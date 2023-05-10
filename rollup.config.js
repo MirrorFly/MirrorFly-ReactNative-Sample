@@ -24,6 +24,9 @@ export default {
     external: [
         'react',
         'react-native',
+        'react-dom',
+        'react-redux',
+        '@reduxjs/toolkit'
     ],
     plugins: [
         nodePolyfills(),

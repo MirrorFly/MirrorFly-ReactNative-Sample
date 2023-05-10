@@ -1,8 +1,6 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { useSelector } from 'react-redux';
-import { AttachmentIcon } from '../common/Icons';
-import { Header, Icon } from 'react-native-elements';
 
 function RecentChat() {
     const recentChats = useSelector(state => state.chat.recentChat)

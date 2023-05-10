@@ -1,29 +1,47 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, BackHandler } from 'react-native'
 import React from 'react'
 import { countriescodes } from '../common/countries'
-
+import CountryItems from '../model/CountryItems';
+import { navigate } from '../redux/navigationSlice';
+import { REGISTERSCREEN } from '../constant';
+import { useDispatch } from 'react-redux';
 const CountryList = () => {
+
+    const dispatch = useDispatch();
+    const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        handleBackBtn
+    );
+
+    React.useEffect(() => {
+        return () => backHandler.remove()
+    }, [])
+
+    const handleBackBtn = () => {
+        let x = { screen: REGISTERSCREEN }
+        dispatch(navigate(x))
+        return true;
+    }
+
+
     return (
         <View>
             <View style={styles.headerStyle}>
-                <Image style={styles.imageView} resizeMode="cover" source={require('../assets/leftArrow.png')} />
+                <TouchableOpacity onPress={handleBackBtn} >
+                    <Image style={styles.imageView} resizeMode="cover" source={require('../assets/leftArrow.png')} />
+                </TouchableOpacity>
+
                 <Text style={{ fontSize: 22, fontWeight: "bold", color: "black", marginLeft: 30 }}>Select Country</Text>
-                <TouchableOpacity style={{ marginLeft: 150 }} >
+                <TouchableOpacity style={{ marginLeft: 150 }}  >
                     <Image style={styles.imageView} resizeMode="cover" source={require('../assets/Search.png')} />
                 </TouchableOpacity>
             </View>
             <View>
                 <FlatList
                     data={countriescodes}
-                    keyExtractor={(item) => item?.id}
+                    keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
-                        <TouchableOpacity
-                            style={{ padding: 10, flexDirection: "row", justifyContent: "space-between" }}
-                        // onPress={() => handleOptionSelect(item)}
-                        >
-                            <Text style={{ fontSize: 15, color: "black" }}>{item.name}</Text>
-                            <Text style={{ fontSize: 15, color: "black" }}>{item.dial_code}</Text>
-                        </TouchableOpacity>
+                        <CountryItems renderItem={item} />
                     )}
                 />
             </View>
@@ -48,5 +66,10 @@ const styles = StyleSheet.create({
         width: 20,
         Left: 10,
         height: 20
+    },
+    countryListStyle: {
+        padding: 10,
+        flexDirection: "row",
+        justifyContent: "space-between"
     }
 })

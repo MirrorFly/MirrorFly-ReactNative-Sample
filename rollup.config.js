@@ -1,5 +1,5 @@
-import babel from 'rollup-plugin-babel';
-import resolve from 'rollup-plugin-node-resolve';
+import babel from '@rollup/plugin-babel';
+import resolve from '@rollup/plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 import svgr from '@svgr/rollup'
@@ -11,17 +11,20 @@ export default {
     input: 'src/index.js',
     output: [
         {
-            dir: 'dist/cjs',
             format: "cjs",
-            sourcemap: true
+            dir: 'dist/cjs',
+            sourcemap: true,
         },
         {
             dir: 'dist',
             format: "esm",
-            sourcemap: true
+            sourcemap: true,
         }
     ],
-    external: ['react', 'react-native'],
+    external: [
+        'react',
+        'react-native',
+    ],
     plugins: [
         nodePolyfills(),
         svgr(),
@@ -33,9 +36,9 @@ export default {
         peerDepsExternal(),
         resolve({
             extensions: ['.js', '.jsx'],
+            preferBuiltins: false
         }),
-        commonjs(
-        ),
+        commonjs(),
         json(),
         terser(),
     ],

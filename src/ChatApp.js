@@ -1,21 +1,25 @@
 import React from 'react';
-import { View } from 'react-native';
-import RegisterScreen from './screen/RegisterScreen';
-import { handleSDKInitialize } from './SDKActions/utils';
+import { Provider } from 'react-redux';
+import store from './redux/store';
+import Navigation from './Navigation';
+import { callBacks } from './SDKActions/callbacks';
+import { SafeAreaView } from 'react-native';
 
 export const ChatApp = () => {
 
     React.useEffect(() => {
         (async () => {
-            let initialize = await handleSDKInitialize();
-            console.log(initialize, 'initialize')
+            await SDK.initializeSDK({
+                apiBaseUrl: `https://api-uikit-qa.contus.us/api/v1`,
+                licenseKey: `ckIjaccWBoMNvxdbql8LJ2dmKqT5bp`,
+                callbackListeners: callBacks,
+            });
         })();
-        console.log('useEffect')
     }, [])
 
     return (
-        <View>
-            <RegisterScreen />
-        </View>
+        <Provider store={store}>
+            <Navigation />
+        </Provider>
     );
 }

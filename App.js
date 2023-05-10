@@ -1,14 +1,10 @@
 import React from 'react';
-import CountryList from './src/screen/CountryList';
-import RegisterScreen from './src/screen/RegisterScreen';
-// import SplashScreen from './src/screen/SplashScreen';
+import SplashScreen from './src/screen/SplashScreen';
+import { ChatApp } from './src';
 
 function App() {
   return (
-    // <SplashScreen />
-    // <RegisterScreen /> 
-    <CountryList/>
-
+    <ChatApp />
   );
 }
 

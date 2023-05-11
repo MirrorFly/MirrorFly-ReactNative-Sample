@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity, Linking, ToastAndroid } from 'react-native';
+import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity, Linking, ToastAndroid, ScrollView, KeyboardAvoidingView } from 'react-native';
 import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch } from 'react-redux';
 import { navigate } from '../redux/navigationSlice';
@@ -53,6 +53,7 @@ const RegisterScreen = () => {
     return (
 
         <View style={styles.headContainer}>
+      <ScrollView showsVerticalScrollIndicator={false}>
             <View style={styles.topSectionContainer}>
                 <Image style={styles.imageView} resizeMode="contain" source={require('../assets/mobile.png')} />
                 <Text style={styles.numberstyle}>Register Your Number</Text>
@@ -77,6 +78,7 @@ const RegisterScreen = () => {
                         </Text>
                         <View style={{ borderLeftWidth: 1, height: 20, borderColor: '#D3D3D3', marginLeft: 10, marginTop: 2 }} />
                     </View>
+                    {/* <KeyboardAvoidingView style={styles.TextInputContainer} >  */}
                     <TextInput
                         style={styles.inputStyle}
                         onChangeText={(value) => {
@@ -94,6 +96,7 @@ const RegisterScreen = () => {
                         keyboardType="numeric"
                         numberOfLines={1}
                     />
+                    {/* </KeyboardAvoidingView> */}
                 </View>
 
                 <View style={styles.button}>
@@ -118,6 +121,7 @@ const RegisterScreen = () => {
                     </View>
                 </View>
             </View>
+            </ScrollView>
         </View>
 
     )
@@ -155,6 +159,9 @@ const styles = StyleSheet.create({
         borderBottomColor: "#D3d3d3",
         marginHorizontal: 12,
         paddingVertical: 12
+    },
+    TextInputContainer:{
+    
     },
     countryText:
     {

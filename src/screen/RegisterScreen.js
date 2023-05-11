@@ -68,7 +68,7 @@ const RegisterScreen = () => {
                     style={styles.dropstyle}
                 >
                     <Text style={styles.countryText}>{selectcountry ? selectcountry?.name : 'India'}</Text>
-                    <Image resizeMode="cover" source={require('../assets/DownArrow.png')} />
+                    <Image resizeMode="contain" style={{height:12,width:12}}  source={require('../assets/DownArrow.png')} />
                 </TouchableOpacity>
                 <View style={styles.mainContainer}>
                     <View style={styles.countryCodeContainer}>

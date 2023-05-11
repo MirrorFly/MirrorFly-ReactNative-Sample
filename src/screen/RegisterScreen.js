@@ -75,7 +75,7 @@ const RegisterScreen = () => {
                         <Text style={styles.countryCodeText}>
                             {selectcountry ? selectcountry?.dial_code : "+91"}
                         </Text>
-                        <View style={{ borderLeftWidth: 1, height: 20, borderColor: '#D5D5D5', marginLeft: 10, marginTop: 2 }} />
+                        <View style={{ borderLeftWidth: 1, height: 20, borderColor: '#D3D3D3', marginLeft: 10, marginTop: 2 }} />
                     </View>
                     <TextInput
                         style={styles.inputStyle}
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
 
     },
     flatListContainer: {
-        marginTop: 42,
+        marginTop: 48,
         marginHorizontal: 4
 
     },
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         borderBottomWidth: 1,
-        borderBottomColor: "#959595",
+        borderBottomColor: "#D3d3d3",
         marginHorizontal: 12,
         paddingVertical: 12
     },
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     },
     button: {
         alignItems: 'center',
-        marginTop: 40,
+        marginTop: 44,
         fontWeight: "bold"
     },
     actionStyle: {

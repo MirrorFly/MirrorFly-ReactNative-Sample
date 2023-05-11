@@ -7,7 +7,6 @@ import { navigate } from '../redux/navigationSlice';
 import { CONNECTED, COUNTRYSCREEN, PROFILESCREEN } from '../constant';
 import { useSelector } from 'react-redux';
 import { registerData } from '../redux/authSlice';
-import { getRecentChat } from '../redux/chatSlice';
 
 const RegisterScreen = () => {
     const selectcountry = useSelector(state => state.navigation.selectContryCode);
@@ -37,8 +36,8 @@ const RegisterScreen = () => {
     }, [isConnect])
 
     return (
-        <Formik
-            initialValues={{ mobileNumber: '+917094229374' }}
+       <Formik
+            initialValues={{ mobileNumber: '' }}
             validate={values => {
                 const errors = {};
                 if (!values.mobileNumber) {
@@ -50,7 +49,7 @@ const RegisterScreen = () => {
                 return errors;
             }}
             onSubmit={values => {
-                dispatch(registerData('917094229374'))
+                    dispatch(registerData(selectcountry?.dial_code + values.mobileNumber))
             }}
         >
             {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
@@ -138,6 +137,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         width: 200,
         height: 200
+
     },
     flatListContainer: {
         marginTop: 42,

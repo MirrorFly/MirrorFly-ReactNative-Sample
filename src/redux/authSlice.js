@@ -23,7 +23,7 @@ export const registerData = createAsyncThunk('register/userData', async (number,
 
         let register
         if (number) {
-            register = await SDK.register(number);
+            register = await SDK.register(`91${number}`);
             switch (register.statusCode) {
                 case 200:
                     await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');

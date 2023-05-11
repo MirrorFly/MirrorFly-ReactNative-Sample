@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import SDK from '../SDK/SDK';
-import { RECENTCHATLOADING } from '../constant';
 
 const initialState = {
     chatMessages: {},
@@ -12,6 +11,7 @@ const initialState = {
 
 export const getRecentChat = createAsyncThunk('chat/getRecentChat', async () => {
     let recentChatsRes = await SDK.getRecentChats();
+    console.log(recentChatsRes)
     const recentChatsFilter = recentChatsRes?.data?.filter(item => item.chatType == 'chat')
     return { recentChatsFilter }
 })
@@ -35,7 +35,7 @@ export const getReceiveMessage = createAsyncThunk('chat/getReceiveMessage', asyn
 })
 
 export const sendMessage = createAsyncThunk('chat/sendMessage', async (message, { getState }) => {
-    let userJid = getState()?.auth?.currentUserJID
+    let userJid = getState()?.register?.currentUserJID
     let [val, fromUserJId] = message;
     SDK.sendTextMessage(fromUserJId, val);
     let chatMessage = {
@@ -61,8 +61,8 @@ const chatSlice = createSlice({
             })
             .addCase(getMessages.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.chatMessages = {
-                    ...state.chatMessages, [action?.payload?.fromUserJId]: action?.payload?.message?.data
+                state.messages = {
+                    ...state.messages, [action?.payload?.fromUserJId]: action?.payload?.message?.data
                 };
             })
             .addCase(getMessages.rejected, (state, action) => {
@@ -74,7 +74,7 @@ const chatSlice = createSlice({
             })
             .addCase(sendMessage.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.chatMessages[action.payload.fromUserJId] = [action.payload.chatMessage, ...state.chatMessages[action.payload.fromUserJId]]
+                state.messages[action.payload.fromUserJId] = [action.payload.chatMessage, ...state.messages[action.payload.fromUserJId]]
             })
             .addCase(sendMessage.rejected, (state, action) => {
                 state.status = 'failed';
@@ -86,18 +86,18 @@ const chatSlice = createSlice({
                 state.status = 'succeeded';
                 let msg = action?.payload?.msg
                 if (msg?.msgType === 'receiveMessage') {
-                    state.chatMessages[msg?.fromUserJid] = action?.payload?.message?.data
+                    state.messages[msg?.fromUserJid] = action?.payload?.message?.data
                 }
             })
             .addCase(getReceiveMessage.rejected, (state, action) => {
                 state.status = 'failed';
             })
             .addCase(getRecentChat.pending, (state) => {
-                state.status = RECENTCHATLOADING;
+                state.status = 'loading';
             })
             .addCase(getRecentChat.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.recentChat = action.payload.recentChatsFilter.reverse()
+                state.recentChat = action.payload.recentChatsFilter
             })
             .addCase(getRecentChat.rejected, (state, action) => {
                 state.status = 'failed';

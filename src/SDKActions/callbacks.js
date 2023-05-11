@@ -1,6 +1,3 @@
-import { getReceiveMessage } from "../redux/chatSlice";
-import store from "../redux/store";
-
 export const callBacks = {
     connectionListener: (response) => {
         if (response.status === "CONNECTED") {
@@ -10,7 +7,7 @@ export const callBacks = {
         }
     },
     messageListener: (res) => {
-        store.dispatch(getReceiveMessage(res))
+        console.log('messageListener');
         // *** for Sender ***
         // type: "acknowledge"
         // msgType: "acknowledge"

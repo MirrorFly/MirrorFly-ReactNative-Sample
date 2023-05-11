@@ -1,39 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Text, View } from 'react-native';
-import Register from './screen/Register';
-import OTP from './screen/OTP';
-import { handleSDKInitialize } from './SDKActions/utils';
+import React from 'react';
+import { Provider } from 'react-redux';
+import store from './redux/store';
+import Navigation from './Navigation';
+import { callBacks } from './SDKActions/callbacks';
+import { SafeAreaView } from 'react-native';
 
 export const ChatApp = () => {
-    const [nav, setNav] = useState('Register')
-    const [navCliked, setNavCliked] = useState(false)
 
-    useEffect(() => {
+    React.useEffect(() => {
         (async () => {
-            let initialize = await handleSDKInitialize();
-            console.log(initialize, 'initialize')
+            await SDK.initializeSDK({
+                apiBaseUrl: `https://api-uikit-qa.contus.us/api/v1`,
+                licenseKey: `ckIjaccWBoMNvxdbql8LJ2dmKqT5bp`,
+                callbackListeners: callBacks,
+            });
         })();
-        console.log('useEffect')
     }, [])
 
-    const handleClick = () => {
-        if (navCliked) {
-            setNav('Register')
-            setNavCliked(false)
-        } else {
-            setNav('OTP')
-            setNavCliked(true)
-        }
-    }
-
     return (
-        <View>
-            <Text>Hi</Text>
-            <Button title='Press' onPress={handleClick} />
-            {{
-                'Register': <Register />,
-                'OTP': <OTP />
-            }[nav]}
-        </View>
+        <Provider store={store}>
+            <Navigation />
+        </Provider>
     );
 }

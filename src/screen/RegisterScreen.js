@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     },
     button: {
         alignItems: 'center',
-        marginTop: 44,
+        marginTop: 42,
         fontWeight: "bold"
     },
     actionStyle: {
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold"
     },
     linkContainer: {
-        marginTop: 24,
+        marginTop: 22,
         justifyContent: "center",
         alignItems: "center"
     },

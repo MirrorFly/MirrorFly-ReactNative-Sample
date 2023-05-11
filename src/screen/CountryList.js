@@ -56,10 +56,10 @@ const CountryList = () => {
                 <View style={styles.iconContainer}>
                     {clicked ?
                         <TouchableOpacity onPress={SearchHandler} >
-                            <Image style={styles.CloseImage} resizeMode="cover" source={require('../assets/remove.png')} />
+                            <Image style={styles.CloseImage} resizeMode="contain" source={require('../assets/remove.png')} />
                         </TouchableOpacity>
                         : <TouchableOpacity onPress={SearchHandler} >
-                            <Image style={styles.SearchImage} resizeMode="cover" source={require('../assets/Search.png')} />
+                            <Image style={styles.SearchImage} resizeMode="contain" source={require('../assets/Search.png')} />
                         </TouchableOpacity>}
                 </View>
             </View>
@@ -142,9 +142,9 @@ const styles = StyleSheet.create({
         flex: 0.9
     },
     SearchImage:{
-        width: 26,
-        height: 26,
-        color:"black"
+        width: 18,
+        height: 18,
+       
     },
     CloseImage:{
         width: 16,

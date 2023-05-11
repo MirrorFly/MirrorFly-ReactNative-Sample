@@ -31,13 +31,10 @@ const CountryList = () => {
     }
 
     const handleSearch = (text) => {
-        console.log(text);
-
         const filtered = countriescodes.filter((item) =>
             item.name.toLowerCase().includes(text.toLowerCase())
         );
         setFilteredData(filtered);
-
     };
 
     return (

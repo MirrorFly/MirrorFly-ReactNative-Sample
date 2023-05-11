@@ -10,7 +10,6 @@ import { registerData } from '../redux/authSlice';
 const RegisterScreen = () => {
     const selectcountry = useSelector(state => state.navigation.selectContryCode);
     const isLoading = useSelector(state=>state.auth.status);
-    console.log(isLoading);
     const [mobileNumber, setMobileNumber] = React.useState('')
   
 
@@ -44,7 +43,7 @@ const RegisterScreen = () => {
             return ToastAndroid.show('Please Enter Mobile Number', ToastAndroid.SHORT);
         }
         if (!/^[0-9]{10}$/i.test(mobileNumber)) {
-            return ToastAndroid.show('Invalid Number', ToastAndroid.SHORT);
+            return ToastAndroid.show('Please enter a valid mobile number', ToastAndroid.SHORT);
         } else {
             dispatch(registerData(selectcountry?.dial_code + mobileNumber))
           

@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import SDK from '../SDK/SDK';
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { navigate } from './navigationSlice';
 import { CONNECTED, NOTCONNECTED } from '../constant';
 
 const initialState = {
@@ -10,6 +9,7 @@ const initialState = {
     status: 'idle',
     isConnected: NOTCONNECTED,
     error: null,
+   
 }
 
 export const getCurrentUserJid = createAsyncThunk('register/getCurrentUserJid', async () => {

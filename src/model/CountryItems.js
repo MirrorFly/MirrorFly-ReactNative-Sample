@@ -8,7 +8,6 @@ const CountryItems = (props) => {
     const dispatch = useDispatch();
 
     const countrySelectHandler = () => {
-        console.log(props);
         let x = { screen: REGISTERSCREEN,selectContryCode:props.renderItem }
         dispatch(navigate(x))
     }

@@ -8,14 +8,11 @@ import { useSelector } from 'react-redux';
 import { registerData } from '../redux/authSlice';
 
 const RegisterScreen = () => {
-    const selectcountry = useSelector(state => state.navigation.selectContryCode);
-    const isLoading = useSelector(state=>state.auth.status);
-    const [mobileNumber, setMobileNumber] = React.useState('')
-  
-
-    const isConnect = useSelector(state => state.auth.isConnected);
-
     const dispatch = useDispatch();
+    const selectcountry = useSelector(state => state.navigation.selectContryCode);
+    const isConnect = useSelector(state => state.auth.isConnected);
+    const isLoading = useSelector(state => state.auth.status);
+    const [mobileNumber, setMobileNumber] = React.useState('')
 
     const termsHandler = () => {
         Linking.openURL("https://www.mirrorfly.com/terms-and-conditions.php");
@@ -38,92 +35,83 @@ const RegisterScreen = () => {
     }, [isConnect])
 
     const handleSubmit = () => {
-
-        if(!mobileNumber){
+        if (!mobileNumber) {
             return ToastAndroid.show('Please Enter Mobile Number', ToastAndroid.SHORT);
         }
         if (!/^[0-9]{10}$/i.test(mobileNumber)) {
             return ToastAndroid.show('Please enter a valid mobile number', ToastAndroid.SHORT);
         } else {
             dispatch(registerData(selectcountry?.dial_code + mobileNumber))
-          
         }
-
     }
     return (
-
         <View style={styles.headContainer}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={styles.topSectionContainer}>
-                <Image style={styles.imageView} resizeMode="contain" source={require('../assets/mobile.png')} />
-                <Text style={styles.numberstyle}>Register Your Number</Text>
-            </View>
-            <View style={{ marginTop: 10 }}>
-                <Text style={styles.chooseText} numberOfLines={2}>
-                    Please choose your country code and enter your mobile number to get the verification code.
-                </Text>
-            </View>
-            <View style={styles.flatListContainer} >
-                <TouchableOpacity
-                    onPress={selectCountryHandler}
-                    style={styles.dropstyle}
-                >
-                    <Text style={styles.countryText}>{selectcountry ? selectcountry?.name : 'India'}</Text>
-                    <Image resizeMode="contain" style={{height:12,width:12}}  source={require('../assets/DownArrow.png')} />
-                </TouchableOpacity>
-                <View style={styles.mainContainer}>
-                    <View style={styles.countryCodeContainer}>
-                        <Text style={styles.countryCodeText}>
-                            {selectcountry ? selectcountry?.dial_code : "+91"}
-                        </Text>
-                        <View style={{ borderLeftWidth: 1, height: 20, borderColor: '#D3D3D3', marginLeft: 10, marginTop: 2 }} />
-                    </View>
-                    {/* <KeyboardAvoidingView style={styles.TextInputContainer} >  */}
-                    <TextInput
-                        style={styles.inputStyle}
-                        onChangeText={(value) => {
-                            let num = value.replace(".", '');
-                            if (isNaN(num)) {
-                                ToastAndroid.show('Please Enter Number', ToastAndroid.SHORT);
-                            } else {
-                                setMobileNumber(value)
-                            }
-                        }}
-                        value={mobileNumber}
-                        placeholder='Enter mobile number'
-                        maxLength={15}
-                        placisLoadingholderTextColor={"#959595"}
-                        keyboardType="numeric"
-                        numberOfLines={1}
-                    />
-                    {/* </KeyboardAvoidingView> */}
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={styles.topSectionContainer}>
+                    <Image style={styles.imageView} resizeMode="contain" source={require('../assets/mobile.png')} />
+                    <Text style={styles.numberstyle}>Register Your Number</Text>
                 </View>
-
-                <View style={styles.button}>
-              
-                    <PrimaryPillBtn title='Continue' isLoading={isLoading} onPress={() => { handleSubmit() }} />
-                </View>
-                <View style={styles.linkContainer}>
-                    <Text style={styles.titleText}>
-                        By clicking continue you agree to MirroFly
+                <View style={{ marginTop: 10 }}>
+                    <Text style={styles.chooseText} numberOfLines={2}>
+                        Please choose your country code and enter your mobile number to get the verification code.
                     </Text>
-                    <View style={styles.termserviceContainer}>
-                        <TouchableOpacity onPress={termsHandler} >
-                            <Text style={styles.termsText}>
-                                Terms and Conditions,
+                </View>
+                <View style={styles.flatListContainer} >
+                    <TouchableOpacity
+                        onPress={selectCountryHandler}
+                        style={styles.dropstyle}
+                    >
+                        <Text style={styles.countryText}>{selectcountry?.name}</Text>
+                        <Image resizeMode="contain" style={{ height: 12, width: 12 }} source={require('../assets/DownArrow.png')} />
+                    </TouchableOpacity>
+                    <View style={styles.mainContainer}>
+                        <View style={styles.countryCodeContainer}>
+                            <Text style={styles.countryCodeText}>
+                                +{selectcountry?.dial_code}
                             </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={PolicyHandler}>
-                            <Text style={styles.policyText}>
-                                Privacy Policy.
-                            </Text>
-                        </TouchableOpacity>
+                            <View style={{ borderLeftWidth: 1, height: 20, borderColor: '#D3D3D3', marginLeft: 10, marginTop: 2 }} />
+                        </View>
+                        <TextInput
+                            style={styles.inputStyle}
+                            onChangeText={(value) => {
+                                let num = value.replace(".", '');
+                                if (isNaN(num)) {
+                                    ToastAndroid.show('Please Enter Number', ToastAndroid.SHORT);
+                                } else {
+                                    setMobileNumber(value)
+                                }
+                            }}
+                            value={mobileNumber}
+                            placeholder='Enter mobile number'
+                            maxLength={15}
+                            placisLoadingholderTextColor={"#959595"}
+                            keyboardType="numeric"
+                            numberOfLines={1}
+                        />
+                    </View>
+                    <View style={styles.button}>
+                        <PrimaryPillBtn title='Continue' isLoading={isLoading} onPress={() => { handleSubmit() }} />
+                    </View>
+                    <View style={styles.linkContainer}>
+                        <Text style={styles.titleText}>
+                            By clicking continue you agree to MirroFly
+                        </Text>
+                        <View style={styles.termserviceContainer}>
+                            <TouchableOpacity onPress={termsHandler} >
+                                <Text style={styles.termsText}>
+                                    Terms and Conditions,
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={PolicyHandler}>
+                                <Text style={styles.policyText}>
+                                    Privacy Policy.
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
-            </View>
             </ScrollView>
         </View>
-
     )
 }
 
@@ -143,14 +131,12 @@ const styles = StyleSheet.create({
     },
     imageView: {
         marginBottom: 10,
-        width:260,
+        width: 260,
         height: 260
-
     },
     flatListContainer: {
         marginTop: 48,
         marginHorizontal: 4
-
     },
     dropstyle: {
         flexDirection: "row",
@@ -160,15 +146,10 @@ const styles = StyleSheet.create({
         marginHorizontal: 12,
         paddingVertical: 12
     },
-    TextInputContainer:{
-    
-    },
-    countryText:
-    {
+    countryText: {
         fontSize: 15,
         color: "#181818",
         fontWeight: "bold"
-
     },
     numberText: {
         flex: 0.24,

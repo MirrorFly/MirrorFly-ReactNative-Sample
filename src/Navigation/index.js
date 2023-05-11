@@ -1,6 +1,6 @@
 import React from 'react'
 import { View } from 'react-native'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import CountryList from '../screen/CountryList'
 import ProfileScreen from '../screen/ProfileScreen'
 import RecentChat from '../screen/RecentChat'

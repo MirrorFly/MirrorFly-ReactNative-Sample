@@ -58,20 +58,20 @@ export const BackBtn = (props) => {
     </TouchableOpacity >
 }
 
-// export const SendBtn = (props) => {
-//     return <TouchableOpacity {...props}>
-//         <Image
-//             source={require('../assets/send.png')}
-//             style={{ width: 24.33, height: 20.32 }}
-//         />
-//     </TouchableOpacity >
-// }
+export const SendBtn = (props) => {
+    return <TouchableOpacity {...props}>
+        <Image
+            source={require('../assets/send.png')}
+            style={{ width: 24.33, height: 20.32 }}
+        />
+    </TouchableOpacity >
+}
 
 
-// export const FloatingBtn = (props) => {
-//     return <View style={styles.FloatingBtnContainer}>
-//         <TouchableOpacity style={styles.FloatingBtn} {...props}>
-//             <Text style={styles.FloatingBtnText}>U</Text>
-//         </TouchableOpacity>
-//     </View>
-// }
+export const FloatingBtn = (props) => {
+    return <View style={styles.FloatingBtnContainer}>
+        <TouchableOpacity style={styles.FloatingBtn} {...props}>
+            <Text style={styles.FloatingBtnText}>U</Text>
+        </TouchableOpacity>
+    </View>
+}

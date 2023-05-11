@@ -142,8 +142,9 @@ const styles = StyleSheet.create({
         flex: 0.9
     },
     SearchImage:{
-        width: 20,
-        height: 20
+        width: 26,
+        height: 26,
+        color:"black"
     },
     CloseImage:{
         width: 16,

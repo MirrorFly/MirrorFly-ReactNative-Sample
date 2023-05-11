@@ -54,7 +54,7 @@ const RegisterScreen = () => {
 
         <View style={styles.headContainer}>
             <View style={styles.topSectionContainer}>
-                <Image style={styles.imageView} resizeMode="cover" source={require('../assets/mobile.png')} />
+                <Image style={styles.imageView} resizeMode="contain" source={require('../assets/mobile.png')} />
                 <Text style={styles.numberstyle}>Register Your Number</Text>
             </View>
             <View style={{ marginTop: 10 }}>
@@ -139,8 +139,8 @@ const styles = StyleSheet.create({
     },
     imageView: {
         marginBottom: 10,
-        width: 200,
-        height: 200
+        width:260,
+        height: 260
 
     },
     flatListContainer: {
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     },
     chooseText: {
         textAlign: "center",
-        marginHorizontal: 35,
+        marginHorizontal: 30,
         color: "#767676",
         fontSize: 14
     },

@@ -3,14 +3,14 @@ import { Provider } from 'react-redux';
 import store from './redux/store';
 import Navigation from './Navigation';
 import { callBacks } from './SDKActions/callbacks';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export const ChatApp = () => {
 
     React.useEffect(() => {
         (async () => {
             await SDK.initializeSDK({
-                apiBaseUrl: `https://api-uikit-qa.contus.us/api/v1`,
+                apiBaseUrl: `https://api-uikit-qa.contus.us/api/v1`,    
                 licenseKey: `ckIjaccWBoMNvxdbql8LJ2dmKqT5bp`,
                 callbackListeners: callBacks,
             });
@@ -19,7 +19,9 @@ export const ChatApp = () => {
 
     return (
         <Provider store={store}>
-            <Navigation />
+            <SafeAreaProvider>
+                <Navigation />
+            </SafeAreaProvider>
         </Provider>
     );
 }

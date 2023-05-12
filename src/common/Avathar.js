@@ -2,6 +2,7 @@ import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 
 const Avathar = (props) => {
+
   return (
     <View style={styles.imageDiv}>
       <Text style={styles.imgName}>{props?.data?.charAt(0) + "" + props?.data?.charAt(1)}</Text>

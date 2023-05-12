@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import SDK from '../SDK/SDK';
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { CONNECTED, NOTCONNECTED } from '../constant';
+import { CONNECTED, DISCONNECTED, NOTCONNECTED, REGISTERSCREEN } from '../constant';
+import { navigate } from './navigationSlice';
 
 const initialState = {
     UserData: {},
@@ -9,8 +10,15 @@ const initialState = {
     status: 'idle',
     isConnected: NOTCONNECTED,
     error: null,
-
 }
+
+export const logout = createAsyncThunk('register/logout', async (val, { dispatch }) => {
+    let logout = await SDK.logout()
+    await AsyncStorage.setItem('mirrorFlyLoggedIn', 'flase');
+    await AsyncStorage.setItem('credential', '');
+    dispatch(navigate({ screen: REGISTERSCREEN }))
+    return logout.statusCode
+})
 
 export const getCurrentUserJid = createAsyncThunk('register/getCurrentUserJid', async () => {
     let jid = await SDK.getCurrentUserJid()
@@ -77,6 +85,17 @@ const authSlice = createSlice({
                 }
             })
             .addCase(connectXMPP.rejected, (state, action) => {
+                state.isConnected = 'failed';
+            })
+            .addCase(logout.pending, (state) => {
+                state.isConnected = 'loading';
+            })
+            .addCase(logout.fulfilled, (state, action) => {
+                if (action.payload == 200) {
+                    state.isConnected = DISCONNECTED;
+                }
+            })
+            .addCase(logout.rejected, (state, action) => {
                 state.isConnected = 'failed';
             })
             .addCase(getCurrentUserJid.pending, (state) => {

@@ -3,20 +3,17 @@ import { BackHandler, FlatList, ImageBackground, StyleSheet, Text, View } from '
 import { BackBtn } from '../common/Button';
 import ChatInput from '../components/ChatInput';
 import ChatMessage from '../components/ChatMessage';
-import { createNavigationContainerRef } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import Avathar from '../common/Avathar';
 import SDK from '../SDK/SDK';
 import { getMessages, sendMessage } from '../redux/chatSlice';
 import { getLastseen } from '../common/TimeStamp';
-import { navigate } from '../redux/screenSlice';
-import { RECENTCHATSCREEN } from '../constants';
-
-export const navigationRef = createNavigationContainerRef();
+import { navigate } from '../redux/navigationSlice';
+import { RECENTCHATSCREEN } from '../constant';
 
 const ChatScreen = () => {
   const dispatch = useDispatch();
-  const messages = useSelector(state => state.chat.messages)
+  const messages = useSelector(state => state.chat.chatMessages)
   const fromUserJId = useSelector(state => state.navigation.fromUserJid)
   const [messageList, setMessageList] = useState([])
   const [seenStatus, setSeenStatus] = useState('Unavailable')
@@ -39,7 +36,6 @@ const ChatScreen = () => {
         dispatch(getMessages(fromUserJId));
       }
       let seen = await SDK.getLastSeen(fromUserJId)
-      console.log(seen, 'seen')
       setSeenStatus(getLastseen(seen?.data?.seconds))
     })();
   }, [messages, fromUserJId])

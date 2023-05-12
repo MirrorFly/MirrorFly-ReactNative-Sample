@@ -6,6 +6,7 @@ import { navigate } from '../redux/navigationSlice';
 import { CONNECTED, COUNTRYSCREEN, PROFILESCREEN } from '../constant';
 import { useSelector } from 'react-redux';
 import { registerData } from '../redux/authSlice';
+import { getRecentChat } from '../redux/chatSlice';
 
 const RegisterScreen = () => {
     const dispatch = useDispatch();
@@ -29,6 +30,7 @@ const RegisterScreen = () => {
 
     React.useEffect(() => {
         if (isConnect == CONNECTED) {
+            dispatch(getRecentChat())
             let nav = { screen: PROFILESCREEN }
             dispatch(navigate(nav))
         }

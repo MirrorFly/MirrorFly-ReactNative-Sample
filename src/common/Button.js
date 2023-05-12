@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     primarypilbtntext: {
         color: '#fff',
         fontSize: 16,
-        fontWeight: "bold"
+        // fontWeight: "bold"
 
     },
     FloatingBtnContainer: {
@@ -51,7 +51,7 @@ export const PrimaryPillBtn = (props) => {
 }
 
 export const BackBtn = (props) => {
-    return <TouchableOpacity {...props}>
+    return <TouchableOpacity {...props} style={{padding:10}}>
         <Image
             source={require('../assets/leftArrow.png')}
             style={{ width: 18.33, height: 15.32 }}

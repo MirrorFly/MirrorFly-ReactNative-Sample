@@ -6,9 +6,11 @@ import { navigate } from '../redux/navigationSlice';
 import { REGISTERSCREEN } from '../constant';
 import { useDispatch } from 'react-redux';
 import { BackBtn } from '../common/Button';
+import { CloseIcon, ManigifyingGlass, SearchIcon } from '../common/Icons';
 const CountryList = () => {
 
     const [clicked, setClicked] = React.useState(false);
+    const textInputRef = React.useRef(null);
     const [filteredData, setFilteredData] = React.useState(countriescodes);
     const dispatch = useDispatch();
     const backHandler = BackHandler.addEventListener(
@@ -47,6 +49,7 @@ const CountryList = () => {
                             style={styles.inputStyle}
                             onChangeText={handleSearch}
                             value={filteredData}
+                            selectionColor={'#3276E2'}
                             placeholder='Search countries...'
                             placisLoadingholderTextColor={"#959595"}
                             keyboardType="default"
@@ -55,32 +58,35 @@ const CountryList = () => {
                 </View>
                 <View style={styles.iconContainer}>
                     {clicked ?
-                        <TouchableOpacity onPress={SearchHandler} >
-                            <Image style={styles.CloseImage} resizeMode="contain" source={require('../assets/remove.png')} />
+                        <TouchableOpacity  >
+                         <CloseIcon onPress={() => { SearchHandler(''); textInputRef.current?.focus(); }} width={20} height={20} />        
                         </TouchableOpacity>
-                        : <TouchableOpacity onPress={SearchHandler} >
-                            <Image style={styles.SearchImage} resizeMode="contain" source={require('../assets/Search.png')} />
-                        </TouchableOpacity>}
+                        : <TouchableOpacity  >
+                         <ManigifyingGlass onPress={() => { SearchHandler(''); textInputRef.current?.focus(); }}  width={20} height={20} />
+                       </TouchableOpacity>}
                 </View>
             </View>
             <View>
-            {  !filteredData.length && clicked ?
-           
-             <Text>
-              No countries found 
-            </Text>
-            : <FlatList
-                    data={filteredData}
-                    removeClippedSubviews={true}
-                    showsVerticalScrollIndicator={false} 
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                        <CountryItems renderItem={item} />
-                    )}
-                /> 
-            
-            }
-                
+                {!filteredData.length && clicked ?
+
+                    <View style={{ alignItems: "center", justifyContent: "center", marginTop: 100 }}>
+                        <Text style={{ fontSize: 20 }}>
+                            No countries found
+                        </Text>
+                    </View>
+
+                    : <FlatList
+                        data={filteredData}
+                        removeClippedSubviews={true}
+                        showsVerticalScrollIndicator={false}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                            <CountryItems renderItem={item} />
+                        )}
+                    />
+
+                }
+
             </View>
         </>
     )
@@ -93,7 +99,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        height: 80,
+        height: 70,
         paddingHorizontal: 10,
         backgroundColor: '#F2F2F2',
         borderBottomWidth: 1,
@@ -112,7 +118,7 @@ const styles = StyleSheet.create({
     iconContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingTop:10
+        paddingTop: 6
     },
     icon: {
         width: 20,
@@ -141,13 +147,14 @@ const styles = StyleSheet.create({
         fontSize: 20,
         flex: 0.9
     },
-    SearchImage:{
+    SearchImage: {
         width: 18,
         height: 18,
-       
+
     },
-    CloseImage:{
+    CloseImage: {
         width: 16,
-        height: 16
+        height: 16,
+
     }
 })

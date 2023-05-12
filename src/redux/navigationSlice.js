@@ -22,7 +22,7 @@ const navigationSlice = createSlice({
             state.screen = action.payload?.screen;
             state.number = action.payload?.number
             state.fromUserJid = action.payload?.fromUserJID;
-            state.selectContryCode = action.payload.selectContryCode
+            state.selectContryCode = action?.payload?.selectContryCode || state.selectContryCode
         }
     },
 });

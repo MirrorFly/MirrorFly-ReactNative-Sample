@@ -6,13 +6,14 @@ import SDK from '../SDK/SDK'
 import { getConversationHistoryTime } from '../common/TimeStamp'
 import { navigate } from '../redux/navigationSlice'
 import { CHATSCREEN } from '../constant'
+import { Divider } from 'react-native-paper'
 
 function RecentChatItem(props) {
     const dispatch = useDispatch()
     const handleRecentChatItem = async () => {
         let jid = await SDK.getJid(props?.RecentItem?.fromUserId)
         if (jid.statusCode == 200) {
-            let x = { screen: CHATSCREEN, fromUserJId: jid.userJid }
+            let x = { screen: CHATSCREEN, fromUserJID: jid.userJid }
             dispatch(navigate(x));
         }
     }
@@ -22,7 +23,7 @@ function RecentChatItem(props) {
                 <View style={styles.userDiv}>
                     <Avathar data={props?.RecentItem?.fromUserId} />
                     <View>
-                        <Text style={styles.userName}>
+                        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.userName}>
                             {props?.RecentItem?.fromUserId}{"\n"}
                         </Text>
                         <Text numberOfLines={1} ellipsizeMode='tail' style={styles.message}>
@@ -34,6 +35,7 @@ function RecentChatItem(props) {
                     <Text>{getConversationHistoryTime(props?.RecentItem?.createdAt)}</Text>
                 </View>
             </View>
+            <Divider />
         </TouchableOpacity>
     )
 }
@@ -55,7 +57,8 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         fontSize: 14,
         color: "black",
-        fontWeight: "600"
+        fontWeight: "600",
+        marginBottom: 20
     },
     message: {
         marginTop: -12,

@@ -1,5 +1,6 @@
 import React from 'react'
 import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Chat_FABICON } from './Icons'
 
 const styles = StyleSheet.create({
     primarypilbtn: {
@@ -71,7 +72,7 @@ export const SendBtn = (props) => {
 export const FloatingBtn = (props) => {
     return <View style={styles.FloatingBtnContainer}>
         <TouchableOpacity style={styles.FloatingBtn} {...props}>
-            <Text style={styles.FloatingBtnText}>U</Text>
+            <Chat_FABICON />
         </TouchableOpacity>
     </View>
 }

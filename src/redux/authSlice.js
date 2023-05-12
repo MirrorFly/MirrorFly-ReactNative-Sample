@@ -9,7 +9,7 @@ const initialState = {
     status: 'idle',
     isConnected: NOTCONNECTED,
     error: null,
-   
+
 }
 
 export const getCurrentUserJid = createAsyncThunk('register/getCurrentUserJid', async () => {
@@ -20,10 +20,9 @@ export const getCurrentUserJid = createAsyncThunk('register/getCurrentUserJid', 
 
 export const registerData = createAsyncThunk('register/userData', async (number, { dispatch }) => {
     try {
-
         let register
         if (number) {
-            register = await SDK.register(`91${number}`);
+            register = await SDK.register(number);
             switch (register.statusCode) {
                 case 200:
                     await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');

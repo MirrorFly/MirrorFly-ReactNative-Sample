@@ -7,7 +7,11 @@ const initialState = {
     number: '',
     status: 'idle',
     error: null,
-    selectContryCode:''
+    selectContryCode: {
+        name: "India",
+        dial_code: "91",
+        code: "IN"
+    }
 }
 
 const navigationSlice = createSlice({
@@ -18,7 +22,7 @@ const navigationSlice = createSlice({
             state.screen = action.payload?.screen;
             state.number = action.payload?.number
             state.fromUserJid = action.payload?.fromUserJID;
-            state.selectContryCode=action.payload.selectContryCode
+            state.selectContryCode = action.payload.selectContryCode
         }
     },
 });

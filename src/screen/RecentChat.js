@@ -1,49 +1,65 @@
-import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
-import { useSelector } from 'react-redux';
-import { AttachmentIcon } from '../common/Icons';
-import { Header, Icon } from 'react-native-elements';
+import React, { useEffect } from 'react';
+import { View, FlatList, Text, StyleSheet, Image } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { FloatingBtn } from '../common/Button';
+import { navigate } from '../redux/navigationSlice';
+import { CONTACTLIST } from '../constant';
+import { getRecentChat } from '../redux/chatSlice';
+import RecentChatItem from '../model/RecentChatItem';
 
-function RecentChat() {
-    const recentChats = useSelector(state => state.chat.recentChat)
-    console.log(recentChats, 'recentChats')
+const RecentChatScreen = () => {
+    const dispatch = useDispatch();
+    const recentChatList = useSelector(state => state.chat.recentChat)
+    const messages = useSelector(state => state.chat.chatMessages)
+    console.log(recentChatList)
+    useEffect(() => {
+        (async () => {
+            dispatch(getRecentChat());
+        })();
+    }, [messages])
+
     return (
-        <View>
-            <View style={styles.screenHeadContainer}>
-                <View>
-                    <Text style={styles.screenHeader}>Chat</Text>
+        <View style={{ flex: 1, backgroundColor: "#fff" }}>
+            <View style={styles.chatHeader}>
+                <View style={styles.avatarContainer}>
+                    <Image
+                        source={require('../assets/mirrorfly-logo.png')}
+                        style={{ width: 145, height: 45.8 }}
+                    />
                 </View>
-                <View style={styles.headIconContainer}>
-                    <Text>O</Text>
-                    <Text>M</Text>
-                </View>
-                {/* <AttachmentIcon /> */}
             </View>
-            {recentChats.length == 0 ?
-                <>
-
-                </>
-                :
-                <>
-                </>
-            }
-            <Text>RecentChat</Text>
+            <FlatList
+                data={recentChatList}
+                keyExtractor={item => item.msgId}
+                renderItem={({ item }) => {
+                    return <RecentChatItem RecentItem={item} />
+                }}
+            />
+            <FloatingBtn onPress={() => dispatch(navigate({ screen: CONTACTLIST }))} />
         </View>
-    )
-}
-
-export default RecentChat
+    );
+};
 
 const styles = StyleSheet.create({
-    screenHeadContainer: {
+    chatHeader: {
         backgroundColor: '#F2F2F2',
-        height: 79,
-        justifyContent: 'center',
-        alignItems: 'flex-end'
+        height: 80,
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 15
     },
-    screenHeader: {
-        fontSize: 20,
-        fontWeight: '900',
-        color: '#181818'
-    }
-})
+    avatarContainer: {
+        marginStart: 16.97,
+        display: 'flex',
+        flexDirection: 'row',
+    },
+    avatar: {
+        width: 36.37,
+        height: 36.37,
+        borderRadius: 50,
+        backgroundColor: 'black',
+    },
+});
+
+export default RecentChatScreen;

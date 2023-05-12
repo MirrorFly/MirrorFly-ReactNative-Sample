@@ -40,6 +40,12 @@ const RegisterScreen = () => {
         if (!mobileNumber) {
             return ToastAndroid.show('Please Enter Mobile Number', ToastAndroid.SHORT);
         }
+ 
+         if(mobileNumber.length <= '5')
+         {
+            return ToastAndroid.show('Your mobile number is too short', ToastAndroid.SHORT);
+         }
+
         if (!/^[0-9]{10}$/i.test(mobileNumber)) {
             return ToastAndroid.show('Please enter a valid mobile number', ToastAndroid.SHORT);
         } else {
@@ -48,16 +54,16 @@ const RegisterScreen = () => {
     }
     return (
         <View style={styles.headContainer}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={styles.topSectionContainer}>
-                    <Image style={styles.imageView} resizeMode="contain" source={require('../assets/mobile.png')} />
-                    <Text style={styles.numberstyle}>Register Your Number</Text>
-                </View>
-                <View style={{ marginTop: 10 }}>
-                    <Text style={styles.chooseText} numberOfLines={2}>
-                        Please choose your country code and enter your mobile number to get the verification code.
-                    </Text>
-                </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={styles.topSectionContainer}>
+                <Image style={styles.imageView} resizeMode="contain" source={require('../assets/mobile.png')} />
+                <Text style={styles.numberstyle}>Register Your Number</Text>
+            </View>
+            <View style={{ marginTop: 10 }}>
+                <Text style={styles.chooseText} numberOfLines={2}>
+                    Please choose your country code and enter your mobile number to get the verification code.
+                </Text>
+            </View> 
                 <View style={styles.flatListContainer} >
                     <TouchableOpacity
                         onPress={selectCountryHandler}
@@ -133,8 +139,9 @@ const styles = StyleSheet.create({
     },
     imageView: {
         marginBottom: 10,
-        width: 260,
-        height: 260
+        width:200,
+        height: 200
+
     },
     flatListContainer: {
         marginTop: 48,
@@ -212,20 +219,20 @@ const styles = StyleSheet.create({
         marginLeft: 10
     },
     termsText: {
-        color: "blue",
+        color: "#3276E2",
         marginRight: 8,
         fontSize: 11,
         borderBottomWidth: 1,
         borderBottomColor: "#3276E2"
     },
     policyText: {
-        color: "blue",
+        color: "#3276E2",
         fontSize: 11,
         borderBottomWidth: 1,
         borderBottomColor: "#3276E2"
     },
     countryCodeContainer: {
-        marginRight: 20,
+        marginRight: 6,
         flexDirection: "row"
     },
     countryCodeText: {
@@ -244,6 +251,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: "bold",
         color: "black",
-        flex: 1
+       flex: 1
     }
 })

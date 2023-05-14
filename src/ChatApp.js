@@ -3,10 +3,8 @@ import { Provider } from 'react-redux';
 import store from './redux/store';
 import Navigation from './Navigation';
 import { callBacks } from './SDKActions/callbacks';
-import { SafeAreaView } from 'react-native';
 
 export const ChatApp = () => {
-
     React.useEffect(() => {
         (async () => {
             await SDK.initializeSDK({

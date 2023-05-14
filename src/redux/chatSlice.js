@@ -19,7 +19,6 @@ export const getRecentChat = createAsyncThunk('chat/getRecentChat', async () => 
 
 export const updateRecentChat = createAsyncThunk('chat/updateRecentChat', async (res, { getState }) => {
     let recentChatsRes = await SDK.getRecentChats();
-
     const recentChatsFilter = recentChatsRes?.data?.filter(item => item.chatType == 'chat')
     return { recentChatsFilter }
 })
@@ -44,9 +43,8 @@ export const getReceiveMessage = createAsyncThunk('chat/getReceiveMessage', asyn
 })
 
 export const sendMessage = createAsyncThunk('chat/sendMessage', async (message, { getState }) => {
-    let userJid = getState()?.register?.currentUserJID
+    let userJid = getState()?.auth?.currentUserJID
     let [val, fromUserJId] = message;
-    await SDK.sendTextMessage(fromUserJId, val);
     let chatMessage = {
         fromUserJid: userJid,
         timestamp: Date.now(),
@@ -55,6 +53,7 @@ export const sendMessage = createAsyncThunk('chat/sendMessage', async (message, 
             message: val
         }
     }
+    await SDK.sendTextMessage(fromUserJId, val);
     return { chatMessage, fromUserJId }
 })
 

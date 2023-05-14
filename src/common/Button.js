@@ -51,7 +51,7 @@ export const PrimaryPillBtn = (props) => {
 }
 
 export const BackBtn = (props) => {
-    return <TouchableOpacity {...props} style={{padding:10}}>
+    return <TouchableOpacity {...props} style={{ padding: 10 }}>
         <Image
             source={require('../assets/leftArrow.png')}
             style={{ width: 18.33, height: 15.32 }}
@@ -71,7 +71,7 @@ export const SendBtn = (props) => {
 
 export const FloatingBtn = (props) => {
     return <View style={styles.FloatingBtnContainer}>
-        <TouchableOpacity style={styles.FloatingBtn} {...props}>
+        <TouchableOpacity activeOpacity={.8} style={styles.FloatingBtn} {...props}>
             <Chat_FABICON />
         </TouchableOpacity>
     </View>

@@ -36,9 +36,9 @@ function RecentScreen() {
         <TabBar
             {...props}
             style={{ backgroundColor: '#F2F2F2', color: 'black' }}
-            indicatorStyle={{ backgroundColor: 'blue' }}
+            indicatorStyle={{ backgroundColor: '#3276E2' }}
             labelStyle={{ color: 'black', fontWeight: 'bold' }}
-            activeColor={'blue'}
+            activeColor={'#3276E2'}
         />
     );
 

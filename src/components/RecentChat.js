@@ -45,8 +45,8 @@ export default function RecentChat(props) {
                         <VStack>
                             <Text color="coolGray.800" _dark={{ color: 'warmGray.50' }} bold>{item.fromUserId}</Text>
                             <HStack alignItems={'center'}>
-                                <View style={[styles.msgStatus, isSame ? statusVisible : ""]}></View>
-                                <Text px={1} color="coolGray.600" _dark={{ color: 'warmGray.200' }}>{item.msgBody.message}</Text>
+                                {isSame && <View style={[styles.msgStatus, isSame ? statusVisible : ""]}></View>}
+                                <Text px={isSame ? 1 : 0} color="coolGray.600" _dark={{ color: 'warmGray.200' }}>{item.msgBody.message}</Text>
                             </HStack>
                         </VStack>
                         <Spacer />

@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { getConversationHistoryTime } from '../common/TimeStamp';
 
 const ChatMessage = (props) => {
-  const currentUserJID = useSelector(state => state?.register?.currentUserJID)
+  const currentUserJID = useSelector(state => state?.auth?.currentUserJID)
   let isSame = currentUserJID === props?.message?.fromUserJid
   let statusVisible = 'notDelivered'
 

@@ -7,13 +7,13 @@ function datetoTime(secs) {
 }
 
 function secondsToHms(secs) {
-    if (secs === 0){
-      return 0;
+    if (secs === 0) {
+        return 0;
     }
     secs = Number(secs);
     var calcHours = Math.floor(secs / 3600);
     return calcHours > 0 ? calcHours : 0;
-  }
+}
 
 function findYesterday(secs, currentDate) {
     let currentDateInSec = currentDate.getUTCHours();
@@ -68,7 +68,7 @@ export const getLastseen = (secs) => {
             }
         }
     } catch (error) {
-        console.log(error)
+        console.log(error, 'getLastseen error')
     }
 
 };

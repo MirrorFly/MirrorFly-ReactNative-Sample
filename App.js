@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChatApp } from './src';
+import { ChatApp } from './src/ChatApp';
 
 function App() {
   return (

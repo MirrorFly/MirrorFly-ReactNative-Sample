@@ -2,58 +2,54 @@ import React from 'react'
 import Svg, { G, Path, Rect } from 'react-native-svg';
 import { TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
+export const LeftArrowIcon = () => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" width="18.334" height="15.325" viewBox="0 0 18.334 15.325">
+            <Path id="Shape_1" data-name="Shape 1" d="M25.179,60.733l-6.942-6.859q-.027-.027-.051-.056l0,0-.01-.012,0,0-.009-.011,0,0-.008-.01,0-.006-.007-.01,0-.007-.006-.009-.005-.008,0-.007-.006-.01,0-.006L18.1,53.7l0,0-.008-.015h0a.8.8,0,0,1,.161-.957l6.926-6.843a.82.82,0,0,1,1.15,0,.8.8,0,0,1,0,1.137L20.776,52.5H35.52a.8.8,0,1,1,0,1.607H20.776L26.33,59.6a.8.8,0,0,1,0,1.137.821.821,0,0,1-1.15,0Z" transform="translate(-17.999 -45.643)" fill="#181818" />
+        </Svg>
+    )
+}
+
 export const AttachmentIcon = (props) => {
     return (
-        <TouchableOpacity {...props}>
-            <Svg xmlns="http://www.w3.org/2000/svg" width="10.718" height="15.5" viewBox="0 0 10.718 15.5">
-                <Path id="XMLID_97_" d="M56.265.577v9.563a5.359,5.359,0,1,1-10.718,0V.577a.577.577,0,0,1,1.155,0v9.563a4.2,4.2,0,1,0,8.408,0V1.155H49.69V9.749a1.216,1.216,0,0,0,2.431,0V3.754a.577.577,0,1,1,1.155,0V9.749a2.371,2.371,0,1,1-4.741,0V.577A.577.577,0,0,1,49.113,0h6.575A.577.577,0,0,1,56.265.577Z" transform="translate(-45.547)" fill="#363636" />
-            </Svg>
-        </TouchableOpacity>
+        <Svg xmlns="http://www.w3.org/2000/svg" width="10.718" height="15.5" viewBox="0 0 10.718 15.5">
+            <Path id="XMLID_97_" d="M56.265.577v9.563a5.359,5.359,0,1,1-10.718,0V.577a.577.577,0,0,1,1.155,0v9.563a4.2,4.2,0,1,0,8.408,0V1.155H49.69V9.749a1.216,1.216,0,0,0,2.431,0V3.754a.577.577,0,1,1,1.155,0V9.749a2.371,2.371,0,1,1-4.741,0V.577A.577.577,0,0,1,49.113,0h6.575A.577.577,0,0,1,56.265.577Z" transform="translate(-45.547)" fill="#363636" />
+        </Svg>
     )
 }
 
 export const ManigifyingGlass = (props) => {
     return (
-        <TouchableWithoutFeedback {...props}>
-            <View {...props}>
-                <Svg xmlns="http://www.w3.org/2000/svg" width={props.width || "18"} height={props.height || "18"} viewBox="0 0 18 18">
-                    <G id="magnifying-glass_2_" data-name="magnifying-glass (2)" transform="translate(-11 -11)">
-                        <Path id="Path_4" data-name="Path 4" d="M28.78,27.722l-4.327-4.327a7.58,7.58,0,1,0-1.062,1.062l4.327,4.324a.749.749,0,1,0,1.062-1.058Zm-10.194-3.06a6.078,6.078,0,1,1,6.08-6.076A6.084,6.084,0,0,1,18.586,24.662Z" fill="#181818" />
-                    </G>
-                </Svg>
-            </View>
-        </TouchableWithoutFeedback>
+        <View {...props}>
+            <Svg xmlns="http://www.w3.org/2000/svg" width={props.width || "18"} height={props.height || "18"} viewBox="0 0 18 18">
+                <G id="magnifying-glass_2_" data-name="magnifying-glass (2)" transform="translate(-11 -11)">
+                    <Path id="Path_4" data-name="Path 4" d="M28.78,27.722l-4.327-4.327a7.58,7.58,0,1,0-1.062,1.062l4.327,4.324a.749.749,0,1,0,1.062-1.058Zm-10.194-3.06a6.078,6.078,0,1,1,6.08-6.076A6.084,6.084,0,0,1,18.586,24.662Z" fill="#181818" />
+                </G>
+            </Svg>
+        </View>
     )
 }
 
 export const CloseIcon = (props) => {
     return (
-        <TouchableWithoutFeedback {...props}>
-            <View {...props}>
-                <Svg xmlns="http://www.w3.org/2000/svg" width={props.width || "20"} height={props.height || "20"} viewBox="0 0 20 20">
-                    <G id="close" transform="translate(-3805 -694)">
-                        <G id="star" transform="translate(-388 -78)">
-                            <Rect id="Rectangle_188" data-name="Rectangle 188" width="20" height="20" transform="translate(4193 772)" fill="rgba(139,68,68,0)" />
-                        </G>
-                        <G id="close-2" data-name="close" transform="translate(3774 699)">
-                            <Path id="Path_1570" data-name="Path 1570" d="M30.78,16.22a.749.749,0,0,0-1.06,0l-6.22,6.22-6.22-6.22a.75.75,0,1,0-1.06,1.06l6.22,6.22-6.22,6.22a.75.75,0,1,0,1.06,1.06l6.22-6.22,6.22,6.22a.75.75,0,0,0,1.06-1.06L24.56,23.5l6.22-6.22A.749.749,0,0,0,30.78,16.22Z" transform="translate(18 -18)" fill="#181818" stroke="#181818" stroke-width="0.2" />
-                        </G>
-                    </G>
-                </Svg>
-            </View>
-        </TouchableWithoutFeedback>
+        <Svg xmlns="http://www.w3.org/2000/svg" width={props.width || "20"} height={props.height || "20"} viewBox="0 0 20 20">
+            <G id="close" transform="translate(-3805 -694)">
+                <G id="star" transform="translate(-388 -78)">
+                    <Rect id="Rectangle_188" data-name="Rectangle 188" width="20" height="20" transform="translate(4193 772)" fill="rgba(139,68,68,0)" />
+                </G>
+                <G id="close-2" data-name="close" transform="translate(3774 699)">
+                    <Path id="Path_1570" data-name="Path 1570" d="M30.78,16.22a.749.749,0,0,0-1.06,0l-6.22,6.22-6.22-6.22a.75.75,0,1,0-1.06,1.06l6.22,6.22-6.22,6.22a.75.75,0,1,0,1.06,1.06l6.22-6.22,6.22,6.22a.75.75,0,0,0,1.06-1.06L24.56,23.5l6.22-6.22A.749.749,0,0,0,30.78,16.22Z" transform="translate(18 -18)" fill="#181818" stroke="#181818" stroke-width="0.2" />
+                </G>
+            </G>
+        </Svg>
     )
 }
 
-export const ShapeIcon = (props) => {
+export const MenuIcon = (props) => {
     return (
-        <TouchableWithoutFeedback {...props}>
-            <View style={{ paddingHorizontal: 20 }} {...props}>
-                <Svg xmlns="http://www.w3.org/2000/svg" width={props.width || "3.66"} height={props.height || "16.31"} viewBox="0 0 3.66 16.31">
-                    <Path id="Shape_1_copy_7" data-name="Shape 1 copy 7" d="M338.34,58.15a1.83,1.83,0,1,1,1.831,1.81A1.82,1.82,0,0,1,338.34,58.15Zm0-6.34a1.83,1.83,0,1,1,1.831,1.81A1.82,1.82,0,0,1,338.34,51.81Zm0-6.35a1.83,1.83,0,1,1,1.831,1.81A1.82,1.82,0,0,1,338.34,45.46Z" transform="translate(-338.34 -43.65)" fill="#181818" />
-                </Svg>
-            </View>
-        </TouchableWithoutFeedback>
+        <Svg xmlns="http://www.w3.org/2000/svg" width={props.width || "3.66"} height={props.height || "16.31"} viewBox="0 0 3.66 16.31">
+            <Path id="Shape_1_copy_7" data-name="Shape 1 copy 7" d="M338.34,58.15a1.83,1.83,0,1,1,1.831,1.81A1.82,1.82,0,0,1,338.34,58.15Zm0-6.34a1.83,1.83,0,1,1,1.831,1.81A1.82,1.82,0,0,1,338.34,51.81Zm0-6.35a1.83,1.83,0,1,1,1.831,1.81A1.82,1.82,0,0,1,338.34,45.46Z" transform="translate(-338.34 -43.65)" fill="#181818" />
+        </Svg>
     )
 }
 
@@ -81,13 +77,11 @@ export const ProfileIcon = (props) => {
 
 export const SearchIcon = (props) => {
     return (
-        <TouchableOpacity {...props}>
-            <Svg xmlns="http://www.w3.org/2000/svg" width={props.width} height={props.height} viewBox="0 0 18 18">
-                <G id="magnifying-glass_2_" data-name="magnifying-glass (2)" transform="translate(-11 -11)">
-                    <Path id="Path_4" data-name="Path 4" d="M28.78,27.722l-4.327-4.327a7.58,7.58,0,1,0-1.062,1.062l4.327,4.324a.749.749,0,1,0,1.062-1.058Zm-10.194-3.06a6.078,6.078,0,1,1,6.08-6.076A6.084,6.084,0,0,1,18.586,24.662Z" fill="#181818" />
-                </G>
-            </Svg>
-        </TouchableOpacity>
+        <Svg xmlns="http://www.w3.org/2000/svg" width={props.width || 20} height={props.height || 20} viewBox="0 0 18 18">
+            <G id="magnifying-glass_2_" data-name="magnifying-glass (2)" transform="translate(-11 -11)">
+                <Path id="Path_4" data-name="Path 4" d="M28.78,27.722l-4.327-4.327a7.58,7.58,0,1,0-1.062,1.062l4.327,4.324a.749.749,0,1,0,1.062-1.058Zm-10.194-3.06a6.078,6.078,0,1,1,6.08-6.076A6.084,6.084,0,0,1,18.586,24.662Z" fill="#181818" />
+            </G>
+        </Svg>
     )
 
 }

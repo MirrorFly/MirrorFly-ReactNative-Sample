@@ -6,7 +6,8 @@ import ProfileScreen from '../screen/ProfileScreen'
 import RecentScreen from '../screen/RecentScreen'
 import RegisterScreen from '../screen/RegisterScreen'
 import ChatScreen from '../screen/ChatScreen'
-import ContactListScreen from '../screen/ContactListScreen';
+import ContactScreen from '../screen/ContactScreen';
+import SettingScreen from '../screen/SettingScreen'
 
 function Navigation() {
     const screenNav = useSelector(state => state.navigation.screen)
@@ -19,7 +20,8 @@ function Navigation() {
                 'COUNTRYSCREEN': <CountryList />,
                 'PROFILESCREEN': <ProfileScreen />,
                 'CHATSCREEN': <ChatScreen />,
-                'CONTACTLIST': <ContactListScreen />
+                'CONTACTLIST': <ContactScreen />,
+                'SETTINGSCREEN': <SettingScreen />
             }[screenNav]}
         </NativeBaseProvider>
     )

@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "Mirrorfly.app"
-               BlueprintName = "Mirrorfly"
-               ReferencedContainer = "container:Mirrorfly.xcodeproj">
+               BuildableName = "mirrorfly_rn.app"
+               BlueprintName = "mirrorfly_rn"
+               ReferencedContainer = "container:mirrorfly_rn.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "MirrorflyTests.xctest"
-               BlueprintName = "MirrorflyTests"
-               ReferencedContainer = "container:Mirrorfly.xcodeproj">
+               BuildableName = "mirrorfly_rnTests.xctest"
+               BlueprintName = "mirrorfly_rnTests"
+               ReferencedContainer = "container:mirrorfly_rn.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "Mirrorfly.app"
-            BlueprintName = "Mirrorfly"
-            ReferencedContainer = "container:Mirrorfly.xcodeproj">
+            BuildableName = "mirrorfly_rn.app"
+            BlueprintName = "mirrorfly_rn"
+            ReferencedContainer = "container:mirrorfly_rn.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "Mirrorfly.app"
-            BlueprintName = "Mirrorfly"
-            ReferencedContainer = "container:Mirrorfly.xcodeproj">
+            BuildableName = "mirrorfly_rn.app"
+            BlueprintName = "mirrorfly_rn"
+            ReferencedContainer = "container:mirrorfly_rn.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

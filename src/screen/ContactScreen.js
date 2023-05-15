@@ -1,11 +1,13 @@
 import React from 'react'
-import { BackHandler, StyleSheet, View } from 'react-native'
+import { Center } from 'native-base';
+import { BackHandler, Image, StyleSheet } from 'react-native'
 import { CHATSCREEN, RECENTCHATSCREEN, SETTINGSCREEN } from '../constant'
 import { navigate } from '../redux/navigationSlice'
 import { useDispatch } from 'react-redux'
 import ScreenHeader from '../components/ScreenHeader'
 import SDK from '../SDK/SDK'
 import FlatListView from '../components/FlatListView'
+import { Text } from 'react-native';
 
 function ContactScreen() {
     const dispatch = useDispatch()
@@ -69,43 +71,43 @@ function ContactScreen() {
     }
 
     return (
-        <View style={{ flex: 1, position: 'relative', }}>
-            <View style={styles.shadowProp}>
-                <ScreenHeader
-                    title='Contacts'
-                    onhandleBack={handleBackBtn}
-                    menuItems={menuItems}
-                    onhandleSearch={handleSearch}
-                />
-            </View>
+        <>
+            <ScreenHeader
+                title='Contacts'
+                onhandleBack={handleBackBtn}
+                menuItems={menuItems}
+                onhandleSearch={handleSearch}
+            />
+            {!usersList.length && <Center h='full'>
+                <Image style={styles.image} resizeMode="cover" source={require('../assets/no_contacts.png')} />
+                <Text style={styles.noMsg}>No Contacts Found</Text>
+            </Center>}
             <FlatListView
                 onhandlePagination={handlePagination}
                 onhandlePress={(item) => handlePress(item)}
                 isLoading={isFetching}
                 data={usersList}
             />
-        </View>
+        </>
     )
 }
 
 export default ContactScreen
 
 const styles = StyleSheet.create({
-    shadowProp: {
-        borderRadius: 10,
-        elevation: 22,
-        zIndex: 999,
-        shadowColor: 'black',
-        shadowOpacity: 1,
-    },
-    flastListContainer: {
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    imageView: {
+        flex: 0.72,
+        alignItems: 'center',
         justifyContent: 'center',
-        alignItems: 'center'
+    },
+    image: {
+        width: 200,
+        height: 200,
+    },
+    noMsg: {
+        color: '#181818',
+        fontSize: 16,
+        fontWeight: '800',
+        marginBottom: 8
     }
-})
+});

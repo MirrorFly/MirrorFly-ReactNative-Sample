@@ -20,8 +20,10 @@ function RecentScreen() {
     ]);
     const recentChatList = useSelector(state => state.chat.recentChat)
     const [filteredData, setFilteredData] = React.useState([])
+    const [isSearching, setIsSearching] = React.useState(false)
 
     const handleSearch = (text) => {
+        setIsSearching(true)
         const filtered = recentChatList.filter((item) =>
             item.fromUserId.toLowerCase().includes(text.toLowerCase())
         );
@@ -30,13 +32,13 @@ function RecentScreen() {
 
     React.useEffect(() => {
         setFilteredData(recentChatList)
-    }, [recentChatList])
+    }, [recentChatList, isSearching])
 
     const renderTabBar = props => (
         <TabBar
             {...props}
             style={{ backgroundColor: '#F2F2F2', color: 'black' }}
-            indicatorStyle={{ backgroundColor: '#3276E2' }}
+            indicatorStyle={{ backgroundColor: '#3276E2', borderColor: '#3276E2', borderWidth: 1.3, }}
             labelStyle={{ color: 'black', fontWeight: 'bold' }}
             activeColor={'#3276E2'}
         />
@@ -52,13 +54,14 @@ function RecentScreen() {
     ]
 
     const renderScene = SceneMap({
-        first: () => <RecentChat data={filteredData} />,
+        first: () => <RecentChat isSearching={isSearching} data={filteredData} />,
         second: RecentCalls,
     });
 
     return (
         <>
             <ScreenHeader
+                setIsSearching={setIsSearching}
                 onhandleSearch={handleSearch}
                 menuItems={menuItems}
                 logo={logo}

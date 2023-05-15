@@ -1,4 +1,4 @@
-import { Avatar, Box, Divider, HStack, Pressable, Spacer, Text, VStack, View } from 'native-base';
+import { Center, Avatar, Box, Divider, HStack, Pressable, Spacer, Text, VStack, View } from 'native-base';
 import React from 'react'
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,7 +7,7 @@ import Avathar from '../common/Avathar';
 import { CHATSCREEN } from '../constant';
 import { SDK } from '../SDK';
 import { navigate } from '../redux/navigationSlice';
-import { StyleSheet } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 
 export default function RecentChat(props) {
     const dispatch = useDispatch();
@@ -59,6 +59,18 @@ export default function RecentChat(props) {
             <Divider w={"83%"} alignSelf="flex-end" my="2" _light={{ bg: "#f2f2f2" }} _dark={{ bg: "muted.50" }} />
         </Box>
     };
+    if (!props.data.length) {
+        return <Center h='full'>
+            <Image style={styles.image} resizeMode="cover" source={require('../assets/no_messages.png')} />
+            {props.isSearching
+                ? <Text style={styles.noMsg}>No Chats Found</Text>
+                : <>
+                    <Text style={styles.noMsg}>No New Messages</Text>
+                    <Text>Any new messages will appear here</Text>
+                </>
+            }
+        </Center>
+    }
 
     return <Box bg="white" safeArea flex="1">
         <SwipeListView showsVerticalScrollIndicator={false} data={props.data} renderItem={renderItem} rightOpenValue={-130} previewRowKey={'0'} previewOpenValue={-40} previewOpenDelay={3000} onRowDidOpen={onRowDidOpen} />
@@ -83,4 +95,19 @@ const styles = StyleSheet.create({
     seen: {
         backgroundColor: '#66E824'
     },
+    imageView: {
+        flex: 0.72,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    image: {
+        width: 200,
+        height: 200,
+    },
+    noMsg: {
+        color: '#181818',
+        fontSize: 16,
+        fontWeight: '800',
+        marginBottom: 8
+    }
 });

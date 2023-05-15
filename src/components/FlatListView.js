@@ -30,6 +30,10 @@ export default function FlatListView(props) {
         </Box>
     };
 
+    if (!props.data.length) {
+        
+    }
+
     return <Box bg="white" safeArea flex="1">
         <Slide mt="20" in={props.isLoading} placement="top">
             <HStack space={8} justifyContent="center" alignItems="center">

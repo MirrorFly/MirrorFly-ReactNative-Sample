@@ -56,9 +56,11 @@ function ContactScreen() {
 
     const handleSearch = async (text) => {
         setIsFetching(true)
-        let updateUsersList = await SDK.getUsersList(text)
+        setTimeout(async () => {
+            let updateUsersList = await SDK.getUsersList(text)
+            setUsersList(updateUsersList.users)
+        }, 1000)
         setSearchText(text)
-        setUsersList(updateUsersList.users)
         setIsFetching(false)
     }
 
@@ -78,16 +80,18 @@ function ContactScreen() {
                 menuItems={menuItems}
                 onhandleSearch={handleSearch}
             />
-            {!usersList.length && <Center h='full'>
-                <Image style={styles.image} resizeMode="cover" source={require('../assets/no_contacts.png')} />
-                <Text style={styles.noMsg}>No Contacts Found</Text>
-            </Center>}
-            <FlatListView
-                onhandlePagination={handlePagination}
-                onhandlePress={(item) => handlePress(item)}
-                isLoading={isFetching}
-                data={usersList}
-            />
+            {!usersList.length && !isFetching ?
+                <Center h='full'>
+                    <Image style={styles.image} resizeMode="cover" source={require('../assets/no_contacts.png')} />
+                    <Text style={styles.noMsg}>No Contacts Found</Text>
+                </Center>
+                : <FlatListView
+                    onhandlePagination={handlePagination}
+                    onhandlePress={(item) => handlePress(item)}
+                    isLoading={isFetching}
+                    data={usersList}
+                />
+            }
         </>
     )
 }

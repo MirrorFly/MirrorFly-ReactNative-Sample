@@ -42,11 +42,10 @@ const RegisterScreen = () => {
         if (!mobileNumber) {
             return ToastAndroid.show('Please Enter Mobile Number', ToastAndroid.SHORT);
         }
- 
-         if(mobileNumber.length <= '5')
-         {
+
+        if (mobileNumber.length <= '5') {
             return ToastAndroid.show('Your mobile number is too short', ToastAndroid.SHORT);
-         }
+        }
 
         if (!/^[0-9]{10}$/i.test(mobileNumber)) {
             return ToastAndroid.show('Please enter a valid mobile number', ToastAndroid.SHORT);
@@ -56,17 +55,16 @@ const RegisterScreen = () => {
     }
     return (
         <View style={styles.headContainer}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={styles.topSectionContainer}>
-            <IconButton  icon={<Icon as={RegiterPageIcon} name="emoji-happy" />} borderRadius="full" />
-                {/* <Image style={styles.imageView} resizeMode="contain" source={require('../assets/mobile.png')} /> */}
-                <Text style={styles.numberstyle}>Register Your Number</Text>
-            </View>
-            <View style={{ marginTop: 10 }}>
-                <Text style={styles.chooseText} numberOfLines={2}>
-                    Please choose your country code and enter your mobile number to get the verification code.
-                </Text>
-            </View> 
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={styles.topSectionContainer}>
+                    <IconButton icon={<Icon as={RegiterPageIcon} name="emoji-happy" />} borderRadius="full" />
+                    <Text style={styles.numberstyle}>Register Your Number</Text>
+                </View>
+                <View style={{ marginTop: 10 }}>
+                    <Text style={styles.chooseText} numberOfLines={2}>
+                        Please choose your country code and enter your mobile number to get the verification code.
+                    </Text>
+                </View>
                 <View style={styles.flatListContainer} >
                     <TouchableOpacity
                         onPress={selectCountryHandler}
@@ -83,6 +81,7 @@ const RegisterScreen = () => {
                             <View style={{ borderLeftWidth: 1, height: 20, borderColor: '#D3D3D3', marginLeft: 10, marginTop: 2 }} />
                         </View>
                         <TextInput
+                            selectionColor={'#3276E2'}
                             style={styles.inputStyle}
                             onChangeText={(value) => {
                                 let num = value.replace(".", '');
@@ -142,7 +141,7 @@ const styles = StyleSheet.create({
     },
     imageView: {
         marginBottom: 10,
-        width:200,
+        width: 200,
         height: 200
 
     },
@@ -254,6 +253,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: "bold",
         color: "black",
-       flex: 1
+        flex: 1
     }
 })

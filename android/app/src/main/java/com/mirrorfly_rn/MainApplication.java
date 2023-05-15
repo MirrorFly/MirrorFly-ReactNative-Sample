@@ -1,4 +1,4 @@
-package com.Mirrorfly;
+package com.mirrorfly_rn;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

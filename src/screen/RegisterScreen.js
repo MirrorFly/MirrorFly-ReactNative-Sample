@@ -7,6 +7,8 @@ import { CONNECTED, COUNTRYSCREEN, PROFILESCREEN } from '../constant';
 import { useSelector } from 'react-redux';
 import { registerData } from '../redux/authSlice';
 import { getRecentChat } from '../redux/chatSlice';
+import { RegiterPageIcon } from '../common/Icons';
+import { Icon, IconButton } from 'native-base';
 
 const RegisterScreen = () => {
     const dispatch = useDispatch();
@@ -56,7 +58,8 @@ const RegisterScreen = () => {
         <View style={styles.headContainer}>
       <ScrollView showsVerticalScrollIndicator={false}>
             <View style={styles.topSectionContainer}>
-                <Image style={styles.imageView} resizeMode="contain" source={require('../assets/mobile.png')} />
+            <IconButton  icon={<Icon as={RegiterPageIcon} name="emoji-happy" />} borderRadius="full" />
+                {/* <Image style={styles.imageView} resizeMode="contain" source={require('../assets/mobile.png')} /> */}
                 <Text style={styles.numberstyle}>Register Your Number</Text>
             </View>
             <View style={{ marginTop: 10 }}>

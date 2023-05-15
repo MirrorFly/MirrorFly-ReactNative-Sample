@@ -13,7 +13,7 @@ export default function FlatListView(props) {
                 _dark={{ bg: 'coolGray.800' }} _light={{ bg: 'white' }}>
                 <Box pl="4" pr="5" py="2">
                     <HStack alignItems="center" space={3}>
-                        {item.avatarUrl
+                        {item?.avatarUrl
                             ? <Avatar size="48px" source={{ uri: item.avatarUrl }} />
                             : <Avathar data={item?.userId} />
                         }
@@ -37,6 +37,7 @@ export default function FlatListView(props) {
             </HStack>
         </Slide>
         <SwipeListView
+            onEndReached={props?.onhandlePagination}
             showsVerticalScrollIndicator={false}
             data={props.data}
             renderItem={renderItem}

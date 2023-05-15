@@ -11,6 +11,10 @@ function ContactScreen() {
     const dispatch = useDispatch()
     const [isFetching, setIsFetching] = React.useState(false)
     const [usersList, setUsersList] = React.useState([])
+    const [page, setPage] = React.useState(0)
+    const [totalPages, setTotalPages] = React.useState()
+    const [totoalUsers, setTotoalUsers] = React.useState()
+    const [searchText, setSearchText] = React.useState('')
 
     const handleBackBtn = () => {
         let x = { screen: RECENTCHATSCREEN }
@@ -27,6 +31,9 @@ function ContactScreen() {
         (async () => {
             setIsFetching(true)
             let usersList = await SDK.getUsersList()
+            setPage(1)
+            setTotalPages(usersList.totalPages)
+            setTotoalUsers(usersList.totalUsers)
             setUsersList(usersList.users)
             setIsFetching(false)
         })();
@@ -45,6 +52,22 @@ function ContactScreen() {
         dispatch(navigate({ screen: CHATSCREEN, fromUserJID: item.userJid }))
     }
 
+    const handleSearch = async (text) => {
+        setIsFetching(true)
+        let updateUsersList = await SDK.getUsersList(text)
+        setSearchText(text)
+        setUsersList(updateUsersList.users)
+        setIsFetching(false)
+    }
+
+    const handlePagination = async (e) => {
+        setIsFetching(true)
+        let updateUsersList = await SDK.getUsersList(searchText, page + 1 + 2, 30)
+        setPage(page + 1)
+        setUsersList([...usersList, ...updateUsersList.users])
+        setIsFetching(false)
+    }
+
     return (
         <View style={{ flex: 1, position: 'relative', }}>
             <View style={styles.shadowProp}>
@@ -52,9 +75,11 @@ function ContactScreen() {
                     title='Contacts'
                     onhandleBack={handleBackBtn}
                     menuItems={menuItems}
+                    onhandleSearch={handleSearch}
                 />
             </View>
             <FlatListView
+                onhandlePagination={handlePagination}
                 onhandlePress={(item) => handlePress(item)}
                 isLoading={isFetching}
                 data={usersList}

@@ -35,13 +35,15 @@ function RecentScreen() {
     }, [recentChatList, isSearching])
 
     const renderTabBar = props => (
-        <TabBar
-            {...props}
-            style={{ backgroundColor: '#F2F2F2', color: 'black' }}
-            indicatorStyle={{ backgroundColor: '#3276E2', borderColor: '#3276E2', borderWidth: 1.3, }}
-            labelStyle={{ color: 'black', fontWeight: 'bold' }}
-            activeColor={'#3276E2'}
-        />
+        <>
+            {!isSearching && <TabBar
+                {...props}
+                style={{ backgroundColor: '#F2F2F2', color: 'black' }}
+                indicatorStyle={{ backgroundColor: '#3276E2', borderColor: '#3276E2', borderWidth: 1.3, }}
+                labelStyle={{ color: 'black', fontWeight: 'bold' }}
+                activeColor={'#3276E2'}
+            />}
+        </>
     );
 
     const menuItems = [
@@ -58,13 +60,19 @@ function RecentScreen() {
         second: RecentCalls,
     });
 
+    const handleBack = () => {
+        setIsSearching(false)
+    }
+
     return (
         <>
             <ScreenHeader
                 setIsSearching={setIsSearching}
                 onhandleSearch={handleSearch}
+                onCloseSearch={handleBack}
                 menuItems={menuItems}
                 logo={logo}
+                isSearching={isSearching}
             />
             <TabView
                 navigationState={{ index, routes }}

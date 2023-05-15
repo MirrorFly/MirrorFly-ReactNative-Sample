@@ -7,6 +7,14 @@ import { TextInput } from 'react-native';
 function ScreenHeader(props) {
     const [position, setPosition] = React.useState("auto");
     const [isSearching, setIsSearching] = React.useState(false)
+    const [text, setText] = React.useState('')
+
+    const handlingBackBtn = () => {
+        setText('');
+        setIsSearching(false);
+        props?.onCloseSearch && props?.onCloseSearch();
+        props?.onhandleBack && props?.onhandleBack();
+    }
 
     return (
         <>
@@ -14,11 +22,13 @@ function ScreenHeader(props) {
             <Box safeAreaTop bg="#F2F2F2" />
             <HStack h={60} bg="#F2F2F2" px="4" py="3" justifyContent="space-between" alignItems="center" w="full">
                 <HStack alignItems="center">
-                    {props?.onhandleBack && <IconButton onPress={props?.onhandleBack} icon={<Icon as={LeftArrowIcon} name="emoji-happy" />} borderRadius="full" />}
+                    {props?.onhandleBack && <IconButton onPress={handlingBackBtn} icon={<Icon as={LeftArrowIcon} name="emoji-happy" />} borderRadius="full" />}
+                    {props?.isSearching && <IconButton onPress={handlingBackBtn} icon={<Icon as={LeftArrowIcon} name="emoji-happy" />} borderRadius="full" />}
                     {isSearching
                         && <TextInput
+                            value={text}
                             style={{ flex: 0.7, color: 'black' }}
-                            onChangeText={props?.onhandleSearch}
+                            onChangeText={(e) => { setText(e); props?.onhandleSearch(e) }}
                             placeholder='Search...'
                             selectionColor={'#3276E2'}
                             autoFocus={true}
@@ -27,9 +37,9 @@ function ScreenHeader(props) {
                     {props?.title && !isSearching && <Text fontSize={24} fontWeight={'bold'}>{props?.title}</Text>}
                 </HStack>
                 <HStack alignItems="center">
-                    {props?.onhandleSearch && isSearching && <IconButton onPress={() => { setIsSearching(false); props?.setIsSearching && props?.setIsSearching(false); }} icon={<Icon as={CloseIcon} name="emoji-happy" />} borderRadius="full" />}
-                    {props?.onhandleSearch && !isSearching && <IconButton onPress={() => { setIsSearching(true) }} icon={<Icon as={SearchIcon} name="emoji-happy" />} borderRadius="full" />}
-                    {props?.menuItems && <Menu w="160" shouldOverlapWithTrigger={true}
+                    {text && <IconButton onPress={() => { setText('') }} icon={<Icon as={CloseIcon} name="emoji-happy" />} borderRadius="full" />}
+                    {props?.onhandleSearch && !isSearching && <IconButton onPress={() => { setIsSearching(true); props?.setIsSearching && props?.setIsSearching(true); }} icon={<Icon as={SearchIcon} name="emoji-happy" />} borderRadius="full" />}
+                    {!isSearching && props?.menuItems && <Menu w="160" shouldOverlapWithTrigger={true}
                         placement={position == "auto" ? undefined : position} trigger={triggerProps => {
                             return <IconButton {...triggerProps} icon={<Icon as={MenuIcon} name="emoji-happy" />} borderRadius="full" />;
                         }}>

@@ -101,7 +101,7 @@ export const ManigifyingGlass = (props) => {
 
 export const CloseIcon = (props) => {
     return (
-        <Svg xmlns="http://www.w3.org/2000/svg" width={props.width || "20"} height={props.height || "20"} viewBox="0 0 20 20">
+        <Svg xmlns="http://www.w3.org/2000/svg" width={props.width || "18"} height={props.height || "18"} viewBox="0 0 20 20">
             <G id="close" transform="translate(-3805 -694)">
                 <G id="star" transform="translate(-388 -78)">
                     <Rect id="Rectangle_188" data-name="Rectangle 188" width="20" height="20" transform="translate(4193 772)" fill="rgba(139,68,68,0)" />
@@ -146,7 +146,7 @@ export const ProfileIcon = (props) => {
 
 export const SearchIcon = (props) => {
     return (
-        <Svg xmlns="http://www.w3.org/2000/svg" width={props.width || 20} height={props.height || 20} viewBox="0 0 18 18">
+        <Svg xmlns="http://www.w3.org/2000/svg" width={props.width || 18} height={props.height || 18} viewBox="0 0 18 18">
             <G id="magnifying-glass_2_" data-name="magnifying-glass (2)" transform="translate(-11 -11)">
                 <Path id="Path_4" data-name="Path 4" d="M28.78,27.722l-4.327-4.327a7.58,7.58,0,1,0-1.062,1.062l4.327,4.324a.749.749,0,1,0,1.062-1.058Zm-10.194-3.06a6.078,6.078,0,1,1,6.08-6.076A6.084,6.084,0,0,1,18.586,24.662Z" fill="#181818" />
             </G>

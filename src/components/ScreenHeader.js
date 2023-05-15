@@ -27,7 +27,7 @@ function ScreenHeader(props) {
                     {props.title && !isSearching && <Text fontSize={24} fontWeight={'bold'}>{props.title}</Text>}
                 </HStack>
                 <HStack alignItems="center">
-                    {props.onhandleSearch && isSearching && <IconButton onPress={() => { setIsSearching(false) }} icon={<Icon as={CloseIcon} name="emoji-happy" />} borderRadius="full" />}
+                    {props.onhandleSearch && isSearching && <IconButton onPress={() => { props.setIsSearching(false); setIsSearching(false) }} icon={<Icon as={CloseIcon} name="emoji-happy" />} borderRadius="full" />}
                     {props.onhandleSearch && !isSearching && <IconButton onPress={() => { setIsSearching(true) }} icon={<Icon as={SearchIcon} name="emoji-happy" />} borderRadius="full" />}
                     {props.menuItems && <Menu w="160" shouldOverlapWithTrigger={true}
                         placement={position == "auto" ? undefined : position} trigger={triggerProps => {

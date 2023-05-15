@@ -7,6 +7,7 @@ import { REGISTERSCREEN } from '../constant';
 import { useDispatch } from 'react-redux';
 import { BackBtn } from '../common/Button';
 import { CloseIcon, ManigifyingGlass, SearchIcon } from '../common/Icons';
+import ScreenHeader from '../components/ScreenHeader';
 const CountryList = () => {
 
     const [clicked, setClicked] = React.useState(false);
@@ -41,8 +42,14 @@ const CountryList = () => {
 
     return (
         <>
-            <View style={styles.container}>
-                <View style={styles.iconContainer}>
+            
+            <View>
+                <ScreenHeader
+                    title='Select Country'
+                    onhandleBack={handleBackBtn}
+                    onhandleSearch={handleSearch}
+                />
+                {/* <View style={styles.iconContainer}>
                     <BackBtn onPress={handleBackBtn} />
                     {clicked ?
                         <TextInput
@@ -55,8 +62,9 @@ const CountryList = () => {
                             keyboardType="default"
                         />
                         : <Text style={styles.title}>Select Country</Text>}
-                </View>
-                <View style={styles.iconContainer}>
+                </View> */}
+
+                {/* <View style={styles.iconContainer}>
                     {clicked ?
                         <TouchableOpacity  >
                          <CloseIcon onPress={() => { SearchHandler(''); textInputRef.current?.focus(); }} width={20} height={20} />        
@@ -64,10 +72,10 @@ const CountryList = () => {
                         : <TouchableOpacity  >
                          <ManigifyingGlass onPress={() => { SearchHandler(''); textInputRef.current?.focus(); }}  width={20} height={20} />
                        </TouchableOpacity>}
-                </View>
+                </View> */}
             </View>
             <View>
-                {!filteredData.length && clicked ?
+                {!filteredData.length ?
 
                     <View style={{ alignItems: "center", justifyContent: "center", marginTop: 100 }}>
                         <Text style={{ fontSize: 20 }}>
@@ -80,8 +88,8 @@ const CountryList = () => {
                         removeClippedSubviews={true}
                         showsVerticalScrollIndicator={false}
                         keyExtractor={(item) => item.id}
-                        renderItem={({ item }) => (
-                            <CountryItems renderItem={item} />
+                        renderItem={({ item,index }) => (
+                            <CountryItems key={index} renderItem={item} />
                         )}
                     />
 
@@ -95,6 +103,7 @@ const CountryList = () => {
 export default CountryList
 
 const styles = StyleSheet.create({
+
     container: {
         flexDirection: 'row',
         alignItems: 'center',

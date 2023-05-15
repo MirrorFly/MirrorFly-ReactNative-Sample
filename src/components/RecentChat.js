@@ -43,10 +43,10 @@ export default function RecentChat(props) {
                             : <Avathar data={item?.fromUserId} />
                         }
                         <VStack>
-                            <Text color="coolGray.800" _dark={{ color: 'warmGray.50' }} bold>{item.fromUserId}</Text>
+                            <Text color="coolGray.800" _dark={{ color: 'warmGray.50' }} bold>{item?.fromUserId}</Text>
                             <HStack alignItems={'center'}>
                                 {isSame && <View style={[styles.msgStatus, isSame ? statusVisible : ""]}></View>}
-                                <Text px={isSame ? 1 : 0} color="coolGray.600" _dark={{ color: 'warmGray.200' }}>{item.msgBody.message}</Text>
+                                <Text px={isSame ? 1 : 0} color="coolGray.600" _dark={{ color: 'warmGray.200' }}>{item?.msgBody?.message}</Text>
                             </HStack>
                         </VStack>
                         <Spacer />

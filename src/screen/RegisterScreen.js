@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: "#767676",
-        fontSize: 12,
+        fontSize: 11,
         fontWeight:"300"
     },
     termserviceContainer: {
@@ -225,13 +225,13 @@ const styles = StyleSheet.create({
     termsText: {
         color: "#3276E2",
         marginRight: 8,
-        fontSize: 12,
+        fontSize: 11,
         borderBottomWidth: 1,
         borderBottomColor: "#3276E2"
     },
     policyText: {
         color: "#3276E2",
-        fontSize: 12,
+        fontSize: 11,
         borderBottomWidth: 1,
         borderBottomColor: "#3276E2"
     },

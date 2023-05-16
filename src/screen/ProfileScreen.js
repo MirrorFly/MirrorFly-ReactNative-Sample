@@ -117,7 +117,7 @@ const ProfileScreen = () => {
             numberOfLines={1}
           />
         </View>
-        <View style={{ marginTop: 50, marginHorizontal: 10, }}>
+        <View style={{ marginTop: 20, marginHorizontal: 10, }}>
           <View style={styles.mainCotainer}>
             <Text style={{ fontSize: 13, color: "black", fontWeight: "600", }}>
               Email
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 150,
     borderRadius: 22,
     padding: 7,
-    marginTop: 40,
+    marginTop: 30,
   },
 
   top: {

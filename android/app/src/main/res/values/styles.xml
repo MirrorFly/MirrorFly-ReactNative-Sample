@@ -5,6 +5,7 @@
         <!-- Customize your theme here. -->
         <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
         <item name="colorAccent">#3276E2</item>
+        <item name="android:statusBarColor">#d4d4d4</item>
     </style>
 
 </resources>

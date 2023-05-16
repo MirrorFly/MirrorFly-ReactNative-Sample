@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
 
 export const PrimaryPillBtn = (props) => {
     return (
-        <TouchableOpacity disabled={props?.isLoading === 'loading'} style={styles.primarypilbtn} {...props}>
+        <TouchableOpacity activeOpacity={1} disabled={props?.isLoading === 'loading'} style={styles.primarypilbtn} {...props}>
             {props?.isLoading === 'loading'
                 ? <ActivityIndicator size="large" color="#fff" />
                 : <Text style={styles.primarypilbtntext}>{props.title}</Text>
@@ -51,7 +51,7 @@ export const PrimaryPillBtn = (props) => {
 }
 
 export const BackBtn = (props) => {
-    return <TouchableOpacity {...props} style={{ padding: 10 }}>
+    return <TouchableOpacity activeOpacity={1} {...props} style={{ padding: 10 }}>
         <Image
             source={require('../assets/leftArrow.png')}
             style={{ width: 18.33, height: 15.32 }}
@@ -60,7 +60,7 @@ export const BackBtn = (props) => {
 }
 
 export const SendBtn = (props) => {
-    return <TouchableOpacity {...props}>
+    return <TouchableOpacity activeOpacity={1} {...props}>
         <Image
             source={require('../assets/send.png')}
             style={{ width: 24.33, height: 20.32 }}
@@ -71,7 +71,7 @@ export const SendBtn = (props) => {
 
 export const FloatingBtn = (props) => {
     return <View style={styles.FloatingBtnContainer}>
-        <TouchableOpacity activeOpacity={.8} style={styles.FloatingBtn} {...props}>
+        <TouchableOpacity activeOpacity={1} style={styles.FloatingBtn} {...props}>
             <Chat_FABICON />
         </TouchableOpacity>
     </View>

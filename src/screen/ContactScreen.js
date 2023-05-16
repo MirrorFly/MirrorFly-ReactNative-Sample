@@ -19,6 +19,7 @@ function ContactScreen() {
     const [searchText, setSearchText] = React.useState('')
 
     const handleBackBtn = () => {
+        setIsFetching(false)
         let x = { screen: RECENTCHATSCREEN }
         dispatch(navigate(x))
         return true;
@@ -39,7 +40,10 @@ function ContactScreen() {
             setUsersList(usersList.users)
             setIsFetching(false)
         })();
-        return () => backHandler.remove()
+        return () => {
+            setIsFetching(false);
+            backHandler.remove()
+        }
     }, [])
 
     const menuItems = [
@@ -51,6 +55,7 @@ function ContactScreen() {
         }
     ]
     const handlePress = (item) => {
+        setIsFetching(false)
         dispatch(navigate({ screen: CHATSCREEN, fromUserJID: item.userJid }))
     }
 
@@ -59,9 +64,9 @@ function ContactScreen() {
         setTimeout(async () => {
             let updateUsersList = await SDK.getUsersList(text)
             setUsersList(updateUsersList.users)
-        }, 1000)
+            setIsFetching(false)
+        }, 700)
         setSearchText(text)
-        setIsFetching(false)
     }
 
     const handlePagination = async (e) => {

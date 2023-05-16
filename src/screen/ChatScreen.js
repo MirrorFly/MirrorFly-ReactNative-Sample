@@ -1,51 +1,53 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { BackHandler, FlatList, ImageBackground, StyleSheet, Text, View } from 'react-native';
-import { BackBtn } from '../common/Button';
-import ChatInput from '../components/ChatInput';
-import ChatMessage from '../components/ChatMessage';
 import { useDispatch, useSelector } from 'react-redux';
-import Avathar from '../common/Avathar';
-import SDK from '../SDK/SDK';
-import { getMessages, sendMessage } from '../redux/chatSlice';
-import { getLastseen } from '../common/TimeStamp';
 import { navigate } from '../redux/navigationSlice';
 import { RECENTCHATSCREEN } from '../constant';
+import ChatInput from '../components/ChatInput';
+import ChatMessage from '../components/ChatMessage';
+import { getMessages, sendMessage } from '../redux/chatSlice';
+import { getLastseen } from '../common/TimeStamp';
+import { BackBtn } from '../common/Button';
+import Avathar from '../common/Avathar';
+import SDK from '../SDK/SDK';
 
 const ChatScreen = () => {
   const dispatch = useDispatch();
   const messages = useSelector(state => state.chat.chatMessages)
   const fromUserJId = useSelector(state => state.navigation.fromUserJid)
-  const [messageList, setMessageList] = useState([])
-  const [seenStatus, setSeenStatus] = useState('Unavailable')
+  const [messageList, setMessageList] = React.useState([])
+  const [seenStatus, setSeenStatus] = React.useState('')
 
   const handleBackBtn = () => {
     let x = { screen: RECENTCHATSCREEN }
     dispatch(navigate(x))
     return true;
   }
-  const handleMessageSend = (val) => {
-    let values = [val, fromUserJId]
-    dispatch(sendMessage(values))
-  }
-
-  useEffect(() => {
-    (async () => {
-      if (messages[fromUserJId]) {
-        setMessageList(messages[fromUserJId])
-      } else {
-        dispatch(getMessages(fromUserJId));
-      }
-      let seen = await SDK.getLastSeen(fromUserJId)
-      setSeenStatus(getLastseen(seen?.data?.seconds))
-    })();
-  }, [messages, fromUserJId])
 
   const backHandler = BackHandler.addEventListener(
     'hardwareBackPress',
     handleBackBtn
   );
+  const handleMessageSend = (val) => {
+    let values = [val, fromUserJId]
+    dispatch(sendMessage(values))
+  }
 
-  useEffect(() => {
+  React.useEffect(() => {
+    (async () => {
+      if (fromUserJId) {
+        if (messages[fromUserJId]) {
+          setMessageList(messages[fromUserJId])
+        } else {
+          dispatch(getMessages(fromUserJId));
+        }
+        let seen = await SDK.getLastSeen(fromUserJId)
+        setSeenStatus(getLastseen(seen?.data?.seconds))
+      }
+    })();
+  }, [messages, fromUserJId])
+
+  React.useEffect(() => {
     return () => backHandler.remove()
   }, [])
 

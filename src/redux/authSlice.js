@@ -5,7 +5,7 @@ import { CONNECTED, DISCONNECTED, NOTCONNECTED, REGISTERSCREEN } from '../consta
 import { navigate } from './navigationSlice';
 
 const initialState = {
-    UserData: {},
+    userData: {},
     currentUserJID: "",
     status: 'idle',
     isConnected: NOTCONNECTED,
@@ -39,7 +39,7 @@ export const registerData = createAsyncThunk('register/userData', async (number,
                     break;
             }
         }
-        return { register }
+        return register.data 
     } catch (error) {
         console.log(error, 'registerData error')
     }
@@ -72,6 +72,7 @@ const authSlice = createSlice({
             })
             .addCase(registerData.fulfilled, (state, action) => {
                 state.status = 'registered';
+                state.userData=action.payload
             })
             .addCase(registerData.rejected, (state, action) => {
                 state.status = 'failed';

@@ -57,7 +57,7 @@ const RegisterScreen = () => {
         <View style={styles.headContainer}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={styles.topSectionContainer}>
-                    <IconButton icon={<Icon as={RegiterPageIcon} name="emoji-happy" />} borderRadius="full" />
+                    <Icon as={RegiterPageIcon} name="emoji-happy" />
                     <Text style={styles.numberstyle}>Register Your Number</Text>
                 </View>
                 <View style={{ marginTop: 10 }}>
@@ -78,7 +78,7 @@ const RegisterScreen = () => {
                             <Text style={styles.countryCodeText}>
                                 +{selectcountry?.dial_code}
                             </Text>
-                            <View style={{ borderLeftWidth: 1, height: 20, borderColor: '#D3D3D3', marginLeft: 10, marginTop: 2 }} />
+                            <View style={{ borderLeftWidth: 1, height: 20, borderColor: '#f2f2f2', marginLeft: 10, marginTop: 2 }} />
                         </View>
                         <TextInput
                             selectionColor={'#3276E2'}
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         textAlign: "center",
         color: "black",
-        fontWeight: "bold"
+        fontWeight:"600"
     },
     imageView: {
         marginBottom: 10,
@@ -153,14 +153,14 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         borderBottomWidth: 1,
-        borderBottomColor: "#D3d3d3",
+        borderBottomColor: "#f2f2f2",
         marginHorizontal: 12,
         paddingVertical: 12
     },
     countryText: {
         fontSize: 15,
         color: "#181818",
-        fontWeight: "bold"
+        fontWeight:"600"
     },
     numberText: {
         flex: 0.24,
@@ -178,7 +178,8 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginHorizontal: 30,
         color: "#767676",
-        fontSize: 14
+        fontSize: 14,
+        fontWeight:"300"
     },
     button: {
         alignItems: 'center',
@@ -214,7 +215,8 @@ const styles = StyleSheet.create({
     },
     titleText: {
         color: "#767676",
-        fontSize: 11,
+        fontSize: 12,
+        fontWeight:"300"
     },
     termserviceContainer: {
         flexDirection: "row",
@@ -223,13 +225,13 @@ const styles = StyleSheet.create({
     termsText: {
         color: "#3276E2",
         marginRight: 8,
-        fontSize: 11,
+        fontSize: 12,
         borderBottomWidth: 1,
         borderBottomColor: "#3276E2"
     },
     policyText: {
         color: "#3276E2",
-        fontSize: 11,
+        fontSize: 12,
         borderBottomWidth: 1,
         borderBottomColor: "#3276E2"
     },
@@ -240,7 +242,7 @@ const styles = StyleSheet.create({
     countryCodeText: {
         fontSize: 16,
         color: "black",
-        fontWeight: "bold"
+        fontWeight:"600"
     },
     countryCodeDropdownText: {
         fontSize: 16,
@@ -251,7 +253,7 @@ const styles = StyleSheet.create({
     },
     inputStyle: {
         fontSize: 14,
-        fontWeight: "bold",
+        fontWeight: "500",
         color: "black",
         flex: 1
     }

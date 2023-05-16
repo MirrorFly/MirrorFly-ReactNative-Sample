@@ -7,7 +7,8 @@ const store = configureStore({
     reducer: {
         navigation: navigationSlice,
         auth: authSlice,
-        chat: chatSlice
+        chat: chatSlice,
+      
     },
 });
 

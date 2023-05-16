@@ -38,7 +38,7 @@ function ScreenHeader(props) {
                             autoFocus={true}
                         />}
                     {props?.logo && !isSearching && <Image key='sm' size='xs' width={145} height={20.8} source={props?.logo} alt="ic_logo.png" />}
-                    {props?.title && !isSearching && <Text fontSize={24} fontWeight={'bold'}>{props?.title}</Text>}
+                    {props?.title && !isSearching && <Text fontSize={24} fontWeight={'600'}>{props?.title}</Text>}
                 </HStack>
                 <HStack alignItems="center">
                     {text && <IconButton onPress={() => { setText('') }} icon={<Icon as={CloseIcon} name="emoji-happy" />} borderRadius="full" />}

@@ -1,7 +1,7 @@
 import { BackHandler, StyleSheet, Text, TouchableOpacity, View, Image, TextInput, ScrollView } from 'react-native'
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { CHATSCREEN, RECENTCHATSCREEN } from '../constant';
+import { RECENTCHATSCREEN } from '../constant';
 import { navigate } from '../redux/navigationSlice';
 import { CallIcon, MailIcon, StatusIcon } from '../common/Icons';
 const logo = require('../assets/profile.png');
@@ -11,7 +11,7 @@ import { SDK } from '../SDK';
 const ProfileScreen = () => {
 
   const phoneNumber = useSelector(state => state.auth.userData);
-  console.log(phoneNumber);
+  const userJid = useSelector(state => state.auth.currentUserJID);
   const toast = useToast();
   const [placement, setPlacement] = React.useState(undefined);
   const [open, setOpen] = React.useState(false);
@@ -23,13 +23,21 @@ const ProfileScreen = () => {
   const [name, setName] = React.useState("");
   const [mail, setMail] = React.useState("");
   const [mobileNumber, setMobileNumber] = React.useState("");
-  const [status, setStatus] = React.useState("");
+  const [status, setStatus] = React.useState("Avaliable");
   const dispatch = useDispatch();
   const isLoading = useSelector(state => state.auth.status);
   const isConnect = useSelector(state => state.auth.isConnected);
 
-  const selectCountryHandler = async () => {
+  React.useEffect(() => {
+    (async () => {
+      let getUserId = await SDK.getUserProfile(userJid);
+      setName(getUserId.data.nickName)
+      setMail(getUserId.data.email)
+      setStatus(getUserId.data.status)
+    })()
+  }, [])
 
+  const selectCountryHandler = async () => {
     if (!name) {
       return toast.show({
         render: () => {
@@ -40,8 +48,6 @@ const ProfileScreen = () => {
       })
     }
 
-
-
     if (!mail) {
       return toast.show({
         render: () => {
@@ -51,25 +57,22 @@ const ProfileScreen = () => {
         }
       })
     }
-
-
     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(mail)) {
 
       return toast.show({
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
-            <Text style={{ color: "#fff", padding: 5 }}>Please enter a Valid Mali</Text>
+            <Text style={{ color: "#fff", padding: 5 }}>Please enter a Valid Ma</Text>
           </Box>;
         }
       })
     }
 
-  
+    let UserInfo = await SDK.setUserProfile(name, '', status, mobileNumber, mail);
 
-    let UserInfo = await SDK.setUserProfile(name, status, mobileNumber, mail);
     let x = { screen: RECENTCHATSCREEN }
     dispatch(navigate(x))
-    if(UserInfo){
+    if (UserInfo) {
       return toast.show({
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
@@ -78,12 +81,8 @@ const ProfileScreen = () => {
         }
       })
     }
-    
-        console.log(UserInfo);
 
   }
-
- 
 
   return (
     < >
@@ -183,12 +182,12 @@ const ProfileScreen = () => {
             </View>
             <View style={{}} />
           </View>
-          <View style={{ marginTop: 10, }}>
-            <TouchableOpacity style={styles.button} onPress={selectCountryHandler} >
+          <View style={{ marginTop: 10, alignItems: "center" }}>
+            <TouchableOpacity style={styles.button} onPress={selectCountryHandler}>
 
-              <Text style={{ fontSize: 20, color: "#FFFf", textAlign: "center", fontWeight: "300" }}>Save</Text>
+              <Text style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: "300" }}>Save</Text>
             </TouchableOpacity>
-             </View>
+          </View>
         </View>
       </ScrollView>
       <Modal isOpen={open} onClose={() => setOpen(false)} safeAreaTop={true} >
@@ -255,9 +254,10 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#3276E2",
-    marginHorizontal: 150,
+    width: 100,
+    alignItems: "center",
     borderRadius: 22,
-    padding: 7,
+    padding: 9,
     marginTop: 30,
   },
 

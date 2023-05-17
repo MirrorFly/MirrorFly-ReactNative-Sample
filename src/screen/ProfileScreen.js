@@ -1,64 +1,91 @@
 import { BackHandler, StyleSheet, Text, TouchableOpacity, View, Image, TextInput, ScrollView } from 'react-native'
 import React from 'react';
-//import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch, useSelector } from 'react-redux';
-import { CHATSCREEN, RECENTCHATSCREEN } from '../constant';
-import {navigate} from '../redux/navigationSlice';
+import { RECENTCHATSCREEN } from '../constant';
+import { navigate } from '../redux/navigationSlice';
+import { CallIcon, MailIcon, StatusIcon } from '../common/Icons';
+const logo = require('../assets/profile.png');
+import { Modal, Center, Box, VStack, useToast } from "native-base";
+import { SDK } from '../SDK';
 
 const ProfileScreen = () => {
-  const [imageUri, setImageUri] = React.useState(null);
-  // const [mail, setMail] = React.useState("");
-  // const [mobileNumber, setMobileNumber] = React.useState("");
-  // const [status, setStatus] = React.useState("");
+
+  const phoneNumber = useSelector(state => state.auth.userData);
+  const userJid = useSelector(state => state.auth.currentUserJID);
+  const toast = useToast();
+  const [placement, setPlacement] = React.useState(undefined);
+  const [open, setOpen] = React.useState(false);
+
+  const openModal = placement => {
+    setOpen(true);
+    setPlacement(placement);
+  };
+  const [name, setName] = React.useState("");
+  const [mail, setMail] = React.useState("");
+  const [mobileNumber, setMobileNumber] = React.useState("");
+  const [status, setStatus] = React.useState("Avaliable");
   const dispatch = useDispatch();
   const isLoading = useSelector(state => state.auth.status);
   const isConnect = useSelector(state => state.auth.isConnected);
 
-  //   React.useEffect(() => {
-  //     if (isConnect == CONNECTED) {
-  //         let nav = { screen: CHATSCREEN }
-  //         dispatch(navigate(nav))
-  //     }
-  // }, [isConnect])
+  React.useEffect(() => {
+    (async () => {
+      let getUserId = await SDK.getUserProfile(userJid);
+      setName(getUserId.data.nickName)
+      setMail(getUserId.data.email)
+      setStatus(getUserId.data.status)
+    })()
+  }, [])
 
-  const selectImage = () => {
-    ImagePicker.showImagePicker(
-      {
-        mediaType: 'photo',
-        maxWidth: 150,
-        maxHeight: 150,
-        quality: 0.8,
-      },
-      response => {
-        if (response.uri) {
-          setImageUri(response.uri);
+  const selectCountryHandler = async () => {
+    if (!name) {
+      return toast.show({
+        render: () => {
+          return <Box bg="black" px="2" py="1" rounded="sm" >
+            <Text style={{ color: "#fff", padding: 5 }}>Please Enter Name</Text>
+          </Box>;
         }
-      },
-    );
+      })
+    }
 
-    ImagePicker.launchImageLibrary(
-      {
-        mediaType: 'photo',
-        maxWidth: 150,
-        maxHeight: 150,
-        quality: 0.8,
-      },
-      response => {
-        if (response.uri) {
-          setImageUri(response.uri);
+    if (!mail) {
+      return toast.show({
+        render: () => {
+          return <Box bg="black" px="2" py="1" rounded="sm" >
+            <Text style={{ color: "#fff", padding: 5 }}>Please Enter Mail</Text>
+          </Box>;
         }
-      },
-    );
-  };
-  
-  const selectCountryHandler = () => {
+      })
+    }
+    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(mail)) {
+
+      return toast.show({
+        render: () => {
+          return <Box bg="black" px="2" py="1" rounded="sm" >
+            <Text style={{ color: "#fff", padding: 5 }}>Please enter a Valid Ma</Text>
+          </Box>;
+        }
+      })
+    }
+
+    let UserInfo = await SDK.setUserProfile(name, '', status, mobileNumber, mail);
+
     let x = { screen: RECENTCHATSCREEN }
     dispatch(navigate(x))
-}
-  
+    if (UserInfo) {
+      return toast.show({
+        render: () => {
+          return <Box bg="black" px="2" py="1" rounded="sm" >
+            <Text style={{ color: "#fff", padding: 5 }}>Profile Updated successfully</Text>
+          </Box>;
+        }
+      })
+    }
+
+  }
 
   return (
-    <View style={{}}>
+    < >
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.imageContainer}>
           <Text style={styles.profileText}>Profile</Text>
@@ -69,100 +96,129 @@ const ProfileScreen = () => {
           alignItems: "center"
         }}>
           <View style={styles.profileContainer}>
-            <TouchableOpacity onPress={selectImage}>
-              {imageUri && <Image style={styles.imageView} resizeMode="contain" source={{ uri: imageUri }} />}
+            <TouchableOpacity onPress={() => openModal("bottom")} style={{ position: "relative" }}>
+              <Image resizeMode="contain" source={logo} style={{ height: 150, width: 150 }} />
+              <TouchableOpacity onPress={() => openModal("bottom")} style={{ position: "absolute", right: 1, bottom: 1 }}  >
+                <Image resizeMode="contain" source={require('../assets/camera.png')} style={{ height: 40, width: 40 }} />
+              </TouchableOpacity>
+
             </TouchableOpacity>
           </View>
         </View>
-        <View>
-          <Text style={styles.nameText} numberOfLines={1} >Ashik sikkanthar</Text>
+        <View style={{ alignItems: "center", justifyContent: "center", }} >
+          <TextInput
+            style={{ fontWeight: "700", textAlign: "center", width: 400 }}
+            value={name}
+            placeholder='Username'
+            onChangeText={setName}
+            placeholderTextColor={"#959595"}
+            keyboardType="default"
+            numberOfLines={1}
+          />
         </View>
-        <View style={{ marginTop: 50, }}>
+        <View style={{ marginTop: 20, marginHorizontal: 10, }}>
           <View style={styles.mainCotainer}>
-            <Text style={{ fontSize: 13, color: "black", fontWeight: "bold" }}>
+            <Text style={{ fontSize: 13, color: "black", fontWeight: "600", }}>
               Email
             </Text>
             <View style={{
-              flexDirection: "row", alignItems: "center", borderBottomColor: "#D3D3D3",
-              borderBottomWidth: 1
+              flexDirection: "row", alignItems: "center"
             }}>
-              <Image style={styles.imageView} resizeMode="contain" source={require('../assets/call.png')} />
+              <MailIcon />
               <TextInput
-                style={{ marginLeft: 10 }}
-                // value={mobileNumber}
+                style={{ marginLeft: 6, color: "#959595", flex: 1 }}
+
+                value={mail}
+                onChangeText={setMail}
                 placeholder='Enter Email Id'
                 maxLength={20}
-                placisLoadingholderTextColor={"#959595"}
-                keyboardType="numeric"
+                placeholderTextColor={"#959595"}
+                keyboardType="email-address"
                 numberOfLines={1}
               />
             </View>
           </View>
           <View style={styles.mainCotainer}>
-            <Text style={{ fontSize: 13, color: "black", fontWeight: "bold" }}>
+            <Text style={{ fontSize: 13, color: "black", fontWeight: "600", }}>
               Mobile Number
             </Text>
             <View style={{
-              flexDirection: "row", alignItems: "center", borderBottomColor: "#D3D3D3",
-              borderBottomWidth: 1
+              flexDirection: "row", alignItems: "center"
             }}>
-              <Image style={styles.imageView} resizeMode="contain" source={require('../assets/call.png')} />
+              {/* 
+               */}
+              <CallIcon />
               <TextInput
-                style={{ marginLeft: 10 }}
-                // value={mobileNumber}
+                style={{ marginLeft: 9, color: "#959595", flex: 1 }}
+                value={"+" + phoneNumber.username}
+                onChangeText={setMobileNumber}
                 placeholder='Enter Your Mobile Number'
-                maxLength={20}
-                placisLoadingholderTextColor={"#959595"}
+                maxLength={15}
+                editable={false}
+                placeholderTextColor={"#959595"}
                 keyboardType="numeric"
                 numberOfLines={1}
               />
             </View>
           </View>
           <View style={styles.mainCotainer}>
-            <Text style={{ fontSize: 13, color: "black", fontWeight: "bold" }}>
+            <Text style={{ fontSize: 13, color: "black", fontWeight: "600", }}>
               Status
             </Text>
             <View style={{
-              flexDirection: "row", alignItems: "center", borderBottomColor: "#D3D3D3",
-              borderBottomWidth: 1
+              flexDirection: "row", alignItems: "center"
             }}>
-              <Image style={styles.imageView} resizeMode="contain" source={require('../assets/call.png')} />
+              <StatusIcon />
               <TextInput
-                style={{ marginLeft: 10 }}
-                // value={mobileNumber}
-                placeholder='Enter Your Mobile Number'
+                style={{ marginLeft: 6, color: "#959595", flex: 1 }}
+                value={status}
+                onChangeText={setStatus}
+                placeholder='Available'
                 maxLength={20}
-                placisLoadingholderTextColor={"#959595"}
-                keyboardType="numeric"
+                placeholderTextColor={"#959595"}
+                keyboardType="default"
                 numberOfLines={1}
               />
             </View>
             <View style={{}} />
           </View>
-          <View style={{ marginTop: 10,  }}>
-          <TouchableOpacity style={styles.button} onPress={selectCountryHandler} >
+          <View style={{ marginTop: 10, alignItems: "center" }}>
+            <TouchableOpacity style={styles.button} onPress={selectCountryHandler}>
 
-          <Text style={{fontSize:20,color:"#FFFf",textAlign:"center"}}>Save</Text>
-          </TouchableOpacity>
-
-          
-            {/* <PrimaryPillBtn title='save' isLoading={isLoading}  
-  //onPress={() => { handleSubmit() }}
-   /> */}
+              <Text style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: "300" }}>Save</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
-    </View>
+      <Modal isOpen={open} onClose={() => setOpen(false)} safeAreaTop={true} >
+        <Modal.Content width="1100" style={styles.bottom} >
+          <Center w="100%">
+            <Box maxW="350" w="120%">
+              <VStack space={4}>
+                <View style={{ padding: 4, }}>
+                  <Text style={{ fontSize: 14, color: "#767676", }} >Options</Text>
+                  <TouchableOpacity style={{ paddingVertical: 20 }}>
+                    <Text style={{ fontSize: 14, color: "#767676", fontWeight: "500" }}>Take Photo</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity>
+                    <Text style={{ fontSize: 14, color: "#767676", fontWeight: "500" }}>Choose from Gallery</Text>
+                  </TouchableOpacity>
+                </View>
+              </VStack>
+            </Box>
+          </Center>
+        </Modal.Content>
+      </Modal>
+    </>
   )
 }
 
 export default ProfileScreen
 
 const styles = StyleSheet.create({
-
   imageContainer: {
     height: 65,
-    backgroundColor: "#E2E2E2",
+    backgroundColor: "#f2f2f2",
     justifyContent: "center",
     alignItems: "center"
   },
@@ -172,46 +228,53 @@ const styles = StyleSheet.create({
     height: 20
   },
   profileContainer: {
-    // flex:1,
     marginHorizontal: 10,
-    backgroundColor: "#E2E2E2",
-    borderRadius: 70,
-    width: 150,
-    height: 150,
-    borderWidth: 1,
     marginTop: 50,
-
 
   },
   profileText: {
     textAlign: "center",
-    fontWeight: "bold",
+    fontWeight: "800",
     fontSize: 18,
-
-
   },
   mainCotainer:
   {
     marginTop: 15,
-    marginHorizontal: 24,
-    // borderBottomColor:"red",
-    // borderBottomWidth:1
+    paddingHorizontal: 10,
+    borderBottomColor: "#F2F2F2",
+    borderBottomWidth: 1
 
   },
   nameText: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: "600",
     color: "black",
     textAlign: "center",
     marginTop: 10
   },
-  button:{
-    backgroundColor:"#3276E2",
-    marginHorizontal:85,
-    borderRadius:8,  
-    padding:7,
-      alignItems: 'center',
-    marginTop: 42,
-   
+  button: {
+    backgroundColor: "#3276E2",
+    width: 100,
+    borderRadius: 22,
+    padding: 9,
+    marginTop: 30,
+  },
+
+  top: {
+    marginBottom: "auto",
+    marginTop: 0
+  },
+  bottom: {
+    marginBottom: 0,
+    paddingVertical: 12,
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+    borderWidth: 3,
+    borderColor: "#D0D8EB",
+    marginTop: "auto",
+    borderBottomWidth: 3,
+    borderBottomColor: "#D0D8EB"
+
   }
+
 })

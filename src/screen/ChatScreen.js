@@ -17,7 +17,8 @@ const ChatScreen = () => {
   const fromUserJId = useSelector(state => state.navigation.fromUserJid)
   const [messageList, setMessageList] = React.useState([])
   const [seenStatus, setSeenStatus] = React.useState('')
-
+  const [nickName, setNickName] = React.useState('')
+  
   const handleBackBtn = () => {
     let x = { screen: RECENTCHATSCREEN }
     dispatch(navigate(x))
@@ -36,6 +37,9 @@ const ChatScreen = () => {
   React.useEffect(() => {
     (async () => {
       if (fromUserJId) {
+        let userDetails = await SDK.getUserProfile(fromUserJId)
+        console.log(userDetails, 'userDetails')
+        setNickName(userDetails.data.nickName)
         if (messages[fromUserJId]) {
           setMessageList(messages[fromUserJId])
         } else {
@@ -60,9 +64,9 @@ const ChatScreen = () => {
       <View style={styles.chatHeader}>
         <BackBtn onPress={handleBackBtn} />
         <View style={styles.avatarContainer}>
-          <Avathar data={fromUserJId ? fromUserJId : '91'} />
+          <Avathar data={nickName ? nickName : '91'} />
           <View style={styles.userName}>
-            <Text numberOfLines={1} ellipsizeMode='tail' >{fromUserJId}</Text>
+            <Text numberOfLines={1} ellipsizeMode='tail' >{nickName}</Text>
             <Text numberOfLines={1} ellipsizeMode='tail'>{seenStatus}</Text>
           </View>
         </View>

@@ -25,8 +25,8 @@ function ScreenHeader(props) {
             <Box safeAreaTop bg="#F2F2F2" />
             <HStack h={70} bg="#F2F2F2" px="4" py="3" justifyContent="space-between" alignItems="center" w="full">
                 <HStack alignItems="center">
-                    {props?.onhandleBack && <IconButton onPress={handlingBackBtn} icon={<Icon as={LeftArrowIcon} name="emoji-happy" />} borderRadius="full" />}
-                    {props?.isSearching && <IconButton onPress={handlingBackBtn} icon={<Icon as={LeftArrowIcon} name="emoji-happy" />} borderRadius="full" />}
+                    {props?.onhandleBack && <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handlingBackBtn} icon={<Icon as={LeftArrowIcon} name="emoji-happy" />} borderRadius="full" />}
+                    {props?.isSearching && <IconButton _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} onPress={handlingBackBtn} icon={<Icon as={LeftArrowIcon} name="emoji-happy" />} borderRadius="full" />}
                     {isSearching
                         && <TextInput
                             placeholderTextColor="#d3d3d3"
@@ -42,10 +42,10 @@ function ScreenHeader(props) {
                 </HStack>
                 <HStack alignItems="center">
                     {text && <IconButton onPress={() => { setText('') }} icon={<Icon as={CloseIcon} name="emoji-happy" />} borderRadius="full" />}
-                    {props?.onhandleSearch && !isSearching && <IconButton onPress={() => { setIsSearching(true); props?.setIsSearching && props?.setIsSearching(true); }} icon={<Icon as={SearchIcon} name="emoji-happy" />} borderRadius="full" />}
+                    {props?.onhandleSearch && !isSearching && <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={() => { setIsSearching(true); props?.setIsSearching && props?.setIsSearching(true); }} icon={<Icon as={SearchIcon} name="emoji-happy" />} borderRadius="full" />}
                     {!isSearching && props?.menuItems && <Menu w="160" shouldOverlapWithTrigger={true}
                         placement={position == "auto" ? undefined : position} trigger={triggerProps => {
-                            return <IconButton ml='3' {...triggerProps} icon={<Icon as={MenuIcon} name="emoji-happy" />} borderRadius="full" />;
+                            return <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} ml='3' {...triggerProps} icon={<Icon as={MenuIcon} name="emoji-happy" />} borderRadius="full" />;
                         }}>
                         {props?.menuItems.map((item, index) => (
                             <Menu.Item key={index} onPress={item?.formatter}>{item.label}</Menu.Item>

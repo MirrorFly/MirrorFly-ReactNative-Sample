@@ -1,15 +1,14 @@
 import React from 'react';
-import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity,ToastAndroid, Linking, ScrollView, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity, Linking, ScrollView } from 'react-native';
 import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch } from 'react-redux';
 import { navigate } from '../redux/navigationSlice';
-import { CONNECTED, COUNTRYSCREEN, PROFILESCREEN } from '../constant';
+import { CONNECTED, COUNTRYSCREEN, numRegx, PROFILESCREEN } from '../constant';
 import { useSelector } from 'react-redux';
 import { registerData } from '../redux/authSlice';
 import { getRecentChat } from '../redux/chatSlice';
 import { RegiterPageIcon } from '../common/Icons';
-import { Icon, IconButton ,Modal, Center, Box, VStack, useToast} from 'native-base';
-
+import { Icon, IconButton, Modal, Center, Box, VStack, useToast } from 'native-base';
 
 const RegisterScreen = () => {
     const dispatch = useDispatch();
@@ -44,34 +43,34 @@ const RegisterScreen = () => {
         if (!mobileNumber) {
             return toast.show({
                 render: () => {
-                  return <Box bg="black" px="2" py="1" rounded="sm" >
-                    <Text style={{ color: "#fff", padding: 5 }}>Please Enter Mobile Number</Text>
-                  </Box>;
+                    return <Box bg="black" px="2" py="1" rounded="sm" >
+                        <Text style={{ color: "#fff", padding: 5 }}>Please Enter Mobile Number</Text>
+                    </Box>;
                 }
-              })
-            
+            })
+
         }
 
         if (mobileNumber.length <= '5') {
             return toast.show({
                 render: () => {
-                  return <Box bg="black" px="2" py="1" rounded="sm" >
-                    <Text style={{ color: "#fff", padding: 5 }}>Your mobile number is too short</Text>
-                  </Box>;
+                    return <Box bg="black" px="2" py="1" rounded="sm" >
+                        <Text style={{ color: "#fff", padding: 5 }}>Your mobile number is too short</Text>
+                    </Box>;
                 }
-              })
-           
+            })
+
         }
 
         if (!/^[0-9]{10}$/i.test(mobileNumber)) {
             return toast.show({
                 render: () => {
-                  return <Box bg="black" px="2" py="1" rounded="sm" >
-                    <Text style={{ color: "#fff", padding: 5 }}>Please enter a valid mobile number</Text>
-                  </Box>;
+                    return <Box bg="black" px="2" py="1" rounded="sm" >
+                        <Text style={{ color: "#fff", padding: 5 }}>Please enter a valid mobile number</Text>
+                    </Box>;
                 }
-              })
-        
+            })
+
         } else {
             dispatch(registerData(selectcountry?.dial_code + mobileNumber))
         }
@@ -107,10 +106,7 @@ const RegisterScreen = () => {
                             selectionColor={'#3276E2'}
                             style={styles.inputStyle}
                             onChangeText={(value) => {
-                                let num = value.replace(".", '');
-                                if (isNaN(num)) {
-                                    ToastAndroid.show('Please Enter Number', ToastAndroid.SHORT);
-                                } else {
+                                if (value.match(numRegx) || !value) {
                                     setMobileNumber(value)
                                 }
                             }}
@@ -160,7 +156,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         textAlign: "center",
         color: "black",
-        fontWeight:"600"
+        fontWeight: "600"
     },
     imageView: {
         marginBottom: 10,
@@ -183,7 +179,7 @@ const styles = StyleSheet.create({
     countryText: {
         fontSize: 15,
         color: "#181818",
-        fontWeight:"600"
+        fontWeight: "600"
     },
     numberText: {
         flex: 0.24,
@@ -202,7 +198,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 30,
         color: "#767676",
         fontSize: 14,
-        fontWeight:"300"
+        fontWeight: "300"
     },
     button: {
         alignItems: 'center',
@@ -239,7 +235,7 @@ const styles = StyleSheet.create({
     titleText: {
         color: "#767676",
         fontSize: 11,
-        fontWeight:"300"
+        fontWeight: "300"
     },
     termserviceContainer: {
         flexDirection: "row",
@@ -265,7 +261,7 @@ const styles = StyleSheet.create({
     countryCodeText: {
         fontSize: 16,
         color: "black",
-        fontWeight:"600"
+        fontWeight: "600"
     },
     countryCodeDropdownText: {
         fontSize: 16,

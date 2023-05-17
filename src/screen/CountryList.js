@@ -1,17 +1,13 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, BackHandler, TextInput } from 'react-native'
+import { StyleSheet, Text, View, FlatList, BackHandler, TextInput } from 'react-native'
 import React from 'react'
 import { countriescodes } from '../common/countries'
 import CountryItems from '../model/CountryItems';
 import { navigate } from '../redux/navigationSlice';
 import { REGISTERSCREEN } from '../constant';
 import { useDispatch } from 'react-redux';
-import { BackBtn } from '../common/Button';
-import { CloseIcon, ManigifyingGlass, SearchIcon } from '../common/Icons';
 import ScreenHeader from '../components/ScreenHeader';
 const CountryList = () => {
-
-    const [clicked, setClicked] = React.useState(false);
-    const textInputRef = React.useRef(null);
+    const [isSearching, setIsSearching] = React.useState(false);
     const [filteredData, setFilteredData] = React.useState(countriescodes);
     const dispatch = useDispatch();
     const backHandler = BackHandler.addEventListener(
@@ -28,67 +24,42 @@ const CountryList = () => {
         dispatch(navigate(x))
         return true;
     }
-    const SearchHandler = () => {
-        setClicked(!clicked)
-        setFilteredData(countriescodes)
-    }
 
     const handleSearch = (text) => {
-        const filtered = countriescodes.filter((item) =>
-            item.name.toLowerCase().includes(text.toLowerCase())
-        );
-        setFilteredData(filtered);
+        if (isSearching) {
+            const filtered = countriescodes.filter((item) =>
+                item.name.toLowerCase().includes(text.toLowerCase())
+            );
+            setFilteredData(filtered);
+        } else {
+            setFilteredData(countriescodes);
+        }
     };
 
     return (
         <>
-            
+
             <View>
                 <ScreenHeader
                     title='Select Country'
                     onhandleBack={handleBackBtn}
                     onhandleSearch={handleSearch}
+                    setIsSearching={setIsSearching}
                 />
-                {/* <View style={styles.iconContainer}>
-                    <BackBtn onPress={handleBackBtn} />
-                    {clicked ?
-                        <TextInput
-                            style={styles.inputStyle}
-                            onChangeText={handleSearch}
-                            value={filteredData}
-                            selectionColor={'#3276E2'}
-                            placeholder='Search countries...'
-                            placisLoadingholderTextColor={"#959595"}
-                            keyboardType="default"
-                        />
-                        : <Text style={styles.title}>Select Country</Text>}
-                </View> */}
-
-                {/* <View style={styles.iconContainer}>
-                    {clicked ?
-                        <TouchableOpacity  >
-                         <CloseIcon onPress={() => { SearchHandler(''); textInputRef.current?.focus(); }} width={20} height={20} />        
-                        </TouchableOpacity>
-                        : <TouchableOpacity  >
-                         <ManigifyingGlass onPress={() => { SearchHandler(''); textInputRef.current?.focus(); }}  width={20} height={20} />
-                       </TouchableOpacity>}
-                </View> */}
             </View>
             <View>
                 {!filteredData.length ?
-
-                    <View style={{ alignItems: "center", justifyContent: "center", marginTop: 100 }}>
+                    <View style={styles.CountryContainer}>
                         <Text style={{ fontSize: 20 }}>
                             No countries found
                         </Text>
                     </View>
-
                     : <FlatList
                         data={filteredData}
                         removeClippedSubviews={true}
                         showsVerticalScrollIndicator={false}
                         keyExtractor={(item) => item.id}
-                        renderItem={({ item,index }) => (
+                        renderItem={({ item, index }) => (
                             <CountryItems key={index} renderItem={item} />
                         )}
                     />
@@ -165,5 +136,11 @@ const styles = StyleSheet.create({
         width: 16,
         height: 16,
 
-    }
+    },
+    CountryContainer:
+    { 
+        alignItems: "center", 
+        justifyContent: "center",
+         marginTop: 100
+   }
 })

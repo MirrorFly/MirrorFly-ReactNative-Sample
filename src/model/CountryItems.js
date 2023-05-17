@@ -17,8 +17,8 @@ const CountryItems = (props) => {
                 style={styles.countryListStyle}
                 onPress={countrySelectHandler}
             >
-                <Text style={{ fontSize: 15, color: "black" }}>{props.renderItem.name}</Text>
-                <Text style={{ fontSize: 15, color: "black" }}>+{props.renderItem.dial_code}</Text>
+                <Text style={{ fontSize: 15, color: "black",fontWeight:"400" }}>{props.renderItem.name}</Text>
+                <Text style={{ fontSize: 15, color: "#767676",fontWeight:"400" }}>+{props.renderItem.dial_code}</Text>
             </TouchableOpacity>
         </View>
     )

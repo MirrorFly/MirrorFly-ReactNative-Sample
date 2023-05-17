@@ -3,7 +3,7 @@ import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity,ToastAndroid
 import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch } from 'react-redux';
 import { navigate } from '../redux/navigationSlice';
-import { CONNECTED, COUNTRYSCREEN, PROFILESCREEN, RECENTCHATSCREEN } from '../constant';
+import { CONNECTED, COUNTRYSCREEN, PROFILESCREEN } from '../constant';
 import { useSelector } from 'react-redux';
 import { registerData } from '../redux/authSlice';
 import { getRecentChat } from '../redux/chatSlice';

@@ -34,6 +34,7 @@ function ContactScreen() {
         (async () => {
             setIsFetching(true)
             let usersList = await SDK.getUsersList()
+            console.log(usersList)
             setPage(1)
             setTotalPages(usersList.totalPages)
             setTotoalUsers(usersList.totalUsers)
@@ -85,7 +86,7 @@ function ContactScreen() {
                 menuItems={menuItems}
                 onhandleSearch={handleSearch}
             />
-            {!usersList.length && !isFetching ?
+            {!usersList?.length && !isFetching ?
                 <Center h='full'>
                     <Image style={styles.image} resizeMode="cover" source={require('../assets/no_contacts.png')} />
                     <Text style={styles.noMsg}>No Contacts Found</Text>

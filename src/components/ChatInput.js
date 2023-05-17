@@ -37,12 +37,13 @@ const ChatInput = ({ onSendMessage }) => {
           style={{ marginStart: 5, flex: 1 }}
           onChangeText={(text) => setMessage(text)}
           placeholder="Start Typing..."
+          autoFocus={true}
         />
         {/* <TouchableOpacity> */}
         <AttachmentIcon />
         {/* </TouchableOpacity> */}
       </View>
-    {message &&  <SendBtn style={{ height: 30, width: 30, alignItems: 'center', justifyContent: 'center' }} onPress={sendMessage} />}
+      {message && <SendBtn style={{ height: 30, width: 30, alignItems: 'center', justifyContent: 'center' }} onPress={sendMessage} />}
     </View>
   );
 };

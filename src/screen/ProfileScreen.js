@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     marginTop: "auto",
     borderBottomWidth: 3,
     borderBottomColor: "#D0D8EB"
-
+     
   },
   numberText: {
  

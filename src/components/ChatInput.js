@@ -42,7 +42,7 @@ const ChatInput = ({ onSendMessage }) => {
         <AttachmentIcon />
         {/* </TouchableOpacity> */}
       </View>
-      <SendBtn style={{ height: 30, width: 30, alignItems: 'center', justifyContent: 'center' }} onPress={sendMessage} />
+    {message &&  <SendBtn style={{ height: 30, width: 30, alignItems: 'center', justifyContent: 'center' }} onPress={sendMessage} />}
     </View>
   );
 };

@@ -23,14 +23,14 @@ const ProfileScreen = () => {
   const [name, setName] = React.useState("");
   const [mail, setMail] = React.useState("");
   const [mobileNumber, setMobileNumber] = React.useState("");
-  const [status, setStatus] = React.useState("Avaliable");
+  const [status, setStatus] = React.useState("Available");
   const dispatch = useDispatch();
-  const isLoading = useSelector(state => state.auth.status);
-  const isConnect = useSelector(state => state.auth.isConnected);
-
+  
   React.useEffect(() => {
     (async () => {
-      let getUserId = await SDK.getUserProfile(userJid);
+  
+      let userId = userJid.split("@")[0]
+      let getUserId = await SDK.getUserProfile(userId);
       setName(getUserId.data.nickName)
       setMail(getUserId.data.email)
       setStatus(getUserId.data.status)
@@ -42,17 +42,27 @@ const ProfileScreen = () => {
       return toast.show({
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
-            <Text style={{ color: "#fff", padding: 5 }}>Please Enter Name</Text>
+            <Text style={{ color: "#fff", padding: 5 }}>UserName cannot be empty</Text>
           </Box>;
         }
       })
     }
 
+    if (name.length <= '5') {
+      return toast.show({
+        render: () => {
+          return <Box bg="black" px="2" py="1" rounded="sm" >
+            <Text style={{ color: "#fff", padding: 5 }}>User Name is too short</Text>
+          </Box>;
+        }
+      })
+    }
+   
     if (!mail) {
       return toast.show({
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
-            <Text style={{ color: "#fff", padding: 5 }}>Please Enter Mail</Text>
+            <Text style={{ color: "#fff", padding: 5 }}>Please Enter the Mail</Text>
           </Box>;
         }
       })
@@ -62,7 +72,7 @@ const ProfileScreen = () => {
       return toast.show({
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
-            <Text style={{ color: "#fff", padding: 5 }}>Please enter a Valid Ma</Text>
+            <Text style={{ color: "#fff", padding: 5 }}>Please enter a Valid Mail</Text>
           </Box>;
         }
       })
@@ -96,21 +106,22 @@ const ProfileScreen = () => {
           alignItems: "center"
         }}>
           <View style={styles.profileContainer}>
-            <TouchableOpacity onPress={() => openModal("bottom")} style={{ position: "relative" }}>
+            <TouchableOpacity activeOpacity={1} onPress={() => openModal("bottom")} style={{ position: "relative" }}>
               <Image resizeMode="contain" source={logo} style={{ height: 150, width: 150 }} />
-              <TouchableOpacity onPress={() => openModal("bottom")} style={{ position: "absolute", right: 1, bottom: 1 }}  >
-                <Image resizeMode="contain" source={require('../assets/camera.png')} style={{ height: 40, width: 40 }} />
+              <TouchableOpacity activeOpacity={1} onPress={() => openModal("bottom")} style={{ position: "absolute", right: 1, bottom: 1 }}  >
+                <Image resizeMode="contain" source={require('../assets/camera.png')} style={styles.CameraImage} />
               </TouchableOpacity>
 
             </TouchableOpacity>
           </View>
         </View>
-        <View style={{ alignItems: "center", justifyContent: "center", }} >
+        <View style={styles.ContentContainer} >
           <TextInput
-            style={{ fontWeight: "700", textAlign: "center", width: 400 }}
+            style={styles.userText}
             value={name}
             placeholder='Username'
             onChangeText={setName}
+            maxLength={30}
             placeholderTextColor={"#959595"}
             keyboardType="default"
             numberOfLines={1}
@@ -126,12 +137,11 @@ const ProfileScreen = () => {
             }}>
               <MailIcon />
               <TextInput
-                style={{ marginLeft: 6, color: "#959595", flex: 1 }}
-
+                style={{ marginLeft: 6, color: "#959595", flex: 1,fontSize: 11 }}
                 value={mail}
                 onChangeText={setMail}
                 placeholder='Enter Email Id'
-                maxLength={20}
+                maxLength={25}
                 placeholderTextColor={"#959595"}
                 keyboardType="email-address"
                 numberOfLines={1}
@@ -139,7 +149,7 @@ const ProfileScreen = () => {
             </View>
           </View>
           <View style={styles.mainCotainer}>
-            <Text style={{ fontSize: 13, color: "black", fontWeight: "600", }}>
+            <Text style={styles.numberText}>
               Mobile Number
             </Text>
             <View style={{
@@ -149,7 +159,7 @@ const ProfileScreen = () => {
                */}
               <CallIcon />
               <TextInput
-                style={{ marginLeft: 9, color: "#959595", flex: 1 }}
+                style={{ marginLeft: 9, color: "#959595", flex: 1,fontSize: 11 }}
                 value={"+" + phoneNumber.username}
                 onChangeText={setMobileNumber}
                 placeholder='Enter Your Mobile Number'
@@ -170,11 +180,12 @@ const ProfileScreen = () => {
             }}>
               <StatusIcon />
               <TextInput
-                style={{ marginLeft: 6, color: "#959595", flex: 1 }}
+                style={{ marginLeft: 6, color: "#959595", flex: 1,fontSize: 11 }}
                 value={status}
                 onChangeText={setStatus}
                 placeholder='Available'
                 maxLength={20}
+                editable={false}
                 placeholderTextColor={"#959595"}
                 keyboardType="default"
                 numberOfLines={1}
@@ -234,8 +245,18 @@ const styles = StyleSheet.create({
   },
   profileText: {
     textAlign: "center",
-    fontWeight: "800",
+    fontWeight: "700",
+    color:"black",
     fontSize: 18,
+  },
+  userText:{
+     fontWeight: "700", 
+     textAlign: "center",
+      width: 400 
+  },
+  ContentContainer:{
+    alignItems: "center",
+     justifyContent: "center"
   },
   mainCotainer:
   {
@@ -275,6 +296,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 3,
     borderBottomColor: "#D0D8EB"
 
-  }
+  },
+  numberText: {
+ 
+    fontSize: 13, 
+    color: "black",
+     fontWeight: "600"
+  },
+  CameraImage:{
+   height: 40,
+     width: 40
+   }
 
 })

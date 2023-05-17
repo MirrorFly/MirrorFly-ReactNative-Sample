@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity, Linking, ToastAndroid, ScrollView, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity,ToastAndroid, Linking, ScrollView, KeyboardAvoidingView } from 'react-native';
 import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch } from 'react-redux';
 import { navigate } from '../redux/navigationSlice';
@@ -8,10 +8,12 @@ import { useSelector } from 'react-redux';
 import { registerData } from '../redux/authSlice';
 import { getRecentChat } from '../redux/chatSlice';
 import { RegiterPageIcon } from '../common/Icons';
-import { Icon, IconButton } from 'native-base';
+import { Icon, IconButton ,Modal, Center, Box, VStack, useToast} from 'native-base';
+
 
 const RegisterScreen = () => {
     const dispatch = useDispatch();
+    const toast = useToast();
     const selectcountry = useSelector(state => state.navigation.selectContryCode);
     const isConnect = useSelector(state => state.auth.isConnected);
     const isLoading = useSelector(state => state.auth.status);
@@ -40,15 +42,36 @@ const RegisterScreen = () => {
 
     const handleSubmit = () => {
         if (!mobileNumber) {
-            return ToastAndroid.show('Please Enter Mobile Number', ToastAndroid.SHORT);
+            return toast.show({
+                render: () => {
+                  return <Box bg="black" px="2" py="1" rounded="sm" >
+                    <Text style={{ color: "#fff", padding: 5 }}>Please Enter Mobile Number</Text>
+                  </Box>;
+                }
+              })
+            
         }
 
         if (mobileNumber.length <= '5') {
-            return ToastAndroid.show('Your mobile number is too short', ToastAndroid.SHORT);
+            return toast.show({
+                render: () => {
+                  return <Box bg="black" px="2" py="1" rounded="sm" >
+                    <Text style={{ color: "#fff", padding: 5 }}>Your mobile number is too short</Text>
+                  </Box>;
+                }
+              })
+           
         }
 
         if (!/^[0-9]{10}$/i.test(mobileNumber)) {
-            return ToastAndroid.show('Please enter a valid mobile number', ToastAndroid.SHORT);
+            return toast.show({
+                render: () => {
+                  return <Box bg="black" px="2" py="1" rounded="sm" >
+                    <Text style={{ color: "#fff", padding: 5 }}>Please enter a valid mobile number</Text>
+                  </Box>;
+                }
+              })
+        
         } else {
             dispatch(registerData(selectcountry?.dial_code + mobileNumber))
         }

@@ -12,12 +12,16 @@ function ScreenHeader(props) {
     const handlingBackBtn = () => {
         setText('');
         setIsSearching(false);
-        props?.setIsSearching(false)
         if (!props?.onCloseSearch && isSearching) {
             return setIsSearching(false)
         }
         props?.onCloseSearch && props?.onCloseSearch();
         props?.onhandleBack && props?.onhandleBack();
+    }
+
+    const handleClearBtn = () => {
+        setText('') 
+        props?.setIsSearching(false)
     }
 
     return (
@@ -42,7 +46,7 @@ function ScreenHeader(props) {
                     {props?.title && !isSearching && <Text fontSize={24} fontWeight={'600'}>{props?.title}</Text>}
                 </HStack>
                 <HStack alignItems="center">
-                    {text && <IconButton onPress={() => { setText('') }} icon={<Icon as={CloseIcon} name="emoji-happy" />} borderRadius="full" />}
+                    {text && <IconButton onPress={handleClearBtn} icon={<Icon as={CloseIcon} name="emoji-happy" />} borderRadius="full" />}
                     {props?.onhandleSearch && !isSearching && <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={() => { setIsSearching(true); props?.setIsSearching && props?.setIsSearching(true); }} icon={<Icon as={SearchIcon} name="emoji-happy" />} borderRadius="full" />}
                     {!isSearching && props?.menuItems && <Menu w="160" shouldOverlapWithTrigger={true}
                         placement={position == "auto" ? undefined : position} trigger={triggerProps => {

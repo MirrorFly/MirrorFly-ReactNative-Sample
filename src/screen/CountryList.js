@@ -25,15 +25,18 @@ const CountryList = () => {
         return true;
     }
 
-    const handleSearch = (text) => {
-        if (isSearching) {
-            const filtered = countriescodes.filter((item) =>
-                item.name.toLowerCase().includes(text.toLowerCase())
-            );
-            setFilteredData(filtered);
-        } else {
+    React.useEffect(() => {
+        console.log(isSearching)
+        if (!isSearching)
             setFilteredData(countriescodes);
-        }
+    }, [isSearching])
+
+    const handleSearch = (text) => {
+        setIsSearching(true)
+        const filtered = countriescodes.filter((item) =>
+            item.name.toLowerCase().includes(text.toLowerCase())
+        );
+        setFilteredData(filtered);
     };
 
     return (
@@ -138,9 +141,9 @@ const styles = StyleSheet.create({
 
     },
     CountryContainer:
-    { 
-        alignItems: "center", 
+    {
+        alignItems: "center",
         justifyContent: "center",
-         marginTop: 100
-   }
+        marginTop: 100
+    }
 })

@@ -35,7 +35,7 @@ const RegisterScreen = () => {
     React.useEffect(() => {
         if (isConnect == CONNECTED) {
             dispatch(getRecentChat())
-            let nav = { screen: RECENTCHATSCREEN }
+            let nav = { screen: PROFILESCREEN }
             dispatch(navigate(nav))
         }
     }, [isConnect])

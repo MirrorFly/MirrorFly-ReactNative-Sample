@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity, Linking, ScrollView } from 'react-native';
+import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity, Linking, ScrollView, KeyboardAvoidingView } from 'react-native';
 import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch } from 'react-redux';
 import { navigate } from '../redux/navigationSlice';
@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { registerData } from '../redux/authSlice';
 import { getRecentChat } from '../redux/chatSlice';
 import { RegiterPageIcon } from '../common/Icons';
-import { Icon, IconButton, Modal, Center, Box, VStack, useToast } from 'native-base';
+import { Icon, IconButton, Modal, Center, Box, VStack, useToast, Spinner, HStack } from 'native-base';
 
 const RegisterScreen = () => {
     const dispatch = useDispatch();
@@ -16,6 +16,7 @@ const RegisterScreen = () => {
     const selectcountry = useSelector(state => state.navigation.selectContryCode);
     const isLoading = useSelector(state => state.auth.status);
     const [mobileNumber, setMobileNumber] = React.useState('')
+    const [loading, setloading] = React.useState(false);
 
     const termsHandler = () => {
         Linking.openURL("https://www.mirrorfly.com/terms-and-conditions.php");
@@ -34,6 +35,7 @@ const RegisterScreen = () => {
     const handleSubmit = () => {
         if (!mobileNumber) {
             return toast.show({
+                duration: 700,
                 render: () => {
                     return <Box bg="black" px="2" py="1" rounded="sm" >
                         <Text style={{ color: "#fff", padding: 5 }}>Please Enter Mobile Number</Text>
@@ -44,6 +46,7 @@ const RegisterScreen = () => {
 
         if (mobileNumber.length <= '5') {
             return toast.show({
+                duration: 700,
                 render: () => {
                     return <Box bg="black" px="2" py="1" rounded="sm" >
                         <Text style={{ color: "#fff", padding: 5 }}>Your mobile number is too short</Text>
@@ -55,6 +58,7 @@ const RegisterScreen = () => {
 
         if (!/^[0-9]{10}$/i.test(mobileNumber)) {
             return toast.show({
+                duration: 700,
                 render: () => {
                     return <Box bg="black" px="2" py="1" rounded="sm" >
                         <Text style={{ color: "#fff", padding: 5 }}>Please enter a valid mobile number</Text>
@@ -97,6 +101,7 @@ const RegisterScreen = () => {
                             </Text>
                             <View style={{ borderLeftWidth: 1, height: 20, borderColor: '#f2f2f2', marginLeft: 10, marginTop: 2 }} />
                         </View>
+                        {/* <KeyboardAvoidingView style={styles.container} behavior="padding"> */}
                         <TextInput
                             selectionColor={'#3276E2'}
                             style={styles.inputStyle}
@@ -108,13 +113,14 @@ const RegisterScreen = () => {
                             value={mobileNumber}
                             placeholder='Enter mobile number'
                             maxLength={15}
-                            placisLoadingholderTextColor={"#959595"}
+                            placeholderTextColor={"#959595"}
                             keyboardType="numeric"
                             numberOfLines={1}
                         />
+                        {/* </KeyboardAvoidingView> */}
                     </View>
                     <View style={styles.button}>
-                        <PrimaryPillBtn title='Continue' isLoading={isLoading} onPress={() => { handleSubmit() }} />
+                        <PrimaryPillBtn title='Continue' onPress={() => { handleSubmit() }} />
                     </View>
                     <View style={styles.linkContainer}>
                         <Text style={styles.titleText}>
@@ -135,6 +141,16 @@ const RegisterScreen = () => {
                     </View>
                 </View>
             </ScrollView>
+            <Modal isOpen={isLoading === 'loading'} style={styles.center} safeAreaTop={true} >
+                <Modal.Content width="60%" height="9%" >
+                    <Center w="100%" h="full">
+                        <HStack alignItems={'center'}>
+                            <Spinner size="lg" color={'#3276E2'} />
+                            <Text style={{ color:"black",paddingHorizontal:15,fontWeight:"500"}}>Please Wait</Text>
+                        </HStack>
+                    </Center>
+                </Modal.Content>
+            </Modal>
         </View>
     )
 }
@@ -239,13 +255,13 @@ const styles = StyleSheet.create({
     termsText: {
         color: "#3276E2",
         marginRight: 8,
-        fontSize: 11,
+        fontSize: 12,
         borderBottomWidth: 1,
         borderBottomColor: "#3276E2"
     },
     policyText: {
         color: "#3276E2",
-        fontSize: 11,
+        fontSize: 12,
         borderBottomWidth: 1,
         borderBottomColor: "#3276E2"
     },

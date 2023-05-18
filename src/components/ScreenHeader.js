@@ -57,7 +57,7 @@ function ScreenHeader(props) {
                         ))}
                     </Menu>}
                 </HStack>
-            </HStack >
+            </HStack>
         </>
     )
 }

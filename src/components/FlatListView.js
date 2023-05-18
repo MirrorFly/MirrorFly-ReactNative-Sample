@@ -30,16 +30,16 @@ export default function FlatListView(props) {
         </Box>
     };
 
-    if (!props.data.length) {
-        
+    if (props.isLoading) {
+        <Slide mt="20" in={props.isLoading} placement="top">
+            <HStack space={8} justifyContent="center" alignItems="center">
+                <Spinner size="lg" color={'#3276E2'} />
+            </HStack>
+        </Slide>
     }
 
     return <Box bg="white" safeArea flex="1">
-        <Slide mt="20" in={props.isLoading} placement="top">
-            <HStack space={8} justifyContent="center" alignItems="center">
-                <Spinner size="lg" />
-            </HStack>
-        </Slide>
+
         <SwipeListView
             onEndReached={props?.onhandlePagination}
             showsVerticalScrollIndicator={false}

@@ -14,7 +14,6 @@ prepare_react_native_project!
 #     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
 # ```
 flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
-
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
   Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
@@ -49,6 +48,7 @@ target 'mirrorfly_rn' do
   end
 
   post_install do |installer|
+    installer.pods_project.build_configurations.each do |config| config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
     react_native_post_install(
       installer,
       # Set `mac_catalyst_enabled` to `true` in order to apply patches
@@ -57,4 +57,5 @@ target 'mirrorfly_rn' do
     )
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
+end
 end

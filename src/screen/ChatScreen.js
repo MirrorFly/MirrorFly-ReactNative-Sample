@@ -10,6 +10,7 @@ import { getLastseen } from '../common/TimeStamp';
 import { BackBtn } from '../common/Button';
 import Avathar from '../common/Avathar';
 import SDK from '../SDK/SDK';
+import { HStack, Slide, Spinner } from 'native-base';
 
 const ChatScreen = () => {
   const dispatch = useDispatch();
@@ -18,7 +19,8 @@ const ChatScreen = () => {
   const [messageList, setMessageList] = React.useState([])
   const [seenStatus, setSeenStatus] = React.useState('')
   const [nickName, setNickName] = React.useState('')
-  
+  const [isChatLoading, setIsChatLoading] = React.useState(false)
+
   const handleBackBtn = () => {
     let x = { screen: RECENTCHATSCREEN }
     dispatch(navigate(x))
@@ -37,19 +39,24 @@ const ChatScreen = () => {
   React.useEffect(() => {
     (async () => {
       if (fromUserJId) {
-        let userDetails = await SDK.getUserProfile(fromUserJId)
-        console.log(userDetails, 'userDetails')
-        setNickName(userDetails.data.nickName)
+        setIsChatLoading(true)
+        let userId = fromUserJId?.split('@')[0]
+        let userDetails = await SDK.getUserProfile(userId)
+        setNickName(userDetails?.data?.nickName || userId)
         if (messages[fromUserJId]) {
           setMessageList(messages[fromUserJId])
         } else {
-          dispatch(getMessages(fromUserJId));
+          dispatch(getMessages(fromUserJId)).then((res) => {
+            console.log(res)
+          });
         }
         let seen = await SDK.getLastSeen(fromUserJId)
         setSeenStatus(getLastseen(seen?.data?.seconds))
       }
+      setIsChatLoading(false)
     })();
   }, [messages, fromUserJId])
+  console.log(isChatLoading, 'isChatLoading')
 
   React.useEffect(() => {
     return () => backHandler.remove()
@@ -77,15 +84,21 @@ const ChatScreen = () => {
           style={styles.imageBackground}
           resizeMode="cover"
         >
-          <FlatList
-            inverted
-            data={messageList}
-            keyExtractor={(item, index) => index.toString()}
-            onEndReached={handleEndReached}
-            renderItem={({ item }) => {
-              return <ChatMessage message={item} />
-            }}
-          />
+          {isChatLoading
+            ? <Slide mt="20" in={isChatLoading} placement="top">
+              <HStack space={8} justifyContent="center" alignItems="center">
+                <Spinner size="lg" color={'#3276E2'} width={5} />
+              </HStack>
+            </Slide>
+            : <FlatList
+              inverted
+              data={messageList}
+              keyExtractor={(item, index) => index.toString()}
+              onEndReached={handleEndReached}
+              renderItem={({ item }) => {
+                return <ChatMessage message={item} />
+              }}
+            />}
         </ImageBackground>
       </View>
       <View style={styles.options}>

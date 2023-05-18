@@ -2,11 +2,13 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import { getConversationHistoryTime } from '../common/TimeStamp';
+import { HStack } from 'native-base';
 
 const ChatMessage = (props) => {
   const currentUserJID = useSelector(state => state?.auth?.currentUserJID)
   let isSame = currentUserJID === props?.message?.fromUserJid
   let statusVisible = 'notDelivered'
+  const [isMore, setIsMore] = React.useState(false)
 
   switch (props?.message?.msgStatus) {
     case 0:
@@ -19,14 +21,21 @@ const ChatMessage = (props) => {
       statusVisible = styles.seen
       break;
   }
+  const handleTextLayout = (event) => {
+    if (event.nativeEvent.lines.length > 1) {
+      setIsMore(true)
+    }
+  }
 
   return (
     <View style={styles.messageContainer}>
       <View style={isSame ? styles.sentContainer : styles.receivedContainer}>
-        <View style={styles.message}>
-          <Text style={isSame ? styles.sentText : styles.receivedText}>{props?.message?.msgBody?.message}</Text>
-          <View style={[styles.msgStatus, isSame ? statusVisible : ""]}></View>
-          <Text style={styles.timeStamp}>{getConversationHistoryTime(props?.message?.timestamp)}</Text>
+        <View style={[styles.message, { flexDirection: isMore ? 'column' : 'row' }]}>
+          <Text onTextLayout={handleTextLayout} style={isSame ? styles.sentText : styles.receivedText}>{props?.message?.msgBody?.message}</Text>
+          <HStack alignSelf="flex-end" justifyContent={'center'} alignItems={'center'}>
+            <View style={[styles.msgStatus, isSame ? statusVisible : ""]}></View>
+            <Text style={styles.timeStamp}>{getConversationHistoryTime(props?.message?.timestamp)}</Text>
+          </HStack>
         </View>
       </View>
     </View>
@@ -40,7 +49,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 9,
   },
   message: {
-    flexDirection: 'row',
+    // flexDirection: 'row',
     alignItems: 'center'
   },
   sentContainer: {

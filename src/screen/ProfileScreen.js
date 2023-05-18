@@ -5,7 +5,7 @@ import { RECENTCHATSCREEN } from '../constant';
 import { navigate } from '../redux/navigationSlice';
 import { CallIcon, MailIcon, StatusIcon } from '../common/Icons';
 const logo = require('../assets/profile.png');
-import { Modal, Center, Box, VStack, useToast } from "native-base";
+import { Modal, Center, Box, VStack, useToast, Spinner } from "native-base";
 import { SDK } from '../SDK';
 
 const ProfileScreen = () => {
@@ -25,6 +25,7 @@ const ProfileScreen = () => {
   const [mobileNumber, setMobileNumber] = React.useState("");
   const [status, setStatus] = React.useState("Available");
   const dispatch = useDispatch();
+  const [loading, setloading] =React.useState(false);
   
   React.useEffect(() => {
     (async () => {  
@@ -37,55 +38,68 @@ const ProfileScreen = () => {
   }, [])
 
   const selectCountryHandler = async () => {
+   
     if (!name) {
       return toast.show({
+        duration: 700,
         render: () => {
+       
           return <Box bg="black" px="2" py="1" rounded="sm" >
             <Text style={{ color: "#fff", padding: 5 }}>UserName cannot be empty</Text>
-          </Box>;
+            
+          </Box>
         }
       })
     }
 
-    if (name.length <= '5') {
+    if (name.length < '4') {
       return toast.show({
+        duration: 700,
         render: () => {
+         
           return <Box bg="black" px="2" py="1" rounded="sm" >
             <Text style={{ color: "#fff", padding: 5 }}>User Name is too short</Text>
-          </Box>;
+           
+          </Box>
         }
       })
     }
    
     if (!mail) {
       return toast.show({
+        duration: 700,
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
             <Text style={{ color: "#fff", padding: 5 }}>Please Enter the Mail</Text>
-          </Box>;
+      
+          </Box>
         }
       })
     }
     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(mail)) {
 
       return toast.show({
+        duration: 700,
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
-            <Text style={{ color: "#fff", padding: 5 }}>Please enter a Valid Mail</Text>
+            <Text style={{ color: "#fff", padding: 5 }}>Please enter a Valid E-Mail</Text>
+           
           </Box>;
         }
       })
     }
-
+    setloading(true);
     let UserInfo = await SDK.setUserProfile(name, '', status, mobileNumber, mail);
-
+    
     let x = { screen: RECENTCHATSCREEN }
     dispatch(navigate(x))
     if (UserInfo) {
       return toast.show({
+        duration: 700,
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
             <Text style={{ color: "#fff", padding: 5 }}>Profile Updated successfully</Text>
+           
           </Box>;
         }
       })
@@ -140,7 +154,6 @@ const ProfileScreen = () => {
                 value={mail}
                 onChangeText={setMail}
                 placeholder='Enter Email Id'
-                maxLength={25}
                 placeholderTextColor={"#959595"}
                 keyboardType="email-address"
                 numberOfLines={1}
@@ -161,7 +174,7 @@ const ProfileScreen = () => {
                 style={{ marginLeft: 9, color: "#959595", flex: 1,fontSize: 11 }}
                 value={"+" + phoneNumber.username}
                 onChangeText={setMobileNumber}
-                placeholder='Enter Your Mobile Number'
+                HStack  placeholder='Enter Your Mobile Number'
                 maxLength={15}
                 editable={false}
                 placeholderTextColor={"#959595"}
@@ -194,7 +207,6 @@ const ProfileScreen = () => {
           </View>
           <View style={{ marginTop: 10, alignItems: "center" }}>
             <TouchableOpacity style={styles.button} onPress={selectCountryHandler}>
-
               <Text style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: "300" }}>Save</Text>
             </TouchableOpacity>
           </View>
@@ -219,6 +231,17 @@ const ProfileScreen = () => {
           </Center>
         </Modal.Content>
       </Modal>
+  
+      <Modal isOpen={loading} onClose={() => setloading(false)} style={styles.center} safeAreaTop={true} >
+        <Modal.Content width="45" height="45" >
+          <Center w="100%" h="full">
+           
+            <Spinner size="lg" color={'#3276E2'} />
+          
+          </Center>
+        </Modal.Content>
+      </Modal>
+     
     </>
   )
 }
@@ -295,6 +318,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 3,
     borderBottomColor: "#D0D8EB"
      
+  },
+  center: {
+   
   },
   numberText: {
  

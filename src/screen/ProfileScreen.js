@@ -27,13 +27,12 @@ const ProfileScreen = () => {
   const dispatch = useDispatch();
   
   React.useEffect(() => {
-    (async () => {
-  
+    (async () => {  
       let userId = userJid.split("@")[0]
       let getUserId = await SDK.getUserProfile(userId);
-      setName(getUserId.data.nickName)
-      setMail(getUserId.data.email)
-      setStatus(getUserId.data.status)
+      setName(getUserId?.data?.nickName)
+      setMail(getUserId?.data?.email)
+      setStatus(getUserId?.data?.status)
     })()
   }, [])
 

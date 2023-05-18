@@ -62,8 +62,9 @@ function ContactScreen() {
 
     const handleSearch = async (text) => {
         setIsFetching(true)
+        setUsersList([]);
         setTimeout(async () => {
-            let updateUsersList = await SDK.getUsersList(text)
+            let updateUsersList = await SDK.getUsersList(text,"",100)
             setUsersList(updateUsersList.users)
             setIsFetching(false)
         }, 700)
@@ -72,9 +73,11 @@ function ContactScreen() {
 
     const handlePagination = async (e) => {
         setIsFetching(true)
-        let updateUsersList = await SDK.getUsersList(searchText, page + 1 + 2, 30)
-        setPage(page + 1)
-        setUsersList([...usersList, ...updateUsersList.users])
+        if(!searchText){
+            let updateUsersList = await SDK.getUsersList(searchText, page + 1 + 2, 30)
+            setPage(page + 1)
+            setUsersList([...usersList, ...updateUsersList.users])
+        }
         setIsFetching(false)
     }
 

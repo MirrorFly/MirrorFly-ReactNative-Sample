@@ -31,22 +31,21 @@ const RegisterScreen = () => {
         dispatch(navigate(x))
     }
 
-
     const handleSubmit = () => {
         if (!mobileNumber) {
             return toast.show({
-                duration: 700,
+                duration: 2500,
                 render: () => {
                     return <Box bg="black" px="2" py="1" rounded="sm" >
                         <Text style={{ color: "#fff", padding: 5 }}>Please Enter Mobile Number</Text>
-                        7  </Box>;
+                    </Box>;
                 }
             })
         }
 
         if (mobileNumber.length <= '5') {
             return toast.show({
-                duration: 700,
+                duration: 2500,
                 render: () => {
                     return <Box bg="black" px="2" py="1" rounded="sm" >
                         <Text style={{ color: "#fff", padding: 5 }}>Your mobile number is too short</Text>
@@ -58,7 +57,7 @@ const RegisterScreen = () => {
 
         if (!/^[0-9]{10}$/i.test(mobileNumber)) {
             return toast.show({
-                duration: 700,
+                duration: 2500,
                 render: () => {
                     return <Box bg="black" px="2" py="1" rounded="sm" >
                         <Text style={{ color: "#fff", padding: 5 }}>Please enter a valid mobile number</Text>
@@ -146,7 +145,7 @@ const RegisterScreen = () => {
                     <Center w="100%" h="full">
                         <HStack alignItems={'center'}>
                             <Spinner size="lg" color={'#3276E2'} />
-                            <Text style={{ color:"black",paddingHorizontal:15,fontWeight:"500"}}>Please Wait</Text>
+                            <Text style={{ color: "black", paddingHorizontal: 15, fontWeight: "500" }}>Please Wait</Text>
                         </HStack>
                     </Center>
                 </Modal.Content>

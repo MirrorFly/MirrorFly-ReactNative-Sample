@@ -12,25 +12,32 @@ import { authScreen } from '../services/auth'
 import { navigate } from '../redux/navigationSlice'
 import SplashScreen from '../screen/SplashScreen'
 import { getRecentChat } from '../redux/chatSlice'
-import { CONNECTED } from '../constant'
+import { CONNECTED, RECENTCHATSCREEN } from '../constant'
 
 function Navigation() {
     const screenNav = useSelector(state => state.navigation.screen)
     const isConnect = useSelector(state => state.auth.isConnected);
     const [isAppLoading, setIsAppLoading] = React.useState(false)
+    const [navScreen, setNavScreen] = React.useState()
     const dispatch = useDispatch();
     React.useEffect(() => {
         setIsAppLoading(true);
         (async () => {
             await authScreen().then(async (res) => {
-                dispatch(getRecentChat())
+                setNavScreen(res)
                 setIsAppLoading(false)
-                let nav = { screen: res }
-                dispatch(navigate(nav))
             })
         })();
     }, [])
-    
+
+    React.useEffect(() => {
+        if (isConnect == CONNECTED) {
+             dispatch(getRecentChat())
+            let nav = { screen: RECENTCHATSCREEN }
+            dispatch(navigate(nav))
+        }
+    }, [isConnect, navScreen])
+
     if (isAppLoading) {
         return <SplashScreen />;
     }

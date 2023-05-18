@@ -25,12 +25,6 @@ const CountryList = () => {
         return true;
     }
 
-    React.useEffect(() => {
-        console.log(isSearching)
-        if (!isSearching)
-            setFilteredData(countriescodes);
-    }, [isSearching])
-
     const handleSearch = (text) => {
         setIsSearching(true)
         const filtered = countriescodes.filter((item) =>
@@ -39,15 +33,18 @@ const CountryList = () => {
         setFilteredData(filtered);
     };
 
+    const handleReset = () => {
+        setFilteredData(countriescodes);
+    }
+
     return (
         <>
-
             <View>
                 <ScreenHeader
                     title='Select Country'
                     onhandleBack={handleBackBtn}
                     onhandleSearch={handleSearch}
-                    setIsSearching={setIsSearching}
+                    onClear={handleReset}
                 />
             </View>
             <View>
@@ -66,9 +63,7 @@ const CountryList = () => {
                             <CountryItems key={index} renderItem={item} />
                         )}
                     />
-
                 }
-
             </View>
         </>
     )

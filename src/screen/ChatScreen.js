@@ -51,7 +51,9 @@ const ChatScreen = () => {
           });
         }
         let seen = await SDK.getLastSeen(fromUserJId)
-        setSeenStatus(getLastseen(seen?.data?.seconds))
+        if (seen.statusCode == 200) {
+          setSeenStatus(getLastseen(seen?.data?.seconds))
+        }
       }
       setIsChatLoading(false)
     })();
@@ -74,7 +76,7 @@ const ChatScreen = () => {
           <Avathar data={nickName ? nickName : '91'} />
           <View style={styles.userName}>
             <Text numberOfLines={1} ellipsizeMode='tail' >{nickName}</Text>
-            <Text numberOfLines={1} ellipsizeMode='tail'>{seenStatus}</Text>
+            {seenStatus && <Text numberOfLines={1} ellipsizeMode='tail'>{seenStatus}</Text>}
           </View>
         </View>
       </View>
@@ -142,6 +144,7 @@ const styles = StyleSheet.create({
   userName: {
     width: 170,
     marginStart: 10,
+    justifyContent: 'center'
   },
   options: {
     backgroundColor: '#fff',

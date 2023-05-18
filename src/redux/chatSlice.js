@@ -105,7 +105,7 @@ const chatSlice = createSlice({
             })
             .addCase(getRecentChat.fulfilled, (state, action) => {
                 state.recentChatStatus = 'succeeded';
-                state.recentChat = action.payload.recentChatsFilter.reverse()
+                state.recentChat = action.payload.recentChatsFilter?.reverse()
             })
             .addCase(getRecentChat.rejected, (state, action) => {
                 state.recentChatStatus = 'failed';

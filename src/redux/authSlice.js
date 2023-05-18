@@ -14,7 +14,7 @@ const initialState = {
 
 export const logout = createAsyncThunk('register/logout', async (val, { dispatch }) => {
     let logout = await SDK.logout()
-    await AsyncStorage.setItem('mirrorFlyLoggedIn', 'flase');
+    await AsyncStorage.setItem('mirrorFlyLoggedIn', 'false');
     await AsyncStorage.setItem('credential', '');
     dispatch(navigate({ screen: REGISTERSCREEN }))
     return logout.statusCode
@@ -34,9 +34,8 @@ export const registerData = createAsyncThunk('register/userData', async (number,
             switch (register.statusCode) {
                 case 200:
                     await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
-                    await AsyncStorage.setItem('credential', JSON.stringify(register.data));
-                    await dispatch(connectXMPP(register.data))
-                    break;
+                    await AsyncStorage.setItem('credential', JSON.stringify(number));
+                    return dispatch(connectXMPP(register.data))
             }
         }
         return register.data 

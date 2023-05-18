@@ -1,16 +1,17 @@
-import { Center, Avatar, Box, Divider, HStack, Pressable, Spacer, Text, VStack, View } from 'native-base';
+import { Center, Avatar, Box, Divider, HStack, Pressable, Spacer, Text, VStack, View, Slide, Spinner } from 'native-base';
 import React from 'react'
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { useDispatch, useSelector } from 'react-redux';
 import { getConversationHistoryTime } from '../common/TimeStamp';
 import Avathar from '../common/Avathar';
-import { CHATSCREEN } from '../constant';
+import { CHATSCREEN, RECENTCHATLOADING } from '../constant';
 import { SDK } from '../SDK';
 import { navigate } from '../redux/navigationSlice';
 import { Image, StyleSheet } from 'react-native';
 
 export default function RecentChat(props) {
     const dispatch = useDispatch();
+    const recentLoading = useSelector(state => state.chat.recentChatStatus)
     const onRowDidOpen = rowKey => {
         console.log('This row opened', rowKey);
     };
@@ -44,9 +45,9 @@ export default function RecentChat(props) {
                         }
                         <VStack>
                             <Text color="coolGray.800" _dark={{ color: 'warmGray.50' }} bold>{item?.fromUserId}</Text>
-                            <HStack w='65%' alignItems={'center'}>
+                            <HStack alignItems={'center'}>
                                 {isSame && <View style={[styles.msgStatus, isSame ? statusVisible : ""]}></View>}
-                                <Text numberOfLines={1} ellipsizeMode="tail"  px={isSame ? 1 : 0} color="coolGray.600" _dark={{ color: 'warmGray.200' }}>{item?.msgBody?.message}</Text>
+                                <Text  w='60%' numberOfLines={1} ellipsizeMode="tail" px={isSame ? 1 : 0} color="coolGray.600" _dark={{ color: 'warmGray.200' }}>{item?.msgBody?.message}</Text>
                             </HStack>
                         </VStack>
                         <Spacer />
@@ -70,6 +71,14 @@ export default function RecentChat(props) {
                 </>
             }
         </Center>
+    }
+
+    if (recentLoading === RECENTCHATLOADING) {
+        return <Slide mt="20" in={recentLoading === RECENTCHATLOADING} placement="top">
+            <HStack space={8} justifyContent="center" alignItems="center">
+                <Spinner size="lg" color={'#3276E2'} />
+            </HStack>
+        </Slide>
     }
 
     return <Box bg="white" safeArea flex="1">

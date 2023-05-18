@@ -14,7 +14,6 @@ const RegisterScreen = () => {
     const dispatch = useDispatch();
     const toast = useToast();
     const selectcountry = useSelector(state => state.navigation.selectContryCode);
-    const isConnect = useSelector(state => state.auth.isConnected);
     const isLoading = useSelector(state => state.auth.status);
     const [mobileNumber, setMobileNumber] = React.useState('')
 
@@ -31,13 +30,6 @@ const RegisterScreen = () => {
         dispatch(navigate(x))
     }
 
-    React.useEffect(() => {
-        if (isConnect == CONNECTED) {
-            dispatch(getRecentChat())
-            let nav = { screen: PROFILESCREEN }
-            dispatch(navigate(nav))
-        }
-    }, [isConnect])
 
     const handleSubmit = () => {
         if (!mobileNumber) {
@@ -45,10 +37,9 @@ const RegisterScreen = () => {
                 render: () => {
                     return <Box bg="black" px="2" py="1" rounded="sm" >
                         <Text style={{ color: "#fff", padding: 5 }}>Please Enter Mobile Number</Text>
-                    </Box>;
+                        7  </Box>;
                 }
             })
-
         }
 
         if (mobileNumber.length <= '5') {
@@ -72,7 +63,11 @@ const RegisterScreen = () => {
             })
 
         } else {
-            dispatch(registerData(selectcountry?.dial_code + mobileNumber))
+            dispatch(registerData(selectcountry?.dial_code + mobileNumber)).then((res) => {
+                dispatch(getRecentChat())
+                let nav = { screen: PROFILESCREEN }
+                dispatch(navigate(nav))
+            })
         }
     }
     return (

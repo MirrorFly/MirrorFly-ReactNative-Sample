@@ -50,7 +50,8 @@ export const sendMessage = createAsyncThunk('chat/sendMessage', async (message, 
         timestamp: Date.now(),
         msgStatus: 0,
         msgBody: {
-            message: val
+            message: val,
+            message_type:'text'
         }
     }
     await SDK.sendTextMessage(fromUserJId, val);

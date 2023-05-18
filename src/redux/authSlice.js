@@ -35,10 +35,10 @@ export const registerData = createAsyncThunk('register/userData', async (number,
                 case 200:
                     await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
                     await AsyncStorage.setItem('credential', JSON.stringify(number));
-                    return dispatch(connectXMPP(register.data))
+                    await dispatch(connectXMPP(register.data))
             }
         }
-        return register.data 
+        return register.data
     } catch (error) {
         console.log(error, 'registerData error')
     }
@@ -71,7 +71,8 @@ const authSlice = createSlice({
             })
             .addCase(registerData.fulfilled, (state, action) => {
                 state.status = 'registered';
-                state.userData=action.payload
+                console.log(action, 'action')
+                state.userData = action.payload
             })
             .addCase(registerData.rejected, (state, action) => {
                 state.status = 'failed';

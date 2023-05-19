@@ -12,7 +12,7 @@ export const LeftArrowIcon = () => {
 
 export const RegiterPageIcon = () => {
     return (
-        <Svg xmlns="http://www.w3.org/2000/svg" width="188.332" height="166.024" viewBox="0 0 188.332 166.024">
+        <Svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 188.332 166.024">
             <G id="Group_7510" data-name="Group 7510" transform="translate(-79 -109.754)">
                 <Ellipse id="Ellipse_1" data-name="Ellipse 1" cx="80.713" cy="80.675" rx="80.713" ry="80.675" transform="translate(105.906 109.754)" fill="#f2f2f2" opacity="0.502" />
                 <Path id="Shape_1" data-name="Shape 1" d="M261.4,381.928l-1.692,9.716L250,393.332l9.7,1.671,1.7,9.725,1.688-9.707,9.724-1.7-9.715-1.68Z" transform="translate(-170.997 -231.259)" fill="#ffd320" />
@@ -206,5 +206,13 @@ export const StatusIcon = (props) => {
 
 }
 
+export const DownArrowIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 10 5.67">
+        <Path id="drop_down" data-name="drop down" d="M333.342,175.667a.7.7,0,0,1-.5-.2l-4.3-4.277a.694.694,0,0,1,0-.985.7.7,0,0,1,.99,0l3.8,3.785,3.8-3.784a.7.7,0,0,1,.99,0,.694.694,0,0,1,0,.985l-4.3,4.277A.7.7,0,0,1,333.342,175.667Z" transform="translate(-328.342 -169.997)" fill="#000"/>
+      </Svg>
+    )
+
+}
 
 

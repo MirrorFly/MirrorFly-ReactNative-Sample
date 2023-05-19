@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity, Linking, ScrollView, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, View, Image, TextInput, TouchableOpacity, Linking, ScrollView, KeyboardAvoidingView } from 'react-native';
 import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch } from 'react-redux';
 import { navigate } from '../redux/navigationSlice';
@@ -7,8 +7,8 @@ import { CONNECTED, COUNTRYSCREEN, numRegx, PROFILESCREEN } from '../constant';
 import { useSelector } from 'react-redux';
 import { registerData } from '../redux/authSlice';
 import { getRecentChat } from '../redux/chatSlice';
-import { RegiterPageIcon } from '../common/Icons';
-import { Icon, IconButton, Modal, Center, Box, VStack, useToast, Spinner, HStack } from 'native-base';
+import { DownArrowIcon, RegiterPageIcon } from '../common/Icons';
+import { Icon, IconButton, Modal, Text, Center, Box, VStack, useToast, Spinner, HStack, Stack, Input } from 'native-base';
 
 const RegisterScreen = () => {
     const dispatch = useDispatch();
@@ -74,216 +74,105 @@ const RegisterScreen = () => {
         }
     }
     return (
-        <View style={styles.headContainer}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={styles.topSectionContainer}>
-                    <Icon as={RegiterPageIcon} name="emoji-happy" />
-                    <Text style={styles.numberstyle}>Register Your Number</Text>
-                </View>
-                <View style={{ marginTop: 10 }}>
-                    <Text style={styles.chooseText} numberOfLines={2}>
-                        Please choose your country code and enter your mobile number to get the verification code.
+
+        <>
+            <Center h="full">
+                <Icon as={RegiterPageIcon} name="emoji-happy" height="100px" width="280px"
+                />
+                <Text mt="15" fontWeight="600" fontSize="23"
+                    color="black"
+                >Register Your Number</Text>
+                <Center mt="2"   >
+                    <Text color="#767676"
+                        fontSize="14"
+                        fontWeight="400" textAlign="center" >
+                        Please choose your country code and enter your mobile {'\n'} number to get the verification code.
                     </Text>
-                </View>
-                <View style={styles.flatListContainer} >
-                    <TouchableOpacity
-                        onPress={selectCountryHandler}
-                        style={styles.dropstyle}
-                    >
-                        <Text style={styles.countryText}>{selectcountry?.name}</Text>
-                        <Image resizeMode="contain" style={{ height: 12, width: 12 }} source={require('../assets/DownArrow.png')} />
-                    </TouchableOpacity>
-                    <View style={styles.mainContainer}>
-                        <View style={styles.countryCodeContainer}>
-                            <Text style={styles.countryCodeText}>
-                                +{selectcountry?.dial_code}
-                            </Text>
-                            <View style={{ borderLeftWidth: 1, height: 20, borderColor: '#f2f2f2', marginLeft: 10, marginTop: 2 }} />
-                        </View>
-                        {/* <KeyboardAvoidingView style={styles.container} behavior="padding"> */}
-                        <TextInput
-                            selectionColor={'#3276E2'}
-                            style={styles.inputStyle}
+                </Center>
+
+
+                <TouchableOpacity onPress={selectCountryHandler}>
+                    <HStack borderBottomWidth="1" py="2"
+
+                        borderBottomColor="#f2f2f2" mt="50" space={80} justifyContent="flex-start" alignItems="center" >
+                        <Text fontSize="15"
+                            color="#181818" fontWeight="600" >{selectcountry?.name}</Text>
+                        <Icon as={DownArrowIcon} name="emoji-happy" />
+
+                    </HStack>
+                </TouchableOpacity>
+
+                <HStack flexDirection="row" alignItems="center" ml="6" mt="5"  >
+
+                    <HStack mt="2" flexDirection="row" alignItems="center" mr="5"  >
+
+                        <Text fontSize="16" color="black" fontWeight="600" mr="1">
+                            +{selectcountry?.dial_code}
+                        </Text>
+                        <Stack height="8" ml="1" mt="2" borderLeftWidth="1" borderColor='#f2f2f2' />
+                        <Input variant="unstyled"
+                            fontSize="14"
+                            fontWeight="500"
+                            color="black"
+                            flex="1"
+                            placeholder="Enter mobile number"
                             onChangeText={(value) => {
                                 if (value.match(numRegx) || !value) {
                                     setMobileNumber(value)
                                 }
                             }}
                             value={mobileNumber}
-                            placeholder='Enter mobile number'
+                            selectionColor={'#3276E2'}
                             maxLength={15}
                             placeholderTextColor={"#959595"}
                             keyboardType="numeric"
                             numberOfLines={1}
                         />
-                        {/* </KeyboardAvoidingView> */}
-                    </View>
-                    <View style={styles.button}>
-                        <PrimaryPillBtn title='Continue' onPress={() => { handleSubmit() }} />
-                    </View>
-                    <View style={styles.linkContainer}>
-                        <Text style={styles.titleText}>
-                            By clicking continue you agree to MirroFly
-                        </Text>
-                        <View style={styles.termserviceContainer}>
-                            <TouchableOpacity onPress={termsHandler} >
-                                <Text style={styles.termsText}>
-                                    Terms and Conditions,
-                                </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={PolicyHandler}>
-                                <Text style={styles.policyText}>
-                                    Privacy Policy.
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </ScrollView>
-            <Modal isOpen={isLoading === 'loading'} style={styles.center} safeAreaTop={true} >
-                <Modal.Content width="60%" height="9%" >
-                    <Center w="100%" h="full">
-                        <HStack alignItems={'center'}>
-                            <Spinner size="lg" color={'#3276E2'} />
-                            <Text style={{ color: "black", paddingHorizontal: 15, fontWeight: "500" }}>Please Wait</Text>
-                        </HStack>
-                    </Center>
-                </Modal.Content>
-            </Modal>
-        </View>
+
+                    </HStack>
+                </HStack>
+
+                <Stack alignItems='center' mt="42" fontWeight="bold">
+
+                    <PrimaryPillBtn title='Continue' onPress={() => { handleSubmit() }} />
+                </Stack>
+
+                <Stack mt="22" justifyContent="center" alignItems="center" >
+
+                    <Text color="#767676" fontSize="14" fontWeight="400">
+                        By clicking continue you agree to MirroFly
+                    </Text>
+                    <HStack flexDirection="row" marginLeft="2" >
+
+                        <TouchableOpacity onPress={termsHandler} >
+                            <Text color="#3276E2" mr="1" fontSize="14" borderBottomWidth="1"
+                                borderBottomColor="#3276E2">
+                                Terms and Conditions,
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={PolicyHandler}>
+                            <Text color="#3276E2"
+                                fontSize="14"
+                                borderBottomWidth="1"
+                                borderBottomColor="#3276E2" >
+                                Privacy Policy.
+                            </Text>
+                        </TouchableOpacity>
+                    </HStack>
+                </Stack>
+                <Modal isOpen={isLoading === 'loading'} safeAreaTop={true} >
+                    <Modal.Content width="60%" height="9%" >
+                        <Center w="100%" h="full">
+                            <HStack alignItems={'center'}>
+                                <Spinner size="lg" color={'#3276E2'} />
+                                <Text style={{ color: "black", paddingHorizontal: 15, fontWeight: "500" }}>Please Wait</Text>
+                            </HStack>
+                        </Center>
+                    </Modal.Content>
+                </Modal>
+            </Center>
+        </>
     )
 }
 
 export default RegisterScreen
-
-const styles = StyleSheet.create({
-    headContainer: {
-        flex: 1,
-        backgroundColor: "white"
-    },
-    numberstyle: {
-        fontSize: 23,
-        marginTop: 10,
-        textAlign: "center",
-        color: "black",
-        fontWeight: "600"
-    },
-    imageView: {
-        marginBottom: 10,
-        width: 200,
-        height: 200
-
-    },
-    flatListContainer: {
-        marginTop: 48,
-        marginHorizontal: 4
-    },
-    dropstyle: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        borderBottomWidth: 1,
-        borderBottomColor: "#f2f2f2",
-        marginHorizontal: 12,
-        paddingVertical: 12
-    },
-    countryText: {
-        fontSize: 15,
-        color: "#181818",
-        fontWeight: "600"
-    },
-    numberText: {
-        flex: 0.24,
-        color: "black",
-        fontSize: 15,
-        fontWeight: "bold",
-        marginTop: 12
-    },
-    topSectionContainer: {
-        marginTop: 42,
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    chooseText: {
-        textAlign: "center",
-        marginHorizontal: 30,
-        color: "#767676",
-        fontSize: 14,
-        fontWeight: "300"
-    },
-    button: {
-        alignItems: 'center',
-        marginTop: 42,
-        fontWeight: "bold"
-    },
-    actionStyle: {
-        color: "white",
-        textAlign: "center",
-        fontSize: 14,
-        fontWeight: "bold"
-    },
-    mainContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginHorizontal: 22,
-        marginTop: 10,
-    },
-    imageStyle: {
-        width: 24,
-        height: 24,
-    },
-    selectedTextStyle: {
-        fontSize: 16,
-        marginLeft: 8,
-        color: "black",
-        fontWeight: "bold"
-    },
-    linkContainer: {
-        marginTop: 22,
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    titleText: {
-        color: "#767676",
-        fontSize: 11,
-        fontWeight: "300"
-    },
-    termserviceContainer: {
-        flexDirection: "row",
-        marginLeft: 10
-    },
-    termsText: {
-        color: "#3276E2",
-        marginRight: 8,
-        fontSize: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: "#3276E2"
-    },
-    policyText: {
-        color: "#3276E2",
-        fontSize: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: "#3276E2"
-    },
-    countryCodeContainer: {
-        marginRight: 6,
-        flexDirection: "row"
-    },
-    countryCodeText: {
-        fontSize: 16,
-        color: "black",
-        fontWeight: "600"
-    },
-    countryCodeDropdownText: {
-        fontSize: 16,
-        paddingVertical: 8,
-        paddingHorizontal: 10,
-        color: "black",
-        fontWeight: "bold"
-    },
-    inputStyle: {
-        fontSize: 14,
-        fontWeight: "500",
-        color: "black",
-        flex: 1
-    }
-})

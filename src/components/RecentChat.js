@@ -60,7 +60,7 @@ export default function RecentChat(props) {
             <Divider w={"83%"} alignSelf="flex-end" my="2" _light={{ bg: "#f2f2f2" }} _dark={{ bg: "muted.50" }} />
         </Box>
     };
-    if (!props.data.length) {
+    if (!props?.data?.length) {
         return <Center h='full'>
             <Image style={styles.image} resizeMode="cover" source={require('../assets/no_messages.png')} />
             {props.isSearching

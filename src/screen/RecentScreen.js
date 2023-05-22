@@ -64,6 +64,10 @@ function RecentScreen() {
         setIsSearching(false)
     }
 
+    const handleReset = ()=>{
+        setFilteredData(recentChatList)
+    }
+
     return (
         <>
             <ScreenHeader
@@ -73,6 +77,7 @@ function RecentScreen() {
                 menuItems={menuItems}
                 logo={logo}
                 isSearching={isSearching}
+                onClear={handleReset}
             />
             <TabView
                 navigationState={{ index, routes }}

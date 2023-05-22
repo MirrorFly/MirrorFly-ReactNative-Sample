@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, Image, TouchableOpacity } from 'react-native';
+import { View, TextInput, Button, TouchableOpacity } from 'react-native';
 import { SendBtn } from '../common/Button';
-import { AttachmentIcon } from '../common/Icons';
+import { AttachmentIcon, EmojiIcon } from '../common/Icons';
+import { Center, HStack, Icon, Text, Image, IconButton, VStack, Pressable } from 'native-base';
 
 const ChatInput = ({ onSendMessage }) => {
-  const [message, setMessage] = useState('');
-
+  const [message, setMessage] = React.useState('');
+  const [onClicked, setOnClicked] = useState('')
+  const [chatInputWidth, setChatInputWidth] = useState(100)
   const sendMessage = () => {
     if (message) {
       onSendMessage(message);
@@ -13,38 +15,38 @@ const ChatInput = ({ onSendMessage }) => {
     }
   };
 
+  React.useEffect(() => {
+    if (chatInputWidth > 92 && message) {
+      setTimeout(() => {
+        setChatInputWidth(chatInputWidth - 0.5);
+      }, 0.1);
+    }
+    if (chatInputWidth < 101 && !message) {
+      setTimeout(() => {
+        setChatInputWidth(chatInputWidth + 0.5);
+      }, 0.1);
+    }
+  }, [message, chatInputWidth])
+
+
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
-      <View style={{
-        flexDirection: 'row',
-        flex: 1,
-        marginRight: 10,
-        backgroundColor: '#fff',
-        borderRadius: 20,
-        paddingHorizontal: 10,
-        borderWidth: 1,
-        borderColor: "#c1c1c1",
-        alignItems: 'center'
-      }}>
-        <TouchableOpacity>
-          <Image
-            source={require('../assets/smile.png')}
-            style={{ width: 20, height: 20 }}
+    <>
+      <HStack p='2' w='full' alignItems={'center'} borderTopWidth={0.25} borderColor='#959595'>
+        <HStack position={'relative'} w={`${chatInputWidth}%`} px='3' h='39' alignItems='center' borderWidth={1} borderRadius={20} borderColor='#959595'>
+          <IconButton _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} p='2' px='0.5' icon={<Icon p='0' as={EmojiIcon} name="emoji-happy" />} borderRadius="full" />
+          <TextInput
+            keyboardType={onClicked ? onClicked:'default'}
+            value={message}
+            style={{ marginStart: 5, flex: 1 }}
+            onChangeText={(text) => setMessage(text)}
+            placeholder="Start Typing..."
+            autoFocus={true}
           />
-        </TouchableOpacity>
-        <TextInput
-          value={message}
-          style={{ marginStart: 5, flex: 1 }}
-          onChangeText={(text) => setMessage(text)}
-          placeholder="Start Typing..."
-          autoFocus={true}
-        />
-        {/* <TouchableOpacity> */}
-        <AttachmentIcon />
-        {/* </TouchableOpacity> */}
-      </View>
-      {message && <SendBtn style={{ height: 30, width: 30, alignItems: 'center', justifyContent: 'center' }} onPress={sendMessage} />}
-    </View>
+          <AttachmentIcon />
+        </HStack>
+        {message && <SendBtn style={{ height: 30, width: 30, alignItems: 'center', justifyContent: 'center' }} onPress={sendMessage} />}
+      </HStack>
+    </>
   );
 };
 

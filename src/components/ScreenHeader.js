@@ -48,9 +48,9 @@ function ScreenHeader(props) {
                 <HStack alignItems="center">
                     {text && <IconButton onPress={handleClearBtn} icon={<Icon as={CloseIcon} name="emoji-happy" />} borderRadius="full" />}
                     {props?.onhandleSearch && !isSearching && <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={() => { setIsSearching(true); props?.setIsSearching && props?.setIsSearching(true); }} icon={<Icon as={SearchIcon} name="emoji-happy" />} borderRadius="full" />}
-                    {!isSearching && props?.menuItems && <Menu w="160" shouldOverlapWithTrigger={true}
+                    {!isSearching && props?.menuItems && <Menu w="160" shouldOverlapWithTrigger={false}
                         placement={position == "auto" ? undefined : position} trigger={triggerProps => {
-                            return <IconButton px='3'  _pressed={{ bg: "rgba(50,118,226, 0.1)" }} ml='3' {...triggerProps} icon={<Icon as={MenuIcon} name="emoji-happy" />} borderRadius="full" />;
+                            return <IconButton p='4'_pressed={{ bg: "rgba(50,118,226, 0.1)" }} {...triggerProps} icon={<Icon  as={MenuIcon} name="emoji-happy" />} borderRadius="full" />;
                         }}>
                         {props?.menuItems.map((item, index) => (
                             <Menu.Item key={index} onPress={item?.formatter}>{item.label}</Menu.Item>

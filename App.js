@@ -1,9 +1,10 @@
 import React from 'react';
-import SplashScreen from './src/screen/SplashScreen';
+import { Text, View } from 'react-native';
+import { ChatApp } from './src/ChatApp';
 
 function App() {
   return (
-    <SplashScreen />
+    <ChatApp />
   );
 }
 

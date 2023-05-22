@@ -93,9 +93,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.Mirrorfly"
+    namespace "com.mirrorfly_rn"
     defaultConfig {
-        applicationId "com.Mirrorfly"
+        applicationId "com.mirrorfly_rn"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

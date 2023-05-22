@@ -14,14 +14,13 @@ prepare_react_native_project!
 #     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
 # ```
 flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
-
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
   Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'Mirrorfly' do
+target 'mirrorfly_rn' do
   config = use_native_modules!
 
   # Flags change depending on the env values.
@@ -32,7 +31,8 @@ target 'Mirrorfly' do
     # Hermes is now enabled by default. Disable by setting this flag to false.
     # Upcoming versions of React Native may rely on get_default_flags(), but
     # we make it explicit here to aid in the React Native upgrade process.
-    :hermes_enabled => flags[:hermes_enabled],
+    # :hermes_enabled => flags[:hermes_enabled],
+    :hermes_enabled => true,
     :fabric_enabled => flags[:fabric_enabled],
     # Enables Flipper.
     #
@@ -43,12 +43,13 @@ target 'Mirrorfly' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'MirrorflyTests' do
+  target 'mirrorfly_rnTests' do
     inherit! :complete
     # Pods for testing
   end
 
   post_install do |installer|
+    installer.pods_project.build_configurations.each do |config| config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
     react_native_post_install(
       installer,
       # Set `mac_catalyst_enabled` to `true` in order to apply patches
@@ -57,4 +58,5 @@ target 'Mirrorfly' do
     )
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
+end
 end

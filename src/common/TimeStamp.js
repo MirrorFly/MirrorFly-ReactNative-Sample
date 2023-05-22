@@ -32,6 +32,24 @@ export const getConversationHistoryTime = (UTCTime) => {
     let offset = moment().utcOffset();
     return moment.utc(UTCTime).utcOffset(offset).format("LT");
 };
+
+/**
+ * changeTimeFormat() method to perform convert Timestamp it's effectively works for 16 digit to Time format.
+ *
+ * @param {timeStamp} time
+ */
+
+export const changeTimeFormat = (time) => {
+    if (!time) {
+        return '';
+    }
+    else if (time.toString().length === 16) {
+        return moment(time / 1000).format('hh:mm A');
+    } else {
+        return moment(time)
+            .format("hh:mm A");
+    }
+};
 /**
  * getLastseen() method to perform convert seconds to user online or Last seen date format status.
  *

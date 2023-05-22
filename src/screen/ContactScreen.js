@@ -34,7 +34,6 @@ function ContactScreen() {
         (async () => {
             setIsFetching(true)
             let usersList = await SDK.getUsersList()
-            console.log(usersList)
             setPage(1)
             setTotalPages(usersList.totalPages)
             setTotoalUsers(usersList.totalUsers)

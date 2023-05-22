@@ -1,5 +1,5 @@
 import React from 'react';
-import { BackHandler, FlatList, ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, FlatList, ImageBackground, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { navigate } from '../redux/navigationSlice';
 import { RECENTCHATSCREEN } from '../constant';
@@ -7,10 +7,9 @@ import ChatInput from '../components/ChatInput';
 import ChatMessage from '../components/ChatMessage';
 import { getMessages, sendMessage } from '../redux/chatSlice';
 import { getLastseen } from '../common/TimeStamp';
-import { BackBtn } from '../common/Button';
-import Avathar from '../common/Avathar';
 import SDK from '../SDK/SDK';
-import { HStack, Slide, Spinner } from 'native-base';
+import { Button, HStack, Slide, Spinner, VStack } from 'native-base';
+import ChatHeader from '../components/ChatHeader';
 
 const ChatScreen = () => {
   const dispatch = useDispatch();
@@ -41,24 +40,23 @@ const ChatScreen = () => {
       if (fromUserJId) {
         setIsChatLoading(true)
         let userId = fromUserJId?.split('@')[0]
-        let userDetails = await SDK.getUserProfile(userId)
-        setNickName(userDetails?.data?.nickName || userId)
+        if (!nickName) {
+          let userDetails = await SDK.getUserProfile(userId)
+          setNickName(userDetails?.data?.nickName || userId)
+        }
         if (messages[fromUserJId]) {
           setMessageList(messages[fromUserJId])
         } else {
-          dispatch(getMessages(fromUserJId)).then((res) => {
-            console.log(res)
-          });
+          dispatch(getMessages(fromUserJId))
         }
         let seen = await SDK.getLastSeen(fromUserJId)
         if (seen.statusCode == 200) {
           setSeenStatus(getLastseen(seen?.data?.seconds))
         }
       }
-      setIsChatLoading(false)
+      setIsChatLoading(false)``
     })();
   }, [messages, fromUserJId])
-  console.log(isChatLoading, 'isChatLoading')
 
   React.useEffect(() => {
     return () => backHandler.remove()
@@ -70,86 +68,39 @@ const ChatScreen = () => {
 
   return (
     <>
-      <View style={styles.chatHeader}>
-        <BackBtn onPress={handleBackBtn} />
-        <View style={styles.avatarContainer}>
-          <Avathar data={nickName ? nickName : '91'} />
-          <View style={styles.userName}>
-            <Text numberOfLines={1} ellipsizeMode='tail' >{nickName}</Text>
-            {seenStatus && <Text numberOfLines={1} ellipsizeMode='tail'>{seenStatus}</Text>}
-          </View>
-        </View>
-      </View>
-      <View style={styles.container}>
-        <ImageBackground
-          source={require('../assets/chatBackgroud.png')}
-          style={styles.imageBackground}
-          resizeMode="cover"
-        >
-          {isChatLoading
-            ? <Slide mt="20" in={isChatLoading} placement="top">
+      <ChatHeader handleBackBtn={handleBackBtn} seenStatus={seenStatus} fromUser={nickName} />
+      <ImageBackground
+        source={require('../assets/chatBackgroud.png')}
+        style={styles.imageBackground}
+        resizeMode="cover"
+      >
+        <VStack h='full'>
+          {
+            isChatLoading && <Slide mt="20" in={isChatLoading} placement="top">
               <HStack space={8} justifyContent="center" alignItems="center">
-                <Spinner size="lg" color={'#3276E2'} width={5} />
+                <Spinner size="lg" color={'#3276E2'} />
               </HStack>
             </Slide>
-            : <FlatList
-              inverted
-              data={messageList}
-              keyExtractor={(item, index) => index.toString()}
-              onEndReached={handleEndReached}
-              renderItem={({ item }) => {
-                return <ChatMessage message={item} />
-              }}
-            />}
-        </ImageBackground>
-      </View>
-      <View style={styles.options}>
-        <ChatInput onSendMessage={handleMessageSend} />
-      </View>
+          }
+          <FlatList
+            inverted
+            data={messageList}
+            keyExtractor={(item, index) => index.toString()}
+            onEndReached={handleEndReached}
+            renderItem={({ item }) => {
+              return <ChatMessage message={item} />
+            }}
+          />
+        </VStack>
+      </ImageBackground>
+      <ChatInput onSendMessage={handleMessageSend} />
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingVertical: 18
-  },
   imageBackground: {
     flex: 1,
-  },
-  text: {
-    color: 'black',
-    fontSize: 20,
-  },
-  chatHeader: {
-    backgroundColor: '#fff',
-    height: 56,
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 15
-  },
-  avatarContainer: {
-    marginStart: 16.97,
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  avatar: {
-    width: 36.37,
-    height: 36.37,
-    borderRadius: 50,
-    backgroundColor: 'black',
-  },
-  userName: {
-    width: 170,
-    marginStart: 10,
-    justifyContent: 'center'
-  },
-  options: {
-    backgroundColor: '#fff',
-    borderTopWidth: 2,
-    borderColor: "#c1c1c1",
   }
 });
 

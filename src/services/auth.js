@@ -15,7 +15,6 @@ export const authScreen = async () => {
                 const credential = await AsyncStorage.getItem('credential')
                 if (credential) {
                     await store.dispatch(registerData(JSON.parse(credential))).then((res) => {
-                        console.log(res)
                         if (res.payload.payload == 200 || res.payload.payload == 409)
                             screen = RECENTCHATSCREEN
                         else screen = REGISTERSCREEN

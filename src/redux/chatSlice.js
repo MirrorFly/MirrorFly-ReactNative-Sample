@@ -13,7 +13,8 @@ const initialState = {
 
 export const getRecentChat = createAsyncThunk('chat/getRecentChat', async () => {
     let recentChatsRes = await SDK.getRecentChats();
-    const recentChatsFilter = recentChatsRes?.data?.filter(item => item.chatType == 'chat')
+    const recentChatsFilter = recentChatsRes?.data.filter(item => item.chatType == 'chat')
+    // .filter(item => item.chatType == 'chat')
     return { recentChatsFilter }
 })
 
@@ -30,13 +31,17 @@ export const getMessages = createAsyncThunk('chat/getMessages', async (fromUserJ
 
 export const getReceiveMessage = createAsyncThunk('chat/getReceiveMessage', async (msg, { dispatch }) => {
     let message
-    await dispatch(updateRecentChat())
     switch (msg.msgType) {
         case 'receiveMessage':
             if (msg.fromUserJid) {
                 message = await SDK.getChatMessages(msg.fromUserJid);
             }
             return { msg, message };
+        case 'delivered':
+        case 'seen':
+            if (msg.fromUserJid) {
+                await dispatch(updateRecentChat(msg))
+            }
         default:
             break;
     }
@@ -51,13 +56,12 @@ export const sendMessage = createAsyncThunk('chat/sendMessage', async (message, 
         msgStatus: 0,
         msgBody: {
             message: val,
-            message_type:'text'
+            message_type: 'text'
         }
     }
     await SDK.sendTextMessage(fromUserJId, val);
     return { chatMessage, fromUserJId }
 })
-
 
 const chatSlice = createSlice({
     name: 'chat',

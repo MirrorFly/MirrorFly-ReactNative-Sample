@@ -26,8 +26,6 @@ function ScreenHeader(props) {
 
     return (
         <>
-            <StatusBar bg="#F2F2F2" barStyle="light-content" />
-            <Box safeAreaTop bg="#F2F2F2" />
             <HStack h={70} bg="#F2F2F2" px="4" py="3" justifyContent="space-between" alignItems="center" w="full">
                 <HStack alignItems="center">
                     {props?.onhandleBack && <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handlingBackBtn} icon={<Icon as={LeftArrowIcon} name="emoji-happy" />} borderRadius="full" />}
@@ -48,7 +46,7 @@ function ScreenHeader(props) {
                 <HStack alignItems="center">
                     {text && <IconButton onPress={handleClearBtn} icon={<Icon as={CloseIcon} name="emoji-happy" />} borderRadius="full" />}
                     {props?.onhandleSearch && !isSearching && <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={() => { setIsSearching(true); props?.setIsSearching && props?.setIsSearching(true); }} icon={<Icon as={SearchIcon} name="emoji-happy" />} borderRadius="full" />}
-                    {!isSearching && props?.menuItems && <Menu w="160" shouldOverlapWithTrigger={false}
+                    {!isSearching && props?.menuItems && <Menu w="160" shouldOverlapWithTrigger={true}
                         placement={position == "auto" ? undefined : position} trigger={triggerProps => {
                             return <IconButton p='4'_pressed={{ bg: "rgba(50,118,226, 0.1)" }} {...triggerProps} icon={<Icon  as={MenuIcon} name="emoji-happy" />} borderRadius="full" />;
                         }}>

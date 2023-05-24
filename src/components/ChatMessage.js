@@ -10,6 +10,9 @@ const ChatMessage = (props) => {
   let statusVisible = 'notDelivered'
 
   switch (props?.message?.msgStatus) {
+    case 3:
+      statusVisible = styles.notSent
+      break;
     case 0:
       statusVisible = styles.notDelivered
       break;
@@ -20,21 +23,21 @@ const ChatMessage = (props) => {
       statusVisible = styles.seen
       break;
   }
-  
+
   return (
     <>
       <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} my='1' px='3'>
-        <View px='2' py='1.5' minWidth='30%' maxWidth='90%' bgColor={isSame ? '#E2E8F7' : ''}
+        <View px='2' py='1.5' minWidth='30%' maxWidth='90%' bgColor={isSame ? '#E2E8F7' : '#fff'}
           borderWidth={isSame ? 0 : 0.25}
           borderRadius={10}
           borderBottomLeftRadius={isSame ? 10 : 0}
           borderBottomRightRadius={isSame ? 0 : 10}
           borderColor='#959595'>
           {{
-              "text":   <Text fontSize={14} color='#313131'>{props?.message?.msgBody?.message}</Text>,
-              "image":  <Text fontWeight={'600'} fontStyle={'italic'} fontSize={14} color='#313131'>image</Text>,
-              "video":  <Text fontWeight={'600'} fontStyle={'italic'} fontSize={14} color='#313131'>video</Text>,
-              "audio":  <Text fontWeight={'600'} fontStyle={'italic'} fontSize={14} color='#313131'>audio</Text>,
+            "text": <Text fontSize={14} color='#313131'>{props?.message?.msgBody?.message}</Text>,
+            "image": <Text fontWeight={'600'} fontStyle={'italic'} fontSize={14} color='#313131'>image</Text>,
+            "video": <Text fontWeight={'600'} fontStyle={'italic'} fontSize={14} color='#313131'>video</Text>,
+            "audio": <Text fontWeight={'600'} fontStyle={'italic'} fontSize={14} color='#313131'>audio</Text>,
           }[props?.message?.msgBody?.message_type]}
           <HStack alignItems='center' alignSelf='flex-end'>
             <View style={[styles.msgStatus, isSame ? statusVisible : ""]}></View>

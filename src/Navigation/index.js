@@ -1,5 +1,5 @@
 import React from 'react'
-import { NativeBaseProvider } from 'native-base'
+import { Box, NativeBaseProvider } from 'native-base'
 import { useDispatch, useSelector } from 'react-redux'
 import CountryList from '../screen/CountryList'
 import ProfileScreen from '../screen/ProfileScreen'
@@ -12,7 +12,7 @@ import { authScreen } from '../services/auth'
 import { navigate } from '../redux/navigationSlice'
 import SplashScreen from '../screen/SplashScreen'
 import { getRecentChat } from '../redux/chatSlice'
-import { CONNECTED, RECENTCHATSCREEN } from '../constant'
+import { CONNECTED, RECENTCHATSCREEN, REGISTERSCREEN } from '../constant'
 
 function Navigation() {
     const screenNav = useSelector(state => state.navigation.screen)
@@ -32,7 +32,7 @@ function Navigation() {
 
     React.useEffect(() => {
         if (isConnect == CONNECTED) {
-             dispatch(getRecentChat())
+            dispatch(getRecentChat())
             let nav = { screen: RECENTCHATSCREEN }
             dispatch(navigate(nav))
         }
@@ -44,6 +44,7 @@ function Navigation() {
 
     return (
         <NativeBaseProvider>
+            <Box safeAreaTop bg="#f2f2f2" />
             {{
                 'REGISTERSCREEN': <RegisterScreen />,
                 'RECENTCHATSCREEN': <RecentScreen />,
@@ -53,6 +54,7 @@ function Navigation() {
                 'CONTACTLIST': <ContactScreen />,
                 'SETTINGSCREEN': <SettingScreen />
             }[screenNav]}
+            <Box safeAreaBottom />
         </NativeBaseProvider>
     )
 }

@@ -1,15 +1,15 @@
 import React from 'react';
-import { BackHandler, FlatList, ImageBackground, StyleSheet } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { navigate } from '../redux/navigationSlice';
-import { RECENTCHATSCREEN } from '../constant';
-import ChatInput from '../components/ChatInput';
-import ChatMessage from '../components/ChatMessage';
-import { getMessages, sendMessage } from '../redux/chatSlice';
-import { getLastseen } from '../common/TimeStamp';
-import SDK from '../SDK/SDK';
-import { Button, HStack, Slide, Spinner, VStack } from 'native-base';
+import { StyleSheet,FlatList, KeyboardAvoidingView, Platform, ImageBackground, BackHandler } from 'react-native';
 import ChatHeader from '../components/ChatHeader';
+import { useDispatch, useSelector } from 'react-redux';
+import ChatMessage from '../components/ChatMessage';
+import ChatInput from '../components/ChatInput';
+import { HStack, Slide, Spinner } from 'native-base';
+import { RECENTCHATSCREEN } from '../constant';
+import { navigate } from '../redux/navigationSlice';
+import { getMessages, sendMessage } from '../redux/chatSlice';
+import SDK from '../SDK/SDK';
+import { getLastseen } from '../common/TimeStamp';
 
 const ChatScreen = () => {
   const dispatch = useDispatch();
@@ -30,6 +30,7 @@ const ChatScreen = () => {
     'hardwareBackPress',
     handleBackBtn
   );
+
   const handleMessageSend = (val) => {
     let values = [val, fromUserJId]
     dispatch(sendMessage(values))
@@ -38,70 +39,78 @@ const ChatScreen = () => {
   React.useEffect(() => {
     (async () => {
       if (fromUserJId) {
+        if (messages[fromUserJId]) {
+          setMessageList(messages[fromUserJId])
+        } else {
+          dispatch(getMessages(fromUserJId))
+        }
         setIsChatLoading(true)
         let userId = fromUserJId?.split('@')[0]
         if (!nickName) {
           let userDetails = await SDK.getUserProfile(userId)
           setNickName(userDetails?.data?.nickName || userId)
         }
-        if (messages[fromUserJId]) {
-          setMessageList(messages[fromUserJId])
-        } else {
-          dispatch(getMessages(fromUserJId))
-        }
         let seen = await SDK.getLastSeen(fromUserJId)
         if (seen.statusCode == 200) {
           setSeenStatus(getLastseen(seen?.data?.seconds))
         }
       }
-      setIsChatLoading(false)``
+      setIsChatLoading(false)
     })();
   }, [messages, fromUserJId])
 
   React.useEffect(() => {
-    return () => backHandler.remove()
+    return () => {
+      backHandler.remove();
+    }
   }, [])
 
   const handleEndReached = (val) => {
     console.log(val, 'handleEndReached')
   }
 
+
   return (
-    <>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} // Adjust the value as per your UI design
+    >
       <ChatHeader handleBackBtn={handleBackBtn} seenStatus={seenStatus} fromUser={nickName} />
       <ImageBackground
         source={require('../assets/chatBackgroud.png')}
-        style={styles.imageBackground}
-        resizeMode="cover"
+        style={{
+          flex: 1,
+          resizeMode: 'cover',
+          justifyContent: 'center',
+        }}
       >
-        <VStack h='full'>
-          {
-            isChatLoading && <Slide mt="20" in={isChatLoading} placement="top">
-              <HStack space={8} justifyContent="center" alignItems="center">
-                <Spinner size="lg" color={'#3276E2'} />
-              </HStack>
-            </Slide>
-          }
-          <FlatList
-            inverted
-            data={messageList}
-            keyExtractor={(item, index) => index.toString()}
-            onEndReached={handleEndReached}
-            renderItem={({ item }) => {
-              return <ChatMessage message={item} />
-            }}
-          />
-        </VStack>
+        {
+          isChatLoading && <Slide mt="20" in={isChatLoading} placement="top">
+            <HStack space={8} justifyContent="center" alignItems="center">
+              <Spinner size="lg" color={'#3276E2'} />
+            </HStack>
+          </Slide>
+        }
+        <FlatList
+          inverted
+          data={messageList}
+          keyExtractor={(item, index) => index.toString()}
+          onEndReached={handleEndReached}
+          renderItem={({ item }) => {
+            return <ChatMessage message={item} />
+          }}
+        />
       </ImageBackground>
       <ChatInput onSendMessage={handleMessageSend} />
-    </>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  imageBackground: {
+  container: {
     flex: 1,
-  }
+  },
 });
 
 export default ChatScreen;

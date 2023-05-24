@@ -1,4 +1,5 @@
-import { getReceiveMessage } from "../redux/chatSlice";
+import { getRecentChat } from "../redux/chatSlice";
+import {  getReceiveMessage, updateMessageStatus } from "../redux/chatSlice";
 import store from "../redux/store";
 
 export const callBacks = {
@@ -11,14 +12,20 @@ export const callBacks = {
     },
     messageListener: (res) => {
         console.log('messageListener');
-        store.dispatch(getReceiveMessage(res))
-        // *** for Sender ***
-        // type: "acknowledge"
-        // msgType: "acknowledge"
-
-        // *** for Receiver *** 
-        // msgType: "seen"
-        //msgType:"receiveMessage"
+        store.dispatch(getRecentChat())
+        switch (res.msgType) {
+            case 'receiveMessage':
+                store.dispatch(getReceiveMessage(res))
+                break;
+            case 'acknowledge':
+            case 'delivered':
+            case 'seen':
+                if (res.fromUserJid) {
+                    store.dispatch(updateMessageStatus(res))
+                }
+            default:
+                break;
+        }
     },
     presenceListener: (res) => {
         console.log('presenceListener', res)

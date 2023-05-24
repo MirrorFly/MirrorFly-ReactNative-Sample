@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Linking } from 'react-native';
+import { Linking } from 'react-native';
 import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch } from 'react-redux';
 import { navigate } from '../redux/navigationSlice';
@@ -16,6 +16,7 @@ const RegisterScreen = () => {
     const selectcountry = useSelector(state => state.navigation.selectContryCode);
     const isLoading = useSelector(state => state.auth.status);
     const [mobileNumber, setMobileNumber] = React.useState('')
+    const [isToastShowing, setIsToastShowing] = React.useState(false)
 
     const termsHandler = () => {
         Linking.openURL("https://www.mirrorfly.com/terms-and-conditions.php");
@@ -31,9 +32,14 @@ const RegisterScreen = () => {
     }
 
     const handleSubmit = () => {
-        if (!mobileNumber) {
+        setIsToastShowing(true)
+        if (!mobileNumber && !isToastShowing) {
             return toast.show({
                 duration: 2500,
+                avoidKeyboard: true,
+                onCloseComplete: () => {
+                    setIsToastShowing(false)
+                },
                 render: () => {
                     return <Box bg="black" px="2" py="1" rounded="sm" >
                         <Text style={{ color: "#fff", padding: 5 }}>Please Enter Mobile Number</Text>
@@ -41,9 +47,13 @@ const RegisterScreen = () => {
                 }
             })
         }
-        if (mobileNumber.length <= '5') {
+        if (mobileNumber.length <= '5' && !isToastShowing) {
             return toast.show({
                 duration: 2500,
+                avoidKeyboard: true,
+                onCloseComplete: () => {
+                    setIsToastShowing(false)
+                },
                 render: () => {
                     return <Box bg="black" px="2" py="1" rounded="sm" >
                         <Text style={{ color: "#fff", padding: 5 }}>Your mobile number is too short</Text>
@@ -51,9 +61,13 @@ const RegisterScreen = () => {
                 }
             })
         }
-        if (!/^[0-9]{10}$/i.test(mobileNumber)) {
+        if (!isToastShowing && !/^[0-9]{10}$/i.test(mobileNumber)) {
             return toast.show({
                 duration: 2500,
+                avoidKeyboard: true,
+                onCloseComplete: () => {
+                    setIsToastShowing(false)
+                },
                 render: () => {
                     return <Box bg="black" px="2" py="1" rounded="sm" >
                         <Text style={{ color: "#fff", padding: 5 }}>Please enter a valid mobile number</Text>
@@ -128,20 +142,23 @@ const RegisterScreen = () => {
                         By clicking continue you agree to MirroFly
                     </Text>
                     <HStack flexDirection="row" marginLeft="2" >
-                        <TouchableOpacity onPress={termsHandler} >
+                        <Pressable borderBottomWidth="1"
+                            borderBottomColor="#3276E2" onPress={termsHandler} >
                             <Text color="#3276E2" mr="1" fontSize="14" borderBottomWidth="1"
                                 borderBottomColor="#3276E2">
                                 Terms and Conditions,
                             </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={PolicyHandler}>
+                        </Pressable>
+                        <Pressable
+                            borderBottomWidth="1"
+                            borderBottomColor="#3276E2"
+                            onPress={PolicyHandler}>
                             <Text color="#3276E2"
                                 fontSize="14"
-                                borderBottomWidth="1"
-                                borderBottomColor="#3276E2" >
+                            >
                                 Privacy Policy.
                             </Text>
-                        </TouchableOpacity>
+                        </Pressable>
                     </HStack>
                 </Stack>
                 <Modal isOpen={isLoading === 'loading'} safeAreaTop={true} >

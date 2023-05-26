@@ -58,7 +58,7 @@ const CountryList = () => {
                         data={filteredData}
                         removeClippedSubviews={true}
                         showsVerticalScrollIndicator={false}
-                        keyExtractor={(item) => item.id}
+                        keyExtractor={(item) => item.code}
                         renderItem={({ item, index }) => (
                             <CountryItems key={index} renderItem={item} />
                         )}

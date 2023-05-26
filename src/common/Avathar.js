@@ -7,7 +7,7 @@ const Avathar = (props) => {
       width: props.width || 48,
       height: props.height || 48,
       borderRadius: 100,
-      backgroundColor: "#9D9D9D",
+      backgroundColor: props.backgroundColor || "#9D9D9D",
       justifyContent:'center',
       alignItems:'center'
     },

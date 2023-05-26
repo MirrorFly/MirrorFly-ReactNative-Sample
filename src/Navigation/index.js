@@ -1,5 +1,5 @@
 import React from 'react'
-import { NativeBaseProvider } from 'native-base'
+import { NativeBaseProvider, Text } from 'native-base'
 import { useDispatch, useSelector } from 'react-redux'
 import CountryList from '../screen/CountryList'
 import ProfileScreen from '../screen/ProfileScreen'
@@ -13,6 +13,11 @@ import { navigate } from '../redux/navigationSlice'
 import SplashScreen from '../screen/SplashScreen'
 import { getRecentChat } from '../redux/chatSlice'
 import { CONNECTED, RECENTCHATSCREEN } from '../constant'
+ import StatusScreen from "../screen/StatusScreen";
+import EditStatusScreen from '../screen/EditStatusScreen'
+import ProfilePage from '../components/ProfilePage'
+import StatusPage from '../components/StatusPage'
+import EditStatusPage from '../components/EditStatusPage'
 
 function Navigation() {
     const screenNav = useSelector(state => state.navigation.screen)
@@ -20,23 +25,23 @@ function Navigation() {
     const [isAppLoading, setIsAppLoading] = React.useState(false)
     const [navScreen, setNavScreen] = React.useState()
     const dispatch = useDispatch();
-    React.useEffect(() => {
-        setIsAppLoading(true);
-        (async () => {
-            await authScreen().then(async (res) => {
-                setNavScreen(res)
-                setIsAppLoading(false)
-            })
-        })();
-    }, [])
+    // React.useEffect(() => {
+    //     setIsAppLoading(true);
+    //     (async () => {
+    //         await authScreen().then(async (res) => {
+    //             setNavScreen(res)
+    //             setIsAppLoading(false)
+    //         })
+    //     })();
+    // }, [])
 
-    React.useEffect(() => {
-        if (isConnect == CONNECTED) {
-             dispatch(getRecentChat())
-            let nav = { screen: RECENTCHATSCREEN }
-            dispatch(navigate(nav))
-        }
-    }, [isConnect, navScreen])
+    // React.useEffect(() => {
+    //     if (isConnect == CONNECTED) {
+    //          dispatch(getRecentChat())
+    //         let nav = { screen: RECENTCHATSCREEN }
+    //         dispatch(navigate(nav))
+    //     }
+    // }, [isConnect, navScreen])
 
     if (isAppLoading) {
         return <SplashScreen />;
@@ -46,12 +51,14 @@ function Navigation() {
         <NativeBaseProvider>
             {{
                 'REGISTERSCREEN': <RegisterScreen />,
+                'PROFILESCREEN':<ProfileScreen/>,
                 'RECENTCHATSCREEN': <RecentScreen />,
                 'COUNTRYSCREEN': <CountryList />,
-                'PROFILESCREEN': <ProfileScreen />,
                 'CHATSCREEN': <ChatScreen />,
                 'CONTACTLIST': <ContactScreen />,
-                'SETTINGSCREEN': <SettingScreen />
+                'SETTINGSCREEN': <SettingScreen />,
+                'STATUSSCREEN':<StatusPage/>,
+               'EDITSTATUSSCREEN':<EditStatusPage/>
             }[screenNav]}
         </NativeBaseProvider>
     )

@@ -16,7 +16,7 @@ const ChatInput = ({ onSendMessage }) => {
   };
 
   React.useEffect(() => {
-    if (chatInputWidth > 92 && message) {
+    if (chatInputWidth > 90 && message) {
       setTimeout(() => {
         setChatInputWidth(chatInputWidth - 0.5);
       }, 0.1);

@@ -95,7 +95,7 @@ android {
 
     namespace "com.mirrorfly_rn"
     defaultConfig {
-        applicationId "com.mirrorfly_rn"
+        applicationId "com.mirrorfly.qa"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

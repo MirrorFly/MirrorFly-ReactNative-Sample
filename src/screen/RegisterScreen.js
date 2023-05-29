@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linking } from 'react-native';
+import { Linking, TextInput } from 'react-native';
 import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch } from 'react-redux';
 import { navigate } from '../redux/navigationSlice';
@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { registerData } from '../redux/authSlice';
 import { getRecentChat } from '../redux/chatSlice';
 import { DownArrowIcon, RegiterPageIcon } from '../common/Icons';
-import { Icon, Modal, Text, Center, Box, useToast, Spinner, HStack, Stack, Input, VStack, Pressable, KeyboardAvoidingView } from 'native-base';
+import { Icon, Modal, Text, Center, Box, useToast, Spinner, HStack, Stack, Input, VStack, Pressable, KeyboardAvoidingView, View } from 'native-base';
 
 const RegisterScreen = () => {
     const dispatch = useDispatch();
@@ -32,14 +32,17 @@ const RegisterScreen = () => {
     }
 
     const handleSubmit = () => {
+        const toastConfig = {
+            duration: 2500,
+            avoidKeyboard: true,
+            onCloseComplete: () => {
+                setIsToastShowing(false)
+            }
+        }
         setIsToastShowing(true)
         if (!mobileNumber && !isToastShowing) {
             return toast.show({
-                duration: 2500,
-                avoidKeyboard: true,
-                onCloseComplete: () => {
-                    setIsToastShowing(false)
-                },
+                ...toastConfig,
                 render: () => {
                     return <Box bg="black" px="2" py="1" rounded="sm" >
                         <Text style={{ color: "#fff", padding: 5 }}>Please Enter Mobile Number</Text>
@@ -49,11 +52,7 @@ const RegisterScreen = () => {
         }
         if (mobileNumber.length <= '5' && !isToastShowing) {
             return toast.show({
-                duration: 2500,
-                avoidKeyboard: true,
-                onCloseComplete: () => {
-                    setIsToastShowing(false)
-                },
+                ...toastConfig,
                 render: () => {
                     return <Box bg="black" px="2" py="1" rounded="sm" >
                         <Text style={{ color: "#fff", padding: 5 }}>Your mobile number is too short</Text>
@@ -63,18 +62,15 @@ const RegisterScreen = () => {
         }
         if (!isToastShowing && !/^[0-9]{10}$/i.test(mobileNumber)) {
             return toast.show({
-                duration: 2500,
-                avoidKeyboard: true,
-                onCloseComplete: () => {
-                    setIsToastShowing(false)
-                },
+                ...toastConfig,
                 render: () => {
                     return <Box bg="black" px="2" py="1" rounded="sm" >
                         <Text style={{ color: "#fff", padding: 5 }}>Please enter a valid mobile number</Text>
                     </Box>;
                 }
             })
-        } else {
+        }
+        if (!isToastShowing && /^[0-9]{10}$/i.test(mobileNumber)) {
             dispatch(registerData(selectcountry?.dial_code + mobileNumber)).then((res) => {
                 dispatch(getRecentChat())
                 let nav = { screen: PROFILESCREEN }
@@ -91,10 +87,11 @@ const RegisterScreen = () => {
             <VStack h='full' justifyContent={'center'}>
                 <VStack alignItems={'center'}>
                     <Icon as={RegiterPageIcon} />
-                    <Text mt="15" fontWeight="600" fontSize="23">
+                    <View mt='4' ></View>{/* // Space between Logo and Text */}
+                    <Text mt="19" fontWeight="600" fontSize="23">
                         Register Your Number
                     </Text>
-                    <Text px='3' color="#767676" fontSize="13" fontWeight="400" textAlign="center">
+                    <Text px='5' color="#767676" fontSize="13" fontWeight="400" textAlign="center">
                         Please choose your country code and enter your mobile number to get the verification code.
                     </Text>
                 </VStack>
@@ -112,13 +109,16 @@ const RegisterScreen = () => {
                             +{selectcountry?.dial_code}
                         </Text>
                         <Stack height="8" ml="1" mt="2" borderLeftWidth="1" borderColor='#f2f2f2' />
-                        <Input
+                        <TextInput
+                            style={{
+                                flex:1,
+                                fontSize: 15,
+                                fontWeight: '500',
+                                marginLeft: 10
+                            }}
+                            placeholderTextColor="#d3d3d3"
                             returnKeyType='done'
-                            variant="unstyled"
-                            fontSize="15"
-                            fontWeight="500"
-                            color="black"
-                            flex="1"
+                            keyboardType="numeric"
                             placeholder="Enter mobile number"
                             onChangeText={(value) => {
                                 if (value.match(numRegx) || !value) {
@@ -127,10 +127,6 @@ const RegisterScreen = () => {
                             }}
                             value={mobileNumber}
                             selectionColor={'#3276E2'}
-                            maxLength={15}
-                            placeholderTextColor={"#959595"}
-                            keyboardType="numeric"
-                            numberOfLines={1}
                         />
                     </HStack>
                 </HStack>
@@ -141,11 +137,10 @@ const RegisterScreen = () => {
                     <Text color="#767676" fontSize="14" fontWeight="400">
                         By clicking continue you agree to MirroFly
                     </Text>
-                    <HStack flexDirection="row" marginLeft="2" >
-                        <Pressable borderBottomWidth="1"
+                    <HStack >
+                        <Pressable mx='1' borderBottomWidth="1"
                             borderBottomColor="#3276E2" onPress={termsHandler} >
-                            <Text color="#3276E2" mr="1" fontSize="14" borderBottomWidth="1"
-                                borderBottomColor="#3276E2">
+                            <Text color="#3276E2" mr="1" fontSize="14">
                                 Terms and Conditions,
                             </Text>
                         </Pressable>

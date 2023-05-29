@@ -14,14 +14,6 @@ function ChatHeader(props) {
         delay: 0,
         consecutive: false,
     })
-    const menuItems = [
-        {
-            label: 'Message Info',
-            formatter: () => {
-                dispatch(navigate({ screen: SETTINGSCREEN }))
-            }
-        }
-    ]
 
     return (
         <>
@@ -43,7 +35,7 @@ function ChatHeader(props) {
                     </Pressable>
                 </HStack>
                 <HStack alignItems="center">
-                    <MenuContainer menuItems={menuItems} />
+                    {props.selectedMsgs.length < 2 && <MenuContainer menuItems={props.menuItems} />}
                 </HStack>
             </HStack>
         </>

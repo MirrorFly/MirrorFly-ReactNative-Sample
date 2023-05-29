@@ -9,10 +9,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/authSlice';
 import { navigate } from '../redux/navigationSlice';
 import { CONTACTLIST } from '../constant';
+import SDK from '../SDK/SDK';
 const logo = require('../assets/mirrorfly-logo.png')
 
 function RecentScreen() {
     const dispatch = useDispatch()
+    const messages = useSelector(state => state.chat.chatMessages)
     const [index, setIndex] = React.useState(0);
     const [routes] = React.useState([
         { key: 'first', title: 'Chats' },
@@ -29,6 +31,12 @@ function RecentScreen() {
         );
         setFilteredData(filtered);
     }
+    React.useEffect(()=>{
+        (async()=>{
+            const recentChats =await SDK.getRecentChats();
+            setFilteredData(recentChats.data.reverse())
+        })()
+    },[messages])
 
     React.useEffect(() => {
         setFilteredData(recentChatList)

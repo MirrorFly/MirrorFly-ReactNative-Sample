@@ -12,11 +12,17 @@ const initialState = {
     recentChatStatus: 'idle'
 }
 
+export const sendSeenStatus = createAsyncThunk('chat/sendSeenStatus', async (res) => {
+    await SDK.sendSeenStatus(res.toJid, res.msgId);
+    return true
+})
+
 export const getRecentChat = createAsyncThunk('chat/getRecentChat', async () => {
     let recentChatsRes = await SDK.getRecentChats();
     const recentChatsFilter = recentChatsRes?.data.filter(item => item.chatType == 'chat')
     return { recentChatsFilter }
 })
+
 
 export const getMessages = createAsyncThunk('chat/getMessages', async (fromUserJId) => {
     let message = await SDK.getChatMessages(fromUserJId);
@@ -35,7 +41,7 @@ export const getReceiveMessage = createAsyncThunk('chat/getReceiveMessage', asyn
     }
 })
 
-export const sendMessage = createAsyncThunk('chat/sendMessage', async (message, { getState }) => {
+export const sendMessage = createAsyncThunk('chat/sendMessage', async (message, { getState,dispatch }) => {
     let userJid = getState()?.auth?.currentUserJID
     let [val, fromUserJId] = message;
     let msgId = uuidv4()
@@ -45,9 +51,11 @@ export const sendMessage = createAsyncThunk('chat/sendMessage', async (message, 
         favouriteStatus: 0,
         deleteStatus: 0,
         fromUserJid: userJid,
+        toUserJid:fromUserJId,
         timestamp: Date.now(),
-        msgStatus: 0,
+        msgStatus: 3,
         msgId: msgId,
+        msgType:'sendMessage',
         msgBody: {
             msgId: msgId,
             message: val,
@@ -70,6 +78,36 @@ const chatSlice = createSlice({
                 }
             });
         },
+        updateRecentChat: (state, action) => {
+            const res = action.payload
+            switch (res.msgType) {
+                case 'receiveMessage':
+                    state.recentChat = state.recentChat.map(user => {
+                        if (user.fromUserId === res.fromUserId) {
+                            // Remove the object that satisfies the condition
+                            return undefined;
+                        } else {
+                            // Return the original object
+                            return user;
+                        }
+                    }).filter(Boolean);
+                    state.recentChat = [res, ...state.recentChat]
+                    break;
+                case 'sendMessage':
+                    state.recentChat = state.recentChat.map(chat=>{
+                        if (chat.fromUserId === res.toUserJid.split('@')[0]) {
+                            // Remove the object that satisfies the condition
+                            return undefined;
+                        } else {
+                            // Return the original object
+                            return user;
+                        }
+                    }).filter(Boolean);
+                    state.recentChat = [res, ...state.recentChat]   
+                    break;
+            }
+            console.log(state.recentChat, 'state.recentChat')
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -117,8 +155,18 @@ const chatSlice = createSlice({
             .addCase(getRecentChat.rejected, (state, action) => {
                 state.recentChatStatus = 'failed';
             })
+            .addCase(sendSeenStatus.pending, (state) => {
+                state.recentChatStatus = RECENTCHATLOADING;
+            })
+            .addCase(sendSeenStatus.fulfilled, (state, action) => {
+                state.recentChatStatus = 'succeeded';
+            })
+            .addCase(sendSeenStatus.rejected, (state, action) => {
+                state.recentChatStatus = 'failed';
+            })
     },
 });
 export default chatSlice.reducer;
 
 export const updateMessageStatus = chatSlice.actions.updateMessageStatus
+export const updateRecentChat = chatSlice.actions.updateRecentChat

@@ -25,23 +25,23 @@ function Navigation() {
     const [isAppLoading, setIsAppLoading] = React.useState(false)
     const [navScreen, setNavScreen] = React.useState()
     const dispatch = useDispatch();
-    // React.useEffect(() => {
-    //     setIsAppLoading(true);
-    //     (async () => {
-    //         await authScreen().then(async (res) => {
-    //             setNavScreen(res)
-    //             setIsAppLoading(false)
-    //         })
-    //     })();
-    // }, [])
+    React.useEffect(() => {
+        setIsAppLoading(true);
+        (async () => {
+            await authScreen().then(async (res) => {
+                setNavScreen(res)
+                setIsAppLoading(false)
+            })
+        })();
+    }, [])
 
-    // React.useEffect(() => {
-    //     if (isConnect == CONNECTED) {
-    //          dispatch(getRecentChat())
-    //         let nav = { screen: RECENTCHATSCREEN }
-    //         dispatch(navigate(nav))
-    //     }
-    // }, [isConnect, navScreen])
+    React.useEffect(() => {
+        if (isConnect == CONNECTED) {
+             dispatch(getRecentChat())
+            let nav = { screen: RECENTCHATSCREEN }
+            dispatch(navigate(nav))
+        }
+    }, [isConnect, navScreen])
 
     if (isAppLoading) {
         return <SplashScreen />;

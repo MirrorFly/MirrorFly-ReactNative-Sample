@@ -11,17 +11,17 @@ import ProfilePage from '../components/ProfilePage';
 import EditStatusPage from '../components/EditStatusPage';
 import StatusPage from '../components/StatusPage';
 import ProfilePhoto from '../components/ProfilePhoto';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfileScreen = () => {
   const [nav, setNav] = React.useState("ProfileScreen");
   const [statusList, setStatusList] = React.useState([
-    { value: "Available" },
-    { value: "Sleeping..." },
-    { value: "Urgent calls only" },
-    { value: "At the movies" },
-    { value: "I am in Mirror Fly" },
-    { value: "Avail" },
+    { id:1, value: "Available",},
+    { id:2,value: "Sleeping...", },
+    { id:3,value: "Urgent calls only", },
+    {id:4, value: "At the movies",},
+    {id:5, value: "I am in Mirror Fly", },
+    { id:6, value: "Avail" },
 
   ]);
 
@@ -35,35 +35,38 @@ const ProfileScreen = () => {
 
   });
 
-   React.useEffect(() => {
-
-    if(profileInfo.status ){
-     
-     
-     let fliter = statusList.filter((info) => profileInfo.status || !info);
-
-   console.log(fliter);
-
-     setStatusList([
-     ... statusList,
-     {
-        value:profileInfo.status
-     }
-    
-    ])
+  const handleDelete = (value) => {
+    setStatusList(statusList.filter(item => item.value !== value));
   }
 
-    }, [profileInfo])
+  
 
-    
+  React.useEffect(() => {
+
+    if (profileInfo.status) {
+      console.log(profileInfo.status);
+      // storeData(jsonData);
+     
+      let fliter = statusList.filter((info) => profileInfo.status == info.value);
+      console.log(fliter);
+      if (!fliter.length) {
+        const newObj = { value: profileInfo.status };
+        setStatusList(prevArray => [...prevArray, newObj]);
+        // console.log(statusList);
+      }
+    }
+
+  }, [profileInfo])
+
+
 
   return (
     <>
       {{
 
-        'ProfileScreen': <ProfilePage setNav={setNav} profileInfo={profileInfo} setProfileInfo={setProfileInfo}   />,
-        'EditStatusPage': <EditStatusPage setNav={setNav} profileInfo={profileInfo} setProfileInfo={setProfileInfo}  />,
-        'statusPage': <StatusPage statusList={statusList} setNav={setNav} profileInfo={profileInfo} setProfileInfo={setProfileInfo} />,
+        'ProfileScreen': <ProfilePage setNav={setNav} profileInfo={profileInfo} setProfileInfo={setProfileInfo} />,
+        'EditStatusPage': <EditStatusPage setNav={setNav} profileInfo={profileInfo} setProfileInfo={setProfileInfo} />,
+        'statusPage': <StatusPage statusList={statusList} setNav={setNav} profileInfo={profileInfo} setProfileInfo={setProfileInfo} removeItem={handleDelete} />,
         'ProfileImage': <ProfilePhoto setNav={setNav} profileInfo={profileInfo} setProfileInfo={setProfileInfo} />
       }[nav]}
     </>

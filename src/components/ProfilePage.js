@@ -7,9 +7,10 @@ import { Modal, Center, Box, Text, VStack, useToast, Spinner, Stack, Icon, Input
 import { SDK } from '../SDK';
 import ImagePicker from 'react-native-image-crop-picker';
 import Avathar from "../common/Avathar";
-import { RECENTCHATSCREEN } from '../constant';
+import {  RECENTCHATSCREEN } from '../constant';
 import { navigate } from '../redux/navigationSlice';
-import { convertToFileType } from '../common/utils';
+import ScreenHeader from './ScreenHeader';
+// import { convertToFileType } from '../common/utils';
 
 const ProfilePage = (props) => {
 
@@ -20,37 +21,39 @@ const ProfilePage = (props) => {
   const [placement, setPlacement] = React.useState(undefined);
   const [open, setOpen] = React.useState(false);
   const [remove, setRemove] = React.useState(false);
-  const onClose = () => setRemove(false);
   const [mobileNumber, setMobileNumber] = React.useState("");
-  // const [status, setStatus] = React.useState("Available");
   const dispatch = useDispatch();
   const [loading, setloading] = React.useState(false);
   const [selectedImage, setSelectedImage] = React.useState(props.profileInfo.image);
-  const [baseImage, setBaseImage] = React.useState(null);
-  // const [isModified, setIsModified] = React.useState(false);
-  const [receivedData, setReceivedData] = React.useState({});
-  const [gettingData, setGettingData] = React.useState({});
-  
+ // const [baseImage, setBaseImage] = React.useState(null);
+
+
+  const [userName, setUserName] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [status, setStatus] = React.useState("");
+
+  const handleBackBtn = () => {
+    let x = { screen: RECENTCHATSCREEN }
+    dispatch(navigate(x))
+    return true;
+  }
+
   const OnStatusHandler = () => {
     props.setNav("statusPage");
 
   }
-console.log(props.profileInfo);
-  const handleImage = () => { 
+  console.log(props.profileInfo);
+  const handleImage = () => {
     if (selectedImage) {
 
-      
-     props.setNav("ProfileImage");
-      
+      props.setNav("ProfileImage");
+
     }
 
     else {
       setOpen(true);
       setPlacement(placement);
     }
- 
-
-    
   };
 
   React.useEffect(() => {
@@ -59,13 +62,25 @@ console.log(props.profileInfo);
       let userId = userJid.split("@")[0]
       let getUserInfo = await SDK.getUserProfile(userId);
       console.log("get profile", getUserInfo);
-      // setName(getUserId?.data?.nickName)
+      if (getUserInfo) {
+        // setloading(true);
+        setUserName(props?.profileInfo?.nickName);
+        setStatus(props?.profileInfo?.status);
+        setMobileNumber(props?.profileInfo?.mobileNumber);
+        setEmail(props?.profileInfo?.email);
+        // console.log(setReceivedData);
+      }
+
+      //  setReceivedData(getUserId?.data?.email)
+
       // setMail(getUserId?.data?.email)
       // setStatus(getUserId?.data?.status)
       // setSelectedImage(getUserId?.data?.image)
+      // setMobileNumber(getUserId?.data?.phone);
 
     })()
   }, [])
+
 
   const handleProfileUpdate = async () => {
 
@@ -76,7 +91,7 @@ console.log(props.profileInfo);
     // console.log(email);
     // console.log(status);
 
-    if (!props?.profileInfo?.nickName ) {
+    if (!props?.profileInfo?.nickName) {
       return toast.show({
         duration: 700,
         render: () => {
@@ -102,7 +117,6 @@ console.log(props.profileInfo);
 
           return <Box bg="black" px="2" py="1" rounded="sm" >
             <Text style={{ color: "#fff", padding: 5 }}>User Name is too short</Text>
-
           </Box>
         }
       })
@@ -119,7 +133,7 @@ console.log(props.profileInfo);
         }
       })
     }
-    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(props?.profileInfo?.email )) {
+    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(props?.profileInfo?.email)) {
 
       return toast.show({
         duration: 700,
@@ -135,13 +149,16 @@ console.log(props.profileInfo);
     //inputRef.current.focus();
     //  props.setNav(StatusPage);
     // setIsModified(false);
-    let UserInfo = await SDK.setUserProfile(userName,'', '', phone, email);
 
-    console.log(UserInfo);
+
+    let UserInfo = await SDK.setUserProfile(props?.profileInfo?.nickName, '', props.profileInfo.status, mobileNumber, props.profileInfo.email);
+
+    // console.log(UserInfo);
 
     let x = { screen: RECENTCHATSCREEN }
     dispatch(navigate(x))
     if (UserInfo) {
+
       return toast.show({
         duration: 700,
         render: () => {
@@ -219,26 +236,16 @@ console.log(props.profileInfo);
       height: 150,
       cropping: true,
       cropperCircleOverlay: true,
-     // includeBase64: true,
+    
 
     }).then((image) => {
-
-      //  const blob= base64ToBlob(image.data);
-      //  console.log('====================================');
-      //  console.log(blob);
-      //  console.log('====================================');
-     
       setSelectedImage(image);
-
       console.log(image);
-    
+
       props.setProfileInfo({
         ...props.profileInfo,
-        image:image
-       })
-      // convertToFileType();
-      // setBaseImage(blob);
-      // console.log(blob);
+        image: image
+      })
       setOpen(false);
 
     }).catch((error) => {
@@ -254,26 +261,18 @@ console.log(props.profileInfo);
       multiple: false,
       cropping: true,
       cropperCircleOverlay: true,
-      // includeBase64: true,
-    }).then(async(image) => {
-
-      // const blob= base64ToBlob(image.data);
-      // console.log('====================================');
-      // console.log(blob);
-      // console.log('====================================');
-      //  console.log(image);
+    }).then(async (image) => {
       setSelectedImage(image);
-
       props.setProfileInfo({
         ...props.profileInfo,
-         image:image
-       })
+        image: image
+      })
       // console.log(image);
       // let file = await convertToFileType(image.path);
       // console.log(file)
       // setBaseImage(file);
       setOpen(false);
-      //console.log(blob);
+      console.log(image);
 
     }).catch((error) => {
       console.log(' Gallery ImagePicker Error: ', error);
@@ -282,9 +281,16 @@ console.log(props.profileInfo);
   };
 
   const handleRemove = () => {
-    setRemove(!remove)
+
+    //setSelectedImage ('');
+    setRemove(!remove);
   }
 
+
+  const onClose = () => {
+    setRemove(false)
+    setSelectedImage('');
+  }
   // const handleUsername = (text) => {
   //   // setName(text);
   //   setGettingData({ ...gettingData, userName: text })
@@ -303,13 +309,14 @@ console.log(props.profileInfo);
   //   setIsModified(true);
   // };
 
-  const handleChangeText = (name,value) => {
-   props.setProfileInfo({
-    ...props.profileInfo,
-    [name] :value
-   }
-   )
+  const handleChangeText = (name, value) => {
+    props.setProfileInfo({
+      ...props.profileInfo,
+      [name]: value
+    }
+    )
   }
+
 
   React.useEffect(() => {
     //console.log(gettingData)
@@ -321,9 +328,15 @@ console.log(props.profileInfo);
     // <View style={{ flex: 1 }}>
     <>
       <Stack h={53} bg="#F2F2F2" w="full" justifyContent={"center"}>
-        <Text color="black" fontSize="21" fontWeight="600" textAlign="center" >
+        {/* <Text color="black" fontSize="21" fontWeight="600" textAlign="center" >
           Profile
-        </Text>
+        </Text> */}
+        <ScreenHeader
+          title='Profile'
+          onhandleBack={handleBackBtn}
+
+
+        />
       </Stack>
 
       {/* <View style={{ flex: 1 }}> */}
@@ -331,9 +344,9 @@ console.log(props.profileInfo);
         <ScrollView showsVerticalScrollIndicator={false}>
           <VStack mt="16" flex="1" alignItems={"center"}>
             <TouchableOpacity activeOpacity={1} onPress={handleImage} style={{ position: "relative" }}>
-              {selectedImage && <Image resizeMode="contain" source={{ uri: props.profileInfo.image.path  }} style={{ height: 157, width: 157, borderRadius: 100 }} />}
-              {!selectedImage && gettingData.userName && <Avathar width={157} height={157} data={props.profileInfo.nickName} backgroundColor={"blue"} />}
-              {!selectedImage && !gettingData.userName && <Image resizeMode="contain" source={require('../assets/profile.png')} style={{ height: 157, width: 157, }} />}
+              {selectedImage && <Image resizeMode="contain" source={{ uri: props.profileInfo.image.path }} style={{ height: 157, width: 157, borderRadius: 100 }} />}
+              {!selectedImage && props?.profileInfo?.nickName && <Avathar width={157} height={157} data={props.profileInfo.nickName} backgroundColor={"blue"} />}
+              {!selectedImage && !props?.profileInfo?.nickName && <Image resizeMode="contain" source={require('../assets/profile.png')} style={{ height: 157, width: 157, }} />}
 
               <TouchableOpacity activeOpacity={1} onPress={() => setOpen(true)} style={{ position: "absolute", right: 0, bottom: 0, }}  >
                 <Image resizeMode="contain" source={require('../assets/camera.png')} style={styles.CameraImage} />
@@ -344,9 +357,9 @@ console.log(props.profileInfo);
 
               textAlign="center"
               style={{ fontSize: 18, fontWeight: "700", marginTop: 5, width: 95 }}
-              value={gettingData?.userName}
+              // value={userName}
               placeholder='Username'
-              onChangeText={(text)=>{ handleChangeText('nickName',text)}}
+              onChangeText={(text) => { handleChangeText('nickName', text) }}
               maxLength={15}
               placeholderTextColor={"#959595"}
               keyboardType="default"
@@ -368,8 +381,7 @@ console.log(props.profileInfo);
                 color="#959595"
                 flex="1"
                 fontSize="13"
-               
-                //onChangeText={handleEmail}
+                //value={email}
                 onChangeText={(text) => handleChangeText('email', text)}
                 placeholder='Enter Email Id'
                 placeholderTextColor={"#959595"}
@@ -394,10 +406,11 @@ console.log(props.profileInfo);
                 color="#959595"
                 flex="1"
                 fontSize="13"
-                
+
                 onChangeText={setMobileNumber}
                 HStack placeholder='Enter Your Mobile Number'
                 maxLength={15}
+                //value={mobileNumber}
                 editable={false}
                 placeholderTextColor={"#959595"}
                 keyboardType="numeric"
@@ -412,24 +425,25 @@ console.log(props.profileInfo);
             <Text fontSize="14" color="black" fontWeight="500">
               Status
             </Text>
-            <Pressable 
+            <Pressable
               onPress={OnStatusHandler} >
               <HStack
-                flexDirection="row" mt="3" mb="3" flex={"1"}  alignItems="center" >
+                flexDirection="row" mt="3" mb="3" flex={"1"} alignItems="center" >
 
                 <StatusIcon />
-               
-                <Text px={"3"} mr={"6"} numberOfLines={1}  color="#959595" fontSize="13"  fontWeight="500" >
-                { props.profileInfo.status || "Avaliable" }
-              
-            </Text>       
+
+                <Text px={"3"} mr={"6"} numberOfLines={1} color="#959595" fontSize="13" fontWeight="500" >
+                  {props.profileInfo.status || "Avaliable"
+
+                  }
+                </Text>
               </HStack>
             </Pressable>
           </Stack>
 
-          <Stack mt="50"  alignItems="center">
-            <TouchableOpacity style={[styles.button, { width: gettingData ? 160 : 100 }]} onPress={handleProfileUpdate}>
-              {/* {gettingData && <Text numberOfLines={1} style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Update & Continue</Text>} */}
+          <Stack mt="50" alignItems="center">
+            <TouchableOpacity style={[styles.button, { width: props?.profileInfo?.nickName ? 160 : 100 }]} onPress={handleProfileUpdate}>
+              {/* {props.profileInfo &&  <Text numberOfLines={1} style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Update & Continue</Text>} */}
 
               <Text style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Save</Text>
             </TouchableOpacity>
@@ -447,7 +461,7 @@ console.log(props.profileInfo);
                       <TouchableOpacity style={{ paddingTop: 15 }} onPress={handleGalleryPicker}>
                         <Text style={{ fontSize: 14, color: "#767676", fontWeight: "500" }}>Choose from Gallery</Text>
                       </TouchableOpacity>
-                      {selectedImage && !gettingData.userName && (<TouchableOpacity onPress={handleRemove} style={{ paddingTop: 15 }} >
+                      {selectedImage && (<TouchableOpacity onPress={handleRemove} style={{ paddingTop: 15 }} >
                         <Text style={{ fontSize: 14, color: "#767676", fontWeight: "500" }}>Remove Photo</Text>
                       </TouchableOpacity>)}
                     </View>
@@ -466,11 +480,11 @@ console.log(props.profileInfo);
                   Are you sure you want to remove the photo?
                   <HStack ml="119" space={5}>
                     <TouchableOpacity onPress={onClose} >
-                      <Text Color="red">Cancel</Text>
+                      <Text color={"blue.800"} >Cancel</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity color={"#3276E2"} onPress={onClose}>
-                      <Text Color="#3276E2" >Remove</Text>
-                    </TouchableOpacity>
+                    {selectedImage && <TouchableOpacity color={"#3276E2"} onPress={onClose}>
+                      <Text color={"blue.800"} >Remove</Text>
+                    </TouchableOpacity>}
 
                   </HStack>
 
@@ -478,11 +492,11 @@ console.log(props.profileInfo);
                 </AlertDialog.Body>
 
 
-
-
               </AlertDialog.Content>
             </AlertDialog>
           </Center>
+
+
           <Modal isOpen={loading} onClose={() => setloading(false)} style={styles.center} safeAreaTop={true} >
             <Modal.Content width="45" height="45" >
               <Center w="100%" h="full">

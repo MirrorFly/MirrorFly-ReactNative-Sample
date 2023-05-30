@@ -50,6 +50,26 @@ export const changeTimeFormat = (time) => {
             .format("hh:mm A");
     }
 };
+
+/**
+ * change16TimeWithDateFormat() method to  returns 26-May-2023 at 3:13PM.
+ *
+ * @param {timeStamp} time
+ */
+
+export const change16TimeWithDateFormat = (time) => {
+    if (!time) {
+        return '';
+    }
+    else if (time.toString().length === 16) {
+        let convertedDate = moment(time / 1000).format('DD-MMM-YYYY')
+        let convertedTime =  moment(time / 1000).format('hh:mm A')
+        return `${convertedDate} at ${convertedTime}`
+    } else {
+        return moment(time)
+            .format("hh:mm A");
+    }
+};
 /**
  * getLastseen() method to perform convert seconds to user online or Last seen date format status.
  *

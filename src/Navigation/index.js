@@ -1,5 +1,5 @@
 import React from 'react'
-import { NativeBaseProvider, Text } from 'native-base'
+import { Box, NativeBaseProvider } from 'native-base'
 import { useDispatch, useSelector } from 'react-redux'
 import CountryList from '../screen/CountryList'
 import ProfileScreen from '../screen/ProfileScreen'
@@ -12,12 +12,7 @@ import { authScreen } from '../services/auth'
 import { navigate } from '../redux/navigationSlice'
 import SplashScreen from '../screen/SplashScreen'
 import { getRecentChat } from '../redux/chatSlice'
-import { CONNECTED, RECENTCHATSCREEN } from '../constant'
- import StatusScreen from "../screen/StatusScreen";
-import EditStatusScreen from '../screen/EditStatusScreen'
-import ProfilePage from '../components/ProfilePage'
-import StatusPage from '../components/StatusPage'
-import EditStatusPage from '../components/EditStatusPage'
+import { CONNECTED, RECENTCHATSCREEN, REGISTERSCREEN } from '../constant'
 
 function Navigation() {
     const screenNav = useSelector(state => state.navigation.screen)
@@ -37,7 +32,7 @@ function Navigation() {
 
     React.useEffect(() => {
         if (isConnect == CONNECTED) {
-             dispatch(getRecentChat())
+            dispatch(getRecentChat())
             let nav = { screen: RECENTCHATSCREEN }
             dispatch(navigate(nav))
         }
@@ -49,6 +44,7 @@ function Navigation() {
 
     return (
         <NativeBaseProvider>
+            <Box safeAreaTop bg="#f2f2f2" />
             {{
                 'REGISTERSCREEN': <RegisterScreen />,
                 'PROFILESCREEN':<ProfileScreen/>,
@@ -57,9 +53,10 @@ function Navigation() {
                 'CHATSCREEN': <ChatScreen />,
                 'CONTACTLIST': <ContactScreen />,
                 'SETTINGSCREEN': <SettingScreen />,
-                'STATUSSCREEN':<StatusPage/>,
-               'EDITSTATUSSCREEN':<EditStatusPage/>
+               // 'STATUSSCREEN':<StatusPage/>,
+              // 'EDITSTATUSSCREEN':<EditStatusPage/>
             }[screenNav]}
+            <Box safeAreaBottom />
         </NativeBaseProvider>
     )
 }

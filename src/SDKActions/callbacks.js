@@ -1,5 +1,7 @@
-import { getReceiveMessage } from "../redux/chatSlice";
+import { getReceiveMessage, getRecentChat, updateMessageStatus, updateRecentChat } from "../redux/chatSlice";
+import { storeDeliveryStatus, storeSeenStatus, updateAsyncStorage } from "../redux/storageSlice";
 import store from "../redux/store";
+import { updateUserPresence } from "../redux/userSlice";
 
 export const callBacks = {
     connectionListener: (response) => {
@@ -11,17 +13,27 @@ export const callBacks = {
     },
     messageListener: (res) => {
         console.log('messageListener');
-        store.dispatch(getReceiveMessage(res))
-        // *** for Sender ***
-        // type: "acknowledge"
-        // msgType: "acknowledge"
-
-        // *** for Receiver *** 
-        // msgType: "seen"
-        //msgType:"receiveMessage"
+        // store.dispatch(updateRecentChat(res))
+        switch (res.msgType) {
+            case 'receiveMessage':
+                store.dispatch(getReceiveMessage(res))
+                break;
+            case 'acknowledge':
+            case 'delivered':
+                store.dispatch(storeDeliveryStatus(res))
+            case 'seen':
+                if (res.fromUserJid) {
+                    store.dispatch(storeSeenStatus(res))
+                    store.dispatch(updateMessageStatus(res))
+                }
+                break;
+            default:
+                break;
+        }
     },
     presenceListener: (res) => {
         console.log('presenceListener', res)
+        store.dispatch(updateUserPresence(res))
     },
     userProfileListener: (res) => {
         console.log('userProfileListener', res)

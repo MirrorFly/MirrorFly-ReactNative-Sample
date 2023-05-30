@@ -182,13 +182,13 @@ const StatusPage = (props) => {
 
 
                 <AlertDialog.Body  >
-                 Do you want to delete the status ?
+                <Text fontSize={"18"}>Do you want to delete the status ? </Text> 
                   <HStack ml="119"mr="6" space={10} py="5" justifyContent={"flex-end"} >
                     <Pressable  onPress={CloseNoStatusHandler} >
-                      <Text color={"blue.500"} >No</Text>
+                      <Text fontSize={"18"} color={"blue.500"} >No</Text>
                     </Pressable>
                     <Pressable  onPress={CloseYesStatusHandler}>
-                      <Text color={"blue.500"} >Yes</Text>
+                      <Text fontSize={"18"} color={"blue.500"} >Yes</Text>
                     </Pressable> 
 
                   </HStack>

@@ -16,7 +16,7 @@ const ChatInput = ({ onSendMessage }) => {
   };
 
   React.useEffect(() => {
-    if (chatInputWidth > 92 && message) {
+    if (chatInputWidth > 90 && message) {
       setTimeout(() => {
         setChatInputWidth(chatInputWidth - 0.5);
       }, 0.1);
@@ -35,7 +35,7 @@ const ChatInput = ({ onSendMessage }) => {
         <HStack position={'relative'} w={`${chatInputWidth}%`} px='3' h='55' alignItems='center' borderWidth={1} borderRadius={40}  borderColor='#959595'>
           <IconButton _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} p='2' px='0.5' icon={<Icon p='0' as={EmojiIcon} name="emoji-happy" />} borderRadius="full" />
           <TextInput
-            keyboardType={onClicked ? onClicked:'default'}
+            keyboardType={onClicked ? onClicked : 'default'}
             value={message}
             style={{ marginStart: 5, flex: 1 }}
             onChangeText={(text) => setMessage(text)}

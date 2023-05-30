@@ -11,14 +11,13 @@ const initialState = {
     
 }
 
-
 export const profileData = createAsyncThunk('profile/InfoData', async () => {
    
         
             let getUserInfo = await SDK.getUserProfile();
             console.log("get profile", getUserInfo);
        
-       
+            return getUserInfo;
    
 })
 
@@ -35,6 +34,7 @@ const profileSlice = createSlice({
             })
             .addCase(profileData.fulfilled, (state, action) => {
                 state.status = 'profile Updated';
+                state.profileInfo = action.payload;
                 
             })
             .addCase(profileData.rejected, (state, action) => {

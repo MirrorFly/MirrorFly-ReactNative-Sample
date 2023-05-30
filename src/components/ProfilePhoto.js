@@ -26,7 +26,7 @@ const ProfilePhoto = (props) => {
         />
         
        <VStack justifyContent={"center"} h="88%"  > 
-        <Image resizeMode="contain" source={{ uri: props.profileInfo.image.path }} style={{ height: 400, width: 400 }} />
+        <Image resizeMode="contain" source={{ uri: props.profileInfo.image.path }} style={{ height: 400, width: 410 }} />
 
         </VStack>
 

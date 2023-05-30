@@ -17,7 +17,8 @@ function ContactScreen() {
     const [totalPages, setTotalPages] = React.useState()
     const [totoalUsers, setTotoalUsers] = React.useState()
     const [searchText, setSearchText] = React.useState('')
-
+    const [isSearching, setIsSearching] = React.useState(false)
+    
     const handleBackBtn = () => {
         setIsFetching(false)
         let x = { screen: RECENTCHATSCREEN }
@@ -60,6 +61,7 @@ function ContactScreen() {
     }
 
     const handleSearch = async (text) => {
+        setIsSearching(true)
         setIsFetching(true)
         setUsersList([]);
         setTimeout(async () => {
@@ -79,7 +81,9 @@ function ContactScreen() {
         }
         setIsFetching(false)
     }
-
+    const handleClear=()=>{
+        setIsSearching(false)
+    }
     return (
         <>
             <ScreenHeader
@@ -87,10 +91,11 @@ function ContactScreen() {
                 onhandleBack={handleBackBtn}
                 menuItems={menuItems}
                 onhandleSearch={handleSearch}
+                onClear={handleClear}
             />
             {!usersList?.length && !isFetching ?
                 <Center h='full'>
-                    <Image style={styles.image} resizeMode="cover" source={require('../assets/no_contacts.png')} />
+                    {!isSearching &&<Image style={styles.image} resizeMode="cover" source={require('../assets/no_contacts.png')} />}
                     <Text style={styles.noMsg}>No Contacts Found</Text>
                 </Center>
                 : <FlatListView

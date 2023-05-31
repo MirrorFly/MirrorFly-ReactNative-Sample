@@ -8,7 +8,7 @@ import { FloatingBtn } from '../common/Button'
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/authSlice';
 import { navigate } from '../redux/navigationSlice';
-import { CONTACTLIST } from '../constant';
+import { CONTACTLIST, PROFILESCREEN } from '../constant';
 import SDK from '../SDK/SDK';
 const logo = require('../assets/mirrorfly-logo.png')
 
@@ -60,7 +60,16 @@ function RecentScreen() {
             formatter: () => {
                 dispatch(logout())
             }
+        },
+        {
+            label: 'Profile',
+            formatter: () => {
+                let x = { screen: PROFILESCREEN }
+                dispatch(navigate(x))
+            }
         }
+
+
     ]
 
     const renderScene = SceneMap({

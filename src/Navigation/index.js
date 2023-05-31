@@ -47,12 +47,14 @@ function Navigation() {
             <Box safeAreaTop bg="#f2f2f2" />
             {{
                 'REGISTERSCREEN': <RegisterScreen />,
+                'PROFILESCREEN':<ProfileScreen/>,
                 'RECENTCHATSCREEN': <RecentScreen />,
                 'COUNTRYSCREEN': <CountryList />,
-                'PROFILESCREEN': <ProfileScreen />,
                 'CHATSCREEN': <ChatScreen />,
                 'CONTACTLIST': <ContactScreen />,
-                'SETTINGSCREEN': <SettingScreen />
+                'SETTINGSCREEN': <SettingScreen />,
+               // 'STATUSSCREEN':<StatusPage/>,
+              // 'EDITSTATUSSCREEN':<EditStatusPage/>
             }[screenNav]}
             <Box safeAreaBottom />
         </NativeBaseProvider>

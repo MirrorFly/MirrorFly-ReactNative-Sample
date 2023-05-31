@@ -7,7 +7,7 @@ import { TextInput } from 'react-native';
 function ScreenHeader(props) {
     const [position, setPosition] = React.useState("auto");
     const [isSearching, setIsSearching] = React.useState(false)
-    const [text, setText] = React.useState('')
+    const [text, setText] = React.useState('');
 
     const handlingBackBtn = () => {
         setText('');

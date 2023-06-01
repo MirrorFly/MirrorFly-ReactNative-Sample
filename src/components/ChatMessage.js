@@ -40,7 +40,7 @@ const ChatMessage = (props) => {
     <Pressable onPress={() => props?.selectedMsgs?.length && props.handleMsgSelect(props.message)} onLongPress={() => props.handleMsgSelect(props.message)}>
       {({ isPressed }) => {
         return <Box bg={isPressed ? 'rgba(0,0,0, 0.1)' : "transparent"}>
-          <Box bg={props.selectedMsgs.includes(props.message) ? 'rgba(0,0,0, 0.1)' : 'transparent'}>
+          <Box bg={props.selectedMsgs.includes(props.message) ? 'rgba(0,0,0, 0.2)' : 'transparent'}>
             <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} my='1' px='3'>
               <View px='2' py='1.5' minWidth='30%' maxWidth='90%' bgColor={isSame ? '#E2E8F7' : '#fff'}
                 borderWidth={isSame ? 0 : 0.25}

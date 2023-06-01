@@ -1,5 +1,5 @@
 import React from 'react'
-import { Center } from 'native-base';
+import { Center, KeyboardAvoidingView } from 'native-base';
 import { BackHandler, Image, StyleSheet } from 'react-native'
 import { CHATSCREEN, RECENTCHATSCREEN, SETTINGSCREEN } from '../constant'
 import { navigate } from '../redux/navigationSlice'
@@ -18,7 +18,7 @@ function ContactScreen() {
     const [totoalUsers, setTotoalUsers] = React.useState()
     const [searchText, setSearchText] = React.useState('')
     const [isSearching, setIsSearching] = React.useState(false)
-    
+
     const handleBackBtn = () => {
         setIsFetching(false)
         let x = { screen: RECENTCHATSCREEN }
@@ -30,6 +30,14 @@ function ContactScreen() {
         'hardwareBackPress',
         handleBackBtn
     );
+
+    const fetchContactList = () => {
+        setTimeout(async () => {
+            let updateUsersList = await SDK.getUsersList(searchText, "", 100)
+            setUsersList(updateUsersList.users)
+            setIsFetching(false)
+        }, 700)
+    }
 
     React.useEffect(() => {
         (async () => {
@@ -64,28 +72,29 @@ function ContactScreen() {
         setIsSearching(true)
         setIsFetching(true)
         setUsersList([]);
-        setTimeout(async () => {
-            let updateUsersList = await SDK.getUsersList(text,"",100)
-            setUsersList(updateUsersList.users)
-            setIsFetching(false)
-        }, 700)
+        fetchContactList()
         setSearchText(text)
     }
 
     const handlePagination = async (e) => {
         setIsFetching(true)
-        if(!searchText){
+        if (!searchText) {
             let updateUsersList = await SDK.getUsersList(searchText, page + 1 + 2, 30)
             setPage(page + 1)
             setUsersList([...usersList, ...updateUsersList.users])
         }
         setIsFetching(false)
     }
-    const handleClear=()=>{
+    const handleClear = async() => {
         setIsSearching(false)
+        await fetchContactList()
     }
     return (
-        <>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} // Adjust the value as per your UI design
+        >
             <ScreenHeader
                 title='Contacts'
                 onhandleBack={handleBackBtn}
@@ -94,9 +103,9 @@ function ContactScreen() {
                 onClear={handleClear}
             />
             {!usersList?.length && !isFetching ?
-                <Center h='full'>
-                    {!isSearching &&<Image style={styles.image} resizeMode="cover" source={require('../assets/no_contacts.png')} />}
-                    <Text style={styles.noMsg}>No Contacts Found</Text>
+                <Center h='90%'>
+                    {!isSearching && <Image style={styles.image} resizeMode="cover" source={require('../assets/no_contacts.png')} />}
+                    <Text style={styles.noMsg}>No contacts found</Text>
                 </Center>
                 : <FlatListView
                     onhandlePagination={handlePagination}
@@ -105,7 +114,7 @@ function ContactScreen() {
                     data={usersList}
                 />
             }
-        </>
+        </KeyboardAvoidingView>
     )
 }
 
@@ -123,8 +132,8 @@ const styles = StyleSheet.create({
     },
     noMsg: {
         color: '#181818',
-        fontSize: 16,
-        fontWeight: '800',
+        fontSize: 13,
+        fontWeight: '600',
         marginBottom: 8
     }
 });

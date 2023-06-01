@@ -7,7 +7,7 @@ import ChatInput from '../components/ChatInput';
 import { HStack, Slide, Spinner } from 'native-base';
 import { RECENTCHATSCREEN } from '../constant';
 import { navigate } from '../redux/navigationSlice';
-import { getMessages, sendMessage, sendSeenStatus } from '../redux/chatSlice';
+import { getMessages, sendMessage, sendSeenStatus, updateMessageList } from '../redux/chatSlice';
 import SDK from '../SDK/SDK';
 import { getLastseen } from '../common/TimeStamp';
 
@@ -134,7 +134,7 @@ const ChatConversation = (props) => {
     React.useEffect(() => {
         if (messageList.length) {
             let unReadMsg = messageList.filter((item) => item.msgStatus == 1 && item.fromUserJid !== currentUserJID)
-            if(unReadMsg.length){
+            if (unReadMsg.length) {
                 unReadMsg.forEach(item => {
                     let data = { toJid: item.fromUserJid, msgId: item.msgId }
                     dispatch(sendSeenStatus(data))
@@ -143,13 +143,20 @@ const ChatConversation = (props) => {
         }
     }, [messageList])
 
+    React.useEffect(() => {
+        if (props.sendSelected) {
+            let values = [props.selectedImages, fromUserJId, currentUserJID]
+            dispatch(updateMessageList(values))
+        }
+    }, [props.sendSelected])
+
     return (
         <KeyboardAvoidingView
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
         >
-            <ChatHeader selectedMsgs={selectedMsgs} menuItems={ menuItems} handleBackBtn={handleBackBtn} seenStatus={seenStatus} fromUser={nickName} />
+            <ChatHeader selectedMsgs={selectedMsgs} menuItems={menuItems} handleBackBtn={handleBackBtn} seenStatus={seenStatus} fromUser={nickName} />
             <ImageBackground
                 source={require('../assets/chatBackgroud.png')}
                 style={{
@@ -175,7 +182,7 @@ const ChatConversation = (props) => {
                     }}
                 />
             </ImageBackground>
-            <ChatInput onSendMessage={handleMessageSend} />
+            <ChatInput attachmentMenuIcons={props.attachmentMenuIcons} onSendMessage={handleMessageSend} />
         </KeyboardAvoidingView>
     );
 };

@@ -11,28 +11,18 @@ import { navigate } from '../redux/navigationSlice';
 import ScreenHeader from './ScreenHeader';
 
 const ProfilePage = (props) => {
-
   const selectProfileInfo = useSelector((state) => state.profile.profileInfoList);
-  const userData = useSelector((state)=>state.auth.userData);
-  console.log("userData", userData);
-  console.log("profileInfo", selectProfileInfo);
+  const userData = useSelector((state) => state.auth.userData);
   const prevPageInfo = useSelector((state) => state.navigation.prevScreen);
-  console.log("prevPageInfo", prevPageInfo);
   const toast = useToast();
   const [placement, setPlacement] = React.useState(undefined);
   const [open, setOpen] = React.useState(false);
   const [remove, setRemove] = React.useState(false);
-   const [mobileNumber, setMobileNumber] = React.useState("");
+  const [mobileNumber, setMobileNumber] = React.useState("");
   const dispatch = useDispatch();
   const [loading, setloading] = React.useState(false);
-  const [isSaved, setISaved] = React.useState(false);
   const [isToastShowing, setIsToastShowing] = React.useState(false)
   const [selectedImage, setSelectedImage] = React.useState(props.profileInfo.image);
-  
-  // const [userName, setUserName] = React.useState("");
-  // const [email, setEmail] = React.useState("");
-  // const [status, setStatus] = React.useState("");
-
   const handleBackBtn = () => {
     let x = { screen: RECENTCHATSCREEN }
     dispatch(navigate(x))
@@ -40,17 +30,13 @@ const ProfilePage = (props) => {
   }
 
   const OnStatusHandler = () => {
-
     props.onChangeEvent();
     props.setNav("statusPage");
-
   }
 
   const handleImage = () => {
     if (selectedImage) {
-
       props.setNav("ProfileImage");
-
     }
 
     else {
@@ -61,7 +47,6 @@ const ProfilePage = (props) => {
 
   const handleProfileUpdate = async () => {
     setIsToastShowing(true)
-    setISaved(true);
     if (!props?.profileInfo?.nickName && !isToastShowing) {
       return toast.show({
         duration: 2500,
@@ -144,9 +129,7 @@ const ProfilePage = (props) => {
   }, []);
 
   React.useEffect(() => {
-
     requestStoragePermission();
-
   }, []);
 
 
@@ -205,8 +188,6 @@ const ProfilePage = (props) => {
 
     }).then((image) => {
       setSelectedImage(image);
-      console.log(image);
-
       props.setProfileInfo({
         ...props.profileInfo,
         image: image
@@ -233,7 +214,6 @@ const ProfilePage = (props) => {
         image: image
       })
       setOpen(false);
-      console.log(image);
     }).catch((error) => {
       console.log(' Gallery ImagePicker Error: ', error);
     });
@@ -243,7 +223,6 @@ const ProfilePage = (props) => {
     setRemove(!remove);
   }
 
-  
   const onClose = () => {
     setRemove(false)
     setOpen(false);
@@ -255,39 +234,33 @@ const ProfilePage = (props) => {
     props.setProfileInfo({
       ...props.profileInfo,
       [name]: value,
-     
-    }
-    )
+    })
   }
 
   return (
-
     <>
       <Stack h={53} bg="#F2F2F2" w="full" justifyContent={"center"}>
-        {prevPageInfo == REGISTERSCREEN ? 
-      <Text textAlign={"center"} fontSize='xl'  fontWeight={'600'} >Profile</Text>
+        {prevPageInfo == REGISTERSCREEN ?
+          <Text textAlign={"center"} fontSize='xl' fontWeight={'600'} >Profile</Text>
           : <ScreenHeader
-          title='Profile'
-          onhandleBack={handleBackBtn}
-        />}
+            title='Profile'
+            onhandleBack={handleBackBtn}
+          />}
       </Stack>
       <VStack h='full' justifyContent={'center'} >
         <ScrollView showsVerticalScrollIndicator={false}>
           <VStack mt="16" flex="1" alignItems={"center"}>
             <TouchableOpacity activeOpacity={1} onPress={handleImage} style={{ position: "relative" }}>
               {selectedImage && <Image resizeMode="contain" source={{ uri: props.profileInfo.image.path }} style={{ height: 157, width: 157, borderRadius: 100 }} />}
-              {!selectedImage && props?.profileInfo?.nickName && <Avathar width={157} height={157} data={props.profileInfo.nickName} backgroundColor={"blue"} />}
+              {!selectedImage && props?.profileInfo?.nickName && <Avathar fontSize={60} width={157} height={157} data={props.profileInfo.nickName} backgroundColor={"blue"} />}
               {!selectedImage && !props?.profileInfo?.nickName && <Image resizeMode="contain" source={require('../assets/profile.png')} style={{ height: 157, width: 157, }} />}
-
               <TouchableOpacity activeOpacity={1} onPress={() => setOpen(true)} style={{ position: "absolute", right: 0, bottom: 0, }}  >
                 <Image resizeMode="contain" source={require('../assets/camera.png')} style={styles.CameraImage} />
               </TouchableOpacity>
             </TouchableOpacity>
-            
             <TextInput
-
               textAlign="center"
-              style={{ fontSize: 18, fontWeight: "700", marginTop: 5  }}
+              style={{ fontSize: 18, fontWeight: "700", marginTop: 5 }}
               defaultValue={props.profileInfo.nickName}
               placeholder='Username'
               onChangeText={(text) => { handleChangeText('nickName', text) }}
@@ -297,27 +270,19 @@ const ProfilePage = (props) => {
               numberOfLines={1}
             />
           </VStack>
-
-          
-          
           <Stack mt="7"
             px="3"
             borderBottomColor="#F2F2F2"
             borderBottomWidth="1">
-           
-
-            <Text fontSize="14" color="black" fontWeight="500" >
-              Email
-            </Text>
+            <Text fontSize="14" color="black" fontWeight="500">Email</Text>
             <HStack
               alignItems="center" >
               <MailIcon />
-
               <Input variant="unstyled"
                 color="#959595"
                 flex="1"
                 fontSize="13"
-                //editable={(prevPageInfo == REGISTERSCREEN)} 
+                editable={(prevPageInfo == REGISTERSCREEN)}
                 defaultValue={props.profileInfo.email}
                 onChangeText={(text) => handleChangeText('email', text)}
                 placeholder='Enter Email Id'
@@ -334,13 +299,9 @@ const ProfilePage = (props) => {
             <Text fontSize="14" color="black" fontWeight="500">
               Mobile Number
             </Text>
-            <HStack
-              flexDirection="row" alignItems="center" mt="1"mb="3" >
+            <HStack flexDirection="row" alignItems="center" mt="1" mb="3" >
               <CallIcon />
-              
-              <Text px={"3"} mt="2" mr={"6"} numberOfLines={1} color="#959595" fontSize="13" fontWeight="500" >
-              {userData.username}
-                </Text>
+              <Text px={"3"} mt="2" mr={"6"} numberOfLines={1} color="#959595" fontSize="13" fontWeight="500">+{userData.username}</Text>
             </HStack>
           </Stack>
           <Stack mt="3"
@@ -354,26 +315,29 @@ const ProfilePage = (props) => {
               onPress={OnStatusHandler} >
               <HStack
                 flexDirection="row" mt="3" mb="3" flex={"1"} alignItems="center" >
-
                 <StatusIcon />
-
                 <Text px={"3"} mr={"6"} numberOfLines={1} color="#959595" fontSize="13" fontWeight="500" >
-                  {props.profileInfo.status || "Avaliable" 
-                       
-                  }
+                  {props.profileInfo.status || "Avaliable"}
                 </Text>
               </HStack>
             </Pressable>
           </Stack>
           <Stack mt="50" alignItems="center">
-
-            <TouchableOpacity style={[styles.button, { width: props.onChangeEvent()  ? 160 : 100 }]} onPress={handleProfileUpdate}  >
-            { props.onChangeEvent() ? <Text numberOfLines={1} style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Update & Continue</Text>  :
-            
-           <Text style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Save</Text>  }
-          
-            </TouchableOpacity>
-
+            {prevPageInfo == REGISTERSCREEN ?
+              <TouchableOpacity style={[styles.button, { width: props.onChangeEvent() ? 160 : 100, backgroundColor: '#3276E2' }]} onPress={handleProfileUpdate}>
+                {prevPageInfo == REGISTERSCREEN &&
+                  <>
+                    {props.onChangeEvent()
+                      ? <Text numberOfLines={1} style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Update & Continue</Text>
+                      : <Text style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Save</Text>
+                    }
+                  </>
+                }
+              </TouchableOpacity>
+              : <TouchableOpacity disabled={!props.onChangeEvent()} style={[styles.button, { width: 100, backgroundColor: props.onChangeEvent() ? '#3276E2' : "#d3d3d3", }]} onPress={handleProfileUpdate}>
+                   <Text style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Save</Text>
+              </TouchableOpacity>
+            }
           </Stack>
           <Modal isOpen={open} onClose={() => setOpen(false)} safeAreaTop={true} >
             <Modal.Content width="1100" style={styles.bottom} >
@@ -397,12 +361,9 @@ const ProfilePage = (props) => {
               </Center>
             </Modal.Content>
           </Modal>
-
           <Center maxH={'40'} width={"50"} >
             <AlertDialog isOpen={remove} onClose={onClose}>
               <AlertDialog.Content>
-
-
                 <AlertDialog.Body >
                   Are you sure you want to remove the photo?
                   <HStack ml="119" space={5}>
@@ -412,33 +373,21 @@ const ProfilePage = (props) => {
                     {selectedImage && <TouchableOpacity color={"#3276E2"} onPress={onClose}>
                       <Text color={"blue.800"} >Remove</Text>
                     </TouchableOpacity>}
-
                   </HStack>
-
-
                 </AlertDialog.Body>
-
-
               </AlertDialog.Content>
             </AlertDialog>
           </Center>
-
-
           <Modal isOpen={loading} onClose={() => setloading(false)} style={styles.center} safeAreaTop={true} >
             <Modal.Content width="45" height="45" >
               <Center w="100%" h="full">
-
                 <Spinner size="lg" color={'#3276E2'} />
-
               </Center>
             </Modal.Content>
           </Modal>
         </ScrollView>
-
       </VStack>
-
     </>
-
   )
 }
 
@@ -492,10 +441,8 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   button: {
-    backgroundColor: "#3276E2",
     borderRadius: 22,
     padding: 10
-
   },
 
   top: {

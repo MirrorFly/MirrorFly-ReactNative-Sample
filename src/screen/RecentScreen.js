@@ -56,20 +56,18 @@ function RecentScreen() {
 
     const menuItems = [
         {
-            label: 'Logout',
-            formatter: () => {
-                dispatch(logout())
-            }
-        },
-        {
             label: 'Profile',
             formatter: () => {
                 let x = { screen: PROFILESCREEN }
                 dispatch(navigate(x))
             }
-        }
-
-
+        },
+        {
+            label: 'Logout',
+            formatter: () => {
+                dispatch(logout())
+            }
+        },
     ]
 
     const renderScene = SceneMap({

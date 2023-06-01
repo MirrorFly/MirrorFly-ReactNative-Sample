@@ -20,6 +20,7 @@ export const sendSeenStatus = createAsyncThunk('chat/sendSeenStatus', async (res
 export const getRecentChat = createAsyncThunk('chat/getRecentChat', async () => {
     let recentChatsRes = await SDK.getRecentChats();
     const recentChatsFilter = recentChatsRes?.data.filter(item => item.chatType == 'chat')
+    console.log(recentChatsFilter);
     return { recentChatsFilter }
 })
 

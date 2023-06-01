@@ -1,39 +1,37 @@
-import { Alert, StyleSheet, ScrollView, FlatList } from 'react-native'
+import { FlatList } from 'react-native'
 import React from 'react'
 import ScreenHeader from '../components/ScreenHeader'
-import { View, Text, HStack, Pressable, useToast, Modal, Center, Spinner, Box, AlertDialog, } from 'native-base';
+import { View, Text, HStack, Pressable, useToast, Modal, Center, Spinner, Box, AlertDialog, Stack, } from 'native-base';
 import { EditIcon, TickMarkIcon } from '../common/Icons';
 
 const StatusPage = (props) => {
-
   const [clicked, setclicked] = React.useState({ value: props.profileInfo?.status });
   const [loading, setLoading] = React.useState(false);
   const [isModified, setModified] = React.useState(false);
-  const [delteItem, setDeleteItem] =React.useState(false);
+  const [delteItem, setDeleteItem] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState("");
-  const [deleteStatus, setDeleteStatus] =React.useState(false);
+  const [deleteStatus, setDeleteStatus] = React.useState(false);
   const toast = useToast();
   const statusList = props.statusList;
 
-  const HandleAlertStatus =()=>{
+  const HandleAlertStatus = () => {
     setDeleteStatus(true);
-    //setDeleteItem(false);
-   }
 
-  const CloseNoStatusHandler =()=>{
+  }
+
+  const CloseNoStatusHandler = () => {
     setDeleteStatus(false);
     setDeleteItem(false);
-     
-   }
 
-  const CloseYesStatusHandler =()=>
-  {
-    
+  }
+
+  const CloseYesStatusHandler = () => {
+
     setDeleteStatus(false);
     props.removeItem(
       selectedItem?.value
-      );
-      setDeleteItem(false);
+    );
+    setDeleteItem(false);
 
   }
 
@@ -42,42 +40,25 @@ const StatusPage = (props) => {
   }
 
   const EditPagehHandler = () => {
+    //props.onChangeEvent();
     props.setNav("EditStatusPage");
-
-
+   
   }
 
   const handleDeleteItem = (val) => {
-    
     setDeleteItem(true);
     setSelectedItem(val);
-  
   };
 
   const handleRemove = () => {
- 
-
     setDeleteStatus(true);
-    
-   
-    
   };
 
-
-
-
   const handlePress = (item) => {
-    
-
     setModified(true)
-
-    
-
     props.setProfileInfo({
       ...props.profileInfo,
       status: item.value,
-      
-
     })
 
     if (item.value && !isModified) {
@@ -102,11 +83,12 @@ const StatusPage = (props) => {
   }, [props.profileInfo])
   return (
     <>
-      <ScreenHeader
-        title='Status'
-        onhandleBack={handleBackBtn}
-      />
-
+      <Stack >
+        <ScreenHeader
+          title='Status'
+          onhandleBack={handleBackBtn}
+        />
+      </Stack>
       <>
 
         <Text mx='3' mt="4" color={"black"} fontSize="18" fontWeight={"500"} >
@@ -114,8 +96,8 @@ const StatusPage = (props) => {
         </Text>
         <Pressable mx='3' onPress={EditPagehHandler}>
           <HStack mt="5" justifyContent={"space-between"}>
-            <Text numberOfLines={1} flex="1" marginRight="4"
-              color="#767676" fontSize="14" fontWeight={"400"}>{ props.profileInfo?.status  || 'Urgent calls only'}</Text>
+       {props.onChangeEvent() ?  <Text numberOfLines={1} flex="1" marginRight="4"
+              color="#767676" fontSize="14" fontWeight={"400"}>{props.profileInfo?.status || 'Avaliable'}</Text> :null}
             <EditIcon />
           </HStack>
         </Pressable>
@@ -128,20 +110,15 @@ const StatusPage = (props) => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {
             return <Pressable
-
-            // disabled={clicked == item.value}
-
-             onLongPress={ () => { !(clicked == item.value) && handleDeleteItem(item)  } } 
-          
+              onLongPress={() => { !(clicked == item.value) && handleDeleteItem(item) }}
               onPress={() => { handlePress(item) }} >
-             
               <HStack mt="5" flex={"0.4"} borderBottomColor={statusList.length == index + 1 ? "#BFBFBF" : "#f2f2f2"} pb="4" borderBottomWidth='1' justifyContent={"space-between"}   >
 
                 <Text numberOfLines={1} color="#767676" flex="1" marginRight="4" fontSize="14" fontWeight={"400"}>{item.value}
 
                 </Text>
-                
-                {clicked == item.value ?  <TickMarkIcon  /> : null}
+
+                {clicked == item.value ? <TickMarkIcon /> : null}
 
               </HStack>
 
@@ -163,48 +140,32 @@ const StatusPage = (props) => {
 
         <Modal isOpen={delteItem} onClose={() => setDeleteItem(false)} >
           <Modal.Content >
-            
-               <Pressable py="15" 
-     
-       onPress={handleRemove}>
-               <Text px="3" >Delete </Text>
-               </Pressable>
-          
+            <Pressable py="15"
 
-           
+              onPress={handleRemove}>
+              <Text px="3" >Delete </Text>
+            </Pressable>
           </Modal.Content>
         </Modal>
-
-
         <Center px="120" py="50" >
-            <AlertDialog isOpen={deleteStatus} onClose={HandleAlertStatus}>
-              <AlertDialog.Content>
-
-
-                <AlertDialog.Body  >
-                <Text fontSize={"18"}>Do you want to delete the status ? </Text> 
-                  <HStack ml="119"mr="6" space={10} py="5" justifyContent={"flex-end"} >
-                    <Pressable  onPress={CloseNoStatusHandler} >
-                      <Text fontSize={"18"} color={"blue.500"} >No</Text>
-                    </Pressable>
-                    <Pressable  onPress={CloseYesStatusHandler}>
-                      <Text fontSize={"18"} color={"blue.500"} >Yes</Text>
-                    </Pressable> 
-
-                  </HStack>
-
-
-                </AlertDialog.Body>
-
-
-              </AlertDialog.Content>
-            </AlertDialog>
-          </Center>
+          <AlertDialog isOpen={deleteStatus} onClose={HandleAlertStatus}>
+            <AlertDialog.Content>
+              <AlertDialog.Body  >
+                <Text fontSize={"18"}>Do you want to delete the status ? </Text>
+                <HStack ml="119" mr="6" space={10} py="5" justifyContent={"flex-end"} >
+                  <Pressable onPress={CloseNoStatusHandler} >
+                    <Text fontSize={"18"} color={"blue.500"} >No</Text>
+                  </Pressable>
+                  <Pressable onPress={CloseYesStatusHandler}>
+                    <Text fontSize={"18"} color={"blue.500"} >Yes</Text>
+                  </Pressable>
+                </HStack>
+              </AlertDialog.Body>
+            </AlertDialog.Content>
+          </AlertDialog>
+        </Center>
       </View>
     </>
   )
 }
-
 export default StatusPage
-
-const styles = StyleSheet.create({})

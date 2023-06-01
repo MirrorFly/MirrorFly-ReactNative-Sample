@@ -10,6 +10,7 @@ const initialState = {
     status: 'idle',
     isConnected: NOTCONNECTED,
     error: null,
+    
 }
 
 export const logout = createAsyncThunk('register/logout', async (val, { dispatch }) => {
@@ -40,7 +41,7 @@ export const registerData = createAsyncThunk('register/userData', async (number,
         }
         return register.data
     } catch (error) {
-        console.log(error, 'registerData error')
+        console.log(error, 'registerData error');
     }
 })
 
@@ -87,6 +88,7 @@ const authSlice = createSlice({
             .addCase(connectXMPP.rejected, (state, action) => {
                 state.isConnected = 'failed';
             })
+
             .addCase(logout.pending, (state) => {
                 state.isConnected = 'loading';
             })

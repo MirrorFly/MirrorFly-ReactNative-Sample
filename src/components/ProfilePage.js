@@ -1,36 +1,37 @@
 import { BackHandler, StyleSheet, TouchableOpacity, View, Image, TextInput, ScrollView, PermissionsAndroid, ToastAndroid } from 'react-native'
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { CallIcon, MailIcon, ProfileIcon, StatusIcon } from '../common/Icons';
-const logo = require('../assets/profile.png');
-import { Modal, Center, Box, Text, VStack, useToast, Spinner, Stack, Icon, Input, HStack, Avatar, AlertDialog, Button, Pressable } from "native-base";
+import { CallIcon, MailIcon, StatusIcon } from '../common/Icons';
+import { Modal, Center, Box, Text, VStack, useToast, Spinner, Stack, Input, HStack, AlertDialog, Pressable } from "native-base";
 import { SDK } from '../SDK';
 import ImagePicker from 'react-native-image-crop-picker';
 import Avathar from "../common/Avathar";
-import {  RECENTCHATSCREEN } from '../constant';
+import { RECENTCHATSCREEN, REGISTERSCREEN } from '../constant';
 import { navigate } from '../redux/navigationSlice';
 import ScreenHeader from './ScreenHeader';
-// import { convertToFileType } from '../common/utils';
 
 const ProfilePage = (props) => {
 
-  const phoneNumber = useSelector(state => state.auth.userData);
-
-  const userJid = useSelector(state => state.auth.currentUserJID);
+  const selectProfileInfo = useSelector((state) => state.profile.profileInfoList);
+  const userData = useSelector((state)=>state.auth.userData);
+  console.log("userData", userData);
+  console.log("profileInfo", selectProfileInfo);
+  const prevPageInfo = useSelector((state) => state.navigation.prevScreen);
+  console.log("prevPageInfo", prevPageInfo);
   const toast = useToast();
   const [placement, setPlacement] = React.useState(undefined);
   const [open, setOpen] = React.useState(false);
   const [remove, setRemove] = React.useState(false);
-  const [mobileNumber, setMobileNumber] = React.useState("");
+   const [mobileNumber, setMobileNumber] = React.useState("");
   const dispatch = useDispatch();
   const [loading, setloading] = React.useState(false);
+  const [isSaved, setISaved] = React.useState(false);
+  const [isToastShowing, setIsToastShowing] = React.useState(false)
   const [selectedImage, setSelectedImage] = React.useState(props.profileInfo.image);
- // const [baseImage, setBaseImage] = React.useState(null);
-
-
-  const [userName, setUserName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [status, setStatus] = React.useState("");
+  
+  // const [userName, setUserName] = React.useState("");
+  // const [email, setEmail] = React.useState("");
+  // const [status, setStatus] = React.useState("");
 
   const handleBackBtn = () => {
     let x = { screen: RECENTCHATSCREEN }
@@ -39,10 +40,12 @@ const ProfilePage = (props) => {
   }
 
   const OnStatusHandler = () => {
+
+    props.onChangeEvent();
     props.setNav("statusPage");
 
   }
-  console.log(props.profileInfo);
+
   const handleImage = () => {
     if (selectedImage) {
 
@@ -56,62 +59,29 @@ const ProfilePage = (props) => {
     }
   };
 
-  React.useEffect(() => {
-    (async () => {
-
-      let userId = userJid.split("@")[0]
-      let getUserInfo = await SDK.getUserProfile(userId);
-      console.log("get profile", getUserInfo);
-      if (getUserInfo) {
-        // setloading(true);
-        setUserName(props?.profileInfo?.nickName);
-        setStatus(props?.profileInfo?.status);
-        setMobileNumber(props?.profileInfo?.mobileNumber);
-        setEmail(props?.profileInfo?.email);
-        // console.log(setReceivedData);
-      }
-
-      //  setReceivedData(getUserId?.data?.email)
-
-      // setMail(getUserId?.data?.email)
-      // setStatus(getUserId?.data?.status)
-      // setSelectedImage(getUserId?.data?.image)
-      // setMobileNumber(getUserId?.data?.phone);
-
-    })()
-  }, [])
-
-
   const handleProfileUpdate = async () => {
-
-    // console.log(gettingData);
-    // const { userName, phone, email, status} = gettingData;
-    // console.log(userName);
-    // console.log(phone);
-    // console.log(email);
-    // console.log(status);
-
-    if (!props?.profileInfo?.nickName) {
+    setIsToastShowing(true)
+    setISaved(true);
+    if (!props?.profileInfo?.nickName && !isToastShowing) {
       return toast.show({
-        duration: 700,
+        duration: 2500,
+        onCloseComplete: () => {
+          setIsToastShowing(false)
+        },
         render: () => {
-
           return <Box bg="black" px="2" py="1" rounded="sm" >
-            <Text style={{ color: "#fff", padding: 5 }}>UserName cannot be empty</Text>
+            <Text style={{ color: "#fff", padding: 5 }}>please enter your username</Text>
           </Box>
         }
       })
     }
 
-    if (props?.profileInfo?.nickName.length < '4') {
+    if (selectProfileInfo.nickName.length < '4' && !isToastShowing) {
       return toast.show({
-        duration: 700,
+        duration: 2500,
         keyboardAvoiding: true,
-        onClose: () => {
-          console.log('====================================');
-          console.log("on close method ....");
-          console.log('====================================');
-
+        onCloseComplete: () => {
+          setIsToastShowing(false)
         },
         render: () => {
 
@@ -122,21 +92,26 @@ const ProfilePage = (props) => {
       })
     }
 
-    if (!props?.profileInfo?.email) {
+    if (!selectProfileInfo.email && !isToastShowing) {
       return toast.show({
-        duration: 700,
+        duration: 2500,
+        onCloseComplete: () => {
+          setIsToastShowing(false)
+        },
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
-            <Text style={{ color: "#fff", padding: 5 }}>Please Enter the Mail</Text>
-
+            <Text style={{ color: "#fff", padding: 5 }}>Email should not be empty</Text>
           </Box>
         }
       })
     }
-    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(props?.profileInfo?.email)) {
+    if (/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(selectProfileInfo.email && !isToastShowing)) {
 
       return toast.show({
-        duration: 700,
+        duration: 2500,
+        onCloseComplete: () => {
+          setIsToastShowing(false)
+        },
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
             <Text style={{ color: "#fff", padding: 5 }}>Please enter a Valid E-Mail</Text>
@@ -146,21 +121,15 @@ const ProfilePage = (props) => {
       })
     }
     setloading(true);
-    //inputRef.current.focus();
-    //  props.setNav(StatusPage);
-    // setIsModified(false);
-
-
     let UserInfo = await SDK.setUserProfile(props?.profileInfo?.nickName, '', props.profileInfo.status, mobileNumber, props.profileInfo.email);
-
-    // console.log(UserInfo);
-
-    let x = { screen: RECENTCHATSCREEN }
+    let x = { screen: RECENTCHATSCREEN, }
     dispatch(navigate(x))
-    if (UserInfo) {
-
+    if (UserInfo && !isToastShowing) {
       return toast.show({
-        duration: 700,
+        duration: 2500,
+        onCloseComplete: () => {
+          setIsToastShowing(false)
+        },
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
             <Text style={{ color: "#fff", padding: 5 }}>Profile Updated successfully</Text>
@@ -172,8 +141,6 @@ const ProfilePage = (props) => {
 
   React.useEffect(() => {
     requestCameraPermission();
-
-
   }, []);
 
   React.useEffect(() => {
@@ -205,7 +172,6 @@ const ProfilePage = (props) => {
     }
   };
 
-
   const requestCameraPermission = async () => {
     try {
       const granted = await PermissionsAndroid.request(
@@ -228,7 +194,6 @@ const ProfilePage = (props) => {
     }
   };
 
-
   const handleCameraPicker = () => {
     ImagePicker.openCamera({
       mediaType: 'photo',
@@ -236,7 +201,7 @@ const ProfilePage = (props) => {
       height: 150,
       cropping: true,
       cropperCircleOverlay: true,
-    
+
 
     }).then((image) => {
       setSelectedImage(image);
@@ -267,79 +232,45 @@ const ProfilePage = (props) => {
         ...props.profileInfo,
         image: image
       })
-      // console.log(image);
-      // let file = await convertToFileType(image.path);
-      // console.log(file)
-      // setBaseImage(file);
       setOpen(false);
       console.log(image);
-
     }).catch((error) => {
       console.log(' Gallery ImagePicker Error: ', error);
     });
-    // Alert("Galery Working...");
   };
 
   const handleRemove = () => {
-
-    //setSelectedImage ('');
     setRemove(!remove);
   }
 
-
+  
   const onClose = () => {
     setRemove(false)
+    setOpen(false);
     setSelectedImage('');
   }
-  // const handleUsername = (text) => {
-  //   // setName(text);
-  //   setGettingData({ ...gettingData, userName: text })
-  //   setIsModified(true);
-  // };
-
-  // const handleEmail = (text) => {
-  //   // setMail(text);
-  //   setGettingData({ ...gettingData, email: text })
-  //   setIsModified(true);
-  // };
-
-  // const handleStatus = (text) => {
-  //   // setStatus(text);
-  //   setGettingData({ ...gettingData, status: text })
-  //   setIsModified(true);
-  // };
 
   const handleChangeText = (name, value) => {
+    props.onChangeEvent()
     props.setProfileInfo({
       ...props.profileInfo,
-      [name]: value
+      [name]: value,
+     
     }
     )
   }
 
-
-  React.useEffect(() => {
-    //console.log(gettingData)
-    handleChangeText('phone', phoneNumber.username)
-
-  }, [phoneNumber])
-
   return (
-    // <View style={{ flex: 1 }}>
+
     <>
       <Stack h={53} bg="#F2F2F2" w="full" justifyContent={"center"}>
-        {/* <Text color="black" fontSize="21" fontWeight="600" textAlign="center" >
-          Profile
-        </Text> */}
-        <ScreenHeader
+        {prevPageInfo == REGISTERSCREEN ? 
+      <Text textAlign={"center"} fontSize='xl'  fontWeight={'600'} >Profile</Text>
+          : <ScreenHeader
           title='Profile'
           onhandleBack={handleBackBtn}
-
-
-        />
+        />}
       </Stack>
-
-      {/* <View style={{ flex: 1 }}> */}
       <VStack h='full' justifyContent={'center'} >
         <ScrollView showsVerticalScrollIndicator={false}>
           <VStack mt="16" flex="1" alignItems={"center"}>
@@ -352,36 +283,42 @@ const ProfilePage = (props) => {
                 <Image resizeMode="contain" source={require('../assets/camera.png')} style={styles.CameraImage} />
               </TouchableOpacity>
             </TouchableOpacity>
-            {/* <Stack mt="3"  flex="1"  alignItems="center" justifyContent="center"> */}
+            
             <TextInput
 
               textAlign="center"
-              style={{ fontSize: 18, fontWeight: "700", marginTop: 5, width: 95 }}
-              // value={userName}
+              style={{ fontSize: 18, fontWeight: "700", marginTop: 5  }}
+              defaultValue={props.profileInfo.nickName}
               placeholder='Username'
               onChangeText={(text) => { handleChangeText('nickName', text) }}
-              maxLength={15}
+              maxLength={20}
               placeholderTextColor={"#959595"}
               keyboardType="default"
               numberOfLines={1}
             />
-            {/* </Stack> */}
           </VStack>
-          <Stack mt="34"
+
+          
+          
+          <Stack mt="7"
             px="3"
             borderBottomColor="#F2F2F2"
             borderBottomWidth="1">
+           
+
             <Text fontSize="14" color="black" fontWeight="500" >
               Email
             </Text>
             <HStack
               alignItems="center" >
               <MailIcon />
+
               <Input variant="unstyled"
                 color="#959595"
                 flex="1"
                 fontSize="13"
-                //value={email}
+                //editable={(prevPageInfo == REGISTERSCREEN)} 
+                defaultValue={props.profileInfo.email}
                 onChangeText={(text) => handleChangeText('email', text)}
                 placeholder='Enter Email Id'
                 placeholderTextColor={"#959595"}
@@ -398,24 +335,12 @@ const ProfilePage = (props) => {
               Mobile Number
             </Text>
             <HStack
-              flexDirection="row" alignItems="center" >
+              flexDirection="row" alignItems="center" mt="1"mb="3" >
               <CallIcon />
-              <Input variant="unstyled"
-                // ml="1"
-                px="4"
-                color="#959595"
-                flex="1"
-                fontSize="13"
-
-                onChangeText={setMobileNumber}
-                HStack placeholder='Enter Your Mobile Number'
-                maxLength={15}
-                //value={mobileNumber}
-                editable={false}
-                placeholderTextColor={"#959595"}
-                keyboardType="numeric"
-                numberOfLines={1}
-              />
+              
+              <Text px={"3"} mt="2" mr={"6"} numberOfLines={1} color="#959595" fontSize="13" fontWeight="500" >
+              {userData.username}
+                </Text>
             </HStack>
           </Stack>
           <Stack mt="3"
@@ -433,20 +358,22 @@ const ProfilePage = (props) => {
                 <StatusIcon />
 
                 <Text px={"3"} mr={"6"} numberOfLines={1} color="#959595" fontSize="13" fontWeight="500" >
-                  {props.profileInfo.status || "Avaliable"
-
+                  {props.profileInfo.status || "Avaliable" 
+                       
                   }
                 </Text>
               </HStack>
             </Pressable>
           </Stack>
-
           <Stack mt="50" alignItems="center">
-            <TouchableOpacity style={[styles.button, { width: props?.profileInfo?.nickName ? 160 : 100 }]} onPress={handleProfileUpdate}>
-              {/* {props.profileInfo &&  <Text numberOfLines={1} style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Update & Continue</Text>} */}
 
-              <Text style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Save</Text>
+            <TouchableOpacity style={[styles.button, { width: props.onChangeEvent()  ? 160 : 100 }]} onPress={handleProfileUpdate}  >
+            { props.onChangeEvent() ? <Text numberOfLines={1} style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Update & Continue</Text>  :
+            
+           <Text style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Save</Text>  }
+          
             </TouchableOpacity>
+
           </Stack>
           <Modal isOpen={open} onClose={() => setOpen(false)} safeAreaTop={true} >
             <Modal.Content width="1100" style={styles.bottom} >
@@ -509,11 +436,9 @@ const ProfilePage = (props) => {
         </ScrollView>
 
       </VStack>
-      {/* </View> */}
 
     </>
 
-    // </View>
   )
 }
 

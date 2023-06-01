@@ -13,6 +13,7 @@ import { navigate } from '../redux/navigationSlice'
 import SplashScreen from '../screen/SplashScreen'
 import { getRecentChat } from '../redux/chatSlice'
 import { CONNECTED, RECENTCHATSCREEN, REGISTERSCREEN } from '../constant'
+import { profileData } from '../redux/profileSlice'
 
 function Navigation() {
     const screenNav = useSelector(state => state.navigation.screen)
@@ -32,6 +33,7 @@ function Navigation() {
 
     React.useEffect(() => {
         if (isConnect == CONNECTED) {
+           dispatch(profileData())
             dispatch(getRecentChat())
             let nav = { screen: RECENTCHATSCREEN }
             dispatch(navigate(nav))
@@ -53,12 +55,9 @@ function Navigation() {
                 'CHATSCREEN': <ChatScreen />,
                 'CONTACTLIST': <ContactScreen />,
                 'SETTINGSCREEN': <SettingScreen />,
-               // 'STATUSSCREEN':<StatusPage/>,
-              // 'EDITSTATUSSCREEN':<EditStatusPage/>
             }[screenNav]}
             <Box safeAreaBottom />
         </NativeBaseProvider>
     )
 }
-
 export default Navigation

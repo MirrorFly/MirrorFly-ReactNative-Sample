@@ -11,7 +11,8 @@ const initialState = {
         name: "India",
         dial_code: "91",
         code: "IN"
-    }
+    },
+    prevScreen:""
 }
 
 const navigationSlice = createSlice({
@@ -23,6 +24,7 @@ const navigationSlice = createSlice({
             state.number = action.payload?.number
             state.fromUserJid = action.payload?.fromUserJID;
             state.selectContryCode = action?.payload?.selectContryCode || state.selectContryCode
+            state.prevScreen= action?.payload.prevScreen ;
         }
     },
 });

@@ -440,8 +440,11 @@ PODS:
     - React-Core
     - React-RCTImage
     - TOCropViewController
+<<<<<<< HEAD
   - RNPermissions (3.8.0):
     - React-Core
+=======
+>>>>>>> 67edc6735792ca2c846fd5a5d4e7a9aac90ed2f8
   - RNSVG (13.9.0):
     - React-Core
   - SocketRocket (0.6.0)
@@ -517,7 +520,10 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - RNFS (from `../node_modules/react-native-fs`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
+<<<<<<< HEAD
   - RNPermissions (from `../node_modules/react-native-permissions`)
+=======
+>>>>>>> 67edc6735792ca2c846fd5a5d4e7a9aac90ed2f8
   - RNSVG (from `../node_modules/react-native-svg`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -623,8 +629,11 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fs"
   RNImageCropPicker:
     :path: "../node_modules/react-native-image-crop-picker"
+<<<<<<< HEAD
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
+=======
+>>>>>>> 67edc6735792ca2c846fd5a5d4e7a9aac90ed2f8
   RNSVG:
     :path: "../node_modules/react-native-svg"
   Yoga:
@@ -685,7 +694,10 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: b90b71f45b8b97be43bc4284e71a6af48ac9f547
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNImageCropPicker: 14fe1c29298fb4018f3186f455c475ab107da332
+<<<<<<< HEAD
   RNPermissions: b0e38eca4ce809f39a1655c7dfb8fe957b844cfc
+=======
+>>>>>>> 67edc6735792ca2c846fd5a5d4e7a9aac90ed2f8
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863

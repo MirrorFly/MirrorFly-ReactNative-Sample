@@ -10,7 +10,7 @@ const initialState = {
     status: 'idle',
     isConnected: NOTCONNECTED,
     error: null,
-    
+
 }
 
 export const logout = createAsyncThunk('register/logout', async (val, { dispatch }) => {
@@ -49,10 +49,8 @@ export const connectXMPP = createAsyncThunk('register/connect', async (register,
     let connect = await SDK.connect(register.username, register.password);
     switch (connect?.statusCode) {
         case 200:
-            ('Connection Established register/connect');
-            await dispatch(getCurrentUserJid());
-            break;
         case 409:
+            await dispatch(getCurrentUserJid());
             break;
         default:
             errorToast(connect.message);

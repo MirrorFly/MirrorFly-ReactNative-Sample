@@ -181,10 +181,14 @@ const MarqueeText = (props, ref) => {
 
   return (
     <View style={[styles.container, { width, height }]}>
-      <Text numberOfLines={1} {...restProps} style={[style, { opacity: isAnimating ? 0 : 1 }]}>
+      <Text numberOfLines={1} {...restProps} style={[style, {
+        opacity: isAnimating ? 0 : 1,
+        color: '#959595',
+        fontWeight:'700',
+        fontSize: 11
+      }]}>
         {children}
       </Text>
-
       <ScrollView
         ref={containerRef}
         style={StyleSheet.absoluteFillObject}
@@ -202,6 +206,9 @@ const MarqueeText = (props, ref) => {
               transform: [{ translateX: animatedValue.current }],
               opacity: isAnimating ? 1 : 0,
               width: '100%',
+              color: '#959595',
+              fontWeight:'700',
+              fontSize: 11
             },
           ]}>
           {children}

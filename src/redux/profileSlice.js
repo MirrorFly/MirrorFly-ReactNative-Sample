@@ -14,20 +14,34 @@ export const profileData = createAsyncThunk('profile/profileData', async (res, {
     let userJid = getState()?.auth?.currentUserJID;
     let userId = userJid.split("@")[0];
     let getUserInfo = await SDK.getUserProfile(userId);
-    return getUserInfo.data;
+    if (getUserInfo.statusCode == 200) {
+        if (getUserInfo.data.image) {
+            let imageUrl = await SDK.getMediaURL(getUserInfo.data.image)
+            getUserInfo.data.image = imageUrl.data
+        }
+        return getUserInfo.data;
+    }
+})
 
+export const updateProfile = createAsyncThunk('profile/updateProfile', async (res, { getState }) => {
+    let profileInfo = getState()?.profile.profileInfoList
+    if (res.userId == profileInfo.userId && res !== profileInfo) {
+        profileInfo = res
+        if (res.image) {
+            let imageUrl = await SDK.getMediaURL(res.image)
+            profileInfo.image = imageUrl.data
+            return profileInfo
+        }
+        return profileInfo
+    }
 })
 
 const profileSlice = createSlice({
     name: 'profileSlice',
     initialState,
     reducers: {
-        updateProfile: (state, action) => {
-            if(action.payload.userId == state.profileInfoList.userId && action.payload !== state.profileInfoList){
-                state.profileInfoList = action.payload;
-            }
-        },
-        
+
+
     },
     extraReducers: (builder) => {
         builder
@@ -41,10 +55,17 @@ const profileSlice = createSlice({
             .addCase(profileData.rejected, (state, action) => {
                 state.status = 'failed';
             })
-
+            .addCase(updateProfile.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(updateProfile.fulfilled, (state, action) => {
+                state.status = 'profile Updated';
+                state.profileInfoList = action.payload;
+            })
+            .addCase(updateProfile.rejected, (state, action) => {
+                state.status = 'failed';
+            })
     },
 });
-
-export const updateProfile = profileSlice.actions.updateProfile
 
 export default profileSlice.reducer;

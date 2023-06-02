@@ -4,7 +4,6 @@ import EditStatusPage from '../components/EditStatusPage';
 import StatusPage from '../components/StatusPage';
 import ProfilePhoto from '../components/ProfilePhoto';
 import { useDispatch, useSelector } from 'react-redux';
-import { profileData } from '../redux/profileSlice';
 
 const ProfileScreen = () => {
   const dispatch = useDispatch()
@@ -25,7 +24,7 @@ const ProfileScreen = () => {
   }
 
   const onChangeEvent = () => {
-    if (!(profileInfo.nickName == selectProfileInfo.nickName)|| !(profileInfo.status == selectProfileInfo.status)) {
+    if (!(profileInfo?.nickName == selectProfileInfo?.nickName)|| !(profileInfo?.status == selectProfileInfo?.status)) {
       return true
     }
     return false;
@@ -36,10 +35,10 @@ const ProfileScreen = () => {
   },[selectProfileInfo])
 
   React.useEffect(() => {
-    if (profileInfo.status) {
-      let fliter = statusList.filter((info) => profileInfo.status == info.value);
+    if (profileInfo?.status) {
+      let fliter = statusList?.filter((info) => profileInfo?.status == info?.value);
       if (!fliter.length) {
-        const newObj = { value: profileInfo.status };
+        const newObj = { value: profileInfo?.status };
         setStatusList(prevArray => [...prevArray, newObj]);
       }
     }
@@ -48,7 +47,6 @@ const ProfileScreen = () => {
   return (
     <>
       {{
-
         'ProfileScreen': <ProfilePage setNav={setNav} profileInfo={profileInfo} setProfileInfo={setProfileInfo} onChangeEvent={onChangeEvent} />,
         'EditStatusPage': <EditStatusPage setNav={setNav} profileInfo={profileInfo} setProfileInfo={setProfileInfo} onChangeEvent={onChangeEvent} />,
         'statusPage': <StatusPage statusList={statusList} setNav={setNav} profileInfo={profileInfo} setProfileInfo={setProfileInfo} removeItem={handleDelete} onChangeEvent={onChangeEvent} />,

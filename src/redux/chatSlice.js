@@ -41,7 +41,12 @@ export const getReceiveMessage = createAsyncThunk('chat/getReceiveMessage', asyn
     }
 })
 
-export const sendMessage = createAsyncThunk('chat/sendMessage', async (message, { getState,dispatch }) => {
+export const sendMediaMsg = createAsyncThunk('chat/sendMediaMsg', async (mediaMsg, { getState, dispatch }) => {
+    let userJid = getState()?.auth?.currentUserJID
+    let [val, fromUserJId] = message;
+})
+
+export const sendMessage = createAsyncThunk('chat/sendMessage', async (message, { getState, dispatch }) => {
     let userJid = getState()?.auth?.currentUserJID
     let [val, fromUserJId] = message;
     let msgId = uuidv4()
@@ -51,11 +56,11 @@ export const sendMessage = createAsyncThunk('chat/sendMessage', async (message, 
         favouriteStatus: 0,
         deleteStatus: 0,
         fromUserJid: userJid,
-        toUserJid:fromUserJId,
+        toUserJid: fromUserJId,
         timestamp: Date.now(),
         msgStatus: 3,
         msgId: msgId,
-        msgType:'sendMessage',
+        msgType: 'sendMessage',
         msgBody: {
             msgId: msgId,
             message: val,
@@ -78,6 +83,41 @@ const chatSlice = createSlice({
                 }
             });
         },
+        updateMessageList: (state, action) => {
+            let [val, fromUserJId,currentUserJID] = action.payload;
+            val.forEach((item) => {
+                let msgId = uuidv4()
+                let chatMessage = {
+                    chatType: 'chat',
+                    favouriteBy: 0,
+                    favouriteStatus: 0,
+                    deleteStatus: 0,
+                    fromUserJid: currentUserJID,
+                    toUserJid: fromUserJId,
+                    timestamp: Date.now(),
+                    msgStatus: 3,
+                    msgId: msgId,
+                    msgType: 'sendMessage',
+                    msgBody: {
+                        msgId: msgId,
+                        message: item.image.fileCopyUri,
+                        message_type: item.image.type.split('/')[0]
+                    }
+                }
+                state.chatMessages[fromUserJId] = [chatMessage, ...state.chatMessages[fromUserJId]]
+                let fileOptions= {
+                    msgId:msgId,
+                    caption:item.caption
+                }
+                switch(chatMessage.msgBody.message_type){
+                    case 'image':
+                        SDK.sendImageMessage(fromUserJId, item.image, fileOptions);
+                        break;
+                    case 'video':
+                        SDK.sendVideoMessage(fromUserJId, item.image, fileOptions);
+                }
+            })
+        },
         updateRecentChat: (state, action) => {
             const res = action.payload
             switch (res.msgType) {
@@ -94,7 +134,7 @@ const chatSlice = createSlice({
                     state.recentChat = [res, ...state.recentChat]
                     break;
                 case 'sendMessage':
-                    state.recentChat = state.recentChat.map(chat=>{
+                    state.recentChat = state.recentChat.map(chat => {
                         if (chat.fromUserId === res.toUserJid.split('@')[0]) {
                             // Remove the object that satisfies the condition
                             return undefined;
@@ -103,7 +143,7 @@ const chatSlice = createSlice({
                             return user;
                         }
                     }).filter(Boolean);
-                    state.recentChat = [res, ...state.recentChat]   
+                    state.recentChat = [res, ...state.recentChat]
                     break;
             }
         }
@@ -163,9 +203,20 @@ const chatSlice = createSlice({
             .addCase(sendSeenStatus.rejected, (state, action) => {
                 state.recentChatStatus = 'failed';
             })
+            .addCase(sendMediaMsg.pending, (state) => {
+                state.recentChatStatus = RECENTCHATLOADING;
+            })
+            .addCase(sendMediaMsg.fulfilled, (state, action) => {
+                state.recentChatStatus = 'succeeded';
+            })
+            .addCase(sendMediaMsg.rejected, (state, action) => {
+                state.recentChatStatus = 'failed';
+            })
+
     },
 });
 export default chatSlice.reducer;
 
 export const updateMessageStatus = chatSlice.actions.updateMessageStatus
 export const updateRecentChat = chatSlice.actions.updateRecentChat
+export const updateMessageList = chatSlice.actions.updateMessageList

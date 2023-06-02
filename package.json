@@ -11,8 +11,30 @@
   },
   "dependencies": {
     "react": "18.2.0",
-    "react-native": "0.71.8"
+    "react-native": "0.71.8",
+    "react-native-permissions": "^3.8.0"
   },
+  "reactNativePermissionsIOS": [
+    "AppTrackingTransparency",
+    "BluetoothPeripheral",
+    "Calendars",
+    "Camera",
+    "Contacts",
+    "FaceID",
+    "LocationAccuracy",
+    "LocationAlways",
+    "LocationWhenInUse",
+    "MediaLibrary",
+    "Microphone",
+    "Motion",
+    "Notifications",
+    "PhotoLibrary",
+    "PhotoLibraryAddOnly",
+    "Reminders",
+    "Siri",
+    "SpeechRecognition",
+    "StoreKit"
+  ],
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
@@ -31,6 +53,7 @@
     "moment": "^2.29.4",
     "native-base": "^3.4.28",
     "prettier": "^2.4.1",
+    "react-native-document-picker": "^9.0.1",
     "react-native-fs": "^2.20.0",
     "react-native-get-random-values": "^1.8.0",
     "react-native-image-crop-picker": "^0.39.0",
@@ -41,6 +64,7 @@
     "react-native-tab-view": "^3.5.1",
     "react-redux": "^8.0.5",
     "react-test-renderer": "18.2.0",
+    "rn-fetch-blob": "^0.12.0",
     "typescript": "4.8.4",
     "uuid": "^9.0.0",
     "uuidv4": "^6.2.13"

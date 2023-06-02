@@ -8,13 +8,13 @@ const Avathar = (props) => {
       height: props.height || 48,
       borderRadius: 100,
       backgroundColor: props.backgroundColor || "#9D9D9D",
-      justifyContent:'center',
-      alignItems:'center'
+      justifyContent: 'center',
+      alignItems: 'center'
     },
     imgName: {
       color: 'white',
-      fontWeight:'600',
-      fontSize: props.fontSize|| 18,
+      fontWeight: '600',
+      fontSize: props.fontSize || 18,
       textTransform: "uppercase"
     },
   });

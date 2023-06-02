@@ -30,13 +30,13 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-  <string>This is app require your camera</string>
-  <key>NSPhotoLibraryUsageDescription</key>
-  <string>This is app would like to access your photos</string>
-  <key>NSPhotoLibraryAddUsageDescription</key>
-  <string>This is app would like to access your photos</string>
-  <key>NSMicrophoneUsageDescription</key>
-  <string>This is app require your microphone</string>
+  	<string>This is app require your camera</string>
+  	<key>NSPhotoLibraryUsageDescription</key>
+  	<string>This is app would like to access your photos</string>
+ 	 <key>NSPhotoLibraryAddUsageDescription</key>
+  	<string>This is app would like to access your photos</string>
+ 	 <key>NSMicrophoneUsageDescription</key>
+  	<string>This is app require your microphone</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>UILaunchStoryboardName</key>

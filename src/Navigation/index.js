@@ -33,9 +33,13 @@ function Navigation() {
 
     React.useEffect(() => {
         if (isConnect == CONNECTED) {
-           dispatch(profileData())
             dispatch(getRecentChat())
             let nav = { screen: RECENTCHATSCREEN }
+            dispatch(navigate(nav))
+            dispatch(profileData())
+        }else{
+            dispatch(getRecentChat())
+            let nav = { screen: REGISTERSCREEN }
             dispatch(navigate(nav))
         }
     }, [isConnect, navScreen])
@@ -49,7 +53,7 @@ function Navigation() {
             <Box safeAreaTop bg="#f2f2f2" />
             {{
                 'REGISTERSCREEN': <RegisterScreen />,
-                'PROFILESCREEN':<ProfileScreen/>,
+                'PROFILESCREEN': <ProfileScreen />,
                 'RECENTCHATSCREEN': <RecentScreen />,
                 'COUNTRYSCREEN': <CountryList />,
                 'CHATSCREEN': <ChatScreen />,

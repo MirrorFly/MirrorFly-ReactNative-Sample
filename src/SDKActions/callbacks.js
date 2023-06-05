@@ -1,5 +1,6 @@
 import { getReceiveMessage, getRecentChat, updateMessageStatus, updateRecentChat } from "../redux/chatSlice";
-import { storeDeliveryStatus, storeSeenStatus, updateAsyncStorage } from "../redux/storageSlice";
+import {  updateProfile } from "../redux/profileSlice";
+import { storeDeliveryStatus, storeSeenStatus } from "../redux/storageSlice";
 import store from "../redux/store";
 import { updateUserPresence } from "../redux/userSlice";
 
@@ -11,9 +12,9 @@ export const callBacks = {
             console.log("Disconnected");
         }
     },
+
     messageListener: (res) => {
         console.log('messageListener');
-        // store.dispatch(updateRecentChat(res))
         switch (res.msgType) {
             case 'receiveMessage':
                 store.dispatch(getReceiveMessage(res))
@@ -32,11 +33,12 @@ export const callBacks = {
         }
     },
     presenceListener: (res) => {
-        console.log('presenceListener', res)
+        //console.log('presenceListener', res)
         store.dispatch(updateUserPresence(res))
     },
     userProfileListener: (res) => {
         console.log('userProfileListener', res)
+         store.dispatch(updateProfile(res))
     },
     replyMessageListener: (res) => {
         console.log('replyMessageListener', res)

@@ -1,37 +1,31 @@
 import { BackHandler, StyleSheet, TouchableOpacity, View, Image, TextInput, ScrollView, PermissionsAndroid, ToastAndroid } from 'react-native'
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { CallIcon, MailIcon, ProfileIcon, StatusIcon } from '../common/Icons';
-const logo = require('../assets/profile.png');
-import { Modal, Center, Box, Text, VStack, useToast, Spinner, Stack, Icon, Input, HStack, Avatar, AlertDialog, Button, Pressable } from "native-base";
+import { CallIcon, MailIcon, StatusIcon } from '../common/Icons';
+import { Modal, Center, Box, Text, VStack, useToast, Spinner, Stack, Input, HStack, AlertDialog, Pressable } from "native-base";
 import { SDK } from '../SDK';
 import ImagePicker from 'react-native-image-crop-picker';
 import Avathar from "../common/Avathar";
-import {  RECENTCHATSCREEN } from '../constant';
+import { RECENTCHATSCREEN, REGISTERSCREEN } from '../constant';
 import { navigate } from '../redux/navigationSlice';
 import ScreenHeader from './ScreenHeader';
-// import { convertToFileType } from '../common/utils';
+import { getMediaURL, handleGalleryPickerSingle, requestStoragePermission } from '../common/utils';
+import AuthenticatedImage from '../common/AuthendicatedImage';
 
 const ProfilePage = (props) => {
-
-  const phoneNumber = useSelector(state => state.auth.userData);
-
-  const userJid = useSelector(state => state.auth.currentUserJID);
+  const selectProfileInfo = useSelector((state) => state.profile.profileInfoList);
+  const userData = useSelector((state) => state.auth.userData);
+  const prevPageInfo = useSelector((state) => state.navigation.prevScreen);
   const toast = useToast();
   const [placement, setPlacement] = React.useState(undefined);
   const [open, setOpen] = React.useState(false);
   const [remove, setRemove] = React.useState(false);
   const [mobileNumber, setMobileNumber] = React.useState("");
+  const [imageToShow, setImageToShow] = useState('')
   const dispatch = useDispatch();
   const [loading, setloading] = React.useState(false);
-  const [selectedImage, setSelectedImage] = React.useState(props.profileInfo.image);
- // const [baseImage, setBaseImage] = React.useState(null);
-
-
-  const [userName, setUserName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [status, setStatus] = React.useState("");
-
+  const [isToastShowing, setIsToastShowing] = React.useState(false)
+  const [selectedImage, setSelectedImage] = React.useState(props.profileInfo?.image);
   const handleBackBtn = () => {
     let x = { screen: RECENTCHATSCREEN }
     dispatch(navigate(x))
@@ -39,15 +33,13 @@ const ProfilePage = (props) => {
   }
 
   const OnStatusHandler = () => {
+    props.onChangeEvent();
     props.setNav("statusPage");
-
   }
-  console.log(props.profileInfo);
+
   const handleImage = () => {
-    if (selectedImage) {
-
+    if (props?.profileInfo?.image) {
       props.setNav("ProfileImage");
-
     }
 
     else {
@@ -56,62 +48,28 @@ const ProfilePage = (props) => {
     }
   };
 
-  React.useEffect(() => {
-    (async () => {
-
-      let userId = userJid.split("@")[0]
-      let getUserInfo = await SDK.getUserProfile(userId);
-      console.log("get profile", getUserInfo);
-      if (getUserInfo) {
-        // setloading(true);
-        setUserName(props?.profileInfo?.nickName);
-        setStatus(props?.profileInfo?.status);
-        setMobileNumber(props?.profileInfo?.mobileNumber);
-        setEmail(props?.profileInfo?.email);
-        // console.log(setReceivedData);
-      }
-
-      //  setReceivedData(getUserId?.data?.email)
-
-      // setMail(getUserId?.data?.email)
-      // setStatus(getUserId?.data?.status)
-      // setSelectedImage(getUserId?.data?.image)
-      // setMobileNumber(getUserId?.data?.phone);
-
-    })()
-  }, [])
-
-
   const handleProfileUpdate = async () => {
-
-    // console.log(gettingData);
-    // const { userName, phone, email, status} = gettingData;
-    // console.log(userName);
-    // console.log(phone);
-    // console.log(email);
-    // console.log(status);
-
-    if (!props?.profileInfo?.nickName) {
+    setIsToastShowing(true)
+    if (!props?.profileInfo?.nickName && !isToastShowing) {
       return toast.show({
-        duration: 700,
+        duration: 2500,
+        onCloseComplete: () => {
+          setIsToastShowing(false)
+        },
         render: () => {
-
           return <Box bg="black" px="2" py="1" rounded="sm" >
-            <Text style={{ color: "#fff", padding: 5 }}>UserName cannot be empty</Text>
+            <Text style={{ color: "#fff", padding: 5 }}>please enter your username</Text>
           </Box>
         }
       })
     }
 
-    if (props?.profileInfo?.nickName.length < '4') {
+    if (props?.profileInfo?.nickName.length < '4' && !isToastShowing) {
       return toast.show({
-        duration: 700,
+        duration: 2500,
         keyboardAvoiding: true,
-        onClose: () => {
-          console.log('====================================');
-          console.log("on close method ....");
-          console.log('====================================');
-
+        onCloseComplete: () => {
+          setIsToastShowing(false)
         },
         render: () => {
 
@@ -122,21 +80,26 @@ const ProfilePage = (props) => {
       })
     }
 
-    if (!props?.profileInfo?.email) {
+    if (!props?.profileInfo?.email && !isToastShowing) {
       return toast.show({
-        duration: 700,
+        duration: 2500,
+        onCloseComplete: () => {
+          setIsToastShowing(false)
+        },
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
-            <Text style={{ color: "#fff", padding: 5 }}>Please Enter the Mail</Text>
-
+            <Text style={{ color: "#fff", padding: 5 }}>Email should not be empty</Text>
           </Box>
         }
       })
     }
-    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(props?.profileInfo?.email)) {
+    if (/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(selectProfileInfo.email && !isToastShowing)) {
 
       return toast.show({
-        duration: 700,
+        duration: 2500,
+        onCloseComplete: () => {
+          setIsToastShowing(false)
+        },
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
             <Text style={{ color: "#fff", padding: 5 }}>Please enter a Valid E-Mail</Text>
@@ -146,21 +109,15 @@ const ProfilePage = (props) => {
       })
     }
     setloading(true);
-    //inputRef.current.focus();
-    //  props.setNav(StatusPage);
-    // setIsModified(false);
-
-
-    let UserInfo = await SDK.setUserProfile(props?.profileInfo?.nickName, '', props.profileInfo.status, mobileNumber, props.profileInfo.email);
-
-    // console.log(UserInfo);
-
-    let x = { screen: RECENTCHATSCREEN }
+    let UserInfo = await SDK.setUserProfile(props?.profileInfo?.nickName, '', props.profileInfo?.status, mobileNumber, props.profileInfo?.email);
+    let x = { screen: RECENTCHATSCREEN, }
     dispatch(navigate(x))
-    if (UserInfo) {
-
+    if (UserInfo && !isToastShowing) {
       return toast.show({
-        duration: 700,
+        duration: 2500,
+        onCloseComplete: () => {
+          setIsToastShowing(false)
+        },
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
             <Text style={{ color: "#fff", padding: 5 }}>Profile Updated successfully</Text>
@@ -170,210 +127,130 @@ const ProfilePage = (props) => {
     }
   }
 
-  React.useEffect(() => {
-    requestCameraPermission();
-
-
-  }, []);
-
-  React.useEffect(() => {
-
-    requestStoragePermission();
-
-  }, []);
-
-
-  const requestStoragePermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-        {
-          title: 'Storage Permission',
-          message: 'App needs access to your device storage to pick images.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('Storage permission granted');
-      } else {
-        console.log('Storage permission denied');
-      }
-    } catch (error) {
-      console.warn('Failed to request storage permission:', error);
-    }
-  };
-
-
-  const requestCameraPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.CAMERA,
-        {
-          title: 'Camera Permission',
-          message: 'App needs camera access to capture photos.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('Camera permission granted');
-      } else {
-        console.log('Camera permission denied');
-      }
-    } catch (error) {
-      console.warn('Failed to request camera permission:', error);
-    }
-  };
-
-
   const handleCameraPicker = () => {
+    setOpen(false);
     ImagePicker.openCamera({
       mediaType: 'photo',
       width: 150,
       height: 150,
-      cropping: true,
-      cropperCircleOverlay: true,
-    
+      // cropping: true,
+      // cropperCircleOverlay: true,
 
-    }).then((image) => {
+
+    }).then(async (image) => {
+      console.log('handleCameraPicker->', image)
+      let sdkRes = await SDK.profileUpdate(image)
+      if (sdkRes.statusCode == 200) {
+        SDK.setUserProfile(props?.profileInfo?.nickName, sdkRes.imageFileToken, props.profileInfo?.status, mobileNumber, props.profileInfo?.email);
+      } else {
+        console.log('sdkRes-->', sdkRes)
+        return toast.show({
+          duration: 2500,
+          onCloseComplete: () => {
+            setIsToastShowing(false)
+          },
+          render: () => {
+            return <Box bg="black" px="2" py="1" rounded="sm" >
+              <Text style={{ color: "#fff", padding: 5 }}>Image upload failed</Text>
+            </Box>
+          }
+        })
+      }
       setSelectedImage(image);
-      console.log(image);
-
       props.setProfileInfo({
         ...props.profileInfo,
         image: image
       })
-      setOpen(false);
 
     }).catch((error) => {
       console.log('ImagePicker Error: ', error);
     });
   };
 
-  const handleGalleryPicker = () => {
-    ImagePicker.openPicker({
-      mediaType: 'photo',
-      width: 150,
-      height: 150,
-      multiple: false,
-      cropping: true,
-      cropperCircleOverlay: true,
-    }).then(async (image) => {
-      setSelectedImage(image);
-      props.setProfileInfo({
-        ...props.profileInfo,
-        image: image
-      })
-      // console.log(image);
-      // let file = await convertToFileType(image.path);
-      // console.log(file)
-      // setBaseImage(file);
-      setOpen(false);
-      console.log(image);
-
-    }).catch((error) => {
-      console.log(' Gallery ImagePicker Error: ', error);
-    });
-    // Alert("Galery Working...");
+  const handleGalleryPicker = async () => {
+    setOpen(false);
+    let imageReadPermission = await requestStoragePermission()
+    if (imageReadPermission == 'granted') {
+      let res = await handleGalleryPickerSingle()
+      let sdkRes = await SDK.profileUpdate(res)
+      if (sdkRes.statusCode == 200) {
+        SDK.setUserProfile(props?.profileInfo?.nickName, sdkRes.imageFileToken, props.profileInfo?.status, mobileNumber, props.profileInfo?.email);
+      } else {
+        console.log('sdkRes-->', sdkRes)
+        return toast.show({
+          duration: 2500,
+          onCloseComplete: () => {
+            setIsToastShowing(false)
+          },
+          render: () => {
+            return <Box bg="black" px="2" py="1" rounded="sm" >
+              <Text style={{ color: "#fff", padding: 5 }}>Image upload failed</Text>
+            </Box>
+          }
+        })
+      }
+    }
   };
 
   const handleRemove = () => {
-
-    //setSelectedImage ('');
     setRemove(!remove);
   }
 
-
   const onClose = () => {
     setRemove(false)
+    setOpen(false);
     setSelectedImage('');
+    SDK.setUserProfile(props?.profileInfo?.nickName, '', props.profileInfo?.status, mobileNumber, props.profileInfo?.email);
   }
-  // const handleUsername = (text) => {
-  //   // setName(text);
-  //   setGettingData({ ...gettingData, userName: text })
-  //   setIsModified(true);
-  // };
-
-  // const handleEmail = (text) => {
-  //   // setMail(text);
-  //   setGettingData({ ...gettingData, email: text })
-  //   setIsModified(true);
-  // };
-
-  // const handleStatus = (text) => {
-  //   // setStatus(text);
-  //   setGettingData({ ...gettingData, status: text })
-  //   setIsModified(true);
-  // };
 
   const handleChangeText = (name, value) => {
+    props.onChangeEvent()
     props.setProfileInfo({
       ...props.profileInfo,
-      [name]: value
-    }
-    )
+      [name]: value,
+    })
   }
 
-
-  React.useEffect(() => {
-    //console.log(gettingData)
-    handleChangeText('phone', phoneNumber.username)
-
-  }, [phoneNumber])
-
   return (
-    // <View style={{ flex: 1 }}>
     <>
       <Stack h={53} bg="#F2F2F2" w="full" justifyContent={"center"}>
-        {/* <Text color="black" fontSize="21" fontWeight="600" textAlign="center" >
-          Profile
-        </Text> */}
-        <ScreenHeader
-          title='Profile'
-          onhandleBack={handleBackBtn}
-
-
-        />
+        {prevPageInfo == REGISTERSCREEN ?
+          <Text textAlign={"center"} fontSize='xl' fontWeight={'600'} >Profile</Text>
+          : <ScreenHeader
+            title='Profile'
+            onhandleBack={handleBackBtn}
+          />}
       </Stack>
-
-      {/* <View style={{ flex: 1 }}> */}
       <VStack h='full' justifyContent={'center'} >
         <ScrollView showsVerticalScrollIndicator={false}>
           <VStack mt="16" flex="1" alignItems={"center"}>
-            <TouchableOpacity activeOpacity={1} onPress={handleImage} style={{ position: "relative" }}>
-              {selectedImage && <Image resizeMode="contain" source={{ uri: props.profileInfo.image.path }} style={{ height: 157, width: 157, borderRadius: 100 }} />}
-              {!selectedImage && props?.profileInfo?.nickName && <Avathar width={157} height={157} data={props.profileInfo.nickName} backgroundColor={"blue"} />}
-              {!selectedImage && !props?.profileInfo?.nickName && <Image resizeMode="contain" source={require('../assets/profile.png')} style={{ height: 157, width: 157, }} />}
-
+            <View style={{ justifyContent: 'center', alignItems: 'center', height: 157, width: 157, position: "relative" }}>
+              <TouchableOpacity activeOpacity={1} onPress={handleImage}>
+                {props.profileInfo?.image?.fileUrl && <AuthenticatedImage borderRadius='100' borderColor={'#d3d3d3'} borderWidth={0.25} height='157' width='157' resizeMode="contain" imageUrl={props.profileInfo?.image?.fileUrl} authToken={props.profileInfo?.image?.token} />}
+                {!props.profileInfo?.image && props?.profileInfo?.nickName && <Avathar fontSize={60} width={157} height={157} data={props.profileInfo?.nickName} backgroundColor={"blue"} />}
+                {!props.profileInfo?.image && !props?.profileInfo?.nickName && <Image resizeMode="contain" source={require('../assets/profile.png')} style={{ height: 157, width: 157, }} />}
+              </TouchableOpacity>
               <TouchableOpacity activeOpacity={1} onPress={() => setOpen(true)} style={{ position: "absolute", right: 0, bottom: 0, }}  >
                 <Image resizeMode="contain" source={require('../assets/camera.png')} style={styles.CameraImage} />
               </TouchableOpacity>
-            </TouchableOpacity>
-            {/* <Stack mt="3"  flex="1"  alignItems="center" justifyContent="center"> */}
+            </View>
             <TextInput
-
               textAlign="center"
-              style={{ fontSize: 18, fontWeight: "700", marginTop: 5, width: 95 }}
-              // value={userName}
+              style={{ fontSize: 18, fontWeight: "700", marginTop: 5 }}
+              defaultValue={props.profileInfo?.nickName}
               placeholder='Username'
               onChangeText={(text) => { handleChangeText('nickName', text) }}
-              maxLength={15}
+              maxLength={20}
               placeholderTextColor={"#959595"}
               keyboardType="default"
               numberOfLines={1}
             />
-            {/* </Stack> */}
           </VStack>
-          <Stack mt="34"
+          <Stack mt="7"
             px="3"
             borderBottomColor="#F2F2F2"
             borderBottomWidth="1">
-            <Text fontSize="14" color="black" fontWeight="500" >
-              Email
-            </Text>
+            <Text fontSize="14" color="black" fontWeight="500">Email</Text>
             <HStack
               alignItems="center" >
               <MailIcon />
@@ -381,7 +258,8 @@ const ProfilePage = (props) => {
                 color="#959595"
                 flex="1"
                 fontSize="13"
-                //value={email}
+                editable={(prevPageInfo == REGISTERSCREEN)}
+                defaultValue={props.profileInfo?.email}
                 onChangeText={(text) => handleChangeText('email', text)}
                 placeholder='Enter Email Id'
                 placeholderTextColor={"#959595"}
@@ -397,25 +275,9 @@ const ProfilePage = (props) => {
             <Text fontSize="14" color="black" fontWeight="500">
               Mobile Number
             </Text>
-            <HStack
-              flexDirection="row" alignItems="center" >
+            <HStack flexDirection="row" alignItems="center" mt="1" mb="3" >
               <CallIcon />
-              <Input variant="unstyled"
-                // ml="1"
-                px="4"
-                color="#959595"
-                flex="1"
-                fontSize="13"
-
-                onChangeText={setMobileNumber}
-                HStack placeholder='Enter Your Mobile Number'
-                maxLength={15}
-                //value={mobileNumber}
-                editable={false}
-                placeholderTextColor={"#959595"}
-                keyboardType="numeric"
-                numberOfLines={1}
-              />
+              <Text px={"3"} mt="2" mr={"6"} numberOfLines={1} color="#959595" fontSize="13" fontWeight="500">+{userData.username}</Text>
             </HStack>
           </Stack>
           <Stack mt="3"
@@ -429,24 +291,29 @@ const ProfilePage = (props) => {
               onPress={OnStatusHandler} >
               <HStack
                 flexDirection="row" mt="3" mb="3" flex={"1"} alignItems="center" >
-
                 <StatusIcon />
-
                 <Text px={"3"} mr={"6"} numberOfLines={1} color="#959595" fontSize="13" fontWeight="500" >
-                  {props.profileInfo.status || "Avaliable"
-
-                  }
+                  {props.profileInfo?.status || "Avaliable"}
                 </Text>
               </HStack>
             </Pressable>
           </Stack>
-
           <Stack mt="50" alignItems="center">
-            <TouchableOpacity style={[styles.button, { width: props?.profileInfo?.nickName ? 160 : 100 }]} onPress={handleProfileUpdate}>
-              {/* {props.profileInfo &&  <Text numberOfLines={1} style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Update & Continue</Text>} */}
-
-              <Text style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Save</Text>
-            </TouchableOpacity>
+            {prevPageInfo == REGISTERSCREEN ?
+              <TouchableOpacity style={[styles.button, { width: props.onChangeEvent() ? 160 : 100, backgroundColor: '#3276E2' }]} onPress={handleProfileUpdate}>
+                {prevPageInfo == REGISTERSCREEN &&
+                  <>
+                    {props.onChangeEvent()
+                      ? <Text numberOfLines={1} style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Update & Continue</Text>
+                      : <Text style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Save</Text>
+                    }
+                  </>
+                }
+              </TouchableOpacity>
+              : <TouchableOpacity disabled={!props.onChangeEvent()} style={[styles.button, { width: 100, backgroundColor: props.onChangeEvent() ? '#3276E2' : "#d3d3d3", }]} onPress={handleProfileUpdate}>
+                <Text style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Save</Text>
+              </TouchableOpacity>
+            }
           </Stack>
           <Modal isOpen={open} onClose={() => setOpen(false)} safeAreaTop={true} >
             <Modal.Content width="1100" style={styles.bottom} >
@@ -461,7 +328,7 @@ const ProfilePage = (props) => {
                       <TouchableOpacity style={{ paddingTop: 15 }} onPress={handleGalleryPicker}>
                         <Text style={{ fontSize: 14, color: "#767676", fontWeight: "500" }}>Choose from Gallery</Text>
                       </TouchableOpacity>
-                      {selectedImage && (<TouchableOpacity onPress={handleRemove} style={{ paddingTop: 15 }} >
+                      {props.profileInfo?.image?.fileUrl && (<TouchableOpacity onPress={handleRemove} style={{ paddingTop: 15 }} >
                         <Text style={{ fontSize: 14, color: "#767676", fontWeight: "500" }}>Remove Photo</Text>
                       </TouchableOpacity>)}
                     </View>
@@ -470,50 +337,33 @@ const ProfilePage = (props) => {
               </Center>
             </Modal.Content>
           </Modal>
-
           <Center maxH={'40'} width={"50"} >
             <AlertDialog isOpen={remove} onClose={onClose}>
               <AlertDialog.Content>
-
-
                 <AlertDialog.Body >
                   Are you sure you want to remove the photo?
                   <HStack ml="119" space={5}>
-                    <TouchableOpacity onPress={onClose} >
+                    <TouchableOpacity onPress={() => setRemove(false)} >
                       <Text color={"blue.800"} >Cancel</Text>
                     </TouchableOpacity>
-                    {selectedImage && <TouchableOpacity color={"#3276E2"} onPress={onClose}>
+                    {props.profileInfo?.image?.fileUrl && <TouchableOpacity color={"#3276E2"} onPress={onClose}>
                       <Text color={"blue.800"} >Remove</Text>
                     </TouchableOpacity>}
-
                   </HStack>
-
-
                 </AlertDialog.Body>
-
-
               </AlertDialog.Content>
             </AlertDialog>
           </Center>
-
-
           <Modal isOpen={loading} onClose={() => setloading(false)} style={styles.center} safeAreaTop={true} >
             <Modal.Content width="45" height="45" >
               <Center w="100%" h="full">
-
                 <Spinner size="lg" color={'#3276E2'} />
-
               </Center>
             </Modal.Content>
           </Modal>
         </ScrollView>
-
       </VStack>
-      {/* </View> */}
-
     </>
-
-    // </View>
   )
 }
 
@@ -567,10 +417,8 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   button: {
-    backgroundColor: "#3276E2",
     borderRadius: 22,
     padding: 10
-
   },
 
   top: {

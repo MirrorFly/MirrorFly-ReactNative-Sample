@@ -2,31 +2,47 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import SDK from '../SDK/SDK';
 
 const initialState = {
-  profileInfo: {
-    nickname:"",
-    status:"",
-    email:"",
-    mobileNumber:""
-  },
-    
+    profileInfoList: {
+        nickName: "",
+        status: "",
+        email: "",
+        mobileNumber: ""
+    },
 }
 
-export const profileData = createAsyncThunk('profile/InfoData', async () => {
-   
-        
-            let getUserInfo = await SDK.getUserProfile();
-            console.log("get profile", getUserInfo);
-       
-            return getUserInfo;
-   
+export const profileData = createAsyncThunk('profile/profileData', async (res, { getState }) => {
+    let userJid = getState()?.auth?.currentUserJID;
+    let userId = userJid.split("@")[0];
+    let getUserInfo = await SDK.getUserProfile(userId);
+    if (getUserInfo.statusCode == 200) {
+        if (getUserInfo.data.image) {
+            let imageUrl = await SDK.getMediaURL(getUserInfo.data.image)
+            getUserInfo.data.image = imageUrl.data
+        }
+        return getUserInfo.data;
+    }
 })
 
-
+export const updateProfile = createAsyncThunk('profile/updateProfile', async (res, { getState }) => {
+    let profileInfo = getState()?.profile.profileInfoList
+    if (res.userId == profileInfo.userId && res !== profileInfo) {
+        profileInfo = res
+        if (res.image) {
+            let imageUrl = await SDK.getMediaURL(res.image)
+            profileInfo.image = imageUrl.data
+            return profileInfo
+        }
+        return profileInfo
+    }
+})
 
 const profileSlice = createSlice({
     name: 'profileSlice',
     initialState,
-    reducers: {},
+    reducers: {
+
+
+    },
     extraReducers: (builder) => {
         builder
             .addCase(profileData.pending, (state) => {
@@ -34,16 +50,21 @@ const profileSlice = createSlice({
             })
             .addCase(profileData.fulfilled, (state, action) => {
                 state.status = 'profile Updated';
-                state.profileInfo = action.payload;
-                
+                state.profileInfoList = action.payload;
             })
             .addCase(profileData.rejected, (state, action) => {
                 state.status = 'failed';
             })
-            
-           
-          
-
+            .addCase(updateProfile.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(updateProfile.fulfilled, (state, action) => {
+                state.status = 'profile Updated';
+                state.profileInfoList = action.payload;
+            })
+            .addCase(updateProfile.rejected, (state, action) => {
+                state.status = 'failed';
+            })
     },
 });
 

@@ -3,39 +3,22 @@ import React from 'react'
 import ScreenHeader from './ScreenHeader'
 import { PROFILESCREEN } from '../constant';
 import { Center, Stack, VStack } from 'native-base';
+import AuthenticatedImage from '../common/AuthendicatedImage';
 
 const ProfilePhoto = (props) => {
   const handleBackBtn = () => {
     props.setNav("ProfileScreen");
   }
 
-  
   return (
-    
     <>
-    
-     
-        
-     
-
-      
-   
       <ScreenHeader
-          onhandleBack={handleBackBtn}
-          title=' Profile Photo'
-        />
-        
-       <VStack justifyContent={"center"} h="88%"  > 
-        <Image resizeMode="contain" source={{ uri: props.profileInfo.image.path }} style={{ height: 400, width: 410 }} />
-
-        </VStack>
-
-
-     
-
-
-
-
+        onhandleBack={handleBackBtn}
+        title=' Profile Photo'
+      />
+      <VStack justifyContent={"center"} h="88%">
+        <AuthenticatedImage resizeMode="contain" style={{ height: 400, width: 410 }} imageUrl={props.profileInfo?.image.fileUrl} authToken={props.profileInfo?.image.token} />
+      </VStack>
     </>
   )
 }

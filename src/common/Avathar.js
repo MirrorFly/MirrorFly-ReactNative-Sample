@@ -14,7 +14,7 @@ const Avathar = (props) => {
     imgName: {
       color: 'white',
       fontWeight: '600',
-      fontSize: props.fontsize || 18,
+      fontSize: props.fontSize || 18,
       textTransform: "uppercase"
     },
   });

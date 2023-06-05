@@ -3,12 +3,12 @@ import { Linking, TextInput } from 'react-native';
 import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch } from 'react-redux';
 import { navigate } from '../redux/navigationSlice';
-import { COUNTRYSCREEN, numRegx, PROFILESCREEN } from '../constant';
+import { COUNTRYSCREEN, numRegx, PROFILESCREEN, REGISTERSCREEN } from '../constant';
 import { useSelector } from 'react-redux';
 import { registerData } from '../redux/authSlice';
 import { getRecentChat } from '../redux/chatSlice';
 import { DownArrowIcon, RegiterPageIcon } from '../common/Icons';
-import { Icon, Modal, Text, Center, Box, useToast, Spinner, HStack, Stack, Input, VStack, Pressable, KeyboardAvoidingView, View } from 'native-base';
+import { Icon, Modal, Text, Center, Box, useToast, Spinner, HStack, Stack, VStack, Pressable, KeyboardAvoidingView, View } from 'native-base';
 
 const RegisterScreen = () => {
     const dispatch = useDispatch();
@@ -73,7 +73,7 @@ const RegisterScreen = () => {
         if (!isToastShowing && /^[0-9]{10}$/i.test(mobileNumber)) {
             dispatch(registerData(selectcountry?.dial_code + mobileNumber)).then((res) => {
                 dispatch(getRecentChat())
-                let nav = { screen: PROFILESCREEN }
+                let nav = { screen: PROFILESCREEN, prevScreen:REGISTERSCREEN }
                 dispatch(navigate(nav))
             })
         }

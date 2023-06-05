@@ -1,13 +1,20 @@
-import { PermissionsAndroid, Platform } from "react-native";
 import RNFS from 'react-native-fs';
 import DocumentPicker from 'react-native-document-picker';
-import GallerPermissionModal from "./GallerPermissionModal";
 import { Box, Text } from "native-base";
+import RNFetchBlob from 'rn-fetch-blob';
+import { request, PERMISSIONS } from 'react-native-permissions';
+import { Platform } from 'react-native';
 
 const toastConfig = {
   duration: 2500,
   avoidKeyboard: true
 }
+
+export const getExtention = filename => {
+  // To get the file extension
+  return /[.]/.exec(filename) ?
+    /[^.]+$/.exec(filename) : undefined;
+};
 
 export const dataURLtoFile = (dataurl, filename) => {
   var dataarr = dataurl.split(','), mime = dataarr[0].match(/:(.*?);/)[1],
@@ -54,74 +61,53 @@ export const convertToFileType = async (filePath) => {
   }
 };
 
-export const handleGalleryPickerSingle = () => {
-  DocumentPicker.pickSingle({}).then(async res => {
-    console.log('Files Picked', res);
+export const handleGalleryPickerSingle = async () => {
+  try {
+    const res = await DocumentPicker.pickSingle({
+      type: [DocumentPicker.types.images],
+      presentationStyle: 'fullScreen',
+      copyTo: Platform.OS === 'android' ? 'documentDirectory' : 'cachesDirectory',
+    });
     if (res) {
       return res
     }
-  })
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 
 export const requestCameraPermission = async () => {
-  try {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.CAMERA,
-      {
-        title: 'Camera Permission',
-        message: 'App needs camera access to capture photos.',
-        buttonNeutral: 'Ask Me Later',
-        buttonNegative: 'Cancel',
-        buttonPositive: 'OK',
-      },
-    );
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log('Camera permission granted');
-    } else {
-      console.log('Camera permission denied');
-    }
-  } catch (error) {
-    console.warn('Failed to request camera permission:', error);
+  if (Platform.OS == 'ios') {
+    request(PERMISSIONS.IOS.CAMERA).then((result) => {
+      console.log(result)
+    });
+  } else {
+    request(PERMISSIONS.ANDROID.CAMERA).then((result) => {
+      console.log(result)
+    });
   }
 };
 
 export const requestStoragePermission = async () => {
-  try {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-      {
-        title: 'Storage Permission',
-        message: 'App needs access to your device storage to pick images.',
-        buttonNeutral: 'Ask Me Later',
-        buttonNegative: 'Cancel',
-        buttonPositive: 'OK',
-      },
-    );
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log('Storage permission granted');
-    } else {
-      return <GallerPermissionModal />
-      console.log('Storage permission denied');
-    }
-  } catch (error) {
-    console.warn('Failed to request storage permission:', error);
+  if (Platform.OS == 'ios') {
+    return await request(PERMISSIONS.IOS.PHOTO_LIBRARY)
+  } else {
+    return await request(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES)
   }
 };
 
 export const handleGalleryPickerMulti = async (toast) => {
   try {
     const res = await DocumentPicker.pick({
-      type: [DocumentPicker.types.images,DocumentPicker.types.video],
+      type: [DocumentPicker.types.images, DocumentPicker.types.video],
       maxFiles: 5,
       presentationStyle: 'fullScreen',
       allowMultiSelection: true,
       copyTo: Platform.OS === 'android' ? 'documentDirectory' : 'cachesDirectory',
     });
-
-    console.log('Files Picked', res);
     if (res.length > 5) {
-       toast.show({
+      toast.show({
         ...toastConfig,
         render: () => {
           return (
@@ -131,7 +117,7 @@ export const handleGalleryPickerMulti = async (toast) => {
           );
         },
       });
-      return res.slice(0,5);
+      return res.slice(0, 5);
     } else {
       return res;
     }
@@ -141,5 +127,89 @@ export const handleGalleryPickerMulti = async (toast) => {
     } else {
       console.log('Error picking images:', err);
     }
+  }
+};
+
+export const downloadImageAsBase64 = async (fileUrl, token) => {
+  // Main function to download the image
+
+  // To add the time suffix in filename
+  let date = new Date();
+  // Image URL which we want to download 
+  let image_URL = fileUrl;
+  // Getting the extention of the file
+  let ext = getExtention(image_URL);
+  ext = ext[0];
+  const { config, fs } = RNFetchBlob;
+  const { DownloadDir } = fs.dirs;
+  let options = {
+    fileCache: true,
+    appendExt: ext,
+    // addAndroidDownloads: {
+    //     useDownloadManager: true, // true will use native manager and be shown on notification bar.
+    //     notification: true,
+    //     path: `${DownloadDir}/san_${Math.floor(date.getTime() + date.getSeconds() / 2)}.${ext}`,
+    //     title : 'Great ! Download Success ! :O ',
+    //     description: 'Downloading.',
+    // }
+  };
+
+  return await RNFetchBlob.config(options)
+    .fetch('GET', image_URL, {
+      Authorization: token
+    }).progress((received, total) => {
+    }).then(resp => {
+      const base64 = resp.readFile('base64');
+      resp.flush();
+      return base64;
+    }).then(base64 => {
+      const imageBase64 = `data:image/png;base64,${base64}`
+      return imageBase64
+    }).catch((err) => {
+      console.log('catch --- ', err);
+    })
+};
+
+const downloadImageToPath = async (fileUrl, token) => {
+  // Main function to download the image
+
+  // To add the time suffix in filename
+  let date = new Date();
+  // Image URL which we want to download
+  // let image_URL = 'https://sample-videos.com/img/Sample-jpg-image-50kb.jpg';    
+  let image_URL = fileUrl;
+  // Getting the extention of the file
+  let ext = getExtention(image_URL);
+  ext = ext[0];
+  const { config, fs } = RNFetchBlob;
+  const { DownloadDir, SDCardApplicationDir } = fs.dirs;
+  let options = {
+    fileCache: true,
+    appendExt: ext,
+    path: `${SDCardApplicationDir}/image_${Math.floor(date.getTime() + date.getSeconds() / 2)}.${ext}`
+  };
+  try {
+    const response = await RNFetchBlob.config(options).fetch('GET', image_URL, {
+      Authorization: token
+    }).progress((received, total) => {
+    });
+    const base64 = await response.readFile('base64');
+    response.flush();
+
+    const imageBase64 = `data:image/png;base64,${base64}`;
+    return imageBase64;
+  } catch (err) {
+    console.log('catch --- ', err);
+    throw err;
+  }
+};
+
+export const getMediaURL = async (fileToken, saveToPath = false) => {
+  try {
+    let imageUrl = await SDK.getMediaURL(fileToken)
+    let imageBase64 = await downloadImageAsBase64(imageUrl.data.fileUrl, imageUrl.data.token);
+    return imageBase64
+  } catch (error) {
+    console.log(error)
   }
 };

@@ -146,7 +146,6 @@ const chatSlice = createSlice({
                     state.recentChat = [res, ...state.recentChat]
                     break;
             }
-            console.log(state.recentChat, 'state.recentChat')
         }
     },
     extraReducers: (builder) => {

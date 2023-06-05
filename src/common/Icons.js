@@ -217,22 +217,13 @@ export const DownArrowIcon = (props) => {
 
 export const EditIcon = (props) => {
     return (
-        <Svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 18 16"
-            id="vector" width="18" height={"18"}>
-
-            <Path
-                id="path"
-                d="M 11.345 14.607 L 18.322 14.607 L 18.322 16.829 L 11.345 16.829 Z"
+        <Svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 16" id="vector" width="18" height={"18"}>
+            <Path id="path" d="M 11.345 14.607 L 18.322 14.607 L 18.322 16.829 L 11.345 16.829 Z"
                 fill="#181818" />
-            <Path
-                id="path_1"
-                d="M 16.912 4.467 L 12.44 0 L 0 12.456 L 0 16.923 L 4.467 16.923 Z M 1.655 15.267 L 1.655 13.117 L 12.44 2.316 L 14.591 4.467 L 3.801 15.267 Z"
+            <Path id="path_1" d="M 16.912 4.467 L 12.44 0 L 0 12.456 L 0 16.923 L 4.467 16.923 Z M 1.655 15.267 L 1.655 13.117 L 12.44 2.316 L 14.591 4.467 L 3.801 15.267 Z"
                 fill="#181818" />
         </Svg>
     )
-
 }
 
 export const EmojiIcon = (props) => {
@@ -421,6 +412,5 @@ export const SendBlueIcon = () => {
                 </G>
             </G>
         </Svg>
-
     )
 }

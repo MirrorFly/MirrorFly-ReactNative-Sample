@@ -13,6 +13,7 @@ import { navigate } from '../redux/navigationSlice'
 import SplashScreen from '../screen/SplashScreen'
 import { getRecentChat } from '../redux/chatSlice'
 import { CONNECTED, RECENTCHATSCREEN, REGISTERSCREEN } from '../constant'
+import { profileData } from '../redux/profileSlice'
 
 function Navigation() {
     const screenNav = useSelector(state => state.navigation.screen)
@@ -35,6 +36,11 @@ function Navigation() {
             dispatch(getRecentChat())
             let nav = { screen: RECENTCHATSCREEN }
             dispatch(navigate(nav))
+            dispatch(profileData())
+        }else{
+            dispatch(getRecentChat())
+            let nav = { screen: REGISTERSCREEN }
+            dispatch(navigate(nav))
         }
     }, [isConnect, navScreen])
 
@@ -47,18 +53,15 @@ function Navigation() {
             <Box safeAreaTop bg="#f2f2f2" />
             {{
                 'REGISTERSCREEN': <RegisterScreen />,
-                'PROFILESCREEN':<ProfileScreen/>,
+                'PROFILESCREEN': <ProfileScreen />,
                 'RECENTCHATSCREEN': <RecentScreen />,
                 'COUNTRYSCREEN': <CountryList />,
                 'CHATSCREEN': <ChatScreen />,
                 'CONTACTLIST': <ContactScreen />,
                 'SETTINGSCREEN': <SettingScreen />,
-               // 'STATUSSCREEN':<StatusPage/>,
-              // 'EDITSTATUSSCREEN':<EditStatusPage/>
             }[screenNav]}
             <Box safeAreaBottom />
         </NativeBaseProvider>
     )
 }
-
 export default Navigation

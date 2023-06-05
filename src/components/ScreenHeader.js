@@ -21,7 +21,7 @@ function ScreenHeader(props) {
 
     const handleClearBtn = () => {
         setText('')
-        props?.onClear && props?.onClear()
+        props.handleClear && props.handleClear()
     }
 
     return (
@@ -48,7 +48,7 @@ function ScreenHeader(props) {
                     {props?.onhandleSearch && !isSearching && <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={() => { setIsSearching(true); props?.setIsSearching && props?.setIsSearching(true); }} icon={<Icon as={SearchIcon} name="emoji-happy" />} borderRadius="full" />}
                     {!isSearching && props?.menuItems && <Menu w="160" shouldOverlapWithTrigger={true}
                         placement={position == "auto" ? undefined : position} trigger={triggerProps => {
-                            return <IconButton p='4'_pressed={{ bg: "rgba(50,118,226, 0.1)" }} {...triggerProps} icon={<Icon  as={MenuIcon} name="emoji-happy" />} borderRadius="full" />;
+                            return <IconButton p='4' _pressed={{ bg: "rgba(50,118,226, 0.1)" }} {...triggerProps} icon={<Icon as={MenuIcon} name="emoji-happy" />} borderRadius="full" />;
                         }}>
                         {props?.menuItems.map((item, index) => (
                             <Menu.Item key={index} onPress={item?.formatter}>{item.label}</Menu.Item>

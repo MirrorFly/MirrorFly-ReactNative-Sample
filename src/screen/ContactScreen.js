@@ -18,9 +18,8 @@ function ContactScreen() {
     const [totoalUsers, setTotoalUsers] = React.useState()
     const [searchText, setSearchText] = React.useState('')
     const [isSearching, setIsSearching] = React.useState(false)
-
+    const [isClearClicked, setisClearClicked ] = React.useState(false)
     const handleBackBtn = () => {
-        setIsFetching(false)
         let x = { screen: RECENTCHATSCREEN }
         dispatch(navigate(x))
         return true;
@@ -32,8 +31,9 @@ function ContactScreen() {
     );
 
     const fetchContactList = () => {
+        setIsFetching(true)
         setTimeout(async () => {
-            let updateUsersList = await SDK.getUsersList(searchText, "", 100)
+            let updateUsersList = await SDK.getUsersList(searchText, "", 20)
             setUsersList(updateUsersList.users)
             setIsFetching(false)
         }, 700)
@@ -50,7 +50,6 @@ function ContactScreen() {
             setIsFetching(false)
         })();
         return () => {
-            setIsFetching(false);
             backHandler.remove()
         }
     }, [])
@@ -64,14 +63,13 @@ function ContactScreen() {
         }
     ]
     const handlePress = (item) => {
-        setIsFetching(false)
         dispatch(navigate({ screen: CHATSCREEN, fromUserJID: item.userJid }))
     }
 
     const handleSearch = async (text) => {
         setIsSearching(true)
         setIsFetching(true)
-        setUsersList([]);
+        if(isClearClicked) return
         fetchContactList()
         setSearchText(text)
     }
@@ -85,10 +83,18 @@ function ContactScreen() {
         }
         setIsFetching(false)
     }
-    const handleClear = async() => {
-        setIsSearching(false)
-        await fetchContactList()
+    const handleClear = async () => {
+        setisClearClicked(true)
+        setIsFetching(true)
+        let usersList = await SDK.getUsersList()
+        setPage(1)
+        setTotalPages(usersList.totalPages)
+        setTotoalUsers(usersList.totalUsers)
+        setUsersList(usersList.users)
+        setIsFetching(false)
+        setisClearClicked(false)
     }
+
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -100,19 +106,19 @@ function ContactScreen() {
                 onhandleBack={handleBackBtn}
                 menuItems={menuItems}
                 onhandleSearch={handleSearch}
-                onClear={handleClear}
+                handleClear={handleClear}
             />
-            {!usersList?.length && !isFetching ?
+            <FlatListView
+                onhandlePagination={handlePagination}
+                onhandlePress={(item) => handlePress(item)}
+                isLoading={isFetching}
+                data={usersList}
+            />
+            {!isFetching && usersList?.length == 0 &&
                 <Center h='90%'>
                     {!isSearching && <Image style={styles.image} resizeMode="cover" source={require('../assets/no_contacts.png')} />}
                     <Text style={styles.noMsg}>No contacts found</Text>
                 </Center>
-                : <FlatListView
-                    onhandlePagination={handlePagination}
-                    onhandlePress={(item) => handlePress(item)}
-                    isLoading={isFetching}
-                    data={usersList}
-                />
             }
         </KeyboardAvoidingView>
     )

@@ -171,24 +171,27 @@ const ProfilePage = (props) => {
   const handleGalleryPicker = async () => {
     setOpen(false);
     let imageReadPermission = await requestStoragePermission()
+    console.log('imageReadPermission-->', imageReadPermission)
     if (imageReadPermission == 'granted') {
       let res = await handleGalleryPickerSingle()
-      let sdkRes = await SDK.profileUpdate(res)
-      if (sdkRes.statusCode == 200) {
-        setImageFileToken(sdkRes.imageFileToken)
-        SDK.setUserProfile(props?.profileInfo?.nickName, sdkRes.imageFileToken, props.profileInfo?.status, mobileNumber, props.profileInfo?.email);
-      } else {
-        return toast.show({
-          duration: 2500,
-          onCloseComplete: () => {
-            setIsToastShowing(false)
-          },
-          render: () => {
-            return <Box bg="black" px="2" py="1" rounded="sm" >
-              <Text style={{ color: "#fff", padding: 5 }}>Image upload failed</Text>
-            </Box>
-          }
-        })
+      if (res) {
+        let sdkRes = await SDK.profileUpdate(res)
+        if (sdkRes.statusCode == 200) {
+          setImageFileToken(sdkRes.imageFileToken)
+          SDK.setUserProfile(props?.profileInfo?.nickName, sdkRes.imageFileToken, props.profileInfo?.status, mobileNumber, props.profileInfo?.email);
+        } else {
+          return toast.show({
+            duration: 2500,
+            onCloseComplete: () => {
+              setIsToastShowing(false)
+            },
+            render: () => {
+              return <Box bg="black" px="2" py="1" rounded="sm" >
+                <Text style={{ color: "#fff", padding: 5 }}>Image upload failed</Text>
+              </Box>
+            }
+          })
+        }
       }
     }
   };

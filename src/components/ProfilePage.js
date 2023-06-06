@@ -25,6 +25,7 @@ const ProfilePage = (props) => {
   const dispatch = useDispatch();
   const [loading, setloading] = React.useState(false);
   const [isToastShowing, setIsToastShowing] = React.useState(false)
+  const [imageFileToken, setImageFileToken] = React.useState('')
   const [selectedImage, setSelectedImage] = React.useState(props.profileInfo?.image);
   const handleBackBtn = () => {
     let x = { screen: RECENTCHATSCREEN }
@@ -109,7 +110,7 @@ const ProfilePage = (props) => {
       })
     }
     setloading(true);
-    let UserInfo = await SDK.setUserProfile(props?.profileInfo?.nickName, '', props.profileInfo?.status, mobileNumber, props.profileInfo?.email);
+    let UserInfo = await SDK.setUserProfile(props?.profileInfo?.nickName, imageFileToken, props.profileInfo?.status, mobileNumber, props.profileInfo?.email);
     let x = { screen: RECENTCHATSCREEN, }
     dispatch(navigate(x))
     if (UserInfo && !isToastShowing) {
@@ -170,24 +171,27 @@ const ProfilePage = (props) => {
   const handleGalleryPicker = async () => {
     setOpen(false);
     let imageReadPermission = await requestStoragePermission()
+    console.log('imageReadPermission-->', imageReadPermission)
     if (imageReadPermission == 'granted') {
       let res = await handleGalleryPickerSingle()
-      let sdkRes = await SDK.profileUpdate(res)
-      if (sdkRes.statusCode == 200) {
-        SDK.setUserProfile(props?.profileInfo?.nickName, sdkRes.imageFileToken, props.profileInfo?.status, mobileNumber, props.profileInfo?.email);
-      } else {
-        console.log('sdkRes-->', sdkRes)
-        return toast.show({
-          duration: 2500,
-          onCloseComplete: () => {
-            setIsToastShowing(false)
-          },
-          render: () => {
-            return <Box bg="black" px="2" py="1" rounded="sm" >
-              <Text style={{ color: "#fff", padding: 5 }}>Image upload failed</Text>
-            </Box>
-          }
-        })
+      if (res) {
+        let sdkRes = await SDK.profileUpdate(res)
+        if (sdkRes.statusCode == 200) {
+          setImageFileToken(sdkRes.imageFileToken)
+          SDK.setUserProfile(props?.profileInfo?.nickName, sdkRes.imageFileToken, props.profileInfo?.status, mobileNumber, props.profileInfo?.email);
+        } else {
+          return toast.show({
+            duration: 2500,
+            onCloseComplete: () => {
+              setIsToastShowing(false)
+            },
+            render: () => {
+              return <Box bg="black" px="2" py="1" rounded="sm" >
+                <Text style={{ color: "#fff", padding: 5 }}>Image upload failed</Text>
+              </Box>
+            }
+          })
+        }
       }
     }
   };

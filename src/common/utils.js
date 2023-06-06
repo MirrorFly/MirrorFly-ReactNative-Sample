@@ -78,22 +78,24 @@ export const handleGalleryPickerSingle = async () => {
 
 
 export const requestCameraPermission = async () => {
-  if (Platform.OS == 'ios') {
-    request(PERMISSIONS.IOS.CAMERA).then((result) => {
-      console.log(result)
-    });
-  } else {
-    request(PERMISSIONS.ANDROID.CAMERA).then((result) => {
-      console.log(result)
-    });
+  switch (true) {
+    case Platform.OS == 'ios':
+      return await request(PERMISSIONS.IOS.PHOTO_LIBRARY)
+    case Platform.OS === 'android' && Platform.Version <= 32: // Android Vresion below 29
+      return await request(PERMISSIONS.ANDROID.CAMERA)
+    default:
+      return await request(PERMISSIONS.ANDROID.CAMERA)// Android Vresion 30 and above
   }
 };
 
 export const requestStoragePermission = async () => {
-  if (Platform.OS == 'ios') {
-    return await request(PERMISSIONS.IOS.PHOTO_LIBRARY)
-  } else {
-    return await request(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES)
+  switch (true) {
+    case Platform.OS == 'ios':
+      return await request(PERMISSIONS.IOS.PHOTO_LIBRARY)
+    case Platform.OS === 'android' && Platform.Version <= 32: // Android Vresion 32 and below
+      return await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE)
+    default:
+      return await request(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES)// Android Vresion 33 and above
   }
 };
 

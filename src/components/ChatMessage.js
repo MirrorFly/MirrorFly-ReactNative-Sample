@@ -37,7 +37,8 @@ const ChatMessage = (props) => {
   }
 
   return (
-    <Pressable onPress={() => props?.selectedMsgs?.length && props.handleMsgSelect(props.message)} onLongPress={() => props.handleMsgSelect(props.message)}>
+    <Pressable onPress={() => props?.selectedMsgs?.length && props.handleMsgSelect(props.message)}
+      onLongPress={() => props?.message?.msgStatus !== 3 && props.handleMsgSelect(props.message)}>
       {({ isPressed }) => {
         return <Box bg={isPressed ? 'rgba(0,0,0, 0.1)' : "transparent"}>
           <Box bg={props.selectedMsgs.includes(props.message) ? 'rgba(0,0,0, 0.2)' : 'transparent'}>

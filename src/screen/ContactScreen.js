@@ -13,12 +13,13 @@ function ContactScreen() {
     const dispatch = useDispatch()
     const [isFetching, setIsFetching] = React.useState(false)
     const [usersList, setUsersList] = React.useState([])
+    const [isSearchedList, setIsSearchedList] = React.useState([])
     const [page, setPage] = React.useState(0)
     const [totalPages, setTotalPages] = React.useState()
     const [totoalUsers, setTotoalUsers] = React.useState()
     const [searchText, setSearchText] = React.useState('')
     const [isSearching, setIsSearching] = React.useState(false)
-    const [isClearClicked, setisClearClicked ] = React.useState(false)
+    
     const handleBackBtn = () => {
         let x = { screen: RECENTCHATSCREEN }
         dispatch(navigate(x))
@@ -34,7 +35,7 @@ function ContactScreen() {
         setIsFetching(true)
         setTimeout(async () => {
             let updateUsersList = await SDK.getUsersList(searchText, "", 20)
-            setUsersList(updateUsersList.users)
+            setIsSearchedList(updateUsersList.users)
             setIsFetching(false)
         }, 700)
     }
@@ -69,7 +70,6 @@ function ContactScreen() {
     const handleSearch = async (text) => {
         setIsSearching(true)
         setIsFetching(true)
-        if(isClearClicked) return
         fetchContactList()
         setSearchText(text)
     }
@@ -84,15 +84,8 @@ function ContactScreen() {
         setIsFetching(false)
     }
     const handleClear = async () => {
-        setisClearClicked(true)
-        setIsFetching(true)
-        let usersList = await SDK.getUsersList()
-        setPage(1)
-        setTotalPages(usersList.totalPages)
-        setTotoalUsers(usersList.totalUsers)
-        setUsersList(usersList.users)
-        setIsFetching(false)
-        setisClearClicked(false)
+        setSearchText('')
+        setIsSearching(false)
     }
 
     return (
@@ -112,11 +105,16 @@ function ContactScreen() {
                 onhandlePagination={handlePagination}
                 onhandlePress={(item) => handlePress(item)}
                 isLoading={isFetching}
-                data={usersList}
+                data={isSearching ? isSearchedList : usersList}
             />
-            {!isFetching && usersList?.length == 0 &&
+             {!isFetching && usersList?.length == 0 &&
                 <Center h='90%'>
-                    {!isSearching && <Image style={styles.image} resizeMode="cover" source={require('../assets/no_contacts.png')} />}
+                    <Image style={styles.image} resizeMode="cover" source={require('../assets/no_contacts.png')} />
+                    <Text style={styles.noMsg}>No contacts found</Text>
+                </Center>
+            }
+            {!isFetching && isSearching && isSearchedList.length == 0 &&
+                <Center h='90%'>
                     <Text style={styles.noMsg}>No contacts found</Text>
                 </Center>
             }

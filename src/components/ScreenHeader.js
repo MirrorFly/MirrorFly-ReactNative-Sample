@@ -1,7 +1,6 @@
 import React from 'react'
 import { HStack, Icon, IconButton, Image, Menu, Text } from 'native-base';
-import { LeftArrowIcon, MenuIcon, SearchIcon } from '../common/Icons';
-import { CloseIcon } from '../common/Icons';
+import { LeftArrowIcon, MenuIcon, SearchIcon, CloseIcon } from '../common/Icons';
 import { TextInput } from 'react-native';
 
 function ScreenHeader(props) {
@@ -50,8 +49,8 @@ function ScreenHeader(props) {
                         placement={position == "auto" ? undefined : position} trigger={triggerProps => {
                             return <IconButton p='4' _pressed={{ bg: "rgba(50,118,226, 0.1)" }} {...triggerProps} icon={<Icon as={MenuIcon} name="emoji-happy" />} borderRadius="full" />;
                         }}>
-                        {props?.menuItems.map((item, index) => (
-                            <Menu.Item key={index} onPress={item?.formatter}>{item.label}</Menu.Item>
+                        {props?.menuItems.map((item) => (
+                            <Menu.Item key={item.label} onPress={item?.formatter}>{item.label}</Menu.Item>
                         ))}
                     </Menu>}
                 </HStack>

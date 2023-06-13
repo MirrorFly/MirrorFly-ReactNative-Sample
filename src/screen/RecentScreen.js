@@ -93,10 +93,12 @@ function RecentScreen() {
     []
   );
 
+  const FirstComponent = () => <RecentChat isSearching={isSearching} data={filteredData} />;
+
   const renderScene = React.useMemo(
     () =>
       SceneMap({
-        first: () => <RecentChat isSearching={isSearching} data={filteredData} />,
+        first: FirstComponent,
         second: RecentCalls,
       }),
     [isSearching, filteredData]

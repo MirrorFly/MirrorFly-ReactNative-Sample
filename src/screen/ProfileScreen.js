@@ -3,11 +3,10 @@ import ProfilePage from '../components/ProfilePage';
 import EditStatusPage from '../components/EditStatusPage';
 import StatusPage from '../components/StatusPage';
 import ProfilePhoto from '../components/ProfilePhoto';
-import { useDispatch, useSelector } from 'react-redux';
+import {  useSelector } from 'react-redux';
 import SDK from '../SDK/SDK';
 
 const ProfileScreen = () => {
-  const dispatch = useDispatch()
   const selectProfileInfo = useSelector((state) => state.profile.profileInfoList);
   const [nav, setNav] = React.useState("ProfileScreen");
   const [profileInfo, setProfileInfo] = React.useState(selectProfileInfo);
@@ -24,11 +23,7 @@ const ProfileScreen = () => {
   }
 
   const onChangeEvent = () => {
-    if ((profileInfo?.nickName !== selectProfileInfo?.nickName) || (profileInfo?.status !== selectProfileInfo?.status)) {
-      return true
-    } else {
-      return false;
-    }
+    return (profileInfo?.nickName !== selectProfileInfo?.nickName) || (profileInfo?.status !== selectProfileInfo?.status)
   }
 
   React.useEffect(() => {

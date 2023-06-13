@@ -41,9 +41,7 @@ export const getReceiveMessage = createAsyncThunk('chat/getReceiveMessage', asyn
     }
 })
 
-export const sendMediaMsg = createAsyncThunk('chat/sendMediaMsg', async (mediaMsg, { getState, dispatch }) => {
-    // let userJid = getState()?.auth?.currentUserJID
-    // let [val, fromUserJId] = message;
+export const sendMediaMsg = createAsyncThunk('chat/sendMediaMsg', async (mediaMsg) => {
     return mediaMsg
 })
 

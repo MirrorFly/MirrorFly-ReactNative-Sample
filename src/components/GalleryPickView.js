@@ -129,7 +129,7 @@ function GalleryPickView(props) {
                     {props.selectedImages?.map((item, i) => (
                         <TouchableOpacity
                             activeOpacity={1}
-                            key={i}
+                            key={item.image.fileCopyUri}
                             style={styles.tabButton}
                             onPress={() => handleIndexChange(i)}
                         >

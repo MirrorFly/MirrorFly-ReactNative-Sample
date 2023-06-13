@@ -26,7 +26,6 @@ export const onChange = (newProfiles, changes) => {
 
 // Create a new profile
 export const createProfile = (name, email) => {
-    // const id = generateRandomNumber();
     const id = uuidv4();
     Realm.open(realmConfig)
         .then((realm) => {

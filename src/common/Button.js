@@ -1,5 +1,5 @@
 import React from 'react'
-import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Chat_FABICON } from './Icons'
 
 const styles = StyleSheet.create({

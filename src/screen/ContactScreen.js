@@ -1,13 +1,12 @@
 import React from 'react'
 import { Center, KeyboardAvoidingView } from 'native-base';
-import { BackHandler, Image, StyleSheet } from 'react-native'
+import { BackHandler, Image, StyleSheet,Text } from 'react-native'
 import { CHATSCREEN, RECENTCHATSCREEN, SETTINGSCREEN } from '../constant'
 import { navigate } from '../redux/navigationSlice'
 import { useDispatch } from 'react-redux'
 import ScreenHeader from '../components/ScreenHeader'
 import SDK from '../SDK/SDK'
 import FlatListView from '../components/FlatListView'
-import { Text } from 'react-native';
 
 function ContactScreen() {
     const dispatch = useDispatch()

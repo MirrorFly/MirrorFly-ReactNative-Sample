@@ -21,5 +21,5 @@ export const DISCONNECTED = 'disconnected'
 
 // Regex format
 export const urlRegex = /(https?:\/\/[^\s]+)/g;
-export const numRegx = /^[0-9]+$/;
+export const numRegx = /^\d+$/;
 export const textRegex = /^[a-zA-Z\s\p{P}]*$/u;

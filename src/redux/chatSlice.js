@@ -42,8 +42,9 @@ export const getReceiveMessage = createAsyncThunk('chat/getReceiveMessage', asyn
 })
 
 export const sendMediaMsg = createAsyncThunk('chat/sendMediaMsg', async (mediaMsg, { getState, dispatch }) => {
-    let userJid = getState()?.auth?.currentUserJID
-    let [val, fromUserJId] = message;
+    // let userJid = getState()?.auth?.currentUserJID
+    // let [val, fromUserJId] = message;
+    return mediaMsg
 })
 
 export const sendMessage = createAsyncThunk('chat/sendMessage', async (message, { getState, dispatch }) => {
@@ -161,7 +162,6 @@ const chatSlice = createSlice({
             })
             .addCase(getMessages.rejected, (state, action) => {
                 state.status = 'failed';
-                // state.error = action.error.message;
             })
             .addCase(sendMessage.pending, (state) => {
                 state.status = 'loading';

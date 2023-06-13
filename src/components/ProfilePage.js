@@ -1,4 +1,4 @@
-import { BackHandler, StyleSheet, TouchableOpacity, View, Image, TextInput, ScrollView, PermissionsAndroid, ToastAndroid } from 'react-native'
+import { BackHandler, StyleSheet, TouchableOpacity, View, Image, TextInput, ScrollView } from 'react-native'
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CallIcon, MailIcon, StatusIcon } from '../common/Icons';
@@ -9,24 +9,21 @@ import Avathar from "../common/Avathar";
 import { RECENTCHATSCREEN, REGISTERSCREEN } from '../constant';
 import { navigate } from '../redux/navigationSlice';
 import ScreenHeader from './ScreenHeader';
-import { getMediaURL, handleGalleryPickerSingle, requestStoragePermission } from '../common/utils';
+import { handleGalleryPickerSingle, requestStoragePermission } from '../common/utils';
 import AuthenticatedImage from '../common/AuthendicatedImage';
 
 const ProfilePage = (props) => {
-  const selectProfileInfo = useSelector((state) => state.profile.profileInfoList);
   const userData = useSelector((state) => state.auth.userData);
   const prevPageInfo = useSelector((state) => state.navigation.prevScreen);
   const toast = useToast();
-  const [placement, setPlacement] = React.useState(undefined);
   const [open, setOpen] = React.useState(false);
   const [remove, setRemove] = React.useState(false);
-  const [mobileNumber, setMobileNumber] = React.useState("");
-  const [imageToShow, setImageToShow] = useState('')
+  const [mobileNumber] = React.useState("");
   const dispatch = useDispatch();
   const [loading, setloading] = React.useState(false);
   const [isToastShowing, setIsToastShowing] = React.useState(false)
   const [imageFileToken, setImageFileToken] = React.useState('')
-  const [selectedImage, setSelectedImage] = React.useState(props.profileInfo?.image);
+
   const handleBackBtn = () => {
     let x = { screen: RECENTCHATSCREEN }
     dispatch(navigate(x))
@@ -45,7 +42,6 @@ const ProfilePage = (props) => {
 
     else {
       setOpen(true);
-      setPlacement(placement);
     }
   };
 
@@ -64,7 +60,6 @@ const ProfilePage = (props) => {
         }
       })
     }
-
     if (props?.profileInfo?.nickName.length < '4' && !isToastShowing) {
       return toast.show({
         duration: 2500,
@@ -80,7 +75,6 @@ const ProfilePage = (props) => {
         }
       })
     }
-
     if (!props?.profileInfo?.email && !isToastShowing) {
       return toast.show({
         duration: 2500,
@@ -94,8 +88,7 @@ const ProfilePage = (props) => {
         }
       })
     }
-    if (/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(selectProfileInfo.email && !isToastShowing)) {
-
+    if (/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(props?.profileInfo?.email && !isToastShowing)) {
       return toast.show({
         duration: 2500,
         onCloseComplete: () => {
@@ -157,7 +150,6 @@ const ProfilePage = (props) => {
           }
         })
       }
-      setSelectedImage(image);
       props.setProfileInfo({
         ...props.profileInfo,
         image: image
@@ -203,7 +195,6 @@ const ProfilePage = (props) => {
   const onClose = () => {
     setRemove(false)
     setOpen(false);
-    setSelectedImage('');
     SDK.setUserProfile(props?.profileInfo?.nickName, '', props.profileInfo?.status, mobileNumber, props.profileInfo?.email);
   }
 
@@ -214,6 +205,17 @@ const ProfilePage = (props) => {
       [name]: value,
     })
   }
+
+  const backHandler = BackHandler.addEventListener(
+    'hardwareBackPress',
+    handleBackBtn
+  );
+
+  React.useEffect(() => {
+    return () => {
+      backHandler.remove();
+    }
+  }, [])
 
   return (
     <>
@@ -281,7 +283,7 @@ const ProfilePage = (props) => {
             </Text>
             <HStack flexDirection="row" alignItems="center" mt="1" mb="3" >
               <CallIcon />
-              <Text px={"3"} mt="2" mr={"6"} numberOfLines={1} color="#959595" fontSize="13" fontWeight="500">+{userData.username}</Text>
+              <Text px={"3"} mt="2" mr={"6"} numberOfLines={1} color="#959595" fontSize="13" fontWeight="500">+{userData?.username}</Text>
             </HStack>
           </Stack>
           <Stack mt="3"
@@ -297,7 +299,7 @@ const ProfilePage = (props) => {
                 flexDirection="row" mt="3" mb="3" flex={"1"} alignItems="center" >
                 <StatusIcon />
                 <Text px={"3"} mr={"6"} numberOfLines={1} color="#959595" fontSize="13" fontWeight="500" >
-                  {props.profileInfo?.status || "Avaliable"}
+                  {props.profileInfo?.status}
                 </Text>
               </HStack>
             </Pressable>

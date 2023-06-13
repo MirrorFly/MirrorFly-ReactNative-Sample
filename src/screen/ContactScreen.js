@@ -15,8 +15,6 @@ function ContactScreen() {
     const [usersList, setUsersList] = React.useState([])
     const [isSearchedList, setIsSearchedList] = React.useState([])
     const [page, setPage] = React.useState(0)
-    const [totalPages, setTotalPages] = React.useState()
-    const [totoalUsers, setTotoalUsers] = React.useState()
     const [searchText, setSearchText] = React.useState('')
     const [isSearching, setIsSearching] = React.useState(false)
     
@@ -45,8 +43,6 @@ function ContactScreen() {
             setIsFetching(true)
             let usersList = await SDK.getUsersList()
             setPage(1)
-            setTotalPages(usersList.totalPages)
-            setTotoalUsers(usersList.totalUsers)
             setUsersList(usersList.users)
             setIsFetching(false)
         })();
@@ -92,7 +88,6 @@ function ContactScreen() {
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} // Adjust the value as per your UI design
         >
             <ScreenHeader
                 title='Contacts'

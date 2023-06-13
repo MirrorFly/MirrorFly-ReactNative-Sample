@@ -2,7 +2,7 @@ import React from 'react';
 import ScreenHeader from '../components/ScreenHeader';
 import RecentChat from '../components/RecentChat';
 import RecentCalls from '../components/RecentCalls';
-import { Dimensions } from 'react-native';
+import { Dimensions  } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { FloatingBtn } from '../common/Button';
 import { useDispatch, useSelector } from 'react-redux';

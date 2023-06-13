@@ -5,6 +5,7 @@ import chatSlice from './chatSlice';
 import profileSlice from './profileSlice';
 import userSlice from './userSlice';
 import storageSlice from './storageSlice';
+import dbSlice from './dbSlice';
 
 const store = configureStore({
     reducer: {
@@ -13,9 +14,8 @@ const store = configureStore({
         chat: chatSlice,
         profile:profileSlice,
         user: userSlice,
-        storage:storageSlice
-
-      
+        storage:storageSlice,
+        dbValues:dbSlice
     },
 });
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Keyboard, TextInput, } from 'react-native';
 import { SendBtn } from '../common/Button';
 import { AttachmentIcon, EmojiIcon, MicIcon } from '../common/Icons';
-import { HStack, Icon, IconButton, Box, Modal, Pressable, Flex, Text, VStack, Stack, ScrollView } from 'native-base';
+import { HStack, Icon, IconButton, Modal, Flex, Text, VStack } from 'native-base';
 
 const ChatInput = ({ onSendMessage, attachmentMenuIcons }) => {
   const [message, setMessage] = React.useState('');
@@ -52,8 +52,8 @@ const ChatInput = ({ onSendMessage, attachmentMenuIcons }) => {
         <Modal.Content width={'90%'} style={{ marginBottom: 30, marginTop: 'auto', backgroundColor: '#181818' }}>
           <Modal.Body>
             <Flex direction="row" justify={'space-between'} wrap="wrap">
-              {attachmentMenuIcons.map((item, index) => (
-                <VStack py='3' key={index} alignItems={'center'} style={{ width: '32%' }} >
+              {attachmentMenuIcons.map((item) => (
+                <VStack py='3' key={item.name} alignItems={'center'} style={{ width: '32%' }} >
                   <IconButton _pressed={{ bg: 'transperent' }} onPress={() => { setIsOpen(false); item.formatter && item.formatter() }} icon={<Icon as={item.icon} name="emoji-happy" />} borderRadius="full" />
                   <Text color={'#fff'}>{item.name}</Text>
                 </VStack>

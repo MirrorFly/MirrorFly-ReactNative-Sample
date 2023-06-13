@@ -1,4 +1,4 @@
-import { Box, HStack, Icon, IconButton, Pressable, Text, VStack, View } from 'native-base'
+import {  HStack, Icon, IconButton, Pressable, Text, VStack } from 'native-base'
 import React from 'react'
 import Avathar from '../common/Avathar'
 import MenuContainer from '../common/MenuContainer'
@@ -7,7 +7,7 @@ import MarqueeText from '../common/MarqueeText'
 
 function ChatHeader(props) {
     const marqueeRef = React.useRef(null);
-    const [config, setConfig] = React.useState({
+    const [config ] = React.useState({
         marqueeOnStart: true,
         speed: 0.3,
         loop: true,

@@ -17,7 +17,7 @@ export const getExtention = filename => {
 };
 
 export const dataURLtoFile = (dataurl, filename) => {
-  var dataarr = dataurl.split(','), mime = dataarr[0].match(/:(.*?);/)[1],
+  let dataarr = dataurl.split(','), mime = dataarr[0].match(/:(.*?);/)[1],
     bstr = atob(dataarr[1]), n = bstr.length, u8arr = new Uint8Array(n);
   //NOSONAR
   while (n--) {
@@ -136,14 +136,11 @@ export const downloadImageAsBase64 = async (fileUrl, token) => {
   // Main function to download the image
 
   // To add the time suffix in filename
-  let date = new Date();
   // Image URL which we want to download 
   let image_URL = fileUrl;
   // Getting the extention of the file
   let ext = getExtention(image_URL);
   ext = ext[0];
-  const { config, fs } = RNFetchBlob;
-  const { DownloadDir } = fs.dirs;
   let options = {
     fileCache: true,
     appendExt: ext,
@@ -174,17 +171,14 @@ export const downloadImageAsBase64 = async (fileUrl, token) => {
 
 const downloadImageToPath = async (fileUrl, token) => {
   // Main function to download the image
-
   // To add the time suffix in filename
-  let date = new Date();
   // Image URL which we want to download
   // let image_URL = 'https://sample-videos.com/img/Sample-jpg-image-50kb.jpg';    
   let image_URL = fileUrl;
   // Getting the extention of the file
   let ext = getExtention(image_URL);
   ext = ext[0];
-  const { config, fs } = RNFetchBlob;
-  const { DownloadDir, SDCardApplicationDir } = fs.dirs;
+  const { SDCardApplicationDir } = fs.dirs;
   let options = {
     fileCache: true,
     appendExt: ext,

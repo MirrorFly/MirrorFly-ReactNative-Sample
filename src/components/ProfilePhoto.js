@@ -1,8 +1,7 @@
-import { StyleSheet, Image, View, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
 import React from 'react'
 import ScreenHeader from './ScreenHeader'
-import { PROFILESCREEN } from '../constant';
-import { Center, Stack, VStack } from 'native-base';
+import { VStack } from 'native-base';
 import AuthenticatedImage from '../common/AuthendicatedImage';
 
 const ProfilePhoto = (props) => {

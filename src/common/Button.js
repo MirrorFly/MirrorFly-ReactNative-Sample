@@ -41,11 +41,8 @@ const styles = StyleSheet.create({
 
 export const PrimaryPillBtn = (props) => {
     return (
-        <TouchableOpacity activeOpacity={1} disabled={props?.isLoading === 'loading'} style={styles.primarypilbtn} {...props}>
-            {props?.isLoading === 'loading'
-                ? <ActivityIndicator size="large" color="#fff" />
-                : <Text style={styles.primarypilbtntext}>{props.title}</Text>
-            }
+        <TouchableOpacity style={styles.primarypilbtn} {...props}>
+             <Text style={styles.primarypilbtntext}>{props.title}</Text>
         </TouchableOpacity>
     )
 }

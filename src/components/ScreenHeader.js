@@ -1,11 +1,11 @@
 import React from 'react'
-import { Box, HStack, Icon, IconButton, Image, Menu, StatusBar, Text } from 'native-base';
+import { HStack, Icon, IconButton, Image, Menu, Text } from 'native-base';
 import { LeftArrowIcon, MenuIcon, SearchIcon } from '../common/Icons';
 import { CloseIcon } from '../common/Icons';
 import { TextInput } from 'react-native';
 
 function ScreenHeader(props) {
-    const [position, setPosition] = React.useState("auto");
+    const [position ] = React.useState("auto");
     const [isSearching, setIsSearching] = React.useState(false)
     const [text, setText] = React.useState('');
 

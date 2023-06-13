@@ -4,6 +4,7 @@ import EditStatusPage from '../components/EditStatusPage';
 import StatusPage from '../components/StatusPage';
 import ProfilePhoto from '../components/ProfilePhoto';
 import { useDispatch, useSelector } from 'react-redux';
+import SDK from '../SDK/SDK';
 
 const ProfileScreen = () => {
   const dispatch = useDispatch()
@@ -15,8 +16,7 @@ const ProfileScreen = () => {
     { id: 2, value: "Sleeping...", },
     { id: 3, value: "Urgent calls only", },
     { id: 4, value: "At the movies", },
-    { id: 5, value: "I am in Mirror Fly", },
-    { id: 6, value: "Avail" },
+    { id: 5, value: "I am in Mirror Fly", }
   ]);
 
   const handleDelete = (value) => {
@@ -24,15 +24,20 @@ const ProfileScreen = () => {
   }
 
   const onChangeEvent = () => {
-    if (!(profileInfo?.nickName == selectProfileInfo?.nickName)|| !(profileInfo?.status == selectProfileInfo?.status)) {
+    if ((profileInfo?.nickName !== selectProfileInfo?.nickName) || (profileInfo?.status !== selectProfileInfo?.status)) {
       return true
+    } else {
+      return false;
     }
-    return false;
   }
 
-  React.useEffect(()=>{
-    setProfileInfo(selectProfileInfo)
-  },[selectProfileInfo])
+  React.useEffect(() => {
+    (async () => {
+      setProfileInfo(selectProfileInfo)
+      let statusList = await SDK.getStatusList()
+      console.log('statusList==>', statusList)
+    })()
+  }, [selectProfileInfo])
 
   React.useEffect(() => {
     if (profileInfo?.status) {

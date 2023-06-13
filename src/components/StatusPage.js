@@ -56,7 +56,7 @@ const StatusPage = (props) => {
         <Pressable onPress={() => props.setNav("EditStatusPage")}>
           <Text mb='3' color={"black"} fontSize="18" fontWeight={"500"}> Your current status</Text>
           <HStack justifyContent={'space-between'} >
-            <Text color="#767676" fontSize="14" fontWeight={"400"}>  {props.profileInfo?.status}</Text>
+            <Text color="#767676" fontSize="14" fontWeight={"400"}>{props.profileInfo?.status}</Text>
             <EditIcon />
           </HStack>
         </Pressable>
@@ -69,7 +69,7 @@ const StatusPage = (props) => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {
             return <Pressable
-              onLongPress={() => !(props.profileInfo.status === item.value) && handleDeleteItem(item)}
+              onLongPress={() => (props.profileInfo.status !== item.value) && handleDeleteItem(item)}
               onPress={() => handleSelectStatus(item)}
             >
               {({ isPressed }) => {

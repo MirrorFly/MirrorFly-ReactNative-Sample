@@ -1,4 +1,4 @@
-import { Image, Text } from 'native-base'
+import { Image } from 'native-base'
 import React from 'react'
 
 function ImagePreView(props) {

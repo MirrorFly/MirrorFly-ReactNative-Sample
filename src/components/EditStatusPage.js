@@ -1,6 +1,6 @@
-import { StyleSheet, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
-import { Text, useToast, HStack, Stack, Input, KeyboardAvoidingView } from 'native-base';
+import { Text, HStack, Stack, Input, KeyboardAvoidingView } from 'native-base';
 import ScreenHeader from '../components/ScreenHeader';
 import { SmileIcon } from '../common/Icons';
 
@@ -36,7 +36,6 @@ const EditStatusPage = (props) => {
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
         >
             <ScreenHeader title=' Add New Status' onhandleBack={handleBackBtn} />
             <HStack pb="2" pt="3" px="4" borderBottomColor={"#f2f2f2"} borderBottomWidth="1" alignItems={"center"} >

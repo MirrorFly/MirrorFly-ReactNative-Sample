@@ -4,7 +4,7 @@ import SDK from '../SDK/SDK';
 const initialState = {
     profileInfoList: {
         nickName: "",
-        status: "",
+        status: "I am in Mirror Fly",
         email: "",
         mobileNumber: ""
     },

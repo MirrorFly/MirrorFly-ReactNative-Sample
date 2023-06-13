@@ -1,5 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import SDK from '../SDK/SDK';
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     userPresence: {}

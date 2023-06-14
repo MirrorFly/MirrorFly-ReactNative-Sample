@@ -12,7 +12,7 @@ export const callBacks = {
             console.log("Disconnected");
         }
     },
-    dbListners: (res) => {
+    dbListener: (res) => {
         console.log('dbListener', JSON.stringify(res));
     },
     messageListener: (res) => {
@@ -23,7 +23,6 @@ export const callBacks = {
             case 'acknowledge':
             case 'delivered':
                 store.dispatch(storeDeliveryStatus(res))
-                break;
             case 'seen':
                 if (res.fromUserJid) {
                     store.dispatch(storeSeenStatus(res))

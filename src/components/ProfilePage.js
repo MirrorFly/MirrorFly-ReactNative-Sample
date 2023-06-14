@@ -127,17 +127,13 @@ const ProfilePage = (props) => {
       mediaType: 'photo',
       width: 150,
       height: 150,
-      // cropping: true,
-      // cropperCircleOverlay: true,
-
-
+      cropping: true,
+      cropperCircleOverlay: true,
     }).then(async (image) => {
-      console.log('handleCameraPicker->', image)
       let sdkRes = await SDK.profileUpdate(image)
-      if (sdkRes.statusCode == 200) {
+      if (sdkRes?.statusCode == 200) {
         SDK.setUserProfile(props?.profileInfo?.nickName, sdkRes.imageFileToken, props.profileInfo?.status, mobileNumber, props.profileInfo?.email);
       } else {
-        console.log('sdkRes-->', sdkRes)
         return toast.show({
           duration: 2500,
           onCloseComplete: () => {
@@ -150,11 +146,6 @@ const ProfilePage = (props) => {
           }
         })
       }
-      props.setProfileInfo({
-        ...props.profileInfo,
-        image: image
-      })
-
     }).catch((error) => {
       console.log('ImagePicker Error: ', error);
     });
@@ -382,15 +373,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center"
   },
-  imageView:
-  {
+  imageView: {
     width: 20,
     height: 20
   },
   profileContainer: {
     marginHorizontal: 10,
     marginTop: 50,
-
   },
   profileText: {
     textAlign: "center",
@@ -407,8 +396,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
-  mainCotainer:
-  {
+  mainCotainer: {
     marginTop: 15,
     paddingHorizontal: 10,
     borderBottomColor: "#F2F2F2",
@@ -426,7 +414,6 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     padding: 10
   },
-
   top: {
     marginBottom: "auto",
     marginTop: 0
@@ -441,10 +428,7 @@ const styles = StyleSheet.create({
     marginTop: "auto",
     borderBottomWidth: 3,
     borderBottomColor: "#D0D8EB"
-
   },
-
-
   CameraImage: {
     height: 42,
     width: 42

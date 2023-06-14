@@ -14,7 +14,7 @@ const StatusPage = (props) => {
   const closeYesStatusHandler = () => {
     setIsOpenDeleteAlert(false);
     props.removeItem(
-      selectedItem?.value
+      selectedItem
     );
   }
 
@@ -31,10 +31,10 @@ const StatusPage = (props) => {
     setIsToastShowing(true)
     props.setProfileInfo({
       ...props.profileInfo,
-      status: item.value,
+      status: item,
     })
 
-    if (item.value && !isToastShowing) {
+    if (item && !isToastShowing) {
       return toast.show({
         duration: 700,
         keyboardAvoiding: true,
@@ -69,15 +69,15 @@ const StatusPage = (props) => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {
             return <Pressable
-              onLongPress={() => (props.profileInfo.status !== item.value) && handleDeleteItem(item)}
+              onLongPress={() => (props.profileInfo.status !== item) && handleDeleteItem(item)}
               onPress={() => handleSelectStatus(item)}
             >
               {({ isPressed }) => {
                 return<HStack bg={isPressed ? 'rgba(0,0,0, 0.1)' : "transparent"} px='1' py='2.5' justifyContent={'space-between'} >
                   <Text
                     color="#767676" fontSize="14" fontWeight={"400"}>
-                    {item.value}</Text>
-                  {props.profileInfo.status === item.value && <TickMarkIcon />}
+                    {item}</Text>
+                  {props.profileInfo.status === item && <TickMarkIcon />}
                 </HStack>
               }}
             </Pressable>

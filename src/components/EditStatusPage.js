@@ -1,8 +1,10 @@
-import { StyleSheet, TouchableOpacity } from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Text, HStack, Stack, Input, KeyboardAvoidingView } from 'native-base';
 import ScreenHeader from '../components/ScreenHeader';
 import { SmileIcon } from '../common/Icons';
+import { spaceReplaceRegex } from '../constant';
+import SDK from '../SDK/SDK';
 
 const EditStatusPage = (props) => {
     const [content, setContent] = React.useState(props.profileInfo.status);
@@ -12,7 +14,7 @@ const EditStatusPage = (props) => {
     }
 
     const handleInput = (text) => {
-        const trimmedValue = text?.replace(/^\s+/, '');
+        const trimmedValue = text;
         setContent(trimmedValue)
         const count = trimmedValue.length;
         setTotal(139 - count);
@@ -23,8 +25,9 @@ const EditStatusPage = (props) => {
         props.onChangeEvent();
         props.setProfileInfo({
             ...props.profileInfo,
-            status: content
+            status: content?.replace(spaceReplaceRegex,'')
         });
+        SDK.addProfileStatus(content?.replace(spaceReplaceRegex,''))
         props.setNav("statusPage");
     }
 
@@ -40,7 +43,6 @@ const EditStatusPage = (props) => {
             <ScreenHeader title=' Add New Status' onhandleBack={handleBackBtn} />
             <HStack pb="2" pt="3" px="4" borderBottomColor={"#f2f2f2"} borderBottomWidth="1" alignItems={"center"} >
                 <Input
-                    value={content}
                     multiline={true}
                     variant="unstyled"
                     fontSize="15"
@@ -80,7 +82,3 @@ const EditStatusPage = (props) => {
 }
 
 export default EditStatusPage
-
-const styles = StyleSheet.create({})
-
-

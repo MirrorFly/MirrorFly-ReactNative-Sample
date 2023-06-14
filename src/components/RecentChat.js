@@ -9,7 +9,7 @@ import { SDK } from '../SDK';
 import { navigate } from '../redux/navigationSlice';
 import { Image, StyleSheet } from 'react-native';
 
-export default function RecentChat({ isSearching, data }) {
+export default function RecentChat(props) {
     const dispatch = useDispatch();
     const recentLoading = useSelector(state => state.chat.recentChatStatus)
     const onRowDidOpen = rowKey => {
@@ -17,7 +17,7 @@ export default function RecentChat({ isSearching, data }) {
     };
     const currentUserJID = useSelector(state => state?.auth?.currentUserJID.split('@')[0])
     const renderItem = ({ item, index }) => {
-        const isSame = currentUserJID === item?.publisherId
+        const isSame = currentUserJID === item?.publisherId;
         let statusVisible
         switch (item?.msgStatus) {
             case 0:
@@ -61,10 +61,10 @@ export default function RecentChat({ isSearching, data }) {
             <Divider w="80%" alignSelf="flex-end" _light={{ bg: "#f2f2f2" }} _dark={{ bg: "muted.50" }} />
         </Box>
     };
-    if (!data?.length) {
+    if (!props?.data?.length) {
         return <Center h='full'>
             <Image style={styles.image} resizeMode="cover" source={require('../assets/no_messages.png')} />
-            {isSearching
+            {props.isSearching
                 ? <Text style={styles.noMsg}>No Chats Found</Text>
                 : <>
                     <Text style={styles.noMsg}>No New Messages</Text>
@@ -82,7 +82,7 @@ export default function RecentChat({ isSearching, data }) {
         </Slide>
     }
 
-    return <SwipeListView showsVerticalScrollIndicator={false} data={data} renderItem={renderItem} rightOpenValue={-130} previewRowKey={'0'} previewOpenValue={-40} previewOpenDelay={3000} onRowDidOpen={onRowDidOpen} />
+    return <SwipeListView showsVerticalScrollIndicator={false} data={props.data} renderItem={renderItem} rightOpenValue={-130} previewRowKey={'0'} previewOpenValue={-40} previewOpenDelay={3000} onRowDidOpen={onRowDidOpen} />
 }
 
 const styles = StyleSheet.create({

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { Chat_FABICON } from './Icons'
+import { Chat_FABICON, MenuIcon } from './Icons'
+import { Icon, IconButton } from 'native-base'
 
 const styles = StyleSheet.create({
     primarypilbtn: {
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
 export const PrimaryPillBtn = (props) => {
     return (
         <TouchableOpacity style={styles.primarypilbtn} {...props}>
-             <Text style={styles.primarypilbtntext}>{props.title}</Text>
+            <Text style={styles.primarypilbtntext}>{props.title}</Text>
         </TouchableOpacity>
     )
 }
@@ -72,4 +73,17 @@ export const FloatingBtn = (props) => {
             <Chat_FABICON />
         </TouchableOpacity>
     </View>
+}
+
+export const MenuIconBtn = (triggerProps) => {
+    //NOSONAR
+    return (
+        <IconButton
+            {...triggerProps}
+            mr='3'
+            borderRadius="full"
+            _pressed={{ bg: "rgba(50,118,226, 0.1)" }}
+            icon={<Icon px='3' as={MenuIcon} name="emoji-happy" />}
+        />
+    )
 }

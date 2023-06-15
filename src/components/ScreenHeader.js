@@ -2,6 +2,7 @@ import React from 'react'
 import { HStack, Icon, IconButton, Image, Menu, Text } from 'native-base';
 import { LeftArrowIcon, MenuIcon, SearchIcon, CloseIcon } from '../common/Icons';
 import { TextInput } from 'react-native';
+import { MenuIconBtn } from '../common/Button';
 
 function ScreenHeader(props) {
     const [position] = React.useState("auto");
@@ -21,17 +22,6 @@ function ScreenHeader(props) {
     const handleClearBtn = () => {
         setText('')
         props.handleClear && props.handleClear()
-    }
-
-    const IconBtn = (triggerProps) => {
-        return (
-            <IconButton
-                p='4'
-                {...triggerProps}
-                _pressed={{ bg: "rgba(50,118,226, 0.1)" }}
-                icon={<Icon as={MenuIcon} name="emoji-happy" />}
-                borderRadius="full" />
-        )
     }
 
     return (
@@ -58,7 +48,7 @@ function ScreenHeader(props) {
                     {props?.onhandleSearch && !isSearching && <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={() => { setIsSearching(true); props?.setIsSearching && props?.setIsSearching(true); }} icon={<Icon as={SearchIcon} name="emoji-happy" />} borderRadius="full" />}
                     {!isSearching && props?.menuItems && <Menu w="160" shouldOverlapWithTrigger={true}
                         placement={position == "auto" ? undefined : position}
-                        trigger={triggerProps => IconBtn(triggerProps)}
+                        trigger={triggerProps => MenuIconBtn(triggerProps)}
                     >
                         {props?.menuItems.map((item) => (
                             <Menu.Item key={item.label} onPress={item?.formatter}>{item.label}</Menu.Item>

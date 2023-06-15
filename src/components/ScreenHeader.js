@@ -38,8 +38,8 @@ function ScreenHeader(props) {
         <>
             <HStack h={65} bg="#F2F2F2" pr="4" py="3" justifyContent="space-between" alignItems="center" w="full">
                 <HStack alignItems="center">
-                    {props?.onhandleBack && <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handlingBackBtn} icon={<Icon as={LeftArrowIcon} name="emoji-happy" />} borderRadius="full" />}
-                    {props?.isSearching && <IconButton _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} onPress={handlingBackBtn} icon={<Icon as={LeftArrowIcon} name="emoji-happy" />} borderRadius="full" />}
+                    {props?.onhandleBack && <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handlingBackBtn} icon={<Icon as={()=>LeftArrowIcon()} name="emoji-happy" />} borderRadius="full" />}
+                    {props?.isSearching && <IconButton _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} onPress={handlingBackBtn} icon={<Icon as={()=>LeftArrowIcon()} name="emoji-happy" />} borderRadius="full" />}
                     {isSearching
                         && <TextInput
                             placeholderTextColor="#d3d3d3"

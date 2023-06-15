@@ -19,7 +19,7 @@ function ChatHeader(props) {
         <>
             <HStack h={'60px'} bg="#F2F2F2" justifyContent="space-between" alignItems="center" w="full">
                 <HStack alignItems="center">
-                    <IconButton _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} onPress={props.handleBackBtn} icon={<Icon as={LeftArrowIcon} name="emoji-happy" />} borderRadius="full" />
+                    <IconButton _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} onPress={props.handleBackBtn} icon={<Icon as={()=>LeftArrowIcon()} name="emoji-happy" />} borderRadius="full" />
                     <Avathar width={36} height={36} data={props.fromUser || '91'} />
                     <Pressable w="65%">
                         {({ isPressed }) => {

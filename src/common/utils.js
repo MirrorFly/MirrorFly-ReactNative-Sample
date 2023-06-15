@@ -1,7 +1,5 @@
-import RNFS from 'react-native-fs';
 import DocumentPicker from 'react-native-document-picker';
 import { Box, Text } from "native-base";
-import RNFetchBlob from 'rn-fetch-blob';
 import { request, PERMISSIONS } from 'react-native-permissions';
 import { Platform } from 'react-native';
 

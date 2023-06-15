@@ -1,4 +1,4 @@
-import { Icon, IconButton, Menu } from 'native-base';
+import { Menu } from 'native-base';
 import React from 'react'
 import { MenuIconBtn } from './Button';
 

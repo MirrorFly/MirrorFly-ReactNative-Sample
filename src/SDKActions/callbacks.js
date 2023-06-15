@@ -23,6 +23,7 @@ export const callBacks = {
             case 'acknowledge':
             case 'delivered':
                 store.dispatch(storeDeliveryStatus(res))
+                break;
             case 'seen':
                 if (res.fromUserJid) {
                     store.dispatch(storeSeenStatus(res))

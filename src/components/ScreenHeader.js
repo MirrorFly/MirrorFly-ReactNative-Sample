@@ -1,6 +1,6 @@
 import React from 'react'
 import { HStack, Icon, IconButton, Image, Menu, Text } from 'native-base';
-import { LeftArrowIcon, MenuIcon, SearchIcon, CloseIcon } from '../common/Icons';
+import { LeftArrowIcon, SearchIcon, CloseIcon } from '../common/Icons';
 import { TextInput } from 'react-native';
 import { MenuIconBtn } from '../common/Button';
 

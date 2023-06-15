@@ -39,10 +39,7 @@ export const updateProfile = createAsyncThunk('profile/updateProfile', async (re
 const profileSlice = createSlice({
     name: 'profileSlice',
     initialState,
-    reducers: {
-
-
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(profileData.pending, (state) => {

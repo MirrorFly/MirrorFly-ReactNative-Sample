@@ -2,7 +2,7 @@ import React from 'react';
 import ScreenHeader from '../components/ScreenHeader';
 import RecentChat from '../components/RecentChat';
 import RecentCalls from '../components/RecentCalls';
-import { Dimensions  } from 'react-native';
+import { Dimensions } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { FloatingBtn } from '../common/Button';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,6 +11,8 @@ import { navigate } from '../redux/navigationSlice';
 import { CONTACTLIST, PROFILESCREEN } from '../constant';
 import SDK from '../SDK/SDK';
 const logo = require('../assets/mirrorfly-logo.png');
+
+const FirstComponent = (isSearching, filteredData) => <RecentChat isSearching={isSearching} data={filteredData} />;
 
 function RecentScreen() {
   const dispatch = useDispatch();
@@ -93,12 +95,12 @@ function RecentScreen() {
     []
   );
 
-  const FirstComponent = () => <RecentChat isSearching={isSearching} data={filteredData} />;
+
 
   const renderScene = React.useMemo(
     () =>
       SceneMap({
-        first: FirstComponent,
+        first: () => FirstComponent(isSearching, filteredData),
         second: RecentCalls,
       }),
     [isSearching, filteredData]

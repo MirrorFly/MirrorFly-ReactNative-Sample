@@ -34,7 +34,7 @@ export const callBacks = {
         }
     },
     presenceListener: (res) => {
-        //console.log('presenceListener', res)
+        console.log('presenceListener', res)
         store.dispatch(updateUserPresence(res))
     },
     userProfileListener: (res) => {

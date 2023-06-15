@@ -25,11 +25,15 @@ import com.facebook.react.modules.network.NetworkingModule;
 import okhttp3.OkHttpClient;
 
 /**
- * Class responsible of loading Flipper inside your React Native application. This is the debug
- * flavor of it. Here you can add your own plugins and customize the Flipper setup.
+ * Class responsible of loading Flipper inside your React Native application.
+ * This is the debug
+ * flavor of it. Here you can add your own plugins and customize the Flipper
+ * setup.
  */
-//NOSONAR
 public class ReactNativeFlipper {
+  private ReactNativeFlipper() {
+    throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+  }
   public static void initializeFlipper(Context context, ReactInstanceManager reactInstanceManager) {
     if (FlipperUtils.shouldEnableFlipper(context)) {
       final FlipperClient client = AndroidFlipperClient.getInstance(context);

@@ -76,7 +76,6 @@ export const FloatingBtn = (props) => {
 }
 
 export const MenuIconBtn = (triggerProps) => {
-    //NOSONAR
     return (
         <IconButton
             {...triggerProps}

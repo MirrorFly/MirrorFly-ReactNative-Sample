@@ -11,6 +11,7 @@ const ChatInput = ({ onSendMessage, attachmentMenuIcons }) => {
     if (message) {
       onSendMessage(message);
       setMessage('');
+     
     }
   };
 
@@ -22,6 +23,7 @@ const ChatInput = ({ onSendMessage, attachmentMenuIcons }) => {
             <TextInput
               keyboardType={'default'}
               value={message}
+              
               style={{
                 paddingHorizontal:5,
                 padding: 10,

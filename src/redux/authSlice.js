@@ -29,9 +29,13 @@ export const getCurrentUserJid = createAsyncThunk('register/getCurrentUserJid', 
 
 export const registerData = createAsyncThunk('register/userData', async (number, { dispatch }) => {
     try {
+        console.log(number);
         let register
         if (number) {
             register = await SDK.register(number);
+            console.log('====================================');
+            console.log(register);
+            console.log('====================================');
             switch (register.statusCode) {
                 case 200:
                     await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');

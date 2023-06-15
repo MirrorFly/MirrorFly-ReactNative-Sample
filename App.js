@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { ChatApp } from './src/ChatApp';
+
+ import { ChatApp } from './src/ChatApp';
 
 function App() {
   return (

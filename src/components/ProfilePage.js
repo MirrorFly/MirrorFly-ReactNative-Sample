@@ -277,7 +277,7 @@ const ProfilePage = (props) => {
             </Text>
             <HStack flexDirection="row" alignItems="center" mt="1" mb="3" >
               <CallIcon />
-              <Text px={"3"} mt="2" mr={"6"} numberOfLines={1} color="#959595" fontSize="13" fontWeight="500">+{userData.username}</Text>
+              <Text px={"3"} mt="2" mr={"6"} numberOfLines={1} color="#959595" fontSize="13" fontWeight="500">+{userData?.username}</Text>
             </HStack>
           </Stack>
           <Stack mt="3"

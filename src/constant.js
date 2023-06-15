@@ -23,7 +23,6 @@ export const DISCONNECTED = 'disconnected'
 export const urlRegex = /(https?:\/\/[^\s]+)/g;
 export const numRegx = /^\d+$/;
 export const textRegex = /^[a-zA-Z\s\p{P}]*$/u;
-export const spaceReplaceRegex = /^(\s+|\s+)$/gm;
 
 // Constant Data
 export const statusListConstant = [

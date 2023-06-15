@@ -27,7 +27,7 @@ const EditStatusPage = (props) => {
             ...props.profileInfo,
             status: content?.replace(spaceReplaceRegex,'')
         });
-        SDK.addProfileStatus(content?.replace(spaceReplaceRegex,''))
+        SDK.addProfileStatus(content.trim())
         props.setNav("statusPage");
     }
 

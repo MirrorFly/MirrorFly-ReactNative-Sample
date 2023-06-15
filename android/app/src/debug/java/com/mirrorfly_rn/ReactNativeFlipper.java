@@ -28,6 +28,7 @@ import okhttp3.OkHttpClient;
  * Class responsible of loading Flipper inside your React Native application. This is the debug
  * flavor of it. Here you can add your own plugins and customize the Flipper setup.
  */
+//NOSONAR
 public class ReactNativeFlipper {
   public static void initializeFlipper(Context context, ReactInstanceManager reactInstanceManager) {
     if (FlipperUtils.shouldEnableFlipper(context)) {

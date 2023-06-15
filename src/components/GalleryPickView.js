@@ -82,7 +82,7 @@ function GalleryPickView(props) {
                                     },
                                 });
                             }
-                        }} icon={<Icon as={() => <PreViewAddIcon color='#fff' />} name="emoji-happy" />} borderRadius="full" />
+                        }} icon={<Icon as={PreViewAddIcon} name="emoji-happy" />} borderRadius="full" />
                         <Divider h='7' bg="#7f7f7f" thickness="1" mx="2" orientation="vertical" />
                         <TextInput
                             style={{
@@ -113,7 +113,7 @@ function GalleryPickView(props) {
         <>
             <View style={styles.container}>
                 <HStack mt='5' alignItems={'center'}>
-                    <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handleBackBtn} icon={<Icon as={() => <LeftArrowIcon color='#fff' />} name="emoji-happy" />} borderRadius="full" />
+                    <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handleBackBtn} icon={<Icon as={() => LeftArrowIcon('#fff')} name="emoji-happy" />} borderRadius="full" />
                     <Avathar width={30} height={30} fontsize={14} data={fromUserJId || '91'} />
                 </HStack>
                 <TabView

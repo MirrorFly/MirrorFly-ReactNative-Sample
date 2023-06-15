@@ -2,7 +2,7 @@ import React from 'react'
 import Svg, { Circle, Ellipse, G, Path, Rect, Text, TSpan } from 'react-native-svg';
 import { TouchableOpacity, View } from 'react-native';
 
-export const LeftArrowIcon = ({ color }) => {
+export const LeftArrowIcon = (color) => {
     return (
         <Svg xmlns="http://www.w3.org/2000/svg" width="16" height="13" viewBox="0 0 18.334 15.325">
             <Path id="Shape_1" data-name="Shape 1" d="M25.179,60.733l-6.942-6.859q-.027-.027-.051-.056l0,0-.01-.012,0,0-.009-.011,0,0-.008-.01,0-.006-.007-.01,0-.007-.006-.009-.005-.008,0-.007-.006-.01,0-.006L18.1,53.7l0,0-.008-.015h0a.8.8,0,0,1,.161-.957l6.926-6.843a.82.82,0,0,1,1.15,0,.8.8,0,0,1,0,1.137L20.776,52.5H35.52a.8.8,0,1,1,0,1.607H20.776L26.33,59.6a.8.8,0,0,1,0,1.137.821.821,0,0,1-1.15,0Z" transform="translate(-17.999 -45.643)"

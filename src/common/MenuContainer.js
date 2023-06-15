@@ -2,10 +2,10 @@ import { Icon, IconButton, Menu } from 'native-base';
 import React from 'react'
 import { MenuIcon } from './Icons';
 
-const IconBtn = (props) => {
+const IconBtn = (triggerProps) => {
     return (
         <IconButton
-            {...props.triggerProps}
+            {...triggerProps}
             mr='3'
             borderRadius="full"
             _pressed={{ bg: "rgba(50,118,226, 0.1)" }}
@@ -20,9 +20,7 @@ function MenuContainer(props) {
         <>
             <Menu w="160" shouldOverlapWithTrigger={true}
                 placement={position == "auto" ? undefined : position}
-                trigger={triggerProps =>
-                    <IconBtn triggerProps ={triggerProps} />
-                }>
+                trigger={triggerProps => IconBtn(triggerProps)}>
                 {props?.menuItems?.map((item) => (
                     <Menu.Item key={item.label} onPress={item?.formatter}>{item.label}</Menu.Item>
                 ))}

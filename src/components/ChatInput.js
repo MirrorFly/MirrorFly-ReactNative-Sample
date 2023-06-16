@@ -4,7 +4,7 @@ import { SendBtn } from '../common/Button';
 import { AttachmentIcon, EmojiIcon, MicIcon } from '../common/Icons';
 import { HStack, Icon, IconButton, Modal, Flex, Text, VStack } from 'native-base';
 
-const ChatInput = ({ onSendMessage, attachmentMenuIcons }) => {
+const ChatInput = ({ onSendMessage, attachmentMenuIcons,chatInputRef }) => {
   const [message, setMessage] = React.useState('');
   const [isOpen, setIsOpen] = React.useState(false)
   const sendMessage = () => {
@@ -20,6 +20,7 @@ const ChatInput = ({ onSendMessage, attachmentMenuIcons }) => {
         <HStack position="relative" w={message ? '90%' : '100%'} px="3" justify={'center'} alignItems="center" borderWidth={1} borderRadius={40} borderColor="#959595">
           <IconButton _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} p="2" px="0.5" icon={<Icon p="0" as={EmojiIcon} name="emoji-happy" />} borderRadius="full" />
             <TextInput
+              ref={chatInputRef}
               keyboardType={'default'}
               value={message}
               style={{

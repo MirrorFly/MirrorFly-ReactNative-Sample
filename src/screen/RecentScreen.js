@@ -12,6 +12,8 @@ import { CONTACTLIST, PROFILESCREEN } from '../constant';
 import SDK from '../SDK/SDK';
 const logo = require('../assets/mirrorfly-logo.png');
 
+const FirstComponent = (isSearching, filteredData) => <RecentChat isSearching={isSearching} data={filteredData} />;
+
 function RecentScreen() {
   const dispatch = useDispatch();
   const messages = useSelector((state) => state.chat.chatMessages);
@@ -93,10 +95,12 @@ function RecentScreen() {
     []
   );
 
+
+
   const renderScene = React.useMemo(
     () =>
       SceneMap({
-        first: () => <RecentChat isSearching={isSearching} data={filteredData} />,
+        first: () => FirstComponent(isSearching, filteredData),
         second: RecentCalls,
       }),
     [isSearching, filteredData]

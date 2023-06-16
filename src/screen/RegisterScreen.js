@@ -1,10 +1,9 @@
 import React from 'react';
 import { Linking, TextInput } from 'react-native';
 import { PrimaryPillBtn } from '../common/Button';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { navigate } from '../redux/navigationSlice';
 import { COUNTRYSCREEN, numRegx, PROFILESCREEN, REGISTERSCREEN } from '../constant';
-import { useSelector } from 'react-redux';
 import { registerData } from '../redux/authSlice';
 import { getRecentChat } from '../redux/chatSlice';
 import { DownArrowIcon, RegiterPageIcon } from '../common/Icons';
@@ -60,7 +59,7 @@ const RegisterScreen = () => {
                 }
             })
         }
-        if (!isToastShowing && !/^[0-9]{10}$/i.test(mobileNumber)) {
+        if (!isToastShowing && !/^\d{10}$/i.test(mobileNumber)) {
             return toast.show({
                 ...toastConfig,
                 render: () => {
@@ -70,10 +69,10 @@ const RegisterScreen = () => {
                 }
             })
         }
-        if (!isToastShowing && /^[0-9]{10}$/i.test(mobileNumber)) {
+        if (!isToastShowing && /^\d{10}$/i.test(mobileNumber)) {
             dispatch(registerData(selectcountry?.dial_code + mobileNumber)).then((res) => {
                 dispatch(getRecentChat())
-                let nav = { screen: PROFILESCREEN, prevScreen:REGISTERSCREEN }
+                let nav = { screen: PROFILESCREEN, prevScreen: REGISTERSCREEN }
                 dispatch(navigate(nav))
             })
         }
@@ -82,7 +81,6 @@ const RegisterScreen = () => {
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} // Adjust the value as per your UI design
         >
             <VStack h='full' justifyContent={'center'}>
                 <VStack alignItems={'center'}>
@@ -111,7 +109,7 @@ const RegisterScreen = () => {
                         <Stack height="8" ml="1" mt="2" borderLeftWidth="1" borderColor='#f2f2f2' />
                         <TextInput
                             style={{
-                                flex:1,
+                                flex: 1,
                                 fontSize: 15,
                                 fontWeight: '500',
                                 marginLeft: 10

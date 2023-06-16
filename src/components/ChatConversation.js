@@ -154,7 +154,6 @@ const ChatConversation = (props) => {
         <KeyboardAvoidingView
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
         >
             <ChatHeader selectedMsgs={selectedMsgs} menuItems={menuItems} handleBackBtn={handleBackBtn} seenStatus={seenStatus} fromUser={nickName} />
             <ImageBackground

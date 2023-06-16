@@ -55,6 +55,7 @@ function MessageInfo(props) {
         })();
     }, [storageStatus])
 
+    let statusVisible
     switch (props?.isMessageInfo?.msgStatus) {
         case 3:
             statusVisible = styles.notSent

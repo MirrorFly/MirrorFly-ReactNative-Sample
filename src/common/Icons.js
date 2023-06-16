@@ -1,12 +1,12 @@
 import React from 'react'
 import Svg, { Circle, Ellipse, G, Path, Rect, Text, TSpan } from 'react-native-svg';
-import { TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 
-export const LeftArrowIcon = (props) => {
+export const LeftArrowIcon = (color) => {
     return (
         <Svg xmlns="http://www.w3.org/2000/svg" width="16" height="13" viewBox="0 0 18.334 15.325">
             <Path id="Shape_1" data-name="Shape 1" d="M25.179,60.733l-6.942-6.859q-.027-.027-.051-.056l0,0-.01-.012,0,0-.009-.011,0,0-.008-.01,0-.006-.007-.01,0-.007-.006-.009-.005-.008,0-.007-.006-.01,0-.006L18.1,53.7l0,0-.008-.015h0a.8.8,0,0,1,.161-.957l6.926-6.843a.82.82,0,0,1,1.15,0,.8.8,0,0,1,0,1.137L20.776,52.5H35.52a.8.8,0,1,1,0,1.607H20.776L26.33,59.6a.8.8,0,0,1,0,1.137.821.821,0,0,1-1.15,0Z" transform="translate(-17.999 -45.643)"
-                fill={props.color || "#181818"} />
+                fill={color || "#181818"} />
         </Svg>
     )
 }
@@ -80,7 +80,7 @@ export const RegiterPageIcon = () => {
     )
 }
 
-export const AttachmentIcon = (props) => {
+export const AttachmentIcon = () => {
     return (
         <Svg xmlns="http://www.w3.org/2000/svg" width="10.718" height="15.5" viewBox="0 0 10.718 15.5">
             <Path id="XMLID_97_" d="M56.265.577v9.563a5.359,5.359,0,1,1-10.718,0V.577a.577.577,0,0,1,1.155,0v9.563a4.2,4.2,0,1,0,8.408,0V1.155H49.69V9.749a1.216,1.216,0,0,0,2.431,0V3.754a.577.577,0,1,1,1.155,0V9.749a2.371,2.371,0,1,1-4.741,0V.577A.577.577,0,0,1,49.113,0h6.575A.577.577,0,0,1,56.265.577Z" transform="translate(-45.547)" fill="#363636" />
@@ -88,10 +88,10 @@ export const AttachmentIcon = (props) => {
     )
 }
 
-export const ManigifyingGlass = (props) => {
+export const ManigifyingGlass = ({ width, height }) => {
     return (
-        <View {...props}>
-            <Svg xmlns="http://www.w3.org/2000/svg" width={props.width || "18"} height={props.height || "18"} viewBox="0 0 18 18">
+        <View>
+            <Svg xmlns="http://www.w3.org/2000/svg" width={width || "18"} height={height || "18"} viewBox="0 0 18 18">
                 <G id="magnifying-glass_2_" data-name="magnifying-glass (2)" transform="translate(-11 -11)">
                     <Path id="Path_4" data-name="Path 4" d="M28.78,27.722l-4.327-4.327a7.58,7.58,0,1,0-1.062,1.062l4.327,4.324a.749.749,0,1,0,1.062-1.058Zm-10.194-3.06a6.078,6.078,0,1,1,6.08-6.076A6.084,6.084,0,0,1,18.586,24.662Z" fill="#181818" />
                 </G>
@@ -100,9 +100,9 @@ export const ManigifyingGlass = (props) => {
     )
 }
 
-export const CloseIcon = (props) => {
+export const CloseIcon = ({ width, height }) => {
     return (
-        <Svg xmlns="http://www.w3.org/2000/svg" width={props.width || "18"} height={props.height || "18"} viewBox="0 0 20 20">
+        <Svg xmlns="http://www.w3.org/2000/svg" width={width || "18"} height={height || "18"} viewBox="0 0 20 20">
             <G id="close" transform="translate(-3805 -694)">
                 <G id="star" transform="translate(-388 -78)">
                     <Rect id="Rectangle_188" data-name="Rectangle 188" width="20" height="20" transform="translate(4193 772)" fill="rgba(139,68,68,0)" />
@@ -115,25 +115,25 @@ export const CloseIcon = (props) => {
     )
 }
 
-export const MenuIcon = (props) => {
+export const MenuIcon = ({ width, height }) => {
     return (
-        <Svg xmlns="http://www.w3.org/2000/svg" width={props.width || "3.66"} height={props.height || "16.31"} viewBox="0 0 3.66 16.31">
+        <Svg xmlns="http://www.w3.org/2000/svg" width={width || "3.66"} height={height || "16.31"} viewBox="0 0 3.66 16.31">
             <Path id="Shape_1_copy_7" data-name="Shape 1 copy 7" d="M338.34,58.15a1.83,1.83,0,1,1,1.831,1.81A1.82,1.82,0,0,1,338.34,58.15Zm0-6.34a1.83,1.83,0,1,1,1.831,1.81A1.82,1.82,0,0,1,338.34,51.81Zm0-6.35a1.83,1.83,0,1,1,1.831,1.81A1.82,1.82,0,0,1,338.34,45.46Z" transform="translate(-338.34 -43.65)" fill="#181818" />
         </Svg>
     )
 }
 
-export const Chat_FABICON = (props) => {
+export const Chat_FABICON = ({ width, height }) => {
     return <Svg
-        xmlns="http://www.w3.org/2000/svg" width={props.width || "20"} height={props.height || "20"} viewBox="0 0 21 21" id="vector">
+        xmlns="http://www.w3.org/2000/svg" width={width || "20"} height={height || "20"} viewBox="0 0 21 21" id="vector">
         <Path id="path" d="M 10.354 21.065 L 0.528 21.065 L 1.549 19.325 C 1.849 18.834 2.01 18.27 2.013 17.695 C 2.016 17.12 1.862 16.554 1.567 16.06 C 0.251 13.924 -0.259 11.386 0.128 8.908 C 0.516 6.429 1.776 4.168 3.681 2.536 C 5.586 0.903 8.013 0.004 10.522 0 C 12.389 -0.002 14.224 0.493 15.837 1.433 C 17.451 2.374 18.785 3.727 19.703 5.353 C 20.622 6.979 21.091 8.821 21.063 10.688 C 20.975 13.469 19.807 16.109 17.809 18.045 C 15.812 19.981 13.136 21.065 10.354 21.065 Z M 13.383 8.743 C 12.948 8.743 12.53 8.916 12.223 9.224 C 11.916 9.532 11.743 9.95 11.743 10.385 C 11.743 10.82 11.916 11.237 12.224 11.545 C 12.532 11.852 12.949 12.025 13.384 12.025 C 13.819 12.025 14.237 11.852 14.544 11.544 C 14.852 11.237 15.025 10.819 15.025 10.384 C 15.024 9.949 14.851 9.531 14.543 9.224 C 14.236 8.916 13.818 8.743 13.383 8.743 Z M 7.363 8.743 C 6.991 8.742 6.63 8.868 6.339 9.099 C 6.047 9.33 5.843 9.654 5.76 10.016 C 5.676 10.378 5.719 10.759 5.88 11.094 C 6.04 11.429 6.311 11.7 6.645 11.862 C 6.98 12.023 7.36 12.067 7.723 11.984 C 8.086 11.902 8.41 11.698 8.642 11.408 C 8.874 11.117 9 10.756 9 10.384 C 8.999 9.95 8.827 9.533 8.52 9.226 C 8.214 8.918 7.797 8.745 7.363 8.743 Z" fill="#fff" />
     </Svg>
 }
 
-export const ProfileIcon = (props) => {
+export const ProfileIcon = ({ width, height }) => {
     return (
         <TouchableOpacity {...props}>
-            <Svg xmlns="http://www.w3.org/2000/svg" width={props.width} height={props.height} viewBox="0 0 15.26 17.941">
+            <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 15.26 17.941">
                 <G id="avatar" transform="translate(-36.073)">
                     <G id="Group_257" data-name="Group 257" transform="translate(36.073)">
                         <Path id="Path_1553" data-name="Path 1553" d="M140.894,9.667h.119a3.428,3.428,0,0,0,2.619-1.133c1.43-1.612,1.193-4.376,1.167-4.64A3.79,3.79,0,0,0,143,.524,4.131,4.131,0,0,0,141,0h-.063a4.137,4.137,0,0,0-2,.509,3.793,3.793,0,0,0-1.824,3.385c-.026.264-.264,3.028,1.167,4.64A3.414,3.414,0,0,0,140.894,9.667Zm-2.79-5.68c0-.011,0-.022,0-.03.123-2.664,2.014-2.95,2.824-2.95h.045c1,.022,2.708.431,2.824,2.95a.073.073,0,0,0,0,.03c0,.026.264,2.552-.918,3.882a2.435,2.435,0,0,1-1.913.8h-.037a2.427,2.427,0,0,1-1.91-.8C137.848,6.546,138.1,4.009,138.1,3.986Z" transform="translate(-133.329)" fill="#181818" />
@@ -145,18 +145,17 @@ export const ProfileIcon = (props) => {
     )
 }
 
-export const SearchIcon = (props) => {
+export const SearchIcon = ({ width, height }) => {
     return (
-        <Svg xmlns="http://www.w3.org/2000/svg" width={props.width || 18} height={props.height || 18} viewBox="0 0 18 18">
+        <Svg xmlns="http://www.w3.org/2000/svg" width={width || 18} height={height || 18} viewBox="0 0 18 18">
             <G id="magnifying-glass_2_" data-name="magnifying-glass (2)" transform="translate(-11 -11)">
                 <Path id="Path_4" data-name="Path 4" d="M28.78,27.722l-4.327-4.327a7.58,7.58,0,1,0-1.062,1.062l4.327,4.324a.749.749,0,1,0,1.062-1.058Zm-10.194-3.06a6.078,6.078,0,1,1,6.08-6.076A6.084,6.084,0,0,1,18.586,24.662Z" fill="#181818" />
             </G>
         </Svg>
     )
-
 }
 
-export const MailIcon = (props) => {
+export const MailIcon = () => {
     return (
         <Svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22">
             <G id="status_icon" data-name="status icon" transform="translate(-97 -529)">
@@ -170,19 +169,17 @@ export const MailIcon = (props) => {
             </G>
         </Svg>
     )
-
 }
 
-export const CallIcon = (props) => {
+export const CallIcon = () => {
     return (
         <Svg xmlns="http://www.w3.org/2000/svg" width="16.153" height="16.11" viewBox="0 0 16.153 16.11">
             <Path id="Shape_1" data-name="Shape 1" d="M327.909,250.976a17.031,17.031,0,0,0,5.667,4.426,8.84,8.84,0,0,0,3.172.936c.076,0,.15.007.226.007a2.63,2.63,0,0,0,2.037-.872.071.071,0,0,0,.013-.017,8.58,8.58,0,0,1,.642-.663c.156-.149.316-.305.469-.464a1.6,1.6,0,0,0-.007-2.385l-2-1.994a1.621,1.621,0,0,0-1.171-.537,1.676,1.676,0,0,0-1.185.534l-1.191,1.188c-.11-.063-.223-.119-.329-.172a4.081,4.081,0,0,1-.366-.2,12.592,12.592,0,0,1-3.012-2.734,7.235,7.235,0,0,1-1.018-1.619c.313-.282.606-.577.888-.866.1-.1.2-.206.306-.309a1.567,1.567,0,0,0,0-2.389l-.992-.989c-.117-.116-.226-.229-.34-.345-.22-.226-.449-.458-.676-.667a1.662,1.662,0,0,0-1.171-.511,1.711,1.711,0,0,0-1.185.514l-1.245,1.241a2.546,2.546,0,0,0-.762,1.632,6.121,6.121,0,0,0,.463,2.654A15.433,15.433,0,0,0,327.909,250.976Zm-2.416-7.186a1.753,1.753,0,0,1,.529-1.128l1.238-1.234a.9.9,0,0,1,.612-.282.852.852,0,0,1,.6.289c.223.206.433.421.659.65.113.116.23.232.346.352l.992.989a.771.771,0,0,1,0,1.241c-.1.1-.206.209-.31.312-.31.312-.6.607-.919.889l-.017.017a.647.647,0,0,0-.166.736c0,.01.007.017.01.027a7.8,7.8,0,0,0,1.168,1.894,13.293,13.293,0,0,0,3.208,2.913,4.754,4.754,0,0,0,.439.239,4.14,4.14,0,0,1,.366.2l.037.02a.7.7,0,0,0,.323.083.707.707,0,0,0,.5-.226l1.245-1.241a.882.882,0,0,1,.609-.3.836.836,0,0,1,.589.3l2.007,2a.8.8,0,0,1-.01,1.251c-.14.149-.286.292-.443.441a9.548,9.548,0,0,0-.7.72,1.83,1.83,0,0,1-1.428.6c-.057,0-.117,0-.173-.007a8.032,8.032,0,0,1-2.869-.856,16.179,16.179,0,0,1-5.395-4.213,14.772,14.772,0,0,1-2.629-4.363A5.336,5.336,0,0,1,325.493,243.79Z" transform="translate(-324.618 -240.283)" fill="gray" stroke="" stroke-linejoin="round" stroke-width="0.1" />
         </Svg>
     )
-
 }
 
-export const StatusIcon = (props) => {
+export const StatusIcon = () => {
     return (
         <Svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22">
             <G id="status_icon" data-name="status icon" transform="translate(-97 -529)">
@@ -203,10 +200,9 @@ export const StatusIcon = (props) => {
         </Svg>
 
     )
-
 }
 
-export const DownArrowIcon = (props) => {
+export const DownArrowIcon = () => {
     return (
         <Svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 10 5.67">
             <Path id="drop_down" data-name="drop down" d="M333.342,175.667a.7.7,0,0,1-.5-.2l-4.3-4.277a.694.694,0,0,1,0-.985.7.7,0,0,1,.99,0l3.8,3.785,3.8-3.784a.7.7,0,0,1,.99,0,.694.694,0,0,1,0,.985l-4.3,4.277A.7.7,0,0,1,333.342,175.667Z" transform="translate(-328.342 -169.997)" fill="#000" />
@@ -215,7 +211,7 @@ export const DownArrowIcon = (props) => {
 
 }
 
-export const EditIcon = (props) => {
+export const EditIcon = () => {
     return (
         <Svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 16" id="vector" width="18" height={"18"}>
             <Path id="path" d="M 11.345 14.607 L 18.322 14.607 L 18.322 16.829 L 11.345 16.829 Z"
@@ -226,14 +222,14 @@ export const EditIcon = (props) => {
     )
 }
 
-export const EmojiIcon = (props) => {
+export const EmojiIcon = () => {
     return (
         <Svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
             <Path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.507 13.941c-1.512 1.195-3.174 1.931-5.506 1.931-2.334 0-3.996-.736-5.508-1.931l-.493.493c1.127 1.72 3.2 3.566 6.001 3.566 2.8 0 4.872-1.846 5.999-3.566l-.493-.493zm-9.007-5.941c-.828 0-1.5.671-1.5 1.5s.672 1.5 1.5 1.5 1.5-.671 1.5-1.5-.672-1.5-1.5-1.5zm7 0c-.828 0-1.5.671-1.5 1.5s.672 1.5 1.5 1.5 1.5-.671 1.5-1.5-.672-1.5-1.5-1.5z" />
         </Svg>
     )
 }
-export const TickMarkIcon = (props) => {
+export const TickMarkIcon = () => {
     return (
         <Svg xmlns="http://www.w3.org/2000/svg" width="16.923" height="13.718" viewBox="0 0 16.923 13.718">
             <G id="tick" transform="translate(0 -46.298)">
@@ -246,7 +242,7 @@ export const TickMarkIcon = (props) => {
 
 }
 
-export const SmileIcon = (props) => {
+export const SmileIcon = () => {
     return (
         <Svg xmlns="http://www.w3.org/2000/svg" width="19.667" height="19.657" viewBox="0 0 19.667 19.657">
             <Path id="smile" d="M28.667,614.18a9.833,9.833,0,1,1,9.833,9.829A9.842,9.842,0,0,1,28.667,614.18Zm.855,0a8.978,8.978,0,1,0,8.978-8.973A8.986,8.986,0,0,0,29.522,614.18Zm4.811,2.849a.428.428,0,0,1,.637-.571,4.758,4.758,0,0,0,7.059,0,.428.428,0,1,1,.637.571,5.614,5.614,0,0,1-8.333,0Zm6.307-4.559a1.28,1.28,0,1,1,1.28,1.28A1.28,1.28,0,0,1,40.64,612.47Zm-6.84,0a1.28,1.28,0,1,1,1.28,1.28A1.28,1.28,0,0,1,33.8,612.47Z" transform="translate(-28.667 -604.352)" fill="#363636" />
@@ -255,16 +251,14 @@ export const SmileIcon = (props) => {
 
 }
 
-export const MicIcon = (props) => {
+export const MicIcon = () => {
     return (
         <Svg xmlns="http://www.w3.org/2000/svg" width="13.017" height="18.456" viewBox="0 0 13.017 18.456">
             <Path id="mic" d="M286.605,622.4v-2.443a6.359,6.359,0,0,1-5.938-6.264.495.495,0,0,1,.99,0,5.445,5.445,0,0,0,10.887,0,.495.495,0,0,1,.99,0,6.342,6.342,0,0,1-5.938,6.264V622.4m3.217-14.753v6.046a3.713,3.713,0,0,1-7.423,0v-6.046a3.713,3.713,0,0,1,7.423,0Zm-.99,0a2.723,2.723,0,0,0-5.444,0v6.046a2.723,2.723,0,0,0,5.444,0Z" transform="translate(-280.592 -603.944)" fill="#363636" stroke-width="0.15" />
         </Svg>
 
     )
-
 }
-
 
 export const SandTimer = () => {
     return (
@@ -386,12 +380,12 @@ export const PreViewAddIcon = () => {
     )
 }
 
-export const DeleteBinIcon = (props) => {
+export const DeleteBinIcon = ({color}) => {
     return (
         <Svg xmlns="http://www.w3.org/2000/svg" width="13.24" height="16.342" viewBox="0 0 13.24 16.342">
             <G id="delete" transform="translate(-1 3)">
                 <Path id="Path_13799" data-name="Path 13799" d="M1.63-.54A.623.623,0,0,0,1,.074a.623.623,0,0,0,.63.615h.63V12.728a.623.623,0,0,0,.63.615h9.459a.623.623,0,0,0,.63-.615V1.208a.63.63,0,0,0-1.26,0v10.9h-8.2V.689h8.2v1.23a.63.63,0,0,0,1.26,0V.689h.63a.623.623,0,0,0,.63-.615.623.623,0,0,0-.63-.615H10.956V-2.385A.623.623,0,0,0,10.326-3H4.914a.623.623,0,0,0-.63.615V-.54ZM5.544-1.77H9.7V-.54H5.544Zm0,0"
-                    fill={props.color || "#000"} />
+                    fill={color || "#000"} />
                 <Path id="Path_13800" data-name="Path 13800" d="M111.027,164.695v6.471a.637.637,0,0,0,1.274,0v-6.471a.637.637,0,1,0-1.274,0Zm0,0" transform="translate(-105.594 -161.509)" fill="#fff" />
                 <Path id="Path_13801" data-name="Path 13801" d="M208,164.637v6.471a.637.637,0,0,0,1.274,0v-6.471a.637.637,0,1,0-1.274,0Zm0,0" transform="translate(-199.44 -161.509)" fill="#fff" />
             </G>

@@ -5,7 +5,7 @@ import { CHATSCREEN, RECENTCHATSCREEN, REGISTERSCREEN } from "../constant"
 import { navigate } from "../redux/navigationSlice"
 
 export const authScreen = async () => {
-    var screen = 'Splash'
+    let screen = 'Splash'
     try {
         await AsyncStorage.getItem('mirrorFlyToken')
         let keys = await AsyncStorage.getAllKeys()

@@ -1,5 +1,5 @@
-import { getReceiveMessage, getRecentChat, updateMessageStatus, updateRecentChat } from "../redux/chatSlice";
-import {  updateProfile } from "../redux/profileSlice";
+import { getReceiveMessage, updateMessageStatus } from "../redux/chatSlice";
+import { updateProfile } from "../redux/profileSlice";
 import { storeDeliveryStatus, storeSeenStatus } from "../redux/storageSlice";
 import store from "../redux/store";
 import { updateUserPresence } from "../redux/userSlice";
@@ -12,9 +12,10 @@ export const callBacks = {
             console.log("Disconnected");
         }
     },
-
+    dbListener: (res) => {
+        console.log('dbListener', JSON.stringify(res));
+    },
     messageListener: (res) => {
-        console.log('messageListener');
         switch (res.msgType) {
             case 'receiveMessage':
                 store.dispatch(getReceiveMessage(res))
@@ -22,6 +23,7 @@ export const callBacks = {
             case 'acknowledge':
             case 'delivered':
                 store.dispatch(storeDeliveryStatus(res))
+                break;
             case 'seen':
                 if (res.fromUserJid) {
                     store.dispatch(storeSeenStatus(res))
@@ -33,12 +35,12 @@ export const callBacks = {
         }
     },
     presenceListener: (res) => {
-        //console.log('presenceListener', res)
+        console.log('presenceListener', res)
         store.dispatch(updateUserPresence(res))
     },
     userProfileListener: (res) => {
         console.log('userProfileListener', res)
-         store.dispatch(updateProfile(res))
+        store.dispatch(updateProfile(res))
     },
     replyMessageListener: (res) => {
         console.log('replyMessageListener', res)

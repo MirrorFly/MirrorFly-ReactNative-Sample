@@ -1,6 +1,6 @@
 import React from 'react'
-import { BackHandler, Dimensions, Image, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
-import { Box, Divider, HStack, Icon, IconButton, Input, Text, View, useToast } from 'native-base'
+import { BackHandler, Image, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
+import { Box, Divider, HStack, Icon, IconButton, Text, View, useToast } from 'native-base'
 import { useSelector } from 'react-redux'
 import { DeleteBinIcon, LeftArrowIcon, PreViewAddIcon, SendBlueIcon } from '../common/Icons'
 import Avathar from '../common/Avathar'
@@ -49,15 +49,13 @@ function GalleryPickView(props) {
                     <IconButton alignSelf={'flex-end'} onPress={() => {
                         let filtered = props.selectedImages?.filter((item, i) => i !== itemIndex)
                         props.setSelectedImages(filtered)
-                    }} _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} icon={<Icon as={() => <DeleteBinIcon color="#fff" />} name="emoji-happy" />} borderRadius="full" />
+                    }} _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} icon={<Icon as={<DeleteBinIcon color="#fff" />} name="emoji-happy" />} borderRadius="full" />
                     <View position='relative' flex='1' px='7' my='5' keyboardShouldPersistTaps="handled">
                         <Image resizeMode='contain' source={{ uri: item.image.fileCopyUri }} style={styles.tabContainer} />
                         <IconButton position='absolute' p='0' right='5' bottom='0' alignSelf={'flex-end'} onPress={() => {
-                            // let filtered = props.selectedImages?.filter((item, i) => i !== itemIndex)
-                            // props.setSelectedImages(filtered)
                             props.setSendSelected(true)
                             props.setLocalNav('CHATCONVERSATION')
-                        }} _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} icon={<Icon as={() => <SendBlueIcon color="#fff" />} name="emoji-happy" />} borderRadius="full" />
+                        }} _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} icon={<Icon as={<SendBlueIcon color="#fff" />} name="emoji-happy" />} borderRadius="full" />
                     </View>
                     <HStack ml='2' mb='3' alignItems={'center'}>
                         <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={async () => {
@@ -84,7 +82,7 @@ function GalleryPickView(props) {
                                     },
                                 });
                             }
-                        }} icon={<Icon as={() => <PreViewAddIcon color='#fff' />} name="emoji-happy" />} borderRadius="full" />
+                        }} icon={<Icon as={PreViewAddIcon} name="emoji-happy" />} borderRadius="full" />
                         <Divider h='7' bg="#7f7f7f" thickness="1" mx="2" orientation="vertical" />
                         <TextInput
                             style={{
@@ -115,7 +113,7 @@ function GalleryPickView(props) {
         <>
             <View style={styles.container}>
                 <HStack mt='5' alignItems={'center'}>
-                    <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handleBackBtn} icon={<Icon as={() => <LeftArrowIcon color='#fff' />} name="emoji-happy" />} borderRadius="full" />
+                    <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handleBackBtn} icon={<Icon as={() => LeftArrowIcon('#fff')} name="emoji-happy" />} borderRadius="full" />
                     <Avathar width={30} height={30} fontsize={14} data={fromUserJId || '91'} />
                 </HStack>
                 <TabView
@@ -131,7 +129,7 @@ function GalleryPickView(props) {
                     {props.selectedImages?.map((item, i) => (
                         <TouchableOpacity
                             activeOpacity={1}
-                            key={i}
+                            key={item.image.fileCopyUri}
                             style={styles.tabButton}
                             onPress={() => handleIndexChange(i)}
                         >

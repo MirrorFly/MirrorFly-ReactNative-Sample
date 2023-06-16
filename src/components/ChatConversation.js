@@ -1,17 +1,16 @@
 import React from 'react';
-import { StyleSheet, KeyboardAvoidingView, Platform, ImageBackground, BackHandler } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView, Platform, ImageBackground, BackHandler, Pressable } from 'react-native';
 import ChatHeader from '../components/ChatHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import ChatMessage from '../components/ChatMessage';
 import ChatInput from '../components/ChatInput';
-import { HStack, IconButton, Slide, Spinner, Stack, Text, View, VStack } from 'native-base';
+import { HStack, Slide, Spinner, Stack, Text, View } from 'native-base';
 import { RECENTCHATSCREEN } from '../constant';
 import { navigate } from '../redux/navigationSlice';
 import { getMessages, sendMessage, sendSeenStatus, updateMessageList } from '../redux/chatSlice';
 import SDK from '../SDK/SDK';
 import { getLastseen } from '../common/TimeStamp';
 import { ClearTextIcon, ReplyIcon } from '../common/Icons';
-import { Pressable } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 
 const ChatConversation = (props) => {

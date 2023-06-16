@@ -2,10 +2,8 @@ import { AlertDialog, HStack, Icon, IconButton, Pressable, Text, VStack, View } 
 import React from 'react'
 import Avathar from '../common/Avathar'
 import MenuContainer from '../common/MenuContainer'
-import { LeftArrowIcon } from '../common/Icons'
 import MarqueeText from '../common/MarqueeText'
-import { CloseIcon, DeleteIcon, FavouriteIcon, ForwardIcon, ReplyIcon } from '../common/Icons';
-import { StyleSheet } from 'react-native'
+import { CloseIcon, DeleteIcon, FavouriteIcon, ForwardIcon, ReplyIcon,LeftArrowIcon } from '../common/Icons';
 
 function ChatHeader(props) {
     const marqueeRef = React.useRef(null);

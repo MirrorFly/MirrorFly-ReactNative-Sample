@@ -21,5 +21,14 @@ export const DISCONNECTED = 'disconnected'
 
 // Regex format
 export const urlRegex = /(https?:\/\/[^\s]+)/g;
-export const numRegx = /^[0-9]+$/;
+export const numRegx = /^\d+$/;
 export const textRegex = /^[a-zA-Z\s\p{P}]*$/u;
+
+// Constant Data
+export const statusListConstant = [
+    "Available",
+    "Sleeping...",
+    "Urgent calls only",
+    "At the movies", 
+    "I am in Mirror Fly"
+];

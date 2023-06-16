@@ -1,7 +1,7 @@
 import moment from "moment";
 
 function datetoTime(secs) {
-    var todayDate = new Date();
+    let todayDate = new Date();
     todayDate.setSeconds(todayDate.getSeconds() - secs);
     return todayDate;
 }
@@ -11,7 +11,7 @@ function secondsToHms(secs) {
         return 0;
     }
     secs = Number(secs);
-    var calcHours = Math.floor(secs / 3600);
+    let calcHours = Math.floor(secs / 3600);
     return calcHours > 0 ? calcHours : 0;
 }
 
@@ -77,11 +77,11 @@ export const change16TimeWithDateFormat = (time) => {
  */
 export const getLastseen = (secs) => {
     try {
-        var userDate = datetoTime(secs);
-        var currentDate = new Date();
-        var weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        var month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        var HHMM = { hour: "numeric", minute: "numeric" };
+        let userDate = datetoTime(secs);
+        let currentDate = new Date();
+        let weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        let month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        let HHMM = { hour: "numeric", minute: "numeric" };
         if (secs === 0) {
             return "Online";
         } else if (userDate.getDate() === currentDate.getDate() && userDate.getMonth() === currentDate.getMonth()) {

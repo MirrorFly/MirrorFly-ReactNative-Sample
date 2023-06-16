@@ -1,13 +1,12 @@
 import React from 'react'
 import { Center, KeyboardAvoidingView } from 'native-base';
-import { BackHandler, Image, StyleSheet } from 'react-native'
+import { BackHandler, Image, StyleSheet,Text } from 'react-native'
 import { CHATSCREEN, RECENTCHATSCREEN, SETTINGSCREEN } from '../constant'
 import { navigate } from '../redux/navigationSlice'
 import { useDispatch } from 'react-redux'
 import ScreenHeader from '../components/ScreenHeader'
 import SDK from '../SDK/SDK'
 import FlatListView from '../components/FlatListView'
-import { Text } from 'react-native';
 
 function ContactScreen() {
     const dispatch = useDispatch()
@@ -15,8 +14,6 @@ function ContactScreen() {
     const [usersList, setUsersList] = React.useState([])
     const [isSearchedList, setIsSearchedList] = React.useState([])
     const [page, setPage] = React.useState(0)
-    const [totalPages, setTotalPages] = React.useState()
-    const [totoalUsers, setTotoalUsers] = React.useState()
     const [searchText, setSearchText] = React.useState('')
     const [isSearching, setIsSearching] = React.useState(false)
     
@@ -45,8 +42,6 @@ function ContactScreen() {
             setIsFetching(true)
             let usersList = await SDK.getUsersList()
             setPage(1)
-            setTotalPages(usersList.totalPages)
-            setTotoalUsers(usersList.totalUsers)
             setUsersList(usersList.users)
             setIsFetching(false)
         })();
@@ -92,7 +87,6 @@ function ContactScreen() {
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} // Adjust the value as per your UI design
         >
             <ScreenHeader
                 title='Contacts'

@@ -1,11 +1,11 @@
 import React from 'react'
-import { Box, HStack, Icon, IconButton, Image, Menu, StatusBar, Text } from 'native-base';
-import { LeftArrowIcon, MenuIcon, SearchIcon } from '../common/Icons';
-import { CloseIcon } from '../common/Icons';
+import { HStack, Icon, IconButton, Image, Menu, Text } from 'native-base';
+import { LeftArrowIcon, SearchIcon, CloseIcon } from '../common/Icons';
 import { TextInput } from 'react-native';
+import { MenuIconBtn } from '../common/Button';
 
 function ScreenHeader(props) {
-    const [position, setPosition] = React.useState("auto");
+    const [position] = React.useState("auto");
     const [isSearching, setIsSearching] = React.useState(false)
     const [text, setText] = React.useState('');
 
@@ -28,8 +28,8 @@ function ScreenHeader(props) {
         <>
             <HStack h={65} bg="#F2F2F2" pr="4" py="3" justifyContent="space-between" alignItems="center" w="full">
                 <HStack alignItems="center">
-                    {props?.onhandleBack && <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handlingBackBtn} icon={<Icon as={LeftArrowIcon} name="emoji-happy" />} borderRadius="full" />}
-                    {props?.isSearching && <IconButton _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} onPress={handlingBackBtn} icon={<Icon as={LeftArrowIcon} name="emoji-happy" />} borderRadius="full" />}
+                    {props?.onhandleBack && <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handlingBackBtn} icon={<Icon as={()=>LeftArrowIcon()} name="emoji-happy" />} borderRadius="full" />}
+                    {props?.isSearching && <IconButton _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} onPress={handlingBackBtn} icon={<Icon as={()=>LeftArrowIcon()} name="emoji-happy" />} borderRadius="full" />}
                     {isSearching
                         && <TextInput
                             placeholderTextColor="#d3d3d3"
@@ -47,11 +47,11 @@ function ScreenHeader(props) {
                     {text && <IconButton onPress={handleClearBtn} icon={<Icon as={CloseIcon} name="emoji-happy" />} borderRadius="full" />}
                     {props?.onhandleSearch && !isSearching && <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={() => { setIsSearching(true); props?.setIsSearching && props?.setIsSearching(true); }} icon={<Icon as={SearchIcon} name="emoji-happy" />} borderRadius="full" />}
                     {!isSearching && props?.menuItems && <Menu w="160" shouldOverlapWithTrigger={true}
-                        placement={position == "auto" ? undefined : position} trigger={triggerProps => {
-                            return <IconButton p='4' _pressed={{ bg: "rgba(50,118,226, 0.1)" }} {...triggerProps} icon={<Icon as={MenuIcon} name="emoji-happy" />} borderRadius="full" />;
-                        }}>
-                        {props?.menuItems.map((item, index) => (
-                            <Menu.Item key={index} onPress={item?.formatter}>{item.label}</Menu.Item>
+                        placement={position == "auto" ? undefined : position}
+                        trigger={triggerProps => MenuIconBtn(triggerProps)}
+                    >
+                        {props?.menuItems.map((item) => (
+                            <Menu.Item key={item.label} onPress={item?.formatter}>{item.label}</Menu.Item>
                         ))}
                     </Menu>}
                 </HStack>

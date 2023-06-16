@@ -1,5 +1,4 @@
 import React from 'react';
-// import { Image } from 'react-native';
 import { Box, Image, Spinner } from 'native-base';
 import RNFetchBlob from 'rn-fetch-blob';
 import { getExtention } from './utils';

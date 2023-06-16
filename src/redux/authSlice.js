@@ -32,8 +32,7 @@ export const registerData = createAsyncThunk('register/userData', async (number,
         let register
         if (number) {
             register = await SDK.register(number);
-            switch (register.statusCode) {
-                case 200:
+            if (register.statusCode ==200) {
                     await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
                     await AsyncStorage.setItem('credential', JSON.stringify(number));
                     await dispatch(connectXMPP(register.data))

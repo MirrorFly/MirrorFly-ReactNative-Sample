@@ -17,7 +17,8 @@ export default function RecentChat(props) {
     };
     const currentUserJID = useSelector(state => state?.auth?.currentUserJID.split('@')[0])
     const renderItem = ({ item, index }) => {
-        const isSame = currentUserJID === item?.publisherId
+        const isSame = currentUserJID === item?.publisherId;
+        let statusVisible
         switch (item?.msgStatus) {
             case 0:
                 statusVisible = styles.notDelivered

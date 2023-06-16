@@ -4,7 +4,7 @@ import SDK from '../SDK/SDK';
 const initialState = {
     profileInfoList: {
         nickName: "",
-        status: "",
+        status: "I am in Mirror Fly",
         email: "",
         mobileNumber: ""
     },
@@ -39,10 +39,7 @@ export const updateProfile = createAsyncThunk('profile/updateProfile', async (re
 const profileSlice = createSlice({
     name: 'profileSlice',
     initialState,
-    reducers: {
-
-
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(profileData.pending, (state) => {

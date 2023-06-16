@@ -167,7 +167,7 @@ const MarqueeText = (props, ref) => {
       containerWidth.current = wrapperWidth;
       marqueeTextWidth.current = textWidth;
     } catch (error) {
-      // console.warn(error);
+      console.warn(error);
     }
   };
 

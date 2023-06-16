@@ -3,42 +3,43 @@ import ProfilePage from '../components/ProfilePage';
 import EditStatusPage from '../components/EditStatusPage';
 import StatusPage from '../components/StatusPage';
 import ProfilePhoto from '../components/ProfilePhoto';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+import SDK from '../SDK/SDK';
+import { statusListConstant } from '../constant';
 
 const ProfileScreen = () => {
-  const dispatch = useDispatch()
   const selectProfileInfo = useSelector((state) => state.profile.profileInfoList);
   const [nav, setNav] = React.useState("ProfileScreen");
   const [profileInfo, setProfileInfo] = React.useState(selectProfileInfo);
-  const [statusList, setStatusList] = React.useState([
-    { id: 1, value: "Available", },
-    { id: 2, value: "Sleeping...", },
-    { id: 3, value: "Urgent calls only", },
-    { id: 4, value: "At the movies", },
-    { id: 5, value: "I am in Mirror Fly", },
-    { id: 6, value: "Avail" },
-  ]);
+  const [statusList, setStatusList] = React.useState([]);
 
   const handleDelete = (value) => {
-    setStatusList(statusList.filter(item => item.value !== value));
+    setStatusList(statusList.filter(item => item !== value));
+    SDK.deleteProfileStatus(value)
   }
 
   const onChangeEvent = () => {
-    if (!(profileInfo?.nickName == selectProfileInfo?.nickName)|| !(profileInfo?.status == selectProfileInfo?.status)) {
-      return true
-    }
-    return false;
+    return (profileInfo?.nickName !== selectProfileInfo?.nickName)
   }
 
-  React.useEffect(()=>{
-    setProfileInfo(selectProfileInfo)
-  },[selectProfileInfo])
+  React.useEffect(() => {
+    (async () => {
+      setProfileInfo(selectProfileInfo)
+      let statusList = await SDK.getStatusList()
+      if (statusList.length == 0) {
+        statusListConstant.forEach(item => SDK.addProfileStatus(item))
+        setStatusList(statusListConstant)
+      } else {
+        setStatusList(statusList)
+      }
+    })()
+  }, [selectProfileInfo])
 
   React.useEffect(() => {
     if (profileInfo?.status) {
-      let fliter = statusList?.filter((info) => profileInfo?.status == info?.value);
+      let fliter = statusList?.filter((item) => profileInfo?.status == item);
       if (!fliter.length) {
-        const newObj = { value: profileInfo?.status };
+        const newObj = profileInfo?.status;
         setStatusList(prevArray => [...prevArray, newObj]);
       }
     }

@@ -1,7 +1,7 @@
 import moment from "moment";
 
 function datetoTime(secs) {
-    var todayDate = new Date();
+    let todayDate = new Date();
     todayDate.setSeconds(todayDate.getSeconds() - secs);
     return todayDate;
 }
@@ -11,7 +11,7 @@ function secondsToHms(secs) {
         return 0;
     }
     secs = Number(secs);
-    var calcHours = Math.floor(secs / 3600);
+    let calcHours = Math.floor(secs / 3600);
     return calcHours > 0 ? calcHours : 0;
 }
 
@@ -32,6 +32,44 @@ export const getConversationHistoryTime = (UTCTime) => {
     let offset = moment().utcOffset();
     return moment.utc(UTCTime).utcOffset(offset).format("LT");
 };
+
+/**
+ * changeTimeFormat() method to perform convert Timestamp it's effectively works for 16 digit to Time format.
+ *
+ * @param {timeStamp} time
+ */
+
+export const changeTimeFormat = (time) => {
+    if (!time) {
+        return '';
+    }
+    else if (time.toString().length === 16) {
+        return moment(time / 1000).format('hh:mm A');
+    } else {
+        return moment(time)
+            .format("hh:mm A");
+    }
+};
+
+/**
+ * change16TimeWithDateFormat() method to  returns 26-May-2023 at 3:13PM.
+ *
+ * @param {timeStamp} time
+ */
+
+export const change16TimeWithDateFormat = (time) => {
+    if (!time) {
+        return '';
+    }
+    else if (time.toString().length === 16) {
+        let convertedDate = moment(time / 1000).format('DD-MMM-YYYY')
+        let convertedTime =  moment(time / 1000).format('hh:mm A')
+        return `${convertedDate} at ${convertedTime}`
+    } else {
+        return moment(time)
+            .format("hh:mm A");
+    }
+};
 /**
  * getLastseen() method to perform convert seconds to user online or Last seen date format status.
  *
@@ -39,11 +77,11 @@ export const getConversationHistoryTime = (UTCTime) => {
  */
 export const getLastseen = (secs) => {
     try {
-        var userDate = datetoTime(secs);
-        var currentDate = new Date();
-        var weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        var month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        var HHMM = { hour: "numeric", minute: "numeric" };
+        let userDate = datetoTime(secs);
+        let currentDate = new Date();
+        let weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        let month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        let HHMM = { hour: "numeric", minute: "numeric" };
         if (secs === 0) {
             return "Online";
         } else if (userDate.getDate() === currentDate.getDate() && userDate.getMonth() === currentDate.getMonth()) {

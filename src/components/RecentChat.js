@@ -17,7 +17,8 @@ export default function RecentChat(props) {
     };
     const currentUserJID = useSelector(state => state?.auth?.currentUserJID.split('@')[0])
     const renderItem = ({ item, index }) => {
-        const isSame = currentUserJID === item?.publisherId
+        const isSame = currentUserJID === item?.publisherId;
+        let statusVisible
         switch (item?.msgStatus) {
             case 0:
                 statusVisible = styles.notDelivered
@@ -30,7 +31,7 @@ export default function RecentChat(props) {
                 break;
         }
         return <Box key={index}>
-            <Pressable android_ripple={{ color: 'rgba(0, 0, 0, 0.1)' }} onPress={async () => {
+            <Pressable py='2' android_ripple={{ color: 'rgba(0, 0, 0, 0.1)' }} onPress={async () => {
                 let jid = await SDK.getJid(item?.fromUserId)
                 if (jid.statusCode == 200) {
                     let x = { screen: CHATSCREEN, fromUserJID: jid.userJid }
@@ -47,7 +48,7 @@ export default function RecentChat(props) {
                             <Text color="coolGray.800" _dark={{ color: 'warmGray.50' }} bold>{item?.fromUserId}</Text>
                             <HStack alignItems={'center'}>
                                 {isSame && <View style={[styles.msgStatus, isSame ? statusVisible : ""]}></View>}
-                                <Text  w='60%' numberOfLines={1} ellipsizeMode="tail" px={isSame ? 1 : 0} color="coolGray.600" _dark={{ color: 'warmGray.200' }}>{item?.msgBody?.message}</Text>
+                                <Text w='60%' numberOfLines={1} ellipsizeMode="tail" px={isSame ? 1 : 0} color="coolGray.600" _dark={{ color: 'warmGray.200' }}>{item?.msgBody?.message}</Text>
                             </HStack>
                         </VStack>
                         <Spacer />
@@ -57,10 +58,10 @@ export default function RecentChat(props) {
                     </HStack>
                 </Box>
             </Pressable>
-            <Divider w={"83%"} alignSelf="flex-end" my="2" _light={{ bg: "#f2f2f2" }} _dark={{ bg: "muted.50" }} />
+            <Divider w="80%" alignSelf="flex-end" _light={{ bg: "#f2f2f2" }} _dark={{ bg: "muted.50" }} />
         </Box>
     };
-    if (!props.data.length) {
+    if (!props?.data?.length) {
         return <Center h='full'>
             <Image style={styles.image} resizeMode="cover" source={require('../assets/no_messages.png')} />
             {props.isSearching
@@ -81,9 +82,7 @@ export default function RecentChat(props) {
         </Slide>
     }
 
-    return <Box bg="white" safeArea flex="1">
-        <SwipeListView showsVerticalScrollIndicator={false} data={props.data} renderItem={renderItem} rightOpenValue={-130} previewRowKey={'0'} previewOpenValue={-40} previewOpenDelay={3000} onRowDidOpen={onRowDidOpen} />
-    </Box>;
+    return <SwipeListView showsVerticalScrollIndicator={false} data={props.data} renderItem={renderItem} rightOpenValue={-130} previewRowKey={'0'} previewOpenValue={-40} previewOpenDelay={3000} onRowDidOpen={onRowDidOpen} />
 }
 
 const styles = StyleSheet.create({

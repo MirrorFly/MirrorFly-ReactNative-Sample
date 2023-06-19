@@ -37,7 +37,7 @@ function Navigation() {
             let nav = { screen: RECENTCHATSCREEN }
             dispatch(navigate(nav))
             dispatch(profileData())
-        }else{
+        } else {
             dispatch(getRecentChat())
             let nav = { screen: REGISTERSCREEN }
             dispatch(navigate(nav))

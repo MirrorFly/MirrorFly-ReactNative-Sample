@@ -44,9 +44,9 @@ const ChatConversation = (props) => {
     }
     const renderHiddenItem = (data, rowMap) => {
         return (
-            <HStack alignItems={'center'}flex={"0.8"} ml='2' >
-                {isSwiping?.isActivated && isSwiping?.key === data.item.msgId && 
-                <HStack alignItems={'center'} justifyContent={'center'} w={10} h={10} borderRadius={20} bg={'#E5E5E5'}><ReplyIcon /></HStack> }
+            <HStack alignItems={'center'} flex={"0.8"} ml='2' >
+                {isSwiping?.isActivated && isSwiping?.key === data.item.msgId &&
+                    <HStack alignItems={'center'} justifyContent={'center'} w={10} h={10} borderRadius={20} bg={'#E5E5E5'}><ReplyIcon /></HStack>}
             </HStack>
         )
     }
@@ -113,6 +113,10 @@ const ChatConversation = (props) => {
                 setMenuItems([
                     {
                         label: 'Clear Chat',
+                        formatter: () => { }
+                    },
+                    {
+                        label: 'Report',
                         formatter: () => { }
                     }
                 ])
@@ -235,15 +239,18 @@ const ChatConversation = (props) => {
             {replyMsgs ? <View paddingX={"1"} paddingY={"1"} backgroundColor={"#DDE3E5"}  >
                 <Stack paddingX={"3"} paddingY={"0 "} backgroundColor={"#E2E8F9"}>
                     <View flexDirection={"row"} justifyContent={"flex-end"}  >
-
                         {replyMsgs ? <Pressable style={{ padding: 5, justifyContent: "flex-end", backgroundColor: "#FFF", borderRadius: 20, borderWidth: 1, borderColor: "black" }} onPress={handleRemove}>
                             <ClearTextIcon />
                         </Pressable> : null}
-
                     </View>
                     <View mb={"2"} justifyContent={"flex-start"} >
                         {replyMsgs.fromUserJid === currentUserJID ? <Text py="0"  >You</Text> : <Text py="0"  >{replyMsgs?.msgBody.nickName}</Text>}
-                        <Text py="0" mr={"6"} fontWeight={"400"} color={"#767676"} numberOfLines={1}>{replyMsgs?.msgBody.message}</Text>
+                        {{
+                            "text": <Text numberOfLines={1} fontSize={14} color='#313131'>{replyMsgs?.msgBody?.message}</Text>,
+                            "image": <Text fontWeight={'600'} fontStyle={'italic'} fontSize={14} color='#313131'>image</Text>,
+                            "video": <Text fontWeight={'600'} fontStyle={'italic'} fontSize={14} color='#313131'>video</Text>,
+                            "audio": <Text fontWeight={'600'} fontStyle={'italic'} fontSize={14} color='#313131'>audio</Text>,
+                        }[replyMsgs?.msgBody?.message_type]}
                     </View>
                 </Stack>
             </View> : null}

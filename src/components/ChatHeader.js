@@ -3,7 +3,7 @@ import React from 'react'
 import Avathar from '../common/Avathar'
 import MenuContainer from '../common/MenuContainer'
 import MarqueeText from '../common/MarqueeText'
-import { CloseIcon, DeleteIcon, FavouriteIcon, ForwardIcon, ReplyIcon,LeftArrowIcon } from '../common/Icons';
+import { CloseIcon, DeleteIcon, FavouriteIcon, ForwardIcon, ReplyIcon, LeftArrowIcon } from '../common/Icons';
 
 function ChatHeader(props) {
     const marqueeRef = React.useRef(null);
@@ -59,8 +59,8 @@ function ChatHeader(props) {
                             }}
                         </Pressable>
                     </HStack>
-                    <HStack alignItems="center">
-                        {props.selectedMsgs.length < 2 && <MenuContainer menuItems={props.menuItems} />}
+                    <HStack pr='3'>
+                        {props?.selectedMsgs?.length < 2 && <MenuContainer menuItems={props.menuItems} />}
                     </HStack>
                 </HStack>
                 : <>
@@ -69,13 +69,13 @@ function ChatHeader(props) {
                             <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handleRemove}>
                                 <CloseIcon />
                             </IconButton>
-                            <Text px="8" textAlign={"center"} fontSize={"18"} fontWeight={"500"} >{props?.selectedMsgs?.length}</Text>
+                            <Text px="8" textAlign={"center"} fontSize={"18"} fontWeight={"400"} >{props?.selectedMsgs?.length}</Text>
                         </View>
                         <View flexDirection={"row"} justifyContent={"space-between"} alignItems={"center"}  >
-                            <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handleReply}>
+                            <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} px="2" onPress={handleReply}>
                                 {props?.selectedMsgs?.length == 1 && <ReplyIcon />}
                             </IconButton>
-                            <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} px="5" onPress={() => console.log("Forward icon pressed")}>
+                            <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} px="4" onPress={() => console.log("Forward icon pressed")}>
                                 <ForwardIcon />
                             </IconButton>
                             <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} px="3" onPress={handleFavourite}>
@@ -91,7 +91,7 @@ function ChatHeader(props) {
 
             }
             <AlertDialog isOpen={remove} onClose={onClose}>
-                <AlertDialog.Content  width={'85%'} borderRadius={0}>
+                <AlertDialog.Content width={'85%'} borderRadius={0}>
                     <AlertDialog.Body >
                         <Text fontSize={"15"} fontWeight={"400"}>Are you sure you want to delete selected Message ?</Text>
                         <HStack justifyContent={"flex-end"} py="3">

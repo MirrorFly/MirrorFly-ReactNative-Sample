@@ -79,7 +79,6 @@ export const MenuIconBtn = (triggerProps) => {
     return (
         <IconButton
             {...triggerProps}
-            mr='3'
             borderRadius="full"
             _pressed={{ bg: "rgba(50,118,226, 0.1)" }}
             icon={<Icon px='3' as={MenuIcon} name="emoji-happy" />}

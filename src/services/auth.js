@@ -5,7 +5,7 @@ import { CHATSCREEN, RECENTCHATSCREEN, REGISTERSCREEN } from "../constant"
 import { navigate } from "../redux/navigationSlice"
 
 export const authScreen = async () => {
-    var screen = 'Splash'
+    let screen = 'Splash'
     try {
         await AsyncStorage.getItem('mirrorFlyToken')
         let keys = await AsyncStorage.getAllKeys()
@@ -15,8 +15,7 @@ export const authScreen = async () => {
                 const credential = await AsyncStorage.getItem('credential')
                 if (credential) {
                     await store.dispatch(registerData(JSON.parse(credential))).then((res) => {
-                        console.log(res)
-                        if (res.payload.payload == 200 || res.payload.payload == 409)
+                        if (res.payload?.payload == 200 || res.payload?.payload == 409)
                             screen = RECENTCHATSCREEN
                         else screen = REGISTERSCREEN
                     })

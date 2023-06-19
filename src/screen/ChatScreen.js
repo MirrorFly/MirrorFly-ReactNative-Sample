@@ -1,156 +1,73 @@
-import React from 'react';
-import { BackHandler, FlatList, ImageBackground, StyleSheet, Text, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { navigate } from '../redux/navigationSlice';
-import { RECENTCHATSCREEN } from '../constant';
-import ChatInput from '../components/ChatInput';
-import ChatMessage from '../components/ChatMessage';
-import { getMessages, sendMessage } from '../redux/chatSlice';
-import { getLastseen } from '../common/TimeStamp';
-import { BackBtn } from '../common/Button';
-import Avathar from '../common/Avathar';
-import SDK from '../SDK/SDK';
-import { HStack, Slide, Spinner } from 'native-base';
+import React from 'react'
+import ChatConversation from '../components/ChatConversation'
+import MessageInfo from '../components/MessageInfo'
+import { CameraIcon, ContactIcon, DocumentIcon, GalleryIcon, HeadSetIcon, LocationIcon } from '../common/Icons'
+import GalleryPickView from '../components/GalleryPickView'
+import { handleGalleryPickerMulti } from '../common/utils'
+import { useToast } from 'native-base'
 
-const ChatScreen = () => {
-  const dispatch = useDispatch();
-  const messages = useSelector(state => state.chat.chatMessages)
-  const fromUserJId = useSelector(state => state.navigation.fromUserJid)
-  const [messageList, setMessageList] = React.useState([])
-  const [seenStatus, setSeenStatus] = React.useState('')
-  const [nickName, setNickName] = React.useState('')
-  const [isChatLoading, setIsChatLoading] = React.useState(false)
+function ChatScreen() {
+  const [localNav, setLocalNav] = React.useState('CHATCONVERSATION')
+  const [isMessageInfo, setIsMessageInfo] = React.useState({})
+  const toast = useToast()
+  const [sendSelected, setSendSelected] = React.useState(false)
+  const [selectedImages, setSelectedImages] = React.useState([])
 
-  const handleBackBtn = () => {
-    let x = { screen: RECENTCHATSCREEN }
-    dispatch(navigate(x))
-    return true;
-  }
+  const attachmentMenuIcons = [
+    {
+      name: "Document",
+      icon: DocumentIcon,
+      formatter: () => { }
+    },
+    {
+      name: "Camera",
+      icon: CameraIcon,
+      formatter: () => {
 
-  const backHandler = BackHandler.addEventListener(
-    'hardwareBackPress',
-    handleBackBtn
-  );
-  const handleMessageSend = (val) => {
-    let values = [val, fromUserJId]
-    dispatch(sendMessage(values))
-  }
-
-  React.useEffect(() => {
-    (async () => {
-      if (fromUserJId) {
-        setIsChatLoading(true)
-        let userId = fromUserJId?.split('@')[0]
-        let userDetails = await SDK.getUserProfile(userId)
-        setNickName(userDetails?.data?.nickName || userId)
-        if (messages[fromUserJId]) {
-          setMessageList(messages[fromUserJId])
-        } else {
-          dispatch(getMessages(fromUserJId)).then((res) => {
-            console.log(res)
-          });
-        }
-        let seen = await SDK.getLastSeen(fromUserJId)
-        if (seen.statusCode == 200) {
-          setSeenStatus(getLastseen(seen?.data?.seconds))
+      }
+    },
+    {
+      name: "Gallery",
+      icon: GalleryIcon,
+      formatter: async () => {
+        const res = await handleGalleryPickerMulti(toast)
+        const transformedArray = res.map((obj, index) => {
+          return {
+            caption: '',
+            image: obj
+          };
+        });
+        setSelectedImages(transformedArray)
+        if (res?.length) {
+          setLocalNav('GalleryPickView')
         }
       }
-      setIsChatLoading(false)
-    })();
-  }, [messages, fromUserJId])
-  console.log(isChatLoading, 'isChatLoading')
-
-  React.useEffect(() => {
-    return () => backHandler.remove()
-  }, [])
-
-  const handleEndReached = (val) => {
-    console.log(val, 'handleEndReached')
-  }
-
+    },
+    {
+      name: "Audio",
+      icon: HeadSetIcon,
+      formatter: () => { }
+    },
+    {
+      name: "Contact",
+      icon: ContactIcon,
+      formatter: () => { }
+    },
+    {
+      name: "Location",
+      icon: LocationIcon,
+      formatter: () => { }
+    },
+  ]
   return (
     <>
-      <View style={styles.chatHeader}>
-        <BackBtn onPress={handleBackBtn} />
-        <View style={styles.avatarContainer}>
-          <Avathar data={nickName ? nickName : '91'} />
-          <View style={styles.userName}>
-            <Text numberOfLines={1} ellipsizeMode='tail' >{nickName}</Text>
-            {seenStatus && <Text numberOfLines={1} ellipsizeMode='tail'>{seenStatus}</Text>}
-          </View>
-        </View>
-      </View>
-      <View style={styles.container}>
-        <ImageBackground
-          source={require('../assets/chatBackgroud.png')}
-          style={styles.imageBackground}
-          resizeMode="cover"
-        >
-          {isChatLoading
-            ? <Slide mt="20" in={isChatLoading} placement="top">
-              <HStack space={8} justifyContent="center" alignItems="center">
-                <Spinner size="lg" color={'#3276E2'} width={5} />
-              </HStack>
-            </Slide>
-            : <FlatList
-              inverted
-              data={messageList}
-              keyExtractor={(item, index) => index.toString()}
-              onEndReached={handleEndReached}
-              renderItem={({ item }) => {
-                return <ChatMessage message={item} />
-              }}
-            />}
-        </ImageBackground>
-      </View>
-      <View style={styles.options}>
-        <ChatInput onSendMessage={handleMessageSend} />
-      </View>
+      {{
+        'CHATCONVERSATION': <ChatConversation setLocalNav={setLocalNav} setIsMessageInfo={setIsMessageInfo} attachmentMenuIcons={attachmentMenuIcons} sendSelected={sendSelected} selectedImages={selectedImages}/>,
+        'MESSAGEINFO': <MessageInfo setLocalNav={setLocalNav} setIsMessageInfo={setIsMessageInfo} isMessageInfo={isMessageInfo} />,
+        'GalleryPickView': <GalleryPickView setSelectedImages={setSelectedImages} selectedImages={selectedImages} setLocalNav={setLocalNav} setSendSelected={setSendSelected}/>
+      }[localNav]}
     </>
-  );
-};
+  )
+}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingVertical: 18
-  },
-  imageBackground: {
-    flex: 1,
-  },
-  text: {
-    color: 'black',
-    fontSize: 20,
-  },
-  chatHeader: {
-    backgroundColor: '#fff',
-    height: 56,
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 15
-  },
-  avatarContainer: {
-    marginStart: 16.97,
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  avatar: {
-    width: 36.37,
-    height: 36.37,
-    borderRadius: 50,
-    backgroundColor: 'black',
-  },
-  userName: {
-    width: 170,
-    marginStart: 10,
-    justifyContent: 'center'
-  },
-  options: {
-    backgroundColor: '#fff',
-    borderTopWidth: 2,
-    borderColor: "#c1c1c1",
-  }
-});
-
-export default ChatScreen;
+export default ChatScreen

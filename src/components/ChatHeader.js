@@ -69,13 +69,13 @@ function ChatHeader(props) {
                             <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handleRemove}>
                                 <CloseIcon />
                             </IconButton>
-                            <Text px="8" textAlign={"center"} fontSize={"18"} fontWeight={"500"} >{props?.selectedMsgs?.length}</Text>
+                            <Text px="8" textAlign={"center"} fontSize={"18"} fontWeight={"400"} >{props?.selectedMsgs?.length}</Text>
                         </View>
                         <View flexDirection={"row"} justifyContent={"space-between"} alignItems={"center"}  >
-                            <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handleReply}>
+                            <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} px="2" onPress={handleReply}>
                                 {props?.selectedMsgs?.length == 1 && <ReplyIcon />}
                             </IconButton>
-                            <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} px="5" onPress={() => console.log("Forward icon pressed")}>
+                            <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} px="4" onPress={() => console.log("Forward icon pressed")}>
                                 <ForwardIcon />
                             </IconButton>
                             <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} px="3" onPress={handleFavourite}>

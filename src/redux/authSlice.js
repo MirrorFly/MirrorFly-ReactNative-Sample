@@ -10,6 +10,7 @@ const initialState = {
     status: 'idle',
     isConnected: NOTCONNECTED,
     error: null,
+
 }
 
 export const logout = createAsyncThunk('register/logout', async (val, { dispatch }) => {
@@ -31,8 +32,7 @@ export const registerData = createAsyncThunk('register/userData', async (number,
         let register
         if (number) {
             register = await SDK.register(number);
-            switch (register.statusCode) {
-                case 200:
+            if (register.statusCode ==200) {
                     await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
                     await AsyncStorage.setItem('credential', JSON.stringify(number));
                     await dispatch(connectXMPP(register.data))
@@ -40,7 +40,7 @@ export const registerData = createAsyncThunk('register/userData', async (number,
         }
         return register.data
     } catch (error) {
-        console.log(error, 'registerData error')
+        console.log(error, 'registerData error');
     }
 })
 
@@ -48,10 +48,8 @@ export const connectXMPP = createAsyncThunk('register/connect', async (register,
     let connect = await SDK.connect(register.username, register.password);
     switch (connect?.statusCode) {
         case 200:
-            ('Connection Established register/connect');
-            await dispatch(getCurrentUserJid());
-            break;
         case 409:
+            await dispatch(getCurrentUserJid());
             break;
         default:
             errorToast(connect.message);
@@ -71,7 +69,6 @@ const authSlice = createSlice({
             })
             .addCase(registerData.fulfilled, (state, action) => {
                 state.status = 'registered';
-                console.log(action, 'action')
                 state.userData = action.payload
             })
             .addCase(registerData.rejected, (state, action) => {
@@ -88,6 +85,7 @@ const authSlice = createSlice({
             .addCase(connectXMPP.rejected, (state, action) => {
                 state.isConnected = 'failed';
             })
+
             .addCase(logout.pending, (state) => {
                 state.isConnected = 'loading';
             })

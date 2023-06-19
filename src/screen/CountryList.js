@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, BackHandler, TextInput } from 'react-native'
+import { StyleSheet, Text, View, FlatList, BackHandler } from 'react-native'
 import React from 'react'
 import { countriescodes } from '../common/countries'
 import CountryItems from '../model/CountryItems';
@@ -7,7 +7,6 @@ import { REGISTERSCREEN } from '../constant';
 import { useDispatch } from 'react-redux';
 import ScreenHeader from '../components/ScreenHeader';
 const CountryList = () => {
-    const [isSearching, setIsSearching] = React.useState(false);
     const [filteredData, setFilteredData] = React.useState(countriescodes);
     const dispatch = useDispatch();
     const backHandler = BackHandler.addEventListener(
@@ -26,7 +25,6 @@ const CountryList = () => {
     }
 
     const handleSearch = (text) => {
-        setIsSearching(true)
         const filtered = countriescodes.filter((item) =>
             item.name.toLowerCase().includes(text.toLowerCase())
         );
@@ -58,7 +56,7 @@ const CountryList = () => {
                         data={filteredData}
                         removeClippedSubviews={true}
                         showsVerticalScrollIndicator={false}
-                        keyExtractor={(item) => item.id}
+                        keyExtractor={(item) => item.code}
                         renderItem={({ item, index }) => (
                             <CountryItems key={index} renderItem={item} />
                         )}

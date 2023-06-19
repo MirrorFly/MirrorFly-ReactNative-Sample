@@ -1,25 +1,23 @@
 import React from 'react'
-import { Center } from 'native-base';
-import { BackHandler, Image, StyleSheet } from 'react-native'
+import { Center, KeyboardAvoidingView } from 'native-base';
+import { BackHandler, Image, StyleSheet,Text } from 'react-native'
 import { CHATSCREEN, RECENTCHATSCREEN, SETTINGSCREEN } from '../constant'
 import { navigate } from '../redux/navigationSlice'
 import { useDispatch } from 'react-redux'
 import ScreenHeader from '../components/ScreenHeader'
 import SDK from '../SDK/SDK'
 import FlatListView from '../components/FlatListView'
-import { Text } from 'react-native';
 
 function ContactScreen() {
     const dispatch = useDispatch()
     const [isFetching, setIsFetching] = React.useState(false)
     const [usersList, setUsersList] = React.useState([])
+    const [isSearchedList, setIsSearchedList] = React.useState([])
     const [page, setPage] = React.useState(0)
-    const [totalPages, setTotalPages] = React.useState()
-    const [totoalUsers, setTotoalUsers] = React.useState()
     const [searchText, setSearchText] = React.useState('')
-
+    const [isSearching, setIsSearching] = React.useState(false)
+    
     const handleBackBtn = () => {
-        setIsFetching(false)
         let x = { screen: RECENTCHATSCREEN }
         dispatch(navigate(x))
         return true;
@@ -30,19 +28,24 @@ function ContactScreen() {
         handleBackBtn
     );
 
+    const fetchContactList = () => {
+        setIsFetching(true)
+        setTimeout(async () => {
+            let updateUsersList = await SDK.getUsersList(searchText, "", 20)
+            setIsSearchedList(updateUsersList.users)
+            setIsFetching(false)
+        }, 700)
+    }
+
     React.useEffect(() => {
         (async () => {
             setIsFetching(true)
             let usersList = await SDK.getUsersList()
-            console.log(usersList)
             setPage(1)
-            setTotalPages(usersList.totalPages)
-            setTotoalUsers(usersList.totalUsers)
             setUsersList(usersList.users)
             setIsFetching(false)
         })();
         return () => {
-            setIsFetching(false);
             backHandler.remove()
         }
     }, [])
@@ -56,52 +59,60 @@ function ContactScreen() {
         }
     ]
     const handlePress = (item) => {
-        setIsFetching(false)
         dispatch(navigate({ screen: CHATSCREEN, fromUserJID: item.userJid }))
     }
 
     const handleSearch = async (text) => {
+        setIsSearching(true)
         setIsFetching(true)
-        setUsersList([]);
-        setTimeout(async () => {
-            let updateUsersList = await SDK.getUsersList(text,"",100)
-            setUsersList(updateUsersList.users)
-            setIsFetching(false)
-        }, 700)
+        fetchContactList()
         setSearchText(text)
     }
 
     const handlePagination = async (e) => {
         setIsFetching(true)
-        if(!searchText){
+        if (!searchText) {
             let updateUsersList = await SDK.getUsersList(searchText, page + 1 + 2, 30)
             setPage(page + 1)
             setUsersList([...usersList, ...updateUsersList.users])
         }
         setIsFetching(false)
     }
+    const handleClear = async () => {
+        setSearchText('')
+        setIsSearching(false)
+    }
 
     return (
-        <>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
             <ScreenHeader
                 title='Contacts'
                 onhandleBack={handleBackBtn}
                 menuItems={menuItems}
                 onhandleSearch={handleSearch}
+                handleClear={handleClear}
             />
-            {!usersList?.length && !isFetching ?
-                <Center h='full'>
+            <FlatListView
+                onhandlePagination={handlePagination}
+                onhandlePress={(item) => handlePress(item)}
+                isLoading={isFetching}
+                data={isSearching ? isSearchedList : usersList}
+            />
+             {!isFetching && usersList?.length == 0 &&
+                <Center h='90%'>
                     <Image style={styles.image} resizeMode="cover" source={require('../assets/no_contacts.png')} />
-                    <Text style={styles.noMsg}>No Contacts Found</Text>
+                    <Text style={styles.noMsg}>No contacts found</Text>
                 </Center>
-                : <FlatListView
-                    onhandlePagination={handlePagination}
-                    onhandlePress={(item) => handlePress(item)}
-                    isLoading={isFetching}
-                    data={usersList}
-                />
             }
-        </>
+            {!isFetching && isSearching && isSearchedList.length == 0 &&
+                <Center h='90%'>
+                    <Text style={styles.noMsg}>No contacts found</Text>
+                </Center>
+            }
+        </KeyboardAvoidingView>
     )
 }
 
@@ -119,8 +130,8 @@ const styles = StyleSheet.create({
     },
     noMsg: {
         color: '#181818',
-        fontSize: 16,
-        fontWeight: '800',
+        fontSize: 13,
+        fontWeight: '600',
         marginBottom: 8
     }
 });

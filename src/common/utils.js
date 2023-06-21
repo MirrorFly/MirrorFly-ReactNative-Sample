@@ -8,11 +8,8 @@ const toastConfig = {
   avoidKeyboard: true
 }
 
-export const getExtention = filename => {
-  // To get the file extension
-  return /[.]/.exec(filename) ?
-      /[^.]+$/.exec(filename) : undefined;
-};
+export const getExtention = filename =>  /[.]/.exec(filename) ? /[^.]+$/.exec(filename) : undefined;
+
 
 export const handleGalleryPickerSingle = async () => {
   try {

@@ -1,4 +1,6 @@
+import { REGISTERSCREEN } from "../constant";
 import { getReceiveMessage, updateMessageStatus } from "../redux/chatSlice";
+import { navigate } from "../redux/navigationSlice";
 import { updateProfile } from "../redux/profileSlice";
 import { storeDeliveryStatus, storeSeenStatus } from "../redux/storageSlice";
 import store from "../redux/store";
@@ -10,6 +12,9 @@ export const callBacks = {
             console.log("Connection Established");
         } else if (response.status === "DISCONNECTED") {
             console.log("Disconnected");
+        } else if (response.status === "LOGOUT") {
+            console.log("LOGOUT");
+            store.dispatch(navigate({ screen: REGISTERSCREEN }))
         }
     },
     dbListener: (res) => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Animated } from 'react-native';
+import { View, StyleSheet, Animated, ImageBackground, Image } from 'react-native';
 
 const SplashScreen = () => {
     const logoOpacity = new Animated.Value(0);
@@ -14,11 +14,17 @@ const SplashScreen = () => {
 
     return (
         <View style={styles.container}>
-            <Animated.Image
-                style={{ ...styles.logo, opacity: logoOpacity }}
-                source={require('../assets/mirrorfly-logo.png')}
-            />
-            {/* <Image source={require('../assets/mirrorfly-logo.png')} style={styles.logo} /> */}
+            <ImageBackground
+                source={require('../assets/drawable_splash_gradient.png')}
+                style={{
+                    flex: 1,
+                    resizeMode: 'contain',
+                    justifyContent: 'center',
+                    alignItems:'center'
+                }}
+            >
+                <Image source={require('../assets/ic_logo_splash.png')} style={styles.logo} />
+            </ImageBackground>
         </View>
     );
 };
@@ -26,9 +32,9 @@ const SplashScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#FFFFFF',
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        // backgroundColor: '#FFFFFF',
     },
     logo: {
         width: 300,

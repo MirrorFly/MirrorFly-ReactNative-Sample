@@ -12,9 +12,9 @@ export const authScreen = async () => {
         if (keys.includes('mirrorFlyLoggedIn')) {
             const mirrorFlyLoggedIn = await AsyncStorage.getItem('mirrorFlyLoggedIn')
             if (mirrorFlyLoggedIn == 'true') {
-                const credential = await AsyncStorage.getItem('credential')
-                if (credential) {
-                    await store.dispatch(registerData(JSON.parse(credential))).then((res) => {
+                const userIdentifier = await AsyncStorage.getItem('userIdentifier')
+                if (userIdentifier) {
+                    await store.dispatch(registerData(JSON.parse(userIdentifier))).then((res) => {
                         if (res.payload?.payload == 200 || res.payload?.payload == 409)
                             screen = RECENTCHATSCREEN
                         else screen = REGISTERSCREEN

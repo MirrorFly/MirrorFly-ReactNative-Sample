@@ -1,5 +1,6 @@
-import {  createSlice } from '@reduxjs/toolkit';
-import { REGISTERSCREEN } from '../constant';
+import { createSlice } from '@reduxjs/toolkit';
+import { PROFILESCREEN, RECENTCHATSCREEN, REGISTERSCREEN } from '../constant';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initialState = {
     screen: REGISTERSCREEN,
@@ -12,7 +13,7 @@ const initialState = {
         dial_code: "91",
         code: "IN"
     },
-    prevScreen:""
+    prevScreen: ""
 }
 
 const navigationSlice = createSlice({
@@ -24,7 +25,8 @@ const navigationSlice = createSlice({
             state.number = action.payload?.number
             state.fromUserJid = action.payload?.fromUserJID;
             state.selectContryCode = action?.payload?.selectContryCode || state.selectContryCode
-            state.prevScreen= action?.payload.prevScreen ;
+            state.prevScreen = action?.payload.prevScreen;
+            AsyncStorage.setItem('screenObj', JSON.stringify({ prevScreen: action.payload?.prevScreen, screen: action.payload?.screen }))
         }
     },
 });

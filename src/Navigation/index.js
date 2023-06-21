@@ -25,31 +25,9 @@ function Navigation() {
             if (JSON.parse(screenObj)) {
                 dispatch(navigate(JSON.parse(screenObj)))
             }
-            // if (!JSON.parse(screenObj)) {
-            //     setIsAppLoading(false)
-            //     dispatch(navigate({ screen: REGISTERSCREEN }))
-            // }
-            // if (validScreens.includes(JSON.parse(screenObj))) {
-            //     dispatch(navigate({ screen: JSON.parse(screenObj) }))
-            // } else {
-            //     dispatch(navigate({ screen: RECENTCHATSCREEN }))
-            // }
             setIsAppLoading(false)
         }, 1000)
     }, [])
-
-    // React.useEffect(() => {
-    //     if (isConnect == CONNECTED) {
-    //         dispatch(getRecentChat())
-    //         let nav = { screen: RECENTCHATSCREEN }
-    //         dispatch(navigate(nav))
-    //         dispatch(profileData())
-    //     } else {
-    //         dispatch(getRecentChat())
-    //         let nav = { screen: REGISTERSCREEN }
-    //         dispatch(navigate(nav))
-    //     }
-    // }, [isConnect])
 
     if (isAppLoading) {
         return <SplashScreen />;

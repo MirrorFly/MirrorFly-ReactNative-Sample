@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { PROFILESCREEN, RECENTCHATSCREEN, REGISTERSCREEN } from '../constant';
+import { REGISTERSCREEN } from '../constant';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initialState = {

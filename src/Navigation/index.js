@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, NativeBaseProvider, useScreenReaderEnabled } from 'native-base'
+import { Box, NativeBaseProvider } from 'native-base'
 import { useDispatch, useSelector } from 'react-redux'
 import CountryList from '../screen/CountryList'
 import ProfileScreen from '../screen/ProfileScreen'
@@ -10,9 +10,6 @@ import ContactScreen from '../screen/ContactScreen';
 import SettingScreen from '../screen/SettingScreen'
 import { navigate } from '../redux/navigationSlice'
 import SplashScreen from '../screen/SplashScreen'
-import { getRecentChat } from '../redux/chatSlice'
-import { CONNECTED, PROFILESCREEN, RECENTCHATSCREEN, REGISTERSCREEN } from '../constant'
-import { profileData } from '../redux/profileSlice'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 function Navigation() {

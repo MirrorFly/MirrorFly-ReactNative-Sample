@@ -21,7 +21,6 @@ function Navigation() {
         setIsAppLoading(true);
         setTimeout(async () => {
             const screenObj = await AsyncStorage.getItem('screenObj')
-            console.log('screen', JSON.parse(screenObj))
             if (JSON.parse(screenObj)) {
                 dispatch(navigate(JSON.parse(screenObj)))
             }

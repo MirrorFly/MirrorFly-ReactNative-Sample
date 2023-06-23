@@ -6,27 +6,38 @@ import { Modal, Center, Box, Text, VStack, useToast, Spinner, Stack, Input, HSta
 import { SDK } from '../SDK';
 import ImagePicker from 'react-native-image-crop-picker';
 import Avathar from "../common/Avathar";
-import { RECENTCHATSCREEN, REGISTERSCREEN } from '../constant';
+import { PROFILESCREEN, RECENTCHATSCREEN, REGISTERSCREEN } from '../constant';
 import { navigate } from '../redux/navigationSlice';
 import ScreenHeader from './ScreenHeader';
 import { handleGalleryPickerSingle, requestStoragePermission } from '../common/utils';
 import AuthenticatedImage from '../common/AuthendicatedImage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNetworkStatus } from '../hooks';
 
 const ProfilePage = (props) => {
+  const toast = useToast();
+  const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
   const prevPageInfo = useSelector((state) => state.navigation.prevScreen);
-  const toast = useToast();
+  const isFetchingProfile = useSelector(state => state.profile.status == 'loading')
   const [open, setOpen] = React.useState(false);
   const [remove, setRemove] = React.useState(false);
-  const [mobileNumber] = React.useState("");
-  const dispatch = useDispatch();
+  const [mobileNumber, setMobileNumber] = React.useState("");
   const [loading, setloading] = React.useState(false);
   const [isToastShowing, setIsToastShowing] = React.useState(false)
   const [imageFileToken, setImageFileToken] = React.useState('')
+  const isConnected = useNetworkStatus();
+  const toastConfig = {
+    duration: 2500,
+    avoidKeyboard: true,
+    onCloseComplete: () => {
+      setIsToastShowing(false)
+    }
+  }
 
   const handleBackBtn = () => {
-    let x = { screen: RECENTCHATSCREEN }
-    dispatch(navigate(x))
+    let x = { prevScreen: PROFILESCREEN,screen: RECENTCHATSCREEN }
+    prevPageInfo !== REGISTERSCREEN &&  dispatch(navigate(x))
     return true;
   }
 
@@ -35,18 +46,42 @@ const ProfilePage = (props) => {
     props.setNav("statusPage");
   }
 
-  const handleImage = () => {
-    if (props?.profileInfo?.image) {
-      props.setNav("ProfileImage");
-    }
-
-    else {
-      setOpen(true);
+  const handleImage = (position) => {
+    setIsToastShowing(true)
+    if (!isConnected && !isToastShowing) {
+      return toast.show({
+        ...toastConfig,
+        render: () => {
+          return <Box bg="black" px="2" py="1" rounded="sm" >
+            <Text style={{ color: "#fff", padding: 5 }}>Please check your internet connectivity</Text>
+          </Box>;
+        }
+      })
+    } else if (isConnected) {
+      if (position == 'big') {
+        if (props?.profileInfo?.image) {
+          props.setNav("ProfileImage");
+        } else {
+          setOpen(true);
+        }
+      } else {
+        setOpen(true);
+      }
     }
   };
 
   const handleProfileUpdate = async () => {
     setIsToastShowing(true)
+    if (!isConnected && !isToastShowing) {
+      return toast.show({
+        ...toastConfig,
+        render: () => {
+          return <Box bg="black" px="2" py="1" rounded="sm" >
+            <Text style={{ color: "#fff", padding: 5 }}>Please check your internet connectivity</Text>
+          </Box>;
+        }
+      })
+    }
     if (!props?.profileInfo?.nickName && !isToastShowing) {
       return toast.show({
         duration: 2500,
@@ -102,22 +137,24 @@ const ProfilePage = (props) => {
         }
       })
     }
-    setloading(true);
-    let UserInfo = await SDK.setUserProfile(props?.profileInfo?.nickName, imageFileToken, props.profileInfo?.status, mobileNumber, props.profileInfo?.email);
-    let x = { screen: RECENTCHATSCREEN, }
-    dispatch(navigate(x))
-    if (UserInfo && !isToastShowing) {
-      return toast.show({
-        duration: 2500,
-        onCloseComplete: () => {
-          setIsToastShowing(false)
-        },
-        render: () => {
-          return <Box bg="black" px="2" py="1" rounded="sm" >
-            <Text style={{ color: "#fff", padding: 5 }}>Profile Updated successfully</Text>
-          </Box>;
-        }
-      })
+    if (isConnected) {
+      setloading(true);
+      let UserInfo = await SDK.setUserProfile(props?.profileInfo?.nickName, imageFileToken, props.profileInfo?.status, mobileNumber, props.profileInfo?.email);
+      let x = { screen: RECENTCHATSCREEN, prevScreen: PROFILESCREEN,}
+      dispatch(navigate(x))
+      if (UserInfo && !isToastShowing) {
+        return toast.show({
+          duration: 2500,
+          onCloseComplete: () => {
+            setIsToastShowing(false)
+          },
+          render: () => {
+            return <Box bg="black" px="2" py="1" rounded="sm" >
+              <Text style={{ color: "#fff", padding: 5 }}>Profile Updated successfully</Text>
+            </Box>;
+          }
+        })
+      }
     }
   }
 
@@ -203,6 +240,14 @@ const ProfilePage = (props) => {
   );
 
   React.useEffect(() => {
+    (async () => {
+      if (!userData?.username && isConnected) {
+        let localMobileNumber = await AsyncStorage.getItem('userIdentifier')
+        setMobileNumber(JSON.parse(localMobileNumber))
+      } else if (isConnected) (
+        setMobileNumber(userData?.username)
+      )
+    })();
     return () => {
       backHandler.remove();
     }
@@ -222,12 +267,12 @@ const ProfilePage = (props) => {
         <ScrollView showsVerticalScrollIndicator={false}>
           <VStack mt="16" flex="1" alignItems={"center"}>
             <View style={{ justifyContent: 'center', alignItems: 'center', height: 157, width: 157, position: "relative" }}>
-              <TouchableOpacity activeOpacity={1} onPress={handleImage}>
+              <TouchableOpacity activeOpacity={1} onPress={() => handleImage('big')}>
                 {props.profileInfo?.image?.fileUrl && <AuthenticatedImage borderRadius='100' borderColor={'#d3d3d3'} borderWidth={0.25} height='157' width='157' resizeMode="contain" imageUrl={props.profileInfo?.image?.fileUrl} authToken={props.profileInfo?.image?.token} />}
                 {!props.profileInfo?.image && props?.profileInfo?.nickName && <Avathar fontSize={60} width={157} height={157} data={props.profileInfo?.nickName} backgroundColor={"blue"} />}
                 {!props.profileInfo?.image && !props?.profileInfo?.nickName && <Image resizeMode="contain" source={require('../assets/profile.png')} style={{ height: 157, width: 157, }} />}
               </TouchableOpacity>
-              <TouchableOpacity activeOpacity={1} onPress={() => setOpen(true)} style={{ position: "absolute", right: 0, bottom: 0, }}  >
+              <TouchableOpacity activeOpacity={1} onPress={() => handleImage('small')} style={{ position: "absolute", right: 0, bottom: 0, }}  >
                 <Image resizeMode="contain" source={require('../assets/camera.png')} style={styles.CameraImage} />
               </TouchableOpacity>
             </View>
@@ -274,7 +319,7 @@ const ProfilePage = (props) => {
             </Text>
             <HStack flexDirection="row" alignItems="center" mt="1" mb="3" >
               <CallIcon />
-              <Text px={"3"} mt="2" mr={"6"} numberOfLines={1} color="#959595" fontSize="13" fontWeight="500">+{userData?.username}</Text>
+              <Text px={"3"} mt="2" mr={"6"} numberOfLines={1} color="#959595" fontSize="13" fontWeight="500">+{mobileNumber}</Text>
             </HStack>
           </Stack>
           <Stack mt="3"
@@ -297,7 +342,7 @@ const ProfilePage = (props) => {
           </Stack>
           <Stack mt="50" alignItems="center">
             {prevPageInfo == REGISTERSCREEN ?
-              <TouchableOpacity style={[styles.button, { width: props.onChangeEvent() ? 160 : 100, backgroundColor: '#3276E2' }]} onPress={handleProfileUpdate}>
+              <Pressable style={[styles.button, { width: props.onChangeEvent() ? 160 : 100, backgroundColor: '#3276E2' }]} onPress={handleProfileUpdate}>
                 {prevPageInfo == REGISTERSCREEN &&
                   <>
                     {props.onChangeEvent()
@@ -306,10 +351,10 @@ const ProfilePage = (props) => {
                     }
                   </>
                 }
-              </TouchableOpacity>
-              : <TouchableOpacity disabled={!props.onChangeEvent()} style={[styles.button, { width: 100, backgroundColor: props.onChangeEvent() ? '#3276E2' : "#d3d3d3", }]} onPress={handleProfileUpdate}>
+              </Pressable>
+              : <Pressable disabled={!props.onChangeEvent()} style={[styles.button, { width: 100, backgroundColor: props.onChangeEvent() ? '#3276E2' : "#d3d3d3", }]} onPress={handleProfileUpdate}>
                 <Text style={{ fontSize: 15, color: "#FFFf", textAlign: "center", fontWeight: 300 }} >Save</Text>
-              </TouchableOpacity>
+              </Pressable>
             }
           </Stack>
           <Modal isOpen={open} onClose={() => setOpen(false)} safeAreaTop={true} >
@@ -351,7 +396,7 @@ const ProfilePage = (props) => {
               </AlertDialog.Content>
             </AlertDialog>
           </Center>
-          <Modal isOpen={loading} onClose={() => setloading(false)} style={styles.center} safeAreaTop={true} >
+          <Modal isOpen={loading || isFetchingProfile} onClose={() => setloading(false)} style={styles.center} safeAreaTop={true} >
             <Modal.Content width="45" height="45" >
               <Center w="100%" h="full">
                 <Spinner size="lg" color={'#3276E2'} />

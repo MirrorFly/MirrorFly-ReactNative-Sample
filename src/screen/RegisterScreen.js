@@ -87,7 +87,7 @@ const RegisterScreen = () => {
         }
     }
     const handleRegister = async () => {
-        register = await SDK.register(selectcountry?.dial_code + mobileNumber);
+       const register = await SDK.register(selectcountry?.dial_code + mobileNumber);
         if (register.statusCode == 200) {
             await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
             await AsyncStorage.setItem('userIdentifier', JSON.stringify(selectcountry?.dial_code + mobileNumber));

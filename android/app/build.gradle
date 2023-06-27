@@ -91,8 +91,19 @@ def reactNativeArchitectures() {
 
 android {
     ndkVersion rootProject.ext.ndkVersion
-
     compileSdkVersion rootProject.ext.compileSdkVersion
+
+    signingConfigs {
+        config {
+            keyAlias 'UiKit'
+            keyPassword 'contus@uikit'
+            storeFile file('contus_internal_uikit_keystore.jks')
+            storePassword 'contus@uikit'
+        }
+        aaptOptions {
+            noCompress "tflite"
+        }
+    }
 
     namespace "com.mirrorfly_rn"
     defaultConfig {

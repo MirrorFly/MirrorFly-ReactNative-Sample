@@ -5,10 +5,21 @@ import ScreenHeader from '../components/ScreenHeader';
 import { SmileIcon } from '../common/Icons';
 import { spaceReplaceRegex } from '../constant';
 import SDK from '../SDK/SDK';
+import { useNetworkStatus } from '../hooks';
 
 const EditStatusPage = (props) => {
+    const isNetworkConnected = useNetworkStatus()
+    const toast = useToast();
+    const [isToastShowing, setIsToastShowing] = React.useState(false);
     const [content, setContent] = React.useState(props.profileInfo.status);
     const [total, setTotal] = React.useState(139 - props?.profileInfo?.status?.length || 139);
+    const toastConfig = {
+        duration: 2500,
+        avoidKeyboard: true,
+        onCloseComplete: () => {
+            setIsToastShowing(false)
+        }
+    }
     const handleBackBtn = () => {
         props.setNav("statusPage");
     }
@@ -21,13 +32,24 @@ const EditStatusPage = (props) => {
         props.onChangeEvent();
     }
 
-    const handleStatus = () => {
+    const handleStatus = async () => {
+        setIsToastShowing(true)
+        if (!isNetworkConnected && !isToastShowing) {
+            return toast.show({
+                ...toastConfig,
+                render: () => {
+                    return <Box bg="black" px="2" py="1" rounded="sm" >
+                        <Text style={{ color: "#fff", padding: 5 }}>Please check your internet connectivity</Text>
+                    </Box>;
+                }
+            })
+        }
         props.onChangeEvent();
         props.setProfileInfo({
             ...props.profileInfo,
-            status: content?.replace(spaceReplaceRegex,'')
+            status: content?.replace(spaceReplaceRegex, '')
         });
-        SDK.addProfileStatus(content.trim())
+        await SDK.addProfileStatus(content.trim())
         props.setNav("statusPage");
     }
 

@@ -1,7 +1,7 @@
 import { REGISTERSCREEN } from "../constant";
 import { getReceiveMessage, updateMessageStatus } from "../redux/chatSlice";
 import { navigate } from "../redux/navigationSlice";
-import { updateProfile } from "../redux/profileSlice";
+import { updateProfileDetail } from "../redux/profileSlice";
 import { storeDeliveryStatus, storeSeenStatus } from "../redux/storageSlice";
 import store from "../redux/store";
 import { updateUserPresence } from "../redux/userSlice";
@@ -45,7 +45,7 @@ export const callBacks = {
     },
     userProfileListener: (res) => {
         console.log('userProfileListener', res)
-        store.dispatch(updateProfile(res))
+        store.dispatch(updateProfileDetail(res))
     },
     replyMessageListener: (res) => {
         console.log('replyMessageListener', res)

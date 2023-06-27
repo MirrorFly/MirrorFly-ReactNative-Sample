@@ -45,7 +45,15 @@ Deploy a new version to the Google Play
 [bundle exec] fastlane android deploy_qa_debug
 ```
 
-Upload qa version to distributes in firebase
+Upload debug qa version to distributes in firebase
+
+### android deploy_qa_release
+
+```sh
+[bundle exec] fastlane android deploy_qa_release
+```
+
+Upload release qa version to distributes in firebase
 
 ----
 

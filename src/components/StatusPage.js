@@ -1,15 +1,25 @@
 import { FlatList } from 'react-native'
 import React from 'react'
 import ScreenHeader from '../components/ScreenHeader'
-import { Text, HStack, Pressable, useToast, Modal ,Box, AlertDialog, VStack, Divider, } from 'native-base';
+import { Text, HStack, Pressable, useToast, Modal, Box, AlertDialog, VStack, Divider, } from 'native-base';
 import { EditIcon, TickMarkIcon } from '../common/Icons';
+import SDK from '../SDK/SDK';
+import { useNetworkStatus } from '../hooks';
 
 const StatusPage = (props) => {
+  const isNetworkConnected = useNetworkStatus()
   const [isToastShowing, setIsToastShowing] = React.useState(false);
   const [isOpenDeleteModal, setIsOpenDeleteModal] = React.useState(false)
   const [isOpenDeleteAlert, setIsOpenDeleteAlert] = React.useState(false)
   const [selectedItem, setSelectedItem] = React.useState("");
   const toast = useToast();
+  const toastConfig = {
+    duration: 2500,
+    avoidKeyboard: true,
+    onCloseComplete: () => {
+      setIsToastShowing(false)
+    }
+  }
 
   const closeYesStatusHandler = () => {
     setIsOpenDeleteAlert(false);
@@ -29,24 +39,36 @@ const StatusPage = (props) => {
 
   const handleSelectStatus = (item) => {
     setIsToastShowing(true)
-    props.setProfileInfo({
-      ...props.profileInfo,
-      status: item,
-    })
-
-    if (item && !isToastShowing) {
+    if (!isNetworkConnected && !isToastShowing) {
       return toast.show({
-        duration: 700,
-        keyboardAvoiding: true,
-        onCloseComplete: () => {
-          setIsToastShowing(false)
-        },
+        ...toastConfig,
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
-            <Text style={{ color: "#fff", padding: 5 }}>Status updated successfully </Text>
-          </Box>
+            <Text style={{ color: "#fff", padding: 5 }}>Please check your internet connectivity</Text>
+          </Box>;
         }
       })
+    }
+    if (isNetworkConnected) {
+      props.setProfileInfo({
+        ...props.profileInfo,
+        status: item,
+      })
+      SDK.setUserProfile(props?.profileInfo?.nickName, props.profileInfo.image, item, props.profileInfo?.mobileNumber, props.profileInfo?.email);
+      if (item && !isToastShowing) {
+        return toast.show({
+          duration: 700,
+          keyboardAvoiding: true,
+          onCloseComplete: () => {
+            setIsToastShowing(false)
+          },
+          render: () => {
+            return <Box bg="black" px="2" py="1" rounded="sm" >
+              <Text style={{ color: "#fff", padding: 5 }}>Status updated successfully </Text>
+            </Box>
+          }
+        })
+      }
     }
   }
   return (
@@ -73,7 +95,7 @@ const StatusPage = (props) => {
               onPress={() => handleSelectStatus(item)}
             >
               {({ isPressed }) => {
-                return<HStack bg={isPressed ? 'rgba(0,0,0, 0.1)' : "transparent"} px='1' py='2.5' justifyContent={'space-between'} >
+                return <HStack bg={isPressed ? 'rgba(0,0,0, 0.1)' : "transparent"} px='1' py='2.5' justifyContent={'space-between'} >
                   <Text
                     color="#767676" fontSize="14" fontWeight={"400"}>
                     {item}</Text>

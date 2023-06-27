@@ -17,6 +17,7 @@ export const logout = createAsyncThunk('register/logout', async (val, { dispatch
     let logout = await SDK.logout()
     await AsyncStorage.setItem('mirrorFlyLoggedIn', 'false');
     await AsyncStorage.setItem('credential', '');
+    await AsyncStorage.clear()
     dispatch(navigate({ screen: REGISTERSCREEN }))
     return logout.statusCode
 })

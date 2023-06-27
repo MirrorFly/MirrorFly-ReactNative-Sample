@@ -4,18 +4,20 @@ import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { navigate } from '../redux/navigationSlice';
 import { COUNTRYSCREEN, numRegx, PROFILESCREEN, REGISTERSCREEN } from '../constant';
-import { registerData } from '../redux/authSlice';
-import { getRecentChat } from '../redux/chatSlice';
+import { getCurrentUserJid } from '../redux/authSlice';
 import { DownArrowIcon, RegiterPageIcon } from '../common/Icons';
 import { Icon, Modal, Text, Center, Box, useToast, Spinner, HStack, Stack, VStack, Pressable, KeyboardAvoidingView, View } from 'native-base';
+import { useNetworkStatus } from '../hooks';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RegisterScreen = () => {
     const dispatch = useDispatch();
     const toast = useToast();
     const selectcountry = useSelector(state => state.navigation.selectContryCode);
-    const isLoading = useSelector(state => state.auth.status);
+    const [isLoading, setIsLoading] = React.useState(false)
     const [mobileNumber, setMobileNumber] = React.useState('')
     const [isToastShowing, setIsToastShowing] = React.useState(false)
+    const isNetworkConnected = useNetworkStatus()
 
     const termsHandler = () => {
         Linking.openURL("https://www.mirrorfly.com/terms-and-conditions.php");
@@ -69,13 +71,44 @@ const RegisterScreen = () => {
                 }
             })
         }
-        if (!isToastShowing && /^\d{10}$/i.test(mobileNumber)) {
-            dispatch(registerData(selectcountry?.dial_code + mobileNumber)).then((res) => {
-                dispatch(getRecentChat())
-                let nav = { screen: PROFILESCREEN, prevScreen: REGISTERSCREEN }
-                dispatch(navigate(nav))
+        if (!isNetworkConnected && !isToastShowing) {
+            return toast.show({
+                ...toastConfig,
+                render: () => {
+                    return <Box bg="black" px="2" py="1" rounded="sm" >
+                        <Text style={{ color: "#fff", padding: 5 }}>Please check your internet connectivity</Text>
+                    </Box>;
+                }
             })
         }
+        if (isNetworkConnected && !isToastShowing && /^\d{10}$/i.test(mobileNumber)) {
+            setIsLoading(true)
+            handleRegister()
+        }
+    }
+    const handleRegister = async () => {
+       const register = await SDK.register(selectcountry?.dial_code + mobileNumber);
+        if (register.statusCode == 200) {
+            await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
+            await AsyncStorage.setItem('userIdentifier', JSON.stringify(selectcountry?.dial_code + mobileNumber));
+            await AsyncStorage.setItem('credential', JSON.stringify(register.data));
+            handleConnect(register.data)
+        }
+    }
+    const handleConnect = async (register) => {
+        let connect = await SDK.connect(register.username, register.password);
+        switch (connect?.statusCode) {
+            case 200:
+            case 409:
+                let nav = { screen: PROFILESCREEN, prevScreen: REGISTERSCREEN }
+                dispatch(getCurrentUserJid());
+                dispatch(navigate(nav))
+                break;
+            default:
+                errorToast(connect.message);
+                break;
+        }
+        setIsLoading(false)
     }
     return (
         <KeyboardAvoidingView
@@ -154,7 +187,7 @@ const RegisterScreen = () => {
                         </Pressable>
                     </HStack>
                 </Stack>
-                <Modal isOpen={isLoading === 'loading'} safeAreaTop={true} >
+                <Modal isOpen={isLoading} safeAreaTop={true} >
                     <Modal.Content width="60%" height="9%" >
                         <Center w="100%" h="full">
                             <HStack alignItems={'center'}>

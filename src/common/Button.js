@@ -1,12 +1,10 @@
 import React from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Chat_FABICON, MenuIcon } from './Icons'
-import { Icon, IconButton } from 'native-base'
+import { Icon, IconButton, Pressable } from 'native-base'
 
 const styles = StyleSheet.create({
     primarypilbtn: {
-        minWidth: 135,
-        padding: 8,
         height: 40,
         minHeight: 4,
         backgroundColor: "#3276E2",
@@ -18,8 +16,7 @@ const styles = StyleSheet.create({
     primarypilbtntext: {
         color: '#fff',
         fontSize: 16,
-        // fontWeight: "bold"
-
+        paddingHorizontal: 25,
     },
     FloatingBtnContainer: {
         position: 'absolute',
@@ -42,9 +39,9 @@ const styles = StyleSheet.create({
 
 export const PrimaryPillBtn = (props) => {
     return (
-        <TouchableOpacity style={styles.primarypilbtn} {...props}>
+        <Pressable style={styles.primarypilbtn} {...props}>
             <Text style={styles.primarypilbtntext}>{props.title}</Text>
-        </TouchableOpacity>
+        </Pressable>
     )
 }
 

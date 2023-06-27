@@ -8,6 +8,13 @@ const toastConfig = {
   avoidKeyboard: true
 }
 
+export const getExtention = filename => {
+  // To get the file extension
+  const dotIndex = filename.lastIndexOf(".");
+  return dotIndex !== -1 ? filename.substring(dotIndex + 1) : undefined;
+};
+
+
 export const handleGalleryPickerSingle = async () => {
   try {
     const res = await DocumentPicker.pickSingle({

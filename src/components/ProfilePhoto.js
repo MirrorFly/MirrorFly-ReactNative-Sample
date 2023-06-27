@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 import React from 'react'
 import ScreenHeader from './ScreenHeader'
 import { VStack } from 'native-base';
-import AuthenticatedImage from '../common/AuthendicatedImage';
+import AuthProfileImage from '../common/AuthProfileImage';
 
 const ProfilePhoto = (props) => {
   const handleBackBtn = () => {
@@ -16,7 +16,12 @@ const ProfilePhoto = (props) => {
         title=' Profile Photo'
       />
       <VStack justifyContent={"center"} h="88%">
-        <AuthenticatedImage resizeMode="contain" style={{ height: 400, width: 410 }} imageUrl={props.profileInfo?.image.fileUrl} authToken={props.profileInfo?.image.token} />
+        <AuthProfileImage
+          style={{ height: 400, width: 410, padding: 0, margin: 0 }}
+          component='profileImage'
+          resizeMode="contain"
+          image={props?.profileInfo?.image}
+        />
       </VStack>
     </>
   )

@@ -21,13 +21,13 @@ const EditStatusPage = (props) => {
         props.onChangeEvent();
     }
 
-    const handleStatus = () => {
+    const handleStatus = async () => {
         props.onChangeEvent();
         props.setProfileInfo({
             ...props.profileInfo,
-            status: content?.replace(spaceReplaceRegex,'')
+            status: content?.replace(spaceReplaceRegex, '')
         });
-        SDK.addProfileStatus(content.trim())
+        await SDK.addProfileStatus(content.trim())
         props.setNav("statusPage");
     }
 

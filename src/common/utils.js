@@ -7,6 +7,18 @@ const toastConfig = {
   duration: 2500,
   avoidKeyboard: true
 }
+export function getExtension(name = "") {
+  if (!name) return "";
+  const lastDot = name.substring(name.lastIndexOf(".") + 1, name.length);
+  return "." + lastDot;
+}
+
+export const getExtention = filename => {
+  // To get the file extension
+  return /[.]/.exec(filename) ?
+      /[^.]+$/.exec(filename) : undefined;
+};
+
 
 export const handleGalleryPickerSingle = async () => {
   try {

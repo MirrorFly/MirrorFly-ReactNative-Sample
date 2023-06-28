@@ -70,6 +70,7 @@ const ProfileScreen = () => {
   React.useEffect(() => {
     if (profileInfo?.status && !statusList.includes(profileInfo.status)) {
       setStatusList(prevStatusList => [...prevStatusList, profileInfo.status]);
+      SDK.addProfileStatus(profileInfo.status.trim())
     }
   }, [profileInfo]);
 

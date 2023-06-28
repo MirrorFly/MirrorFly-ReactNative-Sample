@@ -1,6 +1,6 @@
 import { TouchableOpacity } from 'react-native'
 import React from 'react'
-import { Text, HStack, Stack, Input, KeyboardAvoidingView } from 'native-base';
+import { Text, HStack, Stack, Input, KeyboardAvoidingView, useToast, Box } from 'native-base';
 import ScreenHeader from '../components/ScreenHeader';
 import { SmileIcon } from '../common/Icons';
 import { spaceReplaceRegex } from '../constant';
@@ -44,18 +44,15 @@ const EditStatusPage = (props) => {
                 }
             })
         }
-        props.onChangeEvent();
-        props.setProfileInfo({
-            ...props.profileInfo,
-            status: content?.replace(spaceReplaceRegex, '')
-        });
-        await SDK.addProfileStatus(content.trim())
-        props.setNav("statusPage");
+        if (isNetworkConnected) {
+            props.onChangeEvent();
+            props.setProfileInfo({
+                ...props.profileInfo,
+                status: content.trim()
+            });
+            props.setNav("statusPage");
+        }
     }
-
-    const handleInputFocus = () => {
-        setContent(!content && "");
-    };
 
     return (
         <KeyboardAvoidingView
@@ -65,6 +62,7 @@ const EditStatusPage = (props) => {
             <ScreenHeader title=' Add New Status' onhandleBack={handleBackBtn} />
             <HStack pb="2" pt="3" px="4" borderBottomColor={"#f2f2f2"} borderBottomWidth="1" alignItems={"center"} >
                 <Input
+                    autoFocus={true}
                     multiline={true}
                     variant="unstyled"
                     fontSize="15"
@@ -73,7 +71,6 @@ const EditStatusPage = (props) => {
                     flex="1"
                     defaultValue={props.profileInfo.status}
                     onChangeText={(text) => { handleInput(text) }}
-                    onFocus={handleInputFocus}
                     selectionColor={'#3276E2'}
                     maxLength={139}
                     keyboardType="default"
@@ -84,9 +81,9 @@ const EditStatusPage = (props) => {
                     <SmileIcon />
                 </TouchableOpacity>
             </HStack>
-            {content && <Stack flex="1" >
+            <Stack flex="1" >
                 <HStack position={"absolute"} pb="4" left={"0"} right={"0"} bottom="0" alignItems={"center"} justifyContent={"space-evenly"} borderTopColor={"#BFBFBF"} borderTopWidth="1"  >
-                    <TouchableOpacity >
+                    <TouchableOpacity onPress={handleBackBtn}>
                         <Text color={"black"} fontSize="15" fontWeight={"400"} px="4">
                             Cancel
                         </Text>
@@ -98,7 +95,7 @@ const EditStatusPage = (props) => {
                         </Text>
                     </TouchableOpacity>
                 </HStack>
-            </Stack>}
+            </Stack>
         </KeyboardAvoidingView>
     )
 }

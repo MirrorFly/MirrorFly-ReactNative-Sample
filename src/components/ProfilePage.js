@@ -112,7 +112,7 @@ const ProfilePage = (props) => {
         }
       })
     }
-    if (/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(props?.profileInfo?.email && !isToastShowing)) {
+    if (!(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(props?.profileInfo?.email)) && !isToastShowing) {
       return toast.show({
         duration: 2500,
         onCloseComplete: () => {
@@ -135,7 +135,7 @@ const ProfilePage = (props) => {
         }
       })
     }
-    if (isConnected) {
+    if (isConnected && !isToastShowing) {
       setloading(true);
       let UserInfo = await SDK.setUserProfile(props?.profileInfo?.nickName.trim(), imageFileToken ? imageFileToken : props.selectProfileInfo.image, props.profileInfo?.status, props.profileInfo?.mobileNumber, props.profileInfo?.email);
       setloading(false);
@@ -179,6 +179,7 @@ const ProfilePage = (props) => {
       height: 450,
       cropping: true,
       cropperCircleOverlay: true,
+      compressImageQuality: 0.8
     }).then(async (image) => {
       if (image.size > '10485760') {
         return toast.show({
@@ -228,6 +229,7 @@ const ProfilePage = (props) => {
         height: 450,
         cropping: true,
         cropperCircleOverlay: true,
+        compressImageQuality: 0.5,
       }).then(async (image) => {
         if (image.size > '10485760') {
           return toast.show({
@@ -342,10 +344,30 @@ const ProfilePage = (props) => {
                 textAlign: 'center'
               }}
               numberOfLines={1}
-              defaultValue={props.profileInfo?.nickName}
+              value={props.profileInfo?.nickName}
               placeholder='Username'
-              onChangeText={(text) => { handleChangeText('nickName', text) }}
-              maxLength={20}
+              onChangeText={(text) => {
+                if (text.length > 30) {
+                  setIsToastShowing(true)
+                  if (!isToastShowing) {
+                    return toast.show({
+                      duration: 2500,
+                      onCloseComplete: () => {
+                        setIsToastShowing(false)
+                      },
+                      render: () => {
+                        return <Box bg="black" px="2" py="1" rounded="sm" >
+                          <Text style={{ color: "#fff", padding: 5 }}>Maximum of 30 Characters</Text>
+                        </Box>
+                      }
+                    })
+                  }
+                }
+                if (text.length < 31) {
+                  handleChangeText('nickName', text)
+                }
+              }}
+              maxLength={31}
               placeholderTextColor='#959595'
               keyboardType='default'
             />

@@ -3,8 +3,6 @@ import React from 'react'
 import { Text, HStack, Stack, Input, KeyboardAvoidingView, useToast, Box } from 'native-base';
 import ScreenHeader from '../components/ScreenHeader';
 import { SmileIcon } from '../common/Icons';
-import { spaceReplaceRegex } from '../constant';
-import SDK from '../SDK/SDK';
 import { useNetworkStatus } from '../hooks';
 
 const EditStatusPage = (props) => {

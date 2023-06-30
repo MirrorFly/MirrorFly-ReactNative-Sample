@@ -82,13 +82,7 @@ const CollapsingToolbar = ({
         outputRange: [1, 1, 0.8],
         extrapolate: 'clamp',
     });
-
-    const titleTranslate = scrollY.interpolate({
-        inputRange: [0, scrollDistance / 2, scrollDistance],
-        outputRange: [0, 0, -8],
-        extrapolate: 'clamp',
-    });
-
+    
     const handleModel = () => {
         setVisible(true);
     }

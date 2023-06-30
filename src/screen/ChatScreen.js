@@ -6,7 +6,6 @@ import GalleryPickView from '../components/GalleryPickView'
 import { handleGalleryPickerMulti } from '../common/utils'
 import { useToast } from 'native-base'
 import UserInfo from '../components/UserInfo'
-import ChatHeader from '../components/ChatHeader'
 import UsersTapBarInfo from '../components/UsersTapBarInfo'
 
 function ChatScreen() {

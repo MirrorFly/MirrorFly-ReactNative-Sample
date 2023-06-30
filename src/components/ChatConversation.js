@@ -202,6 +202,7 @@ const ChatConversation = (props) => {
                 seenStatus={seenStatus}
                 fromUser={nickName}
                 handleReply={handleReply}
+                setLocalNav={props.setLocalNav}
             />
             <ImageBackground
                 source={require('../assets/chatBackgroud.png')}

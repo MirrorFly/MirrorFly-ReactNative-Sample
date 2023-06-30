@@ -39,6 +39,10 @@ function ChatHeader(props) {
         props.handleReply(props?.selectedMsgs[0].msgId);
     }
 
+    const handleUserInfo =()=>{
+        props.setLocalNav('UserInfo');
+    }
+
     return (
         <>
             {props?.selectedMsgs.length <= 0
@@ -46,7 +50,7 @@ function ChatHeader(props) {
                     <HStack alignItems="center">
                         <IconButton _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} onPress={props.handleBackBtn} icon={<Icon as={() => LeftArrowIcon()} name="emoji-happy" />} borderRadius="full" />
                         <Avathar width={36} height={36} data={props.fromUser || '91'} />
-                        <Pressable w="65%" >
+                        <Pressable w="65%"  onPress={handleUserInfo}  >
                             {({ isPressed }) => {
                                 return <VStack pr='4' py="3" bg={isPressed ? 'rgba(0,0,0, 0.1)' : "coolGray.100"} pl='2'>
                                     <Text color='#181818' fontWeight='700' fontSize='14'>{props.fromUser}</Text>

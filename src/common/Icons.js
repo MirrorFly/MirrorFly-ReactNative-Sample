@@ -132,7 +132,7 @@ export const Chat_FABICON = ({ width, height }) => {
 
 export const ProfileIcon = ({ width, height }) => {
     return (
-        <TouchableOpacity {...props}>
+        <TouchableOpacity>
             <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 15.26 17.941">
                 <G id="avatar" transform="translate(-36.073)">
                     <G id="Group_257" data-name="Group 257" transform="translate(36.073)">
@@ -515,6 +515,71 @@ export const ClearTextIcon = (props) => {
 
         <Svg xmlns="http://www.w3.org/2000/svg" width="6.46" height="6.4" viewBox="0 0 6.46 6.4">
             <Path id="Path_13610" data-name="Path 13610" d="M21.912,16.088a.3.3,0,0,0-.424,0L19,18.576l-2.488-2.488a.3.3,0,0,0-.424.424L18.576,19l-2.488,2.488a.3.3,0,1,0,.424.424L19,19.424l2.488,2.488a.3.3,0,1,0,.424-.424L19.424,19l2.488-2.488A.3.3,0,0,0,21.912,16.088Z" transform="translate(-15.77 -15.8)" fill="#111b1d" stroke="rgba(24, 24, 24,0.3)" stroke-width="0.4" />
+        </Svg>
+    )
+}
+
+
+export const KeyboardIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 0 24 24" width="24px" fill="#A5A5A8"><Path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z" /><Path d="M0 0h24v24H0zm0 0h24v24H0z" fill="none" /></Svg>
+    )
+}
+export const BackSpaceIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" height="19px" viewBox="0 0 24 24" width="20px" fill="#A5A5A8"><Path d="M0 0h24v24H0z" fill="none" /><Path d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3 12.59L17.59 17 14 13.41 10.41 17 9 15.59 12.59 12 9 8.41 10.41 7 14 10.59 17.59 7 19 8.41 15.41 12 19 15.59z" /></Svg>
+    )
+}
+export const FrontArrowIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10">
+            <Path id="Forma_1_copy_2" data-name="Forma 1 copy 2" d="M333.663,295.335a.681.681,0,0,1-.216.5l-4.526,4.3a.765.765,0,0,1-1.042,0,.676.676,0,0,1,0-.99l4-3.8-4-3.8a.676.676,0,0,1,0-.99.765.765,0,0,1,1.042,0l4.526,4.3A.681.681,0,0,1,333.663,295.335Z" transform="translate(-327.663 -290.335)" fill="#767676" />
+        </Svg>
+    )
+}
+export const GalleryAllIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" width="16.034" height="13.751" viewBox="0 0 16.034 13.751">
+            <G id="image" transform="translate(-0.001 -0.5)">
+                <Path id="Path_9769" data-name="Path 9769" d="M182.351,99.52a1.6,1.6,0,1,0-1.6-1.6A1.6,1.6,0,0,0,182.351,99.52Zm0-2.264a.662.662,0,1,1-.662.662A.663.663,0,0,1,182.351,97.256Zm0,0" transform="translate(-175.089 -92.816)" fill="#181818" />
+                <Path id="Path_9770" data-name="Path 9770" d="M15.449.5H.586A.586.586,0,0,0,0,1.085V13.666a.586.586,0,0,0,.585.585H15.449a.586.586,0,0,0,.585-.585V1.085A.586.586,0,0,0,15.449.5Zm-.354.939V8.874L12.14,5.919a.5.5,0,0,0-.7,0L7.263,10.1,4.594,7.429a.494.494,0,0,0-.7,0L.94,10.384V1.439ZM.94,13.312v-1.6l3.3-3.3,2.669,2.669a.494.494,0,0,0,.7,0L11.791,6.9l3.3,3.3v3.109Zm0,0" fill="#181818" />
+            </G>
+        </Svg>
+
+    )
+}
+
+export const ReportIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" width="13.9" height="18.181" viewBox="0 0 13.9 18.181">
+            <G id="Group_34213" data-name="Group 34213" transform="translate(-14.355 -625.501)">
+                <G id="group" transform="translate(14.505 627.677)">
+                    <Path id="Path_22860" data-name="Path 22860" d="M14.5,12.139a3.57,3.57,0,1,0-3.57-3.57A3.57,3.57,0,0,0,14.5,12.139Zm0-5.695A2.125,2.125,0,1,1,12.371,8.57,2.125,2.125,0,0,1,14.5,6.445Z" transform="translate(-8.474 -4.999)" fill="#ff3939" stroke="#ff3939" stroke-width="0.1" />
+                    <Path id="Path_22863" data-name="Path 22863" d="M16.751,19.38a7.3,7.3,0,0,0-4.933-2.773A5.873,5.873,0,0,0,6.885,19.38,6.238,6.238,0,0,0,5.7,23.352a.723.723,0,0,0,1.445,0c0-2.923,2.1-5.3,4.673-5.3s4.673,2.377,4.673,5.3a.723.723,0,0,0,1.445,0A7.383,7.383,0,0,0,16.751,19.38Z" transform="translate(-5.7 -8.219)" fill="#ff3939" stroke="#ff3939" stroke-width="0.3" />
+                </G>
+                <G id="Group_30952" data-name="Group 30952" transform="translate(26.958 625.501)">
+                    <G id="Group_34171" data-name="Group 34171" transform="translate(0.026 0)">
+                        <G id="Group_34167" data-name="Group 34167" transform="translate(0 0)">
+                            <Path id="Path_40314" data-name="Path 40314" d="M234.2,173c-.347,0-.619.186-.619.517,0,1.008.119,2.457.119,3.465,0,.263.229.373.5.373.2,0,.491-.11.491-.373,0-1.008.119-2.457.119-3.465A.544.544,0,0,0,234.2,173Z" transform="translate(-233.578 -173.005)" fill="#ff3939" />
+                        </G>
+                    </G>
+                    <G id="Group_34172" data-name="Group 34172" transform="translate(0 4.94)">
+                        <G id="Group_34169" data-name="Group 34169" transform="translate(0 0)">
+                            <Path id="Path_40315" data-name="Path 40315" d="M233.3,353.306a.652.652,0,0,0,0,1.3.653.653,0,0,0,0-1.3Z" transform="translate(-232.651 -353.306)" fill="#ff3939" />
+                        </G>
+                    </G>
+                </G>
+            </G>
+        </Svg>
+
+
+    )
+}
+
+export const BackArrowIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" width="18.334" height="15.325" viewBox="0 0 18.334 15.325">
+            <Path id="Shape_1" data-name="Shape 1" d="M25.179,60.733l-6.942-6.859q-.027-.027-.051-.056l0,0-.01-.012,0,0-.009-.011,0,0-.008-.01,0-.006-.007-.01,0-.007-.006-.009-.005-.008,0-.007-.006-.01,0-.006L18.1,53.7l0,0-.008-.015h0a.8.8,0,0,1,.161-.957l6.926-6.843a.82.82,0,0,1,1.15,0,.8.8,0,0,1,0,1.137L20.776,52.5H35.52a.8.8,0,1,1,0,1.607H20.776L26.33,59.6a.8.8,0,0,1,0,1.137.821.821,0,0,1-1.15,0Z" transform="translate(-17.999 -45.643)" fill={props.color || "#181818"} />
         </Svg>
     )
 }

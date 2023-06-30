@@ -2,7 +2,7 @@ import { Pressable, TextInput } from 'react-native'
 import React from 'react'
 import { Text, HStack, Stack, KeyboardAvoidingView, useToast } from 'native-base';
 import ScreenHeader from '../components/ScreenHeader';
-import { SmileIcon } from '../common/Icons';
+import { KeyboardIcon, SmileIcon } from '../common/Icons';
 import { useNetworkStatus } from '../hooks';
 import EmojiOverlay from './EmojiPicker';
 import Graphemer from 'graphemer';
@@ -92,8 +92,8 @@ const EditStatusPage = (props) => {
                         keyboardType='default'
                     />
                     <Text color={"black"} fontSize="15" fontWeight={"400"} px="4" >{total}</Text>
-                    <Pressable onPress={() => setIsEmojiPickerShowing(!isEmojiPickerShowing)} >
-                        <SmileIcon />
+                    <Pressable style={{ width: 25 }} onPress={() => setIsEmojiPickerShowing(!isEmojiPickerShowing)} >
+                        {!isEmojiPickerShowing ? <SmileIcon /> : <KeyboardIcon />}
                     </Pressable>
                 </HStack>
                 <Stack flex="1" >
@@ -114,6 +114,7 @@ const EditStatusPage = (props) => {
                 <EmojiOverlay
                     message={statusContent}
                     setMessage={setStatusContent}
+                    onClose={() => setIsEmojiPickerShowing(false)}
                     visible={isEmojiPickerShowing}
                     handleEmojiSelect={handleEmojiSelect}
                 />

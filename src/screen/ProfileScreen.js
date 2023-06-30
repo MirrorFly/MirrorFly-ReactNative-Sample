@@ -9,6 +9,7 @@ import { statusListConstant } from '../constant';
 import { profileDetail } from '../redux/profileSlice';
 import { useNetworkStatus } from '../hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { KeyboardAvoidingView } from 'native-base';
 
 const ProfileScreen = () => {
   const dispatch = useDispatch()
@@ -68,10 +69,11 @@ const ProfileScreen = () => {
   }, []);
 
   React.useEffect(() => {
-    if (profileInfo?.status && !statusList.includes(profileInfo.status)) {
-      setStatusList(prevStatusList => [...prevStatusList, profileInfo.status]);
-      SDK.addProfileStatus(profileInfo.status.trim())
-    }
+    if (statusList?.length)
+      if (profileInfo?.status && !statusList.includes(profileInfo?.status)) {
+        setStatusList(prevStatusList => [...prevStatusList, profileInfo.status]);
+        SDK.addProfileStatus(profileInfo.status.trim())
+      }
   }, [profileInfo]);
 
 
@@ -120,7 +122,11 @@ const ProfileScreen = () => {
     }
   }, [nav, profileInfo, statusList]);
 
-  return renderedComponent;
+  return <KeyboardAvoidingView
+    style={{ flex: 1 }}
+    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+  >{renderedComponent}
+  </KeyboardAvoidingView>;
 };
 
 export default ProfileScreen;

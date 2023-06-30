@@ -5,6 +5,8 @@ import { CameraIcon, ContactIcon, DocumentIcon, GalleryIcon, HeadSetIcon, Locati
 import GalleryPickView from '../components/GalleryPickView'
 import { handleGalleryPickerMulti } from '../common/utils'
 import { useToast } from 'native-base'
+import UserInfo from '../components/UserInfo'
+import UsersTapBarInfo from '../components/UsersTapBarInfo'
 
 function ChatScreen() {
   const [localNav, setLocalNav] = React.useState('CHATCONVERSATION')
@@ -64,7 +66,9 @@ function ChatScreen() {
       {{
         'CHATCONVERSATION': <ChatConversation setLocalNav={setLocalNav} setIsMessageInfo={setIsMessageInfo} attachmentMenuIcons={attachmentMenuIcons} sendSelected={sendSelected} selectedImages={selectedImages}/>,
         'MESSAGEINFO': <MessageInfo setLocalNav={setLocalNav} setIsMessageInfo={setIsMessageInfo} isMessageInfo={isMessageInfo} />,
-        'GalleryPickView': <GalleryPickView setSelectedImages={setSelectedImages} selectedImages={selectedImages} setLocalNav={setLocalNav} setSendSelected={setSendSelected}/>
+        'GalleryPickView': <GalleryPickView setSelectedImages={setSelectedImages} selectedImages={selectedImages} setLocalNav={setLocalNav} setSendSelected={setSendSelected}/>,
+        'UserInfo':<UserInfo setLocalNav={setLocalNav} />,
+         'UsersTapBarInfo':<UsersTapBarInfo setLocalNav={setLocalNav} />
       }[localNav]}
     </>
   )

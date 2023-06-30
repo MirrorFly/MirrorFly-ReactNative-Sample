@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList, Pressable, useWindowDimensions } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Pressable, useWindowDimensions, Keyboard } from 'react-native';
 import emoji from 'emoji-datasource';
 import { groupBy, orderBy } from 'lodash/collection';
 import { mapValues } from 'lodash/object';
@@ -92,6 +92,10 @@ const EmojiOverlay = (props) => {
     },
     [index, routes]
   );
+
+  React.useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', props.onClose);
+  }, []);
 
   return (
     <>

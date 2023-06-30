@@ -28,14 +28,6 @@ const ChatInput = ({ onSendMessage, attachmentMenuIcons, chatInputRef }) => {
     }
   };
 
-  const handleKeyboardShow = () => {
-    setIsEmojiPickerShowing(false)
-  };
-
-  React.useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', handleKeyboardShow);
-  }, []);
-
   return (
     <>
       <HStack p="2" w="full" alignItems="center" borderTopWidth={0.25} borderColor="#959595">
@@ -104,6 +96,7 @@ const ChatInput = ({ onSendMessage, attachmentMenuIcons, chatInputRef }) => {
         message={message}
         setMessage={setMessage}
         visible={isEmojiPickerShowing}
+        onClose={()=>setIsEmojiPickerShowing(false)}
         handleEmojiSelect={handleEmojiSelect}
       />
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} safeAreaTop={true}>

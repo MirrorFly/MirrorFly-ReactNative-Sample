@@ -1,6 +1,6 @@
 import { Pressable, TextInput } from 'react-native'
 import React from 'react'
-import { Text, HStack, Stack, Input, KeyboardAvoidingView, useToast } from 'native-base';
+import { Text, HStack, Stack, KeyboardAvoidingView, useToast } from 'native-base';
 import ScreenHeader from '../components/ScreenHeader';
 import { SmileIcon } from '../common/Icons';
 import { useNetworkStatus } from '../hooks';
@@ -16,7 +16,6 @@ const EditStatusPage = (props) => {
     const [content, setContent] = React.useState(props.profileInfo.status);
     const [total, setTotal] = React.useState(139 - props?.profileInfo?.status?.length || 139);
     const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false)
-    const [unicode, setUnicode] = React.useState('')
 
     const toastConfig = {
         duration: 2500,
@@ -69,7 +68,6 @@ const EditStatusPage = (props) => {
 
     const handleEmojiSelect = (...emojis) => {
         setStatusContent(prev => prev + emojis)
-        setUnicode(unicode)
     };
 
     return (

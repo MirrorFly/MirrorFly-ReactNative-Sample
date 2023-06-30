@@ -80,7 +80,7 @@ const ProfilePage = (props) => {
         },
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
-            <Text style={{ color: "#fff", padding: 5 }}>please enter your username</Text>
+            <Text style={{ color: "#fff", padding: 5 }}>Please enter your username</Text>
           </Box>
         }
       })
@@ -372,17 +372,18 @@ const ProfilePage = (props) => {
               keyboardType='default'
             />
           </VStack>
-          <Stack mt="7"
+          <Stack
+            mt="7"
             px="3"
             borderBottomColor="#F2F2F2"
             borderBottomWidth="1">
-            <Text fontSize="14" color="black" fontWeight="500">Email</Text>
+            <Text fontSize="14" mb='2' color="black" fontWeight="500">Email</Text>
             <HStack
               alignItems="center" >
               <MailIcon />
               <TextInput
                 editable={prevPageInfo == REGISTERSCREEN}
-                style={{ color: '#959595', flex: 1 }}
+                style={{ color: '#959595', flex: 1, marginLeft: 8 }}
                 defaultValue={props.profileInfo?.email}
                 onChangeText={(text) => handleChangeText('email', text)}
                 maxLength={20}

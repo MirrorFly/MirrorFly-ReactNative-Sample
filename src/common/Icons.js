@@ -426,8 +426,6 @@ export const DeleteIcon = () => {
                 </G>
             </G>
         </Svg>
-
-
     )
 }
 
@@ -518,7 +516,6 @@ export const ClearTextIcon = (props) => {
         </Svg>
     )
 }
-
 
 export const KeyboardIcon = (props) => {
     return (

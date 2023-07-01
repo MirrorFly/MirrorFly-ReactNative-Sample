@@ -1,23 +1,14 @@
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { BackArrowIcon, CallIcon, FrontArrowIcon, GalleryAllIcon, MailIcon, ReportIcon, StatusIcon } from '../common/Icons';
-import {
-    Animated,
-    View,
-    TouchableOpacity,
-    StyleSheet,
-    TextInput,
-    BackHandler,
-
-} from 'react-native';
-import { AlertDialog, Center, Text, HStack, Switch } from 'native-base';
+import { Animated, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { AlertDialog, Center, Text, HStack, Switch, View, Pressable } from 'native-base';
 const image = { uri: 'https://legacy.reactjs.org/logo-og.png' };
 const propTypes = {
-    children: PropTypes.node.isRequired,
     src: PropTypes.oneOfType([
         PropTypes.object,
         PropTypes.number,
-    ]).isRequired,
+    ]),
     title: PropTypes.string,
     titleStatus: PropTypes.string,
     titleColor: PropTypes.string,
@@ -44,20 +35,21 @@ const defaultProps = {
 };
 
 const CollapsingToolbar = ({
-
     leftItemPress,
     title,
     titleStatus,
     toolbarMaxHeight,
     toolbarMinHeight,
-    setLocalNav
-
+    setLocalNav,
+    handleBackBtn
 }) => {
     const [visible, setVisible] = useState(false);
     const scrollY = useRef(new Animated.Value(0)).current;
     const [animatedTitleColor, setAnimatedTitleColor] = useState(300)
     const scrollDistance = toolbarMaxHeight - toolbarMinHeight;
-
+    const window = Dimensions.get('window');
+    const screenHeight = window.height;
+    const adaptiveMinHeight = screenHeight * 0.9;
 
     const headerTranslate = scrollY.interpolate({
         inputRange: [0, scrollDistance],
@@ -82,19 +74,11 @@ const CollapsingToolbar = ({
         outputRange: [1, 1, 0.8],
         extrapolate: 'clamp',
     });
-    
+
     const handleModel = () => {
         setVisible(true);
     }
 
-    const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
-        handleBackHandler
-    );
-
-    const handleBackHandler = ()=> {
-        setLocalNav('CHATCONVERSATION');
-    }
     const handleTapDetails = () => {
         setLocalNav('UsersTapBarInfo');
     }
@@ -106,14 +90,10 @@ const CollapsingToolbar = ({
         setVisible(false);
     }
 
-    React.useEffect(() => {
-        return () => {
-            backHandler.remove();
-        }
-    }, [])
     return (
         <View style={styles.fill}>
             <Animated.ScrollView
+                bounces={false}
                 style={styles.fill}
                 scrollEventThrottle={1}
                 onScroll={Animated.event(
@@ -127,102 +107,51 @@ const CollapsingToolbar = ({
                     },
                 )}
             >
-                <View style={{ marginTop: toolbarMaxHeight, minHeight: 600 }}>
-                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 20, marginBottom: 20,marginRight:10 }}>
-                        <Text style={{  fontSize: 14, color: "black", fontWeight: "600", paddingLeft: 10, }}> Mute Notification </Text>
+                <View mx='3' mt={toolbarMaxHeight} minHeight={adaptiveMinHeight} >
+                    <HStack my='7' justifyContent={'space-between'}>
+                        <Text fontSize={14} fontWeight={600} color={'#000'}> Mute Notification </Text>
                         <Switch size="md" offTrackColor="indigo.100" onTrackColor="indigo.200" onThumbColor="blue.500" offThumbColor="indigo.50" />
-                    </View>
-                    <View style={{ marginHorizontal: 10, marginTop: 10, justifyContent: "space-between" }}>
-                        <Text style={{ fontSize: 14, color: "black", fontWeight: "700" }}> Email </Text>
-                        <View style={{
-                            flexDirection: "row", marginHorizontal: 2, justifyContent: "space-between", alignItems: "center", borderBottomColor: "#F2F2F2",
-                            borderBottomWidth: 1
-                        }}>
+                    </HStack>
+                    <View mb={4} borderBottomWidth={1} borderBottomColor={'#f2f2f2'}>
+                        <Text mb={2} fontSize={14} color={'#000'} fontWeight={700}>Email</Text>
+                        <HStack>
                             <MailIcon />
-                            <TextInput
-                                style={{
-                                    color: '#959595',
-                                    flex: 1,
-                                    fontSize: 13,
-                                    marginLeft: 10,
-                                }}
-                                editable={false}
-                                placeholder='mdashik@gmail.com'
-                                placeholderTextColor='#959595'
-                                keyboardType='email-address'
-                                numberOfLines={1}
-                            />
-                        </View>
+                            <Text mb={2} ml={2} color='#959595' fontSize={13}>mdashik@gmail.com</Text>
+                        </HStack>
                     </View>
-                    <View style={{
-                        marginHorizontal: 10, marginTop: 12, justifyContent: "space-between", borderBottomColor: "#F2F2F2",
-                        borderBottomWidth: 1
-                    }}>
-                        <Text style={{ fontSize: 14, color: "black", fontWeight: "700" }}> Mobile Number </Text>
-                        <View style={{ flexDirection: "row", marginHorizontal: 7, justifyContent: "space-between", alignItems: "center" }}>
+                    <View mb={4} borderBottomWidth={1} borderBottomColor={'#f2f2f2'}>
+                        <Text mb={2} fontSize={14} color={'#000'} fontWeight={700}>Mobile Number</Text>
+                        <HStack>
                             <CallIcon />
-                            <TextInput
-                                style={{
-                                    color: '#959595',
-                                    flex: 1,
-                                    fontSize: 13,
-                                    marginLeft: 10, 
-                                }}
-                                editable={false}
-                                placeholder='+ 91-8838160009'
-                                placeholderTextColor='#959595'
-                                keyboardType='email-address'
-                                numberOfLines={1}
-                            />
-                        </View>
+                            <Text mb={2} ml={2} color='#959595' fontSize={13}>+ 91-8838160009</Text>
+                        </HStack>
                     </View>
-                    <View style={{
-                        marginHorizontal: 10, marginTop: 12, justifyContent: "space-between", borderBottomColor: "#F2F2F2",
-                        borderBottomWidth: 1
-                    }}>
-                        <Text style={{ fontSize: 13, color: "black", fontWeight: "700" }}> Status </Text>
-                        <View style={{ flexDirection: "row", marginHorizontal: 7, justifyContent: "space-between", alignItems: "center" }}>
+                    <View mb={4} borderBottomWidth={1} borderBottomColor={'#f2f2f2'}>
+                        <Text mb={2} fontSize={14} color={'#000'} fontWeight={700}>Status</Text>
+                        <HStack>
                             <StatusIcon />
-                            <TextInput
-                                style={{
-                                    color: '#959595',
-                                    flex: 1,
-                                    fontSize: 13,
-                                    marginLeft: 10, 
-                                }}
-                                editable={false}
-                               
-                                placeholder='Urgent calls only'
-                                placeholderTextColor='#959595'
-                                keyboardType="default"
-                                numberOfLines={1}
-                            />
-                        </View>
+                            <Text mb={2} ml={2} color='#959595' fontSize={13}>Urgent calls only</Text>
+                        </HStack>
                     </View>
-                    <View style={{
-                        flexDirection: "row", marginHorizontal: 13, paddingVertical: 16, justifyContent: "space-between", alignItems: "center", borderBottomColor: "#F2F2F2",
-                        borderBottomWidth: 1
-                    }}>
-                        <View style={{ paddingLeft: 8 }}>
-                            <GalleryAllIcon />
-                        </View>
-                        <Text style={{ fontSize: 14, color: "black", fontWeight: "700", flex: 0.9 }} > View All Media </Text>
-                        <TouchableOpacity style={{ padding: 8 }}
-                            onPress={handleTapDetails}
-                        >
+                    <Pressable onPress={handleTapDetails} borderBottomColor={'#f2f2f2'} borderBottomWidth={1}>
+                        <HStack my='3' alignItems={'center'} justifyContent={'space-between'}>
+                            <HStack alignItems={'center'}>
+                                <GalleryAllIcon />
+                                <Text ml='3' fontSize={14} color={'#000'} fontWeight={700}> View All Media</Text>
+                            </HStack>
                             <FrontArrowIcon />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={{ flexDirection: "row", marginHorizontal: 16, marginTop: 12, justifyContent: "flex-start", alignItems: "center", paddingBottom: 300 }}>
-                        <TouchableOpacity
-                            onPress={handleModel}
-                            style={{ flexDirection: "row" }}>
-                            <ReportIcon />
-                            <Text style={{ fontSize: 14, color: "red", fontWeight: "700", paddingLeft: 14, }} > report </Text>
-                        </TouchableOpacity>
-                    </View>
+                        </HStack>
+                    </Pressable>
+                    <Pressable onPress={handleModel}>
+                        <HStack my='3' alignItems={'center'} justifyContent={'space-between'}>
+                            <HStack alignItems={'center'}>
+                                <ReportIcon />
+                                <Text ml='5' fontSize={14} color='#FF0000' fontWeight={700}>Report</Text>
+                            </HStack>
+                        </HStack>
+                    </Pressable>
                 </View>
-            </Animated.ScrollView>
+            </Animated.ScrollView >
             <Animated.View
                 style={[
                     styles.header,
@@ -233,7 +162,6 @@ const CollapsingToolbar = ({
                     },
                 ]}
             >
-
                 <Animated.Image
                     style={[
                         styles.backgroundImage,
@@ -253,12 +181,11 @@ const CollapsingToolbar = ({
                         },
                     ]}
                 >
-                    <View style={{ flexDirection: "column" }}>
-                        <Animated.Text style={[styles.title,
-                        {
+                    <View>
+                        <Animated.Text style={[styles.title, {
+                            marginTop: 35,
                             color: animatedTitleColor < 330 ? "#fff" : '#000'
-                        }
-                        ]}>{title}</Animated.Text>
+                        }]}>{title}</Animated.Text>
                         {animatedTitleColor < 330 && <Text style={[styles.titleStatus, { color: '#fff' }]}>
                             {titleStatus}
                         </Text>}
@@ -268,7 +195,7 @@ const CollapsingToolbar = ({
             <Animated.View style={styles.bar}>
                 <TouchableOpacity onPress={leftItemPress}>
                     <View style={styles.left}>
-                        <TouchableOpacity onPress={handleBackHandler} >
+                        <TouchableOpacity onPress={handleBackBtn} >
                             <BackArrowIcon color={animatedTitleColor < 330 ? "#fff" : '#000'} />
                         </TouchableOpacity>
                     </View>
@@ -297,7 +224,7 @@ const CollapsingToolbar = ({
 
                 </AlertDialog>
             </Center>
-        </View>
+        </View >
     );
 };
 
@@ -335,11 +262,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 20,
-        marginVertical:13,
+        marginVertical: 13,
         position: 'absolute',
     },
     bar: {
-        top:0,
+        top: 0,
         left: 0,
         right: 0,
         height: 56,
@@ -365,13 +292,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     title: {
-        fontFamily: 'Roboto_medium',
-        fontSize: 30,
+        fontSize: 25,
         padding: 2,
-        marginTop: 30
+        alignItems: 'center',
     },
     titleStatus: {
-        fontFamily: 'Roboto_medium',
         fontSize: 14,
     },
     scrollViewContent: {

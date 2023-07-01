@@ -2,6 +2,15 @@ import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 
 const Avathar = (props) => {
+  const words = props?.data?.trim().split(" ");
+  let userName
+  if (words?.length > 1) {
+    userName = words[0].charAt(0) + words[1].charAt(0);
+  } else if (words?.length === 1) {
+    userName = props?.data?.charAt(0) + props?.data?.charAt(1);
+  } else {
+    userName = "";
+  }
   const styles = StyleSheet.create({
     imageDiv: {
       width: props.width || 48,
@@ -20,7 +29,7 @@ const Avathar = (props) => {
   });
   return (
     <View style={styles.imageDiv}>
-      <Text style={styles.imgName}>{props?.data?.charAt(0) + "" + props?.data?.charAt(1)}</Text>
+      <Text style={styles.imgName}>{userName}</Text>
     </View>
   )
 }

@@ -1,9 +1,8 @@
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { BackArrowIcon, CallIcon, FrontArrowIcon, GalleryAllIcon, MailIcon, ReportIcon, StatusIcon } from '../common/Icons';
-import { Animated, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import { AlertDialog, Center, Text, HStack, Switch, View, Pressable } from 'native-base';
-const image = { uri: 'https://legacy.reactjs.org/logo-og.png' };
+import { BackArrowIcon, CallIcon, FrontArrowIcon, GalleryAllIcon, LeftArrowIcon, MailIcon, ReportIcon, StatusIcon } from '../common/Icons';
+import { Animated, TouchableOpacity, StyleSheet, Dimensions, PixelRatio } from 'react-native';
+import { AlertDialog, Center, Text, HStack, Switch, View, Pressable, IconButton, Icon } from 'native-base';
 const propTypes = {
     src: PropTypes.oneOfType([
         PropTypes.object,
@@ -35,7 +34,6 @@ const defaultProps = {
 };
 
 const CollapsingToolbar = ({
-    leftItemPress,
     title,
     titleStatus,
     toolbarMaxHeight,
@@ -47,9 +45,11 @@ const CollapsingToolbar = ({
     const scrollY = useRef(new Animated.Value(0)).current;
     const [animatedTitleColor, setAnimatedTitleColor] = useState(300)
     const scrollDistance = toolbarMaxHeight - toolbarMinHeight;
-    const window = Dimensions.get('window');
-    const screenHeight = window.height;
+    const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+    const pixelRatio = PixelRatio.get();
+    const baseFontSize = 45;
     const adaptiveMinHeight = screenHeight * 0.9;
+    const scaledFontSize = baseFontSize * screenWidth / 375 * pixelRatio;
 
     const headerTranslate = scrollY.interpolate({
         inputRange: [0, scrollDistance],
@@ -123,7 +123,7 @@ const CollapsingToolbar = ({
                         <Text mb={2} fontSize={14} color={'#000'} fontWeight={700}>Mobile Number</Text>
                         <HStack>
                             <CallIcon />
-                            <Text mb={2} ml={2} color='#959595' fontSize={13}>+ 91-8838160009</Text>
+                            <Text mb={2} ml={2} color='#959595' fontSize={13}>918838160009</Text>
                         </HStack>
                     </View>
                     <View mb={4} borderBottomWidth={1} borderBottomColor={'#f2f2f2'}>
@@ -162,17 +162,19 @@ const CollapsingToolbar = ({
                     },
                 ]}
             >
-                <Animated.Image
+                <Animated.View
                     style={[
-                        styles.backgroundImage,
+                        styles.header,
                         {
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: 'purple',
                             height: toolbarMaxHeight,
                             opacity: imageOpacity,
-                            transform: [{ translateY: imageTranslate }],
                         },
-                    ]}
-                    source={image}
-                />
+                    ]}>
+                    <Text color='#fff' fontWeight={500} fontSize={scaledFontSize}>AS</Text>
+                </Animated.View>
                 <Animated.View
                     style={[
                         styles.action, {
@@ -193,13 +195,9 @@ const CollapsingToolbar = ({
                 </Animated.View>
             </Animated.View>
             <Animated.View style={styles.bar}>
-                <TouchableOpacity onPress={leftItemPress}>
-                    <View style={styles.left}>
-                        <TouchableOpacity onPress={handleBackBtn} >
-                            <BackArrowIcon color={animatedTitleColor < 330 ? "#fff" : '#000'} />
-                        </TouchableOpacity>
-                    </View>
-                </TouchableOpacity>
+                <View style={styles.left}>
+                    <IconButton _pressed={{ bg: animatedTitleColor < 330 ? 'rgba(0,0,0, 0.2)' : 'rgba(50,118,226, 0.1)' }} onPress={handleBackBtn} icon={<Icon as={() => LeftArrowIcon(animatedTitleColor < 330 ? "#fff" : '#000')} name="emoji-happy" />} borderRadius="full" />
+                </View>
             </Animated.View>
             <Center maxH={'40'} width={"60"} >
                 <AlertDialog isOpen={visible}

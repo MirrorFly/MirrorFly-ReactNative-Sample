@@ -63,16 +63,7 @@ const ChatConversation = (props) => {
     const leftActionValue = 20; // Adjust as needed
     const initialLeftActionState = false; // Adjust as needed
 
-    const handleBackBtn = () => {
-        let x = { screen: RECENTCHATSCREEN }
-        dispatch(navigate(x))
-        return true;
-    }
 
-    const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
-        handleBackBtn
-    );
 
     const handleMessageSend = (val) => {
         let values = [val, fromUserJId]
@@ -156,12 +147,6 @@ const ChatConversation = (props) => {
         }, 2000)
     }, [presenceListener])
 
-    React.useEffect(() => {
-        return () => {
-            backHandler.remove();
-        }
-    }, [])
-
     const handleMsgSelect = (message) => {
         if (selectedMsgs.includes(message)) {
             setSelectedMsgs(prevArray => prevArray.filter(item => message !== item));
@@ -198,7 +183,7 @@ const ChatConversation = (props) => {
                 selectedMsgs={selectedMsgs}
                 setSelectedMsgs={setSelectedMsgs}
                 menuItems={menuItems}
-                handleBackBtn={handleBackBtn}
+                handleBackBtn={props.handleBackBtn}
                 seenStatus={seenStatus}
                 fromUser={nickName}
                 handleReply={handleReply}

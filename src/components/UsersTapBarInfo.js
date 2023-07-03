@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   tabIndicator: {
    alignItems:"center",
     backgroundColor: '#3276E2',
-    width:110
+    width:120
   },
   tabLabel: {
     fontSize: 16,

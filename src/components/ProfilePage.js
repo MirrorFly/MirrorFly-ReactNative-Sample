@@ -1,4 +1,4 @@
-import { BackHandler, StyleSheet, TouchableOpacity, View, Image, TextInput, ScrollView } from 'react-native'
+import { BackHandler, StyleSheet, TouchableOpacity, View, Image, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CallIcon, MailIcon, StatusIcon } from '../common/Icons';
@@ -74,10 +74,7 @@ const ProfilePage = (props) => {
     setIsToastShowing(true)
     if (!props?.profileInfo?.nickName && !isToastShowing) {
       return toast.show({
-        duration: 2500,
-        onCloseComplete: () => {
-          setIsToastShowing(false)
-        },
+        ...toastConfig,
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
             <Text style={{ color: "#fff", padding: 5 }}>Please enter your username</Text>
@@ -87,11 +84,7 @@ const ProfilePage = (props) => {
     }
     if (props?.profileInfo?.nickName.length < '3' && !isToastShowing) {
       return toast.show({
-        duration: 2500,
-        keyboardAvoiding: true,
-        onCloseComplete: () => {
-          setIsToastShowing(false)
-        },
+        ...toastConfig,
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
             <Text style={{ color: "#fff", padding: 5 }}>User Name is too short</Text>
@@ -101,10 +94,7 @@ const ProfilePage = (props) => {
     }
     if (!props?.profileInfo?.email && !isToastShowing) {
       return toast.show({
-        duration: 2500,
-        onCloseComplete: () => {
-          setIsToastShowing(false)
-        },
+        ...toastConfig,
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
             <Text style={{ color: "#fff", padding: 5 }}>Email should not be empty</Text>
@@ -114,10 +104,7 @@ const ProfilePage = (props) => {
     }
     if (!(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(props?.profileInfo?.email)) && !isToastShowing) {
       return toast.show({
-        duration: 2500,
-        onCloseComplete: () => {
-          setIsToastShowing(false)
-        },
+        ...toastConfig,
         render: () => {
           return <Box bg="black" px="2" py="1" rounded="sm" >
             <Text style={{ color: "#fff", padding: 5 }}>Please enter a Valid E-Mail</Text>
@@ -144,10 +131,7 @@ const ProfilePage = (props) => {
         prevPageInfo == REGISTERSCREEN && dispatch(navigate(x))
         if (UserInfo && !isToastShowing) {
           return toast.show({
-            duration: 2500,
-            onCloseComplete: () => {
-              setIsToastShowing(false)
-            },
+            ...toastConfig,
             render: () => {
               return <Box bg="black" px="2" py="1" rounded="sm" >
                 <Text style={{ color: "#fff", padding: 5 }}>Profile Updated successfully</Text>
@@ -157,10 +141,7 @@ const ProfilePage = (props) => {
         }
       } else if (UserInfo && !isToastShowing) {
         return toast.show({
-          duration: 2500,
-          onCloseComplete: () => {
-            setIsToastShowing(false)
-          },
+          ...toastConfig,
           render: () => {
             return <Box bg="black" px="2" py="1" rounded="sm" >
               <Text style={{ color: "#fff", padding: 5 }}>{UserInfo.message}</Text>
@@ -183,10 +164,7 @@ const ProfilePage = (props) => {
     }).then(async (image) => {
       if (image.size > '10485760') {
         return toast.show({
-          duration: 2500,
-          onCloseComplete: () => {
-            setIsToastShowing(false)
-          },
+          ...toastConfig,
           render: () => {
             return <Box bg="black" px="2" py="1" rounded="sm" >
               <Text style={{ color: "#fff", padding: 5 }}>Image size too large</Text>
@@ -203,10 +181,7 @@ const ProfilePage = (props) => {
       } else {
         setImageUploading(false)
         return toast.show({
-          duration: 2500,
-          onCloseComplete: () => {
-            setIsToastShowing(false)
-          },
+          ...toastConfig,
           render: () => {
             return <Box bg="black" px="2" py="1" rounded="sm" >
               <Text style={{ color: "#fff", padding: 5 }}>Image upload failed</Text>
@@ -231,12 +206,10 @@ const ProfilePage = (props) => {
         cropperCircleOverlay: true,
         compressImageQuality: 0.5,
       }).then(async (image) => {
+        console.log('image.size', image.size)
         if (image.size > '10485760') {
           return toast.show({
-            duration: 2500,
-            onCloseComplete: () => {
-              setIsToastShowing(false)
-            },
+            ...toastConfig,
             render: () => {
               return <Box bg="black" px="2" py="1" rounded="sm" >
                 <Text style={{ color: "#fff", padding: 5 }}>Image size too large</Text>
@@ -254,10 +227,7 @@ const ProfilePage = (props) => {
         else {
           setImageUploading(false)
           return toast.show({
-            duration: 2500,
-            onCloseComplete: () => {
-              setIsToastShowing(false)
-            },
+            ...toastConfig,
             render: () => {
               return <Box bg="black" px="2" py="1" rounded="sm" >
                 <Text style={{ color: "#fff", padding: 5 }}>Image upload failed</Text>
@@ -280,6 +250,14 @@ const ProfilePage = (props) => {
     setRemove(false)
     setOpen(false);
     SDK.setUserProfile(props?.profileInfo?.nickName, '', props.profileInfo?.status, props.profileInfo?.mobileNumber, props.profileInfo?.email);
+    toast.show({
+      ...toastConfig,
+      render: () => {
+        return <Box bg="black" px="2" py="1" rounded="sm" >
+          <Text style={{ color: "#fff", padding: 5 }}> Profile Image removed successfully</Text>
+        </Box>;
+      }
+    })
   }
 
   const handleChangeText = (name, value) => {
@@ -314,8 +292,8 @@ const ProfilePage = (props) => {
   }, [props.profileInfo, imageUploading])
 
   return (
-    <>
-      <Stack h={53} bg="#F2F2F2" w="full" justifyContent={"center"}>
+    <KeyboardAvoidingView style={{ flex: 1 }}>
+      <Stack h='60' mb='10' bg="#F2F2F2" w="full" justifyContent={"center"}>
         {prevPageInfo == REGISTERSCREEN ?
           <Text textAlign={"center"} fontSize='xl' fontWeight={'600'} >Profile</Text>
           : <ScreenHeader
@@ -323,10 +301,10 @@ const ProfilePage = (props) => {
             onhandleBack={handleBackBtn}
           />}
       </Stack>
-      <VStack h='full' justifyContent={'center'} >
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <VStack mt="16" flex="1" alignItems={"center"}>
-            <View style={{ justifyContent: 'center', alignItems: 'center', height: 157, width: 157, position: "relative" }}>
+      <ScrollView keyboardShouldPersistTaps='handled' showsVerticalScrollIndicator={false} bounces={false} style={{ flex: 1 }}>
+        <VStack h='full' justifyContent={'center'} >
+          <VStack mt="6" flex="1" alignItems={"center"}>
+            <View style={{ justifyContent: 'center', alignItems: 'center',  height: 157, width: 157, position: "relative" }}>
               <Pressable onPress={() => handleImage('big')}>
                 {props.profileInfo?.image && handleRenderAuthImage}
                 {!props.profileInfo?.image && props?.profileInfo?.nickName && <Avathar fontSize={60} width={157} height={157} data={props.profileInfo?.nickName} backgroundColor={"blue"} />}
@@ -351,10 +329,7 @@ const ProfilePage = (props) => {
                   setIsToastShowing(true)
                   if (!isToastShowing) {
                     return toast.show({
-                      duration: 2500,
-                      onCloseComplete: () => {
-                        setIsToastShowing(false)
-                      },
+                      ...toastConfig,
                       render: () => {
                         return <Box bg="black" px="2" py="1" rounded="sm" >
                           <Text style={{ color: "#fff", padding: 5 }}>Maximum of 30 Characters</Text>
@@ -379,6 +354,7 @@ const ProfilePage = (props) => {
             borderBottomWidth="1">
             <Text fontSize="14" mb='2' color="black" fontWeight="500">Email</Text>
             <HStack
+              mb='3'
               alignItems="center" >
               <MailIcon />
               <TextInput
@@ -386,7 +362,7 @@ const ProfilePage = (props) => {
                 style={{ color: '#959595', flex: 1, marginLeft: 8 }}
                 defaultValue={props.profileInfo?.email}
                 onChangeText={(text) => handleChangeText('email', text)}
-                maxLength={20}
+                maxLength={35}
                 placeholder='Enter Email Id'
                 placeholderTextColor={"#959595"}
                 keyboardType="default"
@@ -418,13 +394,13 @@ const ProfilePage = (props) => {
               <HStack
                 flexDirection="row" mt="3" mb="3" flex={"1"} alignItems="center" >
                 <StatusIcon />
-                <Text px={"3"} mr={"6"} numberOfLines={1} color="#959595" fontSize="13" fontWeight="500" >
+                <Text w='90%' px={"3"} mr={"6"} color="#959595" fontSize="13" fontWeight="500" >
                   {props.profileInfo?.status}
                 </Text>
               </HStack>
             </Pressable>
           </Stack>
-          <Stack mt="50" alignItems="center">
+          <Stack mt="5" alignItems="center">
             {prevPageInfo == REGISTERSCREEN ?
               <PrimaryPillBtn
                 onPress={handleProfileUpdate}
@@ -438,7 +414,7 @@ const ProfilePage = (props) => {
               />
             }
           </Stack>
-          <Modal isOpen={open} onClose={() => setOpen(false)} safeAreaTop={true} >
+          <Modal isOpen={open} onClose={() => setOpen(false)} >
             <Modal.Content width="1100" style={styles.bottom} >
               <Center w="100%">
                 <Box maxW="350" w="120%">
@@ -484,9 +460,9 @@ const ProfilePage = (props) => {
               </Center>
             </Modal.Content>
           </Modal>
-        </ScrollView>
-      </VStack>
-    </>
+        </VStack>
+      </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
 

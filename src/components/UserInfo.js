@@ -5,15 +5,14 @@ import CollapsingToolbar from './CollapsibleToolbar';
 
 const UserInfo = (props) => {
 
+  const handleBackBtn = () => {
+    props.setLocalNav('CHATCONVERSATION');
+  }
 
   const backHandler = BackHandler.addEventListener(
     'hardwareBackPress',
     handleBackBtn
   );
-
-  const handleBackBtn = () => {
-    props.setLocalNav('CHATCONVERSATION');
-  }
 
   React.useEffect(() => {
     return () => {

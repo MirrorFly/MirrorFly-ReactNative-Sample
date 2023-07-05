@@ -1,3 +1,4 @@
+import { updateRecentChatMessage } from "../components/chat/common/createMessage";
 import { REGISTERSCREEN } from "../constant";
 import { getReceiveMessage, updateMessageStatus } from "../redux/chatSlice";
 import { navigate } from "../redux/navigationSlice";
@@ -21,6 +22,14 @@ export const callBacks = {
         console.log('dbListener', JSON.stringify(res));
     },
     messageListener: (res) => {
+        if(
+            res.msgType === "sentMessage" ||
+            res.msgType === "carbonSentMessage" ||  
+            res.msgType === "receiveMessage" ||
+            res.msgType === "carbonReceiveMessage" ||
+            res.msgType === "receiveMessage" ){
+            updateRecentChatMessage(res,store.getState())
+        }
         switch (res.msgType) {
             case 'receiveMessage':
                 store.dispatch(getReceiveMessage(res))

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
-import { changeTimeFormat } from '../common/TimeStamp';
+import { getConversationHistoryTime } from '../common/TimeStamp';
 import { Box, HStack, Icon, Pressable, Text, View } from 'native-base';
 import { SandTimer } from '../common/Icons';
 
@@ -57,7 +57,7 @@ const ChatMessage = (props) => {
                 }[props?.message?.msgBody?.message_type]}
                 <HStack alignItems='center' alignSelf='flex-end'>
                   {getMessageStatus(props?.message?.msgStatus)}
-                  <Text pl='1' color='#959595' fontSize='11'>{changeTimeFormat(props?.message?.timestamp)}</Text>
+                  <Text pl='1' color='#959595' fontSize='11'>{getConversationHistoryTime(props?.message?.createdAt)}</Text>
                 </HStack>
               </View>
             </HStack>

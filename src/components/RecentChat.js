@@ -2,7 +2,7 @@ import { Center, Avatar, Box, Divider, HStack, Pressable, Spacer, Text, VStack, 
 import React from 'react'
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { useDispatch, useSelector } from 'react-redux';
-import { getConversationHistoryTime } from '../common/TimeStamp';
+import { convertUTCTOLocalTimeStamp, formatChatDateTime, getConversationHistoryTime } from '../common/TimeStamp';
 import Avathar from '../common/Avathar';
 import { CHATSCREEN, RECENTCHATLOADING } from '../constant';
 import { SDK } from '../SDK';
@@ -53,7 +53,7 @@ export default function RecentChat(props) {
                         </VStack>
                         <Spacer />
                         <Text fontSize="xs" color="coolGray.800" _dark={{ color: 'warmGray.50' }} alignSelf="flex-start">
-                            {getConversationHistoryTime(item?.createdAt)}
+                            {item?.createdAt && console.log(convertUTCTOLocalTimeStamp(item?.createdAt),"3456789")}
                         </Text>
                     </HStack>
                 </Box>

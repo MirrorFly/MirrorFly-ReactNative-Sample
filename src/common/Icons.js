@@ -580,3 +580,72 @@ export const BackArrowIcon = (props) => {
         </Svg>
     )
 }
+
+export const PlayIcon = (props) => {
+    return (
+        <Svg id="media-play-symbol" xmlns="http://www.w3.org/2000/svg" width="7.877" height="10.934" viewBox="0 0 7.877 10.934">
+            <G id="Layer_8_16_" transform="translate(0)">
+                <Path id="Path_1" data-name="Path 1" d="M52.42.076a.566.566,0,0,1,.566,0l6.745,4.9a.566.566,0,0,1,0,.98l-6.745,4.9a.566.566,0,0,1-.849-.49V.566A.566.566,0,0,1,52.42.076Z" transform="translate(-52.137 0)" fill="#3276e2" />
+            </G>
+        </Svg>
+
+    )
+}
+
+export const VideoIcon = (props) => {
+    return (
+        <Svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 14 14 "
+            id="vector">
+            <Path
+                id="path"
+                d="M 2.367 3 L 8.08 3 C 8.61 3 9.119 3.211 9.494 3.586 C 9.869 3.961 10.08 4.47 10.08 5 L 10.08 8.932 C 10.08 9.462 9.869 9.971 9.494 10.346 C 9.119 10.721 8.61 10.932 8.08 10.932 L 2.367 10.932 C 1.837 10.932 1.328 10.721 0.953 10.346 C 0.578 9.971 0.367 9.462 0.367 8.932 L 0.367 5 C 0.367 4.47 0.578 3.961 0.953 3.586 C 1.328 3.211 1.837 3 2.367 3 Z"
+                fill="#fff" />
+            <Path
+                id="path_1"
+                d="M 12.127 4.095 L 10.815 4.914 L 10.815 9.014 L 12.126 9.833 C 12.809 10.259 13.368 9.95 13.368 9.145 L 13.368 4.783 C 13.368 3.976 12.809 3.669 12.127 4.095 Z"
+                fill="#fff" />
+        </Svg>
+
+    )
+}
+
+export const ReplyUserIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <G id="Group_14823" data-name="Group 14823" transform="translate(-55.563 -146.563)">
+                <Circle id="Ellipse_1554" data-name="Ellipse 1554" cx="12" cy="12" r="12" transform="translate(55.563 146.563)" opacity="0.17" />
+                <G id="share_1_" data-name="share (1)" transform="translate(63.359 153.793)">
+                    <Path id="Path_10931" data-name="Path 10931" d="M137.054,3.551,133.747.117a.382.382,0,0,0-.656.265V2.036h-.127A4.966,4.966,0,0,0,128,7v.763a.376.376,0,0,0,.3.365.341.341,0,0,0,.084.01.4.4,0,0,0,.349-.217,4.173,4.173,0,0,1,3.753-2.32h.6V7.25a.382.382,0,0,0,.656.265l3.307-3.434a.382.382,0,0,0,0-.53Zm0,0" transform="translate(-128.003 -0.001)" fill="#fff" />
+                </G>
+            </G>
+        </Svg>
+
+
+    )
+}
+
+export const AudioMusicIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+            <G id="Group_15872" data-name="Group 15872" transform="translate(-1112 -203)">
+                <Path id="Subtraction_5" data-name="Subtraction 5" d="M14,0A14,14,0,1,1,0,14,14,14,0,0,1,14,0Z" transform="translate(1112 203)" fill="#97a5c7" />
+                <Path id="Path_13809" data-name="Path 13809" d="M190.611,122.011l-7.19,1.98a.5.5,0,0,0-.369.476v6.709a2.054,2.054,0,0,0-1.017-.275,1.98,1.98,0,1,0,2.035,1.98v-6.06l6.172-1.7V129.2a2.054,2.054,0,0,0-1.017-.275,1.98,1.98,0,1,0,2.035,1.98v-8.414A.507.507,0,0,0,190.611,122.011Z" transform="translate(939 88.009)" fill="#fff" />
+            </G>
+        </Svg>
+
+    )
+}
+
+export const PlayAudioIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" width="12" height="15" viewBox="0 0 12 15">
+            <G id="play-arrow" transform="translate(0 8)">
+                <Path id="Path_9849" data-name="Path 9849" d="M19.227,6.868,8.543.1a.661.661,0,0,0-.987.626V14.277a.661.661,0,0,0,.987.626l10.684-6.77A.772.772,0,0,0,19.227,6.868Z" transform="translate(-7.556 -8)" fill="#7285b5" />
+            </G>
+        </Svg>
+
+
+    )
+}

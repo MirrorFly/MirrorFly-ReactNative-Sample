@@ -5,9 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { convertUTCTOLocalTimeStamp, formatChatDateTime, getConversationHistoryTime } from '../common/TimeStamp';
 import Avathar from '../common/Avathar';
 import { CHATSCREEN, RECENTCHATLOADING } from '../constant';
-import { SDK } from '../SDK';
 import { navigate } from '../redux/navigationSlice';
 import { Image, StyleSheet } from 'react-native';
+import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 
 export default function RecentChat(props) {
     const dispatch = useDispatch();
@@ -32,11 +32,9 @@ export default function RecentChat(props) {
         }
         return <Box key={index}>
             <Pressable py='2' android_ripple={{ color: 'rgba(0, 0, 0, 0.1)' }} onPress={async () => {
-                let jid = await SDK.getJid(item?.fromUserId)
-                if (jid.statusCode == 200) {
-                    let x = { screen: CHATSCREEN, fromUserJID: jid.userJid }
+                let jid = formatUserIdToJid(item?.fromUserId,item?.chatType)
+                    let x = { screen: CHATSCREEN, fromUserJID: jid }
                     dispatch(navigate(x));
-                }
             }} _dark={{ bg: 'coolGray.800' }} _light={{ bg: 'white' }}>
                 <Box pl="4" pr="5" py="2">
                     <HStack alignItems="center" space={3}>
@@ -44,16 +42,16 @@ export default function RecentChat(props) {
                             ? <Avatar size="48px" source={{ uri: item.avatarUrl }} />
                             : <Avathar data={item?.fromUserId} />
                         }
-                        <VStack>
-                            <Text color="coolGray.800" _dark={{ color: 'warmGray.50' }} bold>{item?.fromUserId}</Text>
+                        <VStack w='60%'>
+                            <Text numberOfLines={1} color="coolGray.800" _dark={{ color: 'warmGray.50' }} ellipsizeMode="tail" bold>{item?.fromUserId}</Text>
                             <HStack alignItems={'center'}>
                                 {isSame && <View style={[styles.msgStatus, isSame ? statusVisible : ""]}></View>}
-                                <Text w='60%' numberOfLines={1} ellipsizeMode="tail" px={isSame ? 1 : 0} color="coolGray.600" _dark={{ color: 'warmGray.200' }}>{item?.msgBody?.message}</Text>
+                                <Text numberOfLines={1} ellipsizeMode="tail" px={isSame ? 1 : 0} color="coolGray.600" _dark={{ color: 'warmGray.200' }}>{item?.msgBody?.message}</Text>
                             </HStack>
                         </VStack>
                         <Spacer />
                         <Text fontSize="xs" color="coolGray.800" _dark={{ color: 'warmGray.50' }} alignSelf="flex-start">
-                            {item?.createdAt && console.log(convertUTCTOLocalTimeStamp(item?.createdAt),"3456789")}
+                            {item?.createdAt && formatChatDateTime(convertUTCTOLocalTimeStamp(item?.createdAt), "recent-chat")}
                         </Text>
                     </HStack>
                 </Box>

@@ -96,9 +96,7 @@ export const change16TimeWithDateFormat = (time) => {
  */
 export const formatChatDate = (date) => {
     const dateCurrent = DateTime.fromMillis(Date.now());
-    console.log(date,"datedatedatedatedatedate");
     const dateMessage = DateTime.fromJSDate(date);
-    console.log(dateCurrent,dateMessage,"dateMessage");
     const datesDiff = dateCurrent.diff(dateMessage, "days").toObject().days;
     if (!datesDiff) {
         return null; /** change ? to null */
@@ -157,9 +155,8 @@ export const formatChatTime = (date, type) => {
  * @param {string} type
  */
 export const formatChatDateTime = (date, type) => {
-    const timeFormatted = formatChatTime(date, type);
-    const dayFormatted = formatChatDate(date);
-    console.log(dayFormatted,timeFormatted,"datattatatataa");
+    const timeFormatted = formatChatTime(new Date(date), type);
+    const dayFormatted = formatChatDate(new Date(date));
     if (type === "recent-chat") {
         if (dayFormatted === "Today") {
             return timeFormatted;
@@ -181,10 +178,8 @@ export const formatChatDateTime = (date, type) => {
 export const convertUTCTOLocalTimeStamp = (date) => {
     // date = new Date(date.replace(/-/g, "/"));
     let newDate = new Date(date);
-    console.log(date,"456789");
     newDate.setMinutes(newDate.getMinutes() - newDate.getTimezoneOffset());
-    console.log(newDate,"newDate");
-    return newDate;
+    return newDate.toString();
 };
 
 /**

@@ -12,13 +12,17 @@ import SDK from '../SDK/SDK';
 import { getLastseen } from '../common/TimeStamp';
 import { ClearTextIcon, ReplyIcon } from '../common/Icons';
 import { SwipeListView } from 'react-native-swipe-list-view';
+import { addChatConversationHistory } from '../redux/conversationSlice';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import { getChatMessageHistoryById } from '../Helper/Chat/ChatHelper';
 
 const ChatConversation = (props) => {
+    const { handleSendMsg } = props
     const dispatch = useDispatch();
     const chatInputRef = React.useRef(null)
     const currentUserJID = useSelector(state => state?.auth?.currentUserJID)
     const presenceListener = useSelector(state => state.user.userPresence)
-    const messages = useSelector(state => state.chat.chatMessages)
+    const messages = useSelector(state => state.chatConversationData.data)
     const fromUserJId = useSelector(state => state.navigation.fromUserJid)
     const [messageList, setMessageList] = React.useState([]);
     const [seenStatus, setSeenStatus] = React.useState('')
@@ -65,9 +69,14 @@ const ChatConversation = (props) => {
 
 
 
-    const handleMessageSend = (val) => {
-        let values = [val, fromUserJId]
-        dispatch(sendMessage(values))
+    const handleMessageSend = (messageContent) => {
+        // let values = [val, fromUserJId]
+        let message = {
+            type: "text",
+            content: messageContent
+        }
+        handleSendMsg(message)
+        // dispatch(sendMessage(values))
     }
 
     React.useEffect(() => {
@@ -118,34 +127,28 @@ const ChatConversation = (props) => {
     React.useEffect(() => {
         (async () => {
             if (fromUserJId) {
-                if (messages[fromUserJId]) {
-                    setMessageList(messages[fromUserJId])
-                } else {
-                    dispatch(getMessages(fromUserJId))
+                if (messages[getUserIdFromJid(fromUserJId)]) {
+                    setMessageList(getChatMessageHistoryById(getUserIdFromJid(fromUserJId)))
                 }
                 setIsChatLoading(true)
-                let userId = fromUserJId?.split('@')[0]
-                if (!nickName) {
-                    let userDetails = await SDK.getUserProfile(userId)
-                    setNickName(userDetails?.data?.nickName || userId)
-                }
-                let seen = await SDK.getLastSeen(fromUserJId)
-                if (seen.statusCode == 200) {
-                    setSeenStatus(getLastseen(seen?.data?.seconds))
-                }
             }
             setIsChatLoading(false)
         })();
-    }, [messages, fromUserJId])
+    }, [messages,fromUserJId])
 
     React.useEffect(() => {
-        setTimeout(async () => {
-            let seen = await SDK.getLastSeen(fromUserJId)
-            if (seen.statusCode == 200) {
-                setSeenStatus(getLastseen(seen?.data?.seconds))
+        (async () => {
+            if (messages[fromUserJId]) {
+                setMessageList(getChatMessageHistoryById(getUserIdFromJid(fromUserJId)))
+            } else {
+                let chatMessage = await SDK.getChatMessages(fromUserJId);
+                if (chatMessage.statusCode == 200) {
+                    dispatch(addChatConversationHistory(chatMessage))
+                }
             }
-        }, 2000)
-    }, [presenceListener])
+        })()
+    }, []);
+
 
     const handleMsgSelect = (message) => {
         if (selectedMsgs.includes(message)) {
@@ -155,17 +158,17 @@ const ChatConversation = (props) => {
         }
     }
 
-    React.useEffect(() => {
-        if (messageList.length) {
-            let unReadMsg = messageList.filter((item) => item.msgStatus == 1 && item.fromUserJid !== currentUserJID)
-            if (unReadMsg.length) {
-                unReadMsg.forEach(item => {
-                    let data = { toJid: item.fromUserJid, msgId: item.msgId }
-                    dispatch(sendSeenStatus(data))
-                })
-            }
-        }
-    }, [messageList])
+    // React.useEffect(() => {
+    //     if (messageList.length) {
+    //         let unReadMsg = messageList.filter((item) => item.msgStatus == 1 && item.fromUserJid !== currentUserJID)
+    //         if (unReadMsg.length) {
+    //             unReadMsg.forEach(item => {
+    //                 let data = { toJid: item.fromUserJid, msgId: item.msgId }
+    //                 dispatch(sendSeenStatus(data))
+    //             })
+    //         }
+    //     }
+    // }, [messageList])
 
     React.useEffect(() => {
         if (props.sendSelected) {
@@ -180,12 +183,12 @@ const ChatConversation = (props) => {
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
             <ChatHeader
+                fromUserJId={fromUserJId}
                 selectedMsgs={selectedMsgs}
                 setSelectedMsgs={setSelectedMsgs}
                 menuItems={menuItems}
                 handleBackBtn={props.handleBackBtn}
                 seenStatus={seenStatus}
-                fromUser={nickName}
                 handleReply={handleReply}
                 setLocalNav={props.setLocalNav}
             />

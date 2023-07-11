@@ -9,11 +9,19 @@ import UserInfo from '../components/UserInfo'
 import UsersTapBarInfo from '../components/UsersTapBarInfo'
 import { BackHandler } from 'react-native'
 import { RECENTCHATSCREEN } from '../constant'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { navigate } from '../redux/navigationSlice'
+import { v4 as uuidv4 } from 'uuid';
+import { getMessageObjSender, getRecentChatMsgObj } from '../Helper/Chat/Utility'
+import { updateRecentChat } from '../redux/recentChatDataSlice'
+import store from '../redux/store'
+import { isSingleChat } from '../Helper/Chat/ChatHelper'
+import { addChatConversationHistory } from '../redux/conversationSlice'
 
 function ChatScreen() {
   const dispatch = useDispatch()
+  const vCardData = useSelector((state) => state.profile.profileDetails);
+  const fromUserJId = useSelector(state => state.navigation.fromUserJid)
   const [localNav, setLocalNav] = React.useState('CHATCONVERSATION')
   const [isMessageInfo, setIsMessageInfo] = React.useState({})
   const toast = useToast()
@@ -78,6 +86,36 @@ function ChatScreen() {
     handleBackBtn
   );
 
+  const handleSendMsg = async(message)=>{
+    let messageType = message.type;
+    if (message.content !== "") {
+      let jid = fromUserJId;
+      let msgId = uuidv4();
+      const userProfile = vCardData;
+        const dataObj = {
+          jid : jid,
+          msgType: "text",
+          message: message.content,
+          userProfile,
+          chatType:'chat',
+          msgId,
+        };
+        const conversationChatObj = await getMessageObjSender(dataObj);
+        const recentChatObj = getRecentChatMsgObj(dataObj);
+        SDK.sendTextMessage(
+          jid,
+          message.content,
+          msgId
+        )
+        const dispatchData = {
+          data: [conversationChatObj],
+          ...(isSingleChat('chat') ? { userJid: jid } : { groupJid: jidSendMsg }),
+        };
+        store.dispatch(addChatConversationHistory(dispatchData));
+        store.dispatch(updateRecentChat(recentChatObj));
+    }
+  }
+
   React.useEffect(() => {
     return () => {
       backHandler.remove();
@@ -87,7 +125,7 @@ function ChatScreen() {
   return (
     <>
       {{
-        'CHATCONVERSATION': <ChatConversation handleBackBtn={handleBackBtn} setLocalNav={setLocalNav} setIsMessageInfo={setIsMessageInfo} attachmentMenuIcons={attachmentMenuIcons} sendSelected={sendSelected} selectedImages={selectedImages} />,
+        'CHATCONVERSATION': <ChatConversation handleBackBtn={handleBackBtn} setLocalNav={setLocalNav} setIsMessageInfo={setIsMessageInfo} attachmentMenuIcons={attachmentMenuIcons} sendSelected={sendSelected} selectedImages={selectedImages} handleSendMsg={handleSendMsg}/>,
         'MESSAGEINFO': <MessageInfo setLocalNav={setLocalNav} setIsMessageInfo={setIsMessageInfo} isMessageInfo={isMessageInfo} />,
         'GalleryPickView': <GalleryPickView setSelectedImages={setSelectedImages} selectedImages={selectedImages} setLocalNav={setLocalNav} setSendSelected={setSendSelected} />,
         'UserInfo': <UserInfo setLocalNav={setLocalNav} />,

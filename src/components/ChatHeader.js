@@ -2,19 +2,15 @@ import { AlertDialog, HStack, Icon, IconButton, Pressable, Text, VStack, View } 
 import React from 'react'
 import Avathar from '../common/Avathar'
 import MenuContainer from '../common/MenuContainer'
-import MarqueeText from '../common/MarqueeText'
 import { CloseIcon, DeleteIcon, FavouriteIcon, ForwardIcon, ReplyIcon, LeftArrowIcon } from '../common/Icons';
+import { SDK } from '../SDK'
+import { getUserIdFromJid } from '../Helper/Chat/Utility'
+import LastSeen from './LastSeen'
 
 function ChatHeader(props) {
-    const marqueeRef = React.useRef(null);
+    const { fromUserJId } = props
     const [remove, setRemove] = React.useState(false);
-    const [config] = React.useState({
-        marqueeOnStart: true,
-        speed: 0.3,
-        loop: true,
-        delay: 0,
-        consecutive: false,
-    })
+    const [nickName, setNickName] = React.useState('');
 
     const onClose = () => {
         setRemove(false)
@@ -39,9 +35,19 @@ function ChatHeader(props) {
         props.handleReply(props?.selectedMsgs[0].msgId);
     }
 
-    const handleUserInfo =()=>{
+    const handleUserInfo = () => {
         props.setLocalNav('UserInfo');
     }
+
+    React.useEffect(() => {
+        (async () => {
+            let userId = getUserIdFromJid(fromUserJId);
+            if (!nickName) {
+                let userDetails = await SDK.getUserProfile(userId)
+                setNickName(userDetails?.data?.nickName || userId)
+            }
+        })()
+    }, [])
 
     return (
         <>
@@ -49,16 +55,12 @@ function ChatHeader(props) {
                 ? <HStack h={'60px'} bg="#F2F2F2" justifyContent="space-between" alignItems="center" w="full">
                     <HStack alignItems="center">
                         <IconButton _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} onPress={props.handleBackBtn} icon={<Icon as={() => LeftArrowIcon()} name="emoji-happy" />} borderRadius="full" />
-                        <Avathar width={36} height={36} data={props.fromUser || '91'} />
-                        <Pressable w="65%"  onPress={handleUserInfo}  >
+                        <Avathar width={36} height={36} data={nickName || '91'} />
+                        <Pressable w="65%" onPress={handleUserInfo}  >
                             {({ isPressed }) => {
                                 return <VStack pr='4' py="3" bg={isPressed ? 'rgba(0,0,0, 0.1)' : "coolGray.100"} pl='2'>
-                                    <Text color='#181818' fontWeight='700' fontSize='14'>{props.fromUser}</Text>
-                                    {props.seenStatus &&
-                                        <MarqueeText key={JSON.stringify(config)} ref={marqueeRef} {...config}>
-                                            {props.seenStatus}
-                                        </MarqueeText>
-                                    }
+                                    <Text color='#181818' fontWeight='700' fontSize='14'>{nickName}</Text>
+                                        <LastSeen jid={fromUserJId}/>
                                 </VStack>
                             }}
                         </Pressable>

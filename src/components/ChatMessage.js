@@ -4,9 +4,11 @@ import { useSelector } from 'react-redux';
 import { getConversationHistoryTime } from '../common/TimeStamp';
 import { Box, HStack, Icon, Pressable, Text, View } from 'native-base';
 import { SandTimer } from '../common/Icons';
+import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 
 const ChatMessage = (props) => {
-  const currentUserJID = useSelector(state => state?.auth?.currentUserJID)
+  const vCardProfile = useSelector((state) => state.profile.profileDetails);
+  const currentUserJID = formatUserIdToJid(vCardProfile?.userId)
   let isSame = currentUserJID === props?.message?.fromUserJid
   let statusVisible = 'notSend'
 

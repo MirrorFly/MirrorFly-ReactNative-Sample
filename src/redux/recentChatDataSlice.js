@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { v4 as uuidv4 } from 'uuid';
+import { getMsgStatusInOrder } from "../Helper/Chat/ChatHelper";
+import { StateToObj } from "./reduxHelper";
 
 const initialState = {
   "id": uuidv4(),
@@ -13,13 +15,13 @@ const getNames = (data = []) => {
 }
 
 const updateRecentChatFunc = (filterBy, newMessage, _state) => {
-  const {   data : recentChatArray = []  } = _state
+  const { data: recentChatArray = [] } = _state
   const checkalreadyExist = recentChatArray.find((message) => message.fromUserId === filterBy);
   if (!checkalreadyExist) {
     newMessage.archiveStatus = 0;
     return [...recentChatArray, newMessage];
   }
-  let value =  recentChatArray.map((recentItem) => {
+  let value = recentChatArray.map((recentItem) => {
     if (recentItem.fromUserId === filterBy) {
       return {
         ...recentItem,
@@ -30,6 +32,15 @@ const updateRecentChatFunc = (filterBy, newMessage, _state) => {
     return recentItem;
   });
   return value
+};
+
+const updateRecentChatMessageStatusFunc = (data, stateData) => {
+  return stateData.map((element) => {
+    if (element.fromUserId === data.fromUserId && element.msgId === data.msgId) {
+      element.msgStatus = getMsgStatusInOrder(element.msgStatus, data.msgStatus);
+    }
+    return element;
+  });
 };
 
 const recentChatData = createSlice({
@@ -49,7 +60,13 @@ const recentChatData = createSlice({
       return {
         ..._state,
         "id": uuidv4(),
-        "data": updateRecentChatFunc(filterBy, rest,_state)
+        "data": updateRecentChatFunc(filterBy, rest, _state)
+      }
+    }, updateRecentChatMessageStatus: (_state, payload) => {
+      return {
+        ..._state,
+        "id": uuidv4(),
+        "data": updateRecentChatMessageStatusFunc(payload.payload, StateToObj(_state).data)
       }
     }
   }
@@ -58,3 +75,4 @@ const recentChatData = createSlice({
 export default recentChatData.reducer
 export const addRecentChat = recentChatData.actions.addRecentChat
 export const updateRecentChat = recentChatData.actions.updateRecentChat
+export const updateRecentChatMessageStatus = recentChatData.actions.updateRecentChatMessageStatus

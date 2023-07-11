@@ -1,4 +1,7 @@
+import { formatUserIdToJid } from "../../../Helper/Chat/ChatHelper";
+import { getMessageObjReceiver } from "../../../Helper/Chat/Utility";
 import { changeTimeFormat } from "../../../common/TimeStamp";
+import { addChatConversationHistory } from "../../../redux/conversationSlice";
 import { updateRecentChat } from "../../../redux/recentChatDataSlice";
 import store from "../../../redux/store";
 
@@ -64,4 +67,14 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
         };
         store.dispatch(updateRecentChat(newMessage));
     }
+};
+
+export const updateConversationMessage = (messgeObject, currentState) => {
+    const newChatTo = messgeObject.msgType === "carbonSentMessage" ? messgeObject.toUserId : messgeObject.fromUserId;
+    const conversationChatObj = getMessageObjReceiver(messgeObject, messgeObject.fromUserId);
+    const dispatchData = {
+        data: [conversationChatObj],
+        ...({ userJid: formatUserIdToJid(newChatTo) })
+    };
+    store.dispatch(addChatConversationHistory(dispatchData));
 };

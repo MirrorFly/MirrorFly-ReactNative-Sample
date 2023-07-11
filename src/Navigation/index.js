@@ -11,21 +11,28 @@ import SettingScreen from '../screen/SettingScreen'
 import { navigate } from '../redux/navigationSlice'
 import SplashScreen from '../screen/SplashScreen'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { profileDetail } from '../redux/profileSlice'
 
 function Navigation() {
     const screenNav = useSelector(state => state.navigation.screen)
     const [isAppLoading, setIsAppLoading] = React.useState(false)
     const dispatch = useDispatch();
+    const vCardProfile = useSelector((state) => state.profile.profileDetails);
 
     React.useEffect(() => {
         setIsAppLoading(true);
         setTimeout(async () => {
+            if(Object.keys(vCardProfile).length === 0){
+            const userIdentifier = await AsyncStorage.getItem('userIdentifier')
+            const profileDetails = await SDK.getUserProfile(JSON.parse(userIdentifier));
+            dispatch(profileDetail(profileDetails.data))
+            }
             const screenObj = await AsyncStorage.getItem('screenObj')
             if (JSON.parse(screenObj)) {
                 dispatch(navigate(JSON.parse(screenObj)))
             }
             setIsAppLoading(false)
-        }, 1000)
+        }, 2000)
     }, [])
 
     if (isAppLoading) {

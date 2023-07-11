@@ -17,12 +17,6 @@ export const sendSeenStatus = createAsyncThunk('chat/sendSeenStatus', async (res
     return true
 })
 
-export const getRecentChat = createAsyncThunk('chat/getRecentChat', async () => {
-    let recentChatsRes = await SDK.getRecentChats();
-    const recentChatsFilter = recentChatsRes?.data.filter(item => item.chatType == 'chat')
-    return { recentChatsFilter }
-})
-
 
 export const getMessages = createAsyncThunk('chat/getMessages', async (fromUserJId) => {
     let message = await SDK.getChatMessages(fromUserJId);
@@ -181,16 +175,6 @@ const chatSlice = createSlice({
             })
             .addCase(getReceiveMessage.rejected, (state, action) => {
                 state.status = 'failed';
-            })
-            .addCase(getRecentChat.pending, (state) => {
-                state.recentChatStatus = RECENTCHATLOADING;
-            })
-            .addCase(getRecentChat.fulfilled, (state, action) => {
-                state.recentChatStatus = 'succeeded';
-                state.recentChat = action.payload.recentChatsFilter?.reverse()
-            })
-            .addCase(getRecentChat.rejected, (state, action) => {
-                state.recentChatStatus = 'failed';
             })
             .addCase(sendSeenStatus.pending, (state) => {
                 state.recentChatStatus = RECENTCHATLOADING;

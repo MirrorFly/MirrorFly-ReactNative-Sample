@@ -8,16 +8,19 @@ import { CHATSCREEN, RECENTCHATLOADING } from '../constant';
 import { navigate } from '../redux/navigationSlice';
 import { Image, StyleSheet } from 'react-native';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 
 export default function RecentChat(props) {
     const dispatch = useDispatch();
     const recentLoading = useSelector(state => state.chat.recentChatStatus)
+    const vCardProfile = useSelector((state) => state.profile.profileDetails);
+
     const onRowDidOpen = rowKey => {
         console.log('This row opened', rowKey);
     };
-    const currentUserJID = useSelector(state => state?.auth?.currentUserJID.split('@')[0])
+    const currentUserJID = vCardProfile?.userId
     const renderItem = ({ item, index }) => {
-        const isSame = currentUserJID === item?.publisherId;
+        const isSame = currentUserJID === getUserIdFromJid(item?.publisherId);
         let statusVisible
         switch (item?.msgStatus) {
             case 0:

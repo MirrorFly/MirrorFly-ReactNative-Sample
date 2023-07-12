@@ -168,7 +168,7 @@ const ChatConversation = (props) => {
                 })
             }
         }
-    }, [messageList])
+    }, [messages])
 
     React.useEffect(() => {
         if (props.sendSelected) {

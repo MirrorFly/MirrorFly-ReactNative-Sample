@@ -4,6 +4,7 @@ import { GROUP_CHAT_PROFILE_UPDATED_NOTIFY, MSG_PROCESSING_STATUS, MSG_SENT_STAT
 
 
 export const getUserIdFromJid = (userJid) => {
+    console.log(userJid,"43212");
     return userJid.includes("@") ? userJid.split("@")[0] : userJid;
 };
 

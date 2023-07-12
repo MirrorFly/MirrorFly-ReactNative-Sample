@@ -39,38 +39,38 @@ export const getMessageObjSender = async (dataObj, idx) => {
             originalHeight = 0;
 
         if (msgType === "image") {
-            let mediaFileURL = fileOptions.blobUrl;
-            const mediaDimension = await getMediaDimension(mediaFileURL, msgType);
-            ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);
+            // let mediaFileURL = fileOptions.blobUrl;
+            // const mediaDimension = await getMediaDimension(mediaFileURL, msgType);
+            // ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);
         } else if (msgType === "video") {
-            ({
-                webWidth,
-                webHeight,
-                androidWidth,
-                androidHeight,
-                originalWidth,
-                originalHeight,
-            } = fileDetails);
+            // ({
+            //     webWidth,
+            //     webHeight,
+            //     androidWidth,
+            //     androidHeight,
+            //     originalWidth,
+            //     originalHeight,
+            // } = fileDetails);
         }
         msgBody.message = "";
         msgBody.media = {
             file,
             caption: fileOptions.caption || "",
-            duration: fileOptions.duration || 0,
+            // duration: fileOptions.duration || 0,
             fileName: fileOptions.fileName,
             file_size: fileOptions.fileSize,
-            file_url: fileOptions.blobUrl,
+            // file_url: fileOptions.blobUrl,
             is_downloaded: 0,
             is_uploading: idx === 0 ? 1 : 0,
-            local_path: "",
-            thumb_image: fileOptions.thumbImage,
-            webWidth: webWidth,
-            webHeight: webHeight,
-            androidWidth: androidWidth,
-            androidHeight: androidHeight,
-            originalWidth,
-            originalHeight,
-            audioType: fileOptions.audioType,
+            // local_path: "",
+            // thumb_image: fileOptions.thumbImage,
+            // webWidth: webWidth,
+            // webHeight: webHeight,
+            // androidWidth: androidWidth,
+            // androidHeight: androidHeight,
+            // originalWidth,
+            // originalHeight,
+            // audioType: fileOptions.audioType,
         };
     }
 
@@ -119,15 +119,15 @@ export const getRecentChatMsgObj = (dataObj) => {
     } else {
         msgBody.media = {
             caption: fileOptions.caption || "",
-            duration: fileOptions.duration || 0,
+            // duration: fileOptions.duration || 0,
             fileName: fileOptions.fileName,
             file_size: fileOptions.fileSize,
-            file_url: fileOptions.blobUrl,
+            // file_url: fileOptions.blobUrl,
             is_downloaded: 0,
             is_uploading: 1,
             local_path: "",
-            thumb_image: fileOptions.thumbImage,
-            audioType: fileOptions.audioType,
+            // thumb_image: fileOptions.thumbImage,
+            // audioType: fileOptions.audioType,
         };
     }
     const fromUserId = getUserIdFromJid(jid);

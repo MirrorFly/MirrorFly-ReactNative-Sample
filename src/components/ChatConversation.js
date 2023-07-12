@@ -14,13 +14,14 @@ import { ClearTextIcon, ReplyIcon } from '../common/Icons';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { addChatConversationHistory } from '../redux/conversationSlice';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
-import { getChatMessageHistoryById } from '../Helper/Chat/ChatHelper';
+import { formatUserIdToJid, getChatMessageHistoryById } from '../Helper/Chat/ChatHelper';
 
 const ChatConversation = (props) => {
     const { handleSendMsg } = props
     const dispatch = useDispatch();
     const chatInputRef = React.useRef(null)
-    const currentUserJID = useSelector(state => state?.auth?.currentUserJID)
+    const vCardProfile = useSelector((state) => state.profile.profileDetails);
+    const currentUserJID = formatUserIdToJid(vCardProfile?.userId)
     const presenceListener = useSelector(state => state.user.userPresence)
     const messages = useSelector(state => state.chatConversationData.data)
     const fromUserJId = useSelector(state => state.navigation.fromUserJid)
@@ -138,7 +139,7 @@ const ChatConversation = (props) => {
 
     React.useEffect(() => {
         (async () => {
-            if (messages[fromUserJId]) {
+            if (messages[getUserIdFromJid(fromUserJId)]) {
                 setMessageList(getChatMessageHistoryById(getUserIdFromJid(fromUserJId)))
             } else {
                 let chatMessage = await SDK.getChatMessages(fromUserJId);
@@ -168,7 +169,7 @@ const ChatConversation = (props) => {
                 })
             }
         }
-    }, [messages])
+    }, [messageList])
 
     React.useEffect(() => {
         if (props.sendSelected) {

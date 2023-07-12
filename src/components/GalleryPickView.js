@@ -8,6 +8,7 @@ import { SceneMap, TabView } from 'react-native-tab-view';
 import { handleGalleryPickerMulti } from '../common/utils'
 
 function GalleryPickView(props) {
+    const { handleSendMsg } = props
     const toast = useToast()
     const toastConfig = {
         duration: 2500,
@@ -42,6 +43,14 @@ function GalleryPickView(props) {
         );
     };
 
+    const handleSendMedia = () =>{
+        let message = {
+            type: "media",
+            content: props.selectedImages
+        }
+        handleSendMsg(message);
+    }
+
     const renderScene = SceneMap(
         props.selectedImages?.reduce((scenes, item, itemIndex) => {
             scenes[`tab${itemIndex + 1}`] = () => (
@@ -53,7 +62,7 @@ function GalleryPickView(props) {
                     <View position='relative' flex='1' px='7' my='5' keyboardShouldPersistTaps="handled">
                         <Image resizeMode='contain' source={{ uri: item.image.fileCopyUri }} style={styles.tabContainer} />
                         <IconButton position='absolute' p='0' right='5' bottom='0' alignSelf={'flex-end'} onPress={() => {
-                            props.setSendSelected(true)
+                            handleSendMedia()
                             props.setLocalNav('CHATCONVERSATION')
                         }} _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} icon={<Icon as={<SendBlueIcon color="#fff" />} name="emoji-happy" />} borderRadius="full" />
                     </View>

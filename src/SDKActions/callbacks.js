@@ -24,7 +24,6 @@ export const callBacks = {
         console.log('dbListener', JSON.stringify(res));
     },
     messageListener: (res) => {
-        console.log(res,"resssssssssss");
         if (
             res.msgType === "sentMessage" ||
             res.msgType === "carbonSentMessage" ||

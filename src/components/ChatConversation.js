@@ -158,17 +158,17 @@ const ChatConversation = (props) => {
         }
     }
 
-    // React.useEffect(() => {
-    //     if (messageList.length) {
-    //         let unReadMsg = messageList.filter((item) => item.msgStatus == 1 && item.fromUserJid !== currentUserJID)
-    //         if (unReadMsg.length) {
-    //             unReadMsg.forEach(item => {
-    //                 let data = { toJid: item.fromUserJid, msgId: item.msgId }
-    //                 dispatch(sendSeenStatus(data))
-    //             })
-    //         }
-    //     }
-    // }, [messageList])
+    React.useEffect(() => {
+        if (messageList.length) {
+            let unReadMsg = messageList.filter((item) => item.msgStatus == 1 && item.fromUserJid !== currentUserJID)
+            if (unReadMsg.length) {
+                unReadMsg.forEach(async item => {
+                    let data = { toJid: item.fromUserJid, msgId: item.msgId }
+                    await SDK.sendSeenStatus(data.toJid, data.msgId);
+                })
+            }
+        }
+    }, [messageList])
 
     React.useEffect(() => {
         if (props.sendSelected) {

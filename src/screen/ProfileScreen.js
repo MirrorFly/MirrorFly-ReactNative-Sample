@@ -29,7 +29,7 @@ const ProfileScreen = () => {
   };
 
   const getProfileDetail = async () => {
-    if (!selectProfileInfo.length) {
+    if (Object.keys(selectProfileInfo).length === 0) {
       const userIdentifier = await AsyncStorage.getItem('userIdentifier')
       const profileDetails = await SDK.getUserProfile(JSON.parse(userIdentifier));
       dispatch(profileDetail(profileDetails.data))

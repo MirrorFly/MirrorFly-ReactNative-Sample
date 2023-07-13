@@ -1,31 +1,50 @@
-import { Image, ImageBackground, StyleSheet } from 'react-native'
 import React from 'react'
-import { HStack, Stack, Text, View } from 'native-base'
+import { HStack, Text, View } from 'native-base'
+import { ApkIcon, DocIcon, DownloadIcon, PdfIcon, PPTIcon, XLSIcon } from '../common/Icons';
 
-
-const PdfCard = () => {
-   // const image = { uri: 'https://via.placeholder.com/500' };
-    return (
-        <Stack>
-
-
-            <Stack mx={3} my={2}>
-                <Image source={{ uri: 'https://reactnative.dev/img/tiny_logo.png'}}resizeMode={"cover"}   style={{ paddingHorizontal:100,paddingVertical:110 }} />
-
-            </Stack>
-            <HStack alignItems={"center"} backgroundColor={"#D0D8EB"} borderBottomLeftRadius={5} borderBottomRightRadius={5} borderColor={"#D0D8EB"} px={"1"} py={"1"}>
-                <View borderRadius={5} mx={1} my={1} px={1} py={1} backgroundColor={"red.500"} >
-
-                    <Text color={"#ffff"} fontWeight={400}>Pdf</Text>
-
-                </View>
-                <Text px={2} py={2}>Demo.pdf</Text>
-            </HStack>
-
-        </Stack>
-    )
+function convertBytesToKB(bytes) {
+    const KB = bytes / 1024;
+    return KB.toFixed(2);
 }
 
-export default PdfCard
+const PdfCard = (props) => {
 
-const styles = StyleSheet.create({})
+    const fileSizeInKB = convertBytesToKB(props.fileSize);
+    const mediaData = props.data.msgBody.media
+    const getFileIcon = (fileType) => {
+        switch (fileType) {
+            case 'pdf':
+                return <PdfIcon />;
+            case 'ppt':
+                return <PPTIcon />;
+            case 'xls':
+                return <XLSIcon />;
+            case 'apk':
+                return <ApkIcon />;
+            case 'docx':
+                return <DocIcon />;
+            default:
+                return null;
+        }
+    }
+    const fileExtension = mediaData?.fileName?.split('.').pop();
+    return (
+        <View marginY={1} marginX={1} flex={1} width={220} height={70} position={"relative"} borderRadius={15}>
+            <HStack borderRadius={15} backgroundColor={"#EFEFEF"} paddingX={2} paddingY={1}>
+                <View py={2}>
+                    {getFileIcon(fileExtension)}
+                </View>
+                <Text px={2} flex={1} numberOfLines={2} fontSize={10} py={1}>{mediaData.fileName}</Text>
+                <View style={{ borderRadius: 5, width: 30, height: 30, borderWidth: 2, borderColor: "#AFB8D0", paddingHorizontal: 4, paddingVertical: 4, marginTop: 6 }}>
+                    <DownloadIcon width='16' height='15' />
+                </View>
+            </HStack>
+            <View flexDirection={"row"} position={'absolute'} bottom={1}   >
+                <Text px={"2"} color={"#000"} fontWeight={"400"} fontSize='7'>{fileSizeInKB}KB</Text>
+                {props.status}
+                <Text pl={110} color='#767676' fontSize='8'>{props.timeStamp}</Text>
+            </View>
+        </View>
+    )
+}
+export default PdfCard;

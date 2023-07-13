@@ -21,6 +21,7 @@ export const callBacks = {
         console.log('dbListener', JSON.stringify(res));
     },
     messageListener: (res) => {
+        console.log('messageListener')
         switch (res.msgType) {
             case 'receiveMessage':
                 store.dispatch(getReceiveMessage(res))

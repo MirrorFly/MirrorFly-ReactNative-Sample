@@ -1,41 +1,46 @@
-import { StyleSheet, ImageBackground, Text, View, Pressable } from 'react-native';
+import { HStack, Image, Text, View } from 'native-base';
 import React from 'react';
 import { PlayIcon, VideoIcon } from '../common/Icons';
+import noPreview from '../assets/noPreview.png'
+import { ImageBackground } from 'react-native';
 
-const VideoCard = () => {
-  
-    const image = {uri: 'https://legacy.reactjs.org/logo-og.png'};
-    return (
-    <View style={styles.container}>
-      <ImageBackground source={image} resizeMode="cover" style={styles.image}>
-        <View style={{ position:"absolute",flexDirection:"row",top:9,left:0}}>
-        <VideoIcon/>
-            <Text style={{top:0,color:"#fff",fontSize:8}}>
-                0.15
-            </Text>
-        </View>
-        <View style={{backgroundColor:"#fff",padding:8,borderRadius:12,alignItems:"center"}}>
-          
-            <Pressable onPress={console.log("Hiii")}>
-            <PlayIcon/>
-            </Pressable>
-           
-        </View>
-      </ImageBackground>
-    </View>
-  )
-}
-
-export default VideoCard
-
-const styles = StyleSheet.create({
-    container:{
+const VideoCard = (props) => {
+    const mediaData = props.data.msgBody.media
+    const durationInSeconds = props.data.msgBody.media.duration;
    
-    },
-    image: {
-        alignItems: 'center',
-       paddingHorizontal:90,
-       paddingVertical:60,
-       
-     },
-})
+    const durationInMinutes = '0.'+ Math.floor(durationInSeconds / 1000);
+    const base64ImageData = 'data:image/jpg;base64,' + mediaData.thumb_image;
+
+    return (
+        <View borderColor={'#E5E5E5'} borderWidth={2} borderRadius={2} position='relative'>
+            {mediaData.thumb_image
+                ? <Image alt={mediaData.fileName} source={{ uri: base64ImageData }} resizeMode="" style={{ width: mediaData.androidWidth, height: mediaData.androidHeight, borderRadius: 5 }} />
+                : <Image alt={mediaData.fileName} source={noPreview} width={mediaData.androidWidth} height={mediaData.androidHeight} />
+            }
+            <View position={'absolute'} top={1} left={1}>
+                <HStack alignItems={'center'}>
+                    <VideoIcon color={mediaData.thumb_image ? '#fff' : '#000'} width='13' height='13' />
+                    <Text px='2' fontSize={11} color={mediaData.thumb_image ? '#fff' : '#000'}>
+                        {/* {durationInMinutes <= 0.15 ? durationInMinutes.toFixed(2) : "0.15"} */}
+                        {durationInMinutes}
+                    </Text>
+                </HStack>
+            </View>
+            <View position={'absolute'} bottom={1} right={1}>
+                <ImageBackground
+                    source={require('../assets/ic_baloon.png')}
+                    style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-end", width: 100, resizeMode: 'cover' }}
+                >
+                    {props.status}
+                    <Text pl='1' color='#fff' fontWeight={400} fontSize='9'>{props.timeStamp}</Text>
+                </ImageBackground>
+            </View>
+            <View bg='#fff' position={'absolute'} bottom={'45%'} right={'43%'} shadow={5} borderRadius={50}>
+                <View p='3' >
+                    <PlayIcon />
+                </View>
+            </View>
+        </View>
+    )
+}
+export default VideoCard;

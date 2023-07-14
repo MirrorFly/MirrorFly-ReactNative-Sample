@@ -86,6 +86,13 @@ const ChatConversation = (props) => {
             case foundMsg.length > 0:
                 setMenuItems([
                     {
+                        label: 'Message Info',
+                        formatter: () => {
+                            props.setIsMessageInfo(selectedMsgs[0])
+                            props.setLocalNav('MESSAGEINFO')
+                        }
+                    },
+                    {
                         label: 'Copy',
                         formatter: () => { }
                     },
@@ -142,8 +149,10 @@ const ChatConversation = (props) => {
             if (messages[getUserIdFromJid(fromUserJId)]) {
                 setMessageList(getChatMessageHistoryById(getUserIdFromJid(fromUserJId)))
             } else {
-                let chatMessage = await SDK.getChatMessages(fromUserJId);
-                if (chatMessage.statusCode == 200) {
+                console.log('fromUserJId',fromUserJId)
+                let chatMessage = await SDK.getChatMessagesDB(fromUserJId);
+                console.log('chatMessage',JSON.stringify(chatMessage))
+                if (chatMessage?.statusCode == 200) {
                     dispatch(addChatConversationHistory(chatMessage))
                 }
             }
@@ -160,8 +169,8 @@ const ChatConversation = (props) => {
     }
 
     React.useEffect(() => {
-        if (messageList.length) {
-            let unReadMsg = messageList.filter((item) => item.msgStatus == 1 && item.fromUserJid !== currentUserJID)
+        if (messageList?.length) {
+            let unReadMsg = messageList.filter((item) => item.msgStatus == 1 && currentUserJID && item.fromUserJid !== currentUserJID)
             if (unReadMsg.length) {
                 unReadMsg.forEach(async item => {
                     let data = { toJid: item.fromUserJid, msgId: item.msgId }

@@ -24,12 +24,12 @@ export const callBacks = {
         console.log('dbListener', JSON.stringify(res));
     },
     messageListener: (res) => {
-        if (
-            res.msgType === "sentMessage" ||
-            res.msgType === "carbonSentMessage" ||
-            res.msgType === "receiveMessage" ||
-            res.msgType === "carbonReceiveMessage" ||
-            res.msgType === "receiveMessage") {
+        if (res.chatType === 'chat' &&
+            (res.msgType === "sentMessage" ||
+                res.msgType === "carbonSentMessage" ||
+                res.msgType === "receiveMessage" ||
+                res.msgType === "carbonReceiveMessage" ||
+                res.msgType === "receiveMessage")) {
             updateRecentChatMessage(res, store.getState())
             updateConversationMessage(res, store.getState())
         }
@@ -51,23 +51,6 @@ export const callBacks = {
             store.dispatch(updateRecentChatMessageStatus(res))
             store.dispatch(updateChatConversationHistory(res))
         }
-        // switch (res.msgType) {
-        //     case 'receiveMessage':
-        //         store.dispatch(getReceiveMessage(res))
-        //         break;
-        //     case 'acknowledge':
-        //     case 'delivered':
-        //         store.dispatch(storeDeliveryStatus(res))
-        //         // break;
-        //     case 'seen':
-        //         if (res.fromUserJid) {
-        //             store.dispatch(storeSeenStatus(res))
-        //             store.dispatch(updateMessageStatus(res))
-        //         }
-        //         break;
-        //     default:
-        //         break;
-        // }
     },
     presenceListener: (res) => {
         store.dispatch(updateUserPresence(res))

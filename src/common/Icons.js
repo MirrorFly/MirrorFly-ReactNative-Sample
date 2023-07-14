@@ -13,7 +13,7 @@ export const LeftArrowIcon = (color) => {
 
 export const RegiterPageIcon = () => {
     return (
-        <Svg xmlns="http://www.w3.org/2000/svg" width="65%" height="200" viewBox="0 0 188.332 166.024">
+        <Svg xmlns="http://www.w3.org/2000/svg" width="55%" height="180" viewBox="0 0 188.332 166.024">
             <G id="Group_7510" data-name="Group 7510" transform="translate(-79 -109.754)">
                 <Ellipse id="Ellipse_1" data-name="Ellipse 1" cx="80.713" cy="80.675" rx="80.713" ry="80.675" transform="translate(105.906 109.754)" fill="#f2f2f2" opacity="0.502" />
                 <Path id="Shape_1" data-name="Shape 1" d="M261.4,381.928l-1.692,9.716L250,393.332l9.7,1.671,1.7,9.725,1.688-9.707,9.724-1.7-9.715-1.68Z" transform="translate(-170.997 -231.259)" fill="#ffd320" />

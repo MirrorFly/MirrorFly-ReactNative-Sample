@@ -118,7 +118,7 @@ const CollapsingToolbar = ({
                         {
                             justifyContent: 'center',
                             alignItems: 'center',
-                            backgroundColor: 'purple',
+                            backgroundColor: '#3276E2',
                             height: toolbarMaxHeight,
                             opacity: imageOpacity,
                         },

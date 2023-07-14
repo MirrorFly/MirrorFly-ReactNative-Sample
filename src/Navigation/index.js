@@ -12,6 +12,7 @@ import { navigate } from '../redux/navigationSlice'
 import SplashScreen from '../screen/SplashScreen'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { profileDetail } from '../redux/profileSlice'
+import { getCurrentUserJid } from '../redux/authSlice'
 
 function Navigation() {
     const screenNav = useSelector(state => state.navigation.screen)
@@ -22,13 +23,16 @@ function Navigation() {
     React.useEffect(() => {
         setIsAppLoading(true);
         setTimeout(async () => {
-            if(Object.keys(vCardProfile).length === 0){
-            const userIdentifier = await AsyncStorage.getItem('userIdentifier')
-            const profileDetails = await SDK.getUserProfile(JSON.parse(userIdentifier));
-            if(profileDetails.statusCode == 200) dispatch(profileDetail(profileDetails.data))
+            if (Object.keys(vCardProfile).length === 0) {
+                const userIdentifier = await AsyncStorage.getItem('userIdentifier')
+                console.log('userIdentifier',userIdentifier)
+                const profileDetails = await SDK.getUserProfile(JSON.parse(userIdentifier));
+                if (profileDetails.statusCode == 200) dispatch(profileDetail(profileDetails.data))
             }
+            const currentUserJID = await AsyncStorage.getItem('currentUserJID')
             const screenObj = await AsyncStorage.getItem('screenObj')
             if (JSON.parse(screenObj)) {
+                dispatch(getCurrentUserJid(JSON.parse(currentUserJID)))
                 dispatch(navigate(JSON.parse(screenObj)))
             }
             setIsAppLoading(false)

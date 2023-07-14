@@ -11,7 +11,7 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
     if (!recentChatNames) {
         return;
     }
-    const { msgType, fromUserId, fromUserJid, toUserId, msgId, timestamp, chatType, msgBody, publisherId } = messgeObject;
+    const { msgType, fromUserId, fromUserJid, toUserId, msgId, timestamp, chatType, msgBody, publisherId, profileDetails } = messgeObject;
 
     const newChatTo = msgType === "carbonSentMessage" ? toUserId : fromUserId;
     const newChatFrom = chatType === "groupchat" ? publisherId : fromUserId;
@@ -63,7 +63,10 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
             publisherId: newChatFrom,
             toUserId: toUserId,
             createdAt: updateTime,
-            filterBy: newChatTo
+            filterBy: newChatTo,
+            profileDetails: {
+                ...profileDetails
+            }
         };
         store.dispatch(updateRecentChat(newMessage));
     }

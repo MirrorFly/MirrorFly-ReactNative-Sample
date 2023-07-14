@@ -13,7 +13,7 @@ const ProfilePhoto = (props) => {
     <>
       <ScreenHeader
         onhandleBack={handleBackBtn}
-        title=' Profile Photo'
+        title={props?.profileInfo?.nickName}
       />
       <VStack justifyContent={"center"} h="88%">
         <AuthProfileImage

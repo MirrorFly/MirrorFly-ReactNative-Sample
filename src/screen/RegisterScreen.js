@@ -6,7 +6,7 @@ import { navigate } from '../redux/navigationSlice';
 import { COUNTRYSCREEN, numRegx, PROFILESCREEN, REGISTERSCREEN } from '../constant';
 import { getCurrentUserJid } from '../redux/authSlice';
 import { DownArrowIcon, RegiterPageIcon } from '../common/Icons';
-import { Icon, Modal, Text, Center, Box, useToast, Spinner, HStack, Stack, VStack, Pressable, KeyboardAvoidingView, View } from 'native-base';
+import { Icon, Modal, Text, Center, Box, useToast, Spinner, HStack, Stack, VStack, Pressable, KeyboardAvoidingView, View, ScrollView } from 'native-base';
 import { useNetworkStatus } from '../hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -87,13 +87,14 @@ const RegisterScreen = () => {
         }
     }
     const handleRegister = async () => {
+        setIsToastShowing(false)
         const register = await SDK.register(selectcountry?.dial_code + mobileNumber);
         if (register.statusCode == 200) {
             await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
             await AsyncStorage.setItem('userIdentifier', JSON.stringify(selectcountry?.dial_code + mobileNumber));
             await AsyncStorage.setItem('credential', JSON.stringify(register.data));
             handleConnect(register.data)
-        }
+        } else setIsLoading(false)
     }
     const handleConnect = async (register) => {
         let connect = await SDK.connect(register.username, register.password);
@@ -104,6 +105,7 @@ const RegisterScreen = () => {
                 let jid = await SDK.getCurrentUserJid()
                 let userJID = jid.userJid.split('/')[0]
                 await AsyncStorage.setItem('currentUserJID', JSON.stringify(userJID));
+                dispatch(getCurrentUserJid(userJID))
                 dispatch(navigate(nav))
                 break;
             default:

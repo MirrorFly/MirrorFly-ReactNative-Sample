@@ -93,11 +93,11 @@ const ChatInput = ({ onSendMessage, attachmentMenuIcons, chatInputRef }) => {
         )}
       </HStack>
       <EmojiOverlay
-        message={message}
-        setMessage={setMessage}
+        state={message}
+        setState={setMessage}
         visible={isEmojiPickerShowing}
-        onClose={()=>setIsEmojiPickerShowing(false)}
-        handleEmojiSelect={handleEmojiSelect}
+        onClose={() => setIsEmojiPickerShowing(false)}
+        onSelect={handleEmojiSelect}
       />
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} safeAreaTop={true}>
         <Modal.Content width={'90%'} style={{ marginBottom: 30, marginTop: 'auto', backgroundColor: '#181818' }}>

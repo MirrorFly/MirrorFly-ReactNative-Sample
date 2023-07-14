@@ -59,6 +59,7 @@ function ContactScreen() {
         }
     ]
     const handlePress = (item) => {
+        SDK.activeChatUser(item.userJid)
         dispatch(navigate({ screen: CHATSCREEN, fromUserJID: item.userJid }))
     }
 

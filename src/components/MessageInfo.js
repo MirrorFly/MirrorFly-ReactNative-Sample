@@ -2,12 +2,11 @@ import { Divider, HStack, Text, View } from 'native-base'
 import React from 'react'
 import ScreenHeader from './ScreenHeader'
 import { BackHandler, StyleSheet } from 'react-native'
-import { change16TimeWithDateFormat, changeTimeFormat } from '../common/TimeStamp'
+import { change16TimeWithDateFormat, getConversationHistoryTime } from '../common/TimeStamp'
 import { useSelector } from 'react-redux'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 
 function MessageInfo(props) {
-    const storageStatus = useSelector(state => state.storage.status)
+    const messages = useSelector(state => state.chatConversationData.data)
     const [deliveredReport, setDeliveredReport] = React.useState()
     const [seenReport, setSeenReport] = React.useState()
     const handleBackBtn = () => {
@@ -28,32 +27,11 @@ function MessageInfo(props) {
 
     React.useEffect(() => {
         (async () => {
-            let deliveryStatus = await AsyncStorage.getItem('deliveryStatus')
-            let seenStatus = await AsyncStorage.getItem('seenStatus')
-            let parsedSeenData = JSON.parse(seenStatus)
-            if (deliveryStatus) {
-                let parsedDeliveredData = JSON.parse(deliveryStatus)
-                let foundDeliveredReport = parsedDeliveredData?.filter(item => item.msgId == props.isMessageInfo.msgId && item.msgStatus == 1)
-                if (foundDeliveredReport) {
-                    props.setIsMessageInfo({
-                        ...props.isMessageInfo,
-                        msgStatus:foundDeliveredReport[0]?.msgStatus
-                    })
-                    setDeliveredReport(foundDeliveredReport[0])
-                }
-            }
-            if (seenStatus) {
-                let foundSeenReport = parsedSeenData?.filter(item => (item.msgId == props.isMessageInfo.msgId && item.msgStatus == 2))
-                if (foundSeenReport) {
-                    props.setIsMessageInfo({
-                        ...props.isMessageInfo,
-                        msgStatus:foundSeenReport[0]?.msgStatus
-                    })
-                    setSeenReport(foundSeenReport[0]);
-                }
-            }
+            const dbValue = await SDK.getMessageInfo(props.isMessageInfo.msgId)
+            setDeliveredReport(dbValue[0].receivedTime)
+            setSeenReport(dbValue[0].seenTime)
         })();
-    }, [storageStatus])
+    }, [messages])
 
     let statusVisible
     switch (props?.isMessageInfo?.msgStatus) {
@@ -88,17 +66,17 @@ function MessageInfo(props) {
                     }[props?.isMessageInfo?.msgBody?.message_type]}
                     <HStack alignItems='center' alignSelf='flex-end'>
                         <View style={[styles?.msgStatus, statusVisible]}></View>
-                        <Text pl='1' color='#959595' fontSize='11'>{changeTimeFormat(props?.isMessageInfo?.timestamp)}</Text>
+                        <Text pl='1' color='#959595' fontSize='11'>{getConversationHistoryTime(props?.isMessageInfo?.createdAt)}</Text>
                     </HStack>
                 </View>
             </HStack>
             <Divider my='5' />
             <View px='5'>
                 <Text fontWeight={'600'} fontSize={'lg'}>Delivered</Text>
-                <Text color={'#959595'}>{deliveredReport ? change16TimeWithDateFormat(deliveredReport?.timestamp) : 'Message sent, not delivered yet'}</Text>
+                <Text color={'#959595'}>{deliveredReport ? change16TimeWithDateFormat(deliveredReport) : 'Message sent, not delivered yet'}</Text>
                 <Divider my='5' />
                 <Text fontWeight={'600'} fontSize={'lg'}>Read</Text>
-                <Text color={'#959595'}>{seenReport ? change16TimeWithDateFormat(seenReport?.timestamp) : 'Your message is not read'}</Text>
+                <Text color={'#959595'}>{seenReport ? change16TimeWithDateFormat(seenReport) : 'Your message is not read'}</Text>
                 <Divider my='5' />
             </View>
         </View>

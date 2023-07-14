@@ -8,7 +8,7 @@ import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 
 const ChatMessage = (props) => {
   const vCardProfile = useSelector((state) => state.profile.profileDetails);
-  const currentUserJID = formatUserIdToJid(vCardProfile?.userId)
+  const currentUserJID = useSelector(state => state.auth.currentUserJID)
   let isSame = currentUserJID === props?.message?.fromUserJid
   let statusVisible = 'notSend'
 

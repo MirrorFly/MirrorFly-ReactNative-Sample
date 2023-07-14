@@ -47,12 +47,11 @@ function RecentScreen() {
   }, [recentData]);
 
   React.useEffect(() => {
-    if(!recentChatList.length){
-      (async () => {
-      const recentChats = await SDK.getRecentChats();
+    (async () => {
+      const recentChats = await SDK.getRecentChatsDB();
       const recentChatsFilter = recentChats?.data.filter(item => item.chatType == 'chat')
       dispatch(addRecentChat(recentChatsFilter))
-    })()}
+    })()
   }, []);
 
   const constructRecentChatItems = (recentChatArrayConstruct) => {
@@ -100,7 +99,7 @@ function RecentScreen() {
       {
         label: 'Profile',
         formatter: () => {
-          let x = { prevScreen: RECENTCHATSCREEN ,screen: PROFILESCREEN }
+          let x = { prevScreen: RECENTCHATSCREEN, screen: PROFILESCREEN }
           dispatch(navigate(x))
         }
       },

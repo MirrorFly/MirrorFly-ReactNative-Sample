@@ -1,4 +1,4 @@
-import { Center, Avatar, Box, Divider, HStack, Pressable, Spacer, Text, VStack, View, Slide, Spinner } from 'native-base';
+import { Center, Box, Divider, HStack, Pressable, Spacer, Text, VStack, View, Slide, Spinner, Icon } from 'native-base';
 import React from 'react'
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,6 +9,10 @@ import { navigate } from '../redux/navigationSlice';
 import { Image, StyleSheet } from 'react-native';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import SDK from '../SDK/SDK';
+import AuthProfileImage from '../common/AuthProfileImage';
+import { SandTimer } from '../common/Icons';
+import RecentChatProfile from '../common/RecentChatProfile';
 
 export default function RecentChat(props) {
     const dispatch = useDispatch();
@@ -18,9 +22,10 @@ export default function RecentChat(props) {
     const onRowDidOpen = rowKey => {
         console.log('This row opened', rowKey);
     };
-    const currentUserJID = vCardProfile?.userId
+    const currentUserJID = useSelector(state => state.auth.currentUserJID)
+
     const renderItem = ({ item, index }) => {
-        const isSame = currentUserJID === getUserIdFromJid(item?.publisherId);
+        const isSame = currentUserJID.split('@')[0] === item?.publisherId;
         let statusVisible
         switch (item?.msgStatus) {
             case 0:
@@ -35,20 +40,28 @@ export default function RecentChat(props) {
         }
         return <Box key={index}>
             <Pressable py='2' android_ripple={{ color: 'rgba(0, 0, 0, 0.1)' }} onPress={async () => {
-                let jid = formatUserIdToJid(item?.fromUserId,item?.chatType)
-                    let x = { screen: CHATSCREEN, fromUserJID: jid }
-                    dispatch(navigate(x));
+                let jid = formatUserIdToJid(item?.fromUserId, item?.chatType)
+                SDK.activeChatUser(jid)
+                let x = { screen: CHATSCREEN, fromUserJID: item?.userJid || jid }
+                dispatch(navigate(x));
             }} _dark={{ bg: 'coolGray.800' }} _light={{ bg: 'white' }}>
                 <Box pl="4" pr="5" py="2">
                     <HStack alignItems="center" space={3}>
-                        {item.avatarUrl
-                            ? <Avatar size="48px" source={{ uri: item.avatarUrl }} />
-                            : <Avathar data={item?.fromUserId} />
-                        }
+                        {/* {item?.profileDetails?.image ?
+                            <RecentChatProfile data={{
+                                image: item?.profileDetails?.image,
+                                nickName: item?.profileDetails?.nickName,
+                                backgroundColor: item?.profileDetails?.colorCode
+                            }} />
+                        } */}
+                         <Avathar data={item?.profileDetails?.nickName || item?.fromUserId} backgroundColor={item?.profileDetails?.colorCode} />
                         <VStack w='60%'>
-                            <Text numberOfLines={1} color="coolGray.800" _dark={{ color: 'warmGray.50' }} ellipsizeMode="tail" bold>{item?.fromUserId}</Text>
+                            <Text numberOfLines={1} color="coolGray.800" _dark={{ color: 'warmGray.50' }} ellipsizeMode="tail" bold>{item?.profileDetails?.nickName || item?.fromUserId}</Text>
                             <HStack alignItems={'center'}>
-                                {isSame && <View style={[styles.msgStatus, isSame ? statusVisible : ""]}></View>}
+                                {isSame &&
+                                    item?.msgStatus !== 3
+                                    ? <View style={[styles.msgStatus, isSame ? statusVisible : ""]}></View>
+                                    : (isSame && item?.msgStatus == 3 && <Icon px='3' as={SandTimer} name="emoji-happy" />)}
                                 <Text numberOfLines={1} ellipsizeMode="tail" px={isSame ? 1 : 0} color="coolGray.600" _dark={{ color: 'warmGray.200' }}>{item?.msgBody?.message}</Text>
                             </HStack>
                         </VStack>

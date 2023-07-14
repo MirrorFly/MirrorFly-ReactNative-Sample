@@ -36,6 +36,10 @@ export const callBacks = {
         if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {
             store.dispatch(updateRecentChatMessageStatus(res))
             store.dispatch(updateChatConversationHistory(res))
+            store.dispatch(storeDeliveryStatus(res))
+            if(res.msgType === "seen" || res.msgType === "carbonSeen"){
+                store.dispatch(storeSeenStatus(res))
+            }
             // store.dispatch(addMessageInfoUpdate(
             //     {
             //         id: uuidv4(),

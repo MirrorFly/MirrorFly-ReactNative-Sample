@@ -123,6 +123,7 @@ const ProfilePage = (props) => {
       })
     }
     if (isConnected && !isToastShowing) {
+      setIsToastShowing(false)
       setloading(true);
       let UserInfo = await SDK.setUserProfile(props?.profileInfo?.nickName.trim(), imageFileToken ? imageFileToken : props.selectProfileInfo.image, props.profileInfo?.status, props.profileInfo?.mobileNumber, props.profileInfo?.email);
       setloading(false);
@@ -312,6 +313,10 @@ const ProfilePage = (props) => {
       nickName={props?.profileInfo?.nickName}
     />
   }, [props.profileInfo, imageUploading])
+
+  React.useEffect(() => {
+    if (!isConnected && loading) setLoading(false)
+  }, [isConnected])
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }}>

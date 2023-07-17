@@ -19,6 +19,7 @@ export const getMessageObjSender = async (dataObj, idx) => {
         fileOptions = {},
         replyTo,
         fileDetails,
+        fromUserJid
     } = dataObj;
     const timestamp = Date.now() * 1000;
     const senderId = userProfile.fromUser;
@@ -74,26 +75,27 @@ export const getMessageObjSender = async (dataObj, idx) => {
         };
     }
 
-    return {
+    const retunVal =  {
         chatType: chatType,
         createdAt: changeTimeFormat(timestamp),
         deleteStatus: 0,
         favouriteBy: "0",
         favouriteStatus: 0,
         fromUserId: senderId,
-        fromUserJid: formatUserIdToJid(senderId, chatType),
+        fromUserJid: fromUserJid,
         msgBody: msgBody,
         msgId: msgId,
         msgStatus: 3,
         timestamp: timestamp,
         msgType: MSG_PROCESSING_STATUS,
         publisherId: senderId,
-        publisherJid: formatUserIdToJid(senderId),
+        publisherJid: fromUserJid,
         ...(isGroupChat(chatType) && {
             fromUserId: getUserIdFromJid(jid),
             fromUserJid: jid,
         }),
     };
+    return retunVal
 };
 
 export const getRecentChatMsgObj = (dataObj) => {

@@ -25,9 +25,10 @@ function Navigation() {
         setTimeout(async () => {
             if (Object.keys(vCardProfile).length === 0) {
                 const userIdentifier = await AsyncStorage.getItem('userIdentifier')
-                console.log('userIdentifier',userIdentifier)
-                const profileDetails = await SDK.getUserProfile(JSON.parse(userIdentifier));
-                if (profileDetails.statusCode == 200) dispatch(profileDetail(profileDetails.data))
+                const vCardProfile = await AsyncStorage.getItem('vCardProfile');
+                console.log(vCardProfile, '\n vCardProfile')
+                if (vCardProfile)
+                    dispatch(profileDetail(JSON.parse(vCardProfile)))
             }
             const currentUserJID = await AsyncStorage.getItem('currentUserJID')
             const screenObj = await AsyncStorage.getItem('screenObj')

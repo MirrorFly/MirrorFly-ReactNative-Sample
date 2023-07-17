@@ -23,6 +23,8 @@ function ChatScreen() {
   const dispatch = useDispatch()
   const vCardData = useSelector((state) => state.profile.profileDetails);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid)
+  const currentUserJID = useSelector(state => state.auth.currentUserJID)
+  console.log(currentUserJID, '\n currentUserJID')
   const [localNav, setLocalNav] = React.useState('CHATCONVERSATION')
   const [isMessageInfo, setIsMessageInfo] = React.useState({})
   const toast = useToast()
@@ -114,7 +116,8 @@ function ChatScreen() {
           msgId,
           file,
           fileOptions,
-          fileDetails: file.images
+          fileDetails: file.images,
+          fromUserJid: currentUserJID
         };
         const conversationChatObj = await getMessageObjSender(dataObj, i);
         mediaData[msgId] = conversationChatObj;
@@ -164,6 +167,7 @@ function ChatScreen() {
         userProfile,
         chatType: 'chat',
         msgId,
+        fromUserJid: currentUserJID
       };
       const conversationChatObj = await getMessageObjSender(dataObj);
       const recentChatObj = getRecentChatMsgObj(dataObj);

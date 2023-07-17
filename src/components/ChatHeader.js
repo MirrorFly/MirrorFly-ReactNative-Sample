@@ -6,12 +6,14 @@ import { CloseIcon, DeleteIcon, FavouriteIcon, ForwardIcon, ReplyIcon, LeftArrow
 import { SDK } from '../SDK'
 import { getUserIdFromJid } from '../Helper/Chat/Utility'
 import LastSeen from './LastSeen'
+import { useSelector } from 'react-redux';
 
 function ChatHeader(props) {
     const { fromUserJId } = props
     const [remove, setRemove] = React.useState(false);
     const [nickName, setNickName] = React.useState('');
-
+    const profileDetails = useSelector(state => state.navigation.profileDetails)
+    
     const onClose = () => {
         setRemove(false)
     }
@@ -55,12 +57,12 @@ function ChatHeader(props) {
                 ? <HStack h={'60px'} bg="#F2F2F2" justifyContent="space-between" alignItems="center" w="full">
                     <HStack alignItems="center">
                         <IconButton _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} onPress={props.handleBackBtn} icon={<Icon as={() => LeftArrowIcon()} name="emoji-happy" />} borderRadius="full" />
-                        <Avathar width={36} height={36} data={nickName || '91'} />
+                        <Avathar width={36} height={36} backgroundColor={profileDetails?.colorCode} data={profileDetails?.nickName || nickName || '91'} />
                         <Pressable w="65%" onPress={handleUserInfo}  >
                             {({ isPressed }) => {
-                                return <VStack pr='4' py="3" bg={isPressed ? 'rgba(0,0,0, 0.1)' : "coolGray.100"} pl='2'>
-                                    <Text color='#181818' fontWeight='700' fontSize='14'>{nickName}</Text>
-                                        <LastSeen jid={fromUserJId}/>
+                                return <VStack justifyItems={'center'} pr='4' py="3" bg={isPressed ? 'rgba(0,0,0, 0.1)' : "coolGray.100"} pl='2'>
+                                    <Text color='#181818' fontWeight='700' fontSize='14'>{profileDetails?.nickName || nickName}</Text>
+                                    <LastSeen jid={fromUserJId} />
                                 </VStack>
                             }}
                         </Pressable>

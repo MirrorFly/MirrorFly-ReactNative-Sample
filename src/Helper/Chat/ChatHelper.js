@@ -33,7 +33,7 @@ export const concatMessageArray = (activeData, stateData, uniqueId, sortId) => {
  * keepin the order of the message delivery status
  * 3 - processing, 0 - sent, 1 - delivered to remote user, 2 - seen by remote user
  */
-export const msgStatusOrder = [MSG_PROCESSING_STATUS_ID,MSG_SENT_ACKNOWLEDGE_STATUS_ID,MSG_DELIVERED_STATUS_ID,MSG_SEEN_STATUS_ID];
+export const msgStatusOrder = [MSG_PROCESSING_STATUS_ID, MSG_SENT_ACKNOWLEDGE_STATUS_ID, MSG_DELIVERED_STATUS_ID, MSG_SEEN_STATUS_ID];
 
 export const getMsgStatusInOrder = (currentStatus, newStatus) => {
     const currentStatusIndex = msgStatusOrder.indexOf(currentStatus);
@@ -63,7 +63,7 @@ export const getChatHistoryData = (data, stateData) => {
     const userId = localUserJid ? getUserIdFromJid(localUserJid) : "";
     if (userId === lastMessage?.publisherId) {
         newSortedData = sortedData.map((msg => {
-            msg.msgStatus = getMsgStatusInOrder(msg.msgStatus, lastMessage?.msgStatus);
+            /* msg.msgStatus = getMsgStatusInOrder(msg.msgStatus, lastMessage?.msgStatus);*/
             return msg;
         }));
     } else newSortedData = sortedData;
@@ -94,15 +94,15 @@ export const getUpdatedHistoryData = (data, stateData) => {
             if (currentMessage?.msgBody?.media && data.msgType === "acknowledge") {
                 currentMessage.msgBody.media.is_uploading = 2
             }
-            
+
             // Updating Old Msg Statuses to Current Status
             const currentMessageIndex = msgIds.indexOf(data.msgId);
             for (let i = 0; i < msgIds.length && i <= currentMessageIndex; i++) {
-                const  message = currentChatData?.messages[msgIds[i]];
+                const message = currentChatData?.messages[msgIds[i]];
                 currentChatData.messages[msgIds[i]] = {
-                    ...message, 
+                    ...message,
                     ...(message.msgStatus !== 3 && {
-                        msgStatus : getMsgStatusInOrder(message.msgStatus, msgStatus)
+                        msgStatus: getMsgStatusInOrder(message.msgStatus, msgStatus)
                     })
                 };
             }

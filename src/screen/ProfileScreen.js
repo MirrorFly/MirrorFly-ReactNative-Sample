@@ -32,7 +32,11 @@ const ProfileScreen = () => {
     if (Object.keys(selectProfileInfo).length === 0) {
       const userIdentifier = await AsyncStorage.getItem('userIdentifier')
       const profileDetails = await SDK.getUserProfile(JSON.parse(userIdentifier));
-      dispatch(profileDetail(profileDetails.data))
+      console.log('profileDetails', profileDetails)
+      if (profileDetails.statusCode == 200) {
+        AsyncStorage.setItem('vCardProfile', JSON.stringify(profileDetails.data))
+        dispatch(profileDetail(profileDetails.data))
+      }
       profileDetails.data.mobileNumber = JSON.parse(userIdentifier)
       if (profileDetails.data.status == "") profileDetails.data.status = "I am in Mirror Fly"
       if (!profileInfo)

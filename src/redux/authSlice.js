@@ -21,6 +21,7 @@ export const logout = createAsyncThunk('register/logout', async (val, { dispatch
     await AsyncStorage.setItem('credential', '');
     await AsyncStorage.setItem('userIdentifier', '');
     await AsyncStorage.setItem('screenObj', '')
+    await AsyncStorage.setItem('vCardProfile', '')
     dispatch(profileDetail({}))
     dispatch(navigate({ screen: REGISTERSCREEN }))
     return logout.statusCode

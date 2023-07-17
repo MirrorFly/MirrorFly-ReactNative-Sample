@@ -28,7 +28,7 @@ const ChatMessage = (props) => {
   }
 
   const getMessageStatus = (msgStatus) => {
-    if (msgStatus == 3) {
+    if (isSame && msgStatus == 3) {
       return <Icon px='3' as={SandTimer} name="emoji-happy" />
     }
     return (

@@ -55,12 +55,12 @@ export const BackBtn = (props) => {
 }
 
 export const SendBtn = (props) => {
-    return <TouchableOpacity activeOpacity={1} {...props}>
+    return <Pressable {...props}>
         <Image
             source={require('../assets/send.png')}
             style={{ width: 24.33, height: 20.32 }}
         />
-    </TouchableOpacity >
+    </Pressable>
 }
 
 

@@ -4,8 +4,11 @@ import { formatUserIdToJid } from "../Helper/Chat/ChatHelper";
 import { getLastseen } from "../common/TimeStamp";
 import { USER_PRESENCE_STATUS_OFFLINE, USER_PRESENCE_STATUS_ONLINE } from "../Helper/Chat/Constant";
 import MarqueeText from "../common/MarqueeText";
+import { useNetworkStatus } from "../hooks";
 
 const LastSeen = (props) => {
+    const isNetworkConnected = useNetworkStatus()
+    const xmppConnection = useSelector(state => state.connection.xmppStatus)
     const [lastSeenData, setLastSeenData] = React.useState({
         seconds: -1,
         lastSeen: "",
@@ -30,6 +33,15 @@ const LastSeen = (props) => {
         }
         return () => (clearTimeout(timer));
     }, [])
+
+    React.useEffect(() => {
+        if (isNetworkConnected && xmppConnection === 'CONNECTED') {
+            if (!lastSeenData.lastSeen) updateLastSeen(userJid, status)
+        } else setLastSeenData({
+            ...lastSeenData,
+            lastSeen: ""
+        })
+    }, [isNetworkConnected, xmppConnection])
 
     React.useEffect(() => {
         if (fromUserJid === userJid && status !== lastSeenData.userPresenceStatus) {
@@ -66,9 +78,15 @@ const LastSeen = (props) => {
             seconds, lastSeen, userPresenceStatus
         });
     }
-    return <MarqueeText key={JSON.stringify(config)} ref={marqueeRef} {...config}>
-        {lastSeenData.lastSeen}
-    </MarqueeText>
+
+    return (
+        <>
+            {lastSeenData.lastSeen
+                ? <MarqueeText key={JSON.stringify(config)} ref={marqueeRef} {...config}> {lastSeenData.lastSeen}</MarqueeText>
+                : null
+            }
+        </>
+    )
 }
 
 export default LastSeen

@@ -1,22 +1,24 @@
 import React from 'react'
 import { Center, KeyboardAvoidingView } from 'native-base';
-import { BackHandler, Image, StyleSheet,Text } from 'react-native'
+import { BackHandler, Image, StyleSheet, Text } from 'react-native'
 import { CHATSCREEN, RECENTCHATSCREEN, SETTINGSCREEN } from '../constant'
 import { navigate } from '../redux/navigationSlice'
 import { useDispatch } from 'react-redux'
 import ScreenHeader from '../components/ScreenHeader'
 import SDK from '../SDK/SDK'
 import FlatListView from '../components/FlatListView'
+import { useNetworkStatus } from '../hooks';
 
 function ContactScreen() {
     const dispatch = useDispatch()
+    const isNetworkconneted = useNetworkStatus()
     const [isFetching, setIsFetching] = React.useState(false)
     const [usersList, setUsersList] = React.useState([])
     const [isSearchedList, setIsSearchedList] = React.useState([])
     const [page, setPage] = React.useState(0)
     const [searchText, setSearchText] = React.useState('')
     const [isSearching, setIsSearching] = React.useState(false)
-    
+
     const handleBackBtn = () => {
         let x = { screen: RECENTCHATSCREEN }
         dispatch(navigate(x))
@@ -60,14 +62,16 @@ function ContactScreen() {
     ]
     const handlePress = (item) => {
         SDK.activeChatUser(item.userJid)
-        dispatch(navigate({ screen: CHATSCREEN, fromUserJID: item.userJid }))
+        dispatch(navigate({ screen: CHATSCREEN, fromUserJID: item.userJid, profileDetails: item }))
     }
 
     const handleSearch = async (text) => {
-        setIsSearching(true)
-        setIsFetching(true)
-        fetchContactList()
-        setSearchText(text)
+        if (isNetworkconneted) {
+            setIsSearching(true)
+            setIsFetching(true)
+            isNetworkconneted && fetchContactList()
+            setSearchText(text)
+        }
     }
 
     const handlePagination = async (e) => {
@@ -102,15 +106,21 @@ function ContactScreen() {
                 isLoading={isFetching}
                 data={isSearching ? isSearchedList : usersList}
             />
-             {!isFetching && usersList?.length == 0 &&
-                <Center h='90%'>
-                    <Image style={styles.image} resizeMode="cover" source={require('../assets/no_contacts.png')} />
-                    <Text style={styles.noMsg}>No contacts found</Text>
-                </Center>
-            }
-            {!isFetching && isSearching && isSearchedList.length == 0 &&
-                <Center h='90%'>
-                    <Text style={styles.noMsg}>No contacts found</Text>
+            {isNetworkconneted ?
+                <>
+                    {!isFetching && usersList?.length == 0 &&
+                        <Center h='90%'>
+                            <Image style={styles.image} resizeMode="cover" source={require('../assets/no_contacts.png')} />
+                            <Text style={styles.noMsg}>No contacts found</Text>
+                        </Center>
+                    }
+                    {!isFetching && isSearching && isSearchedList.length == 0 &&
+                        <Center h='90%'>
+                            <Text style={styles.noMsg}>No contacts found</Text>
+                        </Center>
+                    }
+                </> : <Center h='90%'>
+                    <Text style={styles.noMsg}>No Internet Connection</Text>
                 </Center>
             }
         </KeyboardAvoidingView>

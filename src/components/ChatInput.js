@@ -11,8 +11,8 @@ const ChatInput = ({ onSendMessage, attachmentMenuIcons, chatInputRef }) => {
   const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false)
   const sendMessage = () => {
     if (message) {
-      onSendMessage(message);
       setMessage('');
+      onSendMessage(message);
     }
   };
   const handleEmojiSelect = (...emojis) => {

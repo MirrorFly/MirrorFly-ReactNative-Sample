@@ -109,11 +109,15 @@ const RegisterScreen = () => {
                 dispatch(navigate(nav))
                 break;
             default:
-                errorToast(connect.message);
                 break;
         }
         setIsLoading(false)
     }
+
+    React.useEffect(() => {
+        if (!isNetworkConnected && isLoading) setIsLoading(false)
+    }, [isNetworkConnected])
+    
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -161,6 +165,7 @@ const RegisterScreen = () => {
                                 }
                             }}
                             value={mobileNumber}
+                            maxLength={15}
                             selectionColor={'#3276E2'}
                         />
                     </HStack>

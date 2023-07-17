@@ -13,7 +13,8 @@ const initialState = {
         dial_code: "91",
         code: "IN"
     },
-    prevScreen: ""
+    prevScreen: "",
+    profileDetails: {}
 };
 
 const navigationSlice = createSlice({
@@ -38,6 +39,7 @@ const navigationSlice = createSlice({
             state.fromUserJid = action.payload?.fromUserJID;
             state.selectContryCode = action?.payload?.selectContryCode || state.selectContryCode;
             state.prevScreen = action?.payload.prevScreen;
+            state.profileDetails = action?.payload?.profileDetails
         }
     },
 });

@@ -1,6 +1,7 @@
 import { updateConversationMessage, updateRecentChatMessage } from "../components/chat/common/createMessage";
 import { REGISTERSCREEN } from "../constant";
 import { getReceiveMessage, updateMessageStatus } from "../redux/chatSlice";
+import { setXmppStatus } from "../redux/connectionSlice";
 import { updateChatConversationHistory } from "../redux/conversationSlice";
 import { navigate } from "../redux/navigationSlice";
 import { updateProfileDetail } from "../redux/profileSlice";
@@ -11,6 +12,7 @@ import { updateUserPresence } from "../redux/userSlice";
 
 export const callBacks = {
     connectionListener: (response) => {
+        store.dispatch(setXmppStatus(response.status))
         if (response.status === "CONNECTED") {
             console.log("Connection Established");
         } else if (response.status === "DISCONNECTED") {
@@ -36,6 +38,10 @@ export const callBacks = {
         if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {
             store.dispatch(updateRecentChatMessageStatus(res))
             store.dispatch(updateChatConversationHistory(res))
+            store.dispatch(storeDeliveryStatus(res))
+            if(res.msgType === "seen" || res.msgType === "carbonSeen"){
+                store.dispatch(storeSeenStatus(res))
+            }
             // store.dispatch(addMessageInfoUpdate(
             //     {
             //         id: uuidv4(),
@@ -53,6 +59,7 @@ export const callBacks = {
         }
     },
     presenceListener: (res) => {
+        console.log('presenceListener', res)
         store.dispatch(updateUserPresence(res))
     },
     userProfileListener: (res) => {

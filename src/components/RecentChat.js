@@ -42,7 +42,7 @@ export default function RecentChat(props) {
             <Pressable py='2' android_ripple={{ color: 'rgba(0, 0, 0, 0.1)' }} onPress={async () => {
                 let jid = formatUserIdToJid(item?.fromUserId, item?.chatType)
                 SDK.activeChatUser(jid)
-                let x = { screen: CHATSCREEN, fromUserJID: item?.userJid || jid }
+                let x = { screen: CHATSCREEN, fromUserJID: item?.userJid || jid, profileDetails: item?.profileDetails }
                 dispatch(navigate(x));
             }} _dark={{ bg: 'coolGray.800' }} _light={{ bg: 'white' }}>
                 <Box pl="4" pr="5" py="2">
@@ -54,7 +54,7 @@ export default function RecentChat(props) {
                                 backgroundColor: item?.profileDetails?.colorCode
                             }} />
                         } */}
-                         <Avathar data={item?.profileDetails?.nickName || item?.fromUserId} backgroundColor={item?.profileDetails?.colorCode} />
+                        <Avathar data={item?.profileDetails?.nickName || item?.fromUserId} backgroundColor={item?.profileDetails?.colorCode} />
                         <VStack w='60%'>
                             <Text numberOfLines={1} color="coolGray.800" _dark={{ color: 'warmGray.50' }} ellipsizeMode="tail" bold>{item?.profileDetails?.nickName || item?.fromUserId}</Text>
                             <HStack alignItems={'center'}>

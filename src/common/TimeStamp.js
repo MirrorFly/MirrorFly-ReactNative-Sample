@@ -64,7 +64,8 @@ const formatAMPM = (date) => {
     let minutes = date.getMinutes();
     let ampm = hours >= 12 ? "pm" : "am";
     hours = hours % 12;
-    hours = hours ? hours : 12;
+    hours = hours? hours : 12;
+    hours = hours <10 ? "0"+ hours : hours
     minutes = minutes < 10 ? "0" + minutes : minutes;
     return hours + ":" + minutes + " " + ampm;
 };
@@ -112,7 +113,7 @@ export const formatChatDate = (date) => {
     } else {
         const isCurrentYear = date.getFullYear() === new Date().getFullYear();
         return DateTime.fromJSDate(date).toFormat(
-            isCurrentYear ? "d MMM" : "d MMM yyyy"
+            isCurrentYear ? "dd-MMM" : "dd-MMM-yyyy"
         );
     }
 };

@@ -2,7 +2,7 @@ import { Divider, HStack, Text, View } from 'native-base'
 import React from 'react'
 import ScreenHeader from './ScreenHeader'
 import { BackHandler, StyleSheet } from 'react-native'
-import { change16TimeWithDateFormat, getConversationHistoryTime } from '../common/TimeStamp'
+import { change16TimeWithDateFormat, changeTimeFormat, getConversationHistoryTime } from '../common/TimeStamp'
 import { useSelector } from 'react-redux'
 
 function MessageInfo(props) {
@@ -30,6 +30,30 @@ function MessageInfo(props) {
             const dbValue = await SDK.getMessageInfo(props.isMessageInfo.msgId)
             setDeliveredReport(dbValue[0].receivedTime)
             setSeenReport(dbValue[0].seenTime)
+            /* let deliveryStatus = await AsyncStorage.getItem('deliveryStatus')
+             let seenStatus = await AsyncStorage.getItem('seenStatus')
+             let parsedSeenData = JSON.parse(seenStatus)
+             if (deliveryStatus) {
+                 let parsedDeliveredData = JSON.parse(deliveryStatus)
+                 let foundDeliveredReport = parsedDeliveredData?.filter(item => item.msgId == props.isMessageInfo.msgId && item.msgStatus == 1)
+                 if (foundDeliveredReport) {
+                     props.setIsMessageInfo({
+                         ...props.isMessageInfo,
+                         msgStatus:foundDeliveredReport[0]?.msgStatus
+                     })
+                     setDeliveredReport(foundDeliveredReport[0])
+                 }
+             }
+             if (seenStatus) {
+                 let foundSeenReport = parsedSeenData?.filter(item => (item.msgId == props.isMessageInfo.msgId && item.msgStatus == 2))
+                 if (foundSeenReport.length) {
+                     props.setIsMessageInfo({
+                         ...props.isMessageInfo,
+                         msgStatus:foundSeenReport[0]?.msgStatus
+                     })
+                     setSeenReport(foundSeenReport[0]);
+                 }
+             }*/
         })();
     }, [messages])
 

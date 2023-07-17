@@ -8,19 +8,21 @@ import storageSlice from './storageSlice';
 import dbSlice from './dbSlice';
 import recentChatDataSlice from './recentChatDataSlice';
 import conversationSlice from './conversationSlice';
+import connectionSlice from './connectionSlice';
 
 const store = configureStore({
     reducer: {
         navigation: navigationSlice,
-        recentChatData:recentChatDataSlice,
+        recentChatData: recentChatDataSlice,
         auth: authSlice,
         chat: chatSlice,
-        chatConversationData:conversationSlice,
-        profile:profileSlice,
+        chatConversationData: conversationSlice,
+        profile: profileSlice,
         user: userSlice,
-        storage:storageSlice,
-        dbValues:dbSlice
-    },middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+        storage: storageSlice,
+        dbValues: dbSlice,
+        connection: connectionSlice
+    }, middleware: (getDefaultMiddleware) => getDefaultMiddleware({
         serializableCheck: false
     }),
 });

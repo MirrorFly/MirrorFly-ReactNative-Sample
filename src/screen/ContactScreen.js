@@ -119,8 +119,8 @@ function ContactScreen() {
                             <Text style={styles.noMsg}>No contacts found</Text>
                         </Center>
                     }
-                </> : <Center h='90%'>
-                    <Text style={styles.noMsg}>No Internet Connection</Text>
+                </> : <Center h='100%'>
+                    <Text style={styles.noMsg}>Please check internet connectivity</Text>
                 </Center>
             }
         </KeyboardAvoidingView>

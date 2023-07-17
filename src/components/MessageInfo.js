@@ -2,7 +2,7 @@ import { Divider, HStack, Text, View } from 'native-base'
 import React from 'react'
 import ScreenHeader from './ScreenHeader'
 import { BackHandler, StyleSheet } from 'react-native'
-import { change16TimeWithDateFormat, changeTimeFormat } from '../common/TimeStamp'
+import { change16TimeWithDateFormat, changeTimeFormat, getConversationHistoryTime } from '../common/TimeStamp'
 import { useSelector } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -44,7 +44,7 @@ function MessageInfo(props) {
             }
             if (seenStatus) {
                 let foundSeenReport = parsedSeenData?.filter(item => (item.msgId == props.isMessageInfo.msgId && item.msgStatus == 2))
-                if (foundSeenReport) {
+                if (foundSeenReport.length) {
                     props.setIsMessageInfo({
                         ...props.isMessageInfo,
                         msgStatus:foundSeenReport[0]?.msgStatus
@@ -88,7 +88,7 @@ function MessageInfo(props) {
                     }[props?.isMessageInfo?.msgBody?.message_type]}
                     <HStack alignItems='center' alignSelf='flex-end'>
                         <View style={[styles?.msgStatus, statusVisible]}></View>
-                        <Text pl='1' color='#959595' fontSize='11'>{changeTimeFormat(props?.isMessageInfo?.timestamp)}</Text>
+                        <Text pl='1' color='#959595' fontSize='11'>{getConversationHistoryTime(props?.isMessageInfo?.createdAt)}</Text>
                     </HStack>
                 </View>
             </HStack>

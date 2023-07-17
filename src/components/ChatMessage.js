@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
-import { changeTimeFormat } from '../common/TimeStamp';
-import { Box, HStack, Icon, Pressable, View } from 'native-base';
 import { SandTimer } from '../common/Icons';
 import ImageCard from './ImageCard';
 import VideoCard from './VideoCard';
@@ -11,9 +9,13 @@ import AudioCard from './AudioCard';
 import MapCard from './MapCard';
 import ContactCard from './ContactCard';
 import TextCard from './TextCard';
+import { getConversationHistoryTime } from '../common/TimeStamp';
+import { Box, HStack, Icon, Pressable, Text, View } from 'native-base';
+import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 
 const ChatMessage = (props) => {
-  const currentUserJID = useSelector(state => state?.auth?.currentUserJID)
+  const vCardProfile = useSelector((state) => state.profile.profileDetails);
+  const currentUserJID = formatUserIdToJid(vCardProfile?.userId)
   let isSame = currentUserJID === props?.message?.fromUserJid
   let statusVisible = 'notSend'
   const imageSize = props?.message?.msgBody.media?.file_size;
@@ -56,18 +58,18 @@ const ChatMessage = (props) => {
                 {{
                   "text": <TextCard isSame={isSame} data={{
                     message: props?.message?.msgBody?.message,
-                    timeStamp: changeTimeFormat(props?.message?.timestamp),
+                    timeStamp: getConversationHistoryTime(props?.message?.createdAt),
                     status: getMessageStatus(props?.message?.msgStatus)
                   }} />,
-                  'image': <ImageCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={changeTimeFormat(props?.message?.timestamp)} fileSize={fileSize} />,
-                  "video": <VideoCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={changeTimeFormat(props?.message?.timestamp)} />,
+                  'image': <ImageCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} fileSize={fileSize} />,
+                  "video": <VideoCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} />,
                   "audio":
                     <View style={{ flex: 1 }}>
-                      <AudioCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={changeTimeFormat(props?.message?.timestamp)} />
+                      <AudioCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} />
                     </View>,
-                  "file": <PdfCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={changeTimeFormat(props?.message?.timestamp)} fileSize={fileSize} />,
-                  "contact": <ContactCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={changeTimeFormat(props?.message?.timestamp)} />,
-                  "location": <MapCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={changeTimeFormat(props?.message?.timestamp)} />
+                  "file": <PdfCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} fileSize={fileSize} />,
+                  "contact": <ContactCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} />,
+                  "location": <MapCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} />
                 }[props?.message?.msgBody?.message_type]}
               </View>
             </HStack>

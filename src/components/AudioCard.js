@@ -5,14 +5,13 @@ import { AudioMusicIcon, DownloadIcon } from '../common/Icons';
 const AudioCard = (props) => {
     const durationInSeconds = props.data.msgBody.media.duration;
     const durationInMinutes = Math.floor(durationInSeconds / 1000);
-    const handleUnfilledTrackColor = '#D0D8EB'; 
+    const handleUnfilledTrackColor = '#D0D8EB';
     const sliderStyle = {
         track: { backgroundColor: handleUnfilledTrackColor },
     };
     return (
-
-        <View borderColor={'#3276E2'} flex={1} width={250} height={75} position={"relative"} borderRadius={10} mb={2}>
-            <HStack style={{ backgroundColor: "#EFEFEF", justifyContent: "flex-start", alignItems: "center", positions: "relative", paddingBottom: 20, paddingLeft: 6, paddingTop: 2, borderRadius: 17 }} >
+        <View borderColor={'#E5E5E5'} borderWidth={1} flex={1} width={250} borderRadius={10} mb={2}>
+            <HStack px='2' style={{ backgroundColor: "#EFEFEF", justifyContent: "flex-start", alignItems: "center" }} >
                 <View borderRadius={25} padding={"2"} backgroundColor={"#7285B5"} width='30' height='30' >
                     <AudioMusicIcon width='14' height='14' />
                 </View>
@@ -33,7 +32,7 @@ const AudioCard = (props) => {
                     </View>
                 </View>
             </HStack>
-            <View style={{ justifyContent: "flex-end",}}>
+            <View style={{ justifyContent: "flex-end", }}>
                 {props.status}
                 <Text paddingRight={2} textAlign={"right"} color='#455E93' fontWeight={300} fontSize='10'>{props.timeStamp}</Text>
             </View>

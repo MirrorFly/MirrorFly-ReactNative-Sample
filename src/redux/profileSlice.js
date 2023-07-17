@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     profileInfoList: '',
-    profileDetails: ""
+    profileDetails: {}
 }
 
 const profileSlice = createSlice({

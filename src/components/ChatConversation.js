@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, KeyboardAvoidingView, Platform, ImageBackground, BackHandler, Pressable } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView, Platform, ImageBackground, BackHandler, Pressable, FlatList } from 'react-native';
 import ChatHeader from '../components/ChatHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import ChatMessage from '../components/ChatMessage';
 import ChatInput from '../components/ChatInput';
-import { FlatList, HStack, Slide, Spinner, Stack, Text, View } from 'native-base';
+import { HStack, Slide, Spinner, Stack, Text, View } from 'native-base';
 import { updateMessageList } from '../redux/chatSlice';
 import SDK from '../SDK/SDK';
 import { ClearTextIcon, ReplyIcon } from '../common/Icons';
@@ -120,13 +120,13 @@ const ChatConversation = React.memo((props) => {
     }, [selectedMsgs])
 
     React.useEffect(() => {
-            if (fromUserJId) {
-                if (messages[getUserIdFromJid(fromUserJId)]) {
-                    setMessageList(getChatMessageHistoryById(getUserIdFromJid(fromUserJId)))
-                }
-                setIsChatLoading(true)
+        if (fromUserJId) {
+            if (messages[getUserIdFromJid(fromUserJId)]) {
+                setMessageList(getChatMessageHistoryById(getUserIdFromJid(fromUserJId)))
             }
-            setIsChatLoading(false)
+            setIsChatLoading(true)
+        }
+        setIsChatLoading(false)
     }, [messages, fromUserJId])
 
     React.useEffect(() => {
@@ -151,17 +151,17 @@ const ChatConversation = React.memo((props) => {
         }
     }
 
-    // React.useEffect(() => {
-    //     if (messageList?.length) {
-    //         let unReadMsg = messageList.filter((item) => item.msgStatus == 1 && item.fromUserJid !== currentUserJID)
-    //         if (unReadMsg.length) {
-    //             unReadMsg.forEach(async item => {
-    //                 let data = { toJid: item.fromUserJid, msgId: item.msgId }
-    //                 await SDK.sendSeenStatus(data.toJid, data.msgId);
-    //             })
-    //         }
-    //     }
-    // }, [messageList])
+    React.useEffect(() => {
+        if (messageList?.length) {
+            let unReadMsg = messageList.filter((item) => item.msgStatus == 1 && item.fromUserJid !== currentUserJID)
+            if (unReadMsg.length) {
+                unReadMsg.forEach(async item => {
+                    let data = { toJid: item.fromUserJid, msgId: item.msgId }
+                    SDK.sendSeenStatus(data.toJid, data.msgId);
+                })
+            }
+        }
+    }, [messageList])
 
     return (
         <KeyboardAvoidingView
@@ -192,7 +192,6 @@ const ChatConversation = React.memo((props) => {
                         </HStack>
                     </Slide>
                 }
-
                 <FlatList
                     data={messageList}
                     inverted

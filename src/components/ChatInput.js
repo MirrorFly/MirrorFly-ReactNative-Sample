@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { TextInput, Keyboard, StyleSheet } from 'react-native';
 import { SendBtn } from '../common/Button';
 import { AttachmentIcon, MicIcon, EmojiIcon, KeyboardIcon } from '../common/Icons';
@@ -7,8 +7,8 @@ import EmojiOverlay from './EmojiPicker';
 
 const ChatInput = (props) => {
   const { onSendMessage, attachmentMenuIcons, chatInputRef } = props
-  const [message, setMessage] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = React.useState('');
+  const [isOpen, setIsOpen] = React.useState(false);
   const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false)
   const sendMessage = () => {
     if (message) {

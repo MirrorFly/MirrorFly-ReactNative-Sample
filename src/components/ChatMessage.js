@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import { changeTimeFormat } from '../common/TimeStamp';
-import { Box, HStack, Icon, Pressable,View } from 'native-base';
+import { Box, HStack, Icon, Pressable, View } from 'native-base';
 import { SandTimer } from '../common/Icons';
 import ImageCard from './ImageCard';
 import VideoCard from './VideoCard';
@@ -16,7 +16,7 @@ const ChatMessage = (props) => {
   const currentUserJID = useSelector(state => state?.auth?.currentUserJID)
   let isSame = currentUserJID === props?.message?.fromUserJid
   let statusVisible = 'notSend'
-  const imageSize =props?.message?.msgBody.media?.file_size;
+  const imageSize = props?.message?.msgBody.media?.file_size;
   const fileSize = imageSize;
 
   switch (props?.message?.msgStatus) {
@@ -52,31 +52,25 @@ const ChatMessage = (props) => {
         return <Box >
           <Box my={"1"} bg={props.selectedMsgs.includes(props.message) ? 'rgba(0,0,0, 0.2)' : 'transparent'}>
             <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px='3'   >
-              <View minWidth='30%' maxWidth='80%' bgColor={isSame ? '#E2E8F7' : '#fff'}
-                borderWidth={isSame ? 0 : 0.25}
-                borderRadius={10}
-                borderBottomLeftRadius={isSame ? 10 : 0}
-                borderBottomRightRadius={isSame ? 0 : 10}
-                borderColor='#959595'>
+              <View minWidth='30%' maxWidth='80%'>
                 {{
-                  "text": <TextCard data={{
+                  "text": <TextCard isSame={isSame} data={{
                     message: props?.message?.msgBody?.message,
                     timeStamp: changeTimeFormat(props?.message?.timestamp),
                     status: getMessageStatus(props?.message?.msgStatus)
                   }} />,
                   'image': <ImageCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={changeTimeFormat(props?.message?.timestamp)} fileSize={fileSize} />,
                   "video": <VideoCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={changeTimeFormat(props?.message?.timestamp)} />,
-                  "audio": 
-                  <View style={{flex:1}}>
-
-                  <AudioCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={changeTimeFormat(props?.message?.timestamp)}  /> 
-                  </View>,
-                  "file":<PdfCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={changeTimeFormat(props?.message?.timestamp)} fileSize={fileSize}/>,
-                  "contact":<ContactCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={changeTimeFormat(props?.message?.timestamp)} />,
-                  "location":<MapCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={changeTimeFormat(props?.message?.timestamp)} />
-                 }[props?.message?.msgBody?.message_type]}
-                  </View>
-                  </HStack>
+                  "audio":
+                    <View style={{ flex: 1 }}>
+                      <AudioCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={changeTimeFormat(props?.message?.timestamp)} />
+                    </View>,
+                  "file": <PdfCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={changeTimeFormat(props?.message?.timestamp)} fileSize={fileSize} />,
+                  "contact": <ContactCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={changeTimeFormat(props?.message?.timestamp)} />,
+                  "location": <MapCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={changeTimeFormat(props?.message?.timestamp)} />
+                }[props?.message?.msgBody?.message_type]}
+              </View>
+            </HStack>
           </Box>
         </Box>
       }}

@@ -14,7 +14,7 @@ const VideoCard = (props) => {
     return (
         <View borderColor={'#E5E5E5'} borderWidth={2} borderRadius={2} position='relative'>
             {mediaData.thumb_image
-                ? <Image alt={mediaData.fileName} source={{ uri: base64ImageData }} resizeMode="" style={{ width: mediaData.androidWidth, height: mediaData.androidHeight, borderRadius: 5 }} />
+                ? <Image alt={mediaData.fileName} source={{ uri: base64ImageData }} resizeMode="cover" style={{ width: mediaData.androidWidth, height: mediaData.androidHeight, borderRadius: 5 }} />
                 : <Image alt={mediaData.fileName} source={noPreview} width={mediaData.androidWidth} height={mediaData.androidHeight} />
             }
             <View position={'absolute'} top={1} left={1}>

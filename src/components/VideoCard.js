@@ -7,7 +7,7 @@ import { ImageBackground } from 'react-native';
 const VideoCard = (props) => {
     const mediaData = props.data.msgBody.media
     const durationInSeconds = props.data.msgBody.media.duration; 
-    const durationInMinutes = '0.'+ Math.floor(durationInSeconds / 1000);
+    const durationInMinutes = '00:'+ Math.floor(durationInSeconds / 1000);
     const base64ImageData = 'data:image/jpg;base64,' + mediaData.thumb_image;
 
     return (

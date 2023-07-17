@@ -22,11 +22,11 @@ const AudioCard = (props) => {
                     <DownloadIcon width='15' height='20' />
                 </View>
                 <View mx={"3"} mt={4} w="75%" maxW="140" style={sliderStyle}>
-                    <Slider  defaultValue={60} colorScheme="#7285B5" size="sm">
+                    <Slider defaultValue={60} colorScheme="#7285B5" size="sm">
                         <Slider.Track>
                             <Slider.FilledTrack bg="#7285B5" />
                         </Slider.Track>
-                        <Slider.Thumb bg="#7285B5"/>
+                        <Slider.Thumb bg="#7285B5" />
                     </Slider>
                     <View bottom={2}>
                         <Text color='#000' fontWeight={"300"} fontSize='9'>
@@ -34,13 +34,12 @@ const AudioCard = (props) => {
                         </Text>
                     </View>
                 </View>
-                <View style={{ position: "absolute", bottom: 0, backgroundColor: "#FFFF", width: "103%", height: "40%", justifyContent: "flex-end", borderBottomRightRadius: 10 }}>
-                    {props.status}
-                    <Text paddingRight={2} textAlign={"right"} color='#455E93' fontWeight={300} fontSize='10'>{props.timeStamp}</Text>
-                </View>
             </HStack>
+            <View style={{ justifyContent: "flex-end",}}>
+                {props.status}
+                <Text paddingRight={2} textAlign={"right"} color='#455E93' fontWeight={300} fontSize='10'>{props.timeStamp}</Text>
+            </View>
         </View>
-
     )
 }
 

@@ -8,7 +8,7 @@ const MapCard = (props) => {
   const imageUrl = 'https://subli.info/wp-content/uploads/2015/05/google-maps-blur.png';
 
   return (
-    <View  borderColor={'#E2E8F7'} borderWidth={3} borderRadius={4} >
+    <View  borderColor={'#E2E8F7'} borderWidth={2} borderRadius={10} >
     <View  width={195} height={170}>
       <Pressable onPress={mapHandler}>
         <Image

@@ -29,8 +29,8 @@ const PdfCard = (props) => {
     }
     const fileExtension = mediaData?.fileName?.split('.').pop();
     return (
-        <View marginY={1} marginX={1} flex={1} width={220} height={70} position={"relative"} borderRadius={15}>
-            <HStack borderRadius={15} backgroundColor={"#EFEFEF"} paddingX={2} paddingY={1}>
+        <View  borderColor='#E2E8F7' borderWidth={2} borderRadius={5}  marginY={1} marginX={1} flex={1} width={220} height={70} position={"relative"}>
+            <HStack borderRadius={5} backgroundColor={"#EFEFEF"} paddingX={2} paddingY={1}>
                 <View py={2}>
                     {getFileIcon(fileExtension)}
                 </View>

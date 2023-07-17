@@ -3,6 +3,7 @@ import React from 'react';
 import { ImageBackground } from 'react-native';
 import { DownloadIcon } from '../common/Icons';
 import noPreview from '../assets/noPreview.png'
+
 function convertBytesToKB(bytes) {
   const KB = bytes / 1024;
   return KB.toFixed(0);

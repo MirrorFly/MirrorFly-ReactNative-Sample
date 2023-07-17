@@ -1,13 +1,11 @@
 import React from 'react'
-import { HStack, View, Text, Slider, VStack } from 'native-base';
+import { HStack, View, Text, Slider } from 'native-base';
 import { AudioMusicIcon, DownloadIcon } from '../common/Icons';
-//import {Slider }from '@react-native-community/slider';
 
 const AudioCard = (props) => {
-    // const [value, setValue] = React.useState(70);
     const durationInSeconds = props.data.msgBody.media.duration;
     const durationInMinutes = Math.floor(durationInSeconds / 1000);
-    const handleUnfilledTrackColor = '#D0D8EB'; // Set your desired unfilled track color here
+    const handleUnfilledTrackColor = '#D0D8EB'; 
     const sliderStyle = {
         track: { backgroundColor: handleUnfilledTrackColor },
     };
@@ -19,7 +17,7 @@ const AudioCard = (props) => {
                     <AudioMusicIcon width='14' height='14' />
                 </View>
                 <View style={{ borderRadius: 5, borderWidth: 2, borderColor: "#AFB8D0", paddingHorizontal: 6, paddingVertical: 3, marginLeft: 10 }}>
-                    <DownloadIcon width='15' height='20' />
+                    <DownloadIcon width='15' height='22' />
                 </View>
                 <View mx={"3"} mt={4} w="75%" maxW="140" style={sliderStyle}>
                     <Slider defaultValue={60} colorScheme="#7285B5" size="sm">

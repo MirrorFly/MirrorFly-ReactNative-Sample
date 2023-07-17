@@ -6,8 +6,7 @@ import { ImageBackground } from 'react-native';
 
 const VideoCard = (props) => {
     const mediaData = props.data.msgBody.media
-    const durationInSeconds = props.data.msgBody.media.duration;
-   
+    const durationInSeconds = props.data.msgBody.media.duration; 
     const durationInMinutes = '0.'+ Math.floor(durationInSeconds / 1000);
     const base64ImageData = 'data:image/jpg;base64,' + mediaData.thumb_image;
 
@@ -21,7 +20,6 @@ const VideoCard = (props) => {
                 <HStack alignItems={'center'}>
                     <VideoIcon color={mediaData.thumb_image ? '#fff' : '#000'} width='13' height='13' />
                     <Text px='2' fontSize={11} color={mediaData.thumb_image ? '#fff' : '#000'}>
-                        {/* {durationInMinutes <= 0.15 ? durationInMinutes.toFixed(2) : "0.15"} */}
                         {durationInMinutes}
                     </Text>
                 </HStack>

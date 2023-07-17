@@ -63,7 +63,7 @@ export const getChatHistoryData = (data, stateData) => {
     const userId = localUserJid ? getUserIdFromJid(localUserJid) : "";
     if (userId === lastMessage?.publisherId) {
         newSortedData = sortedData.map((msg => {
-            /* msg.msgStatus = getMsgStatusInOrder(msg.msgStatus, lastMessage?.msgStatus);*/
+            msg.msgStatus = getMsgStatusInOrder(msg.msgStatus, lastMessage?.msgStatus);
             return msg;
         }));
     } else newSortedData = sortedData;

@@ -4,7 +4,7 @@ import ChatHeader from '../components/ChatHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import ChatMessage from '../components/ChatMessage';
 import ChatInput from '../components/ChatInput';
-import { HStack, Slide, Spinner, Stack, Text, View } from 'native-base';
+import { FlatList, HStack, Slide, Spinner, Stack, Text, View } from 'native-base';
 import { updateMessageList } from '../redux/chatSlice';
 import SDK from '../SDK/SDK';
 import { ClearTextIcon, ReplyIcon } from '../common/Icons';
@@ -13,7 +13,7 @@ import { addChatConversationHistory } from '../redux/conversationSlice';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { formatUserIdToJid, getChatMessageHistoryById } from '../Helper/Chat/ChatHelper';
 
-const ChatConversation = (props) => {
+const ChatConversation = React.memo((props) => {
     const { handleSendMsg } = props
     const dispatch = useDispatch();
     const chatInputRef = React.useRef(null)
@@ -120,7 +120,6 @@ const ChatConversation = (props) => {
     }, [selectedMsgs])
 
     React.useEffect(() => {
-        (async () => {
             if (fromUserJId) {
                 if (messages[getUserIdFromJid(fromUserJId)]) {
                     setMessageList(getChatMessageHistoryById(getUserIdFromJid(fromUserJId)))
@@ -128,7 +127,6 @@ const ChatConversation = (props) => {
                 setIsChatLoading(true)
             }
             setIsChatLoading(false)
-        })();
     }, [messages, fromUserJId])
 
     React.useEffect(() => {
@@ -153,24 +151,17 @@ const ChatConversation = (props) => {
         }
     }
 
-    React.useEffect(() => {
-        if (messageList?.length) {
-            let unReadMsg = messageList.filter((item) => item.msgStatus == 1 && item.fromUserJid !== currentUserJID)
-            if (unReadMsg.length) {
-                unReadMsg.forEach(async item => {
-                    let data = { toJid: item.fromUserJid, msgId: item.msgId }
-                    await SDK.sendSeenStatus(data.toJid, data.msgId);
-                })
-            }
-        }
-    }, [messageList])
-
-    React.useEffect(() => {
-        if (props.sendSelected) {
-            let values = [props.selectedImages, fromUserJId, currentUserJID]
-            dispatch(updateMessageList(values))
-        }
-    }, [props.sendSelected])
+    // React.useEffect(() => {
+    //     if (messageList?.length) {
+    //         let unReadMsg = messageList.filter((item) => item.msgStatus == 1 && item.fromUserJid !== currentUserJID)
+    //         if (unReadMsg.length) {
+    //             unReadMsg.forEach(async item => {
+    //                 let data = { toJid: item.fromUserJid, msgId: item.msgId }
+    //                 await SDK.sendSeenStatus(data.toJid, data.msgId);
+    //             })
+    //         }
+    //     }
+    // }, [messageList])
 
     return (
         <KeyboardAvoidingView
@@ -201,7 +192,16 @@ const ChatConversation = (props) => {
                         </HStack>
                     </Slide>
                 }
-                <SwipeListView
+
+                <FlatList
+                    data={messageList}
+                    inverted
+                    renderItem={({ item }) => {
+                        return <ChatMessage handleMsgSelect={handleMsgSelect} selectedMsgs={selectedMsgs} message={item} />
+                    }}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+                {/* <SwipeListView
                     data={messageList}
                     inverted
                     keyExtractor={(item, index) => item.msgId.toString()}
@@ -217,7 +217,7 @@ const ChatConversation = (props) => {
                     initialLeftActionState={initialLeftActionState}
                     onLeftAction={(key) => onLeftAction(key)}
                     onLeftActionStatusChange={(data) => onLeftActionStatusChange(data)}
-                />
+                /> */}
             </ImageBackground>
             {replyMsgs ? <View paddingX={"1"} paddingY={"1"} backgroundColor={"#DDE3E5"}  >
                 <Stack paddingX={"3"} paddingY={"0 "} backgroundColor={"#E2E8F9"}>
@@ -240,7 +240,7 @@ const ChatConversation = (props) => {
             <ChatInput chatInputRef={chatInputRef} attachmentMenuIcons={props.attachmentMenuIcons} onSendMessage={handleMessageSend} />
         </KeyboardAvoidingView>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {

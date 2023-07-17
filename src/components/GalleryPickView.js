@@ -1,5 +1,5 @@
 import React from 'react'
-import { BackHandler, Image, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
+import { BackHandler, Image, Pressable, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
 import { Box, Divider, HStack, Icon, IconButton, Text, View, useToast } from 'native-base'
 import { useSelector } from 'react-redux'
 import { DeleteBinIcon, LeftArrowIcon, PreViewAddIcon, SendBlueIcon } from '../common/Icons'
@@ -136,7 +136,7 @@ function GalleryPickView(props) {
                 </HStack>
                 <HStack>
                     {props.selectedImages?.map((item, i) => (
-                        <TouchableOpacity
+                        <Pressable
                             activeOpacity={1}
                             key={item.image.fileCopyUri}
                             style={styles.tabButton}
@@ -149,7 +149,7 @@ function GalleryPickView(props) {
                                     index === i && styles.selectedTabImage,
                                 ]}
                             />
-                        </TouchableOpacity>
+                        </Pressable>
                     ))}
                 </HStack>
             </View>

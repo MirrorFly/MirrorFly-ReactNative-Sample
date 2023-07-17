@@ -5,14 +5,15 @@ import { AttachmentIcon, MicIcon, EmojiIcon, KeyboardIcon } from '../common/Icon
 import { HStack, Icon, IconButton, Modal, Flex, Text, VStack } from 'native-base';
 import EmojiOverlay from './EmojiPicker';
 
-const ChatInput = ({ onSendMessage, attachmentMenuIcons, chatInputRef }) => {
+const ChatInput = (props) => {
+  const { onSendMessage, attachmentMenuIcons, chatInputRef } = props
   const [message, setMessage] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false)
   const sendMessage = () => {
     if (message) {
-      setMessage('');
       onSendMessage(message);
+      setMessage('');
     }
   };
   const handleEmojiSelect = (...emojis) => {

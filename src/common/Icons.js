@@ -1,6 +1,6 @@
 import React from 'react'
 import Svg, { Circle, Ellipse, G, Path, Rect, Text, TSpan } from 'react-native-svg';
-import { TouchableOpacity, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 export const LeftArrowIcon = (color) => {
     return (
@@ -132,7 +132,7 @@ export const Chat_FABICON = ({ width, height }) => {
 
 export const ProfileIcon = ({ width, height }) => {
     return (
-        <TouchableOpacity>
+        <Pressable>
             <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 15.26 17.941">
                 <G id="avatar" transform="translate(-36.073)">
                     <G id="Group_257" data-name="Group 257" transform="translate(36.073)">
@@ -141,7 +141,7 @@ export const ProfileIcon = ({ width, height }) => {
                     </G>
                 </G>
             </Svg>
-        </TouchableOpacity>
+        </Pressable>
     )
 }
 

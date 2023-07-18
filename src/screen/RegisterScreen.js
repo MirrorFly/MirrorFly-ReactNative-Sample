@@ -142,8 +142,8 @@ const RegisterScreen = () => {
                         <Icon as={DownArrowIcon} name="emoji-happy" />
                     </HStack>
                 </Pressable>
-                <HStack alignItems="center" ml="6" mt="0"  >
-                    <HStack mt="2" alignItems="center" mr="5"  >
+                <HStack alignItems="center" ml="6" mt="0">
+                    <HStack mt="2" alignItems="center" mr="5">
                         <Text fontSize="16" color="black" fontWeight="600" mr="1">
                             +{selectcountry?.dial_code}
                         </Text>

@@ -1,9 +1,16 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
+import { SandTimer } from '../common/Icons';
+import ImageCard from './ImageCard';
+import VideoCard from './VideoCard';
+import PdfCard from './PdfCard';
+import AudioCard from './AudioCard';
+import MapCard from './MapCard';
+import ContactCard from './ContactCard';
+import TextCard from './TextCard';
 import { getConversationHistoryTime } from '../common/TimeStamp';
 import { Box, HStack, Icon, Pressable, Text, View } from 'native-base';
-import { SandTimer } from '../common/Icons';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 
 const ChatMessage = (props) => {
@@ -11,6 +18,8 @@ const ChatMessage = (props) => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID)
   let isSame = currentUserJID === props?.message?.fromUserJid
   let statusVisible = 'notSend'
+  const imageSize = props?.message?.msgBody.media?.file_size;
+  const fileSize = imageSize;
 
   switch (props?.message?.msgStatus) {
     case 3:
@@ -44,23 +53,24 @@ const ChatMessage = (props) => {
       {({ isPressed }) => {
         return <Box >
           <Box my={"1"} bg={props.selectedMsgs.includes(props.message) ? 'rgba(0,0,0, 0.2)' : 'transparent'}>
-            <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} my='1' px='3'>
-              <View px='2' py='1.5' minWidth='30%' maxWidth='90%' bgColor={isSame ? '#E2E8F7' : '#fff'}
-                borderWidth={isSame ? 0 : 0.25}
-                borderRadius={10}
-                borderBottomLeftRadius={isSame ? 10 : 0}
-                borderBottomRightRadius={isSame ? 0 : 10}
-                borderColor='#959595'>
+            <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px='3'   >
+              <View minWidth='30%' maxWidth='80%'>
                 {{
-                  "text": <Text fontSize={14} color='#313131'>{props?.message?.msgBody?.message}</Text>,
-                  "image": <Text fontWeight={'600'} fontStyle={'italic'} fontSize={14} color='#313131'>image</Text>,
-                  "video": <Text fontWeight={'600'} fontStyle={'italic'} fontSize={14} color='#313131'>video</Text>,
-                  "audio": <Text fontWeight={'600'} fontStyle={'italic'} fontSize={14} color='#313131'>audio</Text>,
+                  "text": <TextCard isSame={isSame} data={{
+                    message: props?.message?.msgBody?.message,
+                    timeStamp: getConversationHistoryTime(props?.message?.createdAt),
+                    status: getMessageStatus(props?.message?.msgStatus)
+                  }} />,
+                  'image': <ImageCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} fileSize={fileSize} />,
+                  "video": <VideoCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} />,
+                  "audio":
+                    <View style={{ flex: 1 }}>
+                      <AudioCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} />
+                    </View>,
+                  "file": <PdfCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} fileSize={fileSize} />,
+                  "contact": <ContactCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} />,
+                  "location": <MapCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} />
                 }[props?.message?.msgBody?.message_type]}
-                <HStack alignItems='center' alignSelf='flex-end'>
-                  {getMessageStatus(props?.message?.msgStatus)}
-                  <Text pl='1' color='#959595' fontSize='11'>{getConversationHistoryTime(props?.message?.createdAt)}</Text>
-                </HStack>
               </View>
             </HStack>
           </Box>
@@ -70,7 +80,6 @@ const ChatMessage = (props) => {
     </Pressable>
   );
 };
-
 export default ChatMessage;
 
 const styles = StyleSheet.create({

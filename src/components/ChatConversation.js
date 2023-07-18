@@ -216,6 +216,7 @@ const ChatConversation = React.memo((props) => {
                     leftOpenValue={leftActionValue}
                     leftActivationValue={leftActivationValue}
                     initialLeftActionState={initialLeftActionState}
+                    swipeToOpenPercent={10}
                     onLeftAction={(key) => onLeftAction(key)}
                     onLeftActionStatusChange={(data) => onLeftActionStatusChange(data)}
                 /> */}

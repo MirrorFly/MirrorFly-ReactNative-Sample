@@ -100,7 +100,7 @@ const CollapsingToolbar = ({
             backHandler.remove();
         }
     }, [])
-
+     console.log()
     return (
         <View style={styles.fill}>
             <Animated.View
@@ -227,7 +227,7 @@ const CollapsingToolbar = ({
                     </AlertDialog.Content>
                 </AlertDialog>
             </Center>
-        </View >
+        </View>
     );
 };
 
@@ -238,6 +238,7 @@ export default CollapsingToolbar;
 const styles = StyleSheet.create({
     fill: {
         flex: 1,
+       
     },
     content: {
         flex: 1,

@@ -60,17 +60,19 @@ export const getMessageObjSender = async (dataObj, idx) => {
             file_size: fileOptions.fileSize,
             is_downloaded: 0,
             is_uploading: idx === 0 ? 1 : 0,
-            /**file_url: fileOptions.blobUrl,
-            duration: fileOptions.duration || 0,
-            local_path: "",
-            thumb_image: fileOptions.thumbImage,
-            webWidth: webWidth,
-            webHeight: webHeight,
-            androidWidth: androidWidth,
-            androidHeight: androidHeight,
-            originalWidth,
-            originalHeight,
-            audioType: fileOptions.audioType,*/
+            /**
+             * file_url: fileOptions.blobUrl,
+             * duration: fileOptions.duration || 0,
+             * local_path: "",
+             * thumb_image: fileOptions.thumbImage,
+             * webWidth: webWidth,
+             * webHeight: webHeight,
+             * androidWidth: androidWidth,
+             * androidHeight: androidHeight,
+             * originalWidth,
+             * originalHeight,
+             * audioType: fileOptions.audioType,
+             */
         };
     }
 
@@ -125,10 +127,12 @@ export const getRecentChatMsgObj = (dataObj) => {
             is_downloaded: 0,
             is_uploading: 1,
             local_path: "",
-            /**file_url: fileOptions.blobUrl,
-            duration: fileOptions.duration || 0,
-            thumb_image: fileOptions.thumbImage,
-            audioType: fileOptions.audioType,*/
+            /**
+             * file_url: fileOptions.blobUrl,
+             * duration: fileOptions.duration || 0,
+             * thumb_image: fileOptions.thumbImage,
+             * audioType: fileOptions.audioType,
+             */
         };
     }
     const fromUserId = getUserIdFromJid(jid);

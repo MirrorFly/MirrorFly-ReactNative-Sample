@@ -38,16 +38,11 @@ export const getMessageObjSender = async (dataObj, idx) => {
             androidHeight = 0,
             originalWidth = 0,
             originalHeight = 0; 
-        */
-
         if (msgType === "image") {
-            /**  
             let mediaFileURL = fileOptions.blobUrl;
             const mediaDimension = await getMediaDimension(mediaFileURL, msgType);
             ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);
-            */ 
         } else if (msgType === "video") {
-            /**
                 ({
                 webWidth,
                 webHeight,
@@ -56,8 +51,8 @@ export const getMessageObjSender = async (dataObj, idx) => {
                 originalWidth,
                 originalHeight,
             } = fileDetails);
-            */
-        }
+        } 
+        */
         msgBody.message = "";
         msgBody.media = {
             file,

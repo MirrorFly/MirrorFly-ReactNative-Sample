@@ -181,7 +181,7 @@ const ProfilePage = (props) => {
       console.log('sdkRes', sdkRes)
       if (sdkRes?.statusCode == 200) {
         setImageFileToken(sdkRes.imageFileToken)
-        // SDK.setUserProfile(props?.profileInfo?.nickName, sdkRes.imageFileToken, props.profileInfo?.status, props.profileInfo?.mobileNumber, props.profileInfo?.email);
+        SDK.setUserProfile(props?.profileInfo?.nickName, sdkRes.imageFileToken, props.profileInfo?.status, props.profileInfo?.mobileNumber, props.profileInfo?.email);
         setImageUploading(false)
       } else {
         setImageUploading(false)
@@ -231,8 +231,7 @@ const ProfilePage = (props) => {
         console.log('sdkRes', sdkRes)
         if (sdkRes?.statusCode == 200) {
           setImageFileToken(sdkRes.imageFileToken)
-          // let updateProfiel = await SDK.setUserProfile(props?.profileInfo?.nickName, sdkRes.imageFileToken, props.profileInfo?.status, props.profileInfo?.mobileNumber, props.profileInfo?.email);
-          // console.log('update', updateProfiel)
+          SDK.setUserProfile(props?.profileInfo?.nickName, sdkRes.imageFileToken, props.profileInfo?.status, props.profileInfo?.mobileNumber, props.profileInfo?.email);
           setImageUploading(false)
         }
         else {

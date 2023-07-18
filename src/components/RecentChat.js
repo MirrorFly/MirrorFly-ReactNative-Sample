@@ -8,16 +8,12 @@ import { CHATSCREEN, RECENTCHATLOADING } from '../constant';
 import { navigate } from '../redux/navigationSlice';
 import { Image, StyleSheet } from 'react-native';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import SDK from '../SDK/SDK';
-import AuthProfileImage from '../common/AuthProfileImage';
 import { SandTimer } from '../common/Icons';
-import RecentChatProfile from '../common/RecentChatProfile';
 
 export default function RecentChat(props) {
     const dispatch = useDispatch();
     const recentLoading = useSelector(state => state.chat.recentChatStatus)
-    const vCardProfile = useSelector((state) => state.profile.profileDetails);
 
     const onRowDidOpen = rowKey => {
         console.log('This row opened', rowKey);

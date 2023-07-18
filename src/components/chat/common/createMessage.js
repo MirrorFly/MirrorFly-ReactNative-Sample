@@ -11,12 +11,11 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
     if (!recentChatNames) {
         return;
     }
-    const { msgType, fromUserId, fromUserJid, toUserId, msgId, timestamp, chatType, msgBody, publisherId, profileDetails } = messgeObject;
+    const { msgType, fromUserId, toUserId, msgId, timestamp, chatType, msgBody, publisherId, profileDetails } = messgeObject;
 
     const newChatTo = msgType === "carbonSentMessage" ? toUserId : fromUserId;
     const newChatFrom = chatType === "groupchat" ? publisherId : fromUserId;
     const updateTime = changeTimeFormat(timestamp);
-    // const userDetails = getMessageSenderDetails(newChatFrom, rosterDataArray);
     const leftGroup = !msgType && msgType === "receiveMessage" && msgBody === "3";
     const x = new Date();
     let UTCseconds = x.getTime() + x.getTimezoneOffset() * 60 * 1000;
@@ -38,7 +37,6 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
             filterBy: newChatTo,
             fromUserId: newChatTo,
             chatType: chatType,
-            // contactDetails: userDetails,
             createdAt: updateTime,
             timestamp: parseInt(UTCseconds)
         };

@@ -38,26 +38,28 @@ const ChatConversation = React.memo((props) => {
     const handleRemove = () => {
         setReplyMsgs();
     }
-    /*    const renderHiddenItem = (data, rowMap) => {
+    /**  
+        const renderHiddenItem = (data, rowMap) => {
             return (
                 <HStack alignItems={'center'} flex={"0.8"} ml='2' >
                     {isSwiping?.isActivated && isSwiping?.key === data.item.msgId &&
                         <HStack alignItems={'center'} justifyContent={'center'} w={10} h={10} borderRadius={20} bg={'#E5E5E5'}><ReplyIcon /></HStack>}
                 </HStack>
             )
-        } */
-
-    /*  const onLeftAction = (rowKey) => {
+        }
+    
+        const onLeftAction = (rowKey) => {
             handleSwipeLeft(rowKey);
         };
     
         const onLeftActionStatusChange = (res) => {
             setIsSwiping(res);
         };
-    
-        const leftActivationValue = 20; // Adjust as needed
-        const leftActionValue = 20; // Adjust as needed
-        const initialLeftActionState = false; // Adjust as needed */
+ 
+     const leftActivationValue = 20; // Adjust as needed
+     const leftActionValue = 20; // Adjust as needed
+     const initialLeftActionState = false; // Adjust as needed  
+     */
 
 
 

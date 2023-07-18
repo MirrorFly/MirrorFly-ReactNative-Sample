@@ -24,11 +24,9 @@ function ChatScreen() {
   const vCardData = useSelector((state) => state.profile.profileDetails);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid)
   const currentUserJID = useSelector(state => state.auth.currentUserJID)
-  console.log(currentUserJID, '\n currentUserJID')
   const [localNav, setLocalNav] = React.useState('CHATCONVERSATION')
   const [isMessageInfo, setIsMessageInfo] = React.useState({})
   const toast = useToast()
-  const [sendSelected, setSendSelected] = React.useState(false)
   const [selectedImages, setSelectedImages] = React.useState([])
 
   const attachmentMenuIcons = [
@@ -139,6 +137,7 @@ function ChatScreen() {
         } else if (msgType === "audio") {
           response = await SDK.sendAudioMessage(jidSendMediaMessage, file, fileOptions);
         }
+        console.log(response,"\n response");
       }
     }
   };
@@ -194,7 +193,7 @@ function ChatScreen() {
   return (
     <>
       {{
-        'CHATCONVERSATION': <ChatConversation handleBackBtn={handleBackBtn} setLocalNav={setLocalNav} setIsMessageInfo={setIsMessageInfo} attachmentMenuIcons={attachmentMenuIcons} sendSelected={sendSelected} selectedImages={selectedImages} handleSendMsg={handleSendMsg} />,
+        'CHATCONVERSATION': <ChatConversation handleBackBtn={handleBackBtn} setLocalNav={setLocalNav} setIsMessageInfo={setIsMessageInfo} attachmentMenuIcons={attachmentMenuIcons} selectedImages={selectedImages} handleSendMsg={handleSendMsg} />,
         'MESSAGEINFO': <MessageInfo setLocalNav={setLocalNav} setIsMessageInfo={setIsMessageInfo} isMessageInfo={isMessageInfo} />,
         'GalleryPickView': <GalleryPickView setSelectedImages={setSelectedImages} selectedImages={selectedImages} setLocalNav={setLocalNav} handleSendMsg={handleSendMsg} />,
         'UserInfo': <UserInfo setLocalNav={setLocalNav} />,

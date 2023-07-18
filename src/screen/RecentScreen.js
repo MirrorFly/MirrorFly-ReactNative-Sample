@@ -18,13 +18,11 @@ const FirstComponent = (isSearching, filteredData) => <RecentChat isSearching={i
 
 function RecentScreen() {
   const dispatch = useDispatch();
-  // const messages = useSelector((state) => state.chat.chatMessages);
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: 'first', title: 'Chats' },
     { key: 'second', title: 'Calls' },
   ]);
-  // const recentChatList = useSelector((state) => state.chat.recentChat);
   const [filteredData, setFilteredData] = React.useState([]);
   const [isSearching, setIsSearching] = React.useState(false);
   const [recentData, setrecentData] = React.useState([]);

@@ -30,7 +30,8 @@ function MessageInfo(props) {
             const dbValue = await SDK.getMessageInfo(props.isMessageInfo.msgId)
             setDeliveredReport(dbValue[0].receivedTime)
             setSeenReport(dbValue[0].seenTime)
-            /* let deliveryStatus = await AsyncStorage.getItem('deliveryStatus')
+            /**
+            let deliveryStatus = await AsyncStorage.getItem('deliveryStatus')
              let seenStatus = await AsyncStorage.getItem('seenStatus')
              let parsedSeenData = JSON.parse(seenStatus)
              if (deliveryStatus) {
@@ -53,7 +54,8 @@ function MessageInfo(props) {
                      })
                      setSeenReport(foundSeenReport[0]);
                  }
-             }*/
+             }
+             */
         })();
     }, [messages])
 

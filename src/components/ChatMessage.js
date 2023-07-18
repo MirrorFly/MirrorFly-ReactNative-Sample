@@ -68,7 +68,7 @@ const ChatMessage = (props) => {
                       <AudioCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} />
                     </View>,
                   "file": <PdfCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} fileSize={fileSize} />,
-                  "contact": <ContactCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} />,
+                  "contact": <ContactCard isSame={isSame} data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} />,
                   "location": <MapCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} />
                 }[props?.message?.msgBody?.message_type]}
               </View>

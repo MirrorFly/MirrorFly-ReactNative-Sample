@@ -10,7 +10,7 @@ const AudioCard = (props) => {
         track: { backgroundColor: handleUnfilledTrackColor },
     };
     return (
-        <View borderColor={'#E5E5E5'} borderWidth={1} flex={1} width={250} borderRadius={10} mb={2}>
+        <View borderColor={'#E5E5E5'} borderWidth={1} flex={1} width={250} borderRadius={10} mb={1}>
             <HStack px='2' style={{ backgroundColor: "#EFEFEF", justifyContent: "flex-start", alignItems: "center" }} >
                 <View borderRadius={25} padding={"2"} backgroundColor={"#7285B5"} width='30' height='30' >
                     <AudioMusicIcon width='14' height='14' />
@@ -32,7 +32,7 @@ const AudioCard = (props) => {
                     </View>
                 </View>
             </HStack>
-            <View style={{ justifyContent: "flex-end", }}>
+            <View style={{ justifyContent: "flex-end",backgroundColor:"#fff",borderBottomRightRadius:17,borderBottomLeftRadius:9, }}>
                 {props.status}
                 <Text paddingRight={2} textAlign={"right"} color='#455E93' fontWeight={300} fontSize='10'>{props.timeStamp}</Text>
             </View>

@@ -5,8 +5,9 @@ import { View, Text, HStack } from 'native-base';
 
 const ContactCard = (props) => {
     const ContactInfo = props.data.msgBody.nickName;
+    console.log("color",props.isSame);
     return (
-        <View backgroundColor={"#E2E8F7"}   borderRadius={5} >
+        <View  borderWidth={props.isSame ? 0 : 0.25}  borderColor={'#959595'} bgColor={props.isSame ? '#E2E8F7' : '#fff'}  borderRadius={5} >
             <View  flex={1} width={210} mx={1.2} my={0.9} height={100} position={"relative"}>
                 <View style={{ paddingTop: 12, paddingHorizontal: 10, flexDirection: "row", alignItems: "center" }}>
                     <Image source={BG} resizeMode="cover"

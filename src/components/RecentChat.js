@@ -2,7 +2,7 @@ import { Center, Box, Divider, HStack, Pressable, Spacer, Text, VStack, View, Sl
 import React from 'react'
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { useDispatch, useSelector } from 'react-redux';
-import { convertUTCTOLocalTimeStamp, formatChatDateTime, getConversationHistoryTime } from '../common/TimeStamp';
+import { convertUTCTOLocalTimeStamp, formatChatDateTime } from '../common/TimeStamp';
 import Avathar from '../common/Avathar';
 import { CHATSCREEN, RECENTCHATLOADING } from '../constant';
 import { navigate } from '../redux/navigationSlice';

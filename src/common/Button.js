@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, StyleSheet, Text, View } from 'react-native'
 import { Chat_FABICON, MenuIcon } from './Icons'
 import { Icon, IconButton, Pressable } from 'native-base'
 

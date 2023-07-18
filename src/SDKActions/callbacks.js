@@ -1,6 +1,5 @@
 import { updateConversationMessage, updateRecentChatMessage } from "../components/chat/common/createMessage";
 import { REGISTERSCREEN } from "../constant";
-import { getReceiveMessage, updateMessageStatus } from "../redux/chatSlice";
 import { setXmppStatus } from "../redux/connectionSlice";
 import { updateChatConversationHistory } from "../redux/conversationSlice";
 import { navigate } from "../redux/navigationSlice";

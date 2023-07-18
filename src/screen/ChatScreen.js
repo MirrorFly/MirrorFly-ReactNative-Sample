@@ -12,7 +12,7 @@ import { RECENTCHATSCREEN } from '../constant'
 import { useDispatch, useSelector } from 'react-redux'
 import { navigate } from '../redux/navigationSlice'
 import { v4 as uuidv4 } from 'uuid';
-import { getMessageObjSender, getRecentChatMsgObj, getUserIdFromJid } from '../Helper/Chat/Utility'
+import { getMessageObjSender, getRecentChatMsgObj } from '../Helper/Chat/Utility'
 import { updateRecentChat } from '../redux/recentChatDataSlice'
 import store from '../redux/store'
 import { isSingleChat } from '../Helper/Chat/ChatHelper'
@@ -95,7 +95,7 @@ function ChatScreen() {
         const file = files[i],
           msgId = uuidv4();
         console.log(file, "fileeee");
-        const { caption = "", image: { uri, fileCopyUri = "", type = "" } = {} } = file;
+        const { caption = "" } = file;
         let fileOptions = {
           fileName: file.name,
           fileSize: file.size,

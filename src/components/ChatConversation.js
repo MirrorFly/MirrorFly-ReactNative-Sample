@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, KeyboardAvoidingView, Platform, ImageBackground, BackHandler, Pressable, FlatList } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView, Platform, ImageBackground, Pressable, FlatList } from 'react-native';
 import ChatHeader from '../components/ChatHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import ChatMessage from '../components/ChatMessage';

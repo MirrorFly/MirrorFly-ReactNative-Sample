@@ -10,8 +10,7 @@ import MapCard from './MapCard';
 import ContactCard from './ContactCard';
 import TextCard from './TextCard';
 import { getConversationHistoryTime } from '../common/TimeStamp';
-import { Box, HStack, Icon, Pressable, Text, View } from 'native-base';
-import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
+import { Box, HStack, Icon, Pressable, View } from 'native-base';
 
 const ChatMessage = (props) => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID)

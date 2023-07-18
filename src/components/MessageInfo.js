@@ -2,7 +2,7 @@ import { Divider, HStack, Text, View } from 'native-base'
 import React from 'react'
 import ScreenHeader from './ScreenHeader'
 import { BackHandler, StyleSheet } from 'react-native'
-import { change16TimeWithDateFormat, changeTimeFormat, getConversationHistoryTime } from '../common/TimeStamp'
+import { change16TimeWithDateFormat, getConversationHistoryTime } from '../common/TimeStamp'
 import { useSelector } from 'react-redux'
 
 function MessageInfo(props) {

@@ -1,7 +1,7 @@
 import { FlatList } from 'react-native'
 import React from 'react'
 import ScreenHeader from '../components/ScreenHeader'
-import { Text, HStack, Pressable, useToast, Modal, Box, AlertDialog, VStack, Divider, Center, Spinner, View, } from 'native-base';
+import { Text, HStack, Pressable, useToast, Modal, Box, AlertDialog, VStack, Divider, Center, Spinner } from 'native-base';
 import { EditIcon, TickMarkIcon } from '../common/Icons';
 import SDK from '../SDK/SDK';
 import { useNetworkStatus } from '../hooks';

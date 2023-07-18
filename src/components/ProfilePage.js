@@ -1,5 +1,5 @@
-import { BackHandler, StyleSheet, TouchableOpacity, View, Image, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
-import React, { useState } from 'react';
+import { BackHandler, StyleSheet, TouchableOpacity, View, Image, TextInput, ScrollView, KeyboardAvoidingView } from 'react-native'
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CallIcon, MailIcon, StatusIcon } from '../common/Icons';
 import { Modal, Center, Box, Text, VStack, useToast, Spinner, Stack, HStack, AlertDialog, Pressable } from "native-base";

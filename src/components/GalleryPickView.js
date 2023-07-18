@@ -1,5 +1,5 @@
 import React from 'react'
-import { BackHandler, Image, Pressable, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
+import { BackHandler, Image, Pressable, StyleSheet, TextInput } from 'react-native'
 import { Box, Divider, HStack, Icon, IconButton, Text, View, useToast } from 'native-base'
 import { useSelector } from 'react-redux'
 import { DeleteBinIcon, LeftArrowIcon, PreViewAddIcon, SendBlueIcon } from '../common/Icons'

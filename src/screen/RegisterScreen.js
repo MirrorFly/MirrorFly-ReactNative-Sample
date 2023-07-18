@@ -6,7 +6,7 @@ import { navigate } from '../redux/navigationSlice';
 import { COUNTRYSCREEN, numRegx, PROFILESCREEN, REGISTERSCREEN } from '../constant';
 import { getCurrentUserJid } from '../redux/authSlice';
 import { DownArrowIcon, RegiterPageIcon } from '../common/Icons';
-import { Icon, Modal, Text, Center, Box, useToast, Spinner, HStack, Stack, VStack, Pressable, KeyboardAvoidingView, View, ScrollView } from 'native-base';
+import { Icon, Modal, Text, Center, Box, useToast, Spinner, HStack, Stack, VStack, Pressable, KeyboardAvoidingView, View } from 'native-base';
 import { useNetworkStatus } from '../hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

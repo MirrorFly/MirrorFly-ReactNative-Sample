@@ -1,4 +1,4 @@
-import { Box, Image, Spinner, View } from 'native-base'
+import { Box, Image, Spinner } from 'native-base'
 import React from 'react'
 import RNFetchBlob from 'rn-fetch-blob';
 import { getExtention } from './utils';

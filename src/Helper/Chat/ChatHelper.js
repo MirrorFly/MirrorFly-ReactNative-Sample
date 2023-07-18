@@ -62,8 +62,6 @@ export const getChatHistoryData = (data, stateData) => {
     console.log(data.userJid, '\n ***userJid')
     const localUserJid = data.userJid
     const userId = localUserJid ? getUserIdFromJid(localUserJid) : "";
-    console.log(lastMessage)
-    console.log(lastMessage.publisherId)
     if (userId === lastMessage?.publisherId) {
         newSortedData = sortedData.map((msg => {
             msg.msgStatus = getMsgStatusInOrder(msg.msgStatus, lastMessage?.msgStatus);

@@ -8,7 +8,7 @@ import { updateRecentChatMessageStatus } from "../redux/recentChatDataSlice";
 import { storeDeliveryStatus, storeSeenStatus } from "../redux/storageSlice";
 import store from "../redux/store";
 import { updateUserPresence } from "../redux/userSlice";
-
+import * as RootNav from '../Navigation/rootNavigation'
 export const callBacks = {
     connectionListener: (response) => {
         store.dispatch(setXmppStatus(response.status))
@@ -19,6 +19,7 @@ export const callBacks = {
         } else if (response.status === "LOGOUT") {
             console.log("LOGOUT");
             store.dispatch(navigate({ screen: REGISTERSCREEN }))
+            RootNav.navigate(REGISTERSCREEN)
         }
     },
     dbListener: (res) => {

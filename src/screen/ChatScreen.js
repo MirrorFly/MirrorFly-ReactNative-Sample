@@ -18,6 +18,7 @@ import store from '../redux/store'
 import { isSingleChat } from '../Helper/Chat/ChatHelper'
 import { addChatConversationHistory } from '../redux/conversationSlice'
 import { SDK } from '../SDK'
+import * as RootNav from '../Navigation/rootNavigation'
 
 function ChatScreen() {
   const dispatch = useDispatch()
@@ -79,6 +80,7 @@ function ChatScreen() {
   const handleBackBtn = () => {
     let x = { screen: RECENTCHATSCREEN }
     dispatch(navigate(x))
+    RootNav.navigate(RECENTCHATSCREEN)
     return true;
   }
 

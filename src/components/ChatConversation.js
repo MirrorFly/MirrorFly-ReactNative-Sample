@@ -5,10 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import ChatMessage from '../components/ChatMessage';
 import ChatInput from '../components/ChatInput';
 import { HStack, Slide, Spinner, Stack, Text, View } from 'native-base';
-import { updateMessageList } from '../redux/chatSlice';
 import SDK from '../SDK/SDK';
-import { ClearTextIcon, ReplyIcon } from '../common/Icons';
-import { SwipeListView } from 'react-native-swipe-list-view';
+import { ClearTextIcon } from '../common/Icons';
 import { addChatConversationHistory } from '../redux/conversationSlice';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { formatUserIdToJid, getChatMessageHistoryById } from '../Helper/Chat/ChatHelper';
@@ -25,7 +23,6 @@ const ChatConversation = React.memo((props) => {
     const [isChatLoading, setIsChatLoading] = React.useState(false)
     const [selectedMsgs, setSelectedMsgs] = React.useState([]);
     const [replyMsgs, setReplyMsgs] = React.useState();
-    const [isSwiping, setIsSwiping] = React.useState();
     const [menuItems, setMenuItems] = React.useState([]);
 
     const handleSwipeLeft = (rowKey) => {
@@ -41,37 +38,35 @@ const ChatConversation = React.memo((props) => {
     const handleRemove = () => {
         setReplyMsgs();
     }
-    const renderHiddenItem = (data, rowMap) => {
-        return (
-            <HStack alignItems={'center'} flex={"0.8"} ml='2' >
-                {isSwiping?.isActivated && isSwiping?.key === data.item.msgId &&
-                    <HStack alignItems={'center'} justifyContent={'center'} w={10} h={10} borderRadius={20} bg={'#E5E5E5'}><ReplyIcon /></HStack>}
-            </HStack>
-        )
-    }
+    /*    const renderHiddenItem = (data, rowMap) => {
+            return (
+                <HStack alignItems={'center'} flex={"0.8"} ml='2' >
+                    {isSwiping?.isActivated && isSwiping?.key === data.item.msgId &&
+                        <HStack alignItems={'center'} justifyContent={'center'} w={10} h={10} borderRadius={20} bg={'#E5E5E5'}><ReplyIcon /></HStack>}
+                </HStack>
+            )
+        } */
 
-    const onLeftAction = (rowKey) => {
-        handleSwipeLeft(rowKey);
-    };
-
-    const onLeftActionStatusChange = (res) => {
-        setIsSwiping(res);
-    };
-
-    const leftActivationValue = 20; // Adjust as needed
-    const leftActionValue = 20; // Adjust as needed
-    const initialLeftActionState = false; // Adjust as needed
+    /*  const onLeftAction = (rowKey) => {
+            handleSwipeLeft(rowKey);
+        };
+    
+        const onLeftActionStatusChange = (res) => {
+            setIsSwiping(res);
+        };
+    
+        const leftActivationValue = 20; // Adjust as needed
+        const leftActionValue = 20; // Adjust as needed
+        const initialLeftActionState = false; // Adjust as needed */
 
 
 
     const handleMessageSend = (messageContent) => {
-        // let values = [val, fromUserJId]
         let message = {
             type: "text",
             content: messageContent
         }
         handleSendMsg(message)
-        // dispatch(sendMessage(values))
     }
 
     React.useEffect(() => {

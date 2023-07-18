@@ -28,12 +28,14 @@ const Avathar = (props) => {
       graphemes.forEach(element => {
         if (preVele == " ") {
           preVele = element
-          return result = graphemes[0] + element
+          result = graphemes[0] + element
+          return result
         }
         preVele = element
       });
     } else {
-      return result = graphemes[0] + graphemes[1]
+      result = graphemes[0] + graphemes[1]
+      return result
     }
     return result;
   };

@@ -66,15 +66,11 @@ export const getChatHistoryData = (data, stateData) => {
     console.log(lastMessage.publisherId)
     if (userId === lastMessage?.publisherId) {
         newSortedData = sortedData.map((msg => {
-            // msg.msgStatus = getMsgStatusInOrder(msg.msgStatus, lastMessage?.msgStatus);
+            msg.msgStatus = getMsgStatusInOrder(msg.msgStatus, lastMessage?.msgStatus);
             return msg;
         }));
     } else newSortedData = sortedData;
 
-    // let isScrollNeeded = true;
-    // if (data.fetchLimit) {
-    //     isScrollNeeded = data.data.length === data.fetchLimit; // To Check If this is the Last Message in the Chat, So no Scroll Fetch is Needed
-    // }
     const finalData = { messages: arrayToObject(newSortedData, "msgId") };
 
     let datata = {

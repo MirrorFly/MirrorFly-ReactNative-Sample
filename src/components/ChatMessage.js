@@ -14,7 +14,6 @@ import { Box, HStack, Icon, Pressable, Text, View } from 'native-base';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 
 const ChatMessage = (props) => {
-  const vCardProfile = useSelector((state) => state.profile.profileDetails);
   const currentUserJID = useSelector(state => state.auth.currentUserJID)
   let isSame = currentUserJID === props?.message?.fromUserJid
   let statusVisible = 'notSend'

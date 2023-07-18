@@ -63,11 +63,11 @@ const CollapsingToolbar = ({
         extrapolate: 'clamp',
     });
 
-    const imageTranslate = scrollY.interpolate({
-        inputRange: [0, scrollDistance],
-        outputRange: [0, 100],
-        extrapolate: 'clamp',
-    });
+    /*  const imageTranslate = scrollY.interpolate({
+         inputRange: [0, scrollDistance],
+         outputRange: [0, 100],
+         extrapolate: 'clamp',
+     }); */
 
     const titleScale = scrollY.interpolate({
         inputRange: [0, scrollDistance / 2, scrollDistance],
@@ -100,7 +100,7 @@ const CollapsingToolbar = ({
             backHandler.remove();
         }
     }, [])
-     console.log()
+
     return (
         <View style={styles.fill}>
             <Animated.View
@@ -238,7 +238,6 @@ export default CollapsingToolbar;
 const styles = StyleSheet.create({
     fill: {
         flex: 1,
-       
     },
     content: {
         flex: 1,

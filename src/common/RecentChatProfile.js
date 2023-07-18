@@ -9,8 +9,6 @@ function RecentChatProfile(props) {
 
     const [imageSource, setImageSource] = React.useState(null);
     const [isFetching, setIsFetching] = React.useState(false)
-    const profileImageKey = props.data.image.split('.')[0]
-
 
     const getImageURL = async () => {
         const imageUrl = await SDK.getMediaURL(props.data.image)

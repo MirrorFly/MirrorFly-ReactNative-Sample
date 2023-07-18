@@ -177,7 +177,6 @@ export const formatChatDateTime = (date, type) => {
  * @param {date} date
  */
 export const convertUTCTOLocalTimeStamp = (date) => {
-    // date = new Date(date.replace(/-/g, "/"));
     let newDate = new Date(date);
     newDate.setMinutes(newDate.getMinutes() - newDate.getTimezoneOffset());
     return newDate.toString();

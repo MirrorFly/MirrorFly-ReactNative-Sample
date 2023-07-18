@@ -18,7 +18,6 @@ export const getMessageObjSender = async (dataObj, idx) => {
         file,
         fileOptions = {},
         replyTo,
-        fileDetails,
         fromUserJid
     } = dataObj;
     const timestamp = Date.now() * 1000;
@@ -40,42 +39,42 @@ export const getMessageObjSender = async (dataObj, idx) => {
             originalHeight = 0;
 
         if (msgType === "image") {
-            // let mediaFileURL = fileOptions.blobUrl;
-            // const mediaDimension = await getMediaDimension(mediaFileURL, msgType);
-            // ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);
+          /**  let mediaFileURL = fileOptions.blobUrl;
+            const mediaDimension = await getMediaDimension(mediaFileURL, msgType);
+            ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);*/ 
         } else if (msgType === "video") {
-            // ({
-            //     webWidth,
-            //     webHeight,
-            //     androidWidth,
-            //     androidHeight,
-            //     originalWidth,
-            //     originalHeight,
-            // } = fileDetails);
+            /**({
+                webWidth,
+                webHeight,
+                androidWidth,
+                androidHeight,
+                originalWidth,
+                originalHeight,
+            } = fileDetails);*/
         }
         msgBody.message = "";
         msgBody.media = {
             file,
             caption: fileOptions.caption || "",
-            // duration: fileOptions.duration || 0,
             fileName: fileOptions.fileName,
             file_size: fileOptions.fileSize,
-            // file_url: fileOptions.blobUrl,
             is_downloaded: 0,
             is_uploading: idx === 0 ? 1 : 0,
-            // local_path: "",
-            // thumb_image: fileOptions.thumbImage,
-            // webWidth: webWidth,
-            // webHeight: webHeight,
-            // androidWidth: androidWidth,
-            // androidHeight: androidHeight,
-            // originalWidth,
-            // originalHeight,
-            // audioType: fileOptions.audioType,
+            /**file_url: fileOptions.blobUrl,
+            duration: fileOptions.duration || 0,
+            local_path: "",
+            thumb_image: fileOptions.thumbImage,
+            webWidth: webWidth,
+            webHeight: webHeight,
+            androidWidth: androidWidth,
+            androidHeight: androidHeight,
+            originalWidth,
+            originalHeight,
+            audioType: fileOptions.audioType,*/
         };
     }
 
-    const retunVal =  {
+    const retunVal = {
         chatType: chatType,
         createdAt: changeTimeFormat(timestamp),
         deleteStatus: 0,
@@ -121,15 +120,15 @@ export const getRecentChatMsgObj = (dataObj) => {
     } else {
         msgBody.media = {
             caption: fileOptions.caption || "",
-            // duration: fileOptions.duration || 0,
             fileName: fileOptions.fileName,
             file_size: fileOptions.fileSize,
-            // file_url: fileOptions.blobUrl,
             is_downloaded: 0,
             is_uploading: 1,
             local_path: "",
-            // thumb_image: fileOptions.thumbImage,
-            // audioType: fileOptions.audioType,
+            /**file_url: fileOptions.blobUrl,
+            duration: fileOptions.duration || 0,
+            thumb_image: fileOptions.thumbImage,
+            audioType: fileOptions.audioType,*/
         };
     }
     const fromUserId = getUserIdFromJid(jid);
@@ -184,8 +183,6 @@ export const getMessageObjReceiver = (messgeObject, newChatTo) => {
             msgType,
             userId: messgeObject.userId,
             userJid: messgeObject.userJid,
-            // Should have the unique msgId for all the messages. But for 'profileUpdate' not receiving the msgId
-            // that's why here we give the msgId manually
             msgId:
                 messgeObject.msgId ||
                 (messgeObject.timestamp.toString()) ||

@@ -24,9 +24,7 @@ function Navigation() {
         setIsAppLoading(true);
         setTimeout(async () => {
             if (Object.keys(vCardProfile).length === 0) {
-                const userIdentifier = await AsyncStorage.getItem('userIdentifier')
                 const vCardProfile = await AsyncStorage.getItem('vCardProfile');
-                console.log(vCardProfile, '\n vCardProfile')
                 if (vCardProfile)
                     dispatch(profileDetail(JSON.parse(vCardProfile)))
             }

@@ -31,26 +31,32 @@ export const getMessageObjSender = async (dataObj, idx) => {
     if (msgType === "text") {
         msgBody.message = message;
     } else {
+        /**
         let webWidth = 0,
             webHeight = 0,
             androidWidth = 0,
             androidHeight = 0,
             originalWidth = 0,
-            originalHeight = 0;
+            originalHeight = 0; 
+        */
 
         if (msgType === "image") {
-          /**  let mediaFileURL = fileOptions.blobUrl;
+            /**  
+            let mediaFileURL = fileOptions.blobUrl;
             const mediaDimension = await getMediaDimension(mediaFileURL, msgType);
-            ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);*/ 
+            ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);
+            */ 
         } else if (msgType === "video") {
-            /**({
+            /**
+                ({
                 webWidth,
                 webHeight,
                 androidWidth,
                 androidHeight,
                 originalWidth,
                 originalHeight,
-            } = fileDetails);*/
+            } = fileDetails);
+            */
         }
         msgBody.message = "";
         msgBody.media = {

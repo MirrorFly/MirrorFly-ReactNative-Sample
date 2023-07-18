@@ -1,32 +1,28 @@
 import React from 'react';
-import { StyleSheet, KeyboardAvoidingView, Platform, ImageBackground, BackHandler, Pressable } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView, Platform, ImageBackground, Pressable, FlatList } from 'react-native';
 import ChatHeader from '../components/ChatHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import ChatMessage from '../components/ChatMessage';
 import ChatInput from '../components/ChatInput';
 import { HStack, Slide, Spinner, Stack, Text, View } from 'native-base';
-import { RECENTCHATSCREEN } from '../constant';
-import { navigate } from '../redux/navigationSlice';
-import { getMessages, sendMessage, sendSeenStatus, updateMessageList } from '../redux/chatSlice';
 import SDK from '../SDK/SDK';
-import { getLastseen } from '../common/TimeStamp';
-import { ClearTextIcon, ReplyIcon } from '../common/Icons';
-import { SwipeListView } from 'react-native-swipe-list-view';
+import { ClearTextIcon } from '../common/Icons';
+import { addChatConversationHistory } from '../redux/conversationSlice';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import { formatUserIdToJid, getChatMessageHistoryById } from '../Helper/Chat/ChatHelper';
 
-const ChatConversation = (props) => {
+const ChatConversation = React.memo((props) => {
+    const { handleSendMsg } = props
     const dispatch = useDispatch();
     const chatInputRef = React.useRef(null)
-    const currentUserJID = useSelector(state => state?.auth?.currentUserJID)
-    const presenceListener = useSelector(state => state.user.userPresence)
-    const messages = useSelector(state => state.chat.chatMessages)
+    const vCardProfile = useSelector((state) => state.profile.profileDetails);
+    const currentUserJID = formatUserIdToJid(vCardProfile?.userId)
+    const messages = useSelector(state => state.chatConversationData.data)
     const fromUserJId = useSelector(state => state.navigation.fromUserJid)
     const [messageList, setMessageList] = React.useState([]);
-    const [seenStatus, setSeenStatus] = React.useState('')
-    const [nickName, setNickName] = React.useState('')
     const [isChatLoading, setIsChatLoading] = React.useState(false)
     const [selectedMsgs, setSelectedMsgs] = React.useState([]);
     const [replyMsgs, setReplyMsgs] = React.useState();
-    const [isSwiping, setIsSwiping] = React.useState();
     const [menuItems, setMenuItems] = React.useState([]);
 
     const handleSwipeLeft = (rowKey) => {
@@ -42,32 +38,37 @@ const ChatConversation = (props) => {
     const handleRemove = () => {
         setReplyMsgs();
     }
-    const renderHiddenItem = (data, rowMap) => {
-        return (
-            <HStack alignItems={'center'} flex={"0.8"} ml='2' >
-                {isSwiping?.isActivated && isSwiping?.key === data.item.msgId &&
-                    <HStack alignItems={'center'} justifyContent={'center'} w={10} h={10} borderRadius={20} bg={'#E5E5E5'}><ReplyIcon /></HStack>}
-            </HStack>
-        )
-    }
+    /**  
+        const renderHiddenItem = (data, rowMap) => {
+            return (
+                <HStack alignItems={'center'} flex={"0.8"} ml='2' >
+                    {isSwiping?.isActivated && isSwiping?.key === data.item.msgId &&
+                        <HStack alignItems={'center'} justifyContent={'center'} w={10} h={10} borderRadius={20} bg={'#E5E5E5'}><ReplyIcon /></HStack>}
+                </HStack>
+            )
+        }
+    
+        const onLeftAction = (rowKey) => {
+            handleSwipeLeft(rowKey);
+        };
+    
+        const onLeftActionStatusChange = (res) => {
+            setIsSwiping(res);
+        };
+ 
+     const leftActivationValue = 20; // Adjust as needed
+     const leftActionValue = 20; // Adjust as needed
+     const initialLeftActionState = false; // Adjust as needed  
+     */
 
-    const onLeftAction = (rowKey) => {
-        handleSwipeLeft(rowKey);
-    };
-
-    const onLeftActionStatusChange = (res) => {
-        setIsSwiping(res);
-    };
-
-    const leftActivationValue = 20; // Adjust as needed
-    const leftActionValue = 20; // Adjust as needed
-    const initialLeftActionState = false; // Adjust as needed
 
 
-
-    const handleMessageSend = (val) => {
-        let values = [val, fromUserJId]
-        dispatch(sendMessage(values))
+    const handleMessageSend = (messageContent) => {
+        let message = {
+            type: "text",
+            content: messageContent
+        }
+        handleSendMsg(message)
     }
 
     React.useEffect(() => {
@@ -116,36 +117,29 @@ const ChatConversation = (props) => {
     }, [selectedMsgs])
 
     React.useEffect(() => {
-        (async () => {
-            if (fromUserJId) {
-                if (messages[fromUserJId]) {
-                    setMessageList(messages[fromUserJId])
-                } else {
-                    dispatch(getMessages(fromUserJId))
-                }
-                setIsChatLoading(true)
-                let userId = fromUserJId?.split('@')[0]
-                if (!nickName) {
-                    let userDetails = await SDK.getUserProfile(userId)
-                    setNickName(userDetails?.data?.nickName || userId)
-                }
-                let seen = await SDK.getLastSeen(fromUserJId)
-                if (seen.statusCode == 200) {
-                    setSeenStatus(getLastseen(seen?.data?.seconds))
-                }
+        if (fromUserJId) {
+            if (messages[getUserIdFromJid(fromUserJId)]) {
+                setMessageList(getChatMessageHistoryById(getUserIdFromJid(fromUserJId)))
             }
-            setIsChatLoading(false)
-        })();
+            setIsChatLoading(true)
+        }
+        setIsChatLoading(false)
     }, [messages, fromUserJId])
 
     React.useEffect(() => {
-        setTimeout(async () => {
-            let seen = await SDK.getLastSeen(fromUserJId)
-            if (seen.statusCode == 200) {
-                setSeenStatus(getLastseen(seen?.data?.seconds))
+        (async () => {
+            if (messages[getUserIdFromJid(fromUserJId)]) {
+                setMessageList(getChatMessageHistoryById(getUserIdFromJid(fromUserJId)))
+            } else {
+                let chatMessage = await SDK.getChatMessagesDB(fromUserJId);
+                console.log(JSON.stringify(chatMessage), '\n chatMessage')
+                if (chatMessage?.statusCode == 200) {
+                    dispatch(addChatConversationHistory(chatMessage))
+                }
             }
-        }, 2000)
-    }, [presenceListener])
+        })()
+    }, []);
+
 
     const handleMsgSelect = (message) => {
         if (selectedMsgs.includes(message)) {
@@ -156,23 +150,16 @@ const ChatConversation = (props) => {
     }
 
     React.useEffect(() => {
-        if (messageList.length) {
+        if (messageList?.length) {
             let unReadMsg = messageList.filter((item) => item.msgStatus == 1 && item.fromUserJid !== currentUserJID)
             if (unReadMsg.length) {
-                unReadMsg.forEach(item => {
+                unReadMsg.forEach(async item => {
                     let data = { toJid: item.fromUserJid, msgId: item.msgId }
-                    dispatch(sendSeenStatus(data))
+                    SDK.sendSeenStatus(data.toJid, data.msgId);
                 })
             }
         }
     }, [messageList])
-
-    React.useEffect(() => {
-        if (props.sendSelected) {
-            let values = [props.selectedImages, fromUserJId, currentUserJID]
-            dispatch(updateMessageList(values))
-        }
-    }, [props.sendSelected])
 
     return (
         <KeyboardAvoidingView
@@ -180,12 +167,11 @@ const ChatConversation = (props) => {
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
             <ChatHeader
+                fromUserJId={fromUserJId}
                 selectedMsgs={selectedMsgs}
                 setSelectedMsgs={setSelectedMsgs}
                 menuItems={menuItems}
                 handleBackBtn={props.handleBackBtn}
-                seenStatus={seenStatus}
-                fromUser={nickName}
                 handleReply={handleReply}
                 setLocalNav={props.setLocalNav}
             />
@@ -204,7 +190,16 @@ const ChatConversation = (props) => {
                         </HStack>
                     </Slide>
                 }
-                <SwipeListView
+                <FlatList
+                    data={messageList}
+                    inverted
+                    contentContainerStyle={{ flexDirection: 'column-reverse' }}
+                    renderItem={({ item }) => {
+                        return <ChatMessage handleMsgSelect={handleMsgSelect} selectedMsgs={selectedMsgs} message={item} />
+                    }}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+                {/* <SwipeListView
                     data={messageList}
                     inverted
                     keyExtractor={(item, index) => item.msgId.toString()}
@@ -218,9 +213,10 @@ const ChatConversation = (props) => {
                     leftOpenValue={leftActionValue}
                     leftActivationValue={leftActivationValue}
                     initialLeftActionState={initialLeftActionState}
+                    swipeToOpenPercent={10}
                     onLeftAction={(key) => onLeftAction(key)}
                     onLeftActionStatusChange={(data) => onLeftActionStatusChange(data)}
-                />
+                /> */}
             </ImageBackground>
             {replyMsgs ? <View paddingX={"1"} paddingY={"1"} backgroundColor={"#DDE3E5"}  >
                 <Stack paddingX={"3"} paddingY={"0 "} backgroundColor={"#E2E8F9"}>
@@ -243,7 +239,7 @@ const ChatConversation = (props) => {
             <ChatInput chatInputRef={chatInputRef} attachmentMenuIcons={props.attachmentMenuIcons} onSendMessage={handleMessageSend} />
         </KeyboardAvoidingView>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {

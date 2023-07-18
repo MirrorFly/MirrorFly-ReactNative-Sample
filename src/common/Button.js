@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, StyleSheet, Text, View } from 'react-native'
 import { Chat_FABICON, MenuIcon } from './Icons'
 import { Icon, IconButton, Pressable } from 'native-base'
 
@@ -46,29 +46,29 @@ export const PrimaryPillBtn = (props) => {
 }
 
 export const BackBtn = (props) => {
-    return <TouchableOpacity activeOpacity={1} {...props} style={{ padding: 10 }}>
+    return <Pressable activeOpacity={1} {...props} style={{ padding: 10 }}>
         <Image
             source={require('../assets/leftArrow.png')}
             style={{ width: 18.33, height: 15.32 }}
         />
-    </TouchableOpacity >
+    </Pressable >
 }
 
-export const SendBtn = (props) => {
-    return <TouchableOpacity activeOpacity={1} {...props}>
+export const SendBtn = React.memo((props) => {
+    return <Pressable {...props}>
         <Image
             source={require('../assets/send.png')}
             style={{ width: 24.33, height: 20.32 }}
         />
-    </TouchableOpacity >
-}
+    </Pressable>
+})
 
 
 export const FloatingBtn = (props) => {
     return <View style={styles.FloatingBtnContainer}>
-        <TouchableOpacity activeOpacity={1} style={styles.FloatingBtn} {...props}>
+        <Pressable activeOpacity={1} style={styles.FloatingBtn} {...props}>
             <Chat_FABICON />
-        </TouchableOpacity>
+        </Pressable>
     </View>
 }
 

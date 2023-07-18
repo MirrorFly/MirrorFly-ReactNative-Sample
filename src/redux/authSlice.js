@@ -3,6 +3,7 @@ import SDK from '../SDK/SDK';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { CONNECTED, DISCONNECTED, NOTCONNECTED, REGISTERSCREEN } from '../constant';
 import { navigate } from './navigationSlice';
+import { profileDetail } from './profileSlice';
 
 const initialState = {
     userData: {},
@@ -15,16 +16,19 @@ const initialState = {
 
 export const logout = createAsyncThunk('register/logout', async (val, { dispatch }) => {
     let logout = await SDK.logout()
-    await AsyncStorage.setItem('mirrorFlyLoggedIn', 'false');
+    const getPrevUserIdentifier = await AsyncStorage.getItem('userIdentifier')
+    await AsyncStorage.setItem('prevUserIdentifier', getPrevUserIdentifier);
     await AsyncStorage.setItem('credential', '');
-    await AsyncStorage.clear()
+    await AsyncStorage.setItem('userIdentifier', '');
+    await AsyncStorage.setItem('screenObj', '')
+    await AsyncStorage.setItem('vCardProfile', '')
+    dispatch(profileDetail({}))
     dispatch(navigate({ screen: REGISTERSCREEN }))
     return logout.statusCode
 })
 
-export const getCurrentUserJid = createAsyncThunk('register/getCurrentUserJid', async () => {
-    let jid = await SDK.getCurrentUserJid()
-    let userJID = jid.userJid.split('/')[0]
+export const getCurrentUserJid = createAsyncThunk('register/getCurrentUserJid', async (val) => {
+    let userJID = val
     return userJID
 })
 
@@ -33,11 +37,11 @@ export const registerData = createAsyncThunk('register/userData', async (number,
         let register
         if (number) {
             register = await SDK.register(number);
-            if (register.statusCode ==200) {
-                    await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
-                    await AsyncStorage.setItem('userIdentifier', JSON.stringify(number));
-                    await AsyncStorage.setItem('credential', JSON.stringify(register.data));
-                    await dispatch(connectXMPP(register.data))
+            if (register.statusCode == 200) {
+                await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
+                await AsyncStorage.setItem('userIdentifier', JSON.stringify(number));
+                await AsyncStorage.setItem('credential', JSON.stringify(register.data));
+                await dispatch(connectXMPP(register.data))
             }
         }
         return register.data

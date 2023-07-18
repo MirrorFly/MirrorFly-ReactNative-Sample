@@ -1,4 +1,4 @@
-import { BackHandler, StyleSheet, TouchableOpacity, View, Image, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
+import { BackHandler, StyleSheet, TouchableOpacity, View, Image, TextInput, ScrollView, KeyboardAvoidingView } from 'react-native'
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CallIcon, MailIcon, StatusIcon } from '../common/Icons';
@@ -82,7 +82,7 @@ const ProfilePage = (props) => {
         }
       })
     }
-    if (props?.profileInfo?.nickName.length < '3' && !isToastShowing) {
+    if (props?.profileInfo?.nickName?.length < '3' && !isToastShowing) {
       return toast.show({
         ...toastConfig,
         render: () => {
@@ -123,6 +123,7 @@ const ProfilePage = (props) => {
       })
     }
     if (isConnected && !isToastShowing) {
+      setIsToastShowing(false)
       setloading(true);
       let UserInfo = await SDK.setUserProfile(props?.profileInfo?.nickName.trim(), imageFileToken ? imageFileToken : props.selectProfileInfo.image, props.profileInfo?.status, props.profileInfo?.mobileNumber, props.profileInfo?.email);
       setloading(false);
@@ -173,10 +174,14 @@ const ProfilePage = (props) => {
         })
       }
       setImageUploading(true)
-      let sdkRes = await SDK.profileUpdate(image)
+      let sdkRes
+      if (image) {
+        sdkRes = await SDK.profileUpdate(image)
+      }
+      console.log('sdkRes', sdkRes)
       if (sdkRes?.statusCode == 200) {
         setImageFileToken(sdkRes.imageFileToken)
-        await SDK.setUserProfile(props?.profileInfo?.nickName, sdkRes.imageFileToken, props.profileInfo?.status, props.profileInfo?.mobileNumber, props.profileInfo?.email);
+        SDK.setUserProfile(props?.profileInfo?.nickName, sdkRes.imageFileToken, props.profileInfo?.status, props.profileInfo?.mobileNumber, props.profileInfo?.email);
         setImageUploading(false)
       } else {
         setImageUploading(false)
@@ -197,14 +202,15 @@ const ProfilePage = (props) => {
   const handleGalleryPicker = async () => {
     setOpen(false);
     let imageReadPermission = await requestStoragePermission()
-    if (imageReadPermission == 'granted') {
+    console.log('imageReadPermission', imageReadPermission)
+    if (imageReadPermission == 'granted' || 'limited') {
       ImagePicker.openPicker({
         mediaType: 'photo',
         width: 450,
         height: 450,
         cropping: true,
         cropperCircleOverlay: true,
-        compressImageQuality: 0.5,
+        compressImageQuality: 0.8,
       }).then(async (image) => {
         console.log('image.size', image.size)
         if (image.size > '10485760') {
@@ -218,10 +224,14 @@ const ProfilePage = (props) => {
           })
         }
         setImageUploading(true)
-        let sdkRes = await SDK.profileUpdate(image)
+        let sdkRes
+        if (image) {
+          sdkRes = await SDK.profileUpdate(image)
+        }
+        console.log('sdkRes', sdkRes)
         if (sdkRes?.statusCode == 200) {
           setImageFileToken(sdkRes.imageFileToken)
-          await SDK.setUserProfile(props?.profileInfo?.nickName, sdkRes.imageFileToken, props.profileInfo?.status, props.profileInfo?.mobileNumber, props.profileInfo?.email);
+          SDK.setUserProfile(props?.profileInfo?.nickName, sdkRes.imageFileToken, props.profileInfo?.status, props.profileInfo?.mobileNumber, props.profileInfo?.email);
           setImageUploading(false)
         }
         else {
@@ -246,18 +256,30 @@ const ProfilePage = (props) => {
     setRemove(!remove);
   }
 
-  const onClose = () => {
+  const onClose = async () => {
     setRemove(false)
     setOpen(false);
-    SDK.setUserProfile(props?.profileInfo?.nickName, '', props.profileInfo?.status, props.profileInfo?.mobileNumber, props.profileInfo?.email);
-    toast.show({
-      ...toastConfig,
-      render: () => {
-        return <Box bg="black" px="2" py="1" rounded="sm" >
-          <Text style={{ color: "#fff", padding: 5 }}> Profile Image removed successfully</Text>
-        </Box>;
-      }
-    })
+    let updateProfile = await SDK.setUserProfile(props?.profileInfo?.nickName, '', props.profileInfo?.status, props.profileInfo?.mobileNumber, props.profileInfo?.email);
+    console.log('updateProfile', updateProfile)
+    if (updateProfile.statusCode == 200) {
+      toast.show({
+        ...toastConfig,
+        render: () => {
+          return <Box bg="black" px="2" py="1" rounded="sm" >
+            <Text style={{ color: "#fff", padding: 5 }}> Profile Image removed successfully</Text>
+          </Box>;
+        }
+      })
+    } else {
+      toast.show({
+        ...toastConfig,
+        render: () => {
+          return <Box bg="black" px="2" py="1" rounded="sm" >
+            <Text style={{ color: "#fff", padding: 5 }}>{updateProfile.message}</Text>
+          </Box>;
+        }
+      })
+    }
   }
 
   const handleChangeText = (name, value) => {
@@ -291,6 +313,10 @@ const ProfilePage = (props) => {
     />
   }, [props.profileInfo, imageUploading])
 
+  React.useEffect(() => {
+    if (!isConnected && loading) setLoading(false)
+  }, [isConnected])
+
   return (
     <KeyboardAvoidingView style={{ flex: 1 }}>
       <Stack h='60' mb='10' bg="#F2F2F2" w="full" justifyContent={"center"}>
@@ -304,10 +330,10 @@ const ProfilePage = (props) => {
       <ScrollView keyboardShouldPersistTaps='handled' showsVerticalScrollIndicator={false} bounces={false} style={{ flex: 1 }}>
         <VStack h='full' justifyContent={'center'} >
           <VStack mt="6" flex="1" alignItems={"center"}>
-            <View style={{ justifyContent: 'center', alignItems: 'center',  height: 157, width: 157, position: "relative" }}>
+            <View style={{ justifyContent: 'center', alignItems: 'center', height: 157, width: 157, position: "relative" }}>
               <Pressable onPress={() => handleImage('big')}>
                 {props.profileInfo?.image && handleRenderAuthImage}
-                {!props.profileInfo?.image && props?.profileInfo?.nickName && <Avathar fontSize={60} width={157} height={157} data={props.profileInfo?.nickName} backgroundColor={"blue"} />}
+                {!props.profileInfo?.image && props?.profileInfo?.nickName && <Avathar fontSize={60} width={157} height={157} data={props.profileInfo?.nickName} backgroundColor={"#3276E2"} />}
                 {!props.profileInfo?.image && !props?.profileInfo?.nickName && <Image resizeMode="contain" source={require('../assets/profile.png')} style={{ height: 157, width: 157, }} />}
               </Pressable>
               <TouchableOpacity activeOpacity={1} onPress={() => handleImage('small')} style={{ position: "absolute", right: 0, bottom: 0, }}  >
@@ -453,7 +479,7 @@ const ProfilePage = (props) => {
               </AlertDialog.Content>
             </AlertDialog>
           </Center>
-          <Modal isOpen={loading || isFetchingProfile} onClose={() => setloading(false)} style={styles.center} safeAreaTop={true} >
+          <Modal isOpen={loading || isFetchingProfile} style={styles.center} safeAreaTop={true} >
             <Modal.Content width="45" height="45" >
               <Center w="100%" h="full">
                 <Spinner size="lg" color={'#3276E2'} />

@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { TextInput, Keyboard, StyleSheet } from 'react-native';
 import { SendBtn } from '../common/Button';
 import { AttachmentIcon, MicIcon, EmojiIcon, KeyboardIcon } from '../common/Icons';
 import { HStack, Icon, IconButton, Modal, Flex, Text, VStack } from 'native-base';
 import EmojiOverlay from './EmojiPicker';
 
-const ChatInput = ({ onSendMessage, attachmentMenuIcons, chatInputRef }) => {
-  const [message, setMessage] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
+const ChatInput = (props) => {
+  const { onSendMessage, attachmentMenuIcons, chatInputRef } = props
+  const [message, setMessage] = React.useState('');
+  const [isOpen, setIsOpen] = React.useState(false);
   const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false)
   const sendMessage = () => {
     if (message) {
@@ -93,11 +94,11 @@ const ChatInput = ({ onSendMessage, attachmentMenuIcons, chatInputRef }) => {
         )}
       </HStack>
       <EmojiOverlay
-        message={message}
-        setMessage={setMessage}
+        state={message}
+        setState={setMessage}
         visible={isEmojiPickerShowing}
-        onClose={()=>setIsEmojiPickerShowing(false)}
-        handleEmojiSelect={handleEmojiSelect}
+        onClose={() => setIsEmojiPickerShowing(false)}
+        onSelect={handleEmojiSelect}
       />
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} safeAreaTop={true}>
         <Modal.Content width={'90%'} style={{ marginBottom: 30, marginTop: 'auto', backgroundColor: '#181818' }}>

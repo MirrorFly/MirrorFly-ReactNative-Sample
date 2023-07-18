@@ -12,10 +12,11 @@ const EditStatusPage = (props) => {
     const statusInputRef = React.useRef()
     const isNetworkConnected = useNetworkStatus()
     const toast = useToast();
+    const allowedMaxLimit = 139;
     const [isToastShowing, setIsToastShowing] = React.useState(false);
     const [statusContent, setStatusContent] = React.useState(props.profileInfo.status)
-    const [total, setTotal] = React.useState(139 - props?.profileInfo?.status?.length || 139);
     const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false)
+    const [pressedKey, setPressedKey] = React.useState('')
 
     const toastConfig = {
         duration: 100,
@@ -28,18 +29,23 @@ const EditStatusPage = (props) => {
         props.setNav("statusPage");
     }
 
-    React.useEffect(() => {
-        count(statusContent)
-    }, [statusContent])
+    const count = () => allowedMaxLimit - splitter.countGraphemes(statusContent)
 
-    const count = (text) => {
-        setTotal(139 - splitter.countGraphemes(text));
+    const handleEmojiSelect = (...emojis) => {
+        if (count() > 0) {
+            setStatusContent(prev => prev + emojis)
+        }
+    };
+
+    const handleInput = (status) => {
+        if (count() > 0) {
+            setStatusContent(status)
+        } else if (pressedKey == 'Backspace') setStatusContent(status)
     }
 
-    const handleInput = (text) => {
-        setStatusContent(text)
-        let count = Array.from(text).length
-        setTotal(139 - count);
+    const handleOnKeyPress = ({ nativeEvent }) => {
+        const { key } = nativeEvent;
+        if (key == 'Backspace') setPressedKey(key)
     }
 
     const handleStatus = async () => {
@@ -84,10 +90,6 @@ const EditStatusPage = (props) => {
         }
     }
 
-    const handleEmojiSelect = (...emojis) => {
-        setStatusContent(prev => prev + emojis)
-    };
-
     return (
         <>
             <ScreenHeader title='Add New Status' onhandleBack={handleBackBtn} />
@@ -106,8 +108,9 @@ const EditStatusPage = (props) => {
                     onChangeText={(text) => { handleInput(text) }}
                     placeholderTextColor='#959595'
                     keyboardType='default'
+                    onKeyPress={handleOnKeyPress}
                 />
-                <Text color={"black"} fontSize="15" fontWeight={"400"} px="4" >{total}</Text>
+                <Text color={"black"} fontSize="15" fontWeight={"400"} px="4" >{count()}</Text>
                 <Pressable style={{ width: 25 }} onPress={() => {
                     if (isEmojiPickerShowing)
                         statusInputRef.current.focus()
@@ -135,11 +138,11 @@ const EditStatusPage = (props) => {
                 </HStack>
             </Stack>
             <EmojiOverlay
-                message={statusContent}
-                setMessage={setStatusContent}
-                onClose={() => setIsEmojiPickerShowing(false)}
+                state={statusContent}
+                setState={setStatusContent}
                 visible={isEmojiPickerShowing}
-                handleEmojiSelect={handleEmojiSelect}
+                onClose={() => setIsEmojiPickerShowing(false)}
+                onSelect={handleEmojiSelect}
             />
         </>
     )

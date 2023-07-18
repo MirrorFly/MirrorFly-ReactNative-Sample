@@ -63,11 +63,13 @@ const CollapsingToolbar = ({
         extrapolate: 'clamp',
     });
 
-    const imageTranslate = scrollY.interpolate({
-        inputRange: [0, scrollDistance],
-        outputRange: [0, 100],
-        extrapolate: 'clamp',
-    });
+    /**
+        const imageTranslate = scrollY.interpolate({
+            inputRange: [0, scrollDistance],
+            outputRange: [0, 100],
+            extrapolate: 'clamp',
+        });
+     */
 
     const titleScale = scrollY.interpolate({
         inputRange: [0, scrollDistance / 2, scrollDistance],
@@ -118,7 +120,7 @@ const CollapsingToolbar = ({
                         {
                             justifyContent: 'center',
                             alignItems: 'center',
-                            backgroundColor: 'purple',
+                            backgroundColor: '#3276E2',
                             height: toolbarMaxHeight,
                             opacity: imageOpacity,
                         },
@@ -227,7 +229,7 @@ const CollapsingToolbar = ({
                     </AlertDialog.Content>
                 </AlertDialog>
             </Center>
-        </View >
+        </View>
     );
 };
 

@@ -1,0 +1,12 @@
+export const CHAT_TYPE_SINGLE = 'chat';
+export const CHAT_TYPE_GROUP = 'groupchat';
+export const MSG_PROCESSING_STATUS = 'processing';
+export const MSG_SENT_STATUS_CARBON = 'carbonSentMessage';
+export const GROUP_CHAT_PROFILE_UPDATED_NOTIFY = 'groupProfileUpdated';
+export const USER_PRESENCE_STATUS_OFFLINE = 'unavailable';
+export const USER_PRESENCE_STATUS_ONLINE = 'online';
+export const MSG_PROCESSING_STATUS_ID = 3;
+export const MSG_SENT_ACKNOWLEDGE_STATUS_ID = 0;
+export const MSG_SEEN_STATUS_ID = 2;
+export const MSG_DELIVERED_STATUS_ID = 1;
+export const MSG_DELIVERED_STATUS = 'delivered';

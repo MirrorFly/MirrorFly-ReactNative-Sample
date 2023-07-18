@@ -1,13 +1,17 @@
+import { updateConversationMessage, updateRecentChatMessage } from "../components/chat/common/createMessage";
 import { REGISTERSCREEN } from "../constant";
-import { getReceiveMessage, updateMessageStatus } from "../redux/chatSlice";
+import { setXmppStatus } from "../redux/connectionSlice";
+import { updateChatConversationHistory } from "../redux/conversationSlice";
 import { navigate } from "../redux/navigationSlice";
 import { updateProfileDetail } from "../redux/profileSlice";
+import { updateRecentChatMessageStatus } from "../redux/recentChatDataSlice";
 import { storeDeliveryStatus, storeSeenStatus } from "../redux/storageSlice";
 import store from "../redux/store";
 import { updateUserPresence } from "../redux/userSlice";
 
 export const callBacks = {
     connectionListener: (response) => {
+        store.dispatch(setXmppStatus(response.status))
         if (response.status === "CONNECTED") {
             console.log("Connection Established");
         } else if (response.status === "DISCONNECTED") {
@@ -21,22 +25,36 @@ export const callBacks = {
         console.log('dbListener', JSON.stringify(res));
     },
     messageListener: (res) => {
-        switch (res.msgType) {
-            case 'receiveMessage':
-                store.dispatch(getReceiveMessage(res))
-                break;
-            case 'acknowledge':
-            case 'delivered':
-                store.dispatch(storeDeliveryStatus(res))
-                // break;
-            case 'seen':
-                if (res.fromUserJid) {
-                    store.dispatch(storeSeenStatus(res))
-                    store.dispatch(updateMessageStatus(res))
-                }
-                break;
-            default:
-                break;
+        if (res.chatType === 'chat' &&
+            (res.msgType === "sentMessage" ||
+                res.msgType === "carbonSentMessage" ||
+                res.msgType === "receiveMessage" ||
+                res.msgType === "carbonReceiveMessage" ||
+                res.msgType === "receiveMessage")) {
+            updateRecentChatMessage(res, store.getState())
+            updateConversationMessage(res, store.getState())
+        }
+        if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {
+            store.dispatch(updateRecentChatMessageStatus(res))
+            store.dispatch(updateChatConversationHistory(res))
+            store.dispatch(storeDeliveryStatus(res))
+            if(res.msgType === "seen" || res.msgType === "carbonSeen"){
+                store.dispatch(storeSeenStatus(res))
+            }
+            // store.dispatch(addMessageInfoUpdate(
+            //     {
+            //         id: uuidv4(),
+            //         activeUserId: res.publisherId,
+            //         time: res.timestamp,
+            //         messageStatus:
+            //             res.msgType === MSG_DELIVERED_STATUS_CARBON || res.msgType === MSG_DELIVERED_STATUS
+            //                 ? MSG_DELIVERED_STATUS_ID
+            //                 : MSG_SEEN_STATUS_ID
+            //     }))
+        }
+        if (res.msgType === "acknowledge" && res.type === "acknowledge") {
+            store.dispatch(updateRecentChatMessageStatus(res))
+            store.dispatch(updateChatConversationHistory(res))
         }
     },
     presenceListener: (res) => {

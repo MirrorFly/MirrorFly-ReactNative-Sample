@@ -87,13 +87,14 @@ const RegisterScreen = () => {
         }
     }
     const handleRegister = async () => {
-       const register = await SDK.register(selectcountry?.dial_code + mobileNumber);
+        setIsToastShowing(false)
+        const register = await SDK.register(selectcountry?.dial_code + mobileNumber);
         if (register.statusCode == 200) {
             await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
             await AsyncStorage.setItem('userIdentifier', JSON.stringify(selectcountry?.dial_code + mobileNumber));
             await AsyncStorage.setItem('credential', JSON.stringify(register.data));
             handleConnect(register.data)
-        }
+        } else setIsLoading(false)
     }
     const handleConnect = async (register) => {
         let connect = await SDK.connect(register.username, register.password);
@@ -101,15 +102,22 @@ const RegisterScreen = () => {
             case 200:
             case 409:
                 let nav = { screen: PROFILESCREEN, prevScreen: REGISTERSCREEN }
-                dispatch(getCurrentUserJid());
+                let jid = await SDK.getCurrentUserJid()
+                let userJID = jid.userJid.split('/')[0]
+                await AsyncStorage.setItem('currentUserJID', JSON.stringify(userJID));
+                dispatch(getCurrentUserJid(userJID))
                 dispatch(navigate(nav))
                 break;
             default:
-                errorToast(connect.message);
                 break;
         }
         setIsLoading(false)
     }
+
+    React.useEffect(() => {
+        if (!isNetworkConnected && isLoading) setIsLoading(false)
+    }, [isNetworkConnected])
+    
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -134,8 +142,8 @@ const RegisterScreen = () => {
                         <Icon as={DownArrowIcon} name="emoji-happy" />
                     </HStack>
                 </Pressable>
-                <HStack alignItems="center" ml="6" mt="0"  >
-                    <HStack mt="2" alignItems="center" mr="5"  >
+                <HStack alignItems="center" ml="6" mt="0">
+                    <HStack mt="2" alignItems="center" mr="5">
                         <Text fontSize="16" color="black" fontWeight="600" mr="1">
                             +{selectcountry?.dial_code}
                         </Text>
@@ -157,6 +165,7 @@ const RegisterScreen = () => {
                                 }
                             }}
                             value={mobileNumber}
+                            maxLength={15}
                             selectionColor={'#3276E2'}
                         />
                     </HStack>

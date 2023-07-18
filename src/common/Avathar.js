@@ -1,16 +1,9 @@
 import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
+import Graphemer from 'graphemer';
 
 const Avathar = (props) => {
-  const words = props?.data?.trim().split(" ");
-  let userName
-  if (words?.length > 1) {
-    userName = words[0].charAt(0) + words[1].charAt(0);
-  } else if (words?.length === 1) {
-    userName = props?.data?.charAt(0) + props?.data?.charAt(1);
-  } else {
-    userName = "";
-  }
+  const splitter = new Graphemer();
   const styles = StyleSheet.create({
     imageDiv: {
       width: props.width || 48,
@@ -27,9 +20,30 @@ const Avathar = (props) => {
       textTransform: "uppercase"
     },
   });
+  const extractFirstGraphemes = (input) => {
+    const graphemes = splitter.splitGraphemes(input);
+    let result = '';
+    if (graphemes.includes(" ")) {
+      let preVele
+      graphemes.forEach(element => {
+        if (preVele == " ") {
+          preVele = element
+          result = graphemes[0] + element
+          return result
+        }
+        preVele = element
+      });
+    } else {
+      result = graphemes[0] + graphemes[1]
+      return result
+    }
+    return result;
+  };
+
+
   return (
     <View style={styles.imageDiv}>
-      <Text style={styles.imgName}>{userName}</Text>
+      <Text style={styles.imgName}>{extractFirstGraphemes(props.data)}</Text>
     </View>
   )
 }

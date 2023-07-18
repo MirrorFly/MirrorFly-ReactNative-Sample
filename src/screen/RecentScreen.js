@@ -10,48 +10,64 @@ import { logout } from '../redux/authSlice';
 import { navigate } from '../redux/navigationSlice';
 import { CONTACTLIST, PROFILESCREEN, RECENTCHATSCREEN } from '../constant';
 import SDK from '../SDK/SDK';
+import { addRecentChat } from '../redux/recentChatDataSlice';
+import { sortBydate } from '../Helper/Chat/RecentChat';
 const logo = require('../assets/mirrorfly-logo.png');
 
 const FirstComponent = (isSearching, filteredData) => <RecentChat isSearching={isSearching} data={filteredData} />;
 
 function RecentScreen() {
   const dispatch = useDispatch();
-  const messages = useSelector((state) => state.chat.chatMessages);
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: 'first', title: 'Chats' },
     { key: 'second', title: 'Calls' },
   ]);
-  const recentChatList = useSelector((state) => state.chat.recentChat);
   const [filteredData, setFilteredData] = React.useState([]);
   const [isSearching, setIsSearching] = React.useState(false);
+  const [recentData, setrecentData] = React.useState([]);
+  const recentChatList = useSelector((state) => state.recentChatData.data);
 
   const handleSearch = React.useCallback((text) => {
     setIsSearching(true);
-    const filtered = recentChatList.filter((item) =>
+    const filtered = recentData?.filter((item) =>
       item.fromUserId.toLowerCase().includes(text.toLowerCase())
     );
     setFilteredData(filtered);
-  }, [recentChatList]);
+  }, [recentData]);
 
   const handleBack = React.useCallback(() => {
     setIsSearching(false);
   }, []);
 
-  const handleReset = React.useCallback(() => {
-    setFilteredData(recentChatList);
-  }, [recentChatList]);
+  const handleClear = React.useCallback(() => {
+    setFilteredData(recentData);
+  }, [recentData]);
 
   React.useEffect(() => {
     (async () => {
-      const recentChats = await SDK.getRecentChats();
-      setFilteredData(recentChats.data?.reverse());
-    })();
-  }, [messages]);
+      const recentChats = await SDK.getRecentChatsDB();
+      const recentChatsFilter = recentChats?.data.filter(item => item.chatType == 'chat')
+      dispatch(addRecentChat(recentChatsFilter))
+    })()
+  }, []);
+
+  const constructRecentChatItems = (recentChatArrayConstruct) => {
+    let recent = [];
+    sortBydate([...recentChatArrayConstruct]).map(async (chat) => {
+      recent.push(chat);
+    });
+    return recent.filter((eachmessage) => eachmessage);
+  };
 
   React.useEffect(() => {
-    setFilteredData(recentChatList)
-  }, [recentChatList, isSearching])
+    let recentChatItems = constructRecentChatItems(recentChatList);
+    setrecentData(recentChatItems)
+  }, [recentChatList])
+
+  React.useEffect(() => {
+    setFilteredData(recentData)
+  }, [recentData, isSearching])
 
   const renderTabBar = React.useCallback(
     (props) => {
@@ -81,7 +97,7 @@ function RecentScreen() {
       {
         label: 'Profile',
         formatter: () => {
-          let x = { prevScreen: RECENTCHATSCREEN ,screen: PROFILESCREEN }
+          let x = { prevScreen: RECENTCHATSCREEN, screen: PROFILESCREEN }
           dispatch(navigate(x))
         }
       },
@@ -95,15 +111,15 @@ function RecentScreen() {
     []
   );
 
-
+  const filteredDataList = isSearching ? filteredData : recentData
 
   const renderScene = React.useMemo(
     () =>
       SceneMap({
-        first: () => FirstComponent(isSearching, filteredData),
+        first: () => FirstComponent(isSearching, filteredDataList),
         second: RecentCalls,
       }),
-    [isSearching, filteredData]
+    [isSearching, filteredDataList]
   );
 
   return (
@@ -115,7 +131,7 @@ function RecentScreen() {
         menuItems={menuItems}
         logo={logo}
         isSearching={isSearching}
-        onClear={handleReset}
+        handleClear={handleClear}
       />
       <TabView
         navigationState={{ index, routes }}

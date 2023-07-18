@@ -1,6 +1,6 @@
 import React from 'react'
 import Svg, { Circle, Ellipse, G, Path, Rect, Text, TSpan } from 'react-native-svg';
-import { TouchableOpacity, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 export const LeftArrowIcon = (color) => {
     return (
@@ -13,7 +13,7 @@ export const LeftArrowIcon = (color) => {
 
 export const RegiterPageIcon = () => {
     return (
-        <Svg xmlns="http://www.w3.org/2000/svg" width="65%" height="200" viewBox="0 0 188.332 166.024">
+        <Svg xmlns="http://www.w3.org/2000/svg" width="55%" height="180" viewBox="0 0 188.332 166.024">
             <G id="Group_7510" data-name="Group 7510" transform="translate(-79 -109.754)">
                 <Ellipse id="Ellipse_1" data-name="Ellipse 1" cx="80.713" cy="80.675" rx="80.713" ry="80.675" transform="translate(105.906 109.754)" fill="#f2f2f2" opacity="0.502" />
                 <Path id="Shape_1" data-name="Shape 1" d="M261.4,381.928l-1.692,9.716L250,393.332l9.7,1.671,1.7,9.725,1.688-9.707,9.724-1.7-9.715-1.68Z" transform="translate(-170.997 -231.259)" fill="#ffd320" />
@@ -132,7 +132,7 @@ export const Chat_FABICON = ({ width, height }) => {
 
 export const ProfileIcon = ({ width, height }) => {
     return (
-        <TouchableOpacity>
+        <Pressable>
             <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 15.26 17.941">
                 <G id="avatar" transform="translate(-36.073)">
                     <G id="Group_257" data-name="Group 257" transform="translate(36.073)">
@@ -141,7 +141,7 @@ export const ProfileIcon = ({ width, height }) => {
                     </G>
                 </G>
             </Svg>
-        </TouchableOpacity>
+        </Pressable>
     )
 }
 
@@ -577,6 +577,175 @@ export const BackArrowIcon = (props) => {
     return (
         <Svg xmlns="http://www.w3.org/2000/svg" width="18.334" height="15.325" viewBox="0 0 18.334 15.325">
             <Path id="Shape_1" data-name="Shape 1" d="M25.179,60.733l-6.942-6.859q-.027-.027-.051-.056l0,0-.01-.012,0,0-.009-.011,0,0-.008-.01,0-.006-.007-.01,0-.007-.006-.009-.005-.008,0-.007-.006-.01,0-.006L18.1,53.7l0,0-.008-.015h0a.8.8,0,0,1,.161-.957l6.926-6.843a.82.82,0,0,1,1.15,0,.8.8,0,0,1,0,1.137L20.776,52.5H35.52a.8.8,0,1,1,0,1.607H20.776L26.33,59.6a.8.8,0,0,1,0,1.137.821.821,0,0,1-1.15,0Z" transform="translate(-17.999 -45.643)" fill={props.color || "#181818"} />
+        </Svg>
+    )
+}
+
+export const PlayIcon = (props) => {
+    return (
+        <Svg id="media-play-symbol" xmlns="http://www.w3.org/2000/svg" width="7.877" height="10.934" viewBox="0 0 7.877 10.934">
+            <G id="Layer_8_16_" transform="translate(0)">
+                <Path id="Path_1" data-name="Path 1" d="M52.42.076a.566.566,0,0,1,.566,0l6.745,4.9a.566.566,0,0,1,0,.98l-6.745,4.9a.566.566,0,0,1-.849-.49V.566A.566.566,0,0,1,52.42.076Z" transform="translate(-52.137 0)" fill="#3276e2" />
+            </G>
+        </Svg>
+
+    )
+}
+
+export const VideoIcon = (props) => {
+    return (
+        <Svg
+            width={props.width || 20}
+            height={props.height || 20}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 14 14 "
+            id="vector">
+            <Path
+                id="path"
+                d="M 2.367 3 L 8.08 3 C 8.61 3 9.119 3.211 9.494 3.586 C 9.869 3.961 10.08 4.47 10.08 5 L 10.08 8.932 C 10.08 9.462 9.869 9.971 9.494 10.346 C 9.119 10.721 8.61 10.932 8.08 10.932 L 2.367 10.932 C 1.837 10.932 1.328 10.721 0.953 10.346 C 0.578 9.971 0.367 9.462 0.367 8.932 L 0.367 5 C 0.367 4.47 0.578 3.961 0.953 3.586 C 1.328 3.211 1.837 3 2.367 3 Z"
+                fill={props.color || '#000'} />
+            <Path
+                id="path_1"
+                d="M 12.127 4.095 L 10.815 4.914 L 10.815 9.014 L 12.126 9.833 C 12.809 10.259 13.368 9.95 13.368 9.145 L 13.368 4.783 C 13.368 3.976 12.809 3.669 12.127 4.095 Z"
+                fill={props.color || '#000'} />
+        </Svg>
+
+    )
+}
+
+export const ReplyUserIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <G id="Group_14823" data-name="Group 14823" transform="translate(-55.563 -146.563)">
+                <Circle id="Ellipse_1554" data-name="Ellipse 1554" cx="12" cy="12" r="12" transform="translate(55.563 146.563)" opacity="0.17" />
+                <G id="share_1_" data-name="share (1)" transform="translate(63.359 153.793)">
+                    <Path id="Path_10931" data-name="Path 10931" d="M137.054,3.551,133.747.117a.382.382,0,0,0-.656.265V2.036h-.127A4.966,4.966,0,0,0,128,7v.763a.376.376,0,0,0,.3.365.341.341,0,0,0,.084.01.4.4,0,0,0,.349-.217,4.173,4.173,0,0,1,3.753-2.32h.6V7.25a.382.382,0,0,0,.656.265l3.307-3.434a.382.382,0,0,0,0-.53Zm0,0" transform="translate(-128.003 -0.001)" fill="#fff" />
+                </G>
+            </G>
+        </Svg>
+
+
+    )
+}
+
+export const AudioMusicIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg"   width={props.width || 10}
+        height={props.height || 10}   viewBox="0 0 31.409 23.746">
+        <G id="noun_Audio_3408360" transform="translate(-2.5 -14)">
+          <G id="Group_15648" data-name="Group 15648" transform="translate(2.5 14)">
+            <Path id="Path_13786" data-name="Path 13786" d="M29.615,27.145V25.46a11.427,11.427,0,1,0-22.855,0v1.684a4.683,4.683,0,0,0,.429,9.347h.429v.165a1.1,1.1,0,0,0,1.09,1.09h.859a1.1,1.1,0,0,0,1.09-1.09v-9.71a1.1,1.1,0,0,0-1.09-1.09h-.4v-.4a9.016,9.016,0,0,1,18.033,0v.4h-.4a1.1,1.1,0,0,0-1.09,1.09v9.71a1.1,1.1,0,0,0,1.09,1.09h.859a1.1,1.1,0,0,0,1.09-1.09v-.165h.462a4.687,4.687,0,0,0,4.69-4.69A4.753,4.753,0,0,0,29.615,27.145Z" transform="translate(-2.5 -14)" fill="#ffff"/>
+          </G>
+        </G>
+      </Svg>
+    )
+}
+
+export const PlayAudioIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg"  width="12" height="15" viewBox="0 0 12 15">
+            <G id="play-arrow" transform="translate(0 8)">
+                <Path id="Path_9849" data-name="Path 9849" d="M19.227,6.868,8.543.1a.661.661,0,0,0-.987.626V14.277a.661.661,0,0,0,.987.626l10.684-6.77A.772.772,0,0,0,19.227,6.868Z" transform="translate(-7.556 -8)" fill="#7285b5" />
+            </G>
+        </Svg>
+    )
+}
+
+
+export const PdfIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" width="18.093" height="22.788" viewBox="0 0 18.093 22.788">
+            <G id="Group_7354" data-name="Group 7354" transform="translate(-1.28)">
+                <Path id="Path_9793" data-name="Path 9793" d="M70.828,20.753a2.037,2.037,0,0,1-2.039,2.035H54.774a2.037,2.037,0,0,1-2.039-2.035V2.035A2.037,2.037,0,0,1,54.774,0H63.5a1.53,1.53,0,0,1,1.082.448l5.8,5.8a1.524,1.524,0,0,1,.447,1.078Z" transform="translate(-51.455 0)" fill="#f34646" />
+                <Path id="Path_9796" data-name="Path 9796" d="M315.4,9.659h-5.18a1.378,1.378,0,0,1-1.378-1.379V3.1a1.514,1.514,0,0,1,.448.31l5.8,5.8a1.515,1.515,0,0,1,.31.447Z" transform="translate(-296.16 -2.963)" fill="#f77e7e" />
+                <G id="Group_7353" data-name="Group 7353" transform="translate(8.668 11.394)">
+                    <Path id="Path_9799" data-name="Path 9799" d="M335.546,262.273a.344.344,0,1,0,0-.688h-2.1a.344.344,0,0,0-.344.344v5.188a.344.344,0,1,0,.688,0v-2.3h1.592a.344.344,0,0,0,0-.688h-1.592v-1.857Z" transform="translate(-328.009 -261.585)" fill="#f9f8f9" />
+                    <Path id="Path_9800" data-name="Path 9800" d="M220.525,262.891h-1.437a.344.344,0,0,0-.344.344v0h0v4.984a.343.343,0,0,0,.01.082v0a.344.344,0,0,0,.344.343h0c.043,0,1.066,0,1.473-.011a2.194,2.194,0,0,0,1.732-.881,3.273,3.273,0,0,0,.613-1.988C222.918,264.048,221.956,262.891,220.525,262.891Zm.036,5.061c-.256,0-.774.008-1.12.009,0-.567-.005-1.686-.005-2.2,0-.427,0-1.6,0-2.186h1.092c1.257,0,1.7,1.132,1.7,2.192C222.23,267.038,221.544,267.935,220.562,267.952Z" transform="translate(-218.745 -262.833)" fill="#f9f8f9" />
+                </G>
+                <Path id="Path_9801" data-name="Path 9801" d="M108.7,261.64h-1.467c-.3,0-.316.131-.316.316v5.27a.316.316,0,0,0,.632,0v-1.975c.343,0,.886,0,1.151,0a1.8,1.8,0,1,0,0-3.606Zm0,2.974c-.263,0-.8,0-1.143,0,0-.352,0-.908,0-1.176,0-.225,0-.805,0-1.171h1.15a1.171,1.171,0,1,1,0,2.342Z" transform="translate(-102.75 -250.246)" fill="#f9f8f9" />
+            </G>
+        </Svg>
+
+
+    )
+}
+
+export const PPTIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" width="18.093" height="22.788" viewBox="0 0 18.093 22.788">
+            <G id="Group_15661" data-name="Group 15661" transform="translate(-1.28)">
+                <Path id="Path_9793" data-name="Path 9793" d="M70.828,20.753a2.037,2.037,0,0,1-2.039,2.035H54.774a2.037,2.037,0,0,1-2.039-2.035V2.035A2.037,2.037,0,0,1,54.774,0H63.5a1.53,1.53,0,0,1,1.082.448l5.8,5.8a1.524,1.524,0,0,1,.447,1.078Z" transform="translate(-51.455 0)" fill="#faca2e" />
+                <Path id="Path_9796" data-name="Path 9796" d="M315.4,9.659h-5.18a1.378,1.378,0,0,1-1.378-1.379V3.1a1.514,1.514,0,0,1,.448.31l5.8,5.8a1.515,1.515,0,0,1,.31.447Z" transform="translate(-296.16 -2.963)" fill="#fcda6d" />
+                <Path id="Path_13789" data-name="Path 13789" d="M3.4,19.854a.4.4,0,0,1-.4-.4V15.4a.4.4,0,0,1,.4-.4H4.618a1.618,1.618,0,1,1,0,3.236H3.809v1.213A.4.4,0,0,1,3.4,19.854Zm.4-2.427h.809a.809.809,0,1,0,0-1.618H3.809Z" transform="translate(1.664 -3.846)" fill="#fff" />
+                <Path id="Path_13790" data-name="Path 13790" d="M8.4,19.854a.4.4,0,0,1-.4-.4V15.4a.4.4,0,0,1,.4-.4H9.618a1.618,1.618,0,1,1,0,3.236H8.809v1.213A.4.4,0,0,1,8.4,19.854Zm.4-2.427h.809a.809.809,0,0,0,0-1.618H8.809Z" transform="translate(0.708 -3.846)" fill="#fff" />
+                <Path id="Path_13791" data-name="Path 13791" d="M14.9,19.854a.4.4,0,0,1-.4-.4V15.4a.4.4,0,0,1,.809,0v4.045A.4.4,0,0,1,14.9,19.854Z" transform="translate(-0.533 -3.846)" fill="#fff" />
+                <Path id="Path_13792" data-name="Path 13792" d="M15.831,15.809H13.4a.4.4,0,1,1,0-.809h2.427a.4.4,0,0,1,0,.809Z" transform="translate(-0.247 -3.846)" fill="#fff" />
+            </G>
+        </Svg>
+
+
+    )
+}
+
+export const XLSIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" width="18.093" height="22.788" viewBox="0 0 18.093 22.788">
+            <G id="Group_15658" data-name="Group 15658" transform="translate(-1.28)">
+                <Path id="Path_9793" data-name="Path 9793" d="M70.828,20.753a2.037,2.037,0,0,1-2.039,2.035H54.774a2.037,2.037,0,0,1-2.039-2.035V2.035A2.037,2.037,0,0,1,54.774,0H63.5a1.53,1.53,0,0,1,1.082.448l5.8,5.8a1.524,1.524,0,0,1,.447,1.078Z" transform="translate(-51.455 0)" fill="#50d388" />
+                <Path id="Path_9796" data-name="Path 9796" d="M315.4,9.659h-5.18a1.378,1.378,0,0,1-1.378-1.379V3.1a1.514,1.514,0,0,1,.448.31l5.8,5.8a1.515,1.515,0,0,1,.31.447Z" transform="translate(-296.16 -2.963)" fill="#87e1ae" />
+                <Path id="Path_13779" data-name="Path 13779" d="M14.5,15H4.569a.5.5,0,0,1-.5-.5v-6a.5.5,0,0,1,.5-.5H14.5a.5.5,0,0,1,.5.5v6A.5.5,0,0,1,14.5,15ZM5.069,14H14V9H5.069Z" transform="translate(0.704 3.154)" fill="#fff" />
+                <Path id="Path_13780" data-name="Path 13780" d="M9.5,15c-.276,0-.5-.121-.5-.269V8.269C9,8.121,9.224,8,9.5,8s.5.121.5.269v6.462C10,14.879,9.776,15,9.5,15Z" transform="translate(-0.296 3.154)" fill="#fff" />
+                <Path id="Path_13781" data-name="Path 13781" d="M15.5,12H5.429a.506.506,0,0,1,0-1H15.5a.506.506,0,0,1,0,1Z" transform="translate(-0.227 3.154)" fill="#fff" />
+            </G>
+        </Svg>
+
+    )
+}
+
+export const ApkIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" width="18.093" height="22.788" viewBox="0 0 18.093 22.788">
+            <G id="Group_15663" data-name="Group 15663" transform="translate(-1.28)">
+                <Path id="Path_9793" data-name="Path 9793" d="M70.828,20.753a2.037,2.037,0,0,1-2.039,2.035H54.774a2.037,2.037,0,0,1-2.039-2.035V2.035A2.037,2.037,0,0,1,54.774,0H63.5a1.53,1.53,0,0,1,1.082.448l5.8,5.8a1.524,1.524,0,0,1,.447,1.078Z" transform="translate(-51.455 0)" fill="#788f9b" />
+                <Path id="Path_9796" data-name="Path 9796" d="M315.4,9.659h-5.18a1.378,1.378,0,0,1-1.378-1.379V3.1a1.514,1.514,0,0,1,.448.31l5.8,5.8a1.515,1.515,0,0,1,.31.447Z" transform="translate(-296.16 -2.963)" fill="#9fb2b9" />
+                <Text id="APK" transform="translate(4.704 15.77)" fill="#fff" font-size="6" font-family="SFUIDisplay-Medium, SF UI Display" font-weight="500"><tspan x="0" y="0">APK</tspan></Text>
+            </G>
+        </Svg>
+
+
+    )
+}
+
+export const DocIcon = (props) => {
+    return (
+        <Svg xmlns="http://www.w3.org/2000/svg" width="18.093" height="22.788" viewBox="0 0 18.093 22.788">
+            <G id="Group_15656" data-name="Group 15656" transform="translate(-1.28)">
+                <Path id="Path_9793" data-name="Path 9793" d="M70.828,20.753a2.037,2.037,0,0,1-2.039,2.035H54.774a2.037,2.037,0,0,1-2.039-2.035V2.035A2.037,2.037,0,0,1,54.774,0H63.5a1.53,1.53,0,0,1,1.082.448l5.8,5.8a1.524,1.524,0,0,1,.447,1.078Z" transform="translate(-51.455 0)" fill="#5da9f9" />
+                <Path id="Path_9796" data-name="Path 9796" d="M315.4,9.659h-5.18a1.378,1.378,0,0,1-1.378-1.379V3.1a1.514,1.514,0,0,1,.448.31l5.8,5.8a1.515,1.515,0,0,1,.31.447Z" transform="translate(-296.16 -2.963)" fill="#8ec2fa" />
+                <G id="Group_15665" data-name="Group 15665" transform="translate(51.893 45.199)">
+                    <Rect id="Rectangle_4490" data-name="Rectangle 4490" width="9.846" height="1.094" transform="translate(-46.705 -33.503)" fill="#fff" />
+                    <Rect id="Rectangle_4491" data-name="Rectangle 4491" width="9.846" height="1.094" transform="translate(-46.705 -31.06)" fill="#fff" />
+                    <Rect id="Rectangle_4492" data-name="Rectangle 4492" width="7.002" height="1.094" transform="translate(-46.705 -28.616)" fill="#fff" />
+                </G>
+            </G>
+        </Svg>
+
+
+    )
+}
+
+export const DownloadIcon = (props) => {
+    return (
+        <Svg  
+            width={props.width || 10}
+            height={props.height || 10}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 14 14"
+            id="vector">
+            <Path
+                id="path"
+                d="M 1.75 11.084 L 12.25 11.084 L 12.25 12.251 L 1.75 12.251 Z M 7.583 5.25 L 11.666 5.25 L 7 9.917 L 2.333 5.25 L 6.417 5.25 L 6.417 0.584 L 7.583 0.584 Z"
+                fill= {props.color || "#7285B5"} />
         </Svg>
     )
 }

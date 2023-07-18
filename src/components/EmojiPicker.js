@@ -20,7 +20,7 @@ const emojiCategoriesTabs = Object.entries(emojisByCategory).map(([key, value]) 
   category: key
 }));
 
-const TabBarCustom = ({ navigationState, position, setIndex, inputRef, message, setMessage }) => {
+const TabBarCustom = ({ navigationState, setIndex, state, setState }) => {
   const splitter = new Graphemer();
   return (
     <View style={styles.tabcontainer}>
@@ -38,9 +38,9 @@ const TabBarCustom = ({ navigationState, position, setIndex, inputRef, message, 
       })}
       <View style={{ justifyContent: 'center', alignItems: 'center', marginRight: 4 }}>
         <Pressable onPress={() => {
-          const splittedString = splitter.splitGraphemes(message)
+          const splittedString = splitter.splitGraphemes(state)
           const slicedString = splittedString.slice(0, -1);
-          setMessage(slicedString.join(''))
+          setState(slicedString.join(''))
         }}>
           <BackSpaceIcon />
         </Pressable>
@@ -49,7 +49,7 @@ const TabBarCustom = ({ navigationState, position, setIndex, inputRef, message, 
   );
 };
 
-const EmojiCategory = ({ category, handleEmojiSelect }) => {
+const EmojiCategory = ({ category, onSelect }) => {
   const emojis = emojisByCategory[category];
   const size = defaultEmojiSize;
   const style = {
@@ -61,9 +61,9 @@ const EmojiCategory = ({ category, handleEmojiSelect }) => {
 
   const renderEmoji = ({ item }) => {
     return (
-      <Text style={style} onPress={() => handleEmojiSelect((item))}>
-        {(item)}
-      </Text>
+      <Pressable onPress={() => onSelect(item)}>
+        <Text style={style}>{item}</Text>
+      </Pressable>
     );
   };
 
@@ -77,7 +77,9 @@ const EmojiCategory = ({ category, handleEmojiSelect }) => {
   );
 };
 
-const EmojiOverlay = (props) => {
+const EmojiOverlay = ({
+  state, setState, onClose, visible, onSelect
+}) => {
   const layout = useWindowDimensions();
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState(emojiCategoriesTabs.map(tab => ({ key: tab.category, title: tab.tabLabel })));
@@ -86,25 +88,23 @@ const EmojiOverlay = (props) => {
     ({ route }) => {
       if (route.key === routes[index].key) {
         const { category } = emojiCategoriesTabs.find(tab => tab.category === route.key);
-        return <EmojiCategory category={category} handleEmojiSelect={props.handleEmojiSelect} />;
+        return <EmojiCategory category={category} onSelect={onSelect} />;
       }
       return null;
-    },
-    [index, routes]
+    }
   );
 
   React.useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', props.onClose);
+    Keyboard.addListener('keyboardDidShow', onClose);
   }, []);
 
   return (
     <>
-      {props.visible ? (
+      {visible ? (
         <>
           <TabView
-            {...props}
             keyExtractor={(item, index) => index.toString()}
-            renderTabBar={(e) => <TabBarCustom setIndex={setIndex} message={props.message} setMessage={props.setMessage} inputRef={props.inputRef} {...e} />}
+            renderTabBar={(e) => <TabBarCustom setIndex={setIndex} setState={setState} state={state} {...e} />}
             navigationState={{ index, routes }}
             onIndexChange={setIndex}
             renderScene={renderScene}

@@ -16,6 +16,7 @@ import { getCurrentUserJid } from './redux/authSlice';
 import { profileDetail } from './redux/profileSlice';
 import { navigate } from './redux/navigationSlice';
 import { REGISTERSCREEN } from './constant';
+import { addchatSeenPendingMsg } from './redux/chatSeenPendingMsg';
 
 export const ChatApp = () => {
     React.useEffect(() => {
@@ -56,6 +57,12 @@ const RootNavigation = () => {
             const currentUserJID = await AsyncStorage.getItem('currentUserJID')
             const screenObj = await AsyncStorage.getItem('screenObj')
             const parsedScreenOj = JSON.parse(screenObj)
+            const storedVal = await AsyncStorage.getItem('pendingSeenStatus')
+            const parsedStoreVal = JSON.parse(storedVal)
+            if (parsedStoreVal.data.length)
+                parsedStoreVal.data.forEach(element => {
+                    dispatch(addchatSeenPendingMsg(element))
+                });
             if (JSON.parse(screenObj)) {
                 dispatch(getCurrentUserJid(JSON.parse(currentUserJID)))
                 dispatch(navigate(parsedScreenOj))

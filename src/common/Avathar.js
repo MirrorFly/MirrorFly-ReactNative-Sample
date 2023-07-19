@@ -36,7 +36,6 @@ const Avathar = (props) => {
     if (!result) {
       result = graphemes[0] + graphemes[1]
     }
-    console.log(result)
     return result;
   };
 

@@ -3,7 +3,7 @@ import ChatConversation from '../components/ChatConversation'
 import MessageInfo from '../components/MessageInfo'
 import { CameraIcon, ContactIcon, DocumentIcon, GalleryIcon, HeadSetIcon, LocationIcon } from '../common/Icons'
 import GalleryPickView from '../components/GalleryPickView'
-import { handleGalleryPickerMulti } from '../common/utils'
+import { RNimageGalleryLaunch, handleGalleryPickerMulti, requestStoragePermission } from '../common/utils'
 import { useToast } from 'native-base'
 import UserInfo from '../components/UserInfo'
 import UsersTapBarInfo from '../components/UsersTapBarInfo'
@@ -18,6 +18,8 @@ import store from '../redux/store'
 import { isSingleChat } from '../Helper/Chat/ChatHelper'
 import { addChatConversationHistory } from '../redux/conversationSlice'
 import { SDK } from '../SDK'
+import { CameraRoll } from "@react-native-camera-roll/camera-roll";
+import SavePicture from './Gallery'
 
 function ChatScreen() {
   const dispatch = useDispatch()
@@ -46,17 +48,24 @@ function ChatScreen() {
       name: "Gallery",
       icon: GalleryIcon,
       formatter: async () => {
-        const res = await handleGalleryPickerMulti(toast)
-        const transformedArray = res?.map((obj, index) => {
-          return {
-            caption: '',
-            image: obj
-          };
-        });
-        setSelectedImages(transformedArray)
-        if (res?.length) {
-          setLocalNav('GalleryPickView')
+        let imageReadPermission = await requestStoragePermission()
+        console.log('imageReadPermission', imageReadPermission)
+        if (imageReadPermission == 'granted' || 'limited') {
+          setLocalNav('Gallery')
         }
+        // SavePicture()
+        // RNimageGalleryLaunch()
+      //   const res = await handleGalleryPickerMulti(toast)
+      //   const transformedArray = res?.map((obj, index) => {
+      //     return {
+      //       caption: '',
+      //       image: obj
+      //     };
+      //   });
+      //   setSelectedImages(transformedArray)
+      //   if (res?.length) {
+      //     setLocalNav('GalleryPickView')
+      //   }
       }
     },
     {
@@ -197,7 +206,8 @@ function ChatScreen() {
         'MESSAGEINFO': <MessageInfo setLocalNav={setLocalNav} setIsMessageInfo={setIsMessageInfo} isMessageInfo={isMessageInfo} />,
         'GalleryPickView': <GalleryPickView setSelectedImages={setSelectedImages} selectedImages={selectedImages} setLocalNav={setLocalNav} handleSendMsg={handleSendMsg} />,
         'UserInfo': <UserInfo setLocalNav={setLocalNav} />,
-        'UsersTapBarInfo': <UsersTapBarInfo setLocalNav={setLocalNav} />
+        'UsersTapBarInfo': <UsersTapBarInfo setLocalNav={setLocalNav} />,
+        'Gallery': <SavePicture setLocalNav={setLocalNav}/>
       }[localNav]}
     </>
   )

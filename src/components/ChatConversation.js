@@ -132,7 +132,6 @@ const ChatConversation = React.memo((props) => {
                 setMessageList(getChatMessageHistoryById(getUserIdFromJid(fromUserJId)))
             } else {
                 let chatMessage = await SDK.getChatMessagesDB(fromUserJId);
-                console.log(JSON.stringify(chatMessage), '\n chatMessage')
                 if (chatMessage?.statusCode == 200) {
                     dispatch(addChatConversationHistory(chatMessage))
                 }

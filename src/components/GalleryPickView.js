@@ -60,7 +60,7 @@ function GalleryPickView(props) {
                         props.setSelectedImages(filtered)
                     }} _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} icon={<Icon as={<DeleteBinIcon color="#fff" />} name="emoji-happy" />} borderRadius="full" />
                     <View position='relative' flex='1' px='7' my='5' keyboardShouldPersistTaps="handled">
-                        <Image resizeMode='contain' source={{ uri: item.image.fileCopyUri }} style={styles.tabContainer} />
+                        <Image resizeMode='contain' source={{ uri: item.image.uri }} style={styles.tabContainer} />
                         <IconButton position='absolute' p='0' right='5' bottom='0' alignSelf={'flex-end'} onPress={() => {
                             handleSendMedia()
                             props.setLocalNav('CHATCONVERSATION')
@@ -138,12 +138,12 @@ function GalleryPickView(props) {
                     {props.selectedImages?.map((item, i) => (
                         <Pressable
                             activeOpacity={1}
-                            key={item.image.fileCopyUri}
+                            key={item.image.uri}
                             style={styles.tabButton}
                             onPress={() => handleIndexChange(i)}
                         >
                             <Image
-                                source={{ uri: item.image.fileCopyUri }}
+                                source={{ uri: item.image.uri }}
                                 style={[
                                     styles.tabImage,
                                     index === i && styles.selectedTabImage,

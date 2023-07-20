@@ -88,8 +88,8 @@ function ChatScreen() {
 
   const handleBackBtn = () => {
     let x = { screen: RECENTCHATSCREEN }
-    dispatch(navigate(x))
-    RootNav.navigate(RECENTCHATSCREEN)
+    // dispatch(navigate(x))
+    localNav === "CHATCONVERSATION" && RootNav.navigate(RECENTCHATSCREEN)
     return true;
   }
 
@@ -158,6 +158,17 @@ function ChatScreen() {
     sendMediaMessage(messageType, content, chatType);
   };
 
+  const handleSelectImage = (item) =>{
+    // const transformedArray = res?.map((obj, index) => {
+        const transformedArray =  {
+            caption: '',
+            image: item.image
+          };
+          console.log(transformedArray,"transformedArraytransformedArraytransformedArray");
+    setSelectedImages([...selectedImages ,transformedArray])
+    setLocalNav('GalleryPickView')
+  }
+
   const handleSendMsg = async (message) => {
     let messageType = message.type;
 
@@ -209,7 +220,7 @@ function ChatScreen() {
         'GalleryPickView': <GalleryPickView setSelectedImages={setSelectedImages} selectedImages={selectedImages} setLocalNav={setLocalNav} handleSendMsg={handleSendMsg} />,
         'UserInfo': <UserInfo setLocalNav={setLocalNav} />,
         'UsersTapBarInfo': <UsersTapBarInfo setLocalNav={setLocalNav} />,
-        'Gallery': <SavePicture setLocalNav={setLocalNav}/>
+        'Gallery': <SavePicture setLocalNav={setLocalNav} selectedImages={selectedImages} handleSelectImage={handleSelectImage} setSelectedImages={setSelectedImages}/>
       }[localNav]}
     </>
   )

@@ -11,6 +11,7 @@ import { updateUserPresence } from "../redux/userSlice";
 import * as RootNav from '../Navigation/rootNavigation'
 import { MSG_SEEN_ACKNOWLEDGE_STATUS, MSG_SEEN_STATUS, MSG_SENT_SEEN_STATUS_CARBON } from "../Helper/Chat/Constant";
 import { deleteChatSeenPendingMsg } from "../redux/chatSeenPendingMsg";
+import { changeTimeFormat } from "../common/TimeStamp";
 export const callBacks = {
     connectionListener: (response) => {
         store.dispatch(setXmppStatus(response.status))
@@ -28,22 +29,40 @@ export const callBacks = {
         console.log('dbListener', JSON.stringify(res));
     },
     messageListener: (res) => {
-        if (res.chatType === 'chat' &&
-            (res.msgType === "sentMessage" ||
-                res.msgType === "carbonSentMessage" ||
-                res.msgType === "receiveMessage" ||
-                res.msgType === "carbonReceiveMessage" ||
-                res.msgType === "receiveMessage")) {
-            updateRecentChatMessage(res, store.getState())
-            updateConversationMessage(res, store.getState())
-        }
-        if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {
-            store.dispatch(updateRecentChatMessageStatus(res))
-            store.dispatch(updateChatConversationHistory(res))
-            store.dispatch(storeDeliveryStatus(res))
-            if(res.msgType === "seen" || res.msgType === "carbonSeen"){
-                store.dispatch(storeSeenStatus(res))
+        console.log('messageListener', res.msgId, changeTimeFormat(Date.now()))
+        if (res.chatType === 'chat') {
+            switch (res.msgType) {
+                case 'sentMessage':
+                case 'carbonSentMessage':
+                case 'receiveMessage':
+                case 'carbonReceiveMessage':
+                    console.log('===============================================')
+                    updateRecentChatMessage(res, store.getState())
+                    updateConversationMessage(res, store.getState())
+                    break;
             }
+        }
+        switch (res.msgType) {
+            case "carbonDelivered":
+            case "delivered":
+            case "seen":
+            case "carbonSeen":
+                store.dispatch(updateRecentChatMessageStatus(res))
+                store.dispatch(updateChatConversationHistory(res))
+                store.dispatch(storeDeliveryStatus(res))
+                if (res.msgType === "seen" || res.msgType === "carbonSeen") {
+                    store.dispatch(storeSeenStatus(res))
+                }
+                break;
+        }
+        /**
+        // if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {
+            // store.dispatch(updateRecentChatMessageStatus(res))
+            // store.dispatch(updateChatConversationHistory(res))
+            // store.dispatch(storeDeliveryStatus(res))
+            // if (res.msgType === "seen" || res.msgType === "carbonSeen") {
+            //     store.dispatch(storeSeenStatus(res))
+            // }
             // store.dispatch(addMessageInfoUpdate(
             //     {
             //         id: uuidv4(),
@@ -54,8 +73,9 @@ export const callBacks = {
             //                 ? MSG_DELIVERED_STATUS_ID
             //                 : MSG_SEEN_STATUS_ID
             //     }))
-        }
-         // When message is seen, then delete the seen messages from pending seen message list
+        // }
+        */
+        // When message is seen, then delete the seen messages from pending seen message list
         const pendingMessages = store?.getState().chatSeenPendingMsgData?.data || [];
         if (
             pendingMessages.length > 0 &&
@@ -71,7 +91,7 @@ export const callBacks = {
         }
     },
     presenceListener: (res) => {
-        console.log('presenceListener', res)
+        // console.log('presenceListener', res)
         store.dispatch(updateUserPresence(res))
     },
     userProfileListener: (res) => {

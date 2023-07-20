@@ -10,7 +10,7 @@ import { Icon, Modal, Text, Center, Box, useToast, Spinner, HStack, Stack, VStac
 import { useNetworkStatus } from '../hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const RegisterScreen = () => {
+const RegisterScreen = ({ navigation }) => {
     const dispatch = useDispatch();
     const toast = useToast();
     const selectcountry = useSelector(state => state.navigation.selectContryCode);
@@ -30,6 +30,7 @@ const RegisterScreen = () => {
     const selectCountryHandler = () => {
         let x = { screen: COUNTRYSCREEN }
         dispatch(navigate(x))
+        navigation.navigate(COUNTRYSCREEN)
     }
 
     const handleSubmit = () => {
@@ -104,9 +105,10 @@ const RegisterScreen = () => {
                 let nav = { screen: PROFILESCREEN, prevScreen: REGISTERSCREEN }
                 let jid = await SDK.getCurrentUserJid()
                 let userJID = jid.userJid.split('/')[0]
-                await AsyncStorage.setItem('currentUserJID', JSON.stringify(userJID));
+                AsyncStorage.setItem('currentUserJID', JSON.stringify(userJID));
                 dispatch(getCurrentUserJid(userJID))
                 dispatch(navigate(nav))
+                navigation.navigate(PROFILESCREEN)
                 break;
             default:
                 break;
@@ -117,7 +119,7 @@ const RegisterScreen = () => {
     React.useEffect(() => {
         if (!isNetworkConnected && isLoading) setIsLoading(false)
     }, [isNetworkConnected])
-    
+
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}

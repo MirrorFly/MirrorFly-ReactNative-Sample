@@ -11,7 +11,7 @@ import { useNetworkStatus } from '../hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { KeyboardAvoidingView } from 'native-base';
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch()
   const isNetworkConnected = useNetworkStatus();
   const [nav, setNav] = React.useState("ProfileScreen");
@@ -115,6 +115,7 @@ const ProfileScreen = () => {
       default:
         return (
           <ProfilePage
+            navigation={navigation}
             selectProfileInfo={selectProfileInfo}
             setNav={setNav}
             profileInfo={profileInfo}

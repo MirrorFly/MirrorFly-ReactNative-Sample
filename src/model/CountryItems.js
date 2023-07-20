@@ -3,6 +3,7 @@ import React from 'react'
 import { useDispatch } from 'react-redux';
 import { REGISTERSCREEN } from '../constant';
 import { navigate } from '../redux/navigationSlice';
+import * as RootNav from '../Navigation/rootNavigation'
 
 const CountryItems = (props) => {
     const dispatch = useDispatch();
@@ -10,6 +11,7 @@ const CountryItems = (props) => {
     const countrySelectHandler = () => {
         let x = { screen: REGISTERSCREEN,selectContryCode:props.renderItem }
         dispatch(navigate(x))
+        RootNav.navigate(REGISTERSCREEN)
     }
     return (
         <View>

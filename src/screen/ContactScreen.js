@@ -8,6 +8,7 @@ import ScreenHeader from '../components/ScreenHeader'
 import SDK from '../SDK/SDK'
 import FlatListView from '../components/FlatListView'
 import { useNetworkStatus } from '../hooks';
+import * as RootNav from '../Navigation/rootNavigation'
 
 function ContactScreen() {
     const dispatch = useDispatch()
@@ -22,6 +23,7 @@ function ContactScreen() {
     const handleBackBtn = () => {
         let x = { screen: RECENTCHATSCREEN }
         dispatch(navigate(x))
+        RootNav.navigate(RECENTCHATSCREEN)
         return true;
     }
 
@@ -57,12 +59,14 @@ function ContactScreen() {
             label: 'Settings',
             formatter: () => {
                 dispatch(navigate({ screen: SETTINGSCREEN }))
+                RootNav.navigate(SETTINGSCREEN)
             }
         }
     ]
     const handlePress = (item) => {
         SDK.activeChatUser(item.userJid)
         dispatch(navigate({ screen: CHATSCREEN, fromUserJID: item.userJid, profileDetails: item }))
+        RootNav.navigate(CHATSCREEN)
     }
 
     const handleSearch = async (text) => {

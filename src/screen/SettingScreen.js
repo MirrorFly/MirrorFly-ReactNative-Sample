@@ -4,12 +4,14 @@ import { useDispatch } from 'react-redux';
 import { navigate } from '../redux/navigationSlice';
 import { BackHandler, StyleSheet, View } from 'react-native';
 import ScreenHeader from '../components/ScreenHeader';
+import * as RootNav from '../Navigation/rootNavigation'
 
 function SettingScreen() {
     const dispatch = useDispatch()
     const handleBackBtn = () => {
         let x = { screen: CONTACTLIST }
         dispatch(navigate(x))
+        RootNav.navigate(CONTACTLIST)
         return true;
     }
 

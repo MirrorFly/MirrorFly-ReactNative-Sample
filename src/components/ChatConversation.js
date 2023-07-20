@@ -10,6 +10,7 @@ import { ClearTextIcon } from '../common/Icons';
 import { addChatConversationHistory } from '../redux/conversationSlice';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { formatUserIdToJid, getChatMessageHistoryById } from '../Helper/Chat/ChatHelper';
+import { updateMsgSeenStatus } from './chat/common/createMessage';
 
 const ChatConversation = React.memo((props) => {
     const { handleSendMsg } = props
@@ -149,15 +150,7 @@ const ChatConversation = React.memo((props) => {
     }
 
     React.useEffect(() => {
-        if (messageList?.length) {
-            let unReadMsg = messageList.filter((item) => item.msgStatus == 1 && item.fromUserJid !== currentUserJID)
-            if (unReadMsg.length) {
-                unReadMsg.forEach(async item => {
-                    let data = { toJid: item.fromUserJid, msgId: item.msgId }
-                    SDK.sendSeenStatus(data.toJid, data.msgId);
-                })
-            }
-        }
+        updateMsgSeenStatus();
     }, [messageList])
 
     return (

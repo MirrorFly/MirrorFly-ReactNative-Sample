@@ -12,6 +12,8 @@ import { CONTACTLIST, PROFILESCREEN, RECENTCHATSCREEN } from '../constant';
 import SDK from '../SDK/SDK';
 import { addRecentChat } from '../redux/recentChatDataSlice';
 import { sortBydate } from '../Helper/Chat/RecentChat';
+import * as RootNav from '../Navigation/rootNavigation'
+
 const logo = require('../assets/mirrorfly-logo.png');
 
 const FirstComponent = (isSearching, filteredData) => <RecentChat isSearching={isSearching} data={filteredData} />;
@@ -99,6 +101,7 @@ function RecentScreen() {
         formatter: () => {
           let x = { prevScreen: RECENTCHATSCREEN, screen: PROFILESCREEN }
           dispatch(navigate(x))
+          RootNav.navigate(PROFILESCREEN)
         }
       },
       {
@@ -143,7 +146,10 @@ function RecentScreen() {
         activeTabStyle={{ backgroundColor: 'black' }}
         lazy
       />
-      <FloatingBtn onPress={() => dispatch(navigate({ screen: CONTACTLIST }))} />
+      <FloatingBtn onPress={() => {
+        RootNav.navigate(CONTACTLIST)
+        dispatch(navigate({ screen: CONTACTLIST }))
+      }} />
     </>
   );
 }

@@ -8,7 +8,9 @@ import { updateRecentChatMessageStatus } from "../redux/recentChatDataSlice";
 import { storeDeliveryStatus, storeSeenStatus } from "../redux/storageSlice";
 import store from "../redux/store";
 import { updateUserPresence } from "../redux/userSlice";
-
+import * as RootNav from '../Navigation/rootNavigation'
+import { MSG_SEEN_ACKNOWLEDGE_STATUS, MSG_SEEN_STATUS, MSG_SENT_SEEN_STATUS_CARBON } from "../Helper/Chat/Constant";
+import { deleteChatSeenPendingMsg } from "../redux/chatSeenPendingMsg";
 export const callBacks = {
     connectionListener: (response) => {
         store.dispatch(setXmppStatus(response.status))
@@ -19,6 +21,7 @@ export const callBacks = {
         } else if (response.status === "LOGOUT") {
             console.log("LOGOUT");
             store.dispatch(navigate({ screen: REGISTERSCREEN }))
+            RootNav.navigate(REGISTERSCREEN)
         }
     },
     dbListener: (res) => {
@@ -52,7 +55,17 @@ export const callBacks = {
             //                 : MSG_SEEN_STATUS_ID
             //     }))
         }
-        if (res.msgType === "acknowledge" && res.type === "acknowledge") {
+         // When message is seen, then delete the seen messages from pending seen message list
+        const pendingMessages = store?.getState().chatSeenPendingMsgData?.data || [];
+        if (
+            pendingMessages.length > 0 &&
+            (res.msgType === MSG_SENT_SEEN_STATUS_CARBON || (res.msgType === MSG_SEEN_ACKNOWLEDGE_STATUS && res.type === MSG_SEEN_STATUS))
+        ) {
+            const { msgId: currentMsgId = null } = res;
+            store.dispatch(deleteChatSeenPendingMsg(currentMsgId));
+        }
+
+        if (res.msgType === "acknowledge" && (res.type === "acknowledge")) {
             store.dispatch(updateRecentChatMessageStatus(res))
             store.dispatch(updateChatConversationHistory(res))
         }

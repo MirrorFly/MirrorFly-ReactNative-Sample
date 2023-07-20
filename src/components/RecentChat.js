@@ -1,5 +1,6 @@
 import { Center, Box, Divider, HStack, Pressable, Spacer, Text, VStack, View, Slide, Spinner, Icon } from 'native-base';
 import React from 'react'
+import * as RootNav from '../Navigation/rootNavigation'
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { useDispatch, useSelector } from 'react-redux';
 import { convertUTCTOLocalTimeStamp, formatChatDateTime } from '../common/TimeStamp';
@@ -40,6 +41,7 @@ export default function RecentChat(props) {
                 SDK.activeChatUser(jid)
                 let x = { screen: CHATSCREEN, fromUserJID: item?.userJid || jid, profileDetails: item?.profileDetails }
                 dispatch(navigate(x));
+                RootNav.navigate(CHATSCREEN)
             }} _dark={{ bg: 'coolGray.800' }} _light={{ bg: 'white' }}>
                 <Box pl="4" pr="5" py="2">
                     <HStack alignItems="center" space={3}>

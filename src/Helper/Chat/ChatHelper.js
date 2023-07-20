@@ -123,3 +123,40 @@ export const getChatMessageHistoryById = (id) => {
     if (data[id]?.messages) return Object.values(data[id]?.messages);
     return [];
 };
+
+export const getChatHistoryMessagesData = () => {
+    const { chatConversationData: { data } = {} } = store.getState();
+    return data;
+};
+
+/**
+ * Get the active conversation user ID
+ */
+export const getActiveConversationChatId = () => {
+    const { navigation: { fromUserJid : chatId = "" } = {} } = store.getState();
+    return getUserIdFromJid(chatId);
+}
+
+/**
+ * Check the give USER or GROUP ID is in the active conversation screen
+ * @param {string} userOrGroupId 
+ * @param {string} chatType 
+ */
+export const isActiveConversationUserOrGroup = (userOrGroupId, chatType = CHAT_TYPE_SINGLE) => {
+    if (!userOrGroupId) return false;
+    const conversationUserOrGroupId = getActiveConversationChatId();
+    userOrGroupId = getUserIdFromJid(userOrGroupId);
+    return conversationUserOrGroupId === userOrGroupId;
+}
+
+/**
+ * Check the given user is local or not
+ * @param {*} userId 
+ */
+export const isLocalUser = (userId = "") => {
+    if (!userId) return false;
+    userId = getUserIdFromJid(userId);
+    const vCardData = store.getState()?.auth?.currentUserJID;
+    return userId === getUserIdFromJid(vCardData);
+};
+

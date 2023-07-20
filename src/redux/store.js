@@ -9,6 +9,7 @@ import dbSlice from './dbSlice';
 import recentChatDataSlice from './recentChatDataSlice';
 import conversationSlice from './conversationSlice';
 import connectionSlice from './connectionSlice';
+import chatSeenPendingMsg from './chatSeenPendingMsg';
 
 const store = configureStore({
     reducer: {
@@ -19,6 +20,7 @@ const store = configureStore({
         chatConversationData: conversationSlice,
         profile: profileSlice,
         user: userSlice,
+        chatSeenPendingMsgData: chatSeenPendingMsg,
         storage: storageSlice,
         dbValues: dbSlice,
         connection: connectionSlice

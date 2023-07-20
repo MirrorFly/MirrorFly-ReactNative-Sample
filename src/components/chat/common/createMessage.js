@@ -1,6 +1,8 @@
-import { formatUserIdToJid } from "../../../Helper/Chat/ChatHelper";
+import { formatUserIdToJid, getChatHistoryMessagesData, isActiveConversationUserOrGroup, isGroupChat, isLocalUser, isSingleChat } from "../../../Helper/Chat/ChatHelper";
+import { GROUP_UPDATE_ACTIONS, MSG_RECEIVE_STATUS, MSG_RECEIVE_STATUS_CARBON } from "../../../Helper/Chat/Constant";
 import { getMessageObjReceiver } from "../../../Helper/Chat/Utility";
 import { changeTimeFormat } from "../../../common/TimeStamp";
+import { addchatSeenPendingMsg } from "../../../redux/chatSeenPendingMsg";
 import { addChatConversationHistory } from "../../../redux/conversationSlice";
 import { updateRecentChat } from "../../../redux/recentChatDataSlice";
 import store from "../../../redux/store";
@@ -70,12 +72,58 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
     }
 };
 
+/**
+ * Update all delivered message seen status
+ */
+export const updateMsgSeenStatus = async () => {
+    const state = store.getState();
+    if (state?.navigation?.fromUserJid) {
+        const pendingMessages = state?.chatSeenPendingMsgData?.data || [];
+        console.log(pendingMessages, "pendingMessagesIn");
+
+        pendingMessages.map((message) => {
+            const fromUserId = isGroupChat(message.chatType) ? message.publisherId : message.fromUserId;
+            const groupId = isGroupChat(message.chatType) ? message.fromUserId : "";
+            if (isActiveConversationUserOrGroup(message.fromUserId)) {
+                if (GROUP_UPDATE_ACTIONS.indexOf(message?.profileUpdatedStatus) > -1) {
+                    if (!isLocalUser(message.publisherId)) SDK.updateRecentChatUnreadCount(message?.fromUserJid);
+                } else {
+                    SDK.sendSeenStatus(formatUserIdToJid(fromUserId), message.msgId, groupId);
+                }
+            }
+        });
+    }
+};
+
 export const updateConversationMessage = (messgeObject, currentState) => {
     const newChatTo = messgeObject.msgType === "carbonSentMessage" ? messgeObject.toUserId : messgeObject.fromUserId;
-    const conversationChatObj = getMessageObjReceiver(messgeObject, messgeObject.fromUserId);
-    const dispatchData = {
-        data: [conversationChatObj],
-        ...({ userJid: formatUserIdToJid(newChatTo) })
-    };
-    store.dispatch(addChatConversationHistory(dispatchData));
+    const singleChat = isSingleChat(messgeObject.chatType);
+    if (isActiveConversationUserOrGroup(newChatTo)) {
+        const publisherId = singleChat ? newChatTo : messgeObject.publisherId;
+        if ([MSG_RECEIVE_STATUS, MSG_RECEIVE_STATUS_CARBON].indexOf(messgeObject.msgType) > -1) {
+            // if (currentState?.browserTabData?.isVisible) {
+            const groupId = singleChat ? "" : newChatTo;
+            SDK.sendSeenStatus(formatUserIdToJid(publisherId), messgeObject.msgId, groupId);
+            //     } else {
+            //       Store.dispatch(chatSeenPendingMsg(messgeObject));
+            //     }
+        }
+        //   if (GROUP_UPDATE_ACTIONS.indexOf(messgeObject?.profileUpdatedStatus) && !isLocalUser(messgeObject.publisherId)) {
+        //     SDK.updateRecentChatUnreadCount(messgeObject?.fromUserJid);
+        //   }
+    } else {
+        // If the Chat is Already Opened but if it is Not Currently Active, Store the Messages for Sending Seen Status
+        if (!isLocalUser(messgeObject.publisherId)) {
+            store.dispatch(addchatSeenPendingMsg(messgeObject));
+        }
+    }
+    const conversationHistory = getChatHistoryMessagesData();
+    if (Object.keys(conversationHistory).includes(newChatTo)) {
+        const conversationChatObj = getMessageObjReceiver(messgeObject, messgeObject.fromUserId);
+        const dispatchData = {
+            data: [conversationChatObj],
+            ...({ userJid: formatUserIdToJid(newChatTo) })
+        };
+        store.dispatch(addChatConversationHistory(dispatchData));
+    }
 };

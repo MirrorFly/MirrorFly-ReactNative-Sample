@@ -6,6 +6,8 @@ import { navigate } from '../redux/navigationSlice';
 import { REGISTERSCREEN } from '../constant';
 import { useDispatch } from 'react-redux';
 import ScreenHeader from '../components/ScreenHeader';
+import * as RootNav from '../Navigation/rootNavigation'
+
 const CountryList = () => {
     const [filteredData, setFilteredData] = React.useState(countriescodes);
     const dispatch = useDispatch();
@@ -21,6 +23,7 @@ const CountryList = () => {
     const handleBackBtn = () => {
         let x = { screen: REGISTERSCREEN }
         dispatch(navigate(x))
+        RootNav.navigate(REGISTERSCREEN)
         return true;
     }
 

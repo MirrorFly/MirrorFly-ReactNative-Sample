@@ -20,6 +20,7 @@ import { addChatConversationHistory } from '../redux/conversationSlice'
 import { SDK } from '../SDK'
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import SavePicture from './Gallery'
+import * as RootNav from '../Navigation/rootNavigation'
 
 function ChatScreen() {
   const dispatch = useDispatch()
@@ -88,6 +89,7 @@ function ChatScreen() {
   const handleBackBtn = () => {
     let x = { screen: RECENTCHATSCREEN }
     dispatch(navigate(x))
+    RootNav.navigate(RECENTCHATSCREEN)
     return true;
   }
 

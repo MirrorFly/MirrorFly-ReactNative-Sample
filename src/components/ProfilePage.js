@@ -13,6 +13,7 @@ import { requestStoragePermission } from '../common/utils';
 import { useNetworkStatus } from '../hooks';
 import { PrimaryPillBtn } from '../common/Button';
 import AuthProfileImage from '../common/AuthProfileImage';
+import * as RootNav from '../Navigation/rootNavigation'
 
 const ProfilePage = (props) => {
   const toast = useToast();
@@ -37,7 +38,10 @@ const ProfilePage = (props) => {
 
   const handleBackBtn = () => {
     let x = { prevScreen: PROFILESCREEN, screen: RECENTCHATSCREEN }
-    prevPageInfo !== REGISTERSCREEN && dispatch(navigate(x))
+    if (prevPageInfo !== REGISTERSCREEN) {
+      dispatch(navigate(x))
+      RootNav.navigate(RECENTCHATSCREEN)
+    }
     return true;
   }
 
@@ -129,6 +133,7 @@ const ProfilePage = (props) => {
       setloading(false);
       if (UserInfo.statusCode == 200) {
         let x = { screen: RECENTCHATSCREEN, prevScreen: PROFILESCREEN, }
+        RootNav.navigate(RECENTCHATSCREEN)
         prevPageInfo == REGISTERSCREEN && dispatch(navigate(x))
         if (UserInfo && !isToastShowing) {
           return toast.show({

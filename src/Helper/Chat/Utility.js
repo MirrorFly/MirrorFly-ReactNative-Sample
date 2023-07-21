@@ -7,7 +7,7 @@ export const getUserIdFromJid = (userJid) => {
     return userJid && userJid.includes("@") ? userJid.split("@")[0] : userJid;
 };
 
-export const getMessageObjSender = async (dataObj, idx) => {
+export const getMessageObjSender = (dataObj, idx) => {
     const {
         jid,
         msgType,

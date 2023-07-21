@@ -190,9 +190,8 @@ const ChatConversation = React.memo((props) => {
                 }}
             >
                 <FlatList
-                    data={messageList}
+                    data={messageList.reverse()}
                     inverted
-                    contentContainerStyle={{ flexDirection: 'column-reverse' }}
                     renderItem={chatMessageRender}
                     keyExtractor={(item) => item.msgId.toString()}
                 />

@@ -159,7 +159,9 @@ function ChatScreen() {
 
     if (message.content !== "") {
       let jid = fromUserJId;
+      console.log('uuid before', Date.now())
       let msgId = uuidv4();
+      console.log('uuid after', Date.now())
       const userProfile = vCardData;
       const dataObj = {
         jid: jid,
@@ -170,19 +172,20 @@ function ChatScreen() {
         msgId,
         fromUserJid: currentUserJID
       };
-      const conversationChatObj = await getMessageObjSender(dataObj);
+      const conversationChatObj = getMessageObjSender(dataObj);
       const recentChatObj = getRecentChatMsgObj(dataObj);
+      const dispatchData = {
+        data: [conversationChatObj],
+        ...(isSingleChat('chat') ? { userJid: jid } : { groupJid: jidSendMsg }),
+      };
+      console.log('store dispatch', Date.now())
+      store.dispatch(addChatConversationHistory(dispatchData));
+      store.dispatch(updateRecentChat(recentChatObj));
       SDK.sendTextMessage(
         jid,
         message.content,
         msgId
       )
-      const dispatchData = {
-        data: [conversationChatObj],
-        ...(isSingleChat('chat') ? { userJid: jid } : { groupJid: jidSendMsg }),
-      };
-      store.dispatch(addChatConversationHistory(dispatchData));
-      store.dispatch(updateRecentChat(recentChatObj));
     }
   }
 

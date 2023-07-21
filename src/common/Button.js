@@ -2,6 +2,7 @@ import React from 'react'
 import { Image, StyleSheet, Text, View } from 'react-native'
 import { Chat_FABICON, MenuIcon } from './Icons'
 import { Icon, IconButton, Pressable } from 'native-base'
+import SendIcon from '../assets/send.png'
 
 const styles = StyleSheet.create({
     primarypilbtn: {
@@ -57,7 +58,7 @@ export const BackBtn = (props) => {
 export const SendBtn = React.memo((props) => {
     return <Pressable {...props}>
         <Image
-            source={require('../assets/send.png')}
+            source={SendIcon}
             style={{ width: 24.33, height: 20.32 }}
         />
     </Pressable>

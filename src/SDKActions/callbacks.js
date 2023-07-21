@@ -12,6 +12,8 @@ import * as RootNav from '../Navigation/rootNavigation'
 import { MSG_SEEN_ACKNOWLEDGE_STATUS, MSG_SEEN_STATUS, MSG_SENT_SEEN_STATUS_CARBON } from "../Helper/Chat/Constant";
 import { deleteChatSeenPendingMsg } from "../redux/chatSeenPendingMsg";
 import { changeTimeFormat } from "../common/TimeStamp";
+import nextFrame from 'next-frame';
+
 export const callBacks = {
     connectionListener: (response) => {
         store.dispatch(setXmppStatus(response.status))
@@ -28,7 +30,8 @@ export const callBacks = {
     dbListener: (res) => {
         console.log('dbListener', JSON.stringify(res));
     },
-    messageListener: (res) => {
+    messageListener: async (res) => {
+        await nextFrame();
         console.log('messageListener', res.msgId, changeTimeFormat(Date.now()))
         if (res.chatType === 'chat') {
             switch (res.msgType) {
@@ -91,7 +94,7 @@ export const callBacks = {
         }
     },
     presenceListener: (res) => {
-        // console.log('presenceListener', res)
+        console.log('presenceListener', res)
         store.dispatch(updateUserPresence(res))
     },
     userProfileListener: (res) => {

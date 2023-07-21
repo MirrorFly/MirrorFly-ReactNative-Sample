@@ -159,14 +159,18 @@ function ChatScreen() {
   };
 
   const handleSelectImage = (item) =>{
-    // const transformedArray = res?.map((obj, index) => {
         const transformedArray =  {
             caption: '',
             image: item.image
           };
-          console.log(transformedArray,"transformedArraytransformedArraytransformedArray");
-    setSelectedImages([...selectedImages ,transformedArray])
-    setLocalNav('GalleryPickView')
+          console.log(selectedImages,transformedArray,"098765434567");
+          if (selectedImages.length) {
+            // const images = selectedImages.filter(item => transformedArray?.image.uri !== item?.image.uri)
+            setSelectedImages(prevArray => prevArray.filter(item => transformedArray !== item));
+        } else {
+            setSelectedImages([...selectedImages ,transformedArray])
+        }
+    // // setLocalNav('GalleryPickView')
   }
 
   const handleSendMsg = async (message) => {

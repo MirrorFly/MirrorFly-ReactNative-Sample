@@ -792,3 +792,17 @@ export const VideoSmallIcon = () => {
         </G>
     </Svg>
 }
+
+export const CheckBox = () => {
+    return <Svg id="check-box" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+        <G id="check-box-outline" transform="translate(0)">
+            <Path id="Path_13753" data-name="Path 13753" d="M4.356,6.311,3.111,7.556l4,4L16,2.667,14.756,1.422,7.111,9.067Zm9.867,7.911H1.778V1.778h8.889V0H1.778A1.783,1.783,0,0,0,0,1.778V14.222A1.783,1.783,0,0,0,1.778,16H14.222A1.783,1.783,0,0,0,16,14.222V7.111H14.222Z" transform="translate(0)" />
+        </G>
+    </Svg>
+}
+
+export const TickIcon = () => {
+    return <Svg xmlns="http://www.w3.org/2000/svg" width="16.294" height="12.811" viewBox="0 0 16.294 12.811">
+        <Path id="Path_13812" data-name="Path 13812" d="M4.684,7.6,3.111,9.176l5.057,5.057L19.405,3,17.832,1.422,8.168,11.086Z" transform="translate(-3.111 -1.422)" fill="#fff" />
+    </Svg>
+}

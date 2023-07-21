@@ -3,13 +3,13 @@ import { HStack, Icon, Image, Pressable, Text, View } from "native-base";
 import React from "react";
 import ScreenHeader from "../components/ScreenHeader";
 import { useSelector } from "react-redux";
-import { ActivityIndicator, BackHandler, FlatList, ImageBackground } from "react-native";
+import { ActivityIndicator, BackHandler, FlatList } from "react-native";
 import { CameraSmallIcon, FolderIcon, TickIcon, VideoSmallIcon } from "../common/Icons";
-import GalleryHeader from "../components/GalleryHeader";
+import GalleryPhotos from "./GalleryPhotos";
 
 const Gallery = (props = {}) => {
     const PAGE_SIZE = 20;
-    const { setLocalNav, selectedImages, handleSelectImage, setSelectedImages } = props
+    const { setLocalNav, selectedImages, handleSelectImage, setSelectedImages,handleMedia } = props
     const profileDetails = useSelector(state => state.navigation.profileDetails);
     const [galleryData, setGalleryData] = React.useState([]);
     const [grpView, setGrpView] = React.useState('')
@@ -20,27 +20,24 @@ const Gallery = (props = {}) => {
     const [checkBox, setCheckbox] = React.useState(false)
 
     const handleBackBtn = () => {
-        if (!checkBox && selectedImages.length) {
-            setCheckbox(false)
-            setSelectedImages([])
-        } else if (checkBox) {
-            setCheckbox(false)
-        } else {
-            setLocalNav("CHATCONVERSATION")
-        }
+        setLocalNav("CHATCONVERSATION")
     }
 
     const renderItem = ({ item }) => {
+        const isImageSelected = selectedImages.some((selectedItem) => selectedItem.image.uri === item?.node?.image.uri);
         return (
             <View style={{ position: 'relative' }} p={0.5}>
                 <Pressable
-                    onPress={() => handleSelectImage(item.node)}
-                    onLongPress={() => handleSelectImage(item.node)}
+                    onPress={() => {
+                        setCheckbox(false);
+                        selectedImages.length === 0 ? handleMedia(item.node) : handleSelectImage(item.node)
+                    }}
+                    onLongPress={() => { setCheckbox(false); handleSelectImage(item.node) }}
                 >
                     <Image alt="" style={{ width: 135, height: 135 }} source={{ uri: item?.node?.image.uri }} />
-                    <View style={{ position: 'absolute', padding: 1, width: 135, height: 135, marginRight: 3, backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                        <View position={"absolute"} left={50} bottom={50}>{<Icon as={TickIcon} name="emoji-happy" />}</View>
-                    </View>
+                    {isImageSelected && <View style={{ position: 'absolute', padding: 1, width: 135, height: 135, marginRight: 3, backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                        <View position={"absolute"} left={60} bottom={60}>{<Icon as={TickIcon} name="emoji-happy" />}</View>
+                    </View>}
                     <HStack px={"1"} style={{ backgroundColor: 'rgba(0,0,0,0.3))', position: 'absolute', bottom: 7, left: 4 }}>
                         {item?.node.type.split("/")[0] === "video" && <Icon as={VideoSmallIcon} name="emoji-happy" />}
                     </HStack>
@@ -50,42 +47,48 @@ const Gallery = (props = {}) => {
     }
 
     const fetchGallery = async () => {
-        const photo = await CameraRoll.getAlbums({
-            assetType: "All"
-        });
-        const galleryData = await Promise.allSettled(
-            photo.map(async (item) => {
-                const params = {
-                    first: 1,
-                    assetType: "All",
-                    groupName: item.title,
+        try {
+            setLoading(true);
+            const photo = await CameraRoll.getAlbums({
+                assetType: "All"
+            });
+            const galleryData = await Promise.allSettled(
+                photo.map(async (item) => {
+                    const params = {
+                        first: 1,
+                        assetType: "All",
+                        groupName: item.title,
+                    }
+                    return CameraRoll.getPhotos(params).then(res => ({
+                        count: item.count,
+                        title: item.title,
+                        uri: res.edges[0].node.image.uri
+                    }));
+                })
+            );
+            galleryData.sort((a, b) => {
+                const titleA = a.value.title.toUpperCase();
+                const titleB = b.value.title.toUpperCase();
+                if (titleA < titleB) {
+                    return -1;
+                } else if (titleA > titleB) {
+                    return 1;
+                } else {
+                    return 0;
                 }
-                return CameraRoll.getPhotos(params).then(res => ({
-                    count: item.count,
-                    title: item.title,
-                    uri: res.edges[0].node.image.uri
-                }));
             })
-        );
-
-        galleryData.sort((a, b) => {
-            const titleA = a.value.title.toUpperCase();
-            const titleB = b.value.title.toUpperCase();
-            if (titleA < titleB) {
-                return -1;
-            } else if (titleA > titleB) {
-                return 1;
-            } else {
-                return 0;
-            }
-        })
-
-        setGalleryData(galleryData)
+            setGalleryData(galleryData)
+        } catch (error) {
+            console.log("Photo_Error", error);
+        } finally {
+            setLoading(false);
+        }
     }
 
     const fetchPhotos = async (groupName, after = null) => {
         try {
             setLoading(true);
+            setGrpView(groupName)
             const params = {
                 first: PAGE_SIZE,
                 groupName: groupName,
@@ -100,7 +103,6 @@ const Gallery = (props = {}) => {
             } else {
                 setPhotos(data.edges);
             }
-            setGrpView(groupName)
         } catch (error) {
             console.log("Photo_Error", error);
         } finally {
@@ -158,40 +160,24 @@ const Gallery = (props = {}) => {
         )
     }
 
-    const getTitle = () => {
-        if (selectedImages.length) {
-            return selectedImages.length + "/10 Selected"
-        } else if (checkBox) {
-            return "Tap Photo to select"
-        }
-        else {
-            return grpView
-        }
-    }
-
     return (
         <>
             {grpView ?
-                <View mb='20'>
-                    <GalleryHeader title={getTitle()}
+                <View ml={"1"} mb={20} flex={1}>
+                    <GalleryPhotos
+                        renderItem={renderItem}
+                        handleLoadMore={handleLoadMore}
+                        photos={photos}
+                        setPhotos={setPhotos}
                         setCheckbox={setCheckbox}
                         checkBox={checkBox}
                         selectedImages={selectedImages}
-                        onhandleBack={handleBackBtn} />
-                    <View ml="1" mb='16'>
-                        <FlatList
-                            numColumns={3}
-                            data={photos}
-                            keyExtractor={(item, index) => item.id + index.toString()}
-                            horizontal={false}
-                            showsVerticalScrollIndicator={false}
-                            onEndReached={handleLoadMore}
-                            onEndReachedThreshold={16}
-                            ListFooterComponent={renderFooter}
-                            bounces={true}
-                            renderItem={renderItem}
-                        />
-                    </View>
+                        handleBackBtn={handleBackBtn}
+                        grpView={grpView}
+                        setGrpView={setGrpView}
+                        renderFooter={renderFooter}
+                        setSelectedImages={setSelectedImages}
+                    />
                 </View>
                 :
                 <View mb="20">
@@ -202,6 +188,7 @@ const Gallery = (props = {}) => {
                             data={galleryData}
                             keyExtractor={(item) => item.value.title.toString()}
                             bounces={false}
+                            ListFooterComponent={renderFooter}
                             renderItem={albumRender}
                         />
                     </View>

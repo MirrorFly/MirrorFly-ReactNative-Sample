@@ -3,8 +3,8 @@ import ChatConversation from '../components/ChatConversation'
 import MessageInfo from '../components/MessageInfo'
 import { CameraIcon, ContactIcon, DocumentIcon, GalleryIcon, HeadSetIcon, LocationIcon } from '../common/Icons'
 import GalleryPickView from '../components/GalleryPickView'
-import { RNimageGalleryLaunch, handleGalleryPickerMulti, requestStoragePermission } from '../common/utils'
-import { useToast } from 'native-base'
+import { requestStoragePermission } from '../common/utils'
+import { Box, Text, useToast } from 'native-base'
 import UserInfo from '../components/UserInfo'
 import UsersTapBarInfo from '../components/UsersTapBarInfo'
 import { BackHandler } from 'react-native'
@@ -21,6 +21,8 @@ import { SDK } from '../SDK'
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import SavePicture from './Gallery'
 import * as RootNav from '../Navigation/rootNavigation'
+import { Image as ImageCompressor } from 'react-native-compressor';
+import RNFetchBlob from 'rn-fetch-blob';
 
 function ChatScreen() {
   const dispatch = useDispatch()
@@ -30,7 +32,16 @@ function ChatScreen() {
   const [localNav, setLocalNav] = React.useState('CHATCONVERSATION')
   const [isMessageInfo, setIsMessageInfo] = React.useState({})
   const toast = useToast()
+  const [isToastShowing, setIsToastShowing] = React.useState(false)
   const [selectedImages, setSelectedImages] = React.useState([])
+
+  const toastConfig = {
+    duration: 2500,
+    avoidKeyboard: true,
+    onCloseComplete: () => {
+      setIsToastShowing(false)
+    }
+  }
 
   const attachmentMenuIcons = [
     {
@@ -56,17 +67,17 @@ function ChatScreen() {
         }
         // SavePicture()
         // RNimageGalleryLaunch()
-      //   const res = await handleGalleryPickerMulti(toast)
-      //   const transformedArray = res?.map((obj, index) => {
-      //     return {
-      //       caption: '',
-      //       image: obj
-      //     };
-      //   });
-      //   setSelectedImages(transformedArray)
-      //   if (res?.length) {
-      //     setLocalNav('GalleryPickView')
-      //   }
+        //   const res = await handleGalleryPickerMulti(toast)
+        //   const transformedArray = res?.map((obj, index) => {
+        //     return {
+        //       caption: '',
+        //       image: obj
+        //     };
+        //   });
+        //   setSelectedImages(transformedArray)
+        //   if (res?.length) {
+        //     setLocalNav('GalleryPickView')
+        //   }
       }
     },
     {
@@ -148,7 +159,7 @@ function ChatScreen() {
         } else if (msgType === "audio") {
           response = await SDK.sendAudioMessage(jidSendMediaMessage, file, fileOptions);
         }
-        console.log(response,"\n response");
+        console.log(response, "\n response");
       }
     }
   };
@@ -158,19 +169,63 @@ function ChatScreen() {
     sendMediaMessage(messageType, content, chatType);
   };
 
-  const handleSelectImage = (item) =>{
-        const transformedArray =  {
-            caption: '',
-            image: item.image
-          };
-          console.log(selectedImages,transformedArray,"098765434567");
-          if (selectedImages.length) {
-            // const images = selectedImages.filter(item => transformedArray?.image.uri !== item?.image.uri)
-            setSelectedImages(prevArray => prevArray.filter(item => transformedArray !== item));
-        } else {
-            setSelectedImages([...selectedImages ,transformedArray])
-        }
-    // // setLocalNav('GalleryPickView')
+  const handleMedia = (item) => {
+    const transformedArray = {
+      caption: '',
+      image: item.image
+    };
+    setSelectedImages(prevArray => [...prevArray, transformedArray]);
+    setLocalNav("GalleryPickView")
+  }
+
+  const handleSelectImage = (item) => {
+    const transformedArray = {
+      caption: '',
+      image: item.image
+    };
+    const isImageSelected = selectedImages.some((selectedItem) => selectedItem.image.uri === item.image.uri);
+    setIsToastShowing(true)
+    if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
+      return toast.show({
+        ...toastConfig,
+        render: () => {
+          return (
+            <Box bg="black" px="2" py="1" rounded="sm">
+              <Text style={{ color: '#fff', padding: 5 }}>Can't share more than 10 media items</Text>
+            </Box>
+          );
+        },
+      });
+    }
+    if (!isToastShowing) {
+      setIsToastShowing(false)
+      if (isImageSelected) {
+        setSelectedImages(prevArray => prevArray.filter(selectedItem => selectedItem.image.uri !== item.image.uri));
+      } else {
+        setSelectedImages(prevArray => [...prevArray, transformedArray]);
+      }
+    }
+  };
+
+  const handleImageConvert = async () => {
+    // try {
+    // const result = await ImageCompressor.compress('file:///storage/emulated/0/Abstruct/OPTV - 1.jpg', {
+    //   maxWidth: 600,
+    //   maxHeight: 200,
+    //   quality: 0.3,
+    // });
+    // const response = await RNFetchBlob.fs.readFile(result, 'base64');
+    // console.log(response)
+    //   createThumbnail({
+    //     url: 'file:///storage/emulated/0/Videos/munbe vaa bgm react NS200 ( 720 X 1280 ).mp4',
+    //     timeStamp: 10000,
+    //   })
+    //     .then(response => console.log({ response }))
+    //     .catch(err => console.log({ err }));
+
+    // } catch (error) {
+    //   console.log('handleImageConvert', error)
+    // }
   }
 
   const handleSendMsg = async (message) => {
@@ -211,6 +266,7 @@ function ChatScreen() {
   }
 
   React.useEffect(() => {
+    // handleImageConvert()
     return () => {
       backHandler.remove();
     }
@@ -224,7 +280,9 @@ function ChatScreen() {
         'GalleryPickView': <GalleryPickView setSelectedImages={setSelectedImages} selectedImages={selectedImages} setLocalNav={setLocalNav} handleSendMsg={handleSendMsg} />,
         'UserInfo': <UserInfo setLocalNav={setLocalNav} />,
         'UsersTapBarInfo': <UsersTapBarInfo setLocalNav={setLocalNav} />,
-        'Gallery': <SavePicture setLocalNav={setLocalNav} selectedImages={selectedImages} handleSelectImage={handleSelectImage} setSelectedImages={setSelectedImages}/>
+        'Gallery': <SavePicture setLocalNav={setLocalNav} selectedImages={selectedImages} handleSelectImage={handleSelectImage}
+          handleMedia={handleMedia}
+          setSelectedImages={setSelectedImages} />
       }[localNav]}
     </>
   )

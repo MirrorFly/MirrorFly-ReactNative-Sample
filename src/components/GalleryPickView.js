@@ -17,6 +17,7 @@ function GalleryPickView(props) {
 
     const fromUserJId = useSelector(state => state.navigation.fromUserJid)
     const handleBackBtn = () => {
+        props.setSelectedImages([])
         props.setLocalNav('CHATCONVERSATION')
         return true;
     }

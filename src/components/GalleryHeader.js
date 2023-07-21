@@ -1,8 +1,7 @@
 import React from 'react'
-import { HStack, Icon, IconButton, Image, Menu, Text } from 'native-base';
-import { LeftArrowIcon, SearchIcon, CloseIcon, CheckBox } from '../common/Icons';
-import { Pressable, TextInput } from 'react-native';
-import { MenuIconBtn } from '../common/Button';
+import { HStack, Icon, IconButton, Text } from 'native-base';
+import { LeftArrowIcon, CheckBox } from '../common/Icons';
+import { Pressable } from 'react-native';
 import ApplicationColors from '../config/appColors';
 
 function GalleryHeader(props) {
@@ -28,7 +27,6 @@ function GalleryHeader(props) {
                         <Text color={ApplicationColors.appThemeColor} fontWeight={"600"} >DONE</Text> : !checkBox && <CheckBox />
                         }
                     </Pressable>
-
                 </HStack>
             </HStack>
         </>

@@ -49,7 +49,7 @@ const GalleryPhotos = (props = {}) => {
                     selectedImages={selectedImages}
                     setLocalNav={setLocalNav}
                     onhandleBack={handleBackBtn} />
-                <View mb={16}>
+                <View mb={"2/4"}>
                     <FlatList
                         numColumns={3}
                         data={photos}

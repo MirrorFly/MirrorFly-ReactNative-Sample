@@ -42,7 +42,7 @@ const Gallery = (props = {}) => {
                     onLongPress={() => { setCheckbox(false); handleSelectImage(item.node) }}
                 >
                     <Image alt="" style={{ width: "100%", aspectRatio:1 }} source={{ uri: item?.node?.image.uri }} />
-                    {isImageSelected && <View style={{ position: 'absolute', padding: 1, width: 135, height: 135, marginRight: 3, backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    {isImageSelected && <View style={{ position: 'absolute', padding: 1, width: "100%", aspectRatio:1, marginRight: 3, backgroundColor: 'rgba(0,0,0,0.5)' }}>
                         <View position={"absolute"} left={60} bottom={60}>{<Icon as={TickIcon} name="emoji-happy" />}</View>
                     </View>}
                     <HStack px={"1"} style={{ backgroundColor: 'rgba(0,0,0,0.3))', position: 'absolute', bottom: 7, left: 4 }}>
@@ -175,7 +175,7 @@ const Gallery = (props = {}) => {
     return (
         <>
             {grpView ?
-                <View mb={20}>
+                <View mb={"0.5"} mr={"1"} ml={"1"}>
                     <GalleryPhotos
                         renderItem={renderItem}
                         handleLoadMore={handleLoadMore}

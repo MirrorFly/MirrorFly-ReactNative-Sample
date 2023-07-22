@@ -6,7 +6,7 @@ import ApplicationColors from '../config/appColors';
 
 function GalleryHeader(props) {
     const [position] = React.useState("auto");
-    const { selectedImages = [], checkBox = false, setCheckbox } = props
+    const { selectedImages = [], checkBox = false, setCheckbox,setLocalNav } = props
     
     const handlingBackBtn = () => {
         props?.onhandleBack && props?.onhandleBack();
@@ -22,6 +22,7 @@ function GalleryHeader(props) {
                 <HStack alignItems="center">
                     <Pressable onPress={() => {
                         setCheckbox(true)
+                        selectedImages.length > 0 && setLocalNav("GalleryPickView")
                     }} >
                         {selectedImages.length > 0 ? 
                         <Text color={ApplicationColors.appThemeColor} fontWeight={"600"} >DONE</Text> : !checkBox && <CheckBox />

@@ -4,7 +4,7 @@ import { BackHandler, FlatList } from 'react-native'
 import { View } from 'native-base'
 
 const GalleryPhotos = (props = {}) => {
-    const { setCheckbox, checkBox, selectedImages,setPhotos,
+    const { setCheckbox, checkBox, selectedImages,setPhotos,setLocalNav,
         renderItem, handleLoadMore, photos, renderFooter, setGrpView, grpView, setSelectedImages } = props
 
     const handleBackBtn = () => {
@@ -47,6 +47,7 @@ const GalleryPhotos = (props = {}) => {
                     setCheckbox={setCheckbox}
                     checkBox={checkBox}
                     selectedImages={selectedImages}
+                    setLocalNav={setLocalNav}
                     onhandleBack={handleBackBtn} />
                 <View mb={16}>
                     <FlatList

@@ -11,6 +11,7 @@ import { addChatConversationHistory } from '../redux/conversationSlice';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { formatUserIdToJid, getChatMessageHistoryById } from '../Helper/Chat/ChatHelper';
 import { updateMsgSeenStatus } from './chat/common/createMessage';
+import { clearGalleryData } from '../redux/utils';
 
 const ChatConversation = React.memo((props) => {
     const { handleSendMsg } = props
@@ -138,6 +139,7 @@ const ChatConversation = React.memo((props) => {
                 }
             }
         })()
+        clearGalleryData()
     }, []);
 
 

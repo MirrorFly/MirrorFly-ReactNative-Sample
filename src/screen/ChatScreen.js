@@ -34,6 +34,7 @@ function ChatScreen() {
   const toast = useToast()
   const [isToastShowing, setIsToastShowing] = React.useState(false)
   const [selectedImages, setSelectedImages] = React.useState([])
+  const [selectedSingle, setselectedSingle] = React.useState(false)
 
   const toastConfig = {
     duration: 2500,
@@ -174,7 +175,8 @@ function ChatScreen() {
       caption: '',
       image: item.image
     };
-    setSelectedImages(prevArray => [...prevArray, transformedArray]);
+    setselectedSingle(true)
+    setSelectedImages([transformedArray]);
     setLocalNav("GalleryPickView")
   }
 
@@ -183,6 +185,7 @@ function ChatScreen() {
       caption: '',
       image: item.image
     };
+    setselectedSingle(false)
     const isImageSelected = selectedImages.some((selectedItem) => selectedItem.image.uri === item.image.uri);
     setIsToastShowing(true)
     if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
@@ -277,12 +280,12 @@ function ChatScreen() {
       {{
         'CHATCONVERSATION': <ChatConversation handleBackBtn={handleBackBtn} setLocalNav={setLocalNav} setIsMessageInfo={setIsMessageInfo} attachmentMenuIcons={attachmentMenuIcons} selectedImages={selectedImages} handleSendMsg={handleSendMsg} />,
         'MESSAGEINFO': <MessageInfo setLocalNav={setLocalNav} setIsMessageInfo={setIsMessageInfo} isMessageInfo={isMessageInfo} />,
-        'GalleryPickView': <GalleryPickView setSelectedImages={setSelectedImages} selectedImages={selectedImages} setLocalNav={setLocalNav} handleSendMsg={handleSendMsg} />,
+        'GalleryPickView': <GalleryPickView setSelectedImages={setSelectedImages} selectedSingle={selectedSingle} selectedImages={selectedImages} setLocalNav={setLocalNav} handleSendMsg={handleSendMsg} />,
         'UserInfo': <UserInfo setLocalNav={setLocalNav} />,
         'UsersTapBarInfo': <UsersTapBarInfo setLocalNav={setLocalNav} />,
         'Gallery': <SavePicture setLocalNav={setLocalNav} selectedImages={selectedImages} handleSelectImage={handleSelectImage}
-          handleMedia={handleMedia}
-          setSelectedImages={setSelectedImages} />
+                    handleMedia={handleMedia}
+                    setSelectedImages={setSelectedImages} />
       }[localNav]}
     </>
   )

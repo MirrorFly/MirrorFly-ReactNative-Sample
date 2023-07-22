@@ -1,6 +1,6 @@
 import React from 'react'
 import { BackHandler, Image, Pressable, StyleSheet, TextInput } from 'react-native'
-import { Box, Divider, HStack, Icon, IconButton, Text, View, useToast } from 'native-base'
+import { Divider, HStack, Icon, IconButton, Spacer, Text, View, useToast } from 'native-base'
 import { useSelector } from 'react-redux'
 import { DeleteBinIcon, LeftArrowIcon, PreViewAddIcon, SendBlueIcon } from '../common/Icons'
 import Avathar from '../common/Avathar'
@@ -8,17 +8,13 @@ import { SceneMap, TabView } from 'react-native-tab-view';
 import { handleGalleryPickerMulti } from '../common/utils'
 
 function GalleryPickView(props) {
-    const { handleSendMsg } = props
-    const toast = useToast()
-    const toastConfig = {
-        duration: 2500,
-        avoidKeyboard: true
-    }
+    const { handleSendMsg, setLocalNav, selectedSingle, setSelectedImages, selectedImages } = props
+    const profileDetails = useSelector(state => state.navigation.profileDetails);
+    const [index, setIndex] = React.useState(0);
 
-    const fromUserJId = useSelector(state => state.navigation.fromUserJid)
     const handleBackBtn = () => {
-        props.setSelectedImages([])
-        props.setLocalNav('CHATCONVERSATION')
+        selectedSingle && setSelectedImages([])
+        setLocalNav('Gallery')
         return true;
     }
 
@@ -32,7 +28,6 @@ function GalleryPickView(props) {
             backHandler.remove();
         }
     }, [])
-    const [index, setIndex] = React.useState(0);
 
     const handleIndexChange = (index) => {
         setIndex(index);
@@ -44,7 +39,7 @@ function GalleryPickView(props) {
         );
     };
 
-    const handleSendMedia = () =>{
+    const handleSendMedia = () => {
         let message = {
             type: "media",
             content: props.selectedImages
@@ -53,66 +48,10 @@ function GalleryPickView(props) {
     }
 
     const renderScene = SceneMap(
-        props.selectedImages?.reduce((scenes, item, itemIndex) => {
+        selectedImages?.reduce((scenes, item, itemIndex) => {
             scenes[`tab${itemIndex + 1}`] = () => (
                 <>
-                    <IconButton alignSelf={'flex-end'} onPress={() => {
-                        let filtered = props.selectedImages?.filter((item, i) => i !== itemIndex)
-                        props.setSelectedImages(filtered)
-                    }} _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} icon={<Icon as={<DeleteBinIcon color="#fff" />} name="emoji-happy" />} borderRadius="full" />
-                    <View position='relative' flex='1' px='7' my='5' keyboardShouldPersistTaps="handled">
-                        <Image resizeMode='contain' source={{ uri: item.image.uri }} style={styles.tabContainer} />
-                        <IconButton position='absolute' p='0' right='5' bottom='0' alignSelf={'flex-end'} onPress={() => {
-                            handleSendMedia()
-                            props.setLocalNav('CHATCONVERSATION')
-                        }} _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} icon={<Icon as={<SendBlueIcon color="#fff" />} name="emoji-happy" />} borderRadius="full" />
-                    </View>
-                    <HStack ml='2' mb='3' alignItems={'center'}>
-                        <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={async () => {
-                            const res = await handleGalleryPickerMulti(toast)
-                            let length = props.selectedImages.length
-                            const transformedArray = res.map((obj, index) => {
-                                return {
-                                    caption: '',
-                                    image: obj
-                                };
-                            });
-                            if ((res.length + length) <= 5) {
-                                props.setSelectedImages([...props.selectedImages, ...transformedArray])
-                            } else {
-                                props.setSelectedImages([...props.selectedImages, ...transformedArray.slice(0, 5 - length)])
-                                return toast.show({
-                                    ...toastConfig,
-                                    render: () => {
-                                        return (
-                                            <Box bg="black" px="2" py="1" rounded="sm">
-                                                <Text style={{ color: '#fff', padding: 5 }}>5 Images Only</Text>
-                                            </Box>
-                                        );
-                                    },
-                                });
-                            }
-                        }} icon={<Icon as={PreViewAddIcon} name="emoji-happy" />} borderRadius="full" />
-                        <Divider h='7' bg="#7f7f7f" thickness="1" mx="2" orientation="vertical" />
-                        <TextInput
-                            style={{
-                                flex: 1,
-                                color: '#fff',
-                                fontSize: 14,
-                                minHeight: 20,
-                                maxHeight: 100,
-                            }}
-                            defaultValue={props.selectedImages[index] ? props.selectedImages[index].caption : ""}
-                            numberOfLines={1}
-                            multiline={true}
-                            onChangeText={(text) => {
-                                props.selectedImages[index].caption = text
-                            }}
-                            placeholderTextColor="#7f7f7f"
-                            selectionColor={'#3276E2'}
-                            placeholder='Add a caption...'
-                        />
-                    </HStack>
+                    <Image resizeMode='contain' source={{ uri: item.image.uri }} style={styles.tabContainer} />
                 </>
             );
             return scenes;
@@ -122,9 +61,14 @@ function GalleryPickView(props) {
     return (
         <>
             <View style={styles.container}>
-                <HStack mt='5' alignItems={'center'}>
+                <HStack mb={'2'} mt='5' alignItems={'center'}>
                     <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handleBackBtn} icon={<Icon as={() => LeftArrowIcon('#fff')} name="emoji-happy" />} borderRadius="full" />
-                    <Avathar width={30} height={30} fontsize={14} data={fromUserJId || '91'} />
+                    <Avathar width={30} height={30} fontsize={14} backgroundColor={profileDetails?.colorCode} data={profileDetails?.nickName || '91'} />
+                    <Spacer />
+                    <IconButton mr={'2'} onPress={() => {
+                        let filtered = selectedImages?.filter((item, i) => i !== index)
+                        setSelectedImages(filtered)
+                    }} _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} icon={<Icon as={<DeleteBinIcon color="#fff" />} name="emoji-happy" />} borderRadius="full" />
                 </HStack>
                 <TabView
                     navigationState={{ index, routes: props.selectedImages?.map((_, i) => ({ key: `tab${i + 1}` })) }}
@@ -132,11 +76,40 @@ function GalleryPickView(props) {
                     renderScene={renderScene}
                     onIndexChange={handleIndexChange}
                 />
-                <HStack mb='5' ml='4'>
-                    <Text color='#7f7f7f'>{`>${fromUserJId.split('@')[0]}`}</Text>
+                <IconButton p='0' right='3' bottom='-15' alignSelf={'flex-end'} onPress={() => {
+                    handleSendMedia()
+                    setLocalNav('CHATCONVERSATION')
+                }} _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} icon={<Icon as={<SendBlueIcon color="#fff" />} name="emoji-happy" />} borderRadius="full" />
+                <HStack ml='2' mb='3' alignItems={'center'}>
+                    <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={async () => {
+                        setLocalNav("Gallery")
+                    }} icon={<Icon as={PreViewAddIcon} name="emoji-happy" />} borderRadius="full" />
+                    <Divider h='7' bg="#7f7f7f" thickness="1" mx="2" orientation="vertical" />
+                    <TextInput
+                        style={{
+                            flex: 1,
+                            color: '#fff',
+                            fontSize: 14,
+                            minHeight: 20,
+                            maxHeight: 100,
+                        }}
+                        defaultValue={props.selectedImages[index] ? props.selectedImages[index].caption : ""}
+                        numberOfLines={1}
+                        multiline={true}
+                        onChangeText={(text) => {
+                            selectedImages[index].caption = text
+                        }}
+                        placeholderTextColor="#7f7f7f"
+                        selectionColor={'#3276E2'}
+                        placeholder='Add a caption...'
+                    />
                 </HStack>
-                <HStack>
-                    {props.selectedImages?.map((item, i) => (
+
+                <HStack mb='5' ml='4'>
+                    <Text color='#7f7f7f'>{`>  ${profileDetails.nickName}`}</Text>
+                </HStack>
+                {selectedImages.length > 1 && <HStack>
+                    {selectedImages?.map((item, i) => (
                         <Pressable
                             activeOpacity={1}
                             key={item.image.uri}
@@ -152,7 +125,7 @@ function GalleryPickView(props) {
                             />
                         </Pressable>
                     ))}
-                </HStack>
+                </HStack>}
             </View>
         </>
     )

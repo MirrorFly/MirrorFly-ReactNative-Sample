@@ -3,21 +3,27 @@ import { HStack, Icon, Image, Pressable, Text, View } from "native-base";
 import React from "react";
 import ScreenHeader from "../components/ScreenHeader";
 import { useSelector } from "react-redux";
-import { ActivityIndicator, BackHandler, FlatList } from "react-native";
+import { ActivityIndicator, BackHandler, Dimensions, FlatList } from "react-native";
 import { CameraSmallIcon, FolderIcon, TickIcon, VideoSmallIcon } from "../common/Icons";
 import GalleryPhotos from "./GalleryPhotos";
+import store from "../redux/store";
+import { addGalleryAlbum, addGalleryPhotos, addGalleyGroupName } from "../redux/galleryDataSlice";
 
 const Gallery = (props = {}) => {
     const PAGE_SIZE = 20;
     const { setLocalNav, selectedImages, handleSelectImage, setSelectedImages,handleMedia } = props
     const profileDetails = useSelector(state => state.navigation.profileDetails);
-    const [galleryData, setGalleryData] = React.useState([]);
-    const [grpView, setGrpView] = React.useState('')
-    const [photos, setPhotos] = React.useState([])
+    const { galleryAlbum , galleryPhotos , galleryName} = useSelector(state => state.galleryData);
+    const [galleryData, setGalleryData] = React.useState(galleryAlbum || []);
+    const [grpView, setGrpView] = React.useState(galleryName || '')
+    const [photos, setPhotos] = React.useState(galleryPhotos || []);
     const [loading, setLoading] = React.useState(false)
     const [hasNextPage, setHasNextPage] = React.useState(false);
     const [endCursor, setEndCursor] = React.useState(null);
     const [checkBox, setCheckbox] = React.useState(false)
+    let numColumns = 3
+    const deviceWidth = Dimensions.get('window').width;
+    const itemWidth = deviceWidth / numColumns;
 
     const handleBackBtn = () => {
         setLocalNav("CHATCONVERSATION")
@@ -26,15 +32,16 @@ const Gallery = (props = {}) => {
     const renderItem = ({ item }) => {
         const isImageSelected = selectedImages.some((selectedItem) => selectedItem.image.uri === item?.node?.image.uri);
         return (
-            <View style={{ position: 'relative' }} p={0.5}>
+            <View style={{ position: 'relative' }} padding={0.5} >
                 <Pressable
+                    width={itemWidth}
                     onPress={() => {
                         setCheckbox(false);
-                        selectedImages.length === 0 ? handleMedia(item.node) : handleSelectImage(item.node)
+                        selectedImages.length === 0 && !checkBox ? handleMedia(item.node) : handleSelectImage(item.node)
                     }}
                     onLongPress={() => { setCheckbox(false); handleSelectImage(item.node) }}
                 >
-                    <Image alt="" style={{ width: 135, height: 135 }} source={{ uri: item?.node?.image.uri }} />
+                    <Image alt="" style={{ width: "100%", aspectRatio:1 }} source={{ uri: item?.node?.image.uri }} />
                     {isImageSelected && <View style={{ position: 'absolute', padding: 1, width: 135, height: 135, marginRight: 3, backgroundColor: 'rgba(0,0,0,0.5)' }}>
                         <View position={"absolute"} left={60} bottom={60}>{<Icon as={TickIcon} name="emoji-happy" />}</View>
                     </View>}
@@ -77,6 +84,7 @@ const Gallery = (props = {}) => {
                     return 0;
                 }
             })
+            store.dispatch(addGalleryAlbum(galleryData));
             setGalleryData(galleryData)
         } catch (error) {
             console.log("Photo_Error", error);
@@ -89,6 +97,7 @@ const Gallery = (props = {}) => {
         try {
             setLoading(true);
             setGrpView(groupName)
+            store.dispatch(addGalleyGroupName(groupName));
             const params = {
                 first: PAGE_SIZE,
                 groupName: groupName,
@@ -98,11 +107,14 @@ const Gallery = (props = {}) => {
             const { has_next_page, end_cursor } = data.page_info;
             setEndCursor(end_cursor)
             setHasNextPage(has_next_page)
+            let getPhoto = []
             if (after) {
-                setPhotos(prevData => [...prevData, ...data.edges]);
+                getPhoto = [...photos, ...data.edges]
             } else {
-                setPhotos(data.edges);
+                getPhoto = [...data.edges]
             }
+            setPhotos(getPhoto)
+            store.dispatch(addGalleryPhotos(getPhoto));
         } catch (error) {
             console.log("Photo_Error", error);
         } finally {
@@ -163,7 +175,7 @@ const Gallery = (props = {}) => {
     return (
         <>
             {grpView ?
-                <View ml={"1"} mb={20} flex={1}>
+                <View mb={20}>
                     <GalleryPhotos
                         renderItem={renderItem}
                         handleLoadMore={handleLoadMore}
@@ -176,6 +188,7 @@ const Gallery = (props = {}) => {
                         grpView={grpView}
                         setGrpView={setGrpView}
                         renderFooter={renderFooter}
+                        setLocalNav={setLocalNav}
                         setSelectedImages={setSelectedImages}
                     />
                 </View>

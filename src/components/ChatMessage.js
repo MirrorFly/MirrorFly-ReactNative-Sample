@@ -11,13 +11,23 @@ import ContactCard from './ContactCard';
 import TextCard from './TextCard';
 import { getConversationHistoryTime } from '../common/TimeStamp';
 import { Box, HStack, Icon, Pressable, View } from 'native-base';
+import { uploadFileToSDK } from '../Helper/Chat/ChatHelper';
 
 const ChatMessage = (props) => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID)
+  const fromUserJId = useSelector(state => state.navigation.fromUserJid)
   let isSame = currentUserJID === props?.message?.fromUserJid
   let statusVisible = 'notSend'
+  const { message } = props
+  const {msgBody,msgId,msgBody:{file,is_uploading,thumb_image}} = message
   const imageSize = props?.message?.msgBody.media?.file_size;
   const fileSize = imageSize;
+
+  React.useEffect(()=>{
+    if(is_uploading === 1){
+      uploadFileToSDK(file, fromUserJId, msgId, msgBody?.media);
+    }
+  },[is_uploading])
 
   switch (props?.message?.msgStatus) {
     case 3:

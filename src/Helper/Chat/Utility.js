@@ -1,10 +1,53 @@
 import { changeTimeFormat } from "../../common/TimeStamp";
 import { formatUserIdToJid, isGroupChat } from "./ChatHelper";
-import { GROUP_CHAT_PROFILE_UPDATED_NOTIFY, MSG_PROCESSING_STATUS, MSG_SENT_STATUS_CARBON } from "./Constant";
+import { GROUP_CHAT_PROFILE_UPDATED_NOTIFY, MAX_HEIGHT_AND, MAX_HEIGHT_WEB, MAX_WIDTH_AND, MAX_WIDTH_WEB, MIN_HEIGHT_AND, MIN_HEIGHT_WEB, MIN_WIDTH_AND, MIN_WIDTH_WEB, MSG_PROCESSING_STATUS, MSG_SENT_STATUS_CARBON } from "./Constant";
 
 
 export const getUserIdFromJid = (userJid) => {
     return userJid && userJid.includes("@") ? userJid.split("@")[0] : userJid;
+};
+
+// Recalculates Image/Video Width and Height for Multiple Platforms
+export const calculateWidthAndHeight = (width, height) => {
+    let response = {};
+
+    switch (true) {
+        // Horizontal Video
+        case width > height:
+            let resultHeight = Math.round((height / width) * MAX_WIDTH_WEB),
+                resultHeightAnd = Math.round((height / width) * MAX_WIDTH_AND);
+
+            response = {
+                webWidth: MAX_WIDTH_WEB,
+                webHeight:
+                    resultHeight > MIN_HEIGHT_WEB ? resultHeight : MIN_HEIGHT_WEB,
+                androidWidth: MAX_WIDTH_AND,
+                androidHeight:
+                    resultHeightAnd > MIN_HEIGHT_AND ? resultHeightAnd : MIN_HEIGHT_AND,
+            };
+            break;
+
+        // Vertical Video
+        case width < height:
+            response = {
+                webWidth: MIN_WIDTH_WEB,
+                webHeight: MAX_HEIGHT_WEB,
+                androidWidth: MIN_WIDTH_AND,
+                androidHeight: MAX_HEIGHT_AND,
+            };
+            break;
+
+        // Default/Square Video
+        default:
+            response = {
+                webWidth: MAX_WIDTH_WEB,
+                webHeight: MAX_WIDTH_WEB,
+                androidWidth: MAX_WIDTH_AND,
+                androidHeight: MAX_WIDTH_AND,
+            };
+            break;
+    }
+    return response;
 };
 
 export const getMessageObjSender = async (dataObj, idx) => {
@@ -17,6 +60,7 @@ export const getMessageObjSender = async (dataObj, idx) => {
         message = "",
         file,
         fileOptions = {},
+        fileDetails,
         replyTo,
         fromUserJid
     } = dataObj;
@@ -31,19 +75,17 @@ export const getMessageObjSender = async (dataObj, idx) => {
     if (msgType === "text") {
         msgBody.message = message;
     } else {
-        /**
         let webWidth = 0,
             webHeight = 0,
             androidWidth = 0,
             androidHeight = 0,
             originalWidth = 0,
-            originalHeight = 0; 
+            originalHeight = 0;
         if (msgType === "image") {
-            let mediaFileURL = fileOptions.blobUrl;
-            const mediaDimension = await getMediaDimension(mediaFileURL, msgType);
+            const mediaDimension = calculateWidthAndHeight(fileDetails?.image?.width, fileDetails?.image?.height);
             ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);
         } else if (msgType === "video") {
-                ({
+            ({
                 webWidth,
                 webHeight,
                 androidWidth,
@@ -51,8 +93,7 @@ export const getMessageObjSender = async (dataObj, idx) => {
                 originalWidth,
                 originalHeight,
             } = fileDetails);
-        } 
-        */
+        }
         msgBody.message = "";
         msgBody.media = {
             file,
@@ -61,19 +102,16 @@ export const getMessageObjSender = async (dataObj, idx) => {
             file_size: fileOptions.fileSize,
             is_downloaded: 0,
             is_uploading: idx === 0 ? 1 : 0,
-            /**
-             * file_url: fileOptions.blobUrl,
-             * duration: fileOptions.duration || 0,
-             * local_path: "",
-             * thumb_image: fileOptions.thumbImage,
-             * webWidth: webWidth,
-             * webHeight: webHeight,
-             * androidWidth: androidWidth,
-             * androidHeight: androidHeight,
-             * originalWidth,
-             * originalHeight,
-             * audioType: fileOptions.audioType,
-             */
+            file_url: fileOptions.uri,
+            duration: fileOptions.duration || 0,
+            local_path: "",
+            thumb_image: fileOptions.thumbImage,
+            webWidth: webWidth,
+            webHeight: webHeight,
+            androidWidth: androidWidth,
+            androidHeight: androidHeight,
+            originalWidth,
+            originalHeight,
         };
     }
 
@@ -128,12 +166,10 @@ export const getRecentChatMsgObj = (dataObj) => {
             is_downloaded: 0,
             is_uploading: 1,
             local_path: "",
-            /**
-             * file_url: fileOptions.blobUrl,
-             * duration: fileOptions.duration || 0,
-             * thumb_image: fileOptions.thumbImage,
-             * audioType: fileOptions.audioType,
-             */
+            file_url: fileOptions.blobUrl,
+            duration: fileOptions.duration || 0,
+            thumb_image: fileOptions.thumbImage,
+            audioType: fileOptions.audioType,
         };
     }
     const fromUserId = getUserIdFromJid(jid);

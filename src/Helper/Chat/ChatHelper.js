@@ -17,6 +17,56 @@ export const getUniqueListBy = (arr, key) => {
     return [...new Map(arr.map(item => [item[key], item])).values()]
 }
 
+
+export const uploadFileToSDK = async ( file, jid, msgId, media) => {
+    const { caption = "", fileDetails: { replyTo = "", duration = 0, audioType = "", type } = {} } = file;
+    const msgType = type.split('/')[0];
+    let fileOptions = {
+        msgId: msgId,
+        caption: caption,
+        duration: duration,
+        webWidth: media.webWidth || 0,
+        webHeight: media.webHeight || 0,
+        androidWidth: media.androidWidth || 0,
+        androidHeight: media.androidHeight || 0,
+        originalWidth: media.originalWidth || 0,
+        originalHeight: media.originalHeight || 0,
+        ...(msgType === "video" || msgType === "image" && { thumbImage: media?.thumb_image }),
+        ...(msgType === "audio" && { audioType })
+    };
+
+    let response = {};
+    if (msgType === "file") {
+        response = await SDK.sendDocumentMessage(jid, file, fileOptions, replyTo);
+    } else if (msgType === "image") {
+        response = await SDK.sendImageMessage(jid, file, fileOptions, replyTo);
+    } else if (msgType === "video") {
+        response = await SDK.sendVideoMessage(jid, file, fileOptions, replyTo);
+    } else if (msgType === "audio") {
+        response = await SDK.sendAudioMessage(jid, file, fileOptions, replyTo);
+    }
+    let updateObj = {
+        msgId,
+        statusCode: response.statusCode,
+        fromUserId: getUserIdFromJid(jid)
+    };
+    if (response.statusCode === 200) {
+        /**
+        if (msgType === "image" || msgType === "audio") {
+            // const fileBlob = await fileToBlob(file);
+            // indexedDb.setImage(response.fileToken, fileBlob, getDbInstanceName(msgType));
+        }
+        */
+        updateObj.fileToken = response.data.msgBody.media.fileToken;
+        updateObj.thumbImage =  response.data.msgBody.media.thumbImage;
+        updateObj.fileKey = response.data.msgBody.media.file_key;
+        // store.dispatch(removePendindMedia(msgId));
+    } else if (response.statusCode === 500) {
+        updateObj.uploadStatus = 3;
+    }
+    // store.dispatch(updateUploadStatus(updateObj));
+};
+
 export const concatMessageArray = (activeData, stateData, uniqueId, sortId) => {
     const updateMessage = [
         ...stateData,

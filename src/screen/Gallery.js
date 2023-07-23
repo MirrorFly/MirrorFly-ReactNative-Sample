@@ -9,6 +9,7 @@ import GalleryPhotos from "./GalleryPhotos";
 import store from "../redux/store";
 import { addGalleryAlbum, addGalleryPhotos, addGalleyGroupName } from "../redux/galleryDataSlice";
 
+
 const Gallery = (props = {}) => {
     const PAGE_SIZE = 20;
     const { setLocalNav, selectedImages, handleSelectImage, setSelectedImages,handleMedia } = props
@@ -30,7 +31,7 @@ const Gallery = (props = {}) => {
     }
 
     const renderItem = ({ item }) => {
-        const isImageSelected = selectedImages.some((selectedItem) => selectedItem.image.uri === item?.node?.image.uri);
+        const isImageSelected = selectedImages.some((selectedItem) => selectedItem?.fileDetails.image.uri === item?.node?.image.uri);
         return (
             <View style={{ position: 'relative' }} padding={0.5} >
                 <Pressable
@@ -101,6 +102,7 @@ const Gallery = (props = {}) => {
             const params = {
                 first: PAGE_SIZE,
                 groupName: groupName,
+                include:["filename","fileSize","fileExtension","imageSize","playableDuration","orientation"],
                 after
             }
             const data = await CameraRoll.getPhotos(params);
@@ -175,7 +177,7 @@ const Gallery = (props = {}) => {
     return (
         <>
             {grpView ?
-                <View mb={"0.5"} mr={"1"} ml={"1"}>
+                <View mb={"0.5"} mr={"1"} ml={"0.5"}>
                     <GalleryPhotos
                         renderItem={renderItem}
                         handleLoadMore={handleLoadMore}

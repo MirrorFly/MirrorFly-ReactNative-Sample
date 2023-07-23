@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux'
 import { DeleteBinIcon, LeftArrowIcon, PreViewAddIcon, SendBlueIcon } from '../common/Icons'
 import Avathar from '../common/Avathar'
 import { SceneMap, TabView } from 'react-native-tab-view';
-import { handleGalleryPickerMulti } from '../common/utils'
 
 function GalleryPickView(props) {
     const { handleSendMsg, setLocalNav, selectedSingle, setSelectedImages, selectedImages } = props
@@ -51,7 +50,7 @@ function GalleryPickView(props) {
         selectedImages?.reduce((scenes, item, itemIndex) => {
             scenes[`tab${itemIndex + 1}`] = () => (
                 <>
-                    <Image resizeMode='contain' source={{ uri: item.image.uri }} style={styles.tabContainer} />
+                    <Image resizeMode='contain' source={{ uri: item?.fileDetails?.image?.uri }} style={styles.tabContainer} />
                 </>
             );
             return scenes;
@@ -112,12 +111,12 @@ function GalleryPickView(props) {
                     {selectedImages?.map((item, i) => (
                         <Pressable
                             activeOpacity={1}
-                            key={item.image.uri}
+                            key={item?.fileDetails?.image.uri}
                             style={styles.tabButton}
                             onPress={() => handleIndexChange(i)}
                         >
                             <Image
-                                source={{ uri: item.image.uri }}
+                                source={{ uri: item?.fileDetails?.image.uri }}
                                 style={[
                                     styles.tabImage,
                                     index === i && styles.selectedTabImage,

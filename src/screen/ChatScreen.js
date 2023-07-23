@@ -110,23 +110,34 @@ function ChatScreen() {
     handleBackBtn
   );
 
+  const getThumbImage = async (image) => {
+    const result = await ImageCompressor.compress(image.uri, {
+      maxWidth: 200,
+      maxHeight: 200,
+      quality: 0.3,
+    });
+    const response = await RNFetchBlob.fs.readFile(result, 'base64');
+    return response
+  }
+
   const sendMediaMessage = async (messageType, files, chatTypeSendMsg) => {
     let jidSendMediaMessage = fromUserJId;
     if (messageType === "media") {
       let mediaData = {};
       for (let i = 0; i < files.length; i++) {
-        const file = files[i],
-          msgId = uuidv4();
-        console.log(file, "fileeee");
-        const { caption = "" } = file;
+        const file = files[i], msgId = uuidv4();
+        const { caption = "", fileDetails = {}, fileDetails: { image: { fileSize, filename, playableDuration, uri }, type } = {} } = file;
+        const msgType = type.split('/')[0];
+        const thumbImage = await getThumbImage(fileDetails.image)
         let fileOptions = {
-          fileName: file.name,
-          fileSize: file.size,
+          fileName: filename,
+          fileSize: fileSize,
           caption: caption,
+          uri: uri,
+          duration: playableDuration,
           msgId: msgId,
+          thumbImage: thumbImage,
         };
-
-        const msgType = file.image.type.split('/')[0];
         const userProfile = vCardData;
 
         const dataObj = {
@@ -137,7 +148,7 @@ function ChatScreen() {
           msgId,
           file,
           fileOptions,
-          fileDetails: file.images,
+          fileDetails: fileDetails,
           fromUserJid: currentUserJID
         };
         const conversationChatObj = await getMessageObjSender(dataObj, i);
@@ -150,18 +161,8 @@ function ChatScreen() {
         };
         store.dispatch(addChatConversationHistory(dispatchData));
         store.dispatch(updateRecentChat(recentChatObj));
-        let response = {};
-        if (msgType === "file") {
-          response = await SDK.sendDocumentMessage(jidSendMediaMessage, file, fileOptions);
-        } else if (msgType === "image") {
-          response = await SDK.sendImageMessage(jidSendMediaMessage, file.image, fileOptions);
-        } else if (msgType === "video") {
-          response = await SDK.sendVideoMessage(jidSendMediaMessage, file.image, fileOptions);
-        } else if (msgType === "audio") {
-          response = await SDK.sendAudioMessage(jidSendMediaMessage, file, fileOptions);
-        }
-        console.log(response, "\n response");
       }
+      setSelectedImages([])
     }
   };
 
@@ -173,7 +174,7 @@ function ChatScreen() {
   const handleMedia = (item) => {
     const transformedArray = {
       caption: '',
-      image: item.image
+      fileDetails: item
     };
     setselectedSingle(true)
     setSelectedImages([transformedArray]);
@@ -183,10 +184,10 @@ function ChatScreen() {
   const handleSelectImage = (item) => {
     const transformedArray = {
       caption: '',
-      image: item.image
+      fileDetails: item
     };
     setselectedSingle(false)
-    const isImageSelected = selectedImages.some((selectedItem) => selectedItem.image.uri === item.image.uri);
+    const isImageSelected = selectedImages.some((selectedItem) => selectedItem.fileDetails?.image?.uri === item?.image.uri);
     setIsToastShowing(true)
     if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
       return toast.show({
@@ -203,7 +204,7 @@ function ChatScreen() {
     if (!isToastShowing) {
       setIsToastShowing(false)
       if (isImageSelected) {
-        setSelectedImages(prevArray => prevArray.filter(selectedItem => selectedItem.image.uri !== item.image.uri));
+        setSelectedImages(prevArray => prevArray.filter(selectedItem => selectedItem.fileDetails?.image.uri !== item?.image?.uri));
       } else {
         setSelectedImages(prevArray => [...prevArray, transformedArray]);
       }
@@ -284,8 +285,8 @@ function ChatScreen() {
         'UserInfo': <UserInfo setLocalNav={setLocalNav} />,
         'UsersTapBarInfo': <UsersTapBarInfo setLocalNav={setLocalNav} />,
         'Gallery': <SavePicture setLocalNav={setLocalNav} selectedImages={selectedImages} handleSelectImage={handleSelectImage}
-                    handleMedia={handleMedia}
-                    setSelectedImages={setSelectedImages} />
+          handleMedia={handleMedia}
+          setSelectedImages={setSelectedImages} />
       }[localNav]}
     </>
   )

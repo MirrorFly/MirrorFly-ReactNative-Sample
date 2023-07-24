@@ -255,17 +255,17 @@ function ChatScreen() {
       };
       const conversationChatObj = await getMessageObjSender(dataObj);
       const recentChatObj = getRecentChatMsgObj(dataObj);
-      SDK.sendTextMessage(
-        jid,
-        message.content,
-        msgId
-      )
       const dispatchData = {
         data: [conversationChatObj],
         ...(isSingleChat('chat') ? { userJid: jid } : { groupJid: jidSendMsg }),
       };
       store.dispatch(addChatConversationHistory(dispatchData));
       store.dispatch(updateRecentChat(recentChatObj));
+      SDK.sendTextMessage(
+        jid,
+        message.content,
+        msgId
+      )
     }
   }
 

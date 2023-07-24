@@ -13,6 +13,7 @@ const conversationData = createSlice({
     initialState,
     reducers: {
         addChatConversationHistory: (_state, payload) => {
+            console.log('store conversationData', Date.now())
             return {
                 "id": uuidv4(),
                 "data": getChatHistoryData(payload.payload, _state.data)
@@ -21,7 +22,7 @@ const conversationData = createSlice({
             return {
                 ..._state,
                 "id": uuidv4(),
-                "data": getUpdatedHistoryData(payload.payload,StateToObj(_state).data)
+                "data": getUpdatedHistoryData(payload.payload, StateToObj(_state).data)
             }
         }
     }

@@ -9,7 +9,7 @@ import SDK from '../SDK/SDK';
 import { ClearTextIcon } from '../common/Icons';
 import { addChatConversationHistory } from '../redux/conversationSlice';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
-import { formatUserIdToJid, getChatMessageHistoryById } from '../Helper/Chat/ChatHelper';
+import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { updateMsgSeenStatus } from './chat/common/createMessage';
 import { clearGalleryData } from '../redux/utils';
 
@@ -22,25 +22,22 @@ const ChatConversation = React.memo((props) => {
     const messages = useSelector(state => state.chatConversationData.data)
     const fromUserJId = useSelector(state => state.navigation.fromUserJid)
     const [messageList, setMessageList] = React.useState([]);
-    const [isChatLoading, setIsChatLoading] = React.useState(false)
     const [selectedMsgs, setSelectedMsgs] = React.useState([]);
     const [replyMsgs, setReplyMsgs] = React.useState();
     const [menuItems, setMenuItems] = React.useState([]);
 
-    const handleSwipeLeft = (rowKey) => {
-        chatInputRef.current.focus();
-        const filteredMsgInfo = messageList.filter(item => item.msgId === rowKey);
-        setReplyMsgs(filteredMsgInfo[0]);
-    };
-    const handleReply = (msgId) => {
-        handleSwipeLeft(msgId);
-        setSelectedMsgs([])
-    }
-
-    const handleRemove = () => {
-        setReplyMsgs();
-    }
     /**  
+     *  const { vCardProfile, fromUserJId, messages } = useSelector((state) =>  ({
+        vCardProfile: state.profile.profileDetails,
+        fromUserJId: state.navigation.fromUserJid,
+        messages: state.chatConversationData.data
+    }))
+    // const handleSwipeLeft = (rowKey) => {
+    //     chatInputRef.current.focus();
+    //     const filteredMsgInfo = messageList.filter(item => item.msgId === rowKey);
+    //     setReplyMsgs(filteredMsgInfo[0]);
+    // };
+
         const renderHiddenItem = (data, rowMap) => {
             return (
                 <HStack alignItems={'center'} flex={"0.8"} ml='2' >
@@ -61,8 +58,16 @@ const ChatConversation = React.memo((props) => {
      const leftActivationValue = 20; // Adjust as needed
      const leftActionValue = 20; // Adjust as needed
      const initialLeftActionState = false; // Adjust as needed  
+     // handleSwipeLeft(msgId);
      */
 
+    const handleReply = (msgId) => {
+        setSelectedMsgs([])
+    }
+
+    const handleRemove = () => {
+        setReplyMsgs();
+    }
 
 
     const handleMessageSend = (messageContent) => {
@@ -118,14 +123,17 @@ const ChatConversation = React.memo((props) => {
         }
     }, [selectedMsgs])
 
+    const getChatMessageHistoryById = (id) => {
+        if (messages[id]?.messages) return Object.values(messages[id]?.messages);
+        return [];
+    };
+
     React.useEffect(() => {
         if (fromUserJId) {
             if (messages[getUserIdFromJid(fromUserJId)]) {
                 setMessageList(getChatMessageHistoryById(getUserIdFromJid(fromUserJId)))
             }
-            setIsChatLoading(true)
         }
-        setIsChatLoading(false)
     }, [messages, fromUserJId])
 
     React.useEffect(() => {
@@ -155,6 +163,10 @@ const ChatConversation = React.memo((props) => {
         updateMsgSeenStatus();
     }, [messageList])
 
+    const chatMessageRender = ({ item }) => {
+        return <ChatMessage handleMsgSelect={handleMsgSelect} selectedMsgs={selectedMsgs} message={item} />
+    }
+
     return (
         <KeyboardAvoidingView
             style={styles.container}
@@ -177,40 +189,12 @@ const ChatConversation = React.memo((props) => {
                     justifyContent: 'center',
                 }}
             >
-                {
-                    isChatLoading && <Slide mt="20" in={isChatLoading} placement="top">
-                        <HStack space={8} justifyContent="center" alignItems="center">
-                            <Spinner size="lg" color={'#3276E2'} />
-                        </HStack>
-                    </Slide>
-                }
                 <FlatList
-                    data={messageList}
+                    data={messageList.reverse()}
                     inverted
-                    contentContainerStyle={{ flexDirection: 'column-reverse' }}
-                    renderItem={({ item }) => {
-                        return <ChatMessage handleMsgSelect={handleMsgSelect} selectedMsgs={selectedMsgs} message={item} />
-                    }}
-                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={chatMessageRender}
+                    keyExtractor={(item) => item.msgId}
                 />
-                {/* <SwipeListView
-                    data={messageList}
-                    inverted
-                    keyExtractor={(item, index) => item.msgId.toString()}
-                    renderItem={({ item }) => {
-                        return <ChatMessage handleMsgSelect={handleMsgSelect} selectedMsgs={selectedMsgs} message={item} />
-                    }}
-                    renderHiddenItem={renderHiddenItem}
-                    disableLeftSwipe={true}
-                    disableRightSwipe={false}
-                    stopLeftSwipe={70}
-                    leftOpenValue={leftActionValue}
-                    leftActivationValue={leftActivationValue}
-                    initialLeftActionState={initialLeftActionState}
-                    swipeToOpenPercent={10}
-                    onLeftAction={(key) => onLeftAction(key)}
-                    onLeftActionStatusChange={(data) => onLeftActionStatusChange(data)}
-                /> */}
             </ImageBackground>
             {replyMsgs ? <View paddingX={"1"} paddingY={"1"} backgroundColor={"#DDE3E5"}  >
                 <Stack paddingX={"3"} paddingY={"0 "} backgroundColor={"#E2E8F9"}>

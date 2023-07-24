@@ -9,7 +9,6 @@ import GalleryPhotos from "./GalleryPhotos";
 import store from "../redux/store";
 import { addGalleryAlbum, addGalleryPhotos, addGalleyGroupName } from "../redux/galleryDataSlice";
 
-
 const Gallery = (props = {}) => {
     const PAGE_SIZE = 20;
     const { setLocalNav, selectedImages, handleSelectImage, setSelectedImages,handleMedia } = props

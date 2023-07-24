@@ -4,6 +4,7 @@ import { SendBtn } from '../common/Button';
 import { AttachmentIcon, MicIcon, EmojiIcon, KeyboardIcon } from '../common/Icons';
 import { HStack, Icon, IconButton, Modal, Flex, Text, VStack } from 'native-base';
 import EmojiOverlay from './EmojiPicker';
+import { changeTimeFormat } from '../common/TimeStamp';
 
 const ChatInput = (props) => {
   const { onSendMessage, attachmentMenuIcons, chatInputRef } = props
@@ -12,8 +13,11 @@ const ChatInput = (props) => {
   const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false)
   const sendMessage = () => {
     if (message) {
-      onSendMessage(message);
+      console.log('Sending Message', changeTimeFormat(Date.now()))
       setMessage('');
+      setTimeout(() => {
+        onSendMessage(message);
+      }, 0);
     }
   };
   const handleEmojiSelect = (...emojis) => {
@@ -118,7 +122,7 @@ const ChatInput = (props) => {
   );
 };
 
-export default ChatInput;
+export default React.memo(ChatInput);
 
 const styles = StyleSheet.create({
   container: {

@@ -12,6 +12,9 @@ import * as RootNav from '../Navigation/rootNavigation'
 import { MSG_SEEN_ACKNOWLEDGE_STATUS, MSG_SEEN_STATUS, MSG_SENT_SEEN_STATUS_CARBON } from "../Helper/Chat/Constant";
 import { deleteChatSeenPendingMsg } from "../redux/chatSeenPendingMsg";
 import { updateMediaUploadData } from "../redux/mediaUploadDataSlice";
+import { changeTimeFormat } from "../common/TimeStamp";
+import nextFrame from 'next-frame';
+
 export const callBacks = {
     connectionListener: (response) => {
         store.dispatch(setXmppStatus(response.status))
@@ -28,23 +31,40 @@ export const callBacks = {
     dbListener: (res) => {
         console.log('dbListener', JSON.stringify(res));
     },
-    messageListener: (res) => {
-        if (res.chatType === 'chat' &&
-            (res.msgType === "sentMessage" ||
-                res.msgType === "carbonSentMessage" ||
-                res.msgType === "receiveMessage" ||
-                res.msgType === "carbonReceiveMessage" ||
-                res.msgType === "receiveMessage")) {
-            updateRecentChatMessage(res, store.getState())
-            updateConversationMessage(res, store.getState())
-        }
-        if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {
-            store.dispatch(updateRecentChatMessageStatus(res))
-            store.dispatch(updateChatConversationHistory(res))
-            store.dispatch(storeDeliveryStatus(res))
-            if(res.msgType === "seen" || res.msgType === "carbonSeen"){
-                store.dispatch(storeSeenStatus(res))
+    messageListener: async (res) => {
+        await nextFrame();
+        if (res.chatType === 'chat') {
+            switch (res.msgType) {
+                case 'sentMessage':
+                case 'carbonSentMessage':
+                case 'receiveMessage':
+                case 'carbonReceiveMessage':
+                    updateRecentChatMessage(res, store.getState())
+                    updateConversationMessage(res, store.getState())
+                    break;
             }
+        }
+        switch (res.msgType) {
+            case "carbonDelivered":
+            case "delivered":
+            case "seen":
+            case "carbonSeen":
+                store.dispatch(updateRecentChatMessageStatus(res))
+                store.dispatch(updateChatConversationHistory(res))
+                store.dispatch(storeDeliveryStatus(res))
+                if (res.msgType === "seen" || res.msgType === "carbonSeen") {
+                    store.dispatch(storeSeenStatus(res))
+                }
+                break;
+        }
+        /**
+        // if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {
+            // store.dispatch(updateRecentChatMessageStatus(res))
+            // store.dispatch(updateChatConversationHistory(res))
+            // store.dispatch(storeDeliveryStatus(res))
+            // if (res.msgType === "seen" || res.msgType === "carbonSeen") {
+            //     store.dispatch(storeSeenStatus(res))
+            // }
             // store.dispatch(addMessageInfoUpdate(
             //     {
             //         id: uuidv4(),
@@ -55,8 +75,9 @@ export const callBacks = {
             //                 ? MSG_DELIVERED_STATUS_ID
             //                 : MSG_SEEN_STATUS_ID
             //     }))
-        }
-         // When message is seen, then delete the seen messages from pending seen message list
+        // }
+        */
+        // When message is seen, then delete the seen messages from pending seen message list
         const pendingMessages = store?.getState().chatSeenPendingMsgData?.data || [];
         if (
             pendingMessages.length > 0 &&

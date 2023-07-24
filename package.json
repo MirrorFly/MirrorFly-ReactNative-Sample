@@ -16,6 +16,7 @@
     "@react-navigation/native-stack": "^6.9.13",
     "emoji-datasource": "^15.0.1",
     "graphemer": "^1.4.0",
+    "next-frame": "^0.2.3",
     "react": "18.2.0",
     "react-native": "0.71.8",
     "react-native-compressor": "^1.6.1",

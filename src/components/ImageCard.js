@@ -3,6 +3,7 @@ import React from 'react';
 import { ImageBackground } from 'react-native';
 import { DownloadIcon } from '../common/Icons';
 import noPreview from '../assets/noPreview.png'
+import ProgressLoader from './chat/common/ProgressLoader';
 
 function convertBytesToKB(bytes) {
   const KB = bytes / 1024;
@@ -24,11 +25,6 @@ const ImageCard = (props) => {
         : <Image alt={mediaData.fileName} source={noPreview} width={mediaData.androidWidth} height={mediaData.androidHeight} />
       }
 
-
-      <HStack px={"1"} py={"1"} bg=" rgba(0, 0, 0, 0.5)" alignItems={"center"} position={'absolute'} bottom={'40%'} right={'30%'} borderRadius={"5"}>
-        <DownloadIcon color={mediaData.thumb_image ? '#fff' : '#000'} width='18' height='15' />
-        <Text px={"2"} color={"#fff"}>{fileSizeInKB}KB</Text>
-      </HStack>
       <View position={'absolute'} bottom={1} right={1}>
         <ImageBackground
           source={require('../assets/ic_baloon.png')}
@@ -37,6 +33,7 @@ const ImageCard = (props) => {
           {props.status}
           <Text pl='1' color='#fff' fontSize='9'>{props.timeStamp}</Text>
         </ImageBackground>
+        <ProgressLoader/>
       </View>
     </View>
   );

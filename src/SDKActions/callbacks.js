@@ -11,6 +11,7 @@ import { updateUserPresence } from "../redux/userSlice";
 import * as RootNav from '../Navigation/rootNavigation'
 import { MSG_SEEN_ACKNOWLEDGE_STATUS, MSG_SEEN_STATUS, MSG_SENT_SEEN_STATUS_CARBON } from "../Helper/Chat/Constant";
 import { deleteChatSeenPendingMsg } from "../redux/chatSeenPendingMsg";
+import { updateMediaUploadData } from "../redux/mediaUploadDataSlice";
 export const callBacks = {
     connectionListener: (response) => {
         store.dispatch(setXmppStatus(response.status))
@@ -91,7 +92,7 @@ export const callBacks = {
         console.log('groupMsgInfoListener = (res) => { }', res)
     },
     mediaUploadListener: (res) => {
-        console.log('mediaUploadListener = (res) => { }', res)
+        store.dispatch(updateMediaUploadData(res));
     },
     blockUserListener: (res) => {
         console.log('blockUserListener = (res) => { }', res)

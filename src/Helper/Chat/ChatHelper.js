@@ -2,6 +2,7 @@ import { SDK } from "../../SDK"
 import { CHAT_TYPE_GROUP, CHAT_TYPE_SINGLE, MSG_DELIVERED_STATUS_ID, MSG_PROCESSING_STATUS_ID, MSG_SEEN_STATUS_ID, MSG_SENT_ACKNOWLEDGE_STATUS_ID } from "./Constant"
 import { getUserIdFromJid } from "./Utility";
 import store from "../../redux/store";
+import { updateUploadStatus } from "../../redux/conversationSlice";
 
 export const isGroupChat = (chatType) => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = (chatType) => chatType === CHAT_TYPE_SINGLE;
@@ -18,7 +19,7 @@ export const getUniqueListBy = (arr, key) => {
 }
 
 
-export const uploadFileToSDK = async ( file, jid, msgId, media) => {
+export const uploadFileToSDK = async (file, jid, msgId, media) => {
     const { caption = "", fileDetails: { replyTo = "", duration = 0, audioType = "", type } = {} } = file;
     const msgType = type.split('/')[0];
     let fileOptions = {
@@ -57,14 +58,60 @@ export const uploadFileToSDK = async ( file, jid, msgId, media) => {
             // indexedDb.setImage(response.fileToken, fileBlob, getDbInstanceName(msgType));
         }
         */
-        updateObj.fileToken = response.data.msgBody.media.fileToken;
-        updateObj.thumbImage =  response.data.msgBody.media.thumbImage;
-        updateObj.fileKey = response.data.msgBody.media.file_key;
-        // store.dispatch(removePendindMedia(msgId));
+        updateObj.fileToken = response.fileToken;
+        updateObj.thumbImage = response.thumbImage;
+        // updateObj.fileKey = response.data.msgBody.media.file_key;
     } else if (response.statusCode === 500) {
         updateObj.uploadStatus = 3;
     }
-    // store.dispatch(updateUploadStatus(updateObj));
+    store.dispatch(updateUploadStatus(updateObj));
+};
+
+export const getUpdatedHistoryDataUpload = (data, stateData) => {
+    // Here Get the Current Active Chat History and Active Message
+    const currentChatData = stateData[data.fromUserId];
+    if (currentChatData?.messages && Object.keys(currentChatData?.messages).length > 0) {
+        const currentMessage = currentChatData.messages[data.msgId];
+
+        if (currentMessage) {
+            currentMessage.msgBody.media.is_uploading = data.uploadStatus;
+            if (data.statusCode === 200) {
+                currentMessage.msgBody.media.file_url = data.fileToken || "";
+                currentMessage.msgBody.media.thumb_image = data.thumbImage || "";
+                currentMessage.msgBody.media.file_key = data.fileKey || "";
+            }
+
+            let msgIds = Object.keys(currentChatData?.messages);
+            let nextIndex = msgIds.indexOf(data.msgId) + 1;
+            let nextItem = msgIds[nextIndex];
+
+            if (nextItem) {
+                let nextMessage = currentChatData.messages[nextItem];
+                if (nextMessage?.msgBody?.media?.is_uploading === 0) {
+                    nextMessage.msgBody.media.is_uploading = 1;
+
+                    return {
+                        ...stateData,
+                        [data.fromUserId]: {
+                            ...currentChatData,
+                            [data.msgId]: currentMessage,
+                            [nextItem]: nextMessage
+                        }
+                    };
+                }
+            }
+            return {
+                ...stateData,
+                [data.fromUserId]: {
+                    ...currentChatData,
+                    [data.msgId]: currentMessage
+                }
+            };
+        }
+    }
+    return {
+        ...stateData
+    };
 };
 
 export const concatMessageArray = (activeData, stateData, uniqueId, sortId) => {
@@ -183,7 +230,7 @@ export const getChatHistoryMessagesData = () => {
  * Get the active conversation user ID
  */
 export const getActiveConversationChatId = () => {
-    const { navigation: { fromUserJid : chatId = "" } = {} } = store.getState();
+    const { navigation: { fromUserJid: chatId = "" } = {} } = store.getState();
     return getUserIdFromJid(chatId);
 }
 

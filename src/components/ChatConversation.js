@@ -124,7 +124,7 @@ const ChatConversation = React.memo((props) => {
     }, [selectedMsgs])
 
     const getChatMessageHistoryById = (id) => {
-        if (messages[id]?.messages) return Object.values(messages[id]?.messages);
+        if (messages[id]?.messages) return Object.values(messages[id]?.messages).reverse();
         return [];
     };
 
@@ -164,7 +164,7 @@ const ChatConversation = React.memo((props) => {
     }, [messageList])
 
     const chatMessageRender = ({ item }) => {
-        return <ChatMessage handleMsgSelect={handleMsgSelect} selectedMsgs={selectedMsgs} message={item} />
+        return <ChatMessage handleMsgSelect={handleMsgSelect} selectedMsgs={selectedMsgs} message={item}/>
     }
 
     return (
@@ -190,7 +190,7 @@ const ChatConversation = React.memo((props) => {
                 }}
             >
                 <FlatList
-                    data={messageList.reverse()}
+                    data={messageList}
                     inverted
                     renderItem={chatMessageRender}
                     keyExtractor={(item) => item.msgId}

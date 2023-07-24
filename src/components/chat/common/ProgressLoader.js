@@ -118,9 +118,9 @@ const ProgressLoader = (props = {}) => {
         <View
           style={styles.progressOverlay}
         ><HStack px={"1"} py={"1"} bg=" rgba(0, 0, 0, 0.5)" alignItems={"center"} position={'absolute'} bottom={'40%'} right={'30%'} borderRadius={"5"}>
-        <DownloadIcon color={"mediaData.thumb_image" ? '#fff' : '#000'} width='18' height='15' />
-        <Text px={"2"} color={"#fff"}>{"fileSizeInKB"}KB</Text>
-      </HStack></View>
+            <DownloadIcon color={"mediaData.thumb_image" ? '#fff' : '#000'} width='18' height='15' />
+            <Text px={"2"} color={"#fff"}>{"fileSizeInKB"}KB</Text>
+          </HStack></View>
       </View>
       {/* <div className="progressOverlay">
         {isOnline && (uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8 || uploadStatus === 9) ? (

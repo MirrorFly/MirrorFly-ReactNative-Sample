@@ -79,8 +79,6 @@ export const updateMsgSeenStatus = async () => {
     const state = store.getState();
     if (state?.navigation?.fromUserJid) {
         const pendingMessages = state?.chatSeenPendingMsgData?.data || [];
-        console.log(pendingMessages, "pendingMessagesIn");
-
         pendingMessages.map((message) => {
             const fromUserId = isGroupChat(message.chatType) ? message.publisherId : message.fromUserId;
             const groupId = isGroupChat(message.chatType) ? message.fromUserId : "";

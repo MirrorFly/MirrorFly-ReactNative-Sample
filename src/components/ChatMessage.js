@@ -19,7 +19,7 @@ const ChatMessage = (props) => {
   let isSame = currentUserJID === props?.message?.fromUserJid
   let statusVisible = 'notSend'
   const { message } = props
-  const { msgBody = {}, msgBody: { media: { file = {}, is_uploading, thumb_image = '' } = {} }, msgId, } = message
+  const { msgBody = {}, msgBody: { media: { file = {}, is_uploading, thumb_image = '' } = {} } = {}, msgId } = message
   const imageSize = props?.message?.msgBody?.media?.file_size || "";
   const fileSize = imageSize;
   

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { v4 as uuidv4 } from 'uuid';
-import { getChatHistoryData, getUpdatedHistoryData } from "../Helper/Chat/ChatHelper";
+import { getChatHistoryData, getUpdatedHistoryData, getUpdatedHistoryDataUpload } from "../Helper/Chat/ChatHelper";
 import { StateToObj } from "./reduxHelper";
 
 const initialState = {
@@ -13,7 +13,6 @@ const conversationData = createSlice({
     initialState,
     reducers: {
         addChatConversationHistory: (_state, payload) => {
-            console.log('store conversationData', Date.now())
             return {
                 "id": uuidv4(),
                 "data": getChatHistoryData(payload.payload, _state.data)
@@ -24,6 +23,12 @@ const conversationData = createSlice({
                 "id": uuidv4(),
                 "data": getUpdatedHistoryData(payload.payload, StateToObj(_state).data)
             }
+        }, updateUploadStatus: (_state, payload) => {
+            return {
+                ..._state,
+                "id": uuidv4(),
+                "data": getUpdatedHistoryDataUpload(payload.payload, StateToObj(_state).data)
+            }
         }
     }
 });
@@ -31,3 +36,4 @@ const conversationData = createSlice({
 export default conversationData.reducer
 export const addChatConversationHistory = conversationData.actions.addChatConversationHistory
 export const updateChatConversationHistory = conversationData.actions.updateChatConversationHistory
+export const updateUploadStatus = conversationData.actions.updateUploadStatus

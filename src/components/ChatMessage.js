@@ -10,16 +10,25 @@ import MapCard from './MapCard';
 import ContactCard from './ContactCard';
 import TextCard from './TextCard';
 import { getConversationHistoryTime } from '../common/TimeStamp';
-import { Box, HStack, Icon, Pressable, View } from 'native-base';
+import { Box, HStack, Icon, Pressable, Text, View } from 'native-base';
+import { uploadFileToSDK } from '../Helper/Chat/ChatHelper';
 
 const ChatMessage = (props) => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID)
+  const fromUserJId = useSelector(state => state.navigation.fromUserJid)
   let isSame = currentUserJID === props?.message?.fromUserJid
   let statusVisible = 'notSend'
-  const imageSize = props?.message?.msgBody.media?.file_size;
+  const { message } = props
+  const { msgBody = {}, msgBody: { media: { file = {}, is_uploading, thumb_image = '' } = {} }, msgId, } = message
+  const imageSize = props?.message?.msgBody?.media?.file_size || "";
   const fileSize = imageSize;
+  React.useEffect(() => {
+    if (is_uploading === 1) {
+      uploadFileToSDK(file, fromUserJId, msgId, msgBody?.media);
+    }
+  }, [is_uploading])
 
-  switch (props?.message?.msgStatus) {
+  switch (message?.msgStatus) {
     case 3:
       statusVisible = styles.bgClr
       break;
@@ -47,7 +56,7 @@ const ChatMessage = (props) => {
   return (
     <Pressable
       onPress={() => props?.selectedMsgs?.length && props.handleMsgSelect(props.message)}
-      onLongPress={() => props?.message?.msgStatus !== 3 && props.handleMsgSelect(props.message)}>
+      onLongPress={() => message?.msgStatus !== 3 && props.handleMsgSelect(props.message)}>
       {({ isPressed }) => {
         return <Box >
           <Box my={"1"} bg={props.selectedMsgs.includes(props.message) ? 'rgba(0,0,0, 0.2)' : 'transparent'}>
@@ -55,20 +64,20 @@ const ChatMessage = (props) => {
               <View minWidth='30%' maxWidth='80%'>
                 {{
                   "text": <TextCard isSame={isSame} data={{
-                    message: props?.message?.msgBody?.message,
+                    message: message?.msgBody?.message,
                     timeStamp: getConversationHistoryTime(props?.message?.createdAt),
                     status: getMessageStatus(props?.message?.msgStatus)
                   }} />,
-                  'image': <ImageCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} fileSize={fileSize} />,
-                  "video": <VideoCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} />,
+                  'image': <ImageCard data={message} status={getMessageStatus(message?.msgStatus)} timeStamp={getConversationHistoryTime(message?.createdAt)} fileSize={fileSize} />,
+                  "video": <VideoCard data={message} status={getMessageStatus(message?.msgStatus)} timeStamp={getConversationHistoryTime(message?.createdAt)} />,
                   "audio":
                     <View style={{ flex: 1 }}>
-                      <AudioCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} />
+                      <AudioCard data={message} status={getMessageStatus(message?.msgStatus)} timeStamp={getConversationHistoryTime(message?.createdAt)} />
                     </View>,
-                  "file": <PdfCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} fileSize={fileSize} />,
-                  "contact": <ContactCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} />,
-                  "location": <MapCard data={props?.message} status={getMessageStatus(props?.message?.msgStatus)} timeStamp={getConversationHistoryTime(props?.message?.createdAt)} />
-                }[props?.message?.msgBody?.message_type]}
+                  "file": <PdfCard data={message} status={getMessageStatus(message?.msgStatus)} timeStamp={getConversationHistoryTime(message?.createdAt)} fileSize={fileSize} />,
+                  "contact": <ContactCard data={message} status={getMessageStatus(message?.msgStatus)} timeStamp={getConversationHistoryTime(message?.createdAt)} />,
+                  "location": <MapCard data={message} status={getMessageStatus(message?.msgStatus)} timeStamp={getConversationHistoryTime(message?.createdAt)} />
+                }[message?.msgBody?.message_type]}
               </View>
             </HStack>
           </Box>

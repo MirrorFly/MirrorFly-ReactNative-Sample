@@ -12,6 +12,7 @@ import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { updateMsgSeenStatus } from './chat/common/createMessage';
 import { changeTimeFormat } from '../common/TimeStamp';
+import { clearGalleryData } from '../redux/utils';
 
 const ChatConversation = React.memo((props) => {
     const { handleSendMsg } = props
@@ -148,6 +149,7 @@ const ChatConversation = React.memo((props) => {
                 }
             }
         })()
+        clearGalleryData()
     }, []);
 
 
@@ -193,26 +195,8 @@ const ChatConversation = React.memo((props) => {
                     data={messageList.reverse()}
                     inverted
                     renderItem={chatMessageRender}
-                    keyExtractor={(item) => item.msgId.toString()}
+                    keyExtractor={(item) => item.msgId}
                 />
-                {/* <SwipeListView
-                    data={messageList}
-                    inverted
-                    keyExtractor={(item, index) => item.msgId.toString()}
-                    renderItem={({ item }) => {
-                        return <ChatMessage handleMsgSelect={handleMsgSelect} selectedMsgs={selectedMsgs} message={item} />
-                    }}
-                    renderHiddenItem={renderHiddenItem}
-                    disableLeftSwipe={true}
-                    disableRightSwipe={false}
-                    stopLeftSwipe={70}
-                    leftOpenValue={leftActionValue}
-                    leftActivationValue={leftActivationValue}
-                    initialLeftActionState={initialLeftActionState}
-                    swipeToOpenPercent={10}
-                    onLeftAction={(key) => onLeftAction(key)}
-                    onLeftActionStatusChange={(data) => onLeftActionStatusChange(data)}
-                /> */}
             </ImageBackground>
             {replyMsgs ? <View paddingX={"1"} paddingY={"1"} backgroundColor={"#DDE3E5"}  >
                 <Stack paddingX={"3"} paddingY={"0 "} backgroundColor={"#E2E8F9"}>

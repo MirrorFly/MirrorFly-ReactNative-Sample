@@ -60,7 +60,7 @@ const RootNavigation = () => {
             const storedVal = await AsyncStorage.getItem('pendingSeenStatus')
             const parsedStoreVal = JSON.parse(storedVal)
             if (parsedStoreVal?.data.length)
-                parsedStoreVal.data.forEach(element => {
+                parsedStoreVal?.data.forEach(element => {
                     dispatch(addchatSeenPendingMsg(element))
                 });
             if (JSON.parse(screenObj)) {

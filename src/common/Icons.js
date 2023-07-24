@@ -630,20 +630,20 @@ export const ReplyUserIcon = (props) => {
 
 export const AudioMusicIcon = (props) => {
     return (
-        <Svg xmlns="http://www.w3.org/2000/svg"   width={props.width || 10}
-        height={props.height || 10}   viewBox="0 0 31.409 23.746">
-        <G id="noun_Audio_3408360" transform="translate(-2.5 -14)">
-          <G id="Group_15648" data-name="Group 15648" transform="translate(2.5 14)">
-            <Path id="Path_13786" data-name="Path 13786" d="M29.615,27.145V25.46a11.427,11.427,0,1,0-22.855,0v1.684a4.683,4.683,0,0,0,.429,9.347h.429v.165a1.1,1.1,0,0,0,1.09,1.09h.859a1.1,1.1,0,0,0,1.09-1.09v-9.71a1.1,1.1,0,0,0-1.09-1.09h-.4v-.4a9.016,9.016,0,0,1,18.033,0v.4h-.4a1.1,1.1,0,0,0-1.09,1.09v9.71a1.1,1.1,0,0,0,1.09,1.09h.859a1.1,1.1,0,0,0,1.09-1.09v-.165h.462a4.687,4.687,0,0,0,4.69-4.69A4.753,4.753,0,0,0,29.615,27.145Z" transform="translate(-2.5 -14)" fill="#ffff"/>
-          </G>
-        </G>
-      </Svg>
+        <Svg xmlns="http://www.w3.org/2000/svg" width={props.width || 10}
+            height={props.height || 10} viewBox="0 0 31.409 23.746">
+            <G id="noun_Audio_3408360" transform="translate(-2.5 -14)">
+                <G id="Group_15648" data-name="Group 15648" transform="translate(2.5 14)">
+                    <Path id="Path_13786" data-name="Path 13786" d="M29.615,27.145V25.46a11.427,11.427,0,1,0-22.855,0v1.684a4.683,4.683,0,0,0,.429,9.347h.429v.165a1.1,1.1,0,0,0,1.09,1.09h.859a1.1,1.1,0,0,0,1.09-1.09v-9.71a1.1,1.1,0,0,0-1.09-1.09h-.4v-.4a9.016,9.016,0,0,1,18.033,0v.4h-.4a1.1,1.1,0,0,0-1.09,1.09v9.71a1.1,1.1,0,0,0,1.09,1.09h.859a1.1,1.1,0,0,0,1.09-1.09v-.165h.462a4.687,4.687,0,0,0,4.69-4.69A4.753,4.753,0,0,0,29.615,27.145Z" transform="translate(-2.5 -14)" fill="#ffff" />
+                </G>
+            </G>
+        </Svg>
     )
 }
 
 export const PlayAudioIcon = (props) => {
     return (
-        <Svg xmlns="http://www.w3.org/2000/svg"  width="12" height="15" viewBox="0 0 12 15">
+        <Svg xmlns="http://www.w3.org/2000/svg" width="12" height="15" viewBox="0 0 12 15">
             <G id="play-arrow" transform="translate(0 8)">
                 <Path id="Path_9849" data-name="Path 9849" d="M19.227,6.868,8.543.1a.661.661,0,0,0-.987.626V14.277a.661.661,0,0,0,.987.626l10.684-6.77A.772.772,0,0,0,19.227,6.868Z" transform="translate(-7.556 -8)" fill="#7285b5" />
             </G>
@@ -736,7 +736,7 @@ export const DocIcon = (props) => {
 
 export const DownloadIcon = (props) => {
     return (
-        <Svg  
+        <Svg
             width={props.width || 10}
             height={props.height || 10}
             xmlns="http://www.w3.org/2000/svg"
@@ -745,7 +745,64 @@ export const DownloadIcon = (props) => {
             <Path
                 id="path"
                 d="M 1.75 11.084 L 12.25 11.084 L 12.25 12.251 L 1.75 12.251 Z M 7.583 5.25 L 11.666 5.25 L 7 9.917 L 2.333 5.25 L 6.417 5.25 L 6.417 0.584 L 7.583 0.584 Z"
-                fill= {props.color || "#7285B5"} />
+                fill={props.color || "#7285B5"} />
         </Svg>
     )
+}
+
+export const CameraSmallIcon = () => {
+    return <Svg id="camera_1_" data-name="camera" xmlns="http://www.w3.org/2000/svg" width="10.333" height="9.3" viewBox="0 0 10.333 9.3">
+        <G id="camera-alt" transform="translate(0 0)">
+            <Circle id="Ellipse_55" data-name="Ellipse 55" cx="1.653" cy="1.653" r="1.653" transform="translate(3.513 3.513)" fill="#fff" />
+            <Path id="Path_9745" data-name="Path 9745" d="M3.617,25.5l-.93,1.033H1.033A1.036,1.036,0,0,0,0,27.567v6.2A1.036,1.036,0,0,0,1.033,34.8H9.3a1.036,1.036,0,0,0,1.033-1.033v-6.2A1.036,1.036,0,0,0,9.3,26.533H7.647L6.717,25.5Zm1.55,7.75A2.583,2.583,0,1,1,7.75,30.667,2.558,2.558,0,0,1,5.167,33.25Z" transform="translate(0 -25.5)" fill="#fff" />
+        </G>
+    </Svg>
+}
+
+export const FolderIcon = () => {
+    return <Svg xmlns="http://www.w3.org/2000/svg" width="11.468" height="9.3" viewBox="0 0 11.468 9.3">
+        <G id="folder" transform="translate(0 -48.403)">
+            <G id="Group_15639" data-name="Group 15639" transform="translate(0 48.403)">
+                <G id="Group_15638" data-name="Group 15638" transform="translate(0 0)">
+                    <Path id="Path_13749" data-name="Path 13749" d="M9.041,49.239H3.125a.332.332,0,0,1-.332-.332v-.166a.338.338,0,0,0-.338-.338H.677A.677.677,0,0,0,0,49.08v5.693l.868-4.223a.332.332,0,0,1,.325-.265H9.717v-.368A.677.677,0,0,0,9.041,49.239Z" transform="translate(0 -48.403)" fill="#fff" />
+                </G>
+            </G>
+            <G id="Group_15641" data-name="Group 15641" transform="translate(0.151 50.948)">
+                <G id="Group_15640" data-name="Group 15640">
+                    <Path id="Path_13750" data-name="Path 13750" d="M17.386,162.01H8.058l-1.306,6.352a.336.336,0,0,0,.329.4h9.707a.677.677,0,0,0,.672-.6l.6-5.4A.677.677,0,0,0,17.386,162.01Z" transform="translate(-6.746 -162.01)" fill="#fff" />
+                </G>
+            </G>
+        </G>
+    </Svg>
+}
+
+export const VideoSmallIcon = () => {
+    return <Svg xmlns="http://www.w3.org/2000/svg" width="12.014" height="7.059" viewBox="0 0 12.014 7.059">
+        <G id="video-camera" transform="translate(0 -96.512)">
+            <G id="Group_15643" data-name="Group 15643" transform="translate(0 96.512)">
+                <G id="Group_15642" data-name="Group 15642" transform="translate(0 0)">
+                    <Path id="Path_13751" data-name="Path 13751" d="M6.8,96.512H1.314A1.318,1.318,0,0,0,0,97.826v4.43a1.318,1.318,0,0,0,1.314,1.314H6.8a1.318,1.318,0,0,0,1.314-1.314v-4.43A1.31,1.31,0,0,0,6.8,96.512Z" transform="translate(0 -96.512)" fill="#fff" />
+                </G>
+            </G>
+            <G id="Group_15645" data-name="Group 15645" transform="translate(8.767 97.214)">
+                <G id="Group_15644" data-name="Group 15644" transform="translate(0 0)">
+                    <Path id="Path_13752" data-name="Path 13752" d="M343.778,123.868a.67.67,0,0,0-.223.092l-2.051,1.183v3.05l2.064,1.183a.781.781,0,0,0,1.078-.289.8.8,0,0,0,.105-.394v-4.062A.791.791,0,0,0,343.778,123.868Z" transform="translate(-341.504 -123.847)" fill="#fff" />
+                </G>
+            </G>
+        </G>
+    </Svg>
+}
+
+export const CheckBox = () => {
+    return <Svg id="check-box" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+        <G id="check-box-outline" transform="translate(0)">
+            <Path id="Path_13753" data-name="Path 13753" d="M4.356,6.311,3.111,7.556l4,4L16,2.667,14.756,1.422,7.111,9.067Zm9.867,7.911H1.778V1.778h8.889V0H1.778A1.783,1.783,0,0,0,0,1.778V14.222A1.783,1.783,0,0,0,1.778,16H14.222A1.783,1.783,0,0,0,16,14.222V7.111H14.222Z" transform="translate(0)" />
+        </G>
+    </Svg>
+}
+
+export const TickIcon = () => {
+    return <Svg xmlns="http://www.w3.org/2000/svg" width="16.294" height="12.811" viewBox="0 0 16.294 12.811">
+        <Path id="Path_13812" data-name="Path 13812" d="M4.684,7.6,3.111,9.176l5.057,5.057L19.405,3,17.832,1.422,8.168,11.086Z" transform="translate(-3.111 -1.422)" fill="#fff" />
+    </Svg>
 }

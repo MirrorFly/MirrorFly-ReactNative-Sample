@@ -23,7 +23,8 @@ const Gallery = (props = {}) => {
     const [checkBox, setCheckbox] = React.useState(false)
     let numColumns = 3
     const deviceWidth = Dimensions.get('window').width;
-    const itemWidth = deviceWidth / numColumns;
+    let itemWidth = deviceWidth / numColumns;
+    itemWidth = itemWidth - (itemWidth / 100 * 0.45)
 
     const handleBackBtn = () => {
         setLocalNav("CHATCONVERSATION")
@@ -32,7 +33,7 @@ const Gallery = (props = {}) => {
     const renderItem = ({ item }) => {
         const isImageSelected = selectedImages.some((selectedItem) => selectedItem?.fileDetails.image.uri === item?.node?.image.uri);
         return (
-            <View style={{ position: 'relative' }} padding={0.5} >
+            <View style={{ position: 'relative' }} padding={0.45} >
                 <Pressable
                     width={itemWidth}
                     onPress={() => {
@@ -41,7 +42,7 @@ const Gallery = (props = {}) => {
                     }}
                     onLongPress={() => { setCheckbox(false); handleSelectImage(item.node) }}
                 >
-                    <Image alt="" style={{ width: "100%", aspectRatio:1 }} source={{ uri: item?.node?.image.uri }} />
+                    <Image alt="" style={{ width: itemWidth, aspectRatio:1 }} source={{ uri: item?.node?.image.uri }} />
                     {isImageSelected && <View style={{ position: 'absolute', padding: 1, width: "100%", aspectRatio:1, marginRight: 3, backgroundColor: 'rgba(0,0,0,0.5)' }}>
                         <View position={"absolute"} left={60} bottom={60}>{<Icon as={TickIcon} name="emoji-happy" />}</View>
                     </View>}
@@ -156,9 +157,9 @@ const Gallery = (props = {}) => {
         return (
             <Pressable onPress={() => {
                 fetchPhotos(item.value.title)
-            }} padding='0.5' style={{ justifyContent: "space-between" }}>
-                <View style={{ position: 'relative', width: 135, height: 135 }}>
-                    <Image resizeMode="cover" alt={item.value.title} size={135} source={{ uri: item?.value?.uri }} />
+            }} padding='0.4' style={{ justifyContent: "space-between" }}>
+                <View style={{ position: 'relative', width: itemWidth, height: itemWidth }}>
+                    <Image resizeMode="cover" alt={item.value.title} size={itemWidth} source={{ uri: item?.value?.uri }} />
                     <HStack px={"0.5"} alignItems={"center"} style={{ backgroundColor: 'rgba(0,0,0,0.1))', position: 'absolute', bottom: 1, width: '100%' }}>
                         {item.value.title === "Camera" ? <Icon as={CameraSmallIcon} name="emoji-happy" /> : <Icon as={FolderIcon} name="emoji-happy" />}
                         <Text ml={1.5} color='#fff' width={"60%"} numberOfLines={1} ellipsizeMode="tail" fontSize={10}>
@@ -176,7 +177,7 @@ const Gallery = (props = {}) => {
     return (
         <>
             {grpView ?
-                <View mb={"0.5"} mr={"1"} ml={"0.5"}>
+                <View mb={"0.5"} mr={"0.3"} ml={"0.1"}>
                     <GalleryPhotos
                         renderItem={renderItem}
                         handleLoadMore={handleLoadMore}
@@ -196,7 +197,7 @@ const Gallery = (props = {}) => {
                 :
                 <View mb="20">
                     <ScreenHeader title={'Send to ' + profileDetails?.nickName} onhandleBack={handleBackBtn} />
-                    <View ml={"1"} mb='16'>
+                    <View ml={"0.1"} mb='16'>
                         <FlatList
                             numColumns={3}
                             data={galleryData}

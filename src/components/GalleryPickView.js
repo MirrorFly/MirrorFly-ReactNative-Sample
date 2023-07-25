@@ -2,7 +2,7 @@ import React from 'react'
 import { BackHandler, Image, Pressable, StyleSheet, TextInput } from 'react-native'
 import { Divider, HStack, Icon, IconButton, Spacer, Text, View, useToast } from 'native-base'
 import { useSelector } from 'react-redux'
-import { DeleteBinIcon, LeftArrowIcon, PreViewAddIcon, SendBlueIcon } from '../common/Icons'
+import { DeleteBinIcon, LeftArrowIcon, PreViewAddIcon, RightArrowIcon, SendBlueIcon } from '../common/Icons'
 import Avathar from '../common/Avathar'
 import { SceneMap, TabView } from 'react-native-tab-view';
 
@@ -64,10 +64,10 @@ function GalleryPickView(props) {
                     <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handleBackBtn} icon={<Icon as={() => LeftArrowIcon('#fff')} name="emoji-happy" />} borderRadius="full" />
                     <Avathar width={30} height={30} fontsize={14} backgroundColor={profileDetails?.colorCode} data={profileDetails?.nickName || '91'} />
                     <Spacer />
-                    <IconButton mr={'2'} onPress={() => {
+                    {selectedImages.length > 1 && <IconButton mr={'2'} onPress={() => {
                         let filtered = selectedImages?.filter((item, i) => i !== index)
                         setSelectedImages(filtered)
-                    }} _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} icon={<Icon as={<DeleteBinIcon color="#fff" />} name="emoji-happy" />} borderRadius="full" />
+                    }} _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} icon={<Icon as={<DeleteBinIcon color="#fff" />} name="emoji-happy" />} borderRadius="full" />}
                 </HStack>
                 <TabView
                     navigationState={{ index, routes: props.selectedImages?.map((_, i) => ({ key: `tab${i + 1}` })) }}
@@ -105,7 +105,8 @@ function GalleryPickView(props) {
                 </HStack>
 
                 <HStack mb='5' ml='4'>
-                    <Text color='#7f7f7f'>{`>  ${profileDetails.nickName}`}</Text>
+                    <IconButton icon={<Icon as={() => RightArrowIcon('#fff')} name="emoji-happy" />}  />
+                    <Text color='#7f7f7f'>{profileDetails.nickName}</Text>
                 </HStack>
                 {selectedImages.length > 1 && <HStack>
                     {selectedImages?.map((item, i) => (

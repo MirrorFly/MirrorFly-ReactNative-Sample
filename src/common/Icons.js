@@ -806,3 +806,13 @@ export const TickIcon = () => {
         <Path id="Path_13812" data-name="Path 13812" d="M4.684,7.6,3.111,9.176l5.057,5.057L19.405,3,17.832,1.422,8.168,11.086Z" transform="translate(-3.111 -1.422)" fill="#fff" />
     </Svg>
 }
+
+export const RightArrowIcon = () => {
+    return <Svg xmlns="http://www.w3.org/2000/svg" width="5.085" height="8.656" viewBox="0 0 5.085 8.656">
+        <G id="right-arrow" transform="translate(-101.478)">
+            <G id="Group_15648" data-name="Group 15648" transform="translate(101.478)">
+                <Path id="Path_13758" data-name="Path 13758" d="M106.425,3.99,102.573.138a.475.475,0,0,0-.67,0l-.284.284a.474.474,0,0,0,0,.67l3.235,3.235-3.238,3.238a.475.475,0,0,0,0,.67l.284.284a.474.474,0,0,0,.67,0l3.855-3.855a.478.478,0,0,0,0-.672Z" transform="translate(-101.478)" fill="#fff" />
+            </G>
+        </G>
+    </Svg>
+}

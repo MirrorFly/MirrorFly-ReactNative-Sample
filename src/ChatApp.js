@@ -10,7 +10,7 @@ import { navigationRef } from './Navigation/rootNavigation';
 import ApplicationTheme from './config/appTheme';
 import SplashScreen from './screen/SplashScreen';
 import StackNavigationPage from './Navigation/stackNavigation';
-import { NativeBaseProvider } from 'native-base';
+import { Box, NativeBaseProvider } from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getCurrentUserJid } from './redux/authSlice';
 import { profileDetail } from './redux/profileSlice';
@@ -73,14 +73,18 @@ const RootNavigation = () => {
     }, [])
 
     return (
-        <NavigationContainer
-            ref={navigationRef}
-            theme={scheme === 'dark' ? ApplicationTheme.lightTheme : ApplicationTheme.lightTheme}
-        >
-            {isLoading ?
-                <SplashScreen />
-                : <StackNavigationPage InitialValue={initialRouteValue} />
-            }
-        </NavigationContainer>
+        <>
+            <Box safeAreaTop bg="#f2f2f2" />
+            <NavigationContainer
+                ref={navigationRef}
+                theme={scheme === 'dark' ? ApplicationTheme.lightTheme : ApplicationTheme.lightTheme}
+            >
+                {isLoading ?
+                    <SplashScreen />
+                    : <StackNavigationPage InitialValue={initialRouteValue} />
+                }
+            </NavigationContainer>
+            <Box safeAreaBottom />
+        </>
     )
 }

@@ -7,6 +7,8 @@ export const getUserIdFromJid = (userJid) => {
     return userJid && userJid.includes("@") ? userJid.split("@")[0] : userJid;
 };
 
+export const getThumbBase64URL = (thumb) => `data:image/png;base64,${thumb}`;
+
 // Recalculates Image/Video Width and Height for Multiple Platforms
 export const calculateWidthAndHeight = (width, height) => {
     let response = {};

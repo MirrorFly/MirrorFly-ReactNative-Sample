@@ -10,7 +10,6 @@ const mediauploadDataSlice = createSlice({
     initialState,
     reducers: {
         updateMediaUploadData: (_state, payload) => {
-            console.log(payload.payload,"09876543345678");
             return {
                 ..._state,
                 ...{

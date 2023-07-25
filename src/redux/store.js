@@ -11,6 +11,7 @@ import conversationSlice from './conversationSlice';
 import connectionSlice from './connectionSlice';
 import chatSeenPendingMsg from './chatSeenPendingMsg';
 import galleryDataSlice from './galleryDataSlice';
+import mediaUploadDataSlice from './mediaUploadDataSlice';
 
 const store = configureStore({
     reducer: {
@@ -24,7 +25,8 @@ const store = configureStore({
         chatSeenPendingMsgData: chatSeenPendingMsg,
         storage: storageSlice,
         dbValues: dbSlice,
-        galleryData: galleryDataSlice,  
+        galleryData: galleryDataSlice, 
+        mediaUploadData:mediaUploadDataSlice,
         connection: connectionSlice
     }, middleware: (getDefaultMiddleware) => getDefaultMiddleware({
         serializableCheck: false

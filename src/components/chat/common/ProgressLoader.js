@@ -4,6 +4,7 @@ import { StyleSheet } from "react-native";
 import { DownloadIcon } from "../../../common/Icons";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withRepeat } from 'react-native-reanimated';
 import { useNetworkStatus } from "../../../hooks";
+import { useSelector } from "react-redux";
 
 /**
  * Upload Status
@@ -28,8 +29,9 @@ let animationTimer = null;
 let progressIntervel = null
 
 const ProgressLoader = (props = {}) => {
-  const isNetworkConnected = useNetworkStatus()
-  const { mediaData, fileSize } = props
+  const isNetworkConnected = useNetworkStatus();
+  const { mediaData, fileSize, uploadStatus = 0, msgId } = props
+  const mediaUploadData = useSelector((state) => state.mediaUploadData?.data)
   const [isDownloading, setisDownloading] = React.useState(false)
   const [isProgressing, setIsProgressing] = React.useState(false)
   const fileSizeInKB = convertBytesToKB(fileSize);
@@ -112,7 +114,6 @@ const ProgressLoader = (props = {}) => {
     <>
       <Pressable
         onPress={() => {
-          console.log(mediaData.file_url)
           if (mediaData.file_url) {
             if (!isDownloading) {
               startAnimation();
@@ -122,22 +123,23 @@ const ProgressLoader = (props = {}) => {
             }
           }
         }}>
-        <View overflow={'hidden'} alignItems={'center'} justifyContent={'space-between'} bg=" rgba(0, 0, 0, 0.3)" borderRadius={5}>
-          <View h='9' w='85' alignItems={'center'} justifyContent={'center'}>
-            <HStack
-              px='2'
-              borderRadius={5}
-              alignItems={'center'}>
-              {!isDownloading && !isProgressing && <DownloadIcon color={mediaData.thumb_image ? '#fff' : '#000'} width='18' height='15' />}
-              <Text textAlign={'center'} px='1' fontSize={'12'} color={'#fff'}>
-                {isDownloading || isProgressing ? 'X' : 'RETRY'}
-              </Text>
-            </HStack>
-          </View>
-          <View style={styles.loaderContent}>
-            {renderLoader()}
-          </View>
-        </View>
+        {isNetworkConnected && (uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8) ?
+          <View overflow={'hidden'} alignItems={'center'} justifyContent={'space-between'} bg=" rgba(0, 0, 0, 0.3)" borderRadius={5}>
+            <View h='9' w='85' alignItems={'center'} justifyContent={'center'}>
+              <HStack
+                px='2'
+                borderRadius={5}
+                alignItems={'center'}>
+                {!isDownloading && !isProgressing && <DownloadIcon color={mediaData.thumb_image ? '#fff' : '#000'} width='18' height='15' />}
+                <Text textAlign={'center'} px='1' fontSize={'12'} color={'#fff'}>
+                  {isDownloading || isProgressing ? 'X' : 'RETRY'}
+                </Text>
+              </HStack>
+            </View>
+            <View style={styles.loaderContent}>
+              {renderLoader()}
+            </View>
+          </View> : null}
       </Pressable>
     </>
   );

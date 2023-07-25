@@ -22,7 +22,7 @@ import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import SavePicture from './Gallery'
 import * as RootNav from '../Navigation/rootNavigation'
 import { Image as ImageCompressor } from 'react-native-compressor';
-import RNFetchBlob from 'rn-fetch-blob';
+import RNFS from 'react-native-fs';
 
 function ChatScreen() {
   const dispatch = useDispatch()
@@ -116,7 +116,7 @@ function ChatScreen() {
       maxHeight: 200,
       quality: 0.3,
     });
-    const response = await RNFetchBlob.fs.readFile(result, 'base64');
+    const response = await RNFS.readFile(result, 'base64')
     return response
   }
 
@@ -210,27 +210,6 @@ function ChatScreen() {
       }
     }
   };
-
-  const handleImageConvert = async () => {
-    // try {
-    // const result = await ImageCompressor.compress('file:///storage/emulated/0/Abstruct/OPTV - 1.jpg', {
-    //   maxWidth: 600,
-    //   maxHeight: 200,
-    //   quality: 0.3,
-    // });
-    // const response = await RNFetchBlob.fs.readFile(result, 'base64');
-    // console.log(response)
-    //   createThumbnail({
-    //     url: 'file:///storage/emulated/0/Videos/munbe vaa bgm react NS200 ( 720 X 1280 ).mp4',
-    //     timeStamp: 10000,
-    //   })
-    //     .then(response => console.log({ response }))
-    //     .catch(err => console.log({ err }));
-
-    // } catch (error) {
-    //   console.log('handleImageConvert', error)
-    // }
-  }
 
   const handleSendMsg = async (message) => {
     let messageType = message.type;

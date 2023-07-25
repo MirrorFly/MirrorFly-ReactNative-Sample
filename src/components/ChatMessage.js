@@ -27,7 +27,7 @@ const ChatMessage = (props) => {
   const imageSize = props?.message?.msgBody?.media?.file_size || "";
   const fileSize = imageSize;
   const [isSubscribed, setIsSubscribed] = React.useState(true);
-
+  console.log(JSON.stringify(message?.msgBody),"message");
   const imgFileDownload = () => {
     try {
       if (local_path) {

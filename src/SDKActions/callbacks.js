@@ -113,6 +113,7 @@ export const callBacks = {
         console.log('groupMsgInfoListener = (res) => { }', res)
     },
     mediaUploadListener: (res) => {
+        console.log('mediaUploadListener', res)
         store.dispatch(updateMediaUploadData(res));
     },
     blockUserListener: (res) => {

@@ -22,17 +22,18 @@ const ChatMessage = (props) => {
   const { message } = props
   const { msgBody = {}, msgBody: { media: { file = {}, is_uploading, thumb_image = '', local_path = "" } = {}, message_type } = {}, msgId, msgStatus } = message
   const [uploadStatus, setUploadStatus] = React.useState(4);
+  const imageUrl = local_path ? local_path : file?.fileDetails?.image?.uri
   const thumbURL = thumb_image ? getThumbBase64URL(thumb_image) : "";
   const [imgSrc, saveImage] = React.useState(thumbURL);
   const imageSize = props?.message?.msgBody?.media?.file_size || "";
   const fileSize = imageSize;
   const [isSubscribed, setIsSubscribed] = React.useState(true);
-  console.log(JSON.stringify(message?.msgBody),"message");
+
   const imgFileDownload = () => {
     try {
-      if (local_path) {
+      if (imageUrl) {
         setUploadStatus(2);
-        saveImage(local_path);
+        saveImage(imageUrl);
       }
     } catch (error) {
       if (isSubscribed) saveImage(getThumbBase64URL(thumb_image));

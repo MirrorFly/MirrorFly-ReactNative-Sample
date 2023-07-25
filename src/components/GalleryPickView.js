@@ -106,7 +106,7 @@ function GalleryPickView(props) {
 
                 <HStack mb='5' ml='4'>
                     <IconButton icon={<Icon as={() => RightArrowIcon('#fff')} name="emoji-happy" />}  />
-                    <Text color='#7f7f7f'>{profileDetails.nickName}</Text>
+                    <Text color='#7f7f7f'>{profileDetails?.nickName}</Text>
                 </HStack>
                 {selectedImages.length > 1 && <HStack>
                     {selectedImages?.map((item, i) => (

@@ -95,6 +95,10 @@ const ProgressLoader = (props = {}) => {
     }, 100)
   }
 
+  const getAnimateClass = () => ((data[msgId]?.progress === 100 || uploadStatus === 0 ) ? true : false);
+
+  const getActiveProgressClass = () => (uploadStatus === 1 && data[msgId]?.progress < 100 ? true : false);
+
   const renderLoader = () => {
     if (!isDownloading && !isProgressing) return null
     if (isDownloading)
@@ -130,7 +134,7 @@ const ProgressLoader = (props = {}) => {
                 px='2'
                 borderRadius={5}
                 alignItems={'center'}>
-                {!isDownloading && !isProgressing && <DownloadIcon color={mediaData.thumb_image ? '#fff' : '#000'} width='18' height='15' />}
+                {/* {!isDownloading && !isProgressing && <DownloadIcon color={mediaData.thumb_image ? '#fff' : '#000'} width='18' height='15' />} */}
                 <Text textAlign={'center'} px='1' fontSize={'12'} color={'#fff'}>
                   {isDownloading || isProgressing ? 'X' : 'RETRY'}
                 </Text>

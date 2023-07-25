@@ -17,10 +17,11 @@ const ImageCard = (props) => {
     msgBody: { media },
     msgBody: {
       message_type = "",
-      media: { caption = "", file_url = "", androidHeight, androidWidth,local_path = "", fileName, fileSize,
+      media: { file: { fileDetails = {} } = {}, caption = "", file_url = "", androidHeight, androidWidth, local_path = "", fileName, fileSize,
         thumb_image = "", webWidth, webHeight, file_key } = {}
     } = {}
   } = messageObject;
+  const imageUrl = local_path ? local_path : fileDetails?.image?.uri
   const [imageSource, setImageSource] = React.useState(imgSrc || getThumbBase64URL(thumb_image));
   
   React.useEffect(() => {
@@ -30,6 +31,12 @@ const ImageCard = (props) => {
       setImageSource(getThumbBase64URL(thumb_image));
     }
   }, [imgSrc, msgId]);
+
+  React.useEffect(() => {
+    if (message_type === "image" && file_url) {
+      setImageSource(imageUrl)
+    }
+  }, [file_url, message_type]);
 
   return (
     <View height={androidHeight} width={androidWidth} borderColor={'#E5E5E5'} borderWidth={2} borderRadius={5} position='relative'>
@@ -57,4 +64,5 @@ const ImageCard = (props) => {
     </View>
   );
 };
+
 export default ImageCard;

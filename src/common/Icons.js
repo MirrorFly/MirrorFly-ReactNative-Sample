@@ -816,3 +816,19 @@ export const RightArrowIcon = () => {
         </G>
     </Svg>
 }
+
+export const DownloadCancel = () => {
+    return <Svg id="download-fill" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
+        <Path id="Path_1545" data-name="Path 1545" d="M0,0H14V14H0Z" fill="none" />
+        <Path id="remove" d="M8.227.236,4.8,3.661,1.378.236A.807.807,0,0,0,.236,1.378L3.661,4.8.236,8.227A.807.807,0,0,0,1.378,9.368L4.8,5.944,8.227,9.368A.807.807,0,0,0,9.368,8.227L5.944,4.8,9.368,1.378A.807.807,0,0,0,8.227.236Z" transform="translate(11.604 2) rotate(90)" fill="#fff" />
+    </Svg>
+}
+
+export const uploadIcon = () => {
+    return <Svg xmlns="http://www.w3.org/2000/svg" width="14.56" height="14.56" viewBox="0 0 14.56 14.56">
+        <G id="download-fill" transform="translate(14.56 14.56) rotate(180)">
+            <Path id="Path_1545" data-name="Path 1545" d="M0,0H14.56V14.56H0Z" fill="none" />
+            <Path id="Path_1546" data-name="Path 1546" d="M3.875,12.212H14.8v1.213H3.875ZM9.942,6.145h4.247L9.335,11,4.482,6.145H8.728V1.292H9.942Z" transform="translate(-2.055 -0.685)" fill="#fff" />
+        </G>
+    </Svg>
+}

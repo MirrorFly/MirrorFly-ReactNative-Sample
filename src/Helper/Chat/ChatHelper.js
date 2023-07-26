@@ -67,6 +67,27 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
     store.dispatch(updateUploadStatus(updateObj));
 };
 
+export const updateMediaUploadStatusHistory = (data, stateData) => {
+    // Here Get the Current Active Chat History and Active Message
+    const currentChatData = stateData[data.fromUserId];
+    if (currentChatData?.messages && Object.keys(currentChatData?.messages).length > 0) {
+        const currentMessage = currentChatData.messages[data.msgId];
+        if (currentMessage) {
+            currentMessage.msgBody.media.is_uploading = data.uploadStatus;
+            return {
+                ...stateData,
+                [data.fromUserId]: {
+                    ...currentChatData,
+                    [data.msgId]: currentMessage
+                }
+            };
+        }
+    }
+    return {
+        ...stateData
+    };
+};
+
 export const getUpdatedHistoryDataUpload = (data, stateData) => {
     // Here Get the Current Active Chat History and Active Message
     const currentChatData = stateData[data.fromUserId];

@@ -10,8 +10,11 @@ const ImageCard = (props) => {
   const {
     imgSrc,
     uploadStatus = 0,
+    setUploadStatus,
+    isSender,
     messageObject = {}
   } = props;
+
   const {
     msgId = "",
     msgBody: { media },
@@ -21,9 +24,10 @@ const ImageCard = (props) => {
         thumb_image = "", webWidth, webHeight, file_key } = {}
     } = {}
   } = messageObject;
+
   const imageUrl = local_path ? local_path : fileDetails?.image?.uri
   const [imageSource, setImageSource] = React.useState(imgSrc || getThumbBase64URL(thumb_image));
-  
+
   React.useEffect(() => {
     if (imgSrc) {
       setImageSource(imgSrc);
@@ -46,6 +50,8 @@ const ImageCard = (props) => {
       }
       <View position={'absolute'} style={{ top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
         <ProgressLoader
+          isSender={isSender}
+          setUploadStatus={setUploadStatus}
           msgId={msgId}
           fileSize={fileSize}
           mediaData={media}

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { v4 as uuidv4 } from 'uuid';
-import { getChatHistoryData, getUpdatedHistoryData, getUpdatedHistoryDataUpload } from "../Helper/Chat/ChatHelper";
+import { getChatHistoryData, getUpdatedHistoryData, getUpdatedHistoryDataUpload, updateMediaUploadStatusHistory } from "../Helper/Chat/ChatHelper";
 import { StateToObj } from "./reduxHelper";
 
 const initialState = {
@@ -29,7 +29,17 @@ const conversationData = createSlice({
                 "id": uuidv4(),
                 "data": getUpdatedHistoryDataUpload(payload.payload, StateToObj(_state).data)
             }
-        }
+        }, RetryMediaUpload: (_state, payload) => {
+            return {
+                "id": uuidv4(),
+                "data": updateMediaUploadStatusHistory(payload.payload, StateToObj(_state).data)
+            }
+        }, CancelMediaUpload: (_state, payload) => {
+            return {
+                "id": uuidv4(),
+                "data": updateMediaUploadStatusHistory(payload.payload, StateToObj(_state).data)
+            }
+        },
     }
 });
 
@@ -37,3 +47,5 @@ export default conversationData.reducer
 export const addChatConversationHistory = conversationData.actions.addChatConversationHistory
 export const updateChatConversationHistory = conversationData.actions.updateChatConversationHistory
 export const updateUploadStatus = conversationData.actions.updateUploadStatus
+export const RetryMediaUpload = conversationData.actions.RetryMediaUpload
+export const CancelMediaUpload = conversationData.actions.CancelMediaUpload

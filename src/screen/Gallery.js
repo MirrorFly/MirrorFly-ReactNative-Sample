@@ -102,6 +102,7 @@ const Gallery = (props = {}) => {
             const params = {
                 first: PAGE_SIZE,
                 groupName: groupName,
+                assetType:"All",
                 include:["filename","fileSize","fileExtension","imageSize","playableDuration","orientation"],
                 after
             }

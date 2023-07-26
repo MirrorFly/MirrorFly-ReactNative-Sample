@@ -116,6 +116,10 @@ export const callBacks = {
         console.log('mediaUploadListener', res)
         store.dispatch(updateMediaUploadData(res));
     },
+    mediaDownloadListener: (res) => {
+        console.log('mediaDownloadListener', res)
+        // store.dispatch(updateMediaUploadData(res));
+    },
     blockUserListener: (res) => {
         console.log('blockUserListener = (res) => { }', res)
     },

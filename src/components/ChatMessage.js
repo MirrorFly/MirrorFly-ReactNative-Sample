@@ -48,7 +48,7 @@ const ChatMessage = (props) => {
       if (isImageMessage()) saveImage(getThumbBase64URL(thumb_image));
     } else if (is_uploading !== 0 && is_uploading !== 8) {
       if (isImageMessage()) imgFileDownload();
-      else setUploadStatus(2);
+      // else setUploadStatus(2);
     }
     return () => setIsSubscribed(false);
   }, []);
@@ -108,11 +108,13 @@ const ChatMessage = (props) => {
                     status: getMessageStatus(props?.message?.msgStatus)
                   }} />,
                   'image': <ImageCard messageObject={message}
-                            imgSrc={imgSrc}
-                            status={getMessageStatus(message?.msgStatus)}
-                            timeStamp={getConversationHistoryTime(message?.createdAt)}
-                            uploadStatus={uploadStatus}
-                            fileSize={fileSize} />,
+                    setUploadStatus={setUploadStatus}
+                    imgSrc={imgSrc}
+                    isSender={isSame}
+                    status={getMessageStatus(message?.msgStatus)}
+                    timeStamp={getConversationHistoryTime(message?.createdAt)}
+                    uploadStatus={uploadStatus}
+                    fileSize={fileSize} />,
                   "video": <VideoCard data={message} status={getMessageStatus(message?.msgStatus)} timeStamp={getConversationHistoryTime(message?.createdAt)} />,
                   "audio":
                     <View style={{ flex: 1 }}>

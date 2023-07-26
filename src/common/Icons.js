@@ -737,15 +737,15 @@ export const DocIcon = (props) => {
 export const DownloadIcon = (props) => {
     return (
         <Svg
-            width={props.width || 10}
-            height={props.height || 10}
+            width={props.width || 14}
+            height={props.height || 14}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 14 14"
             id="vector">
             <Path
                 id="path"
                 d="M 1.75 11.084 L 12.25 11.084 L 12.25 12.251 L 1.75 12.251 Z M 7.583 5.25 L 11.666 5.25 L 7 9.917 L 2.333 5.25 L 6.417 5.25 L 6.417 0.584 L 7.583 0.584 Z"
-                fill={props.color || "#7285B5"} />
+                fill="#fff" />
         </Svg>
     )
 }

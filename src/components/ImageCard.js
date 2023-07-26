@@ -12,6 +12,7 @@ const ImageCard = (props) => {
     uploadStatus = 0,
     setUploadStatus,
     isSender,
+    fileSize,
     messageObject = {}
   } = props;
 
@@ -20,8 +21,8 @@ const ImageCard = (props) => {
     msgBody: { media },
     msgBody: {
       message_type = "",
-      media: { file: { fileDetails = {} } = {}, caption = "", file_url = "", androidHeight, androidWidth, local_path = "", fileName, fileSize,
-        thumb_image = "", webWidth, webHeight, file_key } = {}
+      media: { file: { fileDetails = {} } = {}, caption = "", file_url = "", androidHeight, androidWidth,
+        local_path = "", fileName, thumb_image = "", file_key } = {}
     } = {}
   } = messageObject;
 
@@ -38,22 +39,23 @@ const ImageCard = (props) => {
 
   React.useEffect(() => {
     if (message_type === "image" && file_url) {
-      setImageSource(imageUrl)
+      isSender && setImageSource(imageUrl)
     }
   }, [file_url, message_type]);
 
   return (
     <View height={androidHeight} width={androidWidth} borderColor={'#E5E5E5'} borderWidth={2} borderRadius={5} position='relative'>
-      {imgSrc
+      {imageSource
         ? <Image alt={fileName} source={{ uri: imageSource }} resizeMode="cover" style={{ width: androidWidth, height: androidHeight, borderRadius: 5 }} />
         : <Image alt={fileName} source={noPreview} width={androidWidth} height={androidHeight} />
       }
       <View position={'absolute'} style={{ top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
         <ProgressLoader
           isSender={isSender}
+          imageUrl={imageUrl}
+          fileSize={fileSize}
           setUploadStatus={setUploadStatus}
           msgId={msgId}
-          fileSize={fileSize}
           mediaData={media}
           uploadStatus={uploadStatus}
         />

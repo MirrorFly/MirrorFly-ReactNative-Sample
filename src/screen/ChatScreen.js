@@ -23,6 +23,7 @@ import SavePicture from './Gallery'
 import * as RootNav from '../Navigation/rootNavigation'
 import { Image as ImageCompressor } from 'react-native-compressor';
 import RNFS from 'react-native-fs';
+import { getType, validateFileSize } from '../components/chat/common/fileUploadValidation'
 
 function ChatScreen() {
   const dispatch = useDispatch()
@@ -181,14 +182,53 @@ function ChatScreen() {
     setLocalNav("GalleryPickView")
   }
 
+  /*   const validation = (file) => {
+      const { image } = file
+      const fileExtension = getExtension(image.filename);
+      const allowedFilescheck = new RegExp("([a-zA-Z0-9s_\\.-:])+(" + ALLOWED_ALL_FILE_FORMATS.join("|") + ")$", "i");
+      let mediaType = getType(file.type);
+      if (!allowedFilescheck.test(fileExtension) || mediaType === "video/mpeg") {
+        let message = "Unsupported file format. Files allowed: ";
+        if (mediaType === "image") message = message + `${ALLOWED_IMAGE_VIDEO_FORMATS.join(", ")}`; 
+        if (!isToastShowing) {
+          return toast.show({
+            ...toastConfig,
+            render: () => {
+              return (
+                <Box bg="black" px="2" py="1" rounded="sm">
+                  <Text style={{ color: '#fff', padding: 5 }}>{message}</Text>
+                </Box>
+              );
+            },
+          });
+        }
+      }
+    }
+     */
+
   const handleSelectImage = (item) => {
     const transformedArray = {
       caption: '',
       fileDetails: item
     };
     setselectedSingle(false)
+    const size = validateFileSize(item.image, getType(item.type));
     const isImageSelected = selectedImages.some((selectedItem) => selectedItem.fileDetails?.image?.uri === item?.image.uri);
     setIsToastShowing(true)
+
+    if (size && !isToastShowing) {
+      return toast.show({
+        ...toastConfig,
+        render: () => {
+          return (
+            <Box bg="black" px="2" py="1" rounded="sm">
+              <Text style={{ color: '#fff', padding: 5 }}>{size}</Text>
+            </Box>
+          );
+        },
+      });
+    }
+
     if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
       return toast.show({
         ...toastConfig,
@@ -201,6 +241,7 @@ function ChatScreen() {
         },
       });
     }
+
     if (!isToastShowing) {
       setIsToastShowing(false)
       if (isImageSelected) {

@@ -11,9 +11,9 @@ import { addGalleryAlbum, addGalleryPhotos, addGalleyGroupName } from "../redux/
 
 const Gallery = (props = {}) => {
     const PAGE_SIZE = 20;
-    const { setLocalNav, selectedImages, handleSelectImage, setSelectedImages,handleMedia } = props
+    const { setLocalNav, selectedImages, handleSelectImage, setSelectedImages, handleMedia } = props
     const profileDetails = useSelector(state => state.navigation.profileDetails);
-    const { galleryAlbum , galleryPhotos , galleryName} = useSelector(state => state.galleryData);
+    const { galleryAlbum, galleryPhotos, galleryName } = useSelector(state => state.galleryData);
     const [galleryData, setGalleryData] = React.useState(galleryAlbum || []);
     const [grpView, setGrpView] = React.useState(galleryName || '')
     const [photos, setPhotos] = React.useState(galleryPhotos || []);
@@ -42,8 +42,8 @@ const Gallery = (props = {}) => {
                     }}
                     onLongPress={() => { setCheckbox(false); handleSelectImage(item.node) }}
                 >
-                    <Image alt="" style={{ width: itemWidth, aspectRatio:1 }} source={{ uri: item?.node?.image.uri }} />
-                    {isImageSelected && <View style={{ position: 'absolute', padding: 1, width: "100%", aspectRatio:1, marginRight: 3, backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    <Image alt="" style={{ width: itemWidth, aspectRatio: 1 }} source={{ uri: item?.node?.image.uri }} />
+                    {isImageSelected && <View style={{ position: 'absolute', padding: 1, width: "100%", aspectRatio: 1, marginRight: 3, backgroundColor: 'rgba(0,0,0,0.5)' }}>
                         <View position={"absolute"} left={60} bottom={60}>{<Icon as={TickIcon} name="emoji-happy" />}</View>
                     </View>}
                     <HStack px={"1"} style={{ backgroundColor: 'rgba(0,0,0,0.3))', position: 'absolute', bottom: 7, left: 4 }}>
@@ -63,18 +63,34 @@ const Gallery = (props = {}) => {
             const galleryData = await Promise.allSettled(
                 photo.map(async (item) => {
                     const params = {
-                        first: 1,
+                        first: 5,
                         assetType: "All",
+                        include: ["filename", "fileSize", "fileExtension", "imageSize", "playableDuration", "orientation"],
                         groupName: item.title,
                     }
-                    return CameraRoll.getPhotos(params).then(res => ({
-                        count: item.count,
-                        title: item.title,
-                        uri: res.edges[0].node.image.uri
-                    }));
+                    return CameraRoll.getPhotos(params).then(res => {
+                        const node = res.edges.find(data => {
+                            const filename = data.node.image.filename;
+                            return (
+                                filename.endsWith(".jpg") ||
+                                filename.endsWith(".jpeg") ||
+                                filename.endsWith(".png") ||
+                                filename.endsWith(".mp4")
+                            );
+                        });
+                        if (node) {
+                            return {
+                                count: item.count,
+                                title: item.title,
+                                uri: node.node.image.uri
+                            };
+                        }
+                        return null
+                    });
                 })
             );
-            galleryData.sort((a, b) => {
+            const filtertedData = galleryData.filter((item) => item.value !== null)
+            filtertedData.sort((a, b) => {
                 const titleA = a.value.title.toUpperCase();
                 const titleB = b.value.title.toUpperCase();
                 if (titleA < titleB) {
@@ -85,8 +101,8 @@ const Gallery = (props = {}) => {
                     return 0;
                 }
             })
-            store.dispatch(addGalleryAlbum(galleryData));
-            setGalleryData(galleryData)
+            store.dispatch(addGalleryAlbum(filtertedData));
+            setGalleryData(filtertedData)
         } catch (error) {
             console.log("Photo_Error", error);
         } finally {
@@ -102,11 +118,25 @@ const Gallery = (props = {}) => {
             const params = {
                 first: PAGE_SIZE,
                 groupName: groupName,
-                assetType:"All",
-                include:["filename","fileSize","fileExtension","imageSize","playableDuration","orientation"],
+                assetType: "All",
+                include: ["filename", "fileSize", "fileExtension", "imageSize", "playableDuration", "orientation"],
                 after
             }
-            const data = await CameraRoll.getPhotos(params);
+            const data = await CameraRoll.getPhotos(params).then(res => {
+                const filteredArray = res.edges.filter(data => {
+                    const filename = data.node.image.filename;
+                    return filename.endsWith(".jpg") || filename.endsWith(".jpeg") || filename.endsWith(".png") || filename.endsWith(".mp4");
+                })
+                return {
+                    "edges": filteredArray,
+                    "page_info": {
+                        "has_next_page": res.page_info.has_next_page,
+                        "end_cursor": res.page_info.end_cursor
+                    }
+                };
+            });
+            // const data = await CameraRoll.getPhotos(params);
+            // console.log(data,"datadata");
             const { has_next_page, end_cursor } = data.page_info;
             setEndCursor(end_cursor)
             setHasNextPage(has_next_page)
@@ -167,7 +197,7 @@ const Gallery = (props = {}) => {
                             {item.value.title}
                         </Text>
                         <Text color='#fff' position={"absolute"} right={1} fontSize={10}>
-                            {item.value.count}
+                            {/* {item.value.count} */}
                         </Text>
                     </HStack>
                 </View>

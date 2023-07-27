@@ -22,18 +22,12 @@ import store from "../../../redux/store";
 // 9 - User Cancelled Downloading
  */
 
-function convertBytesToKB(bytes) {
-  const KB = bytes / 1024;
-  return KB.toFixed(0);
-}
-
 let animationTimer = null;
 let progressIntervel = null
 
 const ProgressLoader = (props = {}) => {
-  const { setUploadStatus, isSender } = props
+  const { setUploadStatus, isSender, imageUrl, mediaData, fileSize, uploadStatus = 0, msgId } = props
   const isNetworkConnected = useNetworkStatus();
-  const { mediaData, fileSize, uploadStatus = 0, msgId } = props
   const fromUserJId = useSelector(state => state.navigation.fromUserJid)
   const { data = {} } = useSelector((state) => state.mediaUploadData)
   const [isDownloading, setisDownloading] = React.useState(false)
@@ -43,6 +37,21 @@ const ProgressLoader = (props = {}) => {
   console.log(data[msgId], "datadata");
   const progress = useSharedValue(0);
   const [percentage, setPercentage] = React.useState(0);
+
+  function convertBytesToKB(bytes) {
+    if (bytes < 1024) {
+      // If the size is less than 1KB, return bytes only
+      return bytes + ' bytes'
+    } else if (bytes < 1024 * 1024) {
+      // If the size is less than 1MB, return in KB
+      const KB = bytes / 1024;
+      return  KB.toFixed(2) + ' KB'
+    } else {
+      // If the size is 1MB or more, return in MB
+      const MB = bytes / (1024 * 1024);
+      return MB.toFixed(2) + ' MB'
+    }
+  }
 
   const startAnimation = () => {
     animation.value = withRepeat(withTiming(1, {
@@ -104,7 +113,7 @@ const ProgressLoader = (props = {}) => {
 
   const getActiveProgressClass = () => (uploadStatus === 1 && data[msgId]?.progress < 100 ? true : false);
 
-  console.log(getActiveProgressClass(),"34567890");
+  console.log(getActiveProgressClass(), "34567890");
   const renderLoader = () => {
     if (!getAnimateClass() && !getActiveProgressClass()) return null
     if (getAnimateClass())
@@ -178,18 +187,34 @@ const ProgressLoader = (props = {}) => {
     );
   };
 
+  const handleDownload = async() =>{
+    const response = await SDK.downloadMedia(msgId)
+    console.log(response,"resospsps");
+
+  }
+
+  const isDownload = () => {
+    return (
+      <>
+        <Pressable bg="rgba(0, 0, 0, 0.3)" borderRadius={5} onPress={handleDownload}>
+          <HStack h='9' w='90' justifyContent={'center'} alignItems={'center'}>
+            {<IconButton
+              p='0'
+              icon={<Icon color={'#fff'} as={DownloadIcon} name="emoji-happy" />}
+            />}
+            <Text pl='2' fontSize={'12'} color={'#fff'}>
+              {fileSizeInKB}
+            </Text>
+          </HStack>
+        </Pressable>
+      </>
+    );
+  }
+
   return (
     <>
       <Pressable
         onPress={() => {
-          // if (mediaData.file_url) {
-          //   if (!isDownloading) {
-          //     startAnimation();
-          //     /**  SDK.downloadMedia(mediaData.file_url) */
-          //   } else if (isDownloading) {
-          //     stopAnimation();
-          //   }
-          // }
         }}>
         {isNetworkConnected && (uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8) ?
           <View overflow={'hidden'} alignItems={'center'} justifyContent={'space-between'} bg=" rgba(0, 0, 0, 0.3)" borderRadius={5}>
@@ -210,6 +235,7 @@ const ProgressLoader = (props = {}) => {
         {/* {uploadStatus === 4 && isNetworkConnected ? progressViewdiffer()
           : null} */}
         {uploadStatus === 3 && commonRetryAction()}
+        {!imageUrl && !isSender && isDownload()}
       </Pressable>
     </>
   );

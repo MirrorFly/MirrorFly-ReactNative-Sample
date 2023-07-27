@@ -13,13 +13,15 @@ import { getConversationHistoryTime } from '../common/TimeStamp';
 import { Box, HStack, Icon, Pressable, Text, View } from 'native-base';
 import { uploadFileToSDK } from '../Helper/Chat/ChatHelper';
 import { getThumbBase64URL } from '../Helper/Chat/Utility';
+import store from '../redux/store';
+import { singleChatSelectedMediaImage } from '../redux/SingleChatImageSlice';
 
 const ChatMessage = (props) => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID)
   const fromUserJId = useSelector(state => state.navigation.fromUserJid)
   let isSame = currentUserJID === props?.message?.fromUserJid
   let statusVisible = 'notSend'
-  const { message } = props
+  const { message, setLocalNav } = props
   const { msgBody = {}, msgBody: { media: { file = {}, is_uploading, thumb_image = '', local_path = "" } = {}, message_type } = {}, msgId, msgStatus } = message
   const [uploadStatus, setUploadStatus] = React.useState(4);
   const imageUrl = local_path ? local_path : file?.fileDetails?.image?.uri
@@ -82,6 +84,7 @@ const ChatMessage = (props) => {
       break;
   }
 
+
   const getMessageStatus = (msgStatus) => {
     if (isSame && msgStatus == 3) {
       return <Icon px='3' as={SandTimer} name="emoji-happy" />
@@ -92,13 +95,27 @@ const ChatMessage = (props) => {
       </>
     )
   }
+  const validMessageType = ['image', 'video'];
+
+  const handleMessageObj = () => {
+    if (props?.selectedMsgs?.length) {
+      props.handleMsgSelect(props.message);
+    }
+    else if (validMessageType.includes(props.message.msgBody?.message_type)) {
+      if(props.message.msgBody.media.local_path){
+        store.dispatch(singleChatSelectedMediaImage(props.message.msgBody));
+        props.setLocalNav('PostPreView');
+      }
+    }
+  }
+
   return (
     <Pressable
-      onPress={() => props?.selectedMsgs?.length && props.handleMsgSelect(props.message)}
+      onPress={handleMessageObj}
       onLongPress={() => message?.msgStatus !== 3 && props.handleMsgSelect(props.message)}>
       {({ isPressed }) => {
         return <Box >
-          <Box my={"1"} bg={props.selectedMsgs.includes(props.message) ? 'rgba(0,0,0, 0.2)' : 'transparent'}>
+          <Box my={"1"} bg={props.selectedMsgs.includes(props.message) ? 'rgba(0,0,0,0.2)' : 'transparent'}>
             <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px='3'   >
               <View minWidth='30%' maxWidth='80%'>
                 {{

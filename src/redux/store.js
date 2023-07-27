@@ -12,6 +12,7 @@ import connectionSlice from './connectionSlice';
 import chatSeenPendingMsg from './chatSeenPendingMsg';
 import galleryDataSlice from './galleryDataSlice';
 import mediaUploadDataSlice from './mediaUploadDataSlice';
+import SingleChatSelectedImageSlice from './SingleChatImageSlice';
 
 const store = configureStore({
     reducer: {
@@ -27,7 +28,8 @@ const store = configureStore({
         dbValues: dbSlice,
         galleryData: galleryDataSlice, 
         mediaUploadData:mediaUploadDataSlice,
-        connection: connectionSlice
+        connection: connectionSlice,
+        chatSelectedMedia:SingleChatSelectedImageSlice
     }, middleware: (getDefaultMiddleware) => getDefaultMiddleware({
         serializableCheck: false
     }),

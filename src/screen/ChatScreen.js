@@ -18,12 +18,12 @@ import store from '../redux/store'
 import { isSingleChat } from '../Helper/Chat/ChatHelper'
 import { addChatConversationHistory } from '../redux/conversationSlice'
 import { SDK } from '../SDK'
-import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import SavePicture from './Gallery'
 import * as RootNav from '../Navigation/rootNavigation'
 import { Image as ImageCompressor } from 'react-native-compressor';
 import RNFS from 'react-native-fs';
 import { getType, validateFileSize } from '../components/chat/common/fileUploadValidation'
+import PostPreViewPage from '../components/PostPreViewPage';
 
 function ChatScreen() {
   const dispatch = useDispatch()
@@ -44,6 +44,7 @@ function ChatScreen() {
       setIsToastShowing(false)
     }
   }
+  const [sendSelected, setSendSelected] = React.useState(false);
 
   const attachmentMenuIcons = [
     {
@@ -55,7 +56,6 @@ function ChatScreen() {
       name: "Camera",
       icon: CameraIcon,
       formatter: () => {
-
       }
     },
     {
@@ -306,10 +306,11 @@ function ChatScreen() {
         'UsersTapBarInfo': <UsersTapBarInfo setLocalNav={setLocalNav} />,
         'Gallery': <SavePicture setLocalNav={setLocalNav} selectedImages={selectedImages} handleSelectImage={handleSelectImage}
           handleMedia={handleMedia}
-          setSelectedImages={setSelectedImages} />
+          setSelectedImages={setSelectedImages} />,
+        'PostPreView':<PostPreViewPage setLocalNav={setLocalNav} />
       }[localNav]}
     </>
   )
 }
 
-export default ChatScreen
+export default ChatScreen;

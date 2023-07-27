@@ -16,7 +16,7 @@ import { clearGalleryData } from '../redux/utils';
 const ChatConversation = React.memo((props) => {
     const { handleSendMsg } = props
     const dispatch = useDispatch();
-    const chatInputRef = React.useRef(null)
+    const chatInputRef = React.useRef(null);
     const vCardProfile = useSelector((state) => state.profile.profileDetails);
     const currentUserJID = formatUserIdToJid(vCardProfile?.userId)
     const messages = useSelector(state => state.chatConversationData.data)
@@ -159,12 +159,13 @@ const ChatConversation = React.memo((props) => {
         }
     }
 
+
     React.useEffect(() => {
         updateMsgSeenStatus();
     }, [messageList])
 
     const chatMessageRender = ({ item }) => {
-        return <ChatMessage handleMsgSelect={handleMsgSelect} selectedMsgs={selectedMsgs} message={item}/>
+        return <ChatMessage setLocalNav={props.setLocalNav} handleMsgSelect={handleMsgSelect} selectedMsgs={selectedMsgs} message={item}/>
     }
 
     return (

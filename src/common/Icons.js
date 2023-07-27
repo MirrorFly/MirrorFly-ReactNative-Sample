@@ -776,17 +776,17 @@ export const FolderIcon = () => {
     </Svg>
 }
 
-export const VideoSmallIcon = () => {
+export const VideoSmallIcon = (color) => {
     return <Svg xmlns="http://www.w3.org/2000/svg" width="12.014" height="7.059" viewBox="0 0 12.014 7.059">
         <G id="video-camera" transform="translate(0 -96.512)">
             <G id="Group_15643" data-name="Group 15643" transform="translate(0 96.512)">
                 <G id="Group_15642" data-name="Group 15642" transform="translate(0 0)">
-                    <Path id="Path_13751" data-name="Path 13751" d="M6.8,96.512H1.314A1.318,1.318,0,0,0,0,97.826v4.43a1.318,1.318,0,0,0,1.314,1.314H6.8a1.318,1.318,0,0,0,1.314-1.314v-4.43A1.31,1.31,0,0,0,6.8,96.512Z" transform="translate(0 -96.512)" fill="#fff" />
+                    <Path id="Path_13751" data-name="Path 13751" d="M6.8,96.512H1.314A1.318,1.318,0,0,0,0,97.826v4.43a1.318,1.318,0,0,0,1.314,1.314H6.8a1.318,1.318,0,0,0,1.314-1.314v-4.43A1.31,1.31,0,0,0,6.8,96.512Z" transform="translate(0 -96.512)" fill={color || "#fff"} />
                 </G>
             </G>
             <G id="Group_15645" data-name="Group 15645" transform="translate(8.767 97.214)">
                 <G id="Group_15644" data-name="Group 15644" transform="translate(0 0)">
-                    <Path id="Path_13752" data-name="Path 13752" d="M343.778,123.868a.67.67,0,0,0-.223.092l-2.051,1.183v3.05l2.064,1.183a.781.781,0,0,0,1.078-.289.8.8,0,0,0,.105-.394v-4.062A.791.791,0,0,0,343.778,123.868Z" transform="translate(-341.504 -123.847)" fill="#fff" />
+                    <Path id="Path_13752" data-name="Path 13752" d="M343.778,123.868a.67.67,0,0,0-.223.092l-2.051,1.183v3.05l2.064,1.183a.781.781,0,0,0,1.078-.289.8.8,0,0,0,.105-.394v-4.062A.791.791,0,0,0,343.778,123.868Z" transform="translate(-341.504 -123.847)" fill={color || "#fff"} />
                 </G>
             </G>
         </G>
@@ -831,4 +831,18 @@ export const uploadIcon = () => {
             <Path id="Path_1546" data-name="Path 1546" d="M3.875,12.212H14.8v1.213H3.875ZM9.942,6.145h4.247L9.335,11,4.482,6.145H8.728V1.292H9.942Z" transform="translate(-2.055 -0.685)" fill="#fff" />
         </G>
     </Svg>
+}
+
+export const imageIcon = () => {
+    return <Svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
+        <G id="image" transform="translate(-91 -145)">
+            <G id="image-gallery" transform="translate(80.887 145.95)">
+                <G id="Group_7327" data-name="Group 7327" transform="translate(11.113 0.05)">
+                    <Path id="Path_9750" data-name="Path 9750" d="M21.718.05H12.513a1.4,1.4,0,0,0-1.4,1.395v9.2a1.4,1.4,0,0,0,1.4,1.4h9.205a1.4,1.4,0,0,0,1.395-1.4v-9.2A1.4,1.4,0,0,0,21.718.05Zm-.189,9.827a.434.434,0,0,1-.386.226H13.256a.433.433,0,0,1-.42-.56l1.128-3.732a.673.673,0,0,1,1.192-.194l1.578,2.216A.672.672,0,0,0,17.66,8l1.453-.986a.673.673,0,0,1,.941.189L21.51,9.431A.434.434,0,0,1,21.529,9.877Z" transform="translate(-11.113 -0.05)" fill="#767676" />
+                </G>
+            </G>
+            <Rect id="Rectangle_4653" data-name="Rectangle 4653" width="14" height="14" transform="translate(91 145)" fill="none" />
+        </G>
+    </Svg>
+
 }

@@ -10,7 +10,7 @@ import { navigate } from '../redux/navigationSlice';
 import { Image, StyleSheet } from 'react-native';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import SDK from '../SDK/SDK';
-import { SandTimer } from '../common/Icons';
+import { SandTimer, VideoSmallIcon, imageIcon } from '../common/Icons';
 
 export default function RecentChat(props) {
     const dispatch = useDispatch();
@@ -60,7 +60,19 @@ export default function RecentChat(props) {
                                     item?.msgStatus !== 3
                                     ? <View style={[styles.msgStatus, isSame ? statusVisible : ""]}></View>
                                     : (isSame && item?.msgStatus == 3 && <Icon px='3' as={SandTimer} name="emoji-happy" />)}
-                                <Text numberOfLines={1} ellipsizeMode="tail" px={isSame ? 1 : 0} color="coolGray.600" _dark={{ color: 'warmGray.200' }}>{item?.msgBody?.message}</Text>
+                                {{
+                                    'text': <Text numberOfLines={1} ellipsizeMode="tail" px={isSame ? 1 : 0} color="#767676" _dark={{ color: '#767676' }}>{item?.msgBody?.message}</Text>,
+                                    'image':
+                                        <HStack pl='1' alignItems={'center'}>
+                                            <Icon as={imageIcon} />
+                                            <Text numberOfLines={1} ellipsizeMode="tail" px={isSame ? 1 : 0} color="#767676" _dark={{ color: '#767676' }}>Image</Text>
+                                        </HStack>,
+                                    'video':
+                                        <HStack pl='1' alignItems={'center'}>
+                                            <Icon as={() => VideoSmallIcon('#767676')} />
+                                            <Text numberOfLines={1} ellipsizeMode="tail" px={isSame ? 1 : 0} color="#767676" _dark={{ color: '#767676' }}>Video</Text>
+                                        </HStack>
+                                }[item.msgBody.message_type]}
                             </HStack>
                         </VStack>
                         <Spacer />
@@ -69,9 +81,9 @@ export default function RecentChat(props) {
                         </Text>
                     </HStack>
                 </Box>
-            </Pressable>
+            </Pressable >
             <Divider w="80%" alignSelf="flex-end" _light={{ bg: "#f2f2f2" }} _dark={{ bg: "muted.50" }} />
-        </Box>
+        </Box >
     };
     if (!props?.data?.length) {
         return <Center h='full'>

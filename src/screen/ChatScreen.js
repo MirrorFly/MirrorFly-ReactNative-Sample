@@ -18,6 +18,7 @@ import store from '../redux/store'
 import { isSingleChat } from '../Helper/Chat/ChatHelper'
 import { addChatConversationHistory } from '../redux/conversationSlice'
 import { SDK } from '../SDK'
+import PostPreViewPage from '../components/PostPreViewPage';
 
 function ChatScreen() {
   const dispatch = useDispatch()
@@ -26,8 +27,8 @@ function ChatScreen() {
   const [localNav, setLocalNav] = React.useState('CHATCONVERSATION')
   const [isMessageInfo, setIsMessageInfo] = React.useState({})
   const toast = useToast()
-  const [sendSelected, setSendSelected] = React.useState(false)
-  const [selectedImages, setSelectedImages] = React.useState([])
+  const [sendSelected, setSendSelected] = React.useState(false);
+  const [selectedImages, setSelectedImages] = React.useState([]);
 
   const attachmentMenuIcons = [
     {
@@ -39,7 +40,6 @@ function ChatScreen() {
       name: "Camera",
       icon: CameraIcon,
       formatter: () => {
-
       }
     },
     {
@@ -194,10 +194,12 @@ function ChatScreen() {
         'MESSAGEINFO': <MessageInfo setLocalNav={setLocalNav} setIsMessageInfo={setIsMessageInfo} isMessageInfo={isMessageInfo} />,
         'GalleryPickView': <GalleryPickView setSelectedImages={setSelectedImages} selectedImages={selectedImages} setLocalNav={setLocalNav} handleSendMsg={handleSendMsg} />,
         'UserInfo': <UserInfo setLocalNav={setLocalNav} />,
-        'UsersTapBarInfo': <UsersTapBarInfo setLocalNav={setLocalNav} />
+        'UsersTapBarInfo': <UsersTapBarInfo setLocalNav={setLocalNav} />,
+        'PostPreView':<PostPreViewPage setLocalNav={setLocalNav} />
+        
       }[localNav]}
     </>
   )
 }
 
-export default ChatScreen
+export default ChatScreen;

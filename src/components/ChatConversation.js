@@ -17,18 +17,19 @@ import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { formatUserIdToJid, getChatMessageHistoryById } from '../Helper/Chat/ChatHelper';
 
 const ChatConversation = (props) => {
-    const { handleSendMsg } = props
+    
+    const { handleSendMsg } = props;
     const dispatch = useDispatch();
-    const chatInputRef = React.useRef(null)
+    const chatInputRef = React.useRef(null);
     const vCardProfile = useSelector((state) => state.profile.profileDetails);
     const currentUserJID = formatUserIdToJid(vCardProfile?.userId)
     const presenceListener = useSelector(state => state.user.userPresence)
-    const messages = useSelector(state => state.chatConversationData.data)
-    const fromUserJId = useSelector(state => state.navigation.fromUserJid)
+    const messages = useSelector(state => state.chatConversationData.data);
+    const fromUserJId = useSelector(state => state.navigation.fromUserJid);
     const [messageList, setMessageList] = React.useState([]);
-    const [seenStatus, setSeenStatus] = React.useState('')
-    const [nickName, setNickName] = React.useState('')
-    const [isChatLoading, setIsChatLoading] = React.useState(false)
+    const [seenStatus, setSeenStatus] = React.useState('');
+    const [nickName, setNickName] = React.useState('');
+    const [isChatLoading, setIsChatLoading] = React.useState(false);
     const [selectedMsgs, setSelectedMsgs] = React.useState([]);
     const [replyMsgs, setReplyMsgs] = React.useState();
     const [isSwiping, setIsSwiping] = React.useState();
@@ -159,9 +160,12 @@ const ChatConversation = (props) => {
         }
     }
 
+console.log("messageList",messageList);
+
     React.useEffect(() => {
         if (messageList.length) {
             let unReadMsg = messageList.filter((item) => item.msgStatus == 1 && item.fromUserJid !== currentUserJID)
+           
             if (unReadMsg.length) {
                 unReadMsg.forEach(async item => {
                     let data = { toJid: item.fromUserJid, msgId: item.msgId }
@@ -213,7 +217,7 @@ const ChatConversation = (props) => {
                     inverted
                     keyExtractor={(item, index) => item.msgId.toString()}
                     renderItem={({ item }) => {
-                        return <ChatMessage handleMsgSelect={handleMsgSelect} selectedMsgs={selectedMsgs} message={item} />
+                        return <ChatMessage handleMsgSelect={handleMsgSelect} selectedMsgs={selectedMsgs} setLocalNav={props.setLocalNav} message={item} />
                     }}
                     renderHiddenItem={renderHiddenItem}
                     disableLeftSwipe={true}

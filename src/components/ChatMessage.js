@@ -12,12 +12,15 @@ import TextCard from './TextCard';
 import { getConversationHistoryTime } from '../common/TimeStamp';
 import { Box, HStack, Icon, Pressable, Text, View } from 'native-base';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
+import { singleChatSelectedMediaImage } from '../redux/SingleChatImageSlice';
+import store from '../redux/store';
 
 const ChatMessage = (props) => {
+
   const vCardProfile = useSelector((state) => state.profile.profileDetails);
   const currentUserJID = formatUserIdToJid(vCardProfile?.userId)
   let isSame = currentUserJID === props?.message?.fromUserJid
-  let statusVisible = 'notSend'
+  let statusVisible = 'notSend';
   const imageSize = props?.message?.msgBody.media?.file_size;
   const fileSize = imageSize;
 
@@ -36,6 +39,7 @@ const ChatMessage = (props) => {
       break;
   }
 
+
   const getMessageStatus = (msgStatus) => {
     if (msgStatus == 3) {
       return <Icon px='3' as={SandTimer} name="emoji-happy" />
@@ -46,13 +50,24 @@ const ChatMessage = (props) => {
       </>
     )
   }
+  const validMessageType = ['image', 'video'];
+  const handleMessageObj = () => {
+
+    if (props?.selectedMsgs?.length) {
+      props.handleMsgSelect(props.message);
+    }
+    else if (validMessageType.includes(props.message.msgBody?.message_type)) {
+      store.dispatch(singleChatSelectedMediaImage(props.message.msgBody));
+      props.setLocalNav('PostPreView');
+    }
+  }
   return (
     <Pressable
-      onPress={() => props?.selectedMsgs?.length && props.handleMsgSelect(props.message)}
+      onPress={handleMessageObj}
       onLongPress={() => props?.message?.msgStatus !== 3 && props.handleMsgSelect(props.message)}>
       {({ isPressed }) => {
         return <Box >
-          <Box my={"1"} bg={props.selectedMsgs.includes(props.message) ? 'rgba(0,0,0, 0.2)' : 'transparent'}>
+          <Box my={"1"} bg={props.selectedMsgs.includes(props.message) ? 'rgba(0,0,0,0.2)' : 'transparent'}>
             <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px='3'   >
               <View minWidth='30%' maxWidth='80%'>
                 {{

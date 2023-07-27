@@ -8,7 +8,7 @@ import storageSlice from './storageSlice';
 import dbSlice from './dbSlice';
 import recentChatDataSlice from './recentChatDataSlice';
 import conversationSlice from './conversationSlice';
-
+import SingleChatSelectedImageSlice from './SingleChatImageSlice';
 const store = configureStore({
     reducer: {
         navigation: navigationSlice,
@@ -19,7 +19,8 @@ const store = configureStore({
         profile:profileSlice,
         user: userSlice,
         storage:storageSlice,
-        dbValues:dbSlice
+        dbValues:dbSlice,
+        chatSelectedMedia:SingleChatSelectedImageSlice
     },middleware: (getDefaultMiddleware) => getDefaultMiddleware({
         serializableCheck: false
     }),

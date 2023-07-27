@@ -10,10 +10,9 @@ function convertBytesToKB(bytes) {
 }
 
 const ImageCard = (props) => {
-  const mediaData = props.data.msgBody.media
+  const mediaData = props.data.msgBody.media;
 
   const fileSizeInKB = convertBytesToKB(props.fileSize);
-  
   const base64ImageData = 'data:image/png;base64,' + mediaData.thumb_image;
   return (
     <View borderColor={'#E5E5E5'} borderWidth={2} borderRadius={5} position='relative'>
@@ -24,7 +23,6 @@ const ImageCard = (props) => {
         : <Image alt={mediaData.fileName} source={noPreview} width={mediaData.androidWidth} height={mediaData.androidHeight} />
       }
      
-
       <HStack px={"1"} py={"1"} bg=" rgba(0, 0, 0, 0.5)" alignItems={"center"} position={'absolute'} bottom={'40%'} right={'30%'} borderRadius={"5"}>
         <DownloadIcon color={mediaData.thumb_image ? '#fff' : '#000'} width='18' height='15' />
         <Text px={"2"} color={"#fff"}>{fileSizeInKB}KB</Text>

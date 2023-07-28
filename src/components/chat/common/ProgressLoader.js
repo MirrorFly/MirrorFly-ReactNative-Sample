@@ -202,7 +202,6 @@ const ProgressLoader = (props = {}) => {
   const handleDownload = async () => {
     setisDownloading(true)
     const response = await SDK.downloadMedia(msgId);
-    console.log(response,"response");
     if (response.statusCode === 200) {
       let updateObj = {
         msgId,

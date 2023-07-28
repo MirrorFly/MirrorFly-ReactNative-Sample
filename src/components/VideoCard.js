@@ -31,6 +31,7 @@ const VideoCard = (props) => {
     const durationInSeconds = duration;
     const durationInMinutes = millisToMinutesAndSeconds(durationInSeconds);
     const base64ImageData = 'data:image/jpg;base64,' + thumb_image;
+    const imageUrl = local_path ? local_path : ""
 
     return (
         <View borderColor={'#E5E5E5'} borderWidth={2} borderRadius={2} position='relative'>
@@ -50,7 +51,7 @@ const VideoCard = (props) => {
             <View position={'absolute'} style={{ top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
                 <ProgressLoader
                     isSender={isSender}
-                    // imageUrl={imageUrl}
+                    imageUrl={imageUrl}
                     media={media}
                     fileSize={fileSize}
                     setUploadStatus={setUploadStatus}

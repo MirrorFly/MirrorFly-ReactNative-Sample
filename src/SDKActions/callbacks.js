@@ -12,8 +12,8 @@ import * as RootNav from '../Navigation/rootNavigation'
 import { MSG_SEEN_ACKNOWLEDGE_STATUS, MSG_SEEN_STATUS, MSG_SENT_SEEN_STATUS_CARBON } from "../Helper/Chat/Constant";
 import { deleteChatSeenPendingMsg } from "../redux/chatSeenPendingMsg";
 import { updateMediaUploadData } from "../redux/mediaUploadDataSlice";
-import { changeTimeFormat } from "../common/TimeStamp";
 import nextFrame from 'next-frame';
+import { updateDownloadData } from "../redux/mediaDownloadDataSlice";
 
 export const callBacks = {
     connectionListener: (response) => {
@@ -113,12 +113,10 @@ export const callBacks = {
         console.log('groupMsgInfoListener = (res) => { }', res)
     },
     mediaUploadListener: (res) => {
-        console.log('mediaUploadListener', res)
         store.dispatch(updateMediaUploadData(res));
     },
     mediaDownloadListener: (res) => {
-        console.log('mediaDownloadListener', res)
-        // store.dispatch(updateMediaUploadData(res));
+        store.dispatch(updateDownloadData(res));
     },
     blockUserListener: (res) => {
         console.log('blockUserListener = (res) => { }', res)

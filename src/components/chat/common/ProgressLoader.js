@@ -5,8 +5,10 @@ import { DownloadCancel, DownloadIcon, uploadIcon } from "../../../common/Icons"
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withRepeat } from 'react-native-reanimated';
 import { useNetworkStatus } from "../../../hooks";
 import { useSelector } from "react-redux";
-import { CancelMediaUpload, RetryMediaUpload } from "../../../redux/conversationSlice";
+import { updateUploadStatus } from "../../../redux/conversationSlice";
 import store from "../../../redux/store";
+import { updateDownloadData } from "../../../redux/mediaDownloadDataSlice";
+import { getUserIdFromJid } from "../../../Helper/Chat/Utility";
 
 /**
  * Upload Status
@@ -23,20 +25,19 @@ import store from "../../../redux/store";
  */
 
 let animationTimer = null;
-let progressIntervel = null
 
 const ProgressLoader = (props = {}) => {
-  const { setUploadStatus, isSender, imageUrl, mediaData, fileSize, uploadStatus = 0, msgId } = props
+  const { isSender, imageUrl, fileSize, uploadStatus = 0, msgId, media } = props
+  const { file_url = "", thumb_image = "" } = media
   const isNetworkConnected = useNetworkStatus();
+  const { data: mediaDownloadData = {} } = useSelector((state) => state.mediaDownloadData);
+  const { data: mediaUploadData = {} } = useSelector((state) => state.mediaUploadData);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid)
-  const { data = {} } = useSelector((state) => state.mediaUploadData)
+
   const [isDownloading, setisDownloading] = React.useState(false)
-  const [isProgressing, setIsProgressing] = React.useState(false)
   const fileSizeInKB = convertBytesToKB(fileSize);
   const animation = useSharedValue(0);
-  console.log(data[msgId], "datadata");
   const progress = useSharedValue(0);
-  const [percentage, setPercentage] = React.useState(0);
 
   function convertBytesToKB(bytes) {
     if (bytes < 1024) {
@@ -45,7 +46,7 @@ const ProgressLoader = (props = {}) => {
     } else if (bytes < 1024 * 1024) {
       // If the size is less than 1MB, return in KB
       const KB = bytes / 1024;
-      return  KB.toFixed(2) + ' KB'
+      return KB.toFixed(2) + ' KB'
     } else {
       // If the size is 1MB or more, return in MB
       const MB = bytes / (1024 * 1024);
@@ -65,8 +66,6 @@ const ProgressLoader = (props = {}) => {
   };
 
   const stopAnimation = () => {
-    console.log("reanimation");
-    setPercentage(0)
     clearTimeout(animationTimer)
     animation.value = 0;
   }
@@ -83,37 +82,36 @@ const ProgressLoader = (props = {}) => {
 
   const progressStyle = useAnimatedStyle(() => {
     return {
-      width: data[msgId]?.progress,
+      width: mediaUploadData[msgId]?.progress,
       height: 2,
       backgroundColor: '#66E824',
     };
   });
 
-  React.useEffect(() => {
-    if (percentage == 100) {
-      clearInterval(progressIntervel)
-      stopProgress()
-      setPercentage(0)
-    }
-  }, [percentage]);
-
-
-  const increasePercentage = () => {
-    setIsProgressing(true)
-    progressIntervel = setInterval(() => {
-      setPercentage();
-    }, 100)
-  }
+  /*  const progressDownloadStyle = useAnimatedStyle(() => {
+      return {
+        width: mediaDownloadData[msgId]?.progress,
+        height: 2,
+        backgroundColor: '#66E824',
+      };
+   }); */
 
   React.useLayoutEffect(() => {
-    (data[msgId]?.progress === 100 || uploadStatus === 0 || uploadStatus === 1) && startAnimation()
+    (mediaUploadData[msgId]?.progress === 100 || uploadStatus === 0 || uploadStatus === 1) && startAnimation()
   }, [uploadStatus])
 
-  const getAnimateClass = () => ((data[msgId]?.progress === 100 || uploadStatus === 0 || uploadStatus === 1) ? true : false);
+  React.useLayoutEffect(() => {
+    isDownloading && startAnimation()
+  }, [isDownloading])
 
-  const getActiveProgressClass = () => (uploadStatus === 1 && data[msgId]?.progress < 100 ? true : false);
+  const getAnimateClass = () => ((mediaUploadData[msgId]?.progress === 100 || uploadStatus === 0 || uploadStatus === 1) ? true : false);
 
-  console.log(getActiveProgressClass(), "34567890");
+  const getActiveProgressClass = () => (uploadStatus === 1 && mediaUploadData[msgId]?.progress < 100 ? true : false);
+
+  const getAnimateDownloadClass = () => ((mediaDownloadData[msgId]?.progress !== 100) && mediaDownloadData[msgId]?.isDownloaded !== 2 ? true : false);
+
+  const getActiveDownloadProgressClass = () => (mediaDownloadData[msgId]?.progress < 100 ? true : false);
+
   const renderLoader = () => {
     if (!getAnimateClass() && !getActiveProgressClass()) return null
     if (getAnimateClass())
@@ -129,70 +127,100 @@ const ProgressLoader = (props = {}) => {
       return <View style={styles.loaderLine}><Animated.View style={progressStyle} /></View>
   }
 
-  const cancelMediaUpload = () => {
-    if (uploadStatus === 8) return true;
-
-    if (data[msgId]) {
-      data[msgId].source.cancel("User Cancelled!");
-    }
-
-    if (uploadStatus === 0 || uploadStatus === 1) {
-      const cancelObj = {
-        msgId,
-        fromUserId: fromUserJId,
-        uploadStatus: 7
-      };
-      store.dispatch(CancelMediaUpload(cancelObj));
-    }
-    return false;
-  };
-
-  const retryMediaUpload = () => {
-    const retryObj = {
-      msgId,
-      fromUserId: fromUserJId,
-      uploadStatus: 1
-    };
-    store.dispatch(RetryMediaUpload(retryObj));
-  };
-
-  const handleMediaClick = (e) => {
-    console.log(isSender, "isSenderisSenderisSender");
-    // if (isSender) {
-    //   imgFileDownloadOnclick(e);
-    // } else {
-    retryMediaUpload();
-    // }
-  };
-
-  const commonRetryAction = () => {
-    return (
-      <>
-        <Pressable bg="rgba(0, 0, 0, 0.3)" borderRadius={5} onPress={handleMediaClick}>
-          <HStack h='9' w='90' justifyContent={'center'} alignItems={'center'}>
-            {isSender ? <IconButton
-              p='0'
-              icon={<Icon color={mediaData.thumb_image ? '#fff' : '#000'} as={uploadIcon} name="emoji-happy" />}
-            /> :
-              <IconButton
-                p='0'
-                icon={<Icon color={mediaData.thumb_image ? '#fff' : '#000'} as={uploadIcon} name="emoji-happy" />}
-              />}
-            <Text pl='2' fontSize={'12'} color={'#fff'}>
-              RETRY
-            </Text>
-          </HStack>
-        </Pressable>
-      </>
-    );
-  };
-
-  const handleDownload = async() =>{
-    const response = await SDK.downloadMedia(msgId)
-    console.log(response,"resospsps");
-
+  const renderDownloadLoader = () => {
+    if (!getAnimateDownloadClass() && !getActiveDownloadProgressClass()) return null
+    if (getAnimateDownloadClass(), 'getAnimateDownloadClass()')
+      return <View style={styles.loaderLine}>
+        <Animated.View
+          style={[{
+            width: 40,
+            height: 2,
+            backgroundColor: '#f2f2f2',
+          }, animatedStyle]}
+        /></View>
+    if (getActiveDownloadProgressClass())
+      return <View style={styles.loaderLine}><Animated.View style={progressDownloadStyle} /></View>
   }
 
+  /**   const cancelMediaUpload = () => {
+      if (uploadStatus === 8) return true;
+  
+      if (mediaUploadData[msgId]) {
+        mediaUploadData[msgId].source.cancel("User Cancelled!");
+      }
+  
+      if (uploadStatus === 0 || uploadStatus === 1) {
+        const cancelObj = {
+          msgId,
+          fromUserId: fromUserJId,
+          uploadStatus: 7
+        };
+        store.dispatch(CancelMediaUpload(cancelObj));
+      }
+      return false;
+    }; */
+
+  /**  const retryMediaUpload = () => {
+        const retryObj = {
+        msgId,
+        fromUserId: fromUserJId,
+        uploadStatus: 1
+        };
+        store.dispatch(RetryMediaUpload(retryObj));
+   }; */
+
+  /** const handleMediaClick = (e) => {
+      // if (isSender) {
+      //   imgFileDownloadOnclick(e);
+      // } else {
+      retryMediaUpload();
+      // }
+    }; */
+
+  /** const commonRetryAction = () => {
+      return (
+        <>
+          <Pressable bg="rgba(0, 0, 0, 0.3)" borderRadius={5} onPress={handleMediaClick}>
+            <HStack h='9' w='90' justifyContent={'center'} alignItems={'center'}>
+              {isSender ? <IconButton
+                p='0'
+                icon={<Icon color={mediaData.thumb_image ? '#fff' : '#000'} as={uploadIcon} name="emoji-happy" />}
+              /> :
+                <IconButton
+                  p='0'
+                  icon={<Icon color={mediaData.thumb_image ? '#fff' : '#000'} as={uploadIcon} name="emoji-happy" />}
+                />}
+              <Text pl='2' fontSize={'12'} color={'#fff'}>
+                RETRY
+              </Text>
+            </HStack>
+          </Pressable>
+        </>
+      );
+    }; */
+
+  const handleDownload = async () => {
+    setisDownloading(true)
+    const response = await SDK.downloadMedia(msgId);
+    console.log(response,"response");
+    if (response.statusCode === 200) {
+      let updateObj = {
+        msgId,
+        statusCode: response.statusCode,
+        fromUserId: getUserIdFromJid(fromUserJId),
+        local_path: response.data.local_path,
+        fileToken: file_url,
+        thumbImage: thumb_image,
+      };
+      store.dispatch(updateDownloadData(response.data));
+      store.dispatch(updateUploadStatus(updateObj));
+    }
+    setTimeout(()=>{
+      setisDownloading(false)
+      stopAnimation();
+      stopProgress();
+    },3000)
+  }
   const isDownload = () => {
     return (
       <>
@@ -213,12 +241,10 @@ const ProgressLoader = (props = {}) => {
 
   return (
     <>
-      <Pressable
-        onPress={() => {
-        }}>
+      <View>
         {isNetworkConnected && (uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8) ?
           <View overflow={'hidden'} alignItems={'center'} justifyContent={'space-between'} bg=" rgba(0, 0, 0, 0.3)" borderRadius={5}>
-            <Pressable h='9' w='85' alignItems={'center'} justifyContent={'center'} onPress={cancelMediaUpload}>
+            <Pressable h='9' w='85' alignItems={'center'} justifyContent={'center'}>
               <HStack
                 px='2'
                 borderRadius={5}
@@ -232,11 +258,31 @@ const ProgressLoader = (props = {}) => {
               {renderLoader()}
             </View>
           </View> : null}
-        {/* {uploadStatus === 4 && isNetworkConnected ? progressViewdiffer()
+        {/** {uploadStatus === 4 && isNetworkConnected ? progressViewdiffer()
           : null} */}
-        {uploadStatus === 3 && commonRetryAction()}
-        {!imageUrl && !isSender && isDownload()}
-      </Pressable>
+        {
+          /**{uploadStatus === 3 && commonRetryAction()}
+          */
+        }
+        {!imageUrl && !isSender && !isDownloading && isDownload()}
+
+        {isDownloading && mediaDownloadData[msgId]?.isDownloaded !== 2 ?
+          <View overflow={'hidden'} alignItems={'center'} justifyContent={'space-between'} bg=" rgba(0, 0, 0, 0.3)" borderRadius={5}>
+            <Pressable h='9' w='85' alignItems={'center'} justifyContent={'center'}>
+              <HStack
+                px='2'
+                borderRadius={5}
+                alignItems={'center'}>
+                <IconButton
+                  icon={<Icon px='1' color={'#fff'} as={DownloadCancel} name="emoji-happy" />}
+                />
+              </HStack>
+            </Pressable>
+            <View style={styles.loaderContent}>
+              {renderDownloadLoader()}
+            </View>
+          </View> : null}
+      </View>
     </>
   );
 }
@@ -253,6 +299,5 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.1)', // You can set the color of the loader line here
   }
 });
-
 
 export default ProgressLoader;

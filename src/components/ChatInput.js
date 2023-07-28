@@ -13,7 +13,6 @@ const ChatInput = (props) => {
   const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false)
   const sendMessage = () => {
     if (message) {
-      console.log('Sending Message', changeTimeFormat(Date.now()))
       setMessage('');
       setTimeout(() => {
         onSendMessage(message);
@@ -122,23 +121,4 @@ const ChatInput = (props) => {
   );
 };
 
-export default React.memo(ChatInput);
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-  },
-  emojiPickerContainer: {
-    flex: 1,
-    backgroundColor: 'white',
-    maxHeight: 250,
-  },
-  emojiPicker: {
-    flex: 1,
-    width: '100%',
-    maxHeight: 250,
-  },
-});
+export default  ChatInput;

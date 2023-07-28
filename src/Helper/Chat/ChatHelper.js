@@ -101,6 +101,9 @@ export const getUpdatedHistoryDataUpload = (data, stateData) => {
                 currentMessage.msgBody.media.thumb_image = data.thumbImage || "";
                 currentMessage.msgBody.media.file_key = data.fileKey || "";
             }
+            if(data.local_path){
+                currentMessage.msgBody.media.local_path = data.local_path || "";
+            }
 
             let msgIds = Object.keys(currentChatData?.messages);
             let nextIndex = msgIds.indexOf(data.msgId) + 1;

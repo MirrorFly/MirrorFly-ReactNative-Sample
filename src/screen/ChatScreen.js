@@ -64,7 +64,7 @@ function ChatScreen() {
       formatter: async () => {
         let imageReadPermission = await requestStoragePermission()
         console.log('imageReadPermission', imageReadPermission)
-        if (imageReadPermission == 'granted' || 'limited') {
+        if (imageReadPermission == 'granted' || imageReadPermission == 'limited') {
           setLocalNav('Gallery')
         }
         // SavePicture()
@@ -173,7 +173,7 @@ function ChatScreen() {
   };
 
   const handleMedia = (item) => {
-    let {image} = item
+    let { image } = item
     image.playableDuration = setDurationSecToMilli(image.playableDuration)
     const transformedArray = {
       caption: '',
@@ -226,7 +226,7 @@ function ChatScreen() {
      */
 
   const handleSelectImage = (item) => {
-    let {image} = item
+    let { image } = item
     image.playableDuration = setDurationSecToMilli(image.playableDuration)
     const transformedArray = {
       caption: '',

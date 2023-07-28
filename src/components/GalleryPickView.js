@@ -1,6 +1,6 @@
 import React from 'react'
 import { BackHandler, Image, Pressable, StyleSheet, TextInput } from 'react-native'
-import { Divider, HStack, Icon, IconButton, Spacer, Text, View, useToast } from 'native-base'
+import { Divider, HStack, Icon, IconButton, ScrollView, Spacer, Text, View, useToast } from 'native-base'
 import { useSelector } from 'react-redux'
 import { DeleteBinIcon, LeftArrowIcon, PreViewAddIcon, RightArrowIcon, SendBlueIcon } from '../common/Icons'
 import Avathar from '../common/Avathar'
@@ -115,24 +115,28 @@ function GalleryPickView(props) {
                     <IconButton icon={<Icon as={() => RightArrowIcon('#fff')} name="emoji-happy" />} />
                     <Text color='#7f7f7f'>{profileDetails?.nickName}</Text>
                 </HStack>
-                {selectedImages.length > 1 && <HStack>
-                    {selectedImages?.map((item, i) => (
-                        <Pressable
-                            activeOpacity={1}
-                            key={item?.fileDetails?.image.uri}
-                            style={styles.tabButton}
-                            onPress={() => handleIndexChange(i)}
-                        >
-                            <Image
-                                source={{ uri: item?.fileDetails?.image.uri }}
-                                style={[
-                                    styles.tabImage,
-                                    index === i && styles.selectedTabImage,
-                                ]}
-                            />
-                        </Pressable>
-                    ))}
-                </HStack>}
+                {selectedImages.length > 1 &&
+                    <ScrollView position={'absolute'} bottom={0} horizontal>
+                        <HStack>
+                            {selectedImages?.map((item, i) => (
+                                <Pressable
+                                    activeOpacity={1}
+                                    key={item?.fileDetails?.image.uri}
+                                    style={styles.tabButton}
+                                    onPress={() => handleIndexChange(i)}
+                                >
+                                    <Image
+                                        source={{ uri: item?.fileDetails?.image.uri }}
+                                        style={[
+                                            styles.tabImage,
+                                            index === i && styles.selectedTabImage,
+                                        ]}
+                                    />
+                                </Pressable>
+                            ))}
+                        </HStack>
+                    </ScrollView>
+                }
             </View>
         </>
     )

@@ -26,13 +26,12 @@ const VideoCard = (props) => {
                 local_path = "", fileName, thumb_image = "", file_key } = {}
         } = {}
     } = messageObject;
-    const { data: mediaDownloadData = {} } = useSelector((state) => state.mediaDownloadData);
 
     const durationInSeconds = duration;
     const durationInMinutes = millisToMinutesAndSeconds(durationInSeconds);
     const base64ImageData = 'data:image/jpg;base64,' + thumb_image;
     const imageUrl = local_path ? local_path : ""
-    console.log(imageUrl,"is_uploading");
+    const checkDownloaded = isSender ? is_uploading === 2 : imageUrl 
 
     return (
         <View borderColor={'#E5E5E5'} borderWidth={2} borderRadius={2} position='relative'>
@@ -71,7 +70,7 @@ const VideoCard = (props) => {
                     <Text pl='1' color='#fff' fontWeight={400} fontSize='9'>{props.timeStamp}</Text>
                 </ImageBackground>
             </View>
-            {is_uploading === 2 &&  <View bg='#fff' position={'absolute'} bottom={'45%'} right={'43%'} shadow={5} borderRadius={50}>
+            {checkDownloaded && <View bg='#fff' position={'absolute'} bottom={'45%'} right={'43%'} shadow={5} borderRadius={50}>
                 <View p='3' >
                     <PlayIcon />
                 </View>

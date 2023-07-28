@@ -9,7 +9,6 @@ const PostPreViewPage = (props) => {
     const chatSelectedMediaImage = useSelector((state) => state.chatSelectedMedia.data);
 
     const handleBackBtn = () => {
-        console.log('handleBack')
         setLocalNav("CHATCONVERSATION")
         return true;
     }

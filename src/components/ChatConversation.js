@@ -165,13 +165,14 @@ const ChatConversation = React.memo((props) => {
     }, [messageList])
 
     const chatMessageRender = ({ item }) => {
-        return <ChatMessage setLocalNav={props.setLocalNav} handleMsgSelect={handleMsgSelect} selectedMsgs={selectedMsgs} message={item}/>
+        return <ChatMessage setLocalNav={props.setLocalNav} handleMsgSelect={handleMsgSelect} selectedMsgs={selectedMsgs} message={item} />
     }
 
     return (
         <KeyboardAvoidingView
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 'auto'}
             style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <ChatHeader
                 fromUserJId={fromUserJId}

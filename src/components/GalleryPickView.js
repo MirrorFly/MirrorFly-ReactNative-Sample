@@ -79,7 +79,7 @@ function GalleryPickView(props) {
                     handleSendMedia()
                     setLocalNav('CHATCONVERSATION')
                 }} _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} icon={<Icon as={<SendBlueIcon color="#fff" />} name="emoji-happy" />} borderRadius="full" />
-                <HStack ml='2' mb='3' alignItems={'center'}>
+                <HStack ml='2' mb='1' alignItems={'center'}>
                     <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={async () => {
                         setLocalNav("Gallery")
                     }} icon={<Icon as={PreViewAddIcon} name="emoji-happy" />} borderRadius="full" />
@@ -104,8 +104,8 @@ function GalleryPickView(props) {
                     />
                 </HStack>
 
-                <HStack mb='5' ml='4'>
-                    <IconButton icon={<Icon as={() => RightArrowIcon('#fff')} name="emoji-happy" />}  />
+                <HStack alignItems={"center"} ml={3} mb={5}>
+                    <IconButton icon={<Icon as={() => RightArrowIcon('#fff')} name="emoji-happy" />} />
                     <Text color='#7f7f7f'>{profileDetails?.nickName}</Text>
                 </HStack>
                 {selectedImages.length > 1 && <HStack>

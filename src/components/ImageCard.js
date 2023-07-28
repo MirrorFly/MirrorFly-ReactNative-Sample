@@ -40,8 +40,9 @@ const ImageCard = (props) => {
   React.useEffect(() => {
     if (message_type === "image" && file_url) {
       isSender && setImageSource(imageUrl)
+      imageUrl && !isSender && setImageSource(imageUrl)
     }
-  }, [file_url, message_type]);
+  }, [file_url, message_type,local_path]);
 
   return (
     <View height={androidHeight} width={androidWidth} borderColor={'#E5E5E5'} borderWidth={2} borderRadius={5} position='relative'>
@@ -53,6 +54,7 @@ const ImageCard = (props) => {
         <ProgressLoader
           isSender={isSender}
           imageUrl={imageUrl}
+          media={media}
           fileSize={fileSize}
           setUploadStatus={setUploadStatus}
           msgId={msgId}

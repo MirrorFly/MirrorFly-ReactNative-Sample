@@ -98,26 +98,27 @@ const ChatMessage = (props) => {
   const validMessageType = ['image', 'video'];
 
   const handleMessageObj = () => {
+    if (props.message.msgBody.media.local_path) {
+      store.dispatch(singleChatSelectedMediaImage(props.message.msgBody));
+      props.setLocalNav('PostPreView');
+    }
+  }
+  
+  const handleMessageSelect = () => {
     if (props?.selectedMsgs?.length) {
       props.handleMsgSelect(props.message);
-    }
-    else if (validMessageType.includes(props.message.msgBody?.message_type)) {
-      if(props.message.msgBody.media.local_path){
-        store.dispatch(singleChatSelectedMediaImage(props.message.msgBody));
-        props.setLocalNav('PostPreView');
-      }
     }
   }
 
   return (
     <Pressable
-      onPress={handleMessageObj}
+      onPress={handleMessageSelect}
       onLongPress={() => message?.msgStatus !== 3 && props.handleMsgSelect(props.message)}>
       {({ isPressed }) => {
         return <Box >
           <Box my={"1"} bg={props.selectedMsgs.includes(props.message) ? 'rgba(0,0,0,0.2)' : 'transparent'}>
-            <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px='3'   >
-              <View minWidth='30%' maxWidth='80%'>
+            <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px='3'>
+              <Pressable onPress={handleMessageObj} minWidth='30%' maxWidth='80%'>
                 {{
                   "text": <TextCard isSame={isSame} data={{
                     message: message?.msgBody?.message,
@@ -141,7 +142,7 @@ const ChatMessage = (props) => {
                   "contact": <ContactCard data={message} status={getMessageStatus(message?.msgStatus)} timeStamp={getConversationHistoryTime(message?.createdAt)} />,
                   "location": <MapCard data={message} status={getMessageStatus(message?.msgStatus)} timeStamp={getConversationHistoryTime(message?.createdAt)} />
                 }[message?.msgBody?.message_type]}
-              </View>
+              </Pressable>
             </HStack>
           </Box>
         </Box>

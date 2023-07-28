@@ -46,8 +46,10 @@ const Gallery = (props = {}) => {
                     {isImageSelected && <View style={{ position: 'absolute', padding: 1, width: "100%", aspectRatio: 1, marginRight: 3, backgroundColor: 'rgba(0,0,0,0.5)' }}>
                         <View position={"absolute"} left={60} bottom={60}>{<Icon as={TickIcon} name="emoji-happy" />}</View>
                     </View>}
-                    <HStack px={"1"} style={{ backgroundColor: 'rgba(0,0,0,0.3))', position: 'absolute', bottom: 7, left: 4 }}>
-                        {item?.node.type.split("/")[0] === "video" && <Icon as={VideoSmallIcon} name="emoji-happy" />}
+                    <HStack borderRadius={'10'} px={"0.5"} style={{ position: 'absolute', bottom: 7, left: 4 }}>
+                        {item?.node.type.split("/")[0] === "video" && <View p='0.5'>
+                            <Icon as={() => VideoSmallIcon()} name="emoji-happy" />
+                        </View>}
                     </HStack>
                 </Pressable >
             </View >
@@ -110,18 +112,18 @@ const Gallery = (props = {}) => {
         }
     }
 
-    const fetchPhotos = async (groupName, after = null) => {
+    const fetchPhotos = async (groupName, after = '') => {
         try {
             setLoading(true);
             setGrpView(groupName)
             store.dispatch(addGalleyGroupName(groupName));
-            const params = {
+            let params = {
                 first: PAGE_SIZE,
                 groupName: groupName,
                 assetType: "All",
-                include: ["filename", "fileSize", "fileExtension", "imageSize", "playableDuration", "orientation"],
-                after
+                include: ["filename", "fileSize", "fileExtension", "imageSize", "playableDuration", "orientation"]
             }
+            if (after) params.after = after
             const data = await CameraRoll.getPhotos(params).then(res => {
                 const filteredArray = res.edges.filter(data => {
                     const filename = data.node.image.filename;
@@ -135,8 +137,10 @@ const Gallery = (props = {}) => {
                     }
                 };
             });
-            // const data = await CameraRoll.getPhotos(params);
-            // console.log(data,"datadata");
+            /**
+                const data = await CameraRoll.getPhotos(params);
+                 console.log(data,"datadata");
+             * */
             const { has_next_page, end_cursor } = data.page_info;
             setEndCursor(end_cursor)
             setHasNextPage(has_next_page)

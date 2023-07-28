@@ -17,6 +17,7 @@ import { updateDownloadData } from "../redux/mediaDownloadDataSlice";
 
 export const callBacks = {
     connectionListener: (response) => {
+        console.log('connectionListener', response)
         store.dispatch(setXmppStatus(response.status))
         if (response.status === "CONNECTED") {
             console.log("Connection Established");

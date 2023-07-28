@@ -28,7 +28,6 @@ const VideoCard = (props) => {
     } = messageObject;
     const { data: mediaDownloadData = {} } = useSelector((state) => state.mediaDownloadData);
 
-    console.log(mediaDownloadData,media,"is_uploading");
     const durationInSeconds = duration;
     const durationInMinutes = millisToMinutesAndSeconds(durationInSeconds);
     const base64ImageData = 'data:image/jpg;base64,' + thumb_image;

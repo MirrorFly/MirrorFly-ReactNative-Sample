@@ -6,7 +6,8 @@ import { DeleteBinIcon, LeftArrowIcon, PreViewAddIcon, RightArrowIcon, SendBlueI
 import Avathar from '../common/Avathar'
 import { SceneMap, TabView } from 'react-native-tab-view';
 import { getType } from './chat/common/fileUploadValidation'
-import VideoPlayer from './VideoPlayer'
+import VideoPlayer from './Media/VideoPlayer'
+import ImageZoom from './Media/ImageZoom'
 
 function GalleryPickView(props) {
     const { handleSendMsg, setLocalNav, selectedSingle, setSelectedImages, selectedImages } = props
@@ -53,8 +54,10 @@ function GalleryPickView(props) {
             const type = getType(item?.fileDetails?.type)
             scenes[`tab${itemIndex + 1}`] = () => (
                 <>
-                    {type === "image" && <Image resizeMode='contain' source={{ uri: item?.fileDetails?.image?.uri }} style={styles.tabContainer} />}
-                    {type === "video" && <VideoPlayer item={item}/>}
+                    {type === "image" &&
+                        // <Image resizeMode='contain' source={{ uri: item?.fileDetails?.image?.uri }} style={styles.tabContainer}
+                        <ImageZoom item={item} />}
+                    {type === "video" && <VideoPlayer item={item} />}
                 </>
             );
             return scenes;

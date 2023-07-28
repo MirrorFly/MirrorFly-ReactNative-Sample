@@ -55,6 +55,26 @@ export const changeTimeFormat = (time) => {
 };
 
 /**
+ * changeTimeFormat() method to perform convert Timestamp it's effectively works for 16 digit to Time format with milli seconds.
+ *
+ * @param {timeStamp} time
+ */
+
+export const changeTimeFormatWithMs = (time = Date.now()) => {
+    if (!time) {
+        return '';
+    } else if (time.toString().length === 16) {
+        return moment((time / 1000000) * 1000)
+            .utc()
+            .format("YYYY-MM-DD HH:mm:ss:SSS");
+    } else {
+        return moment(time)
+            .utc()
+            .format("YYYY-MM-DD HH:mm:ss:SSS");
+    }
+};
+
+/**
  * formatAMPM() method to perform the am or pm format with time.
  *
  * @param {date} date

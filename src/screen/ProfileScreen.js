@@ -6,57 +6,63 @@ import ProfilePhoto from '../components/ProfilePhoto';
 import { useDispatch, useSelector } from 'react-redux';
 import SDK from '../SDK/SDK';
 import { statusListConstant } from '../constant';
-import { profileDetail } from '../redux/profileSlice';
+import { profileDetail } from '../redux/Actions/ProfileAction';
 import { useNetworkStatus } from '../hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { KeyboardAvoidingView } from 'native-base';
 
 const ProfileScreen = ({ navigation }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const isNetworkConnected = useNetworkStatus();
-  const [nav, setNav] = React.useState("ProfileScreen");
+  const [nav, setNav] = React.useState('ProfileScreen');
   const [statusList, setStatusList] = React.useState([]);
-  const selectProfileInfo = useSelector((state) => state.profile.profileDetails);
+  const selectProfileInfo = useSelector(state => state.profile.profileDetails);
   const [profileInfo, setProfileInfo] = React.useState();
 
-  const handleDelete = (value) => {
+  const handleDelete = value => {
     setStatusList(statusList.filter(item => item !== value));
     SDK.deleteProfileStatus(value);
   };
 
   const hasProfileInfoChanged = () => {
-    return profileInfo?.nickName !== selectProfileInfo?.nickName || profileInfo?.email !== selectProfileInfo?.email;
+    return (
+      profileInfo?.nickName !== selectProfileInfo?.nickName ||
+      profileInfo?.email !== selectProfileInfo?.email
+    );
   };
 
   const getProfileDetail = async () => {
     if (Object.keys(selectProfileInfo).length === 0) {
-      const userIdentifier = await AsyncStorage.getItem('userIdentifier')
-      const profileDetails = await SDK.getUserProfile(JSON.parse(userIdentifier));
+      const userIdentifier = await AsyncStorage.getItem('userIdentifier');
+      const profileDetails = await SDK.getUserProfile(
+        JSON.parse(userIdentifier),
+      );
       if (profileDetails.statusCode == 200) {
-        AsyncStorage.setItem('vCardProfile', JSON.stringify(profileDetails.data))
-        dispatch(profileDetail(profileDetails.data))
+        AsyncStorage.setItem(
+          'vCardProfile',
+          JSON.stringify(profileDetails.data),
+        );
+        dispatch(profileDetail(profileDetails.data));
       }
-      profileDetails.data.mobileNumber = JSON.parse(userIdentifier)
-      if (profileDetails.data.status == "") profileDetails.data.status = "I am in Mirror Fly"
-      if (!profileInfo)
-        setProfileInfo(profileDetails.data)
+      profileDetails.data.mobileNumber = JSON.parse(userIdentifier);
+      if (profileDetails.data.status == '')
+        profileDetails.data.status = 'I am in Mirror Fly';
+      if (!profileInfo) setProfileInfo(profileDetails.data);
     }
-  }
+  };
 
   const updateProfileDetail = () => {
-    if (selectProfileInfo !== profileInfo)
-      setProfileInfo(selectProfileInfo)
-  }
+    if (selectProfileInfo !== profileInfo) setProfileInfo(selectProfileInfo);
+  };
 
   React.useEffect(() => {
-    hasProfileInfoChanged()
-    updateProfileDetail()
-  }, [selectProfileInfo])
+    hasProfileInfoChanged();
+    updateProfileDetail();
+  }, [selectProfileInfo]);
 
   React.useEffect(() => {
-    if (isNetworkConnected)
-      getProfileDetail()
-  }, [isNetworkConnected])
+    if (isNetworkConnected) getProfileDetail();
+  }, [isNetworkConnected]);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -74,11 +80,13 @@ const ProfileScreen = ({ navigation }) => {
   React.useEffect(() => {
     if (statusList?.length)
       if (profileInfo?.status && !statusList.includes(profileInfo?.status)) {
-        setStatusList(prevStatusList => [...prevStatusList, profileInfo.status]);
-        SDK.addProfileStatus(profileInfo.status.trim())
+        setStatusList(prevStatusList => [
+          ...prevStatusList,
+          profileInfo.status,
+        ]);
+        SDK.addProfileStatus(profileInfo.status.trim());
       }
   }, [profileInfo]);
-
 
   const renderedComponent = React.useMemo(() => {
     switch (nav) {
@@ -126,11 +134,13 @@ const ProfileScreen = ({ navigation }) => {
     }
   }, [nav, profileInfo, statusList]);
 
-  return <KeyboardAvoidingView
-    style={{ flex: 1 }}
-    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-  >{renderedComponent}
-  </KeyboardAvoidingView>;
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      {renderedComponent}
+    </KeyboardAvoidingView>
+  );
 };
 
 export default ProfileScreen;

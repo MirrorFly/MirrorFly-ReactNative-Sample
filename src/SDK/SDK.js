@@ -1,5 +1,5 @@
-import './index'
+import './index';
 
-const SDK = global.SDK
+const SDK = global.SDK;
 
-export default SDK
+export default SDK;

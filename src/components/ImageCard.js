@@ -1,67 +1,34 @@
-import { HStack, Image, Pressable, Text, View } from 'native-base';
+import { HStack, Image, Text, View } from 'native-base';
 import React from 'react';
 import { ImageBackground } from 'react-native';
 import { DownloadIcon } from '../common/Icons';
 import noPreview from '../assets/noPreview.png'
-import ProgressLoader from './chat/common/ProgressLoader';
-import { getThumbBase64URL } from '../Helper/Chat/Utility';
+
+function convertBytesToKB(bytes) {
+  const KB = bytes / 1024;
+  return KB.toFixed(0);
+}
 
 const ImageCard = (props) => {
-  const {
-    imgSrc,
-    uploadStatus = 0,
-    setUploadStatus,
-    isSender,
-    fileSize,
-    messageObject = {}
-  } = props;
+  const mediaData = props.data.msgBody.media
 
-  const {
-    msgId = "",
-    msgBody: { media },
-    msgBody: {
-      message_type = "",
-      media: { file: { fileDetails = {} } = {}, caption = "", file_url = "", androidHeight, androidWidth,
-        local_path = "", fileName, thumb_image = "", file_key } = {}
-    } = {}
-  } = messageObject;
-
-  const imageUrl = local_path ? local_path : fileDetails?.image?.uri
-  const [imageSource, setImageSource] = React.useState(imgSrc || getThumbBase64URL(thumb_image));
-
-  React.useEffect(() => {
-    if (imgSrc) {
-      setImageSource(imgSrc);
-    } else {
-      setImageSource(getThumbBase64URL(thumb_image));
-    }
-  }, [imgSrc, msgId]);
-
-  React.useEffect(() => {
-    if (message_type === "image" && file_url) {
-      isSender && setImageSource(imageUrl)
-      imageUrl && !isSender && setImageSource(imageUrl)
-    }
-  }, [file_url, message_type,local_path]);
-
+  const fileSizeInKB = convertBytesToKB(props.fileSize);
+  
+  const base64ImageData = 'data:image/png;base64,' + mediaData.thumb_image;
   return (
-    <View height={androidHeight} width={androidWidth} borderColor={'#E5E5E5'} borderWidth={2} borderRadius={5} position='relative'>
-      {imageSource
-        ? <Image alt={fileName} source={{ uri: imageSource }} resizeMode="cover" style={{ width: androidWidth, height: androidHeight, borderRadius: 5 }} />
-        : <Image alt={fileName} source={noPreview} width={androidWidth} height={androidHeight} />
+    <View borderColor={'#E5E5E5'} borderWidth={2} borderRadius={5} position='relative'>
+
+      {mediaData.thumb_image
+        ?  <Image alt={mediaData.fileName} source={{ uri: base64ImageData }} resizeMode="cover" style={{ width: mediaData.androidWidth, height: mediaData.androidHeight, borderRadius: 5 }} />
+
+        : <Image alt={mediaData.fileName} source={noPreview} width={mediaData.androidWidth} height={mediaData.androidHeight} />
       }
-      <View position={'absolute'} style={{ top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
-        <ProgressLoader
-          isSender={isSender}
-          imageUrl={imageUrl}
-          media={media}
-          fileSize={fileSize}
-          setUploadStatus={setUploadStatus}
-          msgId={msgId}
-          mediaData={media}
-          uploadStatus={uploadStatus}
-        />
-      </View>
+     
+
+      <HStack px={"1"} py={"1"} bg=" rgba(0, 0, 0, 0.5)" alignItems={"center"} position={'absolute'} bottom={'40%'} right={'30%'} borderRadius={"5"}>
+        <DownloadIcon color={mediaData.thumb_image ? '#fff' : '#000'} width='18' height='15' />
+        <Text px={"2"} color={"#fff"}>{fileSizeInKB}KB</Text>
+      </HStack>
       <View position={'absolute'} bottom={1} right={1}>
         <ImageBackground
           source={require('../assets/ic_baloon.png')}
@@ -74,5 +41,4 @@ const ImageCard = (props) => {
     </View>
   );
 };
-
 export default ImageCard;

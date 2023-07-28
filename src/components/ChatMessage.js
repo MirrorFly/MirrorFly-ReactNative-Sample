@@ -10,144 +10,134 @@ import MapCard from './MapCard';
 import ContactCard from './ContactCard';
 import TextCard from './TextCard';
 import { getConversationHistoryTime } from '../common/TimeStamp';
-import { Box, HStack, Icon, Pressable, Text, View } from 'native-base';
-import { uploadFileToSDK } from '../Helper/Chat/ChatHelper';
-import { getThumbBase64URL } from '../Helper/Chat/Utility';
-import store from '../redux/store';
-import { singleChatSelectedMediaImage } from '../redux/SingleChatImageSlice';
+import { Box, HStack, Icon, Pressable, View } from 'native-base';
 
-const ChatMessage = (props) => {
-  const currentUserJID = useSelector(state => state.auth.currentUserJID)
-  const fromUserJId = useSelector(state => state.navigation.fromUserJid)
-  let isSame = currentUserJID === props?.message?.fromUserJid
-  let statusVisible = 'notSend'
-  const { message, setLocalNav } = props
-  const { msgBody = {}, msgBody: { media: { file = {}, is_uploading, thumb_image = '', local_path = "" } = {}, message_type } = {}, msgId, msgStatus } = message
-  const [uploadStatus, setUploadStatus] = React.useState(4);
-  const imageUrl = local_path ? local_path : file?.fileDetails?.image?.uri
-  const thumbURL = thumb_image ? getThumbBase64URL(thumb_image) : "";
-  const [imgSrc, saveImage] = React.useState(thumbURL);
-  const imageSize = props?.message?.msgBody?.media?.file_size || "";
+const ChatMessage = props => {
+  const currentUserJID = useSelector(state => state.auth.currentUserJID);
+  let isSame = currentUserJID === props?.message?.fromUserJid;
+  let statusVisible = 'notSend';
+  const imageSize = props?.message?.msgBody.media?.file_size;
   const fileSize = imageSize;
-  const [isSubscribed, setIsSubscribed] = React.useState(true);
 
-  const imgFileDownload = () => {
-    try {
-      if (imageUrl) {
-        setUploadStatus(2);
-        saveImage(imageUrl);
-      }
-    } catch (error) {
-      if (isSubscribed) saveImage(getThumbBase64URL(thumb_image));
-    }
-  };
-
-  React.useEffect(() => {
-    if (is_uploading === 0 || is_uploading === 1) {
-      setUploadStatus(is_uploading);
-      if (isImageMessage()) saveImage(getThumbBase64URL(thumb_image));
-    } else if (is_uploading === 3 || is_uploading === 7) {
-      if (isImageMessage()) saveImage(getThumbBase64URL(thumb_image));
-    } else if (is_uploading !== 0 && is_uploading !== 8) {
-      if (isImageMessage()) imgFileDownload();
-      // else setUploadStatus(2);
-    }
-    return () => setIsSubscribed(false);
-  }, []);
-
-  React.useEffect(() => {
-    msgStatus === 0 && setUploadStatus(2);
-  }, [msgStatus]);
-
-  React.useEffect(() => {
-    is_uploading === 8 && setUploadStatus(is_uploading);
-    if (is_uploading === 1) {
-      uploadFileToSDK(file, fromUserJId, msgId, msgBody?.media);
-    }
-    (is_uploading === 3 || is_uploading === 7) && setUploadStatus(3);
-  }, [is_uploading])
-
-  const isImageMessage = () => message_type === "image";
-
-  switch (message?.msgStatus) {
+  switch (props?.message?.msgStatus) {
     case 3:
-      statusVisible = styles.bgClr
+      statusVisible = styles.bgClr;
       break;
     case 0:
-      statusVisible = styles.notDelivered
+      statusVisible = styles.notDelivered;
       break;
     case 1:
-      statusVisible = styles.delivered
+      statusVisible = styles.delivered;
       break;
     case 2:
-      statusVisible = styles.seen
+      statusVisible = styles.seen;
       break;
   }
 
-
-  const getMessageStatus = (msgStatus) => {
+  const getMessageStatus = msgStatus => {
     if (isSame && msgStatus == 3) {
-      return <Icon px='3' as={SandTimer} name="emoji-happy" />
+      return <Icon px="3" as={SandTimer} name="emoji-happy" />;
     }
     return (
       <>
-        <View style={[styles?.msgStatus, isSame ? statusVisible : ""]}></View>
+        <View style={[styles?.msgStatus, isSame ? statusVisible : '']}></View>
       </>
-    )
-  }
-  const validMessageType = ['image', 'video'];
+    );
+  };
 
-  const handleMessageObj = () => {
-    if (props.message.msgBody.media.local_path) {
-      store.dispatch(singleChatSelectedMediaImage(props.message.msgBody));
-      props.setLocalNav('PostPreView');
+  const handlePress = () => {
+    props?.selectedMsgs?.length && props.handleMsgSelect(props.message);
+  };
+
+  const handleLongPress = () => {
+    props?.message?.msgStatus !== 3 && props.handleMsgSelect(props.message);
+  };
+
+  const renderMessage = type => {
+    switch (type) {
+      case 'text':
+        return (
+          <TextCard
+            isSame={isSame}
+            data={{
+              message: props?.message?.msgBody?.message,
+              timeStamp: getConversationHistoryTime(props?.message?.createdAt),
+              status: getMessageStatus(props?.message?.msgStatus),
+            }}
+          />
+        );
+      case 'image':
+        return (
+          <ImageCard
+            data={props?.message}
+            status={getMessageStatus(props?.message?.msgStatus)}
+            timeStamp={getConversationHistoryTime(props?.message?.createdAt)}
+            fileSize={fileSize}
+          />
+        );
+      case 'video':
+        return (
+          <VideoCard
+            data={props?.message}
+            status={getMessageStatus(props?.message?.msgStatus)}
+            timeStamp={getConversationHistoryTime(props?.message?.createdAt)}
+          />
+        );
+      case 'audio':
+        return (
+          <View style={{ flex: 1 }}>
+            <AudioCard
+              data={props?.message}
+              status={getMessageStatus(props?.message?.msgStatus)}
+              timeStamp={getConversationHistoryTime(props?.message?.createdAt)}
+            />
+          </View>
+        );
+      case 'file':
+        return (
+          <PdfCard
+            data={props?.message}
+            status={getMessageStatus(props?.message?.msgStatus)}
+            timeStamp={getConversationHistoryTime(props?.message?.createdAt)}
+            fileSize={fileSize}
+          />
+        );
+      case 'contact':
+        return (
+          <ContactCard
+            data={props?.message}
+            status={getMessageStatus(props?.message?.msgStatus)}
+            timeStamp={getConversationHistoryTime(props?.message?.createdAt)}
+          />
+        );
+      case 'location':
+        return (
+          <MapCard
+            data={props?.message}
+            status={getMessageStatus(props?.message?.msgStatus)}
+            timeStamp={getConversationHistoryTime(props?.message?.createdAt)}
+          />
+        );
+      default:
+        return;
     }
-  }
-  
-  const handleMessageSelect = () => {
-    if (props?.selectedMsgs?.length) {
-      props.handleMsgSelect(props.message);
-    }
-  }
+  };
 
   return (
-    <Pressable
-      onPress={handleMessageSelect}
-      onLongPress={() => message?.msgStatus !== 3 && props.handleMsgSelect(props.message)}>
-      {({ isPressed }) => {
-        return <Box >
-          <Box my={"1"} bg={props.selectedMsgs.includes(props.message) ? 'rgba(0,0,0,0.2)' : 'transparent'}>
-            <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px='3'>
-              <Pressable onPress={handleMessageObj} minWidth='30%' maxWidth='80%'>
-                {{
-                  "text": <TextCard isSame={isSame} data={{
-                    message: message?.msgBody?.message,
-                    timeStamp: getConversationHistoryTime(props?.message?.createdAt),
-                    status: getMessageStatus(props?.message?.msgStatus)
-                  }} />,
-                  'image': <ImageCard messageObject={message}
-                    setUploadStatus={setUploadStatus}
-                    imgSrc={imgSrc}
-                    isSender={isSame}
-                    status={getMessageStatus(message?.msgStatus)}
-                    timeStamp={getConversationHistoryTime(message?.createdAt)}
-                    uploadStatus={uploadStatus}
-                    fileSize={fileSize} />,
-                  "video": <VideoCard data={message} status={getMessageStatus(message?.msgStatus)} timeStamp={getConversationHistoryTime(message?.createdAt)} />,
-                  "audio":
-                    <View style={{ flex: 1 }}>
-                      <AudioCard data={message} status={getMessageStatus(message?.msgStatus)} timeStamp={getConversationHistoryTime(message?.createdAt)} />
-                    </View>,
-                  "file": <PdfCard data={message} status={getMessageStatus(message?.msgStatus)} timeStamp={getConversationHistoryTime(message?.createdAt)} fileSize={fileSize} />,
-                  "contact": <ContactCard data={message} status={getMessageStatus(message?.msgStatus)} timeStamp={getConversationHistoryTime(message?.createdAt)} />,
-                  "location": <MapCard data={message} status={getMessageStatus(message?.msgStatus)} timeStamp={getConversationHistoryTime(message?.createdAt)} />
-                }[message?.msgBody?.message_type]}
-              </Pressable>
-            </HStack>
-          </Box>
-        </Box>
-      }}
-
+    <Pressable onPress={handlePress} onLongPress={handleLongPress}>
+      <Box
+        my={'1'}
+        bg={
+          props.selectedMsgs.includes(props.message)
+            ? 'rgba(0,0,0, 0.2)'
+            : 'transparent'
+        }>
+        <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px="3">
+          <View minWidth="30%" maxWidth="80%">
+            {renderMessage(props?.message?.msgBody?.message_type)}
+          </View>
+        </HStack>
+      </Box>
     </Pressable>
   );
 };
@@ -161,15 +151,15 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   bgClr: {
-    backgroundColor: 'red'
+    backgroundColor: 'red',
   },
   notDelivered: {
-    backgroundColor: '#818181'
+    backgroundColor: '#818181',
   },
   delivered: {
-    backgroundColor: '#FFA500'
+    backgroundColor: '#FFA500',
   },
   seen: {
-    backgroundColor: '#66E824'
+    backgroundColor: '#66E824',
   },
 });

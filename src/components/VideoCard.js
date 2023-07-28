@@ -3,11 +3,12 @@ import React from 'react';
 import { PlayIcon, VideoIcon } from '../common/Icons';
 import noPreview from '../assets/noPreview.png'
 import { ImageBackground } from 'react-native';
+import { millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
 
 const VideoCard = (props) => {
-    const mediaData = props.data.msgBody.media
+    const mediaData = props.data?.msgBody?.media
     const durationInSeconds = props.data.msgBody.media.duration; 
-    const durationInMinutes = '00:'+ Math.floor(durationInSeconds / 1000);
+    const durationInMinutes = millisToMinutesAndSeconds(durationInSeconds);
     const base64ImageData = 'data:image/jpg;base64,' + mediaData.thumb_image;
 
     return (

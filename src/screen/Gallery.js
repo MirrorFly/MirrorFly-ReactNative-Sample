@@ -47,7 +47,7 @@ const Gallery = (props = {}) => {
                         <View position={"absolute"} left={60} bottom={60}>{<Icon as={TickIcon} name="emoji-happy" />}</View>
                     </View>}
                     <HStack px={"1"} style={{ backgroundColor: 'rgba(0,0,0,0.3))', position: 'absolute', bottom: 7, left: 4 }}>
-                        {item?.node.type.split("/")[0] === "video" && <Icon as={VideoSmallIcon} name="emoji-happy" />}
+                        {item?.node.type.split("/")[0] === "video" && <Icon as={() => VideoSmallIcon()} name="emoji-happy" />}
                     </HStack>
                 </Pressable >
             </View >

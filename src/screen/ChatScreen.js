@@ -12,7 +12,7 @@ import { RECENTCHATSCREEN } from '../constant'
 import { useDispatch, useSelector } from 'react-redux'
 import { navigate } from '../redux/navigationSlice'
 import { v4 as uuidv4 } from 'uuid';
-import { getMessageObjSender, getRecentChatMsgObj } from '../Helper/Chat/Utility'
+import { getMessageObjSender, getRecentChatMsgObj, setDuration, setDurationSecToMilli } from '../Helper/Chat/Utility'
 import { updateRecentChat } from '../redux/recentChatDataSlice'
 import store from '../redux/store'
 import { isSingleChat } from '../Helper/Chat/ChatHelper'
@@ -173,13 +173,32 @@ function ChatScreen() {
   };
 
   const handleMedia = (item) => {
+    let {image} = item
+    image.playableDuration = setDurationSecToMilli(image.playableDuration)
     const transformedArray = {
       caption: '',
       fileDetails: item
     };
-    setselectedSingle(true)
-    setSelectedImages([transformedArray]);
-    setLocalNav("GalleryPickView")
+    setIsToastShowing(true)
+    const size = validateFileSize(item.image, getType(item.type));
+    if (size && !isToastShowing) {
+      return toast.show({
+        ...toastConfig,
+        render: () => {
+          return (
+            <Box bg="black" px="2" py="1" rounded="sm">
+              <Text style={{ color: '#fff', padding: 5 }}>{size}</Text>
+            </Box>
+          );
+        },
+      });
+    }
+    if (!isToastShowing) {
+      setIsToastShowing(false)
+      setselectedSingle(true)
+      setSelectedImages([transformedArray]);
+      setLocalNav("GalleryPickView")
+    }
   }
 
   /*   const validation = (file) => {
@@ -207,6 +226,8 @@ function ChatScreen() {
      */
 
   const handleSelectImage = (item) => {
+    let {image} = item
+    image.playableDuration = setDurationSecToMilli(image.playableDuration)
     const transformedArray = {
       caption: '',
       fileDetails: item
@@ -307,7 +328,7 @@ function ChatScreen() {
         'Gallery': <SavePicture setLocalNav={setLocalNav} selectedImages={selectedImages} handleSelectImage={handleSelectImage}
           handleMedia={handleMedia}
           setSelectedImages={setSelectedImages} />,
-        'PostPreView':<PostPreViewPage setLocalNav={setLocalNav} />
+        'PostPreView': <PostPreViewPage setLocalNav={setLocalNav} />
       }[localNav]}
     </>
   )

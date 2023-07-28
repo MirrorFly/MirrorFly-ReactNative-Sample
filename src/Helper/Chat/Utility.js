@@ -88,13 +88,11 @@ export const getMessageObjSender = async (dataObj, idx) => {
             ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);
         } else if (msgType === "video") {
             ({
-                webWidth,
-                webHeight,
-                androidWidth,
-                androidHeight,
                 originalWidth,
                 originalHeight,
             } = fileDetails);
+            const mediaDimension = calculateWidthAndHeight(fileDetails?.image?.width, fileDetails?.image?.height);
+            ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);
         }
         msgBody.message = "";
         msgBody.media = {
@@ -232,4 +230,14 @@ export const getMessageObjReceiver = (messgeObject, newChatTo) => {
                 uuidv4(),
         }),
     };
+};
+
+export const setDurationSecToMilli = (seconds) => {
+    return seconds * 1000
+}
+
+export const millisToMinutesAndSeconds = (millis) => {
+    let minutes = Math.floor(millis / 60000);
+    let seconds = parseInt((millis % 60000) / 1000);
+    return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 };

@@ -98,8 +98,8 @@ const ChatMessage = (props) => {
   const validMessageType = ['image', 'video'];
 
   const handleMessageObj = () => {
-    if (props.message.msgBody.media.local_path) {
-      store.dispatch(singleChatSelectedMediaImage(props.message.msgBody));
+    if (props.message.msgBody.media.local_path || props.message.msgBody?.media?.file?.fileDetails?.image?.uri) {
+      store.dispatch(singleChatSelectedMediaImage(props.message));
       props.setLocalNav('PostPreView');
     }
   }
@@ -133,15 +133,15 @@ const ChatMessage = (props) => {
                     timeStamp={getConversationHistoryTime(message?.createdAt)}
                     uploadStatus={uploadStatus}
                     fileSize={fileSize} />,
-                  "video": <VideoCard 
-                          messageObject={message}
-                          setUploadStatus={setUploadStatus}
-                          imgSrc={imgSrc}
-                          isSender={isSame}
-                          status={getMessageStatus(message?.msgStatus)}
-                          uploadStatus={uploadStatus}
-                          fileSize={fileSize}
-                          timeStamp={getConversationHistoryTime(message?.createdAt)} />,
+                  "video": <VideoCard
+                    messageObject={message}
+                    setUploadStatus={setUploadStatus}
+                    imgSrc={imgSrc}
+                    isSender={isSame}
+                    status={getMessageStatus(message?.msgStatus)}
+                    uploadStatus={uploadStatus}
+                    fileSize={fileSize}
+                    timeStamp={getConversationHistoryTime(message?.createdAt)} />,
                   "audio":
                     <View style={{ flex: 1 }}>
                       <AudioCard data={message} status={getMessageStatus(message?.msgStatus)} timeStamp={getConversationHistoryTime(message?.createdAt)} />

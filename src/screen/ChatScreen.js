@@ -226,6 +226,7 @@ function ChatScreen() {
      */
 
   const handleSelectImage = (item) => {
+    setIsToastShowing(true)
     let { image } = item
     image.playableDuration = setDurationSecToMilli(image.playableDuration)
     const transformedArray = {
@@ -235,7 +236,18 @@ function ChatScreen() {
     setselectedSingle(false)
     const size = validateFileSize(item.image, getType(item.type));
     const isImageSelected = selectedImages.some((selectedItem) => selectedItem.fileDetails?.image?.uri === item?.image.uri);
-    setIsToastShowing(true)
+    if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
+      return toast.show({
+        ...toastConfig,
+        render: () => {
+          return (
+            <Box bg="black" px="2" py="1" rounded="sm">
+              <Text style={{ color: '#fff', padding: 5 }}>Can't share more than 10 media items</Text>
+            </Box>
+          );
+        },
+      });
+    }
 
     if (size && !isToastShowing) {
       return toast.show({
@@ -244,19 +256,6 @@ function ChatScreen() {
           return (
             <Box bg="black" px="2" py="1" rounded="sm">
               <Text style={{ color: '#fff', padding: 5 }}>{size}</Text>
-            </Box>
-          );
-        },
-      });
-    }
-
-    if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>Can't share more than 10 media items</Text>
             </Box>
           );
         },

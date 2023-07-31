@@ -86,10 +86,10 @@ function GalleryPickView(props) {
                     setLocalNav('CHATCONVERSATION')
                 }} _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} icon={<Icon as={<SendBlueIcon color="#fff" />} name="emoji-happy" />} borderRadius="full" />
                 <HStack ml='2' mb='1' alignItems={'center'}>
-                    <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={async () => {
+                    {selectedImages.length < 10 && <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={async () => {
                         setLocalNav("Gallery")
-                    }} icon={<Icon as={PreViewAddIcon} name="emoji-happy" />} borderRadius="full" />
-                    <Divider h='7' bg="#7f7f7f" thickness="1" mx="2" orientation="vertical" />
+                    }} icon={<Icon as={PreViewAddIcon} name="emoji-happy" />} borderRadius="full" />}
+                    {selectedImages.length < 10 && <Divider h='7' bg="#7f7f7f" thickness="1" mx="2" orientation="vertical" />}
                     <TextInput
                         style={{
                             flex: 1,

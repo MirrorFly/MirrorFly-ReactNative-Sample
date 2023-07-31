@@ -170,7 +170,6 @@ const Gallery = (props = {}) => {
         return (
             <View style={{ marginBottom: 50 }}>
                 <ActivityIndicator size="large" color={'#3276E2'} />
-                <Text style={{ textAlign: 'center' }}>Loading Content...</Text>
             </View>
         )
     }

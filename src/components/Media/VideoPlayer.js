@@ -84,15 +84,17 @@ const VideoPlayer = (props) => {
 
     React.useLayoutEffect(() => {
         if (Platform.OS == 'ios')
-            RNConvertPhAsset.convertVideoFromUrl({
-                url: uri,
-                convertTo: 'mov',
-                quality: 'original'
-            }).then((response) => {
-                setVideoUri(response.path)
-            }).catch((err) => {
-                console.log(err)
-            });
+            if (uri.includes('ph://'))
+                RNConvertPhAsset.convertVideoFromUrl({
+                    url: uri,
+                    convertTo: 'mov',
+                    quality: 'original'
+                }).then((response) => {
+                    setVideoUri(response.path)
+                }).catch((err) => {
+                    console.log(err)
+                });
+            else setVideoUri(uri)
         else setVideoUri(uri)
     }, [])
 
@@ -134,7 +136,7 @@ const VideoPlayer = (props) => {
                         progress={currentTime}
                         containerStyle={{
                             flex: 1,
-                            backgroundColor: 'rgba(0,0,0,.5)',
+                            backgroundColor: 'rgba(0,0,0,0.2)',
                             height: dimention,
                         }}
                     />

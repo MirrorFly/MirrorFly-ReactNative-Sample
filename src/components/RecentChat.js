@@ -61,16 +61,16 @@ export default function RecentChat(props) {
                                     ? <View style={[styles.msgStatus, isSame ? statusVisible : ""]}></View>
                                     : (isSame && item?.msgStatus == 3 && <Icon px='3' as={SandTimer} name="emoji-happy" />)}
                                 {{
-                                    'text': <Text numberOfLines={1} ellipsizeMode="tail" px={isSame ? 1 : 0} color="#767676" _dark={{ color: '#767676' }}>{item?.msgBody?.message}</Text>,
+                                    'text': <Text numberOfLines={1} ellipsizeMode="tail" px={1} color="#767676" _dark={{ color: '#767676' }}>{item?.msgBody?.message}</Text>,
                                     'image':
                                         <HStack pl='1' alignItems={'center'}>
                                             <Icon as={imageIcon} />
-                                            <Text numberOfLines={1} ellipsizeMode="tail" px={isSame ? 1 : 0} color="#767676" _dark={{ color: '#767676' }}>Image</Text>
+                                            <Text numberOfLines={1} ellipsizeMode="tail" px={1} color="#767676" _dark={{ color: '#767676' }}>Image</Text>
                                         </HStack>,
                                     'video':
                                         <HStack pl='1' alignItems={'center'}>
                                             <Icon as={() => VideoSmallIcon('#767676')} />
-                                            <Text numberOfLines={1} ellipsizeMode="tail" px={isSame ? 1 : 0} color="#767676" _dark={{ color: '#767676' }}>Video</Text>
+                                            <Text numberOfLines={1} ellipsizeMode="tail" px={1} color="#767676" _dark={{ color: '#767676' }}>Video</Text>
                                         </HStack>
                                 }[item.msgBody.message_type]}
                             </HStack>

@@ -45,7 +45,7 @@ const ImageCard = (props) => {
   }, [file_url, message_type,local_path]);
 
   return (
-    <View height={androidHeight} width={androidWidth} borderColor={'#E5E5E5'} borderWidth={2} borderRadius={5} position='relative'>
+    <View backgroundColor={isSender ? '#E2E8F7' : '#fff'} height={androidHeight} width={androidWidth} borderColor={'#E5E5E5'} borderWidth={2} borderRadius={5} position='relative'>
       {imageSource
         ? <Image alt={fileName} source={{ uri: imageSource }} resizeMode="cover" style={{ width: androidWidth, height: androidHeight, borderRadius: 5 }} />
         : <Image alt={fileName} source={noPreview} width={androidWidth} height={androidHeight} />

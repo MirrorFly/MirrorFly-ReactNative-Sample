@@ -13,12 +13,15 @@ import SDK from '../SDK/SDK';
 import { addRecentChat } from '../redux/recentChatDataSlice';
 import { sortBydate } from '../Helper/Chat/RecentChat';
 import * as RootNav from '../Navigation/rootNavigation'
+import { Animated } from "react-native";
 
 const logo = require('../assets/mirrorfly-logo.png');
 
 const FirstComponent = (isSearching, filteredData) => <RecentChat isSearching={isSearching} data={filteredData} />;
 
 function RecentScreen() {
+  const av = new Animated.Value(0);
+  av.addListener(() => { return }); /** resolving WARN Sending `onAnimatedValueUpdate` with no listeners registered */
   const dispatch = useDispatch();
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([

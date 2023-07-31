@@ -1,8 +1,9 @@
 import Video from 'react-native-video';
 import React, { useState } from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 import MediaControls, { PLAYER_STATES } from 'react-native-media-controls';
 import { View } from 'native-base';
+import RNConvertPhAsset from 'react-native-convert-ph-asset';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -10,6 +11,7 @@ const VideoPlayer = (props) => {
     const { item: { fileDetails = {} } = {} } = props
     const { image: { uri, height, width } } = fileDetails
     const videoPlayer = React.useRef(null);
+    const [videoUri, setVideoUri] = useState('')
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
@@ -49,7 +51,6 @@ const VideoPlayer = (props) => {
 
     const onLoad = (data) => {
         setDuration(data.duration);
-        // setIsLoading(false);
     };
 
     const onLoadStart = (data) => setIsLoading(true);
@@ -77,17 +78,31 @@ const VideoPlayer = (props) => {
         const dimension = Math.round(ratio * screenWidth)
         const top = (_height - dimension) / 2
         setMediaControlTop(isNaN(top) ? 0 : top);
-        setDimention(dimension);
+        setDimention(Platform.OS == 'ios' && dimension > _height ? dimension - 30 : dimension);
         setIsLoading(false);
     }
+
+    React.useLayoutEffect(() => {
+        if (Platform.OS == 'ios')
+            RNConvertPhAsset.convertVideoFromUrl({
+                url: uri,
+                convertTo: 'mov',
+                quality: 'original'
+            }).then((response) => {
+                setVideoUri(response.path)
+            }).catch((err) => {
+                console.log(err)
+            });
+        else setVideoUri(uri)
+    }, [])
 
     return (
         <View style={{ flex: 1 }} onLayout={handleLayout}>
             <View style={{ flex: 1, justifyContent: 'center' }}>
-                <Video
+                {videoUri && <Video
                     onEnd={onEnd}
                     onLoad={onLoad}
-                    onLoadStart={onLoadStart}
+                    // onLoadStart={onLoadStart}
                     onProgress={onProgress}
                     paused={paused}
                     controls={false}
@@ -95,7 +110,7 @@ const VideoPlayer = (props) => {
                     posterResizeMode={"contain"}
                     ref={videoPlayer}
                     resizeMode={"contain"}
-                    source={{ uri }}
+                    source={{ uri: videoUri }}
                     style={{
                         width: "100%",
                         height: "100%",
@@ -103,27 +118,27 @@ const VideoPlayer = (props) => {
                     }}
                     volume={100}
                     muted={false}
-                />
+                />}
             </View>
-            {!isLoading && 
-            <View position={'absolute'} top={mediaControlTop} bottom={0} left={0} right={0} justifyContent={'center'}>
-                <MediaControls
-                    duration={duration}
-                    isLoading={isLoading}
-                    mainColor="#333"
-                    onPaused={onPaused}
-                    onReplay={onReplay}
-                    onSeek={onSeek}
-                    onSeeking={onSeeking}
-                    playerState={playerState}
-                    progress={currentTime}
-                    containerStyle={{
-                        flex: 1,
-                        backgroundColor: 'rgba(0,0,0,.5)',
-                        height: dimention
-                    }}
-                />
-            </View>}
+            {!isLoading &&
+                <View position={'absolute'} top={mediaControlTop} bottom={0} left={0} right={0} justifyContent={'center'}>
+                    <MediaControls
+                        duration={duration}
+                        isLoading={isLoading}
+                        mainColor="#333"
+                        onPaused={onPaused}
+                        onReplay={onReplay}
+                        onSeek={onSeek}
+                        onSeeking={onSeeking}
+                        playerState={playerState}
+                        progress={currentTime}
+                        containerStyle={{
+                            flex: 1,
+                            backgroundColor: 'rgba(0,0,0,.5)',
+                            height: dimention,
+                        }}
+                    />
+                </View>}
         </View>
     )
 }

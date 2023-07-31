@@ -106,7 +106,9 @@ export default function RecentChat(props) {
         </Slide>
     }
 
-    return <SwipeListView showsVerticalScrollIndicator={false} data={props.data} renderItem={renderItem} rightOpenValue={-130} previewRowKey={'0'} previewOpenValue={-40} previewOpenDelay={3000} onRowDidOpen={onRowDidOpen} />
+    return <View p='0' flex={1} bg={'#fff'}>
+        <SwipeListView showsVerticalScrollIndicator={false} data={props.data} renderItem={renderItem} rightOpenValue={-130} previewRowKey={'0'} previewOpenValue={-40} previewOpenDelay={3000} onRowDidOpen={onRowDidOpen} />
+    </View>
 }
 
 const styles = StyleSheet.create({

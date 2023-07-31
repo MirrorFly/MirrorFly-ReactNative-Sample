@@ -4,9 +4,10 @@ import Video from 'react-native-video';
  import  { PLAYER_STATES } from 'react-native-media-controls';
 import Orientation from 'react-native-orientation-locker';
 import { BackArrowIcon, ShareIcon } from '../common/Icons';
+import { useSelector } from 'react-redux';
 
 const VideoInfo = (props) => {
-    
+    const SingleSelectedImage = useSelector((state) => state.chatSelectedMedia.data.media);
     const screenWidth = Dimensions.get('window').width;
     const screenHeight = Dimensions.get('window').height;
     const videoPlayer = React.useRef(null);
@@ -72,7 +73,7 @@ const VideoInfo = (props) => {
     }, []);
 
     const externalVideoSource = {
-       uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+       uri: SingleSelectedImage.local_path,
       
     };
    

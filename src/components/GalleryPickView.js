@@ -54,9 +54,8 @@ function GalleryPickView(props) {
             const type = getType(item?.fileDetails?.type)
             scenes[`tab${itemIndex + 1}`] = () => (
                 <>
-                    {type === "image" &&
-                        // <Image resizeMode='contain' source={{ uri: item?.fileDetails?.image?.uri }} style={styles.tabContainer}
-                        <ImageZoom item={item} />}
+
+                    {type === "image" && <Image resizeMode='contain' source={{ uri: item?.fileDetails?.image?.uri }} style={styles.tabContainer} />}
                     {type === "video" && <VideoPlayer item={item} />}
                 </>
             );
@@ -116,7 +115,7 @@ function GalleryPickView(props) {
                     <Text color='#7f7f7f'>{profileDetails?.nickName}</Text>
                 </HStack>
                 {selectedImages.length > 1 &&
-                    <ScrollView position={'absolute'} bottom={0} horizontal>
+                    <ScrollView flexGrow={0} horizontal>
                         <HStack>
                             {selectedImages?.map((item, i) => (
                                 <Pressable

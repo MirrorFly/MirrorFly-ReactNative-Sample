@@ -332,7 +332,7 @@ PODS:
     - glog
   - react-native-cameraroll (5.7.2):
     - React-Core
-  - react-native-compressor (1.6.1):
+  - react-native-compressor (1.6.2):
     - NextLevelSessionExporter
     - React-Core
   - react-native-document-picker (9.0.1):
@@ -444,6 +444,8 @@ PODS:
     - React-Core
   - RNCAsyncStorage (1.19.1):
     - React-Core
+  - RNConvertPhAsset (1.0.3):
+    - React
   - RNFS (2.20.0):
     - React-Core
   - RNImageCropPicker (0.39.0):
@@ -569,6 +571,7 @@ DEPENDENCIES:
   - RealmJS (from `../node_modules/realm`)
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - RNConvertPhAsset (from `../node_modules/react-native-convert-ph-asset`)
   - RNFS (from `../node_modules/react-native-fs`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
@@ -690,6 +693,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/rn-fetch-blob"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
+  RNConvertPhAsset:
+    :path: "../node_modules/react-native-convert-ph-asset"
   RNFS:
     :path: "../node_modules/react-native-fs"
   RNImageCropPicker:
@@ -741,7 +746,7 @@ SPEC CHECKSUMS:
   React-jsinspector: c712f9e3bb9ba4122d6b82b4f906448b8a281580
   React-logger: 342f358b8decfbf8f272367f4eacf4b6154061be
   react-native-cameraroll: 134805127580aed23403b8c2cb1548920dd77b3a
-  react-native-compressor: ebcf8bc36f8e44581a8f831583caee8a27e55a01
+  react-native-compressor: dd1531490d6c335146f6aae3cd0c318f1e817cd5
   react-native-document-picker: 2b8f18667caee73a96708a82b284a4f40b30a156
   react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
   react-native-image-picker: db60857e03d63721f19b6f4027de20429ddd9cba
@@ -766,6 +771,7 @@ SPEC CHECKSUMS:
   RealmJS: 8deebf00c84f499c654bc585583c54f55b586751
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNCAsyncStorage: f47fe18526970a69c34b548883e1aeceb115e3e1
+  RNConvertPhAsset: 9b366b8a1abc194b76572712c6f7dd89c9e4e37f
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNImageCropPicker: 14fe1c29298fb4018f3186f455c475ab107da332
   RNPermissions: 09010ab77268f92c9d34d8ab696532d6cdb8c2a3

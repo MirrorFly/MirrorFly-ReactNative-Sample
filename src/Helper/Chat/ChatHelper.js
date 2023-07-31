@@ -20,7 +20,7 @@ export const getUniqueListBy = (arr, key) => {
 
 
 export const uploadFileToSDK = async (file, jid, msgId, media) => {
-    const { caption = "", fileDetails: { replyTo = "", image : { playableDuration = 0 }, audioType = "", type } = {} } = file;
+    const { caption = "", fileDetails: { replyTo = "", image: { playableDuration = 0 }, audioType = "", type } = {} } = file;
     const msgType = type.split('/')[0];
     let fileOptions = {
         msgId: msgId,
@@ -32,7 +32,7 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
         androidHeight: media.androidHeight || 0,
         originalWidth: media.originalWidth || 0,
         originalHeight: media.originalHeight || 0,
-        ...(msgType === "video" || msgType === "image" && { thumbImage: media?.thumb_image }),
+        ...((msgType === "video" || msgType === "image") && { thumbImage: media?.thumb_image }),
         ...(msgType === "audio" && { audioType })
     };
 

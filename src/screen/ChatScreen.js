@@ -129,7 +129,7 @@ function ChatScreen() {
         const file = files[i], msgId = uuidv4();
         const { caption = "", fileDetails = {}, fileDetails: { image: { fileSize, filename, playableDuration, uri }, type } = {} } = file;
         const msgType = type.split('/')[0];
-        const thumbImage = (msgType === "image" || msgType === "video") ? await getThumbImage(fileDetails.image) : ""
+        const thumbImage = (msgType === "image") ? await getThumbImage(fileDetails.image) : ""
         let fileOptions = {
           fileName: filename,
           fileSize: fileSize,

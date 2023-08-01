@@ -29,13 +29,12 @@ const Avathar = (props) => {
         if (preVele == " ") {
           preVele = element
           result = graphemes[0] + element
-          return result
         }
         preVele = element
       });
-    } else {
+    }
+    if (!result) {
       result = graphemes[0] + graphemes[1]
-      return result
     }
     return result;
   };

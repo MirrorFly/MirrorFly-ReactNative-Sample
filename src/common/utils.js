@@ -1,6 +1,6 @@
 import DocumentPicker from 'react-native-document-picker';
 import { Box, Text } from "native-base";
-import { request, PERMISSIONS } from 'react-native-permissions';
+import { request, PERMISSIONS, requestMultiple } from 'react-native-permissions';
 import { Platform } from 'react-native';
 
 const toastConfig = {
@@ -35,8 +35,6 @@ export const requestCameraPermission = async () => {
     case Platform.OS == 'ios':
       return await request(PERMISSIONS.IOS.PHOTO_LIBRARY)
     case Platform.OS === 'android' && Platform.Version <= 32: // Android Vresion below 29
-      return await request(PERMISSIONS.ANDROID.CAMERA)
-    default:
       return await request(PERMISSIONS.ANDROID.CAMERA)// Android Vresion 30 and above
   }
 };
@@ -48,7 +46,8 @@ export const requestStoragePermission = async () => {
     case Platform.OS === 'android' && Platform.Version <= 32: // Android Vresion 32 and below
       return await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE)
     default:
-      return await request(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES)// Android Vresion 33 and above
+      const permited = await requestMultiple([PERMISSIONS.ANDROID.READ_MEDIA_IMAGES, PERMISSIONS.ANDROID.READ_MEDIA_VIDEO])// Android Vresion 33 and above
+      return permited['android.permission.READ_MEDIA_IMAGES'] || permited['android.permission.READ_MEDIA_VIDEO']
   }
 };
 

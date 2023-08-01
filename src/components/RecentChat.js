@@ -1,5 +1,6 @@
 import { Center, Box, Divider, HStack, Pressable, Spacer, Text, VStack, View, Slide, Spinner, Icon } from 'native-base';
 import React from 'react'
+import * as RootNav from '../Navigation/rootNavigation'
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { useDispatch, useSelector } from 'react-redux';
 import { convertUTCTOLocalTimeStamp, formatChatDateTime } from '../common/TimeStamp';
@@ -9,7 +10,7 @@ import { navigate } from '../redux/navigationSlice';
 import { Image, StyleSheet } from 'react-native';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import SDK from '../SDK/SDK';
-import { SandTimer } from '../common/Icons';
+import { SandTimer, VideoSmallIcon, imageIcon } from '../common/Icons';
 
 export default function RecentChat(props) {
     const dispatch = useDispatch();
@@ -40,6 +41,7 @@ export default function RecentChat(props) {
                 SDK.activeChatUser(jid)
                 let x = { screen: CHATSCREEN, fromUserJID: item?.userJid || jid, profileDetails: item?.profileDetails }
                 dispatch(navigate(x));
+                RootNav.navigate(CHATSCREEN)
             }} _dark={{ bg: 'coolGray.800' }} _light={{ bg: 'white' }}>
                 <Box pl="4" pr="5" py="2">
                     <HStack alignItems="center" space={3}>
@@ -58,7 +60,19 @@ export default function RecentChat(props) {
                                     item?.msgStatus !== 3
                                     ? <View style={[styles.msgStatus, isSame ? statusVisible : ""]}></View>
                                     : (isSame && item?.msgStatus == 3 && <Icon px='3' as={SandTimer} name="emoji-happy" />)}
-                                <Text numberOfLines={1} ellipsizeMode="tail" px={isSame ? 1 : 0} color="coolGray.600" _dark={{ color: 'warmGray.200' }}>{item?.msgBody?.message}</Text>
+                                {{
+                                    'text': <Text numberOfLines={1} ellipsizeMode="tail" px={1} color="#767676" _dark={{ color: '#767676' }}>{item?.msgBody?.message}</Text>,
+                                    'image':
+                                        <HStack pl='1' alignItems={'center'}>
+                                            <Icon as={imageIcon} />
+                                            <Text numberOfLines={1} ellipsizeMode="tail" px={1} color="#767676" _dark={{ color: '#767676' }}>Image</Text>
+                                        </HStack>,
+                                    'video':
+                                        <HStack pl='1' alignItems={'center'}>
+                                            <Icon as={() => VideoSmallIcon('#767676')} />
+                                            <Text numberOfLines={1} ellipsizeMode="tail" px={1} color="#767676" _dark={{ color: '#767676' }}>Video</Text>
+                                        </HStack>
+                                }[item.msgBody.message_type]}
                             </HStack>
                         </VStack>
                         <Spacer />
@@ -67,9 +81,9 @@ export default function RecentChat(props) {
                         </Text>
                     </HStack>
                 </Box>
-            </Pressable>
+            </Pressable >
             <Divider w="80%" alignSelf="flex-end" _light={{ bg: "#f2f2f2" }} _dark={{ bg: "muted.50" }} />
-        </Box>
+        </Box >
     };
     if (!props?.data?.length) {
         return <Center h='full'>
@@ -92,7 +106,9 @@ export default function RecentChat(props) {
         </Slide>
     }
 
-    return <SwipeListView showsVerticalScrollIndicator={false} data={props.data} renderItem={renderItem} rightOpenValue={-130} previewRowKey={'0'} previewOpenValue={-40} previewOpenDelay={3000} onRowDidOpen={onRowDidOpen} />
+    return <View p='0' flex={1} bg={'#fff'}>
+        <SwipeListView showsVerticalScrollIndicator={false} data={props.data} renderItem={renderItem} rightOpenValue={-130} previewRowKey={'0'} previewOpenValue={-40} previewOpenDelay={3000} onRowDidOpen={onRowDidOpen} />
+    </View>
 }
 
 const styles = StyleSheet.create({

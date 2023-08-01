@@ -8,9 +8,16 @@ import { updateRecentChatMessageStatus } from "../redux/recentChatDataSlice";
 import { storeDeliveryStatus, storeSeenStatus } from "../redux/storageSlice";
 import store from "../redux/store";
 import { updateUserPresence } from "../redux/userSlice";
+import * as RootNav from '../Navigation/rootNavigation'
+import { MSG_SEEN_ACKNOWLEDGE_STATUS, MSG_SEEN_STATUS, MSG_SENT_SEEN_STATUS_CARBON } from "../Helper/Chat/Constant";
+import { deleteChatSeenPendingMsg } from "../redux/chatSeenPendingMsg";
+import { updateMediaUploadData } from "../redux/mediaUploadDataSlice";
+import nextFrame from 'next-frame';
+import { updateDownloadData } from "../redux/mediaDownloadDataSlice";
 
 export const callBacks = {
     connectionListener: (response) => {
+        console.log('connectionListener', response)
         store.dispatch(setXmppStatus(response.status))
         if (response.status === "CONNECTED") {
             console.log("Connection Established");
@@ -19,28 +26,46 @@ export const callBacks = {
         } else if (response.status === "LOGOUT") {
             console.log("LOGOUT");
             store.dispatch(navigate({ screen: REGISTERSCREEN }))
+            RootNav.navigate(REGISTERSCREEN)
         }
     },
     dbListener: (res) => {
         console.log('dbListener', JSON.stringify(res));
     },
-    messageListener: (res) => {
-        if (res.chatType === 'chat' &&
-            (res.msgType === "sentMessage" ||
-                res.msgType === "carbonSentMessage" ||
-                res.msgType === "receiveMessage" ||
-                res.msgType === "carbonReceiveMessage" ||
-                res.msgType === "receiveMessage")) {
-            updateRecentChatMessage(res, store.getState())
-            updateConversationMessage(res, store.getState())
-        }
-        if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {
-            store.dispatch(updateRecentChatMessageStatus(res))
-            store.dispatch(updateChatConversationHistory(res))
-            store.dispatch(storeDeliveryStatus(res))
-            if(res.msgType === "seen" || res.msgType === "carbonSeen"){
-                store.dispatch(storeSeenStatus(res))
+    messageListener: async (res) => {
+        await nextFrame();
+        if (res.chatType === 'chat') {
+            switch (res.msgType) {
+                case 'sentMessage':
+                case 'carbonSentMessage':
+                case 'receiveMessage':
+                case 'carbonReceiveMessage':
+                    updateRecentChatMessage(res, store.getState())
+                    updateConversationMessage(res, store.getState())
+                    break;
             }
+        }
+        switch (res.msgType) {
+            case "carbonDelivered":
+            case "delivered":
+            case "seen":
+            case "carbonSeen":
+                store.dispatch(updateRecentChatMessageStatus(res))
+                store.dispatch(updateChatConversationHistory(res))
+                store.dispatch(storeDeliveryStatus(res))
+                if (res.msgType === "seen" || res.msgType === "carbonSeen") {
+                    store.dispatch(storeSeenStatus(res))
+                }
+                break;
+        }
+        /**
+        // if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {
+            // store.dispatch(updateRecentChatMessageStatus(res))
+            // store.dispatch(updateChatConversationHistory(res))
+            // store.dispatch(storeDeliveryStatus(res))
+            // if (res.msgType === "seen" || res.msgType === "carbonSeen") {
+            //     store.dispatch(storeSeenStatus(res))
+            // }
             // store.dispatch(addMessageInfoUpdate(
             //     {
             //         id: uuidv4(),
@@ -51,8 +76,19 @@ export const callBacks = {
             //                 ? MSG_DELIVERED_STATUS_ID
             //                 : MSG_SEEN_STATUS_ID
             //     }))
+        // }
+        */
+        // When message is seen, then delete the seen messages from pending seen message list
+        const pendingMessages = store?.getState().chatSeenPendingMsgData?.data || [];
+        if (
+            pendingMessages.length > 0 &&
+            (res.msgType === MSG_SENT_SEEN_STATUS_CARBON || (res.msgType === MSG_SEEN_ACKNOWLEDGE_STATUS && res.type === MSG_SEEN_STATUS))
+        ) {
+            const { msgId: currentMsgId = null } = res;
+            store.dispatch(deleteChatSeenPendingMsg(currentMsgId));
         }
-        if (res.msgType === "acknowledge" && res.type === "acknowledge") {
+
+        if (res.msgType === "acknowledge" && (res.type === "acknowledge")) {
             store.dispatch(updateRecentChatMessageStatus(res))
             store.dispatch(updateChatConversationHistory(res))
         }
@@ -78,7 +114,10 @@ export const callBacks = {
         console.log('groupMsgInfoListener = (res) => { }', res)
     },
     mediaUploadListener: (res) => {
-        console.log('mediaUploadListener = (res) => { }', res)
+        store.dispatch(updateMediaUploadData(res));
+    },
+    mediaDownloadListener: (res) => {
+        store.dispatch(updateDownloadData(res));
     },
     blockUserListener: (res) => {
         console.log('blockUserListener = (res) => { }', res)

@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { CONNECTED, DISCONNECTED, NOTCONNECTED, REGISTERSCREEN } from '../constant';
 import { navigate } from './navigationSlice';
 import { profileDetail } from './profileSlice';
+import * as RootNav from '../Navigation/rootNavigation';
 
 const initialState = {
     userData: {},
@@ -17,13 +18,14 @@ const initialState = {
 export const logout = createAsyncThunk('register/logout', async (val, { dispatch }) => {
     let logout = await SDK.logout()
     const getPrevUserIdentifier = await AsyncStorage.getItem('userIdentifier')
-    await AsyncStorage.setItem('prevUserIdentifier', getPrevUserIdentifier);
-    await AsyncStorage.setItem('credential', '');
-    await AsyncStorage.setItem('userIdentifier', '');
-    await AsyncStorage.setItem('screenObj', '')
-    await AsyncStorage.setItem('vCardProfile', '')
+    AsyncStorage.setItem('prevUserIdentifier', getPrevUserIdentifier || '');
+    AsyncStorage.setItem('credential', '');
+    AsyncStorage.setItem('userIdentifier', '');
+    AsyncStorage.setItem('screenObj', '')
+    AsyncStorage.setItem('vCardProfile', '')
     dispatch(profileDetail({}))
     dispatch(navigate({ screen: REGISTERSCREEN }))
+    RootNav.navigate(REGISTERSCREEN)
     return logout.statusCode
 })
 

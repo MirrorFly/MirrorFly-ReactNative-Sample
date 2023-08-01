@@ -1,109 +1,164 @@
-import React from 'react'
-import ChatConversation from '../components/ChatConversation'
-import MessageInfo from '../components/MessageInfo'
-import { CameraIcon, ContactIcon, DocumentIcon, GalleryIcon, HeadSetIcon, LocationIcon } from '../common/Icons'
-import GalleryPickView from '../components/GalleryPickView'
-import { handleGalleryPickerMulti } from '../common/utils'
-import { useToast } from 'native-base'
-import UserInfo from '../components/UserInfo'
-import UsersTapBarInfo from '../components/UsersTapBarInfo'
-import { BackHandler } from 'react-native'
-import { RECENTCHATSCREEN } from '../constant'
-import { useDispatch, useSelector } from 'react-redux'
-import { navigate } from '../redux/navigationSlice'
-import { v4 as uuidv4 } from 'uuid';
-import { getMessageObjSender, getRecentChatMsgObj } from '../Helper/Chat/Utility'
-import { updateRecentChat } from '../redux/recentChatDataSlice'
-import store from '../redux/store'
-import { isSingleChat } from '../Helper/Chat/ChatHelper'
-import { addChatConversationHistory } from '../redux/conversationSlice'
-import { SDK } from '../SDK'
+import React from 'react';
+import ChatConversation from '../components/ChatConversation';
+import MessageInfo from '../components/MessageInfo';
+import {
+  CameraIcon,
+  ContactIcon,
+  DocumentIcon,
+  GalleryIcon,
+  HeadSetIcon,
+  LocationIcon,
+} from '../common/Icons';
+import GalleryPickView from '../components/GalleryPickView';
+import {requestStoragePermission} from '../common/utils';
+import {Box, Text, useToast} from 'native-base';
+import UserInfo from '../components/UserInfo';
+import UsersTapBarInfo from '../components/UsersTapBarInfo';
+import {BackHandler} from 'react-native';
+import {RECENTCHATSCREEN} from '../constant';
+import {useSelector} from 'react-redux';
+import {v4 as uuidv4} from 'uuid';
+import {
+  getMessageObjSender,
+  getRecentChatMsgObj,
+  setDurationSecToMilli,
+} from '../Helper/Chat/Utility';
+import {updateRecentChat} from '../redux/recentChatDataSlice';
+import store from '../redux/store';
+import {isSingleChat} from '../Helper/Chat/ChatHelper';
+import {addChatConversationHistory} from '../redux/conversationSlice';
+import {SDK} from '../SDK';
+import SavePicture from './Gallery';
+import * as RootNav from '../Navigation/rootNavigation';
+import {Image as ImageCompressor} from 'react-native-compressor';
+import RNFS from 'react-native-fs';
+import {
+  getType,
+  validateFileSize,
+} from '../components/chat/common/fileUploadValidation';
+import PostPreViewPage from '../components/PostPreViewPage';
 
 function ChatScreen() {
-  const dispatch = useDispatch()
-  const vCardData = useSelector((state) => state.profile.profileDetails);
-  const fromUserJId = useSelector(state => state.navigation.fromUserJid)
-  const currentUserJID = useSelector(state => state.auth.currentUserJID)
-  const [localNav, setLocalNav] = React.useState('CHATCONVERSATION')
-  const [isMessageInfo, setIsMessageInfo] = React.useState({})
-  const toast = useToast()
-  const [selectedImages, setSelectedImages] = React.useState([])
+  const vCardData = useSelector(state => state.profile.profileDetails);
+  const fromUserJId = useSelector(state => state.navigation.fromUserJid);
+  const currentUserJID = useSelector(state => state.auth.currentUserJID);
+  const [localNav, setLocalNav] = React.useState('CHATCONVERSATION');
+  const [isMessageInfo, setIsMessageInfo] = React.useState({});
+  const toast = useToast();
+  const [isToastShowing, setIsToastShowing] = React.useState(false);
+  const [selectedImages, setSelectedImages] = React.useState([]);
+  const [selectedSingle, setselectedSingle] = React.useState(false);
+
+  const toastConfig = {
+    duration: 2500,
+    avoidKeyboard: true,
+    onCloseComplete: () => {
+      setIsToastShowing(false);
+    },
+  };
 
   const attachmentMenuIcons = [
     {
-      name: "Document",
+      name: 'Document',
       icon: DocumentIcon,
-      formatter: () => { }
+      formatter: () => {},
     },
     {
-      name: "Camera",
+      name: 'Camera',
       icon: CameraIcon,
-      formatter: () => {
-
-      }
+      formatter: () => {},
     },
     {
-      name: "Gallery",
+      name: 'Gallery',
       icon: GalleryIcon,
       formatter: async () => {
-        const res = await handleGalleryPickerMulti(toast)
-        const transformedArray = res?.map((obj, index) => {
-          return {
-            caption: '',
-            image: obj
-          };
-        });
-        setSelectedImages(transformedArray)
-        if (res?.length) {
-          setLocalNav('GalleryPickView')
+        let imageReadPermission = await requestStoragePermission();
+        console.log('imageReadPermission', imageReadPermission);
+        if (
+          imageReadPermission === 'granted' ||
+          imageReadPermission === 'limited'
+        ) {
+          setLocalNav('Gallery');
         }
-      }
+        /** SavePicture()
+        RNimageGalleryLaunch()
+          const res = await handleGalleryPickerMulti(toast)
+          const transformedArray = res?.map((obj, index) => {
+            return {
+              caption: '',
+              image: obj
+            };
+          });
+          setSelectedImages(transformedArray)
+          if (res?.length) {
+            setLocalNav('GalleryPickView')
+          } */
+      },
     },
     {
-      name: "Audio",
+      name: 'Audio',
       icon: HeadSetIcon,
-      formatter: () => { }
+      formatter: () => {},
     },
     {
-      name: "Contact",
+      name: 'Contact',
       icon: ContactIcon,
-      formatter: () => { }
+      formatter: () => {},
     },
     {
-      name: "Location",
+      name: 'Location',
       icon: LocationIcon,
-      formatter: () => { }
+      formatter: () => {},
     },
-  ]
+  ];
 
   const handleBackBtn = () => {
-    let x = { screen: RECENTCHATSCREEN }
-    dispatch(navigate(x))
+    localNav === 'CHATCONVERSATION' && RootNav.navigate(RECENTCHATSCREEN);
     return true;
-  }
+  };
 
   const backHandler = BackHandler.addEventListener(
     'hardwareBackPress',
-    handleBackBtn
+    handleBackBtn,
   );
+
+  const getThumbImage = async image => {
+    const result = await ImageCompressor.compress(image.uri, {
+      maxWidth: 200,
+      maxHeight: 200,
+      quality: 0.8,
+    });
+    const response = await RNFS.readFile(result, 'base64');
+    return response;
+  };
 
   const sendMediaMessage = async (messageType, files, chatTypeSendMsg) => {
     let jidSendMediaMessage = fromUserJId;
-    if (messageType === "media") {
+    if (messageType === 'media') {
       let mediaData = {};
       for (let i = 0; i < files.length; i++) {
         const file = files[i],
           msgId = uuidv4();
-        console.log(file, "fileeee");
-        const { caption = "" } = file;
+        const {
+          caption = '',
+          fileDetails = {},
+          fileDetails: {
+            image: {fileSize, filename, playableDuration, uri},
+            type,
+          } = {},
+        } = file;
+        const msgType = type.split('/')[0];
+        const thumbImage =
+          msgType === 'image' ? await getThumbImage(fileDetails.image) : '';
         let fileOptions = {
-          fileName: file.name,
-          fileSize: file.size,
+          fileName: filename,
+          fileSize: fileSize,
           caption: caption,
+          uri: uri,
+          duration: playableDuration,
           msgId: msgId,
+          thumbImage: thumbImage,
         };
-
-        const msgType = file.image.type.split('/')[0];
         const userProfile = vCardData;
 
         const dataObj = {
@@ -114,8 +169,8 @@ function ChatScreen() {
           msgId,
           file,
           fileOptions,
-          fileDetails: file.images,
-          fromUserJid: currentUserJID
+          fileDetails: fileDetails,
+          fromUserJid: currentUserJID,
         };
         const conversationChatObj = await getMessageObjSender(dataObj, i);
         mediaData[msgId] = conversationChatObj;
@@ -123,84 +178,217 @@ function ChatScreen() {
 
         const dispatchData = {
           data: [conversationChatObj],
-          ...(isSingleChat(chatTypeSendMsg) ? { userJid: jidSendMediaMessage } : { groupJid: jidSendMediaMessage })
+          ...(isSingleChat(chatTypeSendMsg)
+            ? {userJid: jidSendMediaMessage}
+            : {groupJid: jidSendMediaMessage}),
         };
         store.dispatch(addChatConversationHistory(dispatchData));
         store.dispatch(updateRecentChat(recentChatObj));
-        let response = {};
-        if (msgType === "file") {
-          response = await SDK.sendDocumentMessage(jidSendMediaMessage, file, fileOptions);
-        } else if (msgType === "image") {
-          response = await SDK.sendImageMessage(jidSendMediaMessage, file.image, fileOptions);
-        } else if (msgType === "video") {
-          response = await SDK.sendVideoMessage(jidSendMediaMessage, file.image, fileOptions);
-        } else if (msgType === "audio") {
-          response = await SDK.sendAudioMessage(jidSendMediaMessage, file, fileOptions);
-        }
-        console.log(response,"\n response");
       }
+      setSelectedImages([]);
     }
   };
 
   const parseAndSendMessage = async (message, chatType, messageType) => {
-    const { content } = message;
+    const {content} = message;
     sendMediaMessage(messageType, content, chatType);
   };
 
-  const handleSendMsg = async (message) => {
+  const handleMedia = item => {
+    let {image} = item;
+    image.playableDuration = setDurationSecToMilli(image.playableDuration);
+    const transformedArray = {
+      caption: '',
+      fileDetails: item,
+    };
+    setIsToastShowing(true);
+    const size = validateFileSize(item.image, getType(item.type));
+    if (size && !isToastShowing) {
+      return toast.show({
+        ...toastConfig,
+        render: () => {
+          return (
+            <Box bg="black" px="2" py="1" rounded="sm">
+              <Text style={{color: '#fff', padding: 5}}>{size}</Text>
+            </Box>
+          );
+        },
+      });
+    }
+    if (!isToastShowing) {
+      setIsToastShowing(false);
+      setselectedSingle(true);
+      setSelectedImages([transformedArray]);
+      setLocalNav('GalleryPickView');
+    }
+  };
+
+  /**   const validation = (file) => {
+      const { image } = file
+      const fileExtension = getExtension(image.filename);
+      const allowedFilescheck = new RegExp("([a-zA-Z0-9s_\\.-:])+(" + ALLOWED_ALL_FILE_FORMATS.join("|") + ")$", "i");
+      let mediaType = getType(file.type);
+      if (!allowedFilescheck.test(fileExtension) || mediaType === "video/mpeg") {
+        let message = "Unsupported file format. Files allowed: ";
+        if (mediaType === "image") message = message + `${ALLOWED_IMAGE_VIDEO_FORMATS.join(", ")}`; 
+        if (!isToastShowing) {
+          return toast.show({
+            ...toastConfig,
+            render: () => {
+              return (
+                <Box bg="black" px="2" py="1" rounded="sm">
+                  <Text style={{ color: '#fff', padding: 5 }}>{message}</Text>
+                </Box>
+              );
+            },
+          });
+        }
+      }
+    }
+     */
+
+  const handleSelectImage = item => {
+    setIsToastShowing(true);
+    let {image} = item;
+    image.playableDuration = setDurationSecToMilli(image.playableDuration);
+    const transformedArray = {
+      caption: '',
+      fileDetails: item,
+    };
+    setselectedSingle(false);
+    const size = validateFileSize(item.image, getType(item.type));
+    const isImageSelected = selectedImages.some(
+      selectedItem => selectedItem.fileDetails?.image?.uri === item?.image.uri,
+    );
+    if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
+      return toast.show({
+        ...toastConfig,
+        render: () => {
+          return (
+            <Box bg="black" px="2" py="1" rounded="sm">
+              <Text style={{color: '#fff', padding: 5}}>
+                Can't share more than 10 media items
+              </Text>
+            </Box>
+          );
+        },
+      });
+    }
+
+    if (size && !isToastShowing) {
+      return toast.show({
+        ...toastConfig,
+        render: () => {
+          return (
+            <Box bg="black" px="2" py="1" rounded="sm">
+              <Text style={{color: '#fff', padding: 5}}>{size}</Text>
+            </Box>
+          );
+        },
+      });
+    }
+
+    if (!isToastShowing) {
+      setIsToastShowing(false);
+      if (isImageSelected) {
+        setSelectedImages(prevArray =>
+          prevArray.filter(
+            selectedItem =>
+              selectedItem.fileDetails?.image.uri !== item?.image?.uri,
+          ),
+        );
+      } else {
+        setSelectedImages(prevArray => [...prevArray, transformedArray]);
+      }
+    }
+  };
+
+  const handleSendMsg = async message => {
     let messageType = message.type;
 
-    if (messageType === "media") {
-      parseAndSendMessage(message, "chat", messageType);
+    if (messageType === 'media') {
+      parseAndSendMessage(message, 'chat', messageType);
       return;
     }
 
-    if (message.content !== "") {
+    if (message.content !== '') {
       let jid = fromUserJId;
       let msgId = uuidv4();
       const userProfile = vCardData;
       const dataObj = {
         jid: jid,
-        msgType: "text",
+        msgType: 'text',
         message: message.content,
         userProfile,
         chatType: 'chat',
         msgId,
-        fromUserJid: currentUserJID
+        fromUserJid: currentUserJID,
       };
       const conversationChatObj = await getMessageObjSender(dataObj);
       const recentChatObj = getRecentChatMsgObj(dataObj);
-      SDK.sendTextMessage(
-        jid,
-        message.content,
-        msgId
-      )
       const dispatchData = {
         data: [conversationChatObj],
-        ...(isSingleChat('chat') ? { userJid: jid } : { groupJid: jidSendMsg }),
+        ...(isSingleChat('chat') ? {userJid: jid} : {groupJid: jidSendMsg}),
       };
       store.dispatch(addChatConversationHistory(dispatchData));
       store.dispatch(updateRecentChat(recentChatObj));
+      SDK.sendTextMessage(jid, message.content, msgId);
     }
-  }
+  };
 
   React.useEffect(() => {
+    // handleImageConvert()
     return () => {
       backHandler.remove();
-    }
-  }, [])
+    };
+  }, []);
 
   return (
     <>
-      {{
-        'CHATCONVERSATION': <ChatConversation handleBackBtn={handleBackBtn} setLocalNav={setLocalNav} setIsMessageInfo={setIsMessageInfo} attachmentMenuIcons={attachmentMenuIcons} selectedImages={selectedImages} handleSendMsg={handleSendMsg} />,
-        'MESSAGEINFO': <MessageInfo setLocalNav={setLocalNav} setIsMessageInfo={setIsMessageInfo} isMessageInfo={isMessageInfo} />,
-        'GalleryPickView': <GalleryPickView setSelectedImages={setSelectedImages} selectedImages={selectedImages} setLocalNav={setLocalNav} handleSendMsg={handleSendMsg} />,
-        'UserInfo': <UserInfo setLocalNav={setLocalNav} />,
-        'UsersTapBarInfo': <UsersTapBarInfo setLocalNav={setLocalNav} />
-      }[localNav]}
+      {
+        {
+          CHATCONVERSATION: (
+            <ChatConversation
+              handleBackBtn={handleBackBtn}
+              setLocalNav={setLocalNav}
+              setIsMessageInfo={setIsMessageInfo}
+              attachmentMenuIcons={attachmentMenuIcons}
+              selectedImages={selectedImages}
+              handleSendMsg={handleSendMsg}
+            />
+          ),
+          MESSAGEINFO: (
+            <MessageInfo
+              setLocalNav={setLocalNav}
+              setIsMessageInfo={setIsMessageInfo}
+              isMessageInfo={isMessageInfo}
+            />
+          ),
+          GalleryPickView: (
+            <GalleryPickView
+              setSelectedImages={setSelectedImages}
+              selectedSingle={selectedSingle}
+              selectedImages={selectedImages}
+              setLocalNav={setLocalNav}
+              handleSendMsg={handleSendMsg}
+            />
+          ),
+          UserInfo: <UserInfo setLocalNav={setLocalNav} />,
+          UsersTapBarInfo: <UsersTapBarInfo setLocalNav={setLocalNav} />,
+          Gallery: (
+            <SavePicture
+              setLocalNav={setLocalNav}
+              selectedImages={selectedImages}
+              handleSelectImage={handleSelectImage}
+              handleMedia={handleMedia}
+              setSelectedImages={setSelectedImages}
+            />
+          ),
+          PostPreView: <PostPreViewPage setLocalNav={setLocalNav} />,
+        }[localNav]
+      }
     </>
-  )
+  );
 }
 
-export default ChatScreen
+export default ChatScreen;

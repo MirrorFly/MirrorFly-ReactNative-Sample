@@ -16,13 +16,11 @@ import UserInfo from '../components/UserInfo';
 import UsersTapBarInfo from '../components/UsersTapBarInfo';
 import {BackHandler} from 'react-native';
 import {RECENTCHATSCREEN} from '../constant';
-import {useDispatch, useSelector} from 'react-redux';
-import {navigate} from '../redux/navigationSlice';
+import {useSelector} from 'react-redux';
 import {v4 as uuidv4} from 'uuid';
 import {
   getMessageObjSender,
   getRecentChatMsgObj,
-  setDuration,
   setDurationSecToMilli,
 } from '../Helper/Chat/Utility';
 import {updateRecentChat} from '../redux/recentChatDataSlice';
@@ -41,7 +39,6 @@ import {
 import PostPreViewPage from '../components/PostPreViewPage';
 
 function ChatScreen() {
-  const dispatch = useDispatch();
   const vCardData = useSelector(state => state.profile.profileDetails);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
@@ -59,7 +56,6 @@ function ChatScreen() {
       setIsToastShowing(false);
     },
   };
-  const [sendSelected, setSendSelected] = React.useState(false);
 
   const attachmentMenuIcons = [
     {
@@ -79,24 +75,24 @@ function ChatScreen() {
         let imageReadPermission = await requestStoragePermission();
         console.log('imageReadPermission', imageReadPermission);
         if (
-          imageReadPermission == 'granted' ||
-          imageReadPermission == 'limited'
+          imageReadPermission === 'granted' ||
+          imageReadPermission === 'limited'
         ) {
           setLocalNav('Gallery');
         }
-        // SavePicture()
-        // RNimageGalleryLaunch()
-        //   const res = await handleGalleryPickerMulti(toast)
-        //   const transformedArray = res?.map((obj, index) => {
-        //     return {
-        //       caption: '',
-        //       image: obj
-        //     };
-        //   });
-        //   setSelectedImages(transformedArray)
-        //   if (res?.length) {
-        //     setLocalNav('GalleryPickView')
-        //   }
+        /** SavePicture()
+        RNimageGalleryLaunch()
+          const res = await handleGalleryPickerMulti(toast)
+          const transformedArray = res?.map((obj, index) => {
+            return {
+              caption: '',
+              image: obj
+            };
+          });
+          setSelectedImages(transformedArray)
+          if (res?.length) {
+            setLocalNav('GalleryPickView')
+          } */
       },
     },
     {
@@ -117,8 +113,6 @@ function ChatScreen() {
   ];
 
   const handleBackBtn = () => {
-    let x = {screen: RECENTCHATSCREEN};
-    // dispatch(navigate(x))
     localNav === 'CHATCONVERSATION' && RootNav.navigate(RECENTCHATSCREEN);
     return true;
   };

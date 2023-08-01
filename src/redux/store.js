@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import {configureStore} from '@reduxjs/toolkit';
 import navigationSlice from './navigationSlice';
 import authSlice from './authSlice';
 import chatSlice from './chatSlice';
@@ -16,26 +16,26 @@ import SingleChatSelectedImageSlice from './SingleChatImageSlice';
 import mediaDownloadDataSlice from './mediaDownloadDataSlice';
 
 const store = configureStore({
-    reducer: {
-        navigation: navigationSlice,
-        recentChatData: recentChatDataSlice,
-        auth: authSlice,
-        chat: chatSlice,
-        chatConversationData: conversationSlice,
-        profile: profileSlice,
-        user: userSlice,
-        chatSeenPendingMsgData: chatSeenPendingMsg,
-        storage: storageSlice,
-        dbValues: dbSlice,
-        galleryData: galleryDataSlice, 
-        mediaUploadData:mediaUploadDataSlice,
-        connection: connectionSlice,
-        chatSelectedMedia:SingleChatSelectedImageSlice,
-        mediaUploadData: mediaUploadDataSlice,
-        mediaDownloadData: mediaDownloadDataSlice,
-        connection: connectionSlice
-    }, middleware: (getDefaultMiddleware) => getDefaultMiddleware({
-        serializableCheck: false
+  reducer: {
+    navigation: navigationSlice,
+    recentChatData: recentChatDataSlice,
+    auth: authSlice,
+    chat: chatSlice,
+    chatConversationData: conversationSlice,
+    profile: profileSlice,
+    user: userSlice,
+    chatSeenPendingMsgData: chatSeenPendingMsg,
+    storage: storageSlice,
+    dbValues: dbSlice,
+    galleryData: galleryDataSlice,
+    mediaUploadData: mediaUploadDataSlice,
+    connection: connectionSlice,
+    chatSelectedMedia: SingleChatSelectedImageSlice,
+    mediaDownloadData: mediaDownloadDataSlice,
+  },
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware({
+      serializableCheck: false,
     }),
 });
 

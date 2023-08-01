@@ -298,7 +298,7 @@ const Gallery = (props = {}) => {
               {item.value.title}
             </Text>
             <Text color="#fff" position={'absolute'} right={1} fontSize={10}>
-              {/* {item.value.count} */}
+              {/** {item.value.count} */}
             </Text>
           </HStack>
         </View>

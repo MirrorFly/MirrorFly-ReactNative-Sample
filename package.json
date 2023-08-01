@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android-build":"cd android && fastlane deploy_qa_release && cd ..",
-    "ios-build":"cd ios && fastlane qa_firebase && cd ..",
+    "android-build": "cd android && fastlane deploy_qa_release && cd ..",
+    "ios-build": "cd ios && fastlane qa_firebase && cd ..",
     "ios-install": "npx react-native setup-ios-permissions && cd ios && pod install && cd ..",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
@@ -17,6 +17,7 @@
     "@react-native-community/netinfo": "^9.3.10",
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/native-stack": "^6.9.13",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "deprecated-react-native-prop-types": "^4.2.0",
     "emoji-datasource": "^15.0.1",
     "graphemer": "^1.4.0",

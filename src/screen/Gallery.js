@@ -94,8 +94,8 @@ const Gallery = (props = {}) => {
             borderRadius={'10'}
             px={'0.5'}
             position={'absolute'}
-            bottom={7}
-            left={4}>
+            bottom={1}
+            left={1}>
             {item?.node.type.split('/')[0] === 'video' && (
               <View p="0.5">
                 <Icon as={() => VideoSmallIcon()} name="emoji-happy" />

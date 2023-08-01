@@ -5,7 +5,6 @@ import noPreview from '../assets/noPreview.png';
 import {ImageBackground} from 'react-native';
 import {millisToMinutesAndSeconds} from '../Helper/Chat/Utility';
 import ProgressLoader from './chat/common/ProgressLoader';
-import {useSelector} from 'react-redux';
 
 const VideoCard = props => {
   const {
@@ -20,19 +19,14 @@ const VideoCard = props => {
     msgId = '',
     msgBody: {media},
     msgBody: {
-      message_type = '',
       media: {
-        file: {fileDetails = {}} = {},
         duration = 0,
-        caption = '',
-        file_url = '',
         is_uploading,
         androidHeight,
         androidWidth,
         local_path = '',
         fileName,
         thumb_image = '',
-        file_key,
       } = {},
     } = {},
   } = messageObject;

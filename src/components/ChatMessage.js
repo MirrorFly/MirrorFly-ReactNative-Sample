@@ -10,7 +10,7 @@ import MapCard from './MapCard';
 import ContactCard from './ContactCard';
 import TextCard from './TextCard';
 import {getConversationHistoryTime} from '../common/TimeStamp';
-import {Box, HStack, Icon, Pressable, Text, View} from 'native-base';
+import {Box, HStack, Icon, Pressable, View} from 'native-base';
 import {uploadFileToSDK} from '../Helper/Chat/ChatHelper';
 import {getThumbBase64URL} from '../Helper/Chat/Utility';
 import store from '../redux/store';

@@ -1,4 +1,4 @@
-// // import { createSlice } from '@reduxjs/toolkit';
+// import { createSlice } from '@reduxjs/toolkit';
 // import { v4 as uuidv4 } from 'uuid';
 
 // const initialState = {
@@ -10,12 +10,12 @@
 //     name: 'connectionSlice',
 //     initialState: initialState,
 //     reducers: {
-        // setXmppStatus: (state, action) => {
-        //     return {
-        //         "id": uuidv4(),
-        //         xmppStatus: action.payload
-        //     }
-        // }
+//         setXmppStatus: (state, action) => {
+//             return {
+//                 "id": uuidv4(),
+//                 xmppStatus: action.payload
+//             }
+//         }
 //     }
 // })
 

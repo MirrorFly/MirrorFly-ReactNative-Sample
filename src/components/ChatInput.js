@@ -17,7 +17,6 @@ import {
   VStack,
 } from 'native-base';
 import EmojiOverlay from './EmojiPicker';
-import { changeTimeFormat } from '../common/TimeStamp';
 
 const ChatInput = props => {
   const { onSendMessage, attachmentMenuIcons, chatInputRef } = props;
@@ -26,11 +25,13 @@ const ChatInput = props => {
   const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
   const sendMessage = () => {
     if (message) {
-      console.log('Sending Message', changeTimeFormat(Date.now()));
       setMessage('');
-      requestAnimationFrame(() => {
+      setTimeout(() => {
         onSendMessage(message);
-      });
+      }, 0);
+      // requestAnimationFrame(() => {
+      //   onSendMessage(message);
+      // });
     }
   };
   const handleEmojiSelect = (...emojis) => {
@@ -45,7 +46,7 @@ const ChatInput = props => {
       Keyboard.dismiss();
     }
   };
-  console.log('ChatInput Rendering ', message);
+
   return (
     <>
       <HStack

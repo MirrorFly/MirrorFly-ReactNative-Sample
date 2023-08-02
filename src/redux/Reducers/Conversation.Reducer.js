@@ -1,10 +1,15 @@
 import {
   getChatHistoryData,
   getUpdatedHistoryData,
+  getUpdatedHistoryDataUpload,
+  updateMediaUploadStatusHistory,
 } from '../../Helper/Chat/ChatHelper';
 import {
   ADD_CHAT_CONVERSATION_HISTORY,
+  CANCEL_MEDIA_UPLOAD,
+  RETRY_MEDIA_UPLOAD,
   UPDATE_CHAT_CONVERSATION_HISTORY,
+  UPDATE_UPLOAD_STATUS,
 } from '../Actions/Constants';
 import { StateToObj } from '../reduxHelper';
 
@@ -25,6 +30,24 @@ const conversationReducer = (state = initialState, action) => {
         ...state,
         id: Date.now(),
         data: getUpdatedHistoryData(action.payload, StateToObj(state).data),
+      };
+    case UPDATE_UPLOAD_STATUS:
+      return {
+        ...state,
+        id: Date.now(),
+        data: getUpdatedHistoryDataUpload(
+          action.payload,
+          StateToObj(state).data,
+        ),
+      };
+    case CANCEL_MEDIA_UPLOAD:
+    case RETRY_MEDIA_UPLOAD:
+      return {
+        id: Date.now(),
+        data: updateMediaUploadStatusHistory(
+          action.payload,
+          StateToObj(state).data,
+        ),
       };
     default:
       return state;

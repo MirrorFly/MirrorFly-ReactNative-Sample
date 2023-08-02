@@ -10,6 +10,7 @@ import { profileDetail } from '../redux/Actions/ProfileAction';
 import { useNetworkStatus } from '../hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { KeyboardAvoidingView } from 'native-base';
+import { Platform, StyleSheet } from 'react-native';
 
 const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -37,7 +38,7 @@ const ProfileScreen = ({ navigation }) => {
       const profileDetails = await SDK.getUserProfile(
         JSON.parse(userIdentifier),
       );
-      if (profileDetails.statusCode == 200) {
+      if (profileDetails.statusCode === 200) {
         AsyncStorage.setItem(
           'vCardProfile',
           JSON.stringify(profileDetails.data),
@@ -45,14 +46,19 @@ const ProfileScreen = ({ navigation }) => {
         dispatch(profileDetail(profileDetails.data));
       }
       profileDetails.data.mobileNumber = JSON.parse(userIdentifier);
-      if (profileDetails.data.status == '')
+      if (profileDetails.data.status === '') {
         profileDetails.data.status = 'I am in Mirror Fly';
-      if (!profileInfo) setProfileInfo(profileDetails.data);
+      }
+      if (!profileInfo) {
+        setProfileInfo(profileDetails.data);
+      }
     }
   };
 
   const updateProfileDetail = () => {
-    if (selectProfileInfo !== profileInfo) setProfileInfo(selectProfileInfo);
+    if (selectProfileInfo !== profileInfo) {
+      setProfileInfo(selectProfileInfo);
+    }
   };
 
   React.useEffect(() => {
@@ -61,7 +67,9 @@ const ProfileScreen = ({ navigation }) => {
   }, [selectProfileInfo]);
 
   React.useEffect(() => {
-    if (isNetworkConnected) getProfileDetail();
+    if (isNetworkConnected) {
+      getProfileDetail();
+    }
   }, [isNetworkConnected]);
 
   React.useEffect(() => {
@@ -78,7 +86,7 @@ const ProfileScreen = ({ navigation }) => {
   }, []);
 
   React.useEffect(() => {
-    if (statusList?.length)
+    if (statusList?.length) {
       if (profileInfo?.status && !statusList.includes(profileInfo?.status)) {
         setStatusList(prevStatusList => [
           ...prevStatusList,
@@ -86,6 +94,7 @@ const ProfileScreen = ({ navigation }) => {
         ]);
         SDK.addProfileStatus(profileInfo.status.trim());
       }
+    }
   }, [profileInfo]);
 
   const renderedComponent = React.useMemo(() => {
@@ -136,7 +145,7 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={styles.keyBoardStyle}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       {renderedComponent}
     </KeyboardAvoidingView>
@@ -144,3 +153,9 @@ const ProfileScreen = ({ navigation }) => {
 };
 
 export default ProfileScreen;
+
+const styles = StyleSheet.create({
+  keyBoardStyle: {
+    flex: 1,
+  },
+});

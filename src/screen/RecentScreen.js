@@ -2,7 +2,7 @@ import React from 'react';
 import ScreenHeader from '../components/ScreenHeader';
 import RecentChat from '../components/RecentChat';
 import RecentCalls from '../components/RecentCalls';
-import { Dimensions } from 'react-native';
+import { Dimensions, Animated, StyleSheet } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { FloatingBtn } from '../common/Button';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,6 +21,10 @@ const FirstComponent = (isSearching, filteredData) => (
 );
 
 function RecentScreen() {
+  const av = new Animated.Value(0);
+  av.addListener(() => {
+    return;
+  }); /** resolving WARN Sending `onAnimatedValueUpdate` with no listeners registered */
   const dispatch = useDispatch();
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
@@ -55,7 +59,7 @@ function RecentScreen() {
     (async () => {
       const recentChats = await SDK.getRecentChatsDB();
       const recentChatsFilter = recentChats?.data.filter(
-        item => item.chatType == 'chat',
+        item => item.chatType === 'chat',
       );
       dispatch(addRecentChat(recentChatsFilter));
     })();
@@ -149,8 +153,8 @@ function RecentScreen() {
         onIndexChange={setIndex}
         initialLayout={{ width: Dimensions.get('window').width }}
         renderTabBar={renderTabBar}
-        tabStyle={{ borderColor: 'black', borderWidth: 1 }}
-        activeTabStyle={{ backgroundColor: 'black' }}
+        tabStyle={styles.tabView}
+        activeTabStyle={styles.activeTab}
         lazy
       />
       <FloatingBtn
@@ -164,3 +168,8 @@ function RecentScreen() {
 }
 
 export default RecentScreen;
+
+const styles = StyleSheet.create({
+  tabView: { borderColor: 'black', borderWidth: 1 },
+  activeTab: { backgroundColor: 'black' },
+});

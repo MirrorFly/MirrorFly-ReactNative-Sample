@@ -1,6 +1,6 @@
 import React from 'react';
 import { Center, KeyboardAvoidingView } from 'native-base';
-import { BackHandler, Image, StyleSheet, Text } from 'react-native';
+import { BackHandler, Image, Platform, StyleSheet, Text } from 'react-native';
 import { CHATSCREEN, RECENTCHATSCREEN, SETTINGSCREEN } from '../constant';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { useDispatch } from 'react-redux';
@@ -44,9 +44,9 @@ function ContactScreen() {
   React.useEffect(() => {
     (async () => {
       setIsFetching(true);
-      let usersList = await SDK.getUsersList();
+      let _usersList = await SDK.getUsersList();
       setPage(1);
-      setUsersList(usersList.users);
+      setUsersList(_usersList.users);
       setIsFetching(false);
     })();
     return () => {
@@ -104,7 +104,7 @@ function ContactScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      flex={1}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScreenHeader
         title="Contacts"
@@ -121,7 +121,7 @@ function ContactScreen() {
       />
       {isNetworkconneted ? (
         <>
-          {!isFetching && usersList?.length == 0 && (
+          {!isFetching && usersList?.length === 0 && (
             <Center h="90%">
               <Image
                 style={styles.image}
@@ -131,7 +131,7 @@ function ContactScreen() {
               <Text style={styles.noMsg}>No contacts found</Text>
             </Center>
           )}
-          {!isFetching && isSearching && isSearchedList.length == 0 && (
+          {!isFetching && isSearching && isSearchedList.length === 0 && (
             <Center h="90%">
               <Text style={styles.noMsg}>No contacts found</Text>
             </Center>

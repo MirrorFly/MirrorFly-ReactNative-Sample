@@ -7,14 +7,14 @@ import {
   MSG_SEEN_STATUS_ID,
   MSG_SENT_ACKNOWLEDGE_STATUS_ID,
 } from './Constant';
-import { getUserIdFromJid } from './Utility';
+import { getUserIdFromJid, setDurationSecToMilli } from './Utility';
 import store from '../../redux/store';
+import { updateUploadStatus } from '../../redux/Actions/ConversationAction';
 
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
 
 export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {
-  console.log('JID from SDK', SDK.getJid(userId), userId);
   const jidResponse =
     chatType === CHAT_TYPE_SINGLE
       ? SDK.getJid(userId)
@@ -26,6 +26,141 @@ export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {
 
 export const getUniqueListBy = (arr, key) => {
   return [...new Map(arr.map(item => [item[key], item])).values()];
+};
+
+export const uploadFileToSDK = async (file, jid, msgId, media) => {
+  const {
+    caption = '',
+    fileDetails: {
+      replyTo = '',
+      image: { playableDuration = 0 },
+      audioType = '',
+      type,
+    } = {},
+  } = file;
+  const msgType = type.split('/')[0];
+  const duration = setDurationSecToMilli(playableDuration);
+  let fileOptions = {
+    msgId: msgId,
+    caption: caption,
+    duration: duration,
+    webWidth: media.webWidth || 0,
+    webHeight: media.webHeight || 0,
+    androidWidth: media.androidWidth || 0,
+    androidHeight: media.androidHeight || 0,
+    originalWidth: media.originalWidth || 0,
+    originalHeight: media.originalHeight || 0,
+    ...((msgType === 'video' || msgType === 'image') && {
+      thumbImage: media?.thumb_image,
+    }),
+    ...(msgType === 'audio' && { audioType }),
+  };
+
+  let response = {};
+  if (msgType === 'file') {
+    response = await SDK.sendDocumentMessage(jid, file, fileOptions, replyTo);
+  } else if (msgType === 'image') {
+    response = await SDK.sendImageMessage(jid, file, fileOptions, replyTo);
+  } else if (msgType === 'video') {
+    response = await SDK.sendVideoMessage(jid, file, fileOptions, replyTo);
+  } else if (msgType === 'audio') {
+    response = await SDK.sendAudioMessage(jid, file, fileOptions, replyTo);
+  }
+  let updateObj = {
+    msgId,
+    statusCode: response.statusCode,
+    fromUserId: getUserIdFromJid(jid),
+  };
+  if (response.statusCode === 200) {
+    /**
+        if (msgType === "image" || msgType === "audio") {
+            // const fileBlob = await fileToBlob(file);
+            // indexedDb.setImage(response.fileToken, fileBlob, getDbInstanceName(msgType));
+        }
+        */
+    updateObj.fileToken = response.fileToken;
+    updateObj.thumbImage = response.thumbImage;
+  } else if (response.statusCode === 500) {
+    updateObj.uploadStatus = 3;
+  }
+  store.dispatch(updateUploadStatus(updateObj));
+};
+
+export const updateMediaUploadStatusHistory = (data, stateData) => {
+  // Here Get the Current Active Chat History and Active Message
+  const currentChatData = stateData[data.fromUserId];
+  if (
+    currentChatData?.messages &&
+    Object.keys(currentChatData?.messages).length > 0
+  ) {
+    const currentMessage = currentChatData.messages[data.msgId];
+    if (currentMessage) {
+      currentMessage.msgBody.media.is_uploading = data.uploadStatus;
+      return {
+        ...stateData,
+        [data.fromUserId]: {
+          ...currentChatData,
+          [data.msgId]: currentMessage,
+        },
+      };
+    }
+  }
+  return {
+    ...stateData,
+  };
+};
+
+export const getUpdatedHistoryDataUpload = (data, stateData) => {
+  // Here Get the Current Active Chat History and Active Message
+  const currentChatData = stateData[data.fromUserId];
+  if (
+    currentChatData?.messages &&
+    Object.keys(currentChatData?.messages).length > 0
+  ) {
+    const currentMessage = currentChatData.messages[data.msgId];
+
+    if (currentMessage) {
+      currentMessage.msgBody.media.is_uploading = data.uploadStatus;
+      if (data.statusCode === 200) {
+        currentMessage.msgBody.media.file_url = data.fileToken || '';
+        currentMessage.msgBody.media.thumb_image = data.thumbImage || '';
+        currentMessage.msgBody.media.file_key = data.fileKey || '';
+      }
+      if (data.local_path) {
+        currentMessage.msgBody.media.local_path = data.local_path || '';
+      }
+
+      let msgIds = Object.keys(currentChatData?.messages);
+      let nextIndex = msgIds.indexOf(data.msgId) + 1;
+      let nextItem = msgIds[nextIndex];
+
+      if (nextItem) {
+        let nextMessage = currentChatData.messages[nextItem];
+        if (nextMessage?.msgBody?.media?.is_uploading === 0) {
+          nextMessage.msgBody.media.is_uploading = 1;
+
+          return {
+            ...stateData,
+            [data.fromUserId]: {
+              ...currentChatData,
+              [data.msgId]: currentMessage,
+              [nextItem]: nextMessage,
+            },
+          };
+        }
+      }
+      return {
+        ...stateData,
+        [data.fromUserId]: {
+          ...currentChatData,
+          [data.msgId]: currentMessage,
+        },
+      };
+    }
+  }
+  return {
+    ...stateData,
+  };
 };
 
 export const concatMessageArray = (activeData, stateData, uniqueId, sortId) => {
@@ -78,7 +213,6 @@ export const getChatHistoryData = (data, stateData) => {
   );
   const lastMessage = sortedData[sortedData.length - 1];
   let newSortedData;
-  // console.log(data.userJid, '\n ***userJid')
   const localUserJid = data.userJid;
   const userId = localUserJid ? getUserIdFromJid(localUserJid) : '';
   if (userId === lastMessage?.publisherId) {

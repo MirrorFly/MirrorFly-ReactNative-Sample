@@ -8,7 +8,6 @@
 //   data: [],
 // };
 // const deleteData = (data, payload) => {
-//   console.log(payload, 'oiuytertyu');
 //   const msgIndex = data.findIndex(msg => msg.msgId === payload);
 //   if (msgIndex > -1) {
 //     data.splice(msgIndex, 1);

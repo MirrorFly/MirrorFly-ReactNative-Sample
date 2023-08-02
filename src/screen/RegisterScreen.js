@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linking, TextInput } from 'react-native';
+import { Linking, Platform, TextInput } from 'react-native';
 import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { navigate } from '../redux/Actions/NavigationAction';
@@ -28,6 +28,7 @@ import {
 } from 'native-base';
 import { useNetworkStatus } from '../hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import SDK from '../SDK/SDK';
 
 const RegisterScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -67,7 +68,7 @@ const RegisterScreen = ({ navigation }) => {
         render: () => {
           return (
             <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>
+              <Text color={'#fff'} p={'2'}>
                 Please Enter Mobile Number
               </Text>
             </Box>
@@ -81,7 +82,7 @@ const RegisterScreen = ({ navigation }) => {
         render: () => {
           return (
             <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>
+              <Text color={'#fff'} p={'2'}>
                 Your mobile number is too short
               </Text>
             </Box>
@@ -95,7 +96,7 @@ const RegisterScreen = ({ navigation }) => {
         render: () => {
           return (
             <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>
+              <Text color={'#fff'} p={'2'}>
                 Please enter a valid mobile number
               </Text>
             </Box>
@@ -109,7 +110,7 @@ const RegisterScreen = ({ navigation }) => {
         render: () => {
           return (
             <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>
+              <Text color={'#fff'} p={'2'}>
                 Please check your internet connectivity
               </Text>
             </Box>
@@ -131,7 +132,7 @@ const RegisterScreen = ({ navigation }) => {
     const register = await SDK.register(
       selectcountry?.dial_code + mobileNumber,
     );
-    if (register.statusCode == 200) {
+    if (register.statusCode === 200) {
       await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
       await AsyncStorage.setItem(
         'userIdentifier',
@@ -139,7 +140,9 @@ const RegisterScreen = ({ navigation }) => {
       );
       await AsyncStorage.setItem('credential', JSON.stringify(register.data));
       handleConnect(register.data);
-    } else setIsLoading(false);
+    } else {
+      setIsLoading(false);
+    }
   };
   const handleConnect = async register => {
     let connect = await SDK.connect(register.username, register.password);
@@ -161,7 +164,9 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   React.useEffect(() => {
-    if (!isNetworkConnected && isLoading) setIsLoading(false);
+    if (!isNetworkConnected && isLoading) {
+      setIsLoading(false);
+    }
   }, [isNetworkConnected]);
 
   return (
@@ -171,7 +176,7 @@ const RegisterScreen = ({ navigation }) => {
       <VStack h="full" justifyContent={'center'}>
         <VStack alignItems={'center'}>
           <Icon as={RegiterPageIcon} />
-          <View mt="4"></View>
+          <View mt="4" />
           {/* // Space between Logo and Text */}
           <Text mt="19" fontWeight="600" fontSize="23">
             Register Your Number

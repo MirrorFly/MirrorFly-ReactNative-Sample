@@ -17,6 +17,7 @@ import { addchatSeenPendingMsg } from '../../../redux/Actions/chatSeenPendingMsg
 import { addChatConversationHistory } from '../../../redux/Actions/ConversationAction';
 import { updateRecentChat } from '../../../redux/Actions/RecentChatAction';
 import store from '../../../redux/store';
+import { SDK } from '../../../SDK';
 
 export const updateRecentChatMessage = (messgeObject, stateObject) => {
   const { recentChatData } = stateObject;
@@ -100,17 +101,16 @@ export const updateMsgSeenStatus = async () => {
   const state = store.getState();
   if (state?.navigation?.fromUserJid) {
     const pendingMessages = state?.chatSeenPendingMsgData?.data || [];
-    console.log(pendingMessages, 'pendingMessagesIn');
-
-    pendingMessages.map(message => {
+    pendingMessages.forEach(message => {
       const fromUserId = isGroupChat(message.chatType)
         ? message.publisherId
         : message.fromUserId;
       const groupId = isGroupChat(message.chatType) ? message.fromUserId : '';
       if (isActiveConversationUserOrGroup(message.fromUserId)) {
         if (GROUP_UPDATE_ACTIONS.indexOf(message?.profileUpdatedStatus) > -1) {
-          if (!isLocalUser(message.publisherId))
+          if (!isLocalUser(message.publisherId)) {
             SDK.updateRecentChatUnreadCount(message?.fromUserJid);
+          }
         } else {
           SDK.sendSeenStatus(
             formatUserIdToJid(fromUserId),
@@ -136,20 +136,13 @@ export const updateConversationMessage = (messgeObject, currentState) => {
         messgeObject.msgType,
       ) > -1
     ) {
-      // if (currentState?.browserTabData?.isVisible) {
       const groupId = singleChat ? '' : newChatTo;
       SDK.sendSeenStatus(
         formatUserIdToJid(publisherId),
         messgeObject.msgId,
         groupId,
       );
-      //     } else {
-      //       Store.dispatch(chatSeenPendingMsg(messgeObject));
-      //     }
     }
-    //   if (GROUP_UPDATE_ACTIONS.indexOf(messgeObject?.profileUpdatedStatus) && !isLocalUser(messgeObject.publisherId)) {
-    //     SDK.updateRecentChatUnreadCount(messgeObject?.fromUserJid);
-    //   }
   } else {
     // If the Chat is Already Opened but if it is Not Currently Active, Store the Messages for Sending Seen Status
     if (!isLocalUser(messgeObject.publisherId)) {

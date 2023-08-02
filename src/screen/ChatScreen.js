@@ -10,36 +10,52 @@ import {
   LocationIcon,
 } from '../common/Icons';
 import GalleryPickView from '../components/GalleryPickView';
-import { handleGalleryPickerMulti } from '../common/utils';
-import { useToast } from 'native-base';
+import { requestStoragePermission } from '../common/utils';
+import { Box, Text, useToast } from 'native-base';
 import UserInfo from '../components/UserInfo';
 import UsersTapBarInfo from '../components/UsersTapBarInfo';
 import { BackHandler } from 'react-native';
 import { RECENTCHATSCREEN } from '../constant';
-import { batch, useDispatch, useSelector } from 'react-redux';
-import { navigate } from '../redux/Actions/NavigationAction';
+import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import {
   getMessageObjSender,
   getRecentChatMsgObj,
+  setDurationSecToMilli,
 } from '../Helper/Chat/Utility';
 import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import store from '../redux/store';
 import { isSingleChat } from '../Helper/Chat/ChatHelper';
 import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
 import { SDK } from '../SDK';
+import SavePicture from './Gallery';
 import * as RootNav from '../Navigation/rootNavigation';
-import { changeTimeFormatWithMs } from '../common/TimeStamp';
+import { Image as ImageCompressor } from 'react-native-compressor';
+import RNFS from 'react-native-fs';
+import {
+  getType,
+  validateFileSize,
+} from '../components/chat/common/fileUploadValidation';
+import PostPreViewPage from '../components/PostPreViewPage';
 
 function ChatScreen() {
-  const dispatch = useDispatch();
   const vCardData = useSelector(state => state.profile.profileDetails);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const [localNav, setLocalNav] = React.useState('CHATCONVERSATION');
   const [isMessageInfo, setIsMessageInfo] = React.useState({});
   const toast = useToast();
+  const [isToastShowing, setIsToastShowing] = React.useState(false);
   const [selectedImages, setSelectedImages] = React.useState([]);
+  const [selectedSingle, setselectedSingle] = React.useState(false);
+
+  const toastConfig = {
+    duration: 2500,
+    avoidKeyboard: true,
+    onCloseComplete: () => {
+      setIsToastShowing(false);
+    },
+  };
 
   const attachmentMenuIcons = [
     {
@@ -56,17 +72,27 @@ function ChatScreen() {
       name: 'Gallery',
       icon: GalleryIcon,
       formatter: async () => {
-        const res = await handleGalleryPickerMulti(toast);
-        const transformedArray = res?.map((obj, index) => {
-          return {
-            caption: '',
-            image: obj,
-          };
-        });
-        setSelectedImages(transformedArray);
-        if (res?.length) {
-          setLocalNav('GalleryPickView');
+        let imageReadPermission = await requestStoragePermission();
+        console.log('imageReadPermission', imageReadPermission);
+        if (
+          imageReadPermission === 'granted' ||
+          imageReadPermission === 'limited'
+        ) {
+          setLocalNav('Gallery');
         }
+        /** SavePicture()
+        RNimageGalleryLaunch()
+          const res = await handleGalleryPickerMulti(toast)
+          const transformedArray = res?.map((obj, index) => {
+            return {
+              caption: '',
+              image: obj
+            };
+          });
+          setSelectedImages(transformedArray)
+          if (res?.length) {
+            setLocalNav('GalleryPickView')
+          } */
       },
     },
     {
@@ -87,9 +113,7 @@ function ChatScreen() {
   ];
 
   const handleBackBtn = () => {
-    let x = { screen: RECENTCHATSCREEN };
-    dispatch(navigate(x));
-    RootNav.navigate(RECENTCHATSCREEN);
+    localNav === 'CHATCONVERSATION' && RootNav.navigate(RECENTCHATSCREEN);
     return true;
   };
 
@@ -98,6 +122,16 @@ function ChatScreen() {
     handleBackBtn,
   );
 
+  const getThumbImage = async image => {
+    const result = await ImageCompressor.compress(image.uri, {
+      maxWidth: 200,
+      maxHeight: 200,
+      quality: 0.8,
+    });
+    const response = await RNFS.readFile(result, 'base64');
+    return response;
+  };
+
   const sendMediaMessage = async (messageType, files, chatTypeSendMsg) => {
     let jidSendMediaMessage = fromUserJId;
     if (messageType === 'media') {
@@ -105,16 +139,27 @@ function ChatScreen() {
       for (let i = 0; i < files.length; i++) {
         const file = files[i],
           msgId = uuidv4();
-        console.log(file, 'fileeee');
-        const { caption = '' } = file;
+        const {
+          caption = '',
+          fileDetails = {},
+          fileDetails: {
+            image: { fileSize, filename, playableDuration, uri },
+            type,
+          } = {},
+        } = file;
+        const duration = setDurationSecToMilli(playableDuration);
+        const msgType = type.split('/')[0];
+        const thumbImage =
+          msgType === 'image' ? await getThumbImage(fileDetails.image) : '';
         let fileOptions = {
-          fileName: file.name,
-          fileSize: file.size,
+          fileName: filename,
+          fileSize: fileSize,
           caption: caption,
+          uri: uri,
+          duration: duration,
           msgId: msgId,
+          thumbImage: thumbImage,
         };
-
-        const msgType = file.image.type.split('/')[0];
         const userProfile = vCardData;
 
         const dataObj = {
@@ -125,7 +170,7 @@ function ChatScreen() {
           msgId,
           file,
           fileOptions,
-          fileDetails: file.images,
+          fileDetails: fileDetails,
           fromUserJid: currentUserJID,
         };
         const conversationChatObj = await getMessageObjSender(dataObj, i);
@@ -140,34 +185,8 @@ function ChatScreen() {
         };
         store.dispatch(addChatConversationHistory(dispatchData));
         store.dispatch(updateRecentChat(recentChatObj));
-        let response = {};
-        if (msgType === 'file') {
-          response = await SDK.sendDocumentMessage(
-            jidSendMediaMessage,
-            file,
-            fileOptions,
-          );
-        } else if (msgType === 'image') {
-          response = await SDK.sendImageMessage(
-            jidSendMediaMessage,
-            file.image,
-            fileOptions,
-          );
-        } else if (msgType === 'video') {
-          response = await SDK.sendVideoMessage(
-            jidSendMediaMessage,
-            file.image,
-            fileOptions,
-          );
-        } else if (msgType === 'audio') {
-          response = await SDK.sendAudioMessage(
-            jidSendMediaMessage,
-            file,
-            fileOptions,
-          );
-        }
-        console.log(response, '\n response');
       }
+      setSelectedImages([]);
     }
   };
 
@@ -176,8 +195,112 @@ function ChatScreen() {
     sendMediaMessage(messageType, content, chatType);
   };
 
+  const handleMedia = item => {
+    const transformedArray = {
+      caption: '',
+      fileDetails: item,
+    };
+    setIsToastShowing(true);
+    const size = validateFileSize(item.image, getType(item.type));
+    if (size && !isToastShowing) {
+      return toast.show({
+        ...toastConfig,
+        render: () => {
+          return (
+            <Box bg="black" px="2" py="1" rounded="sm">
+              <Text style={{ color: '#fff', padding: 5 }}>{size}</Text>
+            </Box>
+          );
+        },
+      });
+    }
+    if (!isToastShowing) {
+      setIsToastShowing(false);
+      setselectedSingle(true);
+      setSelectedImages([transformedArray]);
+      setLocalNav('GalleryPickView');
+    }
+  };
+
+  /**   const validation = (file) => {
+      const { image } = file
+      const fileExtension = getExtension(image.filename);
+      const allowedFilescheck = new RegExp("([a-zA-Z0-9s_\\.-:])+(" + ALLOWED_ALL_FILE_FORMATS.join("|") + ")$", "i");
+      let mediaType = getType(file.type);
+      if (!allowedFilescheck.test(fileExtension) || mediaType === "video/mpeg") {
+        let message = "Unsupported file format. Files allowed: ";
+        if (mediaType === "image") message = message + `${ALLOWED_IMAGE_VIDEO_FORMATS.join(", ")}`; 
+        if (!isToastShowing) {
+          return toast.show({
+            ...toastConfig,
+            render: () => {
+              return (
+                <Box bg="black" px="2" py="1" rounded="sm">
+                  <Text style={{ color: '#fff', padding: 5 }}>{message}</Text>
+                </Box>
+              );
+            },
+          });
+        }
+      }
+    }
+     */
+
+  const handleSelectImage = item => {
+    setIsToastShowing(true);
+    const transformedArray = {
+      caption: '',
+      fileDetails: item,
+    };
+    setselectedSingle(false);
+    const size = validateFileSize(item.image, getType(item.type));
+    const isImageSelected = selectedImages.some(
+      selectedItem => selectedItem.fileDetails?.image?.uri === item?.image.uri,
+    );
+    if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
+      return toast.show({
+        ...toastConfig,
+        render: () => {
+          return (
+            <Box bg="black" px="2" py="1" rounded="sm">
+              <Text style={{ color: '#fff', padding: 5 }}>
+                Can't share more than 10 media items
+              </Text>
+            </Box>
+          );
+        },
+      });
+    }
+
+    if (size && !isToastShowing) {
+      return toast.show({
+        ...toastConfig,
+        render: () => {
+          return (
+            <Box bg="black" px="2" py="1" rounded="sm">
+              <Text style={{ color: '#fff', padding: 5 }}>{size}</Text>
+            </Box>
+          );
+        },
+      });
+    }
+
+    if (!isToastShowing) {
+      setIsToastShowing(false);
+      if (isImageSelected) {
+        setSelectedImages(prevArray =>
+          prevArray.filter(
+            selectedItem =>
+              selectedItem.fileDetails?.image.uri !== item?.image?.uri,
+          ),
+        );
+      } else {
+        setSelectedImages(prevArray => [...prevArray, transformedArray]);
+      }
+    }
+  };
+
   const handleSendMsg = async message => {
-    console.log('\nhandleSendMsg', changeTimeFormatWithMs(Date.now()), '\n\n');
     let messageType = message.type;
 
     if (messageType === 'media') {
@@ -187,9 +310,7 @@ function ChatScreen() {
 
     if (message.content !== '') {
       let jid = fromUserJId;
-      console.log('uuid before', Date.now());
       let msgId = uuidv4();
-      console.log('uuid after', Date.now());
       const userProfile = vCardData;
       const dataObj = {
         jid: jid,
@@ -200,56 +321,20 @@ function ChatScreen() {
         msgId,
         fromUserJid: currentUserJID,
       };
-      console.log(
-        '\nhandleSendMsg 1',
-        changeTimeFormatWithMs(Date.now()),
-        '\n\n',
-      );
-      const conversationChatObj = getMessageObjSender(dataObj);
+      const conversationChatObj = await getMessageObjSender(dataObj);
       const recentChatObj = getRecentChatMsgObj(dataObj);
       const dispatchData = {
         data: [conversationChatObj],
         ...(isSingleChat('chat') ? { userJid: jid } : { groupJid: jidSendMsg }),
       };
-      console.log(
-        '\nhandleSendMsg 2',
-        changeTimeFormatWithMs(Date.now()),
-        '\n\n',
-      );
-      batch(() => {
-        dispatch(addChatConversationHistory(dispatchData));
-        console.log(
-          '\nhandleSendMsg 2.5',
-          changeTimeFormatWithMs(Date.now()),
-          '\n\n',
-        );
-        dispatch(updateRecentChat(recentChatObj));
-      });
-      console.log(
-        '\nhandleSendMsg 3',
-        changeTimeFormatWithMs(Date.now()),
-        '\n\n',
-      );
-      SDK.sendTextMessage(jid, message.content, msgId).then(result => {
-        console.log(
-          '\n\nSDK result',
-          changeTimeFormatWithMs(Date.now()),
-          result,
-          '\n\n',
-          jid,
-          message.content,
-          msgId,
-        );
-      });
-      console.log(
-        '\nhandleSendMsg 4',
-        changeTimeFormatWithMs(Date.now()),
-        '\n\n',
-      );
+      store.dispatch(addChatConversationHistory(dispatchData));
+      store.dispatch(updateRecentChat(recentChatObj));
+      SDK.sendTextMessage(jid, message.content, msgId);
     }
   };
 
   React.useEffect(() => {
+    // handleImageConvert()
     return () => {
       backHandler.remove();
     };
@@ -279,6 +364,7 @@ function ChatScreen() {
           GalleryPickView: (
             <GalleryPickView
               setSelectedImages={setSelectedImages}
+              selectedSingle={selectedSingle}
               selectedImages={selectedImages}
               setLocalNav={setLocalNav}
               handleSendMsg={handleSendMsg}
@@ -286,6 +372,16 @@ function ChatScreen() {
           ),
           UserInfo: <UserInfo setLocalNav={setLocalNav} />,
           UsersTapBarInfo: <UsersTapBarInfo setLocalNav={setLocalNav} />,
+          Gallery: (
+            <SavePicture
+              setLocalNav={setLocalNav}
+              selectedImages={selectedImages}
+              handleSelectImage={handleSelectImage}
+              handleMedia={handleMedia}
+              setSelectedImages={setSelectedImages}
+            />
+          ),
+          PostPreView: <PostPreViewPage setLocalNav={setLocalNav} />,
         }[localNav]
       }
     </>

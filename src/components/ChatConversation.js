@@ -5,24 +5,67 @@ import {
   Platform,
   ImageBackground,
   Pressable,
+  FlatList,
 } from 'react-native';
 import ChatHeader from '../components/ChatHeader';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import ChatInput from '../components/ChatInput';
 import { Stack, Text, View } from 'native-base';
+import SDK from '../SDK/SDK';
 import { ClearTextIcon } from '../common/Icons';
+import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
-import ChatConversationList from './ChatConversationList';
+import { updateMsgSeenStatus } from './chat/common/createMessage';
+import { resetGalleryData } from '../redux/Actions/GalleryAction';
+import ChatMessage from './ChatMessage';
+// import { clearGalleryData } from '../redux/utils';
+// import ChatConversationList from './ChatConversationList';
 
 const ChatConversation = React.memo(props => {
   const { handleSendMsg } = props;
+  const dispatch = useDispatch();
   const chatInputRef = React.useRef(null);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
   const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
+  const messages = useSelector(state => state.chatConversationData.data);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
+  const [messageList, setMessageList] = React.useState([]);
   const [selectedMsgs, setSelectedMsgs] = React.useState([]);
   const [replyMsgs, setReplyMsgs] = React.useState();
   const [menuItems, setMenuItems] = React.useState([]);
+
+  /**
+     *  const { vCardProfile, fromUserJId, messages } = useSelector((state) =>  ({
+        vCardProfile: state.profile.profileDetails,
+        fromUserJId: state.navigation.fromUserJid,
+        messages: state.chatConversationData.data
+    }))
+    // const handleSwipeLeft = (rowKey) => {
+    //     chatInputRef.current.focus();
+    //     const filteredMsgInfo = messageList.filter(item => item.msgId === rowKey);
+    //     setReplyMsgs(filteredMsgInfo[0]);
+    // };
+
+        const renderHiddenItem = (data, rowMap) => {
+            return (
+                <HStack alignItems={'center'} flex={"0.8"} ml='2' >
+                    {isSwiping?.isActivated && isSwiping?.key === data.item.msgId &&
+                        <HStack alignItems={'center'} justifyContent={'center'} w={10} h={10} borderRadius={20} bg={'#E5E5E5'}><ReplyIcon /></HStack>}
+                </HStack>
+            )
+        }
+        const onLeftAction = (rowKey) => {
+            handleSwipeLeft(rowKey);
+        };
+        const onLeftActionStatusChange = (res) => {
+            setIsSwiping(res);
+        };
+     const leftActivationValue = 20; // Adjust as needed
+     const leftActionValue = 20; // Adjust as needed
+     const initialLeftActionState = false; // Adjust as needed
+     // handleSwipeLeft(msgId);
+     */
 
   const handleReply = msgId => {
     setSelectedMsgs([]);
@@ -85,26 +128,70 @@ const ChatConversation = React.memo(props => {
         ]);
         break;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMsgs]);
 
-  const handleMsgSelect = React.useCallback(
-    message => {
-      if (selectedMsgs.includes(message)) {
-        setSelectedMsgs(prevArray =>
-          prevArray.filter(item => message !== item),
+  const getChatMessageHistoryById = id => {
+    if (messages[id]?.messages) {
+      return Object.values(messages[id]?.messages).reverse();
+    }
+    return [];
+  };
+
+  React.useEffect(() => {
+    if (fromUserJId) {
+      if (messages[getUserIdFromJid(fromUserJId)]) {
+        setMessageList(
+          getChatMessageHistoryById(getUserIdFromJid(fromUserJId)),
+        );
+      }
+    }
+  }, [messages, fromUserJId]);
+
+  React.useEffect(() => {
+    (async () => {
+      if (messages[getUserIdFromJid(fromUserJId)]) {
+        setMessageList(
+          getChatMessageHistoryById(getUserIdFromJid(fromUserJId)),
         );
       } else {
-        setSelectedMsgs([...selectedMsgs, message]);
+        let chatMessage = await SDK.getChatMessagesDB(fromUserJId);
+        if (chatMessage?.statusCode == 200) {
+          dispatch(addChatConversationHistory(chatMessage));
+        }
       }
-    },
-    [selectedMsgs],
-  );
+    })();
+    // clearGalleryData();
+    dispatch(resetGalleryData());
+  }, []);
+
+  const handleMsgSelect = message => {
+    if (selectedMsgs.includes(message)) {
+      setSelectedMsgs(prevArray => prevArray.filter(item => message !== item));
+    } else {
+      setSelectedMsgs([...selectedMsgs, message]);
+    }
+  };
+
+  React.useEffect(() => {
+    updateMsgSeenStatus();
+  }, [messageList]);
+
+  const chatMessageRender = ({ item }) => {
+    return (
+      <ChatMessage
+        setLocalNav={props.setLocalNav}
+        handleMsgSelect={handleMsgSelect}
+        selectedMsgs={selectedMsgs}
+        message={item}
+      />
+    );
+  };
 
   return (
     <KeyboardAvoidingView
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 'auto'}
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ChatHeader
         fromUserJId={fromUserJId}
         selectedMsgs={selectedMsgs}
@@ -116,11 +203,16 @@ const ChatConversation = React.memo(props => {
       />
       <ImageBackground
         source={require('../assets/chatBackgroud.png')}
-        style={styles.imageBackground}>
-        <ChatConversationList
-          fromUserJId={fromUserJId}
-          selectedMsgs={selectedMsgs}
-          handleMsgSelect={handleMsgSelect}
+        style={{
+          flex: 1,
+          resizeMode: 'cover',
+          justifyContent: 'center',
+        }}>
+        <FlatList
+          data={messageList}
+          inverted
+          renderItem={chatMessageRender}
+          keyExtractor={item => item.msgId}
         />
       </ImageBackground>
       {replyMsgs ? (
@@ -129,7 +221,14 @@ const ChatConversation = React.memo(props => {
             <View flexDirection={'row'} justifyContent={'flex-end'}>
               {replyMsgs ? (
                 <Pressable
-                  style={styles.replyMessageRemoveButton}
+                  style={{
+                    padding: 5,
+                    justifyContent: 'flex-end',
+                    backgroundColor: '#FFF',
+                    borderRadius: 20,
+                    borderWidth: 1,
+                    borderColor: 'black',
+                  }}
                   onPress={handleRemove}>
                   <ClearTextIcon />
                 </Pressable>
@@ -193,19 +292,6 @@ const ChatConversation = React.memo(props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  imageBackground: {
-    flex: 1,
-    resizeMode: 'cover',
-    justifyContent: 'center',
-  },
-  replyMessageRemoveButton: {
-    padding: 5,
-    justifyContent: 'flex-end',
-    backgroundColor: '#FFF',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'black',
   },
 });
 

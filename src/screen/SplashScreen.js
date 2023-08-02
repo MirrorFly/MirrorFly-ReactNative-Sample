@@ -22,12 +22,7 @@ const SplashScreen = () => {
     <View style={styles.container}>
       <ImageBackground
         source={require('../assets/drawable_splash_gradient.png')}
-        style={{
-          flex: 1,
-          resizeMode: 'contain',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
+        style={styles.imagebg}>
         <Image
           source={require('../assets/ic_logo_splash.png')}
           style={styles.logo}
@@ -43,6 +38,12 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     // alignItems: 'center',
     // backgroundColor: '#FFFFFF',
+  },
+  imagebg: {
+    flex: 1,
+    resizeMode: 'contain',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   logo: {
     width: 300,

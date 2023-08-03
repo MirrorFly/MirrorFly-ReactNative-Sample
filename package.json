@@ -3,7 +3,6 @@
   "version": "3.0.0",
   "private": true,
   "scripts": {
-    "rn:build": "ios/fastlane qa_firebase && android/fastlane deploy_qa_release",
     "rn:clean": "watchman watch-del-all && rm -rf package-lock.json node_modules &&  rm -rf android/build && rm -rf ios/Pods/ ios/Podfile.lock ios/build && rm -rf ~/Library/Developer/Xcode/DerivedData",
     "android:clean": "cd android && ./gradlew clean && cd ..",
     "android-build": "cd android && fastlane deploy_qa_release && cd ..",

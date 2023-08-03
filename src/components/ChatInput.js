@@ -32,6 +32,9 @@ const ChatInput = props => {
       // requestAnimationFrame(() => {
       //   onSendMessage(message);
       // });
+      // Promise.resolve().then(() => {
+      //   onSendMessage(message);
+      // });
     }
   };
   const handleEmojiSelect = (...emojis) => {

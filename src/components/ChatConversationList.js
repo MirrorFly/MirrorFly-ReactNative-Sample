@@ -8,6 +8,7 @@ import SDK from '../SDK/SDK';
 import { updateMsgSeenStatus } from './chat/common/createMessage';
 
 const ChatConversationList = ({
+  setLocalNav,
   fromUserJId,
   selectedMsgs,
   handleMsgSelect,
@@ -30,7 +31,7 @@ const ChatConversationList = ({
         }
       }
     })();
-  }, [dispatch, fromUserJId, messages]);
+  }, [fromUserJId, messages]);
 
   const messageList = React.useMemo(() => {
     const id = getUserIdFromJid(fromUserJId);
@@ -41,17 +42,29 @@ const ChatConversationList = ({
     return data;
   }, [messages, fromUserJId]);
 
+  // const chatMessageRender = ({ item }) => {
+  //   return (
+  //     <ChatMessage
+  //       setLocalNav={props.setLocalNav}
+  //       handleMsgSelect={handleMsgSelect}
+  //       selectedMsgs={selectedMsgs}
+  //       message={item}
+  //     />
+  //   );
+  // };
+
   const chatMessageRender = React.useCallback(
     ({ item }) => {
       return (
         <ChatMessage
+          setLocalNav={setLocalNav}
           handleMsgSelect={handleMsgSelect}
           selectedMsgs={selectedMsgs}
           message={item}
         />
       );
     },
-    [handleMsgSelect, selectedMsgs],
+    [handleMsgSelect, selectedMsgs, setLocalNav],
   );
 
   return (

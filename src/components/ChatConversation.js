@@ -5,22 +5,22 @@ import {
   Platform,
   ImageBackground,
   Pressable,
-  FlatList,
+  // FlatList,
 } from 'react-native';
 import ChatHeader from '../components/ChatHeader';
 import { useSelector, useDispatch } from 'react-redux';
 import ChatInput from '../components/ChatInput';
 import { Stack, Text, View } from 'native-base';
-import SDK from '../SDK/SDK';
+// import SDK from '../SDK/SDK';
 import { ClearTextIcon } from '../common/Icons';
-import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
+// import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
+// import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
-import { updateMsgSeenStatus } from './chat/common/createMessage';
+// import { updateMsgSeenStatus } from './chat/common/createMessage';
 import { resetGalleryData } from '../redux/Actions/GalleryAction';
-import ChatMessage from './ChatMessage';
+// import ChatMessage from './ChatMessage';
 // import { clearGalleryData } from '../redux/utils';
-// import ChatConversationList from './ChatConversationList';
+import ChatConversationList from './ChatConversationList';
 
 const ChatConversation = React.memo(props => {
   const { handleSendMsg } = props;
@@ -28,9 +28,9 @@ const ChatConversation = React.memo(props => {
   const chatInputRef = React.useRef(null);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
   const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
-  const messages = useSelector(state => state.chatConversationData.data);
+  // const messages = useSelector(state => state.chatConversationData.data);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
-  const [messageList, setMessageList] = React.useState([]);
+  // const [messageList, setMessageList] = React.useState([]);
   const [selectedMsgs, setSelectedMsgs] = React.useState([]);
   const [replyMsgs, setReplyMsgs] = React.useState();
   const [menuItems, setMenuItems] = React.useState([]);
@@ -130,36 +130,36 @@ const ChatConversation = React.memo(props => {
     }
   }, [selectedMsgs]);
 
-  const getChatMessageHistoryById = id => {
-    if (messages[id]?.messages) {
-      return Object.values(messages[id]?.messages).reverse();
-    }
-    return [];
-  };
+  // const getChatMessageHistoryById = id => {
+  //   if (messages[id]?.messages) {
+  //     return Object.values(messages[id]?.messages).reverse();
+  //   }
+  //   return [];
+  // };
+
+  // React.useEffect(() => {
+  //   if (fromUserJId) {
+  //     if (messages[getUserIdFromJid(fromUserJId)]) {
+  //       setMessageList(
+  //         getChatMessageHistoryById(getUserIdFromJid(fromUserJId)),
+  //       );
+  //     }
+  //   }
+  // }, [messages, fromUserJId]);
 
   React.useEffect(() => {
-    if (fromUserJId) {
-      if (messages[getUserIdFromJid(fromUserJId)]) {
-        setMessageList(
-          getChatMessageHistoryById(getUserIdFromJid(fromUserJId)),
-        );
-      }
-    }
-  }, [messages, fromUserJId]);
-
-  React.useEffect(() => {
-    (async () => {
-      if (messages[getUserIdFromJid(fromUserJId)]) {
-        setMessageList(
-          getChatMessageHistoryById(getUserIdFromJid(fromUserJId)),
-        );
-      } else {
-        let chatMessage = await SDK.getChatMessagesDB(fromUserJId);
-        if (chatMessage?.statusCode == 200) {
-          dispatch(addChatConversationHistory(chatMessage));
-        }
-      }
-    })();
+    // (async () => {
+    //   if (messages[getUserIdFromJid(fromUserJId)]) {
+    //     setMessageList(
+    //       getChatMessageHistoryById(getUserIdFromJid(fromUserJId)),
+    //     );
+    //   } else {
+    //     let chatMessage = await SDK.getChatMessagesDB(fromUserJId);
+    //     if (chatMessage?.statusCode === 200) {
+    //       dispatch(addChatConversationHistory(chatMessage));
+    //     }
+    //   }
+    // })();
     // clearGalleryData();
     dispatch(resetGalleryData());
   }, []);
@@ -172,20 +172,9 @@ const ChatConversation = React.memo(props => {
     }
   };
 
-  React.useEffect(() => {
-    updateMsgSeenStatus();
-  }, [messageList]);
-
-  const chatMessageRender = ({ item }) => {
-    return (
-      <ChatMessage
-        setLocalNav={props.setLocalNav}
-        handleMsgSelect={handleMsgSelect}
-        selectedMsgs={selectedMsgs}
-        message={item}
-      />
-    );
-  };
+  // React.useEffect(() => {
+  //   updateMsgSeenStatus();
+  // }, [messageList]);
 
   return (
     <KeyboardAvoidingView
@@ -208,11 +197,11 @@ const ChatConversation = React.memo(props => {
           resizeMode: 'cover',
           justifyContent: 'center',
         }}>
-        <FlatList
-          data={messageList}
-          inverted
-          renderItem={chatMessageRender}
-          keyExtractor={item => item.msgId}
+        <ChatConversationList
+          setLocalNav={props.setLocalNav}
+          fromUserJId={fromUserJId}
+          handleMsgSelect={handleMsgSelect}
+          selectedMsgs={selectedMsgs}
         />
       </ImageBackground>
       {replyMsgs ? (

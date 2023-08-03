@@ -1,4 +1,4 @@
-// import Video from 'react-native-video';
+import Video from 'react-native-video';
 import React, { useState } from 'react';
 import { Dimensions, Platform } from 'react-native';
 import MediaControls, { PLAYER_STATES } from 'react-native-media-controls';
@@ -146,28 +146,28 @@ const VideoPlayer = props => {
   return (
     <View style={{ flex: 1 }} onLayout={handleLayout}>
       <View style={{ flex: 1, justifyContent: 'center' }}>
-        {/* {videoUri && (
-          // <Video
-          //   onEnd={onEnd}
-          //   onLoad={onLoad}
-          //   // onLoadStart={onLoadStart}
-          //   onProgress={onProgress}
-          //   paused={paused}
-          //   controls={false}
-          //   poster={uri}
-          //   posterResizeMode={'contain'}
-          //   ref={videoPlayer}
-          //   resizeMode={'contain'}
-          //   source={{ uri: videoUri }}
-          //   style={{
-          //     width: '100%',
-          //     height: '100%',
-          //     justifyContent: 'center',
-          //   }}
-          //   volume={100}
-          //   muted={false}
-          // />
-        )} */}
+        {videoUri && (
+          <Video
+            onEnd={onEnd}
+            onLoad={onLoad}
+            // onLoadStart={onLoadStart}
+            onProgress={onProgress}
+            paused={paused}
+            controls={false}
+            poster={uri}
+            posterResizeMode={'contain'}
+            ref={videoPlayer}
+            resizeMode={'contain'}
+            source={{ uri: videoUri }}
+            style={{
+              width: '100%',
+              height: '100%',
+              justifyContent: 'center',
+            }}
+            volume={100}
+            muted={false}
+          />
+        )}
       </View>
       {!isLoading && (
         <View

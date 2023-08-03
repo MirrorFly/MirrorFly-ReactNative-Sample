@@ -49,6 +49,8 @@ function ChatScreen() {
   const [selectedImages, setSelectedImages] = React.useState([]);
   const [selectedSingle, setselectedSingle] = React.useState(false);
 
+  console.log('rendering');
+
   const toastConfig = {
     duration: 2500,
     avoidKeyboard: true,
@@ -325,7 +327,7 @@ function ChatScreen() {
       const recentChatObj = getRecentChatMsgObj(dataObj);
       const dispatchData = {
         data: [conversationChatObj],
-        ...(isSingleChat('chat') ? { userJid: jid } : { groupJid: jidSendMsg }),
+        ...(isSingleChat('chat') ? { userJid: jid } : { groupJid: jid }), // check this when group works
       };
       store.dispatch(addChatConversationHistory(dispatchData));
       store.dispatch(updateRecentChat(recentChatObj));

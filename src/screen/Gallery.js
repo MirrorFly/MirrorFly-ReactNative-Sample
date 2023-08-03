@@ -1,4 +1,4 @@
-import { CameraRoll } from '@react-native-camera-roll/camera-roll';
+import CameraRoll from '@react-native-community/cameraroll';
 import { HStack, Icon, Image, Pressable, Text, View } from 'native-base';
 import React from 'react';
 import ScreenHeader from '../components/ScreenHeader';

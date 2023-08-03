@@ -88,7 +88,6 @@ const ChatInput = props => {
             onChangeText={setMessage}
             placeholder="Start Typing..."
             placeholderTextColor="#767676"
-            autoFocus={true}
             numberOfLines={1}
             multiline={true}
           />

@@ -8,11 +8,18 @@ import { FloatingBtn } from '../common/Button';
 import { useDispatch, useSelector } from 'react-redux';
 // import { logout } from '../redux/authSlice';
 import { navigate } from '../redux/Actions/NavigationAction';
-import { CONTACTLIST, PROFILESCREEN, RECENTCHATSCREEN } from '../constant';
+import {
+  CONTACTLIST,
+  PROFILESCREEN,
+  RECENTCHATSCREEN,
+  REGISTERSCREEN,
+} from '../constant';
 import SDK from '../SDK/SDK';
 import { addRecentChat } from '../redux/Actions/RecentChatAction';
 import { sortBydate } from '../Helper/Chat/RecentChat';
 import * as RootNav from '../Navigation/rootNavigation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { profileDetail } from '../redux/Actions/ProfileAction';
 
 const logo = require('../assets/mirrorfly-logo.png');
 
@@ -105,6 +112,19 @@ function RecentScreen() {
     [isSearching],
   );
 
+  const handleLogout = async () => {
+    SDK.logout();
+    const getPrevUserIdentifier = await AsyncStorage.getItem('userIdentifier');
+    AsyncStorage.setItem('prevUserIdentifier', getPrevUserIdentifier || '');
+    AsyncStorage.setItem('credential', '');
+    AsyncStorage.setItem('userIdentifier', '');
+    AsyncStorage.setItem('screenObj', '');
+    AsyncStorage.setItem('vCardProfile', '');
+    dispatch(profileDetail({}));
+    dispatch(navigate({ screen: REGISTERSCREEN }));
+    RootNav.navigate(REGISTERSCREEN);
+  };
+
   const menuItems = React.useMemo(
     () => [
       {
@@ -118,6 +138,7 @@ function RecentScreen() {
       {
         label: 'Logout',
         formatter: () => {
+          handleLogout();
           // dispatch(logout());
         },
       },

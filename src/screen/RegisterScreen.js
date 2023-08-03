@@ -156,6 +156,7 @@ const RegisterScreen = ({ navigation }) => {
         dispatch(getCurrentUserJid(userJID));
         dispatch(navigate(nav));
         navigation.navigate(PROFILESCREEN);
+        setMobileNumber();
         break;
       default:
         break;

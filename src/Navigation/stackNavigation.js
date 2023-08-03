@@ -14,9 +14,9 @@ import {
   SETTINGSCREEN,
 } from '../constant';
 import ChatScreen from '../screen/ChatScreen';
-// import CountryList from '../screen/CountryList';
+import CountryList from '../screen/CountryList';
 import ContactScreen from '../screen/ContactScreen';
-// import SettingScreen from '../screen/SettingScreen';
+import SettingScreen from '../screen/SettingScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -33,9 +33,9 @@ function StackNavigationPage(props) {
       <Stack.Screen name={PROFILESCREEN} component={ProfileScreen} />
       <Stack.Screen name={RECENTCHATSCREEN} component={RecentScreen} />
       <Stack.Screen name={CHATSCREEN} component={ChatScreen} />
-      {/* <Stack.Screen name={COUNTRYSCREEN} component={CountryList} /> */}
+      <Stack.Screen name={COUNTRYSCREEN} component={CountryList} />
       <Stack.Screen name={CONTACTLIST} component={ContactScreen} />
-      {/* <Stack.Screen name={SETTINGSCREEN} component={SettingScreen} /> */}
+      <Stack.Screen name={SETTINGSCREEN} component={SettingScreen} />
     </Stack.Navigator>
   );
 }

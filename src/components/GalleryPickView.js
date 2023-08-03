@@ -73,23 +73,27 @@ function GalleryPickView(props) {
     handleSendMsg(message);
   };
 
-  const renderScene = SceneMap(
-    selectedImages?.reduce((scenes, item, itemIndex) => {
-      const type = getType(item?.fileDetails?.type);
-      scenes[`tab${itemIndex + 1}`] = () => (
-        <>
-          {type === 'image' && (
-            <Image
-              resizeMode="contain"
-              source={{ uri: item?.fileDetails?.image?.uri }}
-              style={styles.tabContainer}
-            />
-          )}
-          {/* {type === 'video' && <VideoPlayer item={item} />} */}
-        </>
-      );
-      return scenes;
-    }, {}),
+  const renderScene = React.useMemo(
+    () =>
+      SceneMap(
+        selectedImages?.reduce((scenes, item, itemIndex) => {
+          const type = getType(item?.fileDetails?.type);
+          scenes[`tab${itemIndex + 1}`] = () => (
+            <>
+              {type === 'image' && (
+                <Image
+                  resizeMode="contain"
+                  source={{ uri: item?.fileDetails?.image?.uri }}
+                  style={styles.tabContainer}
+                />
+              )}
+              {/* {type === 'video' && <VideoPlayer item={item} />} */}
+            </>
+          );
+          return scenes;
+        }, {}),
+      ),
+    [selectedImages],
   );
 
   return (

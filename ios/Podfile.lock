@@ -288,7 +288,7 @@ PODS:
   - React-jsinspector (0.69.12)
   - React-logger (0.69.12):
     - glog
-  - react-native-cameraroll (5.6.1):
+  - react-native-cameraroll (5.7.2):
     - React-Core
   - react-native-compressor (1.6.3):
     - NextLevelSessionExporter
@@ -643,7 +643,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: ce0b9aa647bdf94126eb2ee1f235d329eb8c0aec
   React-jsinspector: f275698149311abc8c32ebb97797d6b97c44adde
   React-logger: da69d7f1c9501c78cd60776d52a60d7fa5e4d9c2
-  react-native-cameraroll: 2f08db1ecc9b73dbc01f89335d6d5179fac2894c
+  react-native-cameraroll: 134805127580aed23403b8c2cb1548920dd77b3a
   react-native-compressor: 20af48e04a9b4c82992bcebd6e02dc04ab6be073
   react-native-document-picker: 2b8f18667caee73a96708a82b284a4f40b30a156
   react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb

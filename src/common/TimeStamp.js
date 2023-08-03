@@ -216,17 +216,14 @@ export const getLastseen = secs => {
       userDate.getDate() === currentDate.getDate() &&
       userDate.getMonth() === currentDate.getMonth()
     ) {
-      return `last seen today at ${userDate.toLocaleTimeString('en-US', HHMM)}`;
+      return `last seen today at ${moment(userDate).format('h:mm A')}`;
     } else if (
       (userDate.getDate() === currentDate.getDate() - 1 &&
         userDate.getMonth() === currentDate.getMonth()) ||
       (userDate.getMonth() === currentDate.getMonth() - 1 &&
         findYesterday(secs, currentDate))
     ) {
-      return `last seen yesterday at ${userDate.toLocaleTimeString(
-        'en-US',
-        HHMM,
-      )}`;
+      return `last seen yesterday at ${moment(userDate).format('h:mm A')}`;
     } else if (
       (userDate.getDate() === currentDate.getDate() - 1 ||
         userDate.getDate() === currentDate.getDate() - 2 ||
@@ -236,9 +233,9 @@ export const getLastseen = secs => {
         userDate.getDate() === currentDate.getDate() - 6) &&
       userDate.getMonth() === currentDate.getMonth()
     ) {
-      return `last seen on ${
-        weekday[userDate.getDay()]
-      } at ${userDate.toLocaleTimeString('en-US', HHMM)}`;
+      return `last seen on ${weekday[userDate.getDay()]} at ${moment(
+        userDate,
+      ).format('h:mm A')}`;
     } else {
       if (userDate.getDate().toString().length > 1) {
         return `last seen ${userDate.getDate()}-${

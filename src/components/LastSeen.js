@@ -8,6 +8,7 @@ import {
 } from '../Helper/Chat/Constant';
 import MarqueeText from '../common/MarqueeText';
 import { useNetworkStatus } from '../hooks';
+import { SDK } from '../SDK';
 
 const LastSeen = props => {
   const isNetworkConnected = useNetworkStatus();
@@ -96,7 +97,6 @@ const LastSeen = props => {
     <>
       {lastSeenData.lastSeen ? (
         <MarqueeText key={JSON.stringify(config)} ref={marqueeRef} {...config}>
-          {' '}
           {lastSeenData.lastSeen}
         </MarqueeText>
       ) : null}

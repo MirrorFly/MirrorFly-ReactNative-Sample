@@ -50,8 +50,8 @@ export default StyleSheet.create({
   },
   progressContainer: {
     flexDirection: 'row',
+    alignItems: 'flex-end',
     justifyContent: 'flex-end',
-    marginBottom: -25,
   },
   progressSlider: {
     alignSelf: 'stretch',

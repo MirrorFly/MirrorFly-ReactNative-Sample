@@ -34,6 +34,22 @@ export const handleGalleryPickerSingle = async () => {
   }
 };
 
+export const handleAudioPickerSingle = async () => {
+  try {
+    const res = await DocumentPicker.pickSingle({
+      type: [DocumentPicker.types.audio],
+      presentationStyle: 'fullScreen',
+      copyTo:
+        Platform.OS === 'android' ? 'documentDirectory' : 'cachesDirectory',
+    });
+    if (res) {
+      return res;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const requestCameraPermission = async () => {
   switch (true) {
     case Platform.OS === 'ios':
@@ -61,6 +77,20 @@ export const requestStoragePermission = async () => {
         permited['android.permission.READ_MEDIA_IMAGES'] ||
         permited['android.permission.READ_MEDIA_VIDEO']
       );
+  }
+};
+
+export const requestAudioStoragePermission = async () => {
+  switch (true) {
+    case Platform.OS === 'ios':
+      return await request(PERMISSIONS.IOS.MEDIA_LIBRARY);
+    case Platform.OS === 'android' && Platform.Version <= 32: // Android Vresion 32 and below
+      return await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+    default:
+      const permited = await requestMultiple([
+        PERMISSIONS.ANDROID.READ_MEDIA_AUDIO,
+      ]); // Android Vresion 33 and above
+      return permited['android.permission.READ_MEDIA_AUDIO'];
   }
 };
 

@@ -1,6 +1,26 @@
+import {
+  AlertDialog,
+  Box,
+  HStack,
+  Pressable,
+  Text,
+  Toast,
+  useToast,
+} from 'native-base';
 import React from 'react';
-import ChatConversation from '../components/ChatConversation';
-import MessageInfo from '../components/MessageInfo';
+import { BackHandler } from 'react-native';
+import { Image as ImageCompressor } from 'react-native-compressor';
+import RNFS from 'react-native-fs';
+import { useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
+import { isSingleChat } from '../Helper/Chat/ChatHelper';
+import {
+  getMessageObjSender,
+  getRecentChatMsgObj,
+  setDurationSecToMilli,
+} from '../Helper/Chat/Utility';
+import * as RootNav from '../Navigation/rootNavigation';
+import { SDK } from '../SDK';
 import {
   CameraIcon,
   ContactIcon,
@@ -9,34 +29,27 @@ import {
   HeadSetIcon,
   LocationIcon,
 } from '../common/Icons';
+import {
+  handleAudioPickerSingle,
+  requestAudioStoragePermission,
+  requestStoragePermission,
+} from '../common/utils';
+import ChatConversation from '../components/ChatConversation';
 import GalleryPickView from '../components/GalleryPickView';
-import { requestStoragePermission } from '../common/utils';
-import { Box, Text, useToast } from 'native-base';
+import MessageInfo from '../components/MessageInfo';
+import PostPreViewPage from '../components/PostPreViewPage';
 import UserInfo from '../components/UserInfo';
 import UsersTapBarInfo from '../components/UsersTapBarInfo';
-import { BackHandler } from 'react-native';
-import { RECENTCHATSCREEN } from '../constant';
-import { useSelector } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
-import {
-  getMessageObjSender,
-  getRecentChatMsgObj,
-  setDurationSecToMilli,
-} from '../Helper/Chat/Utility';
-import { updateRecentChat } from '../redux/Actions/RecentChatAction';
-import store from '../redux/store';
-import { isSingleChat } from '../Helper/Chat/ChatHelper';
-import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
-import { SDK } from '../SDK';
-import SavePicture from './Gallery';
-import * as RootNav from '../Navigation/rootNavigation';
-import { Image as ImageCompressor } from 'react-native-compressor';
-import RNFS from 'react-native-fs';
 import {
   getType,
   validateFileSize,
+  validation,
 } from '../components/chat/common/fileUploadValidation';
-import PostPreViewPage from '../components/PostPreViewPage';
+import { RECENTCHATSCREEN } from '../constant';
+import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
+import { updateRecentChat } from '../redux/Actions/RecentChatAction';
+import store from '../redux/store';
+import SavePicture from './Gallery';
 
 function ChatScreen() {
   const vCardData = useSelector(state => state.profile.profileDetails);
@@ -48,15 +61,45 @@ function ChatScreen() {
   const [isToastShowing, setIsToastShowing] = React.useState(false);
   const [selectedImages, setSelectedImages] = React.useState([]);
   const [selectedSingle, setselectedSingle] = React.useState(false);
-
-  console.log('rendering');
+  const [alert, setAlert] = React.useState(false);
+  const [validate, setValidate] = React.useState('');
 
   const toastConfig = {
-    duration: 2500,
+    duration: 1500,
     avoidKeyboard: true,
     onCloseComplete: () => {
       setIsToastShowing(false);
     },
+  };
+
+  const handleAudioSelect = async () => {
+    let MediaPermission = await requestAudioStoragePermission();
+    const size_toast = 'size_toast';
+    if (MediaPermission === 'granted' || MediaPermission === 'limited') {
+      let response = await handleAudioPickerSingle();
+      let _validate = validation(response);
+      let file = {
+        fileSize: response.size,
+      };
+      const size = validateFileSize(file, getType(response.type));
+      if (_validate && !size) {
+        setAlert(true);
+        setValidate(_validate);
+      }
+      if (size && !Toast.isActive(size_toast)) {
+        return Toast.show({
+          id: size_toast,
+          ...toastConfig,
+          render: () => {
+            return (
+              <Box bg="black" px="2" py="1" rounded="sm">
+                <Text style={{ color: '#fff', padding: 5 }}>{size}</Text>
+              </Box>
+            );
+          },
+        });
+      }
+    }
   };
 
   const attachmentMenuIcons = [
@@ -100,7 +143,9 @@ function ChatScreen() {
     {
       name: 'Audio',
       icon: HeadSetIcon,
-      formatter: () => {},
+      formatter: async () => {
+        handleAudioSelect();
+      },
     },
     {
       name: 'Contact',
@@ -224,30 +269,6 @@ function ChatScreen() {
     }
   };
 
-  /**   const validation = (file) => {
-      const { image } = file
-      const fileExtension = getExtension(image.filename);
-      const allowedFilescheck = new RegExp("([a-zA-Z0-9s_\\.-:])+(" + ALLOWED_ALL_FILE_FORMATS.join("|") + ")$", "i");
-      let mediaType = getType(file.type);
-      if (!allowedFilescheck.test(fileExtension) || mediaType === "video/mpeg") {
-        let message = "Unsupported file format. Files allowed: ";
-        if (mediaType === "image") message = message + `${ALLOWED_IMAGE_VIDEO_FORMATS.join(", ")}`; 
-        if (!isToastShowing) {
-          return toast.show({
-            ...toastConfig,
-            render: () => {
-              return (
-                <Box bg="black" px="2" py="1" rounded="sm">
-                  <Text style={{ color: '#fff', padding: 5 }}>{message}</Text>
-                </Box>
-              );
-            },
-          });
-        }
-      }
-    }
-     */
-
   const handleSelectImage = item => {
     setIsToastShowing(true);
     const transformedArray = {
@@ -335,6 +356,11 @@ function ChatScreen() {
     }
   };
 
+  const onClose = () => {
+    setAlert(false);
+    setValidate('');
+  };
+
   React.useEffect(() => {
     // handleImageConvert()
     return () => {
@@ -386,6 +412,25 @@ function ChatScreen() {
           PostPreView: <PostPreViewPage setLocalNav={setLocalNav} />,
         }[localNav]
       }
+      <AlertDialog isOpen={alert} onClose={alert}>
+        <AlertDialog.Content
+          w="85%"
+          borderRadius={0}
+          px="6"
+          py="4"
+          fontWeight={'600'}>
+          <Text fontSize={16} color={'black'}>
+            {validate}
+          </Text>
+          <HStack justifyContent={'flex-end'} mr={2} pb={'2'} pt={'6'}>
+            <Pressable onPress={onClose}>
+              <Text fontWeight={'500'} color={'#3276E2'}>
+                OK
+              </Text>
+            </Pressable>
+          </HStack>
+        </AlertDialog.Content>
+      </AlertDialog>
     </>
   );
 }

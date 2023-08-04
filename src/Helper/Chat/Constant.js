@@ -77,7 +77,7 @@ export const SESSION_LOGOUT = 'The session has been logged out';
 export const SERVER_LOGOUT = 'serverLogout';
 
 export const ALLOWED_IMAGE_VIDEO_FORMATS = ['png', 'jpeg', 'jpg', 'mp4'];
-export const ALLOWED_AUDIO_FORMATS = ['mp3', 'aac', 'wav'];
+export const ALLOWED_AUDIO_FORMATS = ['.aac', '.mp3', '.wav'];
 export const AUDIO_VIDEO_FORMATS = ['mp3', 'aac', 'wav', 'mp4'];
 export const ALLOWED_DOCUMENT_FORMATS = [
   'doc',

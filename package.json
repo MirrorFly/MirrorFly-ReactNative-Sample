@@ -14,7 +14,8 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "i": "npm i -f && npm run ios-install"
   },
   "reactNativePermissionsIOS": [
     "AppTrackingTransparency",
@@ -62,6 +63,7 @@
     "moment": "^2.29.4",
     "native-base": "^3.4.28",
     "next-frame": "^0.2.3",
+    "prop-types": "^15.8.1",
     "react": "18.0.0",
     "react-native": "0.69.12",
     "react-native-compressor": "^1.6.1",

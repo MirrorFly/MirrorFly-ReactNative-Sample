@@ -1,7 +1,7 @@
 import Video from 'react-native-video';
 import React, { useState } from 'react';
 import { Dimensions, Platform } from 'react-native';
-import MediaControls, { PLAYER_STATES } from 'react-native-media-controls';
+import MediaControls, { PLAYER_STATES } from './media-controls';
 import { View } from 'native-base';
 import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import { useAppState } from '../../hooks';
@@ -51,9 +51,9 @@ const VideoPlayer = props => {
     setOnEnded(false);
   };
 
-  const onPaused = playerState => {
+  const onPaused = state => {
     setPaused(!paused);
-    setPlayerState(playerState);
+    setPlayerState(state);
   };
 
   const onReplay = () => {
@@ -103,8 +103,8 @@ const VideoPlayer = props => {
           // else setScreenType('content');
       }; */
 
-  const onSeeking = currentTime => {
-    setCurrentTime(currentTime);
+  const onSeeking = time => {
+    setCurrentTime(time);
     if (onEnded) {
       setPlayerState(PLAYER_STATES.PAUSED);
       setPaused(true);

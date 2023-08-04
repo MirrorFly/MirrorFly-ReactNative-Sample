@@ -27,7 +27,7 @@ import {
 import Avathar from '../common/Avathar';
 import { SceneMap, TabView } from 'react-native-tab-view';
 import { getType } from './chat/common/fileUploadValidation';
-// import VideoPlayer from './Media/VideoPlayer';
+import VideoPlayer from './Media/VideoPlayer';
 
 function GalleryPickView(props) {
   const {
@@ -87,7 +87,7 @@ function GalleryPickView(props) {
                   style={styles.tabContainer}
                 />
               )}
-              {/* {type === 'video' && <VideoPlayer item={item} />} */}
+              {type === 'video' && <VideoPlayer item={item} />}
             </>
           );
           return scenes;

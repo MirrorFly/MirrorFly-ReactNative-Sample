@@ -10,9 +10,9 @@ import {
 import ChatHeader from '../components/ChatHeader';
 import { useSelector, useDispatch } from 'react-redux';
 import ChatInput from '../components/ChatInput';
-import { Stack, Text, View } from 'native-base';
+import { HStack, Stack, Text, View, useToast, Box } from 'native-base';
 // import SDK from '../SDK/SDK';
-import { ClearTextIcon } from '../common/Icons';
+import { ClearTextIcon, GalleryAllIcon } from '../common/Icons';
 // import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
 // import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
@@ -21,6 +21,11 @@ import { resetGalleryData } from '../redux/Actions/GalleryAction';
 // import ChatMessage from './ChatMessage';
 // import { clearGalleryData } from '../redux/utils';
 import ChatConversationList from './ChatConversationList';
+import Clipboard from '@react-native-clipboard/clipboard';
+
+import ReplyText from './ReplyText';
+import ReplyImage from './ReplyImage';
+import ReplyVideo from './ReplyVideo';
 
 const ChatConversation = React.memo(props => {
   const { handleSendMsg } = props;
@@ -34,7 +39,7 @@ const ChatConversation = React.memo(props => {
   const [selectedMsgs, setSelectedMsgs] = React.useState([]);
   const [replyMsgs, setReplyMsgs] = React.useState();
   const [menuItems, setMenuItems] = React.useState([]);
-
+  const toast = useToast();
   /**
      *  const { vCardProfile, fromUserJId, messages } = useSelector((state) =>  ({
         vCardProfile: state.profile.profileDetails,
@@ -67,8 +72,34 @@ const ChatConversation = React.memo(props => {
      // handleSwipeLeft(msgId);
      */
 
-  const handleReply = msgId => {
+  const toastConfig = {
+    duration: 2500,
+    avoidKeyboard: true,
+  };
+
+  const copyToClipboard = () => {
+    console.log('messageList', selectedMsgs[0].msgBody.message_type);
+    Clipboard.setString(selectedMsgs[0].msgBody.message);
+    if (selectedMsgs[0].msgBody.message) {
+      return toast.show({
+        ...toastConfig,
+        render: () => {
+          return (
+            <Box bg="black" px="2" py="1" rounded="sm">
+              <Text style={{ color: '#fff', padding: 5 }}>
+                1 Text copied successfully to the clipboard
+              </Text>
+            </Box>
+          );
+        },
+      });
+    }
+  };
+
+  const handleReply = msg => {
     setSelectedMsgs([]);
+    setReplyMsgs(msg);
+    console.log('selectedMsgs', selectedMsgs[0].msgBody?.message);
   };
 
   const handleRemove = () => {
@@ -91,9 +122,11 @@ const ChatConversation = React.memo(props => {
       case foundMsg.length > 0:
         setMenuItems([
           {
-            label: 'Copy',
-            formatter: () => {},
+            label:
+              selectedMsgs[0].msgBody.message_type === 'text' ? 'Copy' : null,
+            formatter: copyToClipboard,
           },
+
           {
             label: 'Report',
             formatter: () => {},
@@ -106,12 +139,23 @@ const ChatConversation = React.memo(props => {
             label: 'Message Info',
             formatter: () => {
               props.setIsMessageInfo(selectedMsgs[0]);
+              // location
               props.setLocalNav('MESSAGEINFO');
             },
           },
           {
-            label: 'Copy',
+            label:
+              selectedMsgs[0].msgBody.message_type === 'file' &&
+              selectedMsgs[0].msgBody.message_type === 'video' &&
+              selectedMsgs[0].msgBody.message_type === 'image'
+                ? 'Share'
+                : null,
             formatter: () => {},
+          },
+          {
+            label:
+              selectedMsgs[0].msgBody.message_type === 'text' ? 'Copy' : null,
+            formatter: copyToClipboard,
           },
         ]);
         break;
@@ -207,52 +251,26 @@ const ChatConversation = React.memo(props => {
       {replyMsgs ? (
         <View paddingX={'1'} paddingY={'1'} backgroundColor={'#DDE3E5'}>
           <Stack paddingX={'3'} paddingY={'0 '} backgroundColor={'#E2E8F9'}>
-            <View flexDirection={'row'} justifyContent={'flex-end'}>
-              {replyMsgs ? (
-                <Pressable
-                  style={{
-                    padding: 5,
-                    justifyContent: 'flex-end',
-                    backgroundColor: '#FFF',
-                    borderRadius: 20,
-                    borderWidth: 1,
-                    borderColor: 'black',
-                  }}
-                  onPress={handleRemove}>
-                  <ClearTextIcon />
-                </Pressable>
-              ) : null}
-            </View>
-            <View mb={'2'} justifyContent={'flex-start'}>
-              {replyMsgs.fromUserJid === currentUserJID ? (
-                <Text py="0">You</Text>
-              ) : (
-                <Text py="0">{replyMsgs?.msgBody.nickName}</Text>
-              )}
+            <View marginY={'4'} justifyContent={'flex-start'}>
               {
                 {
                   text: (
-                    <Text numberOfLines={1} fontSize={14} color="#313131">
-                      {replyMsgs?.msgBody?.message}
-                    </Text>
+                    <ReplyText
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
                   ),
                   image: (
-                    <Text
-                      fontWeight={'600'}
-                      fontStyle={'italic'}
-                      fontSize={14}
-                      color="#313131">
-                      image
-                    </Text>
+                    <ReplyImage
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
                   ),
                   video: (
-                    <Text
-                      fontWeight={'600'}
-                      fontStyle={'italic'}
-                      fontSize={14}
-                      color="#313131">
-                      video
-                    </Text>
+                    <ReplyVideo
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
                   ),
                   audio: (
                     <Text

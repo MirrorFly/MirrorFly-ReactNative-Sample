@@ -21,6 +21,7 @@ const ChatMessage = props => {
   let isSame = currentUserJID === props?.message?.fromUserJid;
   let statusVisible = 'notSend';
   const { message, setLocalNav } = props;
+  console.log("messageChatMessage",message);
   const {
     msgBody = {},
     msgBody: {
@@ -35,9 +36,11 @@ const ChatMessage = props => {
     msgId,
     msgStatus,
   } = message;
+
   const [uploadStatus, setUploadStatus] = React.useState(4);
   const imageUrl = local_path ? local_path : file?.fileDetails?.image?.uri;
   const thumbURL = thumb_image ? getThumbBase64URL(thumb_image) : '';
+
   const [imgSrc, saveImage] = React.useState(thumbURL);
   const dispatch = useDispatch();
   const imageSize = props?.message?.msgBody?.media?.file_size || '';

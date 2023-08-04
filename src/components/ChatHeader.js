@@ -50,7 +50,7 @@ function ChatHeader(props) {
   };
 
   const handleReply = () => {
-    props.handleReply(props?.selectedMsgs[0].msgId);
+    props.handleReply(props?.selectedMsgs[0]);
   };
 
   const handleUserInfo = () => {

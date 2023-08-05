@@ -10,7 +10,7 @@ import {
   LocationIcon,
 } from '../common/Icons';
 import GalleryPickView from '../components/GalleryPickView';
-import { requestStoragePermission } from '../common/utils';
+import { mediaObjContructor, requestStoragePermission } from '../common/utils';
 import { Box, Text, useToast } from 'native-base';
 import UserInfo from '../components/UserInfo';
 import UsersTapBarInfo from '../components/UsersTapBarInfo';
@@ -124,8 +124,8 @@ function ChatScreen() {
     handleBackBtn,
   );
 
-  const getThumbImage = async image => {
-    const result = await ImageCompressor.compress(image.uri, {
+  const getThumbImage = async uri => {
+    const result = await ImageCompressor.compress(uri, {
       maxWidth: 200,
       maxHeight: 200,
       quality: 0.8,
@@ -134,6 +134,29 @@ function ChatScreen() {
     return response;
   };
 
+  const fileDetails = {
+    duration: null,
+    fileSize: 2265145,
+    filename: 'blue_alpine_a521_2021_f1_car_2_4k_hd_cars.jpg',
+    height: 2160,
+    modificationTimestamp: 1691217115866,
+    type: 'image/jpeg',
+    uri: 'file:///storage/emulated/0/Download/blue_alpine_a521_2021_f1_car_2_4k_hd_cars.jpg',
+    width: 3840,
+  };
+  const file = {
+    caption: '',
+    fileDetails: {
+      duration: null,
+      fileSize: 2265145,
+      filename: 'blue_alpine_a521_2021_f1_car_2_4k_hd_cars.jpg',
+      height: 2160,
+      modificationTimestamp: 1691217115866,
+      type: 'image/jpeg',
+      uri: 'file:///storage/emulated/0/Download/blue_alpine_a521_2021_f1_car_2_4k_hd_cars.jpg',
+      width: 3840,
+    },
+  };
   const sendMediaMessage = async (messageType, files, chatTypeSendMsg) => {
     let jidSendMediaMessage = fromUserJId;
     if (messageType === 'media') {
@@ -144,15 +167,12 @@ function ChatScreen() {
         const {
           caption = '',
           fileDetails = {},
-          fileDetails: {
-            image: { fileSize, filename, playableDuration, uri },
-            type,
-          } = {},
+          fileDetails: { fileSize, filename, playableDuration, uri, type } = {},
         } = file;
+        console.log(file, fileDetails, 'file fileDetails');
         const duration = setDurationSecToMilli(playableDuration);
         const msgType = type.split('/')[0];
-        const thumbImage =
-          msgType === 'image' ? await getThumbImage(fileDetails.image) : '';
+        const thumbImage = msgType === 'image' ? await getThumbImage(uri) : '';
         let fileOptions = {
           fileName: filename,
           fileSize: fileSize,
@@ -200,7 +220,7 @@ function ChatScreen() {
   const handleMedia = item => {
     const transformedArray = {
       caption: '',
-      fileDetails: item,
+      fileDetails: mediaObjContructor('CAMERA_ROLL', item),
     };
     setIsToastShowing(true);
     const size = validateFileSize(item.image, getType(item.type));

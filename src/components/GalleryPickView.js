@@ -83,7 +83,7 @@ function GalleryPickView(props) {
               {type === 'image' && (
                 <Image
                   resizeMode="contain"
-                  source={{ uri: item?.fileDetails?.image?.uri }}
+                  source={{ uri: item?.fileDetails?.uri }}
                   style={styles.tabContainer}
                 />
               )}
@@ -209,11 +209,11 @@ function GalleryPickView(props) {
               {selectedImages?.map((item, i) => (
                 <Pressable
                   activeOpacity={1}
-                  key={item?.fileDetails?.image.uri}
+                  key={item?.fileDetails?.uri}
                   style={styles.tabButton}
                   onPress={() => handleIndexChange(i)}>
                   <Image
-                    source={{ uri: item?.fileDetails?.image.uri }}
+                    source={{ uri: item?.fileDetails?.uri }}
                     style={[
                       styles.tabImage,
                       index === i && styles.selectedTabImage,

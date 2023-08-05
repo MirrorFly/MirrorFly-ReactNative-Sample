@@ -27,7 +27,7 @@ import {
 import Avathar from '../common/Avathar';
 import { SceneMap, TabView } from 'react-native-tab-view';
 import { getType } from './chat/common/fileUploadValidation';
-// import VideoPlayer from './Media/VideoPlayer';
+import VideoPlayer from './Media/VideoPlayer';
 
 function GalleryPickView(props) {
   const {
@@ -83,11 +83,11 @@ function GalleryPickView(props) {
               {type === 'image' && (
                 <Image
                   resizeMode="contain"
-                  source={{ uri: item?.fileDetails?.image?.uri }}
+                  source={{ uri: item?.fileDetails?.uri }}
                   style={styles.tabContainer}
                 />
               )}
-              {/* {type === 'video' && <VideoPlayer item={item} />} */}
+              {type === 'video' && <VideoPlayer item={item} />}
             </>
           );
           return scenes;
@@ -209,11 +209,11 @@ function GalleryPickView(props) {
               {selectedImages?.map((item, i) => (
                 <Pressable
                   activeOpacity={1}
-                  key={item?.fileDetails?.image.uri}
+                  key={item?.fileDetails?.uri}
                   style={styles.tabButton}
                   onPress={() => handleIndexChange(i)}>
                   <Image
-                    source={{ uri: item?.fileDetails?.image.uri }}
+                    source={{ uri: item?.fileDetails?.uri }}
                     style={[
                       styles.tabImage,
                       index === i && styles.selectedTabImage,

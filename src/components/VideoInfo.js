@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 import React from 'react';
-// import VideoPlayer from './Media/VideoPlayer';
+import VideoPlayer from './Media/VideoPlayer';
 
 const VideoInfo = props => {
   const { selectedMedia } = props;
@@ -26,7 +26,7 @@ const VideoInfo = props => {
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 1, justifyContent: 'center' }}>
-        {/* <VideoPlayer item={item} /> */}
+        <VideoPlayer item={item} />
       </View>
     </View>
   );

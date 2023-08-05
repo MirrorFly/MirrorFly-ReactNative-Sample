@@ -1,7 +1,7 @@
 import Video from 'react-native-video';
 import React, { useState } from 'react';
-import { Dimensions, Platform } from 'react-native';
-import MediaControls, { PLAYER_STATES } from 'react-native-media-controls';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
+import MediaControls, { PLAYER_STATES } from './media-controls';
 import { View } from 'native-base';
 import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import { useAppState } from '../../hooks';
@@ -51,9 +51,9 @@ const VideoPlayer = props => {
     setOnEnded(false);
   };
 
-  const onPaused = playerState => {
+  const onPaused = state => {
     setPaused(!paused);
-    setPlayerState(playerState);
+    setPlayerState(state);
   };
 
   const onReplay = () => {
@@ -103,8 +103,8 @@ const VideoPlayer = props => {
           // else setScreenType('content');
       }; */
 
-  const onSeeking = currentTime => {
-    setCurrentTime(currentTime);
+  const onSeeking = time => {
+    setCurrentTime(time);
     if (onEnded) {
       setPlayerState(PLAYER_STATES.PAUSED);
       setPaused(true);
@@ -170,34 +170,41 @@ const VideoPlayer = props => {
         )}
       </View>
       {!isLoading && (
-        <View
-          position={'absolute'}
-          top={mediaControlTop}
-          bottom={0}
-          left={0}
-          right={0}
-          justifyContent={'center'}>
-          <MediaControls
-            duration={duration}
-            isLoading={isLoading}
-            mainColor="#333"
-            onPaused={onPaused}
-            onReplay={onReplay}
-            onSeek={onSeek}
-            onSeeking={onSeeking}
-            fadeOutDelay={1100}
-            playerState={playerState}
-            progress={currentTime}
-            containerStyle={{
-              flex: 1,
-              backgroundColor: 'rgba(0,0,0,0.2)',
-              height: dimention,
-            }}
-          />
-        </View>
+        // <View
+        //   position={'absolute'}
+        //   top={mediaControlTop}
+        //   bottom={0}
+        //   left={0}
+        //   right={0}
+        //   justifyContent={'center'}>
+        <MediaControls
+          duration={duration}
+          isLoading={isLoading}
+          mainColor="#333"
+          onPaused={onPaused}
+          onReplay={onReplay}
+          onSeek={onSeek}
+          onSeeking={onSeeking}
+          fadeOutDelay={1100}
+          playerState={playerState}
+          progress={currentTime}
+          containerStyle={styles.mediaControlStyle}
+        />
+        // </View>
       )}
     </View>
   );
 };
 
 export default React.memo(VideoPlayer);
+
+const styles = StyleSheet.create({
+  mediaControlStyle: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.1)',
+  },
+});

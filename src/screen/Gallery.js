@@ -113,7 +113,6 @@ const Gallery = (props = {}) => {
       const photo = await CameraRoll.getAlbums({
         assetType: 'All',
       });
-      console.log('fetchGallery', photo);
       const galleryData = await Promise.allSettled(
         photo.map(async item => {
           const params = {

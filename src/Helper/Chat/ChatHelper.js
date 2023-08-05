@@ -33,7 +33,7 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
     caption = '',
     fileDetails: {
       replyTo = '',
-      image: { playableDuration = 0 },
+      playableDuration = 0,
       audioType = '',
       type,
     } = {},
@@ -56,16 +56,30 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
     ...(msgType === 'audio' && { audioType }),
   };
 
+  console.log(file, 'UI file');
+
   let response = {};
   if (msgType === 'file') {
-    response = await SDK.sendDocumentMessage(jid, file, fileOptions, replyTo);
+    response = await SDK.sendDocumentMessage(
+      jid,
+      file.fileDetails,
+      fileOptions,
+      replyTo,
+    );
   } else if (msgType === 'image') {
-    response = await SDK.sendImageMessage(jid, file, fileOptions, replyTo);
+    response = await SDK.sendImageMessage(
+      jid,
+      file.fileDetails,
+      fileOptions,
+      replyTo,
+    );
   } else if (msgType === 'video') {
     response = await SDK.sendVideoMessage(jid, file, fileOptions, replyTo);
   } else if (msgType === 'audio') {
     response = await SDK.sendAudioMessage(jid, file, fileOptions, replyTo);
   }
+
+  console.log(response, 'UI response');
   let updateObj = {
     msgId,
     statusCode: response.statusCode,

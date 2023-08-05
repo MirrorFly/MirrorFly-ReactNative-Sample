@@ -127,3 +127,37 @@ export const handleGalleryPickerMulti = async toast => {
     }
   }
 };
+
+export const mediaObjContructor = (_package, file) => {
+  let mediaObj = {
+    extension: '',
+    type: '',
+    modificationTimestamp: Date.now(),
+    uri: '',
+    fileSize: 0,
+    width: 0,
+    height: 0,
+    filename: '',
+    duration: 0,
+  };
+
+  switch (_package) {
+    case 'CAMERA_ROLL':
+      const { image, type } = file;
+      mediaObj.extension = getExtention(image.filename);
+      mediaObj.uri = image.uri;
+      mediaObj.fileSize = image.fileSize;
+      mediaObj.type = type;
+      mediaObj.width = image.width;
+      mediaObj.height = image.height;
+      mediaObj.duration = image.playableDuration;
+      mediaObj.filename = image.filename;
+      return mediaObj;
+    case 'DOCUMENT_PICKER':
+      return mediaObj;
+    case 'IMAGE_PICKER':
+      return mediaObj;
+    default:
+      break;
+  }
+};

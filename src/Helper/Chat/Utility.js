@@ -251,6 +251,12 @@ export const setDurationSecToMilli = seconds => {
 
 export const millisToMinutesAndSeconds = millis => {
   let minutes = Math.floor(millis / 60000);
-  let seconds = parseInt((millis % 60000) / 1000);
-  return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+  let seconds = parseInt((millis % 60000) / 1000, 10);
+  return (
+    (minutes < 10 ? '0' : '') +
+    minutes +
+    ':' +
+    (seconds < 10 ? '0' : '') +
+    seconds
+  );
 };

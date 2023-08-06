@@ -154,6 +154,11 @@ export const mediaObjContructor = (_package, file) => {
       mediaObj.filename = image.filename;
       return mediaObj;
     case 'DOCUMENT_PICKER':
+      mediaObj.extension = getExtention(file.name);
+      mediaObj.uri = `${file.fileCopyUri}`;
+      mediaObj.fileSize = file.size;
+      mediaObj.type = file.type;
+      mediaObj.filename = file.name;
       return mediaObj;
     case 'IMAGE_PICKER':
       return mediaObj;

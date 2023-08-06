@@ -102,6 +102,15 @@ function ChatScreen() {
         });
       }
       if (!validate && !size) {
+        const transformedArray = {
+          caption: '',
+          fileDetails: mediaObjContructor('DOCUMENT_PICKER', response),
+        };
+        let message = {
+          type: 'media',
+          content: [transformedArray],
+        };
+        handleSendMsg(message);
       }
     }
   };
@@ -208,6 +217,7 @@ function ChatScreen() {
       width: 3840,
     },
   };
+
   const sendMediaMessage = async (messageType, files, chatTypeSendMsg) => {
     let jidSendMediaMessage = fromUserJId;
     if (messageType === 'media') {
@@ -215,12 +225,13 @@ function ChatScreen() {
       for (let i = 0; i < files.length; i++) {
         const file = files[i],
           msgId = uuidv4();
+
         const {
           caption = '',
           fileDetails = {},
           fileDetails: { fileSize, filename, playableDuration, uri, type } = {},
         } = file;
-        console.log(file, fileDetails, 'file fileDetails');
+
         const duration = setDurationSecToMilli(playableDuration);
         const msgType = type.split('/')[0];
         const thumbImage = msgType === 'image' ? await getThumbImage(uri) : '';

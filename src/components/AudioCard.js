@@ -1,7 +1,7 @@
 import React from 'react';
 import { HStack, View, Text, Slider } from 'native-base';
 import { AudioMusicIcon, DownloadIcon } from '../common/Icons';
-import AudioPlayer from './Media/AudioPlayer';
+// import AudioPlayer from './Media/AudioPlayer';
 
 const AudioCard = props => {
   const durationInSeconds = props.data.msgBody.media.duration;
@@ -43,7 +43,7 @@ const AudioCard = props => {
             marginLeft: 10,
           }}>
           <DownloadIcon width="15" height="22" />
-          <AudioPlayer />
+          {/* <AudioPlayer /> */}
         </View>
         <View mx={'3'} mt={4} w="75%" maxW="140" style={sliderStyle}>
           <Slider defaultValue={60} colorScheme="#7285B5" size="sm">

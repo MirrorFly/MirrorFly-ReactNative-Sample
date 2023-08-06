@@ -5,6 +5,7 @@ import ProfileScreen from '../screen/ProfileScreen';
 import RecentScreen from '../screen/RecentScreen';
 import SplashScreen from '../screen/SplashScreen';
 import {
+  CAMERA,
   CHATSCREEN,
   CONTACTLIST,
   COUNTRYSCREEN,
@@ -17,6 +18,7 @@ import ChatScreen from '../screen/ChatScreen';
 import CountryList from '../screen/CountryList';
 import ContactScreen from '../screen/ContactScreen';
 import SettingScreen from '../screen/SettingScreen';
+import RNCamera from '../components/RNCamera';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +38,7 @@ function StackNavigationPage(props) {
       <Stack.Screen name={COUNTRYSCREEN} component={CountryList} />
       <Stack.Screen name={CONTACTLIST} component={ContactScreen} />
       <Stack.Screen name={SETTINGSCREEN} component={SettingScreen} />
+      <Stack.Screen name={CAMERA} component={RNCamera} />
     </Stack.Navigator>
   );
 }

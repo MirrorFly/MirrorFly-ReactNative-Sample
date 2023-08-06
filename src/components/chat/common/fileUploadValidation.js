@@ -1,3 +1,4 @@
+import { ALLOWED_DOCUMENT_TYPES } from '../../../constant';
 import config from './config';
 
 const {
@@ -37,8 +38,8 @@ const getMaxAllowedFileSize = mediaType => {
   return fileSize;
 };
 
-export const validateFileSize = (file, mediaTypeFile) => {
-  const filemb = Math.round(file.fileSize / 1024);
+export const validateFileSize = (size, mediaTypeFile) => {
+  const filemb = Math.round(size / 1024);
   const maxAllowedSize = getMaxAllowedFileSize(mediaTypeFile);
 
   if (filemb >= maxAllowedSize * 1024) {
@@ -48,4 +49,8 @@ export const validateFileSize = (file, mediaTypeFile) => {
     }
   }
   return '';
+};
+
+export const isValidFileType = type => {
+  return ALLOWED_DOCUMENT_TYPES.includes(type);
 };

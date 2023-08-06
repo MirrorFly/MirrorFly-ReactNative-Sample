@@ -69,6 +69,7 @@
     "react-native-compressor": "^1.6.1",
     "react-native-convert-ph-asset": "^1.0.3",
     "react-native-document-picker": "^9.0.1",
+    "react-native-file-viewer": "^2.1.5",
     "react-native-fs": "^2.18.0",
     "react-native-get-random-values": "^1.8.0",
     "react-native-image-crop-picker": "^0.38.0",

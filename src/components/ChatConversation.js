@@ -5,21 +5,14 @@ import {
   Platform,
   ImageBackground,
   Pressable,
-  // FlatList,
 } from 'react-native';
 import ChatHeader from '../components/ChatHeader';
 import { useSelector, useDispatch } from 'react-redux';
 import ChatInput from '../components/ChatInput';
 import { Stack, Text, View } from 'native-base';
-// import SDK from '../SDK/SDK';
 import { ClearTextIcon } from '../common/Icons';
-// import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
-// import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
-// import { updateMsgSeenStatus } from './chat/common/createMessage';
 import { resetGalleryData } from '../redux/Actions/GalleryAction';
-// import ChatMessage from './ChatMessage';
-// import { clearGalleryData } from '../redux/utils';
 import ChatConversationList from './ChatConversationList';
 
 const ChatConversation = React.memo(props => {
@@ -28,9 +21,7 @@ const ChatConversation = React.memo(props => {
   const chatInputRef = React.useRef(null);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
   const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
-  // const messages = useSelector(state => state.chatConversationData.data);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
-  // const [messageList, setMessageList] = React.useState([]);
   const [selectedMsgs, setSelectedMsgs] = React.useState([]);
   const [replyMsgs, setReplyMsgs] = React.useState();
   const [menuItems, setMenuItems] = React.useState([]);
@@ -130,37 +121,7 @@ const ChatConversation = React.memo(props => {
     }
   }, [selectedMsgs]);
 
-  // const getChatMessageHistoryById = id => {
-  //   if (messages[id]?.messages) {
-  //     return Object.values(messages[id]?.messages).reverse();
-  //   }
-  //   return [];
-  // };
-
-  // React.useEffect(() => {
-  //   if (fromUserJId) {
-  //     if (messages[getUserIdFromJid(fromUserJId)]) {
-  //       setMessageList(
-  //         getChatMessageHistoryById(getUserIdFromJid(fromUserJId)),
-  //       );
-  //     }
-  //   }
-  // }, [messages, fromUserJId]);
-
   React.useEffect(() => {
-    // (async () => {
-    //   if (messages[getUserIdFromJid(fromUserJId)]) {
-    //     setMessageList(
-    //       getChatMessageHistoryById(getUserIdFromJid(fromUserJId)),
-    //     );
-    //   } else {
-    //     let chatMessage = await SDK.getChatMessagesDB(fromUserJId);
-    //     if (chatMessage?.statusCode === 200) {
-    //       dispatch(addChatConversationHistory(chatMessage));
-    //     }
-    //   }
-    // })();
-    // clearGalleryData();
     dispatch(resetGalleryData());
   }, []);
 
@@ -171,10 +132,6 @@ const ChatConversation = React.memo(props => {
       setSelectedMsgs([...selectedMsgs, message]);
     }
   };
-
-  // React.useEffect(() => {
-  //   updateMsgSeenStatus();
-  // }, [messageList]);
 
   return (
     <KeyboardAvoidingView
@@ -192,11 +149,7 @@ const ChatConversation = React.memo(props => {
       />
       <ImageBackground
         source={require('../assets/chatBackgroud.png')}
-        style={{
-          flex: 1,
-          resizeMode: 'cover',
-          justifyContent: 'center',
-        }}>
+        style={styles.imageBackground}>
         <ChatConversationList
           setLocalNav={props.setLocalNav}
           fromUserJId={fromUserJId}
@@ -210,14 +163,7 @@ const ChatConversation = React.memo(props => {
             <View flexDirection={'row'} justifyContent={'flex-end'}>
               {replyMsgs ? (
                 <Pressable
-                  style={{
-                    padding: 5,
-                    justifyContent: 'flex-end',
-                    backgroundColor: '#FFF',
-                    borderRadius: 20,
-                    borderWidth: 1,
-                    borderColor: 'black',
-                  }}
+                  style={styles.removeReplyMessage}
                   onPress={handleRemove}>
                   <ClearTextIcon />
                 </Pressable>
@@ -281,6 +227,19 @@ const ChatConversation = React.memo(props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  imageBackground: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+  },
+  removeReplyMessage: {
+    padding: 5,
+    justifyContent: 'flex-end',
+    backgroundColor: '#FFF',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'black',
   },
 });
 

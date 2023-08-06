@@ -14,9 +14,9 @@ import { mediaObjContructor, requestStoragePermission } from '../common/utils';
 import { Box, Text, useToast } from 'native-base';
 import UserInfo from '../components/UserInfo';
 import UsersTapBarInfo from '../components/UsersTapBarInfo';
-import { BackHandler } from 'react-native';
+import { BackHandler, Platform } from 'react-native';
 import { RECENTCHATSCREEN } from '../constant';
-import { useSelector } from 'react-redux';
+import { batch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import {
   getMessageObjSender,
@@ -34,9 +34,13 @@ import { Image as ImageCompressor } from 'react-native-compressor';
 import RNFS from 'react-native-fs';
 import {
   getType,
+  isValidFileType,
   validateFileSize,
 } from '../components/chat/common/fileUploadValidation';
 import PostPreViewPage from '../components/PostPreViewPage';
+import DocumentPicker from 'react-native-document-picker';
+import { showToast } from '../Helper';
+import { Linking } from 'react-native';
 
 function ChatScreen() {
   const vCardData = useSelector(state => state.profile.profileDetails);
@@ -58,61 +62,123 @@ function ChatScreen() {
       setIsToastShowing(false);
     },
   };
+  const documentAttachmentTypes = React.useMemo(
+    () => [
+      DocumentPicker.types.pdf,
+      DocumentPicker.types.ppt,
+      DocumentPicker.types.pptx,
+      DocumentPicker.types.doc,
+      DocumentPicker.types.docx,
+      DocumentPicker.types.xls,
+      DocumentPicker.types.xlsx,
+      DocumentPicker.types.plainText,
+      DocumentPicker.types.zip,
+      DocumentPicker.types.csv,
+      // TODO: need to add rar file type
+    ],
+    [],
+  );
 
-  const attachmentMenuIcons = [
-    {
-      name: 'Document',
-      icon: DocumentIcon,
-      formatter: () => {},
-    },
-    {
-      name: 'Camera',
-      icon: CameraIcon,
-      formatter: () => {},
-    },
-    {
-      name: 'Gallery',
-      icon: GalleryIcon,
-      formatter: async () => {
-        let imageReadPermission = await requestStoragePermission();
-        console.log('imageReadPermission', imageReadPermission);
-        if (
-          imageReadPermission === 'granted' ||
-          imageReadPermission === 'limited'
-        ) {
-          setLocalNav('Gallery');
-        }
-        /** SavePicture()
-        RNimageGalleryLaunch()
-          const res = await handleGalleryPickerMulti(toast)
-          const transformedArray = res?.map((obj, index) => {
-            return {
-              caption: '',
-              image: obj
-            };
-          });
-          setSelectedImages(transformedArray)
-          if (res?.length) {
-            setLocalNav('GalleryPickView')
-          } */
+  const attachmentMenuIcons = React.useMemo(
+    () => [
+      {
+        name: 'Document',
+        icon: DocumentIcon,
+        formatter: () => {
+          // TODO: check for permission for external storage
+
+          // updating the SDK flag to keep the connection Alive when app goes background because of document picker
+          SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
+          DocumentPicker.pickSingle({
+            type: documentAttachmentTypes,
+            copyTo:
+              Platform.OS === 'android'
+                ? 'cachesDirectory'
+                : 'documentDirectory',
+          })
+            .then(file => {
+              // updating the SDK flag back to false to behave as usual
+              SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+              console.log(file);
+
+              // TODO: check "react-native-file-viewer" package to open the file with the uri
+
+              // Validating the file type and size
+              if (!isValidFileType(file.type)) {
+                const toastOptions = {
+                  id: 'document-not-supported-toast',
+                  duration: 2500,
+                  avoidKeyboard: true,
+                };
+                showToast(toastOptions, 'document type not supported');
+                return;
+              }
+              const error = validateFileSize(file.size, 'file');
+              if (error) {
+                const toastOptions = {
+                  id: 'document-too-large-toast',
+                  duration: 2500,
+                  avoidKeyboard: true,
+                };
+                showToast(toastOptions, error);
+                return;
+              }
+
+              // TODO: prepare the object and pass it to the sendMessage function
+              const updatedFile = {
+                fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
+              };
+              console.log('updatedFile', updatedFile);
+              const messageData = {
+                type: 'media',
+                content: [updatedFile],
+              };
+              handleSendMsg(messageData);
+            })
+            .catch(err => {
+              // updating the SDK flag back to false to behave as usual
+              SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+              console.log('Error from documen picker', err);
+            });
+        },
       },
-    },
-    {
-      name: 'Audio',
-      icon: HeadSetIcon,
-      formatter: () => {},
-    },
-    {
-      name: 'Contact',
-      icon: ContactIcon,
-      formatter: () => {},
-    },
-    {
-      name: 'Location',
-      icon: LocationIcon,
-      formatter: () => {},
-    },
-  ];
+      {
+        name: 'Camera',
+        icon: CameraIcon,
+        formatter: () => {},
+      },
+      {
+        name: 'Gallery',
+        icon: GalleryIcon,
+        formatter: async () => {
+          let imageReadPermission = await requestStoragePermission();
+          console.log('imageReadPermission', imageReadPermission);
+          if (
+            imageReadPermission === 'granted' ||
+            imageReadPermission === 'limited'
+          ) {
+            setLocalNav('Gallery');
+          }
+        },
+      },
+      {
+        name: 'Audio',
+        icon: HeadSetIcon,
+        formatter: () => {},
+      },
+      {
+        name: 'Contact',
+        icon: ContactIcon,
+        formatter: () => {},
+      },
+      {
+        name: 'Location',
+        icon: LocationIcon,
+        formatter: () => {},
+      },
+    ],
+    [],
+  );
 
   const handleBackBtn = () => {
     localNav === 'CHATCONVERSATION' && RootNav.navigate(RECENTCHATSCREEN);
@@ -134,7 +200,7 @@ function ChatScreen() {
     return response;
   };
 
-  const fileDetails = {
+  /** const fileDetails = {
     duration: null,
     fileSize: 2265145,
     filename: 'blue_alpine_a521_2021_f1_car_2_4k_hd_cars.jpg',
@@ -156,7 +222,7 @@ function ChatScreen() {
       uri: 'file:///storage/emulated/0/Download/blue_alpine_a521_2021_f1_car_2_4k_hd_cars.jpg',
       width: 3840,
     },
-  };
+  }; */
   const sendMediaMessage = async (messageType, files, chatTypeSendMsg) => {
     let jidSendMediaMessage = fromUserJId;
     if (messageType === 'media') {
@@ -205,8 +271,10 @@ function ChatScreen() {
             ? { userJid: jidSendMediaMessage }
             : { groupJid: jidSendMediaMessage }),
         };
-        store.dispatch(addChatConversationHistory(dispatchData));
-        store.dispatch(updateRecentChat(recentChatObj));
+        batch(() => {
+          store.dispatch(addChatConversationHistory(dispatchData));
+          store.dispatch(updateRecentChat(recentChatObj));
+        });
       }
       setSelectedImages([]);
     }
@@ -223,7 +291,7 @@ function ChatScreen() {
       fileDetails: mediaObjContructor('CAMERA_ROLL', item),
     };
     setIsToastShowing(true);
-    const size = validateFileSize(item.image, getType(item.type));
+    const size = validateFileSize(item.image.fileSize, getType(item.type));
     if (size && !isToastShowing) {
       return toast.show({
         ...toastConfig,
@@ -275,7 +343,7 @@ function ChatScreen() {
       fileDetails: item,
     };
     setselectedSingle(false);
-    const size = validateFileSize(item.image, getType(item.type));
+    const size = validateFileSize(item.image.fileSize, getType(item.type));
     const isImageSelected = selectedImages.some(
       selectedItem => selectedItem.fileDetails?.image?.uri === item?.image.uri,
     );
@@ -349,8 +417,10 @@ function ChatScreen() {
         data: [conversationChatObj],
         ...(isSingleChat('chat') ? { userJid: jid } : { groupJid: jid }), // check this when group works
       };
-      store.dispatch(addChatConversationHistory(dispatchData));
-      store.dispatch(updateRecentChat(recentChatObj));
+      batch(() => {
+        store.dispatch(addChatConversationHistory(dispatchData));
+        store.dispatch(updateRecentChat(recentChatObj));
+      });
       SDK.sendTextMessage(jid, message.content, msgId);
     }
   };

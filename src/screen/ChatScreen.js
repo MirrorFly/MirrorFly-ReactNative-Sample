@@ -32,14 +32,13 @@ import {
 import {
   handleAudioPickerSingle,
   requestAudioStoragePermission,
+  mediaObjContructor,
   requestStoragePermission,
 } from '../common/utils';
 import ChatConversation from '../components/ChatConversation';
 import GalleryPickView from '../components/GalleryPickView';
 import MessageInfo from '../components/MessageInfo';
 import PostPreViewPage from '../components/PostPreViewPage';
-import { mediaObjContructor } from '../common/utils';
-import { Box, Text, useToast } from 'native-base';
 import UserInfo from '../components/UserInfo';
 import UsersTapBarInfo from '../components/UsersTapBarInfo';
 import {
@@ -100,6 +99,8 @@ function ChatScreen() {
             );
           },
         });
+      }
+      if (!validate && !size) {
       }
     }
   };

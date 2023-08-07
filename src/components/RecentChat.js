@@ -142,6 +142,32 @@ export default function RecentChat(props) {
                           </Text>
                         </HStack>
                       ),
+                      file: (
+                        <HStack pl="1" alignItems={'center'}>
+                          <Icon as={() => VideoSmallIcon('#767676')} />
+                          <Text
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                            px={1}
+                            color="#767676"
+                            _dark={{ color: '#767676' }}>
+                            File
+                          </Text>
+                        </HStack>
+                      ),
+                      audio: (
+                        <HStack pl="1" alignItems={'center'}>
+                          <Icon as={() => VideoSmallIcon('#767676')} />
+                          <Text
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                            px={1}
+                            color="#767676"
+                            _dark={{ color: '#767676' }}>
+                            Audio
+                          </Text>
+                        </HStack>
+                      ),
                     }[item.msgBody.message_type]
                   }
                 </HStack>

@@ -15,7 +15,7 @@ import {
   Image,
 } from 'react-native';
 import { RNCamera } from 'react-native-camera';
-import { LeftArrowIcon } from 'common/Icons';
+import { LeftArrowIcon, imageIcon } from 'common/Icons';
 import { CHATCONVERSATION } from '../constant';
 import { millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
 import RNFS from 'react-native-fs';
@@ -25,6 +25,10 @@ import flashOnIcon from 'assets/ic_flash_on.png';
 import flashOffIcon from 'assets/ic_flash_off.png';
 import flashAutoIcon from 'assets/ic_flash_auto.png';
 import flipCameraIcon from 'assets/ic_flip_camera_android.png';
+import { validateFileSize } from './chat/common/fileUploadValidation';
+import { getType } from './chat/common/fileUploadValidation';
+
+
 
 const Camera = props => {
   const { setLocalNav = () => {}, setSelectedImages } = props;
@@ -116,7 +120,8 @@ const Camera = props => {
           setCaptureTime(prevTime => prevTime + 1);
         }, 1000);
         const videoInfo = await cameraRef.current.recordAsync();
-        setVideoData(videoInfo);
+        const fileInfo = await RNFS.stat(videoInfo.uri);
+        setVideoData({ ...videoInfo, ...fileInfo });
       }
     } catch (error) {
       console.log('startRecording', error);
@@ -126,13 +131,16 @@ const Camera = props => {
   const handlePressIn = () => {
     setTimeout(() => {
       setIsHolding(true);
-    }, 1500);
+    }, 1000);
   };
 
   const handlePressOut = () => {
     if (isHolding) {
       cameraRef.current.stopRecording();
+      clearInterval(recordingIntervalRef.current)
+      setIsHolding(false)
       setIsCapturing(false);
+      setCaptureTime(0)
     }
     if (!isHolding) {
       capturePhoto();
@@ -154,7 +162,14 @@ const Camera = props => {
       caption: '',
       fileDetails: mediaObjContructor('RN_CAMERA', combinedData),
     };
-    setData(imageFile);
+    const size = validateFileSize(
+      imageFile.fileDetails,
+      getType(imageFile.fileDetails.type),
+    );
+
+    if (!size && imageFile.fileDetails.duration > 1000) {
+      // setData(imageFile);
+    }
   };
 
   const toggleFlashMode = () => {
@@ -189,10 +204,14 @@ const Camera = props => {
             borderRadius="full"
           />
           {captureTime > 0 && (
-            <Text color="#fff">
-              {millisToMinutesAndSeconds(captureTime * 1000)}
-            </Text>
+            <HStack alignItems={'center'}>
+              <View style={styles.recording} />
+              <Text px="1" color="#fff">
+                {millisToMinutesAndSeconds(captureTime * 1000)}
+              </Text>
+            </HStack>
           )}
+          <View />
         </HStack>
       </View>
       <View style={styles.bottomBtns}>
@@ -249,14 +268,14 @@ const styles = StyleSheet.create({
   },
   topBtns: {
     position: 'absolute',
-    top: 30,
+    top: 10,
     left: 0,
     right: 0,
     paddingHorizontal: 20,
   },
   bottomBtns: {
     position: 'absolute',
-    bottom: 40,
+    bottom: 30,
     left: 0,
     right: 0,
     paddingHorizontal: 20,
@@ -265,6 +284,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
+    marginTop: 50,
+    marginBottom: 110,
   },
   captureContainer: {
     borderWidth: 2,
@@ -280,6 +301,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     width: 45,
     height: 45,
+  },
+  recording: {
+    borderRadius: 50,
+    backgroundColor: 'red',
+    width: 10,
+    height: 10,
   },
   flashIcon: {
     width: 25,

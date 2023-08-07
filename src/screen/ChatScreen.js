@@ -38,6 +38,7 @@ import {
 } from '../components/chat/common/fileUploadValidation';
 import PostPreViewPage from '../components/PostPreViewPage';
 import Camera from '../components/RNCamera';
+import CameraPickView from '../components/CameraPickView';
 
 function ChatScreen() {
   const vCardData = useSelector(state => state.profile.profileDetails);
@@ -407,7 +408,20 @@ function ChatScreen() {
             />
           ),
           CAMERAVIEW: (
-            <Camera setLocalNav={setLocalNav} selectedImages={selectedImages} />
+            <Camera
+              setLocalNav={setLocalNav}
+              selectedImages={selectedImages}
+              setSelectedImages={setSelectedImages}
+            />
+          ),
+          CameraPickView: (
+            <CameraPickView
+              setSelectedImages={setSelectedImages}
+              selectedSingle={selectedSingle}
+              selectedImages={selectedImages}
+              setLocalNav={setLocalNav}
+              handleSendMsg={handleSendMsg}
+            />
           ),
           PostPreView: (
             <PostPreViewPage

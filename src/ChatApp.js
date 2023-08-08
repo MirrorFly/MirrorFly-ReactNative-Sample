@@ -43,6 +43,7 @@ const RootNavigation = () => {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const dispatch = useDispatch();
+  const safeAreaBgColor = useSelector(state => state.safeArea.color);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
   React.useEffect(() => {
     setIsLoading(true);
@@ -76,7 +77,7 @@ const RootNavigation = () => {
 
   return (
     <>
-      <Box safeAreaTop bg="#f2f2f2" />
+      <Box safeAreaTop backgroundColor={safeAreaBgColor} />
       <NavigationContainer
         ref={navigationRef}
         theme={
@@ -90,7 +91,7 @@ const RootNavigation = () => {
           <StackNavigationPage InitialValue={initialRouteValue} />
         )}
       </NavigationContainer>
-      <Box safeAreaBottom />
+      <Box safeAreaBottom backgroundColor={safeAreaBgColor} />
     </>
   );
 };

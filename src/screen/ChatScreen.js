@@ -33,6 +33,7 @@ import {
   handleAudioPickerSingle,
   requestAudioStoragePermission,
   mediaObjContructor,
+  requestCameraPermission,
   requestStoragePermission,
 } from '../common/utils';
 import ChatConversation from '../components/ChatConversation';
@@ -53,6 +54,9 @@ import store from '../redux/store';
 import SavePicture from './Gallery';
 import Camera from '../components/RNCamera';
 import Sound from 'react-native-sound';
+import CameraPickView from '../components/CameraPickView';
+import { openSettings } from 'react-native-permissions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function ChatScreen() {
   const vCardData = useSelector(state => state.profile.profileDetails);
@@ -140,14 +144,37 @@ function ChatScreen() {
     {
       name: 'Camera',
       icon: CameraIcon,
-      formatter: () => {
-        setLocalNav('CAMERAVIEW');
+      formatter: async () => {
+        let cameraPermission = await requestCameraPermission();
+        let imageReadPermission = await requestStoragePermission();
+        const camera_permission = await AsyncStorage.getItem(
+          'camera_permission',
+        );
+        console.log(
+          cameraPermission,
+          imageReadPermission,
+          'cameraPermission, imageReadPermission',
+        );
+        AsyncStorage.setItem('camera_permission', 'true');
+        if (
+          (cameraPermission === 'granted' || cameraPermission === 'limited') &&
+          (imageReadPermission === 'granted' ||
+            imageReadPermission === 'limited')
+        ) {
+          setLocalNav('CAMERAVIEW');
+        } else if (camera_permission) {
+          openSettings();
+        }
       },
     },
     {
       name: 'Gallery',
       icon: GalleryIcon,
       formatter: async () => {
+        const storage_permission = await AsyncStorage.getItem(
+          'storage_permission',
+        );
+        AsyncStorage.setItem('storage_permission', 'true');
         let imageReadPermission = await requestStoragePermission();
         console.log('imageReadPermission', imageReadPermission);
         if (
@@ -155,6 +182,8 @@ function ChatScreen() {
           imageReadPermission === 'limited'
         ) {
           setLocalNav('Gallery');
+        } else if (storage_permission) {
+          openSettings();
         }
         /** SavePicture()
         RNimageGalleryLaunch()
@@ -323,15 +352,15 @@ function ChatScreen() {
   };
 
   const handleSelectImage = item => {
-    setIsToastShowing(true);
     const transformedArray = {
       caption: '',
-      fileDetails: item,
+      fileDetails: mediaObjContructor('CAMERA_ROLL', item),
     };
+    setIsToastShowing(true);
     setselectedSingle(false);
     const size = validateFileSize(item.image, getType(item.type));
     const isImageSelected = selectedImages.some(
-      selectedItem => selectedItem.fileDetails?.image?.uri === item?.image.uri,
+      selectedItem => selectedItem.fileDetails?.uri === item?.image.uri,
     );
     if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
       return toast.show({
@@ -366,8 +395,7 @@ function ChatScreen() {
       if (isImageSelected) {
         setSelectedImages(prevArray =>
           prevArray.filter(
-            selectedItem =>
-              selectedItem.fileDetails?.image.uri !== item?.image?.uri,
+            selectedItem => selectedItem.fileDetails?.uri !== item?.image?.uri,
           ),
         );
       } else {
@@ -421,6 +449,8 @@ function ChatScreen() {
     };
   }, []);
 
+  console.log(selectedImages, 'selectedImages');
+
   return (
     <>
       {
@@ -463,7 +493,20 @@ function ChatScreen() {
             />
           ),
           CAMERAVIEW: (
-            <Camera setLocalNav={setLocalNav} selectedImages={selectedImages} />
+            <Camera
+              setLocalNav={setLocalNav}
+              selectedImages={selectedImages}
+              setSelectedImages={setSelectedImages}
+            />
+          ),
+          CameraPickView: (
+            <CameraPickView
+              setSelectedImages={setSelectedImages}
+              selectedSingle={selectedSingle}
+              selectedImages={selectedImages}
+              setLocalNav={setLocalNav}
+              handleSendMsg={handleSendMsg}
+            />
           ),
           PostPreView: (
             <PostPreViewPage

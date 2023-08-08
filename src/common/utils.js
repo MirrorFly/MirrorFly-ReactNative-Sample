@@ -3,7 +3,7 @@ import { Box, Text } from 'native-base';
 import {
   request,
   PERMISSIONS,
-  requestMultiple,
+  requestMultiple
 } from 'react-native-permissions';
 import { Platform } from 'react-native';
 
@@ -53,11 +53,23 @@ export const handleAudioPickerSingle = async () => {
 export const requestCameraPermission = async () => {
   switch (true) {
     case Platform.OS === 'ios':
-      return await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
-    case Platform.OS === 'android' && Platform.Version <= 32: // Android Vresion below 29
-      return await request(PERMISSIONS.ANDROID.CAMERA);
-    default:
-      return await request(PERMISSIONS.ANDROID.CAMERA); // Android Vresion 30 and above
+      const ios_permit = await requestMultiple([
+        PERMISSIONS.IOS.CAMERA,
+        PERMISSIONS.IOS.MICROPHONE,
+      ]);
+      return (
+        ios_permit['ios.permission.CAMERA'] ||
+        ios_permit['ios.permission.MICROPHONE']
+      );
+    case Platform.OS === 'android':
+      const permited = await requestMultiple([
+        PERMISSIONS.ANDROID.CAMERA,
+        PERMISSIONS.ANDROID.RECORD_AUDIO,
+      ]);
+      return (
+        permited['android.permission.CAMERA'] ||
+        permited['android.permission.RECORD_AUDIO']
+      );
   }
 };
 
@@ -162,6 +174,16 @@ export const mediaObjContructor = (_package, file) => {
       mediaObj.duration = file.duration || 0;
       return mediaObj;
     case 'IMAGE_PICKER':
+      return mediaObj;
+    case 'RN_CAMERA':
+      mediaObj.extension = getExtention(file.uri);
+      mediaObj.uri = file.uri;
+      mediaObj.fileSize = file.size;
+      mediaObj.width = file.width;
+      mediaObj.height = file.height;
+      mediaObj.filename = file.uri.split('/').pop();
+      mediaObj.duration = file.duration || 0;
+      mediaObj.type = file.type + '/' + mediaObj.extension;
       return mediaObj;
     default:
       break;

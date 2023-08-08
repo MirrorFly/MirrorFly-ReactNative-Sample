@@ -10,9 +10,7 @@ const screenWidth = Dimensions.get('window').width;
 
 const VideoPlayer = props => {
   const { item: { fileDetails = {} } = {} } = props;
-  const {
-    image: { uri, height, width },
-  } = fileDetails;
+  const { uri, height, width } = fileDetails;
   const videoPlayer = React.useRef(null);
   const [videoUri, setVideoUri] = useState('');
   const [currentTime, setCurrentTime] = useState(0);

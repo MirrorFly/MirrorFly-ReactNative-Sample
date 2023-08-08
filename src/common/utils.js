@@ -6,6 +6,7 @@ import {
   requestMultiple,
 } from 'react-native-permissions';
 import { Platform } from 'react-native';
+import SDK from 'SDK/SDK';
 
 const toastConfig = {
   duration: 2500,
@@ -42,10 +43,12 @@ export const handleAudioPickerSingle = async () => {
       copyTo:
         Platform.OS === 'android' ? 'documentDirectory' : 'cachesDirectory',
     });
+    SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
     if (res) {
       return res;
     }
   } catch (error) {
+    SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
     console.log(error);
   }
 };

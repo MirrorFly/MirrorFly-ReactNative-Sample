@@ -118,6 +118,7 @@ function ChatScreen() {
     let MediaPermission = await requestAudioStoragePermission();
     const size_toast = 'size_toast';
     if (MediaPermission === 'granted' || MediaPermission === 'limited') {
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       let response = await handleAudioPickerSingle();
       let _validate = validation(response);
       let file = {

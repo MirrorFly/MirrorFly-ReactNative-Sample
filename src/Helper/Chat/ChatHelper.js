@@ -1,4 +1,4 @@
-import { SDK } from '../../SDK';
+import SDK from 'SDK/SDK';
 import {
   CHAT_TYPE_GROUP,
   CHAT_TYPE_SINGLE,

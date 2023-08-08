@@ -11,7 +11,6 @@ import React from 'react';
 import { BackHandler } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import RNFS from 'react-native-fs';
-import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { isSingleChat } from '../Helper/Chat/ChatHelper';
 import {
@@ -20,7 +19,7 @@ import {
   setDurationSecToMilli,
 } from '../Helper/Chat/Utility';
 import * as RootNav from '../Navigation/rootNavigation';
-import { SDK } from '../SDK';
+import { SDK } from '../SDK/SDK';
 import {
   CameraIcon,
   ContactIcon,
@@ -42,21 +41,28 @@ import MessageInfo from '../components/MessageInfo';
 import PostPreViewPage from '../components/PostPreViewPage';
 import UserInfo from '../components/UserInfo';
 import UsersTapBarInfo from '../components/UsersTapBarInfo';
+import { Alert, Platform } from 'react-native';
+import { RECENTCHATSCREEN } from '../constant';
+import { batch, useSelector } from 'react-redux';
+import { updateRecentChat } from '../redux/Actions/RecentChatAction';
+import store from '../redux/store';
+import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
+import SavePicture from './Gallery';
 import {
   getType,
+  isValidFileType,
   validateFileSize,
   validation,
 } from '../components/chat/common/fileUploadValidation';
-import { RECENTCHATSCREEN } from '../constant';
-import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
-import { updateRecentChat } from '../redux/Actions/RecentChatAction';
-import store from '../redux/store';
-import SavePicture from './Gallery';
 import Camera from '../components/RNCamera';
 import Sound from 'react-native-sound';
 import CameraPickView from '../components/CameraPickView';
 import { openSettings } from 'react-native-permissions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import DocumentPicker from 'react-native-document-picker';
+import { showToast } from '../Helper';
+import { DOCUMENT_FORMATS } from '../Helper/Chat/Constant';
+import { PERMISSIONS } from 'react-native-permissions';
 
 function ChatScreen() {
   const vCardData = useSelector(state => state.profile.profileDetails);
@@ -78,6 +84,22 @@ function ChatScreen() {
       setIsToastShowing(false);
     },
   };
+  const documentAttachmentTypes = React.useMemo(
+    () => [
+      DocumentPicker.types.pdf,
+      DocumentPicker.types.ppt,
+      DocumentPicker.types.pptx,
+      DocumentPicker.types.doc,
+      DocumentPicker.types.docx,
+      DocumentPicker.types.xls,
+      DocumentPicker.types.xlsx,
+      DocumentPicker.types.plainText,
+      DocumentPicker.types.zip,
+      DocumentPicker.types.csv,
+      // TODO: need to add rar file type
+    ],
+    [],
+  );
 
   const getAudioDuration = async path => {
     return new Promise((resolve, reject) => {
@@ -139,7 +161,60 @@ function ChatScreen() {
     {
       name: 'Document',
       icon: DocumentIcon,
-      formatter: () => {},
+      formatter: () => {
+        // TODO: check for permission for external storage
+        // if (PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE || WRITE_EXTERNAL_STORAGE)
+        //   PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
+        // PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE;
+
+        // updating the SDK flag to keep the connection Alive when app goes background because of document picker
+        SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
+        DocumentPicker.pickSingle({
+          type: documentAttachmentTypes,
+          copyTo:
+            Platform.OS === 'android' ? 'cachesDirectory' : 'documentDirectory',
+        })
+          .then(file => {
+            // updating the SDK flag back to false to behave as usual
+            SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+            console.log(file);
+
+            // Validating the file type and size
+            if (!isValidFileType(file.type)) {
+              Alert.alert(
+                'Mirrorfly',
+                'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
+              );
+              return;
+            }
+            const error = validateFileSize(file.size, 'file');
+            if (error) {
+              const toastOptions = {
+                id: 'document-too-large-toast',
+                duration: 2500,
+                avoidKeyboard: true,
+              };
+              showToast(error, toastOptions);
+              return;
+            }
+
+            // preparing the object and passing it to the sendMessage function
+            const updatedFile = {
+              fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
+            };
+            console.log('updatedFile', updatedFile);
+            const messageData = {
+              type: 'media',
+              content: [updatedFile],
+            };
+            handleSendMsg(messageData);
+          })
+          .catch(err => {
+            // updating the SDK flag back to false to behave as usual
+            SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+            console.log('Error from documen picker', err);
+          });
+      },
     },
     {
       name: 'Camera',
@@ -239,7 +314,7 @@ function ChatScreen() {
     return response;
   };
 
-  const fileDetails = {
+  /** const fileDetails = {
     duration: null,
     fileSize: 2265145,
     filename: 'blue_alpine_a521_2021_f1_car_2_4k_hd_cars.jpg',
@@ -261,8 +336,7 @@ function ChatScreen() {
       uri: 'file:///storage/emulated/0/Download/blue_alpine_a521_2021_f1_car_2_4k_hd_cars.jpg',
       width: 3840,
     },
-  };
-
+  }; */
   const sendMediaMessage = async (messageType, files, chatTypeSendMsg) => {
     let jidSendMediaMessage = fromUserJId;
     if (messageType === 'media') {
@@ -312,8 +386,10 @@ function ChatScreen() {
             ? { userJid: jidSendMediaMessage }
             : { groupJid: jidSendMediaMessage }),
         };
-        store.dispatch(addChatConversationHistory(dispatchData));
-        store.dispatch(updateRecentChat(recentChatObj));
+        batch(() => {
+          store.dispatch(addChatConversationHistory(dispatchData));
+          store.dispatch(updateRecentChat(recentChatObj));
+        });
       }
       setSelectedImages([]);
     }
@@ -330,7 +406,7 @@ function ChatScreen() {
       fileDetails: mediaObjContructor('CAMERA_ROLL', item),
     };
     setIsToastShowing(true);
-    const size = validateFileSize(item.image, getType(item.type));
+    const size = validateFileSize(item.image.fileSize, getType(item.type));
     if (size && !isToastShowing) {
       return toast.show({
         ...toastConfig,
@@ -358,7 +434,7 @@ function ChatScreen() {
     };
     setIsToastShowing(true);
     setselectedSingle(false);
-    const size = validateFileSize(item.image, getType(item.type));
+    const size = validateFileSize(item.image.fileSize, getType(item.type));
     const isImageSelected = selectedImages.some(
       selectedItem => selectedItem.fileDetails?.uri === item?.image.uri,
     );
@@ -431,8 +507,10 @@ function ChatScreen() {
         data: [conversationChatObj],
         ...(isSingleChat('chat') ? { userJid: jid } : { groupJid: jid }), // check this when group works
       };
-      store.dispatch(addChatConversationHistory(dispatchData));
-      store.dispatch(updateRecentChat(recentChatObj));
+      batch(() => {
+        store.dispatch(addChatConversationHistory(dispatchData));
+        store.dispatch(updateRecentChat(recentChatObj));
+      });
       SDK.sendTextMessage(jid, message.content, msgId);
     }
   };

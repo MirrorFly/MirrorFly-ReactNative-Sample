@@ -1,10 +1,11 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+import FileViewer from 'react-native-file-viewer';
 import { SandTimer } from '../common/Icons';
 import ImageCard from './ImageCard';
 import VideoCard from './VideoCard';
-import PdfCard from './PdfCard';
+import DocumentMessageCard from './DocumentMessageCard';
 import AudioCard from './AudioCard';
 import MapCard from './MapCard';
 import ContactCard from './ContactCard';
@@ -14,6 +15,7 @@ import { Box, HStack, Icon, Pressable, View } from 'native-base';
 import { uploadFileToSDK } from '../Helper/Chat/ChatHelper';
 import { getThumbBase64URL } from '../Helper/Chat/Utility';
 import { singleChatSelectedMediaImage } from '../redux/Actions/SingleChatImageAction';
+import { showToast } from '../Helper';
 
 const ChatMessage = props => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
@@ -118,11 +120,33 @@ const ChatMessage = props => {
 
   const handleMessageObj = () => {
     if (
-      props.message.msgBody.media.local_path ||
-      props.message.msgBody?.media?.file?.fileDetails?.uri
+      ['image', 'video'].includes(message?.msgBody?.message_type) &&
+      (props.message?.msgBody?.media?.local_path ||
+        props.message?.msgBody?.media?.file?.fileDetails?.uri)
     ) {
       dispatch(singleChatSelectedMediaImage(props.message));
       setLocalNav('PostPreView');
+    } else if (
+      message?.msgBody?.message_type === 'file' &&
+      (props.message?.msgBody?.media?.local_path ||
+        props.message?.msgBody?.media?.file?.fileDetails?.uri)
+    ) {
+      FileViewer.open(
+        props.message?.msgBody?.media?.local_path ||
+          props.message?.msgBody?.media?.file?.fileDetails?.uri,
+        {
+          showOpenWithDialog: true,
+        }
+      )
+        .then(res => {
+          console.log('Document opened externally', res);
+        })
+        .catch(err => {
+          console.log('Error while opening Document', err);
+          showToast('No apps available to open this file', {
+            id: 'no-supported-app-to-open-file',
+          });
+        });
     }
   };
 
@@ -161,7 +185,7 @@ const ChatMessage = props => {
                           data={{
                             message: message?.msgBody?.message,
                             timeStamp: getConversationHistoryTime(
-                              props?.message?.createdAt,
+                              props?.message?.createdAt
                             ),
                             status: getMessageStatus(props?.message?.msgStatus),
                           }}
@@ -175,7 +199,7 @@ const ChatMessage = props => {
                           isSender={isSame}
                           status={getMessageStatus(message?.msgStatus)}
                           timeStamp={getConversationHistoryTime(
-                            message?.createdAt,
+                            message?.createdAt
                           )}
                           uploadStatus={uploadStatus}
                           fileSize={fileSize}
@@ -191,30 +215,32 @@ const ChatMessage = props => {
                           uploadStatus={uploadStatus}
                           fileSize={fileSize}
                           timeStamp={getConversationHistoryTime(
-                            message?.createdAt,
+                            message?.createdAt
                           )}
                         />
                       ),
                       audio: (
-                        <View style={{ flex: 1 }}>
+                        <View style={styles.flex1}>
                           <AudioCard
                             messageObject={message}
                             isSender={isSame}
                             status={getMessageStatus(message?.msgStatus)}
                             timeStamp={getConversationHistoryTime(
-                              message?.createdAt,
+                              message?.createdAt
                             )}
                           />
                         </View>
                       ),
                       file: (
-                        <PdfCard
-                          data={message}
+                        <DocumentMessageCard
+                          message={message}
                           status={getMessageStatus(message?.msgStatus)}
                           timeStamp={getConversationHistoryTime(
-                            message?.createdAt,
+                            message?.createdAt
                           )}
                           fileSize={fileSize}
+                          isSender={isSame}
+                          mediaUrl={imageUrl}
                         />
                       ),
                       contact: (
@@ -222,7 +248,7 @@ const ChatMessage = props => {
                           data={message}
                           status={getMessageStatus(message?.msgStatus)}
                           timeStamp={getConversationHistoryTime(
-                            message?.createdAt,
+                            message?.createdAt
                           )}
                         />
                       ),
@@ -231,7 +257,7 @@ const ChatMessage = props => {
                           data={message}
                           status={getMessageStatus(message?.msgStatus)}
                           timeStamp={getConversationHistoryTime(
-                            message?.createdAt,
+                            message?.createdAt
                           )}
                         />
                       ),
@@ -267,4 +293,5 @@ const styles = StyleSheet.create({
   seen: {
     backgroundColor: '#66E824',
   },
+  flex1: { flex: 1 },
 });

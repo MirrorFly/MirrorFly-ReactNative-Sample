@@ -5,6 +5,7 @@ export const RECENTCHATSCREEN = 'RECENTCHATSCREEN';
 export const COUNTRYSCREEN = 'COUNTRYSCREEN';
 export const USERLISTSCREEN = 'USERLISTSCREEN';
 export const CHATSCREEN = 'CHATSCREEN';
+export const CHATSCREEN_MAIN = 'CHATSCREEN_MAIN';
 export const PROFILESCREEN = 'PROFILESCREEN';
 export const CONTACTLIST = 'CONTACTLIST';
 export const SETTINGSCREEN = 'SETTINGSCREEN';
@@ -33,3 +34,13 @@ export const statusListConstant = [
   'At the movies',
   'I am in Mirror Fly',
 ];
+
+// media upload download status constants
+export const mediaStatusConstants = {
+  NOT_DOWNLOADED: 'NOT_DOWNLOADED',
+  NOT_UPLOADED: 'NOT_UPLOADED',
+  DOWNLOADING: 'DOWNLOADING',
+  UPLOADING: 'UPLOADING',
+  DOWNLOADED: 'DOWNLOADED',
+  UPLOADED: 'UPLOADED',
+};

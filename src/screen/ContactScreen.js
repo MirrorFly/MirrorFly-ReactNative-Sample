@@ -29,7 +29,7 @@ function ContactScreen() {
 
   const backHandler = BackHandler.addEventListener(
     'hardwareBackPress',
-    handleBackBtn,
+    handleBackBtn
   );
 
   const fetchContactList = () => {
@@ -70,7 +70,7 @@ function ContactScreen() {
         screen: CHATSCREEN,
         fromUserJID: item.userJid,
         profileDetails: item,
-      }),
+      })
     );
     RootNav.navigate(CHATSCREEN);
   };
@@ -90,7 +90,7 @@ function ContactScreen() {
       let updateUsersList = await SDK.getUsersList(
         searchText,
         page + 1 + 2,
-        30,
+        30
       );
       setPage(page + 1);
       setUsersList([...usersList, ...updateUsersList.users]);
@@ -131,7 +131,7 @@ function ContactScreen() {
               <Text style={styles.noMsg}>No contacts found</Text>
             </Center>
           )}
-          {!isFetching && isSearching && isSearchedList.length === 0 && (
+          {!isFetching && isSearching && isSearchedList?.length === 0 && (
             <Center h="90%">
               <Text style={styles.noMsg}>No contacts found</Text>
             </Center>

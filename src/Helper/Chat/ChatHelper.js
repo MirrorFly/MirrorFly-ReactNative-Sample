@@ -2,6 +2,7 @@ import { SDK } from '../../SDK';
 import {
   CHAT_TYPE_GROUP,
   CHAT_TYPE_SINGLE,
+  DOCUMENT_FORMATS,
   MSG_DELIVERED_STATUS_ID,
   MSG_PROCESSING_STATUS_ID,
   MSG_SEEN_STATUS_ID,
@@ -34,7 +35,8 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
     fileDetails: { replyTo = '', duration = 0, audioType = '', type } = {},
   } = file;
 
-  const msgType = type.split('/')[0];
+  const isDocument = DOCUMENT_FORMATS.includes(type);
+  const msgType = isDocument ? 'file' : type.split('/')[0];
   const mediaDuration = setDurationSecToMilli(duration);
   let fileOptions = {
     msgId: msgId,

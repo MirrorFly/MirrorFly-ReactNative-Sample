@@ -198,7 +198,8 @@ const ChatMessage = props => {
                       audio: (
                         <View style={{ flex: 1 }}>
                           <AudioCard
-                            data={message}
+                            messageObject={message}
+                            isSender={isSame}
                             status={getMessageStatus(message?.msgStatus)}
                             timeStamp={getConversationHistoryTime(
                               message?.createdAt,

@@ -52,6 +52,7 @@ import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import store from '../redux/store';
 import SavePicture from './Gallery';
 import Camera from '../components/RNCamera';
+import Sound from 'react-native-sound';
 
 function ChatScreen() {
   const vCardData = useSelector(state => state.profile.profileDetails);
@@ -74,6 +75,19 @@ function ChatScreen() {
     },
   };
 
+  const getAudioDuration = async path => {
+    return new Promise((resolve, reject) => {
+      const sound = new Sound(path, Sound.MAIN_BUNDLE, error => {
+        if (error) {
+          return reject(error);
+        } else {
+          const duration = sound.getDuration();
+          return resolve(duration);
+        }
+      });
+    });
+  };
+
   const handleAudioSelect = async () => {
     let MediaPermission = await requestAudioStoragePermission();
     const size_toast = 'size_toast';
@@ -88,6 +102,8 @@ function ChatScreen() {
         setAlert(true);
         setValidate(_validate);
       }
+      const audioDuration = await getAudioDuration(response.fileCopyUri);
+      response.duration = audioDuration;
       if (size && !Toast.isActive(size_toast)) {
         return Toast.show({
           id: size_toast,
@@ -229,10 +245,10 @@ function ChatScreen() {
         const {
           caption = '',
           fileDetails = {},
-          fileDetails: { fileSize, filename, playableDuration, uri, type } = {},
+          fileDetails: { fileSize, filename, duration, uri, type } = {},
         } = file;
 
-        const duration = setDurationSecToMilli(playableDuration);
+        const mediaDuration = setDurationSecToMilli(duration);
         const msgType = type.split('/')[0];
         const thumbImage = msgType === 'image' ? await getThumbImage(uri) : '';
         let fileOptions = {
@@ -240,7 +256,7 @@ function ChatScreen() {
           fileSize: fileSize,
           caption: caption,
           uri: uri,
-          duration: duration,
+          duration: mediaDuration,
           msgId: msgId,
           thumbImage: thumbImage,
         };

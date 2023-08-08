@@ -159,6 +159,7 @@ export const mediaObjContructor = (_package, file) => {
       mediaObj.fileSize = file.size;
       mediaObj.type = file.type;
       mediaObj.filename = file.name;
+      mediaObj.duration = file.duration || 0;
       return mediaObj;
     case 'IMAGE_PICKER':
       return mediaObj;

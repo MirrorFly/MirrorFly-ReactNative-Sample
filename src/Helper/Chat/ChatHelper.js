@@ -31,19 +31,15 @@ export const getUniqueListBy = (arr, key) => {
 export const uploadFileToSDK = async (file, jid, msgId, media) => {
   const {
     caption = '',
-    fileDetails: {
-      replyTo = '',
-      playableDuration = 0,
-      audioType = '',
-      type,
-    } = {},
+    fileDetails: { replyTo = '', duration = 0, audioType = '', type } = {},
   } = file;
+
   const msgType = type.split('/')[0];
-  const duration = setDurationSecToMilli(playableDuration);
+  const mediaDuration = setDurationSecToMilli(duration);
   let fileOptions = {
     msgId: msgId,
     caption: caption,
-    duration: duration,
+    duration: mediaDuration,
     webWidth: media.webWidth || 0,
     webHeight: media.webHeight || 0,
     androidWidth: media.androidWidth || 0,

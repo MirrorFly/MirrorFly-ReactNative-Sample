@@ -2408,3 +2408,50 @@ export const ShareIcon = props => {
     </Svg>
   );
 };
+
+export const AudioPlay = props => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="20"
+      viewBox="0 0 14 17">
+      <G id="play-arrow" transform="translate(0 8)">
+        <Path
+          id="Path_9849"
+          data-name="Path 9849"
+          d="M19.227,6.868,8.543.1a.661.661,0,0,0-.987.626V14.277a.661.661,0,0,0,.987.626l10.684-6.77A.772.772,0,0,0,19.227,6.868Z"
+          transform="translate(-7.556 -8)"
+          fill="#7285b5"
+        />
+      </G>
+    </Svg>
+  );
+};
+
+export const AudioPause = props => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="18"
+      viewBox="0 0 12 16">
+      <G transform="translate(-430 -478)">
+        <Rect
+          fill="#7285b5"
+          width="4"
+          height="14"
+          rx="1"
+          transform="translate(430 478)"
+        />
+        <Rect
+          fill="#7285b5"
+          width="4"
+          height="14"
+          rx="1"
+          transform="translate(436 478)"
+        />
+      </G>
+    </Svg>
+  );
+};

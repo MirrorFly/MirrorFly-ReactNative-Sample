@@ -3,7 +3,7 @@ import { Box, Text } from 'native-base';
 import {
   request,
   PERMISSIONS,
-  requestMultiple
+  requestMultiple,
 } from 'react-native-permissions';
 import { Platform } from 'react-native';
 

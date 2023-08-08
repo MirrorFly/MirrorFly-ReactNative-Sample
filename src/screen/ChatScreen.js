@@ -93,6 +93,8 @@ function ChatScreen() {
   };
 
   const handleAudioSelect = async () => {
+    const storage_permission = await AsyncStorage.getItem('storage_permission');
+    AsyncStorage.setItem('storage_permission', 'true');
     let MediaPermission = await requestAudioStoragePermission();
     const size_toast = 'size_toast';
     if (MediaPermission === 'granted' || MediaPermission === 'limited') {
@@ -132,6 +134,8 @@ function ChatScreen() {
         };
         handleSendMsg(message);
       }
+    } else if (storage_permission) {
+      openSettings();
     }
   };
 

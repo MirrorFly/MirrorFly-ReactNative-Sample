@@ -4,7 +4,6 @@ import {
   IconButton,
   Pressable,
   Spinner,
-  StatusBar,
   Text,
 } from 'native-base';
 import React, { useRef, useState } from 'react';
@@ -26,16 +25,19 @@ import flashOnIcon from 'assets/ic_flash_on.png';
 import flashOffIcon from 'assets/ic_flash_off.png';
 import flashAutoIcon from 'assets/ic_flash_auto.png';
 import flipCameraIcon from 'assets/ic_flip_camera_android.png';
-import { validateFileSize ,getType} from './chat/common/fileUploadValidation';
+import { validateFileSize, getType } from './chat/common/fileUploadValidation';
 import { showToast } from 'Helper/index';
 import { useDispatch } from 'react-redux';
-import { resetSafeArea, safeAreaBgColor } from 'mf-redux/Actions/SafeAreaAction';
+import {
+  resetSafeArea,
+  safeAreaBgColor,
+} from 'mf-redux/Actions/SafeAreaAction';
 
 const Camera = props => {
   const { setLocalNav = () => {}, setSelectedImages } = props;
   const cameraRef = useRef(null);
   const recordingIntervalRef = useRef(null);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [data, setData] = useState();
   const [videoData, setVideoData] = useState();
   const [captureTime, setCaptureTime] = useState(0);
@@ -201,11 +203,10 @@ const Camera = props => {
     });
   };
 
-
   React.useLayoutEffect(() => {
-    dispatch(safeAreaBgColor('#000'))
-    return ()=> dispatch(resetSafeArea())
-  }, [])
+    dispatch(safeAreaBgColor('#000'));
+    return () => dispatch(resetSafeArea());
+  }, []);
 
   return (
     <View style={styles.container}>

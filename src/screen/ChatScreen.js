@@ -449,8 +449,6 @@ function ChatScreen() {
     };
   }, []);
 
-  console.log(selectedImages, 'selectedImages');
-
   return (
     <>
       {

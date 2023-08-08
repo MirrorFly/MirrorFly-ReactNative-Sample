@@ -3,7 +3,7 @@ import { Provider, useDispatch, useSelector } from 'react-redux';
 import store from './redux/store';
 import { callBacks } from './SDKActions/callbacks';
 import SDK from './SDK/SDK';
-import { useColorScheme } from 'react-native';
+import { useColorScheme, LogBox } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { navigationRef } from './Navigation/rootNavigation';
 import ApplicationTheme from './config/appTheme';
@@ -16,6 +16,8 @@ import { profileDetail } from './redux/Actions/ProfileAction';
 import { navigate } from './redux/Actions/NavigationAction';
 import { REGISTERSCREEN } from './constant';
 import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction';
+
+LogBox.ignoreAllLogs();
 
 export const ChatApp = () => {
   React.useEffect(() => {

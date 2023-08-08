@@ -34,22 +34,12 @@ export const statusListConstant = [
   'I am in Mirror Fly',
 ];
 
-// allowed document types
-export const ALLOWED_DOCUMENT_TYPES = [
-  'application/pdf',
-  'application/msword',
-  'application/vnd.ms-excel',
-  'application/vnd.ms-powerpoint',
-  'text/plain',
-  'text/csv',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/zip',
-  'application/x-zip-compressed',
-  'application/rar',
-  'application/vnd.rar',
-  'application/excel',
-  'application/x-excel',
-  'application/x-msexcel',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-];
+// media upload download status constants
+export const mediaStatusConstants = {
+  NOT_DOWNLOADED: 'NOT_DOWNLOADED',
+  NOT_UPLOADED: 'NOT_UPLOADED',
+  DOWNLOADING: 'DOWNLOADING',
+  UPLOADING: 'UPLOADING',
+  DOWNLOADED: 'DOWNLOADED',
+  UPLOADED: 'UPLOADED',
+};

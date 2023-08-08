@@ -14,7 +14,7 @@ import { mediaObjContructor, requestStoragePermission } from '../common/utils';
 import { Box, Text, useToast } from 'native-base';
 import UserInfo from '../components/UserInfo';
 import UsersTapBarInfo from '../components/UsersTapBarInfo';
-import { BackHandler, Platform } from 'react-native';
+import { Alert, BackHandler, Platform } from 'react-native';
 import { RECENTCHATSCREEN } from '../constant';
 import { batch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
@@ -40,7 +40,8 @@ import {
 import PostPreViewPage from '../components/PostPreViewPage';
 import DocumentPicker from 'react-native-document-picker';
 import { showToast } from '../Helper';
-import { Linking } from 'react-native';
+import { DOCUMENT_FORMATS } from '../Helper/Chat/Constant';
+import { PERMISSIONS } from 'react-native-permissions';
 
 function ChatScreen() {
   const vCardData = useSelector(state => state.profile.profileDetails);
@@ -76,7 +77,7 @@ function ChatScreen() {
       DocumentPicker.types.csv,
       // TODO: need to add rar file type
     ],
-    [],
+    []
   );
 
   const attachmentMenuIcons = React.useMemo(
@@ -86,6 +87,9 @@ function ChatScreen() {
         icon: DocumentIcon,
         formatter: () => {
           // TODO: check for permission for external storage
+          // if (PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE || WRITE_EXTERNAL_STORAGE)
+          //   PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
+          // PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE;
 
           // updating the SDK flag to keep the connection Alive when app goes background because of document picker
           SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
@@ -101,16 +105,12 @@ function ChatScreen() {
               SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
               console.log(file);
 
-              // TODO: check "react-native-file-viewer" package to open the file with the uri
-
               // Validating the file type and size
               if (!isValidFileType(file.type)) {
-                const toastOptions = {
-                  id: 'document-not-supported-toast',
-                  duration: 2500,
-                  avoidKeyboard: true,
-                };
-                showToast(toastOptions, 'document type not supported');
+                Alert.alert(
+                  'Mirrorfly',
+                  'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files'
+                );
                 return;
               }
               const error = validateFileSize(file.size, 'file');
@@ -120,11 +120,11 @@ function ChatScreen() {
                   duration: 2500,
                   avoidKeyboard: true,
                 };
-                showToast(toastOptions, error);
+                showToast(error, toastOptions);
                 return;
               }
 
-              // TODO: prepare the object and pass it to the sendMessage function
+              // preparing the object and passing it to the sendMessage function
               const updatedFile = {
                 fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
               };
@@ -177,7 +177,7 @@ function ChatScreen() {
         formatter: () => {},
       },
     ],
-    [],
+    []
   );
 
   const handleBackBtn = () => {
@@ -187,7 +187,7 @@ function ChatScreen() {
 
   const backHandler = BackHandler.addEventListener(
     'hardwareBackPress',
-    handleBackBtn,
+    handleBackBtn
   );
 
   const getThumbImage = async uri => {
@@ -237,7 +237,8 @@ function ChatScreen() {
         } = file;
         console.log(file, fileDetails, 'file fileDetails');
         const duration = setDurationSecToMilli(playableDuration);
-        const msgType = type.split('/')[0];
+        const isDocument = DOCUMENT_FORMATS.includes(type);
+        const msgType = isDocument ? 'file' : type.split('/')[0];
         const thumbImage = msgType === 'image' ? await getThumbImage(uri) : '';
         let fileOptions = {
           fileName: filename,
@@ -345,7 +346,7 @@ function ChatScreen() {
     setselectedSingle(false);
     const size = validateFileSize(item.image.fileSize, getType(item.type));
     const isImageSelected = selectedImages.some(
-      selectedItem => selectedItem.fileDetails?.image?.uri === item?.image.uri,
+      selectedItem => selectedItem.fileDetails?.image?.uri === item?.image.uri
     );
     if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
       return toast.show({
@@ -381,8 +382,8 @@ function ChatScreen() {
         setSelectedImages(prevArray =>
           prevArray.filter(
             selectedItem =>
-              selectedItem.fileDetails?.image.uri !== item?.image?.uri,
-          ),
+              selectedItem.fileDetails?.image.uri !== item?.image?.uri
+          )
         );
       } else {
         setSelectedImages(prevArray => [...prevArray, transformedArray]);

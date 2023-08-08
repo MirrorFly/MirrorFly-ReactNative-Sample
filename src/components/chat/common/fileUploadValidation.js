@@ -1,8 +1,7 @@
-import { ALLOWED_DOCUMENT_TYPES } from '../../../constant';
+import { DOCUMENT_FORMATS } from '../../../Helper/Chat/Constant';
 import config from './config';
 
 const {
-  maxAllowedMediaCount,
   fileSize,
   imageFileSize,
   videoFileSize,
@@ -14,12 +13,12 @@ const {
  * @param  {string} name=""
  * find last "DOT" and get file Type
  */
-export function getExtension(name = '') {
+export function getExtension(name = '', isDotrequired = true) {
   if (!name) {
     return '';
   }
   const lastDot = name.substring(name.lastIndexOf('.') + 1, name.length);
-  return '.' + lastDot;
+  return isDotrequired ? '.' + lastDot : lastDot;
 }
 
 export function getType(type = '') {
@@ -52,5 +51,5 @@ export const validateFileSize = (size, mediaTypeFile) => {
 };
 
 export const isValidFileType = type => {
-  return ALLOWED_DOCUMENT_TYPES.includes(type);
+  return DOCUMENT_FORMATS.includes(type);
 };

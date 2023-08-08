@@ -1907,6 +1907,79 @@ export const PdfIcon = props => {
   );
 };
 
+export const ZipIcon = ({ height, width }) => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 22 22">
+      <G id="Zip_222" data-name="Zip 222" transform="translate(15914 -11129)">
+        <Rect
+          id="Rectangle_23873"
+          data-name="Rectangle 23873"
+          width="22"
+          height="22"
+          transform="translate(-15914 11129)"
+          fill="#fff"
+          opacity="0"
+        />
+        <G id="zip_1_" data-name="zip (1)" transform="translate(-15912 11130)">
+          <Path
+            id="Path_93379"
+            data-name="Path 93379"
+            d="M46.824,35.557H38.671V36.6a1.464,1.464,0,0,0,1.464,1.464H51.187A1.464,1.464,0,0,0,52.651,36.6V24.136L47.514,19H40.135a1.464,1.464,0,0,0-1.464,1.464v7.5h8.153a.69.69,0,0,1,.691.691v6.21a.691.691,0,0,1-.691.691Z"
+            transform="translate(-35.422 -19)"
+            fill="#eaeae4"
+          />
+          <Path
+            id="Path_93380"
+            data-name="Path 93380"
+            d="M85.557,24.136,80.421,19v3.672a1.464,1.464,0,0,0,1.464,1.464Z"
+            transform="translate(-68.329 -19)"
+            fill="#babab9"
+          />
+          <Rect
+            id="Rectangle_23874"
+            data-name="Rectangle 23874"
+            width="12.092"
+            height="7.591"
+            rx="1"
+            transform="translate(0 8.966)"
+            fill="#1eac8f"
+          />
+          <G
+            id="Group_65101"
+            data-name="Group 65101"
+            transform="translate(2.263 11.171)">
+            <Path
+              id="Path_93381"
+              data-name="Path 93381"
+              d="M34.021,74.8h2.521V74.2H34.92l1.605-1.966v-.5H34.053v.592h1.57L34.017,74.3Z"
+              transform="translate(-34.017 -71.74)"
+              fill="#fffcee"
+            />
+            <Path
+              id="Path_93382"
+              data-name="Path 93382"
+              d="M50.48,71.74h.658V74.8H50.48Z"
+              transform="translate(-46.993 -71.74)"
+              fill="#fffcee"
+            />
+            <Path
+              id="Path_93383"
+              data-name="Path 93383"
+              d="M59.939,73.8a1.038,1.038,0,1,0,0-2.063H58.565V74.8h.654V73.8Zm-.72-1.463h.649c.325,0,.547.169.547.431s-.222.431-.547.431h-.65Z"
+              transform="translate(-53.365 -71.74)"
+              fill="#fffcee"
+            />
+          </G>
+        </G>
+      </G>
+    </Svg>
+  );
+};
+
 export const PPTIcon = props => {
   return (
     <Svg
@@ -2104,18 +2177,18 @@ export const DocIcon = props => {
   );
 };
 
-export const DownloadIcon = props => {
+export const DownloadIcon = ({ width, height, color }) => {
   return (
     <Svg
-      width={props.width || 14}
-      height={props.height || 14}
+      width={width || 14}
+      height={height || 14}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 14 14"
       id="vector">
       <Path
         id="path"
         d="M 1.75 11.084 L 12.25 11.084 L 12.25 12.251 L 1.75 12.251 Z M 7.583 5.25 L 11.666 5.25 L 7 9.917 L 2.333 5.25 L 6.417 5.25 L 6.417 0.584 L 7.583 0.584 Z"
-        fill="#fff"
+        fill={color || '#fff'}
       />
     </Svg>
   );

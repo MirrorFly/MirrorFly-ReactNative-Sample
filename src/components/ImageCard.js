@@ -32,9 +32,9 @@ const ImageCard = props => {
     } = {},
   } = messageObject;
 
-  const imageUrl = local_path ? local_path : fileDetails?.image?.uri;
+  const imageUrl = local_path || fileDetails?.uri;
   const [imageSource, setImageSource] = React.useState(
-    imgSrc || getThumbBase64URL(thumb_image),
+    imgSrc || getThumbBase64URL(thumb_image)
   );
 
   React.useEffect(() => {

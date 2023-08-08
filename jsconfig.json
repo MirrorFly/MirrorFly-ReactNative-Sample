@@ -9,7 +9,7 @@
         "Helper/*":["./src/Helper/*"],
         "model/*":["./src/model/*"],
         "Navigation/*":["./src/Navigation/*"],
-        "redux/*":["./src/redux/*"],
+        "mf-redux/*":["./src/redux/*"],
         "screen/*":["./src/screen/*"],
         "SDK/*":["./src/SDK/*"]
       }

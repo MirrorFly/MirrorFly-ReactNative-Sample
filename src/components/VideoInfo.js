@@ -10,11 +10,9 @@ const VideoInfo = props => {
   if (SingleSelectedImage.local_path) {
     item = {
       fileDetails: {
-        image: {
-          uri: SingleSelectedImage.local_path,
-          height: SingleSelectedImage.originalHeight,
-          width: SingleSelectedImage.originalWidth,
-        },
+        uri: SingleSelectedImage.local_path,
+        height: SingleSelectedImage.originalHeight,
+        width: SingleSelectedImage.originalWidth,
       },
     };
   } else {

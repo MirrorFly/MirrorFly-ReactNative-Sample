@@ -55,7 +55,7 @@ const Gallery = (props = {}) => {
   const renderItem = ({ item }) => {
     const isImageSelected = selectedImages.some(
       selectedItem =>
-        selectedItem?.fileDetails.image.uri === item?.node?.image.uri,
+        selectedItem?.fileDetails.uri === item?.node?.image.uri,
     );
     return (
       <View position="relative" padding={0.45}>

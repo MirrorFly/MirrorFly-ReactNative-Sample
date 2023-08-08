@@ -1,39 +1,22 @@
 import React from 'react';
-import {
-  BackHandler,
-  Image,
-  Pressable,
-  StyleSheet,
-  TextInput,
-} from 'react-native';
-import {
-  Divider,
-  HStack,
-  Icon,
-  IconButton,
-  ScrollView,
-  Spacer,
-  Text,
-  View,
-} from 'native-base';
-import { useSelector } from 'react-redux';
+import { BackHandler, Image, StyleSheet, TextInput } from 'react-native';
+import { HStack, Icon, IconButton, Spacer, Text, View } from 'native-base';
+import { useDispatch, useSelector } from 'react-redux';
 import { LeftArrowIcon, RightArrowIcon, SendBlueIcon } from '../common/Icons';
 import Avathar from '../common/Avathar';
 import { getType } from './chat/common/fileUploadValidation';
 import VideoPlayer from './Media/VideoPlayer';
 import { CHATCONVERSATION } from '../constant';
+import {
+  resetSafeArea,
+  safeAreaBgColor,
+} from 'mf-redux/Actions/SafeAreaAction';
 
 const CameraPickView = props => {
-  const {
-    handleSendMsg,
-    setLocalNav,
-    selectedSingle,
-    setSelectedImages,
-    selectedImages,
-  } = props;
+  const { handleSendMsg, setLocalNav, setSelectedImages, selectedImages } =
+    props;
   const profileDetails = useSelector(state => state.navigation.profileDetails);
-
-  console.log(selectedImages, 'selectedImages');
+  const dispatch = useDispatch();
 
   const handleBackBtn = () => {
     setSelectedImages([]);
@@ -59,6 +42,10 @@ const CameraPickView = props => {
     };
     handleSendMsg(message);
   };
+  React.useLayoutEffect(() => {
+    dispatch(safeAreaBgColor('#000'));
+    return () => dispatch(resetSafeArea());
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -78,14 +65,14 @@ const CameraPickView = props => {
         />
         <Spacer />
       </HStack>
-      {selectedImages[0]?.fileDetails.type === 'image/jpg' && (
+      {getType(selectedImages[0]?.fileDetails.type) === 'image' && (
         <Image
           resizeMode="contain"
           source={{ uri: selectedImages[0]?.fileDetails?.uri }}
           style={styles.tabContainer}
         />
       )}
-      {selectedImages[0]?.fileDetails.type === 'video/mp4' && (
+      {'video' === getType(selectedImages[0]?.fileDetails.type) && (
         <VideoPlayer item={selectedImages[0]} />
       )}
       <IconButton

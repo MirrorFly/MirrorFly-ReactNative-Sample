@@ -4,6 +4,7 @@ import {
   IconButton,
   Pressable,
   Spinner,
+  StatusBar,
   Text,
 } from 'native-base';
 import React, { useRef, useState } from 'react';
@@ -15,7 +16,7 @@ import {
   Image,
 } from 'react-native';
 import { RNCamera } from 'react-native-camera';
-import { LeftArrowIcon, imageIcon } from 'common/Icons';
+import { LeftArrowIcon } from 'common/Icons';
 import { CHATCONVERSATION } from '../constant';
 import { millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
 import RNFS from 'react-native-fs';
@@ -25,15 +26,16 @@ import flashOnIcon from 'assets/ic_flash_on.png';
 import flashOffIcon from 'assets/ic_flash_off.png';
 import flashAutoIcon from 'assets/ic_flash_auto.png';
 import flipCameraIcon from 'assets/ic_flip_camera_android.png';
-import { validateFileSize } from './chat/common/fileUploadValidation';
-import { getType } from './chat/common/fileUploadValidation';
-
-
+import { validateFileSize ,getType} from './chat/common/fileUploadValidation';
+import { showToast } from 'Helper/index';
+import { useDispatch } from 'react-redux';
+import { resetSafeArea, safeAreaBgColor } from 'mf-redux/Actions/SafeAreaAction';
 
 const Camera = props => {
   const { setLocalNav = () => {}, setSelectedImages } = props;
   const cameraRef = useRef(null);
   const recordingIntervalRef = useRef(null);
+  const dispatch = useDispatch()
   const [data, setData] = useState();
   const [videoData, setVideoData] = useState();
   const [captureTime, setCaptureTime] = useState(0);
@@ -102,7 +104,14 @@ const Camera = props => {
           caption: '',
           fileDetails: mediaObjContructor('RN_CAMERA', combinedData),
         };
-        setData(imageFile);
+        const size = validateFileSize(
+          imageFile.fileDetails,
+          getType(imageFile.fileDetails.type),
+        );
+        if (size) {
+          showToast(size, 'rncamera-size');
+        }
+        if (!size) setData(imageFile);
       } else {
         console.warn('Camera ref is not ready');
       }
@@ -137,10 +146,10 @@ const Camera = props => {
   const handlePressOut = () => {
     if (isHolding) {
       cameraRef.current.stopRecording();
-      clearInterval(recordingIntervalRef.current)
-      setIsHolding(false)
+      clearInterval(recordingIntervalRef.current);
+      setIsHolding(false);
       setIsCapturing(false);
-      setCaptureTime(0)
+      setCaptureTime(0);
     }
     if (!isHolding) {
       capturePhoto();
@@ -166,9 +175,14 @@ const Camera = props => {
       imageFile.fileDetails,
       getType(imageFile.fileDetails.type),
     );
-
+    if (imageFile.fileDetails.duration > 1000) {
+      showToast(size, 'rncamera-size');
+    }
+    if (size) {
+      showToast(size, 'rncamera-size');
+    }
     if (!size && imageFile.fileDetails.duration > 1000) {
-      // setData(imageFile);
+      setData(imageFile);
     }
   };
 
@@ -186,6 +200,12 @@ const Camera = props => {
       }
     });
   };
+
+
+  React.useLayoutEffect(() => {
+    dispatch(safeAreaBgColor('#000'))
+    return ()=> dispatch(resetSafeArea())
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -245,7 +265,11 @@ const Camera = props => {
       <View>
         {videoData?.uri && (
           <View style={styles.video}>
-            <Video source={{ uri: videoData?.uri }} onLoad={onLoad} />
+            <Video
+              paused={true}
+              source={{ uri: videoData?.uri }}
+              onLoad={onLoad}
+            />
           </View>
         )}
       </View>
@@ -271,7 +295,7 @@ const styles = StyleSheet.create({
     top: 10,
     left: 0,
     right: 0,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
   },
   bottomBtns: {
     position: 'absolute',

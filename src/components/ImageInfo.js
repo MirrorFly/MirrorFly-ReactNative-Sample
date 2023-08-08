@@ -1,9 +1,9 @@
 import React from 'react';
-import {Dimensions, View} from 'react-native';
+import { Dimensions, View } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
 const ImageInfo = props => {
-  const {selectedMedia} = props;
+  const { selectedMedia } = props;
   const SingleSelectedImage = selectedMedia.media;
   /**
     let isSender = currentUserJID === props?.message?.fromUserJid
@@ -21,7 +21,7 @@ const ImageInfo = props => {
 
   const ImageBase64 =
     SingleSelectedImage.local_path ||
-    SingleSelectedImage?.file?.fileDetails?.image?.uri;
+    SingleSelectedImage?.file?.fileDetails?.uri;
   const [initialImageSize, setInitialImageSize] = React.useState({
     width: 100,
     height: 100,
@@ -41,7 +41,7 @@ const ImageInfo = props => {
       initialWidth = windowHeight * imageAspectRatio;
     }
 
-    setInitialImageSize({width: initialWidth, height: initialHeight});
+    setInitialImageSize({ width: initialWidth, height: initialHeight });
   };
   React.useEffect(() => {
     calculateInitialImageSize();
@@ -60,8 +60,8 @@ const ImageInfo = props => {
 
   const initialIndex = 0;
   return (
-    <View style={{flex: 1}}>
-      <View style={{flex: 1, backgroundColor: '#fff'}}>
+    <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <ImageViewer
           imageUrls={images}
           style={initialImageSize}

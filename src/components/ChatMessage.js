@@ -36,7 +36,7 @@ const ChatMessage = props => {
     msgStatus,
   } = message;
   const [uploadStatus, setUploadStatus] = React.useState(4);
-  const imageUrl = local_path || file?.fileDetails?.image?.uri;
+  const imageUrl = local_path || file?.fileDetails?.uri;
   const thumbURL = thumb_image ? getThumbBase64URL(thumb_image) : '';
   const [imgSrc, saveImage] = React.useState(thumbURL);
   const dispatch = useDispatch();
@@ -119,7 +119,7 @@ const ChatMessage = props => {
   const handleMessageObj = () => {
     if (
       props.message.msgBody.media.local_path ||
-      props.message.msgBody?.media?.file?.fileDetails?.image?.uri
+      props.message.msgBody?.media?.file?.fileDetails?.uri
     ) {
       dispatch(singleChatSelectedMediaImage(props.message));
       setLocalNav('PostPreView');

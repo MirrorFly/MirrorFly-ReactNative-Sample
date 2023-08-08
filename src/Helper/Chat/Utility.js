@@ -97,15 +97,15 @@ export const getMessageObjSender = async (dataObj, idx) => {
       originalHeight = 0;
     if (msgType === 'image') {
       const mediaDimension = calculateWidthAndHeight(
-        fileDetails?.image?.width,
-        fileDetails?.image?.height,
+        fileDetails?.width,
+        fileDetails?.height,
       );
       ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);
     } else if (msgType === 'video') {
       ({ originalWidth, originalHeight } = fileDetails);
       const mediaDimension = calculateWidthAndHeight(
-        fileDetails?.image?.width,
-        fileDetails?.image?.height,
+        fileDetails?.width,
+        fileDetails?.height,
       );
       ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);
     }

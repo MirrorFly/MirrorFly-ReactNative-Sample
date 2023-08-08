@@ -29,12 +29,6 @@ const ChatInput = props => {
       setTimeout(() => {
         onSendMessage(message);
       }, 0);
-      // requestAnimationFrame(() => {
-      //   onSendMessage(message);
-      // });
-      // Promise.resolve().then(() => {
-      //   onSendMessage(message);
-      // });
     }
   };
   const handleEmojiSelect = (...emojis) => {
@@ -48,6 +42,11 @@ const ChatInput = props => {
     } else {
       Keyboard.dismiss();
     }
+  };
+
+  const handleAttachmentconPressed = () => {
+    Keyboard.dismiss();
+    setIsOpen(true);
   };
 
   return (
@@ -80,11 +79,7 @@ const ChatInput = props => {
           <TextInput
             ref={chatInputRef}
             value={message}
-            style={{
-              flex: 1,
-              minHeight: 20,
-              maxHeight: 100,
-            }}
+            style={styles.inputTextbox}
             onChangeText={setMessage}
             placeholder="Start Typing..."
             placeholderTextColor="#767676"
@@ -92,10 +87,7 @@ const ChatInput = props => {
             multiline={true}
           />
           <IconButton
-            onPress={() => {
-              Keyboard.dismiss();
-              setIsOpen(true);
-            }}
+            onPress={handleAttachmentconPressed}
             _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
             p="2"
             icon={<Icon p="0" as={AttachmentIcon} name="emoji-happy" />}
@@ -126,13 +118,7 @@ const ChatInput = props => {
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         safeAreaTop={true}>
-        <Modal.Content
-          width={'90%'}
-          style={{
-            marginBottom: 30,
-            marginTop: 'auto',
-            backgroundColor: '#181818',
-          }}>
+        <Modal.Content width={'90%'} style={styles.modalContent}>
           <Modal.Body>
             <Flex direction="row" justify={'space-between'} wrap="wrap">
               {attachmentMenuIcons.map(item => (
@@ -140,12 +126,12 @@ const ChatInput = props => {
                   py="3"
                   key={item.name}
                   alignItems={'center'}
-                  style={{ width: '32%' }}>
+                  style={styles.attachmentMenuIconsContainer}>
                   <IconButton
                     _pressed={{ bg: 'transperent' }}
                     onPress={() => {
                       setIsOpen(false);
-                      item.formatter && item.formatter();
+                      item.formatter?.();
                     }}
                     icon={<Icon as={item.icon} name="emoji-happy" />}
                     borderRadius="full"
@@ -187,4 +173,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  inputTextbox: {
+    flex: 1,
+    minHeight: 20,
+    maxHeight: 100,
+  },
+  modalContent: {
+    marginBottom: 30,
+    marginTop: 'auto',
+    backgroundColor: '#181818',
+  },
+  attachmentMenuIconsContainer: { width: '32%' },
 });

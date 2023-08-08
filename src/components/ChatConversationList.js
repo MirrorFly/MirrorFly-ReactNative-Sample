@@ -42,17 +42,6 @@ const ChatConversationList = ({
     return data;
   }, [messages, fromUserJId]);
 
-  // const chatMessageRender = ({ item }) => {
-  //   return (
-  //     <ChatMessage
-  //       setLocalNav={props.setLocalNav}
-  //       handleMsgSelect={handleMsgSelect}
-  //       selectedMsgs={selectedMsgs}
-  //       message={item}
-  //     />
-  //   );
-  // };
-
   const chatMessageRender = React.useCallback(
     ({ item }) => {
       return (

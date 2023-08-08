@@ -136,7 +136,7 @@ const ChatMessage = props => {
           props.message?.msgBody?.media?.file?.fileDetails?.uri,
         {
           showOpenWithDialog: true,
-        }
+        },
       )
         .then(res => {
           console.log('Document opened externally', res);
@@ -185,7 +185,7 @@ const ChatMessage = props => {
                           data={{
                             message: message?.msgBody?.message,
                             timeStamp: getConversationHistoryTime(
-                              props?.message?.createdAt
+                              props?.message?.createdAt,
                             ),
                             status: getMessageStatus(props?.message?.msgStatus),
                           }}
@@ -199,7 +199,7 @@ const ChatMessage = props => {
                           isSender={isSame}
                           status={getMessageStatus(message?.msgStatus)}
                           timeStamp={getConversationHistoryTime(
-                            message?.createdAt
+                            message?.createdAt,
                           )}
                           uploadStatus={uploadStatus}
                           fileSize={fileSize}
@@ -215,7 +215,7 @@ const ChatMessage = props => {
                           uploadStatus={uploadStatus}
                           fileSize={fileSize}
                           timeStamp={getConversationHistoryTime(
-                            message?.createdAt
+                            message?.createdAt,
                           )}
                         />
                       ),
@@ -224,9 +224,11 @@ const ChatMessage = props => {
                           <AudioCard
                             messageObject={message}
                             isSender={isSame}
+                            mediaUrl={imageUrl}
                             status={getMessageStatus(message?.msgStatus)}
+                            fileSize={fileSize}
                             timeStamp={getConversationHistoryTime(
-                              message?.createdAt
+                              message?.createdAt,
                             )}
                           />
                         </View>
@@ -236,7 +238,7 @@ const ChatMessage = props => {
                           message={message}
                           status={getMessageStatus(message?.msgStatus)}
                           timeStamp={getConversationHistoryTime(
-                            message?.createdAt
+                            message?.createdAt,
                           )}
                           fileSize={fileSize}
                           isSender={isSame}
@@ -248,7 +250,7 @@ const ChatMessage = props => {
                           data={message}
                           status={getMessageStatus(message?.msgStatus)}
                           timeStamp={getConversationHistoryTime(
-                            message?.createdAt
+                            message?.createdAt,
                           )}
                         />
                       ),
@@ -257,7 +259,7 @@ const ChatMessage = props => {
                           data={message}
                           status={getMessageStatus(message?.msgStatus)}
                           timeStamp={getConversationHistoryTime(
-                            message?.createdAt
+                            message?.createdAt,
                           )}
                         />
                       ),

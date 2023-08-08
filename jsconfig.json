@@ -11,7 +11,8 @@
         "Navigation/*":["./src/Navigation/*"],
         "mf-redux/*":["./src/redux/*"],
         "screen/*":["./src/screen/*"],
-        "SDK/*":["./src/SDK/*"]
+        "SDK/*":["./src/SDK/*"],
+        "hooks/*":["./src/hooks/*"],
       }
     },
     "exclude": ["node_modules"]

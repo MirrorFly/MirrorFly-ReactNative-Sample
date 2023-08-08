@@ -3,7 +3,10 @@ import SDK from '../SDK/SDK';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateDownloadData } from '../redux/Actions/MediaDownloadAction';
-import { updateUploadStatus } from '../redux/Actions/ConversationAction';
+import {
+  RetryMediaUpload,
+  updateUploadStatus,
+} from '../redux/Actions/ConversationAction';
 import { mediaStatusConstants } from '../constant';
 
 const useMediaProgress = ({
@@ -28,7 +31,7 @@ const useMediaProgress = ({
       setMediaStatus(
         mediaUrl
           ? mediaStatusConstants.DOWNLOADED
-          : mediaStatusConstants.NOT_DOWNLOADED
+          : mediaStatusConstants.NOT_DOWNLOADED,
       );
     }
   }, [isSender, mediaUrl, uploadStatus, msgId, media]);
@@ -60,6 +63,12 @@ const useMediaProgress = ({
   };
   const handleUpload = () => {
     // TODO: handle upload cases and retry uploading
+    const retryObj = {
+      msgId,
+      fromUserId: getUserIdFromJid(fromUserJId),
+      uploadStatus: 1,
+    };
+    dispatch(RetryMediaUpload(retryObj));
   };
 
   return {

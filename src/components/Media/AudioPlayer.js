@@ -7,6 +7,7 @@ import { Icon, IconButton, View } from 'native-base';
 import { AudioPause, AudioPlay } from '../../common/Icons';
 import { millisToMinutesAndSeconds } from '../../Helper/Chat/Utility';
 import { useAppState } from '../../hooks';
+import { mediaStatusConstants } from '../../constant';
 
 const PLAY_STATE_PAUSED = 'paused';
 const PLAY_STATE_PLAYING = 'playing';
@@ -14,7 +15,7 @@ const PLAY_STATE_LOADING = 'loading';
 let soundRef = createRef();
 
 const AudioPlayer = props => {
-  const { media, msgId, uri } = props;
+  const { media, msgId, uri, mediaStatus } = props;
   const [playState, setPlayState] = React.useState(PLAY_STATE_PAUSED);
   const [playSeconds, setPlaySeconds] = React.useState(0);
   let sound = React.useRef(null);
@@ -150,22 +151,27 @@ const AudioPlayer = props => {
   return (
     <View style={style.audioControlContainer}>
       <View px={1} flexDirection={'row'}>
-        {playState === PLAY_STATE_PLAYING ? (
-          <IconButton
-            style={{ width: 30 }}
-            onPress={pauseSound}
-            _pressed={{ bg: null }}
-            icon={<Icon as={AudioPause} name="emoji-happy" />}
-            borderRadius="full"
-          />
-        ) : (
-          <IconButton
-            style={{ width: 30 }}
-            onPress={playSound}
-            _pressed={{ bg: null }}
-            icon={<Icon as={AudioPlay} name="emoji-happy" />}
-            borderRadius="full"
-          />
+        {(mediaStatus === mediaStatusConstants.DOWNLOADED ||
+          mediaStatus === mediaStatusConstants.UPLOADED) && (
+          <>
+            {playState === PLAY_STATE_PLAYING ? (
+              <IconButton
+                style={{ width: 30 }}
+                onPress={pauseSound}
+                _pressed={{ bg: null }}
+                icon={<Icon as={AudioPause} name="emoji-happy" />}
+                borderRadius="full"
+              />
+            ) : (
+              <IconButton
+                style={{ width: 30 }}
+                onPress={playSound}
+                _pressed={{ bg: null }}
+                icon={<Icon as={AudioPlay} name="emoji-happy" />}
+                borderRadius="full"
+              />
+            )}
+          </>
         )}
         <View px={1} style={style.sliderView}>
           <RNSlider

@@ -26,7 +26,7 @@ import {
   setDurationSecToMilli,
 } from '../Helper/Chat/Utility';
 import * as RootNav from '../Navigation/rootNavigation';
-import { SDK } from '../SDK';
+import { SDK } from '../SDK/SDK';
 import {
   CameraIcon,
   ContactIcon,
@@ -96,7 +96,7 @@ function ChatScreen() {
       DocumentPicker.types.csv,
       // TODO: need to add rar file type
     ],
-    []
+    [],
   );
 
   const getAudioDuration = async path => {
@@ -304,7 +304,7 @@ function ChatScreen() {
 
   const backHandler = BackHandler.addEventListener(
     'hardwareBackPress',
-    handleBackBtn
+    handleBackBtn,
   );
 
   const getThumbImage = async uri => {
@@ -531,8 +531,6 @@ function ChatScreen() {
       backHandler.remove();
     };
   }, []);
-
-  console.log(selectedImages, 'selectedImages');
 
   return (
     <>

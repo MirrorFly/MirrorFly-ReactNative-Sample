@@ -53,6 +53,7 @@
     "@types/react": "^18.0.24",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.2.1",
+    "deprecated-react-native-prop-types": "^4.2.1",
     "emoji-datasource": "^15.0.1",
     "eslint": "^8.19.0",
     "fbjs": "^3.0.5",

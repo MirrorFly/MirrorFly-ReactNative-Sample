@@ -1,11 +1,8 @@
-<<<<<<< HEAD
 import {
   ALLOWED_ALL_FILE_FORMATS,
   ALLOWED_AUDIO_FORMATS,
+  DOCUMENT_FORMATS,
 } from '../../../Helper/Chat/Constant';
-=======
-import { DOCUMENT_FORMATS } from '../../../Helper/Chat/Constant';
->>>>>>> eef12dd32d62335fbeb0344e2059397db5ed7502
 import config from './config';
 
 const {
@@ -63,7 +60,7 @@ export const validation = file => {
 
   const allowedFilescheck = new RegExp(
     '([a-zA-Z0-9s_\\.-:])+(' + ALLOWED_ALL_FILE_FORMATS.join('|') + ')$',
-    'i',
+    'i'
   );
   let mediaType = getType(file.type);
   if (!allowedFilescheck.test(fileExtension)) {
@@ -74,8 +71,7 @@ export const validation = file => {
     return message;
   }
   return '';
-}
-
+};
 export const isValidFileType = type => {
   return DOCUMENT_FORMATS.includes(type);
 };

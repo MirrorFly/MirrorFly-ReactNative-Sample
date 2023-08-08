@@ -19,7 +19,7 @@ import {
   setDurationSecToMilli,
 } from '../Helper/Chat/Utility';
 import * as RootNav from '../Navigation/rootNavigation';
-import { SDK } from '../SDK/SDK';
+import SDK from 'SDK/SDK';
 import {
   CameraIcon,
   ContactIcon,

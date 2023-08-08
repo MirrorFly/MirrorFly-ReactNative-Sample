@@ -98,7 +98,7 @@ const AudioCard = props => {
           px={1}
           textAlign={'right'}
           color={isSender ? '#455E93' : '#000'}
-          fontWeight={'350'}
+          fontWeight={'300'}
           fontSize="10">
           {props.timeStamp}
         </Text>

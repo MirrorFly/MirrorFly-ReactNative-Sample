@@ -19,7 +19,7 @@ import {
   ReplyIcon,
   LeftArrowIcon,
 } from '../common/Icons';
-import { SDK } from '../SDK';
+import  SDK from 'SDK/SDK';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import LastSeen from './LastSeen';
 import { useSelector } from 'react-redux';

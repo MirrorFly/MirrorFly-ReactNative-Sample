@@ -29,7 +29,7 @@ const TextCard = props => {
           justifyContent: 'flex-end',
         }}>
         {props.data.status}
-        <Text pl="1" color="#455E93" fontSize="10" fontWeight={350}>
+        <Text pl="1" color="#455E93" fontSize="10" fontWeight={300}>
           {props.data.timeStamp}
         </Text>
       </View>

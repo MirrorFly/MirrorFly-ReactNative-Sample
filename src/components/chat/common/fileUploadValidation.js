@@ -1,6 +1,6 @@
 import {
-  ALLOWED_ALL_FILE_FORMATS,
   ALLOWED_AUDIO_FORMATS,
+  AUDIO_FORMATS,
   DOCUMENT_FORMATS,
 } from '../../../Helper/Chat/Constant';
 import config from './config';
@@ -53,16 +53,9 @@ export const validateFileSize = (size, mediaTypeFile) => {
   return '';
 };
 
-export const validation = file => {
-  const { name } = file;
-  const fileExtension = getExtension(name);
-
-  const allowedFilescheck = new RegExp(
-    '([a-zA-Z0-9s_\\.-:])+(' + ALLOWED_ALL_FILE_FORMATS.join('|') + ')$',
-    'i',
-  );
-  let mediaType = getType(file.type);
-  if (!allowedFilescheck.test(fileExtension)) {
+export const validation = type => {
+  let mediaType = getType(type);
+  if (!AUDIO_FORMATS.includes(type)) {
     let message = 'You can upload only ';
     if (mediaType === 'audio') {
       message = message + `${ALLOWED_AUDIO_FORMATS.join(', ')} files`;

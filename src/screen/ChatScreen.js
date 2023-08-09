@@ -126,7 +126,7 @@ function ChatScreen() {
     if (MediaPermission === 'granted' || MediaPermission === 'limited') {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       let response = await handleAudioPickerSingle();
-      let _validate = validation(response);
+      let _validate = validation(response.type);
       const size = validateFileSize(response.size, getType(response.type));
       if (_validate && !size) {
         setAlert(true);

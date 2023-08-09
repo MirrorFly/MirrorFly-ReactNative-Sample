@@ -107,7 +107,7 @@ const Camera = props => {
           fileDetails: mediaObjContructor('RN_CAMERA', combinedData),
         };
         const size = validateFileSize(
-          imageFile.fileDetails,
+          imageFile.fileDetails.fileSize,
           getType(imageFile.fileDetails.type),
         );
         if (size) {
@@ -176,7 +176,7 @@ const Camera = props => {
       fileDetails: mediaObjContructor('RN_CAMERA', combinedData),
     };
     const size = validateFileSize(
-      imageFile.fileDetails,
+      imageFile.fileDetails.fileSize,
       getType(imageFile.fileDetails.type),
     );
     if (size) {

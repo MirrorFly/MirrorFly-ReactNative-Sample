@@ -23,9 +23,10 @@ const useMediaProgress = ({
     if (isSender) {
       const isUploading =
         uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8;
-      const isUploaded = mediaUrl
-        ? mediaStatusConstants.UPLOADED
-        : mediaStatusConstants.NOT_UPLOADED;
+      const isUploaded =
+        uploadStatus === 2 && mediaUrl
+          ? mediaStatusConstants.UPLOADED
+          : mediaStatusConstants.NOT_UPLOADED;
       setMediaStatus(isUploading ? mediaStatusConstants.UPLOADING : isUploaded);
     } else {
       setMediaStatus(
@@ -62,7 +63,6 @@ const useMediaProgress = ({
     }
   };
   const handleUpload = () => {
-    // TODO: handle upload cases and retry uploading
     const retryObj = {
       msgId,
       fromUserId: getUserIdFromJid(fromUserJId),

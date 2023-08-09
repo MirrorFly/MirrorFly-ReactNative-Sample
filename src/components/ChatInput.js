@@ -47,7 +47,7 @@ const ChatInput = props => {
 
   const handleAttachmentconPressed = () => {
     Keyboard.dismiss();
-    soundRef.current.pause();
+    soundRef?.current?.pause();
     soundRef?.current?.updateState?.();
     setIsOpen(true);
   };

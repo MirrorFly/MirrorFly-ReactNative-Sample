@@ -109,6 +109,16 @@ export const requestAudioStoragePermission = async () => {
   }
 };
 
+export const requestFileStoragePermission = async () => {
+  // Android Version 32 and below
+  if (Platform.OS === 'android' && Platform.Version <= 32) {
+    return await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+  } else {
+    // returning granted as we don't need permission to access files in ios and Android version 13 or higher
+    return Promise.resolve('granted');
+  }
+};
+
 export const handleGalleryPickerMulti = async toast => {
   try {
     const res = await DocumentPicker.pick({

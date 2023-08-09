@@ -40,6 +40,7 @@ import {
   mediaObjContructor,
   requestAudioStoragePermission,
   requestCameraPermission,
+  requestFileStoragePermission,
   requestStoragePermission,
 } from '../common/utils';
 import CameraPickView from '../components/CameraPickView';
@@ -94,7 +95,8 @@ function ChatScreen() {
       DocumentPicker.types.plainText,
       DocumentPicker.types.zip,
       DocumentPicker.types.csv,
-      // TODO: need to add rar file type
+      // TODO: need to add rar file type and verify that
+      '.rar',
     ],
     [],
   );
@@ -160,64 +162,68 @@ function ChatScreen() {
     }
   };
 
+  const openDocumentPicker = async () => {
+    const storage_permission = await AsyncStorage.getItem('storage_permission');
+    AsyncStorage.setItem('storage_permission', 'true');
+    const permissionResult = await requestFileStoragePermission();
+    if (permissionResult === 'granted' || permissionResult === 'limited') {
+      // updating the SDK flag to keep the connection Alive when app goes background because of document picker
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
+      DocumentPicker.pickSingle({
+        type: documentAttachmentTypes,
+        copyTo:
+          Platform.OS === 'android' ? 'cachesDirectory' : 'documentDirectory',
+      })
+        .then(file => {
+          // updating the SDK flag back to false to behave as usual
+          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+          console.log(file);
+
+          // Validating the file type and size
+          if (!isValidFileType(file.type)) {
+            Alert.alert(
+              'Mirrorfly',
+              'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
+            );
+            return;
+          }
+          const error = validateFileSize(file.size, 'file');
+          if (error) {
+            const toastOptions = {
+              id: 'document-too-large-toast',
+              duration: 2500,
+              avoidKeyboard: true,
+            };
+            showToast(error, toastOptions);
+            return;
+          }
+
+          // preparing the object and passing it to the sendMessage function
+          const updatedFile = {
+            fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
+          };
+          console.log('updatedFile', updatedFile);
+          const messageData = {
+            type: 'media',
+            content: [updatedFile],
+          };
+          handleSendMsg(messageData);
+        })
+        .catch(err => {
+          // updating the SDK flag back to false to behave as usual
+          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+          console.log('Error from documen picker', err);
+        });
+    } else if (storage_permission) {
+      openSettings();
+    }
+  };
+
   const attachmentMenuIcons = [
     {
       name: 'Document',
       icon: DocumentIcon,
-      formatter: () => {
-        // TODO: check for permission for external storage
-        // if (PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE || WRITE_EXTERNAL_STORAGE)
-        //   PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
-        // PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE;
-
-        // updating the SDK flag to keep the connection Alive when app goes background because of document picker
-        SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
-        DocumentPicker.pickSingle({
-          type: documentAttachmentTypes,
-          copyTo:
-            Platform.OS === 'android' ? 'cachesDirectory' : 'documentDirectory',
-        })
-          .then(file => {
-            // updating the SDK flag back to false to behave as usual
-            SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-            console.log(file);
-
-            // Validating the file type and size
-            if (!isValidFileType(file.type)) {
-              Alert.alert(
-                'Mirrorfly',
-                'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files'
-              );
-              return;
-            }
-            const error = validateFileSize(file.size, 'file');
-            if (error) {
-              const toastOptions = {
-                id: 'document-too-large-toast',
-                duration: 2500,
-                avoidKeyboard: true,
-              };
-              showToast(error, toastOptions);
-              return;
-            }
-
-            // preparing the object and passing it to the sendMessage function
-            const updatedFile = {
-              fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
-            };
-            console.log('updatedFile', updatedFile);
-            const messageData = {
-              type: 'media',
-              content: [updatedFile],
-            };
-            handleSendMsg(messageData);
-          })
-          .catch(err => {
-            // updating the SDK flag back to false to behave as usual
-            SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-            console.log('Error from documen picker', err);
-          });
-      },
+      formatter: openDocumentPicker,
     },
     {
       name: 'Camera',
@@ -226,12 +232,12 @@ function ChatScreen() {
         let cameraPermission = await requestCameraPermission();
         let imageReadPermission = await requestStoragePermission();
         const camera_permission = await AsyncStorage.getItem(
-          'camera_permission'
+          'camera_permission',
         );
         console.log(
           cameraPermission,
           imageReadPermission,
-          'cameraPermission, imageReadPermission'
+          'cameraPermission, imageReadPermission',
         );
         AsyncStorage.setItem('camera_permission', 'true');
         if (
@@ -250,7 +256,7 @@ function ChatScreen() {
       icon: GalleryIcon,
       formatter: async () => {
         const storage_permission = await AsyncStorage.getItem(
-          'storage_permission'
+          'storage_permission',
         );
         AsyncStorage.setItem('storage_permission', 'true');
         let imageReadPermission = await requestStoragePermission();
@@ -441,7 +447,7 @@ function ChatScreen() {
     setselectedSingle(false);
     const size = validateFileSize(item.image.fileSize, getType(item.type));
     const isImageSelected = selectedImages.some(
-      selectedItem => selectedItem.fileDetails?.uri === item?.image.uri
+      selectedItem => selectedItem.fileDetails?.uri === item?.image.uri,
     );
     if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
       return toast.show({
@@ -476,8 +482,8 @@ function ChatScreen() {
       if (isImageSelected) {
         setSelectedImages(prevArray =>
           prevArray.filter(
-            selectedItem => selectedItem.fileDetails?.uri !== item?.image?.uri
-          )
+            selectedItem => selectedItem.fileDetails?.uri !== item?.image?.uri,
+          ),
         );
       } else {
         setSelectedImages(prevArray => [...prevArray, transformedArray]);

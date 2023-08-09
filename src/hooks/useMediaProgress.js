@@ -3,7 +3,10 @@ import SDK from '../SDK/SDK';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateDownloadData } from '../redux/Actions/MediaDownloadAction';
-import { updateUploadStatus } from '../redux/Actions/ConversationAction';
+import {
+  RetryMediaUpload,
+  updateUploadStatus,
+} from '../redux/Actions/ConversationAction';
 import { mediaStatusConstants } from '../constant';
 
 const useMediaProgress = ({
@@ -20,15 +23,16 @@ const useMediaProgress = ({
     if (isSender) {
       const isUploading =
         uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8;
-      const isUploaded = mediaUrl
-        ? mediaStatusConstants.UPLOADED
-        : mediaStatusConstants.NOT_UPLOADED;
+      const isUploaded =
+        uploadStatus === 2 && mediaUrl
+          ? mediaStatusConstants.UPLOADED
+          : mediaStatusConstants.NOT_UPLOADED;
       setMediaStatus(isUploading ? mediaStatusConstants.UPLOADING : isUploaded);
     } else {
       setMediaStatus(
         mediaUrl
           ? mediaStatusConstants.DOWNLOADED
-          : mediaStatusConstants.NOT_DOWNLOADED
+          : mediaStatusConstants.NOT_DOWNLOADED,
       );
     }
   }, [isSender, mediaUrl, uploadStatus, msgId, media]);
@@ -59,7 +63,12 @@ const useMediaProgress = ({
     }
   };
   const handleUpload = () => {
-    // TODO: handle upload cases and retry uploading
+    const retryObj = {
+      msgId,
+      fromUserId: getUserIdFromJid(fromUserJId),
+      uploadStatus: 1,
+    };
+    dispatch(RetryMediaUpload(retryObj));
   };
 
   return {

@@ -320,9 +320,9 @@ function ChatScreen() {
     if (Platform.OS === 'ios') {
       if (uri.includes('ph://')) {
         let result = await ImageCompressor.compress(uri, {
-          maxWidth: 300,
-          maxHeight: 300,
-          quality: 0.5,
+          maxWidth: 600,
+          maxHeight: 600,
+          quality: 0.8,
         });
         response = await RNFS.readFile(result, 'base64');
       } else {

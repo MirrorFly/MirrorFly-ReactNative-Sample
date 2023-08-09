@@ -22,13 +22,13 @@ export const useAppState = () => {
   const [isActive, setIsActive] = React.useState(null);
 
   React.useEffect(() => {
-    const unsubscribe = AppState.addEventListener('change', nextAppState => {
-      setIsActive(nextAppState === 'active');
+    AppState.addEventListener('change', nextAppState => {
+      if (nextAppState === 'active') {
+        setIsActive(true);
+      } else {
+        setIsActive(false);
+      }
     });
-
-    return () => {
-      unsubscribe();
-    };
   }, []);
 
   return isActive;

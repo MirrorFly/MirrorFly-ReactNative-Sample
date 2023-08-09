@@ -165,7 +165,7 @@ export const mediaObjContructor = (_package, file) => {
       mediaObj.type = type;
       mediaObj.width = image.width;
       mediaObj.height = image.height;
-      mediaObj.duration = image.playableDuration;
+      mediaObj.duration = image.playableDuration * 1000;
       mediaObj.filename = image.filename;
       return mediaObj;
     case 'DOCUMENT_PICKER':
@@ -174,7 +174,7 @@ export const mediaObjContructor = (_package, file) => {
       mediaObj.fileSize = file.size;
       mediaObj.type = file.type;
       mediaObj.filename = file.name;
-      mediaObj.duration = file.duration || 0;
+      mediaObj.duration = file.duration * 1000 || 0;
       return mediaObj;
     case 'IMAGE_PICKER':
       return mediaObj;
@@ -185,7 +185,7 @@ export const mediaObjContructor = (_package, file) => {
       mediaObj.width = file.width;
       mediaObj.height = file.height;
       mediaObj.filename = file.uri.split('/').pop();
-      mediaObj.duration = file.duration || 0;
+      mediaObj.duration = file.duration * 1000 || 0;
       mediaObj.type = file.type + '/' + mediaObj.extension;
       return mediaObj;
     default:

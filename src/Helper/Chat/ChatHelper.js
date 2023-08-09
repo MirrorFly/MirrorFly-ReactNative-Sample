@@ -35,14 +35,13 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
     fileDetails: { replyTo = '', duration = 0, audioType = '', type } = {},
   } = file;
 
-  const mediaDuration = setDurationSecToMilli(duration);
   const isDocument = DOCUMENT_FORMATS.includes(type);
   const msgType = isDocument ? 'file' : type.split('/')[0];
-
+  console.log(duration, 'duration');
   let fileOptions = {
     msgId: msgId,
     caption: caption,
-    duration: mediaDuration,
+    duration: duration,
     webWidth: media.webWidth || 0,
     webHeight: media.webHeight || 0,
     androidWidth: media.androidWidth || 0,
@@ -61,31 +60,31 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
       jid,
       file.fileDetails,
       fileOptions,
-      replyTo
+      replyTo,
     );
   } else if (msgType === 'image') {
     response = await SDK.sendImageMessage(
       jid,
       file.fileDetails,
       fileOptions,
-      replyTo
+      replyTo,
     );
   } else if (msgType === 'video') {
     response = await SDK.sendVideoMessage(
       jid,
       file.fileDetails,
       fileOptions,
-      replyTo
+      replyTo,
     );
   } else if (msgType === 'audio') {
     response = await SDK.sendAudioMessage(
       jid,
       file.fileDetails,
       fileOptions,
-      replyTo
+      replyTo,
     );
   }
-
+  console.log(response, 'MEDIA upload response');
   let updateObj = {
     msgId,
     statusCode: response.statusCode,
@@ -229,7 +228,7 @@ export const getChatHistoryData = (data, stateData) => {
     data.data,
     Object.values(state),
     'msgId',
-    'timestamp'
+    'timestamp',
   );
   const lastMessage = sortedData[sortedData.length - 1];
   let newSortedData;
@@ -239,7 +238,7 @@ export const getChatHistoryData = (data, stateData) => {
     newSortedData = sortedData.map(msg => {
       msg.msgStatus = getMsgStatusInOrder(
         msg.msgStatus,
-        lastMessage?.msgStatus
+        lastMessage?.msgStatus,
       );
       return msg;
     });
@@ -265,7 +264,7 @@ export const getUpdatedHistoryData = (data, stateData) => {
     if (currentMessage) {
       const msgStatus = getMsgStatusInOrder(
         currentMessage.msgStatus,
-        data.msgStatus
+        data.msgStatus,
       );
       currentMessage.msgStatus = msgStatus;
       currentMessage.msgType = data.msgType;
@@ -326,7 +325,7 @@ export const getActiveConversationChatId = () => {
  */
 export const isActiveConversationUserOrGroup = (
   userOrGroupId,
-  chatType = CHAT_TYPE_SINGLE
+  chatType = CHAT_TYPE_SINGLE,
 ) => {
   if (!userOrGroupId) return false;
   const conversationUserOrGroupId = getActiveConversationChatId();

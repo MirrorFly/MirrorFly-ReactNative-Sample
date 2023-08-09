@@ -1,6 +1,6 @@
 import React from 'react';
-import { HStack, View, Text, Slider, Center } from 'native-base';
-import { AudioMusicIcon, DownloadIcon } from '../common/Icons';
+import { HStack, View, Text } from 'native-base';
+import { AudioMusicIcon } from '../common/Icons';
 import AudioPlayer from './Media/AudioPlayer';
 import { StyleSheet } from 'react-native';
 import AttachmentProgressLoader from './chat/common/AttachmentProgressLoader';

@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import SDK from 'SDK/SDK';
 import {
   AlertDialog,
   Box,
@@ -23,10 +24,8 @@ import { DOCUMENT_FORMATS } from '../Helper/Chat/Constant';
 import {
   getMessageObjSender,
   getRecentChatMsgObj,
-  setDurationSecToMilli,
 } from '../Helper/Chat/Utility';
 import * as RootNav from '../Navigation/rootNavigation';
-import SDK from 'SDK/SDK';
 import {
   CameraIcon,
   ContactIcon,
@@ -101,14 +100,18 @@ function ChatScreen() {
 
   const getAudioDuration = async path => {
     return new Promise((resolve, reject) => {
-      const sound = new Sound(path, Sound.MAIN_BUNDLE, error => {
-        if (error) {
-          return reject(error);
-        } else {
-          const duration = sound.getDuration();
-          return resolve(duration);
-        }
-      });
+      const sound = new Sound(
+        path,
+        Platform.OS === 'ios' ? '' : Sound.MAIN_BUNDLE,
+        error => {
+          if (error) {
+            return reject(error);
+          } else {
+            const duration = sound.getDuration();
+            return resolve(duration);
+          }
+        },
+      );
     });
   };
 
@@ -164,12 +167,11 @@ function ChatScreen() {
     {
       name: 'Document',
       icon: DocumentIcon,
-      formatter: () => {
+      formatter: async () => {
         // TODO: check for permission for external storage
         // if (PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE || WRITE_EXTERNAL_STORAGE)
         //   PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
         // PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE;
-
         // updating the SDK flag to keep the connection Alive when app goes background because of document picker
         SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
         DocumentPicker.pickSingle({
@@ -205,7 +207,6 @@ function ChatScreen() {
             const updatedFile = {
               fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
             };
-            console.log('updatedFile', updatedFile);
             const messageData = {
               type: 'media',
               content: [updatedFile],
@@ -227,11 +228,6 @@ function ChatScreen() {
         let imageReadPermission = await requestStoragePermission();
         const camera_permission = await AsyncStorage.getItem(
           'camera_permission',
-        );
-        console.log(
-          cameraPermission,
-          imageReadPermission,
-          'cameraPermission, imageReadPermission',
         );
         AsyncStorage.setItem('camera_permission', 'true');
         if (
@@ -354,7 +350,6 @@ function ChatScreen() {
           fileDetails: { fileSize, filename, duration, uri, type } = {},
         } = file;
 
-        const mediaDuration = setDurationSecToMilli(duration);
         const isDocument = DOCUMENT_FORMATS.includes(type);
         const msgType = isDocument ? 'file' : type.split('/')[0];
         const thumbImage = msgType === 'image' ? await getThumbImage(uri) : '';
@@ -364,7 +359,7 @@ function ChatScreen() {
           fileSize: fileSize,
           caption: caption,
           uri: uri,
-          duration: mediaDuration,
+          duration: duration,
           msgId: msgId,
           thumbImage: thumbImage,
         };

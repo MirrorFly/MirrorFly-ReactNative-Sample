@@ -313,29 +313,6 @@ function ChatScreen() {
     return response;
   };
 
-  /** const fileDetails = {
-    duration: null,
-    fileSize: 2265145,
-    filename: 'blue_alpine_a521_2021_f1_car_2_4k_hd_cars.jpg',
-    height: 2160,
-    modificationTimestamp: 1691217115866,
-    type: 'image/jpeg',
-    uri: 'file:///storage/emulated/0/Download/blue_alpine_a521_2021_f1_car_2_4k_hd_cars.jpg',
-    width: 3840,
-  };
-  const file = {
-    caption: '',
-    fileDetails: {
-      duration: null,
-      fileSize: 2265145,
-      filename: 'blue_alpine_a521_2021_f1_car_2_4k_hd_cars.jpg',
-      height: 2160,
-      modificationTimestamp: 1691217115866,
-      type: 'image/jpeg',
-      uri: 'file:///storage/emulated/0/Download/blue_alpine_a521_2021_f1_car_2_4k_hd_cars.jpg',
-      width: 3840,
-    },
-  }; */
   const sendMediaMessage = async (messageType, files, chatTypeSendMsg) => {
     let jidSendMediaMessage = fromUserJId;
     if (messageType === 'media') {

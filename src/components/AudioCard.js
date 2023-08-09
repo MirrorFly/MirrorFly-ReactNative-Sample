@@ -48,7 +48,7 @@ const AudioCard = props => {
           height="30">
           <AudioMusicIcon width="14" height="14" />
         </View>
-        <View ml={2}>
+        <View ml={2} mr={1}>
           <AttachmentProgressLoader
             isSender={isSender}
             mediaStatus={mediaStatus}

@@ -1,4 +1,4 @@
-import React, { createRef } from 'react';
+import React, { createRef, useMemo } from 'react';
 import { Text } from 'react-native';
 import RNSlider from './RNSlider';
 import Sound from 'react-native-sound';
@@ -149,15 +149,22 @@ const AudioPlayer = props => {
   const currentTimeString = getAudioTimeString(playSeconds);
   const durationString = millisToMinutesAndSeconds(media.duration);
 
+  const sliderDisable = useMemo(() => {
+    return !(
+      mediaStatus === mediaStatusConstants.DOWNLOADED ||
+      mediaStatus === mediaStatusConstants.UPLOADED
+    );
+  }, [mediaStatus]);
+
   return (
     <View style={style.audioControlContainer}>
-      <View px={1} flexDirection={'row'}>
+      <View flexDirection={'row'}>
         {(mediaStatus === mediaStatusConstants.DOWNLOADED ||
           mediaStatus === mediaStatusConstants.UPLOADED) && (
           <>
             {playState === PLAY_STATE_PLAYING ? (
               <IconButton
-                style={{ width: 30 }}
+                style={{ width: 25 }}
                 onPress={pauseSound}
                 _pressed={{ bg: null }}
                 icon={<Icon as={AudioPause} name="emoji-happy" />}
@@ -165,7 +172,7 @@ const AudioPlayer = props => {
               />
             ) : (
               <IconButton
-                style={{ width: 30 }}
+                style={{ width: 25 }}
                 onPress={playSound}
                 _pressed={{ bg: null }}
                 icon={<Icon as={AudioPlay} name="emoji-happy" />}
@@ -180,6 +187,7 @@ const AudioPlayer = props => {
             onTouchEnd={onSliderEditEnd}
             onSlidingComplete={onSliderEditing}
             value={playSeconds}
+            disabled={sliderDisable}
             maximumValue={Math.floor(media.duration / 1000)}
             maximumTrackTintColor="#AFB8D0"
             minimumTrackTintColor="#FFFFFF"

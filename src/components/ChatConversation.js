@@ -22,10 +22,13 @@ import { resetGalleryData } from '../redux/Actions/GalleryAction';
 // import { clearGalleryData } from '../redux/utils';
 import ChatConversationList from './ChatConversationList';
 import Clipboard from '@react-native-clipboard/clipboard';
-
 import ReplyText from './ReplyText';
 import ReplyImage from './ReplyImage';
 import ReplyVideo from './ReplyVideo';
+import ReplyAudio from './ReplyAudio';
+import ReplyDocument from './ReplyDocument';
+import ReplyLocation from './ReplyLocation';
+import ReplyContact from './ReplyContact';
 
 const ChatConversation = React.memo(props => {
   const { handleSendMsg } = props;
@@ -39,6 +42,8 @@ const ChatConversation = React.memo(props => {
   const [selectedMsgs, setSelectedMsgs] = React.useState([]);
   const [replyMsgs, setReplyMsgs] = React.useState();
   const [menuItems, setMenuItems] = React.useState([]);
+  // const [selectedMsgIndex, setSelectedMsgIndex] = React.useState();
+
   const toast = useToast();
   /**
      *  const { vCardProfile, fromUserJId, messages } = useSelector((state) =>  ({
@@ -78,8 +83,10 @@ const ChatConversation = React.memo(props => {
   };
 
   const copyToClipboard = () => {
-    console.log('messageList', selectedMsgs[0].msgBody.message_type);
-    Clipboard.setString(selectedMsgs[0].msgBody.message);
+ 
+    if (selectedMsgs[0].msgBody.message.length <= 500) {
+      Clipboard.setString(selectedMsgs[0].msgBody.message);
+    }
     if (selectedMsgs[0].msgBody.message) {
       return toast.show({
         ...toastConfig,
@@ -99,7 +106,7 @@ const ChatConversation = React.memo(props => {
   const handleReply = msg => {
     setSelectedMsgs([]);
     setReplyMsgs(msg);
-    console.log('selectedMsgs', selectedMsgs[0].msgBody?.message);
+   // console.log('selectedMsgs', selectedMsgs[0].msgBody?.message);
   };
 
   const handleRemove = () => {
@@ -110,8 +117,14 @@ const ChatConversation = React.memo(props => {
     let message = {
       type: 'text',
       content: messageContent,
+      replyTo:replyMsgs?.msgId || ''
     };
     handleSendMsg(message);
+
+     if(message.replyTo =!'')
+     {
+       handleRemove();
+     }  
   };
 
   React.useEffect(() => {
@@ -123,8 +136,9 @@ const ChatConversation = React.memo(props => {
         setMenuItems([
           {
             label:
-              selectedMsgs[0].msgBody.message_type === 'text' ? 'Copy' : null,
+             selectedMsgs[0].msgBody.message_type === 'text' ? 'Copy' : null,
             formatter: copyToClipboard,
+          
           },
 
           {
@@ -139,7 +153,6 @@ const ChatConversation = React.memo(props => {
             label: 'Message Info',
             formatter: () => {
               props.setIsMessageInfo(selectedMsgs[0]);
-              // location
               props.setLocalNav('MESSAGEINFO');
             },
           },
@@ -208,12 +221,13 @@ const ChatConversation = React.memo(props => {
     dispatch(resetGalleryData());
   }, []);
 
-  const handleMsgSelect = message => {
+  const handleMsgSelect = (message, index) => {
     if (selectedMsgs.includes(message)) {
       setSelectedMsgs(prevArray => prevArray.filter(item => message !== item));
     } else {
       setSelectedMsgs([...selectedMsgs, message]);
     }
+    
   };
 
   // React.useEffect(() => {
@@ -246,12 +260,15 @@ const ChatConversation = React.memo(props => {
           fromUserJId={fromUserJId}
           handleMsgSelect={handleMsgSelect}
           selectedMsgs={selectedMsgs}
+          
+          
+         
         />
       </ImageBackground>
       {replyMsgs ? (
-        <View paddingX={'1'} paddingY={'1'} backgroundColor={'#DDE3E5'}>
-          <Stack paddingX={'3'} paddingY={'0 '} backgroundColor={'#E2E8F9'}>
-            <View marginY={'4'} justifyContent={'flex-start'}>
+        <View paddingX={'1'} paddingY={'2'} backgroundColor={'#E2E8F9'}>
+          <Stack paddingX={'3'} paddingY={'0 '} backgroundColor={'#0000001A'}>
+            <View marginY={'3'} justifyContent={'flex-start'}>
               {
                 {
                   text: (
@@ -273,13 +290,28 @@ const ChatConversation = React.memo(props => {
                     />
                   ),
                   audio: (
-                    <Text
-                      fontWeight={'600'}
-                      fontStyle={'italic'}
-                      fontSize={14}
-                      color="#313131">
-                      audio
-                    </Text>
+                    <ReplyAudio
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
+                  ),
+                  file: (
+                    <ReplyDocument
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
+                  ),
+                  contact: (
+                    <ReplyContact
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
+                  ),
+                  location: (
+                    <ReplyLocation
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
                   ),
                 }[replyMsgs?.msgBody?.message_type]
               }

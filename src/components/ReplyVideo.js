@@ -17,12 +17,12 @@ const ReplyVideo = props => {
     <View style={{ position: 'relative' }}>
       <HStack justifyContent={'space-between'} alignItems={'center'}>
         {replyMsgItems.fromUserJid === currentUserJID ? (
-          <Text color={'#000'} fontSize={14} mb={2} fontWeight={600} py="0">
+          <Text color={'#000'} fontSize={14} pl={1}  mb={1} fontWeight={600} py="0">
             You
           </Text>
         ) : (
-          <Text mb={2} color={'#000'} fontSize={14} fontWeight={600} py="0">
-            {replyMsgItems.msgBody.nickName}
+          <Text mb={1} color={'#000'} pl={1} fontSize={14} fontWeight={600} py="0">
+            {replyMsgItems?.msgBody.nickName}
           </Text>
         )}
       </HStack>
@@ -32,22 +32,22 @@ const ReplyVideo = props => {
           height: 64,
           alignItems: 'flex-end',
           position: 'absolute',
-          top: -15,
+          top: -12,
           bottom: 0,
           right: -10,
         }}>
-        {replyMsgItems.msgBody.media.local_path ? (
+        {replyMsgItems?.msgBody?.media?.local_path ? (
           <Image
             resizeMode="cover"
-            style={{ width: 70, height: 75 }}
-            source={{ uri: replyMsgItems.msgBody.media.local_path }}
+            style={{ width: 60, height: 69 }}
+            source={{ uri: replyMsgItems?.msgBody?.media?.local_path }}
           />
         ) : (
           <Image
             resizeMode="cover"
-            style={{ width: 70, height: 75 }}
+            style={{ width: 60, height: 69 }}
             source={{
-              uri: `data:image/png;base64,${replyMsgItems.msgBody.media.thumb_image}`,
+              uri: `data:image/png;base64,${replyMsgItems?.msgBody?.media?.thumb_image}`,
             }}
           />
         )}
@@ -65,9 +65,9 @@ const ReplyVideo = props => {
         </Pressable>
       </View>
 
-      <HStack alignItems={'center'}>
+      <HStack alignItems={'center'}pl={1}>
         <VideoIcon color={'#767676'} width="13" height="13" />
-        <Text pl={4} fontSize={14} color={'#000000'} fontWeight={400}>
+        <Text pl={2} fontSize={14} color="#313131" fontWeight={400}>
           Video
         </Text>
       </HStack>

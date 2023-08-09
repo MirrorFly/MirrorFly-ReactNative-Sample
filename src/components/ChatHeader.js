@@ -187,7 +187,7 @@ function ChatHeader(props) {
               </Pressable>
               <Pressable onPress={handleDeleteForMe}>
                 <Text color={'#3276E2'} fontWeight={'600'}>
-                  DELETE FOR ME{' '}
+                  DELETE FOR ME
                 </Text>
               </Pressable>
             </HStack>

@@ -1,4 +1,4 @@
-import { StyleSheet, Pressable, Image } from 'react-native';
+import { Pressable, Image } from 'react-native';
 import React from 'react';
 import { ClearTextIcon, GalleryAllIcon } from '../common/Icons';
 import { HStack, Text, View } from 'native-base';
@@ -16,18 +16,17 @@ const ReplyImage = props => {
 
   return (
     <View style={{ position: 'relative' }}>
-      <HStack justifyContent={'space-between'} alignItems={'center'}>
-     
-        {/* {replyMsgItems.fromUserJid === currentUserJID ? (
-          <Text color={'#000'} fontSize={14} mb={2} fontWeight={600} py="0">
+      <HStack justifyContent={'space-between'} alignItems={'center'}>   
+        {replyMsgItems.fromUserJid === currentUserJID ? (
+          <Text color={'#000'} pl={1}  fontSize={14} mb={1} fontWeight={600} py="0">
             You
           </Text>
         ) : (
-          <Text mb={2} color={'#000'} fontSize={14} fontWeight={600} py="0">
-            {replyMsgItems.msgBody.nickName}
+          <Text mb={1} pl={1}  color={'#000'} fontSize={14} fontWeight={600} py="0">
+            {replyMsgItems.msgBody.nickName}    
           </Text>
-        )} */}
-        <Text mb={2}>Hiiiiiiiiiii</Text>
+        )}
+        
       </HStack>
       <View
         style={{
@@ -35,29 +34,27 @@ const ReplyImage = props => {
           height: 64,
           alignItems: 'flex-end',
           position: 'absolute',
-          top: -15,
+          top: -12,
           bottom: 0,
           right: -10,
         }}>
        
         {
-            replyMsgItems.msgBody.media.local_path ?
-           
+            replyMsgItems.msgBody.media.local_path ?   
              (
         <Image
           resizeMode="cover" 
-          style={{ width: 70, height: 75 }}
+          style={{ width: 60, height:69 }}
           source={{ uri: replyMsgItems.msgBody.media.local_path }}
         />
         ) :
         (
         <Image
           resizeMode="cover" 
-          style={{ width: 70, height: 75 }}
+          style={{ width: 60, height: 69 }}
           source={{ uri: `data:image/png;base64,${replyMsgItems.msgBody.media.thumb_image}` }}
         />
-        )
-        
+        )   
         }
 
         <Pressable
@@ -74,9 +71,9 @@ const ReplyImage = props => {
         </Pressable>
       </View>
 
-      <HStack alignItems={'center'}>
+      <HStack alignItems={'center'} pl={1}>
         <GalleryAllIcon />
-        <Text pl={4} fontSize={14} color={'#000000'} fontWeight={400}>
+        <Text pl={2} fontSize={14} color="#313131" fontWeight={400}>
           Image
         </Text>
       </HStack>
@@ -85,5 +82,3 @@ const ReplyImage = props => {
 };
 
 export default ReplyImage;
-
-const styles = StyleSheet.create({});

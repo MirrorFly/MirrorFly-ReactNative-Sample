@@ -3,6 +3,7 @@ import { HStack, View, Text, Slider } from 'native-base';
 import { AudioMusicIcon, DownloadIcon } from '../common/Icons';
 
 const AudioCard = (props) => {
+  
     const durationInSeconds = props.data.msgBody.media.duration;
     const durationInMinutes = Math.floor(durationInSeconds / 1000);
     const handleUnfilledTrackColor = '#D0D8EB';
@@ -13,7 +14,7 @@ const AudioCard = (props) => {
         <View borderColor={'#E5E5E5'} borderWidth={1} flex={1} width={250} borderRadius={10} mb={1}>
             <HStack px='2' style={{ backgroundColor: "#EFEFEF", justifyContent: "flex-start", alignItems: "center" }} >
                 <View borderRadius={25} padding={"2"} backgroundColor={"#7285B5"} width='30' height='30' >
-                    <AudioMusicIcon width='14' height='14' />
+                    <AudioMusicIcon width='14' height='14'  />
                 </View>
                 <View style={{ borderRadius: 5, borderWidth: 2, borderColor: "#AFB8D0", paddingHorizontal: 6, paddingVertical: 3, marginLeft: 10 }}>
                     <DownloadIcon width='15' height='22' />

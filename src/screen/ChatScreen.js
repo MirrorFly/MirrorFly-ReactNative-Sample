@@ -39,6 +39,7 @@ import {
 import PostPreViewPage from '../components/PostPreViewPage';
 
 function ChatScreen() {
+
   const vCardData = useSelector(state => state.profile.profileDetails);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
@@ -48,8 +49,6 @@ function ChatScreen() {
   const [isToastShowing, setIsToastShowing] = React.useState(false);
   const [selectedImages, setSelectedImages] = React.useState([]);
   const [selectedSingle, setselectedSingle] = React.useState(false);
-
-  console.log('rendering');
 
   const toastConfig = {
     duration: 2500,
@@ -75,7 +74,6 @@ function ChatScreen() {
       icon: GalleryIcon,
       formatter: async () => {
         let imageReadPermission = await requestStoragePermission();
-        console.log('imageReadPermission', imageReadPermission);
         if (
           imageReadPermission === 'granted' ||
           imageReadPermission === 'limited'
@@ -331,7 +329,7 @@ function ChatScreen() {
       };
       store.dispatch(addChatConversationHistory(dispatchData));
       store.dispatch(updateRecentChat(recentChatObj));
-      SDK.sendTextMessage(jid, message.content, msgId);
+      SDK.sendTextMessage(jid, message.content, msgId,message.replyTo);
     }
   };
 

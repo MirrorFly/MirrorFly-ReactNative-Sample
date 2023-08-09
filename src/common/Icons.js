@@ -1208,7 +1208,7 @@ export const DocumentIcon = () => {
   );
 };
 
-export const LocationIcon = () => {
+export const LocationIcon = (props) => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
@@ -1241,7 +1241,8 @@ export const LocationIcon = () => {
               data-name="Path 9751"
               d="M56.243,0a7.2,7.2,0,0,0-6.814,8.565h0s.011.078.048.226a7.218,7.218,0,0,0,.485,1.429A20.857,20.857,0,0,0,56.1,17.907a.626.626,0,0,0,.8,0,20.836,20.836,0,0,0,6.14-7.687,6.912,6.912,0,0,0,.485-1.429c.033-.144.048-.226.048-.226h0A7.205,7.205,0,0,0,56.243,0ZM56.5,10.782a3.5,3.5,0,1,1,3.5-3.5A3.5,3.5,0,0,1,56.5,10.782Z"
               transform="translate(-49.299 0)"
-              fill="#fff"
+              fill={props.color ||"#fff"}
+        
             />
           </G>
         </G>
@@ -1623,13 +1624,13 @@ export const GalleryAllIcon = props => {
           data-name="Path 9769"
           d="M182.351,99.52a1.6,1.6,0,1,0-1.6-1.6A1.6,1.6,0,0,0,182.351,99.52Zm0-2.264a.662.662,0,1,1-.662.662A.663.663,0,0,1,182.351,97.256Zm0,0"
           transform="translate(-175.089 -92.816)"
-          fill="#181818"
+          fill={props.color || "#181818"}
         />
         <Path
           id="Path_9770"
           data-name="Path 9770"
           d="M15.449.5H.586A.586.586,0,0,0,0,1.085V13.666a.586.586,0,0,0,.585.585H15.449a.586.586,0,0,0,.585-.585V1.085A.586.586,0,0,0,15.449.5Zm-.354.939V8.874L12.14,5.919a.5.5,0,0,0-.7,0L7.263,10.1,4.594,7.429a.494.494,0,0,0-.7,0L.94,10.384V1.439ZM.94,13.312v-1.6l3.3-3.3,2.669,2.669a.494.494,0,0,0,.7,0L11.791,6.9l3.3,3.3v3.109Zm0,0"
-          fill="#181818"
+          fill={props.color || "#181818"}
         />
       </G>
     </Svg>
@@ -1826,7 +1827,7 @@ export const AudioMusicIcon = props => {
             data-name="Path 13786"
             d="M29.615,27.145V25.46a11.427,11.427,0,1,0-22.855,0v1.684a4.683,4.683,0,0,0,.429,9.347h.429v.165a1.1,1.1,0,0,0,1.09,1.09h.859a1.1,1.1,0,0,0,1.09-1.09v-9.71a1.1,1.1,0,0,0-1.09-1.09h-.4v-.4a9.016,9.016,0,0,1,18.033,0v.4h-.4a1.1,1.1,0,0,0-1.09,1.09v9.71a1.1,1.1,0,0,0,1.09,1.09h.859a1.1,1.1,0,0,0,1.09-1.09v-.165h.462a4.687,4.687,0,0,0,4.69-4.69A4.753,4.753,0,0,0,29.615,27.145Z"
             transform="translate(-2.5 -14)"
-            fill="#ffff"
+            fill={props.color || '#fff'}
           />
         </G>
       </G>
@@ -2405,6 +2406,94 @@ export const ShareIcon = props => {
         // stroke="#181818"
         stroke-width="0.2"
       />
+    </Svg>
+  );
+};
+
+export const ContactChatIcon = props => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="14"
+      viewBox="0 0 14 14">
+      <G id="Contact" transform="translate(-92 -144)">
+        <G
+          id="contact-book_3_"
+          data-name="contact-book (3)"
+          transform="translate(45.297 144.595)">
+          <G id="Group_7305" data-name="Group 7305" transform="translate(48)">
+            <path
+              id="Path_9718"
+              data-name="Path 9718"
+              d="M58.466,1.675H57.21V.419A.419.419,0,0,0,56.792,0H49.256A1.257,1.257,0,0,0,48,1.256V11.722A1.676,1.676,0,0,0,49.675,13.4h8.792a.419.419,0,0,0,.419-.419V2.093A.419.419,0,0,0,58.466,1.675Zm-2.093,8.792a.419.419,0,0,1-.419.419H50.931a.419.419,0,0,1-.419-.419V9.629a2.1,2.1,0,0,1,2.093-2.093H54.28a2.1,2.1,0,0,1,2.093,2.093ZM51.768,5.024A1.675,1.675,0,1,1,53.442,6.7,1.676,1.676,0,0,1,51.768,5.024Zm4.605-3.349H49.256a.419.419,0,1,1,0-.837h7.117Z"
+              transform="translate(-48)"
+              fill="#767676"
+            />
+          </G>
+        </G>
+        <Rect
+          id="Rectangle_4647"
+          data-name="Rectangle 4647"
+          width="14"
+          height="14"
+          transform="translate(92 144)"
+          fill="none"
+        />
+      </G>
+    </Svg>
+  );
+};
+
+export const DocumentChatIcon = props => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="14"
+      viewBox="0 0 14 14">
+      <G id="Document" transform="translate(-92 -143)">
+        <G id="folded-document-icon" transform="translate(90.014 144)">
+          <G
+            id="Group_7326"
+            data-name="Group 7326"
+            transform="translate(3.986)">
+            <G id="Group_7325" data-name="Group 7325">
+              <Rect
+                id="Rectangle_3728"
+                data-name="Rectangle 3728"
+                width="5.039"
+                height="0.733"
+                transform="translate(2.37 2.941)"
+                fill="#767676"
+              />
+              <Rect
+                id="Rectangle_3729"
+                data-name="Rectangle 3729"
+                width="5.039"
+                height="0.733"
+                transform="translate(2.37 4.698)"
+                fill="#767676"
+              />
+              <Path
+                id="Path_9748"
+                data-name="Path 9748"
+                d="M13.524,0H4.237a.244.244,0,0,0-.244.244V8.388a.605.605,0,0,0-.007.071A2.367,2.367,0,0,0,6.046,10.8l-.007.005,7.241.923a.489.489,0,0,0,.489-.489v-11A.245.245,0,0,0,13.524,0Zm-.977,10.314L7.7,7.471c-.114-.073-.206-.022-.206.113v.833c0,.014,0,.027,0,.042A1.142,1.142,0,0,1,6.351,9.6,1.1,1.1,0,0,1,5.215,8.5c0-.022,0-.054,0-.076v-7.2h7.331v9.092Z"
+                transform="translate(-3.986)"
+                fill="#767676"
+              />
+            </G>
+          </G>
+        </G>
+        <Rect
+          id="Rectangle_4651"
+          data-name="Rectangle 4651"
+          width="14"
+          height="14"
+          transform="translate(92 143)"
+          fill="none"
+        />
+      </G>
     </Svg>
   );
 };

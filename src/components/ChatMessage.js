@@ -21,7 +21,9 @@ const ChatMessage = props => {
   let isSame = currentUserJID === props?.message?.fromUserJid;
   let statusVisible = 'notSend';
   const { message, setLocalNav } = props;
-  console.log("messageChatMessage",message);
+   
+
+ 
   const {
     msgBody = {},
     msgBody: {
@@ -121,7 +123,7 @@ const ChatMessage = props => {
 
   const handleMessageObj = () => {
     if (
-      props.message.msgBody.media.local_path ||
+      props.message.msgBody?.media?.local_path ||
       props.message.msgBody?.media?.file?.fileDetails?.image?.uri
     ) {
       dispatch(singleChatSelectedMediaImage(props.message));
@@ -151,7 +153,7 @@ const ChatMessage = props => {
                   ? 'rgba(0,0,0,0.2)'
                   : 'transparent'
               }>
-              <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px="3">
+              <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px="3" >
                 <Pressable
                   onPress={handleMessageObj}
                   minWidth="30%"
@@ -161,6 +163,7 @@ const ChatMessage = props => {
                       text: (
                         <TextCard
                           isSame={isSame}
+                          message={message}
                           data={{
                             message: message?.msgBody?.message,
                             timeStamp: getConversationHistoryTime(
@@ -171,6 +174,8 @@ const ChatMessage = props => {
                         />
                       ),
                       image: (
+                        
+                       
                         <ImageCard
                           messageObject={message}
                           setUploadStatus={setUploadStatus}
@@ -183,6 +188,7 @@ const ChatMessage = props => {
                           uploadStatus={uploadStatus}
                           fileSize={fileSize}
                         />
+                        
                       ),
                       video: (
                         <VideoCard
@@ -202,11 +208,13 @@ const ChatMessage = props => {
                         <View style={{ flex: 1 }}>
                           <AudioCard
                             data={message}
+                           
                             status={getMessageStatus(message?.msgStatus)}
                             timeStamp={getConversationHistoryTime(
                               message?.createdAt,
                             )}
                           />
+                         
                         </View>
                       ),
                       file: (
@@ -228,7 +236,7 @@ const ChatMessage = props => {
                           )}
                         />
                       ),
-                      location: (
+                      location: (  
                         <MapCard
                           data={message}
                           status={getMessageStatus(message?.msgStatus)}
@@ -236,6 +244,7 @@ const ChatMessage = props => {
                             message?.createdAt,
                           )}
                         />
+                        
                       ),
                     }[message?.msgBody?.message_type]
                   }

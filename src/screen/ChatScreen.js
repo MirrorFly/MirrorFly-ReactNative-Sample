@@ -60,6 +60,7 @@ import { addChatConversationHistory } from '../redux/Actions/ConversationAction'
 import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import store from '../redux/store';
 import SavePicture from './Gallery';
+import { createThumbnail } from 'react-native-create-thumbnail';
 
 function ChatScreen() {
   const vCardData = useSelector(state => state.profile.profileDetails);
@@ -313,6 +314,37 @@ function ChatScreen() {
     return response;
   };
 
+  const getVideoThumbImage = async uri => {
+    console.log(uri, 'getVideoThumbImage');
+    let response;
+    if (Platform.OS === 'ios') {
+      if (uri.includes('ph://')) {
+        let result = await ImageCompressor.compress(uri, {
+          maxWidth: 300,
+          maxHeight: 300,
+          quality: 0.5,
+        });
+        response = await RNFS.readFile(result, 'base64');
+      } else {
+        const frame = await createThumbnail({
+          url: uri,
+          timeStamp: 10000,
+        });
+        console.log(frame, 'frame');
+        response = await RNFS.readFile(frame.path, 'base64');
+      }
+    } else {
+      const frame = await createThumbnail({
+        url: uri,
+        timeStamp: 10000,
+      });
+      console.log(frame, 'frame');
+      response = await RNFS.readFile(frame.path, 'base64');
+    }
+    console.log(response, 'responseresponseresponseresponse ');
+    return response;
+  };
+
   /** const fileDetails = {
     duration: null,
     fileSize: 2265145,
@@ -353,7 +385,8 @@ function ChatScreen() {
         const isDocument = DOCUMENT_FORMATS.includes(type);
         const msgType = isDocument ? 'file' : type.split('/')[0];
         const thumbImage = msgType === 'image' ? await getThumbImage(uri) : '';
-
+        const thumbVideoImage =
+          msgType === 'video' ? await getVideoThumbImage(uri) : '';
         let fileOptions = {
           fileName: filename,
           fileSize: fileSize,
@@ -361,7 +394,7 @@ function ChatScreen() {
           uri: uri,
           duration: duration,
           msgId: msgId,
-          thumbImage: thumbImage,
+          thumbImage: thumbImage || thumbVideoImage,
         };
         const userProfile = vCardData;
 

@@ -20,7 +20,7 @@ const DocumentMessageCard = ({
   const fileExtension = getExtension(mediaData?.fileName, false);
   const { mediaStatus, downloadMedia, retryUploadMedia } = useMediaProgress({
     isSender,
-    mediaUrl,
+    mediaUrl: mediaUrl,
     uploadStatus: message?.msgBody?.media?.is_uploading || 0,
     media: message?.msgBody?.media,
     msgId: message?.msgId,

@@ -44,7 +44,6 @@ const getMaxAllowedFileSize = mediaType => {
 export const validateFileSize = (size, mediaTypeFile) => {
   const filemb = Math.round(size / 1024);
   const maxAllowedSize = getMaxAllowedFileSize(mediaTypeFile);
-
   if (filemb >= maxAllowedSize * 1024) {
     const message = `File size is too large. Try uploading file size below ${maxAllowedSize}MB`;
     if (mediaTypeFile) {
@@ -60,7 +59,7 @@ export const validation = file => {
 
   const allowedFilescheck = new RegExp(
     '([a-zA-Z0-9s_\\.-:])+(' + ALLOWED_ALL_FILE_FORMATS.join('|') + ')$',
-    'i'
+    'i',
   );
   let mediaType = getType(file.type);
   if (!allowedFilescheck.test(fileExtension)) {

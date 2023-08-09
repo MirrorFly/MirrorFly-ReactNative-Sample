@@ -12,7 +12,7 @@ import { mediaStatusConstants } from '../../constant';
 const PLAY_STATE_PAUSED = 'paused';
 const PLAY_STATE_PLAYING = 'playing';
 const PLAY_STATE_LOADING = 'loading';
-let soundRef = createRef();
+export const soundRef = createRef();
 
 const AudioPlayer = props => {
   const { media, msgId, uri, mediaStatus } = props;
@@ -141,10 +141,11 @@ const AudioPlayer = props => {
     }
   };
 
-  const stopSound = () => {
-    soundRef.current.stop();
-    soundRef.current.setCurrentTime(0); // Optional: Set the sound's position back to the beginning
+  /** const stopSound = () => {
+    sound.current?.stop();
+    sound.current?.setCurrentTime(0); // Optional: Set the sound's position back to the beginning
   };
+   */
 
   const currentTimeString = getAudioTimeString(playSeconds);
   const durationString = millisToMinutesAndSeconds(media.duration);

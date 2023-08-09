@@ -101,14 +101,18 @@ function ChatScreen() {
 
   const getAudioDuration = async path => {
     return new Promise((resolve, reject) => {
-      const sound = new Sound(path, Sound.MAIN_BUNDLE, error => {
-        if (error) {
-          return reject(error);
-        } else {
-          const duration = sound.getDuration();
-          return resolve(duration);
-        }
-      });
+      const sound = new Sound(
+        path,
+        Platform.OS === 'ios' ? '' : Sound.MAIN_BUNDLE,
+        error => {
+          if (error) {
+            return reject(error);
+          } else {
+            const duration = sound.getDuration();
+            return resolve(duration);
+          }
+        },
+      );
     });
   };
 
@@ -129,7 +133,7 @@ function ChatScreen() {
         setAlert(true);
         setValidate(_validate);
       }
-      const audioDuration = await getAudioDuration(response.fileCopyUri);
+      const audioDuration = await getAudioDuration(response.uri);
       response.duration = audioDuration;
       if (size && !Toast.isActive(size_toast)) {
         return Toast.show({
@@ -164,12 +168,11 @@ function ChatScreen() {
     {
       name: 'Document',
       icon: DocumentIcon,
-      formatter: () => {
+      formatter: async () => {
         // TODO: check for permission for external storage
         // if (PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE || WRITE_EXTERNAL_STORAGE)
         //   PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
         // PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE;
-
         // updating the SDK flag to keep the connection Alive when app goes background because of document picker
         SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
         DocumentPicker.pickSingle({
@@ -186,7 +189,7 @@ function ChatScreen() {
             if (!isValidFileType(file.type)) {
               Alert.alert(
                 'Mirrorfly',
-                'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files'
+                'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
               );
               return;
             }
@@ -226,12 +229,7 @@ function ChatScreen() {
         let cameraPermission = await requestCameraPermission();
         let imageReadPermission = await requestStoragePermission();
         const camera_permission = await AsyncStorage.getItem(
-          'camera_permission'
-        );
-        console.log(
-          cameraPermission,
-          imageReadPermission,
-          'cameraPermission, imageReadPermission'
+          'camera_permission',
         );
         AsyncStorage.setItem('camera_permission', 'true');
         if (
@@ -250,7 +248,7 @@ function ChatScreen() {
       icon: GalleryIcon,
       formatter: async () => {
         const storage_permission = await AsyncStorage.getItem(
-          'storage_permission'
+          'storage_permission',
         );
         AsyncStorage.setItem('storage_permission', 'true');
         let imageReadPermission = await requestStoragePermission();
@@ -441,7 +439,7 @@ function ChatScreen() {
     setselectedSingle(false);
     const size = validateFileSize(item.image.fileSize, getType(item.type));
     const isImageSelected = selectedImages.some(
-      selectedItem => selectedItem.fileDetails?.uri === item?.image.uri
+      selectedItem => selectedItem.fileDetails?.uri === item?.image.uri,
     );
     if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
       return toast.show({
@@ -476,8 +474,8 @@ function ChatScreen() {
       if (isImageSelected) {
         setSelectedImages(prevArray =>
           prevArray.filter(
-            selectedItem => selectedItem.fileDetails?.uri !== item?.image?.uri
-          )
+            selectedItem => selectedItem.fileDetails?.uri !== item?.image?.uri,
+          ),
         );
       } else {
         setSelectedImages(prevArray => [...prevArray, transformedArray]);

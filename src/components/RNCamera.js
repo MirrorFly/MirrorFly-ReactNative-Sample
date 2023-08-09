@@ -113,7 +113,9 @@ const Camera = props => {
         if (size) {
           showToast(size, 'rncamera-size');
         }
-        if (!size) setData(imageFile);
+        if (!size) {
+          setData(imageFile);
+        }
       } else {
         console.warn('Camera ref is not ready');
       }
@@ -165,7 +167,7 @@ const Camera = props => {
       ...videoData,
       width,
       height,
-      duration: duration * 1000,
+      duration: duration,
       type: 'video',
     };
     console.log(combinedData, 'combinedData');

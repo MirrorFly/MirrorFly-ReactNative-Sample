@@ -69,7 +69,8 @@ const AudioPlayer = props => {
     } else {
       const filepath = uri;
       if (playState === PLAY_STATE_LOADING && filepath) {
-        sound.current = new Sound(filepath, Sound.MAIN_BUNDLE, error => {
+        Sound.setCategory('Playback');
+        sound.current = new Sound(filepath, '', error => {
           if (error) {
             console.log(error, 'Play Error');
             setPlayState(PLAY_STATE_PAUSED);
@@ -173,7 +174,7 @@ const AudioPlayer = props => {
             onTouchEnd={onSliderEditEnd}
             onSlidingComplete={onSliderEditing}
             value={playSeconds}
-            maximumValue={Math.ceil(media.duration / 1000)}
+            maximumValue={Math.floor(media.duration / 1000)}
             maximumTrackTintColor="#AFB8D0"
             minimumTrackTintColor="#FFFFFF"
             trackStyle={style.trackStyle}

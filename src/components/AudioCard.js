@@ -1,6 +1,6 @@
 import React from 'react';
-import { HStack, View, Text, Slider, Center } from 'native-base';
-import { AudioMusicIcon, DownloadIcon } from '../common/Icons';
+import { HStack, View, Text } from 'native-base';
+import { AudioMusicIcon } from '../common/Icons';
 import AudioPlayer from './Media/AudioPlayer';
 import { StyleSheet } from 'react-native';
 
@@ -12,12 +12,6 @@ const AudioCard = props => {
     msgBody: { media },
   } = messageObject;
   const uri = media.local_path || media?.file?.fileDetails?.uri;
-  // const durationInSeconds = props.data.msgBody.media.duration;
-  // const durationInMinutes = Math.floor(durationInSeconds / 1000);
-  // const handleUnfilledTrackColor = '#D0D8EB';
-  // const sliderStyle = {
-  //   track: { backgroundColor: handleUnfilledTrackColor },
-  // };
   return (
     <View
       borderColor={'#E5E5E5'}

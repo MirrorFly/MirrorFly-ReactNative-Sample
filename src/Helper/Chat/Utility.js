@@ -165,6 +165,8 @@ export const getRecentChatMsgObj = dataObj => {
   } = dataObj;
 
   const createdAt = changeTimeFormat(Date.now() * 1000);
+  const timestamp = Date.now() * 1000;
+
   const senderId = userProfile.fromUser;
   const msgBody = {
     message_type: msgType,
@@ -201,7 +203,7 @@ export const getRecentChatMsgObj = dataObj => {
     msgType: msgType,
     notificationTo: '',
     publisherId: senderId,
-    timestamp: new Date(createdAt).getTime(),
+    timestamp: timestamp,
     toUserId: fromUserId,
     unreadCount: 0,
     filterBy: fromUserId,

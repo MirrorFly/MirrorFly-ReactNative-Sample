@@ -9,6 +9,10 @@ function ScreenHeader(props) {
   const [isSearching, setIsSearching] = React.useState(false);
   const [text, setText] = React.useState('');
 
+  React.useEffect(() => {
+    setIsSearching(props.isSearching);
+  }, [props.isSearching]);
+
   const handlingBackBtn = () => {
     setText('');
     setIsSearching(false);

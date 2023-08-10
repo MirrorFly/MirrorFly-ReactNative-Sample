@@ -1,8 +1,10 @@
 import { Box, Stack, Text, useToast, View } from 'native-base';
 import React from 'react';
 import {
-  ImageBackground, KeyboardAvoidingView,
-  Platform, StyleSheet
+  ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import ChatHeader from '../components/ChatHeader';
@@ -73,17 +75,21 @@ const ChatConversation = React.memo(props => {
   };
 
   const copyToClipboard = () => {
- 
-    if (selectedMsgs[0].msgBody.message.length <= 500) {
-      Clipboard.setString(selectedMsgs[0].msgBody.message);
-    }
-    if (selectedMsgs[0].msgBody.message) {
-      return toast.show({
+    if (
+      selectedMsgs[0].msgBody.message.length <= 500 ||
+      selectedMsgs[0]?.msgBody?.media?.caption.length <= 500
+    ) {
+      setSelectedMsgs([]);
+      Clipboard.setString(
+        selectedMsgs[0].msgBody.message ||
+          selectedMsgs[0]?.msgBody?.media?.caption,
+      );
+      toast.show({
         ...toastConfig,
         render: () => {
           return (
             <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>
+              <Text color={'#fff'} p="2">
                 1 Text copied successfully to the clipboard
               </Text>
             </Box>
@@ -96,25 +102,21 @@ const ChatConversation = React.memo(props => {
   const handleReply = msg => {
     setSelectedMsgs([]);
     setReplyMsgs(msg);
-   // console.log('selectedMsgs', selectedMsgs[0].msgBody?.message);
+    // console.log('selectedMsgs', selectedMsgs[0].msgBody?.message);
   };
 
   const handleRemove = () => {
-    setReplyMsgs();
+    setReplyMsgs('');
   };
 
   const handleMessageSend = messageContent => {
     let message = {
       type: 'text',
       content: messageContent,
-      replyTo:replyMsgs?.msgId || ''
+      replyTo: replyMsgs?.msgId || '',
     };
     handleSendMsg(message);
-
-     if(message.replyTo =!'')
-     {
-       handleRemove();
-     }  
+    handleRemove();
   };
 
   React.useEffect(() => {
@@ -124,13 +126,6 @@ const ChatConversation = React.memo(props => {
     switch (true) {
       case foundMsg.length > 0:
         setMenuItems([
-          {
-            label:
-             selectedMsgs[0].msgBody.message_type === 'text' ? 'Copy' : null,
-            formatter: copyToClipboard,
-          
-          },
-
           {
             label: 'Report',
             formatter: () => {},
@@ -148,16 +143,10 @@ const ChatConversation = React.memo(props => {
           },
           {
             label:
-              selectedMsgs[0].msgBody.message_type === 'file' &&
-              selectedMsgs[0].msgBody.message_type === 'video' &&
-              selectedMsgs[0].msgBody.message_type === 'image'
-                ? 'Share'
+              selectedMsgs[0].msgBody.message_type === 'text' ||
+              selectedMsgs[0]?.msgBody?.media?.caption
+                ? 'Copy'
                 : null,
-            formatter: () => {},
-          },
-          {
-            label:
-              selectedMsgs[0].msgBody.message_type === 'text' ? 'Copy' : null,
             formatter: copyToClipboard,
           },
         ]);
@@ -187,7 +176,6 @@ const ChatConversation = React.memo(props => {
     } else {
       setSelectedMsgs([...selectedMsgs, message]);
     }
-    
   };
 
   return (
@@ -212,9 +200,6 @@ const ChatConversation = React.memo(props => {
           fromUserJId={fromUserJId}
           handleMsgSelect={handleMsgSelect}
           selectedMsgs={selectedMsgs}
-          
-          
-         
         />
       </ImageBackground>
       {replyMsgs ? (

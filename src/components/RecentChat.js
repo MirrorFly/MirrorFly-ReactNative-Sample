@@ -26,7 +26,13 @@ import { navigate } from '../redux/Actions/NavigationAction';
 import { Image, StyleSheet } from 'react-native';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import SDK from '../SDK/SDK';
-import { SandTimer, VideoSmallIcon, imageIcon } from '../common/Icons';
+import {
+  AudioMusicIcon,
+  DocumentChatIcon,
+  SandTimer,
+  VideoSmallIcon,
+  imageIcon,
+} from '../common/Icons';
 
 export default function RecentChat(props) {
   const dispatch = useDispatch();
@@ -144,7 +150,7 @@ export default function RecentChat(props) {
                       ),
                       file: (
                         <HStack pl="1" alignItems={'center'}>
-                          <Icon as={() => VideoSmallIcon('#767676')} />
+                          <Icon as={DocumentChatIcon} />
                           <Text
                             numberOfLines={1}
                             ellipsizeMode="tail"
@@ -157,7 +163,15 @@ export default function RecentChat(props) {
                       ),
                       audio: (
                         <HStack pl="1" alignItems={'center'}>
-                          <Icon as={() => VideoSmallIcon('#767676')} />
+                          <Icon
+                            as={() => (
+                              <AudioMusicIcon
+                                width="14"
+                                height="14"
+                                color={'#767676'}
+                              />
+                            )}
+                          />
                           <Text
                             numberOfLines={1}
                             ellipsizeMode="tail"

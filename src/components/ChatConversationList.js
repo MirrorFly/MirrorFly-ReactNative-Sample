@@ -4,7 +4,7 @@ import ChatMessage from './ChatMessage';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { useDispatch, useSelector } from 'react-redux';
 import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
-import SDK from '../SDK/SDK';
+import SDK from 'SDK/SDK';
 import { updateMsgSeenStatus } from './chat/common/createMessage';
 
 const ChatConversationList = ({
@@ -12,11 +12,7 @@ const ChatConversationList = ({
   fromUserJId,
   selectedMsgs,
   handleMsgSelect,
-  
 }) => {
-
-  // console.log("handleReply",handleReply);
-  // console.log("selectedMsgs",selectedMsgs);
   const { id: messagesReducerId, data: messages } = useSelector(
     state => state.chatConversationData,
   );
@@ -54,7 +50,6 @@ const ChatConversationList = ({
           handleMsgSelect={handleMsgSelect}
           selectedMsgs={selectedMsgs}
           message={item}
-         
         />
       );
     },

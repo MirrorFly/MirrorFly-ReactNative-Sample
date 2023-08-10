@@ -23,9 +23,6 @@ const ChatMessage = props => {
   let isSame = currentUserJID === props?.message?.fromUserJid;
   let statusVisible = 'notSend';
   const { message, setLocalNav } = props;
-   
-
- 
   const {
     msgBody = {},
     msgBody: {
@@ -177,9 +174,17 @@ const ChatMessage = props => {
                   ? 'rgba(0,0,0,0.2)'
                   : 'transparent'
               }>
-              <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px="3" >
+              <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px="3">
                 <Pressable
-                  onPress={handleMessageObj}
+                  onPress={() =>
+                    props?.selectedMsgs?.length < 1
+                      ? handleMessageObj()
+                      : handleMessageSelect()
+                  }
+                  onLongPress={() =>
+                    message?.msgStatus !== 3 &&
+                    props.handleMsgSelect(props.message)
+                  }
                   minWidth="30%"
                   maxWidth="80%">
                   {
@@ -198,8 +203,6 @@ const ChatMessage = props => {
                         />
                       ),
                       image: (
-                        
-                       
                         <ImageCard
                           messageObject={message}
                           setUploadStatus={setUploadStatus}
@@ -212,7 +215,6 @@ const ChatMessage = props => {
                           uploadStatus={uploadStatus}
                           fileSize={fileSize}
                         />
-                        
                       ),
                       video: (
                         <VideoCard
@@ -240,7 +242,6 @@ const ChatMessage = props => {
                               message?.createdAt,
                             )}
                           />
-                         
                         </View>
                       ),
                       file: (
@@ -264,7 +265,7 @@ const ChatMessage = props => {
                           )}
                         />
                       ),
-                      location: (  
+                      location: (
                         <MapCard
                           data={message}
                           status={getMessageStatus(message?.msgStatus)}
@@ -272,7 +273,6 @@ const ChatMessage = props => {
                             message?.createdAt,
                           )}
                         />
-                        
                       ),
                     }[message?.msgBody?.message_type]
                   }

@@ -5,7 +5,7 @@ import { ClearTextIcon, DocumentChatIcon } from '../common/Icons';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { useSelector } from 'react-redux';
 
-const ReplyDocument = () => {
+const ReplyDocument = props => {
   const { replyMsgItems, handleRemove } = props;
   const vCardProfile = useSelector(state => state.profile.profileDetails);
   const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
@@ -17,11 +17,23 @@ const ReplyDocument = () => {
     <View>
       <HStack justifyContent={'space-between'} alignItems={'center'}>
         {replyMsgItems.fromUserJid === currentUserJID ? (
-          <Text color={'#000'} pl={1}  fontSize={14} mb={1} fontWeight={600} py="0">
+          <Text
+            color={'#000'}
+            pl={1}
+            fontSize={14}
+            mb={1}
+            fontWeight={600}
+            py="0">
             You
           </Text>
         ) : (
-          <Text mb={2} color={'#000'} pl={1}  fontSize={14} fontWeight={600} py="0">
+          <Text
+            mb={2}
+            color={'#000'}
+            pl={1}
+            fontSize={14}
+            fontWeight={600}
+            py="0">
             {replyMsgItems.msgBody.nickName}
           </Text>
         )}
@@ -46,4 +58,3 @@ const ReplyDocument = () => {
 };
 
 export default ReplyDocument;
-

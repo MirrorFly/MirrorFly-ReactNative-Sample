@@ -39,63 +39,33 @@ const VideoCard = props => {
 
   return (
     <View
-      backgroundColor={isSender ? '#E2E8F7' : '#fff'}
-      borderColor={'#E5E5E5'}
-      borderWidth={2}
-      borderRadius={8}>
-      <View
-        paddingX={'1'}
-        paddingY={'1'}
-        backgroundColor={isSender ? '#E2E8F7' : '#fff'}>
-        <Stack
-          paddingX={'3'}
-          paddingY={'0'}
-          backgroundColor={'#0000001A'}
-          borderRadius={15}>
-          <View marginY={'3'} justifyContent={'flex-start'}>
-            <Text
-              fontSize={14}
-              fontWeight={500}
-              color={'#000'}
-              pb={2}
-              numberOfLines={1}>
-              You
-            </Text>
-            <HStack alignItems={'center'} pl={1}>
-              <VideoIcon color={'#767676'} width="13" height="13" />
-              <Text pl={2} fontSize={14} color="#313131" fontWeight={400}>
-                Video
-              </Text>
-            </HStack>
-          </View>
-        </Stack>
-      </View>
-
-      <View
-        backgroundColor={'#fff'}
-        borderColor={'#E5E5E5'}
-        borderWidth={2}
-        borderRadius={10}
-        position="relative">
+      borderRadius={10}
+      overflow={'hidden'}
+      borderBottomRightRadius={isSender ? 0 : 10}
+      borderBottomLeftRadius={isSender ? 10 : 0}
+      backgroundColor={isSender ? '#E2E8F7' : '#fff'}>
+      <View p="1" position="relative">
         {thumb_image ? (
           <Image
+            width={androidWidth}
+            borderRadius={5}
+            height={androidHeight}
             alt={fileName}
             source={{ uri: base64ImageData }}
             resizeMode="cover"
-            width={androidWidth}
-            height={androidHeight}
-            borderRadius={5}
           />
         ) : (
-          <Image
-            resizeMode="contain"
-            alt={fileName}
-            source={noPreview}
-            width={androidWidth}
-            height={androidHeight}
-          />
+          <View backgroundColor={'#fff'}>
+            <Image
+              resizeMode="contain"
+              alt={fileName}
+              source={noPreview}
+              width={androidWidth}
+              height={androidHeight}
+            />
+          </View>
         )}
-        <View position={'absolute'} top={1} left={1}>
+        <View position={'absolute'} top={2} left={2}>
           <HStack alignItems={'center'}>
             <VideoIcon
               color={thumb_image ? '#fff' : '#000'}
@@ -129,7 +99,7 @@ const VideoCard = props => {
         </View>
 
         {!media.caption && (
-          <View position={'absolute'} bottom={1} right={1}>
+          <View position={'absolute'} bottom={2} right={2}>
             <ImageBackground
               source={require('../assets/ic_baloon.png')}
               style={styles.imageBg}>
@@ -153,28 +123,20 @@ const VideoCard = props => {
             </View>
           </View>
         )}
-        {media.caption ? (
-          <Stack
-            borderBottomLeftRadius={10}
-            backgroundColor={isSender ? '#E2E8F7' : '#fff'}
-            pb={2}
-            pt={3}
-            justifyContent={'space-between'}>
-            <Text
-              numberOfLines={1}
-              color={'#000'}
-              pl={3}
-              fontSize={14}
-              fontWeight={400}>
-              {media.caption}
-            </Text>
-            <HStack alignItems={'center'} justifyContent={'flex-end'}>
-              <Text paddingRight={1}>{props.status}</Text>
-              <Text paddingRight={2}>{props.timeStamp}</Text>
-            </HStack>
-          </Stack>
-        ) : null}
       </View>
+      {media.caption && (
+        <Stack pb={2} justifyContent={'space-between'}>
+          <Text color={'#000'} pl={3} fontSize={14}>
+            {media.caption}
+          </Text>
+          <HStack alignItems={'center'} justifyContent={'flex-end'}>
+            {props.status}
+            <Text pl="1" paddingRight={2} fontSize="9">
+              {props.timeStamp}
+            </Text>
+          </HStack>
+        </Stack>
+      )}
     </View>
   );
 };

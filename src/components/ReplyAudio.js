@@ -11,7 +11,7 @@ const ReplyAudio = props => {
   const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
   const durationInSeconds = replyMsgItems.msgBody.media.duration;
   const durationInMinutes = Math.floor(durationInSeconds / 1000);
-  
+
   const RemoveHandle = () => {
     handleRemove();
   };
@@ -19,11 +19,23 @@ const ReplyAudio = props => {
     <View>
       <HStack justifyContent={'space-between'} alignItems={'center'}>
         {replyMsgItems.fromUserJid === currentUserJID ? (
-          <Text color={'#000'} fontSize={14} pl={1}  mb={1} fontWeight={600} py="0">
+          <Text
+            color={'#000'}
+            fontSize={14}
+            pl={1}
+            mb={1}
+            fontWeight={600}
+            py="0">
             You
           </Text>
         ) : (
-          <Text mb={2} color={'#000'} pl={1} fontSize={14} fontWeight={600} py="0">
+          <Text
+            mb={2}
+            color={'#000'}
+            pl={1}
+            fontSize={14}
+            fontWeight={600}
+            py="0">
             {replyMsgItems.msgBody.nickName}
           </Text>
         )}
@@ -38,14 +50,8 @@ const ReplyAudio = props => {
         </Pressable>
       </HStack>
       <HStack alignItems={'center'} pl={1}>
-        <AudioMusicIcon color={'#767676'} />
-        <Text
-          numberOfLines={1}
-          color="#313131"
-          fontSize={14}
-          mb={1}
-          pl={2}
-          fontWeight={400}>
+        <AudioMusicIcon width="14" height="14" color={'#767676'} />
+        <Text color="#313131" fontSize={14} mb={1} pl={2} fontWeight={400}>
           {`${String(Math.floor(durationInMinutes / 60)).padStart(
             2,
             '0',
@@ -57,4 +63,3 @@ const ReplyAudio = props => {
 };
 
 export default ReplyAudio;
-

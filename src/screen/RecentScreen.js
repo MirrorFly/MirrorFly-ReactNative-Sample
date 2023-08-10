@@ -20,11 +20,16 @@ import { sortBydate } from '../Helper/Chat/RecentChat';
 import * as RootNav from '../Navigation/rootNavigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { profileDetail } from '../redux/Actions/ProfileAction';
+import { useFocusEffect } from '@react-navigation/native';
 
 const logo = require('../assets/mirrorfly-logo.png');
 
-const FirstComponent = (isSearching, filteredData) => (
-  <RecentChat isSearching={isSearching} data={filteredData} />
+const FirstComponent = (isSearching, filteredData, searchValue) => (
+  <RecentChat
+    isSearching={isSearching}
+    data={filteredData}
+    searchValue={searchValue}
+  />
 );
 
 function RecentScreen() {
@@ -133,7 +138,7 @@ function RecentScreen() {
     }
   };
 
-  React.useEffect(() => {
+  useFocusEffect(() => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       handleBackBtn,
@@ -141,7 +146,7 @@ function RecentScreen() {
     return () => {
       backHandler.remove();
     };
-  }, [isSearching]);
+  });
 
   const handleLogout = async () => {
     SDK.logout();
@@ -182,10 +187,10 @@ function RecentScreen() {
   const renderScene = React.useMemo(
     () =>
       SceneMap({
-        first: () => FirstComponent(isSearching, filteredDataList),
+        first: () => FirstComponent(isSearching, filteredDataList, searchValue),
         second: RecentCalls,
       }),
-    [isSearching, filteredDataList],
+    [isSearching, filteredDataList, searchValue],
   );
 
   return (

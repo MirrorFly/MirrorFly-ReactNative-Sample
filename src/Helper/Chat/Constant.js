@@ -97,8 +97,8 @@ export const IMAGE_FORMATS = ['image/png', 'image/jpeg', 'image/jpg'];
 export const AUDIO_FORMATS = [
   'audio/mp3',
   'audio/wav',
-  'audio/vnd.wave',
-  'audio/x-wav',
+  // 'audio/vnd.wave',
+  // 'audio/x-wav',
   'audio/mpeg',
   'audio/aac',
   'audio/vnd.dlna.adts',

@@ -1,6 +1,7 @@
 import { getMsgStatusInOrder } from '../../Helper/Chat/ChatHelper';
 import {
   ADD_RECENT_CHAT,
+  RESET_STORE,
   UPDATE_RECENT_CHAT,
   UPDATE_RECENT_CHAT_MESSAGE_STATUS,
 } from '../Actions/Constants';
@@ -78,6 +79,8 @@ const recentChatReducer = (state = initialState, action) => {
           StateToObj(state).data,
         ),
       };
+    case RESET_STORE:
+      return initialState;
     default:
       return state;
   }

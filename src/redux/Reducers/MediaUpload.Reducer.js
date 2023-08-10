@@ -1,4 +1,4 @@
-import { UPDATE_MEDIA_UPLOAD_DATA } from '../Actions/Constants';
+import { RESET_STORE, UPDATE_MEDIA_UPLOAD_DATA } from '../Actions/Constants';
 
 const initialState = {
   id: null,
@@ -17,6 +17,8 @@ const mediaUploadReducer = (state = initialState, action) => {
         },
       },
     };
+  } else if (action.type === RESET_STORE) {
+    return initialState;
   } else {
     return state;
   }

@@ -5,7 +5,7 @@ import RecentCalls from '../components/RecentCalls';
 import { Dimensions, Animated, StyleSheet } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { FloatingBtn } from '../common/Button';
-import { useDispatch, useSelector } from 'react-redux';
+import { batch, useDispatch, useSelector } from 'react-redux';
 // import { logout } from '../redux/authSlice';
 import { navigate } from '../redux/Actions/NavigationAction';
 import {
@@ -20,6 +20,7 @@ import { sortBydate } from '../Helper/Chat/RecentChat';
 import * as RootNav from '../Navigation/rootNavigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { profileDetail } from '../redux/Actions/ProfileAction';
+import { ResetStore } from 'mf-redux/Actions/ResetAction';
 
 const logo = require('../assets/mirrorfly-logo.png');
 
@@ -120,8 +121,11 @@ function RecentScreen() {
     AsyncStorage.setItem('userIdentifier', '');
     AsyncStorage.setItem('screenObj', '');
     AsyncStorage.setItem('vCardProfile', '');
-    dispatch(profileDetail({}));
-    dispatch(navigate({ screen: REGISTERSCREEN }));
+    batch(()=>{
+      dispatch(profileDetail({}));
+      dispatch(navigate({ screen: REGISTERSCREEN }));
+      dispatch(ResetStore())
+    })
     RootNav.navigate(REGISTERSCREEN);
   };
 

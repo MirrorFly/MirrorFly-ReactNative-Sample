@@ -1,5 +1,5 @@
 import { NOTCONNECTED } from '../../constant';
-import { GET_USER_JID } from '../Actions/Constants';
+import { GET_USER_JID, RESET_STORE } from '../Actions/Constants';
 
 const initialState = {
   userData: {},
@@ -16,6 +16,8 @@ const authReducer = (state = initialState, action) => {
         ...state,
         currentUserJID: action.payload,
       };
+    case RESET_STORE:
+       return initialState
     default:
       return state;
   }

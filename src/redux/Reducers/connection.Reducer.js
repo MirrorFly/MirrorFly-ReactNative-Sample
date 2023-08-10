@@ -1,4 +1,4 @@
-import { SET_XMPP_CONNECTION_STATUS } from '../Actions/Constants';
+import { RESET_STORE, SET_XMPP_CONNECTION_STATUS } from '../Actions/Constants';
 
 const initialState = {
   id: '',
@@ -12,6 +12,8 @@ const connectionReducer = (state = initialState, action) => {
         id: Date.now(),
         xmppStatus: action.payload,
       };
+      case RESET_STORE:
+        return initialState
     default:
       return state;
   }

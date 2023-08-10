@@ -3,6 +3,7 @@ import {
   ADD_GALLERY_GROUP_NAME,
   ADD_GALLERY_PHOTOS,
   RESET_GALLERY_DATA,
+  RESET_STORE,
 } from '../Actions/Constants';
 
 const initialState = {
@@ -29,6 +30,8 @@ const galleryReducer = (state = initialState, action) => {
         galleryName: action.payload,
       };
     case RESET_GALLERY_DATA:
+      return initialState;
+    case RESET_STORE:
       return initialState;
     default:
       return state;

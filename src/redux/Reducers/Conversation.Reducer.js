@@ -7,6 +7,7 @@ import {
 import {
   ADD_CHAT_CONVERSATION_HISTORY,
   CANCEL_MEDIA_UPLOAD,
+  RESET_STORE,
   RETRY_MEDIA_UPLOAD,
   UPDATE_CHAT_CONVERSATION_HISTORY,
   UPDATE_UPLOAD_STATUS,
@@ -49,6 +50,8 @@ const conversationReducer = (state = initialState, action) => {
           StateToObj(state).data,
         ),
       };
+    case RESET_STORE:
+      return initialState;
     default:
       return state;
   }

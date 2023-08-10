@@ -2,7 +2,7 @@ import React from 'react';
 import ScreenHeader from '../components/ScreenHeader';
 import RecentChat from '../components/RecentChat';
 import RecentCalls from '../components/RecentCalls';
-import { Dimensions, Animated, StyleSheet } from 'react-native';
+import { Dimensions, Animated, StyleSheet, BackHandler } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { FloatingBtn } from '../common/Button';
 import { useDispatch, useSelector } from 'react-redux';
@@ -41,26 +41,35 @@ function RecentScreen() {
   const [filteredData, setFilteredData] = React.useState([]);
   const [isSearching, setIsSearching] = React.useState(false);
   const [recentData, setrecentData] = React.useState([]);
+  const [searchValue, setSearchValue] = React.useState('');
   const recentChatList = useSelector(state => state.recentChatData.data);
 
-  const handleSearch = React.useCallback(
-    text => {
-      setIsSearching(true);
-      const filtered = recentData?.filter(item =>
-        item.fromUserId.toLowerCase().includes(text.toLowerCase()),
-      );
-      setFilteredData(filtered);
-    },
-    [recentData],
-  );
+  const handleSearch = text => {
+    setIsSearching(true);
+    setSearchValue(text);
+    searchFilter(text);
+  };
 
-  const handleBack = React.useCallback(() => {
+  const searchFilter = text => {
+    const filtered = recentData?.filter(
+      item =>
+        item.fromUserId.toLowerCase().includes(text.toLowerCase()) ||
+        item?.profileDetails?.nickName
+          .toLowerCase()
+          .includes(text.toLowerCase()),
+    );
+    setFilteredData(filtered);
+  };
+
+  const handleBack = () => {
     setIsSearching(false);
-  }, []);
+    setSearchValue('');
+  };
 
-  const handleClear = React.useCallback(() => {
+  const handleClear = () => {
     setFilteredData(recentData);
-  }, [recentData]);
+    setSearchValue('');
+  };
 
   React.useEffect(() => {
     (async () => {
@@ -86,7 +95,11 @@ function RecentScreen() {
   }, [recentChatList]);
 
   React.useEffect(() => {
-    setFilteredData(recentData);
+    if (!searchValue) {
+      setFilteredData(recentData);
+    } else {
+      searchFilter(searchValue);
+    }
   }, [recentData, isSearching]);
 
   const renderTabBar = React.useCallback(
@@ -111,6 +124,24 @@ function RecentScreen() {
     },
     [isSearching],
   );
+
+  const handleBackBtn = () => {
+    if (isSearching) {
+      setIsSearching(false);
+      setSearchValue('');
+      return true;
+    }
+  };
+
+  React.useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackBtn,
+    );
+    return () => {
+      backHandler.remove();
+    };
+  }, [isSearching]);
 
   const handleLogout = async () => {
     SDK.logout();
@@ -165,6 +196,7 @@ function RecentScreen() {
         onCloseSearch={handleBack}
         menuItems={menuItems}
         logo={logo}
+        handleBackBtn={handleBackBtn}
         isSearching={isSearching}
         handleClear={handleClear}
       />

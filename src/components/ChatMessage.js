@@ -23,6 +23,9 @@ const ChatMessage = props => {
   let isSame = currentUserJID === props?.message?.fromUserJid;
   let statusVisible = 'notSend';
   const { message, setLocalNav } = props;
+   
+
+ 
   const {
     msgBody = {},
     msgBody: {
@@ -37,9 +40,11 @@ const ChatMessage = props => {
     msgId,
     msgStatus,
   } = message;
+
   const [uploadStatus, setUploadStatus] = React.useState(4);
   const imageUrl = local_path || file?.fileDetails?.uri;
   const thumbURL = thumb_image ? getThumbBase64URL(thumb_image) : '';
+
   const [imgSrc, saveImage] = React.useState(thumbURL);
   const dispatch = useDispatch();
   const imageSize = props?.message?.msgBody?.media?.file_size || '';
@@ -172,7 +177,7 @@ const ChatMessage = props => {
                   ? 'rgba(0,0,0,0.2)'
                   : 'transparent'
               }>
-              <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px="3">
+              <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px="3" >
                 <Pressable
                   onPress={handleMessageObj}
                   minWidth="30%"
@@ -182,6 +187,7 @@ const ChatMessage = props => {
                       text: (
                         <TextCard
                           isSame={isSame}
+                          message={message}
                           data={{
                             message: message?.msgBody?.message,
                             timeStamp: getConversationHistoryTime(
@@ -192,6 +198,8 @@ const ChatMessage = props => {
                         />
                       ),
                       image: (
+                        
+                       
                         <ImageCard
                           messageObject={message}
                           setUploadStatus={setUploadStatus}
@@ -204,6 +212,7 @@ const ChatMessage = props => {
                           uploadStatus={uploadStatus}
                           fileSize={fileSize}
                         />
+                        
                       ),
                       video: (
                         <VideoCard
@@ -231,6 +240,7 @@ const ChatMessage = props => {
                               message?.createdAt,
                             )}
                           />
+                         
                         </View>
                       ),
                       file: (
@@ -254,7 +264,7 @@ const ChatMessage = props => {
                           )}
                         />
                       ),
-                      location: (
+                      location: (  
                         <MapCard
                           data={message}
                           status={getMessageStatus(message?.msgStatus)}
@@ -262,6 +272,7 @@ const ChatMessage = props => {
                             message?.createdAt,
                           )}
                         />
+                        
                       ),
                     }[message?.msgBody?.message_type]
                   }

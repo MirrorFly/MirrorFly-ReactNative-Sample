@@ -35,6 +35,7 @@ import {
 } from '../common/Icons';
 
 export default function RecentChat(props) {
+  const { searchValue } = props;
   const dispatch = useDispatch();
   const recentLoading = useSelector(state => state.chat.recentChatStatus);
 
@@ -89,21 +90,24 @@ export default function RecentChat(props) {
                 backgroundColor={item?.profileDetails?.colorCode}
               />
               <VStack w="60%">
-                <Text
+                {/* <Text
                   numberOfLines={1}
                   color="coolGray.800"
                   _dark={{ color: 'warmGray.50' }}
                   ellipsizeMode="tail"
                   bold>
                   {item?.profileDetails?.nickName || item?.fromUserId}
-                </Text>
+                </Text> */}
+                <HighlightedText
+                  text={item?.profileDetails?.nickName || item?.fromUserId}
+                  searchValue={searchValue}
+                  index={index}
+                />
                 <HStack alignItems={'center'}>
                   {isSame && item?.msgStatus !== 3 ? (
                     <View
-                      style={[
-                        styles.msgStatus,
-                        isSame ? statusVisible : '',
-                      ]}></View>
+                      style={[styles.msgStatus, isSame ? statusVisible : '']}
+                    />
                   ) : (
                     isSame &&
                     item?.msgStatus == 3 && (
@@ -219,7 +223,7 @@ export default function RecentChat(props) {
           source={require('../assets/no_messages.png')}
         />
         {props.isSearching ? (
-          <Text style={styles.noMsg}>No Chats Found</Text>
+          <Text style={styles.noMsg}>No Result Found</Text>
         ) : (
           <>
             <Text style={styles.noMsg}>No New Messages</Text>
@@ -242,6 +246,26 @@ export default function RecentChat(props) {
 
   return (
     <View p="0" flex={1} bg={'#fff'}>
+      {searchValue && (
+        <View
+          width={'100%'}
+          height={10}
+          bg={'#E5E5E5'}
+          justifyContent={'center'}>
+          <HStack>
+            <Text
+              ml={2}
+              color={'#181818'}
+              fontSize={16}
+              fontWeight={'extraBlack'}>
+              Chats
+            </Text>
+            <Text ml={'0.5'} fontSize={16} fontWeight={'bold'}>
+              ({props.data.length})
+            </Text>
+          </HStack>
+        </View>
+      )}
       <SwipeListView
         showsVerticalScrollIndicator={false}
         data={props.data}
@@ -255,6 +279,35 @@ export default function RecentChat(props) {
     </View>
   );
 }
+
+const HighlightedText = ({ text, searchValue = '', index }) => {
+  const parts = searchValue
+    ? text.split(new RegExp(`(${searchValue})`, 'gi'))
+    : [text];
+
+  return (
+    <HStack>
+      {parts.map((part, i) => {
+        const isSearchMatch =
+          part.toLowerCase() === searchValue.toLowerCase()
+            ? styles.highlight
+            : {};
+        return (
+          <Text
+            numberOfLines={1}
+            color="coolGray.800"
+            key={++i + '-' + index}
+            dark={{ color: 'warmGray.50' }}
+            ellipsizeMode="tail"
+            bold
+            style={isSearchMatch}>
+            {part}
+          </Text>
+        );
+      })}
+    </HStack>
+  );
+};
 
 const styles = StyleSheet.create({
   msgStatus: {
@@ -273,6 +326,10 @@ const styles = StyleSheet.create({
   },
   seen: {
     backgroundColor: '#66E824',
+  },
+  highlight: {
+    color: '#3276E2',
+    fontWeight: 'bold',
   },
   imageView: {
     flex: 0.72,

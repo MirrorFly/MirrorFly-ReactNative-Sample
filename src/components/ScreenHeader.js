@@ -49,6 +49,7 @@ function ScreenHeader(props) {
           )}
           {props?.isSearching && (
             <IconButton
+              marginRight={3}
               _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
               onPress={handlingBackBtn}
               icon={<Icon as={() => LeftArrowIcon()} name="emoji-happy" />}

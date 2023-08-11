@@ -209,7 +209,7 @@ export default function RecentChat(props) {
           source={require('../assets/no_messages.png')}
         />
         {props.isSearching ? (
-          <Text style={styles.noMsg}>No Chats Found</Text>
+          <Text style={styles.noMsg}>No Result Found</Text>
         ) : (
           <>
             <Text style={styles.noMsg}>No New Messages</Text>
@@ -266,36 +266,32 @@ export default function RecentChat(props) {
   );
 }
 
-const HighlightedText = ({ text, searchValue, index }) => {
-  const parts = text.split(new RegExp(`(${searchValue})`, 'gi'));
+const HighlightedText = ({ text, searchValue = '', index }) => {
+  const parts = searchValue
+    ? text.split(new RegExp(`(${searchValue})`, 'gi'))
+    : [text];
 
   return (
-    <Text>
-      {parts.map((part, i) =>
-        part.toLowerCase() === searchValue.toLowerCase() ? (
+    <HStack>
+      {parts.map((part, i) => {
+        const isSearchMatch =
+          part.toLowerCase() === searchValue.toLowerCase()
+            ? styles.highlight
+            : {};
+        return (
           <Text
             numberOfLines={1}
             color="coolGray.800"
-            _dark={{ color: 'warmGray.50' }}
-            ellipsizeMode="tail"
-            bold
             key={++i + '-' + index}
-            style={styles.highlight}>
-            {part}
-          </Text>
-        ) : (
-          <Text
-            numberOfLines={1}
-            color="coolGray.800"
-            _dark={{ color: 'warmGray.50' }}
+            dark={{ color: 'warmGray.50' }}
             ellipsizeMode="tail"
             bold
-            key={++i + '-' + index}>
+            style={isSearchMatch}>
             {part}
           </Text>
-        ),
-      )}
-    </Text>
+        );
+      })}
+    </HStack>
   );
 };
 
@@ -318,7 +314,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#66E824',
   },
   highlight: {
-    color: 'blue',
+    color: '#3276E2',
     fontWeight: 'bold',
   },
   imageView: {

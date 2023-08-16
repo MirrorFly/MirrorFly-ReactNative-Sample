@@ -121,11 +121,11 @@ function RecentScreen() {
     AsyncStorage.setItem('userIdentifier', '');
     AsyncStorage.setItem('screenObj', '');
     AsyncStorage.setItem('vCardProfile', '');
-    batch(()=>{
+    batch(() => {
       dispatch(profileDetail({}));
       dispatch(navigate({ screen: REGISTERSCREEN }));
-      dispatch(ResetStore())
-    })
+      dispatch(ResetStore());
+    });
     RootNav.navigate(REGISTERSCREEN);
   };
 

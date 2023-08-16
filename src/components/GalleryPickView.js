@@ -16,7 +16,7 @@ import {
   Text,
   View,
 } from 'native-base';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   DeleteBinIcon,
   LeftArrowIcon,
@@ -25,8 +25,8 @@ import {
   SendBlueIcon,
 } from '../common/Icons';
 import Avathar from '../common/Avathar';
-import {SceneMap, TabView} from 'react-native-tab-view';
-import {getType} from './chat/common/fileUploadValidation';
+import { SceneMap, TabView } from 'react-native-tab-view';
+import { getType } from './chat/common/fileUploadValidation';
 import VideoPlayer from './Media/VideoPlayer';
 
 function GalleryPickView(props) {
@@ -73,23 +73,27 @@ function GalleryPickView(props) {
     handleSendMsg(message);
   };
 
-  const renderScene = SceneMap(
-    selectedImages?.reduce((scenes, item, itemIndex) => {
-      const type = getType(item?.fileDetails?.type);
-      scenes[`tab${itemIndex + 1}`] = () => (
-        <>
-          {type === 'image' && (
-            <Image
-              resizeMode="contain"
-              source={{uri: item?.fileDetails?.image?.uri}}
-              style={styles.tabContainer}
-            />
-          )}
-          {type === 'video' && <VideoPlayer item={item} />}
-        </>
-      );
-      return scenes;
-    }, {}),
+  const renderScene = React.useMemo(
+    () =>
+      SceneMap(
+        selectedImages?.reduce((scenes, item, itemIndex) => {
+          const type = getType(item?.fileDetails?.type);
+          scenes[`tab${itemIndex + 1}`] = () => (
+            <>
+              {type === 'image' && (
+                <Image
+                  resizeMode="contain"
+                  source={{ uri: item?.fileDetails?.uri }}
+                  style={styles.tabContainer}
+                />
+              )}
+              {type === 'video' && <VideoPlayer item={item} />}
+            </>
+          );
+          return scenes;
+        }, {}),
+      ),
+    [selectedImages],
   );
 
   return (
@@ -97,7 +101,7 @@ function GalleryPickView(props) {
       <View style={styles.container}>
         <HStack mb={'2'} mt="5" alignItems={'center'}>
           <IconButton
-            _pressed={{bg: 'rgba(50,118,226, 0.1)'}}
+            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
             onPress={handleBackBtn}
             icon={<Icon as={() => LeftArrowIcon('#fff')} name="emoji-happy" />}
             borderRadius="full"
@@ -117,7 +121,7 @@ function GalleryPickView(props) {
                 let filtered = selectedImages?.filter((item, i) => i !== index);
                 setSelectedImages(filtered);
               }}
-              _pressed={{bg: 'rgba(50,118,226, 0.1)'}}
+              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
               icon={
                 <Icon as={<DeleteBinIcon color="#fff" />} name="emoji-happy" />
               }
@@ -128,7 +132,9 @@ function GalleryPickView(props) {
         <TabView
           navigationState={{
             index,
-            routes: props.selectedImages?.map((_, i) => ({key: `tab${i + 1}`})),
+            routes: props.selectedImages?.map((_, i) => ({
+              key: `tab${i + 1}`,
+            })),
           }}
           renderTabBar={renderTabBar}
           renderScene={renderScene}
@@ -143,14 +149,14 @@ function GalleryPickView(props) {
             handleSendMedia();
             setLocalNav('CHATCONVERSATION');
           }}
-          _pressed={{bg: 'rgba(50,118,226, 0.1)'}}
+          _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
           icon={<Icon as={<SendBlueIcon color="#fff" />} name="emoji-happy" />}
           borderRadius="full"
         />
         <HStack ml="2" mb="1" alignItems={'center'}>
           {selectedImages.length < 10 && (
             <IconButton
-              _pressed={{bg: 'rgba(50,118,226, 0.1)'}}
+              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
               onPress={async () => {
                 setLocalNav('Gallery');
               }}
@@ -203,11 +209,11 @@ function GalleryPickView(props) {
               {selectedImages?.map((item, i) => (
                 <Pressable
                   activeOpacity={1}
-                  key={item?.fileDetails?.image.uri}
+                  key={item?.fileDetails?.uri}
                   style={styles.tabButton}
                   onPress={() => handleIndexChange(i)}>
                   <Image
-                    source={{uri: item?.fileDetails?.image.uri}}
+                    source={{ uri: item?.fileDetails?.uri }}
                     style={[
                       styles.tabImage,
                       index === i && styles.selectedTabImage,

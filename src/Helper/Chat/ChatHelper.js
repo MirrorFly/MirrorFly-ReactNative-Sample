@@ -1,15 +1,16 @@
-import {SDK} from '../../SDK';
+import SDK from 'SDK/SDK';
 import {
   CHAT_TYPE_GROUP,
   CHAT_TYPE_SINGLE,
+  DOCUMENT_FORMATS,
   MSG_DELIVERED_STATUS_ID,
   MSG_PROCESSING_STATUS_ID,
   MSG_SEEN_STATUS_ID,
   MSG_SENT_ACKNOWLEDGE_STATUS_ID,
 } from './Constant';
-import {getUserIdFromJid} from './Utility';
+import { getUserIdFromJid, setDurationSecToMilli } from './Utility';
 import store from '../../redux/store';
-import {updateUploadStatus} from '../../redux/conversationSlice';
+import { updateUploadStatus } from '../../redux/Actions/ConversationAction';
 
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
@@ -31,18 +32,16 @@ export const getUniqueListBy = (arr, key) => {
 export const uploadFileToSDK = async (file, jid, msgId, media) => {
   const {
     caption = '',
-    fileDetails: {
-      replyTo = '',
-      image: {playableDuration = 0},
-      audioType = '',
-      type,
-    } = {},
+    fileDetails: { replyTo = '', duration = 0, audioType = '', type } = {},
   } = file;
-  const msgType = type.split('/')[0];
+
+  const isDocument = DOCUMENT_FORMATS.includes(type);
+  const msgType = isDocument ? 'file' : type.split('/')[0];
+  console.log(duration, 'duration');
   let fileOptions = {
     msgId: msgId,
     caption: caption,
-    duration: playableDuration,
+    duration: duration,
     webWidth: media.webWidth || 0,
     webHeight: media.webHeight || 0,
     androidWidth: media.androidWidth || 0,
@@ -52,19 +51,40 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
     ...((msgType === 'video' || msgType === 'image') && {
       thumbImage: media?.thumb_image,
     }),
-    ...(msgType === 'audio' && {audioType}),
+    ...(msgType === 'audio' && { audioType }),
   };
 
   let response = {};
   if (msgType === 'file') {
-    response = await SDK.sendDocumentMessage(jid, file, fileOptions, replyTo);
+    response = await SDK.sendDocumentMessage(
+      jid,
+      file.fileDetails,
+      fileOptions,
+      replyTo,
+    );
   } else if (msgType === 'image') {
-    response = await SDK.sendImageMessage(jid, file, fileOptions, replyTo);
+    response = await SDK.sendImageMessage(
+      jid,
+      file.fileDetails,
+      fileOptions,
+      replyTo,
+    );
   } else if (msgType === 'video') {
-    response = await SDK.sendVideoMessage(jid, file, fileOptions, replyTo);
+    response = await SDK.sendVideoMessage(
+      jid,
+      file.fileDetails,
+      fileOptions,
+      replyTo,
+    );
   } else if (msgType === 'audio') {
-    response = await SDK.sendAudioMessage(jid, file, fileOptions, replyTo);
+    response = await SDK.sendAudioMessage(
+      jid,
+      file.fileDetails,
+      fileOptions,
+      replyTo,
+    );
   }
+  console.log(response, 'MEDIA upload response');
   let updateObj = {
     msgId,
     statusCode: response.statusCode,
@@ -224,7 +244,7 @@ export const getChatHistoryData = (data, stateData) => {
     });
   } else newSortedData = sortedData;
 
-  const finalData = {messages: arrayToObject(newSortedData, 'msgId')};
+  const finalData = { messages: arrayToObject(newSortedData, 'msgId') };
 
   let datata = {
     ...stateData,
@@ -279,14 +299,14 @@ export const getUpdatedHistoryData = (data, stateData) => {
 };
 
 export const getChatMessageHistoryById = id => {
-  const {chatConversationData} = store.getState() || {};
-  const {data = {}} = chatConversationData;
+  const { chatConversationData } = store.getState() || {};
+  const { data = {} } = chatConversationData;
   if (data[id]?.messages) return Object.values(data[id]?.messages);
   return [];
 };
 
 export const getChatHistoryMessagesData = () => {
-  const {chatConversationData: {data} = {}} = store.getState();
+  const { chatConversationData: { data } = {} } = store.getState();
   return data;
 };
 
@@ -294,7 +314,7 @@ export const getChatHistoryMessagesData = () => {
  * Get the active conversation user ID
  */
 export const getActiveConversationChatId = () => {
-  const {navigation: {fromUserJid: chatId = ''} = {}} = store.getState();
+  const { navigation: { fromUserJid: chatId = '' } = {} } = store.getState();
   return getUserIdFromJid(chatId);
 };
 

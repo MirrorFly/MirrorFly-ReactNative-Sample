@@ -1,20 +1,27 @@
-import {HStack, Icon, IconButton, Pressable, Text, View} from 'native-base';
+import {
+  HStack,
+  Icon,
+  IconButton,
+  Pressable,
+  Spinner,
+  Text,
+  View,
+} from 'native-base';
 import React from 'react';
-import {StyleSheet} from 'react-native';
-import {DownloadCancel, DownloadIcon} from '../../../common/Icons';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-  withRepeat,
-} from 'react-native-reanimated';
-import {useNetworkStatus} from '../../../hooks';
-import {useSelector} from 'react-redux';
-import {updateUploadStatus} from '../../../redux/conversationSlice';
-import store from '../../../redux/store';
-import {updateDownloadData} from '../../../redux/mediaDownloadDataSlice';
-import {getUserIdFromJid} from '../../../Helper/Chat/Utility';
+import { StyleSheet, Animated } from 'react-native';
+import { DownloadCancel, DownloadIcon } from '../../../common/Icons';
+// import {
+//   useSharedValue,
+//   useAnimatedStyle,
+//   withTiming,
+//   Easing,
+//   withRepeat,
+// } from 'react-native-reanimated';
+import { useNetworkStatus } from '../../../hooks';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateUploadStatus } from '../../../redux/Actions/ConversationAction';
+import { updateDownloadData } from '../../../redux/Actions/MediaDownloadAction';
+import { getUserIdFromJid } from '../../../Helper/Chat/Utility';
 import SDK from '../../../SDK/SDK';
 
 /**
@@ -34,21 +41,29 @@ import SDK from '../../../SDK/SDK';
 let animationTimer = null;
 
 const ProgressLoader = (props = {}) => {
-  const {isSender, imageUrl, fileSize, uploadStatus = 0, msgId, media} = props;
-  const {file_url = '', thumb_image = ''} = media;
+  const {
+    isSender,
+    imageUrl,
+    fileSize,
+    uploadStatus = 0,
+    msgId,
+    media,
+  } = props;
+  const dispatch = useDispatch();
+  const { file_url = '', thumb_image = '' } = media;
   const isNetworkConnected = useNetworkStatus();
-  const {data: mediaDownloadData = {}} = useSelector(
+  const { data: mediaDownloadData = {} } = useSelector(
     state => state.mediaDownloadData,
   );
-  const {data: mediaUploadData = {}} = useSelector(
+  const { data: mediaUploadData = {} } = useSelector(
     state => state.mediaUploadData,
   );
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
 
   const [isDownloading, setisDownloading] = React.useState(false);
   const fileSizeInKB = convertBytesToKB(fileSize);
-  const animation = useSharedValue(0);
-  const progress = useSharedValue(0);
+  // const animation = useSharedValue(0);
+  // const progress = useSharedValue(0);
 
   function convertBytesToKB(bytes) {
     if (bytes < 1024) {
@@ -65,48 +80,48 @@ const ProgressLoader = (props = {}) => {
     }
   }
 
-  const startAnimation = () => {
-    animation.value = withRepeat(
-      withTiming(1, {
-        duration: 1000,
-        easing: Easing.linear,
-      }),
-      -1,
-    ); // -1 means infinite loop
-    // animationTimer = setTimeout(() => {
-    //   console.log('stopAnimation Called setTimeout', isDownloading)
-    //   stopAnimation()
-    // }, 5000)
-  };
+  // const startAnimation = () => {
+  //   animation.value = withRepeat(
+  //     withTiming(1, {
+  //       duration: 1000,
+  //       easing: Easing.linear,
+  //     }),
+  //     -1,
+  //   ); // -1 means infinite loop
+  //   // animationTimer = setTimeout(() => {
+  //   //   console.log('stopAnimation Called setTimeout', isDownloading)
+  //   //   stopAnimation()
+  //   // }, 5000)
+  // };
 
   const stopAnimation = () => {
     clearTimeout(animationTimer);
-    animation.value = 0;
+    // animation.value = 0;
   };
 
   const stopProgress = () => {
-    progress.value = 0;
+    // progress.value = 0;
   };
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateX: withTiming(-200 / 2 + animation.value * 200, {
-            duration: 0,
-          }),
-        },
-      ],
-    };
-  });
+  // const animatedStyle = useAnimatedStyle(() => {
+  //   return {
+  //     transform: [
+  //       {
+  //         translateX: withTiming(-200 / 2 + animation.value * 200, {
+  //           duration: 0,
+  //         }),
+  //       },
+  //     ],
+  //   };
+  // });
 
-  const progressStyle = useAnimatedStyle(() => {
-    return {
-      width: mediaUploadData[msgId]?.progress,
-      height: 2,
-      backgroundColor: '#66E824',
-    };
-  });
+  // const progressStyle = useAnimatedStyle(() => {
+  //   return {
+  //     width: mediaUploadData[msgId]?.progress,
+  //     height: 2,
+  //     backgroundColor: '#66E824',
+  //   };
+  // });
 
   /**  const progressDownloadStyle = useAnimatedStyle(() => {
       return {
@@ -116,16 +131,16 @@ const ProgressLoader = (props = {}) => {
       };
    }); */
 
-  React.useLayoutEffect(() => {
-    (mediaUploadData[msgId]?.progress === 100 ||
-      uploadStatus === 0 ||
-      uploadStatus === 1) &&
-      startAnimation();
-  }, [uploadStatus]);
+  // React.useLayoutEffect(() => {
+  //   (mediaUploadData[msgId]?.progress === 100 ||
+  //     uploadStatus === 0 ||
+  //     uploadStatus === 1) &&
+  //     startAnimation();
+  // }, [uploadStatus]);
 
-  React.useLayoutEffect(() => {
-    isDownloading && startAnimation();
-  }, [isDownloading]);
+  // React.useLayoutEffect(() => {
+  //   isDownloading && startAnimation();
+  // }, [isDownloading]);
 
   const getAnimateClass = () =>
     mediaUploadData[msgId]?.progress === 100 ||
@@ -153,7 +168,7 @@ const ProgressLoader = (props = {}) => {
     if (getAnimateClass()) {
       return (
         <View style={styles.loaderLine}>
-          <Animated.View
+          {/* <Animated.View
             style={[
               {
                 width: 40,
@@ -162,14 +177,14 @@ const ProgressLoader = (props = {}) => {
               },
               animatedStyle,
             ]}
-          />
+          /> */}
         </View>
       );
     }
     if (getActiveProgressClass()) {
       return (
         <View style={styles.loaderLine}>
-          <Animated.View style={progressStyle} />
+          {/* <Animated.View style={progressStyle} /> */}
         </View>
       );
     }
@@ -182,7 +197,7 @@ const ProgressLoader = (props = {}) => {
     if (getAnimateDownloadClass()) {
       return (
         <View style={styles.loaderLine}>
-          <Animated.View
+          {/* <Animated.View
             style={[
               {
                 width: 40,
@@ -191,7 +206,7 @@ const ProgressLoader = (props = {}) => {
               },
               animatedStyle,
             ]}
-          />
+          /> */}
         </View>
       );
     }
@@ -273,8 +288,8 @@ const ProgressLoader = (props = {}) => {
         fileToken: file_url,
         thumbImage: thumb_image,
       };
-      store.dispatch(updateDownloadData(response.data));
-      store.dispatch(updateUploadStatus(updateObj));
+      dispatch(updateDownloadData(response.data));
+      dispatch(updateUploadStatus(updateObj));
     }
     setTimeout(() => {
       setisDownloading(false);
@@ -316,14 +331,15 @@ const ProgressLoader = (props = {}) => {
             overflow={'hidden'}
             alignItems={'center'}
             justifyContent={'space-between'}
-            bg=" rgba(0, 0, 0, 0.3)"
+            // bg=" rgba(0, 0, 0, 0.3)"
             borderRadius={5}>
             <Pressable
               h="9"
               w="85"
               alignItems={'center'}
               justifyContent={'center'}>
-              <HStack px="2" borderRadius={5} alignItems={'center'}>
+              <Spinner size="lg" color={'#3276E2'} />
+              {/* <HStack px="2" borderRadius={5} alignItems={'center'}>
                 <IconButton
                   icon={
                     <Icon
@@ -334,7 +350,7 @@ const ProgressLoader = (props = {}) => {
                     />
                   }
                 />
-              </HStack>
+              </HStack> */}
             </Pressable>
             <View style={styles.loaderContent}>{renderLoader()}</View>
           </View>
@@ -350,14 +366,15 @@ const ProgressLoader = (props = {}) => {
             overflow={'hidden'}
             alignItems={'center'}
             justifyContent={'space-between'}
-            bg=" rgba(0, 0, 0, 0.3)"
+            // bg=" rgba(0, 0, 0, 0.3)"
             borderRadius={5}>
             <Pressable
               h="9"
               w="85"
               alignItems={'center'}
               justifyContent={'center'}>
-              <HStack px="2" borderRadius={5} alignItems={'center'}>
+              <Spinner size="lg" color={'#3276E2'} />
+              {/* <HStack px="2" borderRadius={5} alignItems={'center'}>
                 <IconButton
                   icon={
                     <Icon
@@ -368,7 +385,7 @@ const ProgressLoader = (props = {}) => {
                     />
                   }
                 />
-              </HStack>
+              </HStack> */}
             </Pressable>
             <View style={styles.loaderContent}>{renderDownloadLoader()}</View>
           </View>

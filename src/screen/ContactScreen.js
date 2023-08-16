@@ -1,13 +1,13 @@
 import React from 'react';
-import {Center, KeyboardAvoidingView} from 'native-base';
-import {BackHandler, Image, Platform, StyleSheet, Text} from 'react-native';
-import {CHATSCREEN, RECENTCHATSCREEN, SETTINGSCREEN} from '../constant';
-import {navigate} from '../redux/navigationSlice';
-import {useDispatch} from 'react-redux';
+import { Center, KeyboardAvoidingView } from 'native-base';
+import { BackHandler, Image, Platform, StyleSheet, Text } from 'react-native';
+import { CHATSCREEN, RECENTCHATSCREEN, SETTINGSCREEN } from '../constant';
+import { navigate } from '../redux/Actions/NavigationAction';
+import { useDispatch } from 'react-redux';
 import ScreenHeader from '../components/ScreenHeader';
 import SDK from '../SDK/SDK';
 import FlatListView from '../components/FlatListView';
-import {useNetworkStatus} from '../hooks';
+import { useNetworkStatus } from '../hooks';
 import * as RootNav from '../Navigation/rootNavigation';
 
 function ContactScreen() {
@@ -21,7 +21,7 @@ function ContactScreen() {
   const [isSearching, setIsSearching] = React.useState(false);
 
   const handleBackBtn = () => {
-    let x = {screen: RECENTCHATSCREEN};
+    let x = { screen: RECENTCHATSCREEN };
     dispatch(navigate(x));
     RootNav.navigate(RECENTCHATSCREEN);
     return true;
@@ -29,7 +29,7 @@ function ContactScreen() {
 
   const backHandler = BackHandler.addEventListener(
     'hardwareBackPress',
-    handleBackBtn,
+    handleBackBtn
   );
 
   const fetchContactList = () => {
@@ -58,7 +58,7 @@ function ContactScreen() {
     {
       label: 'Settings',
       formatter: () => {
-        dispatch(navigate({screen: SETTINGSCREEN}));
+        dispatch(navigate({ screen: SETTINGSCREEN }));
         RootNav.navigate(SETTINGSCREEN);
       },
     },
@@ -70,7 +70,7 @@ function ContactScreen() {
         screen: CHATSCREEN,
         fromUserJID: item.userJid,
         profileDetails: item,
-      }),
+      })
     );
     RootNav.navigate(CHATSCREEN);
   };
@@ -90,7 +90,7 @@ function ContactScreen() {
       let updateUsersList = await SDK.getUsersList(
         searchText,
         page + 1 + 2,
-        30,
+        30
       );
       setPage(page + 1);
       setUsersList([...usersList, ...updateUsersList.users]);
@@ -131,7 +131,7 @@ function ContactScreen() {
               <Text style={styles.noMsg}>No contacts found</Text>
             </Center>
           )}
-          {!isFetching && isSearching && isSearchedList.length === 0 && (
+          {!isFetching && isSearching && isSearchedList?.length === 0 && (
             <Center h="90%">
               <Text style={styles.noMsg}>No contacts found</Text>
             </Center>

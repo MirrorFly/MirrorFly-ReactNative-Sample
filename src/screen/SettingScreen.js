@@ -1,44 +1,41 @@
-import React from 'react'
+import React from 'react';
 import { CONTACTLIST } from '../constant';
 import { useDispatch } from 'react-redux';
-import { navigate } from '../redux/navigationSlice';
+import { navigate } from '../redux/Actions/NavigationAction';
 import { BackHandler, StyleSheet, View } from 'react-native';
 import ScreenHeader from '../components/ScreenHeader';
-import * as RootNav from '../Navigation/rootNavigation'
+import * as RootNav from '../Navigation/rootNavigation';
 
 function SettingScreen() {
-    const dispatch = useDispatch()
-    const handleBackBtn = () => {
-        let x = { screen: CONTACTLIST }
-        dispatch(navigate(x))
-        RootNav.navigate(CONTACTLIST)
-        return true;
-    }
+  const dispatch = useDispatch();
+  const handleBackBtn = () => {
+    let x = { screen: CONTACTLIST };
+    dispatch(navigate(x));
+    RootNav.navigate(CONTACTLIST);
+    return true;
+  };
 
-    const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
-        handleBackBtn
-    );
+  const backHandler = BackHandler.addEventListener(
+    'hardwareBackPress',
+    handleBackBtn,
+  );
 
-    React.useEffect(() => {
-        return () => backHandler.remove()
-    }, [])
+  React.useEffect(() => {
+    return () => backHandler.remove();
+  }, []);
 
-    return (
-        <View style={styles.shadowProp}>
-            <ScreenHeader
-                title='Settings'
-                onhandleBack={handleBackBtn}
-            />
-        </View>
-    )
+  return (
+    <View style={styles.shadowProp}>
+      <ScreenHeader title="Settings" onhandleBack={handleBackBtn} />
+    </View>
+  );
 }
 
-export default SettingScreen
+export default SettingScreen;
 
 const styles = StyleSheet.create({
-    shadowProp: {
-        borderRadius: 8,
-        elevation: 22
-    },
-})
+  shadowProp: {
+    borderRadius: 8,
+    elevation: 22,
+  },
+});

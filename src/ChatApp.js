@@ -1,21 +1,23 @@
 import React from 'react';
 import {Provider, useDispatch, useSelector} from 'react-redux';
 import store from './redux/store';
-import {callBacks} from './SDKActions/callbacks';
+import { callBacks } from './SDKActions/callbacks';
 import SDK from './SDK/SDK';
-import {useColorScheme} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {navigationRef} from './Navigation/rootNavigation';
+import { useColorScheme, LogBox } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { navigationRef } from './Navigation/rootNavigation';
 import ApplicationTheme from './config/appTheme';
 import SplashScreen from './screen/SplashScreen';
 import StackNavigationPage from './Navigation/stackNavigation';
 import {Box, NativeBaseProvider} from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getCurrentUserJid} from './redux/authSlice';
-import {profileDetail} from './redux/profileSlice';
-import {navigate} from './redux/navigationSlice';
-import {REGISTERSCREEN} from './constant';
-import {addchatSeenPendingMsg} from './redux/chatSeenPendingMsg';
+import { getCurrentUserJid } from './redux/Actions/AuthAction';
+import { profileDetail } from './redux/Actions/ProfileAction';
+import { navigate } from './redux/Actions/NavigationAction';
+import { REGISTERSCREEN } from './constant';
+import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction';
+
+LogBox.ignoreAllLogs();
 
 export const ChatApp = () => {
   React.useEffect(() => {
@@ -43,14 +45,15 @@ const RootNavigation = () => {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const dispatch = useDispatch();
+  const safeAreaBgColor = useSelector(state => state.safeArea.color);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
   React.useEffect(() => {
     setIsLoading(true);
     setTimeout(async () => {
       if (Object.keys(vCardProfile).length === 0) {
-        const vCardProfile = await AsyncStorage.getItem('vCardProfile');
-        if (vCardProfile) {
-          dispatch(profileDetail(JSON.parse(vCardProfile)));
+        const vCardProfileLocal = await AsyncStorage.getItem('vCardProfile');
+        if (vCardProfileLocal) {
+          dispatch(profileDetail(JSON.parse(vCardProfileLocal)));
         }
       }
       const currentUserJID = await AsyncStorage.getItem('currentUserJID');
@@ -72,12 +75,11 @@ const RootNavigation = () => {
       }
       setIsLoading(false);
     }, 1000);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <>
-      <Box safeAreaTop bg="#f2f2f2" />
+      <Box safeAreaTop backgroundColor={safeAreaBgColor} />
       <NavigationContainer
         ref={navigationRef}
         theme={
@@ -91,7 +93,7 @@ const RootNavigation = () => {
           <StackNavigationPage InitialValue={initialRouteValue} />
         )}
       </NavigationContainer>
-      <Box safeAreaBottom />
+      <Box safeAreaBottom backgroundColor={safeAreaBgColor} />
     </>
   );
 };

@@ -1,8 +1,8 @@
-import {CameraRoll} from '@react-native-camera-roll/camera-roll';
-import {HStack, Icon, Image, Pressable, Text, View} from 'native-base';
+import CameraRoll from '@react-native-community/cameraroll';
+import { HStack, Icon, Image, Pressable, Text, View } from 'native-base';
 import React from 'react';
 import ScreenHeader from '../components/ScreenHeader';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   ActivityIndicator,
   BackHandler,
@@ -21,7 +21,7 @@ import {
   addGalleryAlbum,
   addGalleryPhotos,
   addGalleyGroupName,
-} from '../redux/galleryDataSlice';
+} from '../redux/Actions/GalleryAction';
 
 const Gallery = (props = {}) => {
   const PAGE_SIZE = 20;
@@ -33,7 +33,7 @@ const Gallery = (props = {}) => {
     handleMedia,
   } = props;
   const profileDetails = useSelector(state => state.navigation.profileDetails);
-  const {galleryAlbum, galleryPhotos, galleryName} = useSelector(
+  const { galleryAlbum, galleryPhotos, galleryName } = useSelector(
     state => state.galleryData,
   );
   const [galleryData, setGalleryData] = React.useState(galleryAlbum || []);
@@ -52,10 +52,10 @@ const Gallery = (props = {}) => {
     setLocalNav('CHATCONVERSATION');
   };
 
-  const renderItem = ({item}) => {
+  const renderItem = ({ item }) => {
     const isImageSelected = selectedImages.some(
       selectedItem =>
-        selectedItem?.fileDetails.image.uri === item?.node?.image.uri,
+        selectedItem?.fileDetails.uri === item?.node?.image.uri,
     );
     return (
       <View position="relative" padding={0.45}>
@@ -75,7 +75,7 @@ const Gallery = (props = {}) => {
             alt=""
             width={itemWidth}
             aspectRatio={1}
-            source={{uri: item?.node?.image.uri}}
+            source={{ uri: item?.node?.image.uri }}
           />
           {isImageSelected && (
             <View
@@ -213,7 +213,7 @@ const Gallery = (props = {}) => {
                 const data = await CameraRoll.getPhotos(params);
                  console.log(data,"datadata");
              * */
-      const {has_next_page, end_cursor} = data.page_info;
+      const { has_next_page, end_cursor } = data.page_info;
       setEndCursor(end_cursor);
       setHasNextPage(has_next_page);
       let getPhoto = [];
@@ -261,7 +261,7 @@ const Gallery = (props = {}) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const albumRender = ({item}) => {
+  const albumRender = ({ item }) => {
     return (
       <Pressable
         onPress={() => {
@@ -274,7 +274,7 @@ const Gallery = (props = {}) => {
             resizeMode="cover"
             alt={item.value.title}
             size={itemWidth}
-            source={{uri: item?.value?.uri}}
+            source={{ uri: item?.value?.uri }}
           />
           <HStack
             px={'0.5'}

@@ -1,11 +1,11 @@
 import React from 'react';
-import {Dimensions, View, LogBox} from 'react-native';
+import { Dimensions, View, LogBox } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
 const ImageZoom = props => {
-  const {item: {fileDetails = {}} = {}} = props;
+  const { item: { fileDetails = {} } = {} } = props;
   const {
-    image: {uri, height, width},
+    image: { uri, height, width },
   } = fileDetails;
   const [initialImageSize, setInitialImageSize] = React.useState({
     width: 100,
@@ -25,7 +25,7 @@ const ImageZoom = props => {
       initialWidth = windowHeight * imageAspectRatio;
     }
 
-    setInitialImageSize({width: initialWidth, height: initialHeight});
+    setInitialImageSize({ width: initialWidth, height: initialHeight });
   };
   React.useEffect(() => {
     calculateInitialImageSize();
@@ -40,7 +40,7 @@ const ImageZoom = props => {
 
   const initialIndex = 0;
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <ImageViewer
         imageUrls={images}
         style={initialImageSize}

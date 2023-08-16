@@ -1,7 +1,7 @@
 import React from 'react';
 import GalleryHeader from '../components/GalleryHeader';
-import {BackHandler, FlatList} from 'react-native';
-import {View} from 'native-base';
+import { BackHandler, FlatList } from 'react-native';
+import { View } from 'native-base';
 
 const GalleryPhotos = (props = {}) => {
   const {

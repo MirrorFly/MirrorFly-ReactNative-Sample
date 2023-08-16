@@ -1,40 +1,49 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
-import {useSelector} from 'react-redux';
-import {SandTimer} from '../common/Icons';
+import { StyleSheet } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
+import FileViewer from 'react-native-file-viewer';
+import { SandTimer } from '../common/Icons';
 import ImageCard from './ImageCard';
 import VideoCard from './VideoCard';
-import PdfCard from './PdfCard';
+import DocumentMessageCard from './DocumentMessageCard';
 import AudioCard from './AudioCard';
 import MapCard from './MapCard';
 import ContactCard from './ContactCard';
 import TextCard from './TextCard';
-import {getConversationHistoryTime} from '../common/TimeStamp';
-import {Box, HStack, Icon, Pressable, View} from 'native-base';
-import {uploadFileToSDK} from '../Helper/Chat/ChatHelper';
-import {getThumbBase64URL} from '../Helper/Chat/Utility';
-import store from '../redux/store';
-import {singleChatSelectedMediaImage} from '../redux/SingleChatImageSlice';
+import { getConversationHistoryTime } from '../common/TimeStamp';
+import { Box, HStack, Icon, Pressable, View } from 'native-base';
+import { uploadFileToSDK } from '../Helper/Chat/ChatHelper';
+import { getThumbBase64URL } from '../Helper/Chat/Utility';
+import { singleChatSelectedMediaImage } from '../redux/Actions/SingleChatImageAction';
+import { showToast } from '../Helper';
 
 const ChatMessage = props => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
   let isSame = currentUserJID === props?.message?.fromUserJid;
   let statusVisible = 'notSend';
-  const {message, setLocalNav} = props;
+  const { message, setLocalNav } = props;
   const {
     msgBody = {},
     msgBody: {
-      media: {file = {}, is_uploading, thumb_image = '', local_path = ''} = {},
+      media: {
+        file = {},
+        is_uploading,
+        thumb_image = '',
+        local_path = '',
+      } = {},
       message_type,
     } = {},
     msgId,
     msgStatus,
   } = message;
+
   const [uploadStatus, setUploadStatus] = React.useState(4);
-  const imageUrl = local_path ? local_path : file?.fileDetails?.image?.uri;
+  const imageUrl = local_path || file?.fileDetails?.uri;
   const thumbURL = thumb_image ? getThumbBase64URL(thumb_image) : '';
+
   const [imgSrc, saveImage] = React.useState(thumbURL);
+  const dispatch = useDispatch();
   const imageSize = props?.message?.msgBody?.media?.file_size || '';
   const fileSize = imageSize;
   const [isSubscribed, setIsSubscribed] = React.useState(true);
@@ -46,19 +55,27 @@ const ChatMessage = props => {
         saveImage(imageUrl);
       }
     } catch (error) {
-      if (isSubscribed) saveImage(getThumbBase64URL(thumb_image));
+      if (isSubscribed) {
+        saveImage(getThumbBase64URL(thumb_image));
+      }
     }
   };
 
   React.useEffect(() => {
     if (is_uploading === 0 || is_uploading === 1) {
       setUploadStatus(is_uploading);
-      if (isImageMessage()) saveImage(getThumbBase64URL(thumb_image));
+      if (isImageMessage()) {
+        saveImage(getThumbBase64URL(thumb_image));
+      }
     } else if (is_uploading === 3 || is_uploading === 7) {
-      if (isImageMessage()) saveImage(getThumbBase64URL(thumb_image));
+      if (isImageMessage()) {
+        saveImage(getThumbBase64URL(thumb_image));
+      }
     } else if (is_uploading !== 0 && is_uploading !== 8) {
-      if (isImageMessage()) imgFileDownload();
-      // else setUploadStatus(2);
+      if (isImageMessage()) {
+        imgFileDownload();
+      }
+      //  else setUploadStatus(2);
     }
     return () => setIsSubscribed(false);
   }, []);
@@ -73,7 +90,6 @@ const ChatMessage = props => {
       uploadFileToSDK(file, fromUserJId, msgId, msgBody?.media);
     }
     (is_uploading === 3 || is_uploading === 7) && setUploadStatus(3);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [is_uploading]);
 
   const isImageMessage = () => message_type === 'image';
@@ -93,24 +109,46 @@ const ChatMessage = props => {
       break;
   }
 
-  const getMessageStatus = msgStatus => {
-    if (isSame && msgStatus === 3) {
+  const getMessageStatus = currentStatus => {
+    if (isSame && currentStatus === 3) {
       return <Icon px="3" as={SandTimer} name="emoji-happy" />;
     }
     return (
       <>
-        <View style={[styles?.msgStatus, isSame ? statusVisible : '']} />
+        <View style={[styles?.currentStatus, isSame ? statusVisible : '']} />
       </>
     );
   };
 
   const handleMessageObj = () => {
     if (
-      props.message.msgBody.media.local_path ||
-      props.message.msgBody?.media?.file?.fileDetails?.image?.uri
+      ['image', 'video'].includes(message?.msgBody?.message_type) &&
+      (props.message?.msgBody?.media?.local_path ||
+        props.message?.msgBody?.media?.file?.fileDetails?.uri)
     ) {
-      store.dispatch(singleChatSelectedMediaImage(props.message));
+      dispatch(singleChatSelectedMediaImage(props.message));
       setLocalNav('PostPreView');
+    } else if (
+      message?.msgBody?.message_type === 'file' &&
+      (props.message?.msgBody?.media?.local_path ||
+        props.message?.msgBody?.media?.file?.fileDetails?.uri)
+    ) {
+      FileViewer.open(
+        props.message?.msgBody?.media?.local_path ||
+          props.message?.msgBody?.media?.file?.fileDetails?.uri,
+        {
+          showOpenWithDialog: true,
+        },
+      )
+        .then(res => {
+          console.log('Document opened externally', res);
+        })
+        .catch(err => {
+          console.log('Error while opening Document', err);
+          showToast('No apps available to open this file', {
+            id: 'no-supported-app-to-open-file',
+          });
+        });
     }
   };
 
@@ -126,7 +164,7 @@ const ChatMessage = props => {
       onLongPress={() =>
         message?.msgStatus !== 3 && props.handleMsgSelect(props.message)
       }>
-      {({isPressed}) => {
+      {({ isPressed }) => {
         return (
           <Box>
             <Box
@@ -138,7 +176,15 @@ const ChatMessage = props => {
               }>
               <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px="3">
                 <Pressable
-                  onPress={handleMessageObj}
+                  onPress={() =>
+                    props?.selectedMsgs?.length < 1
+                      ? handleMessageObj()
+                      : handleMessageSelect()
+                  }
+                  onLongPress={() =>
+                    message?.msgStatus !== 3 &&
+                    props.handleMsgSelect(props.message)
+                  }
                   minWidth="30%"
                   maxWidth="80%">
                   {
@@ -146,6 +192,7 @@ const ChatMessage = props => {
                       text: (
                         <TextCard
                           isSame={isSame}
+                          message={message}
                           data={{
                             message: message?.msgBody?.message,
                             timeStamp: getConversationHistoryTime(
@@ -184,10 +231,13 @@ const ChatMessage = props => {
                         />
                       ),
                       audio: (
-                        <View style={{flex: 1}}>
+                        <View style={styles.flex1}>
                           <AudioCard
-                            data={message}
+                            messageObject={message}
+                            isSender={isSame}
+                            mediaUrl={imageUrl}
                             status={getMessageStatus(message?.msgStatus)}
+                            fileSize={fileSize}
                             timeStamp={getConversationHistoryTime(
                               message?.createdAt,
                             )}
@@ -195,13 +245,15 @@ const ChatMessage = props => {
                         </View>
                       ),
                       file: (
-                        <PdfCard
-                          data={message}
+                        <DocumentMessageCard
+                          message={message}
                           status={getMessageStatus(message?.msgStatus)}
                           timeStamp={getConversationHistoryTime(
                             message?.createdAt,
                           )}
                           fileSize={fileSize}
+                          isSender={isSame}
+                          mediaUrl={imageUrl}
                         />
                       ),
                       contact: (
@@ -236,7 +288,7 @@ const ChatMessage = props => {
 export default ChatMessage;
 
 const styles = StyleSheet.create({
-  msgStatus: {
+  currentStatus: {
     marginStart: 15,
     width: 6,
     height: 6,
@@ -254,4 +306,5 @@ const styles = StyleSheet.create({
   seen: {
     backgroundColor: '#66E824',
   },
+  flex1: { flex: 1 },
 });

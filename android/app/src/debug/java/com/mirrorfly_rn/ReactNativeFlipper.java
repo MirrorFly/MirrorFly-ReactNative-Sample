@@ -17,6 +17,7 @@ import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
+import com.facebook.flipper.plugins.react.ReactFlipperPlugin;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
 import com.facebook.react.ReactInstanceEventListener;
 import com.facebook.react.ReactInstanceManager;
@@ -24,24 +25,18 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.modules.network.NetworkingModule;
 import okhttp3.OkHttpClient;
 
-/**
- * Class responsible of loading Flipper inside your React Native application.
- * This is the debug
- * flavor of it. Here you can add your own plugins and customize the Flipper
- * setup.
- */
 public class ReactNativeFlipper {
-  private ReactNativeFlipper() {
-    throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-  }
   public static void initializeFlipper(Context context, ReactInstanceManager reactInstanceManager) {
     if (FlipperUtils.shouldEnableFlipper(context)) {
-      final FlipperClient client = AndroidFlipperClient.getInstance(context);//NOSONAR
+      final FlipperClient client = AndroidFlipperClient.getInstance(context);
+
       client.addPlugin(new InspectorFlipperPlugin(context, DescriptorMapping.withDefaults()));
+      client.addPlugin(new ReactFlipperPlugin());
       client.addPlugin(new DatabasesFlipperPlugin(context));
       client.addPlugin(new SharedPreferencesFlipperPlugin(context));
       client.addPlugin(CrashReporterPlugin.getInstance());
-      NetworkFlipperPlugin networkFlipperPlugin = new NetworkFlipperPlugin();//NOSONAR
+
+      NetworkFlipperPlugin networkFlipperPlugin = new NetworkFlipperPlugin();
       NetworkingModule.setCustomClientBuilder(
           new NetworkingModule.CustomClientBuilder() {
             @Override
@@ -54,7 +49,7 @@ public class ReactNativeFlipper {
 
       // Fresco Plugin needs to ensure that ImagePipelineFactory is initialized
       // Hence we run if after all native modules have been initialized
-      ReactContext reactContext = reactInstanceManager.getCurrentReactContext();//NOSONAR
+      ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
       if (reactContext == null) {
         reactInstanceManager.addReactInstanceEventListener(
             new ReactInstanceEventListener() {

@@ -1,17 +1,26 @@
 import React from 'react';
-import {TextInput, Keyboard} from 'react-native';
-import {SendBtn} from '../common/Button';
+import { TextInput, Keyboard, StyleSheet } from 'react-native';
+import { SendBtn } from '../common/Button';
 import {
   AttachmentIcon,
   MicIcon,
   EmojiIcon,
   KeyboardIcon,
 } from '../common/Icons';
-import {HStack, Icon, IconButton, Modal, Flex, Text, VStack} from 'native-base';
+import {
+  HStack,
+  Icon,
+  IconButton,
+  Modal,
+  Flex,
+  Text,
+  VStack,
+} from 'native-base';
 import EmojiOverlay from './EmojiPicker';
+import { soundRef } from './Media/AudioPlayer';
 
 const ChatInput = props => {
-  const {onSendMessage, attachmentMenuIcons, chatInputRef} = props;
+  const { onSendMessage, attachmentMenuIcons, chatInputRef } = props;
   const [message, setMessage] = React.useState('');
   const [isOpen, setIsOpen] = React.useState(false);
   const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
@@ -36,6 +45,13 @@ const ChatInput = props => {
     }
   };
 
+  const handleAttachmentconPressed = () => {
+    Keyboard.dismiss();
+    soundRef?.current?.pause();
+    soundRef?.current?.updateState?.();
+    setIsOpen(true);
+  };
+
   return (
     <>
       <HStack
@@ -54,7 +70,7 @@ const ChatInput = props => {
           borderRadius={40}
           borderColor="#959595">
           <IconButton
-            _pressed={{bg: 'rgba(50,118,226, 0.1)'}}
+            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
             ml="2"
             p="1"
             icon={isEmojiPickerShowing ? <KeyboardIcon /> : <EmojiIcon />}
@@ -66,33 +82,23 @@ const ChatInput = props => {
           <TextInput
             ref={chatInputRef}
             value={message}
-            style={{
-              flex: 1,
-              minHeight: 20,
-              maxHeight: 100,
-            }}
-            onChangeText={text => {
-              setMessage(text);
-            }}
+            style={styles.inputTextbox}
+            onChangeText={setMessage}
             placeholder="Start Typing..."
             placeholderTextColor="#767676"
-            autoFocus={true}
             numberOfLines={1}
             multiline={true}
           />
           <IconButton
-            onPress={() => {
-              Keyboard.dismiss();
-              setIsOpen(true);
-            }}
-            _pressed={{bg: 'rgba(50,118,226, 0.1)'}}
+            onPress={handleAttachmentconPressed}
+            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
             p="2"
             icon={<Icon p="0" as={AttachmentIcon} name="emoji-happy" />}
             borderRadius="full"
           />
           <IconButton
             onPress={() => {}}
-            _pressed={{bg: 'rgba(50,118,226, 0.1)'}}
+            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
             p="2"
             ml="3"
             mr="2"
@@ -100,17 +106,8 @@ const ChatInput = props => {
             borderRadius="full"
           />
         </HStack>
-        {message && (
-          <SendBtn
-            style={{
-              height: 30,
-              width: 30,
-              paddingLeft: 10,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            onPress={sendMessage}
-          />
+        {Boolean(message) && (
+          <SendBtn style={styles.sendButton} onPress={sendMessage} />
         )}
       </HStack>
       <EmojiOverlay
@@ -124,13 +121,7 @@ const ChatInput = props => {
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         safeAreaTop={true}>
-        <Modal.Content
-          width={'90%'}
-          style={{
-            marginBottom: 30,
-            marginTop: 'auto',
-            backgroundColor: '#181818',
-          }}>
+        <Modal.Content width={'90%'} style={styles.modalContent}>
           <Modal.Body>
             <Flex direction="row" justify={'space-between'} wrap="wrap">
               {attachmentMenuIcons.map(item => (
@@ -138,12 +129,12 @@ const ChatInput = props => {
                   py="3"
                   key={item.name}
                   alignItems={'center'}
-                  style={{width: '32%'}}>
+                  style={styles.attachmentMenuIconsContainer}>
                   <IconButton
-                    _pressed={{bg: 'transperent'}}
+                    _pressed={{ bg: 'transperent' }}
                     onPress={() => {
                       setIsOpen(false);
-                      item.formatter && item.formatter();
+                      item.formatter?.();
                     }}
                     icon={<Icon as={item.icon} name="emoji-happy" />}
                     borderRadius="full"
@@ -159,4 +150,41 @@ const ChatInput = props => {
   );
 };
 
-export default ChatInput;
+export default React.memo(ChatInput);
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
+  emojiPickerContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+    maxHeight: 250,
+  },
+  emojiPicker: {
+    flex: 1,
+    width: '100%',
+    maxHeight: 250,
+  },
+  sendButton: {
+    height: 30,
+    width: 30,
+    paddingLeft: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputTextbox: {
+    flex: 1,
+    minHeight: 20,
+    maxHeight: 100,
+  },
+  modalContent: {
+    marginBottom: 30,
+    marginTop: 'auto',
+    backgroundColor: '#181818',
+  },
+  attachmentMenuIconsContainer: { width: '32%' },
+});

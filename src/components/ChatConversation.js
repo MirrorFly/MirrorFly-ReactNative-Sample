@@ -1,39 +1,43 @@
+import { Box, Stack, Text, useToast, View } from 'native-base';
 import React from 'react';
 import {
-  StyleSheet,
+  ImageBackground,
   KeyboardAvoidingView,
   Platform,
-  ImageBackground,
-  Pressable,
-  FlatList,
+  StyleSheet,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import ChatHeader from '../components/ChatHeader';
-import {useDispatch, useSelector} from 'react-redux';
-import ChatMessage from '../components/ChatMessage';
 import ChatInput from '../components/ChatInput';
-import {Stack, Text, View} from 'native-base';
-import SDK from '../SDK/SDK';
-import {ClearTextIcon} from '../common/Icons';
-import {addChatConversationHistory} from '../redux/conversationSlice';
-import {getUserIdFromJid} from '../Helper/Chat/Utility';
-import {formatUserIdToJid} from '../Helper/Chat/ChatHelper';
-import {updateMsgSeenStatus} from './chat/common/createMessage';
-import {clearGalleryData} from '../redux/utils';
+// import SDK from '../SDK/SDK';
+// import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
+// import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
+import { resetGalleryData } from '../redux/Actions/GalleryAction';
+import ChatConversationList from './ChatConversationList';
+import ReplyAudio from './ReplyAudio';
+import ReplyContact from './ReplyContact';
+import ReplyDocument from './ReplyDocument';
+import ReplyImage from './ReplyImage';
+import ReplyLocation from './ReplyLocation';
+import ReplyText from './ReplyText';
+import ReplyVideo from './ReplyVideo';
 
 const ChatConversation = React.memo(props => {
-  const {handleSendMsg} = props;
+  const { handleSendMsg } = props;
   const dispatch = useDispatch();
   const chatInputRef = React.useRef(null);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
   const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
-  const messages = useSelector(state => state.chatConversationData.data);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
-  const [messageList, setMessageList] = React.useState([]);
   const [selectedMsgs, setSelectedMsgs] = React.useState([]);
   const [replyMsgs, setReplyMsgs] = React.useState();
   const [menuItems, setMenuItems] = React.useState([]);
+  // const [selectedMsgIndex, setSelectedMsgIndex] = React.useState();
 
-  /**  
+  const toast = useToast();
+  /**
      *  const { vCardProfile, fromUserJId, messages } = useSelector((state) =>  ({
         vCardProfile: state.profile.profileDetails,
         fromUserJId: state.navigation.fromUserJid,
@@ -53,35 +57,66 @@ const ChatConversation = React.memo(props => {
                 </HStack>
             )
         }
-    
         const onLeftAction = (rowKey) => {
             handleSwipeLeft(rowKey);
         };
-    
         const onLeftActionStatusChange = (res) => {
             setIsSwiping(res);
         };
- 
      const leftActivationValue = 20; // Adjust as needed
      const leftActionValue = 20; // Adjust as needed
-     const initialLeftActionState = false; // Adjust as needed  
+     const initialLeftActionState = false; // Adjust as needed
      // handleSwipeLeft(msgId);
      */
 
-  const handleReply = msgId => {
+  const toastConfig = {
+    duration: 2500,
+    avoidKeyboard: true,
+  };
+
+  const copyToClipboard = () => {
+    if (
+      selectedMsgs[0].msgBody.message.length <= 500 ||
+      selectedMsgs[0]?.msgBody?.media?.caption.length <= 500
+    ) {
+      setSelectedMsgs([]);
+      Clipboard.setString(
+        selectedMsgs[0].msgBody.message ||
+          selectedMsgs[0]?.msgBody?.media?.caption,
+      );
+      toast.show({
+        ...toastConfig,
+        render: () => {
+          return (
+            <Box bg="black" px="2" py="1" rounded="sm">
+              <Text color={'#fff'} p="2">
+                1 Text copied successfully to the clipboard
+              </Text>
+            </Box>
+          );
+        },
+      });
+    }
+  };
+
+  const handleReply = msg => {
     setSelectedMsgs([]);
+    setReplyMsgs(msg);
+    // console.log('selectedMsgs', selectedMsgs[0].msgBody?.message);
   };
 
   const handleRemove = () => {
-    setReplyMsgs();
+    setReplyMsgs('');
   };
 
   const handleMessageSend = messageContent => {
     let message = {
       type: 'text',
       content: messageContent,
+      replyTo: replyMsgs?.msgId || '',
     };
     handleSendMsg(message);
+    handleRemove();
   };
 
   React.useEffect(() => {
@@ -92,16 +127,12 @@ const ChatConversation = React.memo(props => {
       case foundMsg.length > 0:
         setMenuItems([
           {
-            label: 'Copy',
-            formatter: () => {},
-          },
-          {
             label: 'Report',
             formatter: () => {},
           },
         ]);
         break;
-      case foundMsg.length == 0 && selectedMsgs.length > 0:
+      case foundMsg.length === 0 && selectedMsgs.length > 0:
         setMenuItems([
           {
             label: 'Message Info',
@@ -111,8 +142,12 @@ const ChatConversation = React.memo(props => {
             },
           },
           {
-            label: 'Copy',
-            formatter: () => {},
+            label:
+              selectedMsgs[0].msgBody.message_type === 'text' ||
+              selectedMsgs[0]?.msgBody?.media?.caption
+                ? 'Copy'
+                : null,
+            formatter: copyToClipboard,
           },
         ]);
         break;
@@ -131,59 +166,16 @@ const ChatConversation = React.memo(props => {
     }
   }, [selectedMsgs]);
 
-  const getChatMessageHistoryById = id => {
-    if (messages[id]?.messages)
-      return Object.values(messages[id]?.messages).reverse();
-    return [];
-  };
-
   React.useEffect(() => {
-    if (fromUserJId) {
-      if (messages[getUserIdFromJid(fromUserJId)]) {
-        setMessageList(
-          getChatMessageHistoryById(getUserIdFromJid(fromUserJId)),
-        );
-      }
-    }
-  }, [messages, fromUserJId]);
-
-  React.useEffect(() => {
-    (async () => {
-      if (messages[getUserIdFromJid(fromUserJId)]) {
-        setMessageList(
-          getChatMessageHistoryById(getUserIdFromJid(fromUserJId)),
-        );
-      } else {
-        let chatMessage = await SDK.getChatMessagesDB(fromUserJId);
-        if (chatMessage?.statusCode == 200) {
-          dispatch(addChatConversationHistory(chatMessage));
-        }
-      }
-    })();
-    clearGalleryData();
+    dispatch(resetGalleryData());
   }, []);
 
-  const handleMsgSelect = message => {
+  const handleMsgSelect = (message, index) => {
     if (selectedMsgs.includes(message)) {
       setSelectedMsgs(prevArray => prevArray.filter(item => message !== item));
     } else {
       setSelectedMsgs([...selectedMsgs, message]);
     }
-  };
-
-  React.useEffect(() => {
-    updateMsgSeenStatus();
-  }, [messageList]);
-
-  const chatMessageRender = ({item}) => {
-    return (
-      <ChatMessage
-        setLocalNav={props.setLocalNav}
-        handleMsgSelect={handleMsgSelect}
-        selectedMsgs={selectedMsgs}
-        message={item}
-      />
-    );
   };
 
   return (
@@ -202,76 +194,61 @@ const ChatConversation = React.memo(props => {
       />
       <ImageBackground
         source={require('../assets/chatBackgroud.png')}
-        style={{
-          flex: 1,
-          resizeMode: 'cover',
-          justifyContent: 'center',
-        }}>
-        <FlatList
-          data={messageList}
-          inverted
-          renderItem={chatMessageRender}
-          keyExtractor={item => item.msgId}
+        style={styles.imageBackground}>
+        <ChatConversationList
+          setLocalNav={props.setLocalNav}
+          fromUserJId={fromUserJId}
+          handleMsgSelect={handleMsgSelect}
+          selectedMsgs={selectedMsgs}
         />
       </ImageBackground>
       {replyMsgs ? (
-        <View paddingX={'1'} paddingY={'1'} backgroundColor={'#DDE3E5'}>
-          <Stack paddingX={'3'} paddingY={'0 '} backgroundColor={'#E2E8F9'}>
-            <View flexDirection={'row'} justifyContent={'flex-end'}>
-              {replyMsgs ? (
-                <Pressable
-                  style={{
-                    padding: 5,
-                    justifyContent: 'flex-end',
-                    backgroundColor: '#FFF',
-                    borderRadius: 20,
-                    borderWidth: 1,
-                    borderColor: 'black',
-                  }}
-                  onPress={handleRemove}>
-                  <ClearTextIcon />
-                </Pressable>
-              ) : null}
-            </View>
-            <View mb={'2'} justifyContent={'flex-start'}>
-              {replyMsgs.fromUserJid === currentUserJID ? (
-                <Text py="0">You</Text>
-              ) : (
-                <Text py="0">{replyMsgs?.msgBody.nickName}</Text>
-              )}
+        <View paddingX={'1'} paddingY={'2'} backgroundColor={'#E2E8F9'}>
+          <Stack paddingX={'3'} paddingY={'0 '} backgroundColor={'#0000001A'}>
+            <View marginY={'3'} justifyContent={'flex-start'}>
               {
                 {
                   text: (
-                    <Text numberOfLines={1} fontSize={14} color="#313131">
-                      {replyMsgs?.msgBody?.message}
-                    </Text>
+                    <ReplyText
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
                   ),
                   image: (
-                    <Text
-                      fontWeight={'600'}
-                      fontStyle={'italic'}
-                      fontSize={14}
-                      color="#313131">
-                      image
-                    </Text>
+                    <ReplyImage
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
                   ),
                   video: (
-                    <Text
-                      fontWeight={'600'}
-                      fontStyle={'italic'}
-                      fontSize={14}
-                      color="#313131">
-                      video
-                    </Text>
+                    <ReplyVideo
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
                   ),
                   audio: (
-                    <Text
-                      fontWeight={'600'}
-                      fontStyle={'italic'}
-                      fontSize={14}
-                      color="#313131">
-                      audio
-                    </Text>
+                    <ReplyAudio
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
+                  ),
+                  file: (
+                    <ReplyDocument
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
+                  ),
+                  contact: (
+                    <ReplyContact
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
+                  ),
+                  location: (
+                    <ReplyLocation
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
                   ),
                 }[replyMsgs?.msgBody?.message_type]
               }
@@ -291,6 +268,19 @@ const ChatConversation = React.memo(props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  imageBackground: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+  },
+  removeReplyMessage: {
+    padding: 5,
+    justifyContent: 'flex-end',
+    backgroundColor: '#FFF',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'black',
   },
 });
 

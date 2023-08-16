@@ -15,8 +15,6 @@ const ChatConversationList = ({
   
 }) => {
 
-  // console.log("handleReply",handleReply);
-  // console.log("selectedMsgs",selectedMsgs);
   const { id: messagesReducerId, data: messages } = useSelector(
     state => state.chatConversationData,
   );

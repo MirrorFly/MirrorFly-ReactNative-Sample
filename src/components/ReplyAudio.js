@@ -38,7 +38,7 @@ const ReplyAudio = props => {
         </Pressable>
       </HStack>
       <HStack alignItems={'center'} pl={1}>
-        <AudioMusicIcon color={'#767676'} />
+        <AudioMusicIcon  color={'#767676'} />
         <Text
           numberOfLines={1}
           color="#313131"

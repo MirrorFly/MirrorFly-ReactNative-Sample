@@ -24,8 +24,6 @@ const ChatMessage = props => {
   let statusVisible = 'notSend';
   const { message, setLocalNav } = props;
    
-
- 
   const {
     msgBody = {},
     msgBody: {

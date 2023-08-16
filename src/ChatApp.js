@@ -20,15 +20,16 @@ import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction'
 LogBox.ignoreAllLogs();
 
 export const ChatApp = () => {
-  React.useEffect(() => {
+  React.useEffect(() => {   
     (async () => {
       await SDK.initializeSDK({
         apiBaseUrl: 'https://api-uikit-qa.contus.us/api/v1',
         licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
         callbackListeners: callBacks,
-      });
+      });  
     })();
   }, []);
+ 
 
   return (
     <Provider store={store}>
@@ -38,6 +39,8 @@ export const ChatApp = () => {
     </Provider>
   );
 };
+
+
 
 const RootNavigation = () => {
   const scheme = useColorScheme();

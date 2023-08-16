@@ -1,5 +1,5 @@
 import React from 'react';
-import { Provider, useDispatch, useSelector } from 'react-redux';
+import {Provider, useDispatch, useSelector} from 'react-redux';
 import store from './redux/store';
 import { callBacks } from './SDKActions/callbacks';
 import SDK from './SDK/SDK';
@@ -9,7 +9,7 @@ import { navigationRef } from './Navigation/rootNavigation';
 import ApplicationTheme from './config/appTheme';
 import SplashScreen from './screen/SplashScreen';
 import StackNavigationPage from './Navigation/stackNavigation';
-import { Box, NativeBaseProvider } from 'native-base';
+import {Box, NativeBaseProvider} from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getCurrentUserJid } from './redux/Actions/AuthAction';
 import { profileDetail } from './redux/Actions/ProfileAction';

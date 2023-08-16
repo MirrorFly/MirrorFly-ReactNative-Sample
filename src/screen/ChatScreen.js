@@ -64,7 +64,6 @@ import SavePicture from './Gallery';
 import { createThumbnail } from 'react-native-create-thumbnail';
 
 function ChatScreen() {
-
   const vCardData = useSelector(state => state.profile.profileDetails);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
@@ -412,7 +411,7 @@ function ChatScreen() {
   };
 
   const parseAndSendMessage = async (message, chatType, messageType) => {
-    const { content } = message;
+    const {content} = message;
     sendMediaMessage(messageType, content, chatType);
   };
 

@@ -8,7 +8,6 @@ import { updateChatConversationHistory } from '../redux/Actions/ConversationActi
 import { navigate } from '../redux/Actions/NavigationAction';
 import { updateProfileDetail } from '../redux/Actions/ProfileAction';
 import { updateRecentChatMessageStatus } from '../redux/Actions/RecentChatAction';
-// import { storeDeliveryStatus, storeSeenStatus } from '../redux/storageSlice';
 import store from '../redux/store';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import * as RootNav from '../Navigation/rootNavigation';
@@ -59,10 +58,6 @@ export const callBacks = {
       case 'carbonSeen':
         store.dispatch(updateRecentChatMessageStatus(res));
         store.dispatch(updateChatConversationHistory(res));
-        // store.dispatch(storeDeliveryStatus(res));
-        // if (res.msgType === 'seen' || res.msgType === 'carbonSeen') {
-        //   store.dispatch(storeSeenStatus(res));
-        // }
         break;
     }
     /**

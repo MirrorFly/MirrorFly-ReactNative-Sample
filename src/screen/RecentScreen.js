@@ -150,6 +150,7 @@ function RecentScreen() {
   });
 
   const handleLogout = async () => {
+    console.log('logged out');
     SDK.logout();
     const getPrevUserIdentifier = await AsyncStorage.getItem('userIdentifier');
     AsyncStorage.setItem('prevUserIdentifier', getPrevUserIdentifier || '');
@@ -177,7 +178,7 @@ function RecentScreen() {
       },
       {
         label: 'Logout',
-        formatter: () => handleLogout,
+        formatter: handleLogout,
       },
     ],
     [],

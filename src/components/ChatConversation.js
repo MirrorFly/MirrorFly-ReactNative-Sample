@@ -10,9 +10,6 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import ChatHeader from '../components/ChatHeader';
 import ChatInput from '../components/ChatInput';
-// import SDK from '../SDK/SDK';
-// import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
-// import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import Clipboard from '@react-native-clipboard/clipboard';
 import SDK from 'SDK/SDK';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
@@ -105,7 +102,6 @@ const ChatConversation = React.memo(props => {
   const handleReply = msg => {
     setSelectedMsgs([]);
     setReplyMsgs(msg);
-    // console.log('selectedMsgs', selectedMsgs[0].msgBody?.message);
   };
 
   const handleRemove = () => {

@@ -19,7 +19,7 @@ import {
   ReplyIcon,
   LeftArrowIcon,
 } from '../common/Icons';
-import  SDK from 'SDK/SDK';
+import SDK from 'SDK/SDK';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import LastSeen from './LastSeen';
 import { useSelector } from 'react-redux';
@@ -33,6 +33,7 @@ function ChatHeader(props) {
   const onClose = () => {
     setRemove(false);
   };
+
   const handleDelete = () => {
     setRemove(!remove);
   };
@@ -75,6 +76,15 @@ function ChatHeader(props) {
           bg="#F2F2F2"
           justifyContent="space-between"
           alignItems="center"
+          borderBottomColor={'#C1C1C1'}
+          borderBottomWidth={1}
+          style={{
+            elevation: 4, 
+            shadowColor: '#181818', 
+            shadowOffset: { width: 0, height:4 },
+            shadowOpacity: 0.6,
+            shadowRadius: 6,
+          }}
           w="full">
           <HStack alignItems="center">
             <IconButton

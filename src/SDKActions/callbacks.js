@@ -74,9 +74,6 @@ export const callBacks = {
     ) {
       store.dispatch(clearLastMessageinRecentChat(res.fromUserId));
       store.dispatch(ClearChatHistoryAction(res.fromUserId));
-      /**
-      // store.dispatch(RemoveStaredMessagesClearChat(res));
-       */
     }
     /**
         // if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {

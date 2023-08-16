@@ -36,7 +36,6 @@ const RegisterScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const toast = useToast();
   const selectcountry = useSelector(state => state.navigation.selectContryCode);
-  
   const [isLoading, setIsLoading] = React.useState(false);
   const [mobileNumber, setMobileNumber] = React.useState('');
   const [isToastShowing, setIsToastShowing] = React.useState(false);
@@ -129,14 +128,14 @@ const RegisterScreen = ({ navigation }) => {
     ) {
       setIsLoading(true);
       handleRegister();
-    
     }
   };
   const handleRegister = async () => {
     setIsToastShowing(false);
     const fcmToken = await messaging().getToken();
     const register = await SDK.register(
-      selectcountry?.dial_code + mobileNumber, fcmToken
+      selectcountry?.dial_code + mobileNumber,
+      fcmToken,
     );
     if (register.statusCode === 200) {
       await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
@@ -154,11 +153,6 @@ const RegisterScreen = ({ navigation }) => {
     let connect = await SDK.connect(register.username, register.password);
     switch (connect?.statusCode) {
       case 200:
-        let Getjid = await SDK.getCurrentUserJid();
-        let usersJID = Getjid.userJid.split('/')[0];
-        AsyncStorage.setItem('currentUserJID', JSON.stringify(usersJID));
-        dispatch(getCurrentUserJid(userJID));
-        break;
       case 409:
         let nav = { screen: PROFILESCREEN, prevScreen: REGISTERSCREEN };
         let jid = await SDK.getCurrentUserJid();
@@ -180,31 +174,6 @@ const RegisterScreen = ({ navigation }) => {
       setIsLoading(false);
     }
   }, [isNetworkConnected]);
-
-  const handleNotify = () => {
-  
-  //   const fromUserJid = store.getState().navigation.fromUserJid;
-  //  // const connect = store.getState().connection.xmppStatus;
-
-  //    console.log("fromUserJid",fromUserJid);
-    PushNotifyLocalFun.scheduleNotify(new Date(Date.now() + 10 * 1000));
-
-  };
-
-// const handleRemoteNotify = async()=>{
-//     const authStatus = await messaging().requestPermission();
-//   const enabled =
-//     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-//     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-//   if (enabled) {
-//     messaging()
-//     .getToken()
-//     .then((fcmToken) => {
-//       console.log('FCM Token -> ', fcmToken);
-//     });
-//   }
-// }
 
   return (
     <KeyboardAvoidingView

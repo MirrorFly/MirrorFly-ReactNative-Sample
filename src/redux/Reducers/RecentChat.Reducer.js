@@ -55,15 +55,18 @@ const updateRecentChatMessageStatusFunc = (data, stateData) => {
 };
 
 const clearMessageInRecentChat = (data, id) => {
-  return data.find(element => {
+  const recentData = data;
+  return recentData.map(element => {
     if (element.fromUserId === id) {
-      element.msgBody = {};
-      element.recent.msgType = '';
-      element.createdAt = '';
-      element.msgStatus = 4;
-      return element;
+      return {
+        ...element,
+        msgBody: {},
+        msgType: '',
+        createdAt: '',
+        msgStatus: 4,
+      };
     }
-    return false;
+    return element;
   });
 };
 

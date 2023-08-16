@@ -9,9 +9,6 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import ChatHeader from '../components/ChatHeader';
 import ChatInput from '../components/ChatInput';
-// import SDK from '../SDK/SDK';
-// import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
-// import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { resetGalleryData } from '../redux/Actions/GalleryAction';
@@ -34,8 +31,6 @@ const ChatConversation = React.memo(props => {
   const [selectedMsgs, setSelectedMsgs] = React.useState([]);
   const [replyMsgs, setReplyMsgs] = React.useState();
   const [menuItems, setMenuItems] = React.useState([]);
-  // const [selectedMsgIndex, setSelectedMsgIndex] = React.useState();
-
   const toast = useToast();
   /**
      *  const { vCardProfile, fromUserJId, messages } = useSelector((state) =>  ({
@@ -102,7 +97,6 @@ const ChatConversation = React.memo(props => {
   const handleReply = msg => {
     setSelectedMsgs([]);
     setReplyMsgs(msg);
-    // console.log('selectedMsgs', selectedMsgs[0].msgBody?.message);
   };
 
   const handleRemove = () => {

@@ -41,8 +41,8 @@ function RecentScreen() {
   const dispatch = useDispatch();
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
-    {key: 'first', title: 'Chats'},
-    {key: 'second', title: 'Calls'},
+    { key: 'first', title: 'Chats' },
+    { key: 'second', title: 'Calls' },
   ]);
   const [filteredData, setFilteredData] = React.useState([]);
   const [isSearching, setIsSearching] = React.useState(false);
@@ -115,13 +115,13 @@ function RecentScreen() {
           {!isSearching && (
             <TabBar
               {...props}
-              style={{backgroundColor: '#F2F2F2', color: 'black'}}
+              style={{ backgroundColor: '#F2F2F2', color: 'black' }}
               indicatorStyle={{
                 backgroundColor: '#3276E2',
                 borderColor: '#3276E2',
                 borderWidth: 1.3,
               }}
-              labelStyle={{color: 'black', fontWeight: 'bold'}}
+              labelStyle={{ color: 'black', fontWeight: 'bold' }}
               activeColor={'#3276E2'}
             />
           )}
@@ -150,6 +150,7 @@ function RecentScreen() {
   });
 
   const handleLogout = async () => {
+    console.log('logged out');
     SDK.logout();
     const getPrevUserIdentifier = await AsyncStorage.getItem('userIdentifier');
     AsyncStorage.setItem('prevUserIdentifier', getPrevUserIdentifier || '');
@@ -177,7 +178,7 @@ function RecentScreen() {
       },
       {
         label: 'Logout',
-        formatter: () => handleLogout,
+        formatter: handleLogout,
       },
     ],
     [],
@@ -207,10 +208,10 @@ function RecentScreen() {
         handleClear={handleClear}
       />
       <TabView
-        navigationState={{index, routes}}
+        navigationState={{ index, routes }}
         renderScene={renderScene}
         onIndexChange={setIndex}
-        initialLayout={{width: Dimensions.get('window').width}}
+        initialLayout={{ width: Dimensions.get('window').width }}
         renderTabBar={renderTabBar}
         tabStyle={styles.tabView}
         activeTabStyle={styles.activeTab}

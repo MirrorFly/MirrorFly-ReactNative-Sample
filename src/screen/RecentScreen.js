@@ -49,7 +49,6 @@ function RecentScreen() {
   const [recentData, setrecentData] = React.useState([]);
   const [searchValue, setSearchValue] = React.useState('');
   const recentChatList = useSelector(state => state.recentChatData.data);
-  console.log(recentChatList, 'recentChatList');
   const handleSearch = text => {
     setIsSearching(true);
     setSearchValue(text);

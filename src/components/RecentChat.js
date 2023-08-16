@@ -77,7 +77,7 @@ export default function RecentChat(props) {
           _dark={{ bg: 'coolGray.800' }}
           _light={{ bg: 'white' }}>
           <Box pl="4" pr="5" py="2">
-            <HStack alignItems="center" space={3}>
+            <HStack space={3}>
               {/* {item?.profileDetails?.image ?
                             <RecentChatProfile data={{
                                 image: item?.profileDetails?.image,
@@ -110,7 +110,7 @@ export default function RecentChat(props) {
                     />
                   ) : (
                     isSame &&
-                    item?.msgStatus == 3 && (
+                    item?.msgStatus === 3 && (
                       <Icon px="3" as={SandTimer} name="emoji-happy" />
                     )
                   )}

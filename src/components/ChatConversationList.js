@@ -4,7 +4,7 @@ import ChatMessage from './ChatMessage';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { useDispatch, useSelector } from 'react-redux';
 import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
-import SDK from '../SDK/SDK';
+import SDK from 'SDK/SDK';
 import { updateMsgSeenStatus } from './chat/common/createMessage';
 
 const ChatConversationList = ({

@@ -395,6 +395,8 @@ PODS:
     - React-Core
   - RNCAsyncStorage (1.19.1):
     - React-Core
+  - RNCClipboard (1.11.2):
+    - React-Core
   - RNConvertPhAsset (1.0.3):
     - React
   - RNFileViewer (2.1.5):
@@ -499,6 +501,7 @@ DEPENDENCIES:
   - RealmJS (from `../node_modules/realm`)
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - RNConvertPhAsset (from `../node_modules/react-native-convert-ph-asset`)
   - RNFileViewer (from `../node_modules/react-native-file-viewer`)
   - RNFS (from `../node_modules/react-native-fs`)
@@ -623,6 +626,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/rn-fetch-blob"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
+  RNCClipboard:
+    :path: "../node_modules/@react-native-clipboard/clipboard"
   RNConvertPhAsset:
     :path: "../node_modules/react-native-convert-ph-asset"
   RNFileViewer:
@@ -704,6 +709,7 @@ SPEC CHECKSUMS:
   RealmJS: 2e45ca6ed4c3732be369219b41816e890ce51024
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNCAsyncStorage: f47fe18526970a69c34b548883e1aeceb115e3e1
+  RNCClipboard: 3f0451a8100393908bea5c5c5b16f96d45f30bfc
   RNConvertPhAsset: 9b366b8a1abc194b76572712c6f7dd89c9e4e37f
   RNFileViewer: ce7ca3ac370e18554d35d6355cffd7c30437c592
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688

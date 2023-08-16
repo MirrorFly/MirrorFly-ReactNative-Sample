@@ -55,6 +55,7 @@ function ChatHeader({
   const onClose = () => {
     setRemove(false);
   };
+
   const handleDelete = () => {
     setRemove(!remove);
   };
@@ -71,8 +72,8 @@ function ChatHeader({
     console.log('Fav item');
   };
 
-  const handleReplyMessage = () => {
-    handleReply(selectedMsgs?.[0]?.msgId);
+  const handleReply = () => {
+    props.handleReply(props?.selectedMsgs[0]);
   };
 
   const handleUserInfo = () => {
@@ -93,6 +94,15 @@ function ChatHeader({
           bg="#F2F2F2"
           justifyContent="space-between"
           alignItems="center"
+          borderBottomColor={'#C1C1C1'}
+          borderBottomWidth={1}
+          style={{
+            elevation: 4, 
+            shadowColor: '#181818', 
+            shadowOffset: { width: 0, height:4 },
+            shadowOpacity: 0.6,
+            shadowRadius: 6,
+          }}
           w="full">
           <HStack alignItems="center">
             <IconButton
@@ -203,7 +213,7 @@ function ChatHeader({
               </Pressable>
               <Pressable onPress={handleDeleteForMe}>
                 <Text color={'#3276E2'} fontWeight={'600'}>
-                  DELETE FOR ME{' '}
+                  DELETE FOR ME
                 </Text>
               </Pressable>
             </HStack>

@@ -1,5 +1,11 @@
 import React from 'react';
-import { BackHandler, Image, StyleSheet, TextInput } from 'react-native';
+import {
+  BackHandler,
+  Image,
+  Platform,
+  StyleSheet,
+  TextInput,
+} from 'react-native';
 import {
   HStack,
   Icon,

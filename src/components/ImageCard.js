@@ -1,9 +1,10 @@
-import { Image, Text, View } from 'native-base';
+import { HStack, Image, Stack, Text, View } from 'native-base';
 import React from 'react';
 import { ImageBackground, StyleSheet } from 'react-native';
 import noPreview from '../assets/noPreview.png';
 import ProgressLoader from './chat/common/ProgressLoader';
 import { getThumbBase64URL } from '../Helper/Chat/Utility';
+import { GalleryAllIcon } from '../common/Icons';
 
 const ImageCard = props => {
   const {
@@ -34,7 +35,7 @@ const ImageCard = props => {
 
   const imageUrl = local_path || fileDetails?.uri;
   const [imageSource, setImageSource] = React.useState(
-    imgSrc || getThumbBase64URL(thumb_image)
+    imgSrc || getThumbBase64URL(thumb_image),
   );
 
   React.useEffect(() => {
@@ -54,62 +55,77 @@ const ImageCard = props => {
 
   return (
     <View
-      backgroundColor={isSender ? '#E2E8F7' : '#fff'}
-      height={androidHeight}
-      width={androidWidth}
-      borderColor={'#E5E5E5'}
-      borderWidth={2}
-      borderRadius={5}
-      position="relative">
-      {imageSource ? (
-        <Image
-          width={androidWidth}
-          height={androidHeight}
-          borderRadius={5}
-          alt={fileName}
-          source={{ uri: imageSource }}
-          resizeMode="cover"
-        />
-      ) : (
-        <View backgroundColor={'#fff'}>
+      borderRadius={10}
+      overflow={'hidden'}
+      borderBottomRightRadius={isSender ? 0 : 10}
+      borderBottomLeftRadius={isSender ? 10 : 0}
+      backgroundColor={isSender ? '#E2E8F7' : '#fff'}>
+      <View p="1" position="relative">
+        {imageSource ? (
           <Image
-            resizeMode="contain"
-            alt={fileName}
-            source={noPreview}
             width={androidWidth}
+            borderRadius={5}
             height={androidHeight}
+            alt={fileName}
+            source={{ uri: imageSource }}
+            resizeMode="cover"
+          />
+        ) : (
+          <View backgroundColor={'#fff'}>
+            <Image
+              resizeMode="contain"
+              alt={fileName}
+              source={noPreview}
+              width={androidWidth}
+              height={androidHeight}
+            />
+          </View>
+        )}
+        <View
+          position={'absolute'}
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          justifyContent={'center'}
+          alignItems={'center'}>
+          <ProgressLoader
+            isSender={isSender}
+            imageUrl={imageUrl}
+            media={media}
+            fileSize={fileSize}
+            setUploadStatus={setUploadStatus}
+            msgId={msgId}
+            mediaData={media}
+            uploadStatus={uploadStatus}
           />
         </View>
-      )}
-      <View
-        position={'absolute'}
-        top={0}
-        left={0}
-        right={0}
-        bottom={0}
-        justifyContent={'center'}
-        alignItems={'center'}>
-        <ProgressLoader
-          isSender={isSender}
-          imageUrl={imageUrl}
-          media={media}
-          fileSize={fileSize}
-          setUploadStatus={setUploadStatus}
-          msgId={msgId}
-          mediaData={media}
-          uploadStatus={uploadStatus}
-        />
+        {!media.caption && (
+          <View position={'absolute'} bottom={2} right={2}>
+            <ImageBackground
+              source={require('../assets/ic_baloon.png')}
+              style={styles.imageBg}>
+              {props.status}
+              <Text pl="1" color="#fff" fontSize="9">
+                {props.timeStamp}
+              </Text>
+            </ImageBackground>
+          </View>
+        )}
       </View>
-      <View position={'absolute'} bottom={1} right={1}>
-        <ImageBackground
-          source={require('../assets/ic_baloon.png')}
-          style={styles.imageBg}>
-          {props.status}
-          <Text pl="1" color="#fff" fontSize="9">
-            {props.timeStamp}
+      {media.caption && (
+        <Stack pb={2} justifyContent={'space-between'}>
+          <Text color={'#000'} pl={3} fontSize={14}>
+            {media.caption}
           </Text>
-        </ImageBackground>
-      </View>
+          <HStack alignItems={'center'} justifyContent={'flex-end'}>
+            {props.status}
+            <Text pl="1" paddingRight={2} fontSize="9">
+              {props.timeStamp}
+            </Text>
+          </HStack>
+        </Stack>
+      )}
     </View>
   );
 };

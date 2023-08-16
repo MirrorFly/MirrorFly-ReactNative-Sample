@@ -9,6 +9,10 @@ function ScreenHeader(props) {
   const [isSearching, setIsSearching] = React.useState(false);
   const [text, setText] = React.useState('');
 
+  React.useEffect(() => {
+    setIsSearching(props.isSearching);
+  }, [props.isSearching]);
+
   const handlingBackBtn = () => {
     setText('');
     setIsSearching(false);
@@ -45,6 +49,7 @@ function ScreenHeader(props) {
           )}
           {props?.isSearching && (
             <IconButton
+              marginRight={3}
               _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
               onPress={handlingBackBtn}
               icon={<Icon as={() => LeftArrowIcon()} name="emoji-happy" />}

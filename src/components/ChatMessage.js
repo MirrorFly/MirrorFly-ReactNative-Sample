@@ -37,9 +37,11 @@ const ChatMessage = props => {
     msgId,
     msgStatus,
   } = message;
+
   const [uploadStatus, setUploadStatus] = React.useState(4);
   const imageUrl = local_path || file?.fileDetails?.uri;
   const thumbURL = thumb_image ? getThumbBase64URL(thumb_image) : '';
+
   const [imgSrc, saveImage] = React.useState(thumbURL);
   const dispatch = useDispatch();
   const imageSize = props?.message?.msgBody?.media?.file_size || '';
@@ -174,7 +176,15 @@ const ChatMessage = props => {
               }>
               <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px="3">
                 <Pressable
-                  onPress={handleMessageObj}
+                  onPress={() =>
+                    props?.selectedMsgs?.length < 1
+                      ? handleMessageObj()
+                      : handleMessageSelect()
+                  }
+                  onLongPress={() =>
+                    message?.msgStatus !== 3 &&
+                    props.handleMsgSelect(props.message)
+                  }
                   minWidth="30%"
                   maxWidth="80%">
                   {
@@ -182,6 +192,7 @@ const ChatMessage = props => {
                       text: (
                         <TextCard
                           isSame={isSame}
+                          message={message}
                           data={{
                             message: message?.msgBody?.message,
                             timeStamp: getConversationHistoryTime(

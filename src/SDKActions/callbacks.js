@@ -1,26 +1,33 @@
+import nextFrame from 'next-frame';
+import {
+  MSG_CLEAR_CHAT,
+  MSG_CLEAR_CHAT_CARBON,
+  MSG_SEEN_ACKNOWLEDGE_STATUS,
+  MSG_SEEN_STATUS,
+  MSG_SENT_SEEN_STATUS_CARBON,
+} from '../Helper/Chat/Constant';
+import * as RootNav from '../Navigation/rootNavigation';
 import {
   updateConversationMessage,
   updateRecentChatMessage,
 } from '../components/chat/common/createMessage';
 import { REGISTERSCREEN } from '../constant';
-import { setXmppStatus } from '../redux/Actions/connectionAction';
-import { updateChatConversationHistory } from '../redux/Actions/ConversationAction';
+import {
+  ClearChatHistoryAction,
+  updateChatConversationHistory,
+} from '../redux/Actions/ConversationAction';
+import { updateDownloadData } from '../redux/Actions/MediaDownloadAction';
+import { updateMediaUploadData } from '../redux/Actions/MediaUploadAction';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { updateProfileDetail } from '../redux/Actions/ProfileAction';
-import { updateRecentChatMessageStatus } from '../redux/Actions/RecentChatAction';
-// import { storeDeliveryStatus, storeSeenStatus } from '../redux/storageSlice';
-import store from '../redux/store';
-import { updateUserPresence } from '../redux/Actions/userAction';
-import * as RootNav from '../Navigation/rootNavigation';
 import {
-  MSG_SEEN_ACKNOWLEDGE_STATUS,
-  MSG_SEEN_STATUS,
-  MSG_SENT_SEEN_STATUS_CARBON,
-} from '../Helper/Chat/Constant';
+  clearLastMessageinRecentChat,
+  updateRecentChatMessageStatus,
+} from '../redux/Actions/RecentChatAction';
 import { deleteChatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAction';
-import { updateMediaUploadData } from '../redux/Actions/MediaUploadAction';
-import nextFrame from 'next-frame';
-import { updateDownloadData } from '../redux/Actions/MediaDownloadAction';
+import { setXmppStatus } from '../redux/Actions/connectionAction';
+import { updateUserPresence } from '../redux/Actions/userAction';
+import store from '../redux/store';
 
 export const callBacks = {
   connectionListener: response => {
@@ -59,11 +66,14 @@ export const callBacks = {
       case 'carbonSeen':
         store.dispatch(updateRecentChatMessageStatus(res));
         store.dispatch(updateChatConversationHistory(res));
-        // store.dispatch(storeDeliveryStatus(res));
-        // if (res.msgType === 'seen' || res.msgType === 'carbonSeen') {
-        //   store.dispatch(storeSeenStatus(res));
-        // }
         break;
+    }
+    if (
+      res.msgType === MSG_CLEAR_CHAT ||
+      res.msgType === MSG_CLEAR_CHAT_CARBON
+    ) {
+      store.dispatch(clearLastMessageinRecentChat(res.fromUserId));
+      store.dispatch(ClearChatHistoryAction(res.fromUserId));
     }
     /**
         // if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {

@@ -1,31 +1,36 @@
 import React from 'react';
-import ScreenHeader from '../components/ScreenHeader';
-import RecentChat from '../components/RecentChat';
-import RecentCalls from '../components/RecentCalls';
-import { Dimensions, Animated, StyleSheet } from 'react-native';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import { FloatingBtn } from '../common/Button';
+import { Animated, BackHandler, Dimensions, StyleSheet } from 'react-native';
+import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import { batch, useDispatch, useSelector } from 'react-redux';
+import { FloatingBtn } from '../common/Button';
+import RecentCalls from '../components/RecentCalls';
+import RecentChat from '../components/RecentChat';
+import ScreenHeader from '../components/ScreenHeader';
 // import { logout } from '../redux/authSlice';
-import { navigate } from '../redux/Actions/NavigationAction';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import { ResetStore } from 'mf-redux/Actions/ResetAction';
+import { sortBydate } from '../Helper/Chat/RecentChat';
+import * as RootNav from '../Navigation/rootNavigation';
+import SDK from '../SDK/SDK';
 import {
   CONTACTLIST,
   PROFILESCREEN,
   RECENTCHATSCREEN,
   REGISTERSCREEN,
 } from '../constant';
-import SDK from '../SDK/SDK';
-import { addRecentChat } from '../redux/Actions/RecentChatAction';
-import { sortBydate } from '../Helper/Chat/RecentChat';
-import * as RootNav from '../Navigation/rootNavigation';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { navigate } from '../redux/Actions/NavigationAction';
 import { profileDetail } from '../redux/Actions/ProfileAction';
-import { ResetStore } from 'mf-redux/Actions/ResetAction';
+import { addRecentChat } from '../redux/Actions/RecentChatAction';
 
 const logo = require('../assets/mirrorfly-logo.png');
 
-const FirstComponent = (isSearching, filteredData) => (
-  <RecentChat isSearching={isSearching} data={filteredData} />
+const FirstComponent = (isSearching, filteredData, searchValue) => (
+  <RecentChat
+    isSearching={isSearching}
+    data={filteredData}
+    searchValue={searchValue}
+  />
 );
 
 function RecentScreen() {
@@ -42,26 +47,35 @@ function RecentScreen() {
   const [filteredData, setFilteredData] = React.useState([]);
   const [isSearching, setIsSearching] = React.useState(false);
   const [recentData, setrecentData] = React.useState([]);
+  const [searchValue, setSearchValue] = React.useState('');
   const recentChatList = useSelector(state => state.recentChatData.data);
+  console.log(recentChatList, 'recentChatList');
+  const handleSearch = text => {
+    setIsSearching(true);
+    setSearchValue(text);
+    searchFilter(text);
+  };
 
-  const handleSearch = React.useCallback(
-    text => {
-      setIsSearching(true);
-      const filtered = recentData?.filter(item =>
-        item.fromUserId.toLowerCase().includes(text.toLowerCase()),
-      );
-      setFilteredData(filtered);
-    },
-    [recentData],
-  );
+  const searchFilter = text => {
+    const filtered = recentData?.filter(
+      item =>
+        item.fromUserId.toLowerCase().includes(text.toLowerCase()) ||
+        item?.profileDetails?.nickName
+          .toLowerCase()
+          .includes(text.toLowerCase()),
+    );
+    setFilteredData(filtered);
+  };
 
-  const handleBack = React.useCallback(() => {
+  const handleBack = () => {
     setIsSearching(false);
-  }, []);
+    setSearchValue('');
+  };
 
-  const handleClear = React.useCallback(() => {
+  const handleClear = () => {
     setFilteredData(recentData);
-  }, [recentData]);
+    setSearchValue('');
+  };
 
   React.useEffect(() => {
     (async () => {
@@ -87,7 +101,11 @@ function RecentScreen() {
   }, [recentChatList]);
 
   React.useEffect(() => {
-    setFilteredData(recentData);
+    if (!searchValue) {
+      setFilteredData(recentData);
+    } else {
+      searchFilter(searchValue);
+    }
   }, [recentData, isSearching]);
 
   const renderTabBar = React.useCallback(
@@ -113,7 +131,26 @@ function RecentScreen() {
     [isSearching],
   );
 
+  const handleBackBtn = () => {
+    if (isSearching) {
+      setIsSearching(false);
+      setSearchValue('');
+      return true;
+    }
+  };
+
+  useFocusEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackBtn,
+    );
+    return () => {
+      backHandler.remove();
+    };
+  });
+
   const handleLogout = async () => {
+    console.log('logged out');
     SDK.logout();
     const getPrevUserIdentifier = await AsyncStorage.getItem('userIdentifier');
     AsyncStorage.setItem('prevUserIdentifier', getPrevUserIdentifier || '');
@@ -141,10 +178,7 @@ function RecentScreen() {
       },
       {
         label: 'Logout',
-        formatter: () => {
-          handleLogout();
-          // dispatch(logout());
-        },
+        formatter: handleLogout,
       },
     ],
     [],
@@ -155,10 +189,10 @@ function RecentScreen() {
   const renderScene = React.useMemo(
     () =>
       SceneMap({
-        first: () => FirstComponent(isSearching, filteredDataList),
+        first: () => FirstComponent(isSearching, filteredDataList, searchValue),
         second: RecentCalls,
       }),
-    [isSearching, filteredDataList],
+    [isSearching, filteredDataList, searchValue],
   );
 
   return (
@@ -169,6 +203,7 @@ function RecentScreen() {
         onCloseSearch={handleBack}
         menuItems={menuItems}
         logo={logo}
+        handleBackBtn={handleBackBtn}
         isSearching={isSearching}
         handleClear={handleClear}
       />

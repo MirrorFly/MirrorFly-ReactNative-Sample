@@ -1,6 +1,7 @@
 import {
   ADD_CHAT_CONVERSATION_HISTORY,
   CANCEL_MEDIA_UPLOAD,
+  CLEAR_CHAT_HISTORY,
   RETRY_MEDIA_UPLOAD,
   UPDATE_CHAT_CONVERSATION_HISTORY,
   UPDATE_UPLOAD_STATUS,
@@ -36,6 +37,13 @@ export const RetryMediaUpload = data => {
 export const updateUploadStatus = data => {
   return {
     type: UPDATE_UPLOAD_STATUS,
+    payload: data,
+  };
+};
+
+export const ClearChatHistoryAction = data => {
+  return {
+    type: CLEAR_CHAT_HISTORY,
     payload: data,
   };
 };

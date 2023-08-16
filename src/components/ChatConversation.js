@@ -1,19 +1,27 @@
+import { Box, HStack, Modal, Stack, Text, useToast, View } from 'native-base';
 import React from 'react';
 import {
-  StyleSheet,
+  ImageBackground,
   KeyboardAvoidingView,
   Platform,
-  ImageBackground,
   Pressable,
+  StyleSheet,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import ChatHeader from '../components/ChatHeader';
-import { useSelector, useDispatch } from 'react-redux';
 import ChatInput from '../components/ChatInput';
-import { Stack, Text, View } from 'native-base';
-import { ClearTextIcon } from '../common/Icons';
+import Clipboard from '@react-native-clipboard/clipboard';
+import SDK from 'SDK/SDK';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { resetGalleryData } from '../redux/Actions/GalleryAction';
 import ChatConversationList from './ChatConversationList';
+import ReplyAudio from './ReplyAudio';
+import ReplyContact from './ReplyContact';
+import ReplyDocument from './ReplyDocument';
+import ReplyImage from './ReplyImage';
+import ReplyLocation from './ReplyLocation';
+import ReplyText from './ReplyText';
+import ReplyVideo from './ReplyVideo';
 
 const ChatConversation = React.memo(props => {
   const { handleSendMsg } = props;
@@ -25,7 +33,10 @@ const ChatConversation = React.memo(props => {
   const [selectedMsgs, setSelectedMsgs] = React.useState([]);
   const [replyMsgs, setReplyMsgs] = React.useState();
   const [menuItems, setMenuItems] = React.useState([]);
+  // const [selectedMsgIndex, setSelectedMsgIndex] = React.useState();
+  const [isOpenAlert, setIsOpenAlert] = React.useState(false);
 
+  const toast = useToast();
   /**
      *  const { vCardProfile, fromUserJId, messages } = useSelector((state) =>  ({
         vCardProfile: state.profile.profileDetails,
@@ -58,20 +69,62 @@ const ChatConversation = React.memo(props => {
      // handleSwipeLeft(msgId);
      */
 
-  const handleReply = msgId => {
+  const toastConfig = {
+    duration: 2500,
+    avoidKeyboard: true,
+  };
+
+  const copyToClipboard = () => {
+    if (
+      selectedMsgs[0].msgBody.message.length <= 500 ||
+      selectedMsgs[0]?.msgBody?.media?.caption.length <= 500
+    ) {
+      setSelectedMsgs([]);
+      Clipboard.setString(
+        selectedMsgs[0].msgBody.message ||
+          selectedMsgs[0]?.msgBody?.media?.caption,
+      );
+      toast.show({
+        ...toastConfig,
+        render: () => {
+          return (
+            <Box bg="black" px="2" py="1" rounded="sm">
+              <Text color={'#fff'} p="2">
+                1 Text copied successfully to the clipboard
+              </Text>
+            </Box>
+          );
+        },
+      });
+    }
+  };
+
+  const handleReply = msg => {
     setSelectedMsgs([]);
+    setReplyMsgs(msg);
   };
 
   const handleRemove = () => {
-    setReplyMsgs();
+    setReplyMsgs('');
   };
 
   const handleMessageSend = messageContent => {
     let message = {
       type: 'text',
       content: messageContent,
+      replyTo: replyMsgs?.msgId || '',
     };
     handleSendMsg(message);
+    handleRemove();
+  };
+
+  const clearChat = () => {
+    setIsOpenAlert(false);
+    SDK.clearChat(fromUserJId);
+  };
+
+  const handleClearChat = () => {
+    setIsOpenAlert(true);
   };
 
   React.useEffect(() => {
@@ -81,10 +134,6 @@ const ChatConversation = React.memo(props => {
     switch (true) {
       case foundMsg.length > 0:
         setMenuItems([
-          {
-            label: 'Copy',
-            formatter: () => {},
-          },
           {
             label: 'Report',
             formatter: () => {},
@@ -101,8 +150,12 @@ const ChatConversation = React.memo(props => {
             },
           },
           {
-            label: 'Copy',
-            formatter: () => {},
+            label:
+              selectedMsgs[0].msgBody.message_type === 'text' ||
+              selectedMsgs[0]?.msgBody?.media?.caption
+                ? 'Copy'
+                : null,
+            formatter: copyToClipboard,
           },
         ]);
         break;
@@ -110,7 +163,9 @@ const ChatConversation = React.memo(props => {
         setMenuItems([
           {
             label: 'Clear Chat',
-            formatter: () => {},
+            formatter: () => {
+              handleClearChat();
+            },
           },
           {
             label: 'Report',
@@ -125,7 +180,7 @@ const ChatConversation = React.memo(props => {
     dispatch(resetGalleryData());
   }, []);
 
-  const handleMsgSelect = message => {
+  const handleMsgSelect = (message, index) => {
     if (selectedMsgs.includes(message)) {
       setSelectedMsgs(prevArray => prevArray.filter(item => message !== item));
     } else {
@@ -158,56 +213,52 @@ const ChatConversation = React.memo(props => {
         />
       </ImageBackground>
       {replyMsgs ? (
-        <View paddingX={'1'} paddingY={'1'} backgroundColor={'#DDE3E5'}>
-          <Stack paddingX={'3'} paddingY={'0 '} backgroundColor={'#E2E8F9'}>
-            <View flexDirection={'row'} justifyContent={'flex-end'}>
-              {replyMsgs ? (
-                <Pressable
-                  style={styles.removeReplyMessage}
-                  onPress={handleRemove}>
-                  <ClearTextIcon />
-                </Pressable>
-              ) : null}
-            </View>
-            <View mb={'2'} justifyContent={'flex-start'}>
-              {replyMsgs.fromUserJid === currentUserJID ? (
-                <Text py="0">You</Text>
-              ) : (
-                <Text py="0">{replyMsgs?.msgBody.nickName}</Text>
-              )}
+        <View paddingX={'1'} paddingY={'2'} backgroundColor={'#E2E8F9'}>
+          <Stack paddingX={'3'} paddingY={'0 '} backgroundColor={'#0000001A'}>
+            <View marginY={'3'} justifyContent={'flex-start'}>
               {
                 {
                   text: (
-                    <Text numberOfLines={1} fontSize={14} color="#313131">
-                      {replyMsgs?.msgBody?.message}
-                    </Text>
+                    <ReplyText
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
                   ),
                   image: (
-                    <Text
-                      fontWeight={'600'}
-                      fontStyle={'italic'}
-                      fontSize={14}
-                      color="#313131">
-                      image
-                    </Text>
+                    <ReplyImage
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
                   ),
                   video: (
-                    <Text
-                      fontWeight={'600'}
-                      fontStyle={'italic'}
-                      fontSize={14}
-                      color="#313131">
-                      video
-                    </Text>
+                    <ReplyVideo
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
                   ),
                   audio: (
-                    <Text
-                      fontWeight={'600'}
-                      fontStyle={'italic'}
-                      fontSize={14}
-                      color="#313131">
-                      audio
-                    </Text>
+                    <ReplyAudio
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
+                  ),
+                  file: (
+                    <ReplyDocument
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
+                  ),
+                  contact: (
+                    <ReplyContact
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
+                  ),
+                  location: (
+                    <ReplyLocation
+                      replyMsgItems={replyMsgs}
+                      handleRemove={handleRemove}
+                    />
                   ),
                 }[replyMsgs?.msgBody?.message_type]
               }
@@ -220,6 +271,36 @@ const ChatConversation = React.memo(props => {
         attachmentMenuIcons={props.attachmentMenuIcons}
         onSendMessage={handleMessageSend}
       />
+      <Modal
+        isOpen={isOpenAlert}
+        safeAreaTop={true}
+        onClose={() => setIsOpenAlert(false)}>
+        <Modal.Content
+          w="88%"
+          borderRadius={0}
+          px="6"
+          py="4"
+          fontWeight={'300'}>
+          <Text fontSize={16} color={'#5e5e5e'}>
+            {'Are you sure you want to clear the chat?'}
+          </Text>
+          <HStack justifyContent={'flex-end'} pb={'1'} pt={'7'}>
+            <Pressable
+              onPress={() => {
+                setIsOpenAlert(false);
+              }}>
+              <Text pr={'5'} fontWeight={'500'} color={'#3276E2'}>
+                CANCEL
+              </Text>
+            </Pressable>
+            <Pressable onPress={clearChat}>
+              <Text fontWeight={'500'} color={'#3276E2'}>
+                CLEAR
+              </Text>
+            </Pressable>
+          </HStack>
+        </Modal.Content>
+      </Modal>
     </KeyboardAvoidingView>
   );
 });

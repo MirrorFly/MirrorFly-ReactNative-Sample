@@ -7,6 +7,7 @@ import {
 import {
   ADD_CHAT_CONVERSATION_HISTORY,
   CANCEL_MEDIA_UPLOAD,
+  CLEAR_CHAT_HISTORY,
   RESET_STORE,
   RETRY_MEDIA_UPLOAD,
   UPDATE_CHAT_CONVERSATION_HISTORY,
@@ -49,6 +50,19 @@ const conversationReducer = (state = initialState, action) => {
           action.payload,
           StateToObj(state).data,
         ),
+      };
+    case CLEAR_CHAT_HISTORY:
+      console.log(action.payload, state, '3456789');
+      let chatId = action.payload;
+      return {
+        ...state,
+        id: Date.now(),
+        data: {
+          ...state.data,
+          [chatId]: {
+            messages: {},
+          },
+        },
       };
     case RESET_STORE:
       return initialState;

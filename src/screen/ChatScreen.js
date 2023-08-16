@@ -260,7 +260,6 @@ function ChatScreen() {
         );
         AsyncStorage.setItem('storage_permission', 'true');
         let imageReadPermission = await requestStoragePermission();
-        console.log('imageReadPermission', imageReadPermission);
         if (
           imageReadPermission === 'granted' ||
           imageReadPermission === 'limited'
@@ -527,7 +526,7 @@ function ChatScreen() {
         store.dispatch(addChatConversationHistory(dispatchData));
         store.dispatch(updateRecentChat(recentChatObj));
       });
-      SDK.sendTextMessage(jid, message.content, msgId);
+      SDK.sendTextMessage(jid, message.content, msgId, message.replyTo);
     }
   };
 

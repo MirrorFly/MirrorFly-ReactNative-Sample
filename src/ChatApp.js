@@ -26,6 +26,7 @@ export const ChatApp = () => {
         apiBaseUrl: 'https://api-uikit-qa.contus.us/api/v1',
         licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
         callbackListeners: callBacks,
+        isSandbox: false,
       });
     })();
   }, []);

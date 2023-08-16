@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import ImageInfo from './ImageInfo';
 import VideoInfo from './VideoInfo';
 import { BackArrowIcon } from '../common/Icons';
-import { Text } from 'native-base';
+import { Icon, IconButton, Text } from 'native-base';
 
 const PostPreViewPage = props => {
   const { setLocalNav } = props;
@@ -60,9 +60,12 @@ const PostPreViewPage = props => {
           zIndex: 10,
         }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Pressable onPress={handleBackBtn} style={{ marginLeft: 8 }}>
-            <BackArrowIcon />
-          </Pressable>
+          <IconButton
+            onPress={handleBackBtn}
+            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+            borderRadius="full"
+            icon={<Icon as={BackArrowIcon} name="emoji-happy" />}
+          />
           <Text
             style={{
               color: '#000',

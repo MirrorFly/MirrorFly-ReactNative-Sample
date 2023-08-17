@@ -28,7 +28,7 @@ const ChatInput = props => {
     if (message) {
       setMessage('');
       setTimeout(() => {
-        onSendMessage(message);
+        onSendMessage(message.trim());
       }, 0);
     }
   };

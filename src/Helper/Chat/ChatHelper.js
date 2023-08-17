@@ -8,7 +8,7 @@ import {
   MSG_SEEN_STATUS_ID,
   MSG_SENT_ACKNOWLEDGE_STATUS_ID,
 } from './Constant';
-import { getUserIdFromJid, setDurationSecToMilli } from './Utility';
+import { getUserIdFromJid } from './Utility';
 import store from '../../redux/store';
 import { updateUploadStatus } from '../../redux/Actions/ConversationAction';
 
@@ -342,4 +342,20 @@ export const isLocalUser = (userId = '') => {
   userId = getUserIdFromJid(userId);
   const vCardData = store.getState()?.auth?.currentUserJID;
   return userId === getUserIdFromJid(vCardData);
+};
+
+/**
+ * getMessageFromHistoryById
+ * @param {*} chatId
+ * @param {*} msgId
+ */
+export const getMessageFromHistoryById = (chatId, msgId) => {
+  const { chatConversationData: { data } = {} } = store.getState();
+  if (
+    data[chatId]?.messages &&
+    Object.keys(data[chatId]?.messages).length > 0
+  ) {
+    return data[chatId]?.messages[msgId] || {};
+  }
+  return {};
 };

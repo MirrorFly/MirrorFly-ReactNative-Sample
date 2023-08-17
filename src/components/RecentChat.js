@@ -280,7 +280,7 @@ export default function RecentChat(props) {
   );
 }
 
-const HighlightedText = ({ text, searchValue = '', index }) => {
+export const HighlightedText = ({ text, searchValue = '', index }) => {
   const parts = searchValue
     ? text.split(new RegExp(`(${searchValue})`, 'gi'))
     : [text];

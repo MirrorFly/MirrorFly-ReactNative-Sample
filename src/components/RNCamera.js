@@ -111,7 +111,7 @@ const Camera = props => {
           getType(imageFile.fileDetails.type),
         );
         if (size) {
-          showToast(size, 'rncamera-size');
+          showToast(size, { id: 'rncamera-size' });
         }
         if (!size) {
           setData(imageFile);
@@ -180,7 +180,7 @@ const Camera = props => {
       getType(imageFile.fileDetails.type),
     );
     if (size) {
-      return showToast(size, 'rncamera-size');
+      return showToast(size, { id: 'rncamera-size' });
     }
     if (!size) {
       setData(imageFile);

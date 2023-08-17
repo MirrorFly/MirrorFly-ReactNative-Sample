@@ -34,7 +34,7 @@ const VideoCard = props => {
   const durationInSeconds = duration;
   const durationInMinutes = millisToMinutesAndSeconds(durationInSeconds);
   const base64ImageData = 'data:image/jpg;base64,' + thumb_image;
-  const imageUrl = local_path ? local_path : '';
+  const imageUrl = local_path;
   const checkDownloaded = isSender ? is_uploading === 2 : imageUrl;
 
   return (

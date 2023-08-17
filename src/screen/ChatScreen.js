@@ -515,6 +515,7 @@ function ChatScreen() {
         chatType: 'chat',
         msgId,
         fromUserJid: currentUserJID,
+        replyTo: message.replyTo,
       };
       const conversationChatObj = await getMessageObjSender(dataObj);
       const recentChatObj = getRecentChatMsgObj(dataObj);

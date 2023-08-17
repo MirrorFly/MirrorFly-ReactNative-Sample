@@ -29,6 +29,9 @@ import ReplyImage from './ReplyImage';
 import ReplyLocation from './ReplyLocation';
 import ReplyText from './ReplyText';
 import ReplyVideo from './ReplyVideo';
+import { clearLastMessageinRecentChat } from 'mf-redux/Actions/RecentChatAction';
+import { ClearChatHistoryAction } from 'mf-redux/Actions/ConversationAction';
+import { getUserIdFromJid } from 'Helper/Chat/Utility';
 
 const ChatConversation = React.memo(props => {
   const { handleSendMsg } = props;
@@ -128,6 +131,8 @@ const ChatConversation = React.memo(props => {
   const clearChat = () => {
     setIsOpenAlert(false);
     SDK.clearChat(fromUserJId);
+    dispatch(clearLastMessageinRecentChat(getUserIdFromJid(fromUserJId)));
+    dispatch(ClearChatHistoryAction(getUserIdFromJid(fromUserJId)));
   };
 
   const checkMessageExist = () => {
@@ -135,10 +140,9 @@ const ChatConversation = React.memo(props => {
       getActiveConversationChatId(),
     );
     if (
-      (chatMessages &&
-        Array.isArray(chatMessages) &&
-        chatMessages.length === 0) ||
-      !isNetworkConnected
+      chatMessages &&
+      Array.isArray(chatMessages) &&
+      chatMessages.length === 0
     ) {
       showToastMessage();
       return false;
@@ -147,9 +151,9 @@ const ChatConversation = React.memo(props => {
   };
 
   const showToastMessage = () => {
-    let toastMessage = isNetworkConnected ? NO_CONVERSATION : NO_INTERNET;
+    let toastMessage = NO_CONVERSATION;
     const options = {
-      id: isNetworkConnected ? 'Clear_Toast' : 'Network',
+      id: 'Clear_Toast',
     };
     showToast(toastMessage, options);
   };

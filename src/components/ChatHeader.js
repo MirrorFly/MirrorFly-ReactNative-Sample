@@ -97,9 +97,9 @@ function ChatHeader({
           borderBottomColor={'#C1C1C1'}
           borderBottomWidth={1}
           style={{
-            elevation: 4, 
-            shadowColor: '#181818', 
-            shadowOffset: { width: 0, height:4 },
+            elevation: 4,
+            shadowColor: '#181818',
+            shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.6,
             shadowRadius: 6,
           }}

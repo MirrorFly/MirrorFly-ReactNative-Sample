@@ -7,7 +7,6 @@ function ReplyMessage(props) {
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
   const [repliedMsg, setRepliedMsg] = React.useState({});
   const { msgBody: { replyTo = '' } = {} } = props.message;
-  console.log(replyTo, 'TextCard replyTo');
 
   React.useEffect(() => {
     setRepliedMsg(getMessageFromHistoryById(fromUserJId, replyTo));

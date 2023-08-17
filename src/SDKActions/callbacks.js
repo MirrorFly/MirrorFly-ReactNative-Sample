@@ -47,6 +47,7 @@ export const callBacks = {
     console.log('dbListener', JSON.stringify(res));
   },
   messageListener: async res => {
+    console.log(res, 'res');
     await nextFrame();
     if (res.chatType === 'chat') {
       switch (res.msgType) {

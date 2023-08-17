@@ -17,6 +17,7 @@ import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNetworkStatus } from '../hooks';
 import commonStyles from 'common/commonStyles';
+import { HighlightedText } from 'components/RecentChat';
 
 const showMaxUsersLimitToast = () => {
   const options = {
@@ -77,6 +78,7 @@ const ContactItem = ({
   handleItemSelect,
   isSelected,
   isCheckboxAllowed,
+  searchText,
 }) => {
   const [isChecked, setIsChecked] = useState(false);
   useEffect(() => {
@@ -86,7 +88,7 @@ const ContactItem = ({
   }, []);
 
   const handleChatItemSelect = () => {
-    if (!isCheckboxAllowed) {
+    if (!isChecked && !isCheckboxAllowed) {
       showMaxUsersLimitToast();
       return;
     }
@@ -106,12 +108,13 @@ const ContactItem = ({
           <View style={styles.recentChatItemAvatarName}>
             <Avathar data={name || userId} backgroundColor={colorCode} />
             <View>
-              <Text
-                style={styles.recentChatItemName}
-                numberOfLines={1}
-                ellipsizeMode="tail">
-                {name || userId}
-              </Text>
+              <View style={styles.recentChatItemName}>
+                <HighlightedText
+                  text={name || userId}
+                  searchValue={searchText}
+                  index={userId}
+                />
+              </View>
               <Text
                 style={styles.recentChatItemStatus}
                 numberOfLines={1}
@@ -133,7 +136,12 @@ const ContactItem = ({
   );
 };
 
-const RecentChatSectionList = ({ data, handleChatSelect, selectedUsers }) => {
+const RecentChatSectionList = ({
+  data,
+  handleChatSelect,
+  selectedUsers,
+  searchText,
+}) => {
   return (
     <View style={styles.recentChatContiner}>
       {/* Header */}
@@ -151,7 +159,8 @@ const RecentChatSectionList = ({ data, handleChatSelect, selectedUsers }) => {
             colorCode={item.profileDetails?.colorCode}
             handleItemSelect={handleChatSelect}
             isSelected={selectedUsers[item.fromUserId]}
-            isCheckboxAllowed={Object.keys(selectedUsers).length <= 5}
+            isCheckboxAllowed={Object.keys(selectedUsers).length <= 4} // allow max 5 contacts
+            searchText={searchText}
           />
         ))}
       </View>
@@ -159,7 +168,12 @@ const RecentChatSectionList = ({ data, handleChatSelect, selectedUsers }) => {
   );
 };
 
-const ContactsSectionList = ({ data, handleChatSelect, selectedUsers }) => {
+const ContactsSectionList = ({
+  data,
+  handleChatSelect,
+  selectedUsers,
+  searchText,
+}) => {
   return (
     <View style={styles.recentChatContiner}>
       {/* Header */}
@@ -176,7 +190,8 @@ const ContactsSectionList = ({ data, handleChatSelect, selectedUsers }) => {
             status={item.status}
             handleItemSelect={handleChatSelect}
             isSelected={selectedUsers[item.userId]}
-            isCheckboxAllowed={Object.keys(selectedUsers).length <= 5}
+            isCheckboxAllowed={Object.keys(selectedUsers).length <= 4} // allow max 5 contacts
+            searchText={searchText}
           />
         ))}
       </View>
@@ -196,7 +211,6 @@ const SelectedUsersName = ({ users, onMessageSend }) => {
   return (
     <NBView style={styles.selectedUsersNameContainer} shadow={2}>
       <Text style={commonStyles.flex1}>{userNames}</Text>
-      {/* TODO: show Send button */}
       <Text style={styles.sendButton} onPress={onMessageSend}>
         NEXT
       </Text>
@@ -326,11 +340,13 @@ const ForwardMessage = () => {
           data={filteredRecentChatList}
           selectedUsers={selectedUsers}
           handleChatSelect={handleUserSelect}
+          searchText={searchText}
         />
         <ContactsSectionList
           data={filteredContactList}
           selectedUsers={selectedUsers}
           handleChatSelect={handleUserSelect}
+          searchText={searchText}
         />
       </ScrollView>
       <SelectedUsersName

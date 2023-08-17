@@ -72,8 +72,8 @@ function ChatHeader({
     console.log('Fav item');
   };
 
-  const handleReply = () => {
-    props.handleReply(props?.selectedMsgs[0]);
+  const handleReplyMessage = () => {
+    handleReply(selectedMsgs[0]);
   };
 
   const handleUserInfo = () => {

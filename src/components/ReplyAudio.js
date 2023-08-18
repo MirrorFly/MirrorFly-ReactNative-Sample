@@ -4,11 +4,15 @@ import { HStack, Text, View } from 'native-base';
 import { AudioMusicIcon, ClearTextIcon } from '../common/Icons';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { useSelector } from 'react-redux';
+import { getUserIdFromJid } from 'Helper/Chat/Utility';
 
 const ReplyAudio = props => {
   const { replyMsgItems, handleRemove } = props;
-  const vCardProfile = useSelector(state => state.profile.profileDetails);
-  const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
+  const { fromUserJid = '' } = replyMsgItems;
+  const profileDetails = useSelector(state => state.navigation.profileDetails);
+  const currentUserJID = useSelector(state => state.auth.currentUserJID);
+  const isSameUser = fromUserJid === currentUserJID;
+
   const durationInSeconds = replyMsgItems.msgBody.media.duration;
   const durationInMinutes = Math.floor(durationInSeconds / 1000);
 
@@ -18,7 +22,7 @@ const ReplyAudio = props => {
   return (
     <View>
       <HStack justifyContent={'space-between'} alignItems={'center'}>
-        {replyMsgItems.fromUserJid === currentUserJID ? (
+        {isSameUser ? (
           <Text
             color={'#000'}
             fontSize={14}
@@ -36,7 +40,7 @@ const ReplyAudio = props => {
             fontSize={14}
             fontWeight={600}
             py="0">
-            {replyMsgItems.msgBody.nickName}
+            {profileDetails.nickName || getUserIdFromJid(currentUserJID)}
           </Text>
         )}
         <Pressable
@@ -51,7 +55,7 @@ const ReplyAudio = props => {
       </HStack>
       <HStack alignItems={'center'} pl={1}>
         <AudioMusicIcon width="14" height="14" color={'#767676'} />
-        <Text color="#313131" fontSize={14}  pl={2} fontWeight={400}>
+        <Text color="#313131" fontSize={14} pl={2} fontWeight={400}>
           {`${String(Math.floor(durationInMinutes / 60)).padStart(
             2,
             '0',

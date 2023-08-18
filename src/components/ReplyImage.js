@@ -2,13 +2,15 @@ import { Pressable, Image } from 'react-native';
 import React from 'react';
 import { ClearTextIcon, GalleryAllIcon } from '../common/Icons';
 import { HStack, Text, View } from 'native-base';
-import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { useSelector } from 'react-redux';
+import { getUserIdFromJid } from 'Helper/Chat/Utility';
 
 const ReplyImage = props => {
   const { replyMsgItems, handleRemove } = props;
-  const vCardProfile = useSelector(state => state.profile.profileDetails);
-  const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
+  const { fromUserJid = '' } = replyMsgItems;
+  const profileDetails = useSelector(state => state.navigation.profileDetails);
+  const currentUserJID = useSelector(state => state.auth.currentUserJID);
+  const isSameUser = fromUserJid === currentUserJID;
 
   const RemoveHandle = () => {
     handleRemove();
@@ -16,17 +18,28 @@ const ReplyImage = props => {
 
   return (
     <View style={{ position: 'relative' }}>
-      <HStack justifyContent={'space-between'} alignItems={'center'}>   
-        {replyMsgItems.fromUserJid === currentUserJID ? (
-          <Text color={'#000'} pl={1}  fontSize={14} mb={1} fontWeight={600} py="0">
+      <HStack justifyContent={'space-between'} alignItems={'center'}>
+        {isSameUser ? (
+          <Text
+            color={'#000'}
+            pl={1}
+            fontSize={14}
+            mb={1}
+            fontWeight={600}
+            py="0">
             You
           </Text>
         ) : (
-          <Text mb={1} pl={1}  color={'#000'} fontSize={14} fontWeight={600} py="0">
-            {replyMsgItems.msgBody.nickName}    
+          <Text
+            mb={1}
+            pl={1}
+            color={'#000'}
+            fontSize={14}
+            fontWeight={600}
+            py="0">
+            {profileDetails.nickName || getUserIdFromJid(currentUserJID)}
           </Text>
         )}
-        
       </HStack>
       <View
         style={{
@@ -38,31 +51,28 @@ const ReplyImage = props => {
           bottom: 0,
           right: -10,
         }}>
-       
-        {
-            replyMsgItems.msgBody.media.local_path ?   
-             (
-        <Image
-          resizeMode="cover" 
-          style={{ width: 60, height:69 }}
-          source={{ uri: replyMsgItems.msgBody.media.local_path }}
-        />
-        ) :
-        (
-        <Image
-          resizeMode="cover" 
-          style={{ width: 60, height: 69 }}
-          source={{ uri: `data:image/png;base64,${replyMsgItems.msgBody.media.thumb_image}` }}
-        />
-        )   
-        }
+        {replyMsgItems.msgBody.media.local_path ? (
+          <Image
+            resizeMode="cover"
+            style={{ width: 60, height: 69 }}
+            source={{ uri: replyMsgItems.msgBody.media.local_path }}
+          />
+        ) : (
+          <Image
+            resizeMode="cover"
+            style={{ width: 60, height: 69 }}
+            source={{
+              uri: `data:image/png;base64,${replyMsgItems.msgBody.media.thumb_image}`,
+            }}
+          />
+        )}
 
         <Pressable
           style={{
             padding: 5,
-            top:-65,
+            top: -65,
             right: 10,
-            bottom:0,
+            bottom: 0,
             backgroundColor: '#FFF',
             borderRadius: 20,
           }}

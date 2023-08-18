@@ -35,8 +35,7 @@ import {
 } from '../common/Icons';
 
 export default function RecentChat(props) {
-  const { searchValue } = props;
-  const dispatch = useDispatch();
+  const { searchValue, handleOnSelect, handleSelect, recentItem } = props;
   const recentLoading = useSelector(state => state.chat.recentChatStatus);
 
   const onRowDidOpen = rowKey => {
@@ -46,6 +45,9 @@ export default function RecentChat(props) {
 
   const renderItem = ({ item, index }) => {
     const isSame = currentUserJID.split('@')[0] === item?.publisherId;
+    const isSelected = recentItem.some(
+      selectedItem => selectedItem?.userJid === item?.userJid,
+    );
     let statusVisible;
     switch (item?.msgStatus) {
       case 0:
@@ -64,19 +66,14 @@ export default function RecentChat(props) {
         <Pressable
           py="2"
           android_ripple={{ color: 'rgba(0, 0, 0, 0.1)' }}
-          onPress={async () => {
-            let jid = formatUserIdToJid(item?.fromUserId, item?.chatType);
-            SDK.activeChatUser(jid);
-            let x = {
-              screen: CHATSCREEN,
-              fromUserJID: item?.userJid || jid,
-              profileDetails: item?.profileDetails,
-            };
-            dispatch(navigate(x));
-            RootNav.navigate(CHATSCREEN);
+          onPress={() => {
+            handleSelect(item);
+          }}
+          onLongPress={() => {
+            handleOnSelect(item);
           }}
           _dark={{ bg: 'coolGray.800' }}
-          _light={{ bg: 'white' }}>
+          _light={{ bg: isSelected ? '#E2E2E2' : 'white' }}>
           <Box pl="4" pr="5" py="2">
             <HStack space={3} alignItems={'center'}>
               {/* {item?.profileDetails?.image ?

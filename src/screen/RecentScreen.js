@@ -205,9 +205,10 @@ function RecentScreen() {
   };
 
   const deleteChat = () => {
-    // recentItem.map(item => {
-    SDK.deleteChat(recentItem[0].userJid);
-    // });
+    recentItem.forEach(item => {
+      SDK.deleteChat(item?.userJid);
+    });
+    setRecentItem([]);
   };
 
   useFocusEffect(() => {

@@ -64,6 +64,7 @@ import SavePicture from './Gallery';
 import { createThumbnail } from 'react-native-create-thumbnail';
 
 function ChatScreen() {
+  const replyMsgRef = React.useRef();
   const vCardData = useSelector(state => state.profile.profileDetails);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
@@ -100,6 +101,10 @@ function ChatScreen() {
     ],
     [],
   );
+
+  const getReplyMessage = message => {
+    replyMsgRef.current = message;
+  };
 
   const getAudioDuration = async path => {
     return new Promise((resolve, reject) => {
@@ -361,7 +366,14 @@ function ChatScreen() {
         const {
           caption = '',
           fileDetails = {},
-          fileDetails: { fileSize, filename, duration, uri, type } = {},
+          fileDetails: {
+            fileSize,
+            filename,
+            duration,
+            uri,
+            type,
+            replyTo = '',
+          } = {},
         } = file;
 
         const isDocument = DOCUMENT_FORMATS.includes(type);
@@ -390,6 +402,7 @@ function ChatScreen() {
           fileOptions,
           fileDetails: fileDetails,
           fromUserJid: currentUserJID,
+          replyTo,
         };
         const conversationChatObj = await getMessageObjSender(dataObj, i);
         mediaData[msgId] = conversationChatObj;
@@ -412,7 +425,10 @@ function ChatScreen() {
 
   const parseAndSendMessage = async (message, chatType, messageType) => {
     const { content } = message;
+    const replyTo = replyMsgRef.current?.msgId || '';
+    content[0].fileDetails.replyTo = replyTo;
     sendMediaMessage(messageType, content, chatType);
+    replyMsgRef.current = '';
   };
 
   const handleMedia = item => {
@@ -549,6 +565,8 @@ function ChatScreen() {
         {
           CHATCONVERSATION: (
             <ChatConversation
+              replyMsgRef={replyMsgRef.current}
+              onReplyMessage={getReplyMessage}
               handleBackBtn={handleBackBtn}
               setLocalNav={setLocalNav}
               setIsMessageInfo={setIsMessageInfo}

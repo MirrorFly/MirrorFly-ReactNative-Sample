@@ -8,7 +8,7 @@ import {
   MSG_SEEN_STATUS_ID,
   MSG_SENT_ACKNOWLEDGE_STATUS_ID,
 } from './Constant';
-import { getUserIdFromJid, setDurationSecToMilli } from './Utility';
+import { getUserIdFromJid } from './Utility';
 import store from '../../redux/store';
 import { updateUploadStatus } from '../../redux/Actions/ConversationAction';
 
@@ -37,7 +37,6 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
 
   const isDocument = DOCUMENT_FORMATS.includes(type);
   const msgType = isDocument ? 'file' : type.split('/')[0];
-  console.log(duration, 'duration');
   let fileOptions = {
     msgId: msgId,
     caption: caption,
@@ -84,7 +83,6 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
       replyTo,
     );
   }
-  console.log(response, 'MEDIA upload response');
   let updateObj = {
     msgId,
     statusCode: response.statusCode,
@@ -342,4 +340,20 @@ export const isLocalUser = (userId = '') => {
   userId = getUserIdFromJid(userId);
   const vCardData = store.getState()?.auth?.currentUserJID;
   return userId === getUserIdFromJid(vCardData);
+};
+
+/**
+ * getMessageFromHistoryById
+ * @param {*} chatId @example '919876543210'
+ * @param {*} msgId  @example 'message-id'
+ */
+export const getMessageFromHistoryById = (chatId, msgId) => {
+  const { chatConversationData: { data } = {} } = store.getState();
+  if (
+    data[chatId]?.messages &&
+    Object.keys(data[getUserIdFromJid(chatId)]?.messages).length > 0
+  ) {
+    return data[chatId]?.messages[msgId] || {};
+  }
+  return {};
 };

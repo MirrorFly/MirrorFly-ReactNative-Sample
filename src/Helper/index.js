@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import { Box, Text, Toast } from 'native-base';
 import { Alert } from 'react-native';
 
-const toastConfig = { duration: 2500, avoidKeyboard: true };
+const toastLocalRef = createRef({});
+toastLocalRef.current = {};
+
+const toastConfig = {
+  duration: 2500,
+  avoidKeyboard: true,
+};
 
 /**
  * showToast
@@ -10,14 +16,18 @@ const toastConfig = { duration: 2500, avoidKeyboard: true };
  * @param {Object} options
  * @example ('Toast Message', {id:'toast-id'})
  */
-export const showToast = (
-  message,
-  options,
-  clearPreviousToastWithId = true
-) => {
-  if (options.id && clearPreviousToastWithId) {
-    Toast.close(options.id);
+export const showToast = (message, options, ignoreDuplicateToast = true) => {
+  const id = options?.id || Date.now();
+  if (options.id && ignoreDuplicateToast && toastLocalRef.current[options.id]) {
+    return;
   }
+
+  toastLocalRef.current[id] = true;
+
+  options.onCloseComplete = () => {
+    delete toastLocalRef.current[id];
+  };
+
   Toast.show({
     ...toastConfig,
     ...options,

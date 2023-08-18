@@ -1,38 +1,24 @@
-import { Stack, Text, View } from 'native-base';
+import { Text, View } from 'native-base';
 import React from 'react';
 import { StyleSheet } from 'react-native';
+import ReplyMessage from './ReplyMessage';
 
 const TextCard = props => {
-  const [isSelected, setIsSelected] = React.useState(false);
-  const ReplyTo = props.message.msgBody.replyTo;
+  const { msgBody: { replyTo = '' } = {} } = props.message;
+
   return (
     <View
       bgColor={props.isSame ? '#E2E8F7' : '#fff'}
       borderRadius={10}
       overflow={'hidden'}
-      borderWidth={props.isSame ? 0 : 0.25}
+      borderWidth={props.isSame ? 0 : 1}
       borderBottomLeftRadius={props.isSame ? 10 : 0}
       borderBottomRightRadius={props.isSame ? 0 : 10}
-      borderColor="#959595"
+      borderColor="#DDE3E5"
       px="1">
-      {isSelected && (
-        <View
-          paddingX={'1'}
-          paddingY={'1'}
-          bgColor={props.isSame ? '#E2E8F7' : '#fff'}>
-          <Stack
-            paddingX={'3'}
-            paddingY={'0'}
-            backgroundColor={'#0000001A'}
-            borderRadius={15}>
-            <View marginY={'2'} justifyContent={'flex-start'}>
-              <Text numberOfLines={1}>You</Text>
-              <Text numberOfLines={1}>Hiiii</Text>
-            </View>
-          </Stack>
-        </View>
+      {replyTo && (
+        <ReplyMessage message={props.message} isSame={props.isSame} />
       )}
-
       <Text style={styles.message}>{props.data?.message}</Text>
       <View style={styles.timeStamp}>
         {props.data.status}

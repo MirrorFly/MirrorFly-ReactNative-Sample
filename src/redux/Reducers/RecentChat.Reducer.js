@@ -4,6 +4,7 @@ import {
   RESET_STORE,
   UPDATE_RECENT_CHAT,
   UPDATE_RECENT_CHAT_MESSAGE_STATUS,
+  UPDATE_ROSTER_LAST_MESSAGE,
 } from '../Actions/Constants';
 import { StateToObj } from '../reduxHelper';
 
@@ -53,6 +54,22 @@ const updateRecentChatMessageStatusFunc = (data, stateData) => {
   });
 };
 
+const clearMessageInRecentChat = (data, id) => {
+  const recentData = data;
+  return recentData.map(element => {
+    if (element.fromUserId === id) {
+      return {
+        ...element,
+        msgBody: {},
+        msgType: '',
+        createdAt: '',
+        msgStatus: 4,
+      };
+    }
+    return element;
+  });
+};
+
 const recentChatReducer = (state = initialState, action) => {
   switch (action.type) {
     case UPDATE_RECENT_CHAT:
@@ -78,6 +95,12 @@ const recentChatReducer = (state = initialState, action) => {
           action.payload,
           StateToObj(state).data,
         ),
+      };
+    case UPDATE_ROSTER_LAST_MESSAGE:
+      return {
+        ...state,
+        id: Date.now(),
+        data: clearMessageInRecentChat(state.data, action.payload),
       };
     case RESET_STORE:
       return initialState;

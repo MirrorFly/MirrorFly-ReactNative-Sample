@@ -24,7 +24,7 @@ import {
   AlertDialog,
   Pressable,
 } from 'native-base';
-import  SDK from 'SDK/SDK';
+import SDK from 'SDK/SDK';
 import ImagePicker from 'react-native-image-crop-picker';
 import Avathar from '../common/Avathar';
 import { PROFILESCREEN, RECENTCHATSCREEN, REGISTERSCREEN } from '../constant';

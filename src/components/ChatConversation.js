@@ -1,19 +1,28 @@
-import { Box, Stack, Text, useToast, View } from 'native-base';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { NO_CONVERSATION } from 'Helper/Chat/Constant';
+import { getUserIdFromJid } from 'Helper/Chat/Utility';
+import { showToast } from 'Helper/index';
+import SDK from 'SDK/SDK';
+import { ClearChatHistoryAction } from 'mf-redux/Actions/ConversationAction';
+import { clearLastMessageinRecentChat } from 'mf-redux/Actions/RecentChatAction';
+import { Box, HStack, Modal, Stack, Text, View, useToast } from 'native-base';
 import React from 'react';
 import {
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   StyleSheet,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNetworkStatus } from '../../src/hooks';
+import {
+  formatUserIdToJid,
+  getActiveConversationChatId,
+  getChatMessageHistoryById,
+} from '../Helper/Chat/ChatHelper';
 import ChatHeader from '../components/ChatHeader';
 import ChatInput from '../components/ChatInput';
-// import SDK from '../SDK/SDK';
-// import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
-// import { getUserIdFromJid } from '../Helper/Chat/Utility';
-import Clipboard from '@react-native-clipboard/clipboard';
-import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { resetGalleryData } from '../redux/Actions/GalleryAction';
 import ChatConversationList from './ChatConversationList';
 import ReplyAudio from './ReplyAudio';
@@ -35,7 +44,8 @@ const ChatConversation = React.memo(props => {
   const [replyMsgs, setReplyMsgs] = React.useState();
   const [menuItems, setMenuItems] = React.useState([]);
   // const [selectedMsgIndex, setSelectedMsgIndex] = React.useState();
-
+  const [isOpenAlert, setIsOpenAlert] = React.useState(false);
+  const isNetworkConnected = useNetworkStatus();
   const toast = useToast();
   /**
      *  const { vCardProfile, fromUserJId, messages } = useSelector((state) =>  ({
@@ -102,7 +112,6 @@ const ChatConversation = React.memo(props => {
   const handleReply = msg => {
     setSelectedMsgs([]);
     setReplyMsgs(msg);
-    // console.log('selectedMsgs', selectedMsgs[0].msgBody?.message);
   };
 
   const handleRemove = () => {
@@ -117,6 +126,43 @@ const ChatConversation = React.memo(props => {
     };
     handleSendMsg(message);
     handleRemove();
+  };
+
+  const clearChat = () => {
+    setIsOpenAlert(false);
+    SDK.clearChat(fromUserJId);
+    dispatch(clearLastMessageinRecentChat(getUserIdFromJid(fromUserJId)));
+    dispatch(ClearChatHistoryAction(getUserIdFromJid(fromUserJId)));
+  };
+
+  const checkMessageExist = () => {
+    const chatMessages = getChatMessageHistoryById(
+      getActiveConversationChatId(),
+    );
+    if (
+      chatMessages &&
+      Array.isArray(chatMessages) &&
+      chatMessages.length === 0
+    ) {
+      showToastMessage();
+      return false;
+    }
+    return true;
+  };
+
+  const showToastMessage = () => {
+    let toastMessage = NO_CONVERSATION;
+    const options = {
+      id: 'Clear_Toast',
+    };
+    showToast(toastMessage, options);
+  };
+
+  const handleClearChat = () => {
+    if (!checkMessageExist()) {
+      return;
+    }
+    setIsOpenAlert(true);
   };
 
   React.useEffect(() => {
@@ -155,7 +201,9 @@ const ChatConversation = React.memo(props => {
         setMenuItems([
           {
             label: 'Clear Chat',
-            formatter: () => {},
+            formatter: () => {
+              handleClearChat();
+            },
           },
           {
             label: 'Report',
@@ -164,7 +212,7 @@ const ChatConversation = React.memo(props => {
         ]);
         break;
     }
-  }, [selectedMsgs]);
+  }, [selectedMsgs, isNetworkConnected]);
 
   React.useEffect(() => {
     dispatch(resetGalleryData());
@@ -261,6 +309,36 @@ const ChatConversation = React.memo(props => {
         attachmentMenuIcons={props.attachmentMenuIcons}
         onSendMessage={handleMessageSend}
       />
+      <Modal
+        isOpen={isOpenAlert}
+        safeAreaTop={true}
+        onClose={() => setIsOpenAlert(false)}>
+        <Modal.Content
+          w="88%"
+          borderRadius={0}
+          px="6"
+          py="4"
+          fontWeight={'300'}>
+          <Text fontSize={16} color={'#5e5e5e'}>
+            {'Are you sure you want to clear the chat?'}
+          </Text>
+          <HStack justifyContent={'flex-end'} pb={'1'} pt={'7'}>
+            <Pressable
+              onPress={() => {
+                setIsOpenAlert(false);
+              }}>
+              <Text pr={'5'} fontWeight={'500'} color={'#3276E2'}>
+                CANCEL
+              </Text>
+            </Pressable>
+            <Pressable onPress={clearChat}>
+              <Text fontWeight={'500'} color={'#3276E2'}>
+                CLEAR
+              </Text>
+            </Pressable>
+          </HStack>
+        </Modal.Content>
+      </Modal>
     </KeyboardAvoidingView>
   );
 });

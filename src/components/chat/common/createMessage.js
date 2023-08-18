@@ -17,7 +17,7 @@ import { addchatSeenPendingMsg } from '../../../redux/Actions/chatSeenPendingMsg
 import { addChatConversationHistory } from '../../../redux/Actions/ConversationAction';
 import { updateRecentChat } from '../../../redux/Actions/RecentChatAction';
 import store from '../../../redux/store';
-import SDK  from '../../../SDK/SDK';
+import SDK from '../../../SDK/SDK';
 
 export const updateRecentChatMessage = (messgeObject, stateObject) => {
   const { recentChatData } = stateObject;

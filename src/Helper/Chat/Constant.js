@@ -170,3 +170,5 @@ export const CAPTION_CHARACTER_LIMIT = 1024;
 export const ALLOWED_KEY_CODES = [8, 35, 36, 37, 38, 39, 40, 46, 65, 67, 86];
 export const TYPE_DELAY_TIME = 5000;
 export const CHAT_HISTORY_LIMIT = 20;
+export const NO_CONVERSATION = 'There is no conversation.';
+export const NO_INTERNET = 'Please check your internet connectivity';

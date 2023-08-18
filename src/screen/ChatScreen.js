@@ -411,7 +411,7 @@ function ChatScreen() {
   };
 
   const parseAndSendMessage = async (message, chatType, messageType) => {
-    const {content} = message;
+    const { content } = message;
     sendMediaMessage(messageType, content, chatType);
   };
 
@@ -515,6 +515,7 @@ function ChatScreen() {
         chatType: 'chat',
         msgId,
         fromUserJid: currentUserJID,
+        replyTo: message.replyTo,
       };
       const conversationChatObj = await getMessageObjSender(dataObj);
       const recentChatObj = getRecentChatMsgObj(dataObj);
@@ -526,7 +527,7 @@ function ChatScreen() {
         store.dispatch(addChatConversationHistory(dispatchData));
         store.dispatch(updateRecentChat(recentChatObj));
       });
-      SDK.sendTextMessage(jid, message.content, msgId,message.replyTo);
+      SDK.sendTextMessage(jid, message.content, msgId, message.replyTo);
     }
   };
 

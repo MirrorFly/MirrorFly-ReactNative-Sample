@@ -37,7 +37,6 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
 
   const isDocument = DOCUMENT_FORMATS.includes(type);
   const msgType = isDocument ? 'file' : type.split('/')[0];
-  console.log(duration, 'duration');
   let fileOptions = {
     msgId: msgId,
     caption: caption,
@@ -84,7 +83,6 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
       replyTo,
     );
   }
-  console.log(response, 'MEDIA upload response');
   let updateObj = {
     msgId,
     statusCode: response.statusCode,

@@ -1,4 +1,11 @@
-import { Box, HStack, Modal, Stack, Text, useToast, View } from 'native-base';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { NO_CONVERSATION } from 'Helper/Chat/Constant';
+import { getUserIdFromJid } from 'Helper/Chat/Utility';
+import { showToast } from 'Helper/index';
+import SDK from 'SDK/SDK';
+import { ClearChatHistoryAction } from 'mf-redux/Actions/ConversationAction';
+import { clearLastMessageinRecentChat } from 'mf-redux/Actions/RecentChatAction';
+import { Box, HStack, Modal, Stack, Text, View, useToast } from 'native-base';
 import React from 'react';
 import {
   ImageBackground,
@@ -8,11 +15,14 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNetworkStatus } from '../../src/hooks';
+import {
+  formatUserIdToJid,
+  getActiveConversationChatId,
+  getChatMessageHistoryById,
+} from '../Helper/Chat/ChatHelper';
 import ChatHeader from '../components/ChatHeader';
 import ChatInput from '../components/ChatInput';
-import Clipboard from '@react-native-clipboard/clipboard';
-import SDK from 'SDK/SDK';
-import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { resetGalleryData } from '../redux/Actions/GalleryAction';
 import ChatConversationList from './ChatConversationList';
 import ReplyAudio from './ReplyAudio';
@@ -35,7 +45,7 @@ const ChatConversation = React.memo(props => {
   const [menuItems, setMenuItems] = React.useState([]);
   // const [selectedMsgIndex, setSelectedMsgIndex] = React.useState();
   const [isOpenAlert, setIsOpenAlert] = React.useState(false);
-
+  const isNetworkConnected = useNetworkStatus();
   const toast = useToast();
   /**
      *  const { vCardProfile, fromUserJId, messages } = useSelector((state) =>  ({
@@ -121,9 +131,37 @@ const ChatConversation = React.memo(props => {
   const clearChat = () => {
     setIsOpenAlert(false);
     SDK.clearChat(fromUserJId);
+    dispatch(clearLastMessageinRecentChat(getUserIdFromJid(fromUserJId)));
+    dispatch(ClearChatHistoryAction(getUserIdFromJid(fromUserJId)));
+  };
+
+  const checkMessageExist = () => {
+    const chatMessages = getChatMessageHistoryById(
+      getActiveConversationChatId(),
+    );
+    if (
+      chatMessages &&
+      Array.isArray(chatMessages) &&
+      chatMessages.length === 0
+    ) {
+      showToastMessage();
+      return false;
+    }
+    return true;
+  };
+
+  const showToastMessage = () => {
+    let toastMessage = NO_CONVERSATION;
+    const options = {
+      id: 'Clear_Toast',
+    };
+    showToast(toastMessage, options);
   };
 
   const handleClearChat = () => {
+    if (!checkMessageExist()) {
+      return;
+    }
     setIsOpenAlert(true);
   };
 
@@ -174,7 +212,7 @@ const ChatConversation = React.memo(props => {
         ]);
         break;
     }
-  }, [selectedMsgs]);
+  }, [selectedMsgs, isNetworkConnected]);
 
   React.useEffect(() => {
     dispatch(resetGalleryData());

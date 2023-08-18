@@ -52,7 +52,6 @@ const conversationReducer = (state = initialState, action) => {
         ),
       };
     case CLEAR_CHAT_HISTORY:
-      console.log(action.payload, state, '3456789');
       let chatId = action.payload;
       return {
         ...state,

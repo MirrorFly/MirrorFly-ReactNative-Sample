@@ -5,7 +5,7 @@ import {
 
 const initialState = {
   id: Date.now(),
-  color: '#f2f2f2',
+  color: '#E5E5E5',
 };
 
 const safeAreaReducer = (state = initialState, action) => {

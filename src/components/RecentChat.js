@@ -58,6 +58,7 @@ export default function RecentChat(props) {
         statusVisible = styles.seen;
         break;
     }
+
     return (
       <Box key={index}>
         <Pressable
@@ -77,7 +78,7 @@ export default function RecentChat(props) {
           _dark={{ bg: 'coolGray.800' }}
           _light={{ bg: 'white' }}>
           <Box pl="4" pr="5" py="2">
-            <HStack space={3}>
+            <HStack space={3} alignItems={'center'}>
               {/* {item?.profileDetails?.image ?
                             <RecentChatProfile data={{
                                 image: item?.profileDetails?.image,
@@ -106,7 +107,12 @@ export default function RecentChat(props) {
                 <HStack alignItems={'center'}>
                   {isSame && item?.msgStatus !== 3 ? (
                     <View
-                      style={[styles.msgStatus, isSame ? statusVisible : '']}
+                      style={[
+                        styles.msgStatus,
+                        isSame && Object.keys(item.msgBody).length
+                          ? statusVisible
+                          : '',
+                      ]}
                     />
                   ) : (
                     isSame &&
@@ -206,7 +212,7 @@ export default function RecentChat(props) {
           </Box>
         </Pressable>
         <Divider
-          w="80%"
+          w="83%"
           alignSelf="flex-end"
           _light={{ bg: '#f2f2f2' }}
           _dark={{ bg: 'muted.50' }}
@@ -216,7 +222,7 @@ export default function RecentChat(props) {
   };
   if (!props?.data?.length) {
     return (
-      <Center h="full">
+      <Center h="full" bgColor={'#fff'}>
         <Image
           style={styles.image}
           resizeMode="cover"

@@ -57,7 +57,7 @@ const ReplyText = props => {
             <ClearTextIcon />
           </Pressable>
         </HStack>
-        <Text numberOfLines={1} fontSize={14} color="#313131">
+        <Text numberOfLines={1} pl={2} fontSize={14} color="#313131">
           {replyMsgItems?.msgBody?.message}
         </Text>
       </View>

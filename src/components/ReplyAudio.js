@@ -51,7 +51,7 @@ const ReplyAudio = props => {
       </HStack>
       <HStack alignItems={'center'} pl={1}>
         <AudioMusicIcon width="14" height="14" color={'#767676'} />
-        <Text color="#313131" fontSize={14} mb={1} pl={2} fontWeight={400}>
+        <Text color="#313131" fontSize={14}  pl={2} fontWeight={400}>
           {`${String(Math.floor(durationInMinutes / 60)).padStart(
             2,
             '0',

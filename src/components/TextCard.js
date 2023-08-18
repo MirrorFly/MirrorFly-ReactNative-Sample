@@ -5,17 +5,20 @@ import ReplyMessage from './ReplyMessage';
 
 const TextCard = props => {
   const { msgBody: { replyTo = '' } = {} } = props.message;
+
   return (
     <View
       bgColor={props.isSame ? '#E2E8F7' : '#fff'}
       borderRadius={10}
       overflow={'hidden'}
-      borderWidth={props.isSame ? 0 : 0.25}
+      borderWidth={props.isSame ? 0 : 1}
       borderBottomLeftRadius={props.isSame ? 10 : 0}
       borderBottomRightRadius={props.isSame ? 0 : 10}
-      borderColor="#959595"
+      borderColor="#DDE3E5"
       px="1">
-      {replyTo && <ReplyMessage message={props.message} />}
+      {replyTo && (
+        <ReplyMessage message={props.message} isSame={props.isSame} />
+      )}
       <Text style={styles.message}>{props.data?.message}</Text>
       <View style={styles.timeStamp}>
         {props.data.status}

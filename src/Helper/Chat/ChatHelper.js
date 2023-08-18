@@ -344,14 +344,14 @@ export const isLocalUser = (userId = '') => {
 
 /**
  * getMessageFromHistoryById
- * @param {*} chatId
- * @param {*} msgId
+ * @param {*} chatId @example '919876543210'
+ * @param {*} msgId  @example 'message-id'
  */
 export const getMessageFromHistoryById = (chatId, msgId) => {
   const { chatConversationData: { data } = {} } = store.getState();
   if (
     data[chatId]?.messages &&
-    Object.keys(data[chatId]?.messages).length > 0
+    Object.keys(data[getUserIdFromJid(chatId)]?.messages).length > 0
   ) {
     return data[chatId]?.messages[msgId] || {};
   }

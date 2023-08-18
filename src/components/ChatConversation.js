@@ -1,7 +1,10 @@
 import Clipboard from '@react-native-clipboard/clipboard';
-import { NO_CONVERSATION, NO_INTERNET } from 'Helper/Chat/Constant';
+import { NO_CONVERSATION } from 'Helper/Chat/Constant';
+import { getUserIdFromJid } from 'Helper/Chat/Utility';
 import { showToast } from 'Helper/index';
 import SDK from 'SDK/SDK';
+import { ClearChatHistoryAction } from 'mf-redux/Actions/ConversationAction';
+import { clearLastMessageinRecentChat } from 'mf-redux/Actions/RecentChatAction';
 import { Box, HStack, Modal, Stack, Text, View, useToast } from 'native-base';
 import React from 'react';
 import {
@@ -29,9 +32,6 @@ import ReplyImage from './ReplyImage';
 import ReplyLocation from './ReplyLocation';
 import ReplyText from './ReplyText';
 import ReplyVideo from './ReplyVideo';
-import { clearLastMessageinRecentChat } from 'mf-redux/Actions/RecentChatAction';
-import { ClearChatHistoryAction } from 'mf-redux/Actions/ConversationAction';
-import { getUserIdFromJid } from 'Helper/Chat/Utility';
 
 const ChatConversation = React.memo(props => {
   const { handleSendMsg } = props;

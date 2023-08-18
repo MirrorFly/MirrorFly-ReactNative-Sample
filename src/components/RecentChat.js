@@ -259,14 +259,10 @@ export default function RecentChat(props) {
           bg={'#E5E5E5'}
           justifyContent={'center'}>
           <HStack>
-            <Text
-              ml={2}
-              color={'#181818'}
-              fontSize={16}
-              fontWeight={'extraBlack'}>
+            <Text ml={2} color={'#181818'} fontSize={16} fontWeight={'500'}>
               Chats
             </Text>
-            <Text ml={'0.5'} fontSize={16} fontWeight={'bold'}>
+            <Text ml={'0.5'} fontSize={16} fontWeight={'700'}>
               ({props.data.length})
             </Text>
           </HStack>

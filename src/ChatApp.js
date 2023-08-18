@@ -22,7 +22,7 @@ import { profileDetail } from './redux/Actions/ProfileAction';
 import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction';
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
-
+/** import messaging from '@react-native-firebase/messaging';*/
 LogBox.ignoreAllLogs();
 
 export const ChatApp = () => {
@@ -34,6 +34,7 @@ export const ChatApp = () => {
         callbackListeners: callBacks,
         isSandbox: false,
       });
+      /** await messaging().requestPermission();*/
     })();
   }, []);
 

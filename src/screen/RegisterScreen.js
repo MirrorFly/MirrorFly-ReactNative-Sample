@@ -29,8 +29,7 @@ import {
 import { useNetworkStatus } from '../hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SDK from '../SDK/SDK';
-import PushNotifiLocal from '../Service/PushNotifiLocal';
-import messaging from '@react-native-firebase/messaging';
+/**import messaging from '@react-native-firebase/messaging';*/
 
 const RegisterScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -40,7 +39,6 @@ const RegisterScreen = ({ navigation }) => {
   const [mobileNumber, setMobileNumber] = React.useState('');
   const [isToastShowing, setIsToastShowing] = React.useState(false);
   const isNetworkConnected = useNetworkStatus();
-  const PushNotifyLocalFun = new PushNotifiLocal();
 
   const termsHandler = () => {
     Linking.openURL('https://www.mirrorfly.com/terms-and-conditions.php');
@@ -130,12 +128,21 @@ const RegisterScreen = ({ navigation }) => {
       handleRegister();
     }
   };
+  /**
+  // const fcmTokenCheck = async () => {
+  //   try {
+  //     const fcmToken = await messaging().getToken();
+  //     return fcmToken;
+  //   } catch (error) {
+  //     return false;
+  //   }
+  // };
+   */
+
   const handleRegister = async () => {
     setIsToastShowing(false);
-    const fcmToken = await messaging().getToken();
     const register = await SDK.register(
       selectcountry?.dial_code + mobileNumber,
-      fcmToken,
     );
     if (register.statusCode === 200) {
       await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');

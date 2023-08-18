@@ -78,7 +78,9 @@ export default function RecentChat(props) {
           _dark={{ bg: 'coolGray.800' }}
           _light={{ bg: 'white' }}>
           <Box pl="4" pr="5" py="2">
-            <HStack space={3} alignItems={'center'}>
+            <HStack
+              space={3}
+              alignItems={item.msgBody.message_type ? 'center' : 'flex-start'}>
               {/* {item?.profileDetails?.image ?
                             <RecentChatProfile data={{
                                 image: item?.profileDetails?.image,

@@ -143,6 +143,13 @@ function ChatHeader({
         </HStack>
       ) : (
         <View
+          style={{
+            elevation: 2,
+            shadowColor: '#181818',
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.1,
+            shadowRadius: 6,
+          }}
           flexDirection={'row'}
           backgroundColor={'#F2F2F4'}
           alignItems={'center'}

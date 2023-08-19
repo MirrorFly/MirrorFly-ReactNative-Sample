@@ -70,7 +70,7 @@ function RecentScreen() {
   const [searchValue, setSearchValue] = React.useState('');
   const recentChatList = useSelector(state => state.recentChatData.data);
   const [recentItem, setRecentItem] = React.useState([]);
-  const [isOpenAlert, setIsOpenAlert] = React.useState([]);
+  const [isOpenAlert, setIsOpenAlert] = React.useState(false);
 
   const handleSearch = text => {
     setIsSearching(true);
@@ -206,9 +206,12 @@ function RecentScreen() {
 
   const deleteChat = () => {
     recentItem.forEach(item => {
-      SDK.deleteChat(item?.userJid);
+      let userJid =
+        item?.userJid || formatUserIdToJid(item?.fromUserId, item?.chatType);
+      SDK.deleteChat(userJid);
     });
     setRecentItem([]);
+    setIsOpenAlert(false);
   };
 
   useFocusEffect(() => {
@@ -272,7 +275,7 @@ function RecentScreen() {
           ),
         second: RecentCalls,
       }),
-    [isSearching, filteredDataList, searchValue, recentItem],
+    [isSearching, filteredDataList, searchValue, recentItem, handleDeleteChat],
   );
 
   return (

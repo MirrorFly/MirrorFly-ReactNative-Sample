@@ -192,7 +192,7 @@ export default function RecentChat(props) {
                           </Text>
                         </HStack>
                       ),
-                    }[item.msgBody.message_type]
+                    }[item?.msgBody?.message_type]
                   }
                 </HStack>
               </VStack>

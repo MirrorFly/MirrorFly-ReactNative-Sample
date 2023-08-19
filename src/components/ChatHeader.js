@@ -86,6 +86,22 @@ function ChatHeader({
     });
   };
 
+  const renderForwardIcon = () => {
+    console.log('selectedMsgs', JSON.stringify(selectedMsgs, null, 2));
+    if (selectedMsgs?.length === 1) {
+      return (
+        <IconButton
+          _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+          px="4"
+          onPress={handleForwardMessage}>
+          <ForwardIcon />
+        </IconButton>
+      );
+    } else {
+      return null;
+    }
+  };
+
   return (
     <>
       {selectedMsgs?.length <= 0 ? (
@@ -175,12 +191,7 @@ function ChatHeader({
               onPress={handleReplyMessage}>
               {selectedMsgs?.length === 1 && <ReplyIcon />}
             </IconButton>
-            <IconButton
-              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-              px="4"
-              onPress={handleForwardMessage}>
-              <ForwardIcon />
-            </IconButton>
+            {renderForwardIcon()}
             <IconButton
               _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
               px="3"

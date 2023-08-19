@@ -232,6 +232,47 @@ const ChatConversation = React.memo(props => {
     }
   };
 
+  const renderReplyMessageTemplateAboveInput = () => {
+    switch (replyMsgs?.msgBody?.message_type) {
+      case 'text':
+        return (
+          <ReplyText replyMsgItems={replyMsgs} handleRemove={handleRemove} />
+        );
+      case 'image':
+        return (
+          <ReplyImage replyMsgItems={replyMsgs} handleRemove={handleRemove} />
+        );
+      case 'video':
+        return (
+          <ReplyVideo replyMsgItems={replyMsgs} handleRemove={handleRemove} />
+        );
+      case 'audio':
+        return (
+          <ReplyAudio replyMsgItems={replyMsgs} handleRemove={handleRemove} />
+        );
+      case 'file':
+        return (
+          <ReplyDocument
+            replyMsgItems={replyMsgs}
+            handleRemove={handleRemove}
+          />
+        );
+      case 'contact':
+        return (
+          <ReplyContact replyMsgItems={replyMsgs} handleRemove={handleRemove} />
+        );
+      case 'location':
+        return (
+          <ReplyLocation
+            replyMsgItems={replyMsgs}
+            handleRemove={handleRemove}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 'auto'}
@@ -260,52 +301,7 @@ const ChatConversation = React.memo(props => {
         <View paddingX={'1'} paddingY={'2'} backgroundColor={'#E2E8F9'}>
           <Stack paddingX={'3'} paddingY={'0 '} backgroundColor={'#0000001A'}>
             <View marginY={'3'} justifyContent={'flex-start'}>
-              {
-                {
-                  text: (
-                    <ReplyText
-                      replyMsgItems={replyMsgs}
-                      handleRemove={handleRemove}
-                    />
-                  ),
-                  image: (
-                    <ReplyImage
-                      replyMsgItems={replyMsgs}
-                      handleRemove={handleRemove}
-                    />
-                  ),
-                  video: (
-                    <ReplyVideo
-                      replyMsgItems={replyMsgs}
-                      handleRemove={handleRemove}
-                    />
-                  ),
-                  audio: (
-                    <ReplyAudio
-                      replyMsgItems={replyMsgs}
-                      handleRemove={handleRemove}
-                    />
-                  ),
-                  file: (
-                    <ReplyDocument
-                      replyMsgItems={replyMsgs}
-                      handleRemove={handleRemove}
-                    />
-                  ),
-                  contact: (
-                    <ReplyContact
-                      replyMsgItems={replyMsgs}
-                      handleRemove={handleRemove}
-                    />
-                  ),
-                  location: (
-                    <ReplyLocation
-                      replyMsgItems={replyMsgs}
-                      handleRemove={handleRemove}
-                    />
-                  ),
-                }[replyMsgs?.msgBody?.message_type]
-              }
+              {renderReplyMessageTemplateAboveInput()}
             </View>
           </Stack>
         </View>

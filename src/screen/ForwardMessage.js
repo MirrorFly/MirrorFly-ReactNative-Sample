@@ -6,7 +6,7 @@ import {
   View,
   ScrollView,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { sortBydate } from 'Helper/Chat/RecentChat';
 import { showToast } from 'Helper/index';
 import SDK from 'SDK/SDK';
@@ -14,10 +14,13 @@ import Avathar from 'common/Avathar';
 import { CloseIcon, SearchIcon } from 'common/Icons';
 import { Checkbox, IconButton, View as NBView } from 'native-base';
 import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { batch, useDispatch, useSelector } from 'react-redux';
 import { useNetworkStatus } from '../hooks';
 import commonStyles from 'common/commonStyles';
 import { HighlightedText } from 'components/RecentChat';
+import { getRecentChatMsgObjForward } from 'Helper/Chat/ChatHelper';
+import { v4 as uuidv4 } from 'uuid';
+import { updateRecentChat } from 'mf-redux/Actions/RecentChatAction';
 
 const showMaxUsersLimitToast = () => {
   const options = {
@@ -73,6 +76,7 @@ const Header = ({
 const ContactItem = ({
   name,
   userId,
+  userJid,
   colorCode,
   status,
   handleItemSelect,
@@ -98,6 +102,7 @@ const ContactItem = ({
       name,
       colorCode,
       status,
+      userJid,
     });
   };
 
@@ -154,6 +159,7 @@ const RecentChatSectionList = ({
           <ContactItem
             key={item.fromUserId}
             userId={item.fromUserId}
+            userJid={item.userJid}
             name={item.profileDetails?.nickName}
             status={item.profileDetails?.status}
             colorCode={item.profileDetails?.colorCode}
@@ -186,6 +192,7 @@ const ContactsSectionList = ({
           <ContactItem
             key={item.userId}
             userId={item.userId}
+            userJid={item.userJid}
             name={item.nickName}
             status={item.status}
             handleItemSelect={handleChatSelect}
@@ -227,8 +234,16 @@ const ForwardMessage = () => {
   const [filteredRecentChatList, setFilteredRecentChatList] = useState([]);
   const [filteredContactList, setFilteredContactList] = useState([]);
   const recentChatData = useSelector(state => state.recentChatData.data);
+  const activeChatUserJid = useSelector(state => state.navigation.fromUserJid);
+  const vCardData = useSelector(state => state.profile.profileDetails);
+
+  const dispatch = useDispatch();
 
   const isInternetReachable = useNetworkStatus();
+
+  const {
+    params: { forwardMessages },
+  } = useRoute();
 
   const getLastThreeRecentChats = data => {
     if (Array.isArray(data) && data.length) {
@@ -322,8 +337,79 @@ const ForwardMessage = () => {
     }
   };
 
-  const handleMessageSend = () => {
+  const handleMessageSend = async () => {
+    // console.log('forwardMessages', JSON.stringify(forwardMessages, null, 2));
+    // console.log('Selected Users', JSON.stringify(selectedUsers, null, 2));
     // TODO: send message to the selected users
+    // STEP 1: send message to all the users through SDK
+    // STEP 2: update the Recent Chat data with last message
+    // STEP 3: update chat conversations only if available
+
+    // Sending params to SDK to forward message
+    const contactsToForward = Object.values(selectedUsers).map(u => u.userJid);
+    const msgIds = forwardMessages.map(m => m.msgId);
+    console.log('Forward params', contactsToForward, msgIds);
+    SDK.forwardMessagesToMultipleUsers(contactsToForward, msgIds, true);
+
+    const newMsgIds = [];
+    const totalLength =
+      forwardMessages.length * Object.keys(selectedUsers).length;
+    for (let i = 0; i < totalLength; i++) {
+      newMsgIds.push(uuidv4());
+    }
+    for (const msg of forwardMessages) {
+      /*
+      OLD CODE
+      const {
+        msgBody: { message_type = 'text', message = '' } = {},
+        chatType = 'chat',
+      } = msg;
+        const messageObject = {
+          type: message_type,
+          content: message,
+          replyTo: '',
+        }; */
+      for (const userId in selectedUsers) {
+        const { userJid } = selectedUsers[userId];
+        const currentNewMsgId = newMsgIds.pop();
+        const recentChatObj = await getRecentChatMsgObjForward(
+          msg,
+          userJid,
+          currentNewMsgId,
+        );
+        console.log('recentChatObj', JSON.stringify(recentChatObj, null, 2));
+        batch(() => {
+          // updating recent chat
+          dispatch(updateRecentChat(recentChatObj));
+          // updating convresations if active chat or delete conversations data
+          if (userJid === activeChatUserJid) {
+            // TODO: add conversation history
+          } else {
+            // TODO: delete conversation history data if available
+          }
+        });
+        // dispatch(RecentChatUpdateAction(recentChatObj));
+        // this.handleUpdateHistory(toJid, contactsToForward, originalMsg, newMsgIds, j);
+        /*
+        OLD code
+        console.log(
+          'Forwarding Message',
+          messageObject,
+          currentUserJID,
+          vCardData,
+          selectedUsers[user].userJid,
+          chatType,
+        );
+        await sendMessageToUserOrGroup(
+          messageObject,
+          currentUserJID,
+          vCardData,
+          selectedUsers[user].userJid,
+          chatType,
+        ); */
+      }
+      // navigation.goBack();
+    }
   };
 
   return (

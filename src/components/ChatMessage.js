@@ -22,7 +22,8 @@ const ChatMessage = props => {
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
   let isSame = currentUserJID === props?.message?.fromUserJid;
   let statusVisible = 'notSend';
-  const { message, setLocalNav } = props;
+  const { message, setLocalNav, handleReplyPress, backgroundColor, replyID } =
+    props;
   const {
     msgBody = {},
     msgBody: {
@@ -161,6 +162,7 @@ const ChatMessage = props => {
   return (
     <Pressable
       onPress={handleMessageSelect}
+      style={replyID === msgId && { backgroundColor }}
       onLongPress={() =>
         message?.msgStatus !== 3 && props.handleMsgSelect(props.message)
       }>
@@ -191,6 +193,7 @@ const ChatMessage = props => {
                     {
                       text: (
                         <TextCard
+                          handleReplyPress={handleReplyPress}
                           isSame={isSame}
                           message={message}
                           data={{
@@ -204,6 +207,7 @@ const ChatMessage = props => {
                       ),
                       image: (
                         <ImageCard
+                          handleReplyPress={handleReplyPress}
                           messageObject={message}
                           setUploadStatus={setUploadStatus}
                           imgSrc={imgSrc}
@@ -218,6 +222,7 @@ const ChatMessage = props => {
                       ),
                       video: (
                         <VideoCard
+                          handleReplyPress={handleReplyPress}
                           messageObject={message}
                           setUploadStatus={setUploadStatus}
                           imgSrc={imgSrc}
@@ -233,6 +238,7 @@ const ChatMessage = props => {
                       audio: (
                         <View style={styles.flex1}>
                           <AudioCard
+                            handleReplyPress={handleReplyPress}
                             messageObject={message}
                             isSender={isSame}
                             mediaUrl={imageUrl}
@@ -246,6 +252,7 @@ const ChatMessage = props => {
                       ),
                       file: (
                         <DocumentMessageCard
+                          handleReplyPress={handleReplyPress}
                           message={message}
                           status={getMessageStatus(message?.msgStatus)}
                           timeStamp={getConversationHistoryTime(
@@ -258,6 +265,7 @@ const ChatMessage = props => {
                       ),
                       contact: (
                         <ContactCard
+                          handleReplyPress={handleReplyPress}
                           data={message}
                           status={getMessageStatus(message?.msgStatus)}
                           timeStamp={getConversationHistoryTime(
@@ -267,6 +275,7 @@ const ChatMessage = props => {
                       ),
                       location: (
                         <MapCard
+                          handleReplyPress={handleReplyPress}
                           data={message}
                           status={getMessageStatus(message?.msgStatus)}
                           timeStamp={getConversationHistoryTime(

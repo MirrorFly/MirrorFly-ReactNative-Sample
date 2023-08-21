@@ -14,6 +14,7 @@ const VideoCard = props => {
     isSender,
     fileSize,
     messageObject = {},
+    handleReplyPress,
   } = props;
 
   const {
@@ -47,7 +48,13 @@ const VideoCard = props => {
       borderBottomLeftRadius={isSender ? 10 : 0}
       backgroundColor={isSender ? '#E2E8F7' : '#fff'}
       px="1">
-      {replyTo && <ReplyMessage message={messageObject} isSame={isSender} />}
+      {replyTo && (
+        <ReplyMessage
+          handleReplyPress={handleReplyPress}
+          message={messageObject}
+          isSame={isSender}
+        />
+      )}
       <View py="1" position="relative">
         {thumb_image ? (
           <Image

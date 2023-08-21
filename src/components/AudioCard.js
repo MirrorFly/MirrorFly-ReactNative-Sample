@@ -30,12 +30,14 @@ const AudioCard = props => {
       borderWidth={1}
       flex={1}
       overflow={'hidden'}
-      backgroundColor={isSender ? '#E2E8F7' : '#0000001A'}
+      backgroundColor={isSender ? '#E2E8F7' : '#fff'}
       width={250}
       borderRadius={10}
       borderBottomRightRadius={isSender ? 0 : 10}
       borderBottomLeftRadius={isSender ? 10 : 0}
-      mb={1}>
+      mb={1}
+      pt={'0'}
+      p={replyTo ? '1' : 0}>
       {replyTo && (
         <ReplyMessage
           handleReplyPress={handleReplyPress}

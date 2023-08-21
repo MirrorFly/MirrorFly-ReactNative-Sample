@@ -154,18 +154,20 @@ const ChatMessage = props => {
   };
 
   const handleMessageSelect = () => {
-    if (props?.selectedMsgs?.length) {
+    if (props?.selectedMsgs?.length && message?.msgStatus !== 3) {
       props.handleMsgSelect(props.message);
     }
+  };
+
+  const handleMessageLongPress = () => {
+    message?.msgStatus !== 3 && props.handleMsgSelect(props.message);
   };
 
   return (
     <Pressable
       onPress={handleMessageSelect}
       style={replyID === msgId && { backgroundColor }}
-      onLongPress={() =>
-        message?.msgStatus !== 3 && props.handleMsgSelect(props.message)
-      }>
+      onLongPress={handleMessageLongPress}>
       {({ isPressed }) => {
         return (
           <Box>
@@ -294,7 +296,7 @@ const ChatMessage = props => {
     </Pressable>
   );
 };
-export default ChatMessage;
+export default React.memo(ChatMessage);
 
 const styles = StyleSheet.create({
   currentStatus: {

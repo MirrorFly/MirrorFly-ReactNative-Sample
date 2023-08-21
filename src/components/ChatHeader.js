@@ -26,6 +26,13 @@ import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { FORWARD_MESSSAGE_SCREEN } from '../constant';
 
+const forwardMediaMessageTypes = {
+  image: true,
+  video: true,
+  audio: true,
+  file: true,
+};
+
 function ChatHeader({
   fromUserJId,
   selectedMsgs,
@@ -39,6 +46,7 @@ function ChatHeader({
   const [remove, setRemove] = React.useState(false);
   const [nickName, setNickName] = React.useState('');
   const profileDetails = useSelector(state => state.navigation.profileDetails);
+  const vCardProfile = useSelector(state => state.profile.profileDetails);
 
   React.useEffect(() => {
     getUserProfile();
@@ -83,7 +91,36 @@ function ChatHeader({
   const handleForwardMessage = () => {
     navigation.navigate(FORWARD_MESSSAGE_SCREEN, {
       forwardMessages: selectedMsgs,
+      onMessageForwaded: handleRemove,
     });
+  };
+
+  const renderForwardIcon = () => {
+    if (selectedMsgs?.length === 1) {
+      const currentUserId = vCardProfile?.userId;
+      const _message = selectedMsgs[0];
+      const localPath = _message?.msgBody?.media?.local_path;
+      // checking for the message is not text and is_downloaded === 2
+      const isDownloadedOrUploaded =
+        _message?.publisherId === currentUserId
+          ? _message?.msgBody?.media?.is_uploading === 2
+          : Boolean(localPath) || _message?.msgBody?.media?.is_downloaded === 2;
+      const isAllowForward = forwardMediaMessageTypes[
+        _message?.msgBody?.message_type
+      ]
+        ? isDownloadedOrUploaded
+        : true;
+      return _message?.msgStatus !== 3 && isAllowForward ? (
+        <IconButton
+          _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+          px="4"
+          onPress={handleForwardMessage}>
+          <ForwardIcon />
+        </IconButton>
+      ) : null;
+    } else {
+      return null;
+    }
   };
 
   return (
@@ -182,12 +219,7 @@ function ChatHeader({
               onPress={handleReplyMessage}>
               {selectedMsgs?.length === 1 && <ReplyIcon />}
             </IconButton>
-            <IconButton
-              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-              px="4"
-              onPress={handleForwardMessage}>
-              <ForwardIcon />
-            </IconButton>
+            {renderForwardIcon()}
             <IconButton
               _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
               px="3"

@@ -5,8 +5,10 @@ import {
   TextInput,
   View,
   ScrollView,
+  Modal,
+  ActivityIndicator,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { sortBydate } from 'Helper/Chat/RecentChat';
 import { showToast } from 'Helper/index';
 import SDK from 'SDK/SDK';
@@ -14,10 +16,22 @@ import Avathar from 'common/Avathar';
 import { CloseIcon, SearchIcon } from 'common/Icons';
 import { Checkbox, IconButton, View as NBView } from 'native-base';
 import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { batch, useDispatch, useSelector } from 'react-redux';
 import { useNetworkStatus } from '../hooks';
 import commonStyles from 'common/commonStyles';
 import { HighlightedText } from 'components/RecentChat';
+import {
+  formatUserIdToJid,
+  getMessageObjForward,
+  getRecentChatMsgObjForward,
+  isSingleChat,
+} from 'Helper/Chat/ChatHelper';
+import { v4 as uuidv4 } from 'uuid';
+import { updateRecentChat } from 'mf-redux/Actions/RecentChatAction';
+import {
+  addChatConversationHistory,
+  deleteChatConversationById,
+} from 'mf-redux/Actions/ConversationAction';
 
 const showMaxUsersLimitToast = () => {
   const options = {
@@ -73,6 +87,7 @@ const Header = ({
 const ContactItem = ({
   name,
   userId,
+  userJid,
   colorCode,
   status,
   handleItemSelect,
@@ -98,6 +113,7 @@ const ContactItem = ({
       name,
       colorCode,
       status,
+      userJid,
     });
   };
 
@@ -111,7 +127,7 @@ const ContactItem = ({
               <View style={styles.recentChatItemName}>
                 <HighlightedText
                   text={name || userId}
-                  searchValue={searchText}
+                  searchValue={searchText?.trim()}
                   index={userId}
                 />
               </View>
@@ -154,6 +170,7 @@ const RecentChatSectionList = ({
           <ContactItem
             key={item.fromUserId}
             userId={item.fromUserId}
+            userJid={item.userJid}
             name={item.profileDetails?.nickName}
             status={item.profileDetails?.status}
             colorCode={item.profileDetails?.colorCode}
@@ -186,6 +203,7 @@ const ContactsSectionList = ({
           <ContactItem
             key={item.userId}
             userId={item.userId}
+            userJid={item.userJid}
             name={item.nickName}
             status={item.status}
             handleItemSelect={handleChatSelect}
@@ -224,11 +242,19 @@ const ForwardMessage = () => {
   const [searchText, setSearchText] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState({});
+  const [showLoader, setShowLoader] = useState(false);
   const [filteredRecentChatList, setFilteredRecentChatList] = useState([]);
   const [filteredContactList, setFilteredContactList] = useState([]);
   const recentChatData = useSelector(state => state.recentChatData.data);
+  const activeChatUserJid = useSelector(state => state.navigation.fromUserJid);
+
+  const dispatch = useDispatch();
 
   const isInternetReachable = useNetworkStatus();
+
+  const {
+    params: { forwardMessages, onMessageForwaded },
+  } = useRoute();
 
   const getLastThreeRecentChats = data => {
     if (Array.isArray(data) && data.length) {
@@ -248,7 +274,7 @@ const ForwardMessage = () => {
   }, []);
 
   useLayoutEffect(() => {
-    fetchContactList(searchText);
+    fetchContactList(searchText.trim());
   }, [searchText]);
 
   useEffect(() => {
@@ -257,7 +283,7 @@ const ForwardMessage = () => {
       const filteredData = recentChatList.filter(i =>
         i.profileDetails?.nickName
           ?.toLowerCase?.()
-          ?.includes(searchText.toLowerCase()),
+          ?.includes(searchText.trim().toLowerCase()),
       );
       setFilteredRecentChatList(filteredData);
     } else {
@@ -322,38 +348,119 @@ const ForwardMessage = () => {
     }
   };
 
-  const handleMessageSend = () => {
-    // TODO: send message to the selected users
+  const forwardMessagesToSelectedUsers = async () => {
+    const newMsgIds = [];
+    const totalLength =
+      forwardMessages.length * Object.keys(selectedUsers).length;
+    for (let i = 0; i < totalLength; i++) {
+      newMsgIds.push(uuidv4());
+    }
+    for (const msg of forwardMessages) {
+      const newMsgIdsCopy = [...newMsgIds];
+      for (const userId in selectedUsers) {
+        const chatType = 'chat';
+        let toUserJid =
+          selectedUsers[userId]?.userJid || formatUserIdToJid(userId);
+        const currentNewMsgId = newMsgIdsCopy.shift();
+        const recentChatObj = await getRecentChatMsgObjForward(
+          msg,
+          toUserJid,
+          currentNewMsgId,
+        );
+        batch(() => {
+          // updating recent chat
+          dispatch(updateRecentChat(recentChatObj));
+          // updating convresations if active chat or delete conversations data
+          if (toUserJid === activeChatUserJid) {
+            const conversationChatObj = getMessageObjForward(
+              msg,
+              toUserJid,
+              currentNewMsgId,
+            );
+            const dispatchData = {
+              data: [conversationChatObj],
+              ...(isSingleChat(chatType)
+                ? { userJid: toUserJid }
+                : { groupJid: toUserJid }), // check this when working for group chat
+            };
+            // adding conversation history
+            dispatch(addChatConversationHistory(dispatchData));
+          } else {
+            // deleting conversation history data if available to avoid unwanted UI issue or complexity
+            dispatch(deleteChatConversationById(userId));
+          }
+        });
+      }
+    }
+    // Sending params to SDK to forward message
+    const contactsToForward = Object.values(selectedUsers).map(u => u.userJid);
+    const msgIds = forwardMessages.map(m => m.msgId);
+    SDK.forwardMessagesToMultipleUsers(
+      contactsToForward,
+      msgIds,
+      true,
+      newMsgIds,
+    );
+    setShowLoader(false);
+    onMessageForwaded?.();
+    navigation.goBack();
   };
 
+  const handleMessageSend = async () => {
+    setShowLoader(true);
+    // doing the complete action in setTimeout to avoid UI render blocking
+    setTimeout(forwardMessagesToSelectedUsers, 0);
+  };
+
+  const doNothing = () => null;
+
   return (
-    <View style={styles.container}>
-      <Header
-        onCancelPressed={handleCancel}
-        onSearchPressed={toggleSearching}
-        onSearch={setSearchText}
-        isSearching={isSearching}
-        searchText={searchText}
-      />
-      <ScrollView style={commonStyles.flex1}>
-        <RecentChatSectionList
-          data={filteredRecentChatList}
-          selectedUsers={selectedUsers}
-          handleChatSelect={handleUserSelect}
+    <>
+      <View style={styles.container}>
+        <Header
+          onCancelPressed={handleCancel}
+          onSearchPressed={toggleSearching}
+          onSearch={setSearchText}
+          isSearching={isSearching}
           searchText={searchText}
         />
-        <ContactsSectionList
-          data={filteredContactList}
-          selectedUsers={selectedUsers}
-          handleChatSelect={handleUserSelect}
-          searchText={searchText}
+        <ScrollView style={commonStyles.flex1}>
+          <RecentChatSectionList
+            data={filteredRecentChatList}
+            selectedUsers={selectedUsers}
+            handleChatSelect={handleUserSelect}
+            searchText={searchText}
+          />
+          <ContactsSectionList
+            data={filteredContactList}
+            selectedUsers={selectedUsers}
+            handleChatSelect={handleUserSelect}
+            searchText={searchText}
+          />
+        </ScrollView>
+        <SelectedUsersName
+          users={selectedUsersArray}
+          onMessageSend={handleMessageSend}
         />
-      </ScrollView>
-      <SelectedUsersName
-        users={selectedUsersArray}
-        onMessageSend={handleMessageSend}
-      />
-    </View>
+      </View>
+      {/* Modal for Loader */}
+      <Modal
+        visible={showLoader}
+        animationType="fade"
+        onRequestClose={doNothing}
+        transparent>
+        <View style={styles.loaderContainer}>
+          <View style={styles.loaderWrapper}>
+            <ActivityIndicator
+              color={'#3c3c3c'}
+              size={'large'}
+              style={styles.loader}
+            />
+            <Text style={styles.loaderText}>Sending</Text>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 };
 export default ForwardMessage;
@@ -464,5 +571,27 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     backgroundColor: 'rgba(0,0,0,0.05)',
     borderRadius: 3,
+  },
+  // Loader styles
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  loaderWrapper: {
+    width: 260,
+    height: 140,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 10,
+  },
+  loader: {
+    marginBottom: 10,
+  },
+  loaderText: {
+    fontSize: 18,
+    color: 'black',
   },
 });

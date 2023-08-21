@@ -287,7 +287,7 @@ const ChatMessage = props => {
     </Pressable>
   );
 };
-export default ChatMessage;
+export default React.memo(ChatMessage);
 
 const styles = StyleSheet.create({
   currentStatus: {

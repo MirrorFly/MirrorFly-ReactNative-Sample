@@ -11,12 +11,20 @@ import {
 } from 'native-base';
 import React from 'react';
 import { Alert, BackHandler, Platform } from 'react-native';
+import { Image as ImageCompressor } from 'react-native-compressor';
 import DocumentPicker from 'react-native-document-picker';
+import RNFS from 'react-native-fs';
 import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
-import { useSelector } from 'react-redux';
+import { batch, useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 import { showToast } from '../Helper';
-import { sendMessageToUserOrGroup } from '../Helper/Chat/ChatHelper';
+import { isSingleChat } from '../Helper/Chat/ChatHelper';
+import { DOCUMENT_FORMATS } from '../Helper/Chat/Constant';
+import {
+  getMessageObjSender,
+  getRecentChatMsgObj,
+} from '../Helper/Chat/Utility';
 import * as RootNav from '../Navigation/rootNavigation';
 import {
   CameraIcon,
@@ -49,7 +57,11 @@ import {
   validation,
 } from '../components/chat/common/fileUploadValidation';
 import { RECENTCHATSCREEN } from '../constant';
+import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
+import { updateRecentChat } from '../redux/Actions/RecentChatAction';
+import store from '../redux/store';
 import SavePicture from './Gallery';
+import { createThumbnail } from 'react-native-create-thumbnail';
 
 function ChatScreen() {
   const replyMsgRef = React.useRef();
@@ -305,6 +317,120 @@ function ChatScreen() {
     handleBackBtn,
   );
 
+  const getThumbImage = async uri => {
+    const result = await ImageCompressor.compress(uri, {
+      maxWidth: 200,
+      maxHeight: 200,
+      quality: 0.8,
+    });
+    const response = await RNFS.readFile(result, 'base64');
+    return response;
+  };
+
+  const getVideoThumbImage = async uri => {
+    let response;
+    if (Platform.OS === 'ios') {
+      if (uri.includes('ph://')) {
+        let result = await ImageCompressor.compress(uri, {
+          maxWidth: 600,
+          maxHeight: 600,
+          quality: 0.8,
+        });
+        response = await RNFS.readFile(result, 'base64');
+      } else {
+        const frame = await createThumbnail({
+          url: uri,
+          timeStamp: 10000,
+        });
+        response = await RNFS.readFile(frame.path, 'base64');
+      }
+    } else {
+      const frame = await createThumbnail({
+        url: uri,
+        timeStamp: 10000,
+      });
+      console.log(frame, 'frame');
+      response = await RNFS.readFile(frame.path, 'base64');
+    }
+    return response;
+  };
+
+  const sendMediaMessage = async (messageType, files, chatTypeSendMsg) => {
+    let jidSendMediaMessage = toUserJid;
+    if (messageType === 'media') {
+      let mediaData = {};
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i],
+          msgId = uuidv4();
+
+        const {
+          caption = '',
+          fileDetails = {},
+          fileDetails: {
+            fileSize,
+            filename,
+            duration,
+            uri,
+            type,
+            replyTo = '',
+          } = {},
+        } = file;
+
+        const isDocument = DOCUMENT_FORMATS.includes(type);
+        const msgType = isDocument ? 'file' : type.split('/')[0];
+        const thumbImage = msgType === 'image' ? await getThumbImage(uri) : '';
+        const thumbVideoImage =
+          msgType === 'video' ? await getVideoThumbImage(uri) : '';
+        let fileOptions = {
+          fileName: filename,
+          fileSize: fileSize,
+          caption: caption,
+          uri: uri,
+          duration: duration,
+          msgId: msgId,
+          thumbImage: thumbImage || thumbVideoImage,
+        };
+        const userProfile = vCardData;
+
+        const dataObj = {
+          jid: jidSendMediaMessage,
+          msgType,
+          userProfile,
+          chatType: chatTypeSendMsg,
+          msgId,
+          file,
+          fileOptions,
+          fileDetails: fileDetails,
+          fromUserJid: currentUserJID,
+          replyTo,
+        };
+        const conversationChatObj = await getMessageObjSender(dataObj, i);
+        mediaData[msgId] = conversationChatObj;
+        const recentChatObj = getRecentChatMsgObj(dataObj);
+
+        const dispatchData = {
+          data: [conversationChatObj],
+          ...(isSingleChat(chatTypeSendMsg)
+            ? { userJid: jidSendMediaMessage }
+            : { groupJid: jidSendMediaMessage }),
+        };
+        batch(() => {
+          store.dispatch(addChatConversationHistory(dispatchData));
+          store.dispatch(updateRecentChat(recentChatObj));
+        });
+      }
+      setSelectedImages([]);
+    }
+  };
+
+  const parseAndSendMessage = async (message, chatType, messageType) => {
+    const { content } = message;
+    const replyTo = replyMsgRef.current?.msgId || '';
+    content[0].fileDetails.replyTo = replyTo;
+    sendMediaMessage(messageType, content, chatType);
+    replyMsgRef.current = '';
+  };
+
   const handleMedia = item => {
     const transformedArray = {
       caption: '',
@@ -386,10 +512,39 @@ function ChatScreen() {
   };
 
   const handleSendMsg = async message => {
-    message.replyTo = replyMsgRef.current?.msgId || '';
-    sendMessageToUserOrGroup(message, currentUserJID, vCardData, toUserJid);
-    replyMsgRef.current = '';
-    setSelectedImages([]);
+    let messageType = message.type;
+
+    if (messageType === 'media') {
+      parseAndSendMessage(message, 'chat', messageType);
+      return;
+    }
+
+    if (message.content !== '') {
+      let jid = toUserJid;
+      let msgId = uuidv4();
+      const userProfile = vCardData;
+      const dataObj = {
+        jid: jid,
+        msgType: 'text',
+        message: message.content,
+        userProfile,
+        chatType: 'chat',
+        msgId,
+        fromUserJid: currentUserJID,
+        replyTo: message.replyTo,
+      };
+      const conversationChatObj = await getMessageObjSender(dataObj);
+      const recentChatObj = getRecentChatMsgObj(dataObj);
+      const dispatchData = {
+        data: [conversationChatObj],
+        ...(isSingleChat('chat') ? { userJid: jid } : { groupJid: jid }), // check this when group works
+      };
+      batch(() => {
+        store.dispatch(addChatConversationHistory(dispatchData));
+        store.dispatch(updateRecentChat(recentChatObj));
+      });
+      SDK.sendTextMessage(jid, message.content, msgId, message.replyTo);
+    }
   };
 
   const onClose = () => {

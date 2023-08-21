@@ -99,11 +99,12 @@ function ChatHeader({
     if (selectedMsgs?.length === 1) {
       const currentUserId = vCardProfile?.userId;
       const _message = selectedMsgs[0];
+      const localPath = _message?.msgBody?.media?.local_path;
       // checking for the message is not text and is_downloaded === 2
       const isDownloadedOrUploaded =
         _message?.publisherId === currentUserId
           ? _message?.msgBody?.media?.is_uploading === 2
-          : _message?.msgBody?.media?.is_downloaded === 2;
+          : Boolean(localPath) || _message?.msgBody?.media?.is_downloaded === 2;
       const isAllowForward = forwardMediaMessageTypes[
         _message?.msgBody?.message_type
       ]

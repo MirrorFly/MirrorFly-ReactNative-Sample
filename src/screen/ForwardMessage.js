@@ -127,7 +127,7 @@ const ContactItem = ({
               <View style={styles.recentChatItemName}>
                 <HighlightedText
                   text={name || userId}
-                  searchValue={searchText}
+                  searchValue={searchText?.trim()}
                   index={userId}
                 />
               </View>
@@ -274,7 +274,7 @@ const ForwardMessage = () => {
   }, []);
 
   useLayoutEffect(() => {
-    fetchContactList(searchText);
+    fetchContactList(searchText.trim());
   }, [searchText]);
 
   useEffect(() => {
@@ -283,7 +283,7 @@ const ForwardMessage = () => {
       const filteredData = recentChatList.filter(i =>
         i.profileDetails?.nickName
           ?.toLowerCase?.()
-          ?.includes(searchText.toLowerCase()),
+          ?.includes(searchText.trim().toLowerCase()),
       );
       setFilteredRecentChatList(filteredData);
     } else {

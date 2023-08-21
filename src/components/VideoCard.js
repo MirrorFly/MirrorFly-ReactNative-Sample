@@ -5,6 +5,7 @@ import noPreview from '../assets/noPreview.png';
 import { ImageBackground, StyleSheet } from 'react-native';
 import { millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
 import ProgressLoader from './chat/common/ProgressLoader';
+import ReplyMessage from './ReplyMessage';
 
 const VideoCard = props => {
   const {
@@ -19,6 +20,7 @@ const VideoCard = props => {
     msgId = '',
     msgBody: { media },
     msgBody: {
+      replyTo = '',
       media: {
         duration = 0,
         is_uploading,
@@ -43,13 +45,15 @@ const VideoCard = props => {
       overflow={'hidden'}
       borderBottomRightRadius={isSender ? 0 : 10}
       borderBottomLeftRadius={isSender ? 10 : 0}
-      backgroundColor={isSender ? '#E2E8F7' : '#fff'}>
-      <View p="1" position="relative">
+      backgroundColor={isSender ? '#E2E8F7' : '#fff'}
+      px="1">
+      {replyTo && <ReplyMessage message={messageObject} isSame={isSender} />}
+      <View py="1" position="relative">
         {thumb_image ? (
           <Image
-            width={androidWidth}
+            width={replyTo ? 250 : androidWidth}
             borderRadius={5}
-            height={androidHeight}
+            height={replyTo ? 150 : androidHeight}
             alt={fileName}
             source={{ uri: base64ImageData }}
             resizeMode="cover"

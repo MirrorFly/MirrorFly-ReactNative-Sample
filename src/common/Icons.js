@@ -1212,8 +1212,8 @@ export const LocationIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="50"
-      height="50"
+      width={props.width || '50'}
+      height={props.height || '50'}
       viewBox="0 0 50 50">
       <G
         id="Group_7341"
@@ -1858,8 +1858,8 @@ export const PdfIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="18.093"
-      height="22.788"
+      width={props.width || '18.093'}
+      height={props.height || '22.788'}
       viewBox="0 0 18.093 22.788">
       <G id="Group_7354" data-name="Group 7354" transform="translate(-1.28)">
         <Path
@@ -1907,12 +1907,12 @@ export const PdfIcon = props => {
   );
 };
 
-export const ZipIcon = ({ height, width }) => {
+export const ZipIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
+      width={props.width || '22'}
+      height={props.height || '22'}
       viewBox="0 0 22 22">
       <G id="Zip_222" data-name="Zip 222" transform="translate(15914 -11129)">
         <Rect
@@ -1984,8 +1984,8 @@ export const PPTIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="18.093"
-      height="22.788"
+      width={props.width || '18.093'}
+      height={props.height || '22.788'}
       viewBox="0 0 18.093 22.788">
       <G id="Group_15661" data-name="Group 15661" transform="translate(-1.28)">
         <Path
@@ -2039,8 +2039,8 @@ export const XLSIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="18.093"
-      height="22.788"
+      width={props.width || '18.093'}
+      height={props.height || '22.788'}
       viewBox="0 0 18.093 22.788">
       <G id="Group_15658" data-name="Group 15658" transform="translate(-1.28)">
         <Path
@@ -2087,8 +2087,8 @@ export const ApkIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="18.093"
-      height="22.788"
+      width={props.width || '18.093'}
+      height={props.height || '22.788'}
       viewBox="0 0 18.093 22.788">
       <G id="Group_15663" data-name="Group 15663" transform="translate(-1.28)">
         <Path
@@ -2125,8 +2125,8 @@ export const DocIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="18.093"
-      height="22.788"
+      width={props.width || '18.093'}
+      height={props.height || '22.788'}
       viewBox="0 0 18.093 22.788">
       <G id="Group_15656" data-name="Group 15656" transform="translate(-1.28)">
         <Path
@@ -2194,14 +2194,14 @@ export const DownloadIcon = ({ width, height, color }) => {
   );
 };
 
-export const CameraSmallIcon = () => {
+export const CameraSmallIcon = props => {
   return (
     <Svg
       id="camera_1_"
       data-name="camera"
       xmlns="http://www.w3.org/2000/svg"
-      width="10.333"
-      height="9.3"
+      width={props.width || '10.333'}
+      height={props.height || '9.3'}
       viewBox="0 0 10.333 9.3">
       <G id="camera-alt" transform="translate(0 0)">
         <Circle
@@ -2211,14 +2211,14 @@ export const CameraSmallIcon = () => {
           cy="1.653"
           r="1.653"
           transform="translate(3.513 3.513)"
-          fill="#fff"
+          fill={props.color || '#fff'}
         />
         <Path
           id="Path_9745"
           data-name="Path 9745"
           d="M3.617,25.5l-.93,1.033H1.033A1.036,1.036,0,0,0,0,27.567v6.2A1.036,1.036,0,0,0,1.033,34.8H9.3a1.036,1.036,0,0,0,1.033-1.033v-6.2A1.036,1.036,0,0,0,9.3,26.533H7.647L6.717,25.5Zm1.55,7.75A2.583,2.583,0,1,1,7.75,30.667,2.558,2.558,0,0,1,5.167,33.25Z"
           transform="translate(0 -25.5)"
-          fill="#fff"
+          fill={props.color || '#fff'}
         />
       </G>
     </Svg>
@@ -2533,8 +2533,8 @@ export const ContactChatIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
+      width={props.width || 14}
+      height={props.height || 14}
       viewBox="0 0 14 14">
       <G id="Contact" transform="translate(-92 -144)">
         <G
@@ -2547,7 +2547,7 @@ export const ContactChatIcon = props => {
               data-name="Path 9718"
               d="M58.466,1.675H57.21V.419A.419.419,0,0,0,56.792,0H49.256A1.257,1.257,0,0,0,48,1.256V11.722A1.676,1.676,0,0,0,49.675,13.4h8.792a.419.419,0,0,0,.419-.419V2.093A.419.419,0,0,0,58.466,1.675Zm-2.093,8.792a.419.419,0,0,1-.419.419H50.931a.419.419,0,0,1-.419-.419V9.629a2.1,2.1,0,0,1,2.093-2.093H54.28a2.1,2.1,0,0,1,2.093,2.093ZM51.768,5.024A1.675,1.675,0,1,1,53.442,6.7,1.676,1.676,0,0,1,51.768,5.024Zm4.605-3.349H49.256a.419.419,0,1,1,0-.837h7.117Z"
               transform="translate(-48)"
-              fill="#767676"
+              fill={props.color || '#767676'}
             />
           </G>
         </G>
@@ -2568,8 +2568,8 @@ export const DocumentChatIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
+      width={props.width || 14}
+      height={props.height || 14}
       viewBox="0 0 14 14">
       <G id="Document" transform="translate(-92 -143)">
         <G id="folded-document-icon" transform="translate(90.014 144)">
@@ -2584,7 +2584,7 @@ export const DocumentChatIcon = props => {
                 width="5.039"
                 height="0.733"
                 transform="translate(2.37 2.941)"
-                fill="#767676"
+                fill={props.color || '#767676'}
               />
               <Rect
                 id="Rectangle_3729"
@@ -2592,14 +2592,14 @@ export const DocumentChatIcon = props => {
                 width="5.039"
                 height="0.733"
                 transform="translate(2.37 4.698)"
-                fill="#767676"
+                fill={props.color || '#767676'}
               />
               <Path
                 id="Path_9748"
                 data-name="Path 9748"
                 d="M13.524,0H4.237a.244.244,0,0,0-.244.244V8.388a.605.605,0,0,0-.007.071A2.367,2.367,0,0,0,6.046,10.8l-.007.005,7.241.923a.489.489,0,0,0,.489-.489v-11A.245.245,0,0,0,13.524,0Zm-.977,10.314L7.7,7.471c-.114-.073-.206-.022-.206.113v.833c0,.014,0,.027,0,.042A1.142,1.142,0,0,1,6.351,9.6,1.1,1.1,0,0,1,5.215,8.5c0-.022,0-.054,0-.076v-7.2h7.331v9.092Z"
                 transform="translate(-3.986)"
-                fill="#767676"
+                fill={props.color || '#767676'}
               />
             </G>
           </G>

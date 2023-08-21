@@ -97,10 +97,10 @@ function ChatHeader({
           borderBottomColor={'#C1C1C1'}
           borderBottomWidth={1}
           style={{
-            elevation: 4,
+            elevation: 2,
             shadowColor: '#181818',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.6,
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.1,
             shadowRadius: 6,
           }}
           w="full">
@@ -143,6 +143,13 @@ function ChatHeader({
         </HStack>
       ) : (
         <View
+          style={{
+            elevation: 2,
+            shadowColor: '#181818',
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.1,
+            shadowRadius: 6,
+          }}
           flexDirection={'row'}
           backgroundColor={'#F2F2F4'}
           alignItems={'center'}

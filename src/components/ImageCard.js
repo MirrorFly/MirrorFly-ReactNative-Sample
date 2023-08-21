@@ -5,6 +5,7 @@ import noPreview from '../assets/noPreview.png';
 import ProgressLoader from './chat/common/ProgressLoader';
 import { getThumbBase64URL } from '../Helper/Chat/Utility';
 import { GalleryAllIcon } from '../common/Icons';
+import ReplyMessage from './ReplyMessage';
 
 const ImageCard = props => {
   const {
@@ -20,6 +21,7 @@ const ImageCard = props => {
     msgId = '',
     msgBody: { media },
     msgBody: {
+      replyTo = '',
       message_type = '',
       media: {
         file: { fileDetails = {} } = {},
@@ -59,13 +61,15 @@ const ImageCard = props => {
       overflow={'hidden'}
       borderBottomRightRadius={isSender ? 0 : 10}
       borderBottomLeftRadius={isSender ? 10 : 0}
-      backgroundColor={isSender ? '#E2E8F7' : '#fff'}>
-      <View p="1" position="relative">
+      backgroundColor={isSender ? '#E2E8F7' : '#fff'}
+      px="1">
+      {replyTo && <ReplyMessage message={messageObject} isSame={isSender} />}
+      <View py="1" position="relative">
         {imageSource ? (
           <Image
-            width={androidWidth}
+            width={replyTo ? 250 : androidWidth}
             borderRadius={5}
-            height={androidHeight}
+            height={replyTo ? 150 : androidHeight}
             alt={fileName}
             source={{ uri: imageSource }}
             resizeMode="cover"

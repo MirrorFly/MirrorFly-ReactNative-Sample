@@ -34,7 +34,7 @@ import ReplyText from './ReplyText';
 import ReplyVideo from './ReplyVideo';
 
 const ChatConversation = React.memo(props => {
-  const { handleSendMsg } = props;
+  const { handleSendMsg, onReplyMessage, replyMsgRef } = props;
   const dispatch = useDispatch();
   const chatInputRef = React.useRef(null);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
@@ -47,6 +47,10 @@ const ChatConversation = React.memo(props => {
   const [isOpenAlert, setIsOpenAlert] = React.useState(false);
   const isNetworkConnected = useNetworkStatus();
   const toast = useToast();
+
+  React.useEffect(() => {
+    setReplyMsgs(replyMsgRef);
+  }, [replyMsgRef]);
   /**
      *  const { vCardProfile, fromUserJId, messages } = useSelector((state) =>  ({
         vCardProfile: state.profile.profileDetails,
@@ -112,10 +116,12 @@ const ChatConversation = React.memo(props => {
   const handleReply = msg => {
     setSelectedMsgs([]);
     setReplyMsgs(msg);
+    onReplyMessage(msg);
   };
 
   const handleRemove = () => {
     setReplyMsgs('');
+    onReplyMessage();
   };
 
   const handleMessageSend = messageContent => {

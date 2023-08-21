@@ -73,7 +73,9 @@ export default function RecentChat(props) {
           _dark={{ bg: 'coolGray.800' }}
           _light={{ bg: isSelected ? '#E2E2E2' : 'white' }}>
           <Box pl="4" pr="5" py="2">
-            <HStack space={3} alignItems={'center'}>
+            <HStack
+              space={3}
+              alignItems={item.msgBody.message_type ? 'center' : 'flex-start'}>
               {/* {item?.profileDetails?.image ?
                             <RecentChatProfile data={{
                                 image: item?.profileDetails?.image,
@@ -254,14 +256,10 @@ export default function RecentChat(props) {
           bg={'#E5E5E5'}
           justifyContent={'center'}>
           <HStack>
-            <Text
-              ml={2}
-              color={'#181818'}
-              fontSize={16}
-              fontWeight={'extraBlack'}>
+            <Text ml={2} color={'#181818'} fontSize={16} fontWeight={'500'}>
               Chats
             </Text>
-            <Text ml={'0.5'} fontSize={16} fontWeight={'bold'}>
+            <Text ml={'0.5'} fontSize={16} fontWeight={'700'}>
               ({props.data.length})
             </Text>
           </HStack>

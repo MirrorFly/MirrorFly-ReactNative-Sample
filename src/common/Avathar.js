@@ -26,7 +26,7 @@ const Avathar = props => {
     if (graphemes.includes(' ')) {
       let preVele;
       graphemes.forEach(element => {
-        if (preVele == ' ') {
+        if (preVele === ' ') {
           preVele = element;
           result = graphemes[0] + element;
         }

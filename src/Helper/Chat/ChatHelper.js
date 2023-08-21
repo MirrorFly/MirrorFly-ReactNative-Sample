@@ -1,4 +1,14 @@
 import SDK from 'SDK/SDK';
+import { changeTimeFormat } from 'common/TimeStamp';
+import { updateRecentChat } from 'mf-redux/Actions/RecentChatAction';
+import { batch } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
+import { getThumbImage, getVideoThumbImage } from '..';
+import {
+  addChatConversationHistory,
+  updateUploadStatus,
+} from '../../redux/Actions/ConversationAction';
+import store from '../../redux/store';
 import {
   CHAT_TYPE_GROUP,
   CHAT_TYPE_SINGLE,
@@ -8,20 +18,23 @@ import {
   MSG_SEEN_STATUS_ID,
   MSG_SENT_ACKNOWLEDGE_STATUS_ID,
 } from './Constant';
-import { getUserIdFromJid } from './Utility';
-import store from '../../redux/store';
-import { updateUploadStatus } from '../../redux/Actions/ConversationAction';
+import {
+  getMessageObjSender,
+  getRecentChatMsgObj,
+  getUserIdFromJid,
+} from './Utility';
 
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
 
 export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {
-  const jidResponse =
-    chatType === CHAT_TYPE_SINGLE
-      ? SDK.getJid(userId)
-      : SDK.getGroupJid(userId);
+  const currentUserJid = store.getState().auth?.currentUserJID || '';
+  if (chatType === CHAT_TYPE_SINGLE) {
+    return `${userId}@${currentUserJid?.split('@')[1] || ''}`;
+  }
+  const jidResponse = SDK.getGroupJid(userId);
   if (jidResponse.statusCode === 200) {
-    return jidResponse.userJid || jidResponse.groupJid;
+    return jidResponse.groupJid;
   }
 };
 
@@ -336,7 +349,9 @@ export const isActiveConversationUserOrGroup = (
  * @param {*} userId
  */
 export const isLocalUser = (userId = '') => {
-  if (!userId) return false;
+  if (!userId) {
+    return false;
+  }
   userId = getUserIdFromJid(userId);
   const vCardData = store.getState()?.auth?.currentUserJID;
   return userId === getUserIdFromJid(vCardData);
@@ -356,4 +371,233 @@ export const getMessageFromHistoryById = (chatId, msgId) => {
     return data[chatId]?.messages[msgId] || {};
   }
   return {};
+};
+
+const sendMediaMessage = async (
+  messageType,
+  files,
+  chatType,
+  fromUserJid,
+  toUserJid,
+  userProfile,
+) => {
+  let jidSendMediaMessage = toUserJid;
+  if (messageType === 'media') {
+    let mediaData = {};
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i],
+        msgId = uuidv4();
+
+      const {
+        caption = '',
+        fileDetails = {},
+        fileDetails: {
+          fileSize,
+          filename,
+          duration,
+          uri,
+          type,
+          replyTo = '',
+        } = {},
+      } = file;
+
+      const isDocument = DOCUMENT_FORMATS.includes(type);
+      const msgType = isDocument ? 'file' : type.split('/')[0];
+      let thumbImage = msgType === 'image' ? await getThumbImage(uri) : '';
+      thumbImage =
+        msgType === 'video' ? await getVideoThumbImage(uri) : thumbImage;
+      let fileOptions = {
+        fileName: filename,
+        fileSize: fileSize,
+        caption: caption,
+        uri: uri,
+        duration: duration,
+        msgId: msgId,
+        thumbImage: thumbImage,
+      };
+
+      const dataObj = {
+        jid: jidSendMediaMessage,
+        msgType,
+        userProfile,
+        chatType: chatType,
+        msgId,
+        file,
+        fileOptions,
+        fileDetails: fileDetails,
+        fromUserJid: fromUserJid,
+        replyTo,
+      };
+      const conversationChatObj = await getMessageObjSender(dataObj, i);
+      console.log(
+        'Media Message',
+        JSON.stringify(conversationChatObj, null, 2),
+      );
+      mediaData[msgId] = conversationChatObj;
+      const recentChatObj = getRecentChatMsgObj(dataObj);
+
+      const dispatchData = {
+        data: [conversationChatObj],
+        ...(isSingleChat(chatType)
+          ? { userJid: jidSendMediaMessage }
+          : { groupJid: jidSendMediaMessage }),
+      };
+      batch(() => {
+        store.dispatch(addChatConversationHistory(dispatchData));
+        store.dispatch(updateRecentChat(recentChatObj));
+      });
+    }
+  }
+};
+
+const parseAndSendMessage = async (
+  message,
+  chatType,
+  messageType,
+  fromUserJid,
+  toUserJid,
+  userProfile,
+) => {
+  const { content, replyTo = '' } = message;
+  content[0].fileDetails.replyTo = replyTo;
+  sendMediaMessage(
+    messageType,
+    content,
+    chatType,
+    fromUserJid,
+    toUserJid,
+    userProfile,
+  );
+};
+
+export const sendMessageToUserOrGroup = async (
+  message,
+  fromUserJid,
+  userProfile,
+  toUserJid,
+  chatType = 'chat',
+) => {
+  let messageType = message.type;
+
+  if (messageType === 'media') {
+    parseAndSendMessage(
+      message,
+      chatType,
+      messageType,
+      fromUserJid,
+      toUserJid,
+      userProfile,
+    );
+    return;
+  }
+
+  if (message.content !== '') {
+    let jid = toUserJid;
+    let msgId = uuidv4();
+    const dataObj = {
+      jid: jid,
+      msgType: 'text',
+      message: message.content,
+      userProfile,
+      chatType: chatType,
+      msgId,
+      fromUserJid: fromUserJid,
+    };
+    const conversationChatObj = await getMessageObjSender(dataObj);
+    const recentChatObj = getRecentChatMsgObj(dataObj);
+    const dispatchData = {
+      data: [conversationChatObj],
+      ...(isSingleChat(chatType) ? { userJid: jid } : { groupJid: jid }), // check this when working for group chat
+    };
+    console.log('dispatchData', JSON.stringify(dispatchData, null, 2));
+    batch(() => {
+      store.dispatch(addChatConversationHistory(dispatchData));
+      store.dispatch(updateRecentChat(recentChatObj));
+    });
+    await SDK.sendTextMessage(jid, message.content, msgId, message.replyTo);
+  }
+};
+
+export const getLocalUserDetails = () => {
+  const state = store.getState();
+  return state.profile?.profileDetails;
+};
+
+export const isSingleChatJID = jid => {
+  return !jid.includes('mix');
+};
+
+export const getRecentChatMsgObjForward = (originalMsg, toJid, newMsgId) => {
+  const timestamp = Date.now() * 1000;
+  const createdAt = changeTimeFormat(timestamp);
+  const vcardData = getLocalUserDetails();
+  const senderId = vcardData.fromUser;
+
+  return {
+    ...originalMsg,
+    timestamp: timestamp,
+    createdAt: createdAt,
+    msgStatus: 3,
+    msgId: newMsgId,
+    fromUserJid: toJid,
+    fromUserId: getUserIdFromJid(toJid),
+    chatType: isSingleChatJID(toJid) ? CHAT_TYPE_SINGLE : CHAT_TYPE_GROUP,
+    publisherId: senderId,
+    deleteStatus: 0,
+    notificationTo: '',
+    toUserId: getUserIdFromJid(toJid),
+    unreadCount: 0,
+    filterBy: getUserIdFromJid(toJid),
+    msgType: originalMsg?.msgBody?.message_type,
+    favouriteBy: '0',
+    favouriteStatus: 0,
+    msgBody: {
+      ...originalMsg.msgBody,
+      media: {
+        ...originalMsg.msgBody.media,
+        caption: '',
+      },
+    },
+  };
+};
+
+export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
+  const timestamp = Date.now() * 1000;
+  const createdAt = changeTimeFormat(timestamp);
+  const vcardData = getLocalUserDetails();
+  const senderId = vcardData.fromUser;
+
+  console.log(
+    'Constructing diapatch object',
+    senderId,
+    formatUserIdToJid(senderId),
+    toJid,
+  );
+
+  return {
+    ...originalMsg,
+    timestamp,
+    createdAt: createdAt,
+    msgStatus: 3,
+    msgType: 'processing',
+    msgId: newMsgId,
+    fromUserJid: formatUserIdToJid(senderId),
+    fromUserId: senderId,
+    chatType: isSingleChatJID(toJid) ? CHAT_TYPE_SINGLE : CHAT_TYPE_GROUP,
+    publisherId: senderId,
+    publisherJid: formatUserIdToJid(senderId),
+    deleteStatus: 0,
+    favouriteBy: '0',
+    favouriteStatus: 0,
+    msgBody: {
+      ...originalMsg.msgBody,
+      replyTo: '',
+      translatedMessage: '',
+      media: {
+        ...originalMsg.msgBody.media,
+        is_uploading: 8,
+        caption: '',
+      },
+    },
+  };
 };

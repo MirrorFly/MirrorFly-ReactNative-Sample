@@ -158,14 +158,14 @@ const ChatMessage = props => {
     }
   };
 
+  const handleMessageLongPress = () => {
+    message?.msgStatus !== 3 && props.handleMsgSelect(props.message);
+  };
+
   return (
     <Pressable
       onPress={handleMessageSelect}
-      onLongPress={() => {
-        console.log('message?.msgStatus', message);
-        // TODO: check for is not text and is_downloaded === 2
-        message?.msgStatus !== 3 && props.handleMsgSelect(props.message);
-      }}>
+      onLongPress={handleMessageLongPress}>
       {({ isPressed }) => {
         return (
           <Box>

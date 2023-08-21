@@ -21,6 +21,7 @@ const ChatConversationList = ({
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const [backgroundColor, setBackgroundColor] = React.useState('transparent');
   const [replyID, setReplyID] = React.useState('');
+
   const messageList = React.useMemo(() => {
     const id = getUserIdFromJid(fromUserJId);
     const data = messages[id]?.messages
@@ -55,15 +56,15 @@ const ChatConversationList = ({
     })();
   }, [fromUserJId, messages]);
 
-  const findMegIndex = msgId => {
-    return messageList.findIndex(item => item.msgId === msgId) || 0;
+  const findMsgIndex = msgId => {
+    return messageList.findIndex(item => item.msgId === msgId);
   };
 
   const handleReplyPress = replyId => {
     setReplyID(replyId);
     setBackgroundColor('rgba(0,0,0,0.2)');
     flatListRef.current.scrollToIndex({
-      index: findMegIndex(replyId) < 0 ? 0 : findMegIndex(replyId),
+      index: findMsgIndex(replyId),
       animated: true,
     });
     setTimeout(() => {
@@ -86,7 +87,14 @@ const ChatConversationList = ({
         />
       );
     },
-    [handleMsgSelect, selectedMsgs, setLocalNav, backgroundColor, replyID],
+    [
+      handleMsgSelect,
+      selectedMsgs,
+      setLocalNav,
+      backgroundColor,
+      replyID,
+      messageList,
+    ],
   );
 
   return (

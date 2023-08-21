@@ -12,6 +12,7 @@ import {
   VStack,
   View,
 } from 'native-base';
+import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { useSelector } from 'react-redux';

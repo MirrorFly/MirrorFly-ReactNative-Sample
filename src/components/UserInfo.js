@@ -5,8 +5,6 @@ import { useSelector } from 'react-redux';
 
 const UserInfo = props => {
   const profileDetails = useSelector(state => state.navigation.profileDetails);
-
-  console.log('profileDetails', JSON.stringify(profileDetails, null, 2));
   const handleBackBtn = () => {
     props.setLocalNav('CHATCONVERSATION');
   };

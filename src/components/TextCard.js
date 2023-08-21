@@ -4,8 +4,8 @@ import { StyleSheet } from 'react-native';
 import ReplyMessage from './ReplyMessage';
 
 const TextCard = props => {
-  const { msgBody: { replyTo = '' } = {} } = props.message;
-
+  const { handleReplyPress, message } = props;
+  const { msgBody: { replyTo = '' } = {} } = message;
   return (
     <View
       bgColor={props.isSame ? '#E2E8F7' : '#fff'}
@@ -17,7 +17,11 @@ const TextCard = props => {
       borderColor="#DDE3E5"
       px="1">
       {replyTo && (
-        <ReplyMessage message={props.message} isSame={props.isSame} />
+        <ReplyMessage
+          handleReplyPress={handleReplyPress}
+          message={props.message}
+          isSame={props.isSame}
+        />
       )}
       <Text style={styles.message}>{props.data?.message}</Text>
       <View style={styles.timeStamp}>

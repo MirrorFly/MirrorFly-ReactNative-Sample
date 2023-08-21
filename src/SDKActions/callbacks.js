@@ -2,6 +2,8 @@ import nextFrame from 'next-frame';
 import {
   MSG_CLEAR_CHAT,
   MSG_CLEAR_CHAT_CARBON,
+  MSG_DELETE_CHAT,
+  MSG_DELETE_CHAT_CARBON,
   MSG_SEEN_ACKNOWLEDGE_STATUS,
   MSG_SEEN_STATUS,
   MSG_SENT_SEEN_STATUS_CARBON,
@@ -14,6 +16,7 @@ import {
 import { REGISTERSCREEN } from '../constant';
 import {
   ClearChatHistoryAction,
+  DeleteChatHIstoryAction,
   updateChatConversationHistory,
 } from '../redux/Actions/ConversationAction';
 import { updateDownloadData } from '../redux/Actions/MediaDownloadAction';
@@ -22,6 +25,7 @@ import { navigate } from '../redux/Actions/NavigationAction';
 import { updateProfileDetail } from '../redux/Actions/ProfileAction';
 import {
   clearLastMessageinRecentChat,
+  deleteActiveChatAction,
   updateRecentChatMessageStatus,
 } from '../redux/Actions/RecentChatAction';
 import { deleteChatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAction';
@@ -74,6 +78,13 @@ export const callBacks = {
     ) {
       store.dispatch(clearLastMessageinRecentChat(res.fromUserId));
       store.dispatch(ClearChatHistoryAction(res.fromUserId));
+    }
+    if (
+      res.msgType === MSG_DELETE_CHAT ||
+      res.msgType === MSG_DELETE_CHAT_CARBON
+    ) {
+      store.dispatch(deleteActiveChatAction(res));
+      store.dispatch(DeleteChatHIstoryAction(res));
     }
     /**
         // if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {

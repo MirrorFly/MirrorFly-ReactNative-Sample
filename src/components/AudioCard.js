@@ -8,7 +8,7 @@ import useMediaProgress from 'hooks/useMediaProgress';
 import ReplyMessage from './ReplyMessage';
 
 const AudioCard = props => {
-  const { messageObject, isSender } = props;
+  const { messageObject, isSender, handleReplyPress } = props;
 
   const {
     msgId = '',
@@ -30,13 +30,21 @@ const AudioCard = props => {
       borderWidth={1}
       flex={1}
       overflow={'hidden'}
-      backgroundColor={isSender ? '#E2E8F7' : '#0000001A'}
+      backgroundColor={isSender ? '#E2E8F7' : '#fff'}
       width={250}
       borderRadius={10}
       borderBottomRightRadius={isSender ? 0 : 10}
       borderBottomLeftRadius={isSender ? 10 : 0}
-      mb={1}>
-      {replyTo && <ReplyMessage message={messageObject} isSame={isSender} />}
+      mb={1}
+      pt={'0'}
+      p={replyTo ? '1' : 0}>
+      {replyTo && (
+        <ReplyMessage
+          handleReplyPress={handleReplyPress}
+          message={messageObject}
+          isSame={isSender}
+        />
+      )}
       <HStack
         alignItems={'center'}
         height={'16'}

@@ -15,6 +15,7 @@ const DocumentMessageCard = ({
   timeStamp,
   isSender,
   mediaUrl,
+  handleReplyPress,
 }) => {
   const {
     msgBody: { replyTo = '' },
@@ -57,7 +58,13 @@ const DocumentMessageCard = ({
 
   return (
     <View style={styles.container(isSender)}>
-      {replyTo && <ReplyMessage message={message} isSame={isSender} />}
+      {replyTo && (
+        <ReplyMessage
+          handleReplyPress={handleReplyPress}
+          message={message}
+          isSame={isSender}
+        />
+      )}
       <HStack
         borderRadius={10}
         backgroundColor={isSender ? '#D5DCEC' : '#EFEFEF'}

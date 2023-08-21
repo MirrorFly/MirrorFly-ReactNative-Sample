@@ -1,5 +1,11 @@
 import React from 'react';
-import { Animated, BackHandler, Dimensions, StyleSheet } from 'react-native';
+import {
+  Animated,
+  BackHandler,
+  Dimensions,
+  Pressable,
+  StyleSheet,
+} from 'react-native';
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { FloatingBtn } from '../common/Button';
@@ -14,6 +20,7 @@ import { sortBydate } from '../Helper/Chat/RecentChat';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import {
+  CHATSCREEN,
   CONTACTLIST,
   PROFILESCREEN,
   RECENTCHATSCREEN,
@@ -21,15 +28,32 @@ import {
 } from '../constant';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { profileDetail } from '../redux/Actions/ProfileAction';
-import { addRecentChat } from '../redux/Actions/RecentChatAction';
+import {
+  addRecentChat,
+  deleteActiveChatAction,
+} from '../redux/Actions/RecentChatAction';
+import RecentHeader from 'components/RecentHeader';
+import { formatUserIdToJid } from 'Helper/Chat/ChatHelper';
+import { HStack, Modal, Text } from 'native-base';
+import { DeleteChatHIstoryAction } from 'mf-redux/Actions/ConversationAction';
 
 const logo = require('../assets/mirrorfly-logo.png');
 
-const FirstComponent = (isSearching, filteredData, searchValue) => (
+const FirstComponent = (
+  isSearching,
+  filteredData,
+  searchValue,
+  handleSelect,
+  handleOnSelect,
+  recentItem,
+) => (
   <RecentChat
     isSearching={isSearching}
     data={filteredData}
     searchValue={searchValue}
+    handleSelect={handleSelect}
+    handleOnSelect={handleOnSelect}
+    recentItem={recentItem}
   />
 );
 
@@ -49,6 +73,9 @@ function RecentScreen() {
   const [recentData, setrecentData] = React.useState([]);
   const [searchValue, setSearchValue] = React.useState('');
   const recentChatList = useSelector(state => state.recentChatData.data);
+  const [recentItem, setRecentItem] = React.useState([]);
+  const [isOpenAlert, setIsOpenAlert] = React.useState(false);
+
   const handleSearch = text => {
     setIsSearching(true);
     setSearchValue(text);
@@ -64,6 +91,35 @@ function RecentScreen() {
           .includes(text.toLowerCase()),
     );
     setFilteredData(filtered);
+  };
+
+  const handleSelect = item => {
+    if (recentItem.length) {
+      let recentSelected = recentItem.some(selectedItem =>
+        selectedItem?.userJid
+          ? selectedItem?.userJid === item?.userJid
+          : selectedItem?.toUserId === item?.toUserId,
+      );
+      if (recentSelected) {
+        setRecentItem(prevArray =>
+          prevArray.filter(
+            selectedItem => selectedItem.userJid !== item?.userJid,
+          ),
+        );
+      } else {
+        setRecentItem([item]);
+      }
+    } else {
+      let jid = formatUserIdToJid(item?.fromUserId, item?.chatType);
+      SDK.activeChatUser(jid);
+      let x = {
+        screen: CHATSCREEN,
+        fromUserJID: item?.userJid || jid,
+        profileDetails: item?.profileDetails,
+      };
+      dispatch(navigate(x));
+      RootNav.navigate(CHATSCREEN);
+    }
   };
 
   const handleBack = () => {
@@ -131,11 +187,39 @@ function RecentScreen() {
   );
 
   const handleBackBtn = () => {
+    if (recentItem.length) {
+      setRecentItem([]);
+      return true;
+    }
     if (isSearching) {
       setIsSearching(false);
       setSearchValue('');
       return true;
     }
+  };
+
+  const handleOnSelect = item => {
+    recentItem.length === 0 && setRecentItem([item]);
+  };
+
+  const handleRemove = () => {
+    setRecentItem([]);
+  };
+
+  const handleDeleteChat = () => {
+    setIsOpenAlert(true);
+  };
+
+  const deleteChat = () => {
+    recentItem.forEach(item => {
+      let userJid =
+        item?.userJid || formatUserIdToJid(item?.fromUserId, item?.chatType);
+      SDK.deleteChat(userJid);
+      dispatch(deleteActiveChatAction({ fromUserId: item?.fromUserId }));
+      dispatch(DeleteChatHIstoryAction({ fromUserId: item?.fromUserId }));
+    });
+    setRecentItem([]);
+    setIsOpenAlert(false);
   };
 
   useFocusEffect(() => {
@@ -188,24 +272,40 @@ function RecentScreen() {
   const renderScene = React.useMemo(
     () =>
       SceneMap({
-        first: () => FirstComponent(isSearching, filteredDataList, searchValue),
+        first: () =>
+          FirstComponent(
+            isSearching,
+            filteredDataList,
+            searchValue,
+            handleSelect,
+            handleOnSelect,
+            recentItem,
+          ),
         second: RecentCalls,
       }),
-    [isSearching, filteredDataList, searchValue],
+    [isSearching, filteredDataList, searchValue, recentItem, recentData],
   );
 
   return (
     <>
-      <ScreenHeader
-        setIsSearching={setIsSearching}
-        onhandleSearch={handleSearch}
-        onCloseSearch={handleBack}
-        menuItems={menuItems}
-        logo={logo}
-        handleBackBtn={handleBackBtn}
-        isSearching={isSearching}
-        handleClear={handleClear}
-      />
+      {!recentItem.length ? (
+        <ScreenHeader
+          setIsSearching={setIsSearching}
+          onhandleSearch={handleSearch}
+          onCloseSearch={handleBack}
+          menuItems={menuItems}
+          logo={logo}
+          handleBackBtn={handleBackBtn}
+          isSearching={isSearching}
+          handleClear={handleClear}
+        />
+      ) : (
+        <RecentHeader
+          handleRemove={handleRemove}
+          recentItem={recentItem}
+          handleDeleteChat={handleDeleteChat}
+        />
+      )}
       <TabView
         navigationState={{ index, routes }}
         renderScene={renderScene}
@@ -222,6 +322,43 @@ function RecentScreen() {
           dispatch(navigate({ screen: CONTACTLIST }));
         }}
       />
+      <Modal
+        isOpen={isOpenAlert}
+        safeAreaTop={true}
+        onClose={() => setIsOpenAlert(false)}>
+        <Modal.Content
+          w="88%"
+          borderRadius={0}
+          px="6"
+          py="4"
+          fontWeight={'300'}>
+          <Text fontSize={16} color={'#000'}>
+            {`${
+              'Delete chat with "' +
+              `${
+                recentItem[0]?.profileDetails?.nickName ||
+                recentItem[0]?.fromUserId
+              }"` +
+              '?'
+            }`}
+          </Text>
+          <HStack justifyContent={'flex-end'} pb={'1'} pt={'7'}>
+            <Pressable
+              onPress={() => {
+                setIsOpenAlert(false);
+              }}>
+              <Text pr={'6'} fontWeight={'500'} color={'#3276E2'}>
+                NO
+              </Text>
+            </Pressable>
+            <Pressable onPress={deleteChat}>
+              <Text fontWeight={'500'} color={'#3276E2'}>
+                YES
+              </Text>
+            </Pressable>
+          </HStack>
+        </Modal.Content>
+      </Modal>
     </>
   );
 }

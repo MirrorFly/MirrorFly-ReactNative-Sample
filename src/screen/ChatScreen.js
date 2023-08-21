@@ -16,7 +16,7 @@ import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
-import { batch, useSelector } from 'react-redux';
+import { batch, useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { showToast } from '../Helper';
 import { isSingleChat } from '../Helper/Chat/ChatHelper';
@@ -62,15 +62,17 @@ import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import store from '../redux/store';
 import SavePicture from './Gallery';
 import { createThumbnail } from 'react-native-create-thumbnail';
+import { navigate } from 'mf-redux/Actions/NavigationAction';
 
 function ChatScreen() {
-  const replyMsgRef = React.useRef();
+  const [replyMsgRef, setReplyMsgRef] = React.useState();
   const vCardData = useSelector(state => state.profile.profileDetails);
-  const fromUserJId = useSelector(state => state.navigation.fromUserJid);
+  const toUserJid = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const [localNav, setLocalNav] = React.useState('CHATCONVERSATION');
   const [isMessageInfo, setIsMessageInfo] = React.useState({});
   const toast = useToast();
+  const dispatch = useDispatch();
   const [isToastShowing, setIsToastShowing] = React.useState(false);
   const [selectedImages, setSelectedImages] = React.useState([]);
   const [selectedSingle, setselectedSingle] = React.useState(false);
@@ -103,7 +105,7 @@ function ChatScreen() {
   );
 
   const getReplyMessage = message => {
-    replyMsgRef.current = message;
+    setReplyMsgRef(message);
   };
 
   const getAudioDuration = async path => {
@@ -308,7 +310,15 @@ function ChatScreen() {
   ];
 
   const handleBackBtn = () => {
-    localNav === 'CHATCONVERSATION' && RootNav.navigate(RECENTCHATSCREEN);
+    if (localNav === 'CHATCONVERSATION') {
+      let x = {
+        screen: RECENTCHATSCREEN,
+        fromUserJID: '',
+        profileDetails: {},
+      };
+      dispatch(navigate(x));
+      RootNav.navigate(RECENTCHATSCREEN);
+    }
     return true;
   };
 
@@ -356,7 +366,7 @@ function ChatScreen() {
   };
 
   const sendMediaMessage = async (messageType, files, chatTypeSendMsg) => {
-    let jidSendMediaMessage = fromUserJId;
+    let jidSendMediaMessage = toUserJid;
     if (messageType === 'media') {
       let mediaData = {};
       for (let i = 0; i < files.length; i++) {
@@ -425,10 +435,10 @@ function ChatScreen() {
 
   const parseAndSendMessage = async (message, chatType, messageType) => {
     const { content } = message;
-    const replyTo = replyMsgRef.current?.msgId || '';
+    const replyTo = replyMsgRef?.msgId || '';
     content[0].fileDetails.replyTo = replyTo;
+    setReplyMsgRef('')
     sendMediaMessage(messageType, content, chatType);
-    replyMsgRef.current = '';
   };
 
   const handleMedia = item => {
@@ -520,7 +530,7 @@ function ChatScreen() {
     }
 
     if (message.content !== '') {
-      let jid = fromUserJId;
+      let jid = toUserJid;
       let msgId = uuidv4();
       const userProfile = vCardData;
       const dataObj = {
@@ -565,7 +575,7 @@ function ChatScreen() {
         {
           CHATCONVERSATION: (
             <ChatConversation
-              replyMsgRef={replyMsgRef.current}
+              replyMsgRef={replyMsgRef}
               onReplyMessage={getReplyMessage}
               handleBackBtn={handleBackBtn}
               setLocalNav={setLocalNav}

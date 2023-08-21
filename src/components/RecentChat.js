@@ -1,31 +1,22 @@
 import {
-  Center,
   Box,
+  Center,
   Divider,
   HStack,
+  Icon,
   Pressable,
+  Slide,
   Spacer,
+  Spinner,
   Text,
   VStack,
   View,
-  Slide,
-  Spinner,
-  Icon,
 } from 'native-base';
 import React from 'react';
-import * as RootNav from '../Navigation/rootNavigation';
-import { SwipeListView } from 'react-native-swipe-list-view';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  convertUTCTOLocalTimeStamp,
-  formatChatDateTime,
-} from '../common/TimeStamp';
-import Avathar from '../common/Avathar';
-import { CHATSCREEN, RECENTCHATLOADING } from '../constant';
-import { navigate } from '../redux/Actions/NavigationAction';
 import { Image, StyleSheet } from 'react-native';
-import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
-import SDK from '../SDK/SDK';
+import { SwipeListView } from 'react-native-swipe-list-view';
+import { useSelector } from 'react-redux';
+import Avathar from '../common/Avathar';
 import {
   AudioMusicIcon,
   DocumentChatIcon,
@@ -33,10 +24,14 @@ import {
   VideoSmallIcon,
   imageIcon,
 } from '../common/Icons';
+import {
+  convertUTCTOLocalTimeStamp,
+  formatChatDateTime,
+} from '../common/TimeStamp';
+import { RECENTCHATLOADING } from '../constant';
 
 export default function RecentChat(props) {
-  const { searchValue } = props;
-  const dispatch = useDispatch();
+  const { searchValue, handleOnSelect, handleSelect, recentItem } = props;
   const recentLoading = useSelector(state => state.chat.recentChatStatus);
 
   const onRowDidOpen = rowKey => {
@@ -46,6 +41,11 @@ export default function RecentChat(props) {
 
   const renderItem = ({ item, index }) => {
     const isSame = currentUserJID.split('@')[0] === item?.publisherId;
+    const isSelected = recentItem.some(selectedItem =>
+      selectedItem?.userJid
+        ? selectedItem?.userJid === item?.userJid
+        : selectedItem?.toUserId === item?.toUserId,
+    );
     let statusVisible;
     switch (item?.msgStatus) {
       case 0:
@@ -64,19 +64,14 @@ export default function RecentChat(props) {
         <Pressable
           py="2"
           android_ripple={{ color: 'rgba(0, 0, 0, 0.1)' }}
-          onPress={async () => {
-            let jid = formatUserIdToJid(item?.fromUserId, item?.chatType);
-            SDK.activeChatUser(jid);
-            let x = {
-              screen: CHATSCREEN,
-              fromUserJID: item?.userJid || jid,
-              profileDetails: item?.profileDetails,
-            };
-            dispatch(navigate(x));
-            RootNav.navigate(CHATSCREEN);
+          onPress={() => {
+            handleSelect(item);
+          }}
+          onLongPress={() => {
+            handleOnSelect(item);
           }}
           _dark={{ bg: 'coolGray.800' }}
-          _light={{ bg: 'white' }}>
+          _light={{ bg: isSelected ? '#E2E2E2' : 'white' }}>
           <Box pl="4" pr="5" py="2">
             <HStack
               space={3}
@@ -194,7 +189,7 @@ export default function RecentChat(props) {
                           </Text>
                         </HStack>
                       ),
-                    }[item.msgBody.message_type]
+                    }[item?.msgBody?.message_type]
                   }
                 </HStack>
               </VStack>

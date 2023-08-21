@@ -196,6 +196,7 @@ export const getRecentChatMsgObj = dataObj => {
     createdAt: createdAt,
     deleteStatus: 0,
     fromUserId: fromUserId,
+    userJid: jid,
     msgBody: msgBody,
     msgId: msgId,
     msgStatus: 3,

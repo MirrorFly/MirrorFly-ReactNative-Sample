@@ -220,7 +220,7 @@ const notificationImage = 'https://your-image-url.com/your-image.png';
 const notificationTitle = 'Styled HTMLTitle';
 const notificationSubtitle = '&#129395;';
 const notificationBody = 'The body can also be styled too! &#127881;';
-
+const scheduleTime = new Date().getTime() + 5000; 
 // const notification = {
 //   title: notificationTitle,
 //   subtitle: notificationSubtitle,
@@ -259,16 +259,23 @@ const notificationBody = 'The body can also be styled too! &#127881;';
 
 notifee.
 displayNotification({
-  title: '<p style="color: #4caf50;"><b>Styled HTMLTitle</span></p></b></p> &#128576;',
-  subtitle: '&#129395;',
-  body:
-    '<img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" style="width: 20px; height: 20px;" />',
+  // title: '<p style="color: #4caf50;"><b>Styled HTMLTitle</span></p></b></p> &#128576;',
+  // subtitle: '&#129395;',
+  // body:
+  //   '<img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" style="width: 20px; height: 20px;" />',
+  title:"Title Push notification",
+  body:"Title Body sample Notification",
   android: {
     channelId,
     color: '#4caf50',
+    schedule: {
+      fireDate: scheduleTime,
+    },
+    smallIcon: 'ic_launcher',
+    largeIcon: require('../assets/BG.png'), 
   },
+  
 });
-
   };
 
   return (

@@ -35,15 +35,15 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
 
 
  messaging().onMessage(async remoteMessage => {
-    //  Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage,null,2));
-     console.log( "remote message", remoteMessage?.notification?.title,
-     remoteMessage?.notification?.body,
-     remoteMessage?.notification?.data);
-     PushNotify.displayRemoteNotification(
-        remoteMessage?.notification?.title,
-        remoteMessage?.notification?.body,
-        remoteMessage?.notification?.data,
-    )
+      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage,null,2));
+    //  console.log( "remote message", remoteMessage?.notification?.title,
+    //  remoteMessage?.notification?.body,
+    //  remoteMessage?.notification?.data);
+    //  PushNotify.displayRemoteNotification(
+    //     remoteMessage?.notification?.title,
+    //     remoteMessage?.notification?.body,
+    //     remoteMessage?.notification?.data,
+    // )
 });
 
 AppRegistry.registerComponent(appName, () => App);

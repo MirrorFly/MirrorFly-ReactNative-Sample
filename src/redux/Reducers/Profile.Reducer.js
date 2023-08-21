@@ -1,4 +1,5 @@
 import {
+  RESET_STORE,
   SET_PROFILE_DETAILS,
   UPDATE_PROFILE_DETAILS,
 } from '../Actions/Constants';
@@ -26,6 +27,8 @@ const profileReducer = (state = initialState, action) => {
         };
       }
       return state;
+    case RESET_STORE:
+      return initialState
     default:
       return state;
   }

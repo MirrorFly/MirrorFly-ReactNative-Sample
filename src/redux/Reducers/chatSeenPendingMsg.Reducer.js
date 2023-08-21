@@ -1,6 +1,7 @@
 import {
   ADD_CHAT_SEEN_PENDING_MSG,
   DELETE_CHAT_SEEN_PENDING_MSG,
+  RESET_STORE,
 } from '../Actions/Constants';
 import { StateToObj } from '../reduxHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -36,6 +37,8 @@ const chatSeenPendingMsgReducer = (state = initialState, action) => {
       };
       AsyncStorage.setItem('pendingSeenStatus', JSON.stringify(deleteSeen));
       return deleteSeen;
+      case RESET_STORE:
+        return initialState
     default:
       return state;
   }

@@ -17,6 +17,7 @@ import {
   VStack,
 } from 'native-base';
 import EmojiOverlay from './EmojiPicker';
+import { soundRef } from './Media/AudioPlayer';
 
 const ChatInput = props => {
   const { onSendMessage, attachmentMenuIcons, chatInputRef } = props;
@@ -27,7 +28,7 @@ const ChatInput = props => {
     if (message) {
       setMessage('');
       setTimeout(() => {
-        onSendMessage(message);
+        onSendMessage(message.trim());
       }, 0);
     }
   };
@@ -46,6 +47,8 @@ const ChatInput = props => {
 
   const handleAttachmentconPressed = () => {
     Keyboard.dismiss();
+    soundRef?.current?.pause();
+    soundRef?.current?.updateState?.();
     setIsOpen(true);
   };
 

@@ -1,6 +1,20 @@
 import React from 'react';
-import { BackHandler, Image, StyleSheet, TextInput } from 'react-native';
-import { HStack, Icon, IconButton, Spacer, Text, View } from 'native-base';
+import {
+  BackHandler,
+  Image,
+  Platform,
+  StyleSheet,
+  TextInput,
+} from 'react-native';
+import {
+  HStack,
+  Icon,
+  IconButton,
+  KeyboardAvoidingView,
+  Spacer,
+  Text,
+  View,
+} from 'native-base';
 import { useDispatch, useSelector } from 'react-redux';
 import { LeftArrowIcon, RightArrowIcon, SendBlueIcon } from '../common/Icons';
 import Avathar from '../common/Avathar';
@@ -48,75 +62,79 @@ const CameraPickView = props => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <HStack mb={'2'} mt="5" alignItems={'center'}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <View style={styles.container}>
+        <HStack mb={'2'} mt="5" alignItems={'center'}>
+          <IconButton
+            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+            onPress={handleBackBtn}
+            icon={<Icon as={() => LeftArrowIcon('#fff')} name="emoji-happy" />}
+            borderRadius="full"
+          />
+          <Avathar
+            width={30}
+            height={30}
+            fontsize={14}
+            backgroundColor={profileDetails?.colorCode}
+            data={profileDetails?.nickName || '91'}
+          />
+          <Spacer />
+        </HStack>
+        {getType(selectedImages[0]?.fileDetails.type) === 'image' && (
+          <Image
+            resizeMode="contain"
+            source={{ uri: selectedImages[0]?.fileDetails?.uri }}
+            style={styles.tabContainer}
+          />
+        )}
+        {'video' === getType(selectedImages[0]?.fileDetails.type) && (
+          <VideoPlayer item={selectedImages[0]} />
+        )}
         <IconButton
+          p="0"
+          right="3"
+          bottom="-15"
+          alignSelf={'flex-end'}
+          onPress={() => {
+            handleSendMedia();
+            setLocalNav(CHATCONVERSATION);
+          }}
           _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-          onPress={handleBackBtn}
-          icon={<Icon as={() => LeftArrowIcon('#fff')} name="emoji-happy" />}
+          icon={<Icon as={<SendBlueIcon color="#fff" />} name="emoji-happy" />}
           borderRadius="full"
         />
-        <Avathar
-          width={30}
-          height={30}
-          fontsize={14}
-          backgroundColor={profileDetails?.colorCode}
-          data={profileDetails?.nickName || '91'}
-        />
-        <Spacer />
-      </HStack>
-      {getType(selectedImages[0]?.fileDetails.type) === 'image' && (
-        <Image
-          resizeMode="contain"
-          source={{ uri: selectedImages[0]?.fileDetails?.uri }}
-          style={styles.tabContainer}
-        />
-      )}
-      {'video' === getType(selectedImages[0]?.fileDetails.type) && (
-        <VideoPlayer item={selectedImages[0]} />
-      )}
-      <IconButton
-        p="0"
-        right="3"
-        bottom="-15"
-        alignSelf={'flex-end'}
-        onPress={() => {
-          handleSendMedia();
-          setLocalNav(CHATCONVERSATION);
-        }}
-        _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-        icon={<Icon as={<SendBlueIcon color="#fff" />} name="emoji-happy" />}
-        borderRadius="full"
-      />
-      <HStack ml="2" mb="1" alignItems={'center'}>
-        <TextInput
-          style={{
-            flex: 1,
-            color: '#fff',
-            fontSize: 14,
-            minHeight: 20,
-            maxHeight: 100,
-          }}
-          defaultValue={
-            props.selectedImages[0] ? props.selectedImages[0].caption : ''
-          }
-          numberOfLines={1}
-          multiline={true}
-          onChangeText={text => {
-            selectedImages[0].caption = text;
-          }}
-          placeholderTextColor="#7f7f7f"
-          selectionColor={'#3276E2'}
-          placeholder="Add a caption..."
-        />
-      </HStack>
-      <HStack alignItems={'center'} ml={3} mb={5}>
-        <IconButton
-          icon={<Icon as={() => RightArrowIcon('#fff')} name="emoji-happy" />}
-        />
-        <Text color="#7f7f7f">{profileDetails?.nickName}</Text>
-      </HStack>
-    </View>
+        <HStack ml="2" mb="1" alignItems={'center'}>
+          <TextInput
+            style={{
+              flex: 1,
+              color: '#fff',
+              fontSize: 14,
+              minHeight: 20,
+              maxHeight: 100,
+            }}
+            defaultValue={
+              props.selectedImages[0] ? props.selectedImages[0].caption : ''
+            }
+            numberOfLines={1}
+            multiline={true}
+            onChangeText={text => {
+              selectedImages[0].caption = text;
+            }}
+            placeholderTextColor="#7f7f7f"
+            selectionColor={'#3276E2'}
+            placeholder="Add a caption..."
+          />
+        </HStack>
+        <HStack alignItems={'center'} ml={3} mb={5}>
+          <IconButton
+            icon={<Icon as={() => RightArrowIcon('#fff')} name="emoji-happy" />}
+          />
+          <Text color="#7f7f7f">{profileDetails?.nickName}</Text>
+        </HStack>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 

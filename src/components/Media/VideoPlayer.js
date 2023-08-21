@@ -146,6 +146,7 @@ const VideoPlayer = props => {
       <View style={{ flex: 1, justifyContent: 'center' }}>
         {videoUri && (
           <Video
+            ignoreSilentSwitch={'ignore'}
             onEnd={onEnd}
             onLoad={onLoad}
             // onLoadStart={onLoadStart}

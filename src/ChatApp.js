@@ -1,22 +1,28 @@
-import React from 'react';
-import { Provider, useDispatch, useSelector } from 'react-redux';
-import store from './redux/store';
-import { callBacks } from './SDKActions/callbacks';
-import SDK from './SDK/SDK';
-import { useColorScheme, LogBox } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { navigationRef } from './Navigation/rootNavigation';
-import ApplicationTheme from './config/appTheme';
-import SplashScreen from './screen/SplashScreen';
-import StackNavigationPage from './Navigation/stackNavigation';
-import { Box, NativeBaseProvider } from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getCurrentUserJid } from './redux/Actions/AuthAction';
-import { profileDetail } from './redux/Actions/ProfileAction';
-import { navigate } from './redux/Actions/NavigationAction';
+import { NavigationContainer } from '@react-navigation/native';
+import { NativeBaseProvider } from 'native-base';
+import React from 'react';
+import {
+  LogBox,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  useColorScheme,
+} from 'react-native';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import { navigationRef } from './Navigation/rootNavigation';
+import StackNavigationPage from './Navigation/stackNavigation';
+import SDK from './SDK/SDK';
+import { callBacks } from './SDKActions/callbacks';
+import ApplicationTheme from './config/appTheme';
 import { REGISTERSCREEN } from './constant';
+import { getCurrentUserJid } from './redux/Actions/AuthAction';
+import { navigate } from './redux/Actions/NavigationAction';
+import { profileDetail } from './redux/Actions/ProfileAction';
 import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction';
-
+import store from './redux/store';
+import SplashScreen from './screen/SplashScreen';
+/** import messaging from '@react-native-firebase/messaging';*/
 LogBox.ignoreAllLogs();
 
 export const ChatApp = () => {
@@ -26,7 +32,9 @@ export const ChatApp = () => {
         apiBaseUrl: 'https://api-uikit-qa.contus.us/api/v1',
         licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
         callbackListeners: callBacks,
-      });  
+        isSandbox: false,
+      });
+      /** await messaging().requestPermission();*/
     })();
   }, []);
  
@@ -82,7 +90,7 @@ const RootNavigation = () => {
 
   return (
     <>
-      <Box safeAreaTop backgroundColor={safeAreaBgColor} />
+      {/** <Box safeAreaBottom backgroundColor={safeAreaBgColor} />
       <NavigationContainer
         ref={navigationRef}
         theme={
@@ -96,7 +104,30 @@ const RootNavigation = () => {
           <StackNavigationPage InitialValue={initialRouteValue} />
         )}
       </NavigationContainer>
-      <Box safeAreaBottom backgroundColor={safeAreaBgColor} />
+      <Box safeAreaBottom backgroundColor={safeAreaBgColor} /> */}
+
+      <SafeAreaView style={styles.container}>
+        <StatusBar backgroundColor={safeAreaBgColor} />
+        <NavigationContainer
+          ref={navigationRef}
+          theme={
+            scheme === 'dark'
+              ? ApplicationTheme.darkTheme
+              : ApplicationTheme.lightTheme
+          }>
+          {isLoading ? (
+            <SplashScreen />
+          ) : (
+            <StackNavigationPage InitialValue={initialRouteValue} />
+          )}
+        </NavigationContainer>
+      </SafeAreaView>
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

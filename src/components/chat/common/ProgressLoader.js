@@ -1,4 +1,12 @@
-import { HStack, Icon, IconButton, Pressable, Text, View } from 'native-base';
+import {
+  HStack,
+  Icon,
+  IconButton,
+  Pressable,
+  Spinner,
+  Text,
+  View,
+} from 'native-base';
 import React from 'react';
 import { StyleSheet, Animated } from 'react-native';
 import { DownloadCancel, DownloadIcon } from '../../../common/Icons';
@@ -323,14 +331,15 @@ const ProgressLoader = (props = {}) => {
             overflow={'hidden'}
             alignItems={'center'}
             justifyContent={'space-between'}
-            bg=" rgba(0, 0, 0, 0.3)"
+            // bg=" rgba(0, 0, 0, 0.3)"
             borderRadius={5}>
             <Pressable
               h="9"
               w="85"
               alignItems={'center'}
               justifyContent={'center'}>
-              <HStack px="2" borderRadius={5} alignItems={'center'}>
+              <Spinner size="lg" color={'#3276E2'} />
+              {/* <HStack px="2" borderRadius={5} alignItems={'center'}>
                 <IconButton
                   icon={
                     <Icon
@@ -341,7 +350,7 @@ const ProgressLoader = (props = {}) => {
                     />
                   }
                 />
-              </HStack>
+              </HStack> */}
             </Pressable>
             <View style={styles.loaderContent}>{renderLoader()}</View>
           </View>
@@ -357,14 +366,15 @@ const ProgressLoader = (props = {}) => {
             overflow={'hidden'}
             alignItems={'center'}
             justifyContent={'space-between'}
-            bg=" rgba(0, 0, 0, 0.3)"
+            // bg=" rgba(0, 0, 0, 0.3)"
             borderRadius={5}>
             <Pressable
               h="9"
               w="85"
               alignItems={'center'}
               justifyContent={'center'}>
-              <HStack px="2" borderRadius={5} alignItems={'center'}>
+              <Spinner size="lg" color={'#3276E2'} />
+              {/* <HStack px="2" borderRadius={5} alignItems={'center'}>
                 <IconButton
                   icon={
                     <Icon
@@ -375,7 +385,7 @@ const ProgressLoader = (props = {}) => {
                     />
                   }
                 />
-              </HStack>
+              </HStack> */}
             </Pressable>
             <View style={styles.loaderContent}>{renderDownloadLoader()}</View>
           </View>

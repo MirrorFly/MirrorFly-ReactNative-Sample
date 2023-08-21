@@ -20,6 +20,7 @@ export default StyleSheet.create({
   sliderView: {
     position: 'relative',
     flexDirection: 'row',
+    marginLeft: 3,
     flex: 1,
   },
   sliderStyle: {

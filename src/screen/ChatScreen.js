@@ -16,7 +16,7 @@ import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
-import { batch, useSelector } from 'react-redux';
+import { batch, useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { showToast } from '../Helper';
 import { isSingleChat } from '../Helper/Chat/ChatHelper';
@@ -39,6 +39,7 @@ import {
   mediaObjContructor,
   requestAudioStoragePermission,
   requestCameraPermission,
+  requestFileStoragePermission,
   requestStoragePermission,
 } from '../common/utils';
 import CameraPickView from '../components/CameraPickView';
@@ -60,15 +61,18 @@ import { addChatConversationHistory } from '../redux/Actions/ConversationAction'
 import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import store from '../redux/store';
 import SavePicture from './Gallery';
+import { createThumbnail } from 'react-native-create-thumbnail';
+import { navigate } from 'mf-redux/Actions/NavigationAction';
 
 function ChatScreen() {
-
+  const [replyMsgRef, setReplyMsgRef] = React.useState();
   const vCardData = useSelector(state => state.profile.profileDetails);
-  const fromUserJId = useSelector(state => state.navigation.fromUserJid);
+  const toUserJid = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const [localNav, setLocalNav] = React.useState('CHATCONVERSATION');
   const [isMessageInfo, setIsMessageInfo] = React.useState({});
   const toast = useToast();
+  const dispatch = useDispatch();
   const [isToastShowing, setIsToastShowing] = React.useState(false);
   const [selectedImages, setSelectedImages] = React.useState([]);
   const [selectedSingle, setselectedSingle] = React.useState(false);
@@ -94,10 +98,15 @@ function ChatScreen() {
       DocumentPicker.types.plainText,
       DocumentPicker.types.zip,
       DocumentPicker.types.csv,
-      // TODO: need to add rar file type
+      // TODO: need to add rar file type and verify that
+      '.rar',
     ],
     [],
   );
+
+  const getReplyMessage = message => {
+    setReplyMsgRef(message);
+  };
 
   const getAudioDuration = async path => {
     return new Promise((resolve, reject) => {
@@ -124,11 +133,8 @@ function ChatScreen() {
     if (MediaPermission === 'granted' || MediaPermission === 'limited') {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       let response = await handleAudioPickerSingle();
-      let _validate = validation(response);
-      let file = {
-        fileSize: response.size,
-      };
-      const size = validateFileSize(file, getType(response.type));
+      let _validate = validation(response.type);
+      const size = validateFileSize(response.size, getType(response.type));
       if (_validate && !size) {
         setAlert(true);
         setValidate(_validate);
@@ -164,62 +170,67 @@ function ChatScreen() {
     }
   };
 
+  const openDocumentPicker = async () => {
+    const storage_permission = await AsyncStorage.getItem('storage_permission');
+    AsyncStorage.setItem('storage_permission', 'true');
+    const permissionResult = await requestFileStoragePermission();
+    if (permissionResult === 'granted' || permissionResult === 'limited') {
+      // updating the SDK flag to keep the connection Alive when app goes background because of document picker
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
+      DocumentPicker.pickSingle({
+        type: documentAttachmentTypes,
+        copyTo:
+          Platform.OS === 'android' ? 'cachesDirectory' : 'documentDirectory',
+      })
+        .then(file => {
+          // updating the SDK flag back to false to behave as usual
+          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+          console.log(file);
+
+          // Validating the file type and size
+          if (!isValidFileType(file.type)) {
+            Alert.alert(
+              'Mirrorfly',
+              'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
+            );
+            return;
+          }
+          const error = validateFileSize(file.size, 'file');
+          if (error) {
+            const toastOptions = {
+              id: 'document-too-large-toast',
+              duration: 2500,
+              avoidKeyboard: true,
+            };
+            showToast(error, toastOptions);
+            return;
+          }
+
+          // preparing the object and passing it to the sendMessage function
+          const updatedFile = {
+            fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
+          };
+          const messageData = {
+            type: 'media',
+            content: [updatedFile],
+          };
+          handleSendMsg(messageData);
+        })
+        .catch(err => {
+          // updating the SDK flag back to false to behave as usual
+          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+          console.log('Error from documen picker', err);
+        });
+    } else if (storage_permission) {
+      openSettings();
+    }
+  };
+
   const attachmentMenuIcons = [
     {
       name: 'Document',
       icon: DocumentIcon,
-      formatter: async () => {
-        // TODO: check for permission for external storage
-        // if (PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE || WRITE_EXTERNAL_STORAGE)
-        //   PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
-        // PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE;
-        // updating the SDK flag to keep the connection Alive when app goes background because of document picker
-        SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
-        DocumentPicker.pickSingle({
-          type: documentAttachmentTypes,
-          copyTo:
-            Platform.OS === 'android' ? 'cachesDirectory' : 'documentDirectory',
-        })
-          .then(file => {
-            // updating the SDK flag back to false to behave as usual
-            SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-            console.log(file);
-
-            // Validating the file type and size
-            if (!isValidFileType(file.type)) {
-              Alert.alert(
-                'Mirrorfly',
-                'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
-              );
-              return;
-            }
-            const error = validateFileSize(file.size, 'file');
-            if (error) {
-              const toastOptions = {
-                id: 'document-too-large-toast',
-                duration: 2500,
-                avoidKeyboard: true,
-              };
-              showToast(error, toastOptions);
-              return;
-            }
-
-            // preparing the object and passing it to the sendMessage function
-            const updatedFile = {
-              fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
-            };
-            const messageData = {
-              type: 'media',
-              content: [updatedFile],
-            };
-            handleSendMsg(messageData);
-          })
-          .catch(err => {
-            // updating the SDK flag back to false to behave as usual
-            SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-            console.log('Error from documen picker', err);
-          });
-      },
+      formatter: openDocumentPicker,
     },
     {
       name: 'Camera',
@@ -229,6 +240,11 @@ function ChatScreen() {
         let imageReadPermission = await requestStoragePermission();
         const camera_permission = await AsyncStorage.getItem(
           'camera_permission',
+        );
+        console.log(
+          cameraPermission,
+          imageReadPermission,
+          'cameraPermission, imageReadPermission',
         );
         AsyncStorage.setItem('camera_permission', 'true');
         if (
@@ -294,7 +310,15 @@ function ChatScreen() {
   ];
 
   const handleBackBtn = () => {
-    localNav === 'CHATCONVERSATION' && RootNav.navigate(RECENTCHATSCREEN);
+    if (localNav === 'CHATCONVERSATION') {
+      let x = {
+        screen: RECENTCHATSCREEN,
+        fromUserJID: '',
+        profileDetails: {},
+      };
+      dispatch(navigate(x));
+      RootNav.navigate(RECENTCHATSCREEN);
+    }
     return true;
   };
 
@@ -313,31 +337,36 @@ function ChatScreen() {
     return response;
   };
 
-  /** const fileDetails = {
-    duration: null,
-    fileSize: 2265145,
-    filename: 'blue_alpine_a521_2021_f1_car_2_4k_hd_cars.jpg',
-    height: 2160,
-    modificationTimestamp: 1691217115866,
-    type: 'image/jpeg',
-    uri: 'file:///storage/emulated/0/Download/blue_alpine_a521_2021_f1_car_2_4k_hd_cars.jpg',
-    width: 3840,
+  const getVideoThumbImage = async uri => {
+    let response;
+    if (Platform.OS === 'ios') {
+      if (uri.includes('ph://')) {
+        let result = await ImageCompressor.compress(uri, {
+          maxWidth: 600,
+          maxHeight: 600,
+          quality: 0.8,
+        });
+        response = await RNFS.readFile(result, 'base64');
+      } else {
+        const frame = await createThumbnail({
+          url: uri,
+          timeStamp: 10000,
+        });
+        response = await RNFS.readFile(frame.path, 'base64');
+      }
+    } else {
+      const frame = await createThumbnail({
+        url: uri,
+        timeStamp: 10000,
+      });
+      console.log(frame, 'frame');
+      response = await RNFS.readFile(frame.path, 'base64');
+    }
+    return response;
   };
-  const file = {
-    caption: '',
-    fileDetails: {
-      duration: null,
-      fileSize: 2265145,
-      filename: 'blue_alpine_a521_2021_f1_car_2_4k_hd_cars.jpg',
-      height: 2160,
-      modificationTimestamp: 1691217115866,
-      type: 'image/jpeg',
-      uri: 'file:///storage/emulated/0/Download/blue_alpine_a521_2021_f1_car_2_4k_hd_cars.jpg',
-      width: 3840,
-    },
-  }; */
+
   const sendMediaMessage = async (messageType, files, chatTypeSendMsg) => {
-    let jidSendMediaMessage = fromUserJId;
+    let jidSendMediaMessage = toUserJid;
     if (messageType === 'media') {
       let mediaData = {};
       for (let i = 0; i < files.length; i++) {
@@ -347,13 +376,21 @@ function ChatScreen() {
         const {
           caption = '',
           fileDetails = {},
-          fileDetails: { fileSize, filename, duration, uri, type } = {},
+          fileDetails: {
+            fileSize,
+            filename,
+            duration,
+            uri,
+            type,
+            replyTo = '',
+          } = {},
         } = file;
 
         const isDocument = DOCUMENT_FORMATS.includes(type);
         const msgType = isDocument ? 'file' : type.split('/')[0];
         const thumbImage = msgType === 'image' ? await getThumbImage(uri) : '';
-
+        const thumbVideoImage =
+          msgType === 'video' ? await getVideoThumbImage(uri) : '';
         let fileOptions = {
           fileName: filename,
           fileSize: fileSize,
@@ -361,7 +398,7 @@ function ChatScreen() {
           uri: uri,
           duration: duration,
           msgId: msgId,
-          thumbImage: thumbImage,
+          thumbImage: thumbImage || thumbVideoImage,
         };
         const userProfile = vCardData;
 
@@ -375,6 +412,7 @@ function ChatScreen() {
           fileOptions,
           fileDetails: fileDetails,
           fromUserJid: currentUserJID,
+          replyTo,
         };
         const conversationChatObj = await getMessageObjSender(dataObj, i);
         mediaData[msgId] = conversationChatObj;
@@ -397,6 +435,9 @@ function ChatScreen() {
 
   const parseAndSendMessage = async (message, chatType, messageType) => {
     const { content } = message;
+    const replyTo = replyMsgRef?.msgId || '';
+    content[0].fileDetails.replyTo = replyTo;
+    setReplyMsgRef('')
     sendMediaMessage(messageType, content, chatType);
   };
 
@@ -489,7 +530,7 @@ function ChatScreen() {
     }
 
     if (message.content !== '') {
-      let jid = fromUserJId;
+      let jid = toUserJid;
       let msgId = uuidv4();
       const userProfile = vCardData;
       const dataObj = {
@@ -500,6 +541,7 @@ function ChatScreen() {
         chatType: 'chat',
         msgId,
         fromUserJid: currentUserJID,
+        replyTo: message.replyTo,
       };
       const conversationChatObj = await getMessageObjSender(dataObj);
       const recentChatObj = getRecentChatMsgObj(dataObj);
@@ -511,7 +553,7 @@ function ChatScreen() {
         store.dispatch(addChatConversationHistory(dispatchData));
         store.dispatch(updateRecentChat(recentChatObj));
       });
-      SDK.sendTextMessage(jid, message.content, msgId,message.replyTo);
+      SDK.sendTextMessage(jid, message.content, msgId, message.replyTo);
     }
   };
 
@@ -533,6 +575,8 @@ function ChatScreen() {
         {
           CHATCONVERSATION: (
             <ChatConversation
+              replyMsgRef={replyMsgRef}
+              onReplyMessage={getReplyMessage}
               handleBackBtn={handleBackBtn}
               setLocalNav={setLocalNav}
               setIsMessageInfo={setIsMessageInfo}

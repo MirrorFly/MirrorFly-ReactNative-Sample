@@ -5,6 +5,7 @@ import noPreview from '../assets/noPreview.png';
 import ProgressLoader from './chat/common/ProgressLoader';
 import { getThumbBase64URL } from '../Helper/Chat/Utility';
 import { GalleryAllIcon } from '../common/Icons';
+import ReplyMessage from './ReplyMessage';
 
 const ImageCard = props => {
   const {
@@ -14,12 +15,14 @@ const ImageCard = props => {
     isSender,
     fileSize,
     messageObject = {},
+    handleReplyPress,
   } = props;
 
   const {
     msgId = '',
     msgBody: { media },
     msgBody: {
+      replyTo = '',
       message_type = '',
       media: {
         file: { fileDetails = {} } = {},
@@ -35,7 +38,7 @@ const ImageCard = props => {
 
   const imageUrl = local_path || fileDetails?.uri;
   const [imageSource, setImageSource] = React.useState(
-    imgSrc || getThumbBase64URL(thumb_image)
+    imgSrc || getThumbBase64URL(thumb_image),
   );
 
   React.useEffect(() => {
@@ -55,46 +58,25 @@ const ImageCard = props => {
 
   return (
     <View
+      borderRadius={10}
+      overflow={'hidden'}
+      borderBottomRightRadius={isSender ? 0 : 10}
+      borderBottomLeftRadius={isSender ? 10 : 0}
       backgroundColor={isSender ? '#E2E8F7' : '#fff'}
-      borderColor={'#E5E5E5'}
-      borderWidth={2}
-      borderRadius={8}
-      paddingBottom={2.5} >
-     
-      <View
-        paddingX={'1'}
-        paddingY={'1'}
-        backgroundColor={isSender ? '#E2E8F7' : '#fff'}>
-        <Stack
-          paddingX={'3'}
-          paddingY={'0'}
-          backgroundColor={'#0000001A'}
-          borderRadius={15}>
-          <View marginY={'2'} justifyContent={'flex-start'}>
-            <Text fontSize={14}  fontWeight={500} color={"#000"} pb={2} numberOfLines={1}>You</Text>
-            <HStack alignItems={'center'} pl={1}>
-              <GalleryAllIcon color={"#6A6A6A"} />
-              <Text pl={2} fontSize={14}  fontWeight={400}>
-                Image
-              </Text>
-            </HStack>
-          </View>
-        </Stack>
-      </View>
-
-      <View
-        height={androidHeight}
-        width={androidWidth}
-        backgroundColor={isSender ? '#E2E8F7' : '#fff'}
-        borderColor={'#E5E5E5'}
-        borderWidth={2}
-        borderRadius={30}
-        position="relative">
+      px="1">
+      {replyTo && (
+        <ReplyMessage
+          handleReplyPress={handleReplyPress}
+          message={messageObject}
+          isSame={isSender}
+        />
+      )}
+      <View py="1" position="relative">
         {imageSource ? (
           <Image
-            width={androidWidth}
-            height={androidHeight}
-            borderRadius={20}
+            width={replyTo ? 250 : androidWidth}
+            borderRadius={5}
+            height={replyTo ? 150 : androidHeight}
             alt={fileName}
             source={{ uri: imageSource }}
             resizeMode="cover"
@@ -130,40 +112,31 @@ const ImageCard = props => {
           />
         </View>
         {!media.caption && (
-          <View position={'absolute'} bottom={1} right={1}>
+          <View position={'absolute'} bottom={2} right={2}>
             <ImageBackground
               source={require('../assets/ic_baloon.png')}
               style={styles.imageBg}>
-              <Text pl="1" color="#fff" fontSize={9}>
+              {props.status}
+              <Text pl="1" color="#fff" fontSize="9">
                 {props.timeStamp}
               </Text>
             </ImageBackground>
           </View>
         )}
       </View>
-      {media.caption ? (
-        <>
-          <Stack
-            borderBottomLeftRadius={1}
-            backgroundColor={isSender ? '#E2E8F7' : '#fff'}
-            pb={2}
-            pt={3}
-            justifyContent={'space-between'}>
-            <Text
-              numberOfLines={1}
-              color={'#000'}
-              pl={3}
-              fontSize={14}
-              fontWeight={400}>
-              {media.caption}
+      {media.caption && (
+        <Stack pb={2} justifyContent={'space-between'}>
+          <Text color={'#000'} pl={3} fontSize={14}>
+            {media.caption}
+          </Text>
+          <HStack alignItems={'center'} justifyContent={'flex-end'}>
+            {props.status}
+            <Text pl="1" paddingRight={2} fontSize="9">
+              {props.timeStamp}
             </Text>
-            <HStack alignItems={'center'} justifyContent={'flex-end'}>
-              <Text paddingRight={1}>{props.status}</Text>
-              <Text paddingRight={2}>{props.timeStamp}</Text>
-            </HStack>
-          </Stack>
-        </>
-      ) : null}
+          </HStack>
+        </Stack>
+      )}
     </View>
   );
 };

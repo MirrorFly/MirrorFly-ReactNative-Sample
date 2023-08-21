@@ -1,35 +1,37 @@
 import {
-  Center,
   Box,
+  Center,
   Divider,
   HStack,
+  Icon,
   Pressable,
+  Slide,
   Spacer,
+  Spinner,
   Text,
   VStack,
   View,
-  Slide,
-  Spinner,
-  Icon,
 } from 'native-base';
 import React from 'react';
-import * as RootNav from '../Navigation/rootNavigation';
+import { Image, StyleSheet } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+import Avathar from '../common/Avathar';
+import {
+  AudioMusicIcon,
+  DocumentChatIcon,
+  SandTimer,
+  VideoSmallIcon,
+  imageIcon,
+} from '../common/Icons';
 import {
   convertUTCTOLocalTimeStamp,
   formatChatDateTime,
 } from '../common/TimeStamp';
-import Avathar from '../common/Avathar';
-import { CHATSCREEN, RECENTCHATLOADING } from '../constant';
-import { navigate } from '../redux/Actions/NavigationAction';
-import { Image, StyleSheet } from 'react-native';
-import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
-import SDK from '../SDK/SDK';
-import { SandTimer, VideoSmallIcon, imageIcon } from '../common/Icons';
+import { RECENTCHATLOADING } from '../constant';
 
 export default function RecentChat(props) {
-  const dispatch = useDispatch();
+  const { searchValue, handleOnSelect, handleSelect, recentItem } = props;
   const recentLoading = useSelector(state => state.chat.recentChatStatus);
 
   const onRowDidOpen = rowKey => {
@@ -39,6 +41,11 @@ export default function RecentChat(props) {
 
   const renderItem = ({ item, index }) => {
     const isSame = currentUserJID.split('@')[0] === item?.publisherId;
+    const isSelected = recentItem.some(selectedItem =>
+      selectedItem?.userJid
+        ? selectedItem?.userJid === item?.userJid
+        : selectedItem?.toUserId === item?.toUserId,
+    );
     let statusVisible;
     switch (item?.msgStatus) {
       case 0:
@@ -51,26 +58,24 @@ export default function RecentChat(props) {
         statusVisible = styles.seen;
         break;
     }
+
     return (
       <Box key={index}>
         <Pressable
           py="2"
           android_ripple={{ color: 'rgba(0, 0, 0, 0.1)' }}
-          onPress={async () => {
-            let jid = formatUserIdToJid(item?.fromUserId, item?.chatType);
-            SDK.activeChatUser(jid);
-            let x = {
-              screen: CHATSCREEN,
-              fromUserJID: item?.userJid || jid,
-              profileDetails: item?.profileDetails,
-            };
-            dispatch(navigate(x));
-            RootNav.navigate(CHATSCREEN);
+          onPress={() => {
+            handleSelect(item);
+          }}
+          onLongPress={() => {
+            handleOnSelect(item);
           }}
           _dark={{ bg: 'coolGray.800' }}
-          _light={{ bg: 'white' }}>
+          _light={{ bg: isSelected ? '#E2E2E2' : 'white' }}>
           <Box pl="4" pr="5" py="2">
-            <HStack alignItems="center" space={3}>
+            <HStack
+              space={3}
+              alignItems={item.msgBody.message_type ? 'center' : 'flex-start'}>
               {/* {item?.profileDetails?.image ?
                             <RecentChatProfile data={{
                                 image: item?.profileDetails?.image,
@@ -83,24 +88,32 @@ export default function RecentChat(props) {
                 backgroundColor={item?.profileDetails?.colorCode}
               />
               <VStack w="60%">
-                <Text
+                {/* <Text
                   numberOfLines={1}
                   color="coolGray.800"
                   _dark={{ color: 'warmGray.50' }}
                   ellipsizeMode="tail"
                   bold>
                   {item?.profileDetails?.nickName || item?.fromUserId}
-                </Text>
+                </Text> */}
+                <HighlightedText
+                  text={item?.profileDetails?.nickName || item?.fromUserId}
+                  searchValue={searchValue}
+                  index={index}
+                />
                 <HStack alignItems={'center'}>
                   {isSame && item?.msgStatus !== 3 ? (
                     <View
                       style={[
                         styles.msgStatus,
-                        isSame ? statusVisible : '',
-                      ]}></View>
+                        isSame && Object.keys(item.msgBody).length
+                          ? statusVisible
+                          : '',
+                      ]}
+                    />
                   ) : (
                     isSame &&
-                    item?.msgStatus == 3 && (
+                    item?.msgStatus === 3 && (
                       <Icon px="3" as={SandTimer} name="emoji-happy" />
                     )
                   )}
@@ -144,7 +157,7 @@ export default function RecentChat(props) {
                       ),
                       file: (
                         <HStack pl="1" alignItems={'center'}>
-                          <Icon as={() => VideoSmallIcon('#767676')} />
+                          <Icon as={DocumentChatIcon} />
                           <Text
                             numberOfLines={1}
                             ellipsizeMode="tail"
@@ -157,7 +170,15 @@ export default function RecentChat(props) {
                       ),
                       audio: (
                         <HStack pl="1" alignItems={'center'}>
-                          <Icon as={() => VideoSmallIcon('#767676')} />
+                          <Icon
+                            as={() => (
+                              <AudioMusicIcon
+                                width="14"
+                                height="14"
+                                color={'#767676'}
+                              />
+                            )}
+                          />
                           <Text
                             numberOfLines={1}
                             ellipsizeMode="tail"
@@ -168,7 +189,7 @@ export default function RecentChat(props) {
                           </Text>
                         </HStack>
                       ),
-                    }[item.msgBody.message_type]
+                    }[item?.msgBody?.message_type]
                   }
                 </HStack>
               </VStack>
@@ -188,7 +209,7 @@ export default function RecentChat(props) {
           </Box>
         </Pressable>
         <Divider
-          w="80%"
+          w="83%"
           alignSelf="flex-end"
           _light={{ bg: '#f2f2f2' }}
           _dark={{ bg: 'muted.50' }}
@@ -198,14 +219,14 @@ export default function RecentChat(props) {
   };
   if (!props?.data?.length) {
     return (
-      <Center h="full">
+      <Center h="full" bgColor={'#fff'}>
         <Image
           style={styles.image}
           resizeMode="cover"
           source={require('../assets/no_messages.png')}
         />
         {props.isSearching ? (
-          <Text style={styles.noMsg}>No Chats Found</Text>
+          <Text style={styles.noMsg}>No Result Found</Text>
         ) : (
           <>
             <Text style={styles.noMsg}>No New Messages</Text>
@@ -228,6 +249,22 @@ export default function RecentChat(props) {
 
   return (
     <View p="0" flex={1} bg={'#fff'}>
+      {searchValue && (
+        <View
+          width={'100%'}
+          height={10}
+          bg={'#E5E5E5'}
+          justifyContent={'center'}>
+          <HStack>
+            <Text ml={2} color={'#181818'} fontSize={16} fontWeight={'500'}>
+              Chats
+            </Text>
+            <Text ml={'0.5'} fontSize={16} fontWeight={'700'}>
+              ({props.data.length})
+            </Text>
+          </HStack>
+        </View>
+      )}
       <SwipeListView
         showsVerticalScrollIndicator={false}
         data={props.data}
@@ -241,6 +278,35 @@ export default function RecentChat(props) {
     </View>
   );
 }
+
+export const HighlightedText = ({ text, searchValue = '', index }) => {
+  const parts = searchValue
+    ? text.split(new RegExp(`(${searchValue})`, 'gi'))
+    : [text];
+
+  return (
+    <HStack>
+      {parts.map((part, i) => {
+        const isSearchMatch =
+          part.toLowerCase() === searchValue.toLowerCase()
+            ? styles.highlight
+            : {};
+        return (
+          <Text
+            numberOfLines={1}
+            color="coolGray.800"
+            key={++i + '-' + index}
+            dark={{ color: 'warmGray.50' }}
+            ellipsizeMode="tail"
+            bold
+            style={isSearchMatch}>
+            {part}
+          </Text>
+        );
+      })}
+    </HStack>
+  );
+};
 
 const styles = StyleSheet.create({
   msgStatus: {
@@ -259,6 +325,10 @@ const styles = StyleSheet.create({
   },
   seen: {
     backgroundColor: '#66E824',
+  },
+  highlight: {
+    color: '#3276E2',
+    fontWeight: 'bold',
   },
   imageView: {
     flex: 0.72,

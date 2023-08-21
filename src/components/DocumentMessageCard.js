@@ -6,6 +6,7 @@ import { StyleSheet } from 'react-native';
 import { convertBytesToKB } from '../Helper';
 import AttachmentProgressLoader from './chat/common/AttachmentProgressLoader';
 import useMediaProgress from '../hooks/useMediaProgress';
+import ReplyMessage from './ReplyMessage';
 
 const DocumentMessageCard = ({
   message,
@@ -14,13 +15,17 @@ const DocumentMessageCard = ({
   timeStamp,
   isSender,
   mediaUrl,
+  handleReplyPress,
 }) => {
+  const {
+    msgBody: { replyTo = '' },
+  } = message;
   const fileSizeInKB = convertBytesToKB(fileSize);
   const mediaData = message.msgBody.media;
   const fileExtension = getExtension(mediaData?.fileName, false);
   const { mediaStatus, downloadMedia, retryUploadMedia } = useMediaProgress({
     isSender,
-    mediaUrl,
+    mediaUrl: mediaUrl,
     uploadStatus: message?.msgBody?.media?.is_uploading || 0,
     media: message?.msgBody?.media,
     msgId: message?.msgId,
@@ -53,6 +58,13 @@ const DocumentMessageCard = ({
 
   return (
     <View style={styles.container(isSender)}>
+      {replyTo && (
+        <ReplyMessage
+          handleReplyPress={handleReplyPress}
+          message={message}
+          isSame={isSender}
+        />
+      )}
       <HStack
         borderRadius={10}
         backgroundColor={isSender ? '#D5DCEC' : '#EFEFEF'}
@@ -95,7 +107,7 @@ export default React.memo(DocumentMessageCard);
 
 const styles = StyleSheet.create({
   container: isSender => ({
-    width: 235,
+    width: 265,
     flex: 1,
     position: 'relative',
     paddingTop: 2,

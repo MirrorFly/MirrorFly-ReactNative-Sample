@@ -52,13 +52,19 @@ const defaultProps = {
   toolbarColor: 'red',
   toolbarMaxHeight: 400,
   toolbarMinHeight: 60,
+  mobileNo: '',
+  email: '',
+  bgColor: '#3276E2',
 };
 
 const CollapsingToolbar = ({
+  bgColor,
   title,
   titleStatus,
   toolbarMaxHeight,
   toolbarMinHeight,
+  mobileNo,
+  email,
   setLocalNav,
   handleBackBtn,
 }) => {
@@ -141,7 +147,7 @@ const CollapsingToolbar = ({
             {
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: '#3276E2',
+              backgroundColor: bgColor,
               height: toolbarMaxHeight,
               opacity: imageOpacity,
             },
@@ -234,7 +240,7 @@ const CollapsingToolbar = ({
             <HStack>
               <MailIcon />
               <Text mb={2} ml={2} color="#959595" fontSize={13}>
-                mdashik@gmail.com
+                {email}
               </Text>
             </HStack>
           </View>
@@ -245,7 +251,7 @@ const CollapsingToolbar = ({
             <HStack>
               <CallIcon />
               <Text mb={2} ml={2} color="#959595" fontSize={13}>
-                918838160009
+                {mobileNo}
               </Text>
             </HStack>
           </View>
@@ -256,7 +262,7 @@ const CollapsingToolbar = ({
             <HStack>
               <StatusIcon />
               <Text mb={2} ml={2} color="#959595" fontSize={13}>
-                Urgent calls only
+                {titleStatus}
               </Text>
             </HStack>
           </View>

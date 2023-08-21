@@ -1,4 +1,4 @@
-import { UPDATE_USER_PRESENCE } from '../Actions/Constants';
+import { RESET_STORE, UPDATE_USER_PRESENCE } from '../Actions/Constants';
 
 const initialState = {
   userPresence: {},
@@ -11,6 +11,8 @@ const userReducer = (state = initialState, action) => {
         ...state,
         userPresence: action.payload,
       };
+    case RESET_STORE:
+      return initialState
     default:
       return state;
   }

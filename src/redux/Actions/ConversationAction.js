@@ -2,6 +2,7 @@ import {
   ADD_CHAT_CONVERSATION_HISTORY,
   CANCEL_MEDIA_UPLOAD,
   CLEAR_CHAT_HISTORY,
+  DELETE_CHAT_HISTORY,
   RETRY_MEDIA_UPLOAD,
   UPDATE_CHAT_CONVERSATION_HISTORY,
   UPDATE_UPLOAD_STATUS,
@@ -44,6 +45,13 @@ export const updateUploadStatus = data => {
 export const ClearChatHistoryAction = data => {
   return {
     type: CLEAR_CHAT_HISTORY,
+    payload: data,
+  };
+};
+
+export const DeleteChatHIstoryAction = data => {
+  return {
+    type: DELETE_CHAT_HISTORY,
     payload: data,
   };
 };

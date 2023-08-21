@@ -16,7 +16,7 @@ import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
-import { batch, useSelector } from 'react-redux';
+import { batch, useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { showToast } from '../Helper';
 import { isSingleChat } from '../Helper/Chat/ChatHelper';
@@ -62,6 +62,7 @@ import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import store from '../redux/store';
 import SavePicture from './Gallery';
 import { createThumbnail } from 'react-native-create-thumbnail';
+import { navigate } from 'mf-redux/Actions/NavigationAction';
 
 function ChatScreen() {
   const vCardData = useSelector(state => state.profile.profileDetails);
@@ -70,6 +71,7 @@ function ChatScreen() {
   const [localNav, setLocalNav] = React.useState('CHATCONVERSATION');
   const [isMessageInfo, setIsMessageInfo] = React.useState({});
   const toast = useToast();
+  const dispatch = useDispatch();
   const [isToastShowing, setIsToastShowing] = React.useState(false);
   const [selectedImages, setSelectedImages] = React.useState([]);
   const [selectedSingle, setselectedSingle] = React.useState(false);
@@ -303,7 +305,15 @@ function ChatScreen() {
   ];
 
   const handleBackBtn = () => {
-    localNav === 'CHATCONVERSATION' && RootNav.navigate(RECENTCHATSCREEN);
+    if (localNav === 'CHATCONVERSATION') {
+      let x = {
+        screen: RECENTCHATSCREEN,
+        fromUserJID: '',
+        profileDetails: {},
+      };
+      dispatch(navigate(x));
+      RootNav.navigate(RECENTCHATSCREEN);
+    }
     return true;
   };
 

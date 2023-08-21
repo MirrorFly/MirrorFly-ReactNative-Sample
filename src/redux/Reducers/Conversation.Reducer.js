@@ -8,6 +8,7 @@ import {
   ADD_CHAT_CONVERSATION_HISTORY,
   CANCEL_MEDIA_UPLOAD,
   CLEAR_CHAT_HISTORY,
+  DELETE_CHAT_HISTORY,
   RESET_STORE,
   RETRY_MEDIA_UPLOAD,
   UPDATE_CHAT_CONVERSATION_HISTORY,
@@ -18,6 +19,12 @@ import { StateToObj } from '../reduxHelper';
 const initialState = {
   id: Date.now(),
   data: [],
+};
+
+const deleteChatHandle = (data, stateData) => {
+  const currentData = { ...stateData };
+  delete currentData[data.fromUserId];
+  return currentData;
 };
 
 const conversationReducer = (state = initialState, action) => {
@@ -62,6 +69,12 @@ const conversationReducer = (state = initialState, action) => {
             messages: {},
           },
         },
+      };
+    case DELETE_CHAT_HISTORY:
+      return {
+        ...state,
+        id: Date.now(),
+        data: deleteChatHandle(action.payload, StateToObj(state).data),
       };
     case RESET_STORE:
       return initialState;

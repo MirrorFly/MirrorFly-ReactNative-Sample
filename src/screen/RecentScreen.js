@@ -28,10 +28,14 @@ import {
 } from '../constant';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { profileDetail } from '../redux/Actions/ProfileAction';
-import { addRecentChat } from '../redux/Actions/RecentChatAction';
+import {
+  addRecentChat,
+  deleteActiveChatAction,
+} from '../redux/Actions/RecentChatAction';
 import RecentHeader from 'components/RecentHeader';
 import { formatUserIdToJid } from 'Helper/Chat/ChatHelper';
 import { HStack, Modal, Text } from 'native-base';
+import { DeleteChatHIstoryAction } from 'mf-redux/Actions/ConversationAction';
 
 const logo = require('../assets/mirrorfly-logo.png');
 
@@ -91,8 +95,10 @@ function RecentScreen() {
 
   const handleSelect = item => {
     if (recentItem.length) {
-      let recentSelected = recentItem.some(
-        selectedItem => selectedItem.userJid === item?.userJid,
+      let recentSelected = recentItem.some(selectedItem =>
+        selectedItem?.userJid
+          ? selectedItem?.userJid === item?.userJid
+          : selectedItem?.toUserId === item?.toUserId,
       );
       if (recentSelected) {
         setRecentItem(prevArray =>
@@ -209,6 +215,8 @@ function RecentScreen() {
       let userJid =
         item?.userJid || formatUserIdToJid(item?.fromUserId, item?.chatType);
       SDK.deleteChat(userJid);
+      dispatch(deleteActiveChatAction({ fromUserId: item?.fromUserId }));
+      dispatch(DeleteChatHIstoryAction({ fromUserId: item?.fromUserId }));
     });
     setRecentItem([]);
     setIsOpenAlert(false);
@@ -275,7 +283,7 @@ function RecentScreen() {
           ),
         second: RecentCalls,
       }),
-    [isSearching, filteredDataList, searchValue, recentItem, handleDeleteChat],
+    [isSearching, filteredDataList, searchValue, recentItem, recentData],
   );
 
   return (
@@ -327,7 +335,10 @@ function RecentScreen() {
           <Text fontSize={16} color={'#000'}>
             {`${
               'Delete chat with "' +
-              `${recentItem[0]?.profileDetails?.nickName}"` +
+              `${
+                recentItem[0]?.profileDetails?.nickName ||
+                recentItem[0]?.fromUserId
+              }"` +
               '?'
             }`}
           </Text>

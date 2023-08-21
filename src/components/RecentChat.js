@@ -45,8 +45,10 @@ export default function RecentChat(props) {
 
   const renderItem = ({ item, index }) => {
     const isSame = currentUserJID.split('@')[0] === item?.publisherId;
-    const isSelected = recentItem.some(
-      selectedItem => selectedItem?.userJid === item?.userJid,
+    const isSelected = recentItem.some(selectedItem =>
+      selectedItem?.userJid
+        ? selectedItem?.userJid === item?.userJid
+        : selectedItem?.toUserId === item?.toUserId,
     );
     let statusVisible;
     switch (item?.msgStatus) {

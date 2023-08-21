@@ -1,31 +1,21 @@
 import {
-  Center,
   Box,
+  Center,
   Divider,
   HStack,
+  Icon,
   Pressable,
+  Slide,
   Spacer,
+  Spinner,
   Text,
   VStack,
   View,
-  Slide,
-  Spinner,
-  Icon,
 } from 'native-base';
-import React from 'react';
-import * as RootNav from '../Navigation/rootNavigation';
-import { SwipeListView } from 'react-native-swipe-list-view';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  convertUTCTOLocalTimeStamp,
-  formatChatDateTime,
-} from '../common/TimeStamp';
-import Avathar from '../common/Avathar';
-import { CHATSCREEN, RECENTCHATLOADING } from '../constant';
-import { navigate } from '../redux/Actions/NavigationAction';
 import { Image, StyleSheet } from 'react-native';
-import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
-import SDK from '../SDK/SDK';
+import { SwipeListView } from 'react-native-swipe-list-view';
+import { useSelector } from 'react-redux';
+import Avathar from '../common/Avathar';
 import {
   AudioMusicIcon,
   DocumentChatIcon,
@@ -33,6 +23,11 @@ import {
   VideoSmallIcon,
   imageIcon,
 } from '../common/Icons';
+import {
+  convertUTCTOLocalTimeStamp,
+  formatChatDateTime,
+} from '../common/TimeStamp';
+import { RECENTCHATLOADING } from '../constant';
 
 export default function RecentChat(props) {
   const { searchValue, handleOnSelect, handleSelect, recentItem } = props;

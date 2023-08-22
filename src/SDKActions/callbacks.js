@@ -37,6 +37,7 @@ import { deleteChatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAct
 import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import store from '../redux/store';
+import SDK from 'SDK/SDK';
 
 export const callBacks = {
   connectionListener: response => {
@@ -92,16 +93,36 @@ export const callBacks = {
       store.dispatch(deleteActiveChatAction(res));
       store.dispatch(DeleteChatHIstoryAction(res));
     }
-    // if (
-    //   res.msgType === MSG_DELETE_STATUS ||
-    //   res.msgType === MSG_DELETE_STATUS_CARBON ||
-    //   res.msgType === 'carbonMessageClear' ||
-    //   res.msgType === 'messageClear' ||
-    //   res.msgType === 'clear_message'
-    // ) {
-    //   store.dispatch(deleteMessageForMe(res));
-    //   store.dispatch(recentRemoveMessageUpdate(res));
+    if (
+      (res.msgType === MSG_DELETE_STATUS ||
+        res.msgType === MSG_DELETE_STATUS_CARBON ||
+        res.msgType === 'carbonMessageClear' ||
+        res.msgType === 'messageClear' ||
+        res.msgType === 'clear_message') &&
+      res.mode === 'offline'
+    ) {
+      store.dispatch(deleteMessageForMe(res));
+      store.dispatch(recentRemoveMessageUpdate(res));
 
+      if (
+        (res.msgType === MSG_DELETE_STATUS ||
+          res.msgType === MSG_DELETE_STATUS_CARBON) &&
+        res.lastMsgId
+      ) {
+        SDK.getMessageById(res.lastMsgId);
+      }
+    }
+
+    // if (
+    //   (res.msgType === 'carbonMessageClear' ||
+    //     res.msgType === 'messageClear' ||
+    //     res.msgType === 'clear_message' ||
+    //     res.msgType === MSG_DELETE_STATUS ||
+    //     res.msgType === MSG_DELETE_STATUS_CARBON) &&
+    //   res.mode === 'offline'
+    // ) {
+    //   store.dispatch(recentRemoveMessageUpdate(res));
+    //   store.dispatch(deleteMessageForMe(res));
     //   // if (
     //   //   (res.msgType === MSG_DELETE_STATUS ||
     //   //     res.msgType === MSG_DELETE_STATUS_CARBON) &&
@@ -110,24 +131,6 @@ export const callBacks = {
     //   //   SDK.getMessageById(res.lastMsgId);
     //   // }
     // }
-
-    if (
-      res.msgType === 'carbonMessageClear' ||
-      res.msgType === 'messageClear' ||
-      res.msgType === 'clear_message' ||
-      res.msgType === MSG_DELETE_STATUS ||
-      res.msgType === MSG_DELETE_STATUS_CARBON
-    ) {
-      store.dispatch(recentRemoveMessageUpdate(res));
-      store.dispatch(deleteMessageForMe(res));
-      // if (
-      //   (res.msgType === MSG_DELETE_STATUS ||
-      //     res.msgType === MSG_DELETE_STATUS_CARBON) &&
-      //   res.lastMsgId
-      // ) {
-      //   SDK.getMessageById(res.lastMsgId);
-      // }
-    }
     /**
         // if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {
             // store.dispatch(updateRecentChatMessageStatus(res))

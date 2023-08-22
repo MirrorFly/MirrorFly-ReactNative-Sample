@@ -79,13 +79,7 @@ function ChatHeader({
     const jid = fromUserJId;
     setSelectedMsgs([]);
     if (deleteType === 1) {
-      const res = await SDK.deleteMessagesForMe(jid, msgIds);
-      console.log(res.message, 'res');
-      if (res.statusCode === 200) {
-        dispatch(recentRemoveMessageUpdate(res.message));
-        dispatch(deleteMessageForMe(res.message));
-        // getMessageFromHistoryById
-      }
+      SDK.deleteMessagesForMe(jid, msgIds);
     } else {
       SDK.deleteMessagesForEveryone(jid, msgIds);
     }

@@ -23,6 +23,10 @@ import {
   getRecentChatMsgObj,
   getUserIdFromJid,
 } from './Utility';
+import {
+  DELETE_MESSAGE_FOR_EVERYONE,
+  DELETE_MESSAGE_FOR_ME,
+} from 'mf-redux/Actions/Constants';
 
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
@@ -136,6 +140,34 @@ export const updateMediaUploadStatusHistory = (data, stateData) => {
         },
       };
     }
+  }
+  return {
+    ...stateData,
+  };
+};
+
+export const updateDeletedMessageInHistory = (actionType, data, stateData) => {
+  // Here Get the Current Active Chat History and Active Message
+  const currentChatData = stateData[data.fromUserId];
+
+  if (currentChatData) {
+    if (actionType === DELETE_MESSAGE_FOR_ME) {
+      data.msgIds.forEach(msgId => delete currentChatData.messages[msgId]);
+    } else if (actionType === DELETE_MESSAGE_FOR_EVERYONE) {
+      const messageIds = data.msgId.split(',');
+      for (const msgId of messageIds) {
+        if (currentChatData.messages[msgId]) {
+          currentChatData.messages[msgId].deleteStatus = 2;
+        }
+      }
+    }
+
+    return {
+      ...stateData,
+      [data.fromUserId]: {
+        ...currentChatData,
+      },
+    };
   }
   return {
     ...stateData,

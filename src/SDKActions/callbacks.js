@@ -4,6 +4,8 @@ import {
   MSG_CLEAR_CHAT_CARBON,
   MSG_DELETE_CHAT,
   MSG_DELETE_CHAT_CARBON,
+  MSG_DELETE_STATUS,
+  MSG_DELETE_STATUS_CARBON,
   MSG_SEEN_ACKNOWLEDGE_STATUS,
   MSG_SEEN_STATUS,
   MSG_SENT_SEEN_STATUS_CARBON,
@@ -17,6 +19,7 @@ import { REGISTERSCREEN } from '../constant';
 import {
   ClearChatHistoryAction,
   DeleteChatHIstoryAction,
+  deleteMessageForMe,
   updateChatConversationHistory,
 } from '../redux/Actions/ConversationAction';
 import { updateDownloadData } from '../redux/Actions/MediaDownloadAction';
@@ -26,6 +29,8 @@ import { updateProfileDetail } from '../redux/Actions/ProfileAction';
 import {
   clearLastMessageinRecentChat,
   deleteActiveChatAction,
+  recentRemoveMessageUpdate,
+  updateMsgByLastMsgId,
   updateRecentChatMessageStatus,
 } from '../redux/Actions/RecentChatAction';
 import { deleteChatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAction';
@@ -51,6 +56,7 @@ export const callBacks = {
     console.log('dbListener', JSON.stringify(res));
   },
   messageListener: async res => {
+    console.log(res, 'resi');
     await nextFrame();
     if (res.chatType === 'chat') {
       switch (res.msgType) {
@@ -85,6 +91,42 @@ export const callBacks = {
     ) {
       store.dispatch(deleteActiveChatAction(res));
       store.dispatch(DeleteChatHIstoryAction(res));
+    }
+    // if (
+    //   res.msgType === MSG_DELETE_STATUS ||
+    //   res.msgType === MSG_DELETE_STATUS_CARBON ||
+    //   res.msgType === 'carbonMessageClear' ||
+    //   res.msgType === 'messageClear' ||
+    //   res.msgType === 'clear_message'
+    // ) {
+    //   store.dispatch(deleteMessageForMe(res));
+    //   store.dispatch(recentRemoveMessageUpdate(res));
+
+    //   // if (
+    //   //   (res.msgType === MSG_DELETE_STATUS ||
+    //   //     res.msgType === MSG_DELETE_STATUS_CARBON) &&
+    //   //   res.lastMsgId
+    //   // ) {
+    //   //   SDK.getMessageById(res.lastMsgId);
+    //   // }
+    // }
+
+    if (
+      res.msgType === 'carbonMessageClear' ||
+      res.msgType === 'messageClear' ||
+      res.msgType === 'clear_message' ||
+      res.msgType === MSG_DELETE_STATUS ||
+      res.msgType === MSG_DELETE_STATUS_CARBON
+    ) {
+      store.dispatch(recentRemoveMessageUpdate(res));
+      store.dispatch(deleteMessageForMe(res));
+      // if (
+      //   (res.msgType === MSG_DELETE_STATUS ||
+      //     res.msgType === MSG_DELETE_STATUS_CARBON) &&
+      //   res.lastMsgId
+      // ) {
+      //   SDK.getMessageById(res.lastMsgId);
+      // }
     }
     /**
         // if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {
@@ -154,6 +196,7 @@ export const callBacks = {
     console.log('blockUserListener = (res) => { }', res);
   },
   singleMessageDataListener: res => {
+    store.dispatch(updateMsgByLastMsgId(res));
     console.log('singleMessageDataListener = (res) => { }', res);
   },
   muteChatListener: res => {

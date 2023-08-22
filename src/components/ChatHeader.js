@@ -1,30 +1,32 @@
+import { useNavigation } from '@react-navigation/native';
+import SDK from 'SDK/SDK';
+import { deleteMessageForMe } from 'mf-redux/Actions/ConversationAction';
+import { recentRemoveMessageUpdate } from 'mf-redux/Actions/RecentChatAction';
 import {
-  AlertDialog,
   HStack,
   Icon,
   IconButton,
+  Modal,
   Pressable,
   Text,
   VStack,
   View,
 } from 'native-base';
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import Avathar from '../common/Avathar';
-import MenuContainer from '../common/MenuContainer';
 import {
   CloseIcon,
   DeleteIcon,
   FavouriteIcon,
   ForwardIcon,
-  ReplyIcon,
   LeftArrowIcon,
+  ReplyIcon,
 } from '../common/Icons';
-import SDK from 'SDK/SDK';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
-import LastSeen from './LastSeen';
-import { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import MenuContainer from '../common/MenuContainer';
 import { FORWARD_MESSSAGE_SCREEN } from '../constant';
+import LastSeen from './LastSeen';
 
 const forwardMediaMessageTypes = {
   image: true,
@@ -47,6 +49,7 @@ function ChatHeader({
   const [nickName, setNickName] = React.useState('');
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
     getUserProfile();
@@ -68,7 +71,24 @@ function ChatHeader({
     setRemove(!remove);
   };
 
-  const handleDeleteForMe = () => {
+  const handleDeleteForMe = async deleteType => {
+    let msgIds = selectedMsgs
+      .slice()
+      .sort((a, b) => (b.timestamp > a.timestamp ? -1 : 1))
+      .map(el => el.msgId);
+    const jid = fromUserJId;
+    setSelectedMsgs([]);
+    if (deleteType === 1) {
+      const res = await SDK.deleteMessagesForMe(jid, msgIds);
+      console.log(res.message, 'res');
+      if (res.statusCode === 200) {
+        dispatch(recentRemoveMessageUpdate(res.message));
+        dispatch(deleteMessageForMe(res.message));
+        // getMessageFromHistoryById
+      }
+    } else {
+      SDK.deleteMessagesForEveryone(jid, msgIds);
+    }
     setRemove(false);
   };
 
@@ -238,27 +258,30 @@ function ChatHeader({
           </View>
         </View>
       )}
-      <AlertDialog isOpen={remove} onClose={onClose}>
-        <AlertDialog.Content width={'85%'} borderRadius={0}>
-          <AlertDialog.Body>
-            <Text fontSize={'15'} fontWeight={'400'}>
-              Are you sure you want to delete selected Message ?
-            </Text>
-            <HStack justifyContent={'flex-end'} py="3">
-              <Pressable mr="6" onPress={() => setRemove(false)}>
-                <Text color={'#3276E2'} fontWeight={'600'}>
-                  CANCEL
-                </Text>
-              </Pressable>
-              <Pressable onPress={handleDeleteForMe}>
-                <Text color={'#3276E2'} fontWeight={'600'}>
-                  DELETE FOR ME
-                </Text>
-              </Pressable>
-            </HStack>
-          </AlertDialog.Body>
-        </AlertDialog.Content>
-      </AlertDialog>
+      <Modal isOpen={remove} safeAreaTop={true} onClose={onClose}>
+        <Modal.Content
+          w="88%"
+          borderRadius={0}
+          px="6"
+          py="4"
+          fontWeight={'300'}>
+          <Text fontSize={'15'} fontWeight={'400'}>
+            Are you sure you want to delete selected Message ?
+          </Text>
+          <HStack justifyContent={'flex-end'} py="3">
+            <Pressable mr="6" onPress={() => setRemove(false)}>
+              <Text color={'#3276E2'} fontWeight={'600'}>
+                CANCEL
+              </Text>
+            </Pressable>
+            <Pressable onPress={() => handleDeleteForMe(1)}>
+              <Text color={'#3276E2'} fontWeight={'600'}>
+                DELETE FOR ME
+              </Text>
+            </Pressable>
+          </HStack>
+        </Modal.Content>
+      </Modal>
     </>
   );
 }

@@ -10,12 +10,18 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { sortBydate } from 'Helper/Chat/RecentChat';
-import { showToast } from 'Helper/index';
+import { debounce, showToast } from 'Helper/index';
 import SDK from 'SDK/SDK';
 import Avathar from 'common/Avathar';
 import { CloseIcon, SearchIcon } from 'common/Icons';
 import { Checkbox, IconButton, View as NBView } from 'native-base';
-import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { useNetworkStatus } from '../hooks';
 import commonStyles from 'common/commonStyles';
@@ -166,9 +172,9 @@ const RecentChatSectionList = ({
       </View>
       {/* List */}
       <View style={styles.recentChatList}>
-        {data.map(item => (
+        {data.map((item, index) => (
           <ContactItem
-            key={item.fromUserId}
+            key={`${++index}_${item.fromUserId}`}
             userId={item.fromUserId}
             userJid={item.userJid}
             name={item.profileDetails?.nickName}
@@ -190,6 +196,7 @@ const ContactsSectionList = ({
   handleChatSelect,
   selectedUsers,
   searchText,
+  showLoadMoreLoader,
 }) => {
   return (
     <View style={styles.recentChatContiner}>
@@ -199,9 +206,9 @@ const ContactsSectionList = ({
       </View>
       {/* List */}
       <View style={styles.recentChatList}>
-        {data.map(item => (
+        {data.map((item, index) => (
           <ContactItem
-            key={item.userId}
+            key={`${++index}_${item.userId}`}
             userId={item.userId}
             userJid={item.userJid}
             name={item.nickName}
@@ -213,6 +220,11 @@ const ContactsSectionList = ({
           />
         ))}
       </View>
+      {showLoadMoreLoader ? (
+        <ActivityIndicator size={'large'} style={styles.loadMoreLoader} />
+      ) : (
+        <View style={styles.loadMoreLoaderPlaceholder} />
+      )}
     </View>
   );
 };
@@ -236,6 +248,11 @@ const SelectedUsersName = ({ users, onMessageSend }) => {
   );
 };
 
+const contactPaginationRefInitialValue = {
+  nextPage: 1,
+  hasNextPage: true,
+};
+
 // Main Component
 const ForwardMessage = () => {
   const navigation = useNavigation();
@@ -243,10 +260,13 @@ const ForwardMessage = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState({});
   const [showLoader, setShowLoader] = useState(false);
+  const [showLoadMoreLoader, setShowLoadMoreLoader] = useState(false);
   const [filteredRecentChatList, setFilteredRecentChatList] = useState([]);
   const [filteredContactList, setFilteredContactList] = useState([]);
   const recentChatData = useSelector(state => state.recentChatData.data);
   const activeChatUserJid = useSelector(state => state.navigation.fromUserJid);
+
+  const contactsPaginationRef = useRef({ ...contactPaginationRefInitialValue });
 
   const dispatch = useDispatch();
 
@@ -274,7 +294,7 @@ const ForwardMessage = () => {
   }, []);
 
   useLayoutEffect(() => {
-    fetchContactList(searchText.trim());
+    fetchContactListWithDebounce(searchText.trim());
   }, [searchText]);
 
   useEffect(() => {
@@ -303,24 +323,59 @@ const ForwardMessage = () => {
     return _users.filter(u => !recentChatUsersObj[u.userId]);
   };
 
-  const fetchContactList = async filter => {
-    if (isInternetReachable) {
-      const { statusCode, users } = await SDK.getUsersList(filter, 1, 23);
+  const updateContactPaginationRefData = (totalPages, filter) => {
+    if (filter) {
+      contactsPaginationRef.current = { ...contactPaginationRefInitialValue };
+      return;
+    }
+    if (!contactsPaginationRef.current) {
+      contactsPaginationRef.current = {};
+    }
+    if (contactsPaginationRef.current.nextPage < totalPages) {
+      contactsPaginationRef.current.nextPage++;
+    } else {
+      contactsPaginationRef.current.hasNextPage = false;
+    }
+  };
+
+  const fetchContactListFromSDK = async filter => {
+    let { nextPage = 1, hasNextPage = true } =
+      contactsPaginationRef.current || {};
+    if (hasNextPage) {
+      nextPage = filter ? 1 : nextPage;
+      const { statusCode, users, totalPages, ...rest } = await SDK.getUsersList(
+        filter,
+        nextPage,
+        23,
+      );
       if (statusCode === 200) {
+        updateContactPaginationRefData(totalPages, filter);
         const filteredUsers = getUsersExceptRecentChatsUsers(users);
-        setFilteredContactList(filteredUsers);
+        setFilteredContactList(
+          nextPage === 1 ? filteredUsers : val => [...val, ...filteredUsers],
+        );
       } else {
         const toastOptions = {
           id: 'contact-server-error',
         };
         showToast('Could not get contacts from server', toastOptions);
       }
-    } else {
-      const toastOptions = {
-        id: 'no-internet-toast',
-      };
-      showToast('Please check your internet connectivity', toastOptions);
     }
+  };
+
+  const fetchContactList = filter => {
+    setShowLoadMoreLoader(true);
+    setTimeout(async () => {
+      if (isInternetReachable) {
+        fetchContactListFromSDK(filter);
+      } else {
+        const toastOptions = {
+          id: 'no-internet-toast',
+        };
+        showToast('Please check your internet connectivity', toastOptions);
+      }
+      setShowLoadMoreLoader(false);
+    }, 0);
   };
 
   const handleCancel = () => {
@@ -414,6 +469,28 @@ const ForwardMessage = () => {
 
   const doNothing = () => null;
 
+  const isCloseToBottom = ({
+    layoutMeasurement,
+    contentOffset,
+    contentSize,
+  }) => {
+    const paddingToBottom = 30;
+    return (
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom
+    );
+  };
+
+  const fetchContactListWithDebounce = debounce(_searchText => {
+    fetchContactList(_searchText);
+  }, 400);
+
+  const handleScroll = ({ nativeEvent }) => {
+    if (isCloseToBottom(nativeEvent)) {
+      fetchContactListWithDebounce(searchText.trim());
+    }
+  };
+
   return (
     <>
       <View style={styles.container}>
@@ -424,7 +501,10 @@ const ForwardMessage = () => {
           isSearching={isSearching}
           searchText={searchText}
         />
-        <ScrollView style={commonStyles.flex1}>
+        <ScrollView
+          style={commonStyles.flex1}
+          onScroll={handleScroll}
+          scrollEventThrottle={150}>
           <RecentChatSectionList
             data={filteredRecentChatList}
             selectedUsers={selectedUsers}
@@ -436,6 +516,7 @@ const ForwardMessage = () => {
             selectedUsers={selectedUsers}
             handleChatSelect={handleUserSelect}
             searchText={searchText}
+            showLoadMoreLoader={showLoadMoreLoader}
           />
         </ScrollView>
         <SelectedUsersName
@@ -531,6 +612,7 @@ const styles = StyleSheet.create({
   recentChatItemAvatarName: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
   recentChatItemName: {
     fontSize: 16,
@@ -593,5 +675,12 @@ const styles = StyleSheet.create({
   loaderText: {
     fontSize: 18,
     color: 'black',
+  },
+  loadMoreLoader: {
+    marginVertical: 15,
+  },
+  loadMoreLoaderPlaceholder: {
+    height: 60,
+    width: '100%',
   },
 });

@@ -14,7 +14,7 @@ import { debounce, showToast } from 'Helper/index';
 import SDK from 'SDK/SDK';
 import Avathar from 'common/Avathar';
 import { CloseIcon, SearchIcon } from 'common/Icons';
-import { Checkbox, IconButton, View as NBView } from 'native-base';
+import { Checkbox, Icon, IconButton, View as NBView } from 'native-base';
 import React, {
   useEffect,
   useLayoutEffect,
@@ -38,6 +38,7 @@ import {
   addChatConversationHistory,
   deleteChatConversationById,
 } from 'mf-redux/Actions/ConversationAction';
+import { SendBlueIcon } from '../common/Icons';
 
 const showMaxUsersLimitToast = () => {
   const options = {
@@ -241,9 +242,15 @@ const SelectedUsersName = ({ users, onMessageSend }) => {
   return (
     <NBView style={styles.selectedUsersNameContainer} shadow={2}>
       <Text style={commonStyles.flex1}>{userNames}</Text>
-      <Text style={styles.sendButton} onPress={onMessageSend}>
-        NEXT
-      </Text>
+      <IconButton
+        style={styles.sendButton}
+        onPress={onMessageSend}
+        _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+        icon={
+          <Icon as={<SendBlueIcon color="#fff" />} name="forward-message" />
+        }
+        borderRadius="full"
+      />
     </NBView>
   );
 };
@@ -641,18 +648,13 @@ const styles = StyleSheet.create({
     minHeight: 50,
     backgroundColor: 'white',
     paddingHorizontal: 5,
+    paddingVertical: 5,
     borderRadius: 3,
   },
   sendButton: {
-    width: 50,
+    width: 40,
     height: 40,
-    padding: 5,
-    margin: 5,
-    marginRight: 0,
-    textAlignVertical: 'center',
-    textAlign: 'center',
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
+    marginRight: 5,
   },
   // Loader styles
   loaderContainer: {

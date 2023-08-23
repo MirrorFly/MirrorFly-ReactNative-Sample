@@ -63,6 +63,7 @@ import store from '../redux/store';
 import SavePicture from './Gallery';
 import { createThumbnail } from 'react-native-create-thumbnail';
 import { navigate } from 'mf-redux/Actions/NavigationAction';
+import Location from 'components/Media/Location';
 
 function ChatScreen() {
   const [replyMsgRef, setReplyMsgRef] = React.useState();
@@ -226,6 +227,10 @@ function ChatScreen() {
     }
   };
 
+  const handleLocationSelect = async () => {
+    setLocalNav('LocationInfo');
+  };
+
   const attachmentMenuIcons = [
     {
       name: 'Document',
@@ -305,7 +310,9 @@ function ChatScreen() {
     {
       name: 'Location',
       icon: LocationIcon,
-      formatter: () => {},
+      formatter: async () => {
+        handleLocationSelect();
+      },
     },
   ];
 
@@ -437,7 +444,7 @@ function ChatScreen() {
     const { content } = message;
     const replyTo = replyMsgRef?.msgId || '';
     content[0].fileDetails.replyTo = replyTo;
-    setReplyMsgRef('')
+    setReplyMsgRef('');
     sendMediaMessage(messageType, content, chatType);
   };
 
@@ -634,6 +641,7 @@ function ChatScreen() {
               setSelectedImages={setSelectedImages}
             />
           ),
+          LocationInfo: <Location setLocalNav={setLocalNav} />,
         }[localNav]
       }
       <AlertDialog isOpen={alert} onClose={alert}>

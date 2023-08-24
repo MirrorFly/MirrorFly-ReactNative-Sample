@@ -1,30 +1,32 @@
+import { useNavigation } from '@react-navigation/native';
+import SDK from 'SDK/SDK';
 import {
-  AlertDialog,
+  Checkbox,
   HStack,
   Icon,
   IconButton,
+  Modal,
   Pressable,
   Text,
   VStack,
   View,
 } from 'native-base';
 import React from 'react';
+import { StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import Avathar from '../common/Avathar';
-import MenuContainer from '../common/MenuContainer';
 import {
   CloseIcon,
   DeleteIcon,
   FavouriteIcon,
   ForwardIcon,
-  ReplyIcon,
   LeftArrowIcon,
+  ReplyIcon,
 } from '../common/Icons';
-import SDK from 'SDK/SDK';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
-import LastSeen from './LastSeen';
-import { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import MenuContainer from '../common/MenuContainer';
 import { FORWARD_MESSSAGE_SCREEN } from '../constant';
+import LastSeen from './LastSeen';
 
 const forwardMediaMessageTypes = {
   image: true,
@@ -47,6 +49,7 @@ function ChatHeader({
   const [nickName, setNickName] = React.useState('');
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
+  const [isSelected, setSelection] = React.useState(false);
 
   React.useEffect(() => {
     getUserProfile();
@@ -68,7 +71,18 @@ function ChatHeader({
     setRemove(!remove);
   };
 
-  const handleDeleteForMe = () => {
+  const handleDeleteForMe = async deleteType => {
+    let msgIds = selectedMsgs
+      .slice()
+      .sort((a, b) => (b.timestamp > a.timestamp ? -1 : 1))
+      .map(el => el.msgId);
+    const jid = fromUserJId;
+    setSelectedMsgs([]);
+    if (deleteType === 1) {
+      SDK.deleteMessagesForMe(jid, msgIds);
+    } else {
+      SDK.deleteMessagesForEveryone(jid, msgIds);
+    }
     setRemove(false);
   };
 
@@ -173,7 +187,7 @@ function ChatHeader({
             </Pressable>
           </HStack>
           <HStack pr="3">
-            {selectedMsgs?.length < 2 && (
+            {selectedMsgs?.length < 2 && menuItems.length > 0 && (
               <MenuContainer menuItems={menuItems} />
             )}
           </HStack>
@@ -213,12 +227,14 @@ function ChatHeader({
             flexDirection={'row'}
             justifyContent={'space-between'}
             alignItems={'center'}>
-            <IconButton
-              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-              px="2"
-              onPress={handleReplyMessage}>
-              {selectedMsgs?.length === 1 && <ReplyIcon />}
-            </IconButton>
+            {selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 && (
+              <IconButton
+                _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+                px="2"
+                onPress={handleReplyMessage}>
+                {selectedMsgs?.length === 1 && <ReplyIcon />}
+              </IconButton>
+            )}
             {renderForwardIcon()}
             <IconButton
               _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
@@ -226,41 +242,76 @@ function ChatHeader({
               onPress={handleFavourite}>
               <FavouriteIcon />
             </IconButton>
-            <IconButton
-              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-              px="4"
-              onPress={handleDelete}>
-              <DeleteIcon />
-            </IconButton>
-            {selectedMsgs?.length === 1 && (
+            {selectedMsgs?.length < 2 &&
+              selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 &&
+              selectedMsgs[0]?.msgBody?.media?.is_downloaded !== 1 && (
+                <IconButton
+                  _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+                  px="4"
+                  onPress={handleDelete}>
+                  <DeleteIcon />
+                </IconButton>
+              )}
+            {selectedMsgs?.length === 1 && menuItems.length > 0 && (
               <MenuContainer menuItems={menuItems} />
             )}
           </View>
         </View>
       )}
-      <AlertDialog isOpen={remove} onClose={onClose}>
-        <AlertDialog.Content width={'85%'} borderRadius={0}>
-          <AlertDialog.Body>
-            <Text fontSize={'15'} fontWeight={'400'}>
-              Are you sure you want to delete selected Message ?
-            </Text>
-            <HStack justifyContent={'flex-end'} py="3">
-              <Pressable mr="6" onPress={() => setRemove(false)}>
-                <Text color={'#3276E2'} fontWeight={'600'}>
-                  CANCEL
-                </Text>
-              </Pressable>
-              <Pressable onPress={handleDeleteForMe}>
-                <Text color={'#3276E2'} fontWeight={'600'}>
-                  DELETE FOR ME
-                </Text>
-              </Pressable>
-            </HStack>
-          </AlertDialog.Body>
-        </AlertDialog.Content>
-      </AlertDialog>
+      <Modal isOpen={remove} safeAreaTop={true} onClose={onClose}>
+        <Modal.Content
+          w="88%"
+          borderRadius={0}
+          px="6"
+          py="4"
+          fontWeight={'300'}>
+          <Text fontSize={'16'} fontWeight={'400'} numberOfLines={2}>
+            Are you sure you want to delete selected Message?
+          </Text>
+          {selectedMsgs[0]?.msgBody.message_type !== 'text' &&
+            selectedMsgs[0]?.msgBody.message_type !== 'location' && (
+              <HStack py={'3'}>
+                <Checkbox
+                  value={isSelected}
+                  onValueChange={setSelection}
+                  style={styles.checkbox}
+                  _checked={{
+                    backgroundColor: '#3276E2',
+                    borderColor: '#3276E2',
+                  }}
+                  _pressed={{
+                    backgroundColor: '#3276E2',
+                    borderColor: '#3276E2',
+                  }}>
+                  <Text fontSize={'14'} fontWeight={'400'}>
+                    Delete media from my phone
+                  </Text>
+                </Checkbox>
+              </HStack>
+            )}
+          <HStack justifyContent={'flex-end'} py="3">
+            <Pressable mr="6" onPress={() => setRemove(false)}>
+              <Text color={'#3276E2'} fontWeight={'600'}>
+                CANCEL
+              </Text>
+            </Pressable>
+            <Pressable onPress={() => handleDeleteForMe(1)}>
+              <Text color={'#3276E2'} fontWeight={'600'}>
+                DELETE FOR ME
+              </Text>
+            </Pressable>
+          </HStack>
+        </Modal.Content>
+      </Modal>
     </>
   );
 }
 
 export default ChatHeader;
+
+const styles = StyleSheet.create({
+  checkbox: {
+    alignSelf: 'center',
+    borderColor: '#3276E2',
+  },
+});

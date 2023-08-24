@@ -2,6 +2,7 @@ import {
   getChatHistoryData,
   getUpdatedHistoryData,
   getUpdatedHistoryDataUpload,
+  updateDeletedMessageInHistory,
   updateMediaUploadStatusHistory,
 } from '../../Helper/Chat/ChatHelper';
 import {
@@ -10,6 +11,8 @@ import {
   CLEAR_CHAT_HISTORY,
   DELETE_CHAT_HISTORY,
   DELETE_CONVERSATION,
+  DELETE_MESSAGE_FOR_EVERYONE,
+  DELETE_MESSAGE_FOR_ME,
   RESET_STORE,
   RETRY_MEDIA_UPLOAD,
   UPDATE_CHAT_CONVERSATION_HISTORY,
@@ -86,6 +89,19 @@ const conversationReducer = (state = initialState, action) => {
         id: Date.now(),
         data: _state,
       };
+
+    case DELETE_MESSAGE_FOR_ME:
+    case DELETE_MESSAGE_FOR_EVERYONE:
+      return {
+        ...state,
+        id: Date.now(),
+        data: updateDeletedMessageInHistory(
+          action.type,
+          action.payload,
+          state.data,
+        ),
+      };
+
     case RESET_STORE:
       return initialState;
     default:

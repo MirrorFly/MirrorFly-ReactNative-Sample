@@ -147,6 +147,7 @@ function RecentScreen() {
     sortBydate([...recentChatArrayConstruct]).map(async chat => {
       recent.push(chat);
     });
+
     return recent.filter(eachmessage => eachmessage);
   };
 

@@ -12,6 +12,7 @@ const ChatConversationList = ({
   fromUserJId,
   selectedMsgs,
   handleMsgSelect,
+  onSelectedMessageUpdate,
 }) => {
   const { id: messagesReducerId, data: messages } = useSelector(
     state => state.chatConversationData,
@@ -28,6 +29,7 @@ const ChatConversationList = ({
       ? Object.values(messages[id]?.messages)
       : [];
     data.reverse();
+    onSelectedMessageUpdate(messages[id]?.messages);
     return data;
   }, [messages, fromUserJId]);
 

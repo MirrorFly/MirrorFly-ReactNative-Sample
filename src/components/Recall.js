@@ -7,10 +7,7 @@ export const emptyMessage = (newMessage, messageArray = []) => {
         MessageType: 'text',
         deleteStatus: 0,
         createdAt: '',
-        msgbody: {
-          message_type: 'text',
-          message: '',
-        },
+        msgBody: {},
         msgType: newMessage.msgType,
         lastMsgId: newMessage.lastMsgId,
       };

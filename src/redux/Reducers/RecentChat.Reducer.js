@@ -132,7 +132,6 @@ const recentChatReducer = (state = initialState, action) => {
         data: deletedChatList(action.payload, StateToObj(state).data),
       };
     case RECENT_REMOVE_MESSAGE_UPDATE:
-      console.log(emptyMessage(action.payload, StateToObj(state).data), '789');
       return {
         ...state,
         id: Date.now(),

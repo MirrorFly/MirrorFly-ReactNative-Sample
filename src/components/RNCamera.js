@@ -170,7 +170,6 @@ const Camera = props => {
       duration: duration,
       type: 'video',
     };
-    console.log(combinedData, 'combinedData');
     const imageFile = {
       caption: '',
       fileDetails: mediaObjContructor('RN_CAMERA', combinedData),

@@ -1,8 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import SDK from 'SDK/SDK';
-import { deleteMessageForMe } from 'mf-redux/Actions/ConversationAction';
-import { recentRemoveMessageUpdate } from 'mf-redux/Actions/RecentChatAction';
 import {
+  Checkbox,
   HStack,
   Icon,
   IconButton,
@@ -13,7 +12,8 @@ import {
   View,
 } from 'native-base';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import Avathar from '../common/Avathar';
 import {
@@ -49,7 +49,7 @@ function ChatHeader({
   const [nickName, setNickName] = React.useState('');
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
-  const dispatch = useDispatch();
+  const [isSelected, setSelection] = React.useState(false);
 
   React.useEffect(() => {
     getUserProfile();
@@ -187,7 +187,7 @@ function ChatHeader({
             </Pressable>
           </HStack>
           <HStack pr="3">
-            {selectedMsgs?.length < 2 && (
+            {selectedMsgs?.length < 2 && menuItems.length > 0 && (
               <MenuContainer menuItems={menuItems} />
             )}
           </HStack>
@@ -227,12 +227,14 @@ function ChatHeader({
             flexDirection={'row'}
             justifyContent={'space-between'}
             alignItems={'center'}>
-            <IconButton
-              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-              px="2"
-              onPress={handleReplyMessage}>
-              {selectedMsgs?.length === 1 && <ReplyIcon />}
-            </IconButton>
+            {selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 && (
+              <IconButton
+                _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+                px="2"
+                onPress={handleReplyMessage}>
+                {selectedMsgs?.length === 1 && <ReplyIcon />}
+              </IconButton>
+            )}
             {renderForwardIcon()}
             <IconButton
               _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
@@ -240,13 +242,17 @@ function ChatHeader({
               onPress={handleFavourite}>
               <FavouriteIcon />
             </IconButton>
-            <IconButton
-              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-              px="4"
-              onPress={handleDelete}>
-              <DeleteIcon />
-            </IconButton>
-            {selectedMsgs?.length === 1 && (
+            {selectedMsgs?.length < 2 &&
+              selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 &&
+              selectedMsgs[0]?.msgBody?.media?.is_downloaded !== 1 && (
+                <IconButton
+                  _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+                  px="4"
+                  onPress={handleDelete}>
+                  <DeleteIcon />
+                </IconButton>
+              )}
+            {selectedMsgs?.length === 1 && menuItems.length > 0 && (
               <MenuContainer menuItems={menuItems} />
             )}
           </View>
@@ -259,9 +265,30 @@ function ChatHeader({
           px="6"
           py="4"
           fontWeight={'300'}>
-          <Text fontSize={'15'} fontWeight={'400'}>
-            Are you sure you want to delete selected Message ?
+          <Text fontSize={'16'} fontWeight={'400'} numberOfLines={2}>
+            Are you sure you want to delete selected Message?
           </Text>
+          {selectedMsgs[0]?.msgBody.message_type !== 'text' &&
+            selectedMsgs[0]?.msgBody.message_type !== 'location' && (
+              <HStack py={'3'}>
+                <Checkbox
+                  value={isSelected}
+                  onValueChange={setSelection}
+                  style={styles.checkbox}
+                  _checked={{
+                    backgroundColor: '#3276E2',
+                    borderColor: '#3276E2',
+                  }}
+                  _pressed={{
+                    backgroundColor: '#3276E2',
+                    borderColor: '#3276E2',
+                  }}>
+                  <Text fontSize={'14'} fontWeight={'400'}>
+                    Delete media from my phone
+                  </Text>
+                </Checkbox>
+              </HStack>
+            )}
           <HStack justifyContent={'flex-end'} py="3">
             <Pressable mr="6" onPress={() => setRemove(false)}>
               <Text color={'#3276E2'} fontWeight={'600'}>
@@ -281,3 +308,10 @@ function ChatHeader({
 }
 
 export default ChatHeader;
+
+const styles = StyleSheet.create({
+  checkbox: {
+    alignSelf: 'center',
+    borderColor: '#3276E2',
+  },
+});

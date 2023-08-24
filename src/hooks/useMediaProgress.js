@@ -76,6 +76,16 @@ const useMediaProgress = ({
     }
     if (networkState) {
       setMediaStatus(mediaStatusConstants.DOWNLOADING);
+      let downloadData = {
+        msgId,
+        statusCode: 200,
+        fromUserId: getUserIdFromJid(fromUserJId),
+        local_path: '',
+        is_downloaded: 1,
+        fileToken: file_url,
+        thumbImage: thumb_image,
+      };
+      dispatch(updateUploadStatus(downloadData));
       const response = await SDK.downloadMedia(msgId);
       if (response.statusCode === 200) {
         let updateObj = {
@@ -83,6 +93,7 @@ const useMediaProgress = ({
           statusCode: response.statusCode,
           fromUserId: getUserIdFromJid(fromUserJId),
           local_path: response.data.local_path,
+          is_downloaded: 2,
           fileToken: file_url,
           thumbImage: thumb_image,
         };

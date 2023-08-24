@@ -154,13 +154,13 @@ const ChatMessage = props => {
   };
 
   const handleMessageSelect = () => {
-    if (props?.selectedMsgs?.length && message?.msgStatus !== 3) {
+    if (props?.selectedMsgs?.length) {
       props.handleMsgSelect(props.message);
     }
   };
 
   const handleMessageLongPress = () => {
-    message?.msgStatus !== 3 && props.handleMsgSelect(props.message);
+    props.handleMsgSelect(props.message);
   };
 
   return (
@@ -174,7 +174,9 @@ const ChatMessage = props => {
             <Box
               my={'1'}
               bg={
-                props.selectedMsgs.includes(props.message)
+                props.selectedMsgs.find(
+                  msg => msg.msgId === props.message.msgId,
+                )
                   ? 'rgba(0,0,0,0.2)'
                   : 'transparent'
               }>
@@ -185,10 +187,7 @@ const ChatMessage = props => {
                       ? handleMessageObj()
                       : handleMessageSelect()
                   }
-                  onLongPress={() =>
-                    message?.msgStatus !== 3 &&
-                    props.handleMsgSelect(props.message)
-                  }
+                  onLongPress={() => props.handleMsgSelect(props.message)}
                   minWidth="30%"
                   maxWidth="80%">
                   {

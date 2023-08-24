@@ -189,6 +189,7 @@ export const getUpdatedHistoryDataUpload = (data, stateData) => {
         currentMessage.msgBody.media.file_url = data.fileToken || '';
         currentMessage.msgBody.media.thumb_image = data.thumbImage || '';
         currentMessage.msgBody.media.file_key = data.fileKey || '';
+        currentMessage.msgBody.media.is_downloaded = data.is_downloaded || '';
       }
       if (data.local_path) {
         currentMessage.msgBody.media.local_path = data.local_path || '';
@@ -463,10 +464,6 @@ const sendMediaMessage = async (
         replyTo,
       };
       const conversationChatObj = await getMessageObjSender(dataObj, i);
-      console.log(
-        'Media Message',
-        JSON.stringify(conversationChatObj, null, 2),
-      );
       mediaData[msgId] = conversationChatObj;
       const recentChatObj = getRecentChatMsgObj(dataObj);
 
@@ -543,7 +540,6 @@ export const sendMessageToUserOrGroup = async (
       data: [conversationChatObj],
       ...(isSingleChat(chatType) ? { userJid: jid } : { groupJid: jid }), // check this when working for group chat
     };
-    console.log('dispatchData', JSON.stringify(dispatchData, null, 2));
     batch(() => {
       store.dispatch(addChatConversationHistory(dispatchData));
       store.dispatch(updateRecentChat(recentChatObj));
@@ -600,13 +596,6 @@ export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
   const createdAt = changeTimeFormat(timestamp);
   const vcardData = getLocalUserDetails();
   const senderId = vcardData.fromUser;
-
-  console.log(
-    'Constructing diapatch object',
-    senderId,
-    formatUserIdToJid(senderId),
-    toJid,
-  );
 
   return {
     ...originalMsg,

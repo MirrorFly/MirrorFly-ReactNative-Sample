@@ -57,7 +57,6 @@ export const callBacks = {
     console.log('dbListener', JSON.stringify(res));
   },
   messageListener: async res => {
-    console.log(res, 'resi');
     await nextFrame();
     if (res.chatType === 'chat') {
       switch (res.msgType) {
@@ -94,12 +93,11 @@ export const callBacks = {
       store.dispatch(DeleteChatHIstoryAction(res));
     }
     if (
-      (res.msgType === MSG_DELETE_STATUS ||
-        res.msgType === MSG_DELETE_STATUS_CARBON ||
-        res.msgType === 'carbonMessageClear' ||
-        res.msgType === 'messageClear' ||
-        res.msgType === 'clear_message') &&
-      res.mode === 'offline'
+      res.msgType === MSG_DELETE_STATUS ||
+      res.msgType === MSG_DELETE_STATUS_CARBON ||
+      res.msgType === 'carbonMessageClear' ||
+      res.msgType === 'messageClear' ||
+      res.msgType === 'clear_message'
     ) {
       store.dispatch(deleteMessageForMe(res));
       store.dispatch(recentRemoveMessageUpdate(res));
@@ -113,24 +111,6 @@ export const callBacks = {
       }
     }
 
-    // if (
-    //   (res.msgType === 'carbonMessageClear' ||
-    //     res.msgType === 'messageClear' ||
-    //     res.msgType === 'clear_message' ||
-    //     res.msgType === MSG_DELETE_STATUS ||
-    //     res.msgType === MSG_DELETE_STATUS_CARBON) &&
-    //   res.mode === 'offline'
-    // ) {
-    //   store.dispatch(recentRemoveMessageUpdate(res));
-    //   store.dispatch(deleteMessageForMe(res));
-    //   // if (
-    //   //   (res.msgType === MSG_DELETE_STATUS ||
-    //   //     res.msgType === MSG_DELETE_STATUS_CARBON) &&
-    //   //   res.lastMsgId
-    //   // ) {
-    //   //   SDK.getMessageById(res.lastMsgId);
-    //   // }
-    // }
     /**
         // if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {
             // store.dispatch(updateRecentChatMessageStatus(res))
@@ -200,7 +180,6 @@ export const callBacks = {
   },
   singleMessageDataListener: res => {
     store.dispatch(updateMsgByLastMsgId(res));
-    console.log('singleMessageDataListener = (res) => { }', res);
   },
   muteChatListener: res => {
     console.log('muteChatListener = (res) => { }', res);

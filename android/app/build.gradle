@@ -96,7 +96,7 @@ def enableSeparateBuildPerCPUArchitecture = false
 /**
  * Run Proguard to shrink the Java bytecode in release builds.
  */
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
 
 /**
  * The preferred build flavor of JavaScriptCore.
@@ -147,7 +147,7 @@ android {
 
     namespace "com.mirrorfly_rn"
     defaultConfig {
-        applicationId "com.mirrorfly.qa"
+        applicationId "com.mirrorfly.uikit.qa"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

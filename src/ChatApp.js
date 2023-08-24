@@ -22,11 +22,11 @@ import { profileDetail } from './redux/Actions/ProfileAction';
 import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction';
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
-/** import messaging from '@react-native-firebase/messaging';*/
+import messaging from '@react-native-firebase/messaging';
 LogBox.ignoreAllLogs();
 
 export const ChatApp = () => {
-  React.useEffect(() => {   
+  React.useEffect(() => {
     (async () => {
       await SDK.initializeSDK({
         apiBaseUrl: 'https://api-uikit-qa.contus.us/api/v1',
@@ -34,10 +34,9 @@ export const ChatApp = () => {
         callbackListeners: callBacks,
         isSandbox: false,
       });
-      /** await messaging().requestPermission();*/
+      await messaging().requestPermission();
     })();
   }, []);
- 
 
   return (
     <Provider store={store}>
@@ -47,8 +46,6 @@ export const ChatApp = () => {
     </Provider>
   );
 };
-
-
 
 const RootNavigation = () => {
   const scheme = useColorScheme();

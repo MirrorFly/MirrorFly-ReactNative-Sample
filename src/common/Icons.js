@@ -2616,3 +2616,23 @@ export const DocumentChatIcon = props => {
     </Svg>
   );
 };
+
+export const ContactInfoIcon = props => {
+  return (
+    <Svg xmlns="http://www.w3.org/2000/svg" width="21.396" height="24.344" viewBox="0 0 21.396 24.344">
+  <G id="user" transform="translate(-31)">
+    <G id="Group_8868" data-name="Group 8868" transform="translate(35.279)">
+      <G id="Group_8867" data-name="Group 8867">
+        <Path id="Path_10201" data-name="Path 10201" d="M127.419,0a6.419,6.419,0,1,0,6.419,6.419A6.426,6.426,0,0,0,127.419,0Z" transform="translate(-121)" fill="#fff"/>
+      </G>
+    </G>
+    <G id="Group_8870" data-name="Group 8870" transform="translate(31 14.264)">
+      <G id="Group_8869" data-name="Group 8869">
+        <Path id="Path_10202" data-name="Path 10202" d="M49.684,302.767A9.15,9.15,0,0,0,43.124,300H40.271a9.15,9.15,0,0,0-6.56,2.767,9.354,9.354,0,0,0-2.712,6.6.713.713,0,0,0,.713.713H51.682a.713.713,0,0,0,.713-.713A9.354,9.354,0,0,0,49.684,302.767Z" transform="translate(-31 -300)" fill="#fff"/>
+      </G>
+    </G>
+  </G>
+</Svg>
+
+  );
+};

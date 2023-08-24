@@ -62,6 +62,7 @@ import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import store from '../redux/store';
 import SavePicture from './Gallery';
 import { createThumbnail } from 'react-native-create-thumbnail';
+import ContactList from 'components/Media/ContactList';
 
 function ChatScreen() {
   const vCardData = useSelector(state => state.profile.profileDetails);
@@ -219,6 +220,10 @@ function ChatScreen() {
     }
   };
 
+  const handleContactSelect =()=>{
+    setLocalNav('ContactList');
+  }
+
   const attachmentMenuIcons = [
     {
       name: 'Document',
@@ -293,7 +298,9 @@ function ChatScreen() {
     {
       name: 'Contact',
       icon: ContactIcon,
-      formatter: () => {},
+      formatter: async () => {
+        handleContactSelect();
+      },
     },
     {
       name: 'Location',
@@ -574,6 +581,10 @@ function ChatScreen() {
           ),
           UserInfo: <UserInfo setLocalNav={setLocalNav} />,
           UsersTapBarInfo: <UsersTapBarInfo setLocalNav={setLocalNav} />,
+          ContactList: (
+            <ContactList
+            setLocalNav={setLocalNav} />
+          ),
           Gallery: (
             <SavePicture
               setLocalNav={setLocalNav}
@@ -605,6 +616,7 @@ function ChatScreen() {
               setSelectedImages={setSelectedImages}
             />
           ),
+
         }[localNav]
       }
       <AlertDialog isOpen={alert} onClose={alert}>

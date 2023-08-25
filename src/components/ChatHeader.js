@@ -10,23 +10,29 @@ import {
   Text,
   VStack,
   View,
+  Input,
 } from 'native-base';
+import { Keyboard } from 'react-native';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { BackHandler, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import Avathar from '../common/Avathar';
 import {
   CloseIcon,
   DeleteIcon,
+  DownArrowIcon,
   FavouriteIcon,
   ForwardIcon,
   LeftArrowIcon,
   ReplyIcon,
+  UpArrowIcon,
 } from '../common/Icons';
 import MenuContainer from '../common/MenuContainer';
 import { FORWARD_MESSSAGE_SCREEN } from '../constant';
 import LastSeen from './LastSeen';
+import { useDispatch } from 'react-redux';
+import { updateSearachMessageDetail } from '../redux/Actions/SearchMessgeAction';
 
 const forwardMediaMessageTypes = {
   image: true,
@@ -43,6 +49,8 @@ function ChatHeader({
   handleBackBtn,
   handleReply,
   setLocalNav,
+  IsSearching,
+  isSearchClose,
 }) {
   const navigation = useNavigation();
   const [remove, setRemove] = React.useState(false);
@@ -50,6 +58,11 @@ function ChatHeader({
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
   const [isSelected, setSelection] = React.useState(false);
+  const searchMsgList = useSelector(
+    state => state?.searchMessageInfo.searchMessageText,
+  );
+  const inputRef = React.useRef();
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
     getUserProfile();
@@ -63,6 +76,10 @@ function ChatHeader({
     }
   };
 
+  // React.useEffect(() => {
+  //   return inputRef.current.focus();
+  // }, []);
+
   const onClose = () => {
     setRemove(false);
   };
@@ -70,6 +87,25 @@ function ChatHeader({
   const handleDelete = () => {
     setRemove(!remove);
   };
+
+  React.useEffect(() => {
+    return () => {
+      backHandler.remove();
+    };
+  }, []);
+
+  const backHandler = BackHandler.addEventListener(
+    'hardwareBackPress',
+    handleBackSearch,
+  );
+
+  React.useEffect(() => {
+    if (IsSearching) {
+      inputRef.current.focus();
+    } else {
+      Keyboard.dismiss();
+    }
+  }, []);
 
   const handleDeleteForMe = async deleteType => {
     let msgIds = selectedMsgs
@@ -102,11 +138,17 @@ function ChatHeader({
     setLocalNav('UserInfo');
   };
 
+  const handleBackSearch = () => {
+    isSearchClose();
+  };
   const handleForwardMessage = () => {
     navigation.navigate(FORWARD_MESSSAGE_SCREEN, {
       forwardMessages: selectedMsgs,
       onMessageForwaded: handleRemove,
     });
+  };
+  const handleSearchTextChange = text => {
+    dispatch(updateSearachMessageDetail(text));
   };
 
   const renderForwardIcon = () => {
@@ -139,7 +181,7 @@ function ChatHeader({
 
   return (
     <>
-      {selectedMsgs?.length <= 0 ? (
+      {IsSearching ? (
         <HStack
           h={'60px'}
           bg="#F2F2F2"
@@ -147,13 +189,45 @@ function ChatHeader({
           alignItems="center"
           borderBottomColor={'#C1C1C1'}
           borderBottomWidth={1}
-          style={{
-            elevation: 2,
-            shadowColor: '#181818',
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: 0.1,
-            shadowRadius: 6,
-          }}
+          style={styles.RootContainer}
+          w="full">
+          <HStack alignItems="center">
+            <IconButton
+              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+              onPress={handleBackSearch}
+              icon={<Icon as={() => LeftArrowIcon()} name="emoji-happy" />}
+              borderRadius="full"
+            />
+            <View style={styles.TextInput}>
+              <Input
+                ref={inputRef}
+                autoFocus
+                variant="underlined"
+                placeholder="Search..."
+                value={searchMsgList}
+                fontSize={18}
+                fontWeight={'500'}
+                onChangeText={handleSearchTextChange}
+              />
+            </View>
+
+            <Pressable style={styles.upArrow}>
+              <UpArrowIcon />
+            </Pressable>
+            <Pressable style={styles.DownArrow}>
+              <DownArrowIcon />
+            </Pressable>
+          </HStack>
+        </HStack>
+      ) : selectedMsgs?.length <= 0 ? (
+        <HStack
+          h={'60px'}
+          bg="#F2F2F2"
+          justifyContent="space-between"
+          alignItems="center"
+          borderBottomColor={'#C1C1C1'}
+          borderBottomWidth={1}
+          style={styles.headerContainer}
           w="full">
           <HStack alignItems="center">
             <IconButton
@@ -194,13 +268,7 @@ function ChatHeader({
         </HStack>
       ) : (
         <View
-          style={{
-            elevation: 2,
-            shadowColor: '#181818',
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: 0.1,
-            shadowRadius: 6,
-          }}
+          style={styles.subContainer}
           flexDirection={'row'}
           backgroundColor={'#F2F2F4'}
           alignItems={'center'}
@@ -258,6 +326,7 @@ function ChatHeader({
           </View>
         </View>
       )}
+
       <Modal isOpen={remove} safeAreaTop={true} onClose={onClose}>
         <Modal.Content
           w="88%"
@@ -314,4 +383,28 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderColor: '#3276E2',
   },
+  headerContainer: {
+    elevation: 2,
+    shadowColor: '#181818',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+  },
+  RootContainer: {
+    elevation: 2,
+    shadowColor: '#181818',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+  },
+  subContainer: {
+    elevation: 2,
+    shadowColor: '#181818',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+  },
+  TextInput: { width: 240, marginLeft: 12 },
+  upArrow: { marginLeft: 25 },
+  DownArrow: { marginLeft: 50 },
 });

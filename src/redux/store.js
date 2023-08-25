@@ -56,6 +56,7 @@ import mediaDownloadReducer from './Reducers/MediaDownload.Reducer';
 import mediaUploadReducer from './Reducers/MediaUpload.Reducer';
 import singleChatImageReducer from './Reducers/SingleChatImage.Reducer';
 import safeAreaReducer from './Reducers/SafeArea.Reducer';
+import searchMessageReducer from './Reducers/SearchMessage.Reducer';
 
 const rootReducer = combineReducers({
   navigation: navigationReducer,
@@ -72,6 +73,7 @@ const rootReducer = combineReducers({
   chatSelectedMedia: singleChatImageReducer,
   mediaDownloadData: mediaDownloadReducer,
   safeArea: safeAreaReducer,
+  searchMessageInfo: searchMessageReducer,
 });
 
 const Store = legacy_createStore(rootReducer, applyMiddleware(thunkMiddleware));

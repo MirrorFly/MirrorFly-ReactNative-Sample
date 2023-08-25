@@ -28,7 +28,7 @@ const profileReducer = (state = initialState, action) => {
       }
       return state;
     case RESET_STORE:
-      return initialState
+      return initialState;
     default:
       return state;
   }

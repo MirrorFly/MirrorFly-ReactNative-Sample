@@ -1,11 +1,15 @@
-import { Text, View } from 'native-base';
+import { HStack, Text, View } from 'native-base';
 import React from 'react';
 import { StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
 import ReplyMessage from './ReplyMessage';
 
 const TextCard = props => {
   const { handleReplyPress, message } = props;
   const { msgBody: { replyTo = '' } = {} } = message;
+  const searchMsgList = useSelector(
+    state => state?.searchMessageInfo.searchMessageText,
+  );
   return (
     <View
       bgColor={props.isSame ? '#E2E8F7' : '#fff'}
@@ -23,7 +27,13 @@ const TextCard = props => {
           isSame={props.isSame}
         />
       )}
-      <Text style={styles.message}>{props.data?.message}</Text>
+      <View>
+        <HighlightedText
+          text={props.data?.message}
+          searchValue={searchMsgList}
+        />
+      </View>
+
       <View style={styles.timeStamp}>
         {props.data.status}
         <Text pl="1" color="#455E93" fontSize="10" fontWeight={300}>
@@ -34,6 +44,33 @@ const TextCard = props => {
   );
 };
 export default TextCard;
+
+const HighlightedText = ({ text, searchValue = '', index }) => {
+  const parts = searchValue
+    ? text.split(new RegExp(`(${searchValue})`, 'gi'))
+    : [text];
+
+  return (
+    <Text>
+      {parts.map((part, i) => {
+        const isSearchMatch =
+          part.toLowerCase() === searchValue.toLowerCase()
+            ? styles.highlight
+            : {};
+        return (
+          <Text
+            color="coolGray.800"
+            key={++i + '-' + index}
+            dark={{ color: 'warmGray.50' }}
+            ellipsizeMode="tail"
+            style={isSearchMatch}>
+            {part}
+          </Text>
+        );
+      })}
+    </Text>
+  );
+};
 
 const styles = StyleSheet.create({
   message: {
@@ -49,5 +86,9 @@ const styles = StyleSheet.create({
     padding: 2,
     alignItems: 'center',
     justifyContent: 'flex-end',
+  },
+  highlight: {
+    backgroundColor: '#D69C23',
+    fontWeight: 'bold',
   },
 });

@@ -47,6 +47,15 @@ const ChatConversation = React.memo(props => {
   const [isOpenAlert, setIsOpenAlert] = React.useState(false);
   const isNetworkConnected = useNetworkStatus();
   const toast = useToast();
+  const [isSearching, setIsSearching] = React.useState(false);
+
+  const isSearchClose = () => {
+    setIsSearching(false);
+  };
+
+  const SearchMessageInfo = () => {
+    setIsSearching(true);
+  };
 
   React.useEffect(() => {
     setReplyMsgs(replyMsgRef);
@@ -226,6 +235,10 @@ const ChatConversation = React.memo(props => {
             label: 'Report',
             formatter: () => {},
           },
+          {
+            label: 'Search',
+            formatter: SearchMessageInfo,
+          },
         ]);
         break;
       default:
@@ -310,6 +323,8 @@ const ChatConversation = React.memo(props => {
         menuItems={menuItems}
         handleBackBtn={props.handleBackBtn}
         handleReply={handleReply}
+        isSearchClose={isSearchClose}
+        IsSearching={isSearching}
         setLocalNav={props.setLocalNav}
       />
       <ImageBackground

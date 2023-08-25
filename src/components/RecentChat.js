@@ -116,12 +116,11 @@ export default function RecentChat(props) {
                 {item.deleteStatus === 1 ? (
                   <HStack mt={'1'} alignItems={'center'}>
                     <Text
-                      ml={1}
                       mb={'0.5'}
                       style={styles.message}
                       fontStyle={'italic'}
                       fontSize={14}
-                      color={isSame ? '#313131' : '#767676'}>
+                      color={'#313131'}>
                       {isSame
                         ? YOU_DELETED_THIS_MESSAGE
                         : THIS_MESSAGE_WAS_DELETED}

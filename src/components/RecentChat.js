@@ -114,8 +114,7 @@ export default function RecentChat(props) {
                   index={index}
                 />
                 {item.deleteStatus === 1 ? (
-                  <HStack pl="1" mt={'1'} alignItems={'center'}>
-                    <BlockedIcon />
+                  <HStack mt={'1'} alignItems={'center'}>
                     <Text
                       ml={1}
                       mb={'0.5'}
@@ -142,7 +141,8 @@ export default function RecentChat(props) {
                       />
                     ) : (
                       isSame &&
-                      item?.msgStatus === 3 && (
+                      item?.msgStatus === 3 &&
+                      Object.keys(item.msgBody).length > 0 && (
                         <Icon px="3" as={SandTimer} name="emoji-happy" />
                       )
                     )}

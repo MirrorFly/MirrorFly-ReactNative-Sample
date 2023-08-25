@@ -85,7 +85,7 @@ const ChatConversationList = ({
         msgType,
         msgBody: { message_type = '' } = {},
       } = item;
-      console.log(deleteStatus, 'item');
+
       return deleteStatus === 0 ? (
         <ChatMessage
           replyID={replyID}

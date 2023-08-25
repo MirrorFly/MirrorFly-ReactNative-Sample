@@ -313,23 +313,23 @@ function ChatHeader({
               </HStack>
             )}
           {deleteEveryOne ? (
-            <HStack justifyContent={'flex-end'} py="5">
-              <Pressable mr="3" ml={1} onPress={() => handleDeleteForMe(2)}>
-                <Text color={'#3276E2'} fontWeight={'600'}>
-                  DELETE FOR EVERYONE
-                </Text>
-              </Pressable>
-              <Pressable mr="5" ml={2} onPress={() => setRemove(false)}>
-                <Text color={'#3276E2'} fontWeight={'600'}>
-                  CANCEL
-                </Text>
-              </Pressable>
-              <Pressable onPress={() => handleDeleteForMe(1)}>
+            <VStack justifyContent={'flex-end'} pt="5">
+              <Pressable mb="6" onPress={() => handleDeleteForMe(1)}>
                 <Text color={'#3276E2'} fontWeight={'600'}>
                   DELETE FOR ME
                 </Text>
               </Pressable>
-            </HStack>
+              <Pressable mb="6" onPress={() => setRemove(false)}>
+                <Text color={'#3276E2'} fontWeight={'600'}>
+                  CANCEL
+                </Text>
+              </Pressable>
+              <Pressable mb="3" onPress={() => handleDeleteForMe(2)}>
+                <Text color={'#3276E2'} fontWeight={'600'}>
+                  DELETE FOR EVERYONE
+                </Text>
+              </Pressable>
+            </VStack>
           ) : (
             <HStack justifyContent={'flex-end'} py="3">
               <Pressable mr="6" onPress={() => setRemove(false)}>

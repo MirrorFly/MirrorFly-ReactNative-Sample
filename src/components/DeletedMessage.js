@@ -32,6 +32,7 @@ const DeletedMessage = (props = {}) => {
 
   return (
     <Pressable
+      mb="1.5"
       onPress={() => handleMsgSelect(messageObject, true)}
       onLongPress={() => handleMsgSelect(messageObject, true)}>
       <Box
@@ -45,7 +46,6 @@ const DeletedMessage = (props = {}) => {
           <View
             bgColor={isSender ? '#fff' : '#E2E8F7'}
             borderRadius={10}
-            mb={2}
             ml={isSender ? 0 : 3}
             minWidth="30%"
             width="75%"

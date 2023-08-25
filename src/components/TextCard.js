@@ -47,9 +47,8 @@ export default TextCard;
 
 const HighlightedText = ({ text, searchValue = '', index }) => {
   const parts = searchValue
-    ? text.split(new RegExp(`(${searchValue})`, 'gi'))
+    ? text.split(new RegExp(`(${searchValue})`, 'i'))
     : [text];
-
   return (
     <Text>
       {parts.map((part, i) => {

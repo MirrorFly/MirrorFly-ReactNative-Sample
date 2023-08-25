@@ -14,7 +14,7 @@ import {
 } from 'native-base';
 import { Keyboard } from 'react-native';
 import React from 'react';
-import { BackHandler, StyleSheet } from 'react-native';
+import { BackHandler, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import Avathar from '../common/Avathar';
@@ -32,7 +32,10 @@ import MenuContainer from '../common/MenuContainer';
 import { FORWARD_MESSSAGE_SCREEN } from '../constant';
 import LastSeen from './LastSeen';
 import { useDispatch } from 'react-redux';
-import { updateSearachMessageDetail } from '../redux/Actions/SearchMessgeAction';
+import {
+  setConversationSearchText,
+  clearConversationSearchText,
+} from '../redux/Actions/SearchMessgeAction';
 
 const forwardMediaMessageTypes = {
   image: true,
@@ -61,11 +64,13 @@ function ChatHeader({
   const searchMsgList = useSelector(
     state => state?.searchMessageInfo.searchMessageText,
   );
-  const inputRef = React.useRef();
   const dispatch = useDispatch();
 
   React.useEffect(() => {
     getUserProfile();
+    return () => {
+      dispatch(clearConversationSearchText());
+    };
   }, []);
 
   const getUserProfile = async () => {
@@ -76,10 +81,6 @@ function ChatHeader({
     }
   };
 
-  // React.useEffect(() => {
-  //   return inputRef.current.focus();
-  // }, []);
-
   const onClose = () => {
     setRemove(false);
   };
@@ -87,25 +88,6 @@ function ChatHeader({
   const handleDelete = () => {
     setRemove(!remove);
   };
-
-  React.useEffect(() => {
-    return () => {
-      backHandler.remove();
-    };
-  }, []);
-
-  const backHandler = BackHandler.addEventListener(
-    'hardwareBackPress',
-    handleBackSearch,
-  );
-
-  React.useEffect(() => {
-    if (IsSearching) {
-      inputRef.current.focus();
-    } else {
-      Keyboard.dismiss();
-    }
-  }, []);
 
   const handleDeleteForMe = async deleteType => {
     let msgIds = selectedMsgs
@@ -148,7 +130,7 @@ function ChatHeader({
     });
   };
   const handleSearchTextChange = text => {
-    dispatch(updateSearachMessageDetail(text));
+    dispatch(setConversationSearchText(text));
   };
 
   const renderForwardIcon = () => {
@@ -200,7 +182,6 @@ function ChatHeader({
             />
             <View style={styles.TextInput}>
               <Input
-                ref={inputRef}
                 autoFocus
                 variant="underlined"
                 placeholder="Search..."
@@ -211,12 +192,12 @@ function ChatHeader({
               />
             </View>
 
-            <Pressable style={styles.upArrow}>
+            <TouchableOpacity style={styles.upArrow}>
               <UpArrowIcon />
-            </Pressable>
-            <Pressable style={styles.DownArrow}>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.DownArrow}>
               <DownArrowIcon />
-            </Pressable>
+            </TouchableOpacity>
           </HStack>
         </HStack>
       ) : selectedMsgs?.length <= 0 ? (

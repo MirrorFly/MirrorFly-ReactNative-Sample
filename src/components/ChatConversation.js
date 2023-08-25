@@ -6,7 +6,7 @@ import SDK from 'SDK/SDK';
 import { ClearChatHistoryAction } from 'mf-redux/Actions/ConversationAction';
 import { clearLastMessageinRecentChat } from 'mf-redux/Actions/RecentChatAction';
 import { Box, HStack, Modal, Stack, Text, View, useToast } from 'native-base';
-import React from 'react';
+import React, { createRef } from 'react';
 import {
   ImageBackground,
   KeyboardAvoidingView,
@@ -34,7 +34,14 @@ import ReplyText from './ReplyText';
 import ReplyVideo from './ReplyVideo';
 
 const ChatConversation = React.memo(props => {
-  const { handleSendMsg, onReplyMessage, replyMsgRef } = props;
+  const {
+    handleSendMsg,
+    onReplyMessage,
+    replyMsgRef,
+    handleIsSearchingClose,
+    handleIsSearching,
+    IsSearching,
+  } = props;
   const dispatch = useDispatch();
   const chatInputRef = React.useRef(null);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
@@ -47,14 +54,13 @@ const ChatConversation = React.memo(props => {
   const [isOpenAlert, setIsOpenAlert] = React.useState(false);
   const isNetworkConnected = useNetworkStatus();
   const toast = useToast();
-  const [isSearching, setIsSearching] = React.useState(false);
 
   const isSearchClose = () => {
-    setIsSearching(false);
+    handleIsSearchingClose();
   };
 
   const SearchMessageInfo = () => {
-    setIsSearching(true);
+    handleIsSearching();
   };
 
   React.useEffect(() => {
@@ -324,7 +330,7 @@ const ChatConversation = React.memo(props => {
         handleBackBtn={props.handleBackBtn}
         handleReply={handleReply}
         isSearchClose={isSearchClose}
-        IsSearching={isSearching}
+        IsSearching={IsSearching}
         setLocalNav={props.setLocalNav}
       />
       <ImageBackground
@@ -351,6 +357,7 @@ const ChatConversation = React.memo(props => {
         chatInputRef={chatInputRef}
         attachmentMenuIcons={props.attachmentMenuIcons}
         onSendMessage={handleMessageSend}
+        IsSearching={IsSearching}
       />
       <Modal
         isOpen={isOpenAlert}

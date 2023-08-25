@@ -1,8 +1,17 @@
-import { UPDATE_SEARCH__MESSAGE_DETAILS } from './Constants';
+import {
+  CLAER_CONVERSATION_SEARCH_TEXT,
+  SET_CONVERSATION_SEARCH_TEXT,
+} from './Constants';
 
-export const updateSearachMessageDetail = data => {
+export const setConversationSearchText = data => {
   return {
-    type: UPDATE_SEARCH__MESSAGE_DETAILS,
+    type: SET_CONVERSATION_SEARCH_TEXT,
     payload: data,
+  };
+};
+
+export const clearConversationSearchText = () => {
+  return {
+    type: CLAER_CONVERSATION_SEARCH_TEXT,
   };
 };

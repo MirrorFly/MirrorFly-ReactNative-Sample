@@ -1,6 +1,7 @@
 import {
+  CLAER_CONVERSATION_SEARCH_TEXT,
   RESET_STORE,
-  UPDATE_SEARCH__MESSAGE_DETAILS,
+  SET_CONVERSATION_SEARCH_TEXT,
 } from '../Actions/Constants';
 
 const initialState = {
@@ -9,12 +10,16 @@ const initialState = {
 
 const searchMessageReducer = (state = initialState, action) => {
   switch (action.type) {
-    case UPDATE_SEARCH__MESSAGE_DETAILS:
+    case SET_CONVERSATION_SEARCH_TEXT:
       return {
         ...state,
         searchMessageText: action.payload,
       };
-
+    case CLAER_CONVERSATION_SEARCH_TEXT:
+      return {
+        ...state,
+        searchMessageText: '',
+      };
     case RESET_STORE:
       return initialState;
     default:

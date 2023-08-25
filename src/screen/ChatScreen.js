@@ -78,6 +78,15 @@ function ChatScreen() {
   const [selectedSingle, setselectedSingle] = React.useState(false);
   const [alert, setAlert] = React.useState(false);
   const [validate, setValidate] = React.useState('');
+  const [isSearching, setIsSearching] = React.useState(false);
+
+  const handleIsSearching = () => {
+    setIsSearching(true);
+  };
+
+  const handleIsSearchingClose = () => {
+    setIsSearching(false);
+  };
 
   const toastConfig = {
     duration: 1500,
@@ -304,6 +313,10 @@ function ChatScreen() {
   ];
 
   const handleBackBtn = () => {
+    if (isSearching) {
+      setIsSearching(false);
+      return true;
+    }
     if (localNav === 'CHATCONVERSATION') {
       let x = {
         screen: RECENTCHATSCREEN,
@@ -430,7 +443,7 @@ function ChatScreen() {
     const { content } = message;
     const replyTo = replyMsgRef?.msgId || '';
     content[0].fileDetails.replyTo = replyTo;
-    setReplyMsgRef('')
+    setReplyMsgRef('');
     sendMediaMessage(messageType, content, chatType);
   };
 
@@ -576,6 +589,9 @@ function ChatScreen() {
               attachmentMenuIcons={attachmentMenuIcons}
               selectedImages={selectedImages}
               handleSendMsg={handleSendMsg}
+              handleIsSearching={handleIsSearching}
+              handleIsSearchingClose={handleIsSearchingClose}
+              IsSearching={isSearching}
             />
           ),
           MESSAGEINFO: (

@@ -19,6 +19,7 @@ import { REGISTERSCREEN } from '../constant';
 import {
   ClearChatHistoryAction,
   DeleteChatHIstoryAction,
+  deleteMessageForEveryone,
   deleteMessageForMe,
   updateChatConversationHistory,
 } from '../redux/Actions/ConversationAction';
@@ -29,6 +30,7 @@ import { updateProfileDetail } from '../redux/Actions/ProfileAction';
 import {
   clearLastMessageinRecentChat,
   deleteActiveChatAction,
+  recentRecallUpdate,
   recentRemoveMessageUpdate,
   updateMsgByLastMsgId,
   updateRecentChatMessageStatus,
@@ -109,6 +111,17 @@ export const callBacks = {
       ) {
         SDK.getMessageById(res.lastMsgId);
       }
+    }
+
+    if (
+      res.msgType === 'recallMessage' ||
+      res.msgType === 'carbonRecallMessage' ||
+      res.msgType === 'carbonSentRecall' ||
+      res.msgType === 'carbonReceiveRecall' ||
+      (res.msgType === 'acknowledge' && res.type === 'recall')
+    ) {
+      store.dispatch(recentRecallUpdate(res));
+      store.dispatch(deleteMessageForEveryone(res));
     }
 
     /**

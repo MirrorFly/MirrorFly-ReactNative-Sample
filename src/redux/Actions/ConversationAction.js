@@ -4,6 +4,7 @@ import {
   CLEAR_CHAT_HISTORY,
   DELETE_CHAT_HISTORY,
   DELETE_CONVERSATION,
+  DELETE_MESSAGE_FOR_EVERYONE,
   DELETE_MESSAGE_FOR_ME,
   RETRY_MEDIA_UPLOAD,
   UPDATE_CHAT_CONVERSATION_HISTORY,
@@ -70,6 +71,13 @@ export const deleteChatConversationById = chatId => {
 export const deleteMessageForMe = data => {
   return {
     type: DELETE_MESSAGE_FOR_ME,
+    payload: data,
+  };
+};
+
+export const deleteMessageForEveryone = data => {
+  return {
+    type: DELETE_MESSAGE_FOR_EVERYONE,
     payload: data,
   };
 };

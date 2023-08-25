@@ -47,6 +47,7 @@ function ChatHeader({
   const navigation = useNavigation();
   const [remove, setRemove] = React.useState(false);
   const [nickName, setNickName] = React.useState('');
+  const [deleteEveryOne, setDeleteEveryOne] = React.useState(false);
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
   const [isSelected, setSelection] = React.useState(false);
@@ -68,6 +69,17 @@ function ChatHeader({
   };
 
   const handleDelete = () => {
+    let msgIds = selectedMsgs
+      .sort((a, b) => (b.timestamp > a.timestamp ? -1 : 1))
+      .map(el => el.msgId);
+    let lastMsgIndex = selectedMsgs.findIndex(obj => obj.msgId === msgIds[0]);
+    let lastMsgTime = parseInt(selectedMsgs[lastMsgIndex].timestamp / 1000);
+    const now = new Date().getTime();
+    const validTime = lastMsgTime + 30 * 1000;
+    const isSender = selectedMsgs.every(
+      msg => msg.publisherId === vCardProfile.userId && msg.deleteStatus === 0,
+    );
+    setDeleteEveryOne(validTime > now && isSender);
     setRemove(!remove);
   };
 
@@ -289,18 +301,38 @@ function ChatHeader({
                 </Checkbox>
               </HStack>
             )}
-          <HStack justifyContent={'flex-end'} py="3">
-            <Pressable mr="6" onPress={() => setRemove(false)}>
-              <Text color={'#3276E2'} fontWeight={'600'}>
-                CANCEL
-              </Text>
-            </Pressable>
-            <Pressable onPress={() => handleDeleteForMe(1)}>
-              <Text color={'#3276E2'} fontWeight={'600'}>
-                DELETE FOR ME
-              </Text>
-            </Pressable>
-          </HStack>
+          {deleteEveryOne ? (
+            <HStack justifyContent={'flex-end'} py="3">
+              <Pressable mr="6" onPress={() => handleDeleteForMe(2)}>
+                <Text color={'#3276E2'} fontWeight={'600'}>
+                  DELETE FOR EVERYONE
+                </Text>
+              </Pressable>
+              <Pressable mr="6" onPress={() => setRemove(false)}>
+                <Text color={'#3276E2'} fontWeight={'600'}>
+                  CANCEL
+                </Text>
+              </Pressable>
+              <Pressable onPress={() => handleDeleteForMe(1)}>
+                <Text color={'#3276E2'} fontWeight={'600'}>
+                  DELETE FOR ME
+                </Text>
+              </Pressable>
+            </HStack>
+          ) : (
+            <HStack justifyContent={'flex-end'} py="3">
+              <Pressable mr="6" onPress={() => setRemove(false)}>
+                <Text color={'#3276E2'} fontWeight={'600'}>
+                  CANCEL
+                </Text>
+              </Pressable>
+              <Pressable onPress={() => handleDeleteForMe(1)}>
+                <Text color={'#3276E2'} fontWeight={'600'}>
+                  DELETE FOR ME
+                </Text>
+              </Pressable>
+            </HStack>
+          )}
         </Modal.Content>
       </Modal>
     </>

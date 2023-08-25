@@ -247,7 +247,10 @@ const ChatConversation = React.memo(props => {
     }
   };
 
-  const handleMsgSelect = (message, index) => {
+  const handleMsgSelect = (message, recall = false) => {
+    if (recall) {
+      message.recall = true;
+    }
     if (selectedMsgs.find(msg => msg.msgId === message?.msgId)) {
       setSelectedMsgs(prevArray =>
         prevArray.filter(item => message.msgId !== item?.msgId),

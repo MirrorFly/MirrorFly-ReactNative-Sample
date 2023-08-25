@@ -20,6 +20,7 @@ import { useSelector } from 'react-redux';
 import Avathar from '../common/Avathar';
 import {
   AudioMusicIcon,
+  BlockedIcon,
   DocumentChatIcon,
   SandTimer,
   VideoSmallIcon,
@@ -30,6 +31,10 @@ import {
   formatChatDateTime,
 } from '../common/TimeStamp';
 import { RECENTCHATLOADING } from '../constant';
+import {
+  THIS_MESSAGE_WAS_DELETED,
+  YOU_DELETED_THIS_MESSAGE,
+} from 'Helper/Chat/Constant';
 
 export default function RecentChat(props) {
   const {
@@ -108,95 +113,112 @@ export default function RecentChat(props) {
                   searchValue={searchValue}
                   index={index}
                 />
-                <HStack alignItems={'center'}>
-                  {isSame && item?.msgStatus !== 3 ? (
-                    <View
-                      mr="1"
-                      style={[
-                        styles.msgStatus,
-                        isSame && Object.keys(item.msgBody).length
-                          ? statusVisible
-                          : '',
-                      ]}
-                    />
-                  ) : (
-                    isSame &&
-                    item?.msgStatus === 3 && (
-                      <Icon px="3" as={SandTimer} name="emoji-happy" />
-                    )
-                  )}
-                  {
+                {item.deleteStatus === 1 ? (
+                  <HStack pl="1" mt={'1'} alignItems={'center'}>
+                    <BlockedIcon />
+                    <Text
+                      ml={1}
+                      mb={'0.5'}
+                      style={styles.message}
+                      fontStyle={'italic'}
+                      fontSize={14}
+                      color={isSame ? '#313131' : '#767676'}>
+                      {isSame
+                        ? YOU_DELETED_THIS_MESSAGE
+                        : THIS_MESSAGE_WAS_DELETED}
+                    </Text>
+                  </HStack>
+                ) : (
+                  <HStack alignItems={'center'}>
+                    {isSame && item?.msgStatus !== 3 ? (
+                      <View
+                        mr="1"
+                        style={[
+                          styles.msgStatus,
+                          isSame && Object.keys(item.msgBody).length
+                            ? statusVisible
+                            : '',
+                        ]}
+                      />
+                    ) : (
+                      isSame &&
+                      item?.msgStatus === 3 && (
+                        <Icon px="3" as={SandTimer} name="emoji-happy" />
+                      )
+                    )}
                     {
-                      text: (
-                        <HighlightedMessage
-                          text={item?.msgBody?.message}
-                          searchValue={searchValue}
-                          index={index}
-                        />
-                      ),
-                      image: (
-                        <HStack pl="1" alignItems={'center'}>
-                          <Icon as={imageIcon} />
-                          <Text
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                            px={1}
-                            color="#767676"
-                            _dark={{ color: '#767676' }}>
-                            Image
-                          </Text>
-                        </HStack>
-                      ),
-                      video: (
-                        <HStack pl="1" alignItems={'center'}>
-                          <Icon as={() => VideoSmallIcon('#767676')} />
-                          <Text
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                            px={1}
-                            color="#767676"
-                            _dark={{ color: '#767676' }}>
-                            Video
-                          </Text>
-                        </HStack>
-                      ),
-                      file: (
-                        <HStack pl="1" alignItems={'center'}>
-                          <Icon as={DocumentChatIcon} />
-                          <Text
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                            px={1}
-                            color="#767676"
-                            _dark={{ color: '#767676' }}>
-                            File
-                          </Text>
-                        </HStack>
-                      ),
-                      audio: (
-                        <HStack pl="1" alignItems={'center'}>
-                          <Icon
-                            as={() => (
-                              <AudioMusicIcon
-                                width="14"
-                                height="14"
-                                color={'#767676'}
-                              />
-                            )}
+                      {
+                        text: (
+                          <HighlightedMessage
+                            text={item?.msgBody?.message}
+                            searchValue={searchValue}
+                            index={index}
                           />
-                          <Text
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                            px={1}
-                            color="#767676"
-                            _dark={{ color: '#767676' }}>
-                            Audio
-                          </Text>
-                        </HStack>
-                      ),
-                    }[item?.msgBody?.message_type]
-                  }
-                </HStack>
+                        ),
+                        image: (
+                          <HStack pl="1" alignItems={'center'}>
+                            <Icon as={imageIcon} />
+                            <Text
+                              numberOfLines={1}
+                              ellipsizeMode="tail"
+                              px={1}
+                              color="#767676"
+                              _dark={{ color: '#767676' }}>
+                              Image
+                            </Text>
+                          </HStack>
+                        ),
+                        video: (
+                          <HStack pl="1" alignItems={'center'}>
+                            <Icon as={() => VideoSmallIcon('#767676')} />
+                            <Text
+                              numberOfLines={1}
+                              ellipsizeMode="tail"
+                              px={1}
+                              color="#767676"
+                              _dark={{ color: '#767676' }}>
+                              Video
+                            </Text>
+                          </HStack>
+                        ),
+                        file: (
+                          <HStack pl="1" alignItems={'center'}>
+                            <Icon as={DocumentChatIcon} />
+                            <Text
+                              numberOfLines={1}
+                              ellipsizeMode="tail"
+                              px={1}
+                              color="#767676"
+                              _dark={{ color: '#767676' }}>
+                              File
+                            </Text>
+                          </HStack>
+                        ),
+                        audio: (
+                          <HStack pl="1" alignItems={'center'}>
+                            <Icon
+                              as={() => (
+                                <AudioMusicIcon
+                                  width="14"
+                                  height="14"
+                                  color={'#767676'}
+                                />
+                              )}
+                            />
+                            <Text
+                              numberOfLines={1}
+                              ellipsizeMode="tail"
+                              px={1}
+                              color="#767676"
+                              _dark={{ color: '#767676' }}>
+                              Audio
+                            </Text>
+                          </HStack>
+                        ),
+                      }[item?.msgBody?.message_type]
+                    }
+                  </HStack>
+                )}
               </VStack>
               <Spacer />
               <Text

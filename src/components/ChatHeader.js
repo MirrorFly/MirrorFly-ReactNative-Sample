@@ -136,7 +136,9 @@ function ChatHeader({
       ]
         ? isDownloadedOrUploaded
         : true;
-      return _message?.msgStatus !== 3 && isAllowForward ? (
+      return _message?.msgStatus !== 3 &&
+        !selectedMsgs[0]?.recall &&
+        isAllowForward ? (
         <IconButton
           _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
           px="4"
@@ -239,21 +241,24 @@ function ChatHeader({
             flexDirection={'row'}
             justifyContent={'space-between'}
             alignItems={'center'}>
-            {selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 && (
+            {selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 &&
+              !selectedMsgs[0]?.recall && (
+                <IconButton
+                  _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+                  px="2"
+                  onPress={handleReplyMessage}>
+                  {selectedMsgs?.length === 1 && <ReplyIcon />}
+                </IconButton>
+              )}
+            {renderForwardIcon()}
+            {!selectedMsgs[0]?.recall && (
               <IconButton
                 _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-                px="2"
-                onPress={handleReplyMessage}>
-                {selectedMsgs?.length === 1 && <ReplyIcon />}
+                px="3"
+                onPress={handleFavourite}>
+                <FavouriteIcon />
               </IconButton>
             )}
-            {renderForwardIcon()}
-            <IconButton
-              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-              px="3"
-              onPress={handleFavourite}>
-              <FavouriteIcon />
-            </IconButton>
             {selectedMsgs?.length < 2 &&
               selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 &&
               selectedMsgs[0]?.msgBody?.media?.is_downloaded !== 1 && (
@@ -264,9 +269,11 @@ function ChatHeader({
                   <DeleteIcon />
                 </IconButton>
               )}
-            {selectedMsgs?.length === 1 && menuItems.length > 0 && (
-              <MenuContainer menuItems={menuItems} />
-            )}
+            {selectedMsgs?.length === 1 &&
+              menuItems.length > 0 &&
+              !selectedMsgs[0]?.recall && (
+                <MenuContainer menuItems={menuItems} />
+              )}
           </View>
         </View>
       )}
@@ -277,7 +284,11 @@ function ChatHeader({
           px="6"
           py="4"
           fontWeight={'300'}>
-          <Text fontSize={'16'} fontWeight={'400'} numberOfLines={2}>
+          <Text
+            fontSize={'16'}
+            fontWeight={'400'}
+            numberOfLines={2}
+            color={'#767676'}>
             Are you sure you want to delete selected Message?
           </Text>
           {selectedMsgs[0]?.msgBody.message_type !== 'text' &&
@@ -302,13 +313,13 @@ function ChatHeader({
               </HStack>
             )}
           {deleteEveryOne ? (
-            <HStack justifyContent={'flex-end'} py="3">
-              <Pressable mr="6" onPress={() => handleDeleteForMe(2)}>
+            <HStack justifyContent={'flex-end'} py="5">
+              <Pressable mr="3" ml={1} onPress={() => handleDeleteForMe(2)}>
                 <Text color={'#3276E2'} fontWeight={'600'}>
                   DELETE FOR EVERYONE
                 </Text>
               </Pressable>
-              <Pressable mr="6" onPress={() => setRemove(false)}>
+              <Pressable mr="5" ml={2} onPress={() => setRemove(false)}>
                 <Text color={'#3276E2'} fontWeight={'600'}>
                   CANCEL
                 </Text>

@@ -98,15 +98,10 @@ const ChatConversationList = ({
         />
       ) : (
         <DeletedMessage
-          // closeMessageOption={closeMessageOption}
-          // messageInfoOptions={true}
-          // addionalnfo={addionalnfo}
-          // key={msgId}
+          selectedMsgs={selectedMsgs}
           currentUserJID={currentUserJID}
-          // vCardData={data}
+          handleMsgSelect={handleMsgSelect}
           messageObject={item}
-          // messageAction={messageAction}
-          // chatType={chatType}
         />
       );
     },

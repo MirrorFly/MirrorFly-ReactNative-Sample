@@ -5,6 +5,7 @@ import {
   HStack,
   Icon,
   Pressable,
+  ScrollView,
   Slide,
   Spacer,
   Spinner,
@@ -31,7 +32,13 @@ import {
 import { RECENTCHATLOADING } from '../constant';
 
 export default function RecentChat(props) {
-  const { searchValue, handleOnSelect, handleSelect, recentItem } = props;
+  const {
+    searchValue,
+    handleOnSelect,
+    handleSelect,
+    recentItem,
+    filteredMessages,
+  } = props;
   const recentLoading = useSelector(state => state.chat.recentChatStatus);
 
   const onRowDidOpen = rowKey => {
@@ -39,7 +46,7 @@ export default function RecentChat(props) {
   };
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
 
-  const renderItem = ({ item, index }) => {
+  const renderItem = (item, index) => {
     const isSame = currentUserJID.split('@')[0] === item?.publisherId;
     const isSelected = recentItem.some(selectedItem =>
       selectedItem?.userJid
@@ -104,6 +111,7 @@ export default function RecentChat(props) {
                 <HStack alignItems={'center'}>
                   {isSame && item?.msgStatus !== 3 ? (
                     <View
+                      mr="1"
                       style={[
                         styles.msgStatus,
                         isSame && Object.keys(item.msgBody).length
@@ -120,14 +128,11 @@ export default function RecentChat(props) {
                   {
                     {
                       text: (
-                        <Text
-                          numberOfLines={1}
-                          ellipsizeMode="tail"
-                          px={1}
-                          color="#767676"
-                          _dark={{ color: '#767676' }}>
-                          {item?.msgBody?.message}
-                        </Text>
+                        <HighlightedMessage
+                          text={item?.msgBody?.message}
+                          searchValue={searchValue}
+                          index={index}
+                        />
                       ),
                       image: (
                         <HStack pl="1" alignItems={'center'}>
@@ -217,7 +222,7 @@ export default function RecentChat(props) {
       </Box>
     );
   };
-  if (!props?.data?.length) {
+  if (!props?.data?.length && !filteredMessages.length) {
     return (
       <Center h="full" bgColor={'#fff'}>
         <Image
@@ -248,8 +253,8 @@ export default function RecentChat(props) {
   }
 
   return (
-    <View p="0" flex={1} bg={'#fff'}>
-      {searchValue && (
+    <ScrollView p="0" flex={1} bg={'#fff'}>
+      {searchValue && props.data.length > 0 && (
         <View
           width={'100%'}
           height={10}
@@ -265,7 +270,9 @@ export default function RecentChat(props) {
           </HStack>
         </View>
       )}
-      <SwipeListView
+      {props.data.length > 0 &&
+        props.data.map((item, index) => renderItem(item, index))}
+      {/* <SwipeListView
         showsVerticalScrollIndicator={false}
         data={props.data}
         renderItem={renderItem}
@@ -274,8 +281,39 @@ export default function RecentChat(props) {
         previewOpenValue={-40}
         previewOpenDelay={3000}
         onRowDidOpen={onRowDidOpen}
-      />
-    </View>
+      /> */}
+      {searchValue && filteredMessages.length > 0 && (
+        <View
+          width={'100%'}
+          height={10}
+          bg={'#E5E5E5'}
+          justifyContent={'center'}>
+          <HStack>
+            <Text ml={2} color={'#181818'} fontSize={16} fontWeight={'500'}>
+              Messages
+            </Text>
+            <Text ml={'0.5'} fontSize={16} fontWeight={'700'}>
+              ({filteredMessages.length})
+            </Text>
+          </HStack>
+        </View>
+      )}
+      {
+        searchValue &&
+          filteredMessages.length > 0 &&
+          filteredMessages.map((item, index) => renderItem(item, index))
+        // <SwipeListView
+        //   showsVerticalScrollIndicator={false}
+        //   data={filteredMessages}
+        //   renderItem={renderItem}
+        //   rightOpenValue={-130}
+        //   previewRowKey={'0'}
+        //   previewOpenValue={-40}
+        //   previewOpenDelay={3000}
+        //   onRowDidOpen={onRowDidOpen}
+        // />
+      }
+    </ScrollView>
   );
 }
 
@@ -299,6 +337,33 @@ export const HighlightedText = ({ text, searchValue = '', index }) => {
             dark={{ color: 'warmGray.50' }}
             ellipsizeMode="tail"
             bold
+            style={isSearchMatch}>
+            {part}
+          </Text>
+        );
+      })}
+    </HStack>
+  );
+};
+
+export const HighlightedMessage = ({ text, searchValue = '', index }) => {
+  const parts = searchValue
+    ? text.split(new RegExp(`(${searchValue})`, 'gi'))
+    : [text];
+
+  return (
+    <HStack>
+      {parts.map((part, i) => {
+        const isSearchMatch =
+          part.toLowerCase() === searchValue.toLowerCase()
+            ? styles.highlight
+            : {};
+        return (
+          <Text
+            color="#767676"
+            numberOfLines={1}
+            key={++i + '-' + index}
+            ellipsizeMode="tail"
             style={isSearchMatch}>
             {part}
           </Text>

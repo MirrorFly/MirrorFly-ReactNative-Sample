@@ -46,6 +46,7 @@ const FirstComponent = (
   handleSelect,
   handleOnSelect,
   recentItem,
+  filteredMessages,
 ) => (
   <RecentChat
     isSearching={isSearching}
@@ -54,6 +55,7 @@ const FirstComponent = (
     handleSelect={handleSelect}
     handleOnSelect={handleOnSelect}
     recentItem={recentItem}
+    filteredMessages={filteredMessages}
   />
 );
 
@@ -69,6 +71,7 @@ function RecentScreen() {
     { key: 'second', title: 'Calls' },
   ]);
   const [filteredData, setFilteredData] = React.useState([]);
+  const [filteredMessages, setFilteredMessages] = React.useState([]);
   const [isSearching, setIsSearching] = React.useState(false);
   const [recentData, setrecentData] = React.useState([]);
   const [searchValue, setSearchValue] = React.useState('');
@@ -90,6 +93,11 @@ function RecentScreen() {
           .toLowerCase()
           .includes(text.toLowerCase()),
     );
+    SDK.messageSearch(text).then(res => {
+      if (res.statusCode === 200) {
+        setFilteredMessages(res.data);
+      }
+    });
     setFilteredData(filtered);
   };
 
@@ -193,6 +201,7 @@ function RecentScreen() {
       return true;
     }
     if (isSearching) {
+      setFilteredMessages([]);
       setIsSearching(false);
       setSearchValue('');
       return true;
@@ -281,10 +290,18 @@ function RecentScreen() {
             handleSelect,
             handleOnSelect,
             recentItem,
+            filteredMessages,
           ),
         second: RecentCalls,
       }),
-    [isSearching, filteredDataList, searchValue, recentItem, recentData],
+    [
+      isSearching,
+      filteredDataList,
+      searchValue,
+      recentItem,
+      recentData,
+      filteredMessages,
+    ],
   );
 
   return (

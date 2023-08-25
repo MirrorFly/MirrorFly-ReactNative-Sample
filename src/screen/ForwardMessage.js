@@ -350,7 +350,7 @@ const ForwardMessage = () => {
       contactsPaginationRef.current || {};
     if (hasNextPage) {
       nextPage = filter ? 1 : nextPage;
-      const { statusCode, users, totalPages, ...rest } = await SDK.getUsersList(
+      const { statusCode, users, totalPages } = await SDK.getUsersList(
         filter,
         nextPage,
         23,

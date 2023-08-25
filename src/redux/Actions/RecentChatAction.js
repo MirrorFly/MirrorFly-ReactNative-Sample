@@ -6,6 +6,7 @@ import {
   DELETE_SINGLE_CHAT,
   RECENT_REMOVE_MESSAGE_UPDATE,
   UPDATE_MSG_BY_LAST_MSGID,
+  RECENT_RECALL_UPDATE,
 } from './Constants';
 
 export const updateRecentChat = data => {
@@ -53,6 +54,13 @@ export const recentRemoveMessageUpdate = data => {
 export const updateMsgByLastMsgId = data => {
   return {
     type: UPDATE_MSG_BY_LAST_MSGID,
+    payload: data,
+  };
+};
+
+export const recentRecallUpdate = data => {
+  return {
+    type: RECENT_RECALL_UPDATE,
     payload: data,
   };
 };

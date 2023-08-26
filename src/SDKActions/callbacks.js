@@ -39,6 +39,7 @@ import { deleteChatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAct
 import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import store from '../redux/store';
+import { updateUserProfileDetails } from 'Helper/index';
 import SDK from 'SDK/SDK';
 
 export const callBacks = {
@@ -167,8 +168,9 @@ export const callBacks = {
     store.dispatch(updateUserPresence(res));
   },
   userProfileListener: res => {
-    console.log('userProfileListener', res);
+    console.log('User Profile updated', JSON.stringify(res, null, 2));
     store.dispatch(updateProfileDetail(res));
+    updateUserProfileDetails(res);
   },
   replyMessageListener: res => {
     console.log('replyMessageListener', res);

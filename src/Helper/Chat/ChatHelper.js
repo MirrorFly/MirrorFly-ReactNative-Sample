@@ -23,6 +23,7 @@ import {
   getRecentChatMsgObj,
   getUserIdFromJid,
 } from './Utility';
+import { updateRosterData } from 'mf-redux/Actions/rosterAction';
 import {
   DELETE_MESSAGE_FOR_EVERYONE,
   DELETE_MESSAGE_FOR_ME,
@@ -623,4 +624,11 @@ export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
       },
     },
   };
+};
+
+export const updateUserProfileStore = async data => {
+  // updating the store with setTimeout to avoid blocking the UI
+  setTimeout(() => {
+    store.dispatch(updateRosterData(data));
+  }, 0);
 };

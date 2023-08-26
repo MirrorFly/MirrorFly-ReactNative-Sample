@@ -24,6 +24,7 @@ import { DOCUMENT_FORMATS } from '../Helper/Chat/Constant';
 import {
   getMessageObjSender,
   getRecentChatMsgObj,
+  getUserIdFromJid,
 } from '../Helper/Chat/Utility';
 import * as RootNav from '../Navigation/rootNavigation';
 import {
@@ -78,6 +79,11 @@ function ChatScreen() {
   const [selectedSingle, setselectedSingle] = React.useState(false);
   const [alert, setAlert] = React.useState(false);
   const [validate, setValidate] = React.useState('');
+
+  const toUserId = React.useMemo(
+    () => getUserIdFromJid(toUserJid),
+    [toUserJid],
+  );
 
   const toastConfig = {
     duration: 1500,
@@ -430,7 +436,7 @@ function ChatScreen() {
     const { content } = message;
     const replyTo = replyMsgRef?.msgId || '';
     content[0].fileDetails.replyTo = replyTo;
-    setReplyMsgRef('')
+    setReplyMsgRef('');
     sendMediaMessage(messageType, content, chatType);
   };
 
@@ -594,7 +600,7 @@ function ChatScreen() {
               handleSendMsg={handleSendMsg}
             />
           ),
-          UserInfo: <UserInfo setLocalNav={setLocalNav} />,
+          UserInfo: <UserInfo setLocalNav={setLocalNav} toUserId={toUserId} />,
           UsersTapBarInfo: <UsersTapBarInfo setLocalNav={setLocalNav} />,
           Gallery: (
             <SavePicture

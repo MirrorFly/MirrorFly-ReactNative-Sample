@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { sortBydate } from 'Helper/Chat/RecentChat';
-import { debounce, showToast } from 'Helper/index';
+import { debounce, fetchContactsFromSDK, showToast } from 'Helper/index';
 import SDK from 'SDK/SDK';
 import Avathar from 'common/Avathar';
 import { CloseIcon, SearchIcon } from 'common/Icons';
@@ -39,6 +39,7 @@ import {
   deleteChatConversationById,
 } from 'mf-redux/Actions/ConversationAction';
 import { SendBlueIcon } from '../common/Icons';
+import useRosterData from 'hooks/useRosterData';
 
 const showMaxUsersLimitToast = () => {
   const options = {
@@ -95,7 +96,6 @@ const ContactItem = ({
   name,
   userId,
   userJid,
-  colorCode,
   status,
   handleItemSelect,
   isSelected,
@@ -103,6 +103,13 @@ const ContactItem = ({
   searchText,
 }) => {
   const [isChecked, setIsChecked] = useState(false);
+  const {
+    nickName = name,
+    status: profileStatus = status,
+    image: imageToken,
+    colorCode,
+  } = useRosterData(userId);
+
   useEffect(() => {
     if (isSelected !== isChecked) {
       setIsChecked(Boolean(isSelected));
@@ -117,9 +124,9 @@ const ContactItem = ({
     setIsChecked(val => !val);
     handleItemSelect(userId, {
       userId,
-      name,
+      name: nickName,
       colorCode,
-      status,
+      status: profileStatus,
       userJid,
     });
   };
@@ -129,11 +136,15 @@ const ContactItem = ({
       <Pressable onPress={handleChatItemSelect}>
         <View style={styles.recentChatListItems}>
           <View style={styles.recentChatItemAvatarName}>
-            <Avathar data={name || userId} backgroundColor={colorCode} />
+            <Avathar
+              data={nickName || userId}
+              backgroundColor={colorCode}
+              profileImage={imageToken}
+            />
             <View>
               <View style={styles.recentChatItemName}>
                 <HighlightedText
-                  text={name || userId}
+                  text={nickName || userId}
                   searchValue={searchText?.trim()}
                   index={userId}
                 />
@@ -142,7 +153,7 @@ const ContactItem = ({
                 style={styles.recentChatItemStatus}
                 numberOfLines={1}
                 ellipsizeMode="tail">
-                {status}
+                {profileStatus}
               </Text>
             </View>
           </View>
@@ -180,7 +191,6 @@ const RecentChatSectionList = ({
             userJid={item.userJid}
             name={item.profileDetails?.nickName}
             status={item.profileDetails?.status}
-            colorCode={item.profileDetails?.colorCode}
             handleItemSelect={handleChatSelect}
             isSelected={selectedUsers[item.fromUserId]}
             isCheckboxAllowed={Object.keys(selectedUsers).length <= 4} // allow max 5 contacts
@@ -242,15 +252,17 @@ const SelectedUsersName = ({ users, onMessageSend }) => {
   return (
     <NBView style={styles.selectedUsersNameContainer} shadow={2}>
       <Text style={commonStyles.flex1}>{userNames}</Text>
-      <IconButton
-        style={styles.sendButton}
-        onPress={onMessageSend}
-        _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-        icon={
-          <Icon as={<SendBlueIcon color="#fff" />} name="forward-message" />
-        }
-        borderRadius="full"
-      />
+      {users?.length > 0 && (
+        <IconButton
+          style={styles.sendButton}
+          onPress={onMessageSend}
+          _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+          icon={
+            <Icon as={<SendBlueIcon color="#fff" />} name="forward-message" />
+          }
+          borderRadius="full"
+        />
+      )}
     </NBView>
   );
 };
@@ -350,7 +362,7 @@ const ForwardMessage = () => {
       contactsPaginationRef.current || {};
     if (hasNextPage) {
       nextPage = filter ? 1 : nextPage;
-      const { statusCode, users, totalPages, ...rest } = await SDK.getUsersList(
+      const { statusCode, users, totalPages } = await fetchContactsFromSDK(
         filter,
         nextPage,
         23,
@@ -367,6 +379,7 @@ const ForwardMessage = () => {
         };
         showToast('Could not get contacts from server', toastOptions);
       }
+      setShowLoadMoreLoader(false);
     }
   };
 
@@ -381,7 +394,6 @@ const ForwardMessage = () => {
         };
         showToast('Please check your internet connectivity', toastOptions);
       }
-      setShowLoadMoreLoader(false);
     }, 0);
   };
 

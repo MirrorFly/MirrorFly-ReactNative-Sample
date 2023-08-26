@@ -23,6 +23,7 @@ import {
   getRecentChatMsgObj,
   getUserIdFromJid,
 } from './Utility';
+import { updateRosterData } from 'mf-redux/Actions/rosterAction';
 
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
@@ -602,4 +603,11 @@ export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
       },
     },
   };
+};
+
+export const updateUserProfileStore = async data => {
+  // updating the store with setTimeout to avoid blocking the UI
+  setTimeout(() => {
+    store.dispatch(updateRosterData(data));
+  }, 0);
 };

@@ -19,12 +19,12 @@ import {
   ReplyIcon,
   LeftArrowIcon,
 } from '../common/Icons';
-import SDK from 'SDK/SDK';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import LastSeen from './LastSeen';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { FORWARD_MESSSAGE_SCREEN } from '../constant';
+import useRosterData from 'hooks/useRosterData';
 
 const forwardMediaMessageTypes = {
   image: true,
@@ -44,21 +44,19 @@ function ChatHeader({
 }) {
   const navigation = useNavigation();
   const [remove, setRemove] = React.useState(false);
-  const [nickName, setNickName] = React.useState('');
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
 
-  React.useEffect(() => {
-    getUserProfile();
-  }, []);
+  const fromUserId = React.useMemo(
+    () => getUserIdFromJid(fromUserJId),
+    [fromUserJId],
+  );
 
-  const getUserProfile = async () => {
-    let userId = getUserIdFromJid(fromUserJId);
-    if (!nickName) {
-      let userDetails = await SDK.getUserProfile(userId);
-      setNickName(userDetails?.data?.nickName || userId);
-    }
-  };
+  const {
+    nickName = '',
+    image: profileImage = '',
+    colorCode = profileDetails?.colorCode,
+  } = useRosterData(fromUserId);
 
   const onClose = () => {
     setRemove(false);
@@ -151,8 +149,9 @@ function ChatHeader({
             <Avathar
               width={36}
               height={36}
-              backgroundColor={profileDetails?.colorCode}
-              data={profileDetails?.nickName || nickName || '91'}
+              backgroundColor={colorCode}
+              data={nickName || fromUserId}
+              profileImage={profileImage}
             />
             <Pressable w="65%" onPress={handleUserInfo}>
               {({ isPressed }) => {
@@ -164,7 +163,7 @@ function ChatHeader({
                     bg={isPressed ? 'rgba(0,0,0, 0.1)' : 'coolGray.100'}
                     pl="2">
                     <Text color="#181818" fontWeight="700" fontSize="14">
-                      {profileDetails?.nickName || nickName}
+                      {nickName}
                     </Text>
                     <LastSeen jid={fromUserJId} />
                   </VStack>

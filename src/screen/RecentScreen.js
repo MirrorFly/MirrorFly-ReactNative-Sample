@@ -12,7 +12,6 @@ import { FloatingBtn } from '../common/Button';
 import RecentCalls from '../components/RecentCalls';
 import RecentChat from '../components/RecentChat';
 import ScreenHeader from '../components/ScreenHeader';
-// import { logout } from '../redux/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { ResetStore } from 'mf-redux/Actions/ResetAction';
@@ -36,6 +35,7 @@ import RecentHeader from 'components/RecentHeader';
 import { formatUserIdToJid } from 'Helper/Chat/ChatHelper';
 import { HStack, Modal, Text } from 'native-base';
 import { DeleteChatHIstoryAction } from 'mf-redux/Actions/ConversationAction';
+import { updateRosterData } from 'mf-redux/Actions/rosterAction';
 
 const logo = require('../assets/mirrorfly-logo.png');
 
@@ -139,6 +139,7 @@ function RecentScreen() {
         item => item.chatType === 'chat',
       );
       dispatch(addRecentChat(recentChatsFilter));
+      updateRosterDataForRecentChats(recentChatsFilter);
     })();
   }, []);
 
@@ -148,6 +149,13 @@ function RecentScreen() {
       recent.push(chat);
     });
     return recent.filter(eachmessage => eachmessage);
+  };
+
+  const updateRosterDataForRecentChats = singleRecentChatList => {
+    const userProfileDetails = singleRecentChatList.map(
+      chat => chat.profileDetails,
+    );
+    dispatch(updateRosterData(userProfileDetails));
   };
 
   React.useEffect(() => {

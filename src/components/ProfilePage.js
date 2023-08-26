@@ -257,7 +257,7 @@ const ProfilePage = props => {
         console.log('sdkRes', sdkRes);
         if (sdkRes?.statusCode == 200) {
           setImageFileToken(sdkRes.imageFileToken);
-          SDK.setUserProfile(
+          await SDK.setUserProfile(
             props?.profileInfo?.nickName,
             sdkRes.imageFileToken,
             props.profileInfo?.status,
@@ -323,7 +323,7 @@ const ProfilePage = props => {
           console.log('sdkRes', sdkRes);
           if (sdkRes?.statusCode == 200) {
             setImageFileToken(sdkRes.imageFileToken);
-            SDK.setUserProfile(
+            await SDK.setUserProfile(
               props?.profileInfo?.nickName,
               sdkRes.imageFileToken,
               props.profileInfo?.status,
@@ -368,7 +368,6 @@ const ProfilePage = props => {
       props.profileInfo?.mobileNumber,
       props.profileInfo?.email,
     );
-    console.log('updateProfile', updateProfile);
     if (updateProfile.statusCode == 200) {
       toast.show({
         ...toastConfig,
@@ -436,7 +435,9 @@ const ProfilePage = props => {
   }, [props.profileInfo, imageUploading]);
 
   React.useEffect(() => {
-    if (!isConnected && loading) setLoading(false);
+    if (!isConnected && loading) {
+      setloading(false);
+    }
   }, [isConnected]);
 
   return (

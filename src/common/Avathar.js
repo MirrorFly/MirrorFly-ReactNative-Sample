@@ -1,49 +1,69 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import React from 'react';
-import Graphemer from 'graphemer';
+import useFetchImage from 'hooks/useFetchImage';
+import { useNetworkStatus } from '../hooks';
+import { Spinner } from 'native-base';
+import { getUsernameGraphemes } from 'Helper/index';
 
-const Avathar = props => {
-  const splitter = new Graphemer();
-  const styles = StyleSheet.create({
-    imageDiv: {
+const Avathar = ({ profileImage, imageStyle, imageProps = {}, ...props }) => {
+  const [isImageLoadError, setIsImageLoadError] = React.useState(false);
+  const isNetworkConnected = useNetworkStatus();
+  const { imageUrl, authToken, isLoading } = useFetchImage(profileImage);
+
+  React.useEffect(() => {
+    if (isNetworkConnected && isImageLoadError) {
+      setIsImageLoadError(false);
+    }
+  }, [isNetworkConnected]);
+
+  const handleImageError = () => {
+    setIsImageLoadError(true);
+  };
+
+  if (isLoading && profileImage) {
+    return <Spinner />;
+  }
+
+  return profileImage && !isImageLoadError ? (
+    <Image
+      {...imageProps}
+      style={imageStyle || styles.imageDiv(props)}
+      source={{
+        uri: imageUrl,
+        method: 'GET',
+        cache: 'force-cache',
+        headers: {
+          Authorization: authToken,
+        },
+      }}
+      onError={handleImageError}
+    />
+  ) : (
+    <View style={styles.imageDiv(props)}>
+      <Text style={styles.imgName(props)}>
+        {getUsernameGraphemes(props.data)}
+      </Text>
+    </View>
+  );
+};
+
+export default Avathar;
+
+const styles = StyleSheet.create({
+  imageDiv: props => {
+    return {
       width: props.width || 48,
       height: props.height || 48,
       borderRadius: 100,
       backgroundColor: props.backgroundColor || '#9D9D9D',
       justifyContent: 'center',
       alignItems: 'center',
-    },
-    imgName: {
-      color: 'white',
-      fontWeight: '600',
-      fontSize: props.fontSize || 18,
-      textTransform: 'uppercase',
-    },
-  });
-  const extractFirstGraphemes = input => {
-    const graphemes = splitter.splitGraphemes(input);
-    let result = '';
-    if (graphemes.includes(' ')) {
-      let preVele;
-      graphemes.forEach(element => {
-        if (preVele === ' ') {
-          preVele = element;
-          result = graphemes[0] + element;
-        }
-        preVele = element;
-      });
-    }
-    if (!result) {
-      result = graphemes[0] + graphemes[1];
-    }
-    return result;
-  };
-
-  return (
-    <View style={styles.imageDiv}>
-      <Text style={styles.imgName}>{extractFirstGraphemes(props.data)}</Text>
-    </View>
-  );
-};
-
-export default Avathar;
+    };
+  },
+  imgName: props => ({
+    color: 'white',
+    fontWeight: '600',
+    fontSize: props.fontSize || 18,
+    textTransform: 'uppercase',
+  }),
+});

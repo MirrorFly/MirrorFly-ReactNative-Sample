@@ -24,10 +24,15 @@ function ReplyMessage(props) {
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const profileDetails = useSelector(state => state.navigation.profileDetails);
+  const { id: messagesReducerId } = useSelector(
+    state => state.chatConversationData,
+  );
   const [repliedMsg, setRepliedMsg] = React.useState({});
   const { msgBody: { replyTo = '' } = {} } = props.message;
   const {
+    msgBody = {},
     msgBody: { message_type = '', message = '', media = {} } = {},
+    deleteStatus = 0,
     fromUserJid = '',
   } = repliedMsg;
 
@@ -77,7 +82,7 @@ function ReplyMessage(props) {
     setRepliedMsg(
       getMessageFromHistoryById(getUserIdFromJid(fromUserJId), replyTo),
     );
-  }, []);
+  }, [messagesReducerId]);
 
   const durationString = millisToMinutesAndSeconds(media.duration);
   const renderReplyItem = () => {
@@ -330,10 +335,37 @@ function ReplyMessage(props) {
   };
 
   const passReplyTo = () => {
-    handleReplyPress?.(replyTo);
+    handleReplyPress?.(replyTo, props.message);
   };
 
-  return <Pressable onPress={passReplyTo}>{renderReplyItem()}</Pressable>;
+  const handleLongPress = () => {
+    handleReplyPress?.(replyTo, props.message, true);
+  };
+
+  return (
+    <Pressable onPress={passReplyTo} onLongPress={handleLongPress}>
+      {deleteStatus !== 0 || Object.keys(msgBody).length === 0 ? (
+        <View
+          mt="1"
+          px="4"
+          py="1"
+          mb="1"
+          borderRadius={7}
+          bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}>
+          <Text numberOfLines={1} ellipsizeMode="tail" fontWeight={'bold'}>
+            {!isSameUser
+              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
+              : 'You'}
+          </Text>
+          <Text numberOfLines={1} ellipsizeMode="tail">
+            Original message not availabe
+          </Text>
+        </View>
+      ) : (
+        renderReplyItem()
+      )}
+    </Pressable>
+  );
 }
 
 export default ReplyMessage;

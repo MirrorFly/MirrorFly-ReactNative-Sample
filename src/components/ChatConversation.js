@@ -252,7 +252,7 @@ const ChatConversation = React.memo(props => {
   }, []);
 
   const onSelectedMessageUpdate = item => {
-    if (Object.keys(item || {}).length) {
+    if (Object.keys(item || {}).length !== 0 && selectedMsgs.length !== 0) {
       const updatedSeletedMessage = selectedMsgs.map(message => {
         return item[message?.msgId];
       });
@@ -279,7 +279,7 @@ const ChatConversation = React.memo(props => {
       deleteStatus = 0,
       msgBody: { message_type },
     } = replyMsgs;
-    
+
     switch (true) {
       case Object.keys(msgBody).length === 0 || deleteStatus !== 0:
         return (

@@ -114,7 +114,6 @@ export const getVideoThumbImage = async uri => {
       url: uri,
       timeStamp: 10000,
     });
-    console.log(frame, 'frame');
     response = await RNFS.readFile(frame.path, 'base64');
   }
   return response;

@@ -183,17 +183,6 @@ const ChatConversation = React.memo(props => {
             label: 'Report',
             formatter: () => {},
           },
-        ]);
-        break;
-      case foundMsg.length === 0 && selectedMsgs.length > 0:
-        setMenuItems([
-          {
-            label: 'Message Info',
-            formatter: () => {
-              props.setIsMessageInfo(selectedMsgs[0]);
-              props.setLocalNav('MESSAGEINFO');
-            },
-          },
           {
             label:
               selectedMsgs[0].msgBody.message_type === 'text' ||
@@ -204,7 +193,28 @@ const ChatConversation = React.memo(props => {
           },
         ]);
         break;
-      default:
+      case foundMsg.length === 0 &&
+        selectedMsgs.length > 0 &&
+        selectedMsgs[0].msgStatus !== 3:
+        setMenuItems([
+          {
+            label:
+              selectedMsgs[0].msgBody.message_type === 'text' ||
+              selectedMsgs[0]?.msgBody?.media?.caption
+                ? 'Copy'
+                : null,
+            formatter: copyToClipboard,
+          },
+          {
+            label: 'Message Info',
+            formatter: () => {
+              props.setIsMessageInfo(selectedMsgs[0]);
+              props.setLocalNav('MESSAGEINFO');
+            },
+          },
+        ]);
+        break;
+      case selectedMsgs.length === 0:
         setMenuItems([
           {
             label: 'Clear Chat',
@@ -218,6 +228,9 @@ const ChatConversation = React.memo(props => {
           },
         ]);
         break;
+      default:
+        setMenuItems([]);
+        break;
     }
   }, [selectedMsgs, isNetworkConnected]);
 
@@ -225,9 +238,20 @@ const ChatConversation = React.memo(props => {
     dispatch(resetGalleryData());
   }, []);
 
+  const onSelectedMessageUpdate = item => {
+    if (Object.keys(item || {}).length) {
+      const updatedSeletedMessage = selectedMsgs.map(message => {
+        return item[message?.msgId];
+      });
+      setSelectedMsgs(updatedSeletedMessage);
+    }
+  };
+
   const handleMsgSelect = (message, index) => {
-    if (selectedMsgs.includes(message)) {
-      setSelectedMsgs(prevArray => prevArray.filter(item => message !== item));
+    if (selectedMsgs.find(msg => msg.msgId === message?.msgId)) {
+      setSelectedMsgs(prevArray =>
+        prevArray.filter(item => message.msgId !== item?.msgId),
+      );
     } else {
       setSelectedMsgs([...selectedMsgs, message]);
     }
@@ -295,6 +319,7 @@ const ChatConversation = React.memo(props => {
           setLocalNav={props.setLocalNav}
           fromUserJId={fromUserJId}
           handleMsgSelect={handleMsgSelect}
+          onSelectedMessageUpdate={onSelectedMessageUpdate}
           selectedMsgs={selectedMsgs}
         />
       </ImageBackground>

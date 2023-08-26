@@ -191,7 +191,6 @@ function ChatScreen() {
         .then(file => {
           // updating the SDK flag back to false to behave as usual
           SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-          console.log(file);
 
           // Validating the file type and size
           if (!isValidFileType(file.type)) {
@@ -246,11 +245,6 @@ function ChatScreen() {
         let imageReadPermission = await requestStoragePermission();
         const camera_permission = await AsyncStorage.getItem(
           'camera_permission',
-        );
-        console.log(
-          cameraPermission,
-          imageReadPermission,
-          'cameraPermission, imageReadPermission',
         );
         AsyncStorage.setItem('camera_permission', 'true');
         if (
@@ -365,7 +359,6 @@ function ChatScreen() {
         url: uri,
         timeStamp: 10000,
       });
-      console.log(frame, 'frame');
       response = await RNFS.readFile(frame.path, 'base64');
     }
     return response;

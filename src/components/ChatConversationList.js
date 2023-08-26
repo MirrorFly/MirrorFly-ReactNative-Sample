@@ -6,12 +6,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
 import SDK from 'SDK/SDK';
 import { updateMsgSeenStatus } from './chat/common/createMessage';
+import DeletedMessage from './DeletedMessage';
 
 const ChatConversationList = ({
   setLocalNav,
   fromUserJId,
   selectedMsgs,
   handleMsgSelect,
+  onSelectedMessageUpdate,
 }) => {
   const { id: messagesReducerId, data: messages } = useSelector(
     state => state.chatConversationData,
@@ -28,6 +30,7 @@ const ChatConversationList = ({
       ? Object.values(messages[id]?.messages)
       : [];
     data.reverse();
+    onSelectedMessageUpdate(messages[id]?.messages);
     return data;
   }, [messages, fromUserJId]);
 
@@ -75,7 +78,15 @@ const ChatConversationList = ({
 
   const chatMessageRender = React.useCallback(
     ({ item }) => {
-      return (
+      const {
+        deleteStatus,
+        msgId,
+        msgBody,
+        msgType,
+        msgBody: { message_type = '' } = {},
+      } = item;
+      console.log(deleteStatus, 'item');
+      return deleteStatus === 0 ? (
         <ChatMessage
           replyID={replyID}
           backgroundColor={backgroundColor}
@@ -84,6 +95,18 @@ const ChatConversationList = ({
           handleMsgSelect={handleMsgSelect}
           selectedMsgs={selectedMsgs}
           message={item}
+        />
+      ) : (
+        <DeletedMessage
+          // closeMessageOption={closeMessageOption}
+          // messageInfoOptions={true}
+          // addionalnfo={addionalnfo}
+          // key={msgId}
+          currentUserJID={currentUserJID}
+          // vCardData={data}
+          messageObject={item}
+          // messageAction={messageAction}
+          // chatType={chatType}
         />
       );
     },

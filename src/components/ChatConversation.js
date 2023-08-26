@@ -32,6 +32,7 @@ import ReplyImage from './ReplyImage';
 import ReplyLocation from './ReplyLocation';
 import ReplyText from './ReplyText';
 import ReplyVideo from './ReplyVideo';
+import ReplyDeleted from './ReplyDeleted';
 
 const ChatConversation = React.memo(props => {
   const { handleSendMsg, onReplyMessage, replyMsgRef } = props;
@@ -86,6 +87,18 @@ const ChatConversation = React.memo(props => {
   const toastConfig = {
     duration: 2500,
     avoidKeyboard: true,
+  };
+
+  const handleMessageListUpdated = messages => {
+    if (
+      replyMsgs &&
+      Object.keys(replyMsgs).length !== 0 &&
+      !messages[replyMsgs.msgId]
+    ) {
+      setReplyMsgs({ ...replyMsgs, deleteStatus: 1, msgBody: {} });
+    } else if (replyMsgs && messages[replyMsgs?.msgId]) {
+      setReplyMsgs(messages[replyMsgs.msgId]);
+    }
   };
 
   const copyToClipboard = () => {
@@ -261,35 +274,45 @@ const ChatConversation = React.memo(props => {
   };
 
   const renderReplyMessageTemplateAboveInput = () => {
-    switch (replyMsgs?.msgBody?.message_type) {
-      case 'text':
+    const {
+      msgBody,
+      deleteStatus = 0,
+      msgBody: { message_type },
+    } = replyMsgs;
+    
+    switch (true) {
+      case Object.keys(msgBody).length === 0 || deleteStatus !== 0:
+        return (
+          <ReplyDeleted replyMsgItems={replyMsgs} handleRemove={handleRemove} />
+        );
+      case message_type === 'text':
         return (
           <ReplyText replyMsgItems={replyMsgs} handleRemove={handleRemove} />
         );
-      case 'image':
+      case message_type === 'image':
         return (
           <ReplyImage replyMsgItems={replyMsgs} handleRemove={handleRemove} />
         );
-      case 'video':
+      case message_type === 'video':
         return (
           <ReplyVideo replyMsgItems={replyMsgs} handleRemove={handleRemove} />
         );
-      case 'audio':
+      case message_type === 'audio':
         return (
           <ReplyAudio replyMsgItems={replyMsgs} handleRemove={handleRemove} />
         );
-      case 'file':
+      case message_type === 'file':
         return (
           <ReplyDocument
             replyMsgItems={replyMsgs}
             handleRemove={handleRemove}
           />
         );
-      case 'contact':
+      case message_type === 'contact':
         return (
           <ReplyContact replyMsgItems={replyMsgs} handleRemove={handleRemove} />
         );
-      case 'location':
+      case message_type === 'location':
         return (
           <ReplyLocation
             replyMsgItems={replyMsgs}
@@ -319,6 +342,7 @@ const ChatConversation = React.memo(props => {
         source={require('../assets/chatBackgroud.png')}
         style={styles.imageBackground}>
         <ChatConversationList
+          handleMessageListUpdated={handleMessageListUpdated}
           setLocalNav={props.setLocalNav}
           fromUserJId={fromUserJId}
           handleMsgSelect={handleMsgSelect}

@@ -1,14 +1,16 @@
+import { showToast } from 'Helper/index';
+import SDK from 'SDK/SDK';
 import React from 'react';
 import { FlatList } from 'react-native';
-import ChatMessage from './ChatMessage';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { useDispatch, useSelector } from 'react-redux';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
-import SDK from 'SDK/SDK';
-import { updateMsgSeenStatus } from './chat/common/createMessage';
+import ChatMessage from './ChatMessage';
 import DeletedMessage from './DeletedMessage';
+import { updateMsgSeenStatus } from './chat/common/createMessage';
 
 const ChatConversationList = ({
+  handleMessageListUpdated,
   setLocalNav,
   fromUserJId,
   selectedMsgs,
@@ -30,6 +32,7 @@ const ChatConversationList = ({
       ? Object.values(messages[id]?.messages)
       : [];
     data.reverse();
+    handleMessageListUpdated(messages[id]?.messages);
     onSelectedMessageUpdate(messages[id]?.messages);
     return data;
   }, [messages, fromUserJId]);
@@ -60,31 +63,47 @@ const ChatConversationList = ({
   }, [fromUserJId, messages]);
 
   const findMsgIndex = msgId => {
-    return messageList.findIndex(item => item.msgId === msgId);
+    const index = messageList.findIndex(
+      item => item.msgId === msgId && item.deleteStatus === 0,
+    );
+    if (index === -1) {
+      return showToast('This message no longer availabe', { id: 'no_Longer' });
+    } else {
+      return index;
+    }
   };
 
-  const handleReplyPress = replyId => {
-    setReplyID(replyId);
-    setBackgroundColor('rgba(0,0,0,0.2)');
-    flatListRef.current.scrollToIndex({
-      index: findMsgIndex(replyId),
-      animated: true,
-    });
-    setTimeout(() => {
-      setReplyID('');
-      setBackgroundColor('transparent');
-    }, 500);
+  const handleReplyPress = (replyId, item, onLongPress = false) => {
+    switch (true) {
+      case selectedMsgs.length === 0 && onLongPress:
+        handleMsgSelect(item);
+        break;
+      case selectedMsgs.length === 0:
+        setReplyID(replyId);
+        setBackgroundColor('rgba(0,0,0,0.2)');
+        const scrollIndex = findMsgIndex(replyId);
+        if (scrollIndex > -1) {
+          flatListRef.current.scrollToIndex({
+            index: scrollIndex,
+            animated: true,
+          });
+          setTimeout(() => {
+            setReplyID('');
+            setBackgroundColor('transparent');
+          }, 500);
+        }
+        break;
+      case selectedMsgs.length > 0:
+        handleMsgSelect(item);
+        break;
+      default:
+        break;
+    }
   };
 
   const chatMessageRender = React.useCallback(
     ({ item }) => {
-      const {
-        deleteStatus,
-        msgId,
-        msgBody,
-        msgType,
-        msgBody: { message_type = '' } = {},
-      } = item;
+      const { deleteStatus = 0 } = item;
 
       return deleteStatus === 0 ? (
         <ChatMessage

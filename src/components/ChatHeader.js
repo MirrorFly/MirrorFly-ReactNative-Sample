@@ -43,6 +43,7 @@ function ChatHeader({
   handleBackBtn,
   handleReply,
   setLocalNav,
+  chatInputRef,
 }) {
   const navigation = useNavigation();
   const [remove, setRemove] = React.useState(false);
@@ -96,6 +97,7 @@ function ChatHeader({
 
   const handleReplyMessage = () => {
     handleReply(selectedMsgs[0]);
+    chatInputRef.current.focus();
   };
 
   const handleUserInfo = () => {

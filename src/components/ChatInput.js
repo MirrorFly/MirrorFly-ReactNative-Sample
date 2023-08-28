@@ -79,6 +79,7 @@ const ChatInput = props => {
             }}
             borderRadius="full"
           />
+
           <TextInput
             ref={chatInputRef}
             value={message}
@@ -89,6 +90,7 @@ const ChatInput = props => {
             numberOfLines={1}
             multiline={true}
           />
+
           <IconButton
             onPress={handleAttachmentconPressed}
             _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}

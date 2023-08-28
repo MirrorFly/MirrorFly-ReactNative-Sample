@@ -13,6 +13,7 @@ const ReplyText = props => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const isSameUser = fromUserJid === currentUserJID;
   const averageMessageHeight = 60;
+
   React.useEffect(() => {
     if (scrollViewRef.current && selectedMsgIndex !== undefined) {
       const scrollToPosition = selectedMsgIndex * averageMessageHeight;
@@ -52,8 +53,13 @@ const ReplyText = props => {
           <Pressable
             style={{
               padding: 5,
+              top: -3,
+              right: 10,
+              bottom: 0,
               backgroundColor: '#FFF',
-              borderRadius: 20,
+              borderRadius: 10,
+              borderColor: '#000',
+              borderWidth: 1,
             }}
             onPress={RemoveHandle}>
             <ClearTextIcon />

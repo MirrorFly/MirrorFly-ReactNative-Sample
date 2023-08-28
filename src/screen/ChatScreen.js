@@ -430,7 +430,7 @@ function ChatScreen() {
     const { content } = message;
     const replyTo = replyMsgRef?.msgId || '';
     content[0].fileDetails.replyTo = replyTo;
-    setReplyMsgRef('')
+    setReplyMsgRef('');
     sendMediaMessage(messageType, content, chatType);
   };
 

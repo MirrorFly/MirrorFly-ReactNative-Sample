@@ -14,6 +14,7 @@ import mediaDownloadReducer from './Reducers/MediaDownload.Reducer';
 import mediaUploadReducer from './Reducers/MediaUpload.Reducer';
 import singleChatImageReducer from './Reducers/SingleChatImage.Reducer';
 import safeAreaReducer from './Reducers/SafeArea.Reducer';
+import conversationSearchReducer from './Reducers/conversationSearch.Reducer';
 import rosterReducer from './Reducers/roster.Reducer';
 
 const rootReducer = combineReducers({
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   chatSelectedMedia: singleChatImageReducer,
   mediaDownloadData: mediaDownloadReducer,
   safeArea: safeAreaReducer,
+  conversationSearchData: conversationSearchReducer,
   rosterData: rosterReducer,
 });
 

@@ -10,22 +10,31 @@ import {
   Text,
   VStack,
   View,
+  Input,
 } from 'native-base';
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import Avathar from '../common/Avathar';
 import {
   CloseIcon,
   DeleteIcon,
+  DownArrowIcon,
   FavouriteIcon,
   ForwardIcon,
   LeftArrowIcon,
   ReplyIcon,
+  UpArrowIcon,
 } from '../common/Icons';
 import MenuContainer from '../common/MenuContainer';
 import LastSeen from './LastSeen';
+import {
+  setConversationSearchText,
+  clearConversationSearchData,
+  updateConversationSearchMessageIndex,
+} from '../redux/Actions/conversationSearchAction';
+import { showToast } from 'Helper/index';
 import { FORWARD_MESSSAGE_SCREEN } from '../constant';
 import useRosterData from 'hooks/useRosterData';
 
@@ -44,6 +53,8 @@ function ChatHeader({
   handleBackBtn,
   handleReply,
   setLocalNav,
+  IsSearching,
+  isSearchClose,
 }) {
   const navigation = useNavigation();
   const [remove, setRemove] = React.useState(false);
@@ -51,6 +62,18 @@ function ChatHeader({
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
   const [isSelected, setSelection] = React.useState(false);
+  const {
+    searchText: conversationSearchText,
+    messageIndex: conversationSearchMessageIndex,
+    totalSearchResults: conversationSearchTotalSearchResults,
+  } = useSelector(state => state?.conversationSearchData) || {};
+  const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    return () => {
+      dispatch(clearConversationSearchData());
+    };
+  }, []);
 
   const fromUserId = React.useMemo(
     () => getUserIdFromJid(fromUserJId),
@@ -113,11 +136,18 @@ function ChatHeader({
     setLocalNav('UserInfo');
   };
 
+  const handleBackSearch = () => {
+    isSearchClose();
+    dispatch(clearConversationSearchData());
+  };
   const handleForwardMessage = () => {
     navigation.navigate(FORWARD_MESSSAGE_SCREEN, {
       forwardMessages: selectedMsgs,
       onMessageForwaded: handleRemove,
     });
+  };
+  const handleSearchTextChange = text => {
+    dispatch(setConversationSearchText(text));
   };
 
   const renderForwardIcon = () => {
@@ -150,6 +180,82 @@ function ChatHeader({
     }
   };
 
+  const showNoMessageFoundToast = () => {
+    const toastConfig = {
+      id: 'conversation-search-no-message-found-toast',
+    };
+    showToast('No messsage found', toastConfig);
+  };
+
+  const handleMessageSearchIndexGoUp = () => {
+    if (
+      conversationSearchMessageIndex + 1 <
+      conversationSearchTotalSearchResults
+    ) {
+      dispatch(
+        updateConversationSearchMessageIndex(
+          conversationSearchMessageIndex + 1,
+        ),
+      );
+    } else {
+      showNoMessageFoundToast();
+    }
+  };
+
+  const handleMessageSearchIndexGoDown = () => {
+    if (conversationSearchMessageIndex > 0) {
+      dispatch(
+        updateConversationSearchMessageIndex(
+          conversationSearchMessageIndex - 1,
+        ),
+      );
+    } else {
+      showNoMessageFoundToast();
+    }
+  };
+
+  if (IsSearching) {
+    return (
+      <HStack
+        h={'60px'}
+        bg="#F2F2F2"
+        justifyContent="space-between"
+        alignItems="center"
+        borderBottomColor={'#C1C1C1'}
+        borderBottomWidth={1}
+        style={styles.RootContainer}
+        w="full">
+        <IconButton
+          _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+          onPress={handleBackSearch}
+          icon={<Icon as={() => LeftArrowIcon()} name="emoji-happy" />}
+          borderRadius="full"
+        />
+        <View style={styles.TextInput}>
+          <Input
+            autoFocus
+            variant="underlined"
+            placeholder="Search..."
+            value={conversationSearchText}
+            fontSize={18}
+            fontWeight={'500'}
+            onChangeText={handleSearchTextChange}
+          />
+        </View>
+        <TouchableOpacity
+          onPress={handleMessageSearchIndexGoUp}
+          style={styles.upAndDownArrow}>
+          <UpArrowIcon />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleMessageSearchIndexGoDown}
+          style={styles.upAndDownArrow}>
+          <DownArrowIcon width={15} height={7} />
+        </TouchableOpacity>
+      </HStack>
+    );
+  }
+
   return (
     <>
       {selectedMsgs?.length <= 0 ? (
@@ -160,13 +266,7 @@ function ChatHeader({
           alignItems="center"
           borderBottomColor={'#C1C1C1'}
           borderBottomWidth={1}
-          style={{
-            elevation: 2,
-            shadowColor: '#181818',
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: 0.1,
-            shadowRadius: 6,
-          }}
+          style={styles.headerContainer}
           w="full">
           <HStack alignItems="center">
             <IconButton
@@ -208,13 +308,7 @@ function ChatHeader({
         </HStack>
       ) : (
         <View
-          style={{
-            elevation: 2,
-            shadowColor: '#181818',
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: 0.1,
-            shadowRadius: 6,
-          }}
+          style={styles.subContainer}
           flexDirection={'row'}
           backgroundColor={'#F2F2F4'}
           alignItems={'center'}
@@ -356,5 +450,33 @@ const styles = StyleSheet.create({
   checkbox: {
     alignSelf: 'center',
     borderColor: '#3276E2',
+  },
+  headerContainer: {
+    elevation: 2,
+    shadowColor: '#181818',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+  },
+  RootContainer: {
+    elevation: 2,
+    shadowColor: '#181818',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+  },
+  subContainer: {
+    elevation: 2,
+    shadowColor: '#181818',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+  },
+  TextInput: { flex: 1, marginLeft: 12 },
+  upAndDownArrow: {
+    marginHorizontal: 5,
+    paddingVertical: 15,
+    paddingHorizontal: 14,
+    borderRadius: 50,
   },
 });

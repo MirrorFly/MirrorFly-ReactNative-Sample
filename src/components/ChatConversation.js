@@ -6,7 +6,7 @@ import SDK from 'SDK/SDK';
 import { ClearChatHistoryAction } from 'mf-redux/Actions/ConversationAction';
 import { clearLastMessageinRecentChat } from 'mf-redux/Actions/RecentChatAction';
 import { Box, HStack, Modal, Stack, Text, View, useToast } from 'native-base';
-import React from 'react';
+import React, { createRef } from 'react';
 import {
   ImageBackground,
   KeyboardAvoidingView,
@@ -35,7 +35,14 @@ import ReplyVideo from './ReplyVideo';
 import ReplyDeleted from './ReplyDeleted';
 
 const ChatConversation = React.memo(props => {
-  const { handleSendMsg, onReplyMessage, replyMsgRef } = props;
+  const {
+    handleSendMsg,
+    onReplyMessage,
+    replyMsgRef,
+    handleIsSearchingClose,
+    handleIsSearching,
+    IsSearching,
+  } = props;
   const dispatch = useDispatch();
   const chatInputRef = React.useRef(null);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
@@ -44,10 +51,17 @@ const ChatConversation = React.memo(props => {
   const [selectedMsgs, setSelectedMsgs] = React.useState([]);
   const [replyMsgs, setReplyMsgs] = React.useState();
   const [menuItems, setMenuItems] = React.useState([]);
-  // const [selectedMsgIndex, setSelectedMsgIndex] = React.useState();
   const [isOpenAlert, setIsOpenAlert] = React.useState(false);
   const isNetworkConnected = useNetworkStatus();
   const toast = useToast();
+
+  const isSearchClose = () => {
+    handleIsSearchingClose();
+  };
+
+  const handleConversationSearchPress = () => {
+    handleIsSearching();
+  };
 
   React.useEffect(() => {
     setReplyMsgs(replyMsgRef);
@@ -239,6 +253,10 @@ const ChatConversation = React.memo(props => {
             label: 'Report',
             formatter: () => {},
           },
+          {
+            label: 'Search',
+            formatter: handleConversationSearchPress,
+          },
         ]);
         break;
       default:
@@ -336,6 +354,8 @@ const ChatConversation = React.memo(props => {
         menuItems={menuItems}
         handleBackBtn={props.handleBackBtn}
         handleReply={handleReply}
+        isSearchClose={isSearchClose}
+        IsSearching={IsSearching}
         setLocalNav={props.setLocalNav}
       />
       <ImageBackground
@@ -363,6 +383,7 @@ const ChatConversation = React.memo(props => {
         chatInputRef={chatInputRef}
         attachmentMenuIcons={props.attachmentMenuIcons}
         onSendMessage={handleMessageSend}
+        IsSearching={IsSearching}
       />
       <Modal
         isOpen={isOpenAlert}

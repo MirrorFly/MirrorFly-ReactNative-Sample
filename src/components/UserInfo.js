@@ -1,12 +1,20 @@
 import React from 'react';
 import { BackHandler, StyleSheet, View } from 'react-native';
 import CollapsingToolbar from './CollapsibleToolbar';
-import { useSelector } from 'react-redux';
+import useRosterData from 'hooks/useRosterData';
 
-const UserInfo = props => {
-  const profileDetails = useSelector(state => state.navigation.profileDetails);
+const UserInfo = ({ setLocalNav, toUserId }) => {
+  const {
+    nickName = '',
+    colorCode = '',
+    status = '',
+    mobileNumber = '',
+    email = '',
+    image = '',
+  } = useRosterData(toUserId);
+
   const handleBackBtn = () => {
-    props.setLocalNav('CHATCONVERSATION');
+    setLocalNav('CHATCONVERSATION');
   };
 
   const backHandler = BackHandler.addEventListener(
@@ -23,13 +31,14 @@ const UserInfo = props => {
   return (
     <View style={styles.container}>
       <CollapsingToolbar
-        bgColor={profileDetails.colorCode}
-        title={profileDetails.nickName}
-        titleColor={profileDetails.colorCode}
-        titleStatus={profileDetails.status}
-        mobileNo={profileDetails.mobileNumber}
-        email={profileDetails.email}
-        setLocalNav={props.setLocalNav}
+        bgColor={colorCode}
+        title={nickName}
+        titleColor={colorCode}
+        titleStatus={status}
+        mobileNo={mobileNumber || toUserId}
+        imageToken={image}
+        email={email}
+        setLocalNav={setLocalNav}
         handleBackBtn={handleBackBtn}
       />
     </View>

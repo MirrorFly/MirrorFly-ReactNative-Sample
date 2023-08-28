@@ -15,3 +15,12 @@ export const emptyMessage = (newMessage, messageArray = []) => {
     return messageObject;
   });
 };
+
+export const updateRecall = (newMessage, messageArray = []) => {
+  return messageArray.map(messageObject => {
+    if (newMessage.msgId.includes(messageObject.msgId)) {
+      messageObject.deleteStatus = 1;
+    }
+    return messageObject;
+  });
+};

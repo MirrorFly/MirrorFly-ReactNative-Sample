@@ -1,9 +1,16 @@
 import React, { createRef } from 'react';
 import { Box, Text, Toast } from 'native-base';
 import { Alert, Platform } from 'react-native';
+import Graphemer from 'graphemer';
 import RNFS from 'react-native-fs';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import { createThumbnail } from 'react-native-create-thumbnail';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Store from 'mf-redux/store';
+import { updateRosterData } from 'mf-redux/Actions/rosterAction';
+import { profileDetail } from 'mf-redux/Actions/ProfileAction';
+import SDK from 'SDK/SDK';
+import { updateUserProfileStore } from './Chat/ChatHelper';
 
 const toastLocalRef = createRef({});
 toastLocalRef.current = {};
@@ -120,4 +127,70 @@ export const debounce = (func, delay) => {
       func.apply(this, args);
     }, delay);
   };
+};
+
+/**
+ * Helper function to update the User profile details
+ *
+ * If It is current User It is update in Async Storage as well
+ */
+export const updateUserProfileDetails = async data => {
+  const userIdentifier = JSON.parse(
+    (await AsyncStorage.getItem('userIdentifier')) || '""',
+  );
+  if (data?.userId === userIdentifier) {
+    AsyncStorage.setItem('vCardProfile', JSON.stringify(data));
+    Store.dispatch(profileDetail(data));
+  } else {
+    Store.dispatch(updateRosterData(data));
+  }
+};
+
+const memoizedUsernameGraphemes = {};
+const splitter = new Graphemer();
+
+export const getUsernameGraphemes = (input = '') => {
+  if (memoizedUsernameGraphemes[input]) {
+    return memoizedUsernameGraphemes[input];
+  }
+
+  if (input) {
+    const graphemes = splitter.splitGraphemes(input);
+    let result = '';
+    if (graphemes.includes(' ')) {
+      let preVele;
+      graphemes.forEach(element => {
+        if (preVele === ' ') {
+          preVele = element;
+          result = graphemes[0] + element;
+        }
+        preVele = element;
+      });
+    }
+    if (!result) {
+      result = graphemes[0] + graphemes[1];
+    }
+    result = result.toUpperCase();
+    memoizedUsernameGraphemes[input] = result;
+    return result;
+  } else {
+    return '';
+  }
+};
+
+export const fetchContactsFromSDK = async (
+  _searchText,
+  _pageNumber,
+  _limit,
+) => {
+  let contactsResponse = await SDK.getUsersList(
+    _searchText,
+    _pageNumber,
+    _limit,
+  );
+  // update the user profile store
+  if (contactsResponse.statusCode === 200) {
+    updateUserProfileStore(contactsResponse.users);
+  }
+  return contactsResponse;
 };

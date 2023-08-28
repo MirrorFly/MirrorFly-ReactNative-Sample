@@ -353,9 +353,7 @@ function ReplyMessage(props) {
           borderRadius={7}
           bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}>
           <Text numberOfLines={1} ellipsizeMode="tail" fontWeight={'bold'}>
-            {!isSameUser
-              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
-              : 'You'}
+            {!isSameUser ? nickName || getUserIdFromJid(fromUserJId) : 'You'}
           </Text>
           <Text numberOfLines={1} ellipsizeMode="tail">
             Original message not availabe

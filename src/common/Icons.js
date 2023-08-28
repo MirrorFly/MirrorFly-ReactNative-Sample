@@ -884,12 +884,12 @@ export const StatusIcon = () => {
   );
 };
 
-export const DownArrowIcon = () => {
+export const DownArrowIcon = ({ width, height }) => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="12"
-      height="8"
+      width={width || '12'}
+      height={height || '8'}
       viewBox="0 0 10 5.67">
       <Path
         id="drop_down"
@@ -2617,12 +2617,12 @@ export const DocumentChatIcon = props => {
   );
 };
 
-export const UpArrowIcon = props => {
+export const UpArrowIcon = ({ width, height }) => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="15"
-      height="7"
+      width={width || '15'}
+      height={height || '7'}
       viewBox="0 0 10 5.67">
       <Path
         id="drop_down"

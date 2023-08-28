@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
 import SDK from 'SDK/SDK';
 import { updateMsgSeenStatus } from './chat/common/createMessage';
+import { updateConversationTotalSearchResults } from 'mf-redux/Actions/conversationSearchAction';
 
 const ChatConversationList = ({
   setLocalNav,
@@ -17,11 +18,19 @@ const ChatConversationList = ({
   const { id: messagesReducerId, data: messages } = useSelector(
     state => state.chatConversationData,
   );
+
+  const {
+    searchText: conversationSearchText,
+    messageIndex: searchMesageIndex,
+  } = useSelector(state => state.conversationSearchData) || {};
+
   const dispatch = useDispatch();
   const flatListRef = React.useRef(null);
+  const filteredMessageIndexes = React.useRef([]);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
-  const [backgroundColor, setBackgroundColor] = React.useState('transparent');
-  const [replyID, setReplyID] = React.useState('');
+  const [highlightMessageId, setHighlightMessageId] = React.useState('');
+  const [highlightMessageBackgroundColor, setHighlightMessageBackgroundColor] =
+    React.useState('transparent');
 
   const messageList = React.useMemo(() => {
     const id = getUserIdFromJid(fromUserJId);
@@ -58,20 +67,65 @@ const ChatConversationList = ({
     })();
   }, [fromUserJId, messages]);
 
+  React.useEffect(() => {
+    if (conversationSearchText) {
+      // updating the filtered messages indices refs data
+      filteredMessageIndexes.current = [];
+      const _filteredMsgIndices = [];
+      const _searchText = conversationSearchText.toLowerCase();
+      messageList.forEach((msg, index) => {
+        if (msg?.msgBody?.message_type === 'text') {
+          if (msg?.msgBody?.message?.toLowerCase?.().includes?.(_searchText)) {
+            _filteredMsgIndices.push({ index, msgId: msg.msgId });
+          }
+        }
+      });
+      filteredMessageIndexes.current = _filteredMsgIndices;
+      setTimeout(() => {
+        dispatch(
+          updateConversationTotalSearchResults(_filteredMsgIndices.length),
+        );
+      }, 0);
+    }
+  }, [messageList, conversationSearchText]);
+
+  React.useEffect(() => {
+    if (conversationSearchText) {
+      const _indexToScroll =
+        filteredMessageIndexes.current?.[searchMesageIndex]?.index ?? -1;
+      // updating the scrollview ref when searchText or the search message index changed
+      if (_indexToScroll > -1) {
+        setHighlightMessageId(
+          filteredMessageIndexes.current?.[searchMesageIndex]?.msgId,
+        );
+        setHighlightMessageBackgroundColor('rgba(0,0,0,0.2)');
+        flatListRef.current.scrollToIndex({
+          index: _indexToScroll,
+          animated: true,
+          viewPosition: 0.5,
+        });
+        setTimeout(() => {
+          setHighlightMessageId('');
+          setHighlightMessageBackgroundColor('transparent');
+        }, 500);
+      }
+    }
+  }, [conversationSearchText, searchMesageIndex]);
+
   const findMsgIndex = msgId => {
     return messageList.findIndex(item => item.msgId === msgId);
   };
 
   const handleReplyPress = replyId => {
-    setReplyID(replyId);
-    setBackgroundColor('rgba(0,0,0,0.2)');
+    setHighlightMessageId(replyId);
+    setHighlightMessageBackgroundColor('rgba(0,0,0,0.2)');
     flatListRef.current.scrollToIndex({
       index: findMsgIndex(replyId),
       animated: true,
     });
     setTimeout(() => {
-      setReplyID('');
-      setBackgroundColor('transparent');
+      setHighlightMessageId('');
+      setHighlightMessageBackgroundColor('transparent');
     }, 500);
   };
 
@@ -79,8 +133,8 @@ const ChatConversationList = ({
     ({ item }) => {
       return (
         <ChatMessage
-          replyID={replyID}
-          backgroundColor={backgroundColor}
+          highlightMessageId={highlightMessageId}
+          highlightMessageBackgroundColor={highlightMessageBackgroundColor}
           handleReplyPress={handleReplyPress}
           setLocalNav={setLocalNav}
           handleMsgSelect={handleMsgSelect}
@@ -93,13 +147,13 @@ const ChatConversationList = ({
       handleMsgSelect,
       selectedMsgs,
       setLocalNav,
-      backgroundColor,
-      replyID,
+      highlightMessageBackgroundColor,
+      highlightMessageId,
       messageList,
     ],
   );
 
-  const doNtg = () => {};
+  const doNothing = () => null;
 
   return (
     <FlatList
@@ -110,7 +164,7 @@ const ChatConversationList = ({
       keyExtractor={item => item.msgId.toString()}
       initialNumToRender={20}
       maxToRenderPerBatch={40}
-      onScrollToIndexFailed={doNtg}
+      onScrollToIndexFailed={doNothing}
       windowSize={15}
     />
   );

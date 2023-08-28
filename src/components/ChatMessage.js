@@ -22,8 +22,13 @@ const ChatMessage = props => {
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
   let isSame = currentUserJID === props?.message?.fromUserJid;
   let statusVisible = 'notSend';
-  const { message, setLocalNav, handleReplyPress, backgroundColor, replyID } =
-    props;
+  const {
+    message,
+    setLocalNav,
+    handleReplyPress,
+    highlightMessageBackgroundColor,
+    highlightMessageId,
+  } = props;
   const {
     msgBody = {},
     msgBody: {
@@ -166,7 +171,11 @@ const ChatMessage = props => {
   return (
     <Pressable
       onPress={handleMessageSelect}
-      style={replyID === msgId && { backgroundColor }}
+      style={
+        highlightMessageId === msgId && {
+          backgroundColor: highlightMessageBackgroundColor,
+        }
+      }
       onLongPress={handleMessageLongPress}>
       {({ isPressed }) => {
         return (

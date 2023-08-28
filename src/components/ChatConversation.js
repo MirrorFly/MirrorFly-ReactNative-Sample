@@ -50,7 +50,6 @@ const ChatConversation = React.memo(props => {
   const [selectedMsgs, setSelectedMsgs] = React.useState([]);
   const [replyMsgs, setReplyMsgs] = React.useState();
   const [menuItems, setMenuItems] = React.useState([]);
-  // const [selectedMsgIndex, setSelectedMsgIndex] = React.useState();
   const [isOpenAlert, setIsOpenAlert] = React.useState(false);
   const isNetworkConnected = useNetworkStatus();
   const toast = useToast();
@@ -59,7 +58,7 @@ const ChatConversation = React.memo(props => {
     handleIsSearchingClose();
   };
 
-  const SearchMessageInfo = () => {
+  const handleConversationSearchPress = () => {
     handleIsSearching();
   };
 
@@ -243,7 +242,7 @@ const ChatConversation = React.memo(props => {
           },
           {
             label: 'Search',
-            formatter: SearchMessageInfo,
+            formatter: handleConversationSearchPress,
           },
         ]);
         break;

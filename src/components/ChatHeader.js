@@ -12,10 +12,9 @@ import {
   View,
   Input,
 } from 'native-base';
-import { Keyboard } from 'react-native';
 import React from 'react';
-import { BackHandler, StyleSheet, TouchableOpacity } from 'react-native';
-import { useSelector } from 'react-redux';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import Avathar from '../common/Avathar';
 import {
@@ -31,11 +30,12 @@ import {
 import MenuContainer from '../common/MenuContainer';
 import { FORWARD_MESSSAGE_SCREEN } from '../constant';
 import LastSeen from './LastSeen';
-import { useDispatch } from 'react-redux';
 import {
   setConversationSearchText,
-  clearConversationSearchText,
-} from '../redux/Actions/SearchMessgeAction';
+  clearConversationSearchData,
+  updateConversationSearchMessageIndex,
+} from '../redux/Actions/conversationSearchAction';
+import { showToast } from 'Helper/index';
 
 const forwardMediaMessageTypes = {
   image: true,
@@ -61,15 +61,17 @@ function ChatHeader({
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
   const [isSelected, setSelection] = React.useState(false);
-  const searchMsgList = useSelector(
-    state => state?.searchMessageInfo.searchMessageText,
-  );
+  const {
+    searchText: conversationSearchText,
+    messageIndex: conversationSearchMessageIndex,
+    totalSearchResults: conversationSearchTotalSearchResults,
+  } = useSelector(state => state?.conversationSearchData) || {};
   const dispatch = useDispatch();
 
   React.useEffect(() => {
     getUserProfile();
     return () => {
-      dispatch(clearConversationSearchText());
+      dispatch(clearConversationSearchData());
     };
   }, []);
 
@@ -122,6 +124,7 @@ function ChatHeader({
 
   const handleBackSearch = () => {
     isSearchClose();
+    dispatch(clearConversationSearchData());
   };
   const handleForwardMessage = () => {
     navigation.navigate(FORWARD_MESSSAGE_SCREEN, {
@@ -161,46 +164,85 @@ function ChatHeader({
     }
   };
 
+  const showNoMessageFoundToast = () => {
+    const toastConfig = {
+      id: 'conversation-search-no-message-found-toast',
+    };
+    showToast('No messsage found', toastConfig);
+  };
+
+  const handleMessageSearchIndexGoUp = () => {
+    if (
+      conversationSearchMessageIndex + 1 <
+      conversationSearchTotalSearchResults
+    ) {
+      dispatch(
+        updateConversationSearchMessageIndex(
+          conversationSearchMessageIndex + 1,
+        ),
+      );
+    } else {
+      showNoMessageFoundToast();
+    }
+  };
+
+  const handleMessageSearchIndexGoDown = () => {
+    if (conversationSearchMessageIndex > 0) {
+      dispatch(
+        updateConversationSearchMessageIndex(
+          conversationSearchMessageIndex - 1,
+        ),
+      );
+    } else {
+      showNoMessageFoundToast();
+    }
+  };
+
+  if (IsSearching) {
+    return (
+      <HStack
+        h={'60px'}
+        bg="#F2F2F2"
+        justifyContent="space-between"
+        alignItems="center"
+        borderBottomColor={'#C1C1C1'}
+        borderBottomWidth={1}
+        style={styles.RootContainer}
+        w="full">
+        <IconButton
+          _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+          onPress={handleBackSearch}
+          icon={<Icon as={() => LeftArrowIcon()} name="emoji-happy" />}
+          borderRadius="full"
+        />
+        <View style={styles.TextInput}>
+          <Input
+            autoFocus
+            variant="underlined"
+            placeholder="Search..."
+            value={conversationSearchText}
+            fontSize={18}
+            fontWeight={'500'}
+            onChangeText={handleSearchTextChange}
+          />
+        </View>
+        <TouchableOpacity
+          onPress={handleMessageSearchIndexGoUp}
+          style={styles.upAndDownArrow}>
+          <UpArrowIcon />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleMessageSearchIndexGoDown}
+          style={styles.upAndDownArrow}>
+          <DownArrowIcon width={15} height={7} />
+        </TouchableOpacity>
+      </HStack>
+    );
+  }
+
   return (
     <>
-      {IsSearching ? (
-        <HStack
-          h={'60px'}
-          bg="#F2F2F2"
-          justifyContent="space-between"
-          alignItems="center"
-          borderBottomColor={'#C1C1C1'}
-          borderBottomWidth={1}
-          style={styles.RootContainer}
-          w="full">
-          <HStack alignItems="center">
-            <IconButton
-              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-              onPress={handleBackSearch}
-              icon={<Icon as={() => LeftArrowIcon()} name="emoji-happy" />}
-              borderRadius="full"
-            />
-            <View style={styles.TextInput}>
-              <Input
-                autoFocus
-                variant="underlined"
-                placeholder="Search..."
-                value={searchMsgList}
-                fontSize={18}
-                fontWeight={'500'}
-                onChangeText={handleSearchTextChange}
-              />
-            </View>
-
-            <TouchableOpacity style={styles.upArrow}>
-              <UpArrowIcon />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.DownArrow}>
-              <DownArrowIcon />
-            </TouchableOpacity>
-          </HStack>
-        </HStack>
-      ) : selectedMsgs?.length <= 0 ? (
+      {selectedMsgs?.length <= 0 ? (
         <HStack
           h={'60px'}
           bg="#F2F2F2"
@@ -307,7 +349,6 @@ function ChatHeader({
           </View>
         </View>
       )}
-
       <Modal isOpen={remove} safeAreaTop={true} onClose={onClose}>
         <Modal.Content
           w="88%"
@@ -385,7 +426,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 6,
   },
-  TextInput: { width: 240, marginLeft: 12 },
-  upArrow: { marginLeft: 25 },
-  DownArrow: { marginLeft: 50 },
+  TextInput: { flex: 1, marginLeft: 12 },
+  upAndDownArrow: {
+    marginHorizontal: 5,
+    paddingVertical: 15,
+    paddingHorizontal: 14,
+    borderRadius: 50,
+  },
 });

@@ -1,4 +1,4 @@
-import { HStack, Text, View } from 'native-base';
+import { Text, View } from 'native-base';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -7,9 +7,11 @@ import ReplyMessage from './ReplyMessage';
 const TextCard = props => {
   const { handleReplyPress, message } = props;
   const { msgBody: { replyTo = '' } = {} } = message;
-  const searchMsgList = useSelector(
-    state => state?.searchMessageInfo.searchMessageText,
+
+  const conversationSearchText = useSelector(
+    state => state.conversationSearchData?.searchText,
   );
+
   return (
     <View
       bgColor={props.isSame ? '#E2E8F7' : '#fff'}
@@ -27,12 +29,12 @@ const TextCard = props => {
           isSame={props.isSame}
         />
       )}
-      <View>
+      <Text style={styles.message}>
         <HighlightedText
           text={props.data?.message}
-          searchValue={searchMsgList}
+          searchValue={conversationSearchText}
         />
-      </View>
+      </Text>
 
       <View style={styles.timeStamp}>
         {props.data.status}
@@ -45,7 +47,7 @@ const TextCard = props => {
 };
 export default TextCard;
 
-const HighlightedText = ({ text, searchValue = '', index }) => {
+const HighlightedText = ({ textStyle = {}, text, searchValue = '', index }) => {
   const parts = searchValue
     ? text.split(new RegExp(`(${searchValue})`, 'i'))
     : [text];
@@ -62,7 +64,7 @@ const HighlightedText = ({ text, searchValue = '', index }) => {
             key={++i + '-' + index}
             dark={{ color: 'warmGray.50' }}
             ellipsizeMode="tail"
-            style={isSearchMatch}>
+            style={[textStyle, isSearchMatch]}>
             {part}
           </Text>
         );

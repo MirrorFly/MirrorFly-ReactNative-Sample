@@ -50,11 +50,12 @@ const RecentChatItem = ({
   const _handlePress = () => {
     handleSelect(item);
   };
+  const { profileDetails = {} } = item;
   const {
-    nickName = item?.fromUserId,
+    nickName = profileDetails.nickName,
     userId = '',
-    image = '',
-    colorCode = item?.profileDetails?.colorCode,
+    image = profileDetails?.image,
+    colorCode = profileDetails?.colorCode,
   } = useRosterData(item?.fromUserId);
   return (
     <Box key={index}>

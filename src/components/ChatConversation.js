@@ -239,14 +239,12 @@ const initialLeftActionState = false; // Adjust as needed
         break;
       case foundMsg.length === 0 &&
         selectedMsgs.length > 0 &&
-        selectedMsgs[0].msgStatus === 3:
+        selectedMsgs[0].msgStatus === 3 &&
+        selectedMsgs[0].msgBody.message_type === 'text' &&
+        selectedMsgs[0]?.msgBody?.media?.caption:
         setMenuItems([
           {
-            label:
-              selectedMsgs[0].msgBody.message_type === 'text' ||
-              selectedMsgs[0]?.msgBody?.media?.caption
-                ? 'Copy'
-                : null,
+            label: 'Copy',
             formatter: copyToClipboard,
           },
         ]);

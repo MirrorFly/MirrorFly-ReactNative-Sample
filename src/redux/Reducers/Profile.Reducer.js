@@ -18,7 +18,7 @@ const profileReducer = (state = initialState, action) => {
       };
     case UPDATE_PROFILE_DETAILS:
       if (
-        action.payload.userId == state.profileDetails.userId &&
+        action.payload.userId === state.profileDetails.userId &&
         action.payload !== state.profileDetails
       ) {
         return {
@@ -28,7 +28,7 @@ const profileReducer = (state = initialState, action) => {
       }
       return state;
     case RESET_STORE:
-      return initialState
+      return initialState;
     default:
       return state;
   }

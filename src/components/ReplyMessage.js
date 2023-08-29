@@ -17,23 +17,41 @@ import { DocIcon, PdfIcon, PPTIcon, XLSIcon, ZipIcon } from '../common/Icons';
 import { getExtension } from './chat/common/fileUploadValidation';
 import { useSelector } from 'react-redux';
 import { Pressable } from 'react-native';
+import useRosterData from 'hooks/useRosterData';
 
 function ReplyMessage(props) {
   const { handleReplyPress } = props;
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const profileDetails = useSelector(state => state.navigation.profileDetails);
+  const { id: messagesReducerId } = useSelector(
+    state => state.chatConversationData,
+  );
   const [repliedMsg, setRepliedMsg] = React.useState({});
   const { msgBody: { replyTo = '' } = {} } = props.message;
   const {
+    msgBody = {},
     msgBody: { message_type = '', message = '', media = {} } = {},
+    deleteStatus = 0,
     fromUserJid = '',
   } = repliedMsg;
+
+  const fromUserId = React.useMemo(
+    () => getUserIdFromJid(fromUserJId),
+    [fromUserJId],
+  );
+
+  const isSameUser = fromUserJid === currentUserJID;
+
+  const { nickName = profileDetails?.nickName || fromUserId } = useRosterData(
+    isSameUser ? '' : fromUserId,
+  );
+
+  const replyMessageUserNickName = !isSameUser ? nickName : 'You';
+
   const fileExtension = getExtension(media?.fileName, false);
   const imageUrl =
     'https://subli.info/wp-content/uploads/2015/05/google-maps-blur.png';
-
-  const isSameUser = fromUserJid === currentUserJID;
 
   const renderFileIcon = React.useCallback(() => {
     switch (fileExtension) {
@@ -64,7 +82,7 @@ function ReplyMessage(props) {
     setRepliedMsg(
       getMessageFromHistoryById(getUserIdFromJid(fromUserJId), replyTo),
     );
-  }, []);
+  }, [messagesReducerId]);
 
   const durationString = millisToMinutesAndSeconds(media.duration);
   const renderReplyItem = () => {
@@ -78,9 +96,7 @@ function ReplyMessage(props) {
           borderRadius={7}
           bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}>
           <Text numberOfLines={1} ellipsizeMode="tail" fontWeight={'bold'}>
-            {!isSameUser
-              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
-              : 'You'}
+            {replyMessageUserNickName}
           </Text>
           <Text numberOfLines={1} ellipsizeMode="tail">
             {message}
@@ -106,9 +122,7 @@ function ReplyMessage(props) {
             fontSize={14}
             ellipsizeMode="tail"
             fontWeight={'bold'}>
-            {!isSameUser
-              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
-              : 'You'}
+            {replyMessageUserNickName}
           </Text>
           <HStack mt="1" alignItems={'center'} pl={1}>
             <CameraSmallIcon color={'#7285B5'} width={13} height={13} />
@@ -217,9 +231,7 @@ function ReplyMessage(props) {
             fontSize={14}
             ellipsizeMode="tail"
             fontWeight={'bold'}>
-            {!isSameUser
-              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
-              : 'You'}
+            {replyMessageUserNickName}
           </Text>
           <Text color="#313131" mt="1" fontSize={14} fontWeight={400}>
             {durationString}
@@ -259,9 +271,7 @@ function ReplyMessage(props) {
             fontSize={14}
             ellipsizeMode="tail"
             fontWeight={'bold'}>
-            {!isSameUser
-              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
-              : 'You'}
+            {replyMessageUserNickName}
           </Text>
           <HStack mt="1" alignItems={'center'}>
             <DocumentChatIcon
@@ -312,9 +322,7 @@ function ReplyMessage(props) {
             fontSize={11}
             ellipsizeMode="tail"
             fontWeight={'bold'}>
-            {!isSameUser
-              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
-              : 'You'}
+            {replyMessageUserNickName}
           </Text>
           <HStack alignItems={'center'} pl={1}>
             <ContactChatIcon
@@ -345,9 +353,7 @@ function ReplyMessage(props) {
             fontSize={11}
             ellipsizeMode="tail"
             fontWeight={'bold'}>
-            {!isSameUser
-              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
-              : 'You'}
+            {replyMessageUserNickName}
           </Text>
 
           <View
@@ -385,10 +391,37 @@ function ReplyMessage(props) {
   };
 
   const passReplyTo = () => {
-    handleReplyPress?.(replyTo);
+    handleReplyPress?.(replyTo, props.message);
   };
 
-  return <Pressable onPress={passReplyTo}>{renderReplyItem()}</Pressable>;
+  const handleLongPress = () => {
+    handleReplyPress?.(replyTo, props.message, true);
+  };
+
+  return (
+    <Pressable onPress={passReplyTo} onLongPress={handleLongPress}>
+      {deleteStatus !== 0 || Object.keys(msgBody).length === 0 ? (
+        <View
+          mt="1"
+          px="4"
+          py="1"
+          mb="1"
+          borderRadius={7}
+          bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}>
+          <Text numberOfLines={1} ellipsizeMode="tail" fontWeight={'bold'}>
+            {!isSameUser
+              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
+              : 'You'}
+          </Text>
+          <Text numberOfLines={1} ellipsizeMode="tail">
+            Original message not availabe
+          </Text>
+        </View>
+      ) : (
+        renderReplyItem()
+      )}
+    </Pressable>
+  );
 }
 
 export default ReplyMessage;

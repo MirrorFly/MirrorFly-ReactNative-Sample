@@ -1,5 +1,5 @@
 import { changeTimeFormat } from '../../common/TimeStamp';
-import { formatUserIdToJid, isGroupChat } from './ChatHelper';
+import { formatUserIdToJid, isGroupChat, isSingleChat } from './ChatHelper';
 import {
   GROUP_CHAT_PROFILE_UPDATED_NOTIFY,
   MAX_HEIGHT_AND,
@@ -262,4 +262,10 @@ export const millisToMinutesAndSeconds = millis => {
     (seconds < 10 ? '0' : '') +
     seconds
   );
+};
+
+export const getSenderIdFromMsgObj = msgObj => {
+  if (!msgObj || typeof msgObj !== 'object') return '';
+  const { fromUserJid, publisherId } = msgObj;
+  return isSingleChat(msgObj.chatType) ? fromUserJid : publisherId;
 };

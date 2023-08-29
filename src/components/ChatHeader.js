@@ -10,23 +10,33 @@ import {
   Text,
   VStack,
   View,
+  Input,
 } from 'native-base';
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import Avathar from '../common/Avathar';
 import {
   CloseIcon,
   DeleteIcon,
+  DownArrowIcon,
   FavouriteIcon,
   ForwardIcon,
   LeftArrowIcon,
   ReplyIcon,
+  UpArrowIcon,
 } from '../common/Icons';
 import MenuContainer from '../common/MenuContainer';
-import { FORWARD_MESSSAGE_SCREEN } from '../constant';
 import LastSeen from './LastSeen';
+import {
+  setConversationSearchText,
+  clearConversationSearchData,
+  updateConversationSearchMessageIndex,
+} from '../redux/Actions/conversationSearchAction';
+import { showToast } from 'Helper/index';
+import { FORWARD_MESSSAGE_SCREEN } from '../constant';
+import useRosterData from 'hooks/useRosterData';
 
 const forwardMediaMessageTypes = {
   image: true,
@@ -44,31 +54,55 @@ function ChatHeader({
   handleReply,
   setLocalNav,
   chatInputRef,
+  IsSearching,
+  isSearchClose,
 }) {
   const navigation = useNavigation();
   const [remove, setRemove] = React.useState(false);
-  const [nickName, setNickName] = React.useState('');
+  const [deleteEveryOne, setDeleteEveryOne] = React.useState(false);
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
   const [isSelected, setSelection] = React.useState(false);
+  const {
+    searchText: conversationSearchText,
+    messageIndex: conversationSearchMessageIndex,
+    totalSearchResults: conversationSearchTotalSearchResults,
+  } = useSelector(state => state?.conversationSearchData) || {};
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
-    getUserProfile();
+    return () => {
+      dispatch(clearConversationSearchData());
+    };
   }, []);
 
-  const getUserProfile = async () => {
-    let userId = getUserIdFromJid(fromUserJId);
-    if (!nickName) {
-      let userDetails = await SDK.getUserProfile(userId);
-      setNickName(userDetails?.data?.nickName || userId);
-    }
-  };
+  const fromUserId = React.useMemo(
+    () => getUserIdFromJid(fromUserJId),
+    [fromUserJId],
+  );
+
+  const {
+    nickName = '',
+    image: profileImage = '',
+    colorCode = profileDetails?.colorCode,
+  } = useRosterData(fromUserId);
 
   const onClose = () => {
     setRemove(false);
   };
 
   const handleDelete = () => {
+    let msgIds = selectedMsgs
+      .sort((a, b) => (b.timestamp > a.timestamp ? -1 : 1))
+      .map(el => el.msgId);
+    let lastMsgIndex = selectedMsgs.findIndex(obj => obj.msgId === msgIds[0]);
+    let lastMsgTime = parseInt(selectedMsgs[lastMsgIndex].timestamp / 1000);
+    const now = new Date().getTime();
+    const validTime = lastMsgTime + 30 * 1000;
+    const isSender = selectedMsgs.every(
+      msg => msg.publisherId === vCardProfile.userId && msg.deleteStatus === 0,
+    );
+    setDeleteEveryOne(validTime > now && isSender);
     setRemove(!remove);
   };
 
@@ -104,11 +138,18 @@ function ChatHeader({
     setLocalNav('UserInfo');
   };
 
+  const handleBackSearch = () => {
+    isSearchClose();
+    dispatch(clearConversationSearchData());
+  };
   const handleForwardMessage = () => {
     navigation.navigate(FORWARD_MESSSAGE_SCREEN, {
       forwardMessages: selectedMsgs,
       onMessageForwaded: handleRemove,
     });
+  };
+  const handleSearchTextChange = text => {
+    dispatch(setConversationSearchText(text));
   };
 
   const renderForwardIcon = () => {
@@ -126,7 +167,9 @@ function ChatHeader({
       ]
         ? isDownloadedOrUploaded
         : true;
-      return _message?.msgStatus !== 3 && isAllowForward ? (
+      return _message?.msgStatus !== 3 &&
+        !selectedMsgs[0]?.recall &&
+        isAllowForward ? (
         <IconButton
           _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
           px="4"
@@ -139,6 +182,82 @@ function ChatHeader({
     }
   };
 
+  const showNoMessageFoundToast = () => {
+    const toastConfig = {
+      id: 'conversation-search-no-message-found-toast',
+    };
+    showToast('No messsage found', toastConfig);
+  };
+
+  const handleMessageSearchIndexGoUp = () => {
+    if (
+      conversationSearchMessageIndex + 1 <
+      conversationSearchTotalSearchResults
+    ) {
+      dispatch(
+        updateConversationSearchMessageIndex(
+          conversationSearchMessageIndex + 1,
+        ),
+      );
+    } else {
+      showNoMessageFoundToast();
+    }
+  };
+
+  const handleMessageSearchIndexGoDown = () => {
+    if (conversationSearchMessageIndex > 0) {
+      dispatch(
+        updateConversationSearchMessageIndex(
+          conversationSearchMessageIndex - 1,
+        ),
+      );
+    } else {
+      showNoMessageFoundToast();
+    }
+  };
+
+  if (IsSearching) {
+    return (
+      <HStack
+        h={'60px'}
+        bg="#F2F2F2"
+        justifyContent="space-between"
+        alignItems="center"
+        borderBottomColor={'#C1C1C1'}
+        borderBottomWidth={1}
+        style={styles.RootContainer}
+        w="full">
+        <IconButton
+          _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+          onPress={handleBackSearch}
+          icon={<Icon as={() => LeftArrowIcon()} name="emoji-happy" />}
+          borderRadius="full"
+        />
+        <View style={styles.TextInput}>
+          <Input
+            autoFocus
+            variant="underlined"
+            placeholder="Search..."
+            value={conversationSearchText}
+            fontSize={18}
+            fontWeight={'500'}
+            onChangeText={handleSearchTextChange}
+          />
+        </View>
+        <TouchableOpacity
+          onPress={handleMessageSearchIndexGoUp}
+          style={styles.upAndDownArrow}>
+          <UpArrowIcon />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleMessageSearchIndexGoDown}
+          style={styles.upAndDownArrow}>
+          <DownArrowIcon width={15} height={7} />
+        </TouchableOpacity>
+      </HStack>
+    );
+  }
+
   return (
     <>
       {selectedMsgs?.length <= 0 ? (
@@ -149,13 +268,7 @@ function ChatHeader({
           alignItems="center"
           borderBottomColor={'#C1C1C1'}
           borderBottomWidth={1}
-          style={{
-            elevation: 2,
-            shadowColor: '#181818',
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: 0.1,
-            shadowRadius: 6,
-          }}
+          style={styles.headerContainer}
           w="full">
           <HStack alignItems="center">
             <IconButton
@@ -167,8 +280,9 @@ function ChatHeader({
             <Avathar
               width={36}
               height={36}
-              backgroundColor={profileDetails?.colorCode}
-              data={profileDetails?.nickName || nickName || '91'}
+              backgroundColor={colorCode}
+              data={nickName || fromUserId}
+              profileImage={profileImage}
             />
             <Pressable w="65%" onPress={handleUserInfo}>
               {({ isPressed }) => {
@@ -180,7 +294,7 @@ function ChatHeader({
                     bg={isPressed ? 'rgba(0,0,0, 0.1)' : 'coolGray.100'}
                     pl="2">
                     <Text color="#181818" fontWeight="700" fontSize="14">
-                      {profileDetails?.nickName || nickName}
+                      {nickName}
                     </Text>
                     <LastSeen jid={fromUserJId} />
                   </VStack>
@@ -196,13 +310,7 @@ function ChatHeader({
         </HStack>
       ) : (
         <View
-          style={{
-            elevation: 2,
-            shadowColor: '#181818',
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: 0.1,
-            shadowRadius: 6,
-          }}
+          style={styles.subContainer}
           flexDirection={'row'}
           backgroundColor={'#F2F2F4'}
           alignItems={'center'}
@@ -229,21 +337,24 @@ function ChatHeader({
             flexDirection={'row'}
             justifyContent={'space-between'}
             alignItems={'center'}>
-            {selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 && (
+            {selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 &&
+              !selectedMsgs[0]?.recall && (
+                <IconButton
+                  _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+                  px="2"
+                  onPress={handleReplyMessage}>
+                  {selectedMsgs?.length === 1 && <ReplyIcon />}
+                </IconButton>
+              )}
+            {renderForwardIcon()}
+            {!selectedMsgs[0]?.recall && (
               <IconButton
                 _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-                px="2"
-                onPress={handleReplyMessage}>
-                {selectedMsgs?.length === 1 && <ReplyIcon />}
+                px="3"
+                onPress={handleFavourite}>
+                <FavouriteIcon />
               </IconButton>
             )}
-            {renderForwardIcon()}
-            <IconButton
-              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-              px="3"
-              onPress={handleFavourite}>
-              <FavouriteIcon />
-            </IconButton>
             {selectedMsgs?.length < 2 &&
               selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 &&
               selectedMsgs[0]?.msgBody?.media?.is_downloaded !== 1 && (
@@ -254,9 +365,11 @@ function ChatHeader({
                   <DeleteIcon />
                 </IconButton>
               )}
-            {selectedMsgs?.length === 1 && menuItems.length > 0 && (
-              <MenuContainer menuItems={menuItems} />
-            )}
+            {selectedMsgs?.length === 1 &&
+              menuItems.length > 0 &&
+              !selectedMsgs[0]?.recall && (
+                <MenuContainer menuItems={menuItems} />
+              )}
           </View>
         </View>
       )}
@@ -267,7 +380,11 @@ function ChatHeader({
           px="6"
           py="4"
           fontWeight={'300'}>
-          <Text fontSize={'16'} fontWeight={'400'} numberOfLines={2}>
+          <Text
+            fontSize={'16'}
+            fontWeight={'400'}
+            numberOfLines={2}
+            color={'#767676'}>
             Are you sure you want to delete selected Message?
           </Text>
           {selectedMsgs[0]?.msgBody.message_type !== 'text' &&
@@ -291,18 +408,38 @@ function ChatHeader({
                 </Checkbox>
               </HStack>
             )}
-          <HStack justifyContent={'flex-end'} py="3">
-            <Pressable mr="6" onPress={() => setRemove(false)}>
-              <Text color={'#3276E2'} fontWeight={'600'}>
-                CANCEL
-              </Text>
-            </Pressable>
-            <Pressable onPress={() => handleDeleteForMe(1)}>
-              <Text color={'#3276E2'} fontWeight={'600'}>
-                DELETE FOR ME
-              </Text>
-            </Pressable>
-          </HStack>
+          {deleteEveryOne ? (
+            <VStack justifyContent={'flex-end'} pt="5">
+              <Pressable mb="6" onPress={() => handleDeleteForMe(1)}>
+                <Text color={'#3276E2'} fontWeight={'600'}>
+                  DELETE FOR ME
+                </Text>
+              </Pressable>
+              <Pressable mb="6" onPress={() => setRemove(false)}>
+                <Text color={'#3276E2'} fontWeight={'600'}>
+                  CANCEL
+                </Text>
+              </Pressable>
+              <Pressable mb="3" onPress={() => handleDeleteForMe(2)}>
+                <Text color={'#3276E2'} fontWeight={'600'}>
+                  DELETE FOR EVERYONE
+                </Text>
+              </Pressable>
+            </VStack>
+          ) : (
+            <HStack justifyContent={'flex-end'} py="3">
+              <Pressable mr="6" onPress={() => setRemove(false)}>
+                <Text color={'#3276E2'} fontWeight={'600'}>
+                  CANCEL
+                </Text>
+              </Pressable>
+              <Pressable onPress={() => handleDeleteForMe(1)}>
+                <Text color={'#3276E2'} fontWeight={'600'}>
+                  DELETE FOR ME
+                </Text>
+              </Pressable>
+            </HStack>
+          )}
         </Modal.Content>
       </Modal>
     </>
@@ -315,5 +452,33 @@ const styles = StyleSheet.create({
   checkbox: {
     alignSelf: 'center',
     borderColor: '#3276E2',
+  },
+  headerContainer: {
+    elevation: 2,
+    shadowColor: '#181818',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+  },
+  RootContainer: {
+    elevation: 2,
+    shadowColor: '#181818',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+  },
+  subContainer: {
+    elevation: 2,
+    shadowColor: '#181818',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+  },
+  TextInput: { flex: 1, marginLeft: 12 },
+  upAndDownArrow: {
+    marginHorizontal: 5,
+    paddingVertical: 15,
+    paddingHorizontal: 14,
+    borderRadius: 50,
   },
 });

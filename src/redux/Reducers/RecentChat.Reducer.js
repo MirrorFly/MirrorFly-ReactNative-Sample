@@ -1,8 +1,9 @@
-import { emptyMessage } from 'components/Recall';
+import { emptyMessage, updateRecall } from 'components/Recall';
 import { getMsgStatusInOrder } from '../../Helper/Chat/ChatHelper';
 import {
   ADD_RECENT_CHAT,
   DELETE_SINGLE_CHAT,
+  RECENT_RECALL_UPDATE,
   RECENT_REMOVE_MESSAGE_UPDATE,
   RESET_STORE,
   UPDATE_MSG_BY_LAST_MSGID,
@@ -142,6 +143,12 @@ const recentChatReducer = (state = initialState, action) => {
         ...state,
         id: Date.now(),
         data: updateMsgByLastMsgId(action.payload, StateToObj(state).data),
+      };
+    case RECENT_RECALL_UPDATE:
+      return {
+        ...state,
+        id: Date.now(),
+        data: updateRecall(action.payload, StateToObj(state).data),
       };
     case RESET_STORE:
       return initialState;

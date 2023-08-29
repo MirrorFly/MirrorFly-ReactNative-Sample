@@ -6,7 +6,7 @@ import SDK from 'SDK/SDK';
 import { ClearChatHistoryAction } from 'mf-redux/Actions/ConversationAction';
 import { clearLastMessageinRecentChat } from 'mf-redux/Actions/RecentChatAction';
 import { Box, HStack, Modal, Stack, Text, View, useToast } from 'native-base';
-import React from 'react';
+import React, { createRef } from 'react';
 import {
   ImageBackground,
   KeyboardAvoidingView,
@@ -32,9 +32,17 @@ import ReplyImage from './ReplyImage';
 import ReplyLocation from './ReplyLocation';
 import ReplyText from './ReplyText';
 import ReplyVideo from './ReplyVideo';
+import ReplyDeleted from './ReplyDeleted';
 
 const ChatConversation = React.memo(props => {
-  const { handleSendMsg, onReplyMessage, replyMsgRef } = props;
+  const {
+    handleSendMsg,
+    onReplyMessage,
+    replyMsgRef,
+    handleIsSearchingClose,
+    handleIsSearching,
+    IsSearching,
+  } = props;
   const dispatch = useDispatch();
   const chatInputRef = React.useRef(null);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
@@ -43,10 +51,17 @@ const ChatConversation = React.memo(props => {
   const [selectedMsgs, setSelectedMsgs] = React.useState([]);
   const [replyMsgs, setReplyMsgs] = React.useState();
   const [menuItems, setMenuItems] = React.useState([]);
-  // const [selectedMsgIndex, setSelectedMsgIndex] = React.useState();
   const [isOpenAlert, setIsOpenAlert] = React.useState(false);
   const isNetworkConnected = useNetworkStatus();
   const toast = useToast();
+
+  const isSearchClose = () => {
+    handleIsSearchingClose();
+  };
+
+  const handleConversationSearchPress = () => {
+    handleIsSearching();
+  };
 
   React.useEffect(() => {
     setReplyMsgs(replyMsgRef);
@@ -86,6 +101,18 @@ const initialLeftActionState = false; // Adjust as needed
   const toastConfig = {
     duration: 2500,
     avoidKeyboard: true,
+  };
+
+  const handleMessageListUpdated = messages => {
+    if (
+      replyMsgs &&
+      Object.keys(replyMsgs).length !== 0 &&
+      !messages[replyMsgs.msgId]
+    ) {
+      setReplyMsgs({ ...replyMsgs, deleteStatus: 1, msgBody: {} });
+    } else if (replyMsgs && messages[replyMsgs?.msgId]) {
+      setReplyMsgs(messages[replyMsgs.msgId]);
+    }
   };
 
   const copyToClipboard = () => {
@@ -221,6 +248,10 @@ const initialLeftActionState = false; // Adjust as needed
             label: 'Report',
             formatter: () => {},
           },
+          {
+            label: 'Search',
+            formatter: handleConversationSearchPress,
+          },
         ]);
         break;
       default:
@@ -234,7 +265,7 @@ const initialLeftActionState = false; // Adjust as needed
   }, []);
 
   const onSelectedMessageUpdate = item => {
-    if (Object.keys(item || {}).length) {
+    if (Object.keys(item || {}).length !== 0 && selectedMsgs.length !== 0) {
       const updatedSeletedMessage = selectedMsgs.map(message => {
         return item[message?.msgId];
       });
@@ -242,7 +273,10 @@ const initialLeftActionState = false; // Adjust as needed
     }
   };
 
-  const handleMsgSelect = (message, index) => {
+  const handleMsgSelect = (message, recall = false) => {
+    if (recall) {
+      message.recall = true;
+    }
     if (selectedMsgs.find(msg => msg.msgId === message?.msgId)) {
       setSelectedMsgs(prevArray =>
         prevArray.filter(item => message.msgId !== item?.msgId),
@@ -253,35 +287,45 @@ const initialLeftActionState = false; // Adjust as needed
   };
 
   const renderReplyMessageTemplateAboveInput = () => {
-    switch (replyMsgs?.msgBody?.message_type) {
-      case 'text':
+    const {
+      msgBody,
+      deleteStatus = 0,
+      msgBody: { message_type },
+    } = replyMsgs;
+
+    switch (true) {
+      case Object.keys(msgBody).length === 0 || deleteStatus !== 0:
+        return (
+          <ReplyDeleted replyMsgItems={replyMsgs} handleRemove={handleRemove} />
+        );
+      case message_type === 'text':
         return (
           <ReplyText replyMsgItems={replyMsgs} handleRemove={handleRemove} />
         );
-      case 'image':
+      case message_type === 'image':
         return (
           <ReplyImage replyMsgItems={replyMsgs} handleRemove={handleRemove} />
         );
-      case 'video':
+      case message_type === 'video':
         return (
           <ReplyVideo replyMsgItems={replyMsgs} handleRemove={handleRemove} />
         );
-      case 'audio':
+      case message_type === 'audio':
         return (
           <ReplyAudio replyMsgItems={replyMsgs} handleRemove={handleRemove} />
         );
-      case 'file':
+      case message_type === 'file':
         return (
           <ReplyDocument
             replyMsgItems={replyMsgs}
             handleRemove={handleRemove}
           />
         );
-      case 'contact':
+      case message_type === 'contact':
         return (
           <ReplyContact replyMsgItems={replyMsgs} handleRemove={handleRemove} />
         );
-      case 'location':
+      case message_type === 'location':
         return (
           <ReplyLocation
             replyMsgItems={replyMsgs}
@@ -305,6 +349,8 @@ const initialLeftActionState = false; // Adjust as needed
         menuItems={menuItems}
         handleBackBtn={props.handleBackBtn}
         handleReply={handleReply}
+        isSearchClose={isSearchClose}
+        IsSearching={IsSearching}
         setLocalNav={props.setLocalNav}
         chatInputRef={chatInputRef}
       />
@@ -312,6 +358,7 @@ const initialLeftActionState = false; // Adjust as needed
         source={require('../assets/chatBackgroud.png')}
         style={styles.imageBackground}>
         <ChatConversationList
+          handleMessageListUpdated={handleMessageListUpdated}
           setLocalNav={props.setLocalNav}
           fromUserJId={fromUserJId}
           handleMsgSelect={handleMsgSelect}
@@ -334,6 +381,7 @@ const initialLeftActionState = false; // Adjust as needed
         attachmentMenuIcons={props.attachmentMenuIcons}
         onSendMessage={handleMessageSend}
         selectedMsgs={selectedMsgs}
+        IsSearching={IsSearching}
       />
 
       <Modal

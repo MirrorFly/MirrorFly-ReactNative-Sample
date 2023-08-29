@@ -19,6 +19,7 @@ import { REGISTERSCREEN } from '../constant';
 import {
   ClearChatHistoryAction,
   DeleteChatHIstoryAction,
+  deleteMessageForEveryone,
   deleteMessageForMe,
   updateChatConversationHistory,
 } from '../redux/Actions/ConversationAction';
@@ -29,6 +30,7 @@ import { updateProfileDetail } from '../redux/Actions/ProfileAction';
 import {
   clearLastMessageinRecentChat,
   deleteActiveChatAction,
+  recentRecallUpdate,
   recentRemoveMessageUpdate,
   updateMsgByLastMsgId,
   updateRecentChatMessageStatus,
@@ -37,6 +39,7 @@ import { deleteChatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAct
 import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import store from '../redux/store';
+import { updateUserProfileDetails } from 'Helper/index';
 import SDK from 'SDK/SDK';
 
 export const callBacks = {
@@ -111,6 +114,17 @@ export const callBacks = {
       }
     }
 
+    if (
+      res.msgType === 'recallMessage' ||
+      res.msgType === 'carbonRecallMessage' ||
+      res.msgType === 'carbonSentRecall' ||
+      res.msgType === 'carbonReceiveRecall' ||
+      (res.msgType === 'acknowledge' && res.type === 'recall')
+    ) {
+      store.dispatch(recentRecallUpdate(res));
+      store.dispatch(deleteMessageForEveryone(res));
+    }
+
     /**
         // if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {
             // store.dispatch(updateRecentChatMessageStatus(res))
@@ -154,8 +168,9 @@ export const callBacks = {
     store.dispatch(updateUserPresence(res));
   },
   userProfileListener: res => {
-    console.log('userProfileListener', res);
+    console.log('User Profile updated', JSON.stringify(res, null, 2));
     store.dispatch(updateProfileDetail(res));
+    updateUserProfileDetails(res);
   },
   replyMessageListener: res => {
     console.log('replyMessageListener', res);

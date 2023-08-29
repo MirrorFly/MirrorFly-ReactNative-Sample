@@ -3,14 +3,18 @@ import React from 'react';
 import { CameraSmallIcon, ClearTextIcon } from '../common/Icons';
 import { HStack, Text, View } from 'native-base';
 import { useSelector } from 'react-redux';
-import { getUserIdFromJid } from 'Helper/Chat/Utility';
+import useRosterData from 'hooks/useRosterData';
 
 const ReplyImage = props => {
   const { replyMsgItems, handleRemove } = props;
-  const { fromUserJid = '' } = replyMsgItems;
+  const { fromUserJid = '', fromUserId = '' } = replyMsgItems;
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const isSameUser = fromUserJid === currentUserJID;
+
+  const { nickName = profileDetails?.nickName } = useRosterData(
+    isSameUser ? '' : fromUserId,
+  );
 
   const RemoveHandle = () => {
     handleRemove();
@@ -37,7 +41,7 @@ const ReplyImage = props => {
             fontSize={14}
             fontWeight={600}
             py="0">
-            {profileDetails.nickName || getUserIdFromJid(currentUserJID)}
+            {nickName || fromUserId}
           </Text>
         )}
       </HStack>

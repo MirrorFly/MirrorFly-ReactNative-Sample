@@ -20,7 +20,9 @@ import EmojiOverlay from './EmojiPicker';
 import { soundRef } from './Media/AudioPlayer';
 
 const ChatInput = props => {
-  const { onSendMessage, attachmentMenuIcons, chatInputRef } = props;
+  const { onSendMessage, attachmentMenuIcons, chatInputRef, IsSearching } =
+    props;
+
   const [message, setMessage] = React.useState('');
   const [isOpen, setIsOpen] = React.useState(false);
   const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
@@ -60,54 +62,56 @@ const ChatInput = props => {
         alignItems="center"
         borderTopWidth={0.25}
         borderColor="#959595">
-        <HStack
-          p="0"
-          position="relative"
-          w={message ? '90%' : '100%'}
-          justify={'center'}
-          alignItems="center"
-          borderWidth={1}
-          borderRadius={40}
-          borderColor="#959595">
-          <IconButton
-            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-            ml="2"
-            p="1"
-            icon={isEmojiPickerShowing ? <KeyboardIcon /> : <EmojiIcon />}
-            onPress={() => {
-              toggleEmojiPicker();
-            }}
-            borderRadius="full"
-          />
+        {!IsSearching && (
+          <HStack
+            p="0"
+            position="relative"
+            w={message ? '90%' : '100%'}
+            justify={'center'}
+            alignItems="center"
+            borderWidth={1}
+            borderRadius={40}
+            borderColor="#959595">
+            <IconButton
+              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+              ml="2"
+              p="1"
+              icon={isEmojiPickerShowing ? <KeyboardIcon /> : <EmojiIcon />}
+              onPress={() => {
+                toggleEmojiPicker();
+              }}
+              borderRadius="full"
+            />
 
-          <TextInput
-            ref={chatInputRef}
-            value={message}
-            style={styles.inputTextbox}
-            onChangeText={setMessage}
-            placeholder="Start Typing..."
-            placeholderTextColor="#767676"
-            numberOfLines={1}
-            multiline={true}
-          />
+            <TextInput
+              ref={chatInputRef}
+              value={message}
+              style={styles.inputTextbox}
+              onChangeText={setMessage}
+              placeholder="Start Typing..."
+              placeholderTextColor="#767676"
+              numberOfLines={1}
+              multiline={true}
+            />
 
-          <IconButton
-            onPress={handleAttachmentconPressed}
-            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-            p="2"
-            icon={<Icon p="0" as={AttachmentIcon} name="emoji-happy" />}
-            borderRadius="full"
-          />
-          <IconButton
-            onPress={() => {}}
-            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-            p="2"
-            ml="3"
-            mr="2"
-            icon={<Icon p="0" as={MicIcon} name="emoji-happy" />}
-            borderRadius="full"
-          />
-        </HStack>
+            <IconButton
+              onPress={handleAttachmentconPressed}
+              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+              p="2"
+              icon={<Icon p="0" as={AttachmentIcon} name="emoji-happy" />}
+              borderRadius="full"
+            />
+            <IconButton
+              onPress={() => {}}
+              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+              p="2"
+              ml="3"
+              mr="2"
+              icon={<Icon p="0" as={MicIcon} name="emoji-happy" />}
+              borderRadius="full"
+            />
+          </HStack>
+        )}
         {Boolean(message) && (
           <SendBtn style={styles.sendButton} onPress={sendMessage} />
         )}

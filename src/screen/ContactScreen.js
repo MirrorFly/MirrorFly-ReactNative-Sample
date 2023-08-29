@@ -9,11 +9,12 @@ import SDK from '../SDK/SDK';
 import FlatListView from '../components/FlatListView';
 import { useNetworkStatus } from '../hooks';
 import * as RootNav from '../Navigation/rootNavigation';
+import { fetchContactsFromSDK } from 'Helper/index';
 
 function ContactScreen() {
   const dispatch = useDispatch();
   const isNetworkconneted = useNetworkStatus();
-  const [isFetching, setIsFetching] = React.useState(false);
+  const [isFetching, setIsFetching] = React.useState(true);
   const [usersList, setUsersList] = React.useState([]);
   const [isSearchedList, setIsSearchedList] = React.useState([]);
   const [page, setPage] = React.useState(0);
@@ -35,16 +36,16 @@ function ContactScreen() {
   const fetchContactList = () => {
     setIsFetching(true);
     setTimeout(async () => {
-      let updateUsersList = await SDK.getUsersList(searchText, '', 20);
+      let updateUsersList = await fetchContactsFromSDK(searchText, '', 20);
       setIsSearchedList(updateUsersList.users);
       setIsFetching(false);
-    }, 700);
+    }, 0);
   };
 
   React.useEffect(() => {
     (async () => {
       setIsFetching(true);
-      let _usersList = await SDK.getUsersList();
+      let _usersList = await fetchContactsFromSDK();
       setPage(1);
       setUsersList(_usersList.users);
       setIsFetching(false);
@@ -87,7 +88,7 @@ function ContactScreen() {
   const handlePagination = async e => {
     setIsFetching(true);
     if (!searchText) {
-      let updateUsersList = await SDK.getUsersList(
+      let updateUsersList = await fetchContactsFromSDK(
         searchText,
         page + 1 + 2,
         30,

@@ -1,27 +1,22 @@
-import { Pressable } from 'react-native';
-import React from 'react';
+import { ORIGINAL_MESSAGE_DELETED } from 'Helper/Chat/Constant';
+import { getUserIdFromJid } from 'Helper/Chat/Utility';
 import { HStack, Text, View } from 'native-base';
-import { AudioMusicIcon, ClearTextIcon } from '../common/Icons';
+import React from 'react';
+import { Pressable } from 'react-native';
 import { useSelector } from 'react-redux';
-import useRosterData from 'hooks/useRosterData';
+import { ClearTextIcon } from '../common/Icons';
 
-const ReplyAudio = props => {
+const ReplyDeleted = props => {
   const { replyMsgItems, handleRemove } = props;
-  const { fromUserJid = '', fromUserId = '' } = replyMsgItems;
+  const { fromUserJid = '' } = replyMsgItems;
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const isSameUser = fromUserJid === currentUserJID;
 
-  const { nickName = profileDetails?.nickName } = useRosterData(
-    isSameUser ? '' : fromUserId,
-  );
-
-  const durationInSeconds = replyMsgItems.msgBody.media.duration;
-  const durationInMinutes = Math.floor(durationInSeconds / 1000);
-
   const RemoveHandle = () => {
     handleRemove();
   };
+
   return (
     <View>
       <HStack justifyContent={'space-between'} alignItems={'center'}>
@@ -39,37 +34,28 @@ const ReplyAudio = props => {
           <Text
             mb={2}
             color={'#000'}
-            pl={1}
+            pl={0}
             fontSize={14}
             fontWeight={600}
             py="0">
-            {nickName || fromUserId}
+            {profileDetails?.nickName || getUserIdFromJid(currentUserJID)}
           </Text>
         )}
         <Pressable
           style={{
             padding: 5,
             backgroundColor: '#FFF',
-            borderRadius: 10,
-            borderColor: '#000',
-            borderWidth: 1,
+            borderRadius: 20,
           }}
           onPress={RemoveHandle}>
           <ClearTextIcon />
         </Pressable>
       </HStack>
-      <HStack alignItems={'center'} pl={1}>
-        <AudioMusicIcon width="14" height="14" color={'#767676'} />
-        <Text color="#313131" fontSize={14} pl={2} fontWeight={400}>
-          {`${String(Math.floor(durationInMinutes / 60)).padStart(
-            2,
-            '0',
-          )}:${String(durationInMinutes % 60).padStart(2, '0')}`}
-          Audio
-        </Text>
-      </HStack>
+      <Text numberOfLines={1} pl={1} fontSize={14} color="#313131">
+        {ORIGINAL_MESSAGE_DELETED}
+      </Text>
     </View>
   );
 };
 
-export default ReplyAudio;
+export default ReplyDeleted;

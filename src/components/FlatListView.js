@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Box,
   Divider,
   HStack,
@@ -13,12 +12,13 @@ import React from 'react';
 import Avathar from '../common/Avathar';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import useRosterData from 'hooks/useRosterData';
+import SDK from 'SDK/SDK';
 
 const RenderItem = ({ item, index, onhandlePress }) => {
   const {
     nickName = item.nickName,
     image: imageToken = '',
-    colorCode,
+    colorCode = SDK.getRandomColorCode(),
   } = useRosterData(item?.userId);
 
   const handlePress = () => onhandlePress(item);
@@ -33,7 +33,7 @@ const RenderItem = ({ item, index, onhandlePress }) => {
         <Box pl="4" pr="5" py="2">
           <HStack alignItems="center" space={3}>
             <Avathar
-              data={item?.userId}
+              data={nickName || item?.userId}
               profileImage={imageToken}
               backgroundColor={colorCode}
             />

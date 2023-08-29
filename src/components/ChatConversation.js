@@ -68,36 +68,36 @@ const ChatConversation = React.memo(props => {
     setReplyMsgs(replyMsgRef);
   }, [replyMsgRef]);
   /**
-     *  const { vCardProfile, fromUserJId, messages } = useSelector((state) =>  ({
-        vCardProfile: state.profile.profileDetails,
-        fromUserJId: state.navigation.fromUserJid,
-        messages: state.chatConversationData.data
-    }))
-    // const handleSwipeLeft = (rowKey) => {
-    //     chatInputRef.current.focus();
-    //     const filteredMsgInfo = messageList.filter(item => item.msgId === rowKey);
-    //     setReplyMsgs(filteredMsgInfo[0]);
-    // };
+* const { vCardProfile, fromUserJId, messages } = useSelector((state) => ({
+vCardProfile: state.profile.profileDetails,
+fromUserJId: state.navigation.fromUserJid,
+messages: state.chatConversationData.data
+}))
+// const handleSwipeLeft = (rowKey) => {
+// chatInputRef.current.focus();
+// const filteredMsgInfo = messageList.filter(item => item.msgId === rowKey);
+// setReplyMsgs(filteredMsgInfo[0]);
+// };
 
-        const renderHiddenItem = (data, rowMap) => {
-            return (
-                <HStack alignItems={'center'} flex={"0.8"} ml='2' >
-                    {isSwiping?.isActivated && isSwiping?.key === data.item.msgId &&
-                        <HStack alignItems={'center'} justifyContent={'center'} w={10} h={10} borderRadius={20} bg={'#E5E5E5'}><ReplyIcon /></HStack>}
-                </HStack>
-            )
-        }
-        const onLeftAction = (rowKey) => {
-            handleSwipeLeft(rowKey);
-        };
-        const onLeftActionStatusChange = (res) => {
-            setIsSwiping(res);
-        };
-     const leftActivationValue = 20; // Adjust as needed
-     const leftActionValue = 20; // Adjust as needed
-     const initialLeftActionState = false; // Adjust as needed
-     // handleSwipeLeft(msgId);
-     */
+const renderHiddenItem = (data, rowMap) => {
+return (
+<HStack alignItems={'center'} flex={"0.8"} ml='2' >
+{isSwiping?.isActivated && isSwiping?.key === data.item.msgId &&
+<HStack alignItems={'center'} justifyContent={'center'} w={10} h={10} borderRadius={20} bg={'#E5E5E5'}><ReplyIcon /></HStack>}
+</HStack>
+)
+}
+const onLeftAction = (rowKey) => {
+handleSwipeLeft(rowKey);
+};
+const onLeftActionStatusChange = (res) => {
+setIsSwiping(res);
+};
+const leftActivationValue = 20; // Adjust as needed
+const leftActionValue = 20; // Adjust as needed
+const initialLeftActionState = false; // Adjust as needed
+// handleSwipeLeft(msgId);
+*/
 
   const toastConfig = {
     duration: 2500,
@@ -117,28 +117,23 @@ const ChatConversation = React.memo(props => {
   };
 
   const copyToClipboard = () => {
-    if (
-      selectedMsgs[0].msgBody.message.length <= 500 ||
-      selectedMsgs[0]?.msgBody?.media?.caption.length <= 500
-    ) {
-      setSelectedMsgs([]);
-      Clipboard.setString(
-        selectedMsgs[0].msgBody.message ||
-          selectedMsgs[0]?.msgBody?.media?.caption,
-      );
-      toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text color={'#fff'} p="2">
-                1 Text copied successfully to the clipboard
-              </Text>
-            </Box>
-          );
-        },
-      });
-    }
+    setSelectedMsgs([]);
+    Clipboard.setString(
+      selectedMsgs[0].msgBody.message ||
+        selectedMsgs[0]?.msgBody?.media?.caption,
+    );
+    toast.show({
+      ...toastConfig,
+      render: () => {
+        return (
+          <Box bg="black" px="2" py="1" rounded="sm">
+            <Text color={'#fff'} p="2">
+              1 Text copied successfully to the clipboard
+            </Text>
+          </Box>
+        );
+      },
+    });
   };
 
   const handleReply = msg => {
@@ -239,6 +234,18 @@ const ChatConversation = React.memo(props => {
               props.setIsMessageInfo(selectedMsgs[0]);
               props.setLocalNav('MESSAGEINFO');
             },
+          },
+        ]);
+        break;
+      case foundMsg.length === 0 &&
+        selectedMsgs.length > 0 &&
+        selectedMsgs[0].msgStatus === 3 &&
+        selectedMsgs[0].msgBody.message_type === 'text' &&
+        selectedMsgs[0]?.msgBody?.media?.caption:
+        setMenuItems([
+          {
+            label: 'Copy',
+            formatter: copyToClipboard,
           },
         ]);
         break;
@@ -359,6 +366,7 @@ const ChatConversation = React.memo(props => {
         isSearchClose={isSearchClose}
         IsSearching={IsSearching}
         setLocalNav={props.setLocalNav}
+        chatInputRef={chatInputRef}
       />
       <ImageBackground
         source={require('../assets/chatBackgroud.png')}
@@ -381,12 +389,15 @@ const ChatConversation = React.memo(props => {
           </Stack>
         </View>
       ) : null}
+
       <ChatInput
         chatInputRef={chatInputRef}
         attachmentMenuIcons={props.attachmentMenuIcons}
         onSendMessage={handleMessageSend}
+        selectedMsgs={selectedMsgs}
         IsSearching={IsSearching}
       />
+
       <Modal
         isOpen={isOpenAlert}
         safeAreaTop={true}

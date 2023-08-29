@@ -57,8 +57,13 @@ const ReplyText = props => {
           <Pressable
             style={{
               padding: 5,
+              top: -3,
+              right: 10,
+              bottom: 0,
               backgroundColor: '#FFF',
-              borderRadius: 20,
+              borderRadius: 10,
+              borderColor: '#000',
+              borderWidth: 1,
             }}
             onPress={RemoveHandle}>
             <ClearTextIcon />

@@ -4,6 +4,7 @@ import { ClearTextIcon, VideoIcon } from '../common/Icons';
 import { HStack, Text, View } from 'native-base';
 import { useSelector } from 'react-redux';
 import useRosterData from 'hooks/useRosterData';
+import { getUserIdFromJid } from 'Helper/Chat/Utility';
 
 const ReplyVideo = props => {
   const { replyMsgItems, handleRemove } = props;
@@ -76,7 +77,9 @@ const ReplyVideo = props => {
             right: 10,
             bottom: 0,
             backgroundColor: '#FFF',
-            borderRadius: 20,
+            borderRadius: 10,
+            borderColor: '#000',
+            borderWidth: 1,
           }}
           onPress={RemoveHandle}>
           <ClearTextIcon />
@@ -94,5 +97,3 @@ const ReplyVideo = props => {
 };
 
 export default ReplyVideo;
-
-const styles = StyleSheet.create({});

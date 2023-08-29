@@ -53,6 +53,7 @@ function ChatHeader({
   handleBackBtn,
   handleReply,
   setLocalNav,
+  chatInputRef,
   IsSearching,
   isSearchClose,
   chatUserProfile,
@@ -131,6 +132,7 @@ function ChatHeader({
 
   const handleReplyMessage = () => {
     handleReply(selectedMsgs[0]);
+    chatInputRef.current.focus();
   };
 
   const handleUserInfo = () => {
@@ -281,7 +283,7 @@ function ChatHeader({
               height={36}
               backgroundColor={colorCode}
               data={nickName || chatUserProfile?.nickName || fromUserId}
-              profileImage={profileImage}
+              profileImage={profileImage || chatUserProfile?.nickName}
             />
             <Pressable w="65%" onPress={handleUserInfo}>
               {({ isPressed }) => {

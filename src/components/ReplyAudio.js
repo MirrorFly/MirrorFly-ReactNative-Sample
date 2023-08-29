@@ -50,7 +50,9 @@ const ReplyAudio = props => {
           style={{
             padding: 5,
             backgroundColor: '#FFF',
-            borderRadius: 20,
+            borderRadius: 10,
+            borderColor: '#000',
+            borderWidth: 1,
           }}
           onPress={RemoveHandle}>
           <ClearTextIcon />
@@ -63,6 +65,7 @@ const ReplyAudio = props => {
             2,
             '0',
           )}:${String(durationInMinutes % 60).padStart(2, '0')}`}
+          Audio
         </Text>
       </HStack>
     </View>

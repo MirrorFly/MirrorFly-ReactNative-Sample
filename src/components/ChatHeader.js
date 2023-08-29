@@ -53,6 +53,7 @@ function ChatHeader({
   handleBackBtn,
   handleReply,
   setLocalNav,
+  chatInputRef,
   IsSearching,
   isSearchClose,
   chatUserProfile,
@@ -131,6 +132,7 @@ function ChatHeader({
 
   const handleReplyMessage = () => {
     handleReply(selectedMsgs[0]);
+    chatInputRef.current.focus();
   };
 
   const handleUserInfo = () => {

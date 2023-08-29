@@ -281,7 +281,7 @@ function ChatHeader({
               height={36}
               backgroundColor={colorCode}
               data={nickName || chatUserProfile?.nickName || fromUserId}
-              profileImage={profileImage}
+              profileImage={profileImage || chatUserProfile?.nickName}
             />
             <Pressable w="65%" onPress={handleUserInfo}>
               {({ isPressed }) => {

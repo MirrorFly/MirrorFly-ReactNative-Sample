@@ -242,6 +242,20 @@ const ChatConversation = React.memo(props => {
           },
         ]);
         break;
+      case foundMsg.length === 0 &&
+        selectedMsgs.length > 0 &&
+        selectedMsgs[0].msgStatus === 3:
+        setMenuItems([
+          {
+            label:
+              selectedMsgs[0].msgBody.message_type === 'text' ||
+              selectedMsgs[0]?.msgBody?.media?.caption
+                ? 'Copy'
+                : null,
+            formatter: copyToClipboard,
+          },
+        ]);
+        break;
       case selectedMsgs.length === 0:
         setMenuItems([
           {

@@ -55,6 +55,7 @@ function ChatHeader({
   setLocalNav,
   IsSearching,
   isSearchClose,
+  chatUserProfile,
 }) {
   const navigation = useNavigation();
   const [remove, setRemove] = React.useState(false);
@@ -95,7 +96,7 @@ function ChatHeader({
       .sort((a, b) => (b.timestamp > a.timestamp ? -1 : 1))
       .map(el => el.msgId);
     let lastMsgIndex = selectedMsgs.findIndex(obj => obj.msgId === msgIds[0]);
-    let lastMsgTime = parseInt(selectedMsgs[lastMsgIndex].timestamp / 1000);
+    let lastMsgTime = parseInt(selectedMsgs[lastMsgIndex].timestamp / 1000, 10);
     const now = new Date().getTime();
     const validTime = lastMsgTime + 30 * 1000;
     const isSender = selectedMsgs.every(
@@ -279,7 +280,7 @@ function ChatHeader({
               width={36}
               height={36}
               backgroundColor={colorCode}
-              data={nickName || fromUserId}
+              data={nickName || chatUserProfile?.nickName || fromUserId}
               profileImage={profileImage}
             />
             <Pressable w="65%" onPress={handleUserInfo}>
@@ -292,7 +293,7 @@ function ChatHeader({
                     bg={isPressed ? 'rgba(0,0,0, 0.1)' : 'coolGray.100'}
                     pl="2">
                     <Text color="#181818" fontWeight="700" fontSize="14">
-                      {nickName}
+                      {nickName || chatUserProfile?.nickName || fromUserId}
                     </Text>
                     <LastSeen jid={fromUserJId} />
                   </VStack>

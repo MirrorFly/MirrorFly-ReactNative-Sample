@@ -13,8 +13,14 @@ import { sortBydate } from 'Helper/Chat/RecentChat';
 import { debounce, fetchContactsFromSDK, showToast } from 'Helper/index';
 import SDK from 'SDK/SDK';
 import Avathar from 'common/Avathar';
-import { CloseIcon, SearchIcon } from 'common/Icons';
-import { Checkbox, Icon, IconButton, View as NBView } from 'native-base';
+import { BackArrowIcon, CloseIcon, SearchIcon } from 'common/Icons';
+import {
+  Center,
+  Checkbox,
+  Icon,
+  IconButton,
+  View as NBView,
+} from 'native-base';
 import React, {
   useEffect,
   useLayoutEffect,
@@ -62,13 +68,22 @@ const Header = ({
   return (
     <View style={styles.headerContainer}>
       {isSearching ? (
-        <TextInput
-          value={searchText}
-          placeholder=" Search..."
-          autoFocus
-          onChangeText={handleSearchTextChange}
-          style={styles.searchInput}
-        />
+        <View style={styles.headerLeftSideContainer}>
+          <IconButton
+            style={styles.cancelIcon}
+            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+            onPress={onCancelPressed}
+            borderRadius="full">
+            <BackArrowIcon />
+          </IconButton>
+          <TextInput
+            value={searchText}
+            placeholder=" Search..."
+            autoFocus
+            onChangeText={handleSearchTextChange}
+            style={styles.searchInput}
+          />
+        </View>
       ) : (
         <View style={styles.headerLeftSideContainer}>
           <IconButton
@@ -179,9 +194,11 @@ const RecentChatSectionList = ({
   return (
     <View style={styles.recentChatContiner}>
       {/* Header */}
-      <View style={styles.recentChatHeader}>
-        <Text style={styles.recentChatHeaderText}>Recent Chat</Text>
-      </View>
+      {data.length > 0 && (
+        <View style={styles.recentChatHeader}>
+          <Text style={styles.recentChatHeaderText}>Recent Chat</Text>
+        </View>
+      )}
       {/* List */}
       <View style={styles.recentChatList}>
         {data.map((item, index) => (
@@ -212,9 +229,11 @@ const ContactsSectionList = ({
   return (
     <View style={styles.recentChatContiner}>
       {/* Header */}
-      <View style={styles.recentChatHeader}>
-        <Text style={styles.recentChatHeaderText}>Contacts</Text>
-      </View>
+      {data.length > 0 && (
+        <View style={styles.recentChatHeader}>
+          <Text style={styles.recentChatHeaderText}>Contacts</Text>
+        </View>
+      )}
       {/* List */}
       <View style={styles.recentChatList}>
         {data.map((item, index) => (
@@ -520,6 +539,11 @@ const ForwardMessage = () => {
           isSearching={isSearching}
           searchText={searchText}
         />
+        {!filteredRecentChatList.length && !filteredContactList.length && (
+          <Center h="full" bgColor={'#fff'}>
+            <Text style={styles.noMsg}>No Result Found</Text>
+          </Center>
+        )}
         <ScrollView
           style={commonStyles.flex1}
           onScroll={handleScroll}
@@ -643,6 +667,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#969696',
     marginLeft: 15,
+    width: 250,
   },
   dividerLine: {
     marginLeft: 73,
@@ -696,5 +721,11 @@ const styles = StyleSheet.create({
   loadMoreLoaderPlaceholder: {
     height: 60,
     width: '100%',
+  },
+  noMsg: {
+    color: '#181818',
+    fontSize: 16,
+    fontWeight: '800',
+    marginBottom: 8,
   },
 });

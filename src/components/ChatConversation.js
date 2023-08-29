@@ -48,6 +48,7 @@ const ChatConversation = React.memo(props => {
   const vCardProfile = useSelector(state => state.profile.profileDetails);
   const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
+  const chatUserProfile = useSelector(state => state.navigation.profileDetails);
   const [selectedMsgs, setSelectedMsgs] = React.useState([]);
   const [replyMsgs, setReplyMsgs] = React.useState();
   const [menuItems, setMenuItems] = React.useState([]);
@@ -348,6 +349,7 @@ const ChatConversation = React.memo(props => {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ChatHeader
+        chatUserProfile={chatUserProfile}
         fromUserJId={fromUserJId}
         selectedMsgs={selectedMsgs}
         setSelectedMsgs={setSelectedMsgs}

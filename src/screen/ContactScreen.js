@@ -9,7 +9,8 @@ import SDK from '../SDK/SDK';
 import FlatListView from '../components/FlatListView';
 import { useNetworkStatus } from '../hooks';
 import * as RootNav from '../Navigation/rootNavigation';
-import { fetchContactsFromSDK } from 'Helper/index';
+import { fetchContactsFromSDK } from '../Helper/index';
+import no_contacts from '../assets/no_contacts.png';
 
 function ContactScreen() {
   const dispatch = useDispatch();
@@ -127,7 +128,7 @@ function ContactScreen() {
               <Image
                 style={styles.image}
                 resizeMode="cover"
-                source={require('../assets/no_contacts.png')}
+                source={no_contacts}
               />
               <Text style={styles.noMsg}>No contacts found</Text>
             </Center>

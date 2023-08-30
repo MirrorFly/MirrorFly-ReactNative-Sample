@@ -6,6 +6,8 @@ import {
   ImageBackground,
   Image,
 } from 'react-native';
+import splash_gradient from '../assets/drawable_splash_gradient.png';
+import ic_logo_splash from '../assets/ic_logo_splash.png';
 
 const SplashScreen = () => {
   const logoOpacity = new Animated.Value(0);
@@ -20,13 +22,8 @@ const SplashScreen = () => {
 
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={require('../assets/drawable_splash_gradient.png')}
-        style={styles.imagebg}>
-        <Image
-          source={require('../assets/ic_logo_splash.png')}
-          style={styles.logo}
-        />
+      <ImageBackground source={splash_gradient} style={styles.imagebg}>
+        <Image source={ic_logo_splash} style={styles.logo} />
       </ImageBackground>
     </View>
   );

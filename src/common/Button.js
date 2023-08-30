@@ -2,7 +2,8 @@ import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { Chat_FABICON, MenuIcon } from './Icons';
 import { Icon, IconButton, Pressable } from 'native-base';
-const SendIcon = require('../assets/send.png');
+import SendIcon from '../assets/send.png';
+import LeftArrow from '../assets/leftArrow.png';
 
 const styles = StyleSheet.create({
   primarypilbtn: {
@@ -49,10 +50,7 @@ export const PrimaryPillBtn = props => {
 export const BackBtn = props => {
   return (
     <Pressable activeOpacity={1} {...props} style={{ padding: 10 }}>
-      <Image
-        source={require('../assets/leftArrow.png')}
-        style={{ width: 18.33, height: 15.32 }}
-      />
+      <Image source={LeftArrow} style={{ width: 18.33, height: 15.32 }} />
     </Pressable>
   );
 };

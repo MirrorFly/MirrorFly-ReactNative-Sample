@@ -1,7 +1,7 @@
 import {
   RESET_SAFE_AREA,
   UPDATE_SAFE_AREA_BG_COLOR,
-} from 'mf-redux/Actions/Constants';
+} from '../Actions/Constants';
 
 const initialState = {
   id: Date.now(),

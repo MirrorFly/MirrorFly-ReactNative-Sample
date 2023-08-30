@@ -5,16 +5,17 @@ module.exports = api => {
     plugins.push(['transform-remove-console']);
   }
   return {
-    presets: [
-      [
-        '@babel/preset-env',
-        {
-          targets: 'last 2 versions, > 1%, not dead',
-        },
-      ],
-      '@babel/preset-react',
-    ],
-    // presets: ['module:metro-react-native-babel-preset'],
+    // presets: [
+    //   [
+    //     '@babel/preset-env',
+    //     {
+    //       targets: 'last 2 versions, > 1%, not dead',
+    //     },
+    //   ],
+    //   '@babel/preset-react',
+    //   '@babel/preset-flow',
+    // ],
+    presets: ['module:metro-react-native-babel-preset'],
     plugins,
   };
 };

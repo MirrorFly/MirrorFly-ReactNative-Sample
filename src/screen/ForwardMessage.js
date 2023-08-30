@@ -9,11 +9,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { sortBydate } from 'Helper/Chat/RecentChat';
-import { debounce, fetchContactsFromSDK, showToast } from 'Helper/index';
-import SDK from 'SDK/SDK';
-import Avathar from 'common/Avathar';
-import { CloseIcon, SearchIcon } from 'common/Icons';
+import { sortBydate } from '../Helper/Chat/RecentChat';
+import { debounce, fetchContactsFromSDK, showToast } from '../Helper/index';
+import SDK from '../SDK/SDK';
+import Avathar from '../common/Avathar';
+import { CloseIcon, SearchIcon } from '../common/Icons';
 import { Checkbox, Icon, IconButton, View as NBView } from 'native-base';
 import React, {
   useEffect,
@@ -24,22 +24,22 @@ import React, {
 } from 'react';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { useNetworkStatus } from '../hooks';
-import commonStyles from 'common/commonStyles';
-import { HighlightedText } from 'components/RecentChat';
+import commonStyles from '../common/commonStyles';
+import { HighlightedText } from '../components/RecentChat';
 import {
   formatUserIdToJid,
   getMessageObjForward,
   getRecentChatMsgObjForward,
   isSingleChat,
-} from 'Helper/Chat/ChatHelper';
+} from '../Helper/Chat/ChatHelper';
 import { v4 as uuidv4 } from 'uuid';
-import { updateRecentChat } from 'mf-redux/Actions/RecentChatAction';
+import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import {
   addChatConversationHistory,
   deleteChatConversationById,
-} from 'mf-redux/Actions/ConversationAction';
+} from '../redux/Actions/ConversationAction';
 import { SendBlueIcon } from '../common/Icons';
-import useRosterData from 'hooks/useRosterData';
+import useRosterData from '../hooks/useRosterData';
 
 const showMaxUsersLimitToast = () => {
   const options = {

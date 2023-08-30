@@ -6,10 +6,10 @@ import RNFS from 'react-native-fs';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import { createThumbnail } from 'react-native-create-thumbnail';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Store from 'mf-redux/store';
-import { updateRosterData } from 'mf-redux/Actions/rosterAction';
-import { profileDetail } from 'mf-redux/Actions/ProfileAction';
-import SDK from 'SDK/SDK';
+import Store from '../redux/store';
+import { updateRosterData } from '../redux/Actions/rosterAction';
+import { profileDetail } from '../redux/Actions/ProfileAction';
+import SDK from '../SDK/SDK';
 import { updateUserProfileStore } from './Chat/ChatHelper';
 
 const toastLocalRef = createRef({});

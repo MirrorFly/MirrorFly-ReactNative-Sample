@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import SDK from 'SDK/SDK';
+import SDK from '../SDK/SDK';
 import {
   Checkbox,
   HStack,
@@ -34,9 +34,9 @@ import {
   clearConversationSearchData,
   updateConversationSearchMessageIndex,
 } from '../redux/Actions/conversationSearchAction';
-import { showToast } from 'Helper/index';
+import { showToast } from '../Helper/index';
 import { FORWARD_MESSSAGE_SCREEN } from '../constant';
-import useRosterData from 'hooks/useRosterData';
+import useRosterData from '../hooks/useRosterData';
 
 const forwardMediaMessageTypes = {
   image: true,

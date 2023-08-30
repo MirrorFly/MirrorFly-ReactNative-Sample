@@ -3,7 +3,7 @@ import React from 'react';
 import { ClearTextIcon, VideoIcon } from '../common/Icons';
 import { HStack, Text, View } from 'native-base';
 import { useSelector } from 'react-redux';
-import useRosterData from 'hooks/useRosterData';
+import useRosterData from '../hooks/useRosterData';
 
 const ReplyVideo = props => {
   const { replyMsgItems, handleRemove } = props;

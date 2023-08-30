@@ -12,7 +12,7 @@ import {
 import React from 'react';
 import Avathar from '../common/Avathar';
 import { SwipeListView } from 'react-native-swipe-list-view';
-import useRosterData from 'hooks/useRosterData';
+import useRosterData from '../hooks/useRosterData';
 
 const RenderItem = ({ item, index, onhandlePress }) => {
   const {

@@ -1,4 +1,4 @@
-import SDK from 'SDK/SDK';
+import SDK from '../SDK/SDK';
 import { useEffect, useState } from 'react';
 
 const initialState = {

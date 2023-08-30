@@ -24,7 +24,7 @@ import { CHATCONVERSATION } from '../constant';
 import {
   resetSafeArea,
   safeAreaBgColor,
-} from 'mf-redux/Actions/SafeAreaAction';
+} from '../redux/Actions/SafeAreaAction';
 
 const CameraPickView = props => {
   const { handleSendMsg, setLocalNav, setSelectedImages, selectedImages } =

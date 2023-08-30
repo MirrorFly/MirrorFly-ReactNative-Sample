@@ -6,7 +6,7 @@ import {
   requestMultiple,
 } from 'react-native-permissions';
 import { Platform } from 'react-native';
-import SDK from 'SDK/SDK';
+import SDK from '../SDK/SDK';
 
 const toastConfig = {
   duration: 2500,

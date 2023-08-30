@@ -1,13 +1,13 @@
 import React from 'react';
-import { BlockedIcon } from 'common/Icons';
+import { BlockedIcon } from '../common/Icons';
 import {
   THIS_MESSAGE_WAS_DELETED,
   YOU_DELETED_THIS_MESSAGE,
-} from 'Helper/Chat/Constant';
+} from '../Helper/Chat/Constant';
 import { Box, HStack, Pressable, Text, View } from 'native-base';
 import { StyleSheet } from 'react-native';
-import { getSenderIdFromMsgObj } from 'Helper/Chat/Utility';
-import { getConversationHistoryTime } from 'common/TimeStamp';
+import { getSenderIdFromMsgObj } from '../Helper/Chat/Utility';
+import { getConversationHistoryTime } from '../common/TimeStamp';
 
 const DeletedMessage = (props = {}) => {
   const {

@@ -14,7 +14,7 @@ import RecentChat from '../components/RecentChat';
 import ScreenHeader from '../components/ScreenHeader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import { ResetStore } from 'mf-redux/Actions/ResetAction';
+import { ResetStore } from '../redux/Actions/ResetAction';
 import { sortBydate } from '../Helper/Chat/RecentChat';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
@@ -31,13 +31,13 @@ import {
   addRecentChat,
   deleteActiveChatAction,
 } from '../redux/Actions/RecentChatAction';
-import RecentHeader from 'components/RecentHeader';
-import { formatUserIdToJid } from 'Helper/Chat/ChatHelper';
+import RecentHeader from '../components/RecentHeader';
+import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { HStack, Modal, Text } from 'native-base';
-import { DeleteChatHIstoryAction } from 'mf-redux/Actions/ConversationAction';
-import { updateRosterData } from 'mf-redux/Actions/rosterAction';
+import { DeleteChatHIstoryAction } from '../redux/Actions/ConversationAction';
+import { updateRosterData } from '../redux/Actions/rosterAction';
 
-const logo = require('../assets/mirrorfly-logo.png');
+import logo from '../assets/mirrorfly-logo.png';
 
 const FirstComponent = (
   isSearching,

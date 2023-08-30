@@ -15,23 +15,23 @@ import {
   Image,
 } from 'react-native';
 import { RNCamera } from 'react-native-camera';
-import { LeftArrowIcon } from 'common/Icons';
+import { LeftArrowIcon } from '../common/Icons';
 import { CHATCONVERSATION } from '../constant';
 import { millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
 import RNFS from 'react-native-fs';
 import { mediaObjContructor } from '../common/utils';
 import Video from 'react-native-video';
-import flashOnIcon from 'assets/ic_flash_on.png';
-import flashOffIcon from 'assets/ic_flash_off.png';
-import flashAutoIcon from 'assets/ic_flash_auto.png';
-import flipCameraIcon from 'assets/ic_flip_camera_android.png';
+import flashOnIcon from '../assets/ic_flash_on.png';
+import flashOffIcon from '../assets/ic_flash_off.png';
+import flashAutoIcon from '../assets/ic_flash_auto.png';
+import flipCameraIcon from '../assets/ic_flip_camera_android.png';
 import { validateFileSize, getType } from './chat/common/fileUploadValidation';
-import { showToast } from 'Helper/index';
+import { showToast } from '../Helper/index';
 import { useDispatch } from 'react-redux';
 import {
   resetSafeArea,
   safeAreaBgColor,
-} from 'mf-redux/Actions/SafeAreaAction';
+} from '../redux/Actions/SafeAreaAction';
 
 const Camera = props => {
   const { setLocalNav = () => {}, setSelectedImages } = props;

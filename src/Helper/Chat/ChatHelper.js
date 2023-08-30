@@ -1,6 +1,6 @@
-import SDK from 'SDK/SDK';
-import { changeTimeFormat } from 'common/TimeStamp';
-import { updateRecentChat } from 'mf-redux/Actions/RecentChatAction';
+import SDK from '../../SDK/SDK';
+import { changeTimeFormat } from '../../common/TimeStamp';
+import { updateRecentChat } from '../../redux/Actions/RecentChatAction';
 import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { getThumbImage, getVideoThumbImage } from '..';
@@ -23,11 +23,11 @@ import {
   getRecentChatMsgObj,
   getUserIdFromJid,
 } from './Utility';
-import { updateRosterData } from 'mf-redux/Actions/rosterAction';
+import { updateRosterData } from '../../redux/Actions/rosterAction';
 import {
   DELETE_MESSAGE_FOR_EVERYONE,
   DELETE_MESSAGE_FOR_ME,
-} from 'mf-redux/Actions/Constants';
+} from '../../redux/Actions/Constants';
 
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;

@@ -9,7 +9,7 @@ import {
 } from '../redux/Actions/ConversationAction';
 import { mediaStatusConstants } from '../constant';
 import { useNetworkStatus } from '../hooks';
-import config from 'components/chat/common/config';
+import config from '../components/chat/common/config';
 import { Box, Text, Toast } from 'native-base';
 
 const toastId = 'network-error-upload-download';

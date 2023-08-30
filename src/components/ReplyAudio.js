@@ -3,7 +3,7 @@ import React from 'react';
 import { HStack, Text, View } from 'native-base';
 import { AudioMusicIcon, ClearTextIcon } from '../common/Icons';
 import { useSelector } from 'react-redux';
-import useRosterData from 'hooks/useRosterData';
+import useRosterData from '../hooks/useRosterData';
 
 const ReplyAudio = props => {
   const { replyMsgItems, handleRemove } = props;

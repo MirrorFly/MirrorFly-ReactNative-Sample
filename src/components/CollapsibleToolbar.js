@@ -28,8 +28,8 @@ import {
   IconButton,
   Icon,
 } from 'native-base';
-import useFetchImage from 'hooks/useFetchImage';
-import { getUsernameGraphemes } from 'Helper/index';
+import useFetchImage from '../hooks/useFetchImage';
+import { getUsernameGraphemes } from '../Helper/index';
 const propTypes = {
   src: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
   title: PropTypes.string,

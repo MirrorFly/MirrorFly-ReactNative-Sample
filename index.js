@@ -3,7 +3,7 @@ import App from './App';
 import { name as appName } from './app.json';
 import 'react-native-get-random-values';
 import messaging from '@react-native-firebase/messaging';
-import SDK from 'SDK/SDK';
+import SDK from './src/SDK/SDK';
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);

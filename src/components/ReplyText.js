@@ -3,7 +3,7 @@ import React from 'react';
 import { HStack, Text, View } from 'native-base';
 import { ClearTextIcon } from '../common/Icons';
 import { useSelector } from 'react-redux';
-import useRosterData from 'hooks/useRosterData';
+import useRosterData from '../hooks/useRosterData';
 
 const ReplyText = props => {
   const { replyMsgItems, handleRemove, selectedMsgIndex } = props;

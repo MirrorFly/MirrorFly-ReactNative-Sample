@@ -1,10 +1,10 @@
 import Clipboard from '@react-native-clipboard/clipboard';
-import { NO_CONVERSATION } from 'Helper/Chat/Constant';
-import { getUserIdFromJid } from 'Helper/Chat/Utility';
-import { showToast } from 'Helper/index';
-import SDK from 'SDK/SDK';
-import { ClearChatHistoryAction } from 'mf-redux/Actions/ConversationAction';
-import { clearLastMessageinRecentChat } from 'mf-redux/Actions/RecentChatAction';
+import { NO_CONVERSATION } from '../Helper/Chat/Constant';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import { showToast } from '../Helper/index';
+import SDK from '../SDK/SDK';
+import { ClearChatHistoryAction } from '../redux/Actions/ConversationAction';
+import { clearLastMessageinRecentChat } from '../redux/Actions/RecentChatAction';
 import { Box, HStack, Modal, Stack, Text, View, useToast } from 'native-base';
 import React, { createRef } from 'react';
 import {
@@ -33,6 +33,7 @@ import ReplyLocation from './ReplyLocation';
 import ReplyText from './ReplyText';
 import ReplyVideo from './ReplyVideo';
 import ReplyDeleted from './ReplyDeleted';
+import chatBackgroud from '../assets/chatBackgroud.png';
 
 const ChatConversation = React.memo(props => {
   const {
@@ -358,9 +359,7 @@ const ChatConversation = React.memo(props => {
         IsSearching={IsSearching}
         setLocalNav={props.setLocalNav}
       />
-      <ImageBackground
-        source={require('../assets/chatBackgroud.png')}
-        style={styles.imageBackground}>
+      <ImageBackground source={chatBackgroud} style={styles.imageBackground}>
         <ChatConversationList
           handleMessageListUpdated={handleMessageListUpdated}
           setLocalNav={props.setLocalNav}

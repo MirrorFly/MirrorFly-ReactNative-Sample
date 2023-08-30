@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet, Image } from 'react-native';
 import React from 'react';
-import useFetchImage from 'hooks/useFetchImage';
+import useFetchImage from '../hooks/useFetchImage';
 import { useNetworkStatus } from '../hooks';
 import { Spinner } from 'native-base';
-import { getUsernameGraphemes } from 'Helper/index';
+import { getUsernameGraphemes } from '../Helper/index';
 
 const Avathar = ({ profileImage, imageStyle, imageProps = {}, ...props }) => {
   const [isImageLoadError, setIsImageLoadError] = React.useState(false);

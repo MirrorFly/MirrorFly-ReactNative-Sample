@@ -16,12 +16,12 @@ import {
   REGISTERSCREEN,
   SETTINGSCREEN,
 } from '../constant';
-import ChatScreen from 'screen/ChatScreen';
-import CountryList from 'screen/CountryList';
-import ContactScreen from 'screen/ContactScreen';
-import SettingScreen from 'screen/SettingScreen';
-import RNCamera from 'components/RNCamera';
-import ForwardMessage from 'screen/ForwardMessage';
+import ChatScreen from '../screen/ChatScreen';
+import CountryList from '../screen/CountryList';
+import ContactScreen from '../screen/ContactScreen';
+import SettingScreen from '../screen/SettingScreen';
+import RNCamera from '../components/RNCamera';
+import ForwardMessage from '../screen/ForwardMessage';
 
 const Stack = createNativeStackNavigator();
 

@@ -46,6 +46,9 @@ import {
 } from 'mf-redux/Actions/ConversationAction';
 import { SendBlueIcon } from '../common/Icons';
 import useRosterData from 'hooks/useRosterData';
+import { CHATSCREEN } from 'src/constant';
+import { navigate } from 'mf-redux/Actions/NavigationAction';
+import { CONVERSATION_SCREEN } from 'src/constant';
 
 const showMaxUsersLimitToast = () => {
   const options = {
@@ -83,6 +86,13 @@ const Header = ({
             onChangeText={handleSearchTextChange}
             style={styles.searchInput}
           />
+          <IconButton
+            style={styles.searchIcon}
+            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+            onPress={onSearchPressed}
+            borderRadius="full">
+            <CloseIcon />
+          </IconButton>
         </View>
       ) : (
         <View style={styles.headerLeftSideContainer}>
@@ -101,7 +111,7 @@ const Header = ({
         _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
         onPress={onSearchPressed}
         borderRadius="full">
-        {isSearching ? <CloseIcon /> : <SearchIcon />}
+        <SearchIcon />
       </IconButton>
     </View>
   );
@@ -496,7 +506,24 @@ const ForwardMessage = () => {
     );
     setShowLoader(false);
     onMessageForwaded?.();
-    navigation.goBack();
+    if (Object.values(selectedUsers).length === 1) {
+      dispatch(
+        navigate({
+          screen: CHATSCREEN,
+          fromUserJID: Object.values(selectedUsers)[0]?.userJid,
+          profileDetails: {
+            userJid: Object.values(selectedUsers)[0]?.userJid,
+            userId: Object.values(selectedUsers)[0]?.userId,
+            nickName: Object.values(selectedUsers)[0]?.name,
+            colorCode: Object.values(selectedUsers)[0]?.colorCode,
+            profileStatus: Object.values(selectedUsers)[0]?.status,
+          },
+        }),
+      );
+      navigation.navigate(CONVERSATION_SCREEN);
+    } else {
+      navigation.goBack();
+    }
   };
 
   const handleMessageSend = async () => {

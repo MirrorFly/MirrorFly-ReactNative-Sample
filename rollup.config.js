@@ -1,6 +1,5 @@
 import babel from '@rollup/plugin-babel';
 import resolve, { nodeResolve } from '@rollup/plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 import svgr from '@svgr/rollup';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
@@ -8,6 +7,7 @@ import json from '@rollup/plugin-json';
 import { terser } from 'rollup-plugin-terser';
 import image from '@rollup/plugin-image';
 import copy from 'rollup-plugin-copy';
+import commonjs from '@rollup/plugin-commonjs';
 
 export default {
   input: 'src/index.js',
@@ -46,6 +46,7 @@ export default {
     'react-native-document-picker',
     '@react-navigation/native',
     '@react-navigation/native-stack',
+    '@react-native-async-storage/async-storage',
     'react-native-swipe-list-view',
     'react-native-mov-to-mp4',
     'react-native-safe-area-context',

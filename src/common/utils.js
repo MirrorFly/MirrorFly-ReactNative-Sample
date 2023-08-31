@@ -202,3 +202,11 @@ export const mediaObjContructor = (_package, file) => {
       break;
   }
 };
+
+export const getImageSource = image => {
+  const isBase64 = typeof image === 'string' && image?.includes('data:image/');
+  const uriBase = {
+    uri: image,
+  };
+  return isBase64 ? uriBase : image;
+};

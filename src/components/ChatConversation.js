@@ -240,8 +240,8 @@ const initialLeftActionState = false; // Adjust as needed
       case foundMsg.length === 0 &&
         selectedMsgs.length > 0 &&
         selectedMsgs[0].msgStatus === 3 &&
-        selectedMsgs[0].msgBody.message_type === 'text' &&
-        selectedMsgs[0]?.msgBody?.media?.caption:
+        (selectedMsgs[0].msgBody.message_type === 'text' ||
+          selectedMsgs[0]?.msgBody?.media?.caption):
         setMenuItems([
           {
             label: 'Copy',

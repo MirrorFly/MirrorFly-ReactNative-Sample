@@ -14,9 +14,9 @@ const ReplyText = props => {
   const isSameUser = fromUserJid === currentUserJID;
   const averageMessageHeight = 60;
 
-  const { nickName = profileDetails?.nickName } = useRosterData(
-    isSameUser ? '' : fromUserId,
-  );
+  let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails?.nickName;
 
   React.useEffect(() => {
     if (scrollViewRef.current && selectedMsgIndex !== undefined) {

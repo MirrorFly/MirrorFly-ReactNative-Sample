@@ -20,6 +20,9 @@ import {
   Icon,
   IconButton,
   View as NBView,
+  Slide,
+  HStack,
+  Spinner,
 } from 'native-base';
 import React, {
   useEffect,
@@ -68,6 +71,10 @@ const Header = ({
     onSearch(value);
   };
 
+  const handleClearSearch = () => {
+    onSearch('');
+  };
+
   return (
     <View style={styles.headerContainer}>
       {isSearching ? (
@@ -89,7 +96,7 @@ const Header = ({
           <IconButton
             style={styles.searchIcon}
             _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-            onPress={onSearchPressed}
+            onPress={handleClearSearch}
             borderRadius="full">
             <CloseIcon />
           </IconButton>
@@ -128,12 +135,16 @@ const ContactItem = ({
   searchText,
 }) => {
   const [isChecked, setIsChecked] = useState(false);
-  const {
-    nickName = name,
-    status: profileStatus = status,
+  let {
+    nickName,
+    status: profileStatus,
     image: imageToken,
     colorCode,
   } = useRosterData(userId);
+  // updating default values
+  nickName = nickName || name || userId;
+  colorCode = colorCode || '';
+  profileStatus = profileStatus || status || '';
 
   useEffect(() => {
     if (isSelected !== isChecked) {
@@ -142,6 +153,7 @@ const ContactItem = ({
   }, []);
 
   const handleChatItemSelect = () => {
+    console.log('handleChatItemSelect', isChecked, isCheckboxAllowed);
     if (!isChecked && !isCheckboxAllowed) {
       showMaxUsersLimitToast();
       return;
@@ -185,7 +197,17 @@ const ContactItem = ({
           <Checkbox
             aria-label="Select Recent Chat User"
             isChecked={isChecked}
+            isDisabled={!isChecked && !isCheckboxAllowed}
+            style={styles.checkbox}
             onChange={handleChatItemSelect}
+            _checked={{
+              backgroundColor: '#3276E2',
+              borderColor: '#3276E2',
+            }}
+            _pressed={{
+              backgroundColor: '#3276E2',
+              borderColor: '#3276E2',
+            }}
           />
         </View>
       </Pressable>
@@ -234,7 +256,6 @@ const ContactsSectionList = ({
   handleChatSelect,
   selectedUsers,
   searchText,
-  showLoadMoreLoader,
 }) => {
   return (
     <View style={styles.recentChatContiner}>
@@ -260,11 +281,6 @@ const ContactsSectionList = ({
           />
         ))}
       </View>
-      {showLoadMoreLoader ? (
-        <ActivityIndicator size={'large'} style={styles.loadMoreLoader} />
-      ) : (
-        <View style={styles.loadMoreLoaderPlaceholder} />
-      )}
     </View>
   );
 };
@@ -314,6 +330,10 @@ const ForwardMessage = () => {
   const recentChatData = useSelector(state => state.recentChatData.data);
   const activeChatUserJid = useSelector(state => state.navigation.fromUserJid);
 
+  const searchTextValueRef = useRef();
+
+  const contactFetchCancelTokenRef = useRef();
+
   const contactsPaginationRef = useRef({ ...contactPaginationRefInitialValue });
 
   const dispatch = useDispatch();
@@ -343,6 +363,7 @@ const ForwardMessage = () => {
 
   useLayoutEffect(() => {
     fetchContactListWithDebounce(searchText.trim());
+    searchTextValueRef.current = searchText;
   }, [searchText]);
 
   useEffect(() => {
@@ -389,13 +410,13 @@ const ForwardMessage = () => {
   const fetchContactListFromSDK = async filter => {
     let { nextPage = 1, hasNextPage = true } =
       contactsPaginationRef.current || {};
-    if (hasNextPage) {
+    // fetching the data from API only when the actual filter value that triggered the function and the searchTextValueRef are equal
+    // because this function will be called with debounce with a delay of 400 milliseconds to ignore API calls for every single character change immediately
+    if (hasNextPage && filter === searchTextValueRef.current) {
       nextPage = filter ? 1 : nextPage;
-      const { statusCode, users, totalPages } = await fetchContactsFromSDK(
-        filter,
-        nextPage,
-        23,
-      );
+      const { statusCode, users, totalPages, cancelToken } =
+        await fetchContactsFromSDK(filter, nextPage, 23);
+      contactFetchCancelTokenRef.current = cancelToken;
       if (statusCode === 200) {
         updateContactPaginationRefData(totalPages, filter);
         const filteredUsers = getUsersExceptRecentChatsUsers(users);
@@ -416,6 +437,8 @@ const ForwardMessage = () => {
     setShowLoadMoreLoader(true);
     setTimeout(async () => {
       if (isInternetReachable) {
+        // cancelling the previous API request if exist
+        contactFetchCancelTokenRef.current?.();
         fetchContactListFromSDK(filter);
       } else {
         const toastOptions = {
@@ -498,7 +521,7 @@ const ForwardMessage = () => {
     // Sending params to SDK to forward message
     const contactsToForward = Object.values(selectedUsers).map(u => u.userJid);
     const msgIds = forwardMessages.map(m => m.msgId);
-    SDK.forwardMessagesToMultipleUsers(
+    await SDK.forwardMessagesToMultipleUsers(
       contactsToForward,
       msgIds,
       true,
@@ -507,20 +530,25 @@ const ForwardMessage = () => {
     setShowLoader(false);
     onMessageForwaded?.();
     if (Object.values(selectedUsers).length === 1) {
-      dispatch(
-        navigate({
-          screen: CHATSCREEN,
-          fromUserJID: Object.values(selectedUsers)[0]?.userJid,
-          profileDetails: {
-            userJid: Object.values(selectedUsers)[0]?.userJid,
-            userId: Object.values(selectedUsers)[0]?.userId,
-            nickName: Object.values(selectedUsers)[0]?.name,
-            colorCode: Object.values(selectedUsers)[0]?.colorCode,
-            profileStatus: Object.values(selectedUsers)[0]?.status,
-          },
-        }),
-      );
-      navigation.navigate(CONVERSATION_SCREEN);
+      // navigating the user after setTimeout to finish all the running things in background to avoid unwanted issues
+      setTimeout(() => {
+        dispatch(
+          navigate({
+            screen: CHATSCREEN,
+            fromUserJID: Object.values(selectedUsers)[0]?.userJid,
+            profileDetails: {
+              userJid: Object.values(selectedUsers)[0]?.userJid,
+              userId: Object.values(selectedUsers)[0]?.userId,
+              nickName:
+                Object.values(selectedUsers)[0]?.name ||
+                Object.values(selectedUsers)[0]?.userId,
+              colorCode: Object.values(selectedUsers)[0]?.colorCode,
+              profileStatus: Object.values(selectedUsers)[0]?.status,
+            },
+          }),
+        );
+        navigation.navigate(CONVERSATION_SCREEN);
+      }, 0);
     } else {
       navigation.goBack();
     }
@@ -556,8 +584,19 @@ const ForwardMessage = () => {
     }
   };
 
+  const renderLoader = () => {
+    return (
+      <Slide mt="20" in={showLoadMoreLoader} placement="top">
+        <HStack space={8} justifyContent="center" alignItems="center">
+          <Spinner size="lg" color={'#3276E2'} />
+        </HStack>
+      </Slide>
+    );
+  };
+
   return (
     <>
+      {renderLoader()}
       <View style={styles.container}>
         <Header
           onCancelPressed={handleCancel}
@@ -586,7 +625,6 @@ const ForwardMessage = () => {
             selectedUsers={selectedUsers}
             handleChatSelect={handleUserSelect}
             searchText={searchText}
-            showLoadMoreLoader={showLoadMoreLoader}
           />
         </ScrollView>
         <SelectedUsersName
@@ -754,5 +792,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
     marginBottom: 8,
+  },
+  checkbox: {
+    borderWidth: 2,
+    borderColor: '#3276E2',
   },
 });

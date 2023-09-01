@@ -61,14 +61,7 @@ const ChatConversationList = ({
   }, [messageList.length]);
 
   React.useEffect(() => {
-    (async () => {
-      if (!messages[getUserIdFromJid(fromUserJId)]) {
-        let chatMessage = await SDK.getChatMessagesDB(fromUserJId);
-        if (chatMessage?.statusCode === 200) {
-          dispatch(addChatConversationHistory(chatMessage));
-        }
-      }
-    })();
+    fetchMessagesFromSDK();
   }, [fromUserJId, messages]);
 
   React.useEffect(() => {
@@ -116,6 +109,14 @@ const ChatConversationList = ({
     }
   }, [conversationSearchText, searchMesageIndex]);
 
+  const fetchMessagesFromSDK = async (forceGetFromSDK = false) => {
+    if (forceGetFromSDK || !messages[getUserIdFromJid(fromUserJId)]) {
+      let chatMessage = await SDK.getChatMessagesDB(fromUserJId);
+      if (chatMessage?.statusCode === 200) {
+        dispatch(addChatConversationHistory(chatMessage));
+      }
+    }
+  };
   const findMsgIndex = msgId => {
     const index = messageList.findIndex(
       item => item.msgId === msgId && item.deleteStatus === 0,

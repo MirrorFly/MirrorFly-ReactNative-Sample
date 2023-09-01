@@ -82,11 +82,11 @@ function ChatHeader({
     [fromUserJId],
   );
 
-  const {
-    nickName = chatUserProfile?.nickName || fromUserId || '',
-    image: profileImage = '',
-    colorCode = profileDetails?.colorCode,
-  } = useRosterData(fromUserId);
+  let { nickName, image: profileImage, colorCode } = useRosterData(fromUserId);
+  // updating default values
+  nickName = nickName || chatUserProfile?.nickName || fromUserId || '';
+  profileImage = profileImage || chatUserProfile?.image || '';
+  colorCode = colorCode || profileDetails?.colorCode;
 
   const onClose = () => {
     setRemove(false);
@@ -283,7 +283,7 @@ function ChatHeader({
               height={36}
               backgroundColor={colorCode}
               data={nickName}
-              profileImage={profileImage || chatUserProfile?.image}
+              profileImage={profileImage}
             />
             <Pressable w="65%" onPress={handleUserInfo}>
               {({ isPressed }) => {

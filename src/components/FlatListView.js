@@ -15,11 +15,15 @@ import useRosterData from 'hooks/useRosterData';
 import SDK from 'SDK/SDK';
 
 const RenderItem = ({ item, index, onhandlePress }) => {
-  const {
+  let {
     nickName = item.nickName,
     image: imageToken = '',
-    colorCode = SDK.getRandomColorCode(),
+    colorCode,
   } = useRosterData(item?.userId);
+  // updating default values
+  nickName = nickName || item?.nickName || item?.userId || '';
+  imageToken = imageToken || item?.image || '';
+  colorCode = colorCode || SDK.getRandomColorCode();
 
   const handlePress = () => onhandlePress(item);
 

@@ -1,10 +1,9 @@
-import { StyleSheet, Pressable, Image } from 'react-native';
+import { Pressable, Image } from 'react-native';
 import React from 'react';
 import { ClearTextIcon, VideoIcon } from '../common/Icons';
 import { HStack, Text, View } from 'native-base';
 import { useSelector } from 'react-redux';
 import useRosterData from 'hooks/useRosterData';
-import { getUserIdFromJid } from 'Helper/Chat/Utility';
 
 const ReplyVideo = props => {
   const { replyMsgItems, handleRemove } = props;
@@ -13,9 +12,9 @@ const ReplyVideo = props => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const isSameUser = fromUserJid === currentUserJID;
 
-  const { nickName = profileDetails?.nickName } = useRosterData(
-    isSameUser ? '' : fromUserId,
-  );
+  let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails?.nickName;
 
   const RemoveHandle = () => {
     handleRemove();

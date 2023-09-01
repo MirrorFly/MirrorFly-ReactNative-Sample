@@ -14,9 +14,9 @@ const ReplyLocation = props => {
 
   const { fromUserJid = '', fromUserId = '' } = replyMsgItems;
   const isSender = fromUserJid === currentUserJID;
-  const { nickName = profileDetails?.nickName } = useRosterData(
-    isSender ? '' : fromUserId,
-  );
+  let { nickName } = useRosterData(isSender ? '' : fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
 
   const RemoveHandle = () => {
     handleRemove();

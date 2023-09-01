@@ -51,12 +51,18 @@ const RecentChatItem = ({
     handleSelect(item);
   };
   const { profileDetails = {} } = item;
-  const {
-    nickName = profileDetails.nickName,
+  let {
+    nickName,
     userId = '',
-    image = profileDetails?.image,
-    colorCode = profileDetails?.colorCode,
+    image,
+    colorCode,
   } = useRosterData(item?.fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails.nickName || item?.fromUserId || '';
+  image = image || profileDetails?.image || '';
+  userId = userId || item?.fromUserId || '';
+  colorCode = colorCode || profileDetails?.colorCode;
+
   return (
     <Box key={index}>
       <Pressable

@@ -16,7 +16,7 @@ const ReplyContact = props => {
   const isSender = fromUserJid === currentUserJID;
   let { nickName } = useRosterData(isSender ? '' : fromUserId);
   // updating default values
-  nickName = nickName || profileDetails?.nickName || '';
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
 
   const RemoveHandle = () => {
     handleRemove();

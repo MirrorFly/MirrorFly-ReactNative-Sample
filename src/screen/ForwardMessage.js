@@ -153,7 +153,6 @@ const ContactItem = ({
   }, []);
 
   const handleChatItemSelect = () => {
-    console.log('handleChatItemSelect', isChecked, isCheckboxAllowed);
     if (!isChecked && !isCheckboxAllowed) {
       showMaxUsersLimitToast();
       return;
@@ -332,8 +331,6 @@ const ForwardMessage = () => {
 
   const searchTextValueRef = useRef();
 
-  const contactFetchCancelTokenRef = useRef();
-
   const contactsPaginationRef = useRef({ ...contactPaginationRefInitialValue });
 
   const dispatch = useDispatch();
@@ -414,9 +411,11 @@ const ForwardMessage = () => {
     // because this function will be called with debounce with a delay of 400 milliseconds to ignore API calls for every single character change immediately
     if (hasNextPage && filter === searchTextValueRef.current) {
       nextPage = filter ? 1 : nextPage;
-      const { statusCode, users, totalPages, cancelToken } =
-        await fetchContactsFromSDK(filter, nextPage, 23);
-      contactFetchCancelTokenRef.current = cancelToken;
+      const { statusCode, users, totalPages } = await fetchContactsFromSDK(
+        filter,
+        nextPage,
+        23,
+      );
       if (statusCode === 200) {
         updateContactPaginationRefData(totalPages, filter);
         const filteredUsers = getUsersExceptRecentChatsUsers(users);
@@ -437,8 +436,6 @@ const ForwardMessage = () => {
     setShowLoadMoreLoader(true);
     setTimeout(async () => {
       if (isInternetReachable) {
-        // cancelling the previous API request if exist
-        contactFetchCancelTokenRef.current?.();
         fetchContactListFromSDK(filter);
       } else {
         const toastOptions = {

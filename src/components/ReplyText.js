@@ -16,7 +16,7 @@ const ReplyText = props => {
 
   let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
   // updating default values
-  nickName = nickName || profileDetails?.nickName;
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
 
   React.useEffect(() => {
     if (scrollViewRef.current && selectedMsgIndex !== undefined) {

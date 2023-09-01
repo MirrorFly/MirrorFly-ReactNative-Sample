@@ -14,7 +14,7 @@ const ReplyDocument = props => {
 
   let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
   // updating default values
-  nickName = nickName || profileDetails?.nickName || '';
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
 
   const RemoveHandle = () => {
     handleRemove();

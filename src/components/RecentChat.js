@@ -58,7 +58,7 @@ const RecentChatItem = ({
     colorCode,
   } = useRosterData(item?.fromUserId);
   // updating default values
-  nickName = nickName || profileDetails.nickName || '';
+  nickName = nickName || profileDetails.nickName || item?.fromUserId || '';
   image = image || profileDetails?.image || '';
   userId = userId || item?.fromUserId || '';
   colorCode = colorCode || profileDetails?.colorCode;

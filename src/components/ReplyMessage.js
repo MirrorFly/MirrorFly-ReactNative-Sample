@@ -45,7 +45,7 @@ function ReplyMessage(props) {
 
   let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
   // updating default values
-  nickName = nickName || profileDetails?.nickName || fromUserId;
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
 
   const replyMessageUserNickName = !isSameUser ? nickName : 'You';
 

@@ -15,11 +15,7 @@ import useRosterData from 'hooks/useRosterData';
 import SDK from 'SDK/SDK';
 
 const RenderItem = ({ item, index, onhandlePress }) => {
-  let {
-    nickName = item.nickName,
-    image: imageToken = '',
-    colorCode,
-  } = useRosterData(item?.userId);
+  let { nickName, image: imageToken, colorCode } = useRosterData(item?.userId);
   // updating default values
   nickName = nickName || item?.nickName || item?.userId || '';
   imageToken = imageToken || item?.image || '';
@@ -37,7 +33,7 @@ const RenderItem = ({ item, index, onhandlePress }) => {
         <Box pl="4" pr="5" py="2">
           <HStack alignItems="center" space={3}>
             <Avathar
-              data={nickName || item?.userId}
+              data={nickName}
               profileImage={imageToken}
               backgroundColor={colorCode}
             />

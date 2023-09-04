@@ -94,13 +94,15 @@ const Header = ({
             onChangeText={handleSearchTextChange}
             style={styles.searchInput}
           />
-          <IconButton
-            style={styles.searchIcon}
-            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-            onPress={handleClearSearch}
-            borderRadius="full">
-            <CloseIcon />
-          </IconButton>
+          {!!searchText && (
+            <IconButton
+              style={styles.searchIcon}
+              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+              onPress={handleClearSearch}
+              borderRadius="full">
+              <CloseIcon />
+            </IconButton>
+          )}
         </View>
       ) : (
         <View style={styles.headerLeftSideContainer}>
@@ -256,6 +258,7 @@ const ContactsSectionList = ({
   handleChatSelect,
   selectedUsers,
   searchText,
+  showLoadMoreLoader,
 }) => {
   return (
     <View style={styles.recentChatContiner}>
@@ -281,6 +284,11 @@ const ContactsSectionList = ({
           />
         ))}
       </View>
+      {showLoadMoreLoader ? (
+        <ActivityIndicator size={'large'} style={styles.loadMoreLoader} />
+      ) : (
+        <View style={styles.loadMoreLoaderPlaceholder} />
+      )}
     </View>
   );
 };
@@ -582,19 +590,8 @@ const ForwardMessage = () => {
     }
   };
 
-  const renderLoader = () => {
-    return (
-      <Slide mt="20" in={showLoadMoreLoader} placement="top">
-        <HStack space={8} justifyContent="center" alignItems="center">
-          <Spinner size="lg" color={'#3276E2'} />
-        </HStack>
-      </Slide>
-    );
-  };
-
   return (
     <>
-      {renderLoader()}
       <View style={styles.container}>
         <Header
           onCancelPressed={handleCancel}
@@ -623,6 +620,7 @@ const ForwardMessage = () => {
             selectedUsers={selectedUsers}
             handleChatSelect={handleUserSelect}
             searchText={searchText}
+            showLoadMoreLoader={showLoadMoreLoader}
           />
         </ScrollView>
         <SelectedUsersName

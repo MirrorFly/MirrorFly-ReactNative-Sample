@@ -79,7 +79,7 @@ const RecentChatItem = ({
             space={3}
             alignItems={item.msgBody.message_type ? 'center' : 'flex-start'}>
             <Avathar
-              data={nickName || userId}
+              data={nickName}
               backgroundColor={colorCode}
               profileImage={image}
             />

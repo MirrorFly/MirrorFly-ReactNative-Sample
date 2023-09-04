@@ -124,7 +124,7 @@ const ProfilePage = props => {
           return (
             <Box bg="black" px="2" py="1" rounded="sm">
               <Text style={{ color: '#fff', padding: 5 }}>
-                User Name is too short
+                Username is too short
               </Text>
             </Box>
           );

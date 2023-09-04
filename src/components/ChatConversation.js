@@ -119,7 +119,7 @@ const initialLeftActionState = false; // Adjust as needed
   const copyToClipboard = () => {
     setSelectedMsgs([]);
     Clipboard.setString(
-      selectedMsgs[0].msgBody.message ||
+      selectedMsgs[0]?.msgBody.message ||
         selectedMsgs[0]?.msgBody?.media?.caption,
     );
     toast.show({
@@ -208,7 +208,7 @@ const initialLeftActionState = false; // Adjust as needed
           },
           {
             label:
-              selectedMsgs[0].msgBody.message_type === 'text' ||
+              selectedMsgs[0]?.msgBody.message_type === 'text' ||
               selectedMsgs[0]?.msgBody?.media?.caption
                 ? 'Copy'
                 : null,
@@ -218,11 +218,11 @@ const initialLeftActionState = false; // Adjust as needed
         break;
       case foundMsg.length === 0 &&
         selectedMsgs.length > 0 &&
-        selectedMsgs[0].msgStatus !== 3:
+        selectedMsgs[0]?.msgStatus !== 3:
         setMenuItems([
           {
             label:
-              selectedMsgs[0].msgBody.message_type === 'text' ||
+              selectedMsgs[0]?.msgBody.message_type === 'text' ||
               selectedMsgs[0]?.msgBody?.media?.caption
                 ? 'Copy'
                 : null,
@@ -239,8 +239,8 @@ const initialLeftActionState = false; // Adjust as needed
         break;
       case foundMsg.length === 0 &&
         selectedMsgs.length > 0 &&
-        selectedMsgs[0].msgStatus === 3 &&
-        (selectedMsgs[0].msgBody.message_type === 'text' ||
+        selectedMsgs[0]?.msgStatus === 3 &&
+        (selectedMsgs[0]?.msgBody.message_type === 'text' ||
           selectedMsgs[0]?.msgBody?.media?.caption):
         setMenuItems([
           {

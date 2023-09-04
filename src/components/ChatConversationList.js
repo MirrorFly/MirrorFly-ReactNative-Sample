@@ -65,11 +65,11 @@ const ChatConversationList = ({
   }, [fromUserJId, messages]);
 
   React.useEffect(() => {
-    if (conversationSearchText) {
+    if (conversationSearchText.trim()) {
       // updating the filtered messages indices refs data
       filteredMessageIndexes.current = [];
       const _filteredMsgIndices = [];
-      const _searchText = conversationSearchText.toLowerCase();
+      const _searchText = conversationSearchText.trim().toLowerCase();
       messageList.forEach((msg, index) => {
         if (msg?.msgBody?.message_type === 'text') {
           if (msg?.msgBody?.message?.toLowerCase?.().includes?.(_searchText)) {
@@ -87,7 +87,7 @@ const ChatConversationList = ({
   }, [messageList, conversationSearchText]);
 
   React.useEffect(() => {
-    if (conversationSearchText) {
+    if (conversationSearchText.trim() && searchMesageIndex > -1) {
       const _indexToScroll =
         filteredMessageIndexes.current?.[searchMesageIndex]?.index ?? -1;
       // updating the scrollview ref when searchText or the search message index changed

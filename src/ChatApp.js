@@ -14,7 +14,7 @@ import { navigationRef } from './Navigation/rootNavigation';
 import StackNavigationPage from './Navigation/stackNavigation';
 import SDK from './SDK/SDK';
 import { callBacks } from './SDKActions/callbacks';
-import ApplicationTheme from './config/appTheme';
+import ApplicationColors from './config/appTheme';
 import { REGISTERSCREEN } from './constant';
 import { getCurrentUserJid } from './redux/Actions/AuthAction';
 import { navigate } from './redux/Actions/NavigationAction';
@@ -92,8 +92,8 @@ const RootNavigation = () => {
         ref={navigationRef}
         theme={
           scheme === 'dark'
-            ? ApplicationTheme.darkTheme
-            : ApplicationTheme.lightTheme
+            ? ApplicationColors.darkTheme
+            : ApplicationColors.lightTheme
         }>
         {isLoading ? (
           <SplashScreen />
@@ -109,8 +109,8 @@ const RootNavigation = () => {
           ref={navigationRef}
           theme={
             scheme === 'dark'
-              ? ApplicationTheme.darkTheme
-              : ApplicationTheme.lightTheme
+              ? ApplicationColors.darkTheme
+              : ApplicationColors.lightTheme
           }>
           {isLoading ? (
             <SplashScreen />

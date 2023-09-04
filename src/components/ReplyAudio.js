@@ -12,9 +12,9 @@ const ReplyAudio = props => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const isSameUser = fromUserJid === currentUserJID;
 
-  const { nickName = profileDetails?.nickName } = useRosterData(
-    isSameUser ? '' : fromUserId,
-  );
+  let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
 
   const durationInSeconds = replyMsgItems.msgBody.media.duration;
   const durationInMinutes = Math.floor(durationInSeconds / 1000);

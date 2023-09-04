@@ -6,7 +6,7 @@ import SDK from 'SDK/SDK';
 import { ClearChatHistoryAction } from 'mf-redux/Actions/ConversationAction';
 import { clearLastMessageinRecentChat } from 'mf-redux/Actions/RecentChatAction';
 import { Box, HStack, Modal, Stack, Text, View, useToast } from 'native-base';
-import React, { createRef } from 'react';
+import React from 'react';
 import {
   ImageBackground,
   KeyboardAvoidingView,

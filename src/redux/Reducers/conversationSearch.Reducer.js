@@ -8,7 +8,7 @@ import {
 
 const initialState = {
   searchText: '',
-  messageIndex: 0,
+  messageIndex: -1,
   totalSearchResults: 0,
 };
 
@@ -18,7 +18,7 @@ const conversationSearchReducer = (state = initialState, action) => {
       return {
         ...state,
         searchText: action.payload,
-        messageIndex: 0,
+        messageIndex: -1,
         totalSearchResults: 0,
       };
     case UPDATE_CONVERSATION_TOTAL_SEARCH_RESULTS:
@@ -35,7 +35,7 @@ const conversationSearchReducer = (state = initialState, action) => {
       return {
         ...state,
         searchText: '',
-        messageIndex: 0,
+        messageIndex: -1,
         totalSearchResults: 0,
       };
     case RESET_STORE:

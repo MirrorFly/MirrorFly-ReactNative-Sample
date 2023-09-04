@@ -4,7 +4,7 @@ import CollapsingToolbar from './CollapsibleToolbar';
 import useRosterData from 'hooks/useRosterData';
 
 const UserInfo = ({ setLocalNav, toUserId }) => {
-  const {
+  let {
     nickName = '',
     colorCode = '',
     status = '',
@@ -12,6 +12,13 @@ const UserInfo = ({ setLocalNav, toUserId }) => {
     email = '',
     image = '',
   } = useRosterData(toUserId);
+  // updating default values
+  nickName = nickName || toUserId || '';
+  colorCode = colorCode || '';
+  status = status || '';
+  mobileNumber = mobileNumber || '';
+  email = email || '';
+  image = image || '';
 
   const handleBackBtn = () => {
     setLocalNav('CHATCONVERSATION');

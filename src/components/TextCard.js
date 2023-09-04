@@ -32,7 +32,7 @@ const TextCard = props => {
       <Text style={styles.message}>
         <HighlightedText
           text={props.data?.message}
-          searchValue={conversationSearchText}
+          searchValue={conversationSearchText.trim()}
         />
       </Text>
 
@@ -47,9 +47,13 @@ const TextCard = props => {
 };
 export default TextCard;
 
+const escapeRegExpReservedChars = str => {
+  return String(str).replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
+};
+
 const HighlightedText = ({ textStyle = {}, text, searchValue = '', index }) => {
-  const parts = searchValue
-    ? text.split(new RegExp(`(${searchValue})`, 'i'))
+  let parts = searchValue
+    ? text.split(new RegExp(`(${escapeRegExpReservedChars(searchValue)})`, 'i'))
     : [text];
   return (
     <Text>

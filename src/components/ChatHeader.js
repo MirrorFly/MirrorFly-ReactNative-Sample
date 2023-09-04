@@ -12,7 +12,7 @@ import {
   View,
   Input,
 } from 'native-base';
-import React from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
@@ -37,6 +37,7 @@ import {
 import { showToast } from 'Helper/index';
 import { FORWARD_MESSSAGE_SCREEN } from '../constant';
 import useRosterData from 'hooks/useRosterData';
+import ApplicationColors from 'config/appColors';
 
 const forwardMediaMessageTypes = {
   image: true,
@@ -71,11 +72,22 @@ function ChatHeader({
   } = useSelector(state => state?.conversationSearchData) || {};
   const dispatch = useDispatch();
 
+  const searchInputRef = useRef();
+
   React.useEffect(() => {
     return () => {
       dispatch(clearConversationSearchData());
     };
   }, []);
+
+  React.useEffect(() => {
+    if (IsSearching) {
+      // focusing the input with setTimeout to focus to avoid some strange issue in react native
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 200);
+    }
+  }, [IsSearching]);
 
   const fromUserId = React.useMemo(
     () => getUserIdFromJid(fromUserJId),
@@ -187,7 +199,7 @@ function ChatHeader({
     const toastConfig = {
       id: 'conversation-search-no-message-found-toast',
     };
-    showToast('No messsage found', toastConfig);
+    showToast('No results found', toastConfig);
   };
 
   const handleMessageSearchIndexGoUp = () => {
@@ -201,7 +213,7 @@ function ChatHeader({
         ),
       );
     } else {
-      showNoMessageFoundToast();
+      conversationSearchText.trim() && showNoMessageFoundToast();
     }
   };
 
@@ -213,7 +225,7 @@ function ChatHeader({
         ),
       );
     } else {
-      showNoMessageFoundToast();
+      conversationSearchText.trim() && showNoMessageFoundToast();
     }
   };
 
@@ -236,13 +248,18 @@ function ChatHeader({
         />
         <View style={styles.TextInput}>
           <Input
-            autoFocus
+            ref={searchInputRef}
             variant="underlined"
-            placeholder="Search..."
+            placeholder=" Search..."
             value={conversationSearchText}
-            fontSize={18}
-            fontWeight={'500'}
+            fontSize={17}
+            fontWeight={'400'}
             onChangeText={handleSearchTextChange}
+            focusOutlineColor={ApplicationColors.mainColor}
+            _input={{
+              cursorColor: ApplicationColors.mainColor,
+              selectionColor: ApplicationColors.mainColor,
+            }}
           />
         </View>
         <TouchableOpacity

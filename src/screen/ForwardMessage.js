@@ -52,6 +52,7 @@ import useRosterData from 'hooks/useRosterData';
 import { CHATSCREEN } from 'src/constant';
 import { navigate } from 'mf-redux/Actions/NavigationAction';
 import { CONVERSATION_SCREEN } from 'src/constant';
+import ApplicationColors from 'config/appColors';
 
 const showMaxUsersLimitToast = () => {
   const options = {
@@ -200,12 +201,12 @@ const ContactItem = ({
             style={styles.checkbox}
             onChange={handleChatItemSelect}
             _checked={{
-              backgroundColor: '#3276E2',
-              borderColor: '#3276E2',
+              backgroundColor: ApplicationColors.mainColor,
+              borderColor: ApplicationColors.mainColor,
             }}
             _pressed={{
-              backgroundColor: '#3276E2',
-              borderColor: '#3276E2',
+              backgroundColor: ApplicationColors.mainColor,
+              borderColor: ApplicationColors.mainColor,
             }}
           />
         </View>

@@ -30,11 +30,18 @@ const DeletedMessage = (props = {}) => {
     messageFrom &&
     messageFrom.indexOf(currentUserJID) === -1;
 
+  const handlePress = () => {
+    if (selectedMsgs.length > 0) {
+      handleMsgSelect(messageObject, true);
+    }
+  };
+
+  const handleLongPress = () => {
+    handleMsgSelect(messageObject, true);
+  };
+
   return (
-    <Pressable
-      mb="1.5"
-      onPress={() => handleMsgSelect(messageObject, true)}
-      onLongPress={() => handleMsgSelect(messageObject, true)}>
+    <Pressable mb="1.5" onPress={handlePress} onLongPress={handleLongPress}>
       <Box
         width={'100%'}
         bg={
@@ -48,7 +55,7 @@ const DeletedMessage = (props = {}) => {
             borderRadius={10}
             ml={isSender ? 0 : 3}
             minWidth="30%"
-            width="75%"
+            width="78%"
             overflow={'hidden'}
             borderWidth={isSender ? 1 : 0}
             borderBottomLeftRadius={isSender ? 0 : 10}

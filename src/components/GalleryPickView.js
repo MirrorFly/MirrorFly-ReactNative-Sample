@@ -2,6 +2,7 @@ import React from 'react';
 import {
   BackHandler,
   Image,
+  Platform,
   Pressable,
   StyleSheet,
   TextInput,
@@ -11,6 +12,7 @@ import {
   HStack,
   Icon,
   IconButton,
+  KeyboardAvoidingView,
   ScrollView,
   Spacer,
   Text,
@@ -108,7 +110,9 @@ function GalleryPickView(props) {
   );
 
   return (
-    <>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.container}>
         <HStack mb={'2'} mt="5" alignItems={'center'}>
           <IconButton
@@ -237,7 +241,7 @@ function GalleryPickView(props) {
           </ScrollView>
         )}
       </View>
-    </>
+    </KeyboardAvoidingView>
   );
 }
 

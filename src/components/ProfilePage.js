@@ -7,6 +7,7 @@ import {
   TextInput,
   ScrollView,
   KeyboardAvoidingView,
+  Keyboard,
 } from 'react-native';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -35,6 +36,7 @@ import { useNetworkStatus } from '../hooks';
 import { PrimaryPillBtn } from '../common/Button';
 import AuthProfileImage from '../common/AuthProfileImage';
 import * as RootNav from '../Navigation/rootNavigation';
+import { showToast } from 'Helper/index';
 
 const ProfilePage = props => {
   const toast = useToast();
@@ -52,11 +54,9 @@ const ProfilePage = props => {
   const isConnected = useNetworkStatus();
 
   const toastConfig = {
+    id: 'profile-toast',
     duration: 2500,
     avoidKeyboard: true,
-    onCloseComplete: () => {
-      setIsToastShowing(false);
-    },
   };
 
   const handleBackBtn = () => {
@@ -74,6 +74,8 @@ const ProfilePage = props => {
   };
 
   const handleImage = position => {
+    Keyboard.dismiss();
+
     setIsToastShowing(true);
     if (!isConnected && !isToastShowing) {
       return toast.show({
@@ -102,76 +104,35 @@ const ProfilePage = props => {
   };
 
   const handleProfileUpdate = async () => {
+    console.log('click');
     setIsToastShowing(true);
-    if (!props?.profileInfo?.nickName && !isToastShowing) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={styles.toastText}>Please enter your username</Text>
-            </Box>
-          );
-        },
-      });
+    const validation =
+      props?.profileInfo?.nickName &&
+      props?.profileInfo?.nickName?.length > '3' &&
+      props?.profileInfo?.email &&
+      /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(
+        props?.profileInfo?.email,
+      );
+    if (!props?.profileInfo?.nickName) {
+      return showToast('Please enter your username', toastConfig);
     }
-    if (props?.profileInfo?.nickName?.length < '3' && !isToastShowing) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={styles.toastText}>User Name is too short</Text>
-            </Box>
-          );
-        },
-      });
+    if (props?.profileInfo?.nickName?.length < '3') {
+      return showToast('Username is too short', toastConfig);
     }
-    if (!props?.profileInfo?.email && !isToastShowing) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={styles.toastText}>Email should not be empty</Text>
-            </Box>
-          );
-        },
-      });
+    if (!props?.profileInfo?.email) {
+      return showToast('Email should not be empty', toastConfig);
     }
     if (
       !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(
         props?.profileInfo?.email,
-      ) &&
-      !isToastShowing
+      )
     ) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={styles.toastText}>Please enter a Valid E-Mail</Text>
-            </Box>
-          );
-        },
-      });
+      return showToast('Please enter a Valid E-Mail', toastConfig);
     }
-    if (!isConnected && !isToastShowing) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={styles.toastText}>
-                Please check your internet connectivity
-              </Text>
-            </Box>
-          );
-        },
-      });
+    if (!isConnected) {
+      return showToast('Please check your internet connectivity', toastConfig);
     }
-    if (isConnected && !isToastShowing) {
-      setIsToastShowing(false);
+    if (isConnected && validation) {
       setloading(true);
       let UserInfo = await SDK.setUserProfile(
         props?.profileInfo?.nickName.trim(),
@@ -185,31 +146,9 @@ const ProfilePage = props => {
         let x = { screen: RECENTCHATSCREEN, prevScreen: PROFILESCREEN };
         RootNav.navigate(RECENTCHATSCREEN);
         prevPageInfo === REGISTERSCREEN && dispatch(navigate(x));
-        if (UserInfo && !isToastShowing) {
-          return toast.show({
-            ...toastConfig,
-            render: () => {
-              return (
-                <Box bg="black" px="2" py="1" rounded="sm">
-                  <Text style={styles.toastText}>
-                    Profile Updated successfully
-                  </Text>
-                </Box>
-              );
-            },
-          });
-        }
-      } else if (UserInfo && !isToastShowing) {
-        return toast.show({
-          ...toastConfig,
-          render: () => {
-            return (
-              <Box bg="black" px="2" py="1" rounded="sm">
-                <Text style={styles.toastText}>{UserInfo.message}</Text>
-              </Box>
-            );
-          },
-        });
+        return showToast('Profile Updated successfully', toastConfig);
+      } else {
+        return showToast(UserInfo.message, toastConfig);
       }
     }
   };
@@ -448,22 +387,24 @@ const ProfilePage = props => {
               }}>
               <Pressable onPress={() => handleImage('big')}>
                 {props.profileInfo?.image && handleRenderAuthImage}
-                {!props.profileInfo?.image && props?.profileInfo?.nickName && (
-                  <Avathar
-                    fontSize={60}
-                    width={157}
-                    height={157}
-                    data={props.profileInfo?.nickName}
-                    backgroundColor={'#3276E2'}
-                  />
-                )}
-                {!props.profileInfo?.image && !props?.profileInfo?.nickName && (
-                  <Image
-                    resizeMode="contain"
-                    source={require('../assets/profile.png')}
-                    style={{ height: 157, width: 157 }}
-                  />
-                )}
+                {!props.profileInfo?.image &&
+                  props?.profileInfo?.nickName.trim() && (
+                    <Avathar
+                      fontSize={60}
+                      width={157}
+                      height={157}
+                      data={props.profileInfo?.nickName.trim()}
+                      backgroundColor={'#3276E2'}
+                    />
+                  )}
+                {!props.profileInfo?.image &&
+                  !props?.profileInfo?.nickName.trim() && (
+                    <Image
+                      resizeMode="contain"
+                      source={require('../assets/profile.png')}
+                      style={{ height: 157, width: 157 }}
+                    />
+                  )}
               </Pressable>
               <TouchableOpacity
                 activeOpacity={1}

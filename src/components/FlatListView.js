@@ -15,11 +15,17 @@ import useRosterData from 'hooks/useRosterData';
 import SDK from 'SDK/SDK';
 
 const RenderItem = ({ item, index, onhandlePress }) => {
-  let { nickName, image: imageToken, colorCode } = useRosterData(item?.userId);
+  let {
+    nickName,
+    image: imageToken,
+    colorCode,
+    status,
+  } = useRosterData(item?.userId);
   // updating default values
   nickName = nickName || item?.nickName || item?.userId || '';
   imageToken = imageToken || item?.image || '';
   colorCode = colorCode || SDK.getRandomColorCode();
+  status = status || item.status || '';
 
   const handlePress = () => onhandlePress(item);
 
@@ -42,8 +48,13 @@ const RenderItem = ({ item, index, onhandlePress }) => {
                 {nickName}
               </Text>
               <HStack alignItems={'center'}>
-                <Text color="coolGray.600" _dark={{ color: 'warmGray.200' }}>
-                  {item.userId}
+                <Text
+                  width={'90%'}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  color="coolGray.600"
+                  _dark={{ color: 'warmGray.200' }}>
+                  {status}
                 </Text>
               </HStack>
             </VStack>

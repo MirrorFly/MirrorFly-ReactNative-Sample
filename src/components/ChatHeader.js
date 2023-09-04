@@ -59,6 +59,13 @@ function ChatHeader({
   isSearchClose,
   chatUserProfile,
 }) {
+  let selectedMsg = {};
+  if (selectedMsgs.length) {
+    selectedMsg = selectedMsgs[0];
+  }
+  const { msgBody: { media: { file = {}, local_path = '' } = {} } = {} } =
+    selectedMsg;
+  const imageUrl = local_path || file?.fileDetails?.uri;
   const navigation = useNavigation();
   const [remove, setRemove] = React.useState(false);
   const [deleteEveryOne, setDeleteEveryOne] = React.useState(false);
@@ -361,7 +368,8 @@ function ChatHeader({
                   _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
                   px="2"
                   onPress={handleReplyMessage}>
-                  {selectedMsgs?.length === 1 && <ReplyIcon />}
+                  {selectedMsgs?.length === 1 &&
+                    selectedMsgs?.msgStatus !== 3 && <ReplyIcon />}
                 </IconButton>
               )}
             {renderForwardIcon()}
@@ -405,27 +413,26 @@ function ChatHeader({
             color={'#767676'}>
             Are you sure you want to delete selected Message?
           </Text>
-          {selectedMsgs[0]?.msgBody.message_type !== 'text' &&
-            selectedMsgs[0]?.msgBody.message_type !== 'location' && (
-              <HStack py={'3'}>
-                <Checkbox
-                  value={isSelected}
-                  onValueChange={setSelection}
-                  style={styles.checkbox}
-                  _checked={{
-                    backgroundColor: '#3276E2',
-                    borderColor: '#3276E2',
-                  }}
-                  _pressed={{
-                    backgroundColor: '#3276E2',
-                    borderColor: '#3276E2',
-                  }}>
-                  <Text fontSize={'14'} fontWeight={'400'}>
-                    Delete media from my phone
-                  </Text>
-                </Checkbox>
-              </HStack>
-            )}
+          {imageUrl && (
+            <HStack py={'3'}>
+              <Checkbox
+                value={isSelected}
+                onValueChange={setSelection}
+                style={styles.checkbox}
+                _checked={{
+                  backgroundColor: '#3276E2',
+                  borderColor: '#3276E2',
+                }}
+                _pressed={{
+                  backgroundColor: '#3276E2',
+                  borderColor: '#3276E2',
+                }}>
+                <Text fontSize={'14'} fontWeight={'400'}>
+                  Delete media from my phone
+                </Text>
+              </Checkbox>
+            </HStack>
+          )}
           {deleteEveryOne ? (
             <VStack justifyContent={'flex-end'} pt="5">
               <Pressable mb="6" onPress={() => handleDeleteForMe(1)}>

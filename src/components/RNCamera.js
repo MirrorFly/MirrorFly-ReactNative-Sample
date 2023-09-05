@@ -138,7 +138,10 @@ const Camera = props => {
           ...res,
           type: 'image',
         };
-        if (orientationCheck(combinedData.pictureOrientation)) {
+        if (
+          orientationCheck(combinedData.pictureOrientation) &&
+          combinedData.width > combinedData.height
+        ) {
           const temp = combinedData.width;
           combinedData.width = combinedData.height;
           combinedData.height = temp;

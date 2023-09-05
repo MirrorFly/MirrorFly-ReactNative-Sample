@@ -7,6 +7,7 @@ import { millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
 import ProgressLoader from './chat/common/ProgressLoader';
 import ReplyMessage from './ReplyMessage';
 import ic_ballon from '../assets/ic_baloon.png';
+import { getImageSource } from '../common/utils';
 
 const VideoCard = props => {
   const {
@@ -71,7 +72,7 @@ const VideoCard = props => {
             <Image
               resizeMode="contain"
               alt={fileName}
-              source={noPreview}
+              source={getImageSource(noPreview)}
               width={androidWidth}
               height={androidHeight}
             />

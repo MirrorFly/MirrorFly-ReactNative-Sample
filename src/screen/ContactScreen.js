@@ -128,7 +128,7 @@ function ContactScreen() {
               <Image
                 style={styles.image}
                 resizeMode="cover"
-                source={no_contacts}
+                source={getImageSource(no_contacts)}
               />
               <Text style={styles.noMsg}>No contacts found</Text>
             </Center>

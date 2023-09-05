@@ -3,6 +3,7 @@ import { HStack, Icon, IconButton, Image, Menu, Text } from 'native-base';
 import { LeftArrowIcon, SearchIcon, CloseIcon } from '../common/Icons';
 import { TextInput } from 'react-native';
 import { MenuIconBtn } from '../common/Button';
+import { getImageSource } from '../common/utils';
 
 function ScreenHeader(props) {
   const [position] = React.useState('auto');
@@ -80,7 +81,7 @@ function ScreenHeader(props) {
               size="xs"
               width={145}
               height={20.8}
-              source={props?.logo}
+              source={getImageSource(props?.logo)}
               alt="ic_logo.png"
             />
           )}

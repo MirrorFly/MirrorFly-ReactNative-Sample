@@ -6,7 +6,7 @@ import {
   Spinner,
   Text,
 } from 'native-base';
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import {
   View,
   TouchableOpacity,
@@ -19,7 +19,7 @@ import { LeftArrowIcon } from '../common/Icons';
 import { CHATCONVERSATION } from '../constant';
 import { millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
 import RNFS from 'react-native-fs';
-import { mediaObjContructor } from '../common/utils';
+import { getImageSource, mediaObjContructor } from '../common/utils';
 import Video from 'react-native-video';
 import flashOnIcon from '../assets/ic_flash_on.png';
 import flashOffIcon from '../assets/ic_flash_off.png';
@@ -35,17 +35,17 @@ import {
 
 const Camera = props => {
   const { setLocalNav = () => {}, setSelectedImages } = props;
-  const cameraRef = useRef(null);
-  const recordingIntervalRef = useRef(null);
+  const cameraRef = React.useRef(null);
+  const recordingIntervalRef = React.useRef(null);
   const dispatch = useDispatch();
-  const [data, setData] = useState();
-  const [videoData, setVideoData] = useState();
-  const [captureTime, setCaptureTime] = useState(0);
-  const [type, setType] = useState(RNCamera.Constants.Type.back);
-  const [flash, setFlash] = useState(RNCamera.Constants.FlashMode.off);
-  const [flashIcon, setFlashIcon] = useState(flashOffIcon);
-  const [isCapturing, setIsCapturing] = useState(false);
-  const [isHolding, setIsHolding] = useState(false);
+  const [data, setData] = React.useState();
+  const [videoData, setVideoData] = React.useState();
+  const [captureTime, setCaptureTime] = React.useState(0);
+  const [type, setType] = React.useState(RNCamera.Constants.Type.back);
+  const [flash, setFlash] = React.useState(RNCamera.Constants.FlashMode.off);
+  const [flashIcon, setFlashIcon] = React.useState(flashOffIcon);
+  const [isCapturing, setIsCapturing] = React.useState(false);
+  const [isHolding, setIsHolding] = React.useState(false);
 
   const handleBackBtn = () => {
     setLocalNav(CHATCONVERSATION);
@@ -239,7 +239,7 @@ const Camera = props => {
             <Image
               alt="flash-icon"
               style={styles.flashIcon}
-              source={flashIcon}
+              source={getImageSource(flashIcon)}
             />
           </Pressable>
           <TouchableOpacity
@@ -256,7 +256,7 @@ const Camera = props => {
             <Image
               alt="flip-icon"
               style={styles.flashIcon}
-              source={flipCameraIcon}
+              source={getImageSource(flipCameraIcon)}
             />
           </Pressable>
         </HStack>

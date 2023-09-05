@@ -7,6 +7,7 @@ import { getThumbBase64URL } from '../Helper/Chat/Utility';
 import { GalleryAllIcon } from '../common/Icons';
 import ReplyMessage from './ReplyMessage';
 import ic_baloon from '../assets/ic_baloon.png';
+import { getImageSource } from '../common/utils';
 
 const ImageCard = props => {
   const {
@@ -87,7 +88,7 @@ const ImageCard = props => {
             <Image
               resizeMode="contain"
               alt={fileName}
-              source={noPreview}
+              source={getImageSource(noPreview)}
               width={androidWidth}
               height={androidHeight}
             />

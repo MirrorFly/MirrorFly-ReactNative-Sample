@@ -4,6 +4,7 @@ import { Chat_FABICON, MenuIcon } from './Icons';
 import { Icon, IconButton, Pressable } from 'native-base';
 import SendIcon from '../assets/send.png';
 import LeftArrow from '../assets/leftArrow.png';
+import { getImageSource } from './utils';
 
 const styles = StyleSheet.create({
   primarypilbtn: {
@@ -50,7 +51,7 @@ export const PrimaryPillBtn = props => {
 export const BackBtn = props => {
   return (
     <Pressable activeOpacity={1} {...props} style={{ padding: 10 }}>
-      <Image source={LeftArrow} style={{ width: 18.33, height: 15.32 }} />
+      <Image source={getImageSource(LeftArrow)} style={{ width: 18.33, height: 15.32 }} />
     </Pressable>
   );
 };
@@ -58,7 +59,10 @@ export const BackBtn = props => {
 export const SendBtn = React.memo(props => {
   return (
     <Pressable {...props}>
-      <Image source={SendIcon} style={{ width: 24.33, height: 20.32 }} />
+      <Image
+        source={getImageSource(SendIcon)}
+        style={{ width: 24.33, height: 20.32 }}
+      />
     </Pressable>
   );
 });

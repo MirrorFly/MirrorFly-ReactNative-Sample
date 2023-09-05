@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 
 /**
@@ -21,9 +21,9 @@ import { useSelector } from 'react-redux';
  */
 const useRosterData = userId => {
   const data = useSelector(state => state.rosterData.data);
-  const [userProfileData, setUserProfileData] = useState({});
+  const [userProfileData, setUserProfileData] = React.useState({});
 
-  useLayoutEffect(() => {
+  React.useLayoutEffect(() => {
     const userData = data[userId];
     if (!userData) {
       setUserProfileData({});

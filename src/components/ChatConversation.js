@@ -34,6 +34,7 @@ import ReplyText from './ReplyText';
 import ReplyVideo from './ReplyVideo';
 import ReplyDeleted from './ReplyDeleted';
 import chatBackgroud from '../assets/chatBackgroud.png';
+import { getImageSource } from '../common/utils';
 
 const ChatConversation = React.memo(props => {
   const {
@@ -359,7 +360,9 @@ const ChatConversation = React.memo(props => {
         IsSearching={IsSearching}
         setLocalNav={props.setLocalNav}
       />
-      <ImageBackground source={chatBackgroud} style={styles.imageBackground}>
+      <ImageBackground
+        source={getImageSource(chatBackgroud)}
+        style={styles.imageBackground}>
         <ChatConversationList
           handleMessageListUpdated={handleMessageListUpdated}
           setLocalNav={props.setLocalNav}

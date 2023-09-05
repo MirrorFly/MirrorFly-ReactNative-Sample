@@ -7,6 +7,7 @@ import json from '@rollup/plugin-json';
 import { terser } from 'rollup-plugin-terser';
 import image from '@rollup/plugin-image';
 import copy from 'rollup-plugin-copy';
+import replace from '@rollup/plugin-replace';
 import commonjs from '@rollup/plugin-commonjs';
 
 export default {
@@ -26,10 +27,8 @@ export default {
   external: [
     'react',
     'react-native',
-    'react-dom',
     'react-redux',
     'react-native-fs',
-    'styled-components',
     'rn-fetch-blob',
     'realm',
     'native-base',
@@ -45,13 +44,32 @@ export default {
     'react-native-compressor',
     'react-native-document-picker',
     '@react-navigation/native',
+    'emoji-datasource',
     '@react-navigation/native-stack',
     '@react-native-async-storage/async-storage',
     'react-native-swipe-list-view',
     'react-native-mov-to-mp4',
+    'react-native-image-crop-picker',
     'react-native-safe-area-context',
+    '@react-native-community/netinfo',
+    'react-native-permissions',
+    '@react-native-clipboard/clipboard',
+    '@react-native-firebase/messaging',
+    '@react-native-firebase/app',
+    '@types/react',
+    'react-native-convert-ph-asset',
+    'react-native-create-thumbnail',
+    'react-native-file-viewer',
+    'react-native-get-random-values',
+    'react-native-push-notification',
+    'react-native-slider',
+    'react-native-svg-transformer',
   ],
   plugins: [
+    replace({
+      preventAssignment: true,
+      'process.env.NODE_ENV': JSON.stringify('development'),
+    }),
     nodePolyfills(),
     svgr(),
     resolve({
@@ -61,14 +79,14 @@ export default {
     babel({
       extensions: ['.tsx', '.ts', '.jsx', '.js'],
       exclude: 'node_modules/**',
-      presets: ['@babel/preset-react'],
+      presets: ['@babel/preset-react', '@babel/preset-typescript'],
     }),
     commonjs(),
     nodeResolve({ browser: false }),
     peerDepsExternal(),
     image(),
     json(),
-    terser(),
+    // terser(),
     copy({
       targets: [{ src: 'src/assets', dest: 'dist' }],
     }),

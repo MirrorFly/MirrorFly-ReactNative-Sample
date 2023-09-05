@@ -15,13 +15,7 @@ import SDK from '../SDK/SDK';
 import Avathar from '../common/Avathar';
 import { CloseIcon, SearchIcon } from '../common/Icons';
 import { Checkbox, Icon, IconButton, View as NBView } from 'native-base';
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React from 'react';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { useNetworkStatus } from '../hooks';
 import commonStyles from '../common/commonStyles';
@@ -102,7 +96,7 @@ const ContactItem = ({
   isCheckboxAllowed,
   searchText,
 }) => {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = React.useState(false);
   const {
     nickName = name,
     status: profileStatus = status,
@@ -110,7 +104,7 @@ const ContactItem = ({
     colorCode,
   } = useRosterData(userId);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isSelected !== isChecked) {
       setIsChecked(Boolean(isSelected));
     }
@@ -241,7 +235,7 @@ const ContactsSectionList = ({
 };
 
 const SelectedUsersName = ({ users, onMessageSend }) => {
-  const userNames = useMemo(() => {
+  const userNames = React.useMemo(() => {
     if (Array.isArray(users) && users.length) {
       return users.map(u => u.name || u.userId).join(', ');
     } else {
@@ -275,17 +269,21 @@ const contactPaginationRefInitialValue = {
 // Main Component
 const ForwardMessage = () => {
   const navigation = useNavigation();
-  const [searchText, setSearchText] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
-  const [selectedUsers, setSelectedUsers] = useState({});
-  const [showLoader, setShowLoader] = useState(false);
-  const [showLoadMoreLoader, setShowLoadMoreLoader] = useState(false);
-  const [filteredRecentChatList, setFilteredRecentChatList] = useState([]);
-  const [filteredContactList, setFilteredContactList] = useState([]);
+  const [searchText, setSearchText] = React.useState('');
+  const [isSearching, setIsSearching] = React.useState(false);
+  const [selectedUsers, setSelectedUsers] = React.useState({});
+  const [showLoader, setShowLoader] = React.useState(false);
+  const [showLoadMoreLoader, setShowLoadMoreLoader] = React.useState(false);
+  const [filteredRecentChatList, setFilteredRecentChatList] = React.useState(
+    [],
+  );
+  const [filteredContactList, setFilteredContactList] = React.useState([]);
   const recentChatData = useSelector(state => state.recentChatData.data);
   const activeChatUserJid = useSelector(state => state.navigation.fromUserJid);
 
-  const contactsPaginationRef = useRef({ ...contactPaginationRefInitialValue });
+  const contactsPaginationRef = React.useRef({
+    ...contactPaginationRefInitialValue,
+  });
 
   const dispatch = useDispatch();
 
@@ -312,11 +310,11 @@ const ForwardMessage = () => {
     return getLastThreeRecentChats(sortedList);
   }, []);
 
-  useLayoutEffect(() => {
+  React.useLayoutEffect(() => {
     fetchContactListWithDebounce(searchText.trim());
   }, [searchText]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (searchText) {
       // filtering the recent chat and updating the state
       const filteredData = recentChatList.filter(i =>
@@ -330,7 +328,7 @@ const ForwardMessage = () => {
     }
   }, [searchText]);
 
-  const selectedUsersArray = useMemo(() => {
+  const selectedUsersArray = React.useMemo(() => {
     return Object.values(selectedUsers || {});
   }, [selectedUsers]);
 

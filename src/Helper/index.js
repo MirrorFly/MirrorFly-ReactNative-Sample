@@ -1,4 +1,4 @@
-import React, { createRef } from 'react';
+import React from 'react';
 import { Box, Text, Toast } from 'native-base';
 import { Alert, Platform } from 'react-native';
 import Graphemer from 'graphemer';
@@ -12,7 +12,7 @@ import { profileDetail } from '../redux/Actions/ProfileAction';
 import SDK from '../SDK/SDK';
 import { updateUserProfileStore } from './Chat/ChatHelper';
 
-const toastLocalRef = createRef({});
+const toastLocalRef = React.createRef({});
 toastLocalRef.current = {};
 
 const toastConfig = {
@@ -124,7 +124,7 @@ export const debounce = (func, delay) => {
   return (...args) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
-      func.apply(this, args);
+      func(...args);
     }, delay);
   };
 };

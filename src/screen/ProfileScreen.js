@@ -18,7 +18,7 @@ const ProfileScreen = ({ navigation }) => {
   const [nav, setNav] = React.useState('ProfileScreen');
   const [statusList, setStatusList] = React.useState([]);
   const selectProfileInfo = useSelector(state => state.profile.profileDetails);
-  const [profileInfo, setProfileInfo] = React.useState();
+  const [profileInfo, setProfileInfo] = React.useState({});
 
   const handleDelete = value => {
     setStatusList(statusList.filter(item => item !== value));

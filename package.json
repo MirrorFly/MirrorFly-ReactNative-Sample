@@ -16,6 +16,7 @@
     "test": "jest",
     "lint": "eslint .",
     "postinstall": "patch-package",
+    "copy_pack": "cp -r dist/* /home/user/Web_Training/React_Native/SamplePoc/node_modules/mirrorfly/dist/",
     "i": "npm i -f && npm run ios-install"
   },
   "reactNativePermissionsIOS": [
@@ -48,6 +49,7 @@
     "@react-native-community/netinfo": "^8.0.0",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.9.13",
+    "@rollup/plugin-replace": "^4.0.0",
     "@tsconfig/react-native": "^2.0.2",
     "@types/jest": "^29.2.1",
     "@types/react": "^18.0.24",
@@ -104,17 +106,28 @@
     "uuidv4": "^6.2.13"
   },
   "peerDependencies": {
+    "react": "18.0.0",
     "@react-native-community/cameraroll": "^4.1.2",
+    "@react-native-community/netinfo": "^8.0.0",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.9.13",
     "moment": "2.29.4",
+    "native-base": "^3.4.28",
     "prop-types": "^15.8.1",
-    "react": "18.0.0",
+    "react-native-get-random-values": "^1.8.0",
     "react-native": "0.69.12",
     "react-native-fs": "^2.18.0",
+    "react-native-image-crop-picker": "^0.38.0",
+    "react-native-permissions": "^3.8.0",
     "react-native-safe-area-context": "^4.3.1",
     "react-native-svg": "^13.10.0",
-    "react-native-video": "^5.2.1"
+    "react-native-video": "^5.2.1",
+    "@react-native-clipboard/clipboard": "^1.11.2",
+    "@react-native-firebase/messaging": "^18.3.0",
+    "@react-native-firebase/app": "^18.3.0",
+    "@types/react": "^18.0.24",
+    "react-native-convert-ph-asset": "^1.0.3",
+    "react-native-create-thumbnail": "^1.6.4"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

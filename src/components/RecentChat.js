@@ -37,6 +37,7 @@ import {
   YOU_DELETED_THIS_MESSAGE,
 } from '../Helper/Chat/Constant';
 import no_messages from '../assets/no_messages.png';
+import { getImageSource } from '../common/utils';
 
 const RecentChatItem = ({
   item,
@@ -266,7 +267,11 @@ export default function RecentChat(props) {
   if (!props?.data?.length && !filteredMessages.length) {
     return (
       <Center h="full" bgColor={'#fff'}>
-        <Image style={styles.image} resizeMode="cover" source={no_messages} />
+        <Image
+          style={styles.image}
+          resizeMode="cover"
+          source={getImageSource(no_messages)}
+        />
         {props.isSearching ? (
           <Text style={styles.noMsg}>No Result Found</Text>
         ) : (

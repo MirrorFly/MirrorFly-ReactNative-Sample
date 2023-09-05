@@ -14,9 +14,9 @@ const ReplyText = props => {
   const isSameUser = fromUserJid === currentUserJID;
   const averageMessageHeight = 60;
 
-  const { nickName = profileDetails?.nickName } = useRosterData(
-    isSameUser ? '' : fromUserId,
-  );
+  let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
 
   React.useEffect(() => {
     if (scrollViewRef.current && selectedMsgIndex !== undefined) {
@@ -57,8 +57,13 @@ const ReplyText = props => {
           <Pressable
             style={{
               padding: 5,
+              top: -3,
+              right: 10,
+              bottom: 0,
               backgroundColor: '#FFF',
-              borderRadius: 20,
+              borderRadius: 10,
+              borderColor: '#000',
+              borderWidth: 1,
             }}
             onPress={RemoveHandle}>
             <ClearTextIcon />

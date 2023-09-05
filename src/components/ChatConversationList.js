@@ -61,22 +61,15 @@ const ChatConversationList = ({
   }, [messageList.length]);
 
   React.useEffect(() => {
-    (async () => {
-      if (!messages[getUserIdFromJid(fromUserJId)]) {
-        let chatMessage = await SDK.getChatMessagesDB(fromUserJId);
-        if (chatMessage?.statusCode === 200) {
-          dispatch(addChatConversationHistory(chatMessage));
-        }
-      }
-    })();
+    fetchMessagesFromSDK();
   }, [fromUserJId, messages]);
 
   React.useEffect(() => {
-    if (conversationSearchText) {
+    if (conversationSearchText.trim()) {
       // updating the filtered messages indices refs data
       filteredMessageIndexes.current = [];
       const _filteredMsgIndices = [];
-      const _searchText = conversationSearchText.toLowerCase();
+      const _searchText = conversationSearchText.trim().toLowerCase();
       messageList.forEach((msg, index) => {
         if (msg?.msgBody?.message_type === 'text') {
           if (msg?.msgBody?.message?.toLowerCase?.().includes?.(_searchText)) {
@@ -94,7 +87,7 @@ const ChatConversationList = ({
   }, [messageList, conversationSearchText]);
 
   React.useEffect(() => {
-    if (conversationSearchText) {
+    if (conversationSearchText.trim() && searchMesageIndex > -1) {
       const _indexToScroll =
         filteredMessageIndexes.current?.[searchMesageIndex]?.index ?? -1;
       // updating the scrollview ref when searchText or the search message index changed
@@ -116,6 +109,14 @@ const ChatConversationList = ({
     }
   }, [conversationSearchText, searchMesageIndex]);
 
+  const fetchMessagesFromSDK = async (forceGetFromSDK = false) => {
+    if (forceGetFromSDK || !messages[getUserIdFromJid(fromUserJId)]) {
+      let chatMessage = await SDK.getChatMessagesDB(fromUserJId);
+      if (chatMessage?.statusCode === 200) {
+        dispatch(addChatConversationHistory(chatMessage));
+      }
+    }
+  };
   const findMsgIndex = msgId => {
     const index = messageList.findIndex(
       item => item.msgId === msgId && item.deleteStatus === 0,

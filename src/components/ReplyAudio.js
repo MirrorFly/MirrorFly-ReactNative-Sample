@@ -12,9 +12,9 @@ const ReplyAudio = props => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const isSameUser = fromUserJid === currentUserJID;
 
-  const { nickName = profileDetails?.nickName } = useRosterData(
-    isSameUser ? '' : fromUserId,
-  );
+  let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
 
   const durationInSeconds = replyMsgItems.msgBody.media.duration;
   const durationInMinutes = Math.floor(durationInSeconds / 1000);
@@ -50,7 +50,9 @@ const ReplyAudio = props => {
           style={{
             padding: 5,
             backgroundColor: '#FFF',
-            borderRadius: 20,
+            borderRadius: 10,
+            borderColor: '#000',
+            borderWidth: 1,
           }}
           onPress={RemoveHandle}>
           <ClearTextIcon />
@@ -63,6 +65,7 @@ const ReplyAudio = props => {
             2,
             '0',
           )}:${String(durationInMinutes % 60).padStart(2, '0')}`}
+          Audio
         </Text>
       </HStack>
     </View>

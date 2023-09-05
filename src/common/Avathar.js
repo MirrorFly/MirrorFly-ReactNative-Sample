@@ -24,7 +24,7 @@ const Avathar = ({ profileImage, imageStyle, imageProps = {}, ...props }) => {
     return <Spinner />;
   }
 
-  return profileImage && !isImageLoadError ? (
+  return profileImage && !isImageLoadError && imageUrl ? (
     <Image
       {...imageProps}
       style={imageStyle || styles.imageDiv(props)}

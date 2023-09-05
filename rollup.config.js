@@ -4,7 +4,6 @@ import nodePolyfills from 'rollup-plugin-node-polyfills';
 import svgr from '@svgr/rollup';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import json from '@rollup/plugin-json';
-import { terser } from 'rollup-plugin-terser';
 import image from '@rollup/plugin-image';
 import copy from 'rollup-plugin-copy';
 import replace from '@rollup/plugin-replace';
@@ -86,7 +85,6 @@ export default {
     peerDepsExternal(),
     image(),
     json(),
-    // terser(),
     copy({
       targets: [{ src: 'src/assets', dest: 'dist' }],
     }),

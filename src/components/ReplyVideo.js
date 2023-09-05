@@ -1,4 +1,4 @@
-import { StyleSheet, Pressable, Image } from 'react-native';
+import { Pressable, Image } from 'react-native';
 import React from 'react';
 import { ClearTextIcon, VideoIcon } from '../common/Icons';
 import { HStack, Text, View } from 'native-base';
@@ -12,9 +12,9 @@ const ReplyVideo = props => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const isSameUser = fromUserJid === currentUserJID;
 
-  const { nickName = profileDetails?.nickName } = useRosterData(
-    isSameUser ? '' : fromUserId,
-  );
+  let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
 
   const RemoveHandle = () => {
     handleRemove();
@@ -76,7 +76,9 @@ const ReplyVideo = props => {
             right: 10,
             bottom: 0,
             backgroundColor: '#FFF',
-            borderRadius: 20,
+            borderRadius: 10,
+            borderColor: '#000',
+            borderWidth: 1,
           }}
           onPress={RemoveHandle}>
           <ClearTextIcon />
@@ -94,5 +96,3 @@ const ReplyVideo = props => {
 };
 
 export default ReplyVideo;
-
-const styles = StyleSheet.create({});

@@ -52,12 +52,19 @@ const RecentChatItem = ({
   const _handlePress = () => {
     handleSelect(item);
   };
-  const {
-    nickName = item?.fromUserId,
+  const { profileDetails = {} } = item;
+  let {
+    nickName,
     userId = '',
-    image = '',
-    colorCode = item?.profileDetails?.colorCode,
+    image,
+    colorCode,
   } = useRosterData(item?.fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails.nickName || item?.fromUserId || '';
+  image = image || profileDetails?.image || '';
+  userId = userId || item?.fromUserId || '';
+  colorCode = colorCode || profileDetails?.colorCode;
+
   return (
     <Box key={index}>
       <Pressable
@@ -74,7 +81,7 @@ const RecentChatItem = ({
             space={3}
             alignItems={item.msgBody.message_type ? 'center' : 'flex-start'}>
             <Avathar
-              data={nickName || userId}
+              data={nickName}
               backgroundColor={colorCode}
               profileImage={image}
             />

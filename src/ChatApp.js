@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
-import { NativeBaseProvider } from 'native-base';
+import { Box, NativeBaseProvider } from 'native-base';
 import React from 'react';
 import {
   LogBox,
@@ -103,9 +103,9 @@ const RootNavigation = () => {
         )}
       </NavigationContainer>
       <Box safeAreaBottom backgroundColor={safeAreaBgColor} /> */}
-
+      <Box safeAreaTop backgroundColor={safeAreaBgColor} />
       <SafeAreaView style={styles.container}>
-        <StatusBar backgroundColor={safeAreaBgColor} />
+        <StatusBar translucent backgroundColor={safeAreaBgColor} />
         <NavigationContainer
           ref={navigationRef}
           theme={
@@ -120,6 +120,7 @@ const RootNavigation = () => {
           )}
         </NavigationContainer>
       </SafeAreaView>
+      <Box safeAreaBottom backgroundColor={safeAreaBgColor} />
     </>
   );
 };

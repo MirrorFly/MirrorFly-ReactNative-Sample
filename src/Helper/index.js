@@ -168,7 +168,7 @@ export const getUsernameGraphemes = (input = '') => {
       });
     }
     if (!result) {
-      result = graphemes[0] + graphemes[1];
+      result = (graphemes[0] || '') + (graphemes[1] || '');
     }
     result = result.toUpperCase();
     memoizedUsernameGraphemes[input] = result;

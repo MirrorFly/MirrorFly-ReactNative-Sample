@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
 import {
   CameraSmallIcon,
   DocumentChatIcon,
@@ -43,9 +42,9 @@ function ReplyMessage(props) {
 
   const isSameUser = fromUserJid === currentUserJID;
 
-  const { nickName = profileDetails?.nickName || fromUserId } = useRosterData(
-    isSameUser ? '' : fromUserId,
-  );
+  let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
 
   const replyMessageUserNickName = !isSameUser ? nickName : 'You';
 
@@ -105,7 +104,7 @@ function ReplyMessage(props) {
       );
     }
 
-    if (message_type === 'image' || message_type === 'video') {
+    if (message_type === 'image') {
       return (
         <View
           mt="1"
@@ -128,6 +127,62 @@ function ReplyMessage(props) {
             <CameraSmallIcon color={'#7285B5'} width={13} height={13} />
             <Text pl={1} fontSize={14} color="#313131" fontWeight={400}>
               Photo
+            </Text>
+          </HStack>
+          <View
+            style={{
+              width: 60,
+              height: 60,
+              position: 'absolute',
+              right: 0,
+              borderBottomRightRadius: 5,
+              borderTopRightRadius: 5,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Image
+              alt="reply-img"
+              resizeMode="cover"
+              style={{
+                width: 60,
+                height: 60,
+                borderTopRightRadius: 5,
+                borderBottomRightRadius: 5,
+              }}
+              source={{
+                uri: `data:image/png;base64,${media?.thumb_image}`,
+              }}
+            />
+          </View>
+        </View>
+      );
+    }
+
+    if (message_type === 'video') {
+      return (
+        <View
+          mt="1"
+          mb="1"
+          position={'relative'}
+          minW={200}
+          minH={60}
+          borderRadius={7}
+          bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}
+          py="1"
+          px={'3'}>
+          <Text
+            numberOfLines={1}
+            fontSize={14}
+            ellipsizeMode="tail"
+            fontWeight={'bold'}>
+            {!isSameUser
+              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
+              : 'You'}
+          </Text>
+          <HStack mt="1" alignItems={'center'} pl={1}>
+            <VideoIcon color={'#767676'} width="13" height="13" />
+            <Text pl={1} fontSize={14} color="#313131" fontWeight={400}>
+              Video
             </Text>
           </HStack>
           <View
@@ -353,9 +408,7 @@ function ReplyMessage(props) {
           borderRadius={7}
           bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}>
           <Text numberOfLines={1} ellipsizeMode="tail" fontWeight={'bold'}>
-            {!isSameUser
-              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
-              : 'You'}
+            {!isSameUser ? nickName || getUserIdFromJid(fromUserJId) : 'You'}
           </Text>
           <Text numberOfLines={1} ellipsizeMode="tail">
             Original message not availabe

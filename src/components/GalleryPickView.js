@@ -2,6 +2,7 @@ import React from 'react';
 import {
   BackHandler,
   Image,
+  Platform,
   Pressable,
   StyleSheet,
   TextInput,
@@ -11,6 +12,7 @@ import {
   HStack,
   Icon,
   IconButton,
+  KeyboardAvoidingView,
   ScrollView,
   Spacer,
   Text,
@@ -28,6 +30,7 @@ import Avathar from '../common/Avathar';
 import { SceneMap, TabView } from 'react-native-tab-view';
 import { getType } from './chat/common/fileUploadValidation';
 import VideoPlayer from './Media/VideoPlayer';
+import useRosterData from '../hooks/useRosterData';
 
 function GalleryPickView(props) {
   const {
@@ -39,6 +42,16 @@ function GalleryPickView(props) {
   } = props;
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const [index, setIndex] = React.useState(0);
+
+  let {
+    nickName,
+    image: imageToken,
+    colorCode,
+  } = useRosterData(profileDetails?.userId);
+  // updating the default values
+  nickName =
+    nickName || profileDetails?.nickName || profileDetails?.userId || '';
+  imageToken = imageToken || '';
 
   const handleBackBtn = () => {
     selectedSingle && setSelectedImages([]);
@@ -97,7 +110,9 @@ function GalleryPickView(props) {
   );
 
   return (
-    <>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.container}>
         <HStack mb={'2'} mt="5" alignItems={'center'}>
           <IconButton
@@ -110,8 +125,9 @@ function GalleryPickView(props) {
             width={30}
             height={30}
             fontsize={14}
-            backgroundColor={profileDetails?.colorCode}
-            data={profileDetails?.nickName || '91'}
+            backgroundColor={colorCode}
+            data={nickName}
+            profileImage={imageToken}
           />
           <Spacer />
           {selectedImages.length > 1 && (
@@ -225,7 +241,7 @@ function GalleryPickView(props) {
           </ScrollView>
         )}
       </View>
-    </>
+    </KeyboardAvoidingView>
   );
 }
 

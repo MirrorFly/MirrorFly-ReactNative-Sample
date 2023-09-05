@@ -12,7 +12,7 @@ import {
   View,
   Input,
 } from 'native-base';
-import React from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
@@ -37,6 +37,7 @@ import {
 import { showToast } from '../Helper/index';
 import { FORWARD_MESSSAGE_SCREEN } from '../constant';
 import useRosterData from '../hooks/useRosterData';
+import ApplicationColors from '../config/appColors';
 
 const forwardMediaMessageTypes = {
   image: true,
@@ -53,9 +54,18 @@ function ChatHeader({
   handleBackBtn,
   handleReply,
   setLocalNav,
+  chatInputRef,
   IsSearching,
   isSearchClose,
+  chatUserProfile,
 }) {
+  let selectedMsg = {};
+  if (selectedMsgs.length) {
+    selectedMsg = selectedMsgs[0];
+  }
+  const { msgBody: { media: { file = {}, local_path = '' } = {} } = {} } =
+    selectedMsg;
+  const imageUrl = local_path || file?.fileDetails?.uri;
   const navigation = useNavigation();
   const [remove, setRemove] = React.useState(false);
   const [deleteEveryOne, setDeleteEveryOne] = React.useState(false);
@@ -69,22 +79,33 @@ function ChatHeader({
   } = useSelector(state => state?.conversationSearchData) || {};
   const dispatch = useDispatch();
 
+  const searchInputRef = useRef();
+
   React.useEffect(() => {
     return () => {
       dispatch(clearConversationSearchData());
     };
   }, []);
 
+  React.useEffect(() => {
+    if (IsSearching) {
+      // focusing the input with setTimeout to focus to avoid some strange issue in react native
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 200);
+    }
+  }, [IsSearching]);
+
   const fromUserId = React.useMemo(
     () => getUserIdFromJid(fromUserJId),
     [fromUserJId],
   );
 
-  const {
-    nickName = '',
-    image: profileImage = '',
-    colorCode = profileDetails?.colorCode,
-  } = useRosterData(fromUserId);
+  let { nickName, image: profileImage, colorCode } = useRosterData(fromUserId);
+  // updating default values
+  nickName = nickName || chatUserProfile?.nickName || fromUserId || '';
+  profileImage = profileImage || chatUserProfile?.image || '';
+  colorCode = colorCode || profileDetails?.colorCode;
 
   const onClose = () => {
     setRemove(false);
@@ -95,7 +116,7 @@ function ChatHeader({
       .sort((a, b) => (b.timestamp > a.timestamp ? -1 : 1))
       .map(el => el.msgId);
     let lastMsgIndex = selectedMsgs.findIndex(obj => obj.msgId === msgIds[0]);
-    let lastMsgTime = parseInt(selectedMsgs[lastMsgIndex].timestamp / 1000);
+    let lastMsgTime = parseInt(selectedMsgs[lastMsgIndex].timestamp / 1000, 10);
     const now = new Date().getTime();
     const validTime = lastMsgTime + 30 * 1000;
     const isSender = selectedMsgs.every(
@@ -130,6 +151,7 @@ function ChatHeader({
 
   const handleReplyMessage = () => {
     handleReply(selectedMsgs[0]);
+    chatInputRef.current.focus();
   };
 
   const handleUserInfo = () => {
@@ -184,7 +206,7 @@ function ChatHeader({
     const toastConfig = {
       id: 'conversation-search-no-message-found-toast',
     };
-    showToast('No messsage found', toastConfig);
+    showToast('No results found', toastConfig);
   };
 
   const handleMessageSearchIndexGoUp = () => {
@@ -198,7 +220,7 @@ function ChatHeader({
         ),
       );
     } else {
-      showNoMessageFoundToast();
+      conversationSearchText.trim() && showNoMessageFoundToast();
     }
   };
 
@@ -210,7 +232,7 @@ function ChatHeader({
         ),
       );
     } else {
-      showNoMessageFoundToast();
+      conversationSearchText.trim() && showNoMessageFoundToast();
     }
   };
 
@@ -233,13 +255,18 @@ function ChatHeader({
         />
         <View style={styles.TextInput}>
           <Input
-            autoFocus
+            ref={searchInputRef}
             variant="underlined"
-            placeholder="Search..."
+            placeholder=" Search..."
             value={conversationSearchText}
-            fontSize={18}
-            fontWeight={'500'}
+            fontSize={17}
+            fontWeight={'400'}
             onChangeText={handleSearchTextChange}
+            focusOutlineColor={ApplicationColors.mainColor}
+            _input={{
+              cursorColor: ApplicationColors.mainColor,
+              selectionColor: ApplicationColors.mainColor,
+            }}
           />
         </View>
         <TouchableOpacity
@@ -279,7 +306,7 @@ function ChatHeader({
               width={36}
               height={36}
               backgroundColor={colorCode}
-              data={nickName || fromUserId}
+              data={nickName}
               profileImage={profileImage}
             />
             <Pressable w="65%" onPress={handleUserInfo}>
@@ -341,7 +368,8 @@ function ChatHeader({
                   _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
                   px="2"
                   onPress={handleReplyMessage}>
-                  {selectedMsgs?.length === 1 && <ReplyIcon />}
+                  {selectedMsgs?.length === 1 &&
+                    selectedMsgs[0]?.msgStatus !== 3 && <ReplyIcon />}
                 </IconButton>
               )}
             {renderForwardIcon()}
@@ -385,27 +413,26 @@ function ChatHeader({
             color={'#767676'}>
             Are you sure you want to delete selected Message?
           </Text>
-          {selectedMsgs[0]?.msgBody.message_type !== 'text' &&
-            selectedMsgs[0]?.msgBody.message_type !== 'location' && (
-              <HStack py={'3'}>
-                <Checkbox
-                  value={isSelected}
-                  onValueChange={setSelection}
-                  style={styles.checkbox}
-                  _checked={{
-                    backgroundColor: '#3276E2',
-                    borderColor: '#3276E2',
-                  }}
-                  _pressed={{
-                    backgroundColor: '#3276E2',
-                    borderColor: '#3276E2',
-                  }}>
-                  <Text fontSize={'14'} fontWeight={'400'}>
-                    Delete media from my phone
-                  </Text>
-                </Checkbox>
-              </HStack>
-            )}
+          {imageUrl && (
+            <HStack py={'3'}>
+              <Checkbox
+                value={isSelected}
+                onValueChange={setSelection}
+                style={styles.checkbox}
+                _checked={{
+                  backgroundColor: '#3276E2',
+                  borderColor: '#3276E2',
+                }}
+                _pressed={{
+                  backgroundColor: '#3276E2',
+                  borderColor: '#3276E2',
+                }}>
+                <Text fontSize={'14'} fontWeight={'400'}>
+                  Delete media from my phone
+                </Text>
+              </Checkbox>
+            </HStack>
+          )}
           {deleteEveryOne ? (
             <VStack justifyContent={'flex-end'} pt="5">
               <Pressable mb="6" onPress={() => handleDeleteForMe(1)}>

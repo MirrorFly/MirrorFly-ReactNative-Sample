@@ -42,7 +42,7 @@ function GalleryPickView(props) {
   } = props;
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const [index, setIndex] = React.useState(0);
-
+  const [_selectedImages, set_selectedImages] = React.useState(selectedImages);
   let {
     nickName,
     image: imageToken,
@@ -70,8 +70,8 @@ function GalleryPickView(props) {
     };
   }, []);
 
-  const handleIndexChange = index => {
-    setIndex(index);
+  const handleIndexChange = ind => {
+    setIndex(ind);
   };
 
   const renderTabBar = () => {
@@ -81,7 +81,7 @@ function GalleryPickView(props) {
   const handleSendMedia = () => {
     let message = {
       type: 'media',
-      content: props.selectedImages,
+      content: _selectedImages,
     };
     handleSendMsg(message);
   };
@@ -89,7 +89,7 @@ function GalleryPickView(props) {
   const renderScene = React.useMemo(
     () =>
       SceneMap(
-        selectedImages?.reduce((scenes, item, itemIndex) => {
+        _selectedImages?.reduce((scenes, item, itemIndex) => {
           const type = getType(item?.fileDetails?.type);
           scenes[`tab${itemIndex + 1}`] = () => (
             <>
@@ -106,7 +106,7 @@ function GalleryPickView(props) {
           return scenes;
         }, {}),
       ),
-    [selectedImages],
+    [_selectedImages],
   );
 
   return (
@@ -130,12 +130,14 @@ function GalleryPickView(props) {
             profileImage={imageToken}
           />
           <Spacer />
-          {selectedImages.length > 1 && (
+          {_selectedImages.length > 1 && (
             <IconButton
               mr={'2'}
               onPress={() => {
-                let filtered = selectedImages?.filter((item, i) => i !== index);
-                setSelectedImages(filtered);
+                let filtered = _selectedImages?.filter(
+                  (item, i) => i !== index,
+                );
+                set_selectedImages(filtered);
               }}
               _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
               icon={
@@ -148,7 +150,7 @@ function GalleryPickView(props) {
         <TabView
           navigationState={{
             index,
-            routes: props.selectedImages?.map((_, i) => ({
+            routes: _selectedImages?.map((_, i) => ({
               key: `tab${i + 1}`,
             })),
           }}
@@ -170,17 +172,18 @@ function GalleryPickView(props) {
           borderRadius="full"
         />
         <HStack ml="2" mb="1" alignItems={'center'}>
-          {selectedImages.length < 10 && (
+          {_selectedImages.length < 10 && (
             <IconButton
               _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
               onPress={async () => {
+                setSelectedImages(_selectedImages);
                 setLocalNav('Gallery');
               }}
               icon={<Icon as={PreViewAddIcon} name="emoji-happy" />}
               borderRadius="full"
             />
           )}
-          {selectedImages.length < 10 && (
+          {_selectedImages.length < 10 && (
             <Divider
               h="7"
               bg="#7f7f7f"
@@ -198,14 +201,12 @@ function GalleryPickView(props) {
               maxHeight: 100,
             }}
             defaultValue={
-              props.selectedImages[index]
-                ? props.selectedImages[index].caption
-                : ''
+              _selectedImages[index] ? _selectedImages[index].caption : ''
             }
             numberOfLines={1}
             multiline={true}
             onChangeText={text => {
-              selectedImages[index].caption = text;
+              _selectedImages[index].caption = text;
             }}
             placeholderTextColor="#7f7f7f"
             selectionColor={'#3276E2'}
@@ -219,10 +220,10 @@ function GalleryPickView(props) {
           />
           <Text color="#7f7f7f">{profileDetails?.nickName}</Text>
         </HStack>
-        {selectedImages.length > 1 && (
+        {_selectedImages.length > 1 && (
           <ScrollView flexGrow={0} horizontal>
             <HStack>
-              {selectedImages?.map((item, i) => (
+              {_selectedImages?.map((item, i) => (
                 <Pressable
                   activeOpacity={1}
                   key={item?.fileDetails?.uri}

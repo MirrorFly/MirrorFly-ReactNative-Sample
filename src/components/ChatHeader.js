@@ -104,7 +104,7 @@ function ChatHeader({
   let { nickName, image: profileImage, colorCode } = useRosterData(fromUserId);
   // updating default values
   nickName = nickName || chatUserProfile?.nickName || fromUserId || '';
-  profileImage = profileImage || chatUserProfile?.image || '';
+  profileImage = profileImage || '';
   colorCode = colorCode || profileDetails?.colorCode;
 
   const onClose = () => {

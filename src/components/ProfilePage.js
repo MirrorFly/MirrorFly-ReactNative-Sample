@@ -280,6 +280,7 @@ const ProfilePage = props => {
   };
 
   const onClose = async () => {
+    setloading(true);
     setRemove(false);
     setOpen(false);
     let updateProfile = await SDK.setUserProfile(
@@ -290,6 +291,11 @@ const ProfilePage = props => {
       props.profileInfo?.email,
     );
     if (updateProfile.statusCode === 200) {
+      props.setProfileInfo({
+        ...props.profileInfo,
+        image: '',
+      });
+      setImageFileToken('');
       toast.show({
         ...toastConfig,
         render: () => {
@@ -315,6 +321,7 @@ const ProfilePage = props => {
         },
       });
     }
+    setloading(false);
   };
 
   const handleChangeText = (name, value) => {

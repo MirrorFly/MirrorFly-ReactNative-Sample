@@ -75,6 +75,15 @@ const ChatConversationList = ({
           if (msg?.msgBody?.message?.toLowerCase?.().includes?.(_searchText)) {
             _filteredMsgIndices.push({ index, msgId: msg.msgId });
           }
+        } else if (msg?.msgBody?.message_type === 'document') {
+          console.log('Document message', JSON.stringify(msg, null, 2));
+          if (
+            msg?.msgBody?.media?.fileName
+              ?.toLowerCase?.()
+              .includes?.(_searchText)
+          ) {
+            _filteredMsgIndices.push({ index, msgId: msg.msgId });
+          }
         }
       });
       filteredMessageIndexes.current = _filteredMsgIndices;

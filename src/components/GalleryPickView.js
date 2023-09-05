@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   BackHandler,
+  FlatList,
   Image,
   Platform,
   Pressable,
@@ -40,6 +41,7 @@ function GalleryPickView(props) {
     setSelectedImages,
     selectedImages,
   } = props;
+  const scrollRef = React.useRef();
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const [index, setIndex] = React.useState(0);
   const [_selectedImages, set_selectedImages] = React.useState(selectedImages);
@@ -71,6 +73,12 @@ function GalleryPickView(props) {
   }, []);
 
   const handleIndexChange = ind => {
+    console.log(ind, 'index');
+    scrollRef?.current.scrollToIndex({
+      index: ind,
+      animated: true,
+      viewPosition: 0.5,
+    });
     setIndex(ind);
   };
 
@@ -220,8 +228,32 @@ function GalleryPickView(props) {
           />
           <Text color="#7f7f7f">{profileDetails?.nickName}</Text>
         </HStack>
-        {_selectedImages.length > 1 && (
-          <ScrollView flexGrow={0} horizontal>
+        <FlatList
+          ref={scrollRef}
+          data={_selectedImages}
+          flexGrow={0}
+          horizontal
+          removeClippedSubviews={true}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={item => item.code}
+          renderItem={({ item, index: i }) => (
+            <Pressable
+              activeOpacity={1}
+              key={item?.fileDetails?.uri}
+              style={styles.tabButton}
+              onPress={() => handleIndexChange(i)}>
+              <Image
+                source={{ uri: item?.fileDetails?.uri }}
+                style={[
+                  styles.tabImage,
+                  index === i && styles.selectedTabImage,
+                ]}
+              />
+            </Pressable>
+          )}
+        />
+        {/* {_selectedImages.length > 1 && (
+          <ScrollView ref={scrollRef} flexGrow={0} horizontal>
             <HStack>
               {_selectedImages?.map((item, i) => (
                 <Pressable
@@ -240,7 +272,7 @@ function GalleryPickView(props) {
               ))}
             </HStack>
           </ScrollView>
-        )}
+        )} */}
       </View>
     </KeyboardAvoidingView>
   );

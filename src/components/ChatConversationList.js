@@ -141,6 +141,7 @@ const ChatConversationList = ({
           flatListRef.current.scrollToIndex({
             index: scrollIndex,
             animated: true,
+            viewPosition: 0.5,
           });
           setTimeout(() => {
             setHighlightMessageId('');

@@ -16,18 +16,12 @@ const Avathar = ({ profileImage, imageStyle, imageProps = {}, ...props }) => {
     }
   }, [isNetworkConnected]);
 
-  const handleImageError = error => {
-    console.log('Image Error while fetching', imageUrl, authToken, isLoading);
-    console.log('Error loading Image', error.nativeEvent);
+  const handleImageError = () => {
     setIsImageLoadError(true);
   };
 
   if (isLoading && profileImage) {
     return <Spinner />;
-  }
-
-  if (profileImage && !isImageLoadError && imageUrl) {
-    console.log('Image fetching params', profileImage, imageUrl, authToken);
   }
 
   return profileImage && !isImageLoadError && imageUrl ? (

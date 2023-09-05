@@ -9,7 +9,7 @@ import {
   Toast,
   useToast,
 } from 'native-base';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Alert, BackHandler, Platform } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import DocumentPicker from 'react-native-document-picker';
@@ -67,7 +67,7 @@ import { navigate } from 'mf-redux/Actions/NavigationAction';
 import { clearConversationSearchData } from 'mf-redux/Actions/conversationSearchAction';
 
 function ChatScreen() {
-  const [replyMsgRef, setReplyMsgRef] = React.useState();
+  const [replyMsg, setReplyMsg] = React.useState();
   const vCardData = useSelector(state => state.profile.profileDetails);
   const toUserJid = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
@@ -121,7 +121,7 @@ function ChatScreen() {
   );
 
   const getReplyMessage = message => {
-    setReplyMsgRef(message);
+    setReplyMsg(message);
   };
 
   const getAudioDuration = async path => {
@@ -447,9 +447,9 @@ function ChatScreen() {
 
   const parseAndSendMessage = async (message, chatType, messageType) => {
     const { content } = message;
-    const replyTo = replyMsgRef?.msgId || '';
+    const replyTo = replyMsg?.msgId || '';
     content[0].fileDetails.replyTo = replyTo;
-    setReplyMsgRef('');
+    setReplyMsg('');
     sendMediaMessage(messageType, content, chatType);
   };
 
@@ -587,7 +587,7 @@ function ChatScreen() {
         {
           CHATCONVERSATION: (
             <ChatConversation
-              replyMsgRef={replyMsgRef}
+              replyMsg={replyMsg}
               onReplyMessage={getReplyMessage}
               handleBackBtn={handleBackBtn}
               setLocalNav={setLocalNav}

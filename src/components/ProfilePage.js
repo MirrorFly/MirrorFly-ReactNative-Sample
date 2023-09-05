@@ -135,7 +135,7 @@ const ProfilePage = props => {
     if (isConnected && validation) {
       setloading(true);
       let UserInfo = await SDK.setUserProfile(
-        props?.profileInfo?.nickName.trim(),
+        props?.profileInfo?.nickName?.trim(),
         imageFileToken ? imageFileToken : props.selectProfileInfo.image,
         props.profileInfo?.status,
         props.profileInfo?.mobileNumber,
@@ -395,17 +395,17 @@ const ProfilePage = props => {
               <Pressable onPress={() => handleImage('big')}>
                 {props.profileInfo?.image && handleRenderAuthImage}
                 {!props.profileInfo?.image &&
-                  props?.profileInfo?.nickName.trim() && (
+                  props?.profileInfo?.nickName?.trim() && (
                     <Avathar
                       fontSize={60}
                       width={157}
                       height={157}
-                      data={props.profileInfo?.nickName.trim()}
+                      data={props.profileInfo?.nickName?.trim()}
                       backgroundColor={'#3276E2'}
                     />
                   )}
                 {!props.profileInfo?.image &&
-                  !props?.profileInfo?.nickName.trim() && (
+                  !props?.profileInfo?.nickName?.trim() && (
                     <Image
                       resizeMode="contain"
                       source={require('../assets/profile.png')}

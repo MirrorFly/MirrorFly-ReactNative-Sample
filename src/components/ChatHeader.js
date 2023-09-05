@@ -369,7 +369,7 @@ function ChatHeader({
                   px="2"
                   onPress={handleReplyMessage}>
                   {selectedMsgs?.length === 1 &&
-                    selectedMsgs?.msgStatus !== 3 && <ReplyIcon />}
+                    selectedMsgs[0]?.msgStatus !== 3 && <ReplyIcon />}
                 </IconButton>
               )}
             {renderForwardIcon()}

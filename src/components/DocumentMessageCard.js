@@ -1,6 +1,14 @@
 import React from 'react';
 import { HStack, Text, View } from 'native-base';
-import { CSVIcon, DocIcon, PdfIcon, PPTIcon, TXTIcon, XLSIcon, ZipIcon } from '../common/Icons';
+import {
+  CSVIcon,
+  DocIcon,
+  PdfIcon,
+  PPTIcon,
+  TXTIcon,
+  XLSIcon,
+  ZipIcon,
+} from '../common/Icons';
 import { getExtension } from './chat/common/fileUploadValidation';
 import { StyleSheet } from 'react-native';
 import { convertBytesToKB } from '../Helper';

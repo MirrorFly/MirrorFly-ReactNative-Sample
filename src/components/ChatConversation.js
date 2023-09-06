@@ -38,7 +38,7 @@ const ChatConversation = React.memo(props => {
   const {
     handleSendMsg,
     onReplyMessage,
-    replyMsgRef,
+    replyMsg,
     handleIsSearchingClose,
     handleIsSearching,
     IsSearching,
@@ -65,8 +65,8 @@ const ChatConversation = React.memo(props => {
   };
 
   React.useEffect(() => {
-    setReplyMsgs(replyMsgRef);
-  }, [replyMsgRef]);
+    setReplyMsgs(replyMsg);
+  }, [replyMsg]);
   /**
 * const { vCardProfile, fromUserJId, messages } = useSelector((state) => ({
 vCardProfile: state.profile.profileDetails,
@@ -380,7 +380,7 @@ const initialLeftActionState = false; // Adjust as needed
           selectedMsgs={selectedMsgs}
         />
       </ImageBackground>
-      {replyMsgs ? (
+      {replyMsgs && !IsSearching ? (
         <View paddingX={'1'} paddingY={'2'} backgroundColor={'#E2E8F9'}>
           <Stack paddingX={'3'} paddingY={'0 '} backgroundColor={'#0000001A'}>
             <View marginY={'3'} justifyContent={'flex-start'}>

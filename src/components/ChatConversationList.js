@@ -75,6 +75,14 @@ const ChatConversationList = ({
           if (msg?.msgBody?.message?.toLowerCase?.().includes?.(_searchText)) {
             _filteredMsgIndices.push({ index, msgId: msg.msgId });
           }
+        } else if (msg?.msgBody?.message_type === 'file') {
+          if (
+            msg?.msgBody?.media?.fileName
+              ?.toLowerCase?.()
+              .includes?.(_searchText)
+          ) {
+            _filteredMsgIndices.push({ index, msgId: msg.msgId });
+          }
         }
       });
       filteredMessageIndexes.current = _filteredMsgIndices;
@@ -141,6 +149,7 @@ const ChatConversationList = ({
           flatListRef.current.scrollToIndex({
             index: scrollIndex,
             animated: true,
+            viewPosition: 0.5,
           });
           setTimeout(() => {
             setHighlightMessageId('');

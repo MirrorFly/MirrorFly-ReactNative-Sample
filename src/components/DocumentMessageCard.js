@@ -7,6 +7,8 @@ import { convertBytesToKB } from '../Helper';
 import AttachmentProgressLoader from './chat/common/AttachmentProgressLoader';
 import useMediaProgress from '../hooks/useMediaProgress';
 import ReplyMessage from './ReplyMessage';
+import { ChatConversationHighlightedText } from './TextCard';
+import { useSelector } from 'react-redux';
 
 const DocumentMessageCard = ({
   message,
@@ -30,6 +32,10 @@ const DocumentMessageCard = ({
     media: message?.msgBody?.media,
     msgId: message?.msgId,
   });
+
+  const conversationSearchText = useSelector(
+    state => state.conversationSearchData?.searchText,
+  );
 
   const renderFileIcon = React.useCallback(() => {
     switch (fileExtension) {
@@ -73,7 +79,10 @@ const DocumentMessageCard = ({
         paddingY={1}>
         <View py={2}>{renderFileIcon()}</View>
         <Text px={2} flex={1} numberOfLines={2} fontSize={11} py={3}>
-          {mediaData.fileName}
+          <ChatConversationHighlightedText
+            text={mediaData.fileName}
+            searchValue={conversationSearchText.trim()}
+          />
         </Text>
         <AttachmentProgressLoader
           isSender={isSender}

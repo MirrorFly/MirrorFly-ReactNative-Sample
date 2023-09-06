@@ -23,7 +23,7 @@ const RenderItem = ({ item, index, onhandlePress }) => {
   } = useRosterData(item?.userId);
   // updating default values
   nickName = nickName || item?.nickName || item?.userId || '';
-  imageToken = imageToken || item?.image || '';
+  imageToken = imageToken || '';
   colorCode = colorCode || SDK.getRandomColorCode();
   status = status || item.status || '';
 

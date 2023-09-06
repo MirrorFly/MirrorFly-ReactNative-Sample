@@ -1,4 +1,4 @@
-import React, { createRef, useMemo } from 'react';
+import React from 'react';
 import { Text } from 'react-native';
 import RNSlider from './RNSlider';
 import Sound from 'react-native-sound';
@@ -12,7 +12,7 @@ import { mediaStatusConstants } from '../../constant';
 const PLAY_STATE_PAUSED = 'paused';
 const PLAY_STATE_PLAYING = 'playing';
 const PLAY_STATE_LOADING = 'loading';
-export const soundRef = createRef();
+export const soundRef = React.createRef();
 
 const AudioPlayer = props => {
   const { media, msgId, uri, mediaStatus } = props;
@@ -150,7 +150,7 @@ const AudioPlayer = props => {
   const currentTimeString = getAudioTimeString(playSeconds);
   const durationString = millisToMinutesAndSeconds(media.duration);
 
-  const sliderDisable = useMemo(() => {
+  const sliderDisable = React.useMemo(() => {
     return !(
       mediaStatus === mediaStatusConstants.DOWNLOADED ||
       mediaStatus === mediaStatusConstants.UPLOADED

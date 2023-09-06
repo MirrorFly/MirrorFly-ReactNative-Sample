@@ -31,11 +31,13 @@ import {
   formatChatDateTime,
 } from '../common/TimeStamp';
 import { RECENTCHATLOADING } from '../constant';
-import useRosterData from 'hooks/useRosterData';
+import useRosterData from '../hooks/useRosterData';
 import {
   THIS_MESSAGE_WAS_DELETED,
   YOU_DELETED_THIS_MESSAGE,
-} from 'Helper/Chat/Constant';
+} from '../Helper/Chat/Constant';
+import no_messages from '../assets/no_messages.png';
+import { getImageSource } from '../common/utils';
 
 const RecentChatItem = ({
   item,
@@ -275,7 +277,7 @@ export default function RecentChat(props) {
         <Image
           style={styles.image}
           resizeMode="cover"
-          source={require('../assets/no_messages.png')}
+          source={getImageSource(no_messages)}
         />
         {props.isSearching ? (
           <Text style={styles.noMsg}>No Result Found</Text>

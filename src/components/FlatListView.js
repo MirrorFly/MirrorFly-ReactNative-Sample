@@ -11,8 +11,8 @@ import {
 import React from 'react';
 import Avathar from '../common/Avathar';
 import { SwipeListView } from 'react-native-swipe-list-view';
-import useRosterData from 'hooks/useRosterData';
-import SDK from 'SDK/SDK';
+import useRosterData from '../hooks/useRosterData';
+import SDK from '../SDK/SDK';
 
 const RenderItem = ({ item, index, onhandlePress }) => {
   let {

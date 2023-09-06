@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import SDK from 'SDK/SDK';
+import SDK from '../SDK/SDK';
 import {
   AlertDialog,
   Box,
@@ -63,11 +63,11 @@ import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import store from '../redux/store';
 import SavePicture from './Gallery';
 import { createThumbnail } from 'react-native-create-thumbnail';
-import { navigate } from 'mf-redux/Actions/NavigationAction';
-import { clearConversationSearchData } from 'mf-redux/Actions/conversationSearchAction';
+import { navigate } from '../redux/Actions/NavigationAction';
+import { clearConversationSearchData } from '../redux/Actions/conversationSearchAction';
 
 function ChatScreen() {
-  const [replyMsg, setReplyMsg] = React.useState();
+  const [replyMsgRef, setReplyMsgRef] = React.useState('');
   const vCardData = useSelector(state => state.profile.profileDetails);
   const toUserJid = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);

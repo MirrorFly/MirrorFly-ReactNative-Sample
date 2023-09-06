@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React from 'react';
 import {
   Animated,
   Easing,
@@ -47,7 +47,9 @@ const createAnimation = (animatedValue, config, consecutive) => {
         ),
       ]);
     }
-    return Animated.loop(Animated.sequence([baseAnimation, Animated.delay(1000)]));
+    return Animated.loop(
+      Animated.sequence([baseAnimation, Animated.delay(1000)]),
+    );
   }
 
   return baseAnimation;
@@ -66,15 +68,15 @@ const MarqueeText = (props, ref) => {
     ...restProps
   } = props;
 
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isAnimating, setIsAnimating] = React.useState(false);
 
-  const containerWidth = useRef(null);
-  const marqueeTextWidth = useRef(null);
-  const animatedValue = useRef(new Animated.Value(0));
-  const textRef = useRef(null);
-  const containerRef = useRef(null);
-  const animation = useRef();
-  const config = useRef({
+  const containerWidth = React.useRef(null);
+  const marqueeTextWidth = React.useRef(null);
+  const animatedValue = React.useRef(new Animated.Value(0));
+  const textRef = React.useRef(null);
+  const containerRef = React.useRef(null);
+  const animation = React.useRef();
+  const config = React.useRef({
     marqueeOnStart,
     speed,
     loop,
@@ -82,13 +84,13 @@ const MarqueeText = (props, ref) => {
     consecutive,
   });
 
-  const stopAnimation = useCallback(() => {
+  const stopAnimation = React.useCallback(() => {
     animation.current?.reset();
     setIsAnimating(false);
     invalidateMetrics();
   }, []);
 
-  const startAnimation = useCallback(async () => {
+  const startAnimation = React.useCallback(async () => {
     setIsAnimating(true);
 
     await wait(100);
@@ -104,20 +106,26 @@ const MarqueeText = (props, ref) => {
       return;
     }
 
-    const baseDuration = PixelRatio.getPixelSizeForLayoutSize(marqueeTextWidth.current) / config.current.speed;
+    const baseDuration =
+      PixelRatio.getPixelSizeForLayoutSize(marqueeTextWidth.current) /
+      config.current.speed;
     const { consecutive: isConsecutive } = config.current;
     animation.current = createAnimation(
       animatedValue.current,
       {
         ...config.current,
         toValue: isConsecutive ? -marqueeTextWidth.current : -distance,
-        duration: isConsecutive ? baseDuration * (marqueeTextWidth.current / distance) : baseDuration,
+        duration: isConsecutive
+          ? baseDuration * (marqueeTextWidth.current / distance)
+          : baseDuration,
       },
       isConsecutive
         ? {
-          resetToValue: containerWidth.current,
-          duration: baseDuration * ((containerWidth.current + marqueeTextWidth.current) / distance),
-        }
+            resetToValue: containerWidth.current,
+            duration:
+              baseDuration *
+              ((containerWidth.current + marqueeTextWidth.current) / distance),
+          }
         : undefined,
     );
 
@@ -127,7 +135,7 @@ const MarqueeText = (props, ref) => {
     });
   }, [onMarqueeComplete]);
 
-  useImperativeHandle(ref, () => {
+  React.useImperativeHandle(ref, () => {
     return {
       start: () => {
         startAnimation();
@@ -138,7 +146,7 @@ const MarqueeText = (props, ref) => {
     };
   });
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!config.current.marqueeOnStart) {
       return;
     }
@@ -152,7 +160,7 @@ const MarqueeText = (props, ref) => {
         return;
       }
 
-      const measureWidth = (component) =>
+      const measureWidth = component =>
         new Promise(resolve => {
           UIManager.measure(findNodeHandle(component), (_x, _y, w) => {
             return resolve(w);
@@ -181,12 +189,18 @@ const MarqueeText = (props, ref) => {
 
   return (
     <View style={[styles.container, { width, height }]}>
-      <Text numberOfLines={1} {...restProps} style={[style, {
-        opacity: isAnimating ? 0 : 1,
-        color: '#959595',
-        fontWeight:'700',
-        fontSize: 11
-      }]}>
+      <Text
+        numberOfLines={1}
+        {...restProps}
+        style={[
+          style,
+          {
+            opacity: isAnimating ? 0 : 1,
+            color: '#959595',
+            fontWeight: '700',
+            fontSize: 11,
+          },
+        ]}>
         {children}
       </Text>
       <ScrollView
@@ -207,8 +221,8 @@ const MarqueeText = (props, ref) => {
               opacity: isAnimating ? 1 : 0,
               width: '100%',
               color: '#959595',
-              fontWeight:'700',
-              fontSize: 11
+              fontWeight: '700',
+              fontSize: 11,
             },
           ]}>
           {children}

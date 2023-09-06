@@ -4,20 +4,19 @@ import {
   AudioMusicIcon,
   ContactChatIcon,
   LocationIcon,
-  VideoIcon,
-} from 'common/Icons';
-import { getMessageFromHistoryById } from 'Helper/Chat/ChatHelper';
+} from '../common/Icons';
+import { getMessageFromHistoryById } from '../Helper/Chat/ChatHelper';
 import {
   getUserIdFromJid,
   millisToMinutesAndSeconds,
-} from 'Helper/Chat/Utility';
+} from '../Helper/Chat/Utility';
 import { HStack, Image, Text, View } from 'native-base';
 import React from 'react';
 import { DocIcon, PdfIcon, PPTIcon, XLSIcon, ZipIcon } from '../common/Icons';
 import { getExtension } from './chat/common/fileUploadValidation';
 import { useSelector } from 'react-redux';
 import { Pressable } from 'react-native';
-import useRosterData from 'hooks/useRosterData';
+import useRosterData from '../hooks/useRosterData';
 
 function ReplyMessage(props) {
   const { handleReplyPress } = props;

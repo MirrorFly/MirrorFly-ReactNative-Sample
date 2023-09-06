@@ -25,18 +25,20 @@ import {
   AlertDialog,
   Pressable,
 } from 'native-base';
-import SDK from 'SDK/SDK';
+import SDK from '../SDK/SDK';
 import ImagePicker from 'react-native-image-crop-picker';
 import Avathar from '../common/Avathar';
 import { PROFILESCREEN, RECENTCHATSCREEN, REGISTERSCREEN } from '../constant';
 import { navigate } from '../redux/Actions/NavigationAction';
 import ScreenHeader from './ScreenHeader';
-import { requestStoragePermission } from '../common/utils';
+import { getImageSource, requestStoragePermission } from '../common/utils';
 import { useNetworkStatus } from '../hooks';
 import { PrimaryPillBtn } from '../common/Button';
 import AuthProfileImage from '../common/AuthProfileImage';
 import * as RootNav from '../Navigation/rootNavigation';
-import { showToast } from 'Helper/index';
+import ProfileImage from '../assets/profile.png';
+import CamerIcon from '../assets/camera.png';
+import { showToast } from '../Helper/index';
 
 const ProfilePage = props => {
   const toast = useToast();
@@ -306,7 +308,6 @@ const ProfilePage = props => {
           return (
             <Box bg="black" px="2" py="1" rounded="sm">
               <Text style={styles.toastText}>
-                {' '}
                 Profile Image removed successfully
               </Text>
             </Box>
@@ -440,7 +441,7 @@ const ProfilePage = props => {
                 {!props.profileInfo?.image && !nickName?.trim() && (
                   <Image
                     resizeMode="contain"
-                    source={require('../assets/profile.png')}
+                    source={getImageSource(ProfileImage)}
                     style={{ height: 157, width: 157 }}
                   />
                 )}
@@ -451,7 +452,7 @@ const ProfilePage = props => {
                 style={{ position: 'absolute', right: 0, bottom: 0 }}>
                 <Image
                   resizeMode="contain"
-                  source={require('../assets/camera.png')}
+                  source={getImageSource(CamerIcon)}
                   style={styles.CameraImage}
                 />
               </TouchableOpacity>

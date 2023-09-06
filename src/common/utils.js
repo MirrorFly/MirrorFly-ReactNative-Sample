@@ -6,7 +6,7 @@ import {
   requestMultiple,
 } from 'react-native-permissions';
 import { Platform } from 'react-native';
-import SDK from 'SDK/SDK';
+import SDK from '../SDK/SDK';
 
 const toastConfig = {
   duration: 2500,
@@ -201,4 +201,12 @@ export const mediaObjContructor = (_package, file) => {
     default:
       break;
   }
+};
+
+export const getImageSource = image => {
+  const isBase64 = typeof image === 'string' && image?.includes('data:image/');
+  const uriBase = {
+    uri: image,
+  };
+  return isBase64 ? uriBase : image;
 };

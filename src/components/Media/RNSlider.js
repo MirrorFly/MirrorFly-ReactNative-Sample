@@ -225,8 +225,7 @@ export default class Slider extends PureComponent {
       animateTransitions,
       ...other
     } = this.props;
-    const { value, containerSize, trackSize, thumbSize, allMeasured } =
-      this.state;
+    const { value, containerSize, thumbSize, allMeasured } = this.state;
     const mainStyles = styles || defaultStyles;
     const thumbLeft = value.interpolate({
       inputRange: [minimumValue, maximumValue],

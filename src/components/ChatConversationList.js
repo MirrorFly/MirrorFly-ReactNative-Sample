@@ -160,7 +160,7 @@ const ChatConversationList = ({
   const chatMessageRender = React.useCallback(
     ({ item }) => {
       const { deleteStatus = 0 } = item;
-
+      if (deleteStatus === 2) return null;
       return deleteStatus === 0 ? (
         <ChatMessage
           highlightMessageId={highlightMessageId}

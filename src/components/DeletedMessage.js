@@ -17,10 +17,6 @@ const DeletedMessage = (props = {}) => {
     messageObject: {
       msgId = '',
       msgType = '',
-      msgStatus,
-      createdAt = '',
-      timeStamp,
-      publisherJid = '',
     } = {},
     currentUserJID,
   } = props;

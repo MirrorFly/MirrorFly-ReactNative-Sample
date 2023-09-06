@@ -20,9 +20,6 @@ import {
   Icon,
   IconButton,
   View as NBView,
-  Slide,
-  HStack,
-  Spinner,
 } from 'native-base';
 import React, {
   useEffect,
@@ -49,9 +46,8 @@ import {
 } from 'mf-redux/Actions/ConversationAction';
 import { SendBlueIcon } from '../common/Icons';
 import useRosterData from 'hooks/useRosterData';
-import { CHATSCREEN } from 'src/constant';
+import { CHATSCREEN, CONVERSATION_SCREEN } from 'src/constant';
 import { navigate } from 'mf-redux/Actions/NavigationAction';
-import { CONVERSATION_SCREEN } from 'src/constant';
 import ApplicationColors from 'config/appColors';
 
 const showMaxUsersLimitToast = () => {

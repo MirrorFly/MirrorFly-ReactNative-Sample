@@ -8,9 +8,9 @@ const initialState = {
 };
 
 const charReducer = (state = initialState, action) => {
-  switch (action.type) {
-    default:
-      return state;
+  if (action.type) {
+  } else {
+    return state;
   }
 };
 

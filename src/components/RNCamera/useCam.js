@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Alert } from 'react-native';
 import TimerService from './TimerService';
 
 const timerService = new TimerService();

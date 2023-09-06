@@ -4,7 +4,6 @@ import { ImageBackground, StyleSheet } from 'react-native';
 import noPreview from '../assets/noPreview.png';
 import ProgressLoader from './chat/common/ProgressLoader';
 import { getThumbBase64URL } from '../Helper/Chat/Utility';
-import { GalleryAllIcon } from '../common/Icons';
 import ReplyMessage from './ReplyMessage';
 
 const ImageCard = props => {

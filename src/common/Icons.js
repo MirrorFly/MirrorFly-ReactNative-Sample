@@ -2652,3 +2652,190 @@ export const BlockedIcon = () => {
     </Svg>
   );
 };
+
+export const CSVIcon = () => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 22 22">
+      <G id="DOCX" transform="translate(-17532 -3696)">
+        <Rect
+          id="Rectangle_10773"
+          data-name="Rectangle 10773"
+          width="22"
+          height="22"
+          transform="translate(17532 3696)"
+          fill="none"
+        />
+        <G
+          id="doc_55"
+          data-name="doc 55"
+          transform="translate(17535.143 3697.572)">
+          <Path
+            id="Path_9793"
+            data-name="Path 9793"
+            d="M67.708,17.174a1.685,1.685,0,0,1-1.687,1.684h-11.6a1.685,1.685,0,0,1-1.687-1.684V1.684A1.685,1.685,0,0,1,54.422,0h7.22a1.266,1.266,0,0,1,.9.371l4.8,4.8a1.261,1.261,0,0,1,.37.892Z"
+            transform="translate(-52.735 0)"
+            fill="#3283be"
+          />
+          <Path
+            id="Path_9796"
+            data-name="Path 9796"
+            d="M314.265,8.528h-4.286a1.141,1.141,0,0,1-1.14-1.141V3.1a1.254,1.254,0,0,1,.371.256l4.8,4.8a1.253,1.253,0,0,1,.256.37Z"
+            transform="translate(-299.406 -2.987)"
+            fill="#40aaf4"
+          />
+          <G
+            id="Group_15665"
+            data-name="Group 15665"
+            transform="translate(2.358 6.954)">
+            <Rect
+              id="Rectangle_4490"
+              data-name="Rectangle 4490"
+              width="9.737"
+              height="0.905"
+              rx="0.453"
+              fill="#fff"
+            />
+            <Rect
+              id="Rectangle_4491"
+              data-name="Rectangle 4491"
+              width="9.737"
+              height="0.905"
+              rx="0.453"
+              transform="translate(0 2.022)"
+              fill="#fff"
+            />
+            <Rect
+              id="Rectangle_4492"
+              data-name="Rectangle 4492"
+              width="9.736"
+              height="0.905"
+              rx="0.453"
+              transform="translate(0 4.044)"
+              fill="#fff"
+            />
+          </G>
+          <Path
+            id="Path_40521"
+            data-name="Path 40521"
+            d="M1.534-.63A1.159,1.159,0,0,0,2.791-1.671H2.209a.645.645,0,0,1-.673.546c-.457,0-.744-.376-.744-.985s.291-.979.742-.979a.661.661,0,0,1,.673.58h.582A1.176,1.176,0,0,0,1.534-3.584,1.314,1.314,0,0,0,.183-2.108,1.312,1.312,0,0,0,1.534-.63Zm1.518-.863c.018.536.455.863,1.142.863.708,0,1.157-.35,1.157-.9,0-.435-.249-.681-.821-.8l-.346-.073c-.328-.075-.467-.174-.467-.35,0-.212.2-.352.493-.352s.51.146.53.388H5.3c-.01-.516-.427-.859-1.092-.859-.637,0-1.092.348-1.092.875,0,.417.259.685.786.8l.372.081c.344.077.481.18.481.366,0,.21-.218.362-.536.362s-.562-.154-.59-.39Zm4.133.813.96-2.855H7.494l-.653,2.24H6.827l-.653-2.24H5.506l.96,2.855Z"
+            transform="translate(3.322 16.732)"
+            fill="#fff"
+          />
+        </G>
+      </G>
+    </Svg>
+  );
+};
+
+export const TXTIcon = () => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 22 22">
+      <G
+        id="Group_34540"
+        data-name="Group 34540"
+        transform="translate(-17731 -3704)">
+        <Rect
+          id="Rectangle_10777"
+          data-name="Rectangle 10777"
+          width="22"
+          height="22"
+          transform="translate(17731 3704)"
+          fill="#fff"
+          opacity="0"
+        />
+        <G
+          id="_004---Plain-Text"
+          data-name="004---Plain-Text"
+          transform="translate(17735 3706)">
+          <Path
+            id="Path"
+            d="M13.426,3.017V16.494a.618.618,0,0,1-.639.589H.639A.618.618,0,0,1,0,16.494V.589A.618.618,0,0,1,.639,0h9.513a1,1,0,0,1,.678.259l2.315,2.133a.85.85,0,0,1,.281.625Z"
+            transform="translate(0 0)"
+            fill="#d0d7e2"
+          />
+          <Path
+            id="Path-2"
+            data-name="Path"
+            d="M35.791,2.866H33.639A.619.619,0,0,1,33,2.273V.28a.923.923,0,0,1,.281.178L35.6,2.6A.919.919,0,0,1,35.791,2.866Z"
+            transform="translate(-22.451 -0.19)"
+            fill="#626c7c"
+          />
+          <Path
+            id="Path-3"
+            data-name="Path"
+            d="M0,36H10.23a.639.639,0,0,1,.639.639v3.836a.639.639,0,0,1-.639.639H0Z"
+            transform="translate(0 -24.492)"
+            fill="none"
+          />
+          <G
+            id="Group_34539"
+            data-name="Group 34539"
+            transform="translate(1.279 4.156)">
+            <Path
+              id="Path-4"
+              data-name="Path"
+              d="M14.549,13.639H4.32a.32.32,0,1,1,0-.639h10.23a.32.32,0,1,1,0,.639Z"
+              transform="translate(-4 -13)"
+              fill="#626c7c"
+            />
+            <Path
+              id="Path-5"
+              data-name="Path"
+              d="M14.549,18.639H4.32a.32.32,0,0,1,0-.639h10.23a.32.32,0,1,1,0,.639Z"
+              transform="translate(-4 -16.402)"
+              fill="#626c7c"
+            />
+            <Path
+              id="Path-6"
+              data-name="Path"
+              d="M14.549,23.639H4.32a.32.32,0,0,1,0-.639h10.23a.32.32,0,1,1,0,.639Z"
+              transform="translate(-4 -19.803)"
+              fill="#626c7c"
+            />
+            <Path
+              id="Path-7"
+              data-name="Path"
+              d="M9.115,28.639H4.32a.32.32,0,1,1,0-.639h4.8a.32.32,0,1,1,0,.639Z"
+              transform="translate(-4 -23.205)"
+              fill="#626c7c"
+            />
+          </G>
+          <G
+            id="Group_34541"
+            data-name="Group 34541"
+            transform="translate(0 -1)">
+            <Path
+              id="Path-8"
+              data-name="Path"
+              d="M25.238,39H23.32a.32.32,0,0,0,0,.639h.639v2.238a.32.32,0,0,0,.639,0V39.639h.639a.32.32,0,0,0,0-.639Z"
+              transform="translate(-14.367 -26.533)"
+              fill="#626c7c"
+            />
+            <Path
+              id="Path-9"
+              data-name="Path"
+              d="M5.238,39H3.32a.32.32,0,0,0,0,.639h.639v2.238a.32.32,0,0,0,.639,0V39.639h.639a.32.32,0,0,0,0-.639Z"
+              transform="translate(-0.76 -26.533)"
+              fill="#626c7c"
+            />
+            <Path
+              id="Path-10"
+              data-name="Path"
+              d="M15.429,39.064a.32.32,0,0,0-.448.064l-.7.938-.7-.938a.32.32,0,1,0-.511.384l.815,1.087-.815,1.087a.32.32,0,0,0,.511.384l.7-.938.7.938a.32.32,0,0,0,.511-.384L14.678,40.6l.815-1.087a.32.32,0,0,0-.064-.448Z"
+              transform="translate(-7.564 -26.533)"
+              fill="#626c7c"
+            />
+          </G>
+        </G>
+      </G>
+    </Svg>
+  );
+};

@@ -1,6 +1,6 @@
 import React from 'react';
 import { HStack, Text, View } from 'native-base';
-import { DocIcon, PdfIcon, PPTIcon, XLSIcon, ZipIcon } from '../common/Icons';
+import { CSVIcon, DocIcon, PdfIcon, PPTIcon, TXTIcon, XLSIcon, ZipIcon } from '../common/Icons';
 import { getExtension } from './chat/common/fileUploadValidation';
 import { StyleSheet } from 'react-native';
 import { convertBytesToKB } from '../Helper';
@@ -38,9 +38,10 @@ const DocumentMessageCard = ({
       case 'ppt':
       case 'pptx':
         return <PPTIcon />;
+      case 'csv':
+        return <CSVIcon />;
       case 'xls':
       case 'xlsx':
-      case 'csv':
         return <XLSIcon />;
       case 'doc':
       case 'docx':
@@ -50,7 +51,7 @@ const DocumentMessageCard = ({
         return <ZipIcon width={30} height={25} />;
       case 'txt':
       case 'text':
-        return <DocIcon />;
+        return <TXTIcon />;
       default:
         return null;
     }

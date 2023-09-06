@@ -108,7 +108,7 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
     statusCode: response.statusCode,
     fromUserId: getUserIdFromJid(jid),
   };
-  console.log(response, 'SDK response')
+  console.log(response, 'uploadfile response');
   if (response.statusCode === 200) {
     /**
         if (msgType === "image" || msgType === "audio") {

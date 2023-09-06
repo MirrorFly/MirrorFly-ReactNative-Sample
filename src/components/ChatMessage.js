@@ -22,8 +22,13 @@ const ChatMessage = props => {
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
   let isSame = currentUserJID === props?.message?.fromUserJid;
   let statusVisible = 'notSend';
-  const { message, setLocalNav, handleReplyPress, backgroundColor, replyID } =
-    props;
+  const {
+    message,
+    setLocalNav,
+    handleReplyPress,
+    highlightMessageBackgroundColor,
+    highlightMessageId,
+  } = props;
   const {
     msgBody = {},
     msgBody: {
@@ -154,142 +159,141 @@ const ChatMessage = props => {
   };
 
   const handleMessageSelect = () => {
-    if (props?.selectedMsgs?.length && message?.msgStatus !== 3) {
+    if (props?.selectedMsgs?.length) {
       props.handleMsgSelect(props.message);
     }
   };
 
   const handleMessageLongPress = () => {
-    message?.msgStatus !== 3 && props.handleMsgSelect(props.message);
+    props.handleMsgSelect(props.message);
   };
 
   return (
     <Pressable
       onPress={handleMessageSelect}
-      style={replyID === msgId && { backgroundColor }}
+      style={
+        highlightMessageId === msgId && {
+          backgroundColor: highlightMessageBackgroundColor,
+        }
+      }
       onLongPress={handleMessageLongPress}>
       {({ isPressed }) => {
         return (
-          <Box>
-            <Box
-              my={'1'}
-              bg={
-                props.selectedMsgs.includes(props.message)
-                  ? 'rgba(0,0,0,0.2)'
-                  : 'transparent'
-              }>
-              <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px="3">
-                <Pressable
-                  onPress={() =>
-                    props?.selectedMsgs?.length < 1
-                      ? handleMessageObj()
-                      : handleMessageSelect()
-                  }
-                  onLongPress={() =>
-                    message?.msgStatus !== 3 &&
-                    props.handleMsgSelect(props.message)
-                  }
-                  minWidth="30%"
-                  maxWidth="80%">
+          <Box
+            mb="1.5"
+            bg={
+              props.selectedMsgs.find(msg => msg.msgId === props.message.msgId)
+                ? 'rgba(0,0,0,0.2)'
+                : 'transparent'
+            }>
+            <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px="3">
+              <Pressable
+                onPress={() =>
+                  props?.selectedMsgs?.length < 1
+                    ? handleMessageObj()
+                    : handleMessageSelect()
+                }
+                onLongPress={() => props.handleMsgSelect(props.message)}
+                minWidth="30%"
+                maxWidth="80%">
+                {
                   {
-                    {
-                      text: (
-                        <TextCard
-                          handleReplyPress={handleReplyPress}
-                          isSame={isSame}
-                          message={message}
-                          data={{
-                            message: message?.msgBody?.message,
-                            timeStamp: getConversationHistoryTime(
-                              props?.message?.createdAt,
-                            ),
-                            status: getMessageStatus(props?.message?.msgStatus),
-                          }}
-                        />
-                      ),
-                      image: (
-                        <ImageCard
+                    text: (
+                      <TextCard
+                        handleReplyPress={handleReplyPress}
+                        isSame={isSame}
+                        message={message}
+                        data={{
+                          message: message?.msgBody?.message,
+                          timeStamp: getConversationHistoryTime(
+                            props?.message?.createdAt,
+                          ),
+                          status: getMessageStatus(props?.message?.msgStatus),
+                        }}
+                      />
+                    ),
+                    image: (
+                      <ImageCard
+                        handleReplyPress={handleReplyPress}
+                        messageObject={message}
+                        setUploadStatus={setUploadStatus}
+                        imgSrc={imgSrc}
+                        isSender={isSame}
+                        status={getMessageStatus(message?.msgStatus)}
+                        timeStamp={getConversationHistoryTime(
+                          message?.createdAt,
+                        )}
+                        uploadStatus={uploadStatus}
+                        fileSize={fileSize}
+                      />
+                    ),
+                    video: (
+                      <VideoCard
+                        handleReplyPress={handleReplyPress}
+                        messageObject={message}
+                        setUploadStatus={setUploadStatus}
+                        imgSrc={imgSrc}
+                        isSender={isSame}
+                        status={getMessageStatus(message?.msgStatus)}
+                        uploadStatus={uploadStatus}
+                        fileSize={fileSize}
+                        timeStamp={getConversationHistoryTime(
+                          message?.createdAt,
+                        )}
+                      />
+                    ),
+                    audio: (
+                      <View style={styles.flex1}>
+                        <AudioCard
                           handleReplyPress={handleReplyPress}
                           messageObject={message}
-                          setUploadStatus={setUploadStatus}
-                          imgSrc={imgSrc}
-                          isSender={isSame}
-                          status={getMessageStatus(message?.msgStatus)}
-                          timeStamp={getConversationHistoryTime(
-                            message?.createdAt,
-                          )}
-                          uploadStatus={uploadStatus}
-                          fileSize={fileSize}
-                        />
-                      ),
-                      video: (
-                        <VideoCard
-                          handleReplyPress={handleReplyPress}
-                          messageObject={message}
-                          setUploadStatus={setUploadStatus}
-                          imgSrc={imgSrc}
-                          isSender={isSame}
-                          status={getMessageStatus(message?.msgStatus)}
-                          uploadStatus={uploadStatus}
-                          fileSize={fileSize}
-                          timeStamp={getConversationHistoryTime(
-                            message?.createdAt,
-                          )}
-                        />
-                      ),
-                      audio: (
-                        <View style={styles.flex1}>
-                          <AudioCard
-                            handleReplyPress={handleReplyPress}
-                            messageObject={message}
-                            isSender={isSame}
-                            mediaUrl={imageUrl}
-                            status={getMessageStatus(message?.msgStatus)}
-                            fileSize={fileSize}
-                            timeStamp={getConversationHistoryTime(
-                              message?.createdAt,
-                            )}
-                          />
-                        </View>
-                      ),
-                      file: (
-                        <DocumentMessageCard
-                          handleReplyPress={handleReplyPress}
-                          message={message}
-                          status={getMessageStatus(message?.msgStatus)}
-                          timeStamp={getConversationHistoryTime(
-                            message?.createdAt,
-                          )}
-                          fileSize={fileSize}
                           isSender={isSame}
                           mediaUrl={imageUrl}
-                        />
-                      ),
-                      contact: (
-                        <ContactCard
-                          handleReplyPress={handleReplyPress}
-                          data={message}
                           status={getMessageStatus(message?.msgStatus)}
+                          fileSize={fileSize}
                           timeStamp={getConversationHistoryTime(
                             message?.createdAt,
                           )}
                         />
-                      ),
-                      location: (
-                        <MapCard
-                          handleReplyPress={handleReplyPress}
-                          data={message}
-                          status={getMessageStatus(message?.msgStatus)}
-                          timeStamp={getConversationHistoryTime(
-                            message?.createdAt,
-                          )}
-                        />
-                      ),
-                    }[message?.msgBody?.message_type]
-                  }
-                </Pressable>
-              </HStack>
-            </Box>
+                      </View>
+                    ),
+                    file: (
+                      <DocumentMessageCard
+                        handleReplyPress={handleReplyPress}
+                        message={message}
+                        status={getMessageStatus(message?.msgStatus)}
+                        timeStamp={getConversationHistoryTime(
+                          message?.createdAt,
+                        )}
+                        fileSize={fileSize}
+                        isSender={isSame}
+                        mediaUrl={imageUrl}
+                      />
+                    ),
+                    contact: (
+                      <ContactCard
+                        handleReplyPress={handleReplyPress}
+                        data={message}
+                        status={getMessageStatus(message?.msgStatus)}
+                        timeStamp={getConversationHistoryTime(
+                          message?.createdAt,
+                        )}
+                      />
+                    ),
+                    location: (
+                      <MapCard
+                        handleReplyPress={handleReplyPress}
+                        data={message}
+                        status={getMessageStatus(message?.msgStatus)}
+                        timeStamp={getConversationHistoryTime(
+                          message?.createdAt,
+                        )}
+                      />
+                    ),
+                  }[message?.msgBody?.message_type]
+                }
+              </Pressable>
+            </HStack>
           </Box>
         );
       }}

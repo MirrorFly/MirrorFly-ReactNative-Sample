@@ -45,7 +45,7 @@ const CountryList = () => {
           title="Select Country"
           onhandleBack={handleBackBtn}
           onhandleSearch={handleSearch}
-          onClear={handleReset}
+          handleClear={handleReset}
         />
       </View>
       <View>

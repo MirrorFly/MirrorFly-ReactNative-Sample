@@ -32,30 +32,36 @@ import {
   resetSafeArea,
   safeAreaBgColor,
 } from 'mf-redux/Actions/SafeAreaAction';
+import CameraService from './RNCamera/CameraService';
+import useCallbackRef from './RNCamera/camHooks';
+import useCamera from './RNCamera/useCam';
+import { orientationCheck } from './RNCamera/Helper';
+
+const cameraService = new CameraService();
 
 const Camera = props => {
+  const [flashMode, setFlashMode] = useState(RNCamera.Constants.FlashMode.off);
+  const [cameraType, setCameraType] = useState(RNCamera.Constants.Type.back);
+  const { ref, callbackRef } = useCallbackRef();
+  const { recording, takePicture, startRecordingVideo, stopRecordingVideo } =
+    useCamera(ref);
+
+  const changeCameraType = () => {
+    setCameraType(cameraService.getNewCameraType(cameraType));
+  };
+
   const { setLocalNav = () => {}, setSelectedImages } = props;
-  const cameraRef = useRef(null);
   const recordingIntervalRef = useRef(null);
   const dispatch = useDispatch();
   const [data, setData] = useState();
   const [videoData, setVideoData] = useState();
   const [captureTime, setCaptureTime] = useState(0);
-  const [type, setType] = useState(RNCamera.Constants.Type.back);
-  const [flash, setFlash] = useState(RNCamera.Constants.FlashMode.off);
   const [flashIcon, setFlashIcon] = useState(flashOffIcon);
   const [isCapturing, setIsCapturing] = useState(false);
-  const [isHolding, setIsHolding] = useState(false);
 
   const handleBackBtn = () => {
     setLocalNav(CHATCONVERSATION);
   };
-
-  React.useEffect(() => {
-    if (isHolding) {
-      startRecording();
-    }
-  }, [isHolding]);
 
   React.useEffect(() => {
     if (data) {
@@ -75,28 +81,66 @@ const Camera = props => {
     };
   }, []);
 
-  const flipCamera = () => {
-    setType(
-      type === RNCamera.Constants.Type.back
-        ? RNCamera.Constants.Type.front
-        : RNCamera.Constants.Type.back,
+  const onLoad = onLoadData => {
+    const { naturalSize: { width, height } = {}, duration } = onLoadData;
+    const combinedData = {
+      ...onLoadData,
+      ...videoData,
+      width,
+      height,
+      duration: duration,
+      type: 'video',
+    };
+    const imageFile = {
+      caption: '',
+      fileDetails: mediaObjContructor('RN_CAMERA', combinedData),
+    };
+    const size = validateFileSize(
+      imageFile.fileDetails.fileSize,
+      getType(imageFile.fileDetails.type),
     );
+    if (size) {
+      return showToast(size, { id: 'rncamera-size' });
+    }
+    if (!size) {
+      setData(imageFile);
+    }
   };
 
-  const capturePhoto = async () => {
-    setIsCapturing(true);
+  const toggleFlashMode = () => {
+    setFlashMode(prevFlash => {
+      if (prevFlash === RNCamera.Constants.FlashMode.off) {
+        setFlashIcon(flashOnIcon);
+        return RNCamera.Constants.FlashMode.on;
+      } else if (prevFlash === RNCamera.Constants.FlashMode.on) {
+        setFlashIcon(flashAutoIcon);
+        return RNCamera.Constants.FlashMode.auto;
+      } else {
+        setFlashIcon(flashOffIcon);
+        return RNCamera.Constants.FlashMode.off;
+      }
+    });
+  };
+
+  React.useLayoutEffect(() => {
+    dispatch(safeAreaBgColor('#000'));
+    return () => dispatch(resetSafeArea());
+  }, []);
+
+  const handlePress = () => {
     try {
-      if (cameraRef.current) {
-        const photoData = await cameraRef.current.takePictureAsync();
-        const fileInfo = await RNFS.stat(photoData.uri);
-        const combinedData = {
+      setIsCapturing(true);
+      let fileInfo, combinedData;
+      takePicture().then(async res => {
+        fileInfo = await RNFS.stat(res.uri);
+        combinedData = {
           ...fileInfo,
-          ...photoData,
+          ...res,
           type: 'image',
         };
         if (
-          combinedData.pictureOrientation === 1 ||
-          combinedData.pictureOrientation === 2
+          orientationCheck(combinedData.pictureOrientation) &&
+          combinedData.width > combinedData.height
         ) {
           const temp = combinedData.width;
           combinedData.width = combinedData.height;
@@ -116,9 +160,7 @@ const Camera = props => {
         if (!size) {
           setData(imageFile);
         }
-      } else {
-        console.warn('Camera ref is not ready');
-      }
+      });
     } catch (error) {
       console.error('Error taking photo:', error);
     } finally {
@@ -126,160 +168,121 @@ const Camera = props => {
     }
   };
 
-  const startRecording = async () => {
+  const handleLongPress = () => {
     try {
-      if (cameraRef.current) {
-        recordingIntervalRef.current = setInterval(() => {
-          setCaptureTime(prevTime => prevTime + 1);
-        }, 1000);
-        const videoInfo = await cameraRef.current.recordAsync();
-        const fileInfo = await RNFS.stat(videoInfo.uri);
-        setVideoData({ ...videoInfo, ...fileInfo });
+      if (flashMode === RNCamera.Constants.FlashMode.on) {
+        setFlashMode(RNCamera.Constants.FlashMode.torch);
       }
+      startRecordingVideo().then(async res => {
+        const fileInfo = await RNFS.stat(res.uri);
+        setVideoData({ ...res, ...fileInfo });
+        setFlashMode(RNCamera.Constants.FlashMode.off);
+      });
+      recordingIntervalRef.current = setInterval(() => {
+        setCaptureTime(prevTime => prevTime + 1);
+      }, 1000);
     } catch (error) {
       console.log('startRecording', error);
     }
   };
 
-  const handlePressIn = () => {
-    setTimeout(() => {
-      setIsHolding(true);
-    }, 1000);
-  };
-
   const handlePressOut = () => {
-    if (isHolding) {
-      cameraRef.current.stopRecording();
-      clearInterval(recordingIntervalRef.current);
-      setIsHolding(false);
-      setIsCapturing(false);
-      setCaptureTime(0);
-    }
-    if (!isHolding) {
-      capturePhoto();
-    }
+    stopRecordingVideo();
   };
-
-  const onLoad = onLoadData => {
-    const { naturalSize: { width, height } = {}, duration } = onLoadData;
-    const combinedData = {
-      ...onLoadData,
-      ...videoData,
-      width,
-      height,
-      duration: duration,
-      type: 'video',
-    };
-    console.log(combinedData, 'combinedData');
-    const imageFile = {
-      caption: '',
-      fileDetails: mediaObjContructor('RN_CAMERA', combinedData),
-    };
-    const size = validateFileSize(
-      imageFile.fileDetails.fileSize,
-      getType(imageFile.fileDetails.type),
-    );
-    if (size) {
-      return showToast(size, { id: 'rncamera-size' });
-    }
-    if (!size) {
-      setData(imageFile);
-    }
-  };
-
-  const toggleFlashMode = () => {
-    setFlash(prevFlash => {
-      if (prevFlash === RNCamera.Constants.FlashMode.off) {
-        setFlashIcon(flashOnIcon);
-        return RNCamera.Constants.FlashMode.on;
-      } else if (prevFlash === RNCamera.Constants.FlashMode.on) {
-        setFlashIcon(flashAutoIcon);
-        return RNCamera.Constants.FlashMode.auto;
-      } else {
-        setFlashIcon(flashOffIcon);
-        return RNCamera.Constants.FlashMode.off;
-      }
-    });
-  };
-
-  React.useLayoutEffect(() => {
-    dispatch(safeAreaBgColor('#000'));
-    return () => dispatch(resetSafeArea());
-  }, []);
 
   return (
-    <View style={styles.container}>
-      <RNCamera
-        flashMode={flash}
-        ref={cameraRef}
-        type={type}
-        style={styles.preview}
-      />
-      <View style={styles.topBtns}>
-        <HStack justifyContent="space-between" alignItems="center">
-          <IconButton
-            _pressed={{ bg: 'rgba(50,118,226, 0.3)' }}
-            onPress={handleBackBtn}
-            icon={<Icon as={() => LeftArrowIcon('#fff')} name="emoji-happy" />}
-            borderRadius="full"
-          />
-          {captureTime > 0 && (
-            <HStack alignItems={'center'}>
-              <View style={styles.recording} />
-              <Text px="1" color="#fff">
-                {millisToMinutesAndSeconds(captureTime * 1000)}
-              </Text>
-            </HStack>
-          )}
-          <View />
-        </HStack>
-      </View>
-      <View style={styles.bottomBtns}>
-        <HStack px="3" justifyContent="space-between" alignItems="center">
-          <Pressable onPress={toggleFlashMode}>
-            <Image
-              alt="flash-icon"
-              style={styles.flashIcon}
-              source={flashIcon}
+    <>
+      <View style={styles.container}>
+        <RNCamera
+          ratio={'16:9'}
+          ref={callbackRef}
+          type={cameraType}
+          flashMode={flashMode}
+          captureAudio={true}
+          style={styles.preview}
+        />
+        <View style={styles.topBtns}>
+          <HStack justifyContent="space-between" alignItems="center">
+            <IconButton
+              _pressed={{ bg: 'rgba(50,118,226, 0.3)' }}
+              onPress={handleBackBtn}
+              icon={
+                <Icon as={() => LeftArrowIcon('#fff')} name="emoji-happy" />
+              }
+              borderRadius="full"
             />
-          </Pressable>
-          <TouchableOpacity
-            onPressIn={handlePressIn}
-            onPressOut={handlePressOut}
-            style={styles.captureContainer}>
-            {isCapturing ? (
-              <Spinner size="lg" color={'#3276E2'} />
-            ) : (
-              isHolding && <View style={styles.captureBtn} />
+            {captureTime > 0 && (
+              <HStack alignItems={'center'}>
+                <View style={styles.recording} />
+                <Text px="1" color="#fff">
+                  {millisToMinutesAndSeconds(captureTime * 1000)}
+                </Text>
+              </HStack>
             )}
-          </TouchableOpacity>
-          <Pressable onPress={flipCamera}>
-            <Image
-              alt="flip-icon"
-              style={styles.flashIcon}
-              source={flipCameraIcon}
-            />
-          </Pressable>
-        </HStack>
+            <View />
+          </HStack>
+        </View>
+        <View style={styles.bottomBtns}>
+          <HStack px="3" justifyContent="space-between" alignItems="center">
+            <Pressable onPress={toggleFlashMode}>
+              <Image
+                alt="flash-icon"
+                style={styles.flashIcon}
+                source={flashIcon}
+              />
+            </Pressable>
+            <TouchableOpacity
+              onPress={handlePress}
+              onLongPress={handleLongPress}
+              onPressOut={handlePressOut}
+              style={styles.captureContainer}>
+              {isCapturing ? (
+                <Spinner size="lg" color={'#3276E2'} />
+              ) : (
+                recording && <View style={styles.captureBtn} />
+              )}
+            </TouchableOpacity>
+            <Pressable onPress={changeCameraType}>
+              <Image
+                alt="flip-icon"
+                style={styles.flashIcon}
+                source={flipCameraIcon}
+              />
+            </Pressable>
+          </HStack>
+        </View>
+        <View>
+          {videoData?.uri && (
+            <View style={styles.video}>
+              <Video
+                paused={true}
+                source={{ uri: videoData?.uri }}
+                onLoad={onLoad}
+              />
+            </View>
+          )}
+        </View>
       </View>
-      <View>
-        {videoData?.uri && (
-          <View style={styles.video}>
-            <Video
-              paused={true}
-              source={{ uri: videoData?.uri }}
-              onLoad={onLoad}
-            />
-          </View>
-        )}
+      <View style={styles.textContainer}>
+        <Text fontSize={12} color={'#fff'}>
+          Hold for video, tap for photo
+        </Text>
       </View>
-    </View>
+    </>
   );
 };
 
 export default Camera;
 
 const styles = StyleSheet.create({
+  textContainer: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    left: 0,
+    alignItems: 'center',
+    backgroundColor: '#000',
+  },
   video: {
     display: 'none',
   },

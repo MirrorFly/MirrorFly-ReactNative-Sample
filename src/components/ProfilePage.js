@@ -7,6 +7,7 @@ import {
   TextInput,
   ScrollView,
   KeyboardAvoidingView,
+  Keyboard,
 } from 'react-native';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -35,13 +36,14 @@ import { useNetworkStatus } from '../hooks';
 import { PrimaryPillBtn } from '../common/Button';
 import AuthProfileImage from '../common/AuthProfileImage';
 import * as RootNav from '../Navigation/rootNavigation';
+import { showToast } from 'Helper/index';
 
 const ProfilePage = props => {
   const toast = useToast();
   const dispatch = useDispatch();
   const prevPageInfo = useSelector(state => state.navigation.prevScreen);
   const isFetchingProfile = useSelector(
-    state => state.profile.status == 'loading',
+    state => state.profile.status === 'loading',
   );
   const [open, setOpen] = React.useState(false);
   const [remove, setRemove] = React.useState(false);
@@ -52,11 +54,9 @@ const ProfilePage = props => {
   const isConnected = useNetworkStatus();
 
   const toastConfig = {
+    id: 'profile-toast',
     duration: 2500,
     avoidKeyboard: true,
-    onCloseComplete: () => {
-      setIsToastShowing(false);
-    },
   };
 
   const handleBackBtn = () => {
@@ -74,6 +74,8 @@ const ProfilePage = props => {
   };
 
   const handleImage = position => {
+    Keyboard.dismiss();
+
     setIsToastShowing(true);
     if (!isConnected && !isToastShowing) {
       return toast.show({
@@ -81,7 +83,7 @@ const ProfilePage = props => {
         render: () => {
           return (
             <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>
+              <Text style={styles.toastText}>
                 Please check your internet connectivity
               </Text>
             </Box>
@@ -89,7 +91,7 @@ const ProfilePage = props => {
         },
       });
     } else if (isConnected) {
-      if (position == 'big') {
+      if (position === 'big') {
         if (props?.profileInfo?.image) {
           props.setNav('ProfileImage');
         } else {
@@ -102,124 +104,51 @@ const ProfilePage = props => {
   };
 
   const handleProfileUpdate = async () => {
+    console.log('click');
     setIsToastShowing(true);
-    if (!props?.profileInfo?.nickName && !isToastShowing) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>
-                Please enter your username
-              </Text>
-            </Box>
-          );
-        },
-      });
+    const validation =
+      props?.profileInfo?.nickName &&
+      props?.profileInfo?.nickName?.length > '3' &&
+      props?.profileInfo?.email &&
+      /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(
+        props?.profileInfo?.email,
+      );
+    if (!props?.profileInfo?.nickName) {
+      return showToast('Please enter your username', toastConfig);
     }
-    if (props?.profileInfo?.nickName?.length < '3' && !isToastShowing) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>
-                User Name is too short
-              </Text>
-            </Box>
-          );
-        },
-      });
+    if (props?.profileInfo?.nickName?.length < '3') {
+      return showToast('Username is too short', toastConfig);
     }
-    if (!props?.profileInfo?.email && !isToastShowing) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>
-                Email should not be empty
-              </Text>
-            </Box>
-          );
-        },
-      });
+    if (!props?.profileInfo?.email) {
+      return showToast('Email should not be empty', toastConfig);
     }
     if (
       !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(
         props?.profileInfo?.email,
-      ) &&
-      !isToastShowing
+      )
     ) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>
-                Please enter a Valid E-Mail
-              </Text>
-            </Box>
-          );
-        },
-      });
+      return showToast('Please enter a Valid E-Mail', toastConfig);
     }
-    if (!isConnected && !isToastShowing) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>
-                Please check your internet connectivity
-              </Text>
-            </Box>
-          );
-        },
-      });
+    if (!isConnected) {
+      return showToast('Please check your internet connectivity', toastConfig);
     }
-    if (isConnected && !isToastShowing) {
-      setIsToastShowing(false);
+    if (isConnected && validation) {
       setloading(true);
       let UserInfo = await SDK.setUserProfile(
-        props?.profileInfo?.nickName.trim(),
+        props?.profileInfo?.nickName?.trim(),
         imageFileToken ? imageFileToken : props.selectProfileInfo.image,
         props.profileInfo?.status,
         props.profileInfo?.mobileNumber,
         props.profileInfo?.email,
       );
       setloading(false);
-      if (UserInfo.statusCode == 200) {
+      if (UserInfo.statusCode === 200) {
         let x = { screen: RECENTCHATSCREEN, prevScreen: PROFILESCREEN };
         RootNav.navigate(RECENTCHATSCREEN);
-        prevPageInfo == REGISTERSCREEN && dispatch(navigate(x));
-        if (UserInfo && !isToastShowing) {
-          return toast.show({
-            ...toastConfig,
-            render: () => {
-              return (
-                <Box bg="black" px="2" py="1" rounded="sm">
-                  <Text style={{ color: '#fff', padding: 5 }}>
-                    Profile Updated successfully
-                  </Text>
-                </Box>
-              );
-            },
-          });
-        }
-      } else if (UserInfo && !isToastShowing) {
-        return toast.show({
-          ...toastConfig,
-          render: () => {
-            return (
-              <Box bg="black" px="2" py="1" rounded="sm">
-                <Text style={{ color: '#fff', padding: 5 }}>
-                  {UserInfo.message}
-                </Text>
-              </Box>
-            );
-          },
-        });
+        prevPageInfo === REGISTERSCREEN && dispatch(navigate(x));
+        return showToast('Profile Updated successfully', toastConfig);
+      } else {
+        return showToast(UserInfo.message, toastConfig);
       }
     }
   };
@@ -241,9 +170,7 @@ const ProfilePage = props => {
             render: () => {
               return (
                 <Box bg="black" px="2" py="1" rounded="sm">
-                  <Text style={{ color: '#fff', padding: 5 }}>
-                    Image size too large
-                  </Text>
+                  <Text style={styles.toastText}>Image size too large</Text>
                 </Box>
               );
             },
@@ -255,9 +182,9 @@ const ProfilePage = props => {
           sdkRes = await SDK.profileUpdate(image);
         }
         console.log('sdkRes', sdkRes);
-        if (sdkRes?.statusCode == 200) {
+        if (sdkRes?.statusCode === 200) {
           setImageFileToken(sdkRes.imageFileToken);
-          SDK.setUserProfile(
+          await SDK.setUserProfile(
             props?.profileInfo?.nickName,
             sdkRes.imageFileToken,
             props.profileInfo?.status,
@@ -272,9 +199,7 @@ const ProfilePage = props => {
             render: () => {
               return (
                 <Box bg="black" px="2" py="1" rounded="sm">
-                  <Text style={{ color: '#fff', padding: 5 }}>
-                    Image upload failed
-                  </Text>
+                  <Text style={styles.toastText}>Image upload failed</Text>
                 </Box>
               );
             },
@@ -290,7 +215,7 @@ const ProfilePage = props => {
     setOpen(false);
     let imageReadPermission = await requestStoragePermission();
     console.log('imageReadPermission', imageReadPermission);
-    if (imageReadPermission == 'granted' || 'limited') {
+    if (imageReadPermission === 'granted' || 'limited') {
       ImagePicker.openPicker({
         mediaType: 'photo',
         width: 450,
@@ -307,9 +232,7 @@ const ProfilePage = props => {
               render: () => {
                 return (
                   <Box bg="black" px="2" py="1" rounded="sm">
-                    <Text style={{ color: '#fff', padding: 5 }}>
-                      Image size too large
-                    </Text>
+                    <Text style={styles.toastText}>Image size too large</Text>
                   </Box>
                 );
               },
@@ -321,9 +244,9 @@ const ProfilePage = props => {
             sdkRes = await SDK.profileUpdate(image);
           }
           console.log('sdkRes', sdkRes);
-          if (sdkRes?.statusCode == 200) {
+          if (sdkRes?.statusCode === 200) {
             setImageFileToken(sdkRes.imageFileToken);
-            SDK.setUserProfile(
+            await SDK.setUserProfile(
               props?.profileInfo?.nickName,
               sdkRes.imageFileToken,
               props.profileInfo?.status,
@@ -338,9 +261,7 @@ const ProfilePage = props => {
               render: () => {
                 return (
                   <Box bg="black" px="2" py="1" rounded="sm">
-                    <Text style={{ color: '#fff', padding: 5 }}>
-                      Image upload failed
-                    </Text>
+                    <Text style={styles.toastText}>Image upload failed</Text>
                   </Box>
                 );
               },
@@ -368,14 +289,13 @@ const ProfilePage = props => {
       props.profileInfo?.mobileNumber,
       props.profileInfo?.email,
     );
-    console.log('updateProfile', updateProfile);
-    if (updateProfile.statusCode == 200) {
+    if (updateProfile.statusCode === 200) {
       toast.show({
         ...toastConfig,
         render: () => {
           return (
             <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>
+              <Text style={styles.toastText}>
                 {' '}
                 Profile Image removed successfully
               </Text>
@@ -389,9 +309,7 @@ const ProfilePage = props => {
         render: () => {
           return (
             <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>
-                {updateProfile.message}
-              </Text>
+              <Text style={styles.toastText}>{updateProfile.message}</Text>
             </Box>
           );
         },
@@ -436,13 +354,15 @@ const ProfilePage = props => {
   }, [props.profileInfo, imageUploading]);
 
   React.useEffect(() => {
-    if (!isConnected && loading) setLoading(false);
+    if (!isConnected && loading) {
+      setloading(false);
+    }
   }, [isConnected]);
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }}>
+    <KeyboardAvoidingView style={styles.flex1}>
       <Stack h="60" mb="10" bg="#F2F2F2" w="full" justifyContent={'center'}>
-        {prevPageInfo == REGISTERSCREEN ? (
+        {prevPageInfo === REGISTERSCREEN ? (
           <Text textAlign={'center'} fontSize="xl" fontWeight={'600'}>
             Profile
           </Text>
@@ -454,7 +374,7 @@ const ProfilePage = props => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
         bounces={false}
-        style={{ flex: 1 }}>
+        style={styles.flex1}>
         <VStack h="full" justifyContent={'center'}>
           <VStack mt="6" flex="1" alignItems={'center'}>
             <View
@@ -467,22 +387,24 @@ const ProfilePage = props => {
               }}>
               <Pressable onPress={() => handleImage('big')}>
                 {props.profileInfo?.image && handleRenderAuthImage}
-                {!props.profileInfo?.image && props?.profileInfo?.nickName && (
-                  <Avathar
-                    fontSize={60}
-                    width={157}
-                    height={157}
-                    data={props.profileInfo?.nickName}
-                    backgroundColor={'#3276E2'}
-                  />
-                )}
-                {!props.profileInfo?.image && !props?.profileInfo?.nickName && (
-                  <Image
-                    resizeMode="contain"
-                    source={require('../assets/profile.png')}
-                    style={{ height: 157, width: 157 }}
-                  />
-                )}
+                {!props.profileInfo?.image &&
+                  props?.profileInfo?.nickName?.trim() && (
+                    <Avathar
+                      fontSize={60}
+                      width={157}
+                      height={157}
+                      data={props.profileInfo?.nickName?.trim()}
+                      backgroundColor={'#3276E2'}
+                    />
+                  )}
+                {!props.profileInfo?.image &&
+                  !props?.profileInfo?.nickName?.trim() && (
+                    <Image
+                      resizeMode="contain"
+                      source={require('../assets/profile.png')}
+                      style={{ height: 157, width: 157 }}
+                    />
+                  )}
               </Pressable>
               <TouchableOpacity
                 activeOpacity={1}
@@ -500,11 +422,11 @@ const ProfilePage = props => {
                 fontSize: 16,
                 fontWeight: '600',
                 marginTop: 5,
-                textAlign: 'center',
               }}
+              textAlign="center"
               numberOfLines={1}
               value={props.profileInfo?.nickName}
-              placeholder="Username"
+              placeholder="Username " // Adding a trailing space to fix a strange issue ( last letter "e" is not visible )
               onChangeText={text => {
                 if (text.length > 30) {
                   setIsToastShowing(true);
@@ -514,7 +436,7 @@ const ProfilePage = props => {
                       render: () => {
                         return (
                           <Box bg="black" px="2" py="1" rounded="sm">
-                            <Text style={{ color: '#fff', padding: 5 }}>
+                            <Text style={styles.toastText}>
                               Maximum of 30 Characters
                             </Text>
                           </Box>
@@ -543,7 +465,7 @@ const ProfilePage = props => {
             <HStack mb="3" alignItems="center">
               <MailIcon />
               <TextInput
-                editable={prevPageInfo == REGISTERSCREEN}
+                editable={prevPageInfo === REGISTERSCREEN}
                 style={{ color: '#959595', flex: 1, marginLeft: 8 }}
                 defaultValue={props.profileInfo?.email}
                 onChangeText={text => handleChangeText('email', text)}
@@ -606,7 +528,7 @@ const ProfilePage = props => {
             </Pressable>
           </Stack>
           <Stack mt="5" alignItems="center">
-            {prevPageInfo == REGISTERSCREEN ? (
+            {prevPageInfo === REGISTERSCREEN ? (
               <PrimaryPillBtn
                 onPress={handleProfileUpdate}
                 title={props.onChangeEvent() ? 'Update & Continue' : 'Save'}
@@ -718,6 +640,7 @@ const ProfilePage = props => {
 export default ProfilePage;
 
 const styles = StyleSheet.create({
+  flex1: { flex: 1 },
   imageContainer: {
     height: 65,
     backgroundColor: '#f2f2f2',
@@ -783,4 +706,5 @@ const styles = StyleSheet.create({
     height: 42,
     width: 42,
   },
+  toastText: { color: '#fff', padding: 5 },
 });

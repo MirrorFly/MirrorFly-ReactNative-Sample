@@ -884,12 +884,12 @@ export const StatusIcon = () => {
   );
 };
 
-export const DownArrowIcon = () => {
+export const DownArrowIcon = ({ width, height }) => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="12"
-      height="8"
+      width={width || '12'}
+      height={height || '8'}
       viewBox="0 0 10 5.67">
       <Path
         id="drop_down"
@@ -2613,6 +2613,42 @@ export const DocumentChatIcon = props => {
           fill="none"
         />
       </G>
+    </Svg>
+  );
+};
+
+export const UpArrowIcon = ({ width, height }) => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={width || '15'}
+      height={height || '7'}
+      viewBox="0 0 10 5.67">
+      <Path
+        id="drop_down"
+        data-name="drop down"
+        d="M333.342,114a.7.7,0,0,1-.5-.2l-4.3-4.277a.694.694,0,0,1,0-.985.7.7,0,0,1,.99,0l3.8,3.785,3.8-3.784a.7.7,0,0,1,.99,0,.694.694,0,0,1,0,.985l-4.3,4.277A.7.7,0,0,1,333.342,114Z"
+        transform="translate(338.342 114) rotate(180)"
+        fill="#000"
+      />
+    </Svg>
+  );
+};
+
+export const BlockedIcon = () => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 18 18">
+      <Path
+        id="Blocked_Contacts"
+        data-name="Blocked Contacts"
+        d="M24.577,294.085a8,8,0,1,1,8,8A8.009,8.009,0,0,1,24.577,294.085Zm8,6.881a6.878,6.878,0,0,0,5.232-11.346l-9.546,9.822A6.849,6.849,0,0,0,32.577,300.966ZM25.7,294.085a6.851,6.851,0,0,0,1.679,4.5l9.688-9.714A6.878,6.878,0,0,0,25.7,294.085Z"
+        transform="translate(-24.577 -286.085)"
+        fill="#959595"
+      />
     </Svg>
   );
 };

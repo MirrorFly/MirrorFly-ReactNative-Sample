@@ -17,7 +17,7 @@ const authReducer = (state = initialState, action) => {
         currentUserJID: action.payload,
       };
     case RESET_STORE:
-       return initialState
+      return initialState;
     default:
       return state;
   }

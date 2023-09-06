@@ -1,11 +1,17 @@
 import { Text, View } from 'native-base';
 import React from 'react';
 import { StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
 import ReplyMessage from './ReplyMessage';
 
 const TextCard = props => {
   const { handleReplyPress, message } = props;
   const { msgBody: { replyTo = '' } = {} } = message;
+
+  const conversationSearchText = useSelector(
+    state => state.conversationSearchData?.searchText,
+  );
+
   return (
     <View
       bgColor={props.isSame ? '#E2E8F7' : '#fff'}
@@ -23,7 +29,13 @@ const TextCard = props => {
           isSame={props.isSame}
         />
       )}
-      <Text style={styles.message}>{props.data?.message}</Text>
+      <Text style={styles.message}>
+        <HighlightedText
+          text={props.data?.message}
+          searchValue={conversationSearchText.trim()}
+        />
+      </Text>
+
       <View style={styles.timeStamp}>
         {props.data.status}
         <Text pl="1" color="#455E93" fontSize="10" fontWeight={300}>
@@ -34,6 +46,36 @@ const TextCard = props => {
   );
 };
 export default TextCard;
+
+const escapeRegExpReservedChars = str => {
+  return String(str).replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
+};
+
+const HighlightedText = ({ textStyle = {}, text, searchValue = '', index }) => {
+  let parts = searchValue
+    ? text.split(new RegExp(`(${escapeRegExpReservedChars(searchValue)})`, 'i'))
+    : [text];
+  return (
+    <Text>
+      {parts.map((part, i) => {
+        const isSearchMatch =
+          part.toLowerCase() === searchValue.toLowerCase()
+            ? styles.highlight
+            : {};
+        return (
+          <Text
+            color="coolGray.800"
+            key={++i + '-' + index}
+            dark={{ color: 'warmGray.50' }}
+            ellipsizeMode="tail"
+            style={[textStyle, isSearchMatch]}>
+            {part}
+          </Text>
+        );
+      })}
+    </Text>
+  );
+};
 
 const styles = StyleSheet.create({
   message: {
@@ -49,5 +91,9 @@ const styles = StyleSheet.create({
     padding: 2,
     alignItems: 'center',
     justifyContent: 'flex-end',
+  },
+  highlight: {
+    backgroundColor: '#D69C23',
+    fontWeight: 'bold',
   },
 });

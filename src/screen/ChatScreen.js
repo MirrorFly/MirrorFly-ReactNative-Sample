@@ -24,6 +24,7 @@ import { DOCUMENT_FORMATS } from '../Helper/Chat/Constant';
 import {
   getMessageObjSender,
   getRecentChatMsgObj,
+  getUserIdFromJid,
 } from '../Helper/Chat/Utility';
 import * as RootNav from '../Navigation/rootNavigation';
 import {
@@ -64,6 +65,7 @@ import SavePicture from './Gallery';
 import { createThumbnail } from 'react-native-create-thumbnail';
 import { navigate } from 'mf-redux/Actions/NavigationAction';
 import Location from 'components/Media/Location';
+import { clearConversationSearchData } from 'mf-redux/Actions/conversationSearchAction';
 
 function ChatScreen() {
   const [replyMsgRef, setReplyMsgRef] = React.useState();
@@ -79,6 +81,20 @@ function ChatScreen() {
   const [selectedSingle, setselectedSingle] = React.useState(false);
   const [alert, setAlert] = React.useState(false);
   const [validate, setValidate] = React.useState('');
+  const [isSearching, setIsSearching] = React.useState(false);
+
+  const handleIsSearching = () => {
+    setIsSearching(true);
+  };
+
+  const handleIsSearchingClose = () => {
+    setIsSearching(false);
+  };
+
+  const toUserId = React.useMemo(
+    () => getUserIdFromJid(toUserJid),
+    [toUserJid],
+  );
 
   const toastConfig = {
     duration: 1500,
@@ -186,7 +202,6 @@ function ChatScreen() {
         .then(file => {
           // updating the SDK flag back to false to behave as usual
           SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-          console.log(file);
 
           // Validating the file type and size
           if (!isValidFileType(file.type)) {
@@ -245,11 +260,6 @@ function ChatScreen() {
         let imageReadPermission = await requestStoragePermission();
         const camera_permission = await AsyncStorage.getItem(
           'camera_permission',
-        );
-        console.log(
-          cameraPermission,
-          imageReadPermission,
-          'cameraPermission, imageReadPermission',
         );
         AsyncStorage.setItem('camera_permission', 'true');
         if (
@@ -317,7 +327,10 @@ function ChatScreen() {
   ];
 
   const handleBackBtn = () => {
-    if (localNav === 'CHATCONVERSATION') {
+    if (isSearching) {
+      setIsSearching(false);
+      dispatch(clearConversationSearchData());
+    } else if (localNav === 'CHATCONVERSATION') {
       let x = {
         screen: RECENTCHATSCREEN,
         fromUserJID: '',
@@ -366,7 +379,6 @@ function ChatScreen() {
         url: uri,
         timeStamp: 10000,
       });
-      console.log(frame, 'frame');
       response = await RNFS.readFile(frame.path, 'base64');
     }
     return response;
@@ -590,6 +602,9 @@ function ChatScreen() {
               attachmentMenuIcons={attachmentMenuIcons}
               selectedImages={selectedImages}
               handleSendMsg={handleSendMsg}
+              handleIsSearching={handleIsSearching}
+              handleIsSearchingClose={handleIsSearchingClose}
+              IsSearching={isSearching}
             />
           ),
           MESSAGEINFO: (
@@ -608,7 +623,7 @@ function ChatScreen() {
               handleSendMsg={handleSendMsg}
             />
           ),
-          UserInfo: <UserInfo setLocalNav={setLocalNav} />,
+          UserInfo: <UserInfo setLocalNav={setLocalNav} toUserId={toUserId} />,
           UsersTapBarInfo: <UsersTapBarInfo setLocalNav={setLocalNav} />,
           Gallery: (
             <SavePicture

@@ -10,12 +10,27 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { sortBydate } from 'Helper/Chat/RecentChat';
-import { showToast } from 'Helper/index';
+import { debounce, fetchContactsFromSDK, showToast } from 'Helper/index';
 import SDK from 'SDK/SDK';
 import Avathar from 'common/Avathar';
-import { CloseIcon, SearchIcon } from 'common/Icons';
-import { Checkbox, IconButton, View as NBView } from 'native-base';
-import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { BackArrowIcon, CloseIcon, SearchIcon } from 'common/Icons';
+import {
+  Center,
+  Checkbox,
+  Icon,
+  IconButton,
+  View as NBView,
+  Slide,
+  HStack,
+  Spinner,
+} from 'native-base';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { useNetworkStatus } from '../hooks';
 import commonStyles from 'common/commonStyles';
@@ -32,6 +47,12 @@ import {
   addChatConversationHistory,
   deleteChatConversationById,
 } from 'mf-redux/Actions/ConversationAction';
+import { SendBlueIcon } from '../common/Icons';
+import useRosterData from 'hooks/useRosterData';
+import { CHATSCREEN } from 'src/constant';
+import { navigate } from 'mf-redux/Actions/NavigationAction';
+import { CONVERSATION_SCREEN } from 'src/constant';
+import ApplicationColors from 'config/appColors';
 
 const showMaxUsersLimitToast = () => {
   const options = {
@@ -51,16 +72,38 @@ const Header = ({
     onSearch(value);
   };
 
+  const handleClearSearch = () => {
+    onSearch('');
+  };
+
   return (
     <View style={styles.headerContainer}>
       {isSearching ? (
-        <TextInput
-          value={searchText}
-          placeholder=" Search..."
-          autoFocus
-          onChangeText={handleSearchTextChange}
-          style={styles.searchInput}
-        />
+        <View style={styles.headerLeftSideContainer}>
+          <IconButton
+            style={styles.cancelIcon}
+            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+            onPress={onCancelPressed}
+            borderRadius="full">
+            <BackArrowIcon />
+          </IconButton>
+          <TextInput
+            value={searchText}
+            placeholder=" Search..."
+            autoFocus
+            onChangeText={handleSearchTextChange}
+            style={styles.searchInput}
+          />
+          {!!searchText && (
+            <IconButton
+              style={styles.searchIcon}
+              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+              onPress={handleClearSearch}
+              borderRadius="full">
+              <CloseIcon />
+            </IconButton>
+          )}
+        </View>
       ) : (
         <View style={styles.headerLeftSideContainer}>
           <IconButton
@@ -78,7 +121,7 @@ const Header = ({
         _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
         onPress={onSearchPressed}
         borderRadius="full">
-        {isSearching ? <CloseIcon /> : <SearchIcon />}
+        <SearchIcon />
       </IconButton>
     </View>
   );
@@ -88,7 +131,6 @@ const ContactItem = ({
   name,
   userId,
   userJid,
-  colorCode,
   status,
   handleItemSelect,
   isSelected,
@@ -96,6 +138,17 @@ const ContactItem = ({
   searchText,
 }) => {
   const [isChecked, setIsChecked] = useState(false);
+  let {
+    nickName,
+    status: profileStatus,
+    image: imageToken,
+    colorCode,
+  } = useRosterData(userId);
+  // updating default values
+  nickName = nickName || name || userId;
+  colorCode = colorCode || '';
+  profileStatus = profileStatus || status || '';
+
   useEffect(() => {
     if (isSelected !== isChecked) {
       setIsChecked(Boolean(isSelected));
@@ -110,9 +163,9 @@ const ContactItem = ({
     setIsChecked(val => !val);
     handleItemSelect(userId, {
       userId,
-      name,
+      name: nickName,
       colorCode,
-      status,
+      status: profileStatus,
       userJid,
     });
   };
@@ -122,11 +175,15 @@ const ContactItem = ({
       <Pressable onPress={handleChatItemSelect}>
         <View style={styles.recentChatListItems}>
           <View style={styles.recentChatItemAvatarName}>
-            <Avathar data={name || userId} backgroundColor={colorCode} />
+            <Avathar
+              data={nickName || userId}
+              backgroundColor={colorCode}
+              profileImage={imageToken}
+            />
             <View>
               <View style={styles.recentChatItemName}>
                 <HighlightedText
-                  text={name || userId}
+                  text={nickName || userId}
                   searchValue={searchText?.trim()}
                   index={userId}
                 />
@@ -135,14 +192,24 @@ const ContactItem = ({
                 style={styles.recentChatItemStatus}
                 numberOfLines={1}
                 ellipsizeMode="tail">
-                {status}
+                {profileStatus}
               </Text>
             </View>
           </View>
           <Checkbox
             aria-label="Select Recent Chat User"
             isChecked={isChecked}
+            isDisabled={!isChecked && !isCheckboxAllowed}
+            style={styles.checkbox}
             onChange={handleChatItemSelect}
+            _checked={{
+              backgroundColor: ApplicationColors.mainColor,
+              borderColor: ApplicationColors.mainColor,
+            }}
+            _pressed={{
+              backgroundColor: ApplicationColors.mainColor,
+              borderColor: ApplicationColors.mainColor,
+            }}
           />
         </View>
       </Pressable>
@@ -161,19 +228,20 @@ const RecentChatSectionList = ({
   return (
     <View style={styles.recentChatContiner}>
       {/* Header */}
-      <View style={styles.recentChatHeader}>
-        <Text style={styles.recentChatHeaderText}>Recent Chat</Text>
-      </View>
+      {data.length > 0 && (
+        <View style={styles.recentChatHeader}>
+          <Text style={styles.recentChatHeaderText}>Recent Chat</Text>
+        </View>
+      )}
       {/* List */}
       <View style={styles.recentChatList}>
-        {data.map(item => (
+        {data.map((item, index) => (
           <ContactItem
-            key={item.fromUserId}
+            key={`${++index}_${item.fromUserId}`}
             userId={item.fromUserId}
             userJid={item.userJid}
             name={item.profileDetails?.nickName}
             status={item.profileDetails?.status}
-            colorCode={item.profileDetails?.colorCode}
             handleItemSelect={handleChatSelect}
             isSelected={selectedUsers[item.fromUserId]}
             isCheckboxAllowed={Object.keys(selectedUsers).length <= 4} // allow max 5 contacts
@@ -190,18 +258,21 @@ const ContactsSectionList = ({
   handleChatSelect,
   selectedUsers,
   searchText,
+  showLoadMoreLoader,
 }) => {
   return (
     <View style={styles.recentChatContiner}>
       {/* Header */}
-      <View style={styles.recentChatHeader}>
-        <Text style={styles.recentChatHeaderText}>Contacts</Text>
-      </View>
+      {data.length > 0 && (
+        <View style={styles.recentChatHeader}>
+          <Text style={styles.recentChatHeaderText}>Contacts</Text>
+        </View>
+      )}
       {/* List */}
       <View style={styles.recentChatList}>
-        {data.map(item => (
+        {data.map((item, index) => (
           <ContactItem
-            key={item.userId}
+            key={`${++index}_${item.userId}`}
             userId={item.userId}
             userJid={item.userJid}
             name={item.nickName}
@@ -213,6 +284,11 @@ const ContactsSectionList = ({
           />
         ))}
       </View>
+      {showLoadMoreLoader ? (
+        <ActivityIndicator size={'large'} style={styles.loadMoreLoader} />
+      ) : (
+        <View style={styles.loadMoreLoaderPlaceholder} />
+      )}
     </View>
   );
 };
@@ -229,11 +305,24 @@ const SelectedUsersName = ({ users, onMessageSend }) => {
   return (
     <NBView style={styles.selectedUsersNameContainer} shadow={2}>
       <Text style={commonStyles.flex1}>{userNames}</Text>
-      <Text style={styles.sendButton} onPress={onMessageSend}>
-        NEXT
-      </Text>
+      {users?.length > 0 && (
+        <IconButton
+          style={styles.sendButton}
+          onPress={onMessageSend}
+          _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+          icon={
+            <Icon as={<SendBlueIcon color="#fff" />} name="forward-message" />
+          }
+          borderRadius="full"
+        />
+      )}
     </NBView>
   );
+};
+
+const contactPaginationRefInitialValue = {
+  nextPage: 1,
+  hasNextPage: true,
 };
 
 // Main Component
@@ -243,10 +332,15 @@ const ForwardMessage = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState({});
   const [showLoader, setShowLoader] = useState(false);
+  const [showLoadMoreLoader, setShowLoadMoreLoader] = useState(false);
   const [filteredRecentChatList, setFilteredRecentChatList] = useState([]);
   const [filteredContactList, setFilteredContactList] = useState([]);
   const recentChatData = useSelector(state => state.recentChatData.data);
   const activeChatUserJid = useSelector(state => state.navigation.fromUserJid);
+
+  const searchTextValueRef = useRef();
+
+  const contactsPaginationRef = useRef({ ...contactPaginationRefInitialValue });
 
   const dispatch = useDispatch();
 
@@ -274,7 +368,8 @@ const ForwardMessage = () => {
   }, []);
 
   useLayoutEffect(() => {
-    fetchContactList(searchText.trim());
+    fetchContactListWithDebounce(searchText.trim());
+    searchTextValueRef.current = searchText;
   }, [searchText]);
 
   useEffect(() => {
@@ -303,24 +398,61 @@ const ForwardMessage = () => {
     return _users.filter(u => !recentChatUsersObj[u.userId]);
   };
 
-  const fetchContactList = async filter => {
-    if (isInternetReachable) {
-      const { statusCode, users } = await SDK.getUsersList(filter, 1, 23);
+  const updateContactPaginationRefData = (totalPages, filter) => {
+    if (filter) {
+      contactsPaginationRef.current = { ...contactPaginationRefInitialValue };
+      return;
+    }
+    if (!contactsPaginationRef.current) {
+      contactsPaginationRef.current = {};
+    }
+    if (contactsPaginationRef.current.nextPage < totalPages) {
+      contactsPaginationRef.current.nextPage++;
+    } else {
+      contactsPaginationRef.current.hasNextPage = false;
+    }
+  };
+
+  const fetchContactListFromSDK = async filter => {
+    let { nextPage = 1, hasNextPage = true } =
+      contactsPaginationRef.current || {};
+    // fetching the data from API only when the actual filter value that triggered the function and the searchTextValueRef are equal
+    // because this function will be called with debounce with a delay of 400 milliseconds to ignore API calls for every single character change immediately
+    if (hasNextPage && filter === searchTextValueRef.current) {
+      nextPage = filter ? 1 : nextPage;
+      const { statusCode, users, totalPages } = await fetchContactsFromSDK(
+        filter,
+        nextPage,
+        23,
+      );
       if (statusCode === 200) {
+        updateContactPaginationRefData(totalPages, filter);
         const filteredUsers = getUsersExceptRecentChatsUsers(users);
-        setFilteredContactList(filteredUsers);
+        setFilteredContactList(
+          nextPage === 1 ? filteredUsers : val => [...val, ...filteredUsers],
+        );
       } else {
         const toastOptions = {
           id: 'contact-server-error',
         };
         showToast('Could not get contacts from server', toastOptions);
       }
-    } else {
-      const toastOptions = {
-        id: 'no-internet-toast',
-      };
-      showToast('Please check your internet connectivity', toastOptions);
+      setShowLoadMoreLoader(false);
     }
+  };
+
+  const fetchContactList = filter => {
+    setShowLoadMoreLoader(true);
+    setTimeout(async () => {
+      if (isInternetReachable) {
+        fetchContactListFromSDK(filter);
+      } else {
+        const toastOptions = {
+          id: 'no-internet-toast',
+        };
+        showToast('Please check your internet connectivity', toastOptions);
+      }
+    }, 0);
   };
 
   const handleCancel = () => {
@@ -395,7 +527,7 @@ const ForwardMessage = () => {
     // Sending params to SDK to forward message
     const contactsToForward = Object.values(selectedUsers).map(u => u.userJid);
     const msgIds = forwardMessages.map(m => m.msgId);
-    SDK.forwardMessagesToMultipleUsers(
+    await SDK.forwardMessagesToMultipleUsers(
       contactsToForward,
       msgIds,
       true,
@@ -403,7 +535,29 @@ const ForwardMessage = () => {
     );
     setShowLoader(false);
     onMessageForwaded?.();
-    navigation.goBack();
+    if (Object.values(selectedUsers).length === 1) {
+      // navigating the user after setTimeout to finish all the running things in background to avoid unwanted issues
+      setTimeout(() => {
+        dispatch(
+          navigate({
+            screen: CHATSCREEN,
+            fromUserJID: Object.values(selectedUsers)[0]?.userJid,
+            profileDetails: {
+              userJid: Object.values(selectedUsers)[0]?.userJid,
+              userId: Object.values(selectedUsers)[0]?.userId,
+              nickName:
+                Object.values(selectedUsers)[0]?.name ||
+                Object.values(selectedUsers)[0]?.userId,
+              colorCode: Object.values(selectedUsers)[0]?.colorCode,
+              profileStatus: Object.values(selectedUsers)[0]?.status,
+            },
+          }),
+        );
+        navigation.navigate(CONVERSATION_SCREEN);
+      }, 0);
+    } else {
+      navigation.goBack();
+    }
   };
 
   const handleMessageSend = async () => {
@@ -413,6 +567,28 @@ const ForwardMessage = () => {
   };
 
   const doNothing = () => null;
+
+  const isCloseToBottom = ({
+    layoutMeasurement,
+    contentOffset,
+    contentSize,
+  }) => {
+    const paddingToBottom = 30;
+    return (
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom
+    );
+  };
+
+  const fetchContactListWithDebounce = debounce(_searchText => {
+    fetchContactList(_searchText);
+  }, 400);
+
+  const handleScroll = ({ nativeEvent }) => {
+    if (isCloseToBottom(nativeEvent)) {
+      fetchContactListWithDebounce(searchText.trim());
+    }
+  };
 
   return (
     <>
@@ -424,7 +600,15 @@ const ForwardMessage = () => {
           isSearching={isSearching}
           searchText={searchText}
         />
-        <ScrollView style={commonStyles.flex1}>
+        {!filteredRecentChatList.length && !filteredContactList.length && (
+          <Center h="full" bgColor={'#fff'}>
+            <Text style={styles.noMsg}>No Result Found</Text>
+          </Center>
+        )}
+        <ScrollView
+          style={commonStyles.flex1}
+          onScroll={handleScroll}
+          scrollEventThrottle={150}>
           <RecentChatSectionList
             data={filteredRecentChatList}
             selectedUsers={selectedUsers}
@@ -436,6 +620,7 @@ const ForwardMessage = () => {
             selectedUsers={selectedUsers}
             handleChatSelect={handleUserSelect}
             searchText={searchText}
+            showLoadMoreLoader={showLoadMoreLoader}
           />
         </ScrollView>
         <SelectedUsersName
@@ -531,6 +716,7 @@ const styles = StyleSheet.create({
   recentChatItemAvatarName: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
   recentChatItemName: {
     fontSize: 16,
@@ -542,6 +728,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#969696',
     marginLeft: 15,
+    width: 250,
   },
   dividerLine: {
     marginLeft: 73,
@@ -559,18 +746,13 @@ const styles = StyleSheet.create({
     minHeight: 50,
     backgroundColor: 'white',
     paddingHorizontal: 5,
+    paddingVertical: 5,
     borderRadius: 3,
   },
   sendButton: {
-    width: 50,
+    width: 40,
     height: 40,
-    padding: 5,
-    margin: 5,
-    marginRight: 0,
-    textAlignVertical: 'center',
-    textAlign: 'center',
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
+    marginRight: 5,
   },
   // Loader styles
   loaderContainer: {
@@ -593,5 +775,22 @@ const styles = StyleSheet.create({
   loaderText: {
     fontSize: 18,
     color: 'black',
+  },
+  loadMoreLoader: {
+    marginVertical: 15,
+  },
+  loadMoreLoaderPlaceholder: {
+    height: 60,
+    width: '100%',
+  },
+  noMsg: {
+    color: '#181818',
+    fontSize: 16,
+    fontWeight: '800',
+    marginBottom: 8,
+  },
+  checkbox: {
+    borderWidth: 2,
+    borderColor: '#3276E2',
   },
 });

@@ -1,16 +1,20 @@
-import { StyleSheet, Pressable, Image } from 'react-native';
+import { Pressable, Image } from 'react-native';
 import React from 'react';
 import { ClearTextIcon, VideoIcon } from '../common/Icons';
 import { HStack, Text, View } from 'native-base';
 import { useSelector } from 'react-redux';
-import { getUserIdFromJid } from 'Helper/Chat/Utility';
+import useRosterData from 'hooks/useRosterData';
 
 const ReplyVideo = props => {
   const { replyMsgItems, handleRemove } = props;
-  const { fromUserJid = '' } = replyMsgItems;
+  const { fromUserJid = '', fromUserId = '' } = replyMsgItems;
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const isSameUser = fromUserJid === currentUserJID;
+
+  let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
 
   const RemoveHandle = () => {
     handleRemove();
@@ -36,7 +40,7 @@ const ReplyVideo = props => {
             fontSize={14}
             fontWeight={600}
             py="0">
-            {profileDetails.nickName || getUserIdFromJid(currentUserJID)}
+            {nickName || fromUserId}
           </Text>
         )}
       </HStack>
@@ -72,7 +76,9 @@ const ReplyVideo = props => {
             right: 10,
             bottom: 0,
             backgroundColor: '#FFF',
-            borderRadius: 20,
+            borderRadius: 10,
+            borderColor: '#000',
+            borderWidth: 1,
           }}
           onPress={RemoveHandle}>
           <ClearTextIcon />
@@ -90,5 +96,3 @@ const ReplyVideo = props => {
 };
 
 export default ReplyVideo;
-
-const styles = StyleSheet.create({});

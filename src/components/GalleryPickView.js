@@ -30,7 +30,7 @@ import Avathar from '../common/Avathar';
 import { SceneMap, TabView } from 'react-native-tab-view';
 import { getType } from './chat/common/fileUploadValidation';
 import VideoPlayer from './Media/VideoPlayer';
-import useRosterData from 'hooks/useRosterData';
+import useRosterData from '../hooks/useRosterData';
 
 function GalleryPickView(props) {
   const {

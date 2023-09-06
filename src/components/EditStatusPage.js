@@ -6,7 +6,7 @@ import { KeyboardIcon, SmileIcon } from '../common/Icons';
 import { useNetworkStatus } from '../hooks';
 import EmojiOverlay from './EmojiPicker';
 import Graphemer from 'graphemer';
-import SDK from 'SDK/SDK';
+import SDK from '../SDK/SDK';
 
 const EditStatusPage = props => {
   const splitter = new Graphemer();

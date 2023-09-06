@@ -11,8 +11,8 @@ import {
 import React from 'react';
 import Avathar from '../common/Avathar';
 import { SwipeListView } from 'react-native-swipe-list-view';
-import useRosterData from 'hooks/useRosterData';
-import SDK from 'SDK/SDK';
+import useRosterData from '../hooks/useRosterData';
+import SDK from '../SDK/SDK';
 
 const RenderItem = ({ item, index, onhandlePress }) => {
   let {
@@ -23,7 +23,7 @@ const RenderItem = ({ item, index, onhandlePress }) => {
   } = useRosterData(item?.userId);
   // updating default values
   nickName = nickName || item?.nickName || item?.userId || '';
-  imageToken = imageToken || item?.image || '';
+  imageToken = imageToken || '';
   colorCode = colorCode || SDK.getRandomColorCode();
   status = status || item.status || '';
 

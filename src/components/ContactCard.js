@@ -2,6 +2,7 @@ import { Image } from 'react-native';
 import React from 'react';
 import BG from '../assets/BG.png';
 import { View, Text, HStack } from 'native-base';
+import { getImageSource } from '../common/utils';
 
 const ContactCard = props => {
   const ContactInfo = props.data.msgBody.nickName;
@@ -27,7 +28,7 @@ const ContactCard = props => {
             alignItems: 'center',
           }}>
           <Image
-            source={BG}
+            source={getImageSource(BG)}
             resizeMode="cover"
             style={{
               alignItems: 'center',

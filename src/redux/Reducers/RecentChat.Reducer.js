@@ -1,4 +1,4 @@
-import { emptyMessage, updateRecall } from 'components/Recall';
+import { emptyMessage, updateRecall } from '../../components/Recall';
 import { getMsgStatusInOrder } from '../../Helper/Chat/ChatHelper';
 import {
   ADD_RECENT_CHAT,

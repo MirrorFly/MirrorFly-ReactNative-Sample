@@ -5,6 +5,8 @@ import noPreview from '../assets/noPreview.png';
 import ProgressLoader from './chat/common/ProgressLoader';
 import { getThumbBase64URL } from '../Helper/Chat/Utility';
 import ReplyMessage from './ReplyMessage';
+import ic_baloon from '../assets/ic_baloon.png';
+import { getImageSource } from '../common/utils';
 
 const ImageCard = props => {
   const {
@@ -85,7 +87,7 @@ const ImageCard = props => {
             <Image
               resizeMode="contain"
               alt={fileName}
-              source={noPreview}
+              source={getImageSource(noPreview)}
               width={androidWidth}
               height={androidHeight}
             />
@@ -112,9 +114,7 @@ const ImageCard = props => {
         </View>
         {!media.caption && (
           <View position={'absolute'} bottom={2} right={2}>
-            <ImageBackground
-              source={require('../assets/ic_baloon.png')}
-              style={styles.imageBg}>
+            <ImageBackground source={ic_baloon} style={styles.imageBg}>
               {props.status}
               <Text pl="1" color="#fff" fontSize="9">
                 {props.timeStamp}

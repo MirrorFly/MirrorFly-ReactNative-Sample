@@ -1,5 +1,5 @@
-import { showToast } from 'Helper/index';
-import SDK from 'SDK/SDK';
+import { showToast } from '../Helper/index';
+import SDK from '../SDK/SDK';
 import React from 'react';
 import { FlatList } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,7 +8,7 @@ import { addChatConversationHistory } from '../redux/Actions/ConversationAction'
 import ChatMessage from './ChatMessage';
 import DeletedMessage from './DeletedMessage';
 import { updateMsgSeenStatus } from './chat/common/createMessage';
-import { updateConversationTotalSearchResults } from 'mf-redux/Actions/conversationSearchAction';
+import { updateConversationTotalSearchResults } from '../redux/Actions/conversationSearchAction';
 
 const ChatConversationList = ({
   handleMessageListUpdated,
@@ -73,6 +73,14 @@ const ChatConversationList = ({
       messageList.forEach((msg, index) => {
         if (msg?.msgBody?.message_type === 'text') {
           if (msg?.msgBody?.message?.toLowerCase?.().includes?.(_searchText)) {
+            _filteredMsgIndices.push({ index, msgId: msg.msgId });
+          }
+        } else if (msg?.msgBody?.message_type === 'file') {
+          if (
+            msg?.msgBody?.media?.fileName
+              ?.toLowerCase?.()
+              .includes?.(_searchText)
+          ) {
             _filteredMsgIndices.push({ index, msgId: msg.msgId });
           }
         }

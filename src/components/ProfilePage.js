@@ -57,8 +57,6 @@ const ProfilePage = props => {
     props?.selectProfileInfo?.nickName?.trim(),
   );
 
-  console.log('nickName', props?.selectProfileInfo?.nickName?.trim());
-
   const toastConfig = {
     id: 'profile-toast',
     duration: 2500,

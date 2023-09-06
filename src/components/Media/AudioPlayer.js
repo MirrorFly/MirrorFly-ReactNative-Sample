@@ -130,7 +130,7 @@ const AudioPlayer = props => {
   const getAudioTimeString = seconds => {
     let m = parseInt(seconds / 60, 10);
     let s = parseInt(seconds % 60, 10);
-    return `${m < 10 ? `0${m}` : m}:${s < 10 ? `0${s}` : s}`;
+    return (m < 10 ? `0${m}` : m) + ':' + (s < 10 ? `0${s}` : s);
   };
 
   const playComplete = success => {

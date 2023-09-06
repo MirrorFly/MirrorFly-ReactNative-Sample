@@ -15,12 +15,10 @@ import {
 } from 'native-base';
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
-import { SwipeListView } from 'react-native-swipe-list-view';
 import { useSelector } from 'react-redux';
 import Avathar from '../common/Avathar';
 import {
   AudioMusicIcon,
-  BlockedIcon,
   DocumentChatIcon,
   SandTimer,
   VideoSmallIcon,
@@ -38,6 +36,10 @@ import {
 } from '../Helper/Chat/Constant';
 import no_messages from '../assets/no_messages.png';
 import { getImageSource } from '../common/utils';
+
+const AudioIconFunc = () => (
+  <AudioMusicIcon width="14" height="14" color={'#767676'} />
+);
 
 const RecentChatItem = ({
   item,
@@ -174,15 +176,7 @@ const RecentChatItem = ({
                       ),
                       audio: (
                         <HStack pl="1" alignItems={'center'}>
-                          <Icon
-                            as={() => (
-                              <AudioMusicIcon
-                                width="14"
-                                height="14"
-                                color={'#767676'}
-                              />
-                            )}
-                          />
+                          <Icon as={AudioIconFunc} />
                           <Text
                             numberOfLines={1}
                             ellipsizeMode="tail"
@@ -233,9 +227,6 @@ export default function RecentChat(props) {
   } = props;
   const recentLoading = useSelector(state => state.chat.recentChatStatus);
 
-  const onRowDidOpen = rowKey => {
-    console.log('This row opened', rowKey);
-  };
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
 
   const renderItem = (item, index) => {

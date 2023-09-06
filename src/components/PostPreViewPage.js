@@ -1,5 +1,5 @@
 import React from 'react';
-import { BackHandler, Pressable, View } from 'react-native';
+import { BackHandler, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import ImageInfo from './ImageInfo';
 import VideoInfo from './VideoInfo';

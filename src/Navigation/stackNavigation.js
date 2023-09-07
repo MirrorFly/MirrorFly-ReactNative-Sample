@@ -3,7 +3,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RegisterScreen from '../screen/RegisterScreen';
 import ProfileScreen from '../screen/ProfileScreen';
 import RecentScreen from '../screen/RecentScreen';
-import SplashScreen from '../screen/SplashScreen';
 import {
   CAMERA,
   CHATSCREEN,

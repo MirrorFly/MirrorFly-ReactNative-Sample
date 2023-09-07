@@ -9,7 +9,7 @@ import {
   Toast,
   useToast,
 } from 'native-base';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Alert, BackHandler, Platform } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import DocumentPicker from 'react-native-document-picker';
@@ -67,7 +67,7 @@ import { navigate } from '../redux/Actions/NavigationAction';
 import { clearConversationSearchData } from '../redux/Actions/conversationSearchAction';
 
 function ChatScreen() {
-  const [replyMsgRef, setReplyMsgRef] = React.useState('');
+  const [replyMsg, setReplyMsg] = React.useState('');
   const vCardData = useSelector(state => state.profile.profileDetails);
   const toUserJid = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);

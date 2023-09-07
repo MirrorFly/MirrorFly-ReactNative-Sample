@@ -8,10 +8,8 @@ export const humanizeVideoDuration = seconds => {
   const date = new Date(0);
 
   date.setSeconds(seconds);
-  return date.toISOString().substr(begin, end);
+  return date.toISOString().substr(begin, end); //NOSONAR
 };
-
-export const noop = () => {};
 
 export const getPlayerStateIcon = playerState => {
   switch (playerState) {

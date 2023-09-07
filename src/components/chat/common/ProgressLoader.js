@@ -105,8 +105,8 @@ const ProgressLoader = (props = {}) => {
     clearTimeout(animationTimer);
   };
 
-  const stopProgress = () => {};
   /**
+   const stopProgress = () => {};
   // const animatedStyle = useAnimatedStyle(() => {
   //   return {
   //     transform: [
@@ -310,7 +310,9 @@ const ProgressLoader = (props = {}) => {
     setTimeout(() => {
       setisDownloading(false);
       stopAnimation();
-      stopProgress();
+      /**
+       *  stopProgress();
+       */
     }, 3000);
   };
   const isDownload = () => {

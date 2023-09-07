@@ -8,10 +8,7 @@ const initialState = {
 };
 
 const charReducer = (state = initialState, action) => {
-  if (action.type) {
-  } else {
-    return state;
-  }
+  return state;
 };
 
 export default charReducer;

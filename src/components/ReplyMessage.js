@@ -16,6 +16,7 @@ import {
   LocationIcon,
   PPTIcon,
   PdfIcon,
+  VideoIcon,
   XLSIcon,
   ZipIcon,
 } from '../common/Icons';

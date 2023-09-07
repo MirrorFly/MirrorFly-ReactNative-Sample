@@ -11,8 +11,6 @@ export const humanizeVideoDuration = seconds => {
   return date.toISOString().substring(begin, end);
 };
 
-export const noop = () => {};
-
 export const getPlayerStateIcon = playerState => {
   switch (playerState) {
     case PLAYER_STATES.PAUSED:

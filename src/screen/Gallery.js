@@ -22,6 +22,8 @@ import {
   addGalleryPhotos,
   addGalleyGroupName,
 } from '../redux/Actions/GalleryAction';
+import useRosterData from '../hooks/useRosterData';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 
 const Gallery = (props = {}) => {
   const PAGE_SIZE = 20;
@@ -32,10 +34,13 @@ const Gallery = (props = {}) => {
     setSelectedImages,
     handleMedia,
   } = props;
-  const profileDetails = useSelector(state => state.navigation.profileDetails);
+  const fromUserJid = useSelector(state => state.navigation.fromUserJid);
   const { galleryAlbum, galleryPhotos, galleryName } = useSelector(
     state => state.galleryData,
   );
+
+  let { nickName } = useRosterData(getUserIdFromJid(fromUserJid));
+  nickName = nickName || getUserIdFromJid(fromUserJid);
   const [galleryData, setGalleryData] = React.useState(galleryAlbum || []);
   const [grpView, setGrpView] = React.useState(galleryName || '');
   const [photos, setPhotos] = React.useState(galleryPhotos || []);
@@ -257,7 +262,6 @@ const Gallery = (props = {}) => {
     return () => {
       backHandler.remove();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const albumRender = ({ item }) => {
@@ -328,7 +332,7 @@ const Gallery = (props = {}) => {
       ) : (
         <View mb="20">
           <ScreenHeader
-            title={'Send to ' + profileDetails?.nickName}
+            title={'Send to ' + nickName}
             onhandleBack={handleBackBtn}
           />
           <View ml={'0.1'} mb="16">

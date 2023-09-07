@@ -65,9 +65,16 @@ import SavePicture from './Gallery';
 import { createThumbnail } from 'react-native-create-thumbnail';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { clearConversationSearchData } from '../redux/Actions/conversationSearchAction';
+import {
+  deleteRecoverMessage,
+  recoverMessage,
+} from '../redux/Actions/RecoverMessageAction';
+import { useFocusEffect } from '@react-navigation/native';
 
 function ChatScreen() {
   const [replyMsg, setReplyMsg] = React.useState('');
+  const chatInputRef = React.useRef(null);
+  const { data = {} } = useSelector(state => state.recoverMessage);
   const vCardData = useSelector(state => state.profile.profileDetails);
   const toUserJid = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
@@ -81,6 +88,12 @@ function ChatScreen() {
   const [alert, setAlert] = React.useState(false);
   const [validate, setValidate] = React.useState('');
   const [isSearching, setIsSearching] = React.useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setReplyMsg(data[toUserJid]?.replyMessage || '');
+    }, [toUserJid]),
+  );
 
   const handleIsSearching = () => {
     setIsSearching(true);
@@ -319,7 +332,23 @@ function ChatScreen() {
     },
   ];
 
+  const handleRecoverMessage = () => {
+    let textMessage =
+      chatInputRef.current?._internalFiberInstanceHandleDEV.memoizedProps.value;
+    if (textMessage || replyMsg) {
+      const recoverMessageData = {
+        textMessage: textMessage || '',
+        replyMessage: replyMsg || '',
+        toUserJid: toUserJid || '',
+      };
+      dispatch(recoverMessage(recoverMessageData));
+    } else if (toUserJid in data) {
+      dispatch(deleteRecoverMessage(toUserJid));
+    }
+  };
+
   const handleBackBtn = () => {
+    handleRecoverMessage();
     if (isSearching) {
       setIsSearching(false);
       dispatch(clearConversationSearchData());
@@ -588,6 +617,7 @@ function ChatScreen() {
           CHATCONVERSATION: (
             <ChatConversation
               replyMsg={replyMsg}
+              chatInputRef={chatInputRef}
               onReplyMessage={getReplyMessage}
               handleBackBtn={handleBackBtn}
               setLocalNav={setLocalNav}

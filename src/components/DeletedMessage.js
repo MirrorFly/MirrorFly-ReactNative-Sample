@@ -14,10 +14,7 @@ const DeletedMessage = (props = {}) => {
     messageObject,
     handleMsgSelect,
     selectedMsgs,
-    messageObject: {
-      msgId = '',
-      msgType = '',
-    } = {},
+    messageObject: { msgId = '', createdAt = '', msgType = '' } = {},
     currentUserJID,
   } = props;
   const messageFrom = getSenderIdFromMsgObj(messageObject);

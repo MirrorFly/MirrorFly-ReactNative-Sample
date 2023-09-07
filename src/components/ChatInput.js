@@ -18,14 +18,23 @@ import {
 } from 'native-base';
 import EmojiOverlay from './EmojiPicker';
 import { soundRef } from './Media/AudioPlayer';
+import { useSelector } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ChatInput = props => {
-  const { onSendMessage, attachmentMenuIcons, chatInputRef, IsSearching } =
-    props;
+  const {
+    onSendMessage,
+    attachmentMenuIcons,
+    chatInputRef,
+    IsSearching,
+    fromUserJId,
+  } = props;
 
   const [message, setMessage] = React.useState('');
   const [isOpen, setIsOpen] = React.useState(false);
   const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
+  const { data = {} } = useSelector(state => state.recoverMessage);
+
   const sendMessage = () => {
     if (message) {
       setMessage('');
@@ -34,6 +43,13 @@ const ChatInput = props => {
       }, 0);
     }
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setMessage(data[fromUserJId]?.textMessage || '');
+    }, [fromUserJId]),
+  );
+
   const handleEmojiSelect = (...emojis) => {
     setMessage(prev => prev + emojis);
   };

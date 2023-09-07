@@ -44,9 +44,9 @@ const ChatConversation = React.memo(props => {
     handleIsSearchingClose,
     handleIsSearching,
     IsSearching,
+    chatInputRef,
   } = props;
   const dispatch = useDispatch();
-  const chatInputRef = React.useRef(null);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
   const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
@@ -397,6 +397,7 @@ const initialLeftActionState = false; // Adjust as needed
         attachmentMenuIcons={props.attachmentMenuIcons}
         onSendMessage={handleMessageSend}
         selectedMsgs={selectedMsgs}
+        fromUserJId={fromUserJId}
         IsSearching={IsSearching}
       />
 

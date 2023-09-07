@@ -294,7 +294,7 @@ export default class Slider extends PureComponent {
       </View>
     );
   }
-
+  /**
   _getPropsForComponentUpdate(props) {
     const {
       value,
@@ -309,7 +309,7 @@ export default class Slider extends PureComponent {
 
     return otherProps;
   }
-
+ */
   _handleStartShouldSetPanResponder = (e /* gestureState: Object */) =>
     // Should we become active when the user presses down on the thumb?
     this._thumbHitTest(e);

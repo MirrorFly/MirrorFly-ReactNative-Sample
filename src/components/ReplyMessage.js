@@ -4,6 +4,12 @@ import {
   AudioMusicIcon,
   ContactChatIcon,
   LocationIcon,
+  DocIcon,
+  PdfIcon,
+  PPTIcon,
+  XLSIcon,
+  ZipIcon,
+  VideoIcon,
 } from '../common/Icons';
 import { getMessageFromHistoryById } from '../Helper/Chat/ChatHelper';
 import {
@@ -12,7 +18,6 @@ import {
 } from '../Helper/Chat/Utility';
 import { HStack, Image, Text, View } from 'native-base';
 import React from 'react';
-import { DocIcon, PdfIcon, PPTIcon, XLSIcon, ZipIcon } from '../common/Icons';
 import { getExtension } from './chat/common/fileUploadValidation';
 import { useSelector } from 'react-redux';
 import { Pressable } from 'react-native';

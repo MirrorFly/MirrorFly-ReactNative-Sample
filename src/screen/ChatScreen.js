@@ -9,7 +9,7 @@ import {
   Toast,
   useToast,
 } from 'native-base';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Alert, BackHandler, Platform } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import DocumentPicker from 'react-native-document-picker';
@@ -121,7 +121,7 @@ function ChatScreen() {
   );
 
   const getReplyMessage = message => {
-    setReplyMsg(message);
+    setReplyMsgRef(message);
   };
 
   const getAudioDuration = async path => {
@@ -447,9 +447,9 @@ function ChatScreen() {
 
   const parseAndSendMessage = async (message, chatType, messageType) => {
     const { content } = message;
-    const replyTo = replyMsg?.msgId || '';
+    const replyTo = replyMsgRef?.msgId || '';
     content[0].fileDetails.replyTo = replyTo;
-    setReplyMsg('');
+    setReplyMsgRef('');
     sendMediaMessage(messageType, content, chatType);
   };
 
@@ -587,7 +587,7 @@ function ChatScreen() {
         {
           CHATCONVERSATION: (
             <ChatConversation
-              replyMsg={replyMsg}
+              replyMsg={replyMsgRef}
               onReplyMessage={getReplyMessage}
               handleBackBtn={handleBackBtn}
               setLocalNav={setLocalNav}

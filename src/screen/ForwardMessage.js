@@ -1,5 +1,4 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { BackArrowIcon } from '../common/Icons';
 import {
   Center,
   Checkbox,
@@ -31,7 +30,12 @@ import { sortBydate } from '../Helper/Chat/RecentChat';
 import { debounce, fetchContactsFromSDK, showToast } from '../Helper/index';
 import SDK from '../SDK/SDK';
 import Avathar from '../common/Avathar';
-import { CloseIcon, SearchIcon, SendBlueIcon } from '../common/Icons';
+import {
+  BackArrowIcon,
+  CloseIcon,
+  SearchIcon,
+  SendBlueIcon,
+} from '../common/Icons';
 import commonStyles from '../common/commonStyles';
 import { HighlightedText } from '../components/RecentChat';
 import ApplicationColors from '../config/appColors';

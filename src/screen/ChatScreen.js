@@ -9,7 +9,7 @@ import {
   Toast,
   useToast,
 } from 'native-base';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Alert, BackHandler, Platform } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import DocumentPicker from 'react-native-document-picker';

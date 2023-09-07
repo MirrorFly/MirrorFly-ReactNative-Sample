@@ -13,7 +13,7 @@ import {
   Input,
 } from 'native-base';
 import React, { useRef } from 'react';
-import { Keyboard, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import Avathar from '../common/Avathar';

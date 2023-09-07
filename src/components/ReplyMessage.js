@@ -1,22 +1,26 @@
-import {
-  CameraSmallIcon,
-  DocumentChatIcon,
-  AudioMusicIcon,
-  ContactChatIcon,
-  LocationIcon,
-} from '../common/Icons';
+import { HStack, Image, Text, View } from 'native-base';
+import React from 'react';
+import { Pressable } from 'react-native';
+import { useSelector } from 'react-redux';
 import { getMessageFromHistoryById } from '../Helper/Chat/ChatHelper';
 import {
   getUserIdFromJid,
   millisToMinutesAndSeconds,
 } from '../Helper/Chat/Utility';
-import { HStack, Image, Text, View } from 'native-base';
-import React from 'react';
-import { DocIcon, PdfIcon, PPTIcon, XLSIcon, ZipIcon } from '../common/Icons';
-import { getExtension } from './chat/common/fileUploadValidation';
-import { useSelector } from 'react-redux';
-import { Pressable } from 'react-native';
+import {
+  AudioMusicIcon,
+  CameraSmallIcon,
+  ContactChatIcon,
+  DocIcon,
+  DocumentChatIcon,
+  LocationIcon,
+  PPTIcon,
+  PdfIcon,
+  XLSIcon,
+  ZipIcon,
+} from '../common/Icons';
 import useRosterData from '../hooks/useRosterData';
+import { getExtension } from './chat/common/fileUploadValidation';
 
 function ReplyMessage(props) {
   const { handleReplyPress } = props;

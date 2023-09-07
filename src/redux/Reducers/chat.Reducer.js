@@ -7,7 +7,7 @@ const initialState = {
   recentChatStatus: 'idle',
 };
 
-const charReducer = (state = initialState, action) => {
+const charReducer = (state = initialState) => {
   return state;
 };
 

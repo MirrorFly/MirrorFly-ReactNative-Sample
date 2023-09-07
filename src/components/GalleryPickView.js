@@ -14,7 +14,6 @@ import {
   Icon,
   IconButton,
   KeyboardAvoidingView,
-  ScrollView,
   Spacer,
   Text,
   View,
@@ -252,27 +251,6 @@ function GalleryPickView(props) {
             </Pressable>
           )}
         />
-        {/* {_selectedImages.length > 1 && (
-          <ScrollView ref={scrollRef} flexGrow={0} horizontal>
-            <HStack>
-              {_selectedImages?.map((item, i) => (
-                <Pressable
-                  activeOpacity={1}
-                  key={item?.fileDetails?.uri}
-                  style={styles.tabButton}
-                  onPress={() => handleIndexChange(i)}>
-                  <Image
-                    source={{ uri: item?.fileDetails?.uri }}
-                    style={[
-                      styles.tabImage,
-                      index === i && styles.selectedTabImage,
-                    ]}
-                  />
-                </Pressable>
-              ))}
-            </HStack>
-          </ScrollView>
-        )} */}
       </View>
     </KeyboardAvoidingView>
   );

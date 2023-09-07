@@ -1,6 +1,12 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { BackArrowIcon } from '../common/Icons';
-import { Checkbox, Icon, IconButton, View as NBView } from 'native-base';
+import {
+  Center,
+  Checkbox,
+  Icon,
+  IconButton,
+  View as NBView,
+} from 'native-base';
 import React from 'react';
 import {
   ActivityIndicator,

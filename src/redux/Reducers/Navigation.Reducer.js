@@ -22,38 +22,37 @@ const initialState = {
 };
 
 const NavigationReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case NAVIGATION_NAVIGATE:
-      const validScreens = [REGISTERSCREEN, PROFILESCREEN, RECENTCHATSCREEN];
-      try {
-        const { screen, prevScreen } = action.payload || {};
-        if (validScreens.includes(screen)) {
-          AsyncStorage.setItem('screenObj', JSON.stringify(action.payload));
-          if (screen === PROFILESCREEN) {
-            if (prevScreen === REGISTERSCREEN) {
-              AsyncStorage.setItem('screenObj', JSON.stringify(action.payload));
-            } else if (prevScreen === RECENTCHATSCREEN) {
-              AsyncStorage.setItem(
-                'screenObj',
-                JSON.stringify({ prevScreen: '', screen: RECENTCHATSCREEN }),
-              );
-            }
+  if (action.type === NAVIGATION_NAVIGATE) {
+    const validScreens = [REGISTERSCREEN, PROFILESCREEN, RECENTCHATSCREEN];
+    try {
+      const { screen, prevScreen } = action.payload || {};
+      if (validScreens.includes(screen)) {
+        AsyncStorage.setItem('screenObj', JSON.stringify(action.payload));
+        if (screen === PROFILESCREEN) {
+          if (prevScreen === REGISTERSCREEN) {
+            AsyncStorage.setItem('screenObj', JSON.stringify(action.payload));
+          } else if (prevScreen === RECENTCHATSCREEN) {
+            AsyncStorage.setItem(
+              'screenObj',
+              JSON.stringify({ prevScreen: '', screen: RECENTCHATSCREEN }),
+            );
           }
         }
-        const updatedState = { ...state };
-        updatedState.screen = action.payload?.screen;
-        updatedState.number = action.payload?.number;
-        updatedState.fromUserJid = action.payload?.fromUserJID;
-        updatedState.selectContryCode =
-          action?.payload?.selectContryCode || updatedState.selectContryCode;
-        updatedState.prevScreen = action?.payload.prevScreen;
-        updatedState.profileDetails = action?.payload?.profileDetails;
-        return updatedState;
-      } catch (error) {
-        console.log('NavigationReducer', error);
       }
-    default:
-      return state;
+      const updatedState = { ...state };
+      updatedState.screen = action.payload?.screen;
+      updatedState.number = action.payload?.number;
+      updatedState.fromUserJid = action.payload?.fromUserJID;
+      updatedState.selectContryCode =
+        action?.payload?.selectContryCode || updatedState.selectContryCode;
+      updatedState.prevScreen = action?.payload.prevScreen;
+      updatedState.profileDetails = action?.payload?.profileDetails;
+      return updatedState;
+    } catch (error) {
+      console.log('NavigationReducer', error);
+    }
+  } else {
+    return state;
   }
 };
 

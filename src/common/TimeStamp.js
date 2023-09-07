@@ -210,7 +210,7 @@ export const getLastseen = secs => {
       'Nov',
       'Dec',
     ];
-    let HHMM = { hour: 'numeric', minute: 'numeric' };
+
     if (secs === 0) {
       return 'Online';
     } else if (

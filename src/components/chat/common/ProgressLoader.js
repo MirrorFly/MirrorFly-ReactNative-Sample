@@ -8,15 +8,9 @@ import {
   View,
 } from 'native-base';
 import React from 'react';
-import { StyleSheet, Animated } from 'react-native';
-import { DownloadCancel, DownloadIcon } from '../../../common/Icons';
-// import {
-//   useSharedValue,
-//   useAnimatedStyle,
-//   withTiming,
-//   Easing,
-//   withRepeat,
-// } from 'react-native-reanimated';
+import { StyleSheet } from 'react-native';
+import { DownloadIcon } from '../../../common/Icons';
+
 import { useNetworkStatus } from '../../../hooks';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateUploadStatus } from '../../../redux/Actions/ConversationAction';
@@ -25,6 +19,35 @@ import { getUserIdFromJid } from '../../../Helper/Chat/Utility';
 import SDK from '../../../SDK/SDK';
 
 /**
+ * // import {
+//   useSharedValue,
+//   useAnimatedStyle,
+//   withTiming,
+//   Easing,
+//   withRepeat,
+// } from 'react-native-reanimated';
+import { DownloadCancel, DownloadIcon } from '../../../common/Icons';
+  // const animation = useSharedValue(0);
+  // const progress = useSharedValue(0);
+
+  // const startAnimation = () => {
+  //   animation.value = withRepeat(
+  //     withTiming(1, {
+  //       duration: 1000,
+  //       easing: Easing.linear,
+  //     }),
+  //     -1,
+  //   ); // -1 means infinite loop
+  //   // animationTimer = setTimeout(() => {
+  //   //   console.log('stopAnimation Called setTimeout', isDownloading)
+  //   //   stopAnimation()
+  //   // }, 5000)
+  // };
+
+    // animation.value = 0;
+
+    // progress.value = 0;
+
  * Upload Status
 // 0 - Before Upload
 // 1 - Uploading Loader - Sender
@@ -62,8 +85,6 @@ const ProgressLoader = (props = {}) => {
 
   const [isDownloading, setisDownloading] = React.useState(false);
   const fileSizeInKB = convertBytesToKB(fileSize);
-  // const animation = useSharedValue(0);
-  // const progress = useSharedValue(0);
 
   function convertBytesToKB(bytes) {
     if (bytes < 1024) {
@@ -80,29 +101,12 @@ const ProgressLoader = (props = {}) => {
     }
   }
 
-  // const startAnimation = () => {
-  //   animation.value = withRepeat(
-  //     withTiming(1, {
-  //       duration: 1000,
-  //       easing: Easing.linear,
-  //     }),
-  //     -1,
-  //   ); // -1 means infinite loop
-  //   // animationTimer = setTimeout(() => {
-  //   //   console.log('stopAnimation Called setTimeout', isDownloading)
-  //   //   stopAnimation()
-  //   // }, 5000)
-  // };
-
   const stopAnimation = () => {
     clearTimeout(animationTimer);
-    // animation.value = 0;
   };
 
-  const stopProgress = () => {
-    // progress.value = 0;
-  };
-
+  const stopProgress = () => {};
+  /**
   // const animatedStyle = useAnimatedStyle(() => {
   //   return {
   //     transform: [
@@ -122,25 +126,26 @@ const ProgressLoader = (props = {}) => {
   //     backgroundColor: '#66E824',
   //   };
   // });
-
+ */
   /**  const progressDownloadStyle = useAnimatedStyle(() => {
       return {
         width: mediaDownloadData[msgId]?.progress,is_uploading
         height: 2,
         backgroundColor: '#66E824',
       };
-   }); */
+   });
 
-  // React.useLayoutEffect(() => {
-  //   (mediaUploadData[msgId]?.progress === 100 ||
-  //     uploadStatus === 0 ||
-  //     uploadStatus === 1) &&
-  //     startAnimation();
-  // }, [uploadStatus]);
+   // React.useLayoutEffect(() => {
+   //   (mediaUploadData[msgId]?.progress === 100 ||
+   //     uploadStatus === 0 ||
+   //     uploadStatus === 1) &&
+   //     startAnimation();
+   // }, [uploadStatus]);
 
-  // React.useLayoutEffect(() => {
-  //   isDownloading && startAnimation();
-  // }, [isDownloading]);
+   // React.useLayoutEffect(() => {
+   //   isDownloading && startAnimation();
+   // }, [isDownloading]);
+   */
 
   const getAnimateClass = () =>
     mediaUploadData[msgId]?.progress === 100 ||

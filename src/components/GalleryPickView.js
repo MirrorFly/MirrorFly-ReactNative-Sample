@@ -230,7 +230,7 @@ function GalleryPickView(props) {
         <FlatList
           ref={scrollRef}
           data={_selectedImages}
-          flexGrow={0}
+          style={styles.miniPreViewScroll}
           horizontal
           removeClippedSubviews={true}
           showsVerticalScrollIndicator={false}
@@ -262,6 +262,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+  },
+  miniPreViewScroll: {
+    flexGrow: 0,
   },
   imageContainer: {
     flex: 1,

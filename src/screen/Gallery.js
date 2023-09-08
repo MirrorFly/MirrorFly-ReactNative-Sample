@@ -135,7 +135,6 @@ const Gallery = (props = {}) => {
           return CameraRoll.getPhotos(params).then(res => {
             const node = res.edges.find(data => {
               const filename = data.node.image.filename;
-              console.log(filename);
               return (
                 filename.endsWith('.jpg') ||
                 filename.endsWith('.jpeg') ||
@@ -200,7 +199,6 @@ const Gallery = (props = {}) => {
       const data = await CameraRoll.getPhotos(params).then(res => {
         const filteredArray = res.edges.filter(item => {
           const filename = item.node.image.filename;
-          console.log(filename,'filename')
           return (
             filename.endsWith('.jpg') ||
             filename.endsWith('.jpeg') ||
@@ -230,10 +228,19 @@ const Gallery = (props = {}) => {
       } else {
         getPhoto = [...data.edges];
       }
-      setPhotos(getPhoto);
-      store.dispatch(addGalleryPhotos(getPhoto));
+      const updatedPhotos = [...getPhoto];
+      for (const newPhoto of getPhoto) {
+        const existingPhoto = updatedPhotos.find(
+          photo => photo.image?.uri === newPhoto.image?.uri,
+        );
+        if (!existingPhoto) {
+          updatedPhotos.push(newPhoto);
+        }
+      }
+      setPhotos(updatedPhotos);
+      store.dispatch(addGalleryPhotos(updatedPhotos));
     } catch (error) {
-      console.log('Photo_Error', error);
+      console.log('fetchPhotos', error);
     } finally {
       setLoading(false);
     }
@@ -312,7 +319,6 @@ const Gallery = (props = {}) => {
       </Pressable>
     );
   };
-  console.log(galleryData, 'galleryData Gallsery');
 
   return (
     <>

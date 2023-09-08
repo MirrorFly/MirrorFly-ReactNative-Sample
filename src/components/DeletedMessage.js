@@ -5,7 +5,7 @@ import {
   YOU_DELETED_THIS_MESSAGE,
 } from '../Helper/Chat/Constant';
 import { Box, HStack, Pressable, Text, View } from 'native-base';
-import { StyleSheet } from 'react-native';
+import { Keyboard, StyleSheet } from 'react-native';
 import { getSenderIdFromMsgObj } from '../Helper/Chat/Utility';
 import { getConversationHistoryTime } from '../common/TimeStamp';
 
@@ -24,12 +24,14 @@ const DeletedMessage = (props = {}) => {
     messageFrom.indexOf(currentUserJID) === -1;
 
   const handlePress = () => {
+    Keyboard.dismiss();
     if (selectedMsgs.length > 0) {
       handleMsgSelect(messageObject, true);
     }
   };
 
   const handleLongPress = () => {
+    Keyboard.dismiss();
     handleMsgSelect(messageObject, true);
   };
 

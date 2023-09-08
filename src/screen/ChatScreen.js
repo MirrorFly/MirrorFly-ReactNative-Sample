@@ -564,6 +564,9 @@ function ChatScreen() {
 
   const handleSendMsg = async message => {
     let messageType = message.type;
+    if (toUserJid in data) {
+      dispatch(deleteRecoverMessage(toUserJid));
+    }
 
     if (messageType === 'media') {
       parseAndSendMessage(message, 'chat', messageType);

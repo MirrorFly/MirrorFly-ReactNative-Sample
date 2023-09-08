@@ -168,13 +168,31 @@ const ChatMessage = props => {
     }
   };
 
+  const dismissKeyBoard = () => {
+    Keyboard.dismiss();
+  };
+
   const handleMessageSelect = () => {
+    dismissKeyBoard();
     if (props?.selectedMsgs?.length) {
       props.handleMsgSelect(props.message);
     }
   };
 
   const handleMessageLongPress = () => {
+    dismissKeyBoard();
+    props.handleMsgSelect(props.message);
+  };
+
+  const handleContentPress = () => {
+    dismissKeyBoard();
+    props?.selectedMsgs?.length < 1
+      ? handleMessageObj()
+      : handleMessageSelect();
+  };
+
+  const handleContentLongPress = () => {
+    dismissKeyBoard();
     props.handleMsgSelect(props.message);
   };
 
@@ -198,12 +216,8 @@ const ChatMessage = props => {
             }>
             <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px="3">
               <Pressable
-                onPress={() =>
-                  props?.selectedMsgs?.length < 1
-                    ? handleMessageObj()
-                    : handleMessageSelect()
-                }
-                onLongPress={() => props.handleMsgSelect(props.message)}
+                onPress={handleContentPress}
+                onLongPress={handleContentLongPress}
                 minWidth="30%"
                 maxWidth="80%">
                 {

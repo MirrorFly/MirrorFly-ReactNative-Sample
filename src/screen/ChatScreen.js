@@ -333,6 +333,10 @@ function ChatScreen() {
   ];
 
   const handleRecoverMessage = () => {
+    console.log(
+      chatInputRef.current?._internalFiberInstanceHandleDEV.pendingProps,
+      'chatInputRef.current',
+    );
     let textMessage =
       chatInputRef.current?._internalFiberInstanceHandleDEV.memoizedProps.value;
     if (textMessage || replyMsg) {
@@ -564,6 +568,9 @@ function ChatScreen() {
 
   const handleSendMsg = async message => {
     let messageType = message.type;
+    if (toUserJid in data) {
+      dispatch(deleteRecoverMessage(toUserJid));
+    }
 
     if (messageType === 'media') {
       parseAndSendMessage(message, 'chat', messageType);

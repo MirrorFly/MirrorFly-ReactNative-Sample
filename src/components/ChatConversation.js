@@ -110,11 +110,9 @@ const initialLeftActionState = false; // Adjust as needed
     if (
       replyMsgs &&
       Object.keys(replyMsgs).length !== 0 &&
-      !messages[replyMsgs.msgId]
+      messages[replyMsgs.msgId]
     ) {
-      setReplyMsgs({ ...replyMsgs, deleteStatus: 1, msgBody: {} });
-    } else if (replyMsgs && messages[replyMsgs?.msgId]) {
-      setReplyMsgs(messages[replyMsgs.msgId]);
+      setReplyMsgs({ ...messages[replyMsgs.msgId] });
     }
   };
 
@@ -391,16 +389,15 @@ const initialLeftActionState = false; // Adjust as needed
           </Stack>
         </View>
       ) : null}
-
-      <ChatInput
-        chatInputRef={chatInputRef}
-        attachmentMenuIcons={props.attachmentMenuIcons}
-        onSendMessage={handleMessageSend}
-        selectedMsgs={selectedMsgs}
-        fromUserJId={fromUserJId}
-        IsSearching={IsSearching}
-      />
-
+      {!IsSearching && (
+        <ChatInput
+          chatInputRef={chatInputRef}
+          attachmentMenuIcons={props.attachmentMenuIcons}
+          onSendMessage={handleMessageSend}
+          selectedMsgs={selectedMsgs}
+          fromUserJId={fromUserJId}
+        />
+      )}
       <Modal
         isOpen={isOpenAlert}
         safeAreaTop={true}

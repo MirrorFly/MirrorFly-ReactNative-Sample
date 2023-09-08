@@ -22,6 +22,7 @@ import {
 } from '../common/Icons';
 import useRosterData from '../hooks/useRosterData';
 import { getExtension } from './chat/common/fileUploadValidation';
+import { ORIGINAL_MESSAGE_DELETED } from '../Helper/Chat/Constant';
 
 function ReplyMessage(props) {
   const { handleReplyPress } = props;
@@ -416,7 +417,7 @@ function ReplyMessage(props) {
             {!isSameUser ? nickName || getUserIdFromJid(fromUserJId) : 'You'}
           </Text>
           <Text numberOfLines={1} ellipsizeMode="tail">
-            Original message not availabe
+            {ORIGINAL_MESSAGE_DELETED}
           </Text>
         </View>
       ) : (

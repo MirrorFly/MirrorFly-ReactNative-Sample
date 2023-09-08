@@ -68,11 +68,11 @@ const StatusPage = props => {
     if (isNetworkConnected) {
       setIsLoading(true);
       let statusRes = await SDK.setUserProfile(
-        props?.profileInfo?.nickName,
-        props.profileInfo.image,
+        props?.selectProfileInfo?.nickName,
+        props.selectProfileInfo.image,
         item,
-        props.profileInfo?.mobileNumber,
-        props.profileInfo?.email,
+        props.selectProfileInfo?.mobileNumber,
+        props.selectProfileInfo?.email,
       );
       if (statusRes.statusCode == 200) {
         props.setProfileInfo({

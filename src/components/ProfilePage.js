@@ -41,6 +41,7 @@ import CamerIcon from '../assets/camera.png';
 import { showToast } from '../Helper/index';
 
 const ProfilePage = props => {
+  const { selectProfileInfo, profileInfo } = props;
   const toast = useToast();
   const dispatch = useDispatch();
   const prevPageInfo = useSelector(state => state.navigation.prevScreen);
@@ -54,16 +55,18 @@ const ProfilePage = props => {
   const [isToastShowing, setIsToastShowing] = React.useState(false);
   const [imageFileToken, setImageFileToken] = React.useState('');
   const isConnected = useNetworkStatus();
+  let userName = selectProfileInfo?.nickName || profileInfo?.nickName;
 
-  const [nickName, setNickName] = React.useState(
-    props?.selectProfileInfo?.nickName?.trim() || props.profileInfo?.nickName,
-  );
-
+  const [nickName, setNickName] = React.useState('');
   const toastConfig = {
     id: 'profile-toast',
     duration: 2500,
     avoidKeyboard: true,
   };
+
+  React.useEffect(() => {
+    setNickName(userName);
+  }, [selectProfileInfo?.nickName]);
 
   const handleBackBtn = () => {
     let x = { prevScreen: PROFILESCREEN, screen: RECENTCHATSCREEN };
@@ -110,7 +113,6 @@ const ProfilePage = props => {
   };
 
   const handleProfileUpdate = async () => {
-    console.log('click');
     setIsToastShowing(true);
     const validation =
       nickName?.trim() &&
@@ -220,7 +222,6 @@ const ProfilePage = props => {
   const handleGalleryPicker = async () => {
     setOpen(false);
     let imageReadPermission = await requestStoragePermission();
-    console.log('imageReadPermission', imageReadPermission);
     if (imageReadPermission === 'granted' || 'limited') {
       ImagePicker.openPicker({
         mediaType: 'photo',
@@ -249,7 +250,6 @@ const ProfilePage = props => {
           if (image) {
             sdkRes = await SDK.profileUpdate(image);
           }
-          console.log('sdkRes', sdkRes);
           if (sdkRes?.statusCode === 200) {
             setImageFileToken(sdkRes.imageFileToken);
             await SDK.setUserProfile(

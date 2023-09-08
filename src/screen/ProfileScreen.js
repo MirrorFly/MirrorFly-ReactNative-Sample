@@ -114,6 +114,7 @@ const ProfileScreen = ({ navigation }) => {
           <StatusPage
             statusList={statusList}
             setNav={setNav}
+            selectProfileInfo={selectProfileInfo}
             profileInfo={profileInfo}
             setProfileInfo={setProfileInfo}
             removeItem={handleDelete}

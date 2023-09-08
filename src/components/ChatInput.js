@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import { TextInput, Keyboard, StyleSheet } from 'react-native';
 import { SendBtn } from '../common/Button';
 import {
@@ -21,6 +21,9 @@ import { soundRef } from './Media/AudioPlayer';
 import { useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 
+export const chatInputMessageRef = createRef();
+chatInputMessageRef.current = '';
+
 const ChatInput = props => {
   const {
     onSendMessage,
@@ -35,6 +38,10 @@ const ChatInput = props => {
   const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
   const { data = {} } = useSelector(state => state.recoverMessage);
 
+  React.useEffect(() => {
+    chatInputMessageRef.current = message;
+  }, [message]);
+
   const sendMessage = () => {
     if (message) {
       setMessage('');
@@ -42,6 +49,10 @@ const ChatInput = props => {
         onSendMessage(message.trim());
       }, 0);
     }
+  };
+
+  const onChangeMessage = text => {
+    setMessage(text);
   };
 
   useFocusEffect(
@@ -103,7 +114,7 @@ const ChatInput = props => {
               ref={chatInputRef}
               value={message}
               style={styles.inputTextbox}
-              onChangeText={setMessage}
+              onChangeText={onChangeMessage}
               placeholder="Start Typing..."
               placeholderTextColor="#767676"
               numberOfLines={1}

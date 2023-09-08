@@ -70,6 +70,7 @@ import {
   recoverMessage,
 } from '../redux/Actions/RecoverMessageAction';
 import { useFocusEffect } from '@react-navigation/native';
+import { chatInputMessageRef } from '../components/ChatInput';
 
 function ChatScreen() {
   const [replyMsg, setReplyMsg] = React.useState('');
@@ -333,8 +334,7 @@ function ChatScreen() {
   ];
 
   const handleRecoverMessage = () => {
-    let textMessage =
-      chatInputRef.current?._internalFiberInstanceHandleDEV.memoizedProps.value;
+    let textMessage = chatInputMessageRef.current;
     if (textMessage || replyMsg) {
       const recoverMessageData = {
         textMessage: textMessage || '',

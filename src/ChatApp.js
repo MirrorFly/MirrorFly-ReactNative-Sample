@@ -33,6 +33,7 @@ isKeyboardVisibleRef.current = false;
 const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
   isKeyboardVisibleRef.current = true;
 });
+
 const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
   isKeyboardVisibleRef.current = false;
 });

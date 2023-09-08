@@ -37,13 +37,16 @@ const ChatConversationList = ({
 
   const messageList = React.useMemo(() => {
     const id = getUserIdFromJid(fromUserJId);
-    const data = messages[id]?.messages
-      ? Object.values(messages[id]?.messages)
-      : [];
-    data.reverse();
-    handleMessageListUpdated(messages[id]?.messages);
-    onSelectedMessageUpdate(messages[id]?.messages);
-    return data;
+    if (id) {
+      const data = messages[id]?.messages
+        ? Object.values(messages[id]?.messages)
+        : [];
+      data.reverse();
+      handleMessageListUpdated(messages[id]?.messages);
+      onSelectedMessageUpdate(messages[id]?.messages);
+      return data;
+    }
+    return [];
   }, [messages, fromUserJId]);
 
   React.useEffect(() => {
@@ -202,6 +205,7 @@ const ChatConversationList = ({
 
   return (
     <FlatList
+      keyboardShouldPersistTaps={'handled'}
       ref={flatListRef}
       data={messageList}
       inverted

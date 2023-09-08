@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { Box, NativeBaseProvider } from 'native-base';
-import React from 'react';
+import React, { createRef } from 'react';
 import {
+  Keyboard,
   LogBox,
   SafeAreaView,
   StatusBar,
@@ -26,6 +27,17 @@ import SplashScreen from './screen/SplashScreen';
 /** import messaging from '@react-native-firebase/messaging';*/
 LogBox.ignoreAllLogs();
 
+export const isKeyboardVisibleRef = createRef();
+isKeyboardVisibleRef.current = false;
+
+const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+  isKeyboardVisibleRef.current = true;
+});
+
+const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+  isKeyboardVisibleRef.current = false;
+});
+
 export const ChatApp = () => {
   React.useEffect(() => {
     (async () => {
@@ -37,6 +49,10 @@ export const ChatApp = () => {
       });
       /** await messaging().requestPermission();*/
     })();
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
   }, []);
 
   return (

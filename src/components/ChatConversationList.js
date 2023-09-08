@@ -205,6 +205,7 @@ const ChatConversationList = ({
 
   return (
     <FlatList
+      keyboardShouldPersistTaps={'handled'}
       ref={flatListRef}
       data={messageList}
       inverted

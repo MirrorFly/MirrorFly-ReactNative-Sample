@@ -127,7 +127,7 @@ function ChatScreen() {
       DocumentPicker.types.plainText,
       DocumentPicker.types.zip,
       DocumentPicker.types.csv,
-      /** TODO: need to add rar file type and verify that */
+      /** need to add rar file type and verify that */
       '.rar',
     ],
     [],

@@ -288,7 +288,7 @@ PODS:
     - React-Core
   - react-native-cameraroll (4.1.2):
     - React-Core
-  - react-native-compressor (1.7.2):
+  - react-native-compressor (1.6.1):
     - NextLevelSessionExporter
     - React-Core
   - react-native-create-thumbnail (1.6.4):
@@ -664,7 +664,7 @@ SPEC CHECKSUMS:
   React-logger: da69d7f1c9501c78cd60776d52a60d7fa5e4d9c2
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: 2957f2bce63ae896a848fbe0d5352c1bd4d20866
-  react-native-compressor: 7bd829e55a085e3e7c924c8ab0f2021878092fe8
+  react-native-compressor: ebcf8bc36f8e44581a8f831583caee8a27e55a01
   react-native-create-thumbnail: e022bcdcba8a0b4529a50d3fa1a832ec921be39d
   react-native-document-picker: 2b8f18667caee73a96708a82b284a4f40b30a156
   react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb

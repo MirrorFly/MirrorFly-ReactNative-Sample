@@ -56,7 +56,7 @@ const ProfilePage = props => {
   const isConnected = useNetworkStatus();
 
   const [nickName, setNickName] = React.useState(
-    props?.selectProfileInfo?.nickName?.trim(),
+    props?.selectProfileInfo?.nickName?.trim() || props.profileInfo?.nickName,
   );
 
   const toastConfig = {

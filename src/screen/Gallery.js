@@ -117,7 +117,7 @@ const Gallery = (props = {}) => {
       const photo = await CameraRoll.getAlbums({
         assetType: 'All',
       });
-      const galleryData = await Promise.allSettled(
+      const _galleryData = await Promise.allSettled(
         photo.map(async item => {
           const params = {
             first: 5,
@@ -135,11 +135,13 @@ const Gallery = (props = {}) => {
           return CameraRoll.getPhotos(params).then(res => {
             const node = res.edges.find(data => {
               const filename = data.node.image.filename;
+              console.log(filename);
               return (
                 filename.endsWith('.jpg') ||
                 filename.endsWith('.jpeg') ||
                 filename.endsWith('.png') ||
-                filename.endsWith('.mp4')
+                filename.endsWith('.mp4') ||
+                filename.endsWith('.MOV')
               );
             });
             if (node) {
@@ -153,7 +155,7 @@ const Gallery = (props = {}) => {
           });
         }),
       );
-      const filtertedData = galleryData.filter(item => item.value !== null);
+      const filtertedData = _galleryData.filter(item => item.value !== null);
       filtertedData.sort((a, b) => {
         const titleA = a.value.title.toUpperCase();
         const titleB = b.value.title.toUpperCase();
@@ -198,11 +200,13 @@ const Gallery = (props = {}) => {
       const data = await CameraRoll.getPhotos(params).then(res => {
         const filteredArray = res.edges.filter(item => {
           const filename = item.node.image.filename;
+          console.log(filename,'filename')
           return (
             filename.endsWith('.jpg') ||
             filename.endsWith('.jpeg') ||
             filename.endsWith('.png') ||
-            filename.endsWith('.mp4')
+            filename.endsWith('.mp4') ||
+            filename.endsWith('.MOV')
           );
         });
         return {
@@ -308,6 +312,7 @@ const Gallery = (props = {}) => {
       </Pressable>
     );
   };
+  console.log(galleryData, 'galleryData Gallsery');
 
   return (
     <>

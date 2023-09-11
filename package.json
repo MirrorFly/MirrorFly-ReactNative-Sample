@@ -1,7 +1,12 @@
 {
-  "name": "mirrorfly_rn",
-  "version": "3.0.0",
-  "private": true,
+  "name": "contus-mf-rn",
+  "version": "1.0.1",
+  "description": "React-Native based UI kit for Mirrorfly",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "rn:clean": "watchman watch-del-all && rm -rf package-lock.json node_modules &&  rm -rf android/build && rm -rf ios/Pods/ ios/Podfile.lock ios/build && rm -rf ~/Library/Developer/Xcode/DerivedData",
     "android:clean": "cd android && ./gradlew clean && cd ..",
@@ -158,5 +163,7 @@
   },
   "jest": {
     "preset": "react-native"
-  }
+  },
+  "author": "",
+  "license": "ISC"
 }

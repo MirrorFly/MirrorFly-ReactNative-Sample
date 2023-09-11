@@ -1,10 +1,10 @@
 import Clipboard from '@react-native-clipboard/clipboard';
-import { NO_CONVERSATION } from 'Helper/Chat/Constant';
-import { getUserIdFromJid } from 'Helper/Chat/Utility';
-import { showToast } from 'Helper/index';
-import SDK from 'SDK/SDK';
-import { ClearChatHistoryAction } from 'mf-redux/Actions/ConversationAction';
-import { clearLastMessageinRecentChat } from 'mf-redux/Actions/RecentChatAction';
+import { NO_CONVERSATION } from '../Helper/Chat/Constant';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import { showToast } from '../Helper/index';
+import SDK from '../SDK/SDK';
+import { ClearChatHistoryAction } from '../redux/Actions/ConversationAction';
+import { clearLastMessageinRecentChat } from '../redux/Actions/RecentChatAction';
 import { Box, HStack, Modal, Stack, Text, View, useToast } from 'native-base';
 import React from 'react';
 import {
@@ -33,18 +33,20 @@ import ReplyLocation from './ReplyLocation';
 import ReplyText from './ReplyText';
 import ReplyVideo from './ReplyVideo';
 import ReplyDeleted from './ReplyDeleted';
+import chatBackgroud from '../assets/chatBackgroud.png';
+import { getImageSource } from '../common/utils';
 
 const ChatConversation = React.memo(props => {
   const {
     handleSendMsg,
     onReplyMessage,
-    replyMsgRef,
+    replyMsg,
     handleIsSearchingClose,
     handleIsSearching,
     IsSearching,
+    chatInputRef,
   } = props;
   const dispatch = useDispatch();
-  const chatInputRef = React.useRef(null);
   const vCardProfile = useSelector(state => state.profile.profileDetails);
   const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
@@ -65,8 +67,8 @@ const ChatConversation = React.memo(props => {
   };
 
   React.useEffect(() => {
-    setReplyMsgs(replyMsgRef);
-  }, [replyMsgRef]);
+    setReplyMsgs(replyMsg);
+  }, [replyMsg]);
   /**
 * const { vCardProfile, fromUserJId, messages } = useSelector((state) => ({
 vCardProfile: state.profile.profileDetails,
@@ -108,11 +110,9 @@ const initialLeftActionState = false; // Adjust as needed
     if (
       replyMsgs &&
       Object.keys(replyMsgs).length !== 0 &&
-      !messages[replyMsgs.msgId]
+      messages[replyMsgs.msgId]
     ) {
-      setReplyMsgs({ ...replyMsgs, deleteStatus: 1, msgBody: {} });
-    } else if (replyMsgs && messages[replyMsgs?.msgId]) {
-      setReplyMsgs(messages[replyMsgs.msgId]);
+      setReplyMsgs({ ...messages[replyMsgs.msgId] });
     }
   };
 
@@ -369,7 +369,7 @@ const initialLeftActionState = false; // Adjust as needed
         chatInputRef={chatInputRef}
       />
       <ImageBackground
-        source={require('../assets/chatBackgroud.png')}
+        source={getImageSource(chatBackgroud)}
         style={styles.imageBackground}>
         <ChatConversationList
           handleMessageListUpdated={handleMessageListUpdated}
@@ -380,7 +380,7 @@ const initialLeftActionState = false; // Adjust as needed
           selectedMsgs={selectedMsgs}
         />
       </ImageBackground>
-      {replyMsgs ? (
+      {replyMsgs && !IsSearching ? (
         <View paddingX={'1'} paddingY={'2'} backgroundColor={'#E2E8F9'}>
           <Stack paddingX={'3'} paddingY={'0 '} backgroundColor={'#0000001A'}>
             <View marginY={'3'} justifyContent={'flex-start'}>
@@ -389,15 +389,15 @@ const initialLeftActionState = false; // Adjust as needed
           </Stack>
         </View>
       ) : null}
-
-      <ChatInput
-        chatInputRef={chatInputRef}
-        attachmentMenuIcons={props.attachmentMenuIcons}
-        onSendMessage={handleMessageSend}
-        selectedMsgs={selectedMsgs}
-        IsSearching={IsSearching}
-      />
-
+      {!IsSearching && (
+        <ChatInput
+          chatInputRef={chatInputRef}
+          attachmentMenuIcons={props.attachmentMenuIcons}
+          onSendMessage={handleMessageSend}
+          selectedMsgs={selectedMsgs}
+          fromUserJId={fromUserJId}
+        />
+      )}
       <Modal
         isOpen={isOpenAlert}
         safeAreaTop={true}

@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import SDK from 'SDK/SDK';
+import SDK from '../SDK/SDK';
 import {
   Checkbox,
   HStack,
@@ -34,10 +34,11 @@ import {
   clearConversationSearchData,
   updateConversationSearchMessageIndex,
 } from '../redux/Actions/conversationSearchAction';
-import { showToast } from 'Helper/index';
+import { showToast } from '../Helper/index';
 import { FORWARD_MESSSAGE_SCREEN } from '../constant';
-import useRosterData from 'hooks/useRosterData';
-import ApplicationColors from 'config/appColors';
+import useRosterData from '../hooks/useRosterData';
+import ApplicationColors from '../config/appColors';
+import { touchEffect } from '../config/appTheme';
 
 const forwardMediaMessageTypes = {
   image: true,
@@ -104,7 +105,7 @@ function ChatHeader({
   let { nickName, image: profileImage, colorCode } = useRosterData(fromUserId);
   // updating default values
   nickName = nickName || chatUserProfile?.nickName || fromUserId || '';
-  profileImage = profileImage || chatUserProfile?.image || '';
+  profileImage = profileImage || '';
   colorCode = colorCode || profileDetails?.colorCode;
 
   const onClose = () => {
@@ -434,18 +435,33 @@ function ChatHeader({
             </HStack>
           )}
           {deleteEveryOne ? (
-            <VStack justifyContent={'flex-end'} pt="5">
-              <Pressable mb="6" onPress={() => handleDeleteForMe(1)}>
+            <VStack justifyContent={'flex-end'} alignItems="flex-start" pt="5">
+              <Pressable
+                mb="4"
+                py="1"
+                px="2"
+                onPress={() => handleDeleteForMe(1)}
+                _pressed={touchEffect}>
                 <Text color={'#3276E2'} fontWeight={'600'}>
                   DELETE FOR ME
                 </Text>
               </Pressable>
-              <Pressable mb="6" onPress={() => setRemove(false)}>
+              <Pressable
+                mb="4"
+                py="1"
+                px="2"
+                onPress={() => setRemove(false)}
+                _pressed={touchEffect}>
                 <Text color={'#3276E2'} fontWeight={'600'}>
                   CANCEL
                 </Text>
               </Pressable>
-              <Pressable mb="3" onPress={() => handleDeleteForMe(2)}>
+              <Pressable
+                mb="3"
+                py="1"
+                px="2"
+                onPress={() => handleDeleteForMe(2)}
+                _pressed={touchEffect}>
                 <Text color={'#3276E2'} fontWeight={'600'}>
                   DELETE FOR EVERYONE
                 </Text>
@@ -453,12 +469,21 @@ function ChatHeader({
             </VStack>
           ) : (
             <HStack justifyContent={'flex-end'} py="3">
-              <Pressable mr="6" onPress={() => setRemove(false)}>
+              <Pressable
+                mr="4"
+                py="1"
+                px="2"
+                onPress={() => setRemove(false)}
+                _pressed={touchEffect}>
                 <Text color={'#3276E2'} fontWeight={'600'}>
                   CANCEL
                 </Text>
               </Pressable>
-              <Pressable onPress={() => handleDeleteForMe(1)}>
+              <Pressable
+                py="1"
+                px="2"
+                onPress={() => handleDeleteForMe(1)}
+                _pressed={touchEffect}>
                 <Text color={'#3276E2'} fontWeight={'600'}>
                   DELETE FOR ME
                 </Text>

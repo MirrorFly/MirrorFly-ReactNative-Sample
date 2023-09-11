@@ -1,58 +1,52 @@
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  ScrollView,
-  Modal,
-  ActivityIndicator,
-} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { sortBydate } from 'Helper/Chat/RecentChat';
-import { debounce, fetchContactsFromSDK, showToast } from 'Helper/index';
-import SDK from 'SDK/SDK';
-import Avathar from 'common/Avathar';
-import { BackArrowIcon, CloseIcon, SearchIcon } from 'common/Icons';
 import {
   Center,
   Checkbox,
   Icon,
   IconButton,
   View as NBView,
-  Slide,
-  HStack,
-  Spinner,
 } from 'native-base';
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React from 'react';
+import {
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { batch, useDispatch, useSelector } from 'react-redux';
-import { useNetworkStatus } from '../hooks';
-import commonStyles from 'common/commonStyles';
-import { HighlightedText } from 'components/RecentChat';
+import { v4 as uuidv4 } from 'uuid';
+import { CHATSCREEN, CONVERSATION_SCREEN } from '../../src/constant';
 import {
   formatUserIdToJid,
   getMessageObjForward,
   getRecentChatMsgObjForward,
   isSingleChat,
-} from 'Helper/Chat/ChatHelper';
-import { v4 as uuidv4 } from 'uuid';
-import { updateRecentChat } from 'mf-redux/Actions/RecentChatAction';
+} from '../Helper/Chat/ChatHelper';
+import { sortBydate } from '../Helper/Chat/RecentChat';
+import { debounce, fetchContactsFromSDK, showToast } from '../Helper/index';
+import SDK from '../SDK/SDK';
+import Avathar from '../common/Avathar';
+import {
+  BackArrowIcon,
+  CloseIcon,
+  SearchIcon,
+  SendBlueIcon,
+} from '../common/Icons';
+import commonStyles from '../common/commonStyles';
+import { HighlightedText } from '../components/RecentChat';
+import ApplicationColors from '../config/appColors';
+import { useNetworkStatus } from '../hooks';
+import useRosterData from '../hooks/useRosterData';
 import {
   addChatConversationHistory,
   deleteChatConversationById,
-} from 'mf-redux/Actions/ConversationAction';
-import { SendBlueIcon } from '../common/Icons';
-import useRosterData from 'hooks/useRosterData';
-import { CHATSCREEN } from 'src/constant';
-import { navigate } from 'mf-redux/Actions/NavigationAction';
-import { CONVERSATION_SCREEN } from 'src/constant';
-import ApplicationColors from 'config/appColors';
+} from '../redux/Actions/ConversationAction';
+import { navigate } from '../redux/Actions/NavigationAction';
+import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 
 const showMaxUsersLimitToast = () => {
   const options = {
@@ -137,7 +131,7 @@ const ContactItem = ({
   isCheckboxAllowed,
   searchText,
 }) => {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = React.useState(false);
   let {
     nickName,
     status: profileStatus,
@@ -149,7 +143,7 @@ const ContactItem = ({
   colorCode = colorCode || '';
   profileStatus = profileStatus || status || '';
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isSelected !== isChecked) {
       setIsChecked(Boolean(isSelected));
     }
@@ -294,7 +288,7 @@ const ContactsSectionList = ({
 };
 
 const SelectedUsersName = ({ users, onMessageSend }) => {
-  const userNames = useMemo(() => {
+  const userNames = React.useMemo(() => {
     if (Array.isArray(users) && users.length) {
       return users.map(u => u.name || u.userId).join(', ');
     } else {
@@ -328,19 +322,23 @@ const contactPaginationRefInitialValue = {
 // Main Component
 const ForwardMessage = () => {
   const navigation = useNavigation();
-  const [searchText, setSearchText] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
-  const [selectedUsers, setSelectedUsers] = useState({});
-  const [showLoader, setShowLoader] = useState(false);
-  const [showLoadMoreLoader, setShowLoadMoreLoader] = useState(false);
-  const [filteredRecentChatList, setFilteredRecentChatList] = useState([]);
-  const [filteredContactList, setFilteredContactList] = useState([]);
+  const [searchText, setSearchText] = React.useState('');
+  const [isSearching, setIsSearching] = React.useState(false);
+  const [selectedUsers, setSelectedUsers] = React.useState({});
+  const [showLoader, setShowLoader] = React.useState(false);
+  const [showLoadMoreLoader, setShowLoadMoreLoader] = React.useState(false);
+  const [filteredRecentChatList, setFilteredRecentChatList] = React.useState(
+    [],
+  );
+  const [filteredContactList, setFilteredContactList] = React.useState([]);
   const recentChatData = useSelector(state => state.recentChatData.data);
   const activeChatUserJid = useSelector(state => state.navigation.fromUserJid);
 
-  const searchTextValueRef = useRef();
+  const searchTextValueRef = React.useRef();
 
-  const contactsPaginationRef = useRef({ ...contactPaginationRefInitialValue });
+  const contactsPaginationRef = React.useRef({
+    ...contactPaginationRefInitialValue,
+  });
 
   const dispatch = useDispatch();
 
@@ -367,12 +365,12 @@ const ForwardMessage = () => {
     return getLastThreeRecentChats(sortedList);
   }, []);
 
-  useLayoutEffect(() => {
+  React.useLayoutEffect(() => {
     fetchContactListWithDebounce(searchText.trim());
     searchTextValueRef.current = searchText;
   }, [searchText]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (searchText) {
       // filtering the recent chat and updating the state
       const filteredData = recentChatList.filter(i =>
@@ -386,7 +384,7 @@ const ForwardMessage = () => {
     }
   }, [searchText]);
 
-  const selectedUsersArray = useMemo(() => {
+  const selectedUsersArray = React.useMemo(() => {
     return Object.values(selectedUsers || {});
   }, [selectedUsers]);
 

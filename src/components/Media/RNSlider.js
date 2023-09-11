@@ -225,8 +225,7 @@ export default class Slider extends PureComponent {
       animateTransitions,
       ...other
     } = this.props;
-    const { value, containerSize, trackSize, thumbSize, allMeasured } =
-      this.state;
+    const { value, containerSize, thumbSize, allMeasured } = this.state;
     const mainStyles = styles || defaultStyles;
     const thumbLeft = value.interpolate({
       inputRange: [minimumValue, maximumValue],
@@ -295,7 +294,7 @@ export default class Slider extends PureComponent {
       </View>
     );
   }
-
+  /**
   _getPropsForComponentUpdate(props) {
     const {
       value,
@@ -310,7 +309,7 @@ export default class Slider extends PureComponent {
 
     return otherProps;
   }
-
+ */
   _handleStartShouldSetPanResponder = (e /* gestureState: Object */) =>
     // Should we become active when the user presses down on the thumb?
     this._thumbHitTest(e);
@@ -538,7 +537,7 @@ export default class Slider extends PureComponent {
   };
 }
 
-var defaultStyles = StyleSheet.create({
+const defaultStyles = StyleSheet.create({
   container: {
     height: 40,
     justifyContent: 'center',

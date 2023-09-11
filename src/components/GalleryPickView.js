@@ -14,7 +14,6 @@ import {
   Icon,
   IconButton,
   KeyboardAvoidingView,
-  ScrollView,
   Spacer,
   Text,
   View,
@@ -31,7 +30,8 @@ import Avathar from '../common/Avathar';
 import { SceneMap, TabView } from 'react-native-tab-view';
 import { getType } from './chat/common/fileUploadValidation';
 import VideoPlayer from './Media/VideoPlayer';
-import useRosterData from 'hooks/useRosterData';
+import useRosterData from '../hooks/useRosterData';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 
 function GalleryPickView(props) {
   const {
@@ -42,19 +42,17 @@ function GalleryPickView(props) {
     selectedImages,
   } = props;
   const scrollRef = React.useRef();
-  const profileDetails = useSelector(state => state.navigation.profileDetails);
+  const fromUserJid = useSelector(state => state.navigation.fromUserJid);
   const [index, setIndex] = React.useState(0);
   const [_selectedImages, set_selectedImages] = React.useState(selectedImages);
   let {
     nickName,
     image: imageToken,
     colorCode,
-  } = useRosterData(profileDetails?.userId);
+  } = useRosterData(getUserIdFromJid(fromUserJid));
   // updating the default values
-  nickName =
-    nickName || profileDetails?.nickName || profileDetails?.userId || '';
+  nickName = nickName || getUserIdFromJid(fromUserJid) || '';
   imageToken = imageToken || '';
-
   const handleBackBtn = () => {
     selectedSingle && setSelectedImages([]);
     setLocalNav('Gallery');
@@ -226,12 +224,12 @@ function GalleryPickView(props) {
           <IconButton
             icon={<Icon as={() => RightArrowIcon('#fff')} name="emoji-happy" />}
           />
-          <Text color="#7f7f7f">{profileDetails?.nickName}</Text>
+          <Text color="#7f7f7f">{nickName}</Text>
         </HStack>
         <FlatList
           ref={scrollRef}
           data={_selectedImages}
-          flexGrow={0}
+          style={styles.miniPreViewScroll}
           horizontal
           removeClippedSubviews={true}
           showsVerticalScrollIndicator={false}
@@ -252,27 +250,6 @@ function GalleryPickView(props) {
             </Pressable>
           )}
         />
-        {/* {_selectedImages.length > 1 && (
-          <ScrollView ref={scrollRef} flexGrow={0} horizontal>
-            <HStack>
-              {_selectedImages?.map((item, i) => (
-                <Pressable
-                  activeOpacity={1}
-                  key={item?.fileDetails?.uri}
-                  style={styles.tabButton}
-                  onPress={() => handleIndexChange(i)}>
-                  <Image
-                    source={{ uri: item?.fileDetails?.uri }}
-                    style={[
-                      styles.tabImage,
-                      index === i && styles.selectedTabImage,
-                    ]}
-                  />
-                </Pressable>
-              ))}
-            </HStack>
-          </ScrollView>
-        )} */}
       </View>
     </KeyboardAvoidingView>
   );
@@ -284,6 +261,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+  },
+  miniPreViewScroll: {
+    flexGrow: 0,
   },
   imageContainer: {
     flex: 1,

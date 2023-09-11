@@ -1,26 +1,22 @@
 import Video from 'react-native-video';
-import React, { useState } from 'react';
-import { Dimensions, Platform, StyleSheet } from 'react-native';
+import React from 'react';
+import { Platform, StyleSheet } from 'react-native';
 import MediaControls, { PLAYER_STATES } from './media-controls';
 import { View } from 'native-base';
 import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import { useAppState } from '../../hooks';
 
-const screenWidth = Dimensions.get('window').width;
-
 const VideoPlayer = props => {
   const { item: { fileDetails = {} } = {} } = props;
-  const { uri, height, width } = fileDetails;
+  const { uri } = fileDetails;
   const videoPlayer = React.useRef(null);
-  const [videoUri, setVideoUri] = useState('');
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [paused, setPaused] = useState(true);
-  const [playerState, setPlayerState] = useState(PLAYER_STATES.PAUSED);
-  const [onEnded, setOnEnded] = useState(false);
-  const [dimention, setDimention] = React.useState(0);
-  const [mediaControlTop, setMediaControlTop] = React.useState(0);
+  const [videoUri, setVideoUri] = React.useState('');
+  const [currentTime, setCurrentTime] = React.useState(0);
+  const [duration, setDuration] = React.useState(0);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [paused, setPaused] = React.useState(true);
+  const [playerState, setPlayerState] = React.useState(PLAYER_STATES.PAUSED);
+  const [onEnded, setOnEnded] = React.useState(false);
 
   const appState = useAppState();
 
@@ -110,12 +106,6 @@ const VideoPlayer = props => {
   };
 
   const handleLayout = e => {
-    const { height: _height } = e.nativeEvent.layout;
-    let ratio = height / width;
-    const dimension = Math.round(ratio * screenWidth);
-    const top = (_height - dimension) / 2;
-    setMediaControlTop(isNaN(top) ? 0 : top);
-    setDimention(dimension > _height ? dimension - 30 : dimension);
     setIsLoading(false);
   };
 

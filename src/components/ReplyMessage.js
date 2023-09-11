@@ -1,23 +1,28 @@
-import {
-  CameraSmallIcon,
-  DocumentChatIcon,
-  AudioMusicIcon,
-  ContactChatIcon,
-  LocationIcon,
-  VideoIcon,
-} from 'common/Icons';
-import { getMessageFromHistoryById } from 'Helper/Chat/ChatHelper';
+import { HStack, Image, Text, View } from 'native-base';
+import React from 'react';
+import { Pressable } from 'react-native';
+import { useSelector } from 'react-redux';
+import { getMessageFromHistoryById } from '../Helper/Chat/ChatHelper';
 import {
   getUserIdFromJid,
   millisToMinutesAndSeconds,
-} from 'Helper/Chat/Utility';
-import { HStack, Image, Text, View } from 'native-base';
-import React from 'react';
-import { DocIcon, PdfIcon, PPTIcon, XLSIcon, ZipIcon } from '../common/Icons';
+} from '../Helper/Chat/Utility';
+import {
+  AudioMusicIcon,
+  CameraSmallIcon,
+  ContactChatIcon,
+  DocIcon,
+  DocumentChatIcon,
+  LocationIcon,
+  PPTIcon,
+  PdfIcon,
+  VideoIcon,
+  XLSIcon,
+  ZipIcon,
+} from '../common/Icons';
+import useRosterData from '../hooks/useRosterData';
 import { getExtension } from './chat/common/fileUploadValidation';
-import { useSelector } from 'react-redux';
-import { Pressable } from 'react-native';
-import useRosterData from 'hooks/useRosterData';
+import { ORIGINAL_MESSAGE_DELETED } from '../Helper/Chat/Constant';
 
 function ReplyMessage(props) {
   const { handleReplyPress } = props;
@@ -412,7 +417,7 @@ function ReplyMessage(props) {
             {!isSameUser ? nickName || getUserIdFromJid(fromUserJId) : 'You'}
           </Text>
           <Text numberOfLines={1} ellipsizeMode="tail">
-            Original message not availabe
+            {ORIGINAL_MESSAGE_DELETED}
           </Text>
         </View>
       ) : (

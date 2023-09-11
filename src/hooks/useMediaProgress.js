@@ -1,4 +1,4 @@
-import React, { createRef, useEffect, useState } from 'react';
+import React from 'react';
 import SDK from '../SDK/SDK';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { batch, useDispatch, useSelector } from 'react-redux';
@@ -9,11 +9,11 @@ import {
 } from '../redux/Actions/ConversationAction';
 import { mediaStatusConstants } from '../constant';
 import { useNetworkStatus } from '../hooks';
-import config from 'components/chat/common/config';
+import config from '../components/chat/common/config';
 import { Box, Text, Toast } from 'native-base';
 
 const toastId = 'network-error-upload-download';
-const toastRef = createRef(false);
+const toastRef = React.createRef(false);
 
 const useMediaProgress = ({
   isSender,
@@ -23,7 +23,7 @@ const useMediaProgress = ({
   media,
 }) => {
   // 'NOT_DOWNLOADED' | 'NOT_UPLOADED' | 'DOWNLOADING' | 'UPLOADING' | 'DOWNLOADED' | 'UPLOADED'
-  const [mediaStatus, setMediaStatus] = useState('');
+  const [mediaStatus, setMediaStatus] = React.useState('');
   const networkState = useNetworkStatus();
 
   const toastConfig = {
@@ -34,7 +34,7 @@ const useMediaProgress = ({
     },
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isSender) {
       const isUploading =
         uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8;

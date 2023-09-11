@@ -16,6 +16,7 @@ import singleChatImageReducer from './Reducers/SingleChatImage.Reducer';
 import safeAreaReducer from './Reducers/SafeArea.Reducer';
 import conversationSearchReducer from './Reducers/conversationSearch.Reducer';
 import rosterReducer from './Reducers/roster.Reducer';
+import recoverMessageReducer from './Reducers/RecoverMessage.Reducer';
 
 const rootReducer = combineReducers({
   navigation: navigationReducer,
@@ -34,6 +35,7 @@ const rootReducer = combineReducers({
   safeArea: safeAreaReducer,
   conversationSearchData: conversationSearchReducer,
   rosterData: rosterReducer,
+  recoverMessage: recoverMessageReducer,
 });
 
 const Store = legacy_createStore(rootReducer, applyMiddleware(thunkMiddleware));

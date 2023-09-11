@@ -1,5 +1,5 @@
-import { ORIGINAL_MESSAGE_DELETED } from 'Helper/Chat/Constant';
-import { getUserIdFromJid } from 'Helper/Chat/Utility';
+import { ORIGINAL_MESSAGE_DELETED } from '../Helper/Chat/Constant';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { HStack, Text, View } from 'native-base';
 import React from 'react';
 import { Pressable } from 'react-native';

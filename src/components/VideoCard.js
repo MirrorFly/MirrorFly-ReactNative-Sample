@@ -6,6 +6,8 @@ import { ImageBackground, StyleSheet } from 'react-native';
 import { millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
 import ProgressLoader from './chat/common/ProgressLoader';
 import ReplyMessage from './ReplyMessage';
+import ic_ballon from '../assets/ic_baloon.png';
+import { getImageSource } from '../common/utils';
 
 const VideoCard = props => {
   const {
@@ -70,7 +72,7 @@ const VideoCard = props => {
             <Image
               resizeMode="contain"
               alt={fileName}
-              source={noPreview}
+              source={getImageSource(noPreview)}
               width={androidWidth}
               height={androidHeight}
             />
@@ -111,9 +113,7 @@ const VideoCard = props => {
 
         {!media.caption && (
           <View position={'absolute'} bottom={2} right={2}>
-            <ImageBackground
-              source={require('../assets/ic_baloon.png')}
-              style={styles.imageBg}>
+            <ImageBackground source={ic_ballon} style={styles.imageBg}>
               {props.status}
               <Text pl="1" color="#fff" fontWeight={400} fontSize="9">
                 {props.timeStamp}
@@ -130,7 +130,7 @@ const VideoCard = props => {
             shadow={5}
             borderRadius={50}>
             <View p="3">
-              <PlayIcon />
+              <PlayIcon width={15} height={15} />
             </View>
           </View>
         )}

@@ -1,5 +1,5 @@
-import SDK from 'SDK/SDK';
-import { useEffect, useState } from 'react';
+import SDK from '../SDK/SDK';
+import React from 'react';
 
 const initialState = {
   isLoading: false,
@@ -20,12 +20,12 @@ const initialState = {
  * @returns {ImageData}
  */
 const useFetchImage = imageToken => {
-  const [state, setState] = useState({
+  const [state, setState] = React.useState({
     ...initialState,
     isLoading: Boolean(imageToken),
   });
 
-  useEffect(() => {
+  React.useEffect(() => {
     getMediaURL();
   }, [imageToken]);
 

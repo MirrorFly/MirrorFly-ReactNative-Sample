@@ -1,27 +1,20 @@
 import React from 'react';
-import { BlockedIcon } from 'common/Icons';
+import { BlockedIcon } from '../common/Icons';
 import {
   THIS_MESSAGE_WAS_DELETED,
   YOU_DELETED_THIS_MESSAGE,
-} from 'Helper/Chat/Constant';
+} from '../Helper/Chat/Constant';
 import { Box, HStack, Pressable, Text, View } from 'native-base';
-import { StyleSheet } from 'react-native';
-import { getSenderIdFromMsgObj } from 'Helper/Chat/Utility';
-import { getConversationHistoryTime } from 'common/TimeStamp';
+import { Keyboard, StyleSheet } from 'react-native';
+import { getSenderIdFromMsgObj } from '../Helper/Chat/Utility';
+import { getConversationHistoryTime } from '../common/TimeStamp';
 
 const DeletedMessage = (props = {}) => {
   const {
     messageObject,
     handleMsgSelect,
     selectedMsgs,
-    messageObject: {
-      msgId = '',
-      msgType = '',
-      msgStatus,
-      createdAt = '',
-      timeStamp,
-      publisherJid = '',
-    } = {},
+    messageObject: { msgId = '', createdAt = '', msgType = '' } = {},
     currentUserJID,
   } = props;
   const messageFrom = getSenderIdFromMsgObj(messageObject);
@@ -31,12 +24,14 @@ const DeletedMessage = (props = {}) => {
     messageFrom.indexOf(currentUserJID) === -1;
 
   const handlePress = () => {
+    Keyboard.dismiss();
     if (selectedMsgs.length > 0) {
       handleMsgSelect(messageObject, true);
     }
   };
 
   const handleLongPress = () => {
+    Keyboard.dismiss();
     handleMsgSelect(messageObject, true);
   };
 

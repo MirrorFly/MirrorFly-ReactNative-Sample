@@ -15,12 +15,10 @@ import {
 } from 'native-base';
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
-import { SwipeListView } from 'react-native-swipe-list-view';
 import { useSelector } from 'react-redux';
 import Avathar from '../common/Avathar';
 import {
   AudioMusicIcon,
-  BlockedIcon,
   DocumentChatIcon,
   SandTimer,
   VideoSmallIcon,
@@ -31,11 +29,17 @@ import {
   formatChatDateTime,
 } from '../common/TimeStamp';
 import { RECENTCHATLOADING } from '../constant';
-import useRosterData from 'hooks/useRosterData';
+import useRosterData from '../hooks/useRosterData';
 import {
   THIS_MESSAGE_WAS_DELETED,
   YOU_DELETED_THIS_MESSAGE,
-} from 'Helper/Chat/Constant';
+} from '../Helper/Chat/Constant';
+import no_messages from '../assets/no_messages.png';
+import { getImageSource } from '../common/utils';
+
+const AudioIconFunc = () => (
+  <AudioMusicIcon width="14" height="14" color={'#767676'} />
+);
 
 const RecentChatItem = ({
   item,
@@ -59,7 +63,7 @@ const RecentChatItem = ({
   } = useRosterData(item?.fromUserId);
   // updating default values
   nickName = nickName || profileDetails.nickName || item?.fromUserId || '';
-  image = image || profileDetails?.image || '';
+  image = image || '';
   userId = userId || item?.fromUserId || '';
   colorCode = colorCode || profileDetails?.colorCode;
 
@@ -172,15 +176,7 @@ const RecentChatItem = ({
                       ),
                       audio: (
                         <HStack pl="1" alignItems={'center'}>
-                          <Icon
-                            as={() => (
-                              <AudioMusicIcon
-                                width="14"
-                                height="14"
-                                color={'#767676'}
-                              />
-                            )}
-                          />
+                          <Icon as={AudioIconFunc} />
                           <Text
                             numberOfLines={1}
                             ellipsizeMode="tail"
@@ -231,9 +227,6 @@ export default function RecentChat(props) {
   } = props;
   const recentLoading = useSelector(state => state.chat.recentChatStatus);
 
-  const onRowDidOpen = rowKey => {
-    console.log('This row opened', rowKey);
-  };
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
 
   const renderItem = (item, index) => {
@@ -275,7 +268,7 @@ export default function RecentChat(props) {
         <Image
           style={styles.image}
           resizeMode="cover"
-          source={require('../assets/no_messages.png')}
+          source={getImageSource(no_messages)}
         />
         {props.isSearching ? (
           <Text style={styles.noMsg}>No Result Found</Text>

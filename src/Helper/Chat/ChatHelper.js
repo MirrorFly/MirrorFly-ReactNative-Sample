@@ -1,6 +1,6 @@
-import SDK from 'SDK/SDK';
-import { changeTimeFormat } from 'common/TimeStamp';
-import { updateRecentChat } from 'mf-redux/Actions/RecentChatAction';
+import SDK from '../../SDK/SDK';
+import { changeTimeFormat } from '../../common/TimeStamp';
+import { updateRecentChat } from '../../redux/Actions/RecentChatAction';
 import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { getThumbImage, getVideoThumbImage } from '..';
@@ -23,11 +23,11 @@ import {
   getRecentChatMsgObj,
   getUserIdFromJid,
 } from './Utility';
-import { updateRosterData } from 'mf-redux/Actions/rosterAction';
+import { updateRosterData } from '../../redux/Actions/rosterAction';
 import {
   DELETE_MESSAGE_FOR_EVERYONE,
   DELETE_MESSAGE_FOR_ME,
-} from 'mf-redux/Actions/Constants';
+} from '../../redux/Actions/Constants';
 
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
@@ -108,7 +108,7 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
     statusCode: response.statusCode,
     fromUserId: getUserIdFromJid(jid),
   };
-  console.log(response, 'SDK response')
+  console.log(response, 'uploadfile response');
   if (response.statusCode === 200) {
     /**
         if (msgType === "image" || msgType === "audio") {
@@ -154,12 +154,16 @@ export const updateDeletedMessageInHistory = (actionType, data, stateData) => {
 
   if (currentChatData) {
     if (actionType === DELETE_MESSAGE_FOR_ME) {
-      data.msgIds.forEach(msgId => delete currentChatData.messages[msgId]);
+      for (const msgId of data.msgIds) {
+        if (currentChatData.messages[msgId]) {
+          currentChatData.messages[msgId].deleteStatus = 2;
+        }
+      }
     } else if (actionType === DELETE_MESSAGE_FOR_EVERYONE) {
       const messageIds = data.msgId.split(',');
       for (const msgId of messageIds) {
         if (currentChatData.messages[msgId]) {
-          currentChatData.messages[msgId].deleteStatus = 2;
+          currentChatData.messages[msgId].deleteStatus = 1;
         }
       }
     }

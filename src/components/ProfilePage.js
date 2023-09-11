@@ -25,20 +25,23 @@ import {
   AlertDialog,
   Pressable,
 } from 'native-base';
-import SDK from 'SDK/SDK';
+import SDK from '../SDK/SDK';
 import ImagePicker from 'react-native-image-crop-picker';
 import Avathar from '../common/Avathar';
 import { PROFILESCREEN, RECENTCHATSCREEN, REGISTERSCREEN } from '../constant';
 import { navigate } from '../redux/Actions/NavigationAction';
 import ScreenHeader from './ScreenHeader';
-import { requestStoragePermission } from '../common/utils';
+import { getImageSource, requestStoragePermission } from '../common/utils';
 import { useNetworkStatus } from '../hooks';
 import { PrimaryPillBtn } from '../common/Button';
 import AuthProfileImage from '../common/AuthProfileImage';
 import * as RootNav from '../Navigation/rootNavigation';
-import { showToast } from 'Helper/index';
+import ProfileImage from '../assets/profile.png';
+import CamerIcon from '../assets/camera.png';
+import { showToast } from '../Helper/index';
 
 const ProfilePage = props => {
+  const { selectProfileInfo, profileInfo } = props;
   const toast = useToast();
   const dispatch = useDispatch();
   const prevPageInfo = useSelector(state => state.navigation.prevScreen);
@@ -52,12 +55,20 @@ const ProfilePage = props => {
   const [isToastShowing, setIsToastShowing] = React.useState(false);
   const [imageFileToken, setImageFileToken] = React.useState('');
   const isConnected = useNetworkStatus();
+  let userName = selectProfileInfo?.nickName || profileInfo?.nickName;
 
+  const [nickName, setNickName] = React.useState('');
   const toastConfig = {
     id: 'profile-toast',
     duration: 2500,
     avoidKeyboard: true,
   };
+
+  console.log(nickName, 'nickName', selectProfileInfo);
+  React.useEffect(() => {
+    console.log(userName, 'userName');
+    setNickName(selectProfileInfo?.nickName);
+  }, [selectProfileInfo?.nickName]);
 
   const handleBackBtn = () => {
     let x = { prevScreen: PROFILESCREEN, screen: RECENTCHATSCREEN };
@@ -104,19 +115,18 @@ const ProfilePage = props => {
   };
 
   const handleProfileUpdate = async () => {
-    console.log('click');
     setIsToastShowing(true);
     const validation =
-      props?.profileInfo?.nickName &&
-      props?.profileInfo?.nickName?.length > '3' &&
+      nickName?.trim() &&
+      nickName?.trim()?.length > 2 &&
       props?.profileInfo?.email &&
       /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(
         props?.profileInfo?.email,
       );
-    if (!props?.profileInfo?.nickName) {
+    if (!nickName?.trim()) {
       return showToast('Please enter your username', toastConfig);
     }
-    if (props?.profileInfo?.nickName?.length < '3') {
+    if (nickName?.trim()?.length < 3) {
       return showToast('Username is too short', toastConfig);
     }
     if (!props?.profileInfo?.email) {
@@ -135,7 +145,7 @@ const ProfilePage = props => {
     if (isConnected && validation) {
       setloading(true);
       let UserInfo = await SDK.setUserProfile(
-        props?.profileInfo?.nickName?.trim(),
+        nickName?.trim(),
         imageFileToken ? imageFileToken : props.selectProfileInfo.image,
         props.profileInfo?.status,
         props.profileInfo?.mobileNumber,
@@ -144,8 +154,8 @@ const ProfilePage = props => {
       setloading(false);
       if (UserInfo.statusCode === 200) {
         let x = { screen: RECENTCHATSCREEN, prevScreen: PROFILESCREEN };
-        RootNav.navigate(RECENTCHATSCREEN);
         prevPageInfo === REGISTERSCREEN && dispatch(navigate(x));
+        RootNav.reset(RECENTCHATSCREEN);
         return showToast('Profile Updated successfully', toastConfig);
       } else {
         return showToast(UserInfo.message, toastConfig);
@@ -185,11 +195,11 @@ const ProfilePage = props => {
         if (sdkRes?.statusCode === 200) {
           setImageFileToken(sdkRes.imageFileToken);
           await SDK.setUserProfile(
-            props?.profileInfo?.nickName,
+            props?.selectProfileInfo?.nickName,
             sdkRes.imageFileToken,
-            props.profileInfo?.status,
-            props.profileInfo?.mobileNumber,
-            props.profileInfo?.email,
+            props?.selectProfileInfo?.status,
+            props?.selectProfileInfo?.mobileNumber,
+            props?.selectProfileInfo?.email,
           );
           setImageUploading(false);
         } else {
@@ -214,7 +224,6 @@ const ProfilePage = props => {
   const handleGalleryPicker = async () => {
     setOpen(false);
     let imageReadPermission = await requestStoragePermission();
-    console.log('imageReadPermission', imageReadPermission);
     if (imageReadPermission === 'granted' || 'limited') {
       ImagePicker.openPicker({
         mediaType: 'photo',
@@ -243,15 +252,14 @@ const ProfilePage = props => {
           if (image) {
             sdkRes = await SDK.profileUpdate(image);
           }
-          console.log('sdkRes', sdkRes);
           if (sdkRes?.statusCode === 200) {
             setImageFileToken(sdkRes.imageFileToken);
             await SDK.setUserProfile(
-              props?.profileInfo?.nickName,
+              props?.selectProfileInfo?.nickName,
               sdkRes.imageFileToken,
-              props.profileInfo?.status,
-              props.profileInfo?.mobileNumber,
-              props.profileInfo?.email,
+              props?.selectProfileInfo?.status,
+              props?.selectProfileInfo?.mobileNumber,
+              props?.selectProfileInfo?.email,
             );
             setImageUploading(false);
           } else {
@@ -280,23 +288,28 @@ const ProfilePage = props => {
   };
 
   const onClose = async () => {
+    setloading(true);
     setRemove(false);
     setOpen(false);
     let updateProfile = await SDK.setUserProfile(
-      props?.profileInfo?.nickName,
+      props?.selectProfileInfo?.nickName,
       '',
-      props.profileInfo?.status,
-      props.profileInfo?.mobileNumber,
-      props.profileInfo?.email,
+      props?.selectProfileInfo?.status,
+      props?.selectProfileInfo?.mobileNumber,
+      props?.selectProfileInfo?.email,
     );
     if (updateProfile.statusCode === 200) {
+      props.setProfileInfo({
+        ...props.profileInfo,
+        image: '',
+      });
+      setImageFileToken('');
       toast.show({
         ...toastConfig,
         render: () => {
           return (
             <Box bg="black" px="2" py="1" rounded="sm">
               <Text style={styles.toastText}>
-                {' '}
                 Profile Image removed successfully
               </Text>
             </Box>
@@ -315,6 +328,7 @@ const ProfilePage = props => {
         },
       });
     }
+    setloading(false);
   };
 
   const handleChangeText = (name, value) => {
@@ -359,6 +373,36 @@ const ProfilePage = props => {
     }
   }, [isConnected]);
 
+  const isUnsavedChangesAvailable = React.useMemo(() => {
+    return props?.selectProfileInfo?.nickName !== nickName;
+  }, [nickName, props?.selectProfileInfo]);
+
+  const handleEmailChange = text => {
+    handleChangeText('email', text);
+  };
+
+  const handleNicknameChange = text => {
+    if (text.length < 31) {
+      setNickName(text);
+      handleChangeText('nickName', text);
+    }
+    if (text.length > 30) {
+      setIsToastShowing(true);
+      if (!isToastShowing) {
+        return toast.show({
+          ...toastConfig,
+          render: () => {
+            return (
+              <Box bg="black" px="2" py="1" rounded="sm">
+                <Text style={styles.toastText}>Maximum of 30 Characters</Text>
+              </Box>
+            );
+          },
+        });
+      }
+    }
+  };
+
   return (
     <KeyboardAvoidingView style={styles.flex1}>
       <Stack h="60" mb="10" bg="#F2F2F2" w="full" justifyContent={'center'}>
@@ -387,24 +431,22 @@ const ProfilePage = props => {
               }}>
               <Pressable onPress={() => handleImage('big')}>
                 {props.profileInfo?.image && handleRenderAuthImage}
-                {!props.profileInfo?.image &&
-                  props?.profileInfo?.nickName?.trim() && (
-                    <Avathar
-                      fontSize={60}
-                      width={157}
-                      height={157}
-                      data={props.profileInfo?.nickName?.trim()}
-                      backgroundColor={'#3276E2'}
-                    />
-                  )}
-                {!props.profileInfo?.image &&
-                  !props?.profileInfo?.nickName?.trim() && (
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/profile.png')}
-                      style={{ height: 157, width: 157 }}
-                    />
-                  )}
+                {!props.profileInfo?.image && nickName?.trim() && (
+                  <Avathar
+                    fontSize={60}
+                    width={157}
+                    height={157}
+                    data={nickName?.trim()}
+                    backgroundColor={'#3276E2'}
+                  />
+                )}
+                {!props.profileInfo?.image && !nickName?.trim() && (
+                  <Image
+                    resizeMode="contain"
+                    source={getImageSource(ProfileImage)}
+                    style={{ height: 157, width: 157 }}
+                  />
+                )}
               </Pressable>
               <TouchableOpacity
                 activeOpacity={1}
@@ -412,7 +454,7 @@ const ProfilePage = props => {
                 style={{ position: 'absolute', right: 0, bottom: 0 }}>
                 <Image
                   resizeMode="contain"
-                  source={require('../assets/camera.png')}
+                  source={getImageSource(CamerIcon)}
                   style={styles.CameraImage}
                 />
               </TouchableOpacity>
@@ -425,30 +467,9 @@ const ProfilePage = props => {
               }}
               textAlign="center"
               numberOfLines={1}
-              value={props.profileInfo?.nickName}
+              value={nickName}
               placeholder="Username " // Adding a trailing space to fix a strange issue ( last letter "e" is not visible )
-              onChangeText={text => {
-                if (text.length > 30) {
-                  setIsToastShowing(true);
-                  if (!isToastShowing) {
-                    return toast.show({
-                      ...toastConfig,
-                      render: () => {
-                        return (
-                          <Box bg="black" px="2" py="1" rounded="sm">
-                            <Text style={styles.toastText}>
-                              Maximum of 30 Characters
-                            </Text>
-                          </Box>
-                        );
-                      },
-                    });
-                  }
-                }
-                if (text.length < 31) {
-                  handleChangeText('nickName', text);
-                }
-              }}
+              onChangeText={handleNicknameChange}
               maxLength={31}
               placeholderTextColor="#959595"
               keyboardType="default"
@@ -468,7 +489,7 @@ const ProfilePage = props => {
                 editable={prevPageInfo === REGISTERSCREEN}
                 style={{ color: '#959595', flex: 1, marginLeft: 8 }}
                 defaultValue={props.profileInfo?.email}
-                onChangeText={text => handleChangeText('email', text)}
+                onChangeText={handleEmailChange}
                 maxLength={35}
                 placeholder="Enter Email Id"
                 placeholderTextColor={'#959595'}
@@ -538,12 +559,12 @@ const ProfilePage = props => {
                 style={[
                   styles.button,
                   {
-                    backgroundColor: props.onChangeEvent()
+                    backgroundColor: isUnsavedChangesAvailable
                       ? '#3276E2'
                       : '#d3d3d3',
                   },
                 ]}
-                disabled={!props.onChangeEvent()}
+                disabled={!isUnsavedChangesAvailable}
                 onPress={handleProfileUpdate}
                 title={'Save'}
               />

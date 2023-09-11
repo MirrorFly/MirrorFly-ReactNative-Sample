@@ -1,5 +1,5 @@
-import { showToast } from 'Helper/index';
-import SDK from 'SDK/SDK';
+import { showToast } from '../Helper/index';
+import SDK from '../SDK/SDK';
 import React from 'react';
 import { FlatList } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,7 +8,7 @@ import { addChatConversationHistory } from '../redux/Actions/ConversationAction'
 import ChatMessage from './ChatMessage';
 import DeletedMessage from './DeletedMessage';
 import { updateMsgSeenStatus } from './chat/common/createMessage';
-import { updateConversationTotalSearchResults } from 'mf-redux/Actions/conversationSearchAction';
+import { updateConversationTotalSearchResults } from '../redux/Actions/conversationSearchAction';
 
 const ChatConversationList = ({
   handleMessageListUpdated,
@@ -37,13 +37,16 @@ const ChatConversationList = ({
 
   const messageList = React.useMemo(() => {
     const id = getUserIdFromJid(fromUserJId);
-    const data = messages[id]?.messages
-      ? Object.values(messages[id]?.messages)
-      : [];
-    data.reverse();
-    handleMessageListUpdated(messages[id]?.messages);
-    onSelectedMessageUpdate(messages[id]?.messages);
-    return data;
+    if (id) {
+      const data = messages[id]?.messages
+        ? Object.values(messages[id]?.messages)
+        : [];
+      data.reverse();
+      handleMessageListUpdated(messages[id]?.messages);
+      onSelectedMessageUpdate(messages[id]?.messages);
+      return data;
+    }
+    return [];
   }, [messages, fromUserJId]);
 
   React.useEffect(() => {
@@ -73,6 +76,14 @@ const ChatConversationList = ({
       messageList.forEach((msg, index) => {
         if (msg?.msgBody?.message_type === 'text') {
           if (msg?.msgBody?.message?.toLowerCase?.().includes?.(_searchText)) {
+            _filteredMsgIndices.push({ index, msgId: msg.msgId });
+          }
+        } else if (msg?.msgBody?.message_type === 'file') {
+          if (
+            msg?.msgBody?.media?.fileName
+              ?.toLowerCase?.()
+              .includes?.(_searchText)
+          ) {
             _filteredMsgIndices.push({ index, msgId: msg.msgId });
           }
         }
@@ -160,7 +171,7 @@ const ChatConversationList = ({
   const chatMessageRender = React.useCallback(
     ({ item }) => {
       const { deleteStatus = 0 } = item;
-
+      if (deleteStatus === 2) return null;
       return deleteStatus === 0 ? (
         <ChatMessage
           highlightMessageId={highlightMessageId}
@@ -194,6 +205,7 @@ const ChatConversationList = ({
 
   return (
     <FlatList
+      keyboardShouldPersistTaps={'handled'}
       ref={flatListRef}
       data={messageList}
       inverted

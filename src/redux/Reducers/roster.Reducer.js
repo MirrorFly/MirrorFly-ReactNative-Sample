@@ -1,5 +1,5 @@
-import SDK from 'SDK/SDK';
-import { RESET_STORE, UPDATE_ROSTER_DATA } from 'mf-redux/Actions/Constants';
+import SDK from '../../SDK/SDK';
+import { RESET_STORE, UPDATE_ROSTER_DATA } from '../Actions/Constants';
 
 /**
  * @example

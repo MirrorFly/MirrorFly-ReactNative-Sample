@@ -4,7 +4,7 @@ import { AudioMusicIcon } from '../common/Icons';
 import AudioPlayer from './Media/AudioPlayer';
 import { StyleSheet } from 'react-native';
 import AttachmentProgressLoader from './chat/common/AttachmentProgressLoader';
-import useMediaProgress from 'hooks/useMediaProgress';
+import useMediaProgress from '../hooks/useMediaProgress';
 import ReplyMessage from './ReplyMessage';
 
 const AudioCard = props => {

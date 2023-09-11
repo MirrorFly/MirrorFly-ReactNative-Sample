@@ -22,6 +22,8 @@ import {
   addGalleryPhotos,
   addGalleyGroupName,
 } from '../redux/Actions/GalleryAction';
+import useRosterData from '../hooks/useRosterData';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 
 const Gallery = (props = {}) => {
   const PAGE_SIZE = 20;
@@ -32,10 +34,13 @@ const Gallery = (props = {}) => {
     setSelectedImages,
     handleMedia,
   } = props;
-  const profileDetails = useSelector(state => state.navigation.profileDetails);
+  const fromUserJid = useSelector(state => state.navigation.fromUserJid);
   const { galleryAlbum, galleryPhotos, galleryName } = useSelector(
     state => state.galleryData,
   );
+
+  let { nickName } = useRosterData(getUserIdFromJid(fromUserJid));
+  nickName = nickName || getUserIdFromJid(fromUserJid);
   const [galleryData, setGalleryData] = React.useState(galleryAlbum || []);
   const [grpView, setGrpView] = React.useState(galleryName || '');
   const [photos, setPhotos] = React.useState(galleryPhotos || []);
@@ -112,7 +117,7 @@ const Gallery = (props = {}) => {
       const photo = await CameraRoll.getAlbums({
         assetType: 'All',
       });
-      const galleryData = await Promise.allSettled(
+      const _galleryData = await Promise.allSettled(
         photo.map(async item => {
           const params = {
             first: 5,
@@ -134,7 +139,8 @@ const Gallery = (props = {}) => {
                 filename.endsWith('.jpg') ||
                 filename.endsWith('.jpeg') ||
                 filename.endsWith('.png') ||
-                filename.endsWith('.mp4')
+                filename.endsWith('.mp4') ||
+                filename.endsWith('.MOV')
               );
             });
             if (node) {
@@ -148,7 +154,7 @@ const Gallery = (props = {}) => {
           });
         }),
       );
-      const filtertedData = galleryData.filter(item => item.value !== null);
+      const filtertedData = _galleryData.filter(item => item.value !== null);
       filtertedData.sort((a, b) => {
         const titleA = a.value.title.toUpperCase();
         const titleB = b.value.title.toUpperCase();
@@ -197,7 +203,8 @@ const Gallery = (props = {}) => {
             filename.endsWith('.jpg') ||
             filename.endsWith('.jpeg') ||
             filename.endsWith('.png') ||
-            filename.endsWith('.mp4')
+            filename.endsWith('.mp4') ||
+            filename.endsWith('.MOV')
           );
         });
         return {
@@ -221,10 +228,19 @@ const Gallery = (props = {}) => {
       } else {
         getPhoto = [...data.edges];
       }
-      setPhotos(getPhoto);
-      store.dispatch(addGalleryPhotos(getPhoto));
+      const updatedPhotos = [...getPhoto];
+      for (const newPhoto of getPhoto) {
+        const existingPhoto = updatedPhotos.find(
+          photo => photo.image?.uri === newPhoto.image?.uri,
+        );
+        if (!existingPhoto) {
+          updatedPhotos.push(newPhoto);
+        }
+      }
+      setPhotos(updatedPhotos);
+      store.dispatch(addGalleryPhotos(updatedPhotos));
     } catch (error) {
-      console.log('Photo_Error', error);
+      console.log('fetchPhotos', error);
     } finally {
       setLoading(false);
     }
@@ -257,7 +273,6 @@ const Gallery = (props = {}) => {
     return () => {
       backHandler.remove();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const albumRender = ({ item }) => {
@@ -328,7 +343,7 @@ const Gallery = (props = {}) => {
       ) : (
         <View mb="20">
           <ScreenHeader
-            title={'Send to ' + profileDetails?.nickName}
+            title={'Send to ' + nickName}
             onhandleBack={handleBackBtn}
           />
           <View ml={'0.1'} mb="16">

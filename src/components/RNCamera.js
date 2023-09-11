@@ -6,7 +6,7 @@ import {
   Spinner,
   Text,
 } from 'native-base';
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import {
   View,
   TouchableOpacity,
@@ -15,23 +15,23 @@ import {
   Image,
 } from 'react-native';
 import { RNCamera } from 'react-native-camera';
-import { LeftArrowIcon } from 'common/Icons';
+import { LeftArrowIcon } from '../common/Icons';
 import { CHATCONVERSATION } from '../constant';
 import { millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
 import RNFS from 'react-native-fs';
-import { mediaObjContructor } from '../common/utils';
+import { getImageSource, mediaObjContructor } from '../common/utils';
 import Video from 'react-native-video';
-import flashOnIcon from 'assets/ic_flash_on.png';
-import flashOffIcon from 'assets/ic_flash_off.png';
-import flashAutoIcon from 'assets/ic_flash_auto.png';
-import flipCameraIcon from 'assets/ic_flip_camera_android.png';
+import flashOnIcon from '../assets/ic_flash_on.png';
+import flashOffIcon from '../assets/ic_flash_off.png';
+import flashAutoIcon from '../assets/ic_flash_auto.png';
+import flipCameraIcon from '../assets/ic_flip_camera_android.png';
 import { validateFileSize, getType } from './chat/common/fileUploadValidation';
-import { showToast } from 'Helper/index';
+import { showToast } from '../Helper/index';
 import { useDispatch } from 'react-redux';
 import {
   resetSafeArea,
   safeAreaBgColor,
-} from 'mf-redux/Actions/SafeAreaAction';
+} from '../redux/Actions/SafeAreaAction';
 import CameraService from './RNCamera/CameraService';
 import useCallbackRef from './RNCamera/camHooks';
 import useCamera from './RNCamera/useCam';
@@ -40,8 +40,12 @@ import { orientationCheck } from './RNCamera/Helper';
 const cameraService = new CameraService();
 
 const Camera = props => {
-  const [flashMode, setFlashMode] = useState(RNCamera.Constants.FlashMode.off);
-  const [cameraType, setCameraType] = useState(RNCamera.Constants.Type.back);
+  const [flashMode, setFlashMode] = React.useState(
+    RNCamera.Constants.FlashMode.off,
+  );
+  const [cameraType, setCameraType] = React.useState(
+    RNCamera.Constants.Type.back,
+  );
   const { ref, callbackRef } = useCallbackRef();
   const { recording, takePicture, startRecordingVideo, stopRecordingVideo } =
     useCamera(ref);
@@ -51,13 +55,13 @@ const Camera = props => {
   };
 
   const { setLocalNav = () => {}, setSelectedImages } = props;
-  const recordingIntervalRef = useRef(null);
+  const recordingIntervalRef = React.useRef(null);
   const dispatch = useDispatch();
-  const [data, setData] = useState();
-  const [videoData, setVideoData] = useState();
-  const [captureTime, setCaptureTime] = useState(0);
-  const [flashIcon, setFlashIcon] = useState(flashOffIcon);
-  const [isCapturing, setIsCapturing] = useState(false);
+  const [data, setData] = React.useState();
+  const [videoData, setVideoData] = React.useState();
+  const [captureTime, setCaptureTime] = React.useState(0);
+  const [flashIcon, setFlashIcon] = React.useState(flashOffIcon);
+  const [isCapturing, setIsCapturing] = React.useState(false);
 
   const handleBackBtn = () => {
     setLocalNav(CHATCONVERSATION);
@@ -228,7 +232,7 @@ const Camera = props => {
               <Image
                 alt="flash-icon"
                 style={styles.flashIcon}
-                source={flashIcon}
+                source={getImageSource(flashIcon)}
               />
             </Pressable>
             <TouchableOpacity
@@ -246,7 +250,7 @@ const Camera = props => {
               <Image
                 alt="flip-icon"
                 style={styles.flashIcon}
-                source={flipCameraIcon}
+                source={getImageSource(flipCameraIcon)}
               />
             </Pressable>
           </HStack>

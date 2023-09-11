@@ -1,7 +1,7 @@
 import React from 'react';
 import { BackHandler, StyleSheet, View } from 'react-native';
 import CollapsingToolbar from './CollapsibleToolbar';
-import useRosterData from 'hooks/useRosterData';
+import useRosterData from '../hooks/useRosterData';
 
 const UserInfo = ({ setLocalNav, toUserId }) => {
   let {

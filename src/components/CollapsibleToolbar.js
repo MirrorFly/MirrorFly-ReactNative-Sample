@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   CallIcon,
@@ -28,8 +28,8 @@ import {
   IconButton,
   Icon,
 } from 'native-base';
-import useFetchImage from 'hooks/useFetchImage';
-import { getUsernameGraphemes } from 'Helper/index';
+import useFetchImage from '../hooks/useFetchImage';
+import { getUsernameGraphemes } from '../Helper/index';
 const propTypes = {
   src: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
   title: PropTypes.string,
@@ -72,9 +72,9 @@ const CollapsingToolbar = ({
   setLocalNav,
   handleBackBtn,
 }) => {
-  const [visible, setVisible] = useState(false);
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const [animatedTitleColor, setAnimatedTitleColor] = useState(250);
+  const [visible, setVisible] = React.useState(false);
+  const scrollY = React.useRef(new Animated.Value(0)).current;
+  const [animatedTitleColor, setAnimatedTitleColor] = React.useState(250);
   const scrollDistance = toolbarMaxHeight - toolbarMinHeight;
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const pixelRatio = PixelRatio.get();

@@ -1,6 +1,6 @@
 {
-  "name": "contus-mf-rn",
-  "version": "1.0.1",
+  "name": "mirrorfly-uikit-react-native",
+  "version": "1.0.0",
   "description": "React-Native based UI kit for Mirrorfly",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -164,6 +164,15 @@
   "jest": {
     "preset": "react-native"
   },
+  "keywords": [
+    "mirrorfly-uikit_react_native",
+    "mirrorfly",
+    "contus",
+    "React Native chat",
+    "messaging",
+    "chat",
+    "sdk"
+  ],
   "author": "",
   "license": "ISC"
 }

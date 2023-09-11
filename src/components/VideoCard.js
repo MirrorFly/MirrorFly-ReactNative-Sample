@@ -121,19 +121,19 @@ const VideoCard = props => {
             </ImageBackground>
           </View>
         )}
-        {/* {checkDownloaded && ( */}
-        <View
-          bg="#fff"
-          position={'absolute'}
-          bottom={'45%'}
-          right={'43%'}
-          shadow={5}
-          borderRadius={50}>
-          <View p="3">
-            <PlayIcon width={15} height={15} />
+        {checkDownloaded && (
+          <View
+            bg="#fff"
+            position={'absolute'}
+            bottom={'45%'}
+            right={'43%'}
+            shadow={5}
+            borderRadius={50}>
+            <View p="3">
+              <PlayIcon width={15} height={15} />
+            </View>
           </View>
-        </View>
-        {/* )} */}
+        )}
       </View>
       {media.caption && (
         <Stack pb={2} justifyContent={'space-between'}>

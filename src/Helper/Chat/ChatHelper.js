@@ -469,7 +469,7 @@ const sendMediaMessage = async (
         fromUserJid: fromUserJid,
         replyTo,
       };
-      const conversationChatObj = await getMessageObjSender(dataObj, i);
+      const conversationChatObj = getMessageObjSender(dataObj, i);
       mediaData[msgId] = conversationChatObj;
       const recentChatObj = getRecentChatMsgObj(dataObj);
 
@@ -540,7 +540,7 @@ export const sendMessageToUserOrGroup = async (
       msgId,
       fromUserJid: fromUserJid,
     };
-    const conversationChatObj = await getMessageObjSender(dataObj);
+    const conversationChatObj = getMessageObjSender(dataObj);
     const recentChatObj = getRecentChatMsgObj(dataObj);
     const dispatchData = {
       data: [conversationChatObj],

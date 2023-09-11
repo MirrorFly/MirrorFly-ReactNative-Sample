@@ -3,59 +3,92 @@ import {
   StyleSheet,
   Text,
   View,
-  PermissionsAndroid,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import MapView, { Marker } from 'react-native-maps';
-import Geolocation from 'react-native-geolocation-service';
-import ScreenHeader from 'components/ScreenHeader';
 import { ArrowForwardIcon } from 'native-base';
+import Geocoder from 'react-native-geocoder';
+import Geolocation from 'react-native-geolocation-service';
+import ScreenHeader from '../../components/ScreenHeader';
+import { showToast } from '../../Helper/index';
+import { openSettings } from 'react-native-permissions';
+import ApplicationColors from '../../config/appColors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { requestLocationPermission } from '../../common/utils';
 
-const Location = props => {
-  const [currentLocation, setCurrentLocation] = React.useState(null);
-  const [currentAddress, setCurrentAddress] = useState('');
+Geocoder.fallbackToGoogle('AIzaSyBaKkrQnLT4nacpKblIE5d4QK6GpaX5luQ');
 
-  const requestLocationPermission = async () => {
+/**
+ * @typedef LocationState
+ * @prop {number} latitude
+ * @prop {number} longitude
+ * @prop {number} latitudeDelta
+ * @prop {number} longitudeDelta
+ */
+
+/**
+ * @type {LocationState|null}
+ */
+const locationInitialValue = null;
+
+const Location = ({ setLocalNav, handleSendMsg }) => {
+  const [location, setLocation] = React.useState(locationInitialValue);
+  const [locationAddress, setLocationAddress] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  const mapViewRef = useRef();
+  const mapDeltaValue = useRef({
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  });
+
+  const checkPermissionAndGetLocation = async () => {
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Location Permission',
-          message: 'App needs access to your location.',
-          buttonPositive: 'OK',
-        },
+      const isNotFirstTimeLocationPermissionCheck = await AsyncStorage.getItem(
+        'location_permission',
       );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('Location permission granted.');
+      AsyncStorage.setItem('location_permission', 'true');
+      const result = await requestLocationPermission();
+      if (result === 'granted' || result === 'limited') {
         getCurrentLocation();
+      } else if (isNotFirstTimeLocationPermissionCheck) {
+        goBackToPreviousScreen();
+        openSettings();
       } else {
-        console.log('Location permission denied.');
-        handleLocationPermissionDenied();
+        goBackToPreviousScreen();
       }
     } catch (error) {
+      setIsLoading(false);
       console.error('Failed to request location permission:', error);
     }
   };
 
   useEffect(() => {
-    requestLocationPermission();
+    checkPermissionAndGetLocation();
   }, []);
 
-  useEffect(() => {
-    getCurrentLocation();
-  }, []);
-  const handleBackBtn = () => {
-    props.setLocalNav('CHATCONVERSATION');
+  const goBackToPreviousScreen = () => {
+    setLocalNav('CHATCONVERSATION');
   };
 
-  const handleBackNav = () => {
-    props.setLocalNav('CHATCONVERSATION');
+  const handleSendLocation = () => {
+    // TODO: construct the location data object ans pass to handleSendMsg function
+    const locationObj = {
+      type: 'location',
+      location: {
+        latitude: location.latitude,
+        longitude: location.longitude,
+      },
+    };
+    handleSendMsg(locationObj);
+    setLocalNav('CHATCONVERSATION');
   };
 
   const backHandler = BackHandler.addEventListener(
     'hardwareBackPress',
-    handleBackBtn,
+    goBackToPreviousScreen,
   );
 
   React.useEffect(() => {
@@ -65,87 +98,184 @@ const Location = props => {
   }, []);
 
   React.useEffect(() => {
-    if (currentLocation) {
-      const { latitude, longitude } = currentLocation;
-      fetch(`https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}`)
-        .then(response => response.json())
-        .then(responseJson => {
-          setCurrentAddress(responseJson);
-        })
-        .catch(error => {
-          console.error('Error fetching address:', error);
+    if (location) {
+      const { latitude, longitude } = location;
+      Geocoder.geocodePosition({
+        lat: latitude,
+        lng: longitude,
+      }).then(res => {
+        // find the nearest coords address
+        let {
+          formattedAddress = '',
+          subLocality = '',
+          locality = '',
+          adminArea = '',
+          postalCode = '',
+        } = getNearestCoordsData(
+          {
+            lat: latitude,
+            lng: longitude,
+          },
+          res,
+        );
+        const doesHaveCode = formattedAddress
+          .substring(0, formattedAddress.indexOf(' '))
+          .includes('+');
+        if (doesHaveCode) {
+          formattedAddress = formattedAddress.substring(
+            formattedAddress.indexOf(' ') + 1,
+          );
+        }
+        // extracting local address like "No 2 John street, Triplicane, "
+        const localityAddress = formattedAddress.substring(
+          0,
+          formattedAddress.indexOf(locality) - 2,
+        );
+        setLocationAddress({
+          streetAddress: localityAddress,
+          subLocality,
+          locality,
+          adminArea,
+          postalCode,
         });
+      });
     }
-  }, [currentLocation]);
+  }, [location]);
+
+  const getNearestCoordsData = (targetCoords, addressArray) => {
+    // Function to calculate Euclidean distance between two points
+    const calculateDistance = (_lat, _lng) => {
+      const dx = _lat - targetCoords.lat;
+      const dy = _lng - targetCoords.lng;
+      return Math.sqrt(dx * dx + dy * dy);
+    };
+
+    // Initialize variables to store the nearest coordinates and minimum distance
+    let nearestCoordsAddress = null;
+    let minDistance = Infinity;
+
+    // Loop through the addressArray to find the nearest coordinates
+    for (const address of addressArray) {
+      const { lat, lng } = address.position;
+      const distance = calculateDistance(lat, lng);
+
+      // Update the nearest coordinates if the current distance is smaller
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestCoordsAddress = address;
+      }
+    }
+
+    return nearestCoordsAddress;
+  };
 
   const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
       position => {
         const { latitude, longitude } = position.coords;
-        setCurrentLocation({ latitude, longitude });
+        setLocation({
+          latitude,
+          longitude,
+          latitudeDelta: mapDeltaValue.current.latitudeDelta,
+          longitudeDelta: mapDeltaValue.current.longitudeDelta,
+        });
+        setIsLoading(false);
       },
       error => {
+        setIsLoading(false);
         console.error('Error getting current location:', error);
+        showToast('Unable to get current location', {
+          id: 'location-error-toast',
+        });
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
   };
 
-  return (
-    <View style={{ flex: 1 }}>
-      <View style={styles.headerContainer}>
-        <ScreenHeader title="User Location" onhandleBack={handleBackBtn} />
-      </View>
+  const handleMapPress = e => {
+    const { coordinate } = e.nativeEvent;
+    const newRegion = {
+      ...coordinate,
+      latitudeDelta: mapDeltaValue.current.latitudeDelta,
+      longitudeDelta: mapDeltaValue.current.longitudeDelta,
+    };
+    setLocation(newRegion);
+    mapViewRef.current.animateToRegion(newRegion, 500);
+  };
 
+  const handleRegionChange = region => {
+    mapDeltaValue.current.latitudeDelta = region.latitudeDelta;
+    mapDeltaValue.current.longitudeDelta = region.longitudeDelta;
+  };
+
+  const renderMapView = () => {
+    if (isLoading) {
+      return (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator
+            size={'large'}
+            color={ApplicationColors.mainColor}
+          />
+        </View>
+      );
+    }
+
+    return (
       <MapView
         style={styles.map}
-        region={
-          currentLocation
-            ? {
-                latitude: currentLocation.latitude,
-                longitude: currentLocation.longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }
-            : null
-        }>
-        {currentLocation && (
+        initialRegion={location}
+        ref={mapViewRef}
+        onRegionChangeComplete={handleRegionChange}
+        showsCompass={true}
+        onPress={handleMapPress}>
+        {location && (
           <Marker
             coordinate={{
-              latitude: currentLocation.latitude,
-              longitude: currentLocation.longitude,
+              latitude: location.latitude,
+              longitude: location.longitude,
             }}
           />
         )}
       </MapView>
-      <View style={styles.mapFooter}>
-        <Text style={styles.LocText}>Send this location</Text>
-        <View style={styles.addressContainer}>
-        {currentLocation !=null  && ( <View style={{ flexDirection: 'column', flex: 0.6 }}>
-          <Text style={styles.addSubText}>
-              {`${currentAddress.address?.neighbourhood}` +
-                ',' +
-                `${currentAddress.address?.suburb}` +
-                ' , ' +
-                `${currentAddress.address?.city_district}`}
-            </Text>
-             <Text style={styles.addCityText}>
-              {`${currentAddress.address?.city}` +
-                ' , ' +
-                `${currentAddress.address?.state}` +
-                ' , ' +
-                `${currentAddress.address?.postcode}`}
-            </Text>
-          </View> )}
-          <View style={styles.elevationContainer}>
-            <View style={styles.ArrowIcon}>
-              <Pressable onPress={handleBackNav}>
-                <ArrowForwardIcon color={'#fff'} />
-              </Pressable>
+    );
+  };
+  const renderFooter = () => {
+    if (location != null && Boolean(locationAddress)) {
+      return (
+        <View style={styles.mapFooter}>
+          <View style={styles.addressContainer}>
+            <Text style={styles.LocText}>Send this location</Text>
+            <View>
+              <Text style={styles.addSubText}>
+                {locationAddress.streetAddress}
+              </Text>
+              <Text style={styles.addCityText}>
+                {`${locationAddress.locality}, ${locationAddress.adminArea}, ${locationAddress.postalCode}`}
+              </Text>
             </View>
           </View>
+          <View style={styles.elevationContainer}>
+            <Pressable onPress={handleSendLocation}>
+              <View style={styles.ArrowIcon}>
+                <ArrowForwardIcon color={'#fff'} />
+              </View>
+            </Pressable>
+          </View>
         </View>
+      );
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <ScreenHeader
+          title="User Location"
+          onhandleBack={goBackToPreviousScreen}
+        />
       </View>
+      {renderMapView()}
+      {renderFooter()}
     </View>
   );
 };
@@ -153,12 +283,16 @@ const Location = props => {
 export default Location;
 
 const styles = StyleSheet.create({
+  container: { flex: 1 },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#F2F2F2',
-    borderBottomWidth: 2,
-    borderBottomColor: '#000',
     borderBottomWidth: 2,
     borderBottomColor: '#E2E2E2',
     elevation: 6,
@@ -169,21 +303,24 @@ const styles = StyleSheet.create({
     paddingVertical: 100,
   },
   mapFooter: {
+    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#fff',
-    flex: 0.2,
-    paddingVertical: 14,
+    justifyContent: 'space-between',
     paddingHorizontal: 18,
+    paddingTop: 12,
+    paddingBottom: 18,
   },
   LocText: {
     color: '#4879F9',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '400',
   },
   addressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     flex: 1,
+    justifyContent: 'center',
+    paddingRight: 15,
   },
   addressText: {
     color: '#000',
@@ -195,8 +332,8 @@ const styles = StyleSheet.create({
   },
   addSubText: {
     color: '#4D4D4D',
-    paddingTop: 8,
-    fontSize: 14,
+    paddingTop: 4,
+    fontSize: 15,
     fontWeight: 'bold',
   },
   addCityText: {
@@ -206,22 +343,17 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
   },
   ArrowIcon: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
     backgroundColor: '#4879F9',
     justifyContent: 'center',
-    borderRadius: 20,
-    paddingLeft: 12,
-    position: 'absolute',
-    right: 2,
-    top: -5,
+    alignItems: 'center',
+    borderRadius: 30,
     elevation: 4,
     borderColor: '#4879F9',
   },
   elevationContainer: {
-    position: 'absolute',
-    right: 14,
-    top: 6,
     elevation: 4,
+    marginTop: 6,
   },
 });

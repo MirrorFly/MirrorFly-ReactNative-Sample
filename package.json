@@ -78,6 +78,7 @@
     "react-native-document-picker": "^9.0.1",
     "react-native-file-viewer": "^2.1.5",
     "react-native-fs": "^2.18.0",
+    "react-native-geocoder": "^0.5.0",
     "react-native-geocoding": "^0.5.0",
     "react-native-geolocation-service": "^5.3.1",
     "react-native-get-random-values": "^1.8.0",

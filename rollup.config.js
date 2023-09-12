@@ -79,6 +79,7 @@ export default {
       extensions: ['.tsx', '.ts', '.jsx', '.js'],
       exclude: 'node_modules/**',
       presets: ['@babel/preset-react', '@babel/preset-typescript'],
+      plugins: ['transform-remove-console'],
     }),
     commonjs(),
     nodeResolve({ browser: false }),

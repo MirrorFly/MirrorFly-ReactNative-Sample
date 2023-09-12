@@ -7,11 +7,10 @@ import {
   Linking,
   ImageBackground,
   Platform,
+  StyleSheet,
 } from 'react-native';
 import ic_baloon from '../assets/ic_baloon.png';
 import { getImageSource } from '../common/utils';
-import ReplyMessage from './ReplyMessage';
-import { StyleSheet } from 'react-native';
 import config from './chat/common/config';
 
 const MAP_URL = 'https://maps.googleapis.com/maps/api/staticmap';
@@ -38,19 +37,19 @@ const MapCard = ({
   }, [latitude, longitude]);
 
   const mapHandler = () => {
+    /**
     // const locationUrl =
     //   Platform.OS === 'ios'
     //     ? ''
     //     : 'https://www.google.co.in/maps/place/CONTUS+TECH/@13.0104824,80.2064899,17z/data=!3m2!4b1!5s0x3a5267401095b6c3:0x8e18de1ed0748b0a!4m6!3m5!1s0x3a5260d084dc54cd:0xb3e84ab20dc3785e!8m2!3d13.0104824!4d80.2090648!16s%2Fg%2F1tjym3x5?entry=ttu';
-
+   */
     const scheme = Platform.select({
       ios: 'maps://0,0?q=',
       android: 'geo:0,0?q=',
     });
     const latLng = `${latitude},${longitude}`;
-    const label = '';
     const locationUrl = Platform.select({
-      ios: `${scheme}${label}@${latLng}`,
+      ios: `${scheme}${latLng}`,
       android: `${scheme}${latLng}`,
     });
     if (Linking.canOpenURL(locationUrl)) {
@@ -65,8 +64,6 @@ const MapCard = ({
       });
     }
   };
-
-  console.log('Message object', JSON.stringify(message.msgBody, null, 2));
 
   return (
     <View style={styles.container(isSender)}>

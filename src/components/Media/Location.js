@@ -18,8 +18,11 @@ import ApplicationColors from '../../config/appColors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { requestLocationPermission } from '../../common/utils';
 import config from '../chat/common/config';
+import { useNetworkStatus } from '../../hooks';
 
 Geocoder.fallbackToGoogle(config.GOOGLE_LOCATION_API_KEY);
+
+// TODO: Reply, Delete, MessageInfo
 
 /**
  * @typedef LocationState
@@ -45,6 +48,26 @@ const Location = ({ setLocalNav, handleSendMsg }) => {
     longitudeDelta: 0.01,
   });
 
+  const isInternetReachable = useNetworkStatus();
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      goBackToPreviousScreen,
+    );
+    // checking permission and fetching current location
+    checkPermissionAndGetLocation();
+    return () => {
+      backHandler.remove();
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (location) {
+      fetchAddressForLocation(location);
+    }
+  }, [location]);
+
   const checkPermissionAndGetLocation = async () => {
     try {
       const isNotFirstTimeLocationPermissionCheck = await AsyncStorage.getItem(
@@ -66,82 +89,84 @@ const Location = ({ setLocalNav, handleSendMsg }) => {
     }
   };
 
-  useEffect(() => {
-    checkPermissionAndGetLocation();
-  }, []);
-
   const goBackToPreviousScreen = () => {
     setLocalNav('CHATCONVERSATION');
   };
 
   const handleSendLocation = () => {
-    // TODO: construct the location data object ans pass to handleSendMsg function
-    const locationObj = {
-      type: 'location',
-      location: {
-        latitude: location.latitude,
-        longitude: location.longitude,
-      },
-    };
-    handleSendMsg(locationObj);
-    setLocalNav('CHATCONVERSATION');
+    if (isInternetReachable) {
+      const locationObj = {
+        type: 'location',
+        location: {
+          latitude: location.latitude,
+          longitude: location.longitude,
+        },
+      };
+      handleSendMsg(locationObj);
+      setLocalNav('CHATCONVERSATION');
+    } else {
+      showNoConnectivityToast();
+    }
   };
 
-  const backHandler = BackHandler.addEventListener(
-    'hardwareBackPress',
-    goBackToPreviousScreen,
-  );
-
-  React.useEffect(() => {
-    return () => {
-      backHandler.remove();
-    };
-  }, []);
-
-  React.useEffect(() => {
-    if (location) {
-      const { latitude, longitude } = location;
+  const fetchAddressForLocation = _location => {
+    const { latitude, longitude } = _location;
+    if (!isInternetReachable) {
+      return;
+    }
+    if (latitude && longitude) {
       Geocoder.geocodePosition({
         lat: latitude,
         lng: longitude,
       }).then(res => {
         // find the nearest coords address
-        let {
-          formattedAddress = '',
-          subLocality = '',
-          locality = '',
-          adminArea = '',
-          postalCode = '',
-        } = getNearestCoordsData(
+        const nearestAddress = getNearestCoordsData(
           {
             lat: latitude,
             lng: longitude,
           },
           res,
         );
-        const doesHaveCode = formattedAddress
-          .substring(0, formattedAddress.indexOf(' '))
-          .includes('+');
-        if (doesHaveCode) {
-          formattedAddress = formattedAddress.substring(
-            formattedAddress.indexOf(' ') + 1,
+        if (nearestAddress) {
+          let {
+            formattedAddress = '',
+            subLocality = '',
+            locality = '',
+            adminArea = '',
+            postalCode = '',
+          } = nearestAddress;
+          const doesHaveCode = formattedAddress
+            .substring(0, formattedAddress.indexOf(' '))
+            .includes('+');
+          if (doesHaveCode) {
+            formattedAddress = formattedAddress.substring(
+              formattedAddress.indexOf(' ') + 1,
+            );
+          }
+          // extracting local address like "No 2 John street, Triplicane, "
+          const localityAddress = formattedAddress.substring(
+            0,
+            formattedAddress.indexOf(locality) - 2,
           );
+          setLocationAddress({
+            streetAddress: localityAddress,
+            subLocality,
+            locality,
+            adminArea,
+            postalCode,
+          });
+        } else {
+          setLocationAddress({
+            streetAddress: '',
+            subLocality: '',
+            locality: '',
+            adminArea: '',
+            postalCode: '',
+          });
         }
-        // extracting local address like "No 2 John street, Triplicane, "
-        const localityAddress = formattedAddress.substring(
-          0,
-          formattedAddress.indexOf(locality) - 2,
-        );
-        setLocationAddress({
-          streetAddress: localityAddress,
-          subLocality,
-          locality,
-          adminArea,
-          postalCode,
-        });
       });
     }
-  }, [location]);
+  };
 
   const getNearestCoordsData = (targetCoords, addressArray) => {
     // Function to calculate Euclidean distance between two points
@@ -166,7 +191,6 @@ const Location = ({ setLocalNav, handleSendMsg }) => {
         nearestCoordsAddress = address;
       }
     }
-
     return nearestCoordsAddress;
   };
 
@@ -191,6 +215,12 @@ const Location = ({ setLocalNav, handleSendMsg }) => {
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
+  };
+
+  const showNoConnectivityToast = () => {
+    showToast('Please check your internet connection', {
+      id: 'location-no-internet-toast',
+    });
   };
 
   const handleMapPress = e => {
@@ -242,8 +272,20 @@ const Location = ({ setLocalNav, handleSendMsg }) => {
       </MapView>
     );
   };
+
+  const renderCityDistrictAndPostalCode = () => {
+    const _locaility = locationAddress.locality
+      ? locationAddress.locality + ', '
+      : '';
+    const _adminArea = locationAddress.adminArea
+      ? locationAddress.adminArea + ', '
+      : '';
+    const _postalCode = locationAddress.postalCode || '';
+    return _locaility + _adminArea + _postalCode;
+  };
+
   const renderFooter = () => {
-    if (location != null && Boolean(locationAddress)) {
+    if (location != null && Boolean(locationAddress) && isInternetReachable) {
       return (
         <View style={styles.mapFooter}>
           <View style={styles.addressContainer}>
@@ -253,7 +295,7 @@ const Location = ({ setLocalNav, handleSendMsg }) => {
                 {locationAddress.streetAddress}
               </Text>
               <Text style={styles.addCityText}>
-                {`${locationAddress.locality}, ${locationAddress.adminArea}, ${locationAddress.postalCode}`}
+                {renderCityDistrictAndPostalCode()}
               </Text>
             </View>
           </View>

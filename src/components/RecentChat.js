@@ -20,6 +20,7 @@ import Avathar from '../common/Avathar';
 import {
   AudioMusicIcon,
   DocumentChatIcon,
+  LocationMarkerIcon,
   SandTimer,
   VideoSmallIcon,
   imageIcon,
@@ -39,6 +40,10 @@ import { getImageSource } from '../common/utils';
 
 const AudioIconFunc = () => (
   <AudioMusicIcon width="14" height="14" color={'#767676'} />
+);
+
+const LocationMarkerIconFunc = () => (
+  <LocationMarkerIcon width="23" height="23" color={'#000'} />
 );
 
 const RecentChatItem = ({
@@ -66,6 +71,91 @@ const RecentChatItem = ({
   image = image || '';
   userId = userId || item?.fromUserId || '';
   colorCode = colorCode || profileDetails?.colorCode;
+
+  const renderLastSentMessageBasedOnType = () => {
+    switch (item?.msgBody?.message_type) {
+      case 'text':
+        return (
+          <HighlightedMessage
+            text={item?.msgBody?.message}
+            searchValue={searchValue}
+            index={index}
+          />
+        );
+      case 'image':
+        return (
+          <HStack pl="1" alignItems={'center'}>
+            <Icon as={imageIcon} />
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              px={1}
+              color="#767676"
+              _dark={{ color: '#767676' }}>
+              Image
+            </Text>
+          </HStack>
+        );
+      case 'video':
+        return (
+          <HStack pl="1" alignItems={'center'}>
+            <Icon as={() => VideoSmallIcon('#767676')} />
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              px={1}
+              color="#767676"
+              _dark={{ color: '#767676' }}>
+              Video
+            </Text>
+          </HStack>
+        );
+      case 'file':
+        return (
+          <HStack pl="1" alignItems={'center'}>
+            <Icon as={DocumentChatIcon} />
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              px={1}
+              color="#767676"
+              _dark={{ color: '#767676' }}>
+              File
+            </Text>
+          </HStack>
+        );
+      case 'audio':
+        return (
+          <HStack pl="1" alignItems={'center'}>
+            <Icon as={AudioIconFunc} />
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              px={1}
+              color="#767676"
+              _dark={{ color: '#767676' }}>
+              Audio
+            </Text>
+          </HStack>
+        );
+      case 'location':
+        return (
+          <HStack alignItems={'center'}>
+            <Icon as={LocationMarkerIconFunc} />
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              // px={1}
+              color="#767676"
+              _dark={{ color: '#767676' }}>
+              Location
+            </Text>
+          </HStack>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <Box key={index}>
@@ -126,69 +216,7 @@ const RecentChatItem = ({
                       <Icon px="3" as={SandTimer} name="emoji-happy" />
                     )
                   )}
-                  {
-                    {
-                      text: (
-                        <HighlightedMessage
-                          text={item?.msgBody?.message}
-                          searchValue={searchValue}
-                          index={index}
-                        />
-                      ),
-                      image: (
-                        <HStack pl="1" alignItems={'center'}>
-                          <Icon as={imageIcon} />
-                          <Text
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                            px={1}
-                            color="#767676"
-                            _dark={{ color: '#767676' }}>
-                            Image
-                          </Text>
-                        </HStack>
-                      ),
-                      video: (
-                        <HStack pl="1" alignItems={'center'}>
-                          <Icon as={() => VideoSmallIcon('#767676')} />
-                          <Text
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                            px={1}
-                            color="#767676"
-                            _dark={{ color: '#767676' }}>
-                            Video
-                          </Text>
-                        </HStack>
-                      ),
-                      file: (
-                        <HStack pl="1" alignItems={'center'}>
-                          <Icon as={DocumentChatIcon} />
-                          <Text
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                            px={1}
-                            color="#767676"
-                            _dark={{ color: '#767676' }}>
-                            File
-                          </Text>
-                        </HStack>
-                      ),
-                      audio: (
-                        <HStack pl="1" alignItems={'center'}>
-                          <Icon as={AudioIconFunc} />
-                          <Text
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                            px={1}
-                            color="#767676"
-                            _dark={{ color: '#767676' }}>
-                            Audio
-                          </Text>
-                        </HStack>
-                      ),
-                    }[item?.msgBody?.message_type]
-                  }
+                  {renderLastSentMessageBasedOnType()}
                 </HStack>
               )}
             </VStack>

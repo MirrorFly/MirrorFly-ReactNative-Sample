@@ -71,6 +71,7 @@ import {
 } from '../redux/Actions/RecoverMessageAction';
 import { useFocusEffect } from '@react-navigation/native';
 import { chatInputMessageRef } from '../components/ChatInput';
+import Location from '../components/Media/Location';
 
 function ChatScreen() {
   const [replyMsg, setReplyMsg] = React.useState('');
@@ -255,6 +256,10 @@ function ChatScreen() {
     }
   };
 
+  const handleLocationSelect = async () => {
+    setLocalNav('LocationInfo');
+  };
+
   const attachmentMenuIcons = [
     {
       name: 'Document',
@@ -329,7 +334,7 @@ function ChatScreen() {
     {
       name: 'Location',
       icon: LocationIcon,
-      formatter: () => {},
+      formatter: handleLocationSelect,
     },
   ];
 
@@ -455,7 +460,7 @@ function ChatScreen() {
           fromUserJid: currentUserJID,
           replyTo,
         };
-        const conversationChatObj = await getMessageObjSender(dataObj, i);
+        const conversationChatObj = getMessageObjSender(dataObj, i);
         mediaData[msgId] = conversationChatObj;
         const recentChatObj = getRecentChatMsgObj(dataObj);
 
@@ -562,42 +567,78 @@ function ChatScreen() {
     }
   };
 
+  const constructAndDispatchConversationAndRecentChatData = dataObj => {
+    const conversationChatObj = getMessageObjSender(dataObj);
+    const recentChatObj = getRecentChatMsgObj(dataObj);
+    const dispatchData = {
+      data: [conversationChatObj],
+      ...(isSingleChat('chat')
+        ? { userJid: dataObj.jid }
+        : { groupJid: dataObj.jid }), // check this when group works
+    };
+    batch(() => {
+      store.dispatch(addChatConversationHistory(dispatchData));
+      store.dispatch(updateRecentChat(recentChatObj));
+    });
+  };
+
   const handleSendMsg = async message => {
-    let messageType = message.type;
+    const messageType = message.type;
+
     if (toUserJid in data) {
       dispatch(deleteRecoverMessage(toUserJid));
     }
 
-    if (messageType === 'media') {
-      parseAndSendMessage(message, 'chat', messageType);
-      return;
-    }
-
-    if (message.content !== '') {
-      let jid = toUserJid;
-      let msgId = uuidv4();
-      const userProfile = vCardData;
-      const dataObj = {
-        jid: jid,
-        msgType: 'text',
-        message: message.content,
-        userProfile,
-        chatType: 'chat',
-        msgId,
-        fromUserJid: currentUserJID,
-        replyTo: message.replyTo,
-      };
-      const conversationChatObj = await getMessageObjSender(dataObj);
-      const recentChatObj = getRecentChatMsgObj(dataObj);
-      const dispatchData = {
-        data: [conversationChatObj],
-        ...(isSingleChat('chat') ? { userJid: jid } : { groupJid: jid }), // check this when group works
-      };
-      batch(() => {
-        store.dispatch(addChatConversationHistory(dispatchData));
-        store.dispatch(updateRecentChat(recentChatObj));
-      });
-      SDK.sendTextMessage(jid, message.content, msgId, message.replyTo);
+    const msgId = uuidv4();
+    switch (messageType) {
+      case 'media':
+        parseAndSendMessage(message, 'chat', messageType);
+        break;
+      case 'location':
+        const replyTo = replyMsg?.msgId || '';
+        const { latitude, longitude } = message.location || {};
+        if (latitude && longitude) {
+          const dataObj = {
+            jid: toUserJid,
+            msgType: messageType,
+            userProfile: vCardData,
+            chatType: 'chat',
+            msgId,
+            location: { latitude, longitude },
+            fromUserJid: currentUserJID,
+            replyTo: replyTo,
+          };
+          constructAndDispatchConversationAndRecentChatData(dataObj);
+          SDK.sendLocationMessage(
+            toUserJid,
+            latitude,
+            longitude,
+            msgId,
+            replyTo,
+          );
+        }
+        break;
+      default: // default to text message
+        if (message.content !== '') {
+          const dataObj = {
+            jid: toUserJid,
+            msgType: 'text',
+            message: message.content,
+            userProfile: vCardData,
+            chatType: 'chat',
+            msgId,
+            fromUserJid: currentUserJID,
+            replyTo: message.replyTo,
+          };
+          constructAndDispatchConversationAndRecentChatData(dataObj);
+          SDK.sendTextMessage(
+            toUserJid,
+            message.content,
+            msgId,
+            message.replyTo,
+          );
+        }
+        break;
     }
   };
 
@@ -681,6 +722,9 @@ function ChatScreen() {
               setLocalNav={setLocalNav}
               setSelectedImages={setSelectedImages}
             />
+          ),
+          LocationInfo: (
+            <Location setLocalNav={setLocalNav} handleSendMsg={handleSendMsg} />
           ),
         }[localNav]
       }

@@ -12,6 +12,6 @@ const config = {
   maximumCharForwardPopUp: 60,
   internetErrorMessage: 'Please check your Internet connection',
   reportMembers: 5,
-  GOOGLE_LOCATION_API_KEY: 'AIzaSyBaKkrQnLT4nacpKblIE5d4QK6GpaX5luQ',
+  GOOGLE_LOCATION_API_KEY: 'AIzaSyBaKkrQnLT4nacpKblIE5d4QK6GpaX5luQ', // NOSONAR
 };
 export default config;

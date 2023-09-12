@@ -525,13 +525,12 @@ const ForwardMessage = () => {
     // Sending params to SDK to forward message
     const contactsToForward = Object.values(selectedUsers).map(u => u.userJid);
     const msgIds = forwardMessages.map(m => m.msgId);
-    const res = await SDK.forwardMessagesToMultipleUsers(
+    await SDK.forwardMessagesToMultipleUsers(
       contactsToForward,
       msgIds,
       true,
       newMsgIds,
     );
-    console.log('Forward message response', JSON.stringify(res, null, 2));
     setShowLoader(false);
     onMessageForwaded?.();
     if (Object.values(selectedUsers).length === 1) {

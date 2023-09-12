@@ -9,10 +9,16 @@ import {
   Platform,
 } from 'react-native';
 import ic_baloon from '../assets/ic_baloon.png';
-import mapImage from '../assets/google-maps-blur.png';
 import { getImageSource } from '../common/utils';
 import ReplyMessage from './ReplyMessage';
 import { StyleSheet } from 'react-native';
+import config from './chat/common/config';
+
+const MAP_URL = 'https://maps.googleapis.com/maps/api/staticmap';
+
+const getLocationImageURL = ({ latitude, longitude }) => {
+  return `${MAP_URL}?center=${latitude},${longitude}&zoom=15&size=194x171&markers=color:red|${latitude},${longitude}&key=${config.GOOGLE_LOCATION_API_KEY}`;
+};
 
 const MapCard = ({
   status,
@@ -25,8 +31,13 @@ const MapCard = ({
     msgBody: { replyTo = '' },
   } = message;
 
+  const { latitude = '', longitude = '' } = message.msgBody?.location || {};
+
+  const locationImageUrl = React.useMemo(() => {
+    return getLocationImageURL({ latitude, longitude });
+  }, [latitude, longitude]);
+
   const mapHandler = () => {
-    const { latitude = '', longitude = '' } = message.msgBody?.location || {};
     // const locationUrl =
     //   Platform.OS === 'ios'
     //     ? ''
@@ -58,7 +69,7 @@ const MapCard = ({
   console.log('Message object', JSON.stringify(message.msgBody, null, 2));
 
   return (
-    <View borderColor={'#E2E8F7'} borderWidth={2} borderRadius={10}>
+    <View style={styles.container(isSender)}>
       {replyTo && (
         <ReplyMessage
           handleReplyPress={handleReplyPress}
@@ -69,7 +80,7 @@ const MapCard = ({
       <View width={195} height={170}>
         <Pressable onPress={mapHandler}>
           <Image
-            source={getImageSource(mapImage)}
+            source={{ uri: locationImageUrl }}
             resizeMode="cover"
             style={styles.staticMapImage}
           />
@@ -91,6 +102,11 @@ const MapCard = ({
 export default MapCard;
 
 const styles = StyleSheet.create({
+  container: isSender => ({
+    backgroundColor: isSender ? '#E2E8F7' : '#FFFFFF',
+    padding: 4,
+    borderRadius: 10,
+  }),
   staticMapImage: {
     width: 194,
     height: 171,

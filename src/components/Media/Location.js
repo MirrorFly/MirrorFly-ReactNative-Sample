@@ -17,8 +17,9 @@ import { openSettings } from 'react-native-permissions';
 import ApplicationColors from '../../config/appColors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { requestLocationPermission } from '../../common/utils';
+import config from '../chat/common/config';
 
-Geocoder.fallbackToGoogle('AIzaSyBaKkrQnLT4nacpKblIE5d4QK6GpaX5luQ');
+Geocoder.fallbackToGoogle(config.GOOGLE_LOCATION_API_KEY);
 
 /**
  * @typedef LocationState
@@ -227,6 +228,8 @@ const Location = ({ setLocalNav, handleSendMsg }) => {
         ref={mapViewRef}
         onRegionChangeComplete={handleRegionChange}
         showsCompass={true}
+        showsMyLocationButton={true}
+        showsScale={true}
         onPress={handleMapPress}>
         {location && (
           <Marker

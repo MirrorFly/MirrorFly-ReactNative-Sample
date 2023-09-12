@@ -124,6 +124,7 @@ const ChatConversationList = ({
     if (forceGetFromSDK || !messages[getUserIdFromJid(fromUserJId)]) {
       let chatMessage = await SDK.getChatMessagesDB(fromUserJId);
       if (chatMessage?.statusCode === 200) {
+        console.log('Conversation data', JSON.stringify(chatMessage, null, 2));
         dispatch(addChatConversationHistory(chatMessage));
       }
     }

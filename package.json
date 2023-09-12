@@ -22,7 +22,7 @@
     "@types/react": "^18.0.24",
     "contus-mf-rn": "^1.0.1",
     "emoji-datasource": "^15.0.1",
-    "mirrorfly-uikit-react-native": "^1.0.1",
+    "mirrorfly-uikit-react-native": "^1.0.2",
     "moment": "^2.29.4",
     "native-base": "^3.4.28",
     "patch-package": "^8.0.0",

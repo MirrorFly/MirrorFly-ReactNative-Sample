@@ -65,7 +65,7 @@ const ProfilePage = props => {
   };
 
   React.useEffect(() => {
-    setNickName(userName);
+    setNickName(selectProfileInfo?.nickName);
   }, [selectProfileInfo?.nickName]);
 
   const handleBackBtn = () => {
@@ -152,8 +152,8 @@ const ProfilePage = props => {
       setloading(false);
       if (UserInfo.statusCode === 200) {
         let x = { screen: RECENTCHATSCREEN, prevScreen: PROFILESCREEN };
-        RootNav.navigate(RECENTCHATSCREEN);
         prevPageInfo === REGISTERSCREEN && dispatch(navigate(x));
+        RootNav.reset(RECENTCHATSCREEN);
         return showToast('Profile Updated successfully', toastConfig);
       } else {
         return showToast(UserInfo.message, toastConfig);

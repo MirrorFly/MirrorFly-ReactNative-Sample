@@ -130,7 +130,7 @@ const VideoCard = props => {
             shadow={5}
             borderRadius={50}>
             <View p="3">
-              <PlayIcon />
+              <PlayIcon width={15} height={15} />
             </View>
           </View>
         )}

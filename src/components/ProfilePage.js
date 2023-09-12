@@ -65,7 +65,7 @@ const ProfilePage = props => {
   };
 
   React.useEffect(() => {
-    setNickName(selectProfileInfo?.nickName);
+    setNickName(userName);
   }, [selectProfileInfo?.nickName]);
 
   const handleBackBtn = () => {

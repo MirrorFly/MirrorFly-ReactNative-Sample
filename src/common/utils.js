@@ -119,6 +119,14 @@ export const requestFileStoragePermission = async () => {
   }
 };
 
+export const requestLocationPermission = async () => {
+  return request(
+    Platform.OS === 'android'
+      ? PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION
+      : PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+  );
+};
+
 export const handleGalleryPickerMulti = async toast => {
   try {
     const res = await DocumentPicker.pick({

@@ -289,4 +289,5 @@ const styles = StyleSheet.create({
     borderColor: '#3276E2',
     borderWidth: 2,
   },
+  miniPreviewList: { flexGrow: 0 },
 });

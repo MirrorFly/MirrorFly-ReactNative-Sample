@@ -13,7 +13,7 @@ import {
   ContactChatIcon,
   DocIcon,
   DocumentChatIcon,
-  LocationIcon,
+  LocationMarkerIcon,
   PPTIcon,
   PdfIcon,
   VideoIcon,
@@ -23,6 +23,8 @@ import {
 import useRosterData from '../hooks/useRosterData';
 import { getExtension } from './chat/common/fileUploadValidation';
 import { ORIGINAL_MESSAGE_DELETED } from '../Helper/Chat/Constant';
+import mapStaticBlurImage from '../assets/google-maps-blur.png';
+import { getImageSource } from '../common/utils';
 
 function ReplyMessage(props) {
   const { handleReplyPress } = props;
@@ -55,8 +57,6 @@ function ReplyMessage(props) {
   const replyMessageUserNickName = !isSameUser ? nickName : 'You';
 
   const fileExtension = getExtension(media?.fileName, false);
-  const imageUrl =
-    'https://subli.info/wp-content/uploads/2015/05/google-maps-blur.png';
 
   const renderFileIcon = React.useCallback(() => {
     switch (fileExtension) {
@@ -372,21 +372,18 @@ function ReplyMessage(props) {
               resizeMode="cover"
               style={{
                 width: 45,
-                height: 43,
+                height: 45,
+                backgroundColor: 'salmon',
                 borderTopRightRadius: 5,
                 borderBottomRightRadius: 5,
               }}
-              source={{ uri: imageUrl }}
+              source={getImageSource(mapStaticBlurImage)}
             />
           </View>
 
-          <HStack alignItems={'center'} pl={1}>
-            <LocationIcon
-              width="12"
-              height="10"
-              color={props.isSame ? '#7285B5' : '#959595'}
-            />
-            <Text pl={2} fontSize={12} color={'#313131'} fontWeight={400}>
+          <HStack alignItems={'center'}>
+            <LocationMarkerIcon color={props.isSame ? '#7285B5' : '#959595'} />
+            <Text fontSize={12} color={'#313131'} fontWeight={400}>
               Location
             </Text>
           </HStack>

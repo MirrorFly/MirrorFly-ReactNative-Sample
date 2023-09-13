@@ -35,6 +35,19 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>This is app require your camera</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string></string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This is app require your microphone</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This is app would like to access your photos</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This is app would like to access your photos</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This is app would like to access your music files</string>
+	<key>UILaunchStoryboardName</key>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>UILaunchStoryboardName</key>

@@ -64,10 +64,8 @@ const ProfilePage = props => {
     avoidKeyboard: true,
   };
 
-  console.log(nickName, 'nickName', selectProfileInfo);
   React.useEffect(() => {
-    console.log(userName, 'userName');
-    setNickName(selectProfileInfo?.nickName);
+    setNickName(userName);
   }, [selectProfileInfo?.nickName]);
 
   const handleBackBtn = () => {

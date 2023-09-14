@@ -38,14 +38,14 @@ const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
   isKeyboardVisibleRef.current = false;
 });
 
-export const ChatApp = () => {
+export const ChatApp = props => {
   React.useEffect(() => {
     (async () => {
       await SDK.initializeSDK({
-        apiBaseUrl: 'https://api-uikit-qa.contus.us/api/v1',
-        licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
+        apiBaseUrl: props.apiUrl,
+        licenseKey: props.licenseKey,
         callbackListeners: callBacks,
-        isSandbox: false,
+        isSandbox: props.isSandbox,
       });
       /** await messaging().requestPermission();*/
     })();

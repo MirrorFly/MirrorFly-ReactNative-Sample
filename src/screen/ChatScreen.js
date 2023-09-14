@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SDK from '../SDK/SDK';
-import { AlertDialog } from 'native-base';
 import React from 'react';
 import {
   Alert,
@@ -72,7 +71,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { chatInputMessageRef } from '../components/ChatInput';
 import Location from '../components/Media/Location';
-import commonStyles from '../common/commonStyles';
+import Modal, { ModalCenteredContent } from '../common/Modal';
 
 function ChatScreen() {
   const [replyMsg, setReplyMsg] = React.useState('');
@@ -696,18 +695,18 @@ function ChatScreen() {
           ),
         }[localNav]
       }
-      {alert && (
-        <AlertDialog isOpen={alert} onClose={alert}>
-          <View style={styles.dialogContentContainer}>
-            <Text style={styles.alertMessageText}>{validate}</Text>
-            <View style={styles.actionButtonContainer}>
+      <Modal visible={alert}>
+        <ModalCenteredContent>
+          <View style={styles.modalContentContainer}>
+            <Text style={styles.modalMessageText}>{validate}</Text>
+            <View style={styles.modalActionButtonContainer}>
               <Pressable onPress={onClose}>
-                <Text style={styles.dialogOkButton}>OK</Text>
+                <Text style={styles.modalOkButton}>OK</Text>
               </Pressable>
             </View>
           </View>
-        </AlertDialog>
-      )}
+        </ModalCenteredContent>
+      </Modal>
     </>
   );
 }
@@ -715,22 +714,22 @@ function ChatScreen() {
 export default ChatScreen;
 
 const styles = StyleSheet.create({
-  dialogContentContainer: {
+  modalContentContainer: {
     width: '85%',
     borderRadius: 0,
     paddingHorizontal: 24,
     paddingVertical: 16,
     backgroundColor: '#fff',
   },
-  alertMessageText: {
+  modalMessageText: {
     fontSize: 16,
     color: 'black',
   },
-  dialogOkButton: {
+  modalOkButton: {
     fontWeight: '500',
     color: '#3276E2',
   },
-  actionButtonContainer: {
+  modalActionButtonContainer: {
     flexDirection: 'row',
     flexGrow: 1,
     justifyContent: 'flex-end',

@@ -1,16 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SDK from '../SDK/SDK';
-import {
-  AlertDialog,
-  Box,
-  HStack,
-  Pressable,
-  Text,
-  Toast,
-  useToast,
-} from 'native-base';
+import { AlertDialog } from 'native-base';
 import React from 'react';
-import { Alert, BackHandler, Platform } from 'react-native';
+import {
+  Alert,
+  BackHandler,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
@@ -72,6 +72,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { chatInputMessageRef } from '../components/ChatInput';
 import Location from '../components/Media/Location';
+import commonStyles from '../common/commonStyles';
 
 function ChatScreen() {
   const [replyMsg, setReplyMsg] = React.useState('');
@@ -82,7 +83,6 @@ function ChatScreen() {
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const [localNav, setLocalNav] = React.useState('CHATCONVERSATION');
   const [isMessageInfo, setIsMessageInfo] = React.useState({});
-  const toast = useToast();
   const dispatch = useDispatch();
   const [isToastShowing, setIsToastShowing] = React.useState(false);
   const [selectedImages, setSelectedImages] = React.useState([]);
@@ -160,32 +160,23 @@ function ChatScreen() {
     const storage_permission = await AsyncStorage.getItem('storage_permission');
     AsyncStorage.setItem('storage_permission', 'true');
     let MediaPermission = await requestAudioStoragePermission();
-    const size_toast = 'size_toast';
     if (MediaPermission === 'granted' || MediaPermission === 'limited') {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       let response = await handleAudioPickerSingle();
       let _validate = validation(response.type);
-      const size = validateFileSize(response.size, getType(response.type));
-      if (_validate && !size) {
+      const sizeError = validateFileSize(response.size, getType(response.type));
+      if (_validate && !sizeError) {
         setAlert(true);
         setValidate(_validate);
       }
       const audioDuration = await getAudioDuration(response.fileCopyUri);
       response.duration = audioDuration;
-      if (size && !Toast.isActive(size_toast)) {
-        return Toast.show({
-          id: size_toast,
-          ...toastConfig,
-          render: () => {
-            return (
-              <Box bg="black" px="2" py="1" rounded="sm">
-                <Text style={{ color: '#fff', padding: 5 }}>{size}</Text>
-              </Box>
-            );
-          },
+      if (sizeError) {
+        return showToast(sizeError, {
+          id: 'media-size-error-toast',
         });
       }
-      if (!_validate && !size) {
+      if (!_validate && !sizeError) {
         const transformedArray = {
           caption: '',
           fileDetails: mediaObjContructor('DOCUMENT_PICKER', response),
@@ -493,17 +484,10 @@ function ChatScreen() {
       fileDetails: mediaObjContructor('CAMERA_ROLL', item),
     };
     setIsToastShowing(true);
-    const size = validateFileSize(item.image.fileSize, getType(item.type));
-    if (size && !isToastShowing) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>{size}</Text>
-            </Box>
-          );
-        },
+    const sizeError = validateFileSize(item.image.fileSize, getType(item.type));
+    if (sizeError && !isToastShowing) {
+      return showToast(sizeError, {
+        id: 'media-size-error-toast',
       });
     }
     if (!isToastShowing) {
@@ -521,35 +505,19 @@ function ChatScreen() {
     };
     setIsToastShowing(true);
     setselectedSingle(false);
-    const size = validateFileSize(item.image.fileSize, getType(item.type));
+    const sizeError = validateFileSize(item.image.fileSize, getType(item.type));
     const isImageSelected = selectedImages.some(
       selectedItem => selectedItem.fileDetails?.uri === item?.image.uri,
     );
     if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>
-                Can't share more than 10 media items
-              </Text>
-            </Box>
-          );
-        },
+      return showToast("Can't share more than 10 media items", {
+        id: 'media-error-toast',
       });
     }
 
-    if (size && !isToastShowing) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>{size}</Text>
-            </Box>
-          );
-        },
+    if (sizeError && !isToastShowing) {
+      return showToast(sizeError, {
+        id: 'media-size-error-toast',
       });
     }
 
@@ -728,27 +696,46 @@ function ChatScreen() {
           ),
         }[localNav]
       }
-      <AlertDialog isOpen={alert} onClose={alert}>
-        <AlertDialog.Content
-          w="85%"
-          borderRadius={0}
-          px="6"
-          py="4"
-          fontWeight={'600'}>
-          <Text fontSize={16} color={'black'}>
-            {validate}
-          </Text>
-          <HStack justifyContent={'flex-end'} mr={2} pb={'2'} pt={'6'}>
-            <Pressable onPress={onClose}>
-              <Text fontWeight={'500'} color={'#3276E2'}>
-                OK
-              </Text>
-            </Pressable>
-          </HStack>
-        </AlertDialog.Content>
-      </AlertDialog>
+      {alert && (
+        <AlertDialog isOpen={alert} onClose={alert}>
+          <View style={styles.dialogContentContainer}>
+            <Text style={styles.alertMessageText}>{validate}</Text>
+            <View style={styles.actionButtonContainer}>
+              <Pressable onPress={onClose}>
+                <Text style={styles.dialogOkButton}>OK</Text>
+              </Pressable>
+            </View>
+          </View>
+        </AlertDialog>
+      )}
     </>
   );
 }
 
 export default ChatScreen;
+
+const styles = StyleSheet.create({
+  dialogContentContainer: {
+    width: '85%',
+    borderRadius: 0,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    backgroundColor: '#fff',
+  },
+  alertMessageText: {
+    fontSize: 16,
+    color: 'black',
+  },
+  dialogOkButton: {
+    fontWeight: '500',
+    color: '#3276E2',
+  },
+  actionButtonContainer: {
+    flexDirection: 'row',
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+    marginRight: 8,
+    paddingBottom: 8,
+    paddingTop: 24,
+  },
+});

@@ -1,39 +1,41 @@
-import { Stack, Text, View } from 'native-base';
+import { Text, View } from 'native-base';
 import React from 'react';
 import { StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
+import ReplyMessage from './ReplyMessage';
 
 const TextCard = props => {
-  const [isSelected, setIsSelected] = React.useState(false);
-  const ReplyTo = props.message.msgBody.replyTo;
+  const { handleReplyPress, message } = props;
+  const { msgBody: { replyTo = '' } = {} } = message;
+
+  const conversationSearchText = useSelector(
+    state => state.conversationSearchData?.searchText,
+  );
+
   return (
     <View
       bgColor={props.isSame ? '#E2E8F7' : '#fff'}
       borderRadius={10}
       overflow={'hidden'}
-      borderWidth={props.isSame ? 0 : 0.25}
+      borderWidth={props.isSame ? 0 : 1}
       borderBottomLeftRadius={props.isSame ? 10 : 0}
       borderBottomRightRadius={props.isSame ? 0 : 10}
-      borderColor="#959595"
+      borderColor="#DDE3E5"
       px="1">
-      {isSelected && (
-        <View
-          paddingX={'1'}
-          paddingY={'1'}
-          bgColor={props.isSame ? '#E2E8F7' : '#fff'}>
-          <Stack
-            paddingX={'3'}
-            paddingY={'0'}
-            backgroundColor={'#0000001A'}
-            borderRadius={15}>
-            <View marginY={'2'} justifyContent={'flex-start'}>
-              <Text numberOfLines={1}>You</Text>
-              <Text numberOfLines={1}>Hiiii</Text>
-            </View>
-          </Stack>
-        </View>
+      {replyTo && (
+        <ReplyMessage
+          handleReplyPress={handleReplyPress}
+          message={props.message}
+          isSame={props.isSame}
+        />
       )}
+      <Text style={styles.message}>
+        <ChatConversationHighlightedText
+          text={props.data?.message}
+          searchValue={conversationSearchText.trim()}
+        />
+      </Text>
 
-      <Text style={styles.message}>{props.data?.message}</Text>
       <View style={styles.timeStamp}>
         {props.data.status}
         <Text pl="1" color="#455E93" fontSize="10" fontWeight={300}>
@@ -44,6 +46,41 @@ const TextCard = props => {
   );
 };
 export default TextCard;
+
+const escapeRegExpReservedChars = str => {
+  return String(str).replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
+};
+
+export const ChatConversationHighlightedText = ({
+  textStyle = {},
+  text,
+  searchValue = '',
+  index,
+}) => {
+  let parts = searchValue
+    ? text.split(new RegExp(`(${escapeRegExpReservedChars(searchValue)})`, 'i'))
+    : [text];
+  return (
+    <Text>
+      {parts.map((part, i) => {
+        const isSearchMatch =
+          part.toLowerCase() === searchValue.toLowerCase()
+            ? styles.highlight
+            : {};
+        return (
+          <Text
+            color="coolGray.800"
+            key={++i + '-' + index}
+            dark={{ color: 'warmGray.50' }}
+            ellipsizeMode="tail"
+            style={[textStyle, isSearchMatch]}>
+            {part}
+          </Text>
+        );
+      })}
+    </Text>
+  );
+};
 
 const styles = StyleSheet.create({
   message: {
@@ -59,5 +96,9 @@ const styles = StyleSheet.create({
     padding: 2,
     alignItems: 'center',
     justifyContent: 'flex-end',
+  },
+  highlight: {
+    backgroundColor: '#D69C23',
+    fontWeight: 'bold',
   },
 });

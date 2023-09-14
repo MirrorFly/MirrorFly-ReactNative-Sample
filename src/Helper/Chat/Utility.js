@@ -1,5 +1,5 @@
 import { changeTimeFormat } from '../../common/TimeStamp';
-import { formatUserIdToJid, isGroupChat } from './ChatHelper';
+import { formatUserIdToJid, isGroupChat, isSingleChat } from './ChatHelper';
 import {
   GROUP_CHAT_PROFILE_UPDATED_NOTIFY,
   MAX_HEIGHT_AND,
@@ -64,7 +64,7 @@ export const calculateWidthAndHeight = (width, height) => {
   return response;
 };
 
-export const getMessageObjSender = async (dataObj, idx) => {
+export const getMessageObjSender = (dataObj, idx) => {
   const {
     jid,
     msgType,
@@ -77,6 +77,7 @@ export const getMessageObjSender = async (dataObj, idx) => {
     fileDetails,
     replyTo,
     fromUserJid,
+    location = {},
   } = dataObj;
   const timestamp = Date.now() * 1000;
   const senderId = userProfile.fromUser;
@@ -86,48 +87,58 @@ export const getMessageObjSender = async (dataObj, idx) => {
     ...(replyTo && { replyTo }),
   };
 
-  if (msgType === 'text') {
-    msgBody.message = message;
-  } else {
-    let webWidth = 0,
-      webHeight = 0,
-      androidWidth = 0,
-      androidHeight = 0,
-      originalWidth = 0,
-      originalHeight = 0;
-    if (msgType === 'image') {
-      const mediaDimension = calculateWidthAndHeight(
-        fileDetails?.width,
-        fileDetails?.height,
-      );
-      ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);
-    } else if (msgType === 'video') {
-      ({ originalWidth, originalHeight } = fileDetails);
-      const mediaDimension = calculateWidthAndHeight(
-        fileDetails?.width,
-        fileDetails?.height,
-      );
-      ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);
-    }
-    msgBody.message = '';
-    msgBody.media = {
-      file,
-      caption: fileOptions.caption || '',
-      fileName: fileOptions.fileName,
-      file_size: fileOptions.fileSize,
-      is_downloaded: 0,
-      is_uploading: idx === 0 ? 1 : 0,
-      file_url: '',
-      duration: fileOptions.duration || 0,
-      local_path: '',
-      thumb_image: fileOptions.thumbImage,
-      webWidth: webWidth,
-      webHeight: webHeight,
-      androidWidth: androidWidth,
-      androidHeight: androidHeight,
-      originalWidth,
-      originalHeight,
-    };
+  switch (msgType) {
+    case 'text':
+      msgBody.message = message;
+      break;
+    case 'location':
+      const { latitude, longitude } = location;
+      msgBody.location = {
+        latitude,
+        longitude,
+      };
+      break;
+    default:
+      let webWidth = 0,
+        webHeight = 0,
+        androidWidth = 0,
+        androidHeight = 0,
+        originalWidth = 0,
+        originalHeight = 0;
+      if (msgType === 'image') {
+        const mediaDimension = calculateWidthAndHeight(
+          fileDetails?.width,
+          fileDetails?.height,
+        );
+        ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);
+      } else if (msgType === 'video') {
+        ({ originalWidth, originalHeight } = fileDetails);
+        const mediaDimension = calculateWidthAndHeight(
+          fileDetails?.width,
+          fileDetails?.height,
+        );
+        ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);
+      }
+      msgBody.message = '';
+      msgBody.media = {
+        file,
+        caption: fileOptions.caption || '',
+        fileName: fileOptions.fileName,
+        file_size: fileOptions.fileSize,
+        is_downloaded: 0,
+        is_uploading: idx === 0 ? 1 : 0,
+        file_url: '',
+        duration: fileOptions.duration || 0,
+        local_path: '',
+        thumb_image: fileOptions.thumbImage,
+        webWidth: webWidth,
+        webHeight: webHeight,
+        androidWidth: androidWidth,
+        androidHeight: androidHeight,
+        originalWidth,
+        originalHeight,
+      };
+      break;
   }
 
   const retunVal = {
@@ -162,6 +173,7 @@ export const getRecentChatMsgObj = dataObj => {
     chatType,
     message = '',
     fileOptions = {},
+    location = {},
   } = dataObj;
 
   const createdAt = changeTimeFormat(Date.now() * 1000);
@@ -173,21 +185,31 @@ export const getRecentChatMsgObj = dataObj => {
     nickName: userProfile.nickName,
   };
 
-  if (msgType === 'text') {
-    msgBody.message = message;
-  } else {
-    msgBody.media = {
-      caption: fileOptions.caption || '',
-      fileName: fileOptions.fileName,
-      file_size: fileOptions.fileSize,
-      is_downloaded: 0,
-      is_uploading: 1,
-      local_path: '',
-      file_url: '',
-      duration: fileOptions.duration || 0,
-      thumb_image: fileOptions.thumbImage,
-      audioType: fileOptions.audioType,
-    };
+  switch (msgType) {
+    case 'text':
+      msgBody.message = message;
+      break;
+    case 'location':
+      const { latitude, longitude } = location;
+      msgBody.location = {
+        latitude,
+        longitude,
+      };
+      break;
+    default:
+      msgBody.media = {
+        caption: fileOptions.caption || '',
+        fileName: fileOptions.fileName,
+        file_size: fileOptions.fileSize,
+        is_downloaded: 0,
+        is_uploading: 1,
+        local_path: '',
+        file_url: '',
+        duration: fileOptions.duration || 0,
+        thumb_image: fileOptions.thumbImage,
+        audioType: fileOptions.audioType,
+      };
+      break;
   }
   const fromUserId = getUserIdFromJid(jid);
 
@@ -196,6 +218,7 @@ export const getRecentChatMsgObj = dataObj => {
     createdAt: createdAt,
     deleteStatus: 0,
     fromUserId: fromUserId,
+    userJid: jid,
     msgBody: msgBody,
     msgId: msgId,
     msgStatus: 3,
@@ -261,4 +284,10 @@ export const millisToMinutesAndSeconds = millis => {
     (seconds < 10 ? '0' : '') +
     seconds
   );
+};
+
+export const getSenderIdFromMsgObj = msgObj => {
+  if (!msgObj || typeof msgObj !== 'object') return '';
+  const { fromUserJid, publisherId } = msgObj;
+  return isSingleChat(msgObj.chatType) ? fromUserJid : publisherId;
 };

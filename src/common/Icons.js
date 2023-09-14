@@ -884,12 +884,12 @@ export const StatusIcon = () => {
   );
 };
 
-export const DownArrowIcon = () => {
+export const DownArrowIcon = ({ width, height }) => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="12"
-      height="8"
+      width={width || '12'}
+      height={height || '8'}
       viewBox="0 0 10 5.67">
       <Path
         id="drop_down"
@@ -1212,8 +1212,8 @@ export const LocationIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="50"
-      height="50"
+      width={props.width || '50'}
+      height={props.height || '50'}
       viewBox="0 0 50 50">
       <G
         id="Group_7341"
@@ -1245,6 +1245,26 @@ export const LocationIcon = props => {
             />
           </G>
         </G>
+      </G>
+    </Svg>
+  );
+};
+
+export const LocationMarkerIcon = ({ width, height, color }) => {
+  return (
+    <Svg
+      width={width || '20'}
+      height={height || '20'}
+      viewBox="0 0 20 20"
+      version="1.1">
+      <G id="surface1">
+        <Path
+          stroke=""
+          fillRule="nonzero"
+          fill={color || 'rgb(0, 0, 0)'}
+          fillOpacity={1}
+          d="M 14.703125 9.1875 C 14.703125 6.703125 12.703125 4.703125 10.21875 4.703125 C 7.734375 4.703125 5.734375 6.703125 5.734375 9.1875 C 5.734375 11.671875 10.21875 16.308594 10.21875 16.308594 C 10.21875 16.308594 14.703125 11.671875 14.703125 9.1875 Z M 8.132812 9.097656 C 8.132812 7.957031 9.078125 7.011719 10.21875 7.011719 C 11.363281 7.011719 12.308594 7.933594 12.308594 9.097656 C 12.308594 10.242188 11.382812 11.1875 10.21875 11.1875 C 9.078125 11.1875 8.132812 10.242188 8.132812 9.097656 Z M 8.132812 9.097656 "
+        />
       </G>
     </Svg>
   );
@@ -1858,8 +1878,8 @@ export const PdfIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="18.093"
-      height="22.788"
+      width={props.width || '18.093'}
+      height={props.height || '22.788'}
       viewBox="0 0 18.093 22.788">
       <G id="Group_7354" data-name="Group 7354" transform="translate(-1.28)">
         <Path
@@ -1907,12 +1927,12 @@ export const PdfIcon = props => {
   );
 };
 
-export const ZipIcon = ({ height, width }) => {
+export const ZipIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
+      width={props.width || '22'}
+      height={props.height || '22'}
       viewBox="0 0 22 22">
       <G id="Zip_222" data-name="Zip 222" transform="translate(15914 -11129)">
         <Rect
@@ -1984,8 +2004,8 @@ export const PPTIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="18.093"
-      height="22.788"
+      width={props.width || '18.093'}
+      height={props.height || '22.788'}
       viewBox="0 0 18.093 22.788">
       <G id="Group_15661" data-name="Group 15661" transform="translate(-1.28)">
         <Path
@@ -2039,8 +2059,8 @@ export const XLSIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="18.093"
-      height="22.788"
+      width={props.width || '18.093'}
+      height={props.height || '22.788'}
       viewBox="0 0 18.093 22.788">
       <G id="Group_15658" data-name="Group 15658" transform="translate(-1.28)">
         <Path
@@ -2087,8 +2107,8 @@ export const ApkIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="18.093"
-      height="22.788"
+      width={props.width || '18.093'}
+      height={props.height || '22.788'}
       viewBox="0 0 18.093 22.788">
       <G id="Group_15663" data-name="Group 15663" transform="translate(-1.28)">
         <Path
@@ -2125,8 +2145,8 @@ export const DocIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="18.093"
-      height="22.788"
+      width={props.width || '18.093'}
+      height={props.height || '22.788'}
       viewBox="0 0 18.093 22.788">
       <G id="Group_15656" data-name="Group 15656" transform="translate(-1.28)">
         <Path
@@ -2194,14 +2214,14 @@ export const DownloadIcon = ({ width, height, color }) => {
   );
 };
 
-export const CameraSmallIcon = () => {
+export const CameraSmallIcon = props => {
   return (
     <Svg
       id="camera_1_"
       data-name="camera"
       xmlns="http://www.w3.org/2000/svg"
-      width="10.333"
-      height="9.3"
+      width={props.width || '10.333'}
+      height={props.height || '9.3'}
       viewBox="0 0 10.333 9.3">
       <G id="camera-alt" transform="translate(0 0)">
         <Circle
@@ -2211,14 +2231,14 @@ export const CameraSmallIcon = () => {
           cy="1.653"
           r="1.653"
           transform="translate(3.513 3.513)"
-          fill="#fff"
+          fill={props.color || '#fff'}
         />
         <Path
           id="Path_9745"
           data-name="Path 9745"
           d="M3.617,25.5l-.93,1.033H1.033A1.036,1.036,0,0,0,0,27.567v6.2A1.036,1.036,0,0,0,1.033,34.8H9.3a1.036,1.036,0,0,0,1.033-1.033v-6.2A1.036,1.036,0,0,0,9.3,26.533H7.647L6.717,25.5Zm1.55,7.75A2.583,2.583,0,1,1,7.75,30.667,2.558,2.558,0,0,1,5.167,33.25Z"
           transform="translate(0 -25.5)"
-          fill="#fff"
+          fill={props.color || '#fff'}
         />
       </G>
     </Svg>
@@ -2533,8 +2553,8 @@ export const ContactChatIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
+      width={props.width || 14}
+      height={props.height || 14}
       viewBox="0 0 14 14">
       <G id="Contact" transform="translate(-92 -144)">
         <G
@@ -2547,7 +2567,7 @@ export const ContactChatIcon = props => {
               data-name="Path 9718"
               d="M58.466,1.675H57.21V.419A.419.419,0,0,0,56.792,0H49.256A1.257,1.257,0,0,0,48,1.256V11.722A1.676,1.676,0,0,0,49.675,13.4h8.792a.419.419,0,0,0,.419-.419V2.093A.419.419,0,0,0,58.466,1.675Zm-2.093,8.792a.419.419,0,0,1-.419.419H50.931a.419.419,0,0,1-.419-.419V9.629a2.1,2.1,0,0,1,2.093-2.093H54.28a2.1,2.1,0,0,1,2.093,2.093ZM51.768,5.024A1.675,1.675,0,1,1,53.442,6.7,1.676,1.676,0,0,1,51.768,5.024Zm4.605-3.349H49.256a.419.419,0,1,1,0-.837h7.117Z"
               transform="translate(-48)"
-              fill="#767676"
+              fill={props.color || '#767676'}
             />
           </G>
         </G>
@@ -2568,8 +2588,8 @@ export const DocumentChatIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
+      width={props.width || 14}
+      height={props.height || 14}
       viewBox="0 0 14 14">
       <G id="Document" transform="translate(-92 -143)">
         <G id="folded-document-icon" transform="translate(90.014 144)">
@@ -2584,7 +2604,7 @@ export const DocumentChatIcon = props => {
                 width="5.039"
                 height="0.733"
                 transform="translate(2.37 2.941)"
-                fill="#767676"
+                fill={props.color || '#767676'}
               />
               <Rect
                 id="Rectangle_3729"
@@ -2592,14 +2612,14 @@ export const DocumentChatIcon = props => {
                 width="5.039"
                 height="0.733"
                 transform="translate(2.37 4.698)"
-                fill="#767676"
+                fill={props.color || '#767676'}
               />
               <Path
                 id="Path_9748"
                 data-name="Path 9748"
                 d="M13.524,0H4.237a.244.244,0,0,0-.244.244V8.388a.605.605,0,0,0-.007.071A2.367,2.367,0,0,0,6.046,10.8l-.007.005,7.241.923a.489.489,0,0,0,.489-.489v-11A.245.245,0,0,0,13.524,0Zm-.977,10.314L7.7,7.471c-.114-.073-.206-.022-.206.113v.833c0,.014,0,.027,0,.042A1.142,1.142,0,0,1,6.351,9.6,1.1,1.1,0,0,1,5.215,8.5c0-.022,0-.054,0-.076v-7.2h7.331v9.092Z"
                 transform="translate(-3.986)"
-                fill="#767676"
+                fill={props.color || '#767676'}
               />
             </G>
           </G>
@@ -2634,5 +2654,140 @@ export const ContactInfoIcon = props => {
   </G>
 </Svg>
 
+export const UpArrowIcon = ({ width, height }) => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={width || '15'}
+      height={height || '7'}
+      viewBox="0 0 10 5.67">
+      <Path
+        id="drop_down"
+        data-name="drop down"
+        d="M333.342,114a.7.7,0,0,1-.5-.2l-4.3-4.277a.694.694,0,0,1,0-.985.7.7,0,0,1,.99,0l3.8,3.785,3.8-3.784a.7.7,0,0,1,.99,0,.694.694,0,0,1,0,.985l-4.3,4.277A.7.7,0,0,1,333.342,114Z"
+        transform="translate(338.342 114) rotate(180)"
+        fill="#000"
+      />
+    </Svg>
+  );
+};
+
+export const BlockedIcon = () => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 18 18">
+      <Path
+        id="Blocked_Contacts"
+        data-name="Blocked Contacts"
+        d="M24.577,294.085a8,8,0,1,1,8,8A8.009,8.009,0,0,1,24.577,294.085Zm8,6.881a6.878,6.878,0,0,0,5.232-11.346l-9.546,9.822A6.849,6.849,0,0,0,32.577,300.966ZM25.7,294.085a6.851,6.851,0,0,0,1.679,4.5l9.688-9.714A6.878,6.878,0,0,0,25.7,294.085Z"
+        transform="translate(-24.577 -286.085)"
+        fill="#959595"
+      />
+    </Svg>
+  );
+};
+
+export const CSVIcon = () => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 22 22">
+      <G
+        id="Group_34544"
+        data-name="Group 34544"
+        transform="translate(-17241 -3489)">
+        <Rect
+          id="Rectangle_10778"
+          data-name="Rectangle 10778"
+          width="22"
+          height="22"
+          transform="translate(17241 3489)"
+          fill="#fff"
+          opacity="0"
+        />
+        <G
+          id="Group_34542"
+          data-name="Group 34542"
+          transform="translate(17244.438 3490.475)">
+          <Path
+            id="Path_9793"
+            data-name="Path 9793"
+            d="M67.86,17.349a1.7,1.7,0,0,1-1.7,1.7H54.439a1.7,1.7,0,0,1-1.7-1.7V1.7a1.7,1.7,0,0,1,1.7-1.7h7.294a1.279,1.279,0,0,1,.9.375l4.849,4.849a1.274,1.274,0,0,1,.373.9Z"
+            transform="translate(-52.735 0)"
+            fill="#5ec363"
+          />
+          <Path
+            id="Path_9796"
+            data-name="Path 9796"
+            d="M314.32,8.583h-4.33a1.152,1.152,0,0,1-1.152-1.153V3.1a1.267,1.267,0,0,1,.374.259l4.849,4.849a1.266,1.266,0,0,1,.259.374Z"
+            transform="translate(-299.31 -2.986)"
+            fill="#469552"
+          />
+          <Path
+            id="Path_40523"
+            data-name="Path 40523"
+            d="M1.851.061A1.43,1.43,0,0,0,3.4-1.223H2.683a.8.8,0,0,1-.83.674c-.564,0-.918-.464-.918-1.216s.359-1.208.916-1.208a.816.816,0,0,1,.83.715H3.4A1.451,1.451,0,0,0,1.851-3.584,1.621,1.621,0,0,0,.183-1.763,1.619,1.619,0,0,0,1.851.061ZM3.723-1C3.745-.342,4.285.061,5.132.061c.874,0,1.428-.432,1.428-1.116,0-.537-.308-.84-1.013-.991l-.427-.09c-.405-.093-.576-.215-.576-.432,0-.261.244-.435.608-.435s.63.181.654.479H6.5c-.012-.637-.527-1.06-1.348-1.06-.786,0-1.348.43-1.348,1.079,0,.515.32.845.969.984l.459.1c.425.1.593.222.593.452,0,.259-.269.447-.662.447S4.468-.713,4.434-1Zm5.1,1,1.184-3.523H9.2L8.4-.759H8.381L7.576-3.523H6.75L7.935,0Z"
+            transform="translate(2.563 14.525)"
+            fill="#fff"
+          />
+        </G>
+      </G>
+    </Svg>
+  );
+};
+
+export const TXTIcon = () => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 22 22">
+      <G
+        id="Group_34543"
+        data-name="Group 34543"
+        transform="translate(-17241 -3489)">
+        <Rect
+          id="Rectangle_10778"
+          data-name="Rectangle 10778"
+          width="22"
+          height="22"
+          transform="translate(17241 3489)"
+          fill="#fff"
+          opacity="0"
+        />
+        <G
+          id="Group_34542"
+          data-name="Group 34542"
+          transform="translate(17244.438 3490.475)">
+          <Path
+            id="Path_9793"
+            data-name="Path 9793"
+            d="M67.86,17.349a1.7,1.7,0,0,1-1.7,1.7H54.439a1.7,1.7,0,0,1-1.7-1.7V1.7a1.7,1.7,0,0,1,1.7-1.7h7.294a1.279,1.279,0,0,1,.9.375l4.849,4.849a1.274,1.274,0,0,1,.373.9Z"
+            transform="translate(-52.735 0)"
+            fill="#825ca4"
+          />
+          <Path
+            id="Path_9796"
+            data-name="Path 9796"
+            d="M314.32,8.583h-4.33a1.152,1.152,0,0,1-1.152-1.153V3.1a1.267,1.267,0,0,1,.374.259l4.849,4.849a1.266,1.266,0,0,1,.259.374Z"
+            transform="translate(-299.31 -2.986)"
+            fill="#a374af"
+          />
+          <Path
+            id="Path_40522"
+            data-name="Path 40522"
+            d="M2.01.249V-2.872H3.116v-.651h-3v.651h1.1V.249Zm1.341,0H4.2l.831-1.32h.021L5.881.249h.9L5.562-1.628v-.018L6.8-3.523H5.915L5.107-2.164H5.087l-.8-1.359H3.359L4.548-1.662v.021Zm5.576,0V-2.872h1.106v-.651h-3v.651h1.1V.249Z"
+            transform="translate(2.238 14.049)"
+            fill="#fff"
+          />
+        </G>
+      </G>
+    </Svg>
   );
 };

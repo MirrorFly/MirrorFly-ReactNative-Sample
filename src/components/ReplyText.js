@@ -2,15 +2,22 @@ import { Pressable, ScrollView } from 'react-native';
 import React from 'react';
 import { HStack, Text, View } from 'native-base';
 import { ClearTextIcon } from '../common/Icons';
-import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { useSelector } from 'react-redux';
+import useRosterData from '../hooks/useRosterData';
 
 const ReplyText = props => {
   const { replyMsgItems, handleRemove, selectedMsgIndex } = props;
   const scrollViewRef = React.useRef(null);
-  const vCardProfile = useSelector(state => state.profile.profileDetails);
-  const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
+  const { fromUserJid = '', fromUserId = '' } = replyMsgItems;
+  const profileDetails = useSelector(state => state.navigation.profileDetails);
+  const currentUserJID = useSelector(state => state.auth.currentUserJID);
+  const isSameUser = fromUserJid === currentUserJID;
   const averageMessageHeight = 60;
+
+  let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
+
   React.useEffect(() => {
     if (scrollViewRef.current && selectedMsgIndex !== undefined) {
       const scrollToPosition = selectedMsgIndex * averageMessageHeight;
@@ -26,7 +33,7 @@ const ReplyText = props => {
     <ScrollView ref={scrollViewRef}>
       <View>
         <HStack justifyContent={'space-between'} alignItems={'center'}>
-          {replyMsgItems?.fromUserJid === currentUserJID ? (
+          {isSameUser ? (
             <Text
               color={'#000'}
               fontSize={14}
@@ -44,20 +51,25 @@ const ReplyText = props => {
               fontSize={14}
               fontWeight={600}
               py="0">
-              {replyMsgItems?.msgBody?.nickName}
+              {nickName || fromUserId}
             </Text>
           )}
           <Pressable
             style={{
               padding: 5,
+              top: -3,
+              right: 10,
+              bottom: 0,
               backgroundColor: '#FFF',
-              borderRadius: 20,
+              borderRadius: 10,
+              borderColor: '#000',
+              borderWidth: 1,
             }}
             onPress={RemoveHandle}>
             <ClearTextIcon />
           </Pressable>
         </HStack>
-        <Text numberOfLines={1} fontSize={14} color="#313131">
+        <Text numberOfLines={1} pl={2} fontSize={14} color="#313131">
           {replyMsgItems?.msgBody?.message}
         </Text>
       </View>

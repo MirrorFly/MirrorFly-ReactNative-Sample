@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   CallIcon,
@@ -15,6 +15,7 @@ import {
   Dimensions,
   PixelRatio,
   BackHandler,
+  Image,
 } from 'react-native';
 import {
   AlertDialog,
@@ -27,6 +28,8 @@ import {
   IconButton,
   Icon,
 } from 'native-base';
+import useFetchImage from '../hooks/useFetchImage';
+import { getUsernameGraphemes } from '../Helper/index';
 const propTypes = {
   src: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
   title: PropTypes.string,
@@ -52,25 +55,34 @@ const defaultProps = {
   toolbarColor: 'red',
   toolbarMaxHeight: 400,
   toolbarMinHeight: 60,
+  mobileNo: '',
+  email: '',
+  bgColor: '#3276E2',
 };
 
 const CollapsingToolbar = ({
+  bgColor,
   title,
+  imageToken,
   titleStatus,
   toolbarMaxHeight,
   toolbarMinHeight,
+  mobileNo,
+  email,
   setLocalNav,
   handleBackBtn,
 }) => {
-  const [visible, setVisible] = useState(false);
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const [animatedTitleColor, setAnimatedTitleColor] = useState(250);
+  const [visible, setVisible] = React.useState(false);
+  const scrollY = React.useRef(new Animated.Value(0)).current;
+  const [animatedTitleColor, setAnimatedTitleColor] = React.useState(250);
   const scrollDistance = toolbarMaxHeight - toolbarMinHeight;
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const pixelRatio = PixelRatio.get();
   const baseFontSize = 45;
   const adaptiveMinHeight = screenHeight * 0.92;
   const scaledFontSize = ((baseFontSize * screenWidth) / 375) * pixelRatio;
+
+  const { imageUrl, authToken } = useFetchImage(imageToken);
 
   const headerTranslate = scrollY.interpolate({
     inputRange: [0, scrollDistance],
@@ -83,14 +95,6 @@ const CollapsingToolbar = ({
     outputRange: [1, 1, 0],
     extrapolate: 'clamp',
   });
-
-  /**
-        const imageTranslate = scrollY.interpolate({
-            inputRange: [0, scrollDistance],
-            outputRange: [0, 100],
-            extrapolate: 'clamp',
-        });
-     */
 
   const titleScale = scrollY.interpolate({
     inputRange: [0, scrollDistance / 2, scrollDistance],
@@ -141,14 +145,28 @@ const CollapsingToolbar = ({
             {
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: '#3276E2',
+              backgroundColor: bgColor,
               height: toolbarMaxHeight,
               opacity: imageOpacity,
             },
           ]}>
-          <Text color="#fff" fontWeight={500} fontSize={scaledFontSize}>
-            AS
-          </Text>
+          {imageUrl ? (
+            <Image
+              style={styles.profileImage}
+              source={{
+                uri: imageUrl,
+                method: 'GET',
+                cache: 'force-cache',
+                headers: {
+                  Authorization: authToken,
+                },
+              }}
+            />
+          ) : (
+            <Text color="#fff" fontWeight={500} fontSize={scaledFontSize}>
+              {getUsernameGraphemes(title)}
+            </Text>
+          )}
         </Animated.View>
         <Animated.View
           style={[
@@ -234,7 +252,7 @@ const CollapsingToolbar = ({
             <HStack>
               <MailIcon />
               <Text mb={2} ml={2} color="#959595" fontSize={13}>
-                mdashik@gmail.com
+                {email}
               </Text>
             </HStack>
           </View>
@@ -245,7 +263,7 @@ const CollapsingToolbar = ({
             <HStack>
               <CallIcon />
               <Text mb={2} ml={2} color="#959595" fontSize={13}>
-                918838160009
+                {mobileNo}
               </Text>
             </HStack>
           </View>
@@ -256,7 +274,7 @@ const CollapsingToolbar = ({
             <HStack>
               <StatusIcon />
               <Text mb={2} ml={2} color="#959595" fontSize={13}>
-                Urgent calls only
+                {titleStatus}
               </Text>
             </HStack>
           </View>
@@ -408,5 +426,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#D3D3D3',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  profileImage: {
+    width: '100%',
+    height: '100%',
   },
 });

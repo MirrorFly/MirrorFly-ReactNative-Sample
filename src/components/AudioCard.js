@@ -4,14 +4,15 @@ import { AudioMusicIcon } from '../common/Icons';
 import AudioPlayer from './Media/AudioPlayer';
 import { StyleSheet } from 'react-native';
 import AttachmentProgressLoader from './chat/common/AttachmentProgressLoader';
-import useMediaProgress from 'hooks/useMediaProgress';
+import useMediaProgress from '../hooks/useMediaProgress';
+import ReplyMessage from './ReplyMessage';
 
 const AudioCard = props => {
-  const { messageObject, isSender } = props;
+  const { messageObject, isSender, handleReplyPress } = props;
 
   const {
     msgId = '',
-    msgBody: { media },
+    msgBody: { replyTo = '', media },
   } = messageObject;
   const uri = media.local_path || media?.file?.fileDetails?.uri;
 
@@ -29,12 +30,21 @@ const AudioCard = props => {
       borderWidth={1}
       flex={1}
       overflow={'hidden'}
-      backgroundColor={isSender ? '#E2E8F7' : '#0000001A'}
+      backgroundColor={isSender ? '#E2E8F7' : '#fff'}
       width={250}
       borderRadius={10}
       borderBottomRightRadius={isSender ? 0 : 10}
       borderBottomLeftRadius={isSender ? 10 : 0}
-      mb={1}>
+      mb={1}
+      pt={'0'}
+      p={replyTo ? '1' : 0}>
+      {replyTo && (
+        <ReplyMessage
+          handleReplyPress={handleReplyPress}
+          message={messageObject}
+          isSame={isSender}
+        />
+      )}
       <HStack
         alignItems={'center'}
         height={'16'}

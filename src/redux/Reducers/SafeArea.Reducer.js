@@ -1,11 +1,11 @@
 import {
   RESET_SAFE_AREA,
   UPDATE_SAFE_AREA_BG_COLOR,
-} from 'mf-redux/Actions/Constants';
+} from '../Actions/Constants';
 
 const initialState = {
   id: Date.now(),
-  color: '#f2f2f2',
+  color: '#E5E5E5',
 };
 
 const safeAreaReducer = (state = initialState, action) => {

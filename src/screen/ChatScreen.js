@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import SDK from 'SDK/SDK';
+import SDK from '../SDK/SDK';
 import {
   AlertDialog,
   Box,
@@ -16,7 +16,7 @@ import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
-import { batch, useSelector } from 'react-redux';
+import { batch, useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { showToast } from '../Helper';
 import { isSingleChat } from '../Helper/Chat/ChatHelper';
@@ -24,6 +24,7 @@ import { DOCUMENT_FORMATS } from '../Helper/Chat/Constant';
 import {
   getMessageObjSender,
   getRecentChatMsgObj,
+  getUserIdFromJid,
 } from '../Helper/Chat/Utility';
 import * as RootNav from '../Navigation/rootNavigation';
 import {
@@ -63,19 +64,52 @@ import store from '../redux/store';
 import SavePicture from './Gallery';
 import { createThumbnail } from 'react-native-create-thumbnail';
 import ContactList from 'components/Media/ContactList';
+import { navigate } from '../redux/Actions/NavigationAction';
+import { clearConversationSearchData } from '../redux/Actions/conversationSearchAction';
+import {
+  deleteRecoverMessage,
+  recoverMessage,
+} from '../redux/Actions/RecoverMessageAction';
+import { useFocusEffect } from '@react-navigation/native';
+import { chatInputMessageRef } from '../components/ChatInput';
+import Location from '../components/Media/Location';
 
 function ChatScreen() {
+  const [replyMsg, setReplyMsg] = React.useState('');
+  const chatInputRef = React.useRef(null);
+  const { data = {} } = useSelector(state => state.recoverMessage);
   const vCardData = useSelector(state => state.profile.profileDetails);
-  const fromUserJId = useSelector(state => state.navigation.fromUserJid);
+  const toUserJid = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const [localNav, setLocalNav] = React.useState('CHATCONVERSATION');
   const [isMessageInfo, setIsMessageInfo] = React.useState({});
   const toast = useToast();
+  const dispatch = useDispatch();
   const [isToastShowing, setIsToastShowing] = React.useState(false);
   const [selectedImages, setSelectedImages] = React.useState([]);
   const [selectedSingle, setselectedSingle] = React.useState(false);
   const [alert, setAlert] = React.useState(false);
   const [validate, setValidate] = React.useState('');
+  const [isSearching, setIsSearching] = React.useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setReplyMsg(data[toUserJid]?.replyMessage || '');
+    }, [toUserJid]),
+  );
+
+  const handleIsSearching = () => {
+    setIsSearching(true);
+  };
+
+  const handleIsSearchingClose = () => {
+    setIsSearching(false);
+  };
+
+  const toUserId = React.useMemo(
+    () => getUserIdFromJid(toUserJid),
+    [toUserJid],
+  );
 
   const toastConfig = {
     duration: 1500,
@@ -96,11 +130,15 @@ function ChatScreen() {
       DocumentPicker.types.plainText,
       DocumentPicker.types.zip,
       DocumentPicker.types.csv,
-      // TODO: need to add rar file type and verify that
+      /** need to add rar file type and verify that */
       '.rar',
     ],
     [],
   );
+
+  const getReplyMessage = message => {
+    setReplyMsg(message);
+  };
 
   const getAudioDuration = async path => {
     return new Promise((resolve, reject) => {
@@ -179,7 +217,6 @@ function ChatScreen() {
         .then(file => {
           // updating the SDK flag back to false to behave as usual
           SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-          console.log(file);
 
           // Validating the file type and size
           if (!isValidFileType(file.type)) {
@@ -220,9 +257,12 @@ function ChatScreen() {
     }
   };
 
-  const handleContactSelect =()=>{
+  const handleContactSelect = () => {
     setLocalNav('ContactList');
-  }
+  };
+  const handleLocationSelect = async () => {
+    setLocalNav('LocationInfo');
+  };
 
   const attachmentMenuIcons = [
     {
@@ -238,11 +278,6 @@ function ChatScreen() {
         let imageReadPermission = await requestStoragePermission();
         const camera_permission = await AsyncStorage.getItem(
           'camera_permission',
-        );
-        console.log(
-          cameraPermission,
-          imageReadPermission,
-          'cameraPermission, imageReadPermission',
         );
         AsyncStorage.setItem('camera_permission', 'true');
         if (
@@ -305,12 +340,38 @@ function ChatScreen() {
     {
       name: 'Location',
       icon: LocationIcon,
-      formatter: () => {},
+      formatter: handleLocationSelect,
     },
   ];
 
+  const handleRecoverMessage = () => {
+    let textMessage = chatInputMessageRef.current;
+    if (textMessage || replyMsg) {
+      const recoverMessageData = {
+        textMessage: textMessage || '',
+        replyMessage: replyMsg || '',
+        toUserJid: toUserJid || '',
+      };
+      dispatch(recoverMessage(recoverMessageData));
+    } else if (toUserJid in data) {
+      dispatch(deleteRecoverMessage(toUserJid));
+    }
+  };
+
   const handleBackBtn = () => {
-    localNav === 'CHATCONVERSATION' && RootNav.navigate(RECENTCHATSCREEN);
+    handleRecoverMessage();
+    if (isSearching) {
+      setIsSearching(false);
+      dispatch(clearConversationSearchData());
+    } else if (localNav === 'CHATCONVERSATION') {
+      let x = {
+        screen: RECENTCHATSCREEN,
+        fromUserJID: '',
+        profileDetails: {},
+      };
+      dispatch(navigate(x));
+      RootNav.navigate(RECENTCHATSCREEN);
+    }
     return true;
   };
 
@@ -351,14 +412,13 @@ function ChatScreen() {
         url: uri,
         timeStamp: 10000,
       });
-      console.log(frame, 'frame');
       response = await RNFS.readFile(frame.path, 'base64');
     }
     return response;
   };
 
   const sendMediaMessage = async (messageType, files, chatTypeSendMsg) => {
-    let jidSendMediaMessage = fromUserJId;
+    let jidSendMediaMessage = toUserJid;
     if (messageType === 'media') {
       let mediaData = {};
       for (let i = 0; i < files.length; i++) {
@@ -368,7 +428,14 @@ function ChatScreen() {
         const {
           caption = '',
           fileDetails = {},
-          fileDetails: { fileSize, filename, duration, uri, type } = {},
+          fileDetails: {
+            fileSize,
+            filename,
+            duration,
+            uri,
+            type,
+            replyTo = '',
+          } = {},
         } = file;
 
         const isDocument = DOCUMENT_FORMATS.includes(type);
@@ -397,8 +464,9 @@ function ChatScreen() {
           fileOptions,
           fileDetails: fileDetails,
           fromUserJid: currentUserJID,
+          replyTo,
         };
-        const conversationChatObj = await getMessageObjSender(dataObj, i);
+        const conversationChatObj = getMessageObjSender(dataObj, i);
         mediaData[msgId] = conversationChatObj;
         const recentChatObj = getRecentChatMsgObj(dataObj);
 
@@ -418,7 +486,10 @@ function ChatScreen() {
   };
 
   const parseAndSendMessage = async (message, chatType, messageType) => {
-    const {content} = message;
+    const { content } = message;
+    const replyTo = replyMsg?.msgId || '';
+    content[0].fileDetails.replyTo = replyTo;
+    setReplyMsg('');
     sendMediaMessage(messageType, content, chatType);
   };
 
@@ -502,38 +573,78 @@ function ChatScreen() {
     }
   };
 
-  const handleSendMsg = async message => {
-    let messageType = message.type;
+  const constructAndDispatchConversationAndRecentChatData = dataObj => {
+    const conversationChatObj = getMessageObjSender(dataObj);
+    const recentChatObj = getRecentChatMsgObj(dataObj);
+    const dispatchData = {
+      data: [conversationChatObj],
+      ...(isSingleChat('chat')
+        ? { userJid: dataObj.jid }
+        : { groupJid: dataObj.jid }), // check this when group works
+    };
+    batch(() => {
+      store.dispatch(addChatConversationHistory(dispatchData));
+      store.dispatch(updateRecentChat(recentChatObj));
+    });
+  };
 
-    if (messageType === 'media') {
-      parseAndSendMessage(message, 'chat', messageType);
-      return;
+  const handleSendMsg = async message => {
+    const messageType = message.type;
+
+    if (toUserJid in data) {
+      dispatch(deleteRecoverMessage(toUserJid));
     }
 
-    if (message.content !== '') {
-      let jid = fromUserJId;
-      let msgId = uuidv4();
-      const userProfile = vCardData;
-      const dataObj = {
-        jid: jid,
-        msgType: 'text',
-        message: message.content,
-        userProfile,
-        chatType: 'chat',
-        msgId,
-        fromUserJid: currentUserJID,
-      };
-      const conversationChatObj = await getMessageObjSender(dataObj);
-      const recentChatObj = getRecentChatMsgObj(dataObj);
-      const dispatchData = {
-        data: [conversationChatObj],
-        ...(isSingleChat('chat') ? { userJid: jid } : { groupJid: jid }), // check this when group works
-      };
-      batch(() => {
-        store.dispatch(addChatConversationHistory(dispatchData));
-        store.dispatch(updateRecentChat(recentChatObj));
-      });
-      SDK.sendTextMessage(jid, message.content, msgId,message.replyTo);
+    const msgId = uuidv4();
+    switch (messageType) {
+      case 'media':
+        parseAndSendMessage(message, 'chat', messageType);
+        break;
+      case 'location':
+        const replyTo = replyMsg?.msgId || '';
+        const { latitude, longitude } = message.location || {};
+        if (latitude && longitude) {
+          const dataObj = {
+            jid: toUserJid,
+            msgType: messageType,
+            userProfile: vCardData,
+            chatType: 'chat',
+            msgId,
+            location: { latitude, longitude },
+            fromUserJid: currentUserJID,
+            replyTo: replyTo,
+          };
+          constructAndDispatchConversationAndRecentChatData(dataObj);
+          SDK.sendLocationMessage(
+            toUserJid,
+            latitude,
+            longitude,
+            msgId,
+            replyTo,
+          );
+        }
+        break;
+      default: // default to text message
+        if (message.content !== '') {
+          const dataObj = {
+            jid: toUserJid,
+            msgType: 'text',
+            message: message.content,
+            userProfile: vCardData,
+            chatType: 'chat',
+            msgId,
+            fromUserJid: currentUserJID,
+            replyTo: message.replyTo,
+          };
+          constructAndDispatchConversationAndRecentChatData(dataObj);
+          SDK.sendTextMessage(
+            toUserJid,
+            message.content,
+            msgId,
+            message.replyTo,
+          );
+        }
+        break;
     }
   };
 
@@ -555,12 +666,18 @@ function ChatScreen() {
         {
           CHATCONVERSATION: (
             <ChatConversation
+              replyMsg={replyMsg}
+              chatInputRef={chatInputRef}
+              onReplyMessage={getReplyMessage}
               handleBackBtn={handleBackBtn}
               setLocalNav={setLocalNav}
               setIsMessageInfo={setIsMessageInfo}
               attachmentMenuIcons={attachmentMenuIcons}
               selectedImages={selectedImages}
               handleSendMsg={handleSendMsg}
+              handleIsSearching={handleIsSearching}
+              handleIsSearchingClose={handleIsSearchingClose}
+              IsSearching={isSearching}
             />
           ),
           MESSAGEINFO: (
@@ -579,12 +696,9 @@ function ChatScreen() {
               handleSendMsg={handleSendMsg}
             />
           ),
-          UserInfo: <UserInfo setLocalNav={setLocalNav} />,
+          UserInfo: <UserInfo setLocalNav={setLocalNav} toUserId={toUserId} />,
           UsersTapBarInfo: <UsersTapBarInfo setLocalNav={setLocalNav} />,
-          ContactList: (
-            <ContactList
-            setLocalNav={setLocalNav} />
-          ),
+          ContactList: <ContactList setLocalNav={setLocalNav} />,
           Gallery: (
             <SavePicture
               setLocalNav={setLocalNav}
@@ -617,6 +731,9 @@ function ChatScreen() {
             />
           ),
 
+          LocationInfo: (
+            <Location setLocalNav={setLocalNav} handleSendMsg={handleSendMsg} />
+          ),
         }[localNav]
       }
       <AlertDialog isOpen={alert} onClose={alert}>

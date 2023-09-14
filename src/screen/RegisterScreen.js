@@ -29,6 +29,7 @@ import {
 import { useNetworkStatus } from '../hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SDK from '../SDK/SDK';
+/**import messaging from '@react-native-firebase/messaging';*/
 
 const RegisterScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -127,6 +128,17 @@ const RegisterScreen = ({ navigation }) => {
       handleRegister();
     }
   };
+  /**
+  // const fcmTokenCheck = async () => {
+  //   try {
+  //     const fcmToken = await messaging().getToken();
+  //     return fcmToken;
+  //   } catch (error) {
+  //     return false;
+  //   }
+  // };
+   */
+
   const handleRegister = async () => {
     setIsToastShowing(false);
     const register = await SDK.register(
@@ -241,6 +253,8 @@ const RegisterScreen = ({ navigation }) => {
         </HStack>
         <Stack alignItems="center" mt="42">
           <PrimaryPillBtn title="Continue" onPress={handleSubmit} />
+          {/* <PrimaryPillBtn title="Push Remote" onPress={handleRemoteNotify} /> */}
+          {/* <PrimaryPillBtn title="Push Local" onPress={handleNotify} /> */}
         </Stack>
         <Stack mt="22" justifyContent="center" alignItems="center">
           <Text color="#767676" fontSize="14" fontWeight="400">

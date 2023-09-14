@@ -1,14 +1,20 @@
-import { StyleSheet, Pressable, Image } from 'react-native';
+import { Pressable, Image } from 'react-native';
 import React from 'react';
 import { ClearTextIcon, VideoIcon } from '../common/Icons';
 import { HStack, Text, View } from 'native-base';
-import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { useSelector } from 'react-redux';
+import useRosterData from '../hooks/useRosterData';
 
 const ReplyVideo = props => {
   const { replyMsgItems, handleRemove } = props;
-  const vCardProfile = useSelector(state => state.profile.profileDetails);
-  const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
+  const { fromUserJid = '', fromUserId = '' } = replyMsgItems;
+  const profileDetails = useSelector(state => state.navigation.profileDetails);
+  const currentUserJID = useSelector(state => state.auth.currentUserJID);
+  const isSameUser = fromUserJid === currentUserJID;
+
+  let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
 
   const RemoveHandle = () => {
     handleRemove();
@@ -16,13 +22,25 @@ const ReplyVideo = props => {
   return (
     <View style={{ position: 'relative' }}>
       <HStack justifyContent={'space-between'} alignItems={'center'}>
-        {replyMsgItems.fromUserJid === currentUserJID ? (
-          <Text color={'#000'} fontSize={14} pl={1}  mb={1} fontWeight={600} py="0">
+        {isSameUser ? (
+          <Text
+            color={'#000'}
+            fontSize={14}
+            pl={1}
+            mb={1}
+            fontWeight={600}
+            py="0">
             You
           </Text>
         ) : (
-          <Text mb={1} color={'#000'} pl={1} fontSize={14} fontWeight={600} py="0">
-            {replyMsgItems?.msgBody.nickName}
+          <Text
+            mb={1}
+            color={'#000'}
+            pl={1}
+            fontSize={14}
+            fontWeight={600}
+            py="0">
+            {nickName || fromUserId}
           </Text>
         )}
       </HStack>
@@ -58,14 +76,16 @@ const ReplyVideo = props => {
             right: 10,
             bottom: 0,
             backgroundColor: '#FFF',
-            borderRadius: 20,
+            borderRadius: 10,
+            borderColor: '#000',
+            borderWidth: 1,
           }}
           onPress={RemoveHandle}>
           <ClearTextIcon />
         </Pressable>
       </View>
 
-      <HStack alignItems={'center'}pl={1}>
+      <HStack alignItems={'center'} pl={1}>
         <VideoIcon color={'#767676'} width="13" height="13" />
         <Text pl={2} fontSize={14} color="#313131" fontWeight={400}>
           Video
@@ -76,5 +96,3 @@ const ReplyVideo = props => {
 };
 
 export default ReplyVideo;
-
-const styles = StyleSheet.create({});

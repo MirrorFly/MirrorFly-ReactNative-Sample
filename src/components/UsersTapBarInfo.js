@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native';
-import React, { useState } from 'react'
+import React from 'react'
 import { TabView, TabBar } from 'react-native-tab-view';
 import ScreenHeader from './ScreenHeader';
 const UsersTapBarInfo = (props) => {
-  const [index, setIndex] = useState(0);
-  const [routes] = useState([
+  const [index, setIndex] = React.useState(0);
+  const [routes] = React.useState([
     { key: '1', title: 'Media' },
     { key: '2', title: 'Docs' },
     { key: '3', title: 'Links' },

@@ -4,6 +4,7 @@ import styles from './MediaControls.style';
 import { getPlayerStateIcon } from './utils';
 import { Props } from './MediaControls';
 import { PLAYER_STATES } from './constants/playerStates';
+import { getImageSource } from '../../../common/utils';
 
 type ControlsProps = Pick<
   Props,
@@ -25,7 +26,7 @@ const Controls = (props: ControlsProps) => {
       onPress={pressAction}
       accessibilityLabel={PLAYER_STATES.PAUSED ? 'Tap to Play' : 'Tap to Pause'}
       accessibilityHint={'Plays and Pauses the Video'}>
-      <Image source={icon} style={styles.playIcon} />
+      <Image source={getImageSource(icon)} style={styles.playIcon} />
     </TouchableOpacity>
   );
 

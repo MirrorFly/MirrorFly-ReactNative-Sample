@@ -5,6 +5,9 @@ import noPreview from '../assets/noPreview.png';
 import { ImageBackground, StyleSheet } from 'react-native';
 import { millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
 import ProgressLoader from './chat/common/ProgressLoader';
+import ReplyMessage from './ReplyMessage';
+import ic_ballon from '../assets/ic_baloon.png';
+import { getImageSource } from '../common/utils';
 
 const VideoCard = props => {
   const {
@@ -13,12 +16,14 @@ const VideoCard = props => {
     isSender,
     fileSize,
     messageObject = {},
+    handleReplyPress,
   } = props;
 
   const {
     msgId = '',
     msgBody: { media },
     msgBody: {
+      replyTo = '',
       media: {
         duration = 0,
         is_uploading,
@@ -34,7 +39,7 @@ const VideoCard = props => {
   const durationInSeconds = duration;
   const durationInMinutes = millisToMinutesAndSeconds(durationInSeconds);
   const base64ImageData = 'data:image/jpg;base64,' + thumb_image;
-  const imageUrl = local_path ? local_path : '';
+  const imageUrl = local_path;
   const checkDownloaded = isSender ? is_uploading === 2 : imageUrl;
 
   return (
@@ -43,13 +48,21 @@ const VideoCard = props => {
       overflow={'hidden'}
       borderBottomRightRadius={isSender ? 0 : 10}
       borderBottomLeftRadius={isSender ? 10 : 0}
-      backgroundColor={isSender ? '#E2E8F7' : '#fff'}>
-      <View p="1" position="relative">
+      backgroundColor={isSender ? '#E2E8F7' : '#fff'}
+      px="1">
+      {replyTo && (
+        <ReplyMessage
+          handleReplyPress={handleReplyPress}
+          message={messageObject}
+          isSame={isSender}
+        />
+      )}
+      <View py="1" position="relative">
         {thumb_image ? (
           <Image
-            width={androidWidth}
+            width={replyTo ? 250 : androidWidth}
             borderRadius={5}
-            height={androidHeight}
+            height={replyTo ? 150 : androidHeight}
             alt={fileName}
             source={{ uri: base64ImageData }}
             resizeMode="cover"
@@ -59,7 +72,7 @@ const VideoCard = props => {
             <Image
               resizeMode="contain"
               alt={fileName}
-              source={noPreview}
+              source={getImageSource(noPreview)}
               width={androidWidth}
               height={androidHeight}
             />
@@ -100,9 +113,7 @@ const VideoCard = props => {
 
         {!media.caption && (
           <View position={'absolute'} bottom={2} right={2}>
-            <ImageBackground
-              source={require('../assets/ic_baloon.png')}
-              style={styles.imageBg}>
+            <ImageBackground source={ic_ballon} style={styles.imageBg}>
               {props.status}
               <Text pl="1" color="#fff" fontWeight={400} fontSize="9">
                 {props.timeStamp}
@@ -119,7 +130,7 @@ const VideoCard = props => {
             shadow={5}
             borderRadius={50}>
             <View p="3">
-              <PlayIcon />
+              <PlayIcon width={15} height={15} />
             </View>
           </View>
         )}

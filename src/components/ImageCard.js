@@ -4,7 +4,9 @@ import { ImageBackground, StyleSheet } from 'react-native';
 import noPreview from '../assets/noPreview.png';
 import ProgressLoader from './chat/common/ProgressLoader';
 import { getThumbBase64URL } from '../Helper/Chat/Utility';
-import { GalleryAllIcon } from '../common/Icons';
+import ReplyMessage from './ReplyMessage';
+import ic_baloon from '../assets/ic_baloon.png';
+import { getImageSource } from '../common/utils';
 
 const ImageCard = props => {
   const {
@@ -14,12 +16,14 @@ const ImageCard = props => {
     isSender,
     fileSize,
     messageObject = {},
+    handleReplyPress,
   } = props;
 
   const {
     msgId = '',
     msgBody: { media },
     msgBody: {
+      replyTo = '',
       message_type = '',
       media: {
         file: { fileDetails = {} } = {},
@@ -59,13 +63,21 @@ const ImageCard = props => {
       overflow={'hidden'}
       borderBottomRightRadius={isSender ? 0 : 10}
       borderBottomLeftRadius={isSender ? 10 : 0}
-      backgroundColor={isSender ? '#E2E8F7' : '#fff'}>
-      <View p="1" position="relative">
+      backgroundColor={isSender ? '#E2E8F7' : '#fff'}
+      px="1">
+      {replyTo && (
+        <ReplyMessage
+          handleReplyPress={handleReplyPress}
+          message={messageObject}
+          isSame={isSender}
+        />
+      )}
+      <View py="1" position="relative">
         {imageSource ? (
           <Image
-            width={androidWidth}
+            width={replyTo ? 250 : androidWidth}
             borderRadius={5}
-            height={androidHeight}
+            height={replyTo ? 150 : androidHeight}
             alt={fileName}
             source={{ uri: imageSource }}
             resizeMode="cover"
@@ -75,7 +87,7 @@ const ImageCard = props => {
             <Image
               resizeMode="contain"
               alt={fileName}
-              source={noPreview}
+              source={getImageSource(noPreview)}
               width={androidWidth}
               height={androidHeight}
             />
@@ -102,9 +114,7 @@ const ImageCard = props => {
         </View>
         {!media.caption && (
           <View position={'absolute'} bottom={2} right={2}>
-            <ImageBackground
-              source={require('../assets/ic_baloon.png')}
-              style={styles.imageBg}>
+            <ImageBackground source={ic_baloon} style={styles.imageBg}>
               {props.status}
               <Text pl="1" color="#fff" fontSize="9">
                 {props.timeStamp}

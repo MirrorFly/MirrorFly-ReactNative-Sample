@@ -2,13 +2,19 @@ import { Pressable } from 'react-native';
 import React from 'react';
 import { HStack, Text, View } from 'native-base';
 import { ClearTextIcon, DocumentChatIcon } from '../common/Icons';
-import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { useSelector } from 'react-redux';
+import useRosterData from '../hooks/useRosterData';
 
 const ReplyDocument = props => {
   const { replyMsgItems, handleRemove } = props;
-  const vCardProfile = useSelector(state => state.profile.profileDetails);
-  const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
+  const { fromUserJid = '', fromUserId = '' } = replyMsgItems;
+  const profileDetails = useSelector(state => state.navigation.profileDetails);
+  const currentUserJID = useSelector(state => state.auth.currentUserJID);
+  const isSameUser = fromUserJid === currentUserJID;
+
+  let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
 
   const RemoveHandle = () => {
     handleRemove();
@@ -16,7 +22,7 @@ const ReplyDocument = props => {
   return (
     <View>
       <HStack justifyContent={'space-between'} alignItems={'center'}>
-        {replyMsgItems.fromUserJid === currentUserJID ? (
+        {isSameUser ? (
           <Text
             color={'#000'}
             pl={1}
@@ -34,7 +40,7 @@ const ReplyDocument = props => {
             fontSize={14}
             fontWeight={600}
             py="0">
-            {replyMsgItems.msgBody.nickName}
+            {nickName || fromUserId}
           </Text>
         )}
         <Pressable

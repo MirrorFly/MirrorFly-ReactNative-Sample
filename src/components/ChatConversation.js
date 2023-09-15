@@ -5,7 +5,6 @@ import { showToast } from '../Helper/index';
 import SDK from '../SDK/SDK';
 import { ClearChatHistoryAction } from '../redux/Actions/ConversationAction';
 import { clearLastMessageinRecentChat } from '../redux/Actions/RecentChatAction';
-import { Box, HStack, Modal, Stack, Text, View, useToast } from 'native-base';
 import React from 'react';
 import {
   ImageBackground,
@@ -13,6 +12,8 @@ import {
   Platform,
   Pressable,
   StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNetworkStatus } from '../../src/hooks';
@@ -35,6 +36,7 @@ import ReplyVideo from './ReplyVideo';
 import ReplyDeleted from './ReplyDeleted';
 import chatBackgroud from '../assets/chatBackgroud.png';
 import { getImageSource } from '../common/utils';
+import Modal, { ModalCenteredContent } from '../common/Modal';
 
 const ChatConversation = React.memo(props => {
   const {
@@ -56,7 +58,6 @@ const ChatConversation = React.memo(props => {
   const [menuItems, setMenuItems] = React.useState([]);
   const [isOpenAlert, setIsOpenAlert] = React.useState(false);
   const isNetworkConnected = useNetworkStatus();
-  const toast = useToast();
 
   const isSearchClose = () => {
     handleIsSearchingClose();
@@ -122,17 +123,8 @@ const initialLeftActionState = false; // Adjust as needed
       selectedMsgs[0]?.msgBody.message ||
         selectedMsgs[0]?.msgBody?.media?.caption,
     );
-    toast.show({
-      ...toastConfig,
-      render: () => {
-        return (
-          <Box bg="black" px="2" py="1" rounded="sm">
-            <Text color={'#fff'} p="2">
-              1 Text copied successfully to the clipboard
-            </Text>
-          </Box>
-        );
-      },
+    showToast('1 Text copied successfully to the clipboard', {
+      id: 'text-copied-success-toast',
     });
   };
 
@@ -299,6 +291,8 @@ const initialLeftActionState = false; // Adjust as needed
     }
   };
 
+  const closeAlert = () => setIsOpenAlert(false);
+
   const renderReplyMessageTemplateAboveInput = () => {
     const {
       msgBody,
@@ -381,12 +375,10 @@ const initialLeftActionState = false; // Adjust as needed
         />
       </ImageBackground>
       {replyMsgs && !IsSearching ? (
-        <View paddingX={'1'} paddingY={'2'} backgroundColor={'#E2E8F9'}>
-          <Stack paddingX={'3'} paddingY={'0 '} backgroundColor={'#0000001A'}>
-            <View marginY={'3'} justifyContent={'flex-start'}>
-              {renderReplyMessageTemplateAboveInput()}
-            </View>
-          </Stack>
+        <View style={styles.replyingMessageContainer}>
+          <View style={styles.replyingMessageWrapper}>
+            {renderReplyMessageTemplateAboveInput()}
+          </View>
         </View>
       ) : null}
       {!IsSearching && (
@@ -398,35 +390,22 @@ const initialLeftActionState = false; // Adjust as needed
           fromUserJId={fromUserJId}
         />
       )}
-      <Modal
-        isOpen={isOpenAlert}
-        safeAreaTop={true}
-        onClose={() => setIsOpenAlert(false)}>
-        <Modal.Content
-          w="88%"
-          borderRadius={0}
-          px="6"
-          py="4"
-          fontWeight={'300'}>
-          <Text fontSize={16} color={'#5e5e5e'}>
-            {'Are you sure you want to clear the chat?'}
-          </Text>
-          <HStack justifyContent={'flex-end'} pb={'1'} pt={'7'}>
-            <Pressable
-              onPress={() => {
-                setIsOpenAlert(false);
-              }}>
-              <Text pr={'5'} fontWeight={'500'} color={'#3276E2'}>
-                CANCEL
-              </Text>
-            </Pressable>
-            <Pressable onPress={clearChat}>
-              <Text fontWeight={'500'} color={'#3276E2'}>
-                CLEAR
-              </Text>
-            </Pressable>
-          </HStack>
-        </Modal.Content>
+      <Modal visible={isOpenAlert} onRequestClose={closeAlert}>
+        <ModalCenteredContent onPressOutside={closeAlert}>
+          <View style={styles.modalContentContainer}>
+            <Text style={styles.modalContentText}>
+              Are you sure you want to clear the chat?
+            </Text>
+            <View style={styles.modalActionButtonContainer}>
+              <Pressable onPress={closeAlert}>
+                <Text style={styles.modalCancelButtonText}>CANCEL</Text>
+              </Pressable>
+              <Pressable onPress={clearChat}>
+                <Text style={styles.modalOkButtonText}>CLEAR</Text>
+              </Pressable>
+            </View>
+          </View>
+        </ModalCenteredContent>
       </Modal>
     </KeyboardAvoidingView>
   );
@@ -448,6 +427,45 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: 'black',
+  },
+  replyingMessageContainer: {
+    paddingHorizontal: 4,
+    paddingVertical: 8,
+    backgroundColor: '#E2E8F9',
+  },
+  replyingMessageWrapper: {
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    justifyContent: 'center',
+    backgroundColor: '#0000001A',
+  },
+  modalContentContainer: {
+    width: '88%',
+    borderRadius: 0,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    fontWeight: '300',
+    backgroundColor: '#fff',
+  },
+  modalContentText: {
+    fontSize: 16,
+    color: '#5e5e5e',
+  },
+  modalActionButtonContainer: {
+    flexDirection: 'row',
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+    paddingBottom: 4,
+    paddingTop: 28,
+  },
+  modalCancelButtonText: {
+    paddingRight: 20,
+    fontWeight: '500',
+    color: '#3276E2',
+  },
+  modalOkButtonText: {
+    fontWeight: '500',
+    color: '#3276E2',
   },
 });
 

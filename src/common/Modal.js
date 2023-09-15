@@ -1,10 +1,31 @@
 import React from 'react';
-// eslint-disable-next-line no-unused-vars
-import { StyleSheet, View, Modal as RNModal, ModalProps } from 'react-native';
+import {
+  StyleSheet,
+  // View,
+  Modal as RNModal,
+  // eslint-disable-next-line no-unused-vars
+  ModalProps,
+  Pressable,
+  View,
+} from 'react-native';
 import ApplicationColors from '../config/appColors';
 
-export const ModalCenteredContent = ({ children }) => {
-  return <View style={styles.modalcontainer}>{children}</View>;
+export const ModalCenteredContent = ({ children, onPressOutside }) => {
+  return (
+    <>
+      <Pressable onPress={onPressOutside} style={styles.modalOverlay} />
+      <View style={styles.modalCeneteredContentContainer}>{children}</View>
+    </>
+  );
+};
+
+export const ModalBottomContent = ({ children, onPressOutside }) => {
+  return (
+    <>
+      <Pressable onPress={onPressOutside} style={styles.modalOverlay} />
+      <View style={styles.modalBottomContentContainer}>{children}</View>
+    </>
+  );
 };
 
 /**
@@ -34,10 +55,22 @@ const Modal = ({
 export default Modal;
 
 const styles = StyleSheet.create({
-  modalcontainer: {
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: ApplicationColors.modalBg,
+  },
+  modalCeneteredContentContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: ApplicationColors.modalBg,
+  },
+  modalBottomContentContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
 });

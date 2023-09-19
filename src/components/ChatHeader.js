@@ -44,6 +44,7 @@ function ChatHeader({
   fromUserJId,
   selectedMsgs,
   setSelectedMsgs,
+  selectedMsgsIdRef,
   menuItems,
   handleBackBtn,
   handleReply,
@@ -126,6 +127,7 @@ function ChatHeader({
       .sort((a, b) => (b.timestamp > a.timestamp ? -1 : 1))
       .map(el => el.msgId);
     const jid = fromUserJId;
+    selectedMsgsIdRef.current = {};
     setSelectedMsgs([]);
     if (deleteType === 1) {
       SDK.deleteMessagesForMe(jid, msgIds);
@@ -136,6 +138,7 @@ function ChatHeader({
   };
 
   const handleRemove = () => {
+    selectedMsgsIdRef.current = {};
     setSelectedMsgs([]);
   };
 

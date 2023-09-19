@@ -1,0 +1,52 @@
+import React from 'react';
+import {
+  Pressable as RNPressable,
+  // eslint-disable-next-line no-unused-vars
+  PressableProps,
+  View,
+  StyleSheet,
+} from 'react-native';
+import commonStyles from './commonStyles';
+import ApplicationColors from '../config/appColors';
+
+/**
+ *
+ * @param {PressableProps} props
+ */
+const MessagePressable = ({
+  children,
+  contentContainerStyle,
+  pressedStyle,
+  ...props
+}) => {
+  const processedContentContainerStyle = React.useMemo(() => {
+    return [
+      commonStyles.positionRelative,
+      ...(Array.isArray(contentContainerStyle)
+        ? contentContainerStyle
+        : [contentContainerStyle]),
+    ];
+  }, [contentContainerStyle]);
+  return (
+    <RNPressable {...props}>
+      {({ pressed }) => (
+        <View style={[processedContentContainerStyle]}>
+          <View style={pressed && styles.highlightView} />
+          {children}
+        </View>
+      )}
+    </RNPressable>
+  );
+};
+
+export default MessagePressable;
+
+const styles = StyleSheet.create({
+  highlightView: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: ApplicationColors.pressedBg,
+    zIndex: 10,
+  },
+});

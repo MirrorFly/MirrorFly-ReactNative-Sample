@@ -1,5 +1,5 @@
 import React from 'react';
-import { Keyboard, StyleSheet } from 'react-native';
+import { Keyboard, StyleSheet, View, Pressable } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import FileViewer from 'react-native-file-viewer';
 import { SandTimer } from '../common/Icons';
@@ -11,12 +11,15 @@ import MapCard from './MapCard';
 import ContactCard from './ContactCard';
 import TextCard from './TextCard';
 import { getConversationHistoryTime } from '../common/TimeStamp';
-import { Box, HStack, Icon, Pressable, View } from 'native-base';
 import { uploadFileToSDK } from '../Helper/Chat/ChatHelper';
 import { getThumbBase64URL } from '../Helper/Chat/Utility';
 import { singleChatSelectedMediaImage } from '../redux/Actions/SingleChatImageAction';
 import { showToast } from '../Helper';
 import { isKeyboardVisibleRef } from '../ChatApp';
+import commonStyles from '../common/commonStyles';
+import ApplicationColors from '../config/appColors';
+import MessagePressable from '../common/MessagePressable';
+import { isMessageSelectingRef } from './ChatConversation';
 
 const ChatMessage = props => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
@@ -27,8 +30,12 @@ const ChatMessage = props => {
     message,
     setLocalNav,
     handleReplyPress,
-    highlightMessageBackgroundColor,
-    highlightMessageId,
+    // highlightMessageBackgroundColor,
+    shouldHighlightMessage,
+    shouldSelectMessage,
+    // selectedMsgsIdRef,
+    // selectedMsgs,
+    handleMsgSelect,
   } = props;
   const {
     msgBody = {},
@@ -54,6 +61,44 @@ const ChatMessage = props => {
   const imageSize = props?.message?.msgBody?.media?.file_size || '';
   const fileSize = imageSize;
   const [isSubscribed, setIsSubscribed] = React.useState(true);
+  // console.log('rendering message', message?.msgBody?.message);
+
+  // React.useEffect(() => {
+  //   console.log('shouldHighlightMessage changed', msgBody?.message);
+  // }, [shouldHighlightMessage]);
+  // React.useEffect(() => {
+  //   console.log('handleReplyPress changed', msgBody?.message);
+  // }, [handleReplyPress]);
+  // React.useEffect(() => {
+  //   console.log('setLocalNav changed', msgBody?.message);
+  // }, [setLocalNav]);
+  // React.useEffect(() => {
+  //   console.log('handleMsgSelect changed', msgBody?.message);
+  // }, [handleMsgSelect]);
+  // React.useEffect(() => {
+  //   console.log('shouldSelectMessage changed', msgBody?.message);
+  // }, [shouldSelectMessage]);
+  // React.useEffect(() => {
+  //   console.log('message changed', msgBody?.message);
+  // }, [message]);
+
+  // const [isMessageSelected, setIsMessageSelected] = React.useState(false);
+
+  // React.useEffect(() => {
+  //   const _isSelected = Boolean(selectedMsgsIdRef?.current?.[msgId]);
+  //   isMessageSelected !== _isSelected && setIsMessageSelected(_isSelected);
+  // }, [selectedMsgs]);
+
+  // React.useEffect(() => {
+  //   isMessageSelected !== shouldSelectMessage &&
+  //     setIsMessageSelected(shouldSelectMessage);
+  // }, [shouldSelectMessage]);
+
+  // React.useEffect(() => {
+  //   if (isMessageSelected !== Boolean(selectedMsgsIdRef?.current?.[msgId])) {
+  //     props.handleMsgSelect(props.message);
+  //   }
+  // }, [isMessageSelected]);
 
   const imgFileDownload = () => {
     try {
@@ -118,12 +163,14 @@ const ChatMessage = props => {
 
   const getMessageStatus = currentStatus => {
     if (isSame && currentStatus === 3) {
-      return <Icon px="3" as={SandTimer} name="emoji-happy" />;
+      return (
+        <View style={commonStyles.paddingHorizontal_12}>
+          <SandTimer />
+        </View>
+      );
     }
     return (
-      <>
-        <View style={[styles?.currentStatus, isSame ? statusVisible : '']} />
-      </>
+      <View style={[styles?.currentStatus, isSame ? statusVisible : '']} />
     );
   };
 
@@ -174,7 +221,7 @@ const ChatMessage = props => {
 
   const handleMessageSelect = () => {
     dismissKeyBoard();
-    if (props?.selectedMsgs?.length) {
+    if (isMessageSelectingRef.current) {
       props.handleMsgSelect(props.message);
     }
   };
@@ -186,9 +233,7 @@ const ChatMessage = props => {
 
   const handleContentPress = () => {
     dismissKeyBoard();
-    props?.selectedMsgs?.length < 1
-      ? handleMessageObj()
-      : handleMessageSelect();
+    isMessageSelectingRef.current ? handleMessageSelect() : handleMessageObj();
   };
 
   const handleContentLongPress = () => {
@@ -289,34 +334,40 @@ const ChatMessage = props => {
 
   return (
     <Pressable
-      onPress={handleMessageSelect}
       style={
-        highlightMessageId === msgId && {
-          backgroundColor: highlightMessageBackgroundColor,
+        shouldHighlightMessage && {
+          backgroundColor: ApplicationColors.highlighedMessageBg,
         }
       }
+      delayLongPress={300}
+      pressedStyle={commonStyles.bg_transparent}
+      onPress={handleMessageSelect}
       onLongPress={handleMessageLongPress}>
-      {({ isPressed }) => {
-        return (
-          <Box
-            mb="1.5"
-            bg={
-              props.selectedMsgs.find(msg => msg.msgId === props.message.msgId)
-                ? 'rgba(0,0,0,0.2)'
-                : 'transparent'
-            }>
-            <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px="3">
-              <Pressable
-                onPress={handleContentPress}
-                onLongPress={handleContentLongPress}
-                minWidth="30%"
-                maxWidth="80%">
-                {renderMessageBasedOnType()}
-              </Pressable>
-            </HStack>
-          </Box>
-        );
-      }}
+      <View
+        style={[
+          styles.messageContainer,
+          shouldSelectMessage ? styles.highlightMessage : undefined,
+        ]}>
+        <View
+          style={[
+            commonStyles.paddingHorizontal_12,
+            isSame
+              ? commonStyles.alignSelfFlexEnd
+              : commonStyles.alignSelfFlexStart,
+          ]}>
+          <MessagePressable
+            style={styles.messageContentPressable}
+            contentContainerStyle={[
+              styles.messageCommonStyle,
+              isSame ? styles.sentMessage : styles.receivedMessage,
+            ]}
+            delayLongPress={300}
+            onPress={handleContentPress}
+            onLongPress={handleContentLongPress}>
+            {renderMessageBasedOnType()}
+          </MessagePressable>
+        </View>
+      </View>
     </Pressable>
   );
 };
@@ -342,4 +393,29 @@ const styles = StyleSheet.create({
     backgroundColor: '#66E824',
   },
   flex1: { flex: 1 },
+  messageContainer: {
+    marginBottom: 6,
+  },
+  highlightMessage: {
+    backgroundColor: ApplicationColors.highlighedMessageBg,
+  },
+  messageContentPressable: {
+    minWidth: '30%',
+    maxWidth: '80%',
+  },
+  messageCommonStyle: {
+    borderRadius: 10,
+    overflow: 'hidden',
+    borderColor: '#DDE3E5',
+  },
+  sentMessage: {
+    backgroundColor: '#E2E8F7',
+    borderWidth: 0,
+    borderBottomRightRadius: 0,
+  },
+  receivedMessage: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderBottomLeftRadius: 0,
+  },
 });

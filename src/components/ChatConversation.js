@@ -5,7 +5,7 @@ import { showToast } from '../Helper/index';
 import SDK from '../SDK/SDK';
 import { ClearChatHistoryAction } from '../redux/Actions/ConversationAction';
 import { clearLastMessageinRecentChat } from '../redux/Actions/RecentChatAction';
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   ImageBackground,
   KeyboardAvoidingView,
@@ -38,6 +38,10 @@ import chatBackgroud from '../assets/chatBackgroud.png';
 import { getImageSource } from '../common/utils';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 
+// below ref is used to check whether selecting is happening or not in other components without passing the selected Messages state as props
+export const isMessageSelectingRef = React.createRef();
+isMessageSelectingRef.current = false;
+
 const ChatConversation = React.memo(props => {
   const {
     handleSendMsg,
@@ -58,6 +62,12 @@ const ChatConversation = React.memo(props => {
   const [menuItems, setMenuItems] = React.useState([]);
   const [isOpenAlert, setIsOpenAlert] = React.useState(false);
   const isNetworkConnected = useNetworkStatus();
+
+  const selectedMessagesIdRef = useRef({});
+
+  React.useEffect(() => {
+    isMessageSelectingRef.current = Boolean(selectedMsgs?.length);
+  }, [selectedMsgs]);
 
   const isSearchClose = () => {
     handleIsSearchingClose();
@@ -118,6 +128,7 @@ const initialLeftActionState = false; // Adjust as needed
   };
 
   const copyToClipboard = () => {
+    selectedMessagesIdRef.current = {};
     setSelectedMsgs([]);
     Clipboard.setString(
       selectedMsgs[0]?.msgBody.message ||
@@ -129,6 +140,7 @@ const initialLeftActionState = false; // Adjust as needed
   };
 
   const handleReply = msg => {
+    selectedMessagesIdRef.current = {};
     setSelectedMsgs([]);
     setReplyMsgs(msg);
     onReplyMessage(msg);
@@ -272,24 +284,30 @@ const initialLeftActionState = false; // Adjust as needed
   const onSelectedMessageUpdate = item => {
     if (Object.keys(item || {}).length !== 0 && selectedMsgs.length !== 0) {
       const updatedSeletedMessage = selectedMsgs.map(message => {
+        selectedMessagesIdRef.current[message?.msgId] = true;
         return item[message?.msgId];
       });
       setSelectedMsgs(updatedSeletedMessage);
     }
   };
 
-  const handleMsgSelect = (message, recall = false) => {
-    if (recall) {
-      message.recall = true;
-    }
-    if (selectedMsgs.find(msg => msg.msgId === message?.msgId)) {
-      setSelectedMsgs(prevArray =>
-        prevArray.filter(item => message.msgId !== item?.msgId),
-      );
-    } else {
-      setSelectedMsgs([...selectedMsgs, message]);
-    }
-  };
+  const handleMsgSelect = React.useCallback(
+    (message, recall = false) => {
+      if (recall) {
+        message.recall = true;
+      }
+      if (selectedMessagesIdRef.current[message?.msgId]) {
+        delete selectedMessagesIdRef.current[message?.msgId];
+        setSelectedMsgs(prevArray =>
+          prevArray.filter(item => message.msgId !== item?.msgId),
+        );
+      } else {
+        selectedMessagesIdRef.current[message?.msgId] = true;
+        setSelectedMsgs(prevArray => [...prevArray, message]);
+      }
+    },
+    [setSelectedMsgs],
+  );
 
   const closeAlert = () => setIsOpenAlert(false);
 
@@ -354,6 +372,7 @@ const initialLeftActionState = false; // Adjust as needed
         fromUserJId={fromUserJId}
         selectedMsgs={selectedMsgs}
         setSelectedMsgs={setSelectedMsgs}
+        selectedMsgsIdRef={selectedMessagesIdRef}
         menuItems={menuItems}
         handleBackBtn={props.handleBackBtn}
         handleReply={handleReply}
@@ -372,6 +391,7 @@ const initialLeftActionState = false; // Adjust as needed
           handleMsgSelect={handleMsgSelect}
           onSelectedMessageUpdate={onSelectedMessageUpdate}
           selectedMsgs={selectedMsgs}
+          selectedMsgsIdRef={selectedMessagesIdRef}
         />
       </ImageBackground>
       {replyMsgs && !IsSearching ? (

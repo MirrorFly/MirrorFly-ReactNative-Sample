@@ -15,6 +15,7 @@ const ChatConversationList = ({
   setLocalNav,
   fromUserJId,
   selectedMsgs,
+  selectedMsgsIdRef,
   handleMsgSelect,
   onSelectedMessageUpdate,
 }) => {
@@ -32,8 +33,8 @@ const ChatConversationList = ({
   const filteredMessageIndexes = React.useRef([]);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const [highlightMessageId, setHighlightMessageId] = React.useState('');
-  const [highlightMessageBackgroundColor, setHighlightMessageBackgroundColor] =
-    React.useState('transparent');
+  // const [highlightMessageBackgroundColor, setHighlightMessageBackgroundColor] =
+  //   React.useState('transparent');
 
   const messageList = React.useMemo(() => {
     const id = getUserIdFromJid(fromUserJId);
@@ -106,7 +107,7 @@ const ChatConversationList = ({
         setHighlightMessageId(
           filteredMessageIndexes.current?.[searchMesageIndex]?.msgId,
         );
-        setHighlightMessageBackgroundColor('rgba(0,0,0,0.2)');
+        // setHighlightMessageBackgroundColor('rgba(0,0,0,0.2)');
         flatListRef.current.scrollToIndex({
           index: _indexToScroll,
           animated: true,
@@ -114,7 +115,7 @@ const ChatConversationList = ({
         });
         setTimeout(() => {
           setHighlightMessageId('');
-          setHighlightMessageBackgroundColor('transparent');
+          // setHighlightMessageBackgroundColor('transparent');
         }, 500);
       }
     }
@@ -128,58 +129,75 @@ const ChatConversationList = ({
       }
     }
   };
-  const findMsgIndex = msgId => {
-    const index = messageList.findIndex(
-      item => item.msgId === msgId && item.deleteStatus === 0,
-    );
-    if (index === -1) {
-      return showToast('This message no longer availabe', { id: 'no_Longer' });
-    } else {
-      return index;
-    }
-  };
+  const findMsgIndex = React.useCallback(
+    msgId => {
+      const index = messageList.findIndex(
+        item => item.msgId === msgId && item.deleteStatus === 0,
+      );
+      if (index === -1) {
+        return showToast('This message no longer availabe', {
+          id: 'no_Longer',
+        });
+      } else {
+        return index;
+      }
+    },
+    [messageList],
+  );
 
-  const handleReplyPress = (replyId, item, onLongPress = false) => {
-    switch (true) {
-      case selectedMsgs.length === 0 && onLongPress:
-        handleMsgSelect(item);
-        break;
-      case selectedMsgs.length === 0:
-        setHighlightMessageId(replyId);
-        setHighlightMessageBackgroundColor('rgba(0,0,0,0.2)');
-        const scrollIndex = findMsgIndex(replyId);
-        if (scrollIndex > -1) {
-          flatListRef.current.scrollToIndex({
-            index: scrollIndex,
-            animated: true,
-            viewPosition: 0.5,
-          });
-          setTimeout(() => {
-            setHighlightMessageId('');
-            setHighlightMessageBackgroundColor('transparent');
-          }, 500);
-        }
-        break;
-      case selectedMsgs.length > 0:
-        handleMsgSelect(item);
-        break;
-      default:
-        break;
-    }
-  };
+  const handleReplyPress = React.useCallback(
+    (replyId, item, onLongPress = false) => {
+      const selectedMessagesLength = Object.keys(
+        selectedMsgsIdRef?.current || {},
+      ).length;
+      switch (true) {
+        case selectedMessagesLength === 0 && onLongPress:
+          handleMsgSelect(item);
+          break;
+        case selectedMessagesLength === 0:
+          setHighlightMessageId(replyId);
+          // setHighlightMessageBackgroundColor('rgba(0,0,0,0.2)');
+          const scrollIndex = findMsgIndex(replyId);
+          if (scrollIndex > -1) {
+            flatListRef.current.scrollToIndex({
+              index: scrollIndex,
+              animated: true,
+              viewPosition: 0.5,
+            });
+            setTimeout(() => {
+              console.log('removing the highlight msg ID');
+              setHighlightMessageId('');
+              // setHighlightMessageBackgroundColor('transparent');
+            }, 500);
+          }
+          break;
+        case selectedMessagesLength > 0:
+          handleMsgSelect(item);
+          break;
+        default:
+          break;
+      }
+    },
+    [handleMsgSelect, findMsgIndex],
+  );
 
   const chatMessageRender = React.useCallback(
     ({ item }) => {
-      const { deleteStatus = 0 } = item;
-      if (deleteStatus === 2) return null;
+      const { deleteStatus = 0, msgId } = item;
+      if (deleteStatus === 2) {
+        return null;
+      }
       return deleteStatus === 0 ? (
         <ChatMessage
-          highlightMessageId={highlightMessageId}
-          highlightMessageBackgroundColor={highlightMessageBackgroundColor}
+          // highlightMessageId={highlightMessageId}
+          shouldHighlightMessage={highlightMessageId === msgId}
+          // highlightMessageBackgroundColor={highlightMessageBackgroundColor}
           handleReplyPress={handleReplyPress}
           setLocalNav={setLocalNav}
           handleMsgSelect={handleMsgSelect}
-          selectedMsgs={selectedMsgs}
+          // selectedMsgs={selectedMsgs}
+          shouldSelectMessage={selectedMsgsIdRef?.current?.[msgId]}
+          // selectedMsgsIdRef={selectedMsgsIdRef}
           message={item}
         />
       ) : (
@@ -195,7 +213,7 @@ const ChatConversationList = ({
       handleMsgSelect,
       selectedMsgs,
       setLocalNav,
-      highlightMessageBackgroundColor,
+      // highlightMessageBackgroundColor,
       highlightMessageId,
       messageList,
     ],

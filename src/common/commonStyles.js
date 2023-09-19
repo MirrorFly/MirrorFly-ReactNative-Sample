@@ -50,11 +50,17 @@ const commonStyles = StyleSheet.create({
     borderRadius: 50,
     overflow: 'hidden',
   },
+  positionRelative: {
+    position: 'relative',
+  },
   pressedBg: {
     backgroundColor: ApplicationColors.pressedBg,
   },
   marginLeft_5: {
     marginLeft: 5,
+  },
+  p_4: {
+    padding: 4,
   },
   paddingHorizontal_4: {
     paddingHorizontal: 4,
@@ -95,6 +101,15 @@ const commonStyles = StyleSheet.create({
   },
   paddingRight_0: {
     paddingRight: 0,
+  },
+  alignSelfFlexStart: {
+    alignSelf: 'flex-start',
+  },
+  alignSelfFlexEnd: {
+    alignSelf: 'flex-end',
+  },
+  bg_transparent: {
+    backgroundColor: 'transparent',
   },
 });
 

@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import PushNotification from 'react-native-push-notification';
 import { CHATSCREEN } from '../constant';
 import store from '../redux/store';
-import { navigate } from 'mf-redux/Actions/NavigationAction';
+import { navigate } from '../redux/Actions/NavigationAction';
 
 class PushNotifiLocal {
   constructor(fromUserJid, onForGround) {

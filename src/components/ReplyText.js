@@ -3,16 +3,21 @@ import React from 'react';
 import { HStack, Text, View } from 'native-base';
 import { ClearTextIcon } from '../common/Icons';
 import { useSelector } from 'react-redux';
-import { getUserIdFromJid } from 'Helper/Chat/Utility';
+import useRosterData from '../hooks/useRosterData';
 
 const ReplyText = props => {
   const { replyMsgItems, handleRemove, selectedMsgIndex } = props;
   const scrollViewRef = React.useRef(null);
-  const { fromUserJid = '' } = replyMsgItems;
+  const { fromUserJid = '', fromUserId = '' } = replyMsgItems;
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const isSameUser = fromUserJid === currentUserJID;
   const averageMessageHeight = 60;
+
+  let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
+
   React.useEffect(() => {
     if (scrollViewRef.current && selectedMsgIndex !== undefined) {
       const scrollToPosition = selectedMsgIndex * averageMessageHeight;
@@ -46,14 +51,19 @@ const ReplyText = props => {
               fontSize={14}
               fontWeight={600}
               py="0">
-              {profileDetails?.nickName || getUserIdFromJid(currentUserJID)}
+              {nickName || fromUserId}
             </Text>
           )}
           <Pressable
             style={{
               padding: 5,
+              top: -3,
+              right: 10,
+              bottom: 0,
               backgroundColor: '#FFF',
-              borderRadius: 20,
+              borderRadius: 10,
+              borderColor: '#000',
+              borderWidth: 1,
             }}
             onPress={RemoveHandle}>
             <ClearTextIcon />

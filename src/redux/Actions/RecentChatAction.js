@@ -4,6 +4,9 @@ import {
   UPDATE_RECENT_CHAT_MESSAGE_STATUS,
   UPDATE_ROSTER_LAST_MESSAGE,
   DELETE_SINGLE_CHAT,
+  RECENT_REMOVE_MESSAGE_UPDATE,
+  UPDATE_MSG_BY_LAST_MSGID,
+  RECENT_RECALL_UPDATE,
 } from './Constants';
 
 export const updateRecentChat = data => {
@@ -37,6 +40,27 @@ export const clearLastMessageinRecentChat = data => {
 export const deleteActiveChatAction = data => {
   return {
     type: DELETE_SINGLE_CHAT,
+    payload: data,
+  };
+};
+
+export const recentRemoveMessageUpdate = data => {
+  return {
+    type: RECENT_REMOVE_MESSAGE_UPDATE,
+    payload: data,
+  };
+};
+
+export const updateMsgByLastMsgId = data => {
+  return {
+    type: UPDATE_MSG_BY_LAST_MSGID,
+    payload: data,
+  };
+};
+
+export const recentRecallUpdate = data => {
+  return {
+    type: RECENT_RECALL_UPDATE,
     payload: data,
   };
 };

@@ -53,3 +53,15 @@ allprojects {
         maven { url 'https://www.jitpack.io' }
     }
 }
+
+// Adding these below subprojects block to fix an error while taking release build
+subprojects {
+    afterEvaluate {project ->
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion rootProject.ext.compileSdkVersion
+                buildToolsVersion rootProject.ext.buildToolsVersion
+            }
+        }
+    }
+}

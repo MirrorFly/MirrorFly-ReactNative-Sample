@@ -1,6 +1,6 @@
-import SDK from 'SDK/SDK';
-import { changeTimeFormat } from 'common/TimeStamp';
-import { updateRecentChat } from 'mf-redux/Actions/RecentChatAction';
+import SDK from '../../SDK/SDK';
+import { changeTimeFormat } from '../../common/TimeStamp';
+import { updateRecentChat } from '../../redux/Actions/RecentChatAction';
 import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { getThumbImage, getVideoThumbImage } from '..';
@@ -23,6 +23,11 @@ import {
   getRecentChatMsgObj,
   getUserIdFromJid,
 } from './Utility';
+import { updateRosterData } from '../../redux/Actions/rosterAction';
+import {
+  DELETE_MESSAGE_FOR_EVERYONE,
+  DELETE_MESSAGE_FOR_ME,
+} from '../../redux/Actions/Constants';
 
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
@@ -103,6 +108,7 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
     statusCode: response.statusCode,
     fromUserId: getUserIdFromJid(jid),
   };
+  console.log(response, 'uploadfile response');
   if (response.statusCode === 200) {
     /**
         if (msgType === "image" || msgType === "audio") {
@@ -142,6 +148,38 @@ export const updateMediaUploadStatusHistory = (data, stateData) => {
   };
 };
 
+export const updateDeletedMessageInHistory = (actionType, data, stateData) => {
+  // Here Get the Current Active Chat History and Active Message
+  const currentChatData = stateData[data.fromUserId];
+
+  if (currentChatData) {
+    if (actionType === DELETE_MESSAGE_FOR_ME) {
+      for (const msgId of data.msgIds) {
+        if (currentChatData.messages[msgId]) {
+          currentChatData.messages[msgId].deleteStatus = 2;
+        }
+      }
+    } else if (actionType === DELETE_MESSAGE_FOR_EVERYONE) {
+      const messageIds = data.msgId.split(',');
+      for (const msgId of messageIds) {
+        if (currentChatData.messages[msgId]) {
+          currentChatData.messages[msgId].deleteStatus = 1;
+        }
+      }
+    }
+
+    return {
+      ...stateData,
+      [data.fromUserId]: {
+        ...currentChatData,
+      },
+    };
+  }
+  return {
+    ...stateData,
+  };
+};
+
 export const getUpdatedHistoryDataUpload = (data, stateData) => {
   // Here Get the Current Active Chat History and Active Message
   const currentChatData = stateData[data.fromUserId];
@@ -157,6 +195,7 @@ export const getUpdatedHistoryDataUpload = (data, stateData) => {
         currentMessage.msgBody.media.file_url = data.fileToken || '';
         currentMessage.msgBody.media.thumb_image = data.thumbImage || '';
         currentMessage.msgBody.media.file_key = data.fileKey || '';
+        currentMessage.msgBody.media.is_downloaded = data.is_downloaded || '';
       }
       if (data.local_path) {
         currentMessage.msgBody.media.local_path = data.local_path || '';
@@ -430,11 +469,7 @@ const sendMediaMessage = async (
         fromUserJid: fromUserJid,
         replyTo,
       };
-      const conversationChatObj = await getMessageObjSender(dataObj, i);
-      console.log(
-        'Media Message',
-        JSON.stringify(conversationChatObj, null, 2),
-      );
+      const conversationChatObj = getMessageObjSender(dataObj, i);
       mediaData[msgId] = conversationChatObj;
       const recentChatObj = getRecentChatMsgObj(dataObj);
 
@@ -505,13 +540,12 @@ export const sendMessageToUserOrGroup = async (
       msgId,
       fromUserJid: fromUserJid,
     };
-    const conversationChatObj = await getMessageObjSender(dataObj);
+    const conversationChatObj = getMessageObjSender(dataObj);
     const recentChatObj = getRecentChatMsgObj(dataObj);
     const dispatchData = {
       data: [conversationChatObj],
       ...(isSingleChat(chatType) ? { userJid: jid } : { groupJid: jid }), // check this when working for group chat
     };
-    console.log('dispatchData', JSON.stringify(dispatchData, null, 2));
     batch(() => {
       store.dispatch(addChatConversationHistory(dispatchData));
       store.dispatch(updateRecentChat(recentChatObj));
@@ -569,13 +603,6 @@ export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
   const vcardData = getLocalUserDetails();
   const senderId = vcardData.fromUser;
 
-  console.log(
-    'Constructing diapatch object',
-    senderId,
-    formatUserIdToJid(senderId),
-    toJid,
-  );
-
   return {
     ...originalMsg,
     timestamp,
@@ -602,4 +629,11 @@ export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
       },
     },
   };
+};
+
+export const updateUserProfileStore = async data => {
+  // updating the store with setTimeout to avoid blocking the UI
+  setTimeout(() => {
+    store.dispatch(updateRosterData(data));
+  }, 0);
 };

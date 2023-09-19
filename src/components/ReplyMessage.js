@@ -1,39 +1,62 @@
-/* eslint-disable react-native/no-inline-styles */
-import {
-  CameraSmallIcon,
-  DocumentChatIcon,
-  AudioMusicIcon,
-  ContactChatIcon,
-  LocationIcon,
-} from 'common/Icons';
-import { getMessageFromHistoryById } from 'Helper/Chat/ChatHelper';
+import { HStack, Image, Text, View } from 'native-base';
+import React from 'react';
+import { Pressable } from 'react-native';
+import { useSelector } from 'react-redux';
+import { getMessageFromHistoryById } from '../Helper/Chat/ChatHelper';
 import {
   getUserIdFromJid,
   millisToMinutesAndSeconds,
-} from 'Helper/Chat/Utility';
-import { HStack, Image, Text, View } from 'native-base';
-import React from 'react';
-import { DocIcon, PdfIcon, PPTIcon, XLSIcon, ZipIcon } from '../common/Icons';
+} from '../Helper/Chat/Utility';
+import {
+  AudioMusicIcon,
+  CameraSmallIcon,
+  ContactChatIcon,
+  DocIcon,
+  DocumentChatIcon,
+  LocationMarkerIcon,
+  PPTIcon,
+  PdfIcon,
+  VideoIcon,
+  XLSIcon,
+  ZipIcon,
+} from '../common/Icons';
+import useRosterData from '../hooks/useRosterData';
 import { getExtension } from './chat/common/fileUploadValidation';
-import { useSelector } from 'react-redux';
-import { Pressable } from 'react-native';
+import { ORIGINAL_MESSAGE_DELETED } from '../Helper/Chat/Constant';
+import mapStaticBlurImage from '../assets/google-maps-blur.png';
+import { getImageSource } from '../common/utils';
 
 function ReplyMessage(props) {
   const { handleReplyPress } = props;
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const profileDetails = useSelector(state => state.navigation.profileDetails);
+  const { id: messagesReducerId } = useSelector(
+    state => state.chatConversationData,
+  );
   const [repliedMsg, setRepliedMsg] = React.useState({});
   const { msgBody: { replyTo = '' } = {} } = props.message;
   const {
+    msgBody = {},
     msgBody: { message_type = '', message = '', media = {} } = {},
+    deleteStatus = 0,
     fromUserJid = '',
   } = repliedMsg;
-  const fileExtension = getExtension(media?.fileName, false);
-  const imageUrl =
-    'https://subli.info/wp-content/uploads/2015/05/google-maps-blur.png';
+
+  const fromUserId = React.useMemo(
+    () => getUserIdFromJid(fromUserJId),
+    [fromUserJId],
+  );
 
   const isSameUser = fromUserJid === currentUserJID;
+
+  let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
+
+  const replyMessageUserNickName = !isSameUser ? nickName : 'You';
+
+  const fileExtension = getExtension(media?.fileName, false);
 
   const renderFileIcon = React.useCallback(() => {
     switch (fileExtension) {
@@ -64,7 +87,7 @@ function ReplyMessage(props) {
     setRepliedMsg(
       getMessageFromHistoryById(getUserIdFromJid(fromUserJId), replyTo),
     );
-  }, []);
+  }, [messagesReducerId]);
 
   const durationString = millisToMinutesAndSeconds(media.duration);
   const renderReplyItem = () => {
@@ -78,9 +101,7 @@ function ReplyMessage(props) {
           borderRadius={7}
           bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}>
           <Text numberOfLines={1} ellipsizeMode="tail" fontWeight={'bold'}>
-            {!isSameUser
-              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
-              : 'You'}
+            {replyMessageUserNickName}
           </Text>
           <Text numberOfLines={1} ellipsizeMode="tail">
             {message}
@@ -89,7 +110,61 @@ function ReplyMessage(props) {
       );
     }
 
-    if (message_type === 'image' || message_type === 'video') {
+    if (message_type === 'image') {
+      return (
+        <View
+          mt="1"
+          mb="1"
+          position={'relative'}
+          minW={200}
+          minH={60}
+          borderRadius={7}
+          bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}
+          py="1"
+          px={'3'}>
+          <Text
+            numberOfLines={1}
+            fontSize={14}
+            ellipsizeMode="tail"
+            fontWeight={'bold'}>
+            {replyMessageUserNickName}
+          </Text>
+          <HStack mt="1" alignItems={'center'} pl={1}>
+            <CameraSmallIcon color={'#7285B5'} width={13} height={13} />
+            <Text pl={1} fontSize={14} color="#313131" fontWeight={400}>
+              Photo
+            </Text>
+          </HStack>
+          <View
+            style={{
+              width: 60,
+              height: 60,
+              position: 'absolute',
+              right: 0,
+              borderBottomRightRadius: 5,
+              borderTopRightRadius: 5,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Image
+              alt="reply-img"
+              resizeMode="cover"
+              style={{
+                width: 60,
+                height: 60,
+                borderTopRightRadius: 5,
+                borderBottomRightRadius: 5,
+              }}
+              source={{
+                uri: `data:image/png;base64,${media?.thumb_image}`,
+              }}
+            />
+          </View>
+        </View>
+      );
+    }
+
+    if (message_type === 'video') {
       return (
         <View
           mt="1"
@@ -111,9 +186,9 @@ function ReplyMessage(props) {
               : 'You'}
           </Text>
           <HStack mt="1" alignItems={'center'} pl={1}>
-            <CameraSmallIcon color={'#7285B5'} width={13} height={13} />
+            <VideoIcon color={'#767676'} width="13" height="13" />
             <Text pl={1} fontSize={14} color="#313131" fontWeight={400}>
-              Photo
+              Video
             </Text>
           </HStack>
           <View
@@ -161,9 +236,7 @@ function ReplyMessage(props) {
             fontSize={14}
             ellipsizeMode="tail"
             fontWeight={'bold'}>
-            {!isSameUser
-              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
-              : 'You'}
+            {replyMessageUserNickName}
           </Text>
           <Text color="#313131" mt="1" fontSize={14} fontWeight={400}>
             {durationString}
@@ -203,9 +276,7 @@ function ReplyMessage(props) {
             fontSize={14}
             ellipsizeMode="tail"
             fontWeight={'bold'}>
-            {!isSameUser
-              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
-              : 'You'}
+            {replyMessageUserNickName}
           </Text>
           <HStack mt="1" alignItems={'center'}>
             <DocumentChatIcon
@@ -256,9 +327,7 @@ function ReplyMessage(props) {
             fontSize={11}
             ellipsizeMode="tail"
             fontWeight={'bold'}>
-            {!isSameUser
-              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
-              : 'You'}
+            {replyMessageUserNickName}
           </Text>
           <HStack alignItems={'center'} pl={1}>
             <ContactChatIcon
@@ -289,9 +358,7 @@ function ReplyMessage(props) {
             fontSize={11}
             ellipsizeMode="tail"
             fontWeight={'bold'}>
-            {!isSameUser
-              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
-              : 'You'}
+            {replyMessageUserNickName}
           </Text>
 
           <View
@@ -305,21 +372,18 @@ function ReplyMessage(props) {
               resizeMode="cover"
               style={{
                 width: 45,
-                height: 43,
+                height: 45,
+                backgroundColor: 'salmon',
                 borderTopRightRadius: 5,
                 borderBottomRightRadius: 5,
               }}
-              source={{ uri: imageUrl }}
+              source={getImageSource(mapStaticBlurImage)}
             />
           </View>
 
-          <HStack alignItems={'center'} pl={1}>
-            <LocationIcon
-              width="12"
-              height="10"
-              color={props.isSame ? '#7285B5' : '#959595'}
-            />
-            <Text pl={2} fontSize={12} color={'#313131'} fontWeight={400}>
+          <HStack alignItems={'center'}>
+            <LocationMarkerIcon color={props.isSame ? '#7285B5' : '#959595'} />
+            <Text fontSize={12} color={'#313131'} fontWeight={400}>
               Location
             </Text>
           </HStack>
@@ -329,10 +393,35 @@ function ReplyMessage(props) {
   };
 
   const passReplyTo = () => {
-    handleReplyPress?.(replyTo);
+    handleReplyPress?.(replyTo, props.message);
   };
 
-  return <Pressable onPress={passReplyTo}>{renderReplyItem()}</Pressable>;
+  const handleLongPress = () => {
+    handleReplyPress?.(replyTo, props.message, true);
+  };
+
+  return (
+    <Pressable onPress={passReplyTo} onLongPress={handleLongPress}>
+      {deleteStatus !== 0 || Object.keys(msgBody).length === 0 ? (
+        <View
+          mt="1"
+          px="4"
+          py="1"
+          mb="1"
+          borderRadius={7}
+          bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}>
+          <Text numberOfLines={1} ellipsizeMode="tail" fontWeight={'bold'}>
+            {!isSameUser ? nickName || getUserIdFromJid(fromUserJId) : 'You'}
+          </Text>
+          <Text numberOfLines={1} ellipsizeMode="tail">
+            {ORIGINAL_MESSAGE_DELETED}
+          </Text>
+        </View>
+      ) : (
+        renderReplyItem()
+      )}
+    </Pressable>
+  );
 }
 
 export default ReplyMessage;

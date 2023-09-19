@@ -2,16 +2,19 @@ import { Pressable } from 'react-native';
 import React from 'react';
 import { HStack, Text, View } from 'native-base';
 import { AudioMusicIcon, ClearTextIcon } from '../common/Icons';
-import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { useSelector } from 'react-redux';
-import { getUserIdFromJid } from 'Helper/Chat/Utility';
+import useRosterData from '../hooks/useRosterData';
 
 const ReplyAudio = props => {
   const { replyMsgItems, handleRemove } = props;
-  const { fromUserJid = '' } = replyMsgItems;
+  const { fromUserJid = '', fromUserId = '' } = replyMsgItems;
   const profileDetails = useSelector(state => state.navigation.profileDetails);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const isSameUser = fromUserJid === currentUserJID;
+
+  let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
+  // updating default values
+  nickName = nickName || profileDetails?.nickName || fromUserId || '';
 
   const durationInSeconds = replyMsgItems.msgBody.media.duration;
   const durationInMinutes = Math.floor(durationInSeconds / 1000);
@@ -40,14 +43,16 @@ const ReplyAudio = props => {
             fontSize={14}
             fontWeight={600}
             py="0">
-            {profileDetails.nickName || getUserIdFromJid(currentUserJID)}
+            {nickName || fromUserId}
           </Text>
         )}
         <Pressable
           style={{
             padding: 5,
             backgroundColor: '#FFF',
-            borderRadius: 20,
+            borderRadius: 10,
+            borderColor: '#000',
+            borderWidth: 1,
           }}
           onPress={RemoveHandle}>
           <ClearTextIcon />
@@ -60,6 +65,7 @@ const ReplyAudio = props => {
             2,
             '0',
           )}:${String(durationInMinutes % 60).padStart(2, '0')}`}
+          Audio
         </Text>
       </HStack>
     </View>

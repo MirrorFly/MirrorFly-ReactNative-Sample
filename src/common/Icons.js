@@ -884,12 +884,12 @@ export const StatusIcon = () => {
   );
 };
 
-export const DownArrowIcon = () => {
+export const DownArrowIcon = ({ width, height }) => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="12"
-      height="8"
+      width={width || '12'}
+      height={height || '8'}
       viewBox="0 0 10 5.67">
       <Path
         id="drop_down"
@@ -1245,6 +1245,26 @@ export const LocationIcon = props => {
             />
           </G>
         </G>
+      </G>
+    </Svg>
+  );
+};
+
+export const LocationMarkerIcon = ({ width, height, color }) => {
+  return (
+    <Svg
+      width={width || '20'}
+      height={height || '20'}
+      viewBox="0 0 20 20"
+      version="1.1">
+      <G id="surface1">
+        <Path
+          stroke=""
+          fillRule="nonzero"
+          fill={color || 'rgb(0, 0, 0)'}
+          fillOpacity={1}
+          d="M 14.703125 9.1875 C 14.703125 6.703125 12.703125 4.703125 10.21875 4.703125 C 7.734375 4.703125 5.734375 6.703125 5.734375 9.1875 C 5.734375 11.671875 10.21875 16.308594 10.21875 16.308594 C 10.21875 16.308594 14.703125 11.671875 14.703125 9.1875 Z M 8.132812 9.097656 C 8.132812 7.957031 9.078125 7.011719 10.21875 7.011719 C 11.363281 7.011719 12.308594 7.933594 12.308594 9.097656 C 12.308594 10.242188 11.382812 11.1875 10.21875 11.1875 C 9.078125 11.1875 8.132812 10.242188 8.132812 9.097656 Z M 8.132812 9.097656 "
+        />
       </G>
     </Svg>
   );
@@ -2612,6 +2632,144 @@ export const DocumentChatIcon = props => {
           transform="translate(92 143)"
           fill="none"
         />
+      </G>
+    </Svg>
+  );
+};
+
+export const UpArrowIcon = ({ width, height }) => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={width || '15'}
+      height={height || '7'}
+      viewBox="0 0 10 5.67">
+      <Path
+        id="drop_down"
+        data-name="drop down"
+        d="M333.342,114a.7.7,0,0,1-.5-.2l-4.3-4.277a.694.694,0,0,1,0-.985.7.7,0,0,1,.99,0l3.8,3.785,3.8-3.784a.7.7,0,0,1,.99,0,.694.694,0,0,1,0,.985l-4.3,4.277A.7.7,0,0,1,333.342,114Z"
+        transform="translate(338.342 114) rotate(180)"
+        fill="#000"
+      />
+    </Svg>
+  );
+};
+
+export const BlockedIcon = () => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 18 18">
+      <Path
+        id="Blocked_Contacts"
+        data-name="Blocked Contacts"
+        d="M24.577,294.085a8,8,0,1,1,8,8A8.009,8.009,0,0,1,24.577,294.085Zm8,6.881a6.878,6.878,0,0,0,5.232-11.346l-9.546,9.822A6.849,6.849,0,0,0,32.577,300.966ZM25.7,294.085a6.851,6.851,0,0,0,1.679,4.5l9.688-9.714A6.878,6.878,0,0,0,25.7,294.085Z"
+        transform="translate(-24.577 -286.085)"
+        fill="#959595"
+      />
+    </Svg>
+  );
+};
+
+export const CSVIcon = () => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 22 22">
+      <G
+        id="Group_34544"
+        data-name="Group 34544"
+        transform="translate(-17241 -3489)">
+        <Rect
+          id="Rectangle_10778"
+          data-name="Rectangle 10778"
+          width="22"
+          height="22"
+          transform="translate(17241 3489)"
+          fill="#fff"
+          opacity="0"
+        />
+        <G
+          id="Group_34542"
+          data-name="Group 34542"
+          transform="translate(17244.438 3490.475)">
+          <Path
+            id="Path_9793"
+            data-name="Path 9793"
+            d="M67.86,17.349a1.7,1.7,0,0,1-1.7,1.7H54.439a1.7,1.7,0,0,1-1.7-1.7V1.7a1.7,1.7,0,0,1,1.7-1.7h7.294a1.279,1.279,0,0,1,.9.375l4.849,4.849a1.274,1.274,0,0,1,.373.9Z"
+            transform="translate(-52.735 0)"
+            fill="#5ec363"
+          />
+          <Path
+            id="Path_9796"
+            data-name="Path 9796"
+            d="M314.32,8.583h-4.33a1.152,1.152,0,0,1-1.152-1.153V3.1a1.267,1.267,0,0,1,.374.259l4.849,4.849a1.266,1.266,0,0,1,.259.374Z"
+            transform="translate(-299.31 -2.986)"
+            fill="#469552"
+          />
+          <Path
+            id="Path_40523"
+            data-name="Path 40523"
+            d="M1.851.061A1.43,1.43,0,0,0,3.4-1.223H2.683a.8.8,0,0,1-.83.674c-.564,0-.918-.464-.918-1.216s.359-1.208.916-1.208a.816.816,0,0,1,.83.715H3.4A1.451,1.451,0,0,0,1.851-3.584,1.621,1.621,0,0,0,.183-1.763,1.619,1.619,0,0,0,1.851.061ZM3.723-1C3.745-.342,4.285.061,5.132.061c.874,0,1.428-.432,1.428-1.116,0-.537-.308-.84-1.013-.991l-.427-.09c-.405-.093-.576-.215-.576-.432,0-.261.244-.435.608-.435s.63.181.654.479H6.5c-.012-.637-.527-1.06-1.348-1.06-.786,0-1.348.43-1.348,1.079,0,.515.32.845.969.984l.459.1c.425.1.593.222.593.452,0,.259-.269.447-.662.447S4.468-.713,4.434-1Zm5.1,1,1.184-3.523H9.2L8.4-.759H8.381L7.576-3.523H6.75L7.935,0Z"
+            transform="translate(2.563 14.525)"
+            fill="#fff"
+          />
+        </G>
+      </G>
+    </Svg>
+  );
+};
+
+export const TXTIcon = () => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 22 22">
+      <G
+        id="Group_34543"
+        data-name="Group 34543"
+        transform="translate(-17241 -3489)">
+        <Rect
+          id="Rectangle_10778"
+          data-name="Rectangle 10778"
+          width="22"
+          height="22"
+          transform="translate(17241 3489)"
+          fill="#fff"
+          opacity="0"
+        />
+        <G
+          id="Group_34542"
+          data-name="Group 34542"
+          transform="translate(17244.438 3490.475)">
+          <Path
+            id="Path_9793"
+            data-name="Path 9793"
+            d="M67.86,17.349a1.7,1.7,0,0,1-1.7,1.7H54.439a1.7,1.7,0,0,1-1.7-1.7V1.7a1.7,1.7,0,0,1,1.7-1.7h7.294a1.279,1.279,0,0,1,.9.375l4.849,4.849a1.274,1.274,0,0,1,.373.9Z"
+            transform="translate(-52.735 0)"
+            fill="#825ca4"
+          />
+          <Path
+            id="Path_9796"
+            data-name="Path 9796"
+            d="M314.32,8.583h-4.33a1.152,1.152,0,0,1-1.152-1.153V3.1a1.267,1.267,0,0,1,.374.259l4.849,4.849a1.266,1.266,0,0,1,.259.374Z"
+            transform="translate(-299.31 -2.986)"
+            fill="#a374af"
+          />
+          <Path
+            id="Path_40522"
+            data-name="Path 40522"
+            d="M2.01.249V-2.872H3.116v-.651h-3v.651h1.1V.249Zm1.341,0H4.2l.831-1.32h.021L5.881.249h.9L5.562-1.628v-.018L6.8-3.523H5.915L5.107-2.164H5.087l-.8-1.359H3.359L4.548-1.662v.021Zm5.576,0V-2.872h1.106v-.651h-3v.651h1.1V.249Z"
+            transform="translate(2.238 14.049)"
+            fill="#fff"
+          />
+        </G>
       </G>
     </Svg>
   );

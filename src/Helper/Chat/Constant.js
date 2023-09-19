@@ -50,6 +50,7 @@ export const DEFAULT_TITLE_NAME = 'MirrorFly';
 export const AUDIO_ACC_WINDOWS = 'audio/vnd.dlna.adts';
 export const THIS_MESSAGE_WAS_DELETED = 'This message was deleted';
 export const YOU_DELETED_THIS_MESSAGE = 'You deleted this message';
+export const ORIGINAL_MESSAGE_DELETED = 'Original message not available';
 export const BRAND_NAME = 'MirrorFly';
 export const MAP_URL = 'https://maps.googleapis.com/maps/api/staticmap';
 export const GROUP_UPDATE_ACTIONS = [

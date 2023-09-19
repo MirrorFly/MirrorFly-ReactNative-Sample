@@ -7,11 +7,8 @@ const initialState = {
   recentChatStatus: 'idle',
 };
 
-const charReducer = (state = initialState, action) => {
-  switch (action.type) {
-    default:
-      return state;
-  }
+const charReducer = (state = initialState) => {
+  return state;
 };
 
 export default charReducer;

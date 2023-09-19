@@ -46,7 +46,7 @@ function GalleryHeader(props) {
               selectedImages.length > 0 && setLocalNav('GalleryPickView');
             }}>
             {selectedImages.length > 0 ? (
-              <Text color={ApplicationColors.appThemeColor} fontWeight={'600'}>
+              <Text color={ApplicationColors.mainColor} fontWeight={'600'}>
                 DONE
               </Text>
             ) : (

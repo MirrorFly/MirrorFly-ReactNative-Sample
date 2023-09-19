@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
-import { NativeBaseProvider } from 'native-base';
-import React from 'react';
+import { Box, NativeBaseProvider } from 'native-base';
+import React, { createRef } from 'react';
 import {
+  Keyboard,
   LogBox,
   SafeAreaView,
   StatusBar,
@@ -22,20 +23,36 @@ import { profileDetail } from './redux/Actions/ProfileAction';
 import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction';
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
-import messaging from '@react-native-firebase/messaging';
+
+/** import messaging from '@react-native-firebase/messaging';*/
 LogBox.ignoreAllLogs();
 
-export const ChatApp = () => {
+export const isKeyboardVisibleRef = createRef();
+isKeyboardVisibleRef.current = false;
+
+const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+  isKeyboardVisibleRef.current = true;
+});
+
+const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+  isKeyboardVisibleRef.current = false;
+});
+
+export const ChatApp = props => {
   React.useEffect(() => {
     (async () => {
       await SDK.initializeSDK({
-        apiBaseUrl: 'https://api-uikit-qa.contus.us/api/v1',
-        licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
+        apiBaseUrl: props.apiUrl,
+        licenseKey: props.licenseKey,
         callbackListeners: callBacks,
-        isSandbox: false,
+        isSandbox: props.isSandbox,
       });
       await messaging().requestPermission();
     })();
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
   }, []);
 
   return (
@@ -102,9 +119,9 @@ const RootNavigation = () => {
         )}
       </NavigationContainer>
       <Box safeAreaBottom backgroundColor={safeAreaBgColor} /> */}
-
+      <Box safeAreaTop backgroundColor={safeAreaBgColor} />
       <SafeAreaView style={styles.container}>
-        <StatusBar backgroundColor={safeAreaBgColor} />
+        <StatusBar translucent backgroundColor={safeAreaBgColor} />
         <NavigationContainer
           ref={navigationRef}
           theme={
@@ -119,6 +136,7 @@ const RootNavigation = () => {
           )}
         </NavigationContainer>
       </SafeAreaView>
+      <Box safeAreaBottom backgroundColor={safeAreaBgColor} />
     </>
   );
 };

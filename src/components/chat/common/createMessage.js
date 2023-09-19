@@ -12,12 +12,12 @@ import {
   MSG_RECEIVE_STATUS_CARBON,
 } from '../../../Helper/Chat/Constant';
 import { getMessageObjReceiver } from '../../../Helper/Chat/Utility';
+import SDK from '../../../SDK/SDK';
 import { changeTimeFormat } from '../../../common/TimeStamp';
-import { addchatSeenPendingMsg } from '../../../redux/Actions/chatSeenPendingMsgAction';
 import { addChatConversationHistory } from '../../../redux/Actions/ConversationAction';
 import { updateRecentChat } from '../../../redux/Actions/RecentChatAction';
+import { addchatSeenPendingMsg } from '../../../redux/Actions/chatSeenPendingMsgAction';
 import store from '../../../redux/store';
-import SDK from '../../../SDK/SDK';
 
 export const updateRecentChatMessage = (messgeObject, stateObject) => {
   const { recentChatData } = stateObject;

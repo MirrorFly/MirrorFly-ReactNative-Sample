@@ -1,12 +1,22 @@
 import React from 'react';
 import { HStack, Text, View } from 'native-base';
-import { DocIcon, PdfIcon, PPTIcon, XLSIcon, ZipIcon } from '../common/Icons';
+import {
+  CSVIcon,
+  DocIcon,
+  PdfIcon,
+  PPTIcon,
+  TXTIcon,
+  XLSIcon,
+  ZipIcon,
+} from '../common/Icons';
 import { getExtension } from './chat/common/fileUploadValidation';
 import { StyleSheet } from 'react-native';
 import { convertBytesToKB } from '../Helper';
 import AttachmentProgressLoader from './chat/common/AttachmentProgressLoader';
 import useMediaProgress from '../hooks/useMediaProgress';
 import ReplyMessage from './ReplyMessage';
+import { ChatConversationHighlightedText } from './TextCard';
+import { useSelector } from 'react-redux';
 
 const DocumentMessageCard = ({
   message,
@@ -31,6 +41,10 @@ const DocumentMessageCard = ({
     msgId: message?.msgId,
   });
 
+  const conversationSearchText = useSelector(
+    state => state.conversationSearchData?.searchText,
+  );
+
   const renderFileIcon = React.useCallback(() => {
     switch (fileExtension) {
       case 'pdf':
@@ -38,9 +52,10 @@ const DocumentMessageCard = ({
       case 'ppt':
       case 'pptx':
         return <PPTIcon />;
+      case 'csv':
+        return <CSVIcon />;
       case 'xls':
       case 'xlsx':
-      case 'csv':
         return <XLSIcon />;
       case 'doc':
       case 'docx':
@@ -50,7 +65,7 @@ const DocumentMessageCard = ({
         return <ZipIcon width={30} height={25} />;
       case 'txt':
       case 'text':
-        return <DocIcon />;
+        return <TXTIcon />;
       default:
         return null;
     }
@@ -73,7 +88,10 @@ const DocumentMessageCard = ({
         paddingY={1}>
         <View py={2}>{renderFileIcon()}</View>
         <Text px={2} flex={1} numberOfLines={2} fontSize={11} py={3}>
-          {mediaData.fileName}
+          <ChatConversationHighlightedText
+            text={mediaData.fileName}
+            searchValue={conversationSearchText.trim()}
+          />
         </Text>
         <AttachmentProgressLoader
           isSender={isSender}

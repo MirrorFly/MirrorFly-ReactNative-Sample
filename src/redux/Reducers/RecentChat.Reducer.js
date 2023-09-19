@@ -1,8 +1,12 @@
+import { emptyMessage, updateRecall } from '../../components/Recall';
 import { getMsgStatusInOrder } from '../../Helper/Chat/ChatHelper';
 import {
   ADD_RECENT_CHAT,
   DELETE_SINGLE_CHAT,
+  RECENT_RECALL_UPDATE,
+  RECENT_REMOVE_MESSAGE_UPDATE,
   RESET_STORE,
+  UPDATE_MSG_BY_LAST_MSGID,
   UPDATE_RECENT_CHAT,
   UPDATE_RECENT_CHAT_MESSAGE_STATUS,
   UPDATE_ROSTER_LAST_MESSAGE,
@@ -71,6 +75,18 @@ const clearMessageInRecentChat = (data, id) => {
   });
 };
 
+const updateMsgByLastMsgId = (newMessage, recentChatList = []) => {
+  const msgIndex = recentChatList.findIndex(
+    msg => msg.lastMsgId === newMessage.msgId,
+  );
+  if (msgIndex > -1) {
+    recentChatList[msgIndex] = { ...recentChatList[msgIndex], ...newMessage };
+    recentChatList[msgIndex].msgType =
+      newMessage?.msgBody?.message_type || newMessage.msgType;
+  }
+  return recentChatList.sort((a, b) => (b.msgId > a.msgId ? 1 : -1));
+};
+
 const deletedChatList = (deleteData, currentArray) => {
   const { fromUserId } = deleteData;
   return currentArray.filter(
@@ -115,6 +131,24 @@ const recentChatReducer = (state = initialState, action) => {
         ...state,
         id: Date.now(),
         data: deletedChatList(action.payload, StateToObj(state).data),
+      };
+    case RECENT_REMOVE_MESSAGE_UPDATE:
+      return {
+        ...state,
+        id: Date.now(),
+        data: emptyMessage(action.payload, StateToObj(state).data),
+      };
+    case UPDATE_MSG_BY_LAST_MSGID:
+      return {
+        ...state,
+        id: Date.now(),
+        data: updateMsgByLastMsgId(action.payload, StateToObj(state).data),
+      };
+    case RECENT_RECALL_UPDATE:
+      return {
+        ...state,
+        id: Date.now(),
+        data: updateRecall(action.payload, StateToObj(state).data),
       };
     case RESET_STORE:
       return initialState;

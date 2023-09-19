@@ -24,12 +24,20 @@ import { CHATCONVERSATION } from '../constant';
 import {
   resetSafeArea,
   safeAreaBgColor,
-} from 'mf-redux/Actions/SafeAreaAction';
+} from '../redux/Actions/SafeAreaAction';
+import useRosterData from '../hooks/useRosterData';
 
 const CameraPickView = props => {
   const { handleSendMsg, setLocalNav, setSelectedImages, selectedImages } =
     props;
   const profileDetails = useSelector(state => state.navigation.profileDetails);
+
+  let { nickName, image: imageToken } = useRosterData(profileDetails?.userId);
+  // updating the default values
+  nickName =
+    nickName || profileDetails?.nickName || profileDetails?.userId || '';
+  imageToken = imageToken || '';
+
   const dispatch = useDispatch();
 
   const handleBackBtn = () => {
@@ -78,7 +86,8 @@ const CameraPickView = props => {
             height={30}
             fontsize={14}
             backgroundColor={profileDetails?.colorCode}
-            data={profileDetails?.nickName || '91'}
+            data={nickName}
+            profileImage={imageToken}
           />
           <Spacer />
         </HStack>

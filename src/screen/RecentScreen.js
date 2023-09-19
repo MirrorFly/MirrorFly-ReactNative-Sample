@@ -12,10 +12,9 @@ import { FloatingBtn } from '../common/Button';
 import RecentCalls from '../components/RecentCalls';
 import RecentChat from '../components/RecentChat';
 import ScreenHeader from '../components/ScreenHeader';
-// import { logout } from '../redux/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import { ResetStore } from 'mf-redux/Actions/ResetAction';
+import { ResetStore } from '../redux/Actions/ResetAction';
 import { sortBydate } from '../Helper/Chat/RecentChat';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
@@ -32,12 +31,13 @@ import {
   addRecentChat,
   deleteActiveChatAction,
 } from '../redux/Actions/RecentChatAction';
-import RecentHeader from 'components/RecentHeader';
-import { formatUserIdToJid } from 'Helper/Chat/ChatHelper';
+import RecentHeader from '../components/RecentHeader';
+import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { HStack, Modal, Text } from 'native-base';
-import { DeleteChatHIstoryAction } from 'mf-redux/Actions/ConversationAction';
+import { DeleteChatHIstoryAction } from '../redux/Actions/ConversationAction';
+import { updateRosterData } from '../redux/Actions/rosterAction';
 
-const logo = require('../assets/mirrorfly-logo.png');
+import logo from '../assets/mirrorfly-logo.png';
 
 const FirstComponent = (
   isSearching,
@@ -46,6 +46,7 @@ const FirstComponent = (
   handleSelect,
   handleOnSelect,
   recentItem,
+  filteredMessages,
 ) => (
   <RecentChat
     isSearching={isSearching}
@@ -54,6 +55,7 @@ const FirstComponent = (
     handleSelect={handleSelect}
     handleOnSelect={handleOnSelect}
     recentItem={recentItem}
+    filteredMessages={filteredMessages}
   />
 );
 
@@ -69,6 +71,7 @@ function RecentScreen() {
     { key: 'second', title: 'Calls' },
   ]);
   const [filteredData, setFilteredData] = React.useState([]);
+  const [filteredMessages, setFilteredMessages] = React.useState([]);
   const [isSearching, setIsSearching] = React.useState(false);
   const [recentData, setrecentData] = React.useState([]);
   const [searchValue, setSearchValue] = React.useState('');
@@ -90,6 +93,11 @@ function RecentScreen() {
           .toLowerCase()
           .includes(text.toLowerCase()),
     );
+    SDK.messageSearch(text).then(res => {
+      if (res.statusCode === 200) {
+        setFilteredMessages(res.data);
+      }
+    });
     setFilteredData(filtered);
   };
 
@@ -139,6 +147,7 @@ function RecentScreen() {
         item => item.chatType === 'chat',
       );
       dispatch(addRecentChat(recentChatsFilter));
+      updateRosterDataForRecentChats(recentChatsFilter);
     })();
   }, []);
 
@@ -147,7 +156,15 @@ function RecentScreen() {
     sortBydate([...recentChatArrayConstruct]).map(async chat => {
       recent.push(chat);
     });
+
     return recent.filter(eachmessage => eachmessage);
+  };
+
+  const updateRosterDataForRecentChats = singleRecentChatList => {
+    const userProfileDetails = singleRecentChatList.map(
+      chat => chat.profileDetails,
+    );
+    dispatch(updateRosterData(userProfileDetails));
   };
 
   React.useEffect(() => {
@@ -192,6 +209,7 @@ function RecentScreen() {
       return true;
     }
     if (isSearching) {
+      setFilteredMessages([]);
       setIsSearching(false);
       setSearchValue('');
       return true;
@@ -280,10 +298,18 @@ function RecentScreen() {
             handleSelect,
             handleOnSelect,
             recentItem,
+            filteredMessages,
           ),
         second: RecentCalls,
       }),
-    [isSearching, filteredDataList, searchValue, recentItem, recentData],
+    [
+      isSearching,
+      filteredDataList,
+      searchValue,
+      recentItem,
+      recentData,
+      filteredMessages,
+    ],
   );
 
   return (

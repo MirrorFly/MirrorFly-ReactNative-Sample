@@ -8,7 +8,7 @@ import {
 } from '../Helper/Chat/Constant';
 import MarqueeText from '../common/MarqueeText';
 import { useNetworkStatus } from '../hooks';
-import SDK from 'SDK/SDK';
+import SDK from '../SDK/SDK';
 
 const LastSeen = props => {
   const isNetworkConnected = useNetworkStatus();

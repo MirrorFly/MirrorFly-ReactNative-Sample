@@ -11,6 +11,7 @@ import { useNetworkStatus } from '../hooks';
 import * as RootNav from '../Navigation/rootNavigation';
 import { fetchContactsFromSDK } from '../Helper/index';
 import no_contacts from '../assets/no_contacts.png';
+import { getImageSource } from '../common/utils';
 
 function ContactScreen() {
   const dispatch = useDispatch();

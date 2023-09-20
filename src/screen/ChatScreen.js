@@ -63,7 +63,7 @@ import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import store from '../redux/store';
 import SavePicture from './Gallery';
 import { createThumbnail } from 'react-native-create-thumbnail';
-import ContactList from 'components/Media/ContactList';
+import ContactList from '../components/Media/ContactList';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { clearConversationSearchData } from '../redux/Actions/conversationSearchAction';
 import {

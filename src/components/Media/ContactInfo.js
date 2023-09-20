@@ -47,7 +47,7 @@ const ContactInfo = props => {
       </ScrollView>
 
       <Pressable
-        onPress={console.log('ok ok')}
+        onPress={console.log('SendBlue Icon clikcked ...!!')}
         style={styles.elevationContainer}>
         <View style={styles.ArrowIcon}>
           <SendBlueIcon />
@@ -90,14 +90,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
   },
   itemMobileNumSeperator: {
-    paddingTop: 10,
+    paddingTop: 1,
     borderBottomColor: '#00000036',
     borderBottomWidth: 1,
-    elevation: 4,
-    shadowColor: '#00000014',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.9,
-    shadowRadius: 5,
+    elevation: 2,
   },
   SelectedItemContainer: {
     flex: 1,
@@ -121,6 +117,7 @@ const styles = StyleSheet.create({
     marginLeft: 23,
     marginTop: 3,
     fontSize: 10,
+    marginBottom: 10,
     color: '#737373',
   },
   ArrowIcon: {

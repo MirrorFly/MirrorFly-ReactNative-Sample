@@ -59,6 +59,7 @@ const ContactList = props => {
             setContacts(fetchedContacts);
           });
         } else {
+          console.log('Error requesting contacts permission');
         }
       } catch (error) {
         console.error('Error requesting contacts permission:', error);
@@ -109,10 +110,6 @@ const ContactList = props => {
     }
   };
 
-  const handleClear = () => {
-    setClearItem(true);
-  };
-
   const handleTextClear = () => {
     setSearchInfo('');
   };
@@ -127,14 +124,13 @@ const ContactList = props => {
     } else if (selectedContact.length < 5) {
       ContactSelectRef.current[item.recordID] = true;
       setSelectedContact([...selectedContact, item]);
-    }
-    // }
-    else {
+    } else {
       showToast("can't share more than 5 contacts", {
         id: 'contacts-max-user-toast',
       });
     }
   };
+
   const renderSelectedContacts = () => {
     return selectedContact.map(item => (
       <View key={item.recordID} style={styles.SelectedItemContainer}>
@@ -159,11 +155,6 @@ const ContactList = props => {
     );
     delete ContactSelectRef.current[itemToRemove.recordID];
     setSelectedContact(updatedSelectedContact);
-  };
-
-  const handleClose = () => {
-    setContactNav(false);
-    return true;
   };
 
   const renderItem = ({ item }) => (

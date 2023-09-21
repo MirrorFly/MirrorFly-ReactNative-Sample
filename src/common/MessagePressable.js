@@ -15,6 +15,7 @@ import ApplicationColors from '../config/appColors';
  */
 const MessagePressable = ({
   children,
+  forcePress = false,
   contentContainerStyle,
   pressedStyle,
   ...props
@@ -31,7 +32,7 @@ const MessagePressable = ({
     <RNPressable {...props}>
       {({ pressed }) => (
         <View style={[processedContentContainerStyle]}>
-          <View style={pressed && styles.highlightView} />
+          <View style={(pressed || forcePress) && styles.highlightView} />
           {children}
         </View>
       )}

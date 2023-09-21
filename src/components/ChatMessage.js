@@ -286,17 +286,15 @@ const ChatMessage = props => {
         );
       case 'audio':
         return (
-          <View style={styles.flex1}>
-            <AudioCard
-              handleReplyPress={handleReplyPress}
-              messageObject={message}
-              isSender={isSame}
-              mediaUrl={imageUrl}
-              status={getMessageStatus(message?.msgStatus)}
-              fileSize={fileSize}
-              timeStamp={getConversationHistoryTime(message?.createdAt)}
-            />
-          </View>
+          <AudioCard
+            handleReplyPress={handleReplyPress}
+            messageObject={message}
+            isSender={isSame}
+            mediaUrl={imageUrl}
+            status={getMessageStatus(message?.msgStatus)}
+            fileSize={fileSize}
+            timeStamp={getConversationHistoryTime(message?.createdAt)}
+          />
         );
       case 'file':
         return (
@@ -343,31 +341,34 @@ const ChatMessage = props => {
       pressedStyle={commonStyles.bg_transparent}
       onPress={handleMessageSelect}
       onLongPress={handleMessageLongPress}>
-      <View
-        style={[
-          styles.messageContainer,
-          shouldSelectMessage ? styles.highlightMessage : undefined,
-        ]}>
+      {({ pressed }) => (
         <View
           style={[
-            commonStyles.paddingHorizontal_12,
-            isSame
-              ? commonStyles.alignSelfFlexEnd
-              : commonStyles.alignSelfFlexStart,
+            styles.messageContainer,
+            shouldSelectMessage ? styles.highlightMessage : undefined,
           ]}>
-          <MessagePressable
-            style={styles.messageContentPressable}
-            contentContainerStyle={[
-              styles.messageCommonStyle,
-              isSame ? styles.sentMessage : styles.receivedMessage,
-            ]}
-            delayLongPress={300}
-            onPress={handleContentPress}
-            onLongPress={handleContentLongPress}>
-            {renderMessageBasedOnType()}
-          </MessagePressable>
+          <View
+            style={[
+              commonStyles.paddingHorizontal_12,
+              isSame
+                ? commonStyles.alignSelfFlexEnd
+                : commonStyles.alignSelfFlexStart,
+            ]}>
+            <MessagePressable
+              forcePress={pressed}
+              style={styles.messageContentPressable}
+              contentContainerStyle={[
+                styles.messageCommonStyle,
+                isSame ? styles.sentMessage : styles.receivedMessage,
+              ]}
+              delayLongPress={300}
+              onPress={handleContentPress}
+              onLongPress={handleContentLongPress}>
+              {renderMessageBasedOnType()}
+            </MessagePressable>
+          </View>
         </View>
-      </View>
+      )}
     </Pressable>
   );
 };

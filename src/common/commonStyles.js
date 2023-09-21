@@ -59,14 +59,29 @@ const commonStyles = StyleSheet.create({
   marginLeft_5: {
     marginLeft: 5,
   },
+  marginLeft_8: {
+    marginLeft: 8,
+  },
+  marginRight_4: {
+    marginRight: 4,
+  },
   p_4: {
     padding: 4,
+  },
+  minWidth_250: {
+    minWidth: 250,
+  },
+  minWidth_200: {
+    minWidth: 200,
   },
   paddingHorizontal_4: {
     paddingHorizontal: 4,
   },
   paddingHorizontal_8: {
     paddingHorizontal: 8,
+  },
+  paddingVertical_8: {
+    paddingVertical: 8,
   },
   paddingHorizontal_12: {
     paddingHorizontal: 12,
@@ -99,6 +114,9 @@ const commonStyles = StyleSheet.create({
   paddingHorizontal_6: {
     paddingHorizontal: 6,
   },
+  paddingLeft_0: {
+    paddingLeft: 0,
+  },
   paddingRight_0: {
     paddingRight: 0,
   },
@@ -110,6 +128,9 @@ const commonStyles = StyleSheet.create({
   },
   bg_transparent: {
     backgroundColor: 'transparent',
+  },
+  fontWeight_bold: {
+    fontWeight: 'bold',
   },
 });
 

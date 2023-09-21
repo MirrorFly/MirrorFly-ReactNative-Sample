@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     paddingLeft: 4,
     color: '#455E93',
     fontSize: 10,
-    fontWeight: '300',
+    fontWeight: '400',
   },
 
   highlight: {

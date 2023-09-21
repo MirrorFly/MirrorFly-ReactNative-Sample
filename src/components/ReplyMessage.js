@@ -1,6 +1,5 @@
-import { HStack, Image, Text, View } from 'native-base';
 import React from 'react';
-import { Pressable } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { getMessageFromHistoryById } from '../Helper/Chat/ChatHelper';
 import {
@@ -25,6 +24,7 @@ import { getExtension } from './chat/common/fileUploadValidation';
 import { ORIGINAL_MESSAGE_DELETED } from '../Helper/Chat/Constant';
 import mapStaticBlurImage from '../assets/google-maps-blur.png';
 import { getImageSource } from '../common/utils';
+import commonStyles from '../common/commonStyles';
 
 function ReplyMessage(props) {
   const { handleReplyPress } = props;
@@ -90,17 +90,19 @@ function ReplyMessage(props) {
   }, [messagesReducerId]);
 
   const durationString = millisToMinutesAndSeconds(media.duration);
+
   const renderReplyItem = () => {
     if (message_type === 'text') {
       return (
         <View
-          mt="1"
-          px="4"
-          py="1"
-          mb="1"
-          borderRadius={7}
-          bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}>
-          <Text numberOfLines={1} ellipsizeMode="tail" fontWeight={'bold'}>
+          style={[
+            styles.replyContainer,
+            isSameUser ? styles.senderBg : styles.receiverBg,
+          ]}>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={styles.nickNameText}>
             {replyMessageUserNickName}
           </Text>
           <Text numberOfLines={1} ellipsizeMode="tail">
@@ -113,48 +115,24 @@ function ReplyMessage(props) {
     if (message_type === 'image') {
       return (
         <View
-          mt="1"
-          mb="1"
-          position={'relative'}
-          minW={200}
-          minH={60}
-          borderRadius={7}
-          bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}
-          py="1"
-          px={'3'}>
+          style={[
+            styles.mediaReplyContainer,
+            isSameUser ? styles.senderBg : styles.receiverBg,
+          ]}>
           <Text
             numberOfLines={1}
-            fontSize={14}
             ellipsizeMode="tail"
-            fontWeight={'bold'}>
+            style={styles.nickNameText}>
             {replyMessageUserNickName}
           </Text>
-          <HStack mt="1" alignItems={'center'} pl={1}>
+          <View style={styles.mediaLeftStack}>
             <CameraSmallIcon color={'#7285B5'} width={13} height={13} />
-            <Text pl={1} fontSize={14} color="#313131" fontWeight={400}>
-              Photo
-            </Text>
-          </HStack>
-          <View
-            style={{
-              width: 60,
-              height: 60,
-              position: 'absolute',
-              right: 0,
-              borderBottomRightRadius: 5,
-              borderTopRightRadius: 5,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+            <Text style={styles.attachmentTypeText}>Photo</Text>
+          </View>
+          <View style={styles.miniMediaPreviewWrapper}>
             <Image
               alt="reply-img"
-              resizeMode="cover"
-              style={{
-                width: 60,
-                height: 60,
-                borderTopRightRadius: 5,
-                borderBottomRightRadius: 5,
-              }}
+              style={styles.miniMediaPreviewImage}
               source={{
                 uri: `data:image/png;base64,${media?.thumb_image}`,
               }}
@@ -167,50 +145,24 @@ function ReplyMessage(props) {
     if (message_type === 'video') {
       return (
         <View
-          mt="1"
-          mb="1"
-          position={'relative'}
-          minW={200}
-          minH={60}
-          borderRadius={7}
-          bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}
-          py="1"
-          px={'3'}>
+          style={[
+            styles.mediaReplyContainer,
+            isSameUser ? styles.senderBg : styles.receiverBg,
+          ]}>
           <Text
             numberOfLines={1}
-            fontSize={14}
             ellipsizeMode="tail"
-            fontWeight={'bold'}>
-            {!isSameUser
-              ? profileDetails?.nickName || getUserIdFromJid(fromUserJId)
-              : 'You'}
+            style={styles.nickNameText}>
+            {replyMessageUserNickName}
           </Text>
-          <HStack mt="1" alignItems={'center'} pl={1}>
+          <View style={styles.mediaLeftStack}>
             <VideoIcon color={'#767676'} width="13" height="13" />
-            <Text pl={1} fontSize={14} color="#313131" fontWeight={400}>
-              Video
-            </Text>
-          </HStack>
-          <View
-            style={{
-              width: 60,
-              height: 60,
-              position: 'absolute',
-              right: 0,
-              borderBottomRightRadius: 5,
-              borderTopRightRadius: 5,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+            <Text style={styles.attachmentTypeText}>Video</Text>
+          </View>
+          <View style={styles.miniMediaPreviewWrapper}>
             <Image
               alt="reply-img"
-              resizeMode="cover"
-              style={{
-                width: 60,
-                height: 60,
-                borderTopRightRadius: 5,
-                borderBottomRightRadius: 5,
-              }}
+              style={styles.miniMediaPreviewImage}
               source={{
                 uri: `data:image/png;base64,${media?.thumb_image}`,
               }}
@@ -222,37 +174,22 @@ function ReplyMessage(props) {
     if (message_type === 'audio') {
       return (
         <View
-          mt="1"
-          mb="1"
-          position={'relative'}
-          minW={200}
-          minH={60}
-          borderRadius={7}
-          bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}
-          py="1"
-          px={'3'}>
+          style={[
+            styles.mediaReplyContainer,
+            isSameUser ? styles.senderBg : styles.receiverBg,
+          ]}>
           <Text
             numberOfLines={1}
-            fontSize={14}
             ellipsizeMode="tail"
-            fontWeight={'bold'}>
+            style={styles.nickNameText}>
             {replyMessageUserNickName}
           </Text>
-          <Text color="#313131" mt="1" fontSize={14} fontWeight={400}>
-            {durationString}
-          </Text>
+          <Text style={styles.audioDurationText}>{durationString}</Text>
           <View
-            style={{
-              width: 60,
-              height: 60,
-              backgroundColor: '#97A5C7',
-              position: 'absolute',
-              right: 0,
-              borderBottomRightRadius: 5,
-              borderTopRightRadius: 5,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+            style={[
+              styles.miniMediaPreviewWrapper,
+              styles.audioMiniPreviewWrapperBg,
+            ]}>
             <AudioMusicIcon width="22" height="22" color={'#fff'} />
           </View>
         </View>
@@ -261,52 +198,34 @@ function ReplyMessage(props) {
     if (message_type === 'file') {
       return (
         <View
-          mt="1"
-          mb="1"
-          position={'relative'}
-          minW={250}
-          minH={60}
-          borderRadius={7}
-          bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}
-          py="1"
-          px={'3'}>
+          style={[
+            styles.mediaReplyContainer,
+            commonStyles.minWidth_250,
+            isSameUser ? styles.senderBg : styles.receiverBg,
+          ]}>
           <Text
-            width={200}
             numberOfLines={1}
-            fontSize={14}
             ellipsizeMode="tail"
-            fontWeight={'bold'}>
+            style={styles.nickNameTextForFile}>
             {replyMessageUserNickName}
           </Text>
-          <HStack mt="1" alignItems={'center'}>
+          <View style={[styles.mediaLeftStack, commonStyles.paddingLeft_0]}>
             <DocumentChatIcon
               width="12"
               height="12"
               color={props.isSame ? '#7285B5' : '#959595'}
             />
             <Text
-              width={200}
               numberOfLines={1}
-              pl={1}
               ellipsizeMode="tail"
-              color="#313131"
-              fontSize={14}
-              fontWeight={400}>
+              style={styles.fileNameText}>
               {media?.fileName}
             </Text>
-          </HStack>
+          </View>
           <View
-            style={{
-              width: 60,
-              height: 60,
-              position: 'absolute',
-              right: 0,
-              backgroundColor: props.isSame ? '#fff' : '#A9A9A9',
-              borderBottomRightRadius: 5,
-              borderTopRightRadius: 5,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+            style={styles.miniMediaPreviewWrapperForFile(
+              isSameUser ? '#fff' : '#A9A9A9',
+            )}>
             {renderFileIcon()}
           </View>
         </View>
@@ -316,29 +235,24 @@ function ReplyMessage(props) {
     if (message_type === 'contact') {
       return (
         <View
-          mt="1"
-          mb="1"
-          px="2"
-          py="1"
-          borderRadius={7}
-          bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}>
+          style={[
+            styles.replyContainer,
+            isSameUser ? styles.senderBg : styles.receiverBg,
+          ]}>
           <Text
             numberOfLines={1}
-            fontSize={11}
             ellipsizeMode="tail"
-            fontWeight={'bold'}>
+            style={styles.nickNameText}>
             {replyMessageUserNickName}
           </Text>
-          <HStack alignItems={'center'} pl={1}>
+          <View style={styles.mediaLeftStack}>
             <ContactChatIcon
               width="12"
               height="12"
               color={props.isSame ? '#7285B5' : '#959595'}
             />
-            <Text pl={1} color="#313131" fontSize={12} fontWeight={400}>
-              Contact: Afzal Qa
-            </Text>
-          </HStack>
+            <Text style={styles.attachmentTypeText}>Contact: Ashiq</Text>
+          </View>
         </View>
       );
     }
@@ -346,47 +260,29 @@ function ReplyMessage(props) {
     if (message_type === 'location') {
       return (
         <View
-          mt="1"
-          px="2"
-          mb="1"
-          py="1"
-          minW={200}
-          borderRadius={7}
-          bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}>
+          style={[
+            styles.mediaReplyContainer,
+            isSameUser ? styles.senderBg : styles.receiverBg,
+          ]}>
           <Text
             numberOfLines={1}
-            fontSize={11}
             ellipsizeMode="tail"
-            fontWeight={'bold'}>
+            style={styles.nickNameText}>
             {replyMessageUserNickName}
           </Text>
 
-          <View
-            style={{
-              position: 'absolute',
-              top: 0,
-              bottom: 0,
-              right: 0,
-            }}>
+          <View style={styles.miniPreviewImageWrapperForLocation}>
             <Image
-              resizeMode="cover"
-              style={{
-                width: 45,
-                height: 45,
-                backgroundColor: 'salmon',
-                borderTopRightRadius: 5,
-                borderBottomRightRadius: 5,
-              }}
+              alt="location"
+              style={styles.miniMediaPreviewImage}
               source={getImageSource(mapStaticBlurImage)}
             />
           </View>
 
-          <HStack alignItems={'center'}>
+          <View style={[styles.mediaLeftStack, commonStyles.paddingLeft_0]}>
             <LocationMarkerIcon color={props.isSame ? '#7285B5' : '#959595'} />
-            <Text fontSize={12} color={'#313131'} fontWeight={400}>
-              Location
-            </Text>
-          </HStack>
+            <Text style={styles.attachmentTypeText}>Location</Text>
+          </View>
         </View>
       );
     }
@@ -404,13 +300,14 @@ function ReplyMessage(props) {
     <Pressable onPress={passReplyTo} onLongPress={handleLongPress}>
       {deleteStatus !== 0 || Object.keys(msgBody).length === 0 ? (
         <View
-          mt="1"
-          px="4"
-          py="1"
-          mb="1"
-          borderRadius={7}
-          bgColor={props.isSame ? '#D0D8EB' : '#EFEFEF'}>
-          <Text numberOfLines={1} ellipsizeMode="tail" fontWeight={'bold'}>
+          style={[
+            styles.replyContainer,
+            isSameUser ? styles.senderBg : styles.receiverBg,
+          ]}>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={commonStyles.fontWeight_bold}>
             {!isSameUser ? nickName || getUserIdFromJid(fromUserJId) : 'You'}
           </Text>
           <Text numberOfLines={1} ellipsizeMode="tail">
@@ -425,3 +322,100 @@ function ReplyMessage(props) {
 }
 
 export default ReplyMessage;
+
+const styles = StyleSheet.create({
+  replyContainer: {
+    marginTop: 4,
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    marginBottom: 4,
+    borderRadius: 7,
+  },
+  mediaReplyContainer: {
+    marginTop: 4,
+    marginBottom: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 7,
+    position: 'relative',
+    minWidth: 200,
+    minHeight: 60,
+  },
+  senderBg: {
+    backgroundColor: '#D0D8EB',
+  },
+  receiverBg: {
+    backgroundColor: '#EFEFEF',
+  },
+  nickNameText: {
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  nickNameTextForFile: {
+    width: 200,
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  mediaLeftStack: {
+    flexDirection: 'row',
+    marginTop: 4,
+    alignItems: 'center',
+    paddingLeft: 4,
+  },
+  attachmentTypeText: {
+    paddingLeft: 4,
+    color: '#313131',
+    fontSize: 14,
+    fontWeight: '400',
+  },
+  audioDurationText: {
+    marginTop: 4,
+    color: '#313131',
+    fontSize: 14,
+    fontWeight: '400',
+  },
+  miniMediaPreviewWrapper: {
+    width: 60,
+    height: 60,
+    position: 'absolute',
+    right: 0,
+    borderBottomRightRadius: 5,
+    borderTopRightRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  miniMediaPreviewWrapperForFile: bgColor => ({
+    width: 60,
+    height: 60,
+    position: 'absolute',
+    right: 0,
+    backgroundColor: bgColor,
+    borderBottomRightRadius: 5,
+    borderTopRightRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }),
+  miniPreviewImageWrapperForLocation: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: 0,
+  },
+  audioMiniPreviewWrapperBg: {
+    backgroundColor: '#97A5C7',
+  },
+  miniMediaPreviewImage: {
+    width: 60,
+    height: 60,
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
+    resizeMode: 'cover',
+  },
+  fileNameText: {
+    width: 200,
+    paddingLeft: 4,
+    color: '#313131',
+    fontSize: 14,
+    fontWeight: '400',
+  },
+});

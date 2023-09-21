@@ -1,10 +1,9 @@
 import React from 'react';
 import {
   StyleSheet,
-  // View,
   Modal as RNModal,
   // eslint-disable-next-line no-unused-vars
-  ModalProps,
+  ModalProps, // NOSONAR
   Pressable,
   View,
 } from 'react-native';

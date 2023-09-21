@@ -2,22 +2,30 @@ import React from 'react';
 import {
   Pressable as RNPressable,
   // eslint-disable-next-line no-unused-vars
-  PressableProps,
+  PressableProps, // NOSONAR
   View,
   StyleSheet,
+  // eslint-disable-next-line no-unused-vars
+  ViewStyle, // NOSONAR
 } from 'react-native';
 import commonStyles from './commonStyles';
 import ApplicationColors from '../config/appColors';
 
 /**
+ * @typedef {Object} CustomProps
+ * @property {boolean} forcePress
+ * @property {ViewStyle} contentContainerStyle
  *
- * @param {PressableProps} props
+ * @typedef { PressableProps & CustomProps } MessagePressableProps
+ */
+
+/**
+ * @param {MessagePressableProps} props
  */
 const MessagePressable = ({
   children,
   forcePress = false,
   contentContainerStyle,
-  pressedStyle,
   ...props
 }) => {
   const processedContentContainerStyle = React.useMemo(() => {

@@ -30,12 +30,8 @@ const ChatMessage = props => {
     message,
     setLocalNav,
     handleReplyPress,
-    // highlightMessageBackgroundColor,
     shouldHighlightMessage,
     shouldSelectMessage,
-    // selectedMsgsIdRef,
-    // selectedMsgs,
-    handleMsgSelect,
   } = props;
   const {
     msgBody = {},
@@ -61,44 +57,6 @@ const ChatMessage = props => {
   const imageSize = props?.message?.msgBody?.media?.file_size || '';
   const fileSize = imageSize;
   const [isSubscribed, setIsSubscribed] = React.useState(true);
-  // console.log('rendering message', message?.msgBody?.message);
-
-  // React.useEffect(() => {
-  //   console.log('shouldHighlightMessage changed', msgBody?.message);
-  // }, [shouldHighlightMessage]);
-  // React.useEffect(() => {
-  //   console.log('handleReplyPress changed', msgBody?.message);
-  // }, [handleReplyPress]);
-  // React.useEffect(() => {
-  //   console.log('setLocalNav changed', msgBody?.message);
-  // }, [setLocalNav]);
-  // React.useEffect(() => {
-  //   console.log('handleMsgSelect changed', msgBody?.message);
-  // }, [handleMsgSelect]);
-  // React.useEffect(() => {
-  //   console.log('shouldSelectMessage changed', msgBody?.message);
-  // }, [shouldSelectMessage]);
-  // React.useEffect(() => {
-  //   console.log('message changed', msgBody?.message);
-  // }, [message]);
-
-  // const [isMessageSelected, setIsMessageSelected] = React.useState(false);
-
-  // React.useEffect(() => {
-  //   const _isSelected = Boolean(selectedMsgsIdRef?.current?.[msgId]);
-  //   isMessageSelected !== _isSelected && setIsMessageSelected(_isSelected);
-  // }, [selectedMsgs]);
-
-  // React.useEffect(() => {
-  //   isMessageSelected !== shouldSelectMessage &&
-  //     setIsMessageSelected(shouldSelectMessage);
-  // }, [shouldSelectMessage]);
-
-  // React.useEffect(() => {
-  //   if (isMessageSelected !== Boolean(selectedMsgsIdRef?.current?.[msgId])) {
-  //     props.handleMsgSelect(props.message);
-  //   }
-  // }, [isMessageSelected]);
 
   const imgFileDownload = () => {
     try {
@@ -127,7 +85,6 @@ const ChatMessage = props => {
       if (isImageMessage()) {
         imgFileDownload();
       }
-      //  else setUploadStatus(2);
     }
     return () => setIsSubscribed(false);
   }, []);

@@ -109,13 +109,6 @@ function ChatScreen() {
     [toUserJid],
   );
 
-  const toastConfig = {
-    duration: 1500,
-    avoidKeyboard: true,
-    onCloseComplete: () => {
-      setIsToastShowing(false);
-    },
-  };
   const documentAttachmentTypes = React.useMemo(
     () => [
       DocumentPicker.types.pdf,

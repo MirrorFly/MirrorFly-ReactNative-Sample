@@ -1,12 +1,24 @@
-import { View } from 'react-native';
 import React from 'react';
-// eslint-disable-next-line no-unused-vars
-import { Pressable as RNPressable, PressableProps } from 'react-native';
+import {
+  Pressable as RNPressable,
+  View,
+  // eslint-disable-next-line no-unused-vars
+  PressableProps, // NOSONAR
+  // eslint-disable-next-line no-unused-vars
+  ViewStyle, // NOSONAR
+} from 'react-native';
 import commonStyles from './commonStyles';
 
 /**
+ * @typedef {Object} CustomProps
+ * @property {ViewStyle} pressedStyle
+ * @property {ViewStyle} contentContainerStyle
  *
- * @param {PressableProps} props
+ * @typedef { PressableProps & CustomProps } CustomPressableProps
+ */
+
+/**
+ * @param {CustomPressableProps} props
  */
 const Pressable = ({
   children,

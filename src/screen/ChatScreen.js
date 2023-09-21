@@ -11,7 +11,6 @@ import {
   View,
 } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
-import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
@@ -36,6 +35,7 @@ import {
 } from '../common/Icons';
 import {
   handleAudioPickerSingle,
+  handleDocumentPickSingle,
   mediaObjContructor,
   requestAudioStoragePermission,
   requestCameraPermission,
@@ -109,24 +109,6 @@ function ChatScreen() {
     [toUserJid],
   );
 
-  const documentAttachmentTypes = React.useMemo(
-    () => [
-      DocumentPicker.types.pdf,
-      DocumentPicker.types.ppt,
-      DocumentPicker.types.pptx,
-      DocumentPicker.types.doc,
-      DocumentPicker.types.docx,
-      DocumentPicker.types.xls,
-      DocumentPicker.types.xlsx,
-      DocumentPicker.types.plainText,
-      DocumentPicker.types.zip,
-      DocumentPicker.types.csv,
-      /** need to add rar file type and verify that */
-      '.rar',
-    ],
-    [],
-  );
-
   const getReplyMessage = message => {
     setReplyMsg(message);
   };
@@ -191,49 +173,38 @@ function ChatScreen() {
     if (permissionResult === 'granted' || permissionResult === 'limited') {
       // updating the SDK flag to keep the connection Alive when app goes background because of document picker
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
-      DocumentPicker.pickSingle({
-        type: documentAttachmentTypes,
-        copyTo:
-          Platform.OS === 'android' ? 'cachesDirectory' : 'documentDirectory',
-      })
-        .then(file => {
-          // updating the SDK flag back to false to behave as usual
-          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+      const file = await handleDocumentPickSingle();
+      // updating the SDK flag back to false to behave as usual
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
 
-          // Validating the file type and size
-          if (!isValidFileType(file.type)) {
-            Alert.alert(
-              'Mirrorfly',
-              'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
-            );
-            return;
-          }
-          const error = validateFileSize(file.size, 'file');
-          if (error) {
-            const toastOptions = {
-              id: 'document-too-large-toast',
-              duration: 2500,
-              avoidKeyboard: true,
-            };
-            showToast(error, toastOptions);
-            return;
-          }
+      // Validating the file type and size
+      if (!isValidFileType(file.type)) {
+        Alert.alert(
+          'Mirrorfly',
+          'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
+        );
+        return;
+      }
+      const error = validateFileSize(file.size, 'file');
+      if (error) {
+        const toastOptions = {
+          id: 'document-too-large-toast',
+          duration: 2500,
+          avoidKeyboard: true,
+        };
+        showToast(error, toastOptions);
+        return;
+      }
 
-          // preparing the object and passing it to the sendMessage function
-          const updatedFile = {
-            fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
-          };
-          const messageData = {
-            type: 'media',
-            content: [updatedFile],
-          };
-          handleSendMsg(messageData);
-        })
-        .catch(err => {
-          // updating the SDK flag back to false to behave as usual
-          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-          console.log('Error from documen picker', err);
-        });
+      // preparing the object and passing it to the sendMessage function
+      const updatedFile = {
+        fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
+      };
+      const messageData = {
+        type: 'media',
+        content: [updatedFile],
+      };
+      handleSendMsg(messageData);
     } else if (storage_permission) {
       openSettings();
     }

@@ -11,19 +11,19 @@ import ApplicationColors from '../config/appColors';
 
 export const ModalCenteredContent = ({ children, onPressOutside }) => {
   return (
-    <>
+    <View style={styles.modalCeneteredContentContainer}>
       <Pressable onPress={onPressOutside} style={styles.modalOverlay} />
-      <View style={styles.modalCeneteredContentContainer}>{children}</View>
-    </>
+      {children}
+    </View>
   );
 };
 
 export const ModalBottomContent = ({ children, onPressOutside }) => {
   return (
-    <>
+    <View style={styles.modalBottomContentContainer}>
       <Pressable onPress={onPressOutside} style={styles.modalOverlay} />
-      <View style={styles.modalBottomContentContainer}>{children}</View>
-    </>
+      {children}
+    </View>
   );
 };
 

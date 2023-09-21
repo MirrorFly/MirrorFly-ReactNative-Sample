@@ -13,6 +13,21 @@ const toastConfig = {
   avoidKeyboard: true,
 };
 
+const documentAttachmentTypes = [
+  DocumentPicker.types.pdf,
+  DocumentPicker.types.ppt,
+  DocumentPicker.types.pptx,
+  DocumentPicker.types.doc,
+  DocumentPicker.types.docx,
+  DocumentPicker.types.xls,
+  DocumentPicker.types.xlsx,
+  DocumentPicker.types.plainText,
+  DocumentPicker.types.zip,
+  DocumentPicker.types.csv,
+  /** need to add rar file type and verify that */
+  '.rar',
+];
+
 export const getExtention = filename => {
   // To get the file extension
   const dotIndex = filename.lastIndexOf('.');
@@ -50,6 +65,22 @@ export const handleAudioPickerSingle = async () => {
   } catch (error) {
     SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
     console.log(error);
+  }
+};
+
+export const handleDocumentPickSingle = async () => {
+  try {
+    const result = await DocumentPicker.pickSingle({
+      type: documentAttachmentTypes,
+      presentationStyle: 'fullScreen',
+      copyTo:
+        Platform.OS === 'android' ? 'documentDirectory' : 'cachesDirectory',
+    });
+    return result;
+  } catch (error) {
+    // updating the SDK flag back to false to behave as usual
+    SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+    console.log('Error in document picker pick single ', error);
   }
 };
 

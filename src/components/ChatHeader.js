@@ -39,6 +39,7 @@ import { FORWARD_MESSSAGE_SCREEN } from '../constant';
 import useRosterData from '../hooks/useRosterData';
 import ApplicationColors from '../config/appColors';
 import { touchEffect } from '../config/appTheme';
+import { navigate } from '../redux/Actions/NavigationAction';
 
 const forwardMediaMessageTypes = {
   image: true,
@@ -164,6 +165,7 @@ function ChatHeader({
     dispatch(clearConversationSearchData());
   };
   const handleForwardMessage = () => {
+    dispatch(navigate({ notificationCheck: 'CHANGED' }));
     navigation.navigate(FORWARD_MESSSAGE_SCREEN, {
       forwardMessages: selectedMsgs,
       onMessageForwaded: handleRemove,

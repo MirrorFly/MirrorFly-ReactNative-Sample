@@ -31,6 +31,7 @@
       android:requestLegacyExternalStorage="true"
       android:usesCleartextTraffic="true"
       >
+      <meta-data android:name="ic_notification" android:resource="@mipmap/ic_notification" />
       <meta-data android:name="com.google.android.geo.API_KEY"
            android:value="AIzaSyCfG5u1-XDZhWD8vOZGK5hTKyqsVOjHSSM"/>
       <activity

@@ -41,6 +41,8 @@ import { updateUserPresence } from '../redux/Actions/userAction';
 import store from '../redux/store';
 import { updateUserProfileDetails } from '../Helper/index';
 import SDK from '../SDK/SDK';
+import { pushNotify } from '../Service/remoteNotifyHandle';
+import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
 
 export const callBacks = {
   connectionListener: response => {
@@ -67,6 +69,14 @@ export const callBacks = {
         case 'carbonSentMessage':
         case 'receiveMessage':
         case 'carbonReceiveMessage':
+          // handleNotifeeNotify()
+          // triggerNotification()
+          pushNotify(
+            getNotifyNickName(res),
+            getNotifyMessage(res),
+            res?.publisherJid,
+            true,
+          );
           updateRecentChatMessage(res, store.getState());
           updateConversationMessage(res, store.getState());
           break;

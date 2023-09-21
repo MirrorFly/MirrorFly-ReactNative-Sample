@@ -1,5 +1,13 @@
 import { Platform } from 'react-native';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
+import {
+  audioEmoji,
+  contactEmoji,
+  fileEmoji,
+  imageEmoji,
+  locationEmoji,
+  videoEmoji,
+} from '../../constant';
 
 export const orientationCheck = orientation => {
   if (Platform.OS === 'ios') {
@@ -16,13 +24,25 @@ export const getNotifyNickName = res =>
   getUserIdFromJid(res?.publisherJid);
 
 export const getNotifyMessage = res => {
-  if (res.msgBody.message_type === 'text') return res?.msgBody?.message;
-  if (res.msgBody.message_type === 'image') return 'Image';
-  if (res.msgBody.message_type === 'video') return 'Video';
-  if (res.msgBody.message_type === 'audio') return 'Audio';
-  if (res.msgBody.message_type === 'file') return 'File';
-  if (res.msgBody.message_type === 'location') return 'Location';
-  if (res.msgBody.message_type === 'contact') return 'Contact';
-
-  else return res.msgBody.message_type;
+  if (res.msgBody.message_type === 'text') {
+    return res?.msgBody?.message;
+  }
+  if (res.msgBody.message_type === 'image') {
+    return imageEmoji + ' Image';
+  }
+  if (res.msgBody.message_type === 'video') {
+    return videoEmoji + ' Video';
+  }
+  if (res.msgBody.message_type === 'audio') {
+    return audioEmoji + ' Audio';
+  }
+  if (res.msgBody.message_type === 'file') {
+    return fileEmoji + ' File';
+  }
+  if (res.msgBody.message_type === 'location') {
+    return locationEmoji + ' Location';
+  }
+  if (res.msgBody.message_type === 'contact') {
+    return contactEmoji + ' Contact';
+  }
 };

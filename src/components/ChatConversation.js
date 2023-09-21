@@ -10,7 +10,6 @@ import {
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   StyleSheet,
   Text,
   View,
@@ -37,6 +36,8 @@ import ReplyDeleted from './ReplyDeleted';
 import chatBackgroud from '../assets/chatBackgroud.png';
 import { getImageSource } from '../common/utils';
 import Modal, { ModalCenteredContent } from '../common/Modal';
+import Pressable from '../common/Pressable';
+import commonStyles from '../common/commonStyles';
 
 // below ref is used to check whether selecting is happening or not in other components without passing the selected Messages state as props
 export const isMessageSelectingRef = React.createRef();
@@ -381,10 +382,17 @@ const ChatConversation = React.memo(props => {
               Are you sure you want to clear the chat?
             </Text>
             <View style={styles.modalActionButtonContainer}>
-              <Pressable onPress={closeAlert}>
+              <Pressable
+                contentContainerStyle={[
+                  commonStyles.p_4,
+                  commonStyles.marginRight_16,
+                ]}
+                onPress={closeAlert}>
                 <Text style={styles.modalCancelButtonText}>CANCEL</Text>
               </Pressable>
-              <Pressable onPress={clearChat}>
+              <Pressable
+                contentContainerStyle={commonStyles.p_4}
+                onPress={clearChat}>
                 <Text style={styles.modalOkButtonText}>CLEAR</Text>
               </Pressable>
             </View>
@@ -443,7 +451,6 @@ const styles = StyleSheet.create({
     paddingTop: 28,
   },
   modalCancelButtonText: {
-    paddingRight: 20,
     fontWeight: '500',
     color: '#3276E2',
   },

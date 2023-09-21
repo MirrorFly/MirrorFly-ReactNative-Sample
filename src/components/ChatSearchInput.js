@@ -1,6 +1,6 @@
 import React from 'react';
 // eslint-disable-next-line no-unused-vars
-import { StyleSheet, TextInput, TextInputProps } from 'react-native';
+import { StyleSheet, TextInput, TextInputProps } from 'react-native'; // NOSONAR
 import ApplicationColors from '../config/appColors';
 
 /**

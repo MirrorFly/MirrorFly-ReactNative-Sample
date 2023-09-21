@@ -22,8 +22,6 @@ import { useNetworkStatus } from '../../hooks';
 
 Geocoder.fallbackToGoogle(config.GOOGLE_LOCATION_API_KEY);
 
-// TODO: Reply, Delete, MessageInfo
-
 /**
  * @typedef LocationState
  * @prop {number} latitude

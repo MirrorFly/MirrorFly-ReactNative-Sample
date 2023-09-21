@@ -80,42 +80,6 @@ const ChatConversation = React.memo(props => {
   React.useEffect(() => {
     setReplyMsgs(replyMsg);
   }, [replyMsg]);
-  /**
-* const { vCardProfile, fromUserJId, messages } = useSelector((state) => ({
-vCardProfile: state.profile.profileDetails,
-fromUserJId: state.navigation.fromUserJid,
-messages: state.chatConversationData.data
-}))
-// const handleSwipeLeft = (rowKey) => {
-// chatInputRef.current.focus();
-// const filteredMsgInfo = messageList.filter(item => item.msgId === rowKey);
-// setReplyMsgs(filteredMsgInfo[0]);
-// };
-
-const renderHiddenItem = (data, rowMap) => {
-return (
-<HStack alignItems={'center'} flex={"0.8"} ml='2' >
-{isSwiping?.isActivated && isSwiping?.key === data.item.msgId &&
-<HStack alignItems={'center'} justifyContent={'center'} w={10} h={10} borderRadius={20} bg={'#E5E5E5'}><ReplyIcon /></HStack>}
-</HStack>
-)
-}
-const onLeftAction = (rowKey) => {
-handleSwipeLeft(rowKey);
-};
-const onLeftActionStatusChange = (res) => {
-setIsSwiping(res);
-};
-const leftActivationValue = 20; // Adjust as needed
-const leftActionValue = 20; // Adjust as needed
-const initialLeftActionState = false; // Adjust as needed
-// handleSwipeLeft(msgId);
-*/
-
-  const toastConfig = {
-    duration: 2500,
-    avoidKeyboard: true,
-  };
 
   const handleMessageListUpdated = messages => {
     if (

@@ -33,8 +33,6 @@ const ChatConversationList = ({
   const filteredMessageIndexes = React.useRef([]);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const [highlightMessageId, setHighlightMessageId] = React.useState('');
-  // const [highlightMessageBackgroundColor, setHighlightMessageBackgroundColor] =
-  //   React.useState('transparent');
 
   const messageList = React.useMemo(() => {
     const id = getUserIdFromJid(fromUserJId);
@@ -107,7 +105,6 @@ const ChatConversationList = ({
         setHighlightMessageId(
           filteredMessageIndexes.current?.[searchMesageIndex]?.msgId,
         );
-        // setHighlightMessageBackgroundColor('rgba(0,0,0,0.2)');
         flatListRef.current.scrollToIndex({
           index: _indexToScroll,
           animated: true,
@@ -115,7 +112,6 @@ const ChatConversationList = ({
         });
         setTimeout(() => {
           setHighlightMessageId('');
-          // setHighlightMessageBackgroundColor('transparent');
         }, 500);
       }
     }
@@ -156,7 +152,6 @@ const ChatConversationList = ({
           break;
         case selectedMessagesLength === 0:
           setHighlightMessageId(replyId);
-          // setHighlightMessageBackgroundColor('rgba(0,0,0,0.2)');
           const scrollIndex = findMsgIndex(replyId);
           if (scrollIndex > -1) {
             flatListRef.current.scrollToIndex({
@@ -165,9 +160,7 @@ const ChatConversationList = ({
               viewPosition: 0.5,
             });
             setTimeout(() => {
-              console.log('removing the highlight msg ID');
               setHighlightMessageId('');
-              // setHighlightMessageBackgroundColor('transparent');
             }, 500);
           }
           break;
@@ -189,15 +182,11 @@ const ChatConversationList = ({
       }
       return deleteStatus === 0 ? (
         <ChatMessage
-          // highlightMessageId={highlightMessageId}
           shouldHighlightMessage={highlightMessageId === msgId}
-          // highlightMessageBackgroundColor={highlightMessageBackgroundColor}
           handleReplyPress={handleReplyPress}
           setLocalNav={setLocalNav}
           handleMsgSelect={handleMsgSelect}
-          // selectedMsgs={selectedMsgs}
           shouldSelectMessage={selectedMsgsIdRef?.current?.[msgId]}
-          // selectedMsgsIdRef={selectedMsgsIdRef}
           message={item}
         />
       ) : (
@@ -213,7 +202,6 @@ const ChatConversationList = ({
       handleMsgSelect,
       selectedMsgs,
       setLocalNav,
-      // highlightMessageBackgroundColor,
       highlightMessageId,
       messageList,
     ],

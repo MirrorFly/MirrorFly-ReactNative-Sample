@@ -161,7 +161,7 @@ const ChatConversationList = ({
             });
             setTimeout(() => {
               setHighlightMessageId('');
-            }, 500);
+            }, 1000);
           }
           break;
         case selectedMessagesLength > 0:

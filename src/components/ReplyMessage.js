@@ -97,7 +97,7 @@ function ReplyMessage(props) {
         <View
           style={[
             styles.replyContainer,
-            isSameUser ? styles.senderBg : styles.receiverBg,
+            props.isSame ? styles.senderBg : styles.receiverBg,
           ]}>
           <Text
             numberOfLines={1}
@@ -117,7 +117,7 @@ function ReplyMessage(props) {
         <View
           style={[
             styles.mediaReplyContainer,
-            isSameUser ? styles.senderBg : styles.receiverBg,
+            props.isSame ? styles.senderBg : styles.receiverBg,
           ]}>
           <Text
             numberOfLines={1}
@@ -147,7 +147,7 @@ function ReplyMessage(props) {
         <View
           style={[
             styles.mediaReplyContainer,
-            isSameUser ? styles.senderBg : styles.receiverBg,
+            props.isSame ? styles.senderBg : styles.receiverBg,
           ]}>
           <Text
             numberOfLines={1}
@@ -176,7 +176,7 @@ function ReplyMessage(props) {
         <View
           style={[
             styles.mediaReplyContainer,
-            isSameUser ? styles.senderBg : styles.receiverBg,
+            props.isSame ? styles.senderBg : styles.receiverBg,
           ]}>
           <Text
             numberOfLines={1}
@@ -201,7 +201,7 @@ function ReplyMessage(props) {
           style={[
             styles.mediaReplyContainer,
             commonStyles.minWidth_250,
-            isSameUser ? styles.senderBg : styles.receiverBg,
+            props.isSame ? styles.senderBg : styles.receiverBg,
           ]}>
           <Text
             numberOfLines={1}
@@ -218,7 +218,7 @@ function ReplyMessage(props) {
             <Text
               numberOfLines={1}
               ellipsizeMode="tail"
-              style={styles.fileNameText}>
+              style={styles.documentFileNameText}>
               {media?.fileName}
             </Text>
           </View>
@@ -237,7 +237,7 @@ function ReplyMessage(props) {
         <View
           style={[
             styles.replyContainer,
-            isSameUser ? styles.senderBg : styles.receiverBg,
+            props.isSame ? styles.senderBg : styles.receiverBg,
           ]}>
           <Text
             numberOfLines={1}
@@ -262,7 +262,7 @@ function ReplyMessage(props) {
         <View
           style={[
             styles.mediaReplyContainer,
-            isSameUser ? styles.senderBg : styles.receiverBg,
+            props.isSame ? styles.senderBg : styles.receiverBg,
           ]}>
           <Text
             numberOfLines={1}
@@ -302,7 +302,7 @@ function ReplyMessage(props) {
         <View
           style={[
             styles.replyContainer,
-            isSameUser ? styles.senderBg : styles.receiverBg,
+            props.isSame ? styles.senderBg : styles.receiverBg,
           ]}>
           <Text
             numberOfLines={1}
@@ -416,6 +416,13 @@ const styles = StyleSheet.create({
     paddingLeft: 4,
     color: '#313131',
     fontSize: 14,
+    fontWeight: '400',
+  },
+  documentFileNameText: {
+    width: 165,
+    paddingLeft: 4,
+    color: '#313131',
+    fontSize: 12,
     fontWeight: '400',
   },
 });

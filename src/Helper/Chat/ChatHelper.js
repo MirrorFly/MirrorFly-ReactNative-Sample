@@ -298,11 +298,10 @@ export const getChatHistoryData = (data, stateData) => {
 
   const finalData = { messages: arrayToObject(newSortedData, 'msgId') };
 
-  let datata = {
+  return {
     ...stateData,
     [chatId]: finalData,
   };
-  return datata;
 };
 
 export const getUpdatedHistoryData = (data, stateData) => {

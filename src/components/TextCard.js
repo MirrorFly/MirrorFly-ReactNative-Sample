@@ -1,8 +1,8 @@
-import { Text, View } from 'native-base';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { useSelector } from 'react-redux';
 import ReplyMessage from './ReplyMessage';
+import commonStyles from '../common/commonStyles';
 
 const TextCard = props => {
   const { handleReplyPress, message } = props;
@@ -13,15 +13,7 @@ const TextCard = props => {
   );
 
   return (
-    <View
-      bgColor={props.isSame ? '#E2E8F7' : '#fff'}
-      borderRadius={10}
-      overflow={'hidden'}
-      borderWidth={props.isSame ? 0 : 1}
-      borderBottomLeftRadius={props.isSame ? 10 : 0}
-      borderBottomRightRadius={props.isSame ? 0 : 10}
-      borderColor="#DDE3E5"
-      px="1">
+    <View style={commonStyles.paddingHorizontal_4}>
       {replyTo && (
         <ReplyMessage
           handleReplyPress={handleReplyPress}
@@ -32,15 +24,14 @@ const TextCard = props => {
       <Text style={styles.message}>
         <ChatConversationHighlightedText
           text={props.data?.message}
+          textStyle={styles.message}
           searchValue={conversationSearchText.trim()}
         />
       </Text>
 
       <View style={styles.timeStamp}>
         {props.data.status}
-        <Text pl="1" color="#455E93" fontSize="10" fontWeight={300}>
-          {props.data.timeStamp}
-        </Text>
+        <Text style={styles.timeStampText}>{props.data.timeStamp}</Text>
       </View>
     </View>
   );
@@ -69,9 +60,7 @@ export const ChatConversationHighlightedText = ({
             : {};
         return (
           <Text
-            color="coolGray.800"
             key={++i + '-' + index}
-            dark={{ color: 'warmGray.50' }}
             ellipsizeMode="tail"
             style={[textStyle, isSearchMatch]}>
             {part}
@@ -85,9 +74,10 @@ export const ChatConversationHighlightedText = ({
 const styles = StyleSheet.create({
   message: {
     fontSize: 14,
-    paddingHorizontal: 3,
-    paddingVertical: 4,
+    paddingHorizontal: 5,
+    paddingVertical: 8,
     color: '#313131',
+    lineHeight: 20,
   },
   timeStamp: {
     flexDirection: 'row',
@@ -97,6 +87,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
+  timeStampText: {
+    paddingLeft: 4,
+    color: '#455E93',
+    fontSize: 10,
+    fontWeight: '400',
+  },
+
   highlight: {
     backgroundColor: '#D69C23',
     fontWeight: 'bold',

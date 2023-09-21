@@ -1,5 +1,4 @@
 import React from 'react';
-import { HStack, Text, View } from 'native-base';
 import {
   CSVIcon,
   DocIcon,
@@ -10,13 +9,14 @@ import {
   ZipIcon,
 } from '../common/Icons';
 import { getExtension } from './chat/common/fileUploadValidation';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { convertBytesToKB } from '../Helper';
 import AttachmentProgressLoader from './chat/common/AttachmentProgressLoader';
 import useMediaProgress from '../hooks/useMediaProgress';
 import ReplyMessage from './ReplyMessage';
 import { ChatConversationHighlightedText } from './TextCard';
 import { useSelector } from 'react-redux';
+import commonStyles from '../common/commonStyles';
 
 const DocumentMessageCard = ({
   message,
@@ -72,7 +72,7 @@ const DocumentMessageCard = ({
   }, [fileExtension]);
 
   return (
-    <View style={styles.container(isSender)}>
+    <View style={styles.container}>
       {replyTo && (
         <ReplyMessage
           handleReplyPress={handleReplyPress}
@@ -80,14 +80,12 @@ const DocumentMessageCard = ({
           isSame={isSender}
         />
       )}
-      <HStack
-        borderRadius={10}
-        backgroundColor={isSender ? '#D5DCEC' : '#EFEFEF'}
-        alignItems={'center'}
-        paddingX={2}
-        paddingY={1}>
-        <View py={2}>{renderFileIcon()}</View>
-        <Text px={2} flex={1} numberOfLines={2} fontSize={11} py={3}>
+      <View
+        style={styles.fileIconAndNameContainer(
+          isSender ? '#D5DCEC' : '#EFEFEF',
+        )}>
+        <View style={commonStyles.paddingVertical_8}>{renderFileIcon()}</View>
+        <Text numberOfLines={2} style={styles.fileNameText}>
           <ChatConversationHighlightedText
             text={mediaData.fileName}
             searchValue={conversationSearchText.trim()}
@@ -99,23 +97,12 @@ const DocumentMessageCard = ({
           onDownload={downloadMedia}
           onUpload={retryUploadMedia}
         />
-      </HStack>
-      <View
-        width={'100%'}
-        p={1}
-        flexDirection={'row'}
-        position={'absolute'}
-        justifyContent={'space-between'}
-        alignItems={'center'}
-        bottom={0}>
-        <Text color={'#484848'} fontWeight={'400'} fontSize="9">
-          {fileSizeInKB}
-        </Text>
+      </View>
+      <View style={styles.statusAndTimestampWithFileSizeContainer}>
+        <Text style={styles.fileSizeText}>{fileSizeInKB}</Text>
         <View style={styles.timeStampAndStatusContainer}>
           {status}
-          <Text pl="1" color="#959595" fontSize="9">
-            {timeStamp}
-          </Text>
+          <Text style={styles.timeStampText}>{timeStamp}</Text>
         </View>
       </View>
     </View>
@@ -124,24 +111,52 @@ const DocumentMessageCard = ({
 export default React.memo(DocumentMessageCard);
 
 const styles = StyleSheet.create({
-  container: isSender => ({
+  container: {
     width: 265,
-    flex: 1,
     position: 'relative',
     paddingTop: 2,
     paddingBottom: 25,
     paddingHorizontal: 2,
-    borderWidth: 2,
-    borderColor: isSender ? '#E2E8F7' : '#FFFFFF',
-    borderRadius: 10,
-    borderBottomLeftRadius: isSender ? 10 : 0,
-    borderBottomRightRadius: isSender ? 0 : 10,
-    backgroundColor: isSender ? '#E2E8F7' : '#fff',
     margin: 2,
-  }),
+  },
   timeStampAndStatusContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  fileIconAndNameContainer: bgColor => ({
+    flexDirection: 'row',
+    borderRadius: 10,
+    backgroundColor: bgColor,
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  }),
+  fileNameText: {
+    paddingHorizontal: 8,
+    flex: 1,
+    fontSize: 11,
+    paddingVertical: 12,
+  },
+  statusAndTimestampWithFileSizeContainer: {
+    width: '100%',
+    padding: 4,
+    flexDirection: 'row',
+    position: 'absolute',
+    bottom: 0,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  fileSizeText: {
+    color: '#484848',
+    fontWeight: '400',
+    fontSize: 9,
+    marginLeft: 8,
+  },
+  timeStampText: {
+    paddingLeft: 4,
+    color: '#455E93',
+    fontSize: 10,
+    fontWeight: '400',
   },
 });

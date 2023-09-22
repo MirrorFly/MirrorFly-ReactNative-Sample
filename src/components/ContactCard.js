@@ -1,79 +1,76 @@
-import { Image } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import BG from '../assets/BG.png';
-import { View, Text, HStack } from 'native-base';
 import { getImageSource } from '../common/utils';
 
 const ContactCard = props => {
   const ContactInfo = props.data.msgBody.nickName;
 
   return (
-    <View
-      borderWidth={props.isSame ? 0 : 0.25}
-      borderColor={'#959595'}
-      bgColor={props.isSame ? '#E2E8F7' : '#fff'}
-      borderRadius={5}>
-      <View
-        flex={1}
-        width={210}
-        mx={1.2}
-        my={0.9}
-        height={100}
-        position={'relative'}>
-        <View
-          style={{
-            paddingTop: 12,
-            paddingHorizontal: 10,
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
-          <Image
-            source={getImageSource(BG)}
-            resizeMode="cover"
-            style={{
-              alignItems: 'center',
-              width: 30,
-              height: 30,
-              borderRadius: 20,
-            }}
-          />
-          <Text
-            style={{
-              color: '#000',
-              fontSize: 12,
-              fontWeight: '400',
-              paddingLeft: 5,
-            }}>
-            {ContactInfo}
-          </Text>
-        </View>
-        <HStack
-          style={{
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            flex: 0.8,
-          }}>
-          {props.status}
-          <Text style={{ color: '#000', fontSize: 10, paddingRight: 6 }}>
-            {' '}
-            {props.timeStamp}{' '}
-          </Text>
-        </HStack>
-        <View style={{ borderWidth: 0.2, borderColor: '#BFBFBF' }} />
-        <View style={{ justifyContent: 'center', marginTop: 5 }}>
-          <Text
-            style={{
-              color: '#000',
-              fontSize: 12,
-              fontWeight: '500',
-              textAlign: 'center',
-            }}>
-            Invite
-          </Text>
-        </View>
+    <View style={styles.container}>
+      <View style={styles.contactInfo}>
+        <Image source={getImageSource(BG)} style={styles.imageBackground} />
+        <Text style={styles.contactNickname}>{ContactInfo}</Text>
+      </View>
+      <View style={styles.timeStampWrapper}>
+        {props.status}
+        <Text style={styles.timeStampText}>{props.timeStamp} </Text>
+      </View>
+      <View style={styles.borderLine} />
+      <View style={styles.inviteTextWrapper}>
+        <Text style={styles.inviteText}>Invite</Text>
       </View>
     </View>
   );
 };
 
 export default ContactCard;
+
+const styles = StyleSheet.create({
+  container: {
+    width: 210,
+    marginHorizontal: 6,
+    marginVertical: 4,
+    height: 100,
+    position: 'relative',
+  },
+  contactInfo: {
+    paddingTop: 12,
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  imageBackground: {
+    alignItems: 'center',
+    width: 30,
+    height: 30,
+    borderRadius: 20,
+    resizeMode: 'cover',
+  },
+  contactNickname: {
+    color: '#000',
+    fontSize: 12,
+    fontWeight: '400',
+    paddingLeft: 5,
+  },
+  timeStampWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    flex: 0.8,
+  },
+  timeStampText: {
+    color: '#000',
+    fontSize: 10,
+    paddingRight: 6,
+    fontWeight: '400',
+  },
+  borderLine: { borderWidth: 0.2, borderColor: '#BFBFBF' },
+  inviteTextWrapper: { justifyContent: 'center', marginTop: 5 },
+  inviteText: {
+    color: '#000',
+    fontSize: 12,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+});

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Text, Toast } from 'native-base';
-import { Alert, Platform } from 'react-native';
+import { Toast } from 'native-base';
+import { Alert, Platform, Text, View } from 'react-native';
 import Graphemer from 'graphemer';
 import RNFS from 'react-native-fs';
 import { Image as ImageCompressor } from 'react-native-compressor';
@@ -11,6 +11,7 @@ import { updateRosterData } from '../redux/Actions/rosterAction';
 import { profileDetail } from '../redux/Actions/ProfileAction';
 import SDK from '../SDK/SDK';
 import { updateUserProfileStore } from './Chat/ChatHelper';
+import { toastStyles } from '../common/commonStyles';
 
 const toastLocalRef = React.createRef({});
 toastLocalRef.current = {};
@@ -43,11 +44,9 @@ export const showToast = (message, options, ignoreDuplicateToast = true) => {
     ...options,
     render: () => {
       return (
-        <Box bg="black" px="2" py="1" rounded="sm">
-          <Text color={'#fff'} padding={2}>
-            {message}
-          </Text>
-        </Box>
+        <View style={toastStyles.toastContainer}>
+          <Text style={toastStyles.toastContent}>{message}</Text>
+        </View>
       );
     },
   });

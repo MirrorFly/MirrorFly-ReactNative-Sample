@@ -1,18 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SDK from '../SDK/SDK';
-import {
-  AlertDialog,
-  Box,
-  HStack,
-  Pressable,
-  Text,
-  Toast,
-  useToast,
-} from 'native-base';
 import React from 'react';
-import { Alert, BackHandler, Platform } from 'react-native';
+import {
+  Alert,
+  BackHandler,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
-import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
@@ -37,6 +35,7 @@ import {
 } from '../common/Icons';
 import {
   handleAudioPickerSingle,
+  handleDocumentPickSingle,
   mediaObjContructor,
   requestAudioStoragePermission,
   requestCameraPermission,
@@ -73,6 +72,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { chatInputMessageRef } from '../components/ChatInput';
 import Location from '../components/Media/Location';
 import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
+import Modal, { ModalCenteredContent } from '../common/Modal';
 
 function ChatScreen() {
   const [replyMsg, setReplyMsg] = React.useState('');
@@ -85,7 +85,6 @@ function ChatScreen() {
     state => state.chatConversationLocalNav.chatConversationLocalNav,
   );
   const [isMessageInfo, setIsMessageInfo] = React.useState({});
-  const toast = useToast();
   const dispatch = useDispatch();
   const [isToastShowing, setIsToastShowing] = React.useState(false);
   const [selectedImages, setSelectedImages] = React.useState([]);
@@ -125,31 +124,6 @@ function ChatScreen() {
     [toUserJid],
   );
 
-  const toastConfig = {
-    duration: 1500,
-    avoidKeyboard: true,
-    onCloseComplete: () => {
-      setIsToastShowing(false);
-    },
-  };
-  const documentAttachmentTypes = React.useMemo(
-    () => [
-      DocumentPicker.types.pdf,
-      DocumentPicker.types.ppt,
-      DocumentPicker.types.pptx,
-      DocumentPicker.types.doc,
-      DocumentPicker.types.docx,
-      DocumentPicker.types.xls,
-      DocumentPicker.types.xlsx,
-      DocumentPicker.types.plainText,
-      DocumentPicker.types.zip,
-      DocumentPicker.types.csv,
-      /** need to add rar file type and verify that */
-      '.rar',
-    ],
-    [],
-  );
-
   const getReplyMessage = message => {
     setReplyMsg(message);
   };
@@ -175,32 +149,23 @@ function ChatScreen() {
     const storage_permission = await AsyncStorage.getItem('storage_permission');
     AsyncStorage.setItem('storage_permission', 'true');
     let MediaPermission = await requestAudioStoragePermission();
-    const size_toast = 'size_toast';
     if (MediaPermission === 'granted' || MediaPermission === 'limited') {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       let response = await handleAudioPickerSingle();
       let _validate = validation(response.type);
-      const size = validateFileSize(response.size, getType(response.type));
-      if (_validate && !size) {
+      const sizeError = validateFileSize(response.size, getType(response.type));
+      if (_validate && !sizeError) {
         setAlert(true);
         setValidate(_validate);
       }
       const audioDuration = await getAudioDuration(response.fileCopyUri);
       response.duration = audioDuration;
-      if (size && !Toast.isActive(size_toast)) {
-        return Toast.show({
-          id: size_toast,
-          ...toastConfig,
-          render: () => {
-            return (
-              <Box bg="black" px="2" py="1" rounded="sm">
-                <Text style={{ color: '#fff', padding: 5 }}>{size}</Text>
-              </Box>
-            );
-          },
+      if (sizeError) {
+        return showToast(sizeError, {
+          id: 'media-size-error-toast',
         });
       }
-      if (!_validate && !size) {
+      if (!_validate && !sizeError) {
         const transformedArray = {
           caption: '',
           fileDetails: mediaObjContructor('DOCUMENT_PICKER', response),
@@ -223,49 +188,38 @@ function ChatScreen() {
     if (permissionResult === 'granted' || permissionResult === 'limited') {
       // updating the SDK flag to keep the connection Alive when app goes background because of document picker
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
-      DocumentPicker.pickSingle({
-        type: documentAttachmentTypes,
-        copyTo:
-          Platform.OS === 'android' ? 'cachesDirectory' : 'documentDirectory',
-      })
-        .then(file => {
-          // updating the SDK flag back to false to behave as usual
-          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+      const file = await handleDocumentPickSingle();
+      // updating the SDK flag back to false to behave as usual
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
 
-          // Validating the file type and size
-          if (!isValidFileType(file.type)) {
-            Alert.alert(
-              'Mirrorfly',
-              'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
-            );
-            return;
-          }
-          const error = validateFileSize(file.size, 'file');
-          if (error) {
-            const toastOptions = {
-              id: 'document-too-large-toast',
-              duration: 2500,
-              avoidKeyboard: true,
-            };
-            showToast(error, toastOptions);
-            return;
-          }
+      // Validating the file type and size
+      if (!isValidFileType(file.type)) {
+        Alert.alert(
+          'Mirrorfly',
+          'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
+        );
+        return;
+      }
+      const error = validateFileSize(file.size, 'file');
+      if (error) {
+        const toastOptions = {
+          id: 'document-too-large-toast',
+          duration: 2500,
+          avoidKeyboard: true,
+        };
+        showToast(error, toastOptions);
+        return;
+      }
 
-          // preparing the object and passing it to the sendMessage function
-          const updatedFile = {
-            fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
-          };
-          const messageData = {
-            type: 'media',
-            content: [updatedFile],
-          };
-          handleSendMsg(messageData);
-        })
-        .catch(err => {
-          // updating the SDK flag back to false to behave as usual
-          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-          console.log('Error from documen picker', err);
-        });
+      // preparing the object and passing it to the sendMessage function
+      const updatedFile = {
+        fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
+      };
+      const messageData = {
+        type: 'media',
+        content: [updatedFile],
+      };
+      handleSendMsg(messageData);
     } else if (storage_permission) {
       openSettings();
     }
@@ -509,17 +463,10 @@ function ChatScreen() {
       fileDetails: mediaObjContructor('CAMERA_ROLL', item),
     };
     setIsToastShowing(true);
-    const size = validateFileSize(item.image.fileSize, getType(item.type));
-    if (size && !isToastShowing) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>{size}</Text>
-            </Box>
-          );
-        },
+    const sizeError = validateFileSize(item.image.fileSize, getType(item.type));
+    if (sizeError && !isToastShowing) {
+      return showToast(sizeError, {
+        id: 'media-size-error-toast',
       });
     }
     if (!isToastShowing) {
@@ -537,35 +484,19 @@ function ChatScreen() {
     };
     setIsToastShowing(true);
     setselectedSingle(false);
-    const size = validateFileSize(item.image.fileSize, getType(item.type));
+    const sizeError = validateFileSize(item.image.fileSize, getType(item.type));
     const isImageSelected = selectedImages.some(
       selectedItem => selectedItem.fileDetails?.uri === item?.image.uri,
     );
     if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>
-                Can't share more than 10 media items
-              </Text>
-            </Box>
-          );
-        },
+      return showToast("Can't share more than 10 media items", {
+        id: 'media-error-toast',
       });
     }
 
-    if (size && !isToastShowing) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>{size}</Text>
-            </Box>
-          );
-        },
+    if (sizeError && !isToastShowing) {
+      return showToast(sizeError, {
+        id: 'media-size-error-toast',
       });
     }
 
@@ -744,27 +675,46 @@ function ChatScreen() {
           ),
         }[localNav]
       }
-      <AlertDialog isOpen={alert} onClose={alert}>
-        <AlertDialog.Content
-          w="85%"
-          borderRadius={0}
-          px="6"
-          py="4"
-          fontWeight={'600'}>
-          <Text fontSize={16} color={'black'}>
-            {validate}
-          </Text>
-          <HStack justifyContent={'flex-end'} mr={2} pb={'2'} pt={'6'}>
-            <Pressable onPress={onClose}>
-              <Text fontWeight={'500'} color={'#3276E2'}>
-                OK
-              </Text>
-            </Pressable>
-          </HStack>
-        </AlertDialog.Content>
-      </AlertDialog>
+      <Modal visible={alert}>
+        <ModalCenteredContent>
+          <View style={styles.modalContentContainer}>
+            <Text style={styles.modalMessageText}>{validate}</Text>
+            <View style={styles.modalActionButtonContainer}>
+              <Pressable onPress={onClose}>
+                <Text style={styles.modalOkButton}>OK</Text>
+              </Pressable>
+            </View>
+          </View>
+        </ModalCenteredContent>
+      </Modal>
     </>
   );
 }
 
 export default ChatScreen;
+
+const styles = StyleSheet.create({
+  modalContentContainer: {
+    width: '85%',
+    borderRadius: 0,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    backgroundColor: '#fff',
+  },
+  modalMessageText: {
+    fontSize: 16,
+    color: 'black',
+  },
+  modalOkButton: {
+    fontWeight: '500',
+    color: '#3276E2',
+  },
+  modalActionButtonContainer: {
+    flexDirection: 'row',
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+    marginRight: 8,
+    paddingBottom: 8,
+    paddingTop: 24,
+  },
+});

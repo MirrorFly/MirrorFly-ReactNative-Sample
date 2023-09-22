@@ -2,6 +2,7 @@ import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { Chat_FABICON, MenuIcon } from './Icons';
 import { Icon, IconButton, Pressable } from 'native-base';
+import MFIconButton from '../common/IconButton';
 import SendIcon from '../assets/send.png';
 import LeftArrow from '../assets/leftArrow.png';
 import { getImageSource } from './utils';
@@ -51,19 +52,22 @@ export const PrimaryPillBtn = props => {
 export const BackBtn = props => {
   return (
     <Pressable activeOpacity={1} {...props} style={{ padding: 10 }}>
-      <Image source={getImageSource(LeftArrow)} style={{ width: 18.33, height: 15.32 }} />
+      <Image
+        source={getImageSource(LeftArrow)}
+        style={{ width: 18.33, height: 15.32 }}
+      />
     </Pressable>
   );
 };
 
 export const SendBtn = React.memo(props => {
   return (
-    <Pressable {...props}>
+    <MFIconButton {...props}>
       <Image
         source={getImageSource(SendIcon)}
         style={{ width: 24.33, height: 20.32 }}
       />
-    </Pressable>
+    </MFIconButton>
   );
 });
 

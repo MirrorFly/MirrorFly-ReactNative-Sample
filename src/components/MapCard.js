@@ -1,5 +1,4 @@
 import { showToast } from '../Helper/index';
-import { View, Text } from 'native-base';
 import React, { useState } from 'react';
 import {
   Image,
@@ -8,6 +7,8 @@ import {
   ImageBackground,
   Platform,
   StyleSheet,
+  View,
+  Text,
 } from 'react-native';
 import ic_baloon from '../assets/ic_baloon.png';
 import { getImageSource } from '../common/utils';
@@ -15,11 +16,12 @@ import config from './chat/common/config';
 import ReplyMessage from './ReplyMessage';
 import mapStaticFallbackImage from '../assets/google-maps-blur.png';
 import { useNetworkStatus } from '../hooks';
+import ApplicationColors from '../config/appColors';
 
 const MAP_URL = 'https://maps.googleapis.com/maps/api/staticmap';
 
 const getLocationImageURL = ({ latitude, longitude }) => {
-  return `${MAP_URL}?center=${latitude},${longitude}&zoom=15&size=194x171&markers=color:red|${latitude},${longitude}&key=${config.GOOGLE_LOCATION_API_KEY}`;
+  return `${MAP_URL}?center=${latitude},${longitude}&zoom=15&size=195x170&markers=color:red|${latitude},${longitude}&key=${config.GOOGLE_LOCATION_API_KEY}`;
 };
 
 const MapCard = ({
@@ -77,7 +79,7 @@ const MapCard = ({
   };
 
   return (
-    <View style={styles.container(isSender)}>
+    <View style={styles.container}>
       {replyTo && (
         <ReplyMessage
           handleReplyPress={handleReplyPress}
@@ -85,29 +87,25 @@ const MapCard = ({
           isSame={isSender}
         />
       )}
-      <View width={195} height={170}>
-        <Pressable onPress={mapHandler}>
-          <Image
-            source={
-              isImageLoadingError
-                ? getImageSource(mapStaticFallbackImage)
-                : { uri: locationImageUrl, cache: 'force-cache' }
-            }
-            resizeMode="cover"
-            style={styles.staticMapImage}
-            onError={handleImageLoadError}
-          />
-        </Pressable>
-        <View position="absolute" borderRadius={10} bottom={0.4} right={1}>
-          <ImageBackground
-            source={getImageSource(ic_baloon)}
-            style={styles.imageBackground}>
-            {status}
-            <Text pl={1} pr="2" color="#FFF" fontSize="10" fontWeight={400}>
-              {timeStamp}
-            </Text>
-          </ImageBackground>
-        </View>
+      <Pressable onPress={mapHandler}>
+        <Image
+          source={
+            isImageLoadingError
+              ? getImageSource(mapStaticFallbackImage)
+              : { uri: locationImageUrl, cache: 'force-cache' }
+          }
+          resizeMode="cover"
+          style={styles.mapImage}
+          onError={handleImageLoadError}
+        />
+      </Pressable>
+      <View style={styles.statusWithTimestampContainer}>
+        <ImageBackground
+          source={getImageSource(ic_baloon)}
+          style={styles.imageBackground}>
+          {status}
+          <Text style={styles.timeStampText}>{timeStamp}</Text>
+        </ImageBackground>
       </View>
     </View>
   );
@@ -115,15 +113,22 @@ const MapCard = ({
 export default MapCard;
 
 const styles = StyleSheet.create({
-  container: isSender => ({
-    backgroundColor: isSender ? '#E2E8F7' : '#FFFFFF',
+  container: {
     padding: 4,
-    borderRadius: 10,
-  }),
-  staticMapImage: {
-    width: 194,
-    height: 171,
+    width: 203,
+    height: 178,
+  },
+  mapImage: {
+    width: 195,
+    height: 170,
+    resizeMode: 'contain',
     borderRadius: 8,
+  },
+  statusWithTimestampContainer: {
+    position: 'absolute',
+    borderRadius: 10,
+    bottom: 4,
+    right: 4,
   },
   imageBackground: {
     flexDirection: 'row',
@@ -131,7 +136,14 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     width: 130,
     resizeMode: 'cover',
-    borderTopRightRadius: 20,
-    borderBottomRightRadius: 20,
+    borderBottomRightRadius: 5,
+    overflow: 'hidden',
+  },
+  timeStampText: {
+    paddingLeft: 4,
+    paddingRight: 8,
+    color: ApplicationColors.white,
+    fontSize: 10,
+    fontWeight: '400',
   },
 });

@@ -1,19 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import SDK from '../SDK/SDK';
-import {
-  Checkbox,
-  HStack,
-  Icon,
-  IconButton,
-  Modal,
-  Pressable,
-  Text,
-  VStack,
-  View,
-  Input,
-} from 'native-base';
+import { Checkbox } from 'native-base';
 import React, { useRef } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import Avathar from '../common/Avathar';
@@ -40,6 +29,11 @@ import useRosterData from '../hooks/useRosterData';
 import ApplicationColors from '../config/appColors';
 import { touchEffect } from '../config/appTheme';
 import { navigate } from '../redux/Actions/NavigationAction';
+import ChatSearchInput from './ChatSearchInput';
+import commonStyles from '../common/commonStyles';
+import Modal, { ModalCenteredContent } from '../common/Modal';
+import Pressable from '../common/Pressable';
+import IconButton from '../common/IconButton';
 
 const forwardMediaMessageTypes = {
   image: true,
@@ -52,6 +46,7 @@ function ChatHeader({
   fromUserJId,
   selectedMsgs,
   setSelectedMsgs,
+  selectedMsgsIdRef,
   menuItems,
   handleBackBtn,
   handleReply,
@@ -134,6 +129,7 @@ function ChatHeader({
       .sort((a, b) => (b.timestamp > a.timestamp ? -1 : 1))
       .map(el => el.msgId);
     const jid = fromUserJId;
+    selectedMsgsIdRef.current = {};
     setSelectedMsgs([]);
     if (deleteType === 1) {
       SDK.deleteMessagesForMe(jid, msgIds);
@@ -144,6 +140,7 @@ function ChatHeader({
   };
 
   const handleRemove = () => {
+    selectedMsgsIdRef.current = {};
     setSelectedMsgs([]);
   };
 
@@ -194,8 +191,7 @@ function ChatHeader({
         !selectedMsgs[0]?.recall &&
         isAllowForward ? (
         <IconButton
-          _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-          px="4"
+          style={[commonStyles.padding_10_15]}
           onPress={handleForwardMessage}>
           <ForwardIcon />
         </IconButton>
@@ -241,35 +237,16 @@ function ChatHeader({
 
   if (IsSearching) {
     return (
-      <HStack
-        h={'60px'}
-        bg="#F2F2F2"
-        justifyContent="space-between"
-        alignItems="center"
-        borderBottomColor={'#C1C1C1'}
-        borderBottomWidth={1}
-        style={styles.RootContainer}
-        w="full">
-        <IconButton
-          _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-          onPress={handleBackSearch}
-          icon={<Icon as={() => LeftArrowIcon()} name="emoji-happy" />}
-          borderRadius="full"
-        />
+      <View style={styles.RootContainer}>
+        <IconButton onPress={handleBackSearch}>{LeftArrowIcon()}</IconButton>
         <View style={styles.TextInput}>
-          <Input
-            ref={searchInputRef}
-            variant="underlined"
+          <ChatSearchInput
+            inputRef={searchInputRef}
             placeholder=" Search..."
             value={conversationSearchText}
-            fontSize={17}
-            fontWeight={'400'}
             onChangeText={handleSearchTextChange}
-            focusOutlineColor={ApplicationColors.mainColor}
-            _input={{
-              cursorColor: ApplicationColors.mainColor,
-              selectionColor: ApplicationColors.mainColor,
-            }}
+            cursorColor={ApplicationColors.mainColor}
+            style={styles.chatSearchInput}
           />
         </View>
         <TouchableOpacity
@@ -282,29 +259,19 @@ function ChatHeader({
           style={styles.upAndDownArrow}>
           <DownArrowIcon width={15} height={7} />
         </TouchableOpacity>
-      </HStack>
+      </View>
     );
   }
 
   return (
     <>
       {selectedMsgs?.length <= 0 ? (
-        <HStack
-          h={'60px'}
-          bg="#F2F2F2"
-          justifyContent="space-between"
-          alignItems="center"
-          borderBottomColor={'#C1C1C1'}
-          borderBottomWidth={1}
-          style={styles.headerContainer}
-          w="full">
-          <HStack alignItems="center">
-            <IconButton
-              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-              onPress={handleBackBtn}
-              icon={<Icon as={() => LeftArrowIcon()} name="emoji-happy" />}
-              borderRadius="full"
-            />
+        <View style={styles.headerContainer}>
+          <IconButton onPress={handleBackBtn}>{LeftArrowIcon()}</IconButton>
+          <Pressable
+            onPress={handleUserInfo}
+            style={commonStyles.flex1}
+            contentContainerStyle={styles.userAvatharAndInfoContainer}>
             <Avathar
               width={36}
               height={36}
@@ -312,64 +279,30 @@ function ChatHeader({
               data={nickName}
               profileImage={profileImage}
             />
-            <Pressable w="65%" onPress={handleUserInfo}>
-              {({ isPressed }) => {
-                return (
-                  <VStack
-                    justifyItems={'center'}
-                    pr="4"
-                    py="3"
-                    bg={isPressed ? 'rgba(0,0,0, 0.1)' : 'coolGray.100'}
-                    pl="2">
-                    <Text color="#181818" fontWeight="700" fontSize="14">
-                      {nickName}
-                    </Text>
-                    <LastSeen jid={fromUserJId} />
-                  </VStack>
-                );
-              }}
-            </Pressable>
-          </HStack>
-          <HStack pr="3">
+            <View style={styles.userNameAndLastSeenContainer}>
+              <Text style={styles.userNameText}>{nickName}</Text>
+              <LastSeen jid={fromUserJId} />
+            </View>
+          </Pressable>
+          <View style={styles.menuIconContainer}>
             {selectedMsgs?.length < 2 && menuItems.length > 0 && (
               <MenuContainer menuItems={menuItems} />
             )}
-          </HStack>
-        </HStack>
+          </View>
+        </View>
       ) : (
-        <View
-          style={styles.subContainer}
-          flexDirection={'row'}
-          backgroundColor={'#F2F2F4'}
-          alignItems={'center'}
-          p="13"
-          justifyContent={'space-between'}>
-          <View
-            flexDirection={'row'}
-            justifyContent={'space-between'}
-            alignItems={'center'}>
-            <IconButton
-              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-              onPress={handleRemove}>
+        <View style={styles.subContainer}>
+          <View style={styles.selectedMsgsTextContainer}>
+            <IconButton onPress={handleRemove}>
               <CloseIcon />
             </IconButton>
-            <Text
-              px="8"
-              textAlign={'center'}
-              fontSize={'18'}
-              fontWeight={'400'}>
-              {selectedMsgs?.length}
-            </Text>
+            <Text style={styles.selectedMsgsText}>{selectedMsgs?.length}</Text>
           </View>
-          <View
-            flexDirection={'row'}
-            justifyContent={'space-between'}
-            alignItems={'center'}>
+          <View style={styles.selectedMsgsActionsContainer}>
             {selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 &&
               !selectedMsgs[0]?.recall && (
                 <IconButton
-                  _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-                  px="2"
+                  style={[commonStyles.padding_10_15]}
                   onPress={handleReplyMessage}>
                   {selectedMsgs?.length === 1 &&
                     selectedMsgs[0]?.msgStatus !== 3 && <ReplyIcon />}
@@ -378,8 +311,7 @@ function ChatHeader({
             {renderForwardIcon()}
             {!selectedMsgs[0]?.recall && (
               <IconButton
-                _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-                px="3"
+                style={[commonStyles.padding_10_15]}
                 onPress={handleFavourite}>
                 <FavouriteIcon />
               </IconButton>
@@ -388,8 +320,7 @@ function ChatHeader({
               selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 &&
               selectedMsgs[0]?.msgBody?.media?.is_downloaded !== 1 && (
                 <IconButton
-                  _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-                  px="4"
+                  style={[commonStyles.padding_10_15]}
                   onPress={handleDelete}>
                   <DeleteIcon />
                 </IconButton>
@@ -402,97 +333,78 @@ function ChatHeader({
           </View>
         </View>
       )}
-      <Modal isOpen={remove} safeAreaTop={true} onClose={onClose}>
-        <Modal.Content
-          w="88%"
-          borderRadius={0}
-          px="6"
-          py="4"
-          fontWeight={'300'}>
-          <Text
-            fontSize={'16'}
-            fontWeight={'400'}
-            numberOfLines={2}
-            color={'#767676'}>
-            Are you sure you want to delete selected Message?
-          </Text>
-          {imageUrl && (
-            <HStack py={'3'}>
-              <Checkbox
-                value={isSelected}
-                onValueChange={setSelection}
-                style={styles.checkbox}
-                _checked={{
-                  backgroundColor: '#3276E2',
-                  borderColor: '#3276E2',
-                }}
-                _pressed={{
-                  backgroundColor: '#3276E2',
-                  borderColor: '#3276E2',
-                }}>
-                <Text fontSize={'14'} fontWeight={'400'}>
-                  Delete media from my phone
-                </Text>
-              </Checkbox>
-            </HStack>
-          )}
-          {deleteEveryOne ? (
-            <VStack justifyContent={'flex-end'} alignItems="flex-start" pt="5">
-              <Pressable
-                mb="4"
-                py="1"
-                px="2"
-                onPress={() => handleDeleteForMe(1)}
-                _pressed={touchEffect}>
-                <Text color={'#3276E2'} fontWeight={'600'}>
-                  DELETE FOR ME
-                </Text>
-              </Pressable>
-              <Pressable
-                mb="4"
-                py="1"
-                px="2"
-                onPress={() => setRemove(false)}
-                _pressed={touchEffect}>
-                <Text color={'#3276E2'} fontWeight={'600'}>
-                  CANCEL
-                </Text>
-              </Pressable>
-              <Pressable
-                mb="3"
-                py="1"
-                px="2"
-                onPress={() => handleDeleteForMe(2)}
-                _pressed={touchEffect}>
-                <Text color={'#3276E2'} fontWeight={'600'}>
-                  DELETE FOR EVERYONE
-                </Text>
-              </Pressable>
-            </VStack>
-          ) : (
-            <HStack justifyContent={'flex-end'} py="3">
-              <Pressable
-                mr="4"
-                py="1"
-                px="2"
-                onPress={() => setRemove(false)}
-                _pressed={touchEffect}>
-                <Text color={'#3276E2'} fontWeight={'600'}>
-                  CANCEL
-                </Text>
-              </Pressable>
-              <Pressable
-                py="1"
-                px="2"
-                onPress={() => handleDeleteForMe(1)}
-                _pressed={touchEffect}>
-                <Text color={'#3276E2'} fontWeight={'600'}>
-                  DELETE FOR ME
-                </Text>
-              </Pressable>
-            </HStack>
-          )}
-        </Modal.Content>
+      <Modal visible={remove} onRequestClose={onClose}>
+        <ModalCenteredContent onPressOutside={onClose}>
+          <View style={styles.deleteModalContentContainer}>
+            <Text style={styles.deleteModalContentText} numberOfLines={2}>
+              Are you sure you want to delete selected Message?
+            </Text>
+            {imageUrl && (
+              <View
+                style={[commonStyles.hstack, commonStyles.paddingVertical_12]}>
+                <Checkbox
+                  value={isSelected}
+                  onValueChange={setSelection}
+                  style={styles.checkbox}
+                  _checked={{
+                    backgroundColor: '#3276E2',
+                    borderColor: '#3276E2',
+                  }}
+                  _pressed={{
+                    backgroundColor: '#3276E2',
+                    borderColor: '#3276E2',
+                  }}>
+                  <Text style={styles.deleteModalCheckboxLabel}>
+                    Delete media from my phone
+                  </Text>
+                </Checkbox>
+              </View>
+            )}
+            {deleteEveryOne ? (
+              <View style={styles.deleteModalVerticalActionButtonsContainer}>
+                <Pressable
+                  contentContainerStyle={styles.deleteModalVerticalActionButton}
+                  onPress={() => handleDeleteForMe(1)}>
+                  <Text style={styles.deleteModalActionButtonText}>
+                    DELETE FOR ME
+                  </Text>
+                </Pressable>
+                <Pressable
+                  contentContainerStyle={styles.deleteModalVerticalActionButton}
+                  onPress={() => setRemove(false)}>
+                  <Text style={styles.deleteModalActionButtonText}>CANCEL</Text>
+                </Pressable>
+                <Pressable
+                  contentContainerStyle={styles.deleteModalVerticalActionButton}
+                  onPress={() => handleDeleteForMe(2)}>
+                  <Text style={styles.deleteModalActionButtonText}>
+                    DELETE FOR EVERYONE
+                  </Text>
+                </Pressable>
+              </View>
+            ) : (
+              <View style={styles.deleteModalHorizontalActionButtonsContainer}>
+                <Pressable
+                  contentContainerStyle={[
+                    styles.deleteModalHorizontalActionButton,
+                    commonStyles.marginRight_16,
+                  ]}
+                  onPress={() => setRemove(false)}>
+                  <Text style={styles.deleteModalActionButtonText}>CANCEL</Text>
+                </Pressable>
+                <Pressable
+                  contentContainerStyle={
+                    styles.deleteModalHorizontalActionButton
+                  }
+                  onPress={() => handleDeleteForMe(1)}>
+                  <Text style={styles.deleteModalActionButtonText}>
+                    DELETE FOR ME
+                  </Text>
+                </Pressable>
+              </View>
+            )}
+          </View>
+        </ModalCenteredContent>
       </Modal>
     </>
   );
@@ -506,6 +418,14 @@ const styles = StyleSheet.create({
     borderColor: '#3276E2',
   },
   headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    height: 60,
+    backgroundColor: ApplicationColors.headerBg,
+    borderBottomWidth: 1,
+    borderBottomColor: ApplicationColors.mainBorderColor,
     elevation: 2,
     shadowColor: '#181818',
     shadowOffset: { width: 0, height: 6 },
@@ -513,6 +433,14 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
   },
   RootContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    height: 60,
+    backgroundColor: '#F2F2F2',
+    borderBottomColor: ApplicationColors.mainBorderColor,
+    borderBottomWidth: 1,
     elevation: 2,
     shadowColor: '#181818',
     shadowOffset: { width: 0, height: 6 },
@@ -520,6 +448,11 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
   },
   subContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 13,
+    backgroundColor: ApplicationColors.headerBg,
     elevation: 2,
     shadowColor: '#181818',
     shadowOffset: { width: 0, height: 6 },
@@ -532,5 +465,88 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 14,
     borderRadius: 50,
+  },
+  chatSearchInput: {
+    fontSize: 17,
+    fontWeight: '400',
+    borderBottomWidth: 1,
+    borderBottomColor: ApplicationColors.mainBorderColor,
+  },
+  userAvatharAndInfoContainer: {
+    flexGrow: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  userNameAndLastSeenContainer: {
+    justifyItems: 'center',
+    paddingRight: 16,
+    paddingLeft: 8,
+    paddingVertical: 12,
+  },
+  userNameText: {
+    color: '#181818',
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  menuIconContainer: {
+    paddingRight: 12,
+  },
+  selectedMsgsTextContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  selectedMsgsText: {
+    marginLeft: 30,
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: '400',
+  },
+  selectedMsgsActionsContainer: {
+    // backgroundColor: 'salmon',
+    flex: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  deleteModalContentContainer: {
+    width: '88%',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    fontWeight: '300',
+    backgroundColor: ApplicationColors.mainbg,
+  },
+  deleteModalContentText: {
+    fontSize: 16,
+    fontWeight: '400',
+    color: ApplicationColors.modalTextColor,
+    marginTop: 10,
+  },
+  deleteModalCheckboxLabel: {
+    fontSize: 14,
+    fontWeight: '400',
+  },
+  deleteModalVerticalActionButtonsContainer: {
+    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
+    paddingTop: 20,
+  },
+  deleteModalVerticalActionButton: {
+    marginBottom: 16,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+  deleteModalActionButtonText: {
+    color: ApplicationColors.mainColor,
+    fontWeight: '600',
+  },
+  deleteModalHorizontalActionButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingVertical: 12,
+  },
+  deleteModalHorizontalActionButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
   },
 });

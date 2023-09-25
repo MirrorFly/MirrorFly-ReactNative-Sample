@@ -56,7 +56,7 @@ import {
   validateFileSize,
   validation,
 } from '../components/chat/common/fileUploadValidation';
-import { RECENTCHATSCREEN } from '../constant';
+import { CHATCONVERSATION, RECENTCHATSCREEN } from '../constant';
 import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
 import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import store from '../redux/store';
@@ -71,6 +71,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { chatInputMessageRef } from '../components/ChatInput';
 import Location from '../components/Media/Location';
+import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 
 function ChatScreen() {
@@ -80,7 +81,9 @@ function ChatScreen() {
   const vCardData = useSelector(state => state.profile.profileDetails);
   const toUserJid = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
-  const [localNav, setLocalNav] = React.useState('CHATCONVERSATION');
+  const localNav = useSelector(
+    state => state.chatConversationLocalNav.chatConversationLocalNav,
+  );
   const [isMessageInfo, setIsMessageInfo] = React.useState({});
   const dispatch = useDispatch();
   const [isToastShowing, setIsToastShowing] = React.useState(false);
@@ -95,6 +98,18 @@ function ChatScreen() {
       setReplyMsg(data[toUserJid]?.replyMessage || '');
     }, [toUserJid]),
   );
+
+  React.useEffect(() => {
+    if (localNav !== CHATCONVERSATION) {
+      dispatch(navigate({ notificationCheck: 'CHANGED' }));
+    } else {
+      dispatch(navigate({ notificationCheck: toUserJid }));
+    }
+  }, [localNav]);
+
+  const setLocalNav = localname => {
+    dispatch(updateChatConversationLocalNav(localname));
+  };
 
   const handleIsSearching = () => {
     setIsSearching(true);
@@ -318,6 +333,7 @@ function ChatScreen() {
         profileDetails: {},
       };
       dispatch(navigate(x));
+      dispatch(navigate({ notificationCheck: 'CHANGED' }));
       RootNav.navigate(RECENTCHATSCREEN);
     }
     return true;

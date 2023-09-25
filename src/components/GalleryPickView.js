@@ -71,7 +71,6 @@ function GalleryPickView(props) {
   }, []);
 
   const handleIndexChange = ind => {
-    console.log(ind, 'index');
     scrollRef?.current.scrollToIndex({
       index: ind,
       animated: true,

@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initialState = {
   screen: REGISTERSCREEN,
+  notificationCheck: '',
   fromUserJid: '',
   number: '',
   status: 'idle',
@@ -39,14 +40,31 @@ const NavigationReducer = (state = initialState, action) => {
           }
         }
       }
-      const updatedState = { ...state };
-      updatedState.screen = action.payload?.screen;
-      updatedState.number = action.payload?.number;
-      updatedState.fromUserJid = action.payload?.fromUserJID;
-      updatedState.selectContryCode =
-        action?.payload?.selectContryCode || updatedState.selectContryCode;
-      updatedState.prevScreen = action?.payload.prevScreen;
-      updatedState.profileDetails = action?.payload?.profileDetails;
+      const updatedState = {
+        ...state,
+      };
+      if (action.payload?.screen) {
+        updatedState.screen = action.payload?.screen;
+      }
+      if (action.payload?.number) {
+        updatedState.number = action.payload?.number;
+      }
+      if (action?.payload?.fromUserJID || action.payload?.fromUserJID === '') {
+        updatedState.fromUserJid = action.payload?.fromUserJID;
+      }
+      if (action?.payload?.selectContryCode || updatedState.selectContryCode) {
+        updatedState.selectContryCode =
+          action?.payload?.selectContryCode || updatedState.selectContryCode;
+      }
+      if (action?.payload.prevScreen) {
+        updatedState.prevScreen = action?.payload.prevScreen;
+      }
+      if (action?.payload?.profileDetails) {
+        updatedState.profileDetails = action?.payload?.profileDetails;
+      }
+      if (action?.payload?.notificationCheck) {
+        updatedState.notificationCheck = action?.payload?.notificationCheck;
+      }
       return updatedState;
     } catch (error) {
       console.log('NavigationReducer', error);

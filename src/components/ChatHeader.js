@@ -27,6 +27,7 @@ import { showToast } from '../Helper/index';
 import { FORWARD_MESSSAGE_SCREEN } from '../constant';
 import useRosterData from '../hooks/useRosterData';
 import ApplicationColors from '../config/appColors';
+import { navigate } from '../redux/Actions/NavigationAction';
 import ChatSearchInput from './ChatSearchInput';
 import commonStyles from '../common/commonStyles';
 import Modal, { ModalCenteredContent } from '../common/Modal';
@@ -160,6 +161,7 @@ function ChatHeader({
     dispatch(clearConversationSearchData());
   };
   const handleForwardMessage = () => {
+    dispatch(navigate({ notificationCheck: 'CHANGED' }));
     navigation.navigate(FORWARD_MESSSAGE_SCREEN, {
       forwardMessages: selectedMsgs,
       onMessageForwaded: handleRemove,

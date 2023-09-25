@@ -23,8 +23,7 @@ import { profileDetail } from './redux/Actions/ProfileAction';
 import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction';
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
-
-/** import messaging from '@react-native-firebase/messaging';*/
+import messaging from '@react-native-firebase/messaging';
 LogBox.ignoreAllLogs();
 
 export const isKeyboardVisibleRef = createRef();
@@ -47,7 +46,7 @@ export const ChatApp = props => {
         callbackListeners: callBacks,
         isSandbox: props.isSandbox,
       });
-      /** await messaging().requestPermission();*/
+      await messaging().requestPermission();
     })();
     return () => {
       keyboardDidShowListener.remove();

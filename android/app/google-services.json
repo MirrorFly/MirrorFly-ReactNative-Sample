@@ -1,98 +1,88 @@
 {
   "project_info": {
-    "project_number": "695832127329",
-    "firebase_url": "https://mirror-fly-qa.firebaseio.com",
-    "project_id": "mirror-fly-qa",
-    "storage_bucket": "mirror-fly-qa.appspot.com"
+    "project_number": "235373697524",
+    "project_id": "mirrorfly-uikit-qa",
+    "storage_bucket": "mirrorfly-uikit-qa.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:695832127329:android:f8b6b0fab296a800",
+        "mobilesdk_app_id": "1:235373697524:android:6003ca46ab3fd6ada0c1a1",
         "android_client_info": {
-          "package_name": "com.mirrorfly.qa"
+          "package_name": "com.mirrorfly.uikit.qa"
         }
       },
       "oauth_client": [
         {
-          "client_id": "695832127329-46nd9k7c6nnvnc3165t6obp4pq4kvek1.apps.googleusercontent.com",
+          "client_id": "235373697524-00ffa2b0fnuqiaq8lrsm4dngutag4gsi.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.mirrorfly.qa",
-            "certificate_hash": "9cc3a748151b891ffdc9ca776601ba020f25ca20"
+            "package_name": "com.mirrorfly.uikit.qa",
+            "certificate_hash": "f2e6cce5db55425b8fb5e6da0db05cd82bd76a48"
           }
         },
         {
-          "client_id": "695832127329-ajuv682fsl04dhpvg92eqa9rd2kq1fb2.apps.googleusercontent.com",
+          "client_id": "235373697524-bumgakf43vn6f11bopo5gvfeu9u98a73.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.mirrorfly.qa",
-            "certificate_hash": "61ed377e85d386a8dfee6b864bd85b0bfaa5af81"
+            "package_name": "com.mirrorfly.uikit.qa",
+            "certificate_hash": "9626f8a5334e94cb50c72750ffc123cb8f7c8dad"
           }
         },
         {
-          "client_id": "695832127329-f1ueppg9fj7n3558kjo49kogs57joquh.apps.googleusercontent.com",
+          "client_id": "235373697524-detbrjshb6jpgv3akqq0bdkc20kkp3o6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.mirrorfly.qa",
-            "certificate_hash": "6936a9d09c887745b04a14be833fc2007b414cf1"
+            "package_name": "com.mirrorfly.uikit.qa",
+            "certificate_hash": "43f4966e1c78b386badd219a9215d60220f45ebb"
           }
         },
         {
-          "client_id": "695832127329-foss90n1vn89uhcbermnd7ejivqcm4su.apps.googleusercontent.com",
+          "client_id": "235373697524-jsr24653h08i4ahdu7pcrs8kcu63qrti.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.mirrorfly.qa",
-            "certificate_hash": "879c7b7ee145f2e62b86206a098fcad83f2a10e9"
+            "package_name": "com.mirrorfly.uikit.qa",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
           }
         },
         {
-          "client_id": "695832127329-g41mji3c6ghhuecegev9e15nfe59csq9.apps.googleusercontent.com",
+          "client_id": "235373697524-lnprhrs93p068q2fempp75f5t00u39ga.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.mirrorfly.qa",
-            "certificate_hash": "84f74124f1a889ff3664d0ae47cb666322a93e83"
-          }
-        },
-        {
-          "client_id": "695832127329-jgh2nq7u0dvo498jjjhadme1vt99urrq.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.mirrorfly.qa",
-            "certificate_hash": "57696cde3b1cafa03b14cb647096e41b3dcbedd0"
-          }
-        },
-        {
-          "client_id": "695832127329-m9krm6piekmgm1l7cru3i65fedhvrpj9.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.mirrorfly.qa",
+            "package_name": "com.mirrorfly.uikit.qa",
             "certificate_hash": "e31756556a43b89c8b95f22eb86f47af53baa7fb"
           }
         },
         {
-          "client_id": "695832127329-56b75k46ebkln169v43qo14hb4rrjtra.apps.googleusercontent.com",
+          "client_id": "235373697524-pg17gt0dbdoc8q7jom1s1hlt38d167tl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mirrorfly.uikit.qa",
+            "certificate_hash": "9cc3a748151b891ffdc9ca776601ba020f25ca20"
+          }
+        },
+        {
+          "client_id": "235373697524-3tl5e1eoqvqmv51qcqhgmcg2nkndfgu7.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD1v-uNHcFJX3Q4XzKj66AMQqaV3A-L0OE"
+          "current_key": "AIzaSyDfIqmrHFXEvJgE29tWr3Ps1bFJ-sOd2Go"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "695832127329-56b75k46ebkln169v43qo14hb4rrjtra.apps.googleusercontent.com",
+              "client_id": "235373697524-3tl5e1eoqvqmv51qcqhgmcg2nkndfgu7.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "695832127329-90o6pulj3hvrgd3eub4n6fpclp3b0ngj.apps.googleusercontent.com",
+              "client_id": "235373697524-2na45jkmpo3vu58u26m96huimhjkrrgi.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.mirrorfly.uikitflutter.qa",
-                "app_store_id": "123456789"
+                "bundle_id": "com.mirrorfly.uikit.qa"
               }
             }
           ]
@@ -101,35 +91,138 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:695832127329:android:fe82c302a9aee08c824720",
+        "mobilesdk_app_id": "1:235373697524:android:8c60557f4f35c990a0c1a1",
         "android_client_info": {
-          "package_name": "com.mirrorfly_rn"
+          "package_name": "com.mirrorfly.uikit_flutter.qa"
         }
       },
       "oauth_client": [
         {
-          "client_id": "695832127329-56b75k46ebkln169v43qo14hb4rrjtra.apps.googleusercontent.com",
+          "client_id": "235373697524-brkbj1pki6s3viu9f83bsbok5vk3dct3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mirrorfly.uikit_flutter.qa",
+            "certificate_hash": "f2e6cce5db55425b8fb5e6da0db05cd82bd76a48"
+          }
+        },
+        {
+          "client_id": "235373697524-fvliaemnm5p7q66et4bdjtvdq2t0r1re.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mirrorfly.uikit_flutter.qa",
+            "certificate_hash": "9cc3a748151b891ffdc9ca776601ba020f25ca20"
+          }
+        },
+        {
+          "client_id": "235373697524-h2la9od8svq8b5j95pgp98nk2qf02bcs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mirrorfly.uikit_flutter.qa",
+            "certificate_hash": "1b2a8b5a786da910dd531cae9b5efa01718d9826"
+          }
+        },
+        {
+          "client_id": "235373697524-t7bu6bse9n7a6umf22lu2sn89um0jqtl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mirrorfly.uikit_flutter.qa",
+            "certificate_hash": "6936a9d09c887745b04a14be833fc2007b414cf1"
+          }
+        },
+        {
+          "client_id": "235373697524-3tl5e1eoqvqmv51qcqhgmcg2nkndfgu7.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD1v-uNHcFJX3Q4XzKj66AMQqaV3A-L0OE"
+          "current_key": "AIzaSyDfIqmrHFXEvJgE29tWr3Ps1bFJ-sOd2Go"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "695832127329-56b75k46ebkln169v43qo14hb4rrjtra.apps.googleusercontent.com",
+              "client_id": "235373697524-3tl5e1eoqvqmv51qcqhgmcg2nkndfgu7.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "695832127329-90o6pulj3hvrgd3eub4n6fpclp3b0ngj.apps.googleusercontent.com",
+              "client_id": "235373697524-2na45jkmpo3vu58u26m96huimhjkrrgi.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.mirrorfly.uikitflutter.qa",
-                "app_store_id": "123456789"
+                "bundle_id": "com.mirrorfly.uikit.qa"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:235373697524:android:ad5ab4024f79c1a7a0c1a1",
+        "android_client_info": {
+          "package_name": "com.mirrorfly.uikit_react.qa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "235373697524-3tl5e1eoqvqmv51qcqhgmcg2nkndfgu7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfIqmrHFXEvJgE29tWr3Ps1bFJ-sOd2Go"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "235373697524-3tl5e1eoqvqmv51qcqhgmcg2nkndfgu7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "235373697524-2na45jkmpo3vu58u26m96huimhjkrrgi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mirrorfly.uikit.qa"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:235373697524:android:4e84fae2e982ba27a0c1a1",
+        "android_client_info": {
+          "package_name": "com.mirrorfly.uikitsdk.qa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "235373697524-3tl5e1eoqvqmv51qcqhgmcg2nkndfgu7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfIqmrHFXEvJgE29tWr3Ps1bFJ-sOd2Go"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "235373697524-3tl5e1eoqvqmv51qcqhgmcg2nkndfgu7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "235373697524-2na45jkmpo3vu58u26m96huimhjkrrgi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mirrorfly.uikit.qa"
               }
             }
           ]

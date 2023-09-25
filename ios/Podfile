@@ -35,3 +35,7 @@ target 'mirrorfly_rn' do
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end
+
+target 'NotificationExtension' do
+  pod 'Firebase/Messaging', '~> 18.3.0' # eg 6.31.0
+end

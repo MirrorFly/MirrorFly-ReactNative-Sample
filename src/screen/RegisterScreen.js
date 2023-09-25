@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Linking, Platform, TextInput } from 'react-native';
+import { Linking, Platform, TextInput } from 'react-native';
 import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { navigate } from '../redux/Actions/NavigationAction';
@@ -39,7 +39,6 @@ const RegisterScreen = ({ navigation }) => {
   const [mobileNumber, setMobileNumber] = React.useState('');
   const [isToastShowing, setIsToastShowing] = React.useState(false);
   const isNetworkConnected = useNetworkStatus();
-  // const pushNotificationInstance = new PushNotifiLocal();
 
   const termsHandler = () => {
     Linking.openURL('https://www.mirrorfly.com/terms-and-conditions.php');

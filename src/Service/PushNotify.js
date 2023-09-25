@@ -1,26 +1,26 @@
-import notifee, { AndroidStyle } from '@notifee/react-native';
+import notifee from '@notifee/react-native';
 
-// class PushNotify {
-//   static displayRemoteNotification = async (title, data, body) => {
-//     const channelId = await notifee.createChannel({
-//       id: 'default',
-//       name: 'Default Channel',
-//     });
-//     await notifee.requestPermission();
-//     // Display a notification
-//     await notifee.displayNotification({
-//       id: '123',
-//       title: title,
-//       body: body,
-//       data: data ? data : null,
-//       android: {
-//         channelId,
-//       },
-//     });
-//   };
-// }
+class PushNotify {
+  static displayRemoteNotification = async (title, data, body) => {
+    const channelId = await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+    });
+    await notifee.requestPermission();
+    /** Display a notification */
+    await notifee.displayNotification({
+      id: '123',
+      title: title,
+      body: body,
+      data: data || null,
+      android: {
+        channelId,
+      },
+    });
+  };
+}
 
-// export default PushNotify;
+export default PushNotify;
 
 export const handleNotifeeNotify = async () => {
   const channelId = await notifee.createChannel({
@@ -38,6 +38,7 @@ export const handleNotifeeNotify = async () => {
       channelId,
       groupId,
       smallIcon: 'ic_notification_blue',
+      /**
       //   style: {
       //     type: AndroidStyle.MESSAGING,
       //     person: {
@@ -59,8 +60,10 @@ export const handleNotifeeNotify = async () => {
       //       },
       //     ],
       //   },
+       */
     },
   });
+  /**
   // notifee.displayNotification({
   //   // title: '<p style="color: #4caf50;"><b>Styled HTMLTitle</span></p></b></p> &#128576;',
   //   // subtitle: '&#129395;',
@@ -78,4 +81,5 @@ export const handleNotifeeNotify = async () => {
   //     largeIcon: require('../assets/BG.png'),
   //   },
   // });
+  */
 };

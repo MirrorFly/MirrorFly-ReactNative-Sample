@@ -6,9 +6,7 @@ import store from '../redux/store';
 import { navigate } from '../redux/Actions/NavigationAction';
 import * as RootNav from '../../src/Navigation/rootNavigation';
 import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
-import { AppState, Platform } from 'react-native';
-import SDK from '../SDK/SDK';
-
+import { Platform } from 'react-native';
 class PushNotifiLocal {
   constructor(fromUserJid, onForeGround) {
     PushNotification.configure({

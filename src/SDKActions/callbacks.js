@@ -135,7 +135,7 @@ export const callBacks = {
       res.msgType === 'carbonReceiveRecall' ||
       (res.msgType === 'acknowledge' && res.type === 'recall')
     ) {
-      if(res.msgId){
+      if (res.msgId) {
         updateNotification(res.msgId);
       }
       store.dispatch(recentRecallUpdate(res));

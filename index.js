@@ -63,7 +63,7 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
     console.log('messaging().setBackgroundMessageHandler', error);
   }
 });
-
+/**
 // messaging().onMessage(async remoteMessage => {
 //   console.log(
 //     'Message handled in the forground!',
@@ -74,5 +74,6 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 //     JSON.stringify(remoteMessage, null, 2),
 //   );
 // });
+ */
 
 AppRegistry.registerComponent(appName, () => App);

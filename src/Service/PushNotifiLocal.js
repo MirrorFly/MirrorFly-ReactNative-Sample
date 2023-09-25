@@ -1,25 +1,36 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PushNotification from 'react-native-push-notification';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import { CHATCONVERSATION, CHATSCREEN } from '../constant';
 import store from '../redux/store';
 import { navigate } from '../redux/Actions/NavigationAction';
 import * as RootNav from '../../src/Navigation/rootNavigation';
 import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
+import { AppState, Platform } from 'react-native';
+import SDK from '../SDK/SDK';
 
 class PushNotifiLocal {
-  constructor(fromUserJid, onForGround) {
+  constructor(fromUserJid, onForeGround) {
     PushNotification.configure({
       onNotification: async function (notification) {
-        if (onForGround) {
+        notification.finish(PushNotificationIOS.FetchResult.NoData);
+        if (onForeGround) {
           let x = { screen: CHATSCREEN, fromUserJID: fromUserJid };
           await store.dispatch(navigate(x));
           RootNav.navigate(CHATSCREEN);
-          store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
+          await store.dispatch(
+            updateChatConversationLocalNav(CHATCONVERSATION),
+          );
         }
         await AsyncStorage.setItem('fromUserJId', fromUserJid);
       },
+      permissions: {
+        alert: true,
+        badge: true,
+        sound: true,
+      },
       popInitialNotification: true,
-      requestPermissions: false,
+      requestPermissions: Platform.OS === 'ios',
     });
     PushNotification.createChannel(
       {
@@ -31,13 +42,17 @@ class PushNotifiLocal {
     );
     PushNotification.getScheduledLocalNotifications(rn => {});
   }
-  scheduleNotify(date, title, body) {
+  scheduleNotify(id, date, title, body, playSound) {
     PushNotification.localNotification({
       smallIcon: 'ic_notification',
+      largeIcon: '',
       channelId: 'reminders',
-      title: title ? title : 'Task reminder Notification',
-      message: body ? body : 'Reminder Task',
+      title: title || 'Task reminder Notification',
+      message: body || 'Reminder Task',
       date,
+      when: date,
+      id: id,
+      playSound: playSound,
     });
   }
 }

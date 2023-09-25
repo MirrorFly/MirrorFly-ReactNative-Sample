@@ -46,6 +46,7 @@ export const mediaStatusConstants = {
   UPLOADED: 'UPLOADED',
 };
 
+// Notification constants
 export const deletedMessage = 'This message was deleted';
 export const imageEmoji = '📷';
 export const videoEmoji = '📽️';
@@ -53,3 +54,6 @@ export const contactEmoji = '👤';
 export const audioEmoji = '🎵';
 export const fileEmoji = '📄';
 export const locationEmoji = '📌';
+
+export const CALL_BACK = 'CALL_BACK';
+export const NOTIFICATION = 'NOTIFICATION';

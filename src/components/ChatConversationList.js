@@ -27,7 +27,7 @@ const ChatConversationList = ({
     searchText: conversationSearchText,
     messageIndex: searchMesageIndex,
   } = useSelector(state => state.conversationSearchData) || {};
-
+  const xmppConnection = useSelector(state => state.connection.xmppStatus);
   const dispatch = useDispatch();
   const flatListRef = React.useRef(null);
   const filteredMessageIndexes = React.useRef([]);
@@ -50,7 +50,7 @@ const ChatConversationList = ({
 
   React.useEffect(() => {
     updateMsgSeenStatus();
-  }, [messagesReducerId]);
+  }, [messagesReducerId, xmppConnection]);
 
   React.useEffect(() => {
     const isSender = messageList[0]?.fromUserJid === currentUserJID;

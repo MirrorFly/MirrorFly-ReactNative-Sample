@@ -16,7 +16,7 @@ import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import { showToast } from '../Helper';
+import { showCheckYourInternetToast, showToast } from '../Helper';
 import { isSingleChat } from '../Helper/Chat/ChatHelper';
 import { DOCUMENT_FORMATS } from '../Helper/Chat/Constant';
 import {
@@ -62,6 +62,7 @@ import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import store from '../redux/store';
 import SavePicture from './Gallery';
 import { createThumbnail } from 'react-native-create-thumbnail';
+import ContactList from '../components/Media/ContactList';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { clearConversationSearchData } from '../redux/Actions/conversationSearchAction';
 import {
@@ -73,6 +74,7 @@ import { chatInputMessageRef } from '../components/ChatInput';
 import Location from '../components/Media/Location';
 import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
 import Modal, { ModalCenteredContent } from '../common/Modal';
+import { useNetworkStatus } from '../hooks';
 
 function ChatScreen() {
   const [replyMsg, setReplyMsg] = React.useState('');
@@ -92,6 +94,8 @@ function ChatScreen() {
   const [alert, setAlert] = React.useState(false);
   const [validate, setValidate] = React.useState('');
   const [isSearching, setIsSearching] = React.useState(false);
+
+  const isNetworkAvailable = useNetworkStatus();
 
   useFocusEffect(
     React.useCallback(() => {
@@ -217,8 +221,15 @@ function ChatScreen() {
     }
   };
 
+  const handleContactSelect = () => {
+    setLocalNav('ContactList');
+  };
   const handleLocationSelect = async () => {
-    setLocalNav('LocationInfo');
+    if (isNetworkAvailable) {
+      setLocalNav('LocationInfo');
+    } else {
+      showCheckYourInternetToast();
+    }
   };
 
   const attachmentMenuIcons = [
@@ -290,7 +301,9 @@ function ChatScreen() {
     {
       name: 'Contact',
       icon: ContactIcon,
-      formatter: () => {},
+      formatter: async () => {
+        handleContactSelect();
+      },
     },
     {
       name: 'Location',
@@ -528,12 +541,12 @@ function ChatScreen() {
     }
 
     const msgId = uuidv4();
+    const replyTo = replyMsg?.msgId || '';
     switch (messageType) {
       case 'media':
         parseAndSendMessage(message, 'chat', messageType);
         break;
       case 'location':
-        const replyTo = replyMsg?.msgId || '';
         const { latitude, longitude } = message.location || {};
         if (latitude && longitude) {
           const dataObj = {
@@ -555,6 +568,31 @@ function ChatScreen() {
             replyTo,
           );
         }
+        break;
+      case 'contact':
+        const updatedContacts = message.contacts.map(c => ({
+          ...c,
+          msgId: uuidv4(),
+        }));
+        for (const contact of updatedContacts) {
+          const dataObj = {
+            jid: toUserJid,
+            msgType: messageType,
+            userProfile: vCardData,
+            chatType: 'chat',
+            msgId: contact.msgId,
+            contact: { ...contact },
+            fromUserJid: currentUserJID,
+            replyTo: replyTo,
+          };
+          constructAndDispatchConversationAndRecentChatData(dataObj);
+        }
+        setReplyMsg('');
+        SDK.sendContactMessage(toUserJid, updatedContacts, replyTo).then(
+          res => {
+            console.log('Response from SDK , ', res);
+          },
+        );
         break;
       default: // default to text message
         if (message.content !== '') {
@@ -630,6 +668,12 @@ function ChatScreen() {
           ),
           UserInfo: <UserInfo setLocalNav={setLocalNav} toUserId={toUserId} />,
           UsersTapBarInfo: <UsersTapBarInfo setLocalNav={setLocalNav} />,
+          ContactList: (
+            <ContactList
+              setLocalNav={setLocalNav}
+              handleSendMsg={handleSendMsg}
+            />
+          ),
           Gallery: (
             <SavePicture
               setLocalNav={setLocalNav}
@@ -661,6 +705,7 @@ function ChatScreen() {
               setSelectedImages={setSelectedImages}
             />
           ),
+
           LocationInfo: (
             <Location setLocalNav={setLocalNav} handleSendMsg={handleSendMsg} />
           ),

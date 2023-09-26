@@ -1,25 +1,66 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Linking, Platform, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import BG from '../assets/BG.png';
-import { getImageSource } from '../common/utils';
+import Pressable from '../common/Pressable';
+import { ContactInfoIcon } from '../common/Icons';
+import ApplicationColors from '../config/appColors';
+import ReplyMessage from './ReplyMessage';
+import commonStyles from '../common/commonStyles';
+import { INVITE_SMS_CONTENT } from '../constant';
 
-const ContactCard = props => {
-  const ContactInfo = props.data.msgBody.nickName;
+const ContactCard = ({
+  message,
+  status,
+  timeStamp,
+  handleReplyPress,
+  isSender,
+}) => {
+  const ContactInfo = message.msgBody?.contact;
+  const { msgBody: { replyTo = '' } = {} } = message;
+
+  const handleInvite = () => {
+    // open the message app and invite the user to the app with content
+    const phoneNumber = ContactInfo.phone_number[0];
+    const separator = Platform.OS === 'ios' ? '&' : '?';
+    const url = `sms:${phoneNumber}${separator}body=${INVITE_SMS_CONTENT}`;
+    Linking.openURL(url);
+  };
 
   return (
     <View style={styles.container}>
+      {replyTo && (
+        <View style={commonStyles.marginHorizontal_4}>
+          <ReplyMessage
+            handleReplyPress={handleReplyPress}
+            message={message}
+            isSame={isSender}
+          />
+        </View>
+      )}
       <View style={styles.contactInfo}>
-        <Image source={getImageSource(BG)} style={styles.imageBackground} />
-        <Text style={styles.contactNickname}>{ContactInfo}</Text>
+        <View style={styles.SelectedIcon}>
+          <ContactInfoIcon width={15} height={15} />
+        </View>
+        <Text
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={styles.contactNickname}>
+          {ContactInfo.name}
+        </Text>
       </View>
       <View style={styles.timeStampWrapper}>
-        {props.status}
-        <Text style={styles.timeStampText}>{props.timeStamp} </Text>
+        {status}
+        <Text style={styles.timeStampText}>{timeStamp} </Text>
       </View>
-      <View style={styles.borderLine} />
-      <View style={styles.inviteTextWrapper}>
-        <Text style={styles.inviteText}>Invite</Text>
-      </View>
+      {!isSender && (
+        <>
+          <View style={styles.borderLine} />
+          <Pressable
+            contentContainerStyle={styles.inviteTextWrapper}
+            onPress={handleInvite}>
+            <Text style={styles.inviteText}>Invite</Text>
+          </Pressable>
+        </>
+      )}
     </View>
   );
 };
@@ -28,14 +69,12 @@ export default ContactCard;
 
 const styles = StyleSheet.create({
   container: {
-    width: 210,
-    marginHorizontal: 6,
-    marginVertical: 4,
-    height: 100,
+    width: 230,
     position: 'relative',
   },
   contactInfo: {
-    paddingTop: 12,
+    paddingTop: 17,
+    paddingBottom: 7,
     paddingHorizontal: 10,
     flexDirection: 'row',
     alignItems: 'center',
@@ -48,29 +87,45 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   contactNickname: {
-    color: '#000',
-    fontSize: 12,
+    color: '#313131',
+    fontSize: 13,
     fontWeight: '400',
     paddingLeft: 5,
+    flex: 1,
   },
   timeStampWrapper: {
     flexDirection: 'row',
+    borderBottomLeftRadius: 6,
+    borderBottomRightRadius: 6,
+    padding: 2,
     alignItems: 'center',
     justifyContent: 'flex-end',
-    flex: 0.8,
   },
   timeStampText: {
-    color: '#000',
+    paddingLeft: 4,
+    color: '#455E93',
     fontSize: 10,
-    paddingRight: 6,
     fontWeight: '400',
   },
-  borderLine: { borderWidth: 0.2, borderColor: '#BFBFBF' },
-  inviteTextWrapper: { justifyContent: 'center', marginTop: 5 },
+  borderLine: {
+    borderWidth: 0.5,
+    borderColor: ApplicationColors.mainBorderColor,
+  },
+  inviteTextWrapper: { justifyContent: 'center', paddingVertical: 10 },
   inviteText: {
-    color: '#000',
+    color: '#313131',
     fontSize: 12,
     fontWeight: '500',
     textAlign: 'center',
+  },
+  SelectedIcon: {
+    width: 30,
+    height: 30,
+    marginRight: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 1,
+    backgroundColor: '#9D9D9D',
+    borderRadius: 15,
   },
 });

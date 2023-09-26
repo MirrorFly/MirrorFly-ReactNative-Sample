@@ -164,6 +164,14 @@ export const requestNotificationPermission = async () => {
   );
 };
 
+export const requestContactPermission = async () => {
+  return request(
+    Platform.OS === 'android'
+      ? PERMISSIONS.ANDROID.READ_CONTACTS
+      : PERMISSIONS.IOS.CONTACTS,
+  );
+};
+
 export const handleGalleryPickerMulti = async toast => {
   try {
     const res = await DocumentPicker.pick({

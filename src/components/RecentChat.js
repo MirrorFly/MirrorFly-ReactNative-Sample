@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import Avathar from '../common/Avathar';
 import {
   AudioMusicIcon,
+  ContactChatIcon,
   DocumentChatIcon,
   LocationMarkerIcon,
   SandTimer,
@@ -145,10 +146,23 @@ const RecentChatItem = ({
             <Text
               numberOfLines={1}
               ellipsizeMode="tail"
-              // px={1}
               color="#767676"
               _dark={{ color: '#767676' }}>
               Location
+            </Text>
+          </HStack>
+        );
+      case 'contact':
+        return (
+          <HStack alignItems={'center'}>
+            <Icon as={ContactChatIcon} />
+            <Text
+              numberOfLines={1}
+              ml={1}
+              ellipsizeMode="tail"
+              color="#767676"
+              _dark={{ color: '#767676' }}>
+              Contact
             </Text>
           </HStack>
         );

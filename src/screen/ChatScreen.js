@@ -56,7 +56,7 @@ import {
   validateFileSize,
   validation,
 } from '../components/chat/common/fileUploadValidation';
-import { CHATCONVERSATION, RECENTCHATSCREEN } from '../constant';
+import { RECENTCHATSCREEN } from '../constant';
 import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
 import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import store from '../redux/store';

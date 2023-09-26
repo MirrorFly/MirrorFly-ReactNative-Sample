@@ -19,7 +19,6 @@ import { sortBydate } from '../Helper/Chat/RecentChat';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import {
-  CHATCONVERSATION,
   CHATSCREEN,
   CONTACTLIST,
   PROFILESCREEN,

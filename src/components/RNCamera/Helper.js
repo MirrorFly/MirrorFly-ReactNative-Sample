@@ -1,8 +1,6 @@
 import { Platform } from 'react-native';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import {
-  CALL_BACK,
-  NOTIFICATION,
   audioEmoji,
   contactEmoji,
   fileEmoji,

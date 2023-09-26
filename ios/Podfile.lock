@@ -395,6 +395,8 @@ PODS:
     - React-Core
   - RNConvertPhAsset (1.0.3):
     - React
+  - RNCPushNotificationIOS (1.11.0):
+    - React-Core
   - RNFBApp (18.4.0):
     - Firebase/CoreOnly (= 10.14.0)
     - React-Core
@@ -489,6 +491,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - RNConvertPhAsset (from `../node_modules/react-native-convert-ph-asset`)
+  - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNFileViewer (from `../node_modules/react-native-file-viewer`)
@@ -621,6 +624,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-clipboard/clipboard"
   RNConvertPhAsset:
     :path: "../node_modules/react-native-convert-ph-asset"
+  RNCPushNotificationIOS:
+    :path: "../node_modules/@react-native-community/push-notification-ios"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBMessaging:
@@ -709,6 +714,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: c913ede1fa163a71cea118ed4670bbaaa4b511bb
   RNCClipboard: 3f0451a8100393908bea5c5c5b16f96d45f30bfc
   RNConvertPhAsset: 9b366b8a1abc194b76572712c6f7dd89c9e4e37f
+  RNCPushNotificationIOS: 64218f3c776c03d7408284a819b2abfda1834bc8
   RNFBApp: af276a038f2e1488d59920697bba97b43f83164c
   RNFBMessaging: d991f55546b940c4aaf73559d8590bf9a9d8620c
   RNFileViewer: ce7ca3ac370e18554d35d6355cffd7c30437c592

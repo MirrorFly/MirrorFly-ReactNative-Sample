@@ -3,7 +3,10 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
-
+// Push notification set-up.
+#import <UserNotifications/UserNotifications.h>
+#import <RNCPushNotificationIOS.h>
+//==========================
 #import <React/RCTAppSetupUtils.h>
 
 #if RCT_NEW_ARCH_ENABLED
@@ -29,9 +32,51 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 @implementation AppDelegate
 
+
+// Required for the register event (Push notification set-up).==========================================
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+  if (@available(iOS 10.0, *)) {
+    [UNUserNotificationCenter currentNotificationCenter].delegate = (id<UNUserNotificationCenterDelegate>) self;
+  }
+ [RNCPushNotificationIOS didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+// Required for the notification event. You must call the completion handler after handling the remote notification.
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+  [RNCPushNotificationIOS didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+}
+// Required for the registrationError event.
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+ [RNCPushNotificationIOS didFailToRegisterForRemoteNotificationsWithError:error];
+}
+// Required for localNotification event // Called when a user taps on a notification in the foreground
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
+{
+  NSMutableDictionary *userData = [NSMutableDictionary dictionaryWithDictionary:response.notification.request.content.userInfo];
+  [userData setObject:@YES forKey:@"userInteraction"];
+  [RNCPushNotificationIOS didReceiveRemoteNotification:userData];
+}
+//===========================================================================================================
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  
+  // Define UNUserNotificationCenter // Push notification set-up.============================================
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  center.delegate = self;
+  UNAuthorizationOptions options = UNAuthorizationOptionAlert + UNAuthorizationOptionSound;
+  [center requestAuthorizationWithOptions:options
+   completionHandler:^(BOOL granted, NSError * _Nullable error) {
+    if (!granted) {
+      NSLog(@"Something went wrong");
+    }
+  }];
+
+  [application registerForRemoteNotifications];
+  //===========================================================================================================
   [FIRApp configure];
   RCTAppSetupPrepareApp(application);
 
@@ -61,7 +106,19 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
   [self.window makeKeyAndVisible];
   return YES;
 }
+// Push notification set-up.==================================================================================
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+{
 
+    //Still call the javascript onNotification handler so it can display the new message right away
+  
+//    NSDictionary *userInfo = notification.request.content.userInfo;
+//    [RNCPushNotificationIOS didReceiveRemoteNotification:userInfo];
+
+    //hide push notification
+    completionHandler(UNNotificationPresentationOptionAlert);
+}
+//=============================================================================================================
 /// This method controls whether the `concurrentRoot`feature of React18 is turned on or off.
 ///
 /// @see: https://reactjs.org/blog/2022/03/29/react-v18.html

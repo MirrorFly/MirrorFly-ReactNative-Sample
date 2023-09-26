@@ -40,7 +40,7 @@ platform :android do
     lane :deploy_qa_debug do
       gradle(task: "clean assembleDebug")
       firebase_app_distribution(
-        app: "1:695832127329:android:f8b6b0fab296a800",
+        app: "1:235373697524:android:6003ca46ab3fd6ada0c1a1",
         groups: "reactnative",
         release_notes: "React-Native android 1.2.3",
         apk_path: "../android/app/build/outputs/apk/debug/app-debug.apk",
@@ -53,9 +53,9 @@ platform :android do
     lane :deploy_qa_release do
       gradle(task: "clean assembleRelease")
       firebase_app_distribution(
-        app: "1:695832127329:android:f8b6b0fab296a800",
+        app: "1:235373697524:android:6003ca46ab3fd6ada0c1a1",
         groups: "reactnative",
-        release_notes: "React-Native android build for feature #MRN-163",
+        release_notes: "React-Native android build for feature #MRN-276",
         apk_path: "../android/app/build/outputs/apk/release/app-release.apk",
         
         firebase_cli_token: "1//0gfTJ_oWJ0mHNCgYIARAAGBASNwF-L9IrYZM4cUIV5EB8gVnSvtMC6Q7aAtgrgG8R1ybhSY1Np_5r5UuZu28N144_weOQDyONcW4",

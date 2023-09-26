@@ -29,6 +29,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This is app would like to access your music files</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This is app require your camera</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -39,8 +41,11 @@
 	<string>This is app would like to access your photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This is app would like to access your photos</string>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>This is app would like to access your music files</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

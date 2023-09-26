@@ -14,14 +14,16 @@ class PushNotifiLocal {
       onNotification: async function (notification) {
         notification.finish(PushNotificationIOS.FetchResult.NoData);
         if (onForeGround) {
-          console.log('notify on foreground');
           let x = { screen: CHATSCREEN, fromUserJID: fromUserJid };
           await store.dispatch(navigate(x));
           if (RootNav.getCurrentScreen() === CHATSCREEN) {
+            store.dispatch(
+              updateChatConversationLocalNav(CHATCONVERSATION),
+            );
             return RootNav.navigate(CONVERSATION_SCREEN);
           }
           RootNav.navigate(CHATSCREEN);
-          await store.dispatch(
+          store.dispatch(
             updateChatConversationLocalNav(CHATCONVERSATION),
           );
           return;

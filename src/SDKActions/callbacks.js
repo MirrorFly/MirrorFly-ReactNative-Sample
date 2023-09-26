@@ -42,6 +42,7 @@ import store from '../redux/store';
 import { updateUserProfileDetails } from '../Helper/index';
 import SDK from '../SDK/SDK';
 import { pushNotify, updateNotification } from '../Service/remoteNotifyHandle';
+import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
 
 export const callBacks = {
   connectionListener: response => {

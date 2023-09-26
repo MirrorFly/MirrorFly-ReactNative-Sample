@@ -12,7 +12,9 @@ import { profileDetail } from '../redux/Actions/ProfileAction';
 import SDK from '../SDK/SDK';
 import { updateUserProfileStore } from './Chat/ChatHelper';
 import { toastStyles } from '../common/commonStyles';
-import { MAP_THHUMBNAIL_URL } from '../constant';
+import * as RootNav from '../Navigation/rootNavigation';
+import { navigate } from '../redux/Actions/NavigationAction';
+import { MAP_THHUMBNAIL_URL, CHATSCREEN } from '../constant';
 import config from '../components/chat/common/config';
 
 const toastLocalRef = React.createRef({});
@@ -227,4 +229,20 @@ export const openLocationExternally = (latitude, longitude) => {
 
 export const getLocationImageURL = ({ latitude, longitude }) => {
   return `${MAP_THHUMBNAIL_URL}?center=${latitude},${longitude}&zoom=15&size=195x170&markers=color:red|${latitude},${longitude}&key=${config.GOOGLE_LOCATION_API_KEY}`;
+};
+
+export const handleOpenUrl = async () => {
+  const push_url = await AsyncStorage.getItem('push_url');
+  if (push_url) {
+    let regex = /[?&]([^=#]+)=([^&#]*)/g,
+      match;
+    match = regex.exec(push_url);
+    let x = {
+      screen: CHATSCREEN,
+      fromUserJID: match[2],
+    };
+    Store.dispatch(navigate(x));
+    RootNav.navigate(CHATSCREEN);
+    AsyncStorage.setItem('push_url', '');
+  }
 };

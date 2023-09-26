@@ -158,6 +158,12 @@ export const requestLocationPermission = async () => {
   );
 };
 
+export const requestNotificationPermission = async () => {
+  return request(
+    Platform.OS === 'android' && PERMISSIONS.ANDROID.POST_NOTIFICATIONS,
+  );
+};
+
 export const requestContactPermission = async () => {
   return request(
     Platform.OS === 'android'

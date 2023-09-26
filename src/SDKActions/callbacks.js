@@ -42,10 +42,6 @@ import store from '../redux/store';
 import { updateUserProfileDetails } from '../Helper/index';
 import SDK from '../SDK/SDK';
 import { pushNotify, updateNotification } from '../Service/remoteNotifyHandle';
-import {
-  getNotifyMessage,
-  getNotifyNickName,
-} from '../components/RNCamera/Helper';
 
 export const callBacks = {
   connectionListener: response => {
@@ -72,12 +68,10 @@ export const callBacks = {
         case 'carbonSentMessage':
         case 'receiveMessage':
         case 'carbonReceiveMessage':
-          // handleNotifeeNotify()
-          // triggerNotification()
           pushNotify(
             res.msgId,
             getNotifyNickName(res, CALL_BACK),
-            getNotifyMessage(res),
+            getNotifyMessage(res),  
             res?.publisherJid,
             true,
           );
@@ -135,11 +129,11 @@ export const callBacks = {
       res.msgType === 'carbonReceiveRecall' ||
       (res.msgType === 'acknowledge' && res.type === 'recall')
     ) {
+      store.dispatch(recentRecallUpdate(res));
+      store.dispatch(deleteMessageForEveryone(res));
       if (res.msgId) {
         updateNotification(res.msgId);
       }
-      store.dispatch(recentRecallUpdate(res));
-      store.dispatch(deleteMessageForEveryone(res));
     }
 
     /**

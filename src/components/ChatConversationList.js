@@ -9,6 +9,8 @@ import ChatMessage from './ChatMessage';
 import DeletedMessage from './DeletedMessage';
 import { updateMsgSeenStatus } from './chat/common/createMessage';
 import { updateConversationTotalSearchResults } from '../redux/Actions/conversationSearchAction';
+import { useFocusEffect } from '@react-navigation/native';
+import { isActiveChatScreenRef } from './ChatConversation';
 
 const ChatConversationList = ({
   handleMessageListUpdated,
@@ -48,9 +50,18 @@ const ChatConversationList = ({
     return [];
   }, [messages, fromUserJId]);
 
-  React.useEffect(() => {
-    updateMsgSeenStatus();
-  }, [messagesReducerId, xmppConnection]);
+  useFocusEffect(
+    React.useCallback(() => {
+      isActiveChatScreenRef.current = true;
+      return () => (isActiveChatScreenRef.current = false);
+    }, []),
+  );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      updateMsgSeenStatus();
+    }, [messagesReducerId, xmppConnection]),
+  );
 
   React.useEffect(() => {
     const isSender = messageList[0]?.fromUserJid === currentUserJID;

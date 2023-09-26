@@ -19,7 +19,6 @@ import { sortBydate } from '../Helper/Chat/RecentChat';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import {
-  CHATCONVERSATION,
   CHATSCREEN,
   CONTACTLIST,
   PROFILESCREEN,
@@ -123,7 +122,6 @@ function RecentScreen() {
       SDK.activeChatUser(jid);
       let x = {
         screen: CHATSCREEN,
-        notificationCheck: CHATCONVERSATION,
         fromUserJID: item?.userJid || jid,
         profileDetails: item?.profileDetails,
       };

@@ -28,6 +28,7 @@ import {
   DELETE_MESSAGE_FOR_EVERYONE,
   DELETE_MESSAGE_FOR_ME,
 } from '../../redux/Actions/Constants';
+import { isActiveChatScreenRef } from '../../components/ChatConversation';
 
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
@@ -378,10 +379,14 @@ export const isActiveConversationUserOrGroup = (
   userOrGroupId,
   chatType = CHAT_TYPE_SINGLE,
 ) => {
-  if (!userOrGroupId) return false;
+  if (!userOrGroupId) {
+    return false;
+  }
   const conversationUserOrGroupId = getActiveConversationChatId();
   userOrGroupId = getUserIdFromJid(userOrGroupId);
-  return conversationUserOrGroupId === userOrGroupId;
+  return (
+    conversationUserOrGroupId === userOrGroupId && isActiveChatScreenRef.current
+  );
 };
 
 /**

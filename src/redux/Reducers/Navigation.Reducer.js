@@ -8,7 +8,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initialState = {
   screen: REGISTERSCREEN,
-  notificationCheck: '',
   fromUserJid: '',
   number: '',
   status: 'idle',
@@ -61,9 +60,6 @@ const NavigationReducer = (state = initialState, action) => {
       }
       if (action?.payload?.profileDetails) {
         updatedState.profileDetails = action?.payload?.profileDetails;
-      }
-      if (action?.payload?.notificationCheck) {
-        updatedState.notificationCheck = action?.payload?.notificationCheck;
       }
       return updatedState;
     } catch (error) {

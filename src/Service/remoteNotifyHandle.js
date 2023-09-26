@@ -50,15 +50,17 @@ export const pushNotify = (msgId, title, body, sent_from, onForGround) => {
 };
 
 export const updateNotification = msgId => {
-  const { id, date, title, sent_from, onForGround } = notifyObj[msgId];
-  const pushNotifiLocal = new PushNotifiLocal(sent_from, onForGround);
-  pushNotifiLocal.scheduleNotify(
-    id,
-    date,
-    title,
-    THIS_MESSAGE_WAS_DELETED,
-    false,
-  );
+  if (notifyObj[msgId]) {
+    const { id, date, title, sent_from, onForGround } = notifyObj[msgId];
+    const pushNotifiLocal = new PushNotifiLocal(sent_from, onForGround);
+    pushNotifiLocal.scheduleNotify(
+      id,
+      date,
+      title,
+      THIS_MESSAGE_WAS_DELETED,
+      false,
+    );
+  }
 };
 
 export const removeAllDeliveredNotificatoin = () => {

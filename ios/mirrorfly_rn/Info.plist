@@ -31,6 +31,8 @@
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>This is app would like to access your music files</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app require your contacts</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This is app require your camera</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

@@ -91,6 +91,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '400',
     paddingLeft: 5,
+    flex: 1,
   },
   timeStampWrapper: {
     flexDirection: 'row',
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   borderLine: {
-    borderWidth: 0.2,
+    borderWidth: 0.5,
     borderColor: ApplicationColors.mainBorderColor,
   },
   inviteTextWrapper: { justifyContent: 'center', paddingVertical: 10 },

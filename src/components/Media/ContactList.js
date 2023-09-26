@@ -6,6 +6,8 @@ import {
   BackHandler,
   TextInput,
   Dimensions,
+  Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import Contacts from 'react-native-contacts';
 import React from 'react';
@@ -63,10 +65,16 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
         );
         AsyncStorage.setItem('contact_permission', 'true');
         const result = await requestContactPermission();
-
         if (result === 'granted') {
           Contacts.getAll().then(fetchedContacts => {
-            setContacts(fetchedContacts.filter(c => c.phoneNumbers.length));
+            let filtered = fetchedContacts.filter(c => c.phoneNumbers.length);
+            if (Platform.OS === 'ios') {
+              filtered = filtered.map(c => ({
+                ...c,
+                displayName: c.givenName + c.familyName,
+              }));
+            }
+            setContacts(filtered);
           });
         } else if (isNotFirstTimeContactPermissionCheck) {
           goBackToPreviousScreen();
@@ -213,7 +221,9 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
   }
 
   return (
-    <View style={commonStyles.flex1}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : ''}
+      style={commonStyles.flex1}>
       <View style={styles.HeaderContainer}>
         {!isSearching ? (
           <View style={styles.HeadSubcontainer}>
@@ -245,6 +255,7 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
               placeholder="Search..."
               selectionColor={'#000'}
               autoFocus={true}
+              autoCorrect={false}
             />
             <IconButton
               containerStyle={commonStyles.marginRight_8}
@@ -284,7 +295,7 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
           </View>
         </Pressable>
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

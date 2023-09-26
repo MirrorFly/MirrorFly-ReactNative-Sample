@@ -16,7 +16,11 @@ import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import { showCheckYourInternetToast, showToast } from '../Helper';
+import {
+  getVideoThumbImage,
+  showCheckYourInternetToast,
+  showToast,
+} from '../Helper';
 import { isSingleChat } from '../Helper/Chat/ChatHelper';
 import { DOCUMENT_FORMATS } from '../Helper/Chat/Constant';
 import {
@@ -358,32 +362,34 @@ function ChatScreen() {
     return response;
   };
 
-  const getVideoThumbImage = async uri => {
-    let response;
-    if (Platform.OS === 'ios') {
-      if (uri.includes('ph://')) {
-        let result = await ImageCompressor.compress(uri, {
-          maxWidth: 600,
-          maxHeight: 600,
-          quality: 0.8,
-        });
-        response = await RNFS.readFile(result, 'base64');
-      } else {
-        const frame = await createThumbnail({
-          url: uri,
-          timeStamp: 10000,
-        });
-        response = await RNFS.readFile(frame.path, 'base64');
-      }
-    } else {
-      const frame = await createThumbnail({
-        url: uri,
-        timeStamp: 10000,
-      });
-      response = await RNFS.readFile(frame.path, 'base64');
-    }
-    return response;
-  };
+  /**
+  // const getVideoThumbImage = async uri => {
+  //   let response;
+  //   if (Platform.OS === 'ios') {
+  //     if (uri.includes('ph://')) {
+  //       let result = await ImageCompressor.compress(uri, {
+  //         maxWidth: 600,
+  //         maxHeight: 600,
+  //         quality: 0.8,
+  //       });
+  //       response = await RNFS.readFile(result, 'base64');
+  //     } else {
+  //       const frame = await createThumbnail({
+  //         url: uri,
+  //         timeStamp: 10000,
+  //       });
+  //       response = await RNFS.readFile(frame.path, 'base64');
+  //     }
+  //   } else {
+  //     const frame = await createThumbnail({
+  //       url: uri,
+  //       timeStamp: 10000,
+  //     });
+  //     response = await RNFS.readFile(frame.path, 'base64');
+  //   }
+  //   return response;
+  // };
+   */
 
   const sendMediaMessage = async (messageType, files, chatTypeSendMsg) => {
     let jidSendMediaMessage = toUserJid;

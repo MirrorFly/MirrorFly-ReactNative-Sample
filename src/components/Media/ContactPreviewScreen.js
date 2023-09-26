@@ -67,8 +67,8 @@ const ContactPreviewScreen = ({
         item.phoneNumbers?.filter(i => Boolean(i.isChecked)).length === 1;
 
       return (
-        <>
-          <View key={item.recordID} style={styles.SelectedItemContainer}>
+        <React.Fragment key={item.recordID}>
+          <View style={styles.SelectedItemContainer}>
             <View style={styles.SelectedIcon}>
               <ContactInfoIcon />
             </View>
@@ -82,7 +82,7 @@ const ContactPreviewScreen = ({
           </View>
           <View style={styles.itemSeperator} />
           {item.phoneNumbers?.map((num, numberIndex) => (
-            <View key={num?.id} style={styles.SelectedItemContainer}>
+            <View key={num?.number} style={styles.SelectedItemContainer}>
               <View
                 style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
                 <View style={commonStyles.marginLeft_10}>
@@ -111,7 +111,7 @@ const ContactPreviewScreen = ({
             </View>
           ))}
           <View style={styles.itemMobileNumSeperator} />
-        </>
+        </React.Fragment>
       );
     });
   };

@@ -1,4 +1,3 @@
-// import { HStack, Icon, IconButton, Pressable, Text, View } from 'native-base';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { DownloadIcon } from '../../../common/Icons';
@@ -340,8 +339,6 @@ const ProgressLoader = (props = {}) => {
     </View>
   );
 
-  console.log('uploadStatus', uploadStatus);
-
   return (
     <>
       {isNetworkConnected &&
@@ -405,7 +402,6 @@ const styles = StyleSheet.create({
   loaderWrapper: {
     justifyContent: 'center',
     alignItems: 'center',
-    // height: 9,
     width: 85,
   },
 });

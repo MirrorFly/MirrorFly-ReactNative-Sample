@@ -8,7 +8,6 @@ import {
 } from '../common/TimeStamp';
 import { useSelector } from 'react-redux';
 import SDK from '../SDK/SDK';
-import { useNetworkStatus } from '../hooks';
 import { SandTimer } from '../common/Icons';
 import commonStyles from '../common/commonStyles';
 import MapCard from './MapCard';
@@ -87,7 +86,7 @@ function MessageInfo(props) {
     );
   };
 
-  const doNothing = () => {};
+  const doNothing = () => {}; // NOSONAR
 
   const getMessageStatus = currentStatus => {
     if (currentStatus === 3) {

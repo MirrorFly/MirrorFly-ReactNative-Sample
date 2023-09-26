@@ -161,7 +161,6 @@ function ChatHeader({
     dispatch(clearConversationSearchData());
   };
   const handleForwardMessage = () => {
-    dispatch(navigate({ notificationCheck: 'CHANGED' }));
     navigation.navigate(FORWARD_MESSSAGE_SCREEN, {
       forwardMessages: selectedMsgs,
       onMessageForwaded: handleRemove,

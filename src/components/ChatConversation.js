@@ -41,6 +41,8 @@ import commonStyles from '../common/commonStyles';
 
 // below ref is used to check whether selecting is happening or not in other components without passing the selected Messages state as props
 export const isMessageSelectingRef = React.createRef();
+export const isActiveChatScreenRef = React.createRef();
+isActiveChatScreenRef.current = false;
 isMessageSelectingRef.current = false;
 
 const ChatConversation = React.memo(props => {

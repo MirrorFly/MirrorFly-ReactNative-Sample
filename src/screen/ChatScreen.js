@@ -99,14 +99,6 @@ function ChatScreen() {
     }, [toUserJid]),
   );
 
-  React.useEffect(() => {
-    if (localNav !== CHATCONVERSATION) {
-      dispatch(navigate({ notificationCheck: 'CHANGED' }));
-    } else {
-      dispatch(navigate({ notificationCheck: toUserJid }));
-    }
-  }, [localNav]);
-
   const setLocalNav = localname => {
     dispatch(updateChatConversationLocalNav(localname));
   };
@@ -333,7 +325,6 @@ function ChatScreen() {
         profileDetails: {},
       };
       dispatch(navigate(x));
-      dispatch(navigate({ notificationCheck: 'CHANGED' }));
       RootNav.navigate(RECENTCHATSCREEN);
     }
     return true;

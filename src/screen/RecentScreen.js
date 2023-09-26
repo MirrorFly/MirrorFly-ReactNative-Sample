@@ -123,7 +123,6 @@ function RecentScreen() {
       SDK.activeChatUser(jid);
       let x = {
         screen: CHATSCREEN,
-        notificationCheck: CHATCONVERSATION,
         fromUserJID: item?.userJid || jid,
         profileDetails: item?.profileDetails,
       };

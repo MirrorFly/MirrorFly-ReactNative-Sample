@@ -158,6 +158,12 @@ export const requestLocationPermission = async () => {
   );
 };
 
+export const requestNotificationPermission = async () => {
+  return request(
+    Platform.OS === 'android' && PERMISSIONS.ANDROID.POST_NOTIFICATIONS,
+  );
+};
+
 export const handleGalleryPickerMulti = async toast => {
   try {
     const res = await DocumentPicker.pick({

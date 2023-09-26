@@ -19,22 +19,13 @@ export const orientationCheck = orientation => {
   }
 };
 
-export const getNotifyNickName = (res, type) => {
-  if (type === CALL_BACK) {
-    return (
-      res?.msgBody?.nickName ||
-      res?.profileDetails?.nickName ||
-      res?.profileDetails?.userId ||
-      getUserIdFromJid(res?.publisherJid)
-    );
-  }
-  if (type === NOTIFICATION) {
-    return (
-      res?.vcardDetails?.nickname ||
-      res?.vcardDetails?.lnickname ||
-      res?.vcardDetails?.username
-    );
-  }
+export const getNotifyNickName = res => {
+  return (
+    res?.msgBody?.nickName ||
+    res?.profileDetails?.nickName ||
+    res?.profileDetails?.userId ||
+    getUserIdFromJid(res?.publisherJid)
+  );
 };
 
 export const getNotifyMessage = res => {

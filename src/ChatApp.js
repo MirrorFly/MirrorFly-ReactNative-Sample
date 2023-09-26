@@ -16,7 +16,16 @@ import StackNavigationPage from './Navigation/stackNavigation';
 import SDK from './SDK/SDK';
 import { callBacks } from './SDKActions/callbacks';
 import ApplicationTheme from './config/appTheme';
-import { REGISTERSCREEN } from './constant';
+import {
+  CAMERA,
+  CHATSCREEN,
+  CONTACTLIST,
+  COUNTRYSCREEN,
+  PROFILESCREEN,
+  RECENTCHATSCREEN,
+  REGISTERSCREEN,
+  SETTINGSCREEN,
+} from './constant';
 import { getCurrentUserJid } from './redux/Actions/AuthAction';
 import { navigate } from './redux/Actions/NavigationAction';
 import { profileDetail } from './redux/Actions/ProfileAction';
@@ -24,6 +33,9 @@ import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction'
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
 import messaging from '@react-native-firebase/messaging';
+import { requestNotificationPermission } from './common/utils';
+import { removeAllDeliveredNotificatoin } from './Service/remoteNotifyHandle';
+import { handleOpenUrl } from './Helper';
 LogBox.ignoreAllLogs();
 
 export const isKeyboardVisibleRef = createRef();
@@ -37,6 +49,22 @@ const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
   isKeyboardVisibleRef.current = false;
 });
 
+const linking = {
+  prefixes: ['mirrorfly_rn://'], // Replace 'yourapp' with your app's custom scheme
+  config: {
+    screens: {
+      [REGISTERSCREEN]: REGISTERSCREEN,
+      [PROFILESCREEN]: PROFILESCREEN,
+      [RECENTCHATSCREEN]: RECENTCHATSCREEN,
+      [CHATSCREEN]: CHATSCREEN,
+      [COUNTRYSCREEN]: COUNTRYSCREEN,
+      [CONTACTLIST]: CONTACTLIST,
+      [SETTINGSCREEN]: SETTINGSCREEN,
+      [CAMERA]: CAMERA,
+    },
+  },
+};
+
 export const ChatApp = props => {
   React.useEffect(() => {
     (async () => {
@@ -47,6 +75,8 @@ export const ChatApp = props => {
         isSandbox: props.isSandbox,
       });
       await messaging().requestPermission();
+      requestNotificationPermission();
+      removeAllDeliveredNotificatoin();
     })();
     return () => {
       keyboardDidShowListener.remove();
@@ -99,6 +129,9 @@ const RootNavigation = () => {
       }
       setIsLoading(false);
     }, 1000);
+    setTimeout(async () => {
+      await handleOpenUrl();
+    }, 1100);
   }, []);
 
   return (
@@ -122,6 +155,7 @@ const RootNavigation = () => {
       <SafeAreaView style={styles.container}>
         <StatusBar translucent backgroundColor={safeAreaBgColor} />
         <NavigationContainer
+          linking={linking}
           ref={navigationRef}
           theme={
             scheme === 'dark'

@@ -12,7 +12,9 @@ import { profileDetail } from '../redux/Actions/ProfileAction';
 import SDK from '../SDK/SDK';
 import { updateUserProfileStore } from './Chat/ChatHelper';
 import { toastStyles } from '../common/commonStyles';
-
+import { CHATSCREEN } from '../constant';
+import * as RootNav from '../Navigation/rootNavigation';
+import { navigate } from '../redux/Actions/NavigationAction';
 const toastLocalRef = React.createRef({});
 toastLocalRef.current = {};
 
@@ -192,4 +194,20 @@ export const fetchContactsFromSDK = async (
     updateUserProfileStore(contactsResponse.users);
   }
   return contactsResponse;
+};
+
+export const handleOpenUrl = async () => {
+  const push_url = await AsyncStorage.getItem('push_url');
+  if (push_url) {
+    let regex = /[?&]([^=#]+)=([^&#]*)/g,
+      match;
+    match = regex.exec(push_url);
+    let x = {
+      screen: CHATSCREEN,
+      fromUserJID: match[2],
+    };
+    Store.dispatch(navigate(x));
+    RootNav.navigate(CHATSCREEN);
+    AsyncStorage.setItem('push_url', '');
+  }
 };

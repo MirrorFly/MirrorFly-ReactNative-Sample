@@ -1,7 +1,8 @@
 import PushNotifiLocal from './PushNotifiLocal';
-import store from '../redux/store';
 import PushNotification from 'react-native-push-notification';
 import { THIS_MESSAGE_WAS_DELETED } from '../Helper/Chat/Constant';
+import { AppState } from 'react-native';
+import { isActiveConversationUserOrGroup } from '../Helper/Chat/ChatHelper';
 
 /**
 // export const remoteNotifyHandle = async (remoteMessage, onForGround) => {
@@ -27,10 +28,10 @@ import { THIS_MESSAGE_WAS_DELETED } from '../Helper/Chat/Constant';
 let notifyObj = {};
 let ids = [];
 export const pushNotify = (msgId, title, body, sent_from, onForGround) => {
-  const date = Date.now().toString();
-  const id = date.substring(date.length - 1, 7);
-  const activeScreen = store.getState().navigation.notificationCheck;
-  if (activeScreen !== sent_from) {
+  const date = Date.now();
+  const dateStr = date.toString();
+  const id = dateStr.substring(dateStr.length - 1, 7);
+  if (!isActiveConversationUserOrGroup(sent_from)) {
     const pushNotifiLocal = new PushNotifiLocal(sent_from, onForGround);
     notifyObj = {
       ...notifyObj,
@@ -38,11 +39,13 @@ export const pushNotify = (msgId, title, body, sent_from, onForGround) => {
     };
     pushNotifiLocal.scheduleNotify(id, date, title, body, true);
     ids.push(notifyObj[msgId].id);
-    setTimeout(() => {
-      PushNotification.removeDeliveredNotifications(Object.values(ids));
-      ids = [];
-      notifyObj = {};
-    }, 5000);
+    if (AppState.currentState === 'active') {
+      setTimeout(() => {
+        PushNotification.removeDeliveredNotifications(Object.values(ids));
+        ids = [];
+        notifyObj = {};
+      }, 5000);
+    }
   }
 };
 
@@ -56,4 +59,12 @@ export const updateNotification = msgId => {
     THIS_MESSAGE_WAS_DELETED,
     false,
   );
+};
+
+export const removeAllDeliveredNotificatoin = () => {
+  try {
+    PushNotification.removeAllDeliveredNotifications();
+  } catch (error) {
+    console.log('removeAllDeliveredNotificatoin', error);
+  }
 };

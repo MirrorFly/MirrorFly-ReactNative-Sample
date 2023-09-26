@@ -1,28 +1,24 @@
-import { showToast } from '../Helper/index';
+import {
+  getLocationImageURL,
+  openLocationExternally,
+  showCheckYourInternetToast,
+} from '../Helper/index';
 import React, { useState } from 'react';
 import {
   Image,
   Pressable,
-  Linking,
   ImageBackground,
-  Platform,
   StyleSheet,
   View,
   Text,
 } from 'react-native';
 import ic_baloon from '../assets/ic_baloon.png';
 import { getImageSource } from '../common/utils';
-import config from './chat/common/config';
 import ReplyMessage from './ReplyMessage';
 import mapStaticFallbackImage from '../assets/google-maps-blur.png';
 import { useNetworkStatus } from '../hooks';
 import ApplicationColors from '../config/appColors';
-
-const MAP_URL = 'https://maps.googleapis.com/maps/api/staticmap';
-
-const getLocationImageURL = ({ latitude, longitude }) => {
-  return `${MAP_URL}?center=${latitude},${longitude}&zoom=15&size=195x170&markers=color:red|${latitude},${longitude}&key=${config.GOOGLE_LOCATION_API_KEY}`;
-};
+import commonStyles from '../common/commonStyles';
 
 const MapCard = ({
   status,
@@ -47,31 +43,10 @@ const MapCard = ({
 
   const mapHandler = () => {
     if (!isInternetReachable) {
-      showToast('Please check your internet connection', {
-        id: 'map-opening-no-internet-toast',
-      });
+      showCheckYourInternetToast();
       return;
     }
-    const scheme = Platform.select({
-      ios: 'maps://0,0?q=',
-      android: 'geo:0,0?q=',
-    });
-    const latLng = `${latitude},${longitude}`;
-    const locationUrl = Platform.select({
-      ios: `${scheme}${latLng}`,
-      android: `${scheme}${latLng}`,
-    });
-    if (Linking.canOpenURL(locationUrl)) {
-      Linking.openURL(locationUrl).catch(() => {
-        showToast('Unable to open the location', {
-          id: 'location-open-error-toast',
-        });
-      });
-    } else {
-      showToast('No app found to open location', {
-        id: 'location-open-error-toast',
-      });
-    }
+    openLocationExternally(latitude, longitude);
   };
 
   const handleImageLoadError = () => {
@@ -79,7 +54,7 @@ const MapCard = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, replyTo && commonStyles.paddingTop_0]}>
       {replyTo && (
         <ReplyMessage
           handleReplyPress={handleReplyPress}
@@ -116,7 +91,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 4,
     width: 203,
-    height: 178,
   },
   mapImage: {
     width: 195,

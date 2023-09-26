@@ -4,12 +4,10 @@ import {
   // eslint-disable-next-line no-unused-vars
   PressableProps, // NOSONAR
   View,
-  StyleSheet,
   // eslint-disable-next-line no-unused-vars
   ViewStyle, // NOSONAR
 } from 'react-native';
-import commonStyles from './commonStyles';
-import ApplicationColors from '../config/appColors';
+import commonStyles, { pressableStyles } from './commonStyles';
 
 /**
  * @typedef {Object} CustomProps
@@ -40,22 +38,14 @@ const MessagePressable = ({
     <RNPressable {...props}>
       {({ pressed }) => (
         <View style={[processedContentContainerStyle]}>
-          <View style={(pressed || forcePress) && styles.highlightView} />
           {children}
+          <View
+            style={(pressed || forcePress) && pressableStyles.highlightView}
+          />
         </View>
       )}
     </RNPressable>
   );
 };
 
-export default MessagePressable;
-
-const styles = StyleSheet.create({
-  highlightView: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    backgroundColor: ApplicationColors.pressedBg,
-    zIndex: 10,
-  },
-});
+export default React.memo(MessagePressable);

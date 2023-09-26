@@ -80,6 +80,7 @@
     "react-native": "0.69.12",
     "react-native-camera": "^4.2.1",
     "react-native-compressor": "^1.6.1",
+    "react-native-contacts": "^7.0.6",
     "react-native-convert-ph-asset": "^1.0.3",
     "react-native-create-thumbnail": "^1.6.4",
     "react-native-crypto-js": "^1.0.0",

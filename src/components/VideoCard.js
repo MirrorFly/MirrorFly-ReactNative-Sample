@@ -92,7 +92,7 @@ const VideoCard = props => {
           />
         </View>
 
-        {!media.caption && (
+        {!media?.caption && (
           <View style={styles.messgeStatusAndTimestampWithoutCaption}>
             <ImageBackground source={ic_ballon} style={styles.imageBg}>
               {props.status}
@@ -106,7 +106,7 @@ const VideoCard = props => {
           </View>
         )}
       </View>
-      {media.caption && (
+      {media?.caption && (
         <View style={styles.captionContainer}>
           <Text style={styles.captionText}>{media.caption}</Text>
           <View style={styles.messgeStatusAndTimestampWithCaption}>

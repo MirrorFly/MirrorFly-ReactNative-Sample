@@ -19,6 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { requestLocationPermission } from '../../common/utils';
 import config from '../chat/common/config';
 import { useNetworkStatus } from '../../hooks';
+import { CHATCONVERSATION } from '../../constant';
 
 Geocoder.fallbackToGoogle(config.GOOGLE_LOCATION_API_KEY);
 
@@ -88,7 +89,7 @@ const Location = ({ setLocalNav, handleSendMsg }) => {
   };
 
   const goBackToPreviousScreen = () => {
-    setLocalNav('CHATCONVERSATION');
+    setLocalNav(CHATCONVERSATION);
   };
 
   const handleSendLocation = () => {
@@ -101,7 +102,7 @@ const Location = ({ setLocalNav, handleSendMsg }) => {
         },
       };
       handleSendMsg(locationObj);
-      setLocalNav('CHATCONVERSATION');
+      setLocalNav(CHATCONVERSATION);
     } else {
       showNoConnectivityToast();
     }

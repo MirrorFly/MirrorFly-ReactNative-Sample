@@ -78,6 +78,7 @@ export const getMessageObjSender = (dataObj, idx) => {
     replyTo,
     fromUserJid,
     location = {},
+    contact = {},
   } = dataObj;
   const timestamp = Date.now() * 1000;
   const senderId = userProfile.fromUser;
@@ -96,6 +97,14 @@ export const getMessageObjSender = (dataObj, idx) => {
       msgBody.location = {
         latitude,
         longitude,
+      };
+      break;
+    case 'contact':
+      const { name, phone_number, active_status } = contact;
+      msgBody.contact = {
+        name: name,
+        phone_number: phone_number,
+        active_status: active_status,
       };
       break;
     default:
@@ -174,6 +183,7 @@ export const getRecentChatMsgObj = dataObj => {
     message = '',
     fileOptions = {},
     location = {},
+    contact = {},
   } = dataObj;
 
   const createdAt = changeTimeFormat(Date.now() * 1000);
@@ -194,6 +204,14 @@ export const getRecentChatMsgObj = dataObj => {
       msgBody.location = {
         latitude,
         longitude,
+      };
+      break;
+    case 'contact':
+      const { name, phone_number, active_status } = contact;
+      msgBody.contact = {
+        name: name,
+        phone_number: phone_number,
+        active_status: active_status,
       };
       break;
     default:

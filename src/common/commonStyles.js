@@ -14,10 +14,23 @@ export const toastStyles = StyleSheet.create({
   },
 });
 
+export const pressableStyles = StyleSheet.create({
+  highlightView: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: ApplicationColors.pressedBg,
+    zIndex: 10,
+  },
+});
+
 const commonStyles = StyleSheet.create({
   flex1: { flex: 1 },
   justifyContentCenter: {
     justifyContent: 'center',
+  },
+  justifyContentSpaceEvenly: {
+    justifyContent: 'space-evenly',
   },
   justifyContentFlexStart: {
     justifyContent: 'flex-start',
@@ -62,8 +75,14 @@ const commonStyles = StyleSheet.create({
   marginLeft_8: {
     marginLeft: 8,
   },
+  marginLeft_10: {
+    marginLeft: 10,
+  },
   marginRight_4: {
     marginRight: 4,
+  },
+  marginRight_8: {
+    marginRight: 8,
   },
   p_4: {
     padding: 4,
@@ -95,6 +114,9 @@ const commonStyles = StyleSheet.create({
   marginRight_16: {
     marginRight: 16,
   },
+  padding_2: {
+    padding: 2,
+  },
   padding_12: {
     padding: 12,
   },
@@ -113,6 +135,9 @@ const commonStyles = StyleSheet.create({
   },
   paddingHorizontal_6: {
     paddingHorizontal: 6,
+  },
+  paddingTop_0: {
+    paddingTop: 0,
   },
   paddingLeft_0: {
     paddingLeft: 0,

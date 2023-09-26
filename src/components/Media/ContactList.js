@@ -2,12 +2,10 @@ import {
   View,
   Text,
   FlatList,
-  PermissionsAndroid,
   StyleSheet,
   BackHandler,
-  Pressable,
   TextInput,
-  TouchableHighlight,
+  Dimensions,
 } from 'react-native';
 import Contacts from 'react-native-contacts';
 import React from 'react';
@@ -21,45 +19,60 @@ import {
   ClearTextIcon,
 } from '../../common/Icons';
 import { showToast } from '../../Helper/index';
-import ContactInfo from './ContactInfo';
+import ContactPreviewScreen from './ContactPreviewScreen';
+import commonStyles from '../../common/commonStyles';
+import Pressable from '../../common/Pressable';
+import IconButton from '../../common/IconButton';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { requestContactPermission } from '../../common/utils';
+import { openSettings } from 'react-native-permissions';
 
-const ContactList = props => {
+const screenWidth = Dimensions.get('screen').width;
+
+const maxScreenWidth = Math.min(screenWidth, 500);
+
+const ContactList = ({ handleSendMsg, setLocalNav }) => {
   const [contacts, setContacts] = React.useState([]);
   const [fliterArray, setFliterArray] = React.useState([]);
-  const [searchInfo, setSearchInfo] = React.useState('');
+  const [searchText, setSearchText] = React.useState('');
   const [isSearching, setIsSearching] = React.useState(false);
-  const [contactNav, setContactNav] = React.useState(false);
-  const [selectedContact, setSelectedContact] = React.useState([]);
-  const ContactSelectRef = React.useRef({});
-  const [clearItem, setClearItem] = React.useState(false);
+  const [showSelectedContactsPreview, setShowSelectedContactsPreview] =
+    React.useState(false);
+  const [selectedContacts, setSelectedContacts] = React.useState([]);
+  const selectedContactsRef = React.useRef({});
+
+  React.useEffect(() => {
+    setSearchText('');
+    setIsSearching(false);
+    setSelectedContacts([]);
+    selectedContactsRef.current = {};
+  }, [showSelectedContactsPreview]);
 
   React.useEffect(() => {
     const filtered = contacts.filter(item =>
-      item.displayName?.toLowerCase().includes(searchInfo.toLowerCase()),
+      item.displayName?.toLowerCase().includes(searchText.toLowerCase()),
     );
     setFliterArray(filtered);
-  }, [searchInfo, contacts]);
+  }, [searchText, contacts]);
 
   React.useEffect(() => {
     async function fetchContacts() {
       try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-          {
-            title: 'Contacts Permission',
-            message: 'App needs access to your contacts.',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          },
+        const isNotFirstTimeContactPermissionCheck = await AsyncStorage.getItem(
+          'contact_permission',
         );
+        AsyncStorage.setItem('contact_permission', 'true');
+        const result = await requestContactPermission();
 
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        if (result === 'granted') {
           Contacts.getAll().then(fetchedContacts => {
-            setContacts(fetchedContacts);
+            setContacts(fetchedContacts.filter(c => c.phoneNumbers.length));
           });
+        } else if (isNotFirstTimeContactPermissionCheck) {
+          goBackToPreviousScreen();
+          openSettings();
         } else {
-          console.log('Error requesting contacts permission');
+          goBackToPreviousScreen();
         }
       } catch (error) {
         console.error('Error requesting contacts permission:', error);
@@ -72,58 +85,54 @@ const ContactList = props => {
   React.useEffect(() => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
-      handleBackBtn,
+      goBackToPreviousScreen,
     );
     return () => backHandler.remove();
-  }, [contactNav]);
+  }, [showSelectedContactsPreview]);
 
-  const handleBackBtn = () => {
-    if (contactNav) {
-      setContactNav(false);
-    } else {
-      props.setLocalNav('CHATCONVERSATION');
-    }
-  };
-
-  const handleBackInputBtn = () => {
-    setIsSearching(false);
-  };
-
-  const handleSearchIconPress = () => {
-    setIsSearching(!isSearching);
-  };
-
-  const handleContactNav = () => {
-    setContactNav(true);
-  };
-
-  const handleSearch = text => {
-    setSearchInfo(text);
-
-    if (text === '') {
+  React.useEffect(() => {
+    if (searchText === '') {
       setFliterArray(contacts);
     } else {
       const filtered = contacts.filter(item =>
-        item?.displayName?.toLowerCase().includes(text.toLowerCase()),
+        item?.displayName?.toLowerCase().includes(searchText.toLowerCase()),
       );
       setFliterArray(filtered);
     }
+  }, [searchText]);
+
+  const goBackToPreviousScreen = () => {
+    if (showSelectedContactsPreview) {
+      setShowSelectedContactsPreview(false);
+    } else {
+      setLocalNav('CHATCONVERSATION');
+    }
   };
 
-  const handleTextClear = () => {
-    setSearchInfo('');
+  const toggleSearch = () => {
+    setIsSearching(val => !val);
+    setSearchText('');
   };
+
+  const handleContactNav = () => {
+    setShowSelectedContactsPreview(true);
+  };
+
+  const handleSearch = text => {
+    setSearchText(text);
+  };
+
   const handleSelectedItem = item => {
-    if (ContactSelectRef.current[item.recordID]) {
-      delete ContactSelectRef.current[item.recordID];
-      const newListItems = selectedContact.filter(
+    if (selectedContactsRef.current[item.recordID]) {
+      delete selectedContactsRef.current[item.recordID];
+      const newListItems = selectedContacts.filter(
         listItem => listItem !== item,
       );
 
-      setSelectedContact([...newListItems]);
-    } else if (selectedContact.length < 5) {
-      ContactSelectRef.current[item.recordID] = true;
-      setSelectedContact([...selectedContact, item]);
+      setSelectedContacts([...newListItems]);
+    } else if (selectedContacts.length < 5) {
+      selectedContactsRef.current[item.recordID] = true;
+      setSelectedContacts([...selectedContacts, item]);
     } else {
       showToast("can't share more than 5 contacts", {
         id: 'contacts-max-user-toast',
@@ -132,17 +141,22 @@ const ContactList = props => {
   };
 
   const renderSelectedContacts = () => {
-    return selectedContact.map(item => (
+    const handleRemovePress = item => () => handleRemoveSelectedContact(item);
+
+    return selectedContacts.map(item => (
       <View key={item.recordID} style={styles.SelectedItemContainer}>
-        <View style={styles.SelectedIcon}>
-          <ContactInfoIcon />
-        </View>
         <Pressable
-          style={styles.ClearIcon}
-          onPress={() => handleRemoveSelectedContact(item)}>
-          <ClearTextIcon color="#fff" />
+          contentContainerStyle={styles.SelectedIcon}
+          onPress={handleRemovePress(item)}>
+          <ContactInfoIcon />
+          <View style={styles.ClearIcon}>
+            <ClearTextIcon color="#fff" />
+          </View>
         </Pressable>
-        <Text style={styles.selectcontactName} numberOfLines={1}>
+        <Text
+          style={styles.selectcontactName}
+          numberOfLines={1}
+          ellipsizeMode="tail">
           {item.displayName}
         </Text>
       </View>
@@ -150,124 +164,125 @@ const ContactList = props => {
   };
 
   const handleRemoveSelectedContact = itemToRemove => {
-    const updatedSelectedContact = selectedContact.filter(
+    const updatedSelectedContact = selectedContacts.filter(
       item => item !== itemToRemove,
     );
-    delete ContactSelectRef.current[itemToRemove.recordID];
-    setSelectedContact(updatedSelectedContact);
+    delete selectedContactsRef.current[itemToRemove.recordID];
+    setSelectedContacts(updatedSelectedContact);
   };
 
-  const renderItem = ({ item }) => (
-    <TouchableHighlight
-      activeOpacity={0.6}
-      underlayColor="#DDDDDD"
-      onPress={() => handleSelectedItem(item)}>
-      <View style={styles.contactItem}>
-        <View style={styles.SubcontactItem}>
-          <ContactInfoIcon />
-        </View>
-        {ContactSelectRef.current[item.recordID] == true ? (
-          <View style={styles.selectedTickContainer}>
-            <TickIcon width={'8'} height={'8'} />
+  const clearSearch = () => {
+    setSearchText('');
+  };
+
+  const renderItem = ({ item }) => {
+    const handlePress = () => handleSelectedItem(item);
+
+    return (
+      <Pressable onPress={handlePress}>
+        <View style={styles.contactItem}>
+          <View style={styles.SubcontactItem}>
+            <ContactInfoIcon />
+            {selectedContactsRef.current[item.recordID] === true ? (
+              <View style={styles.selectedTickContainer}>
+                <TickIcon width={'8'} height={'8'} />
+              </View>
+            ) : null}
           </View>
-        ) : null}
-        <View style={styles.NameContainer}>
-          <Text style={styles.contactName} numberOfLines={1}>
+          <Text
+            style={styles.contactName}
+            numberOfLines={1}
+            ellipsizeMode="tail">
             {item.displayName}
           </Text>
-          <View style={styles.itemSeparator} />
         </View>
-      </View>
-    </TouchableHighlight>
-  );
+        <View style={styles.itemSeparator} />
+      </Pressable>
+    );
+  };
+
+  if (showSelectedContactsPreview) {
+    return (
+      <ContactPreviewScreen
+        handleClose={goBackToPreviousScreen}
+        contactItems={selectedContacts}
+        handleSendMsg={handleSendMsg}
+        setLocalNav={setLocalNav}
+      />
+    );
+  }
+
   return (
-    <View style={{ flex: 1 }}>
-      {!contactNav ? (
-        <>
-          <View style={styles.HeaderContainer}>
-            {!isSearching && (
-              <View style={styles.HeadSubcontainer}>
-                <Pressable style={{ padding: 2 }} onPress={handleBackBtn}>
-                  <BackArrowIcon />
-                </Pressable>
-                <View>
-                  <Text style={styles.HeaderTitle}>Contacts to Send</Text>
-                  <Text style={styles.SelectedItem}>
-                    {selectedContact.length} selected
-                  </Text>
-                </View>
-              </View>
-            )}
-            {isSearching && (
-              <View style={styles.searchContainer}>
-                <Pressable style={{ padding: 2 }} onPress={handleBackInputBtn}>
-                  <BackArrowIcon color={'#767676'} />
-                </Pressable>
-                <View style={styles.inputContainer}>
-                  <TextInput
-                    placeholderTextColor="#9D9D9D"
-                    value={searchInfo}
-                    style={styles.inputstyle}
-                    onChangeText={handleSearch}
-                    placeholder="Search..."
-                    selectionColor={'#000'}
-                    autoFocus={true}
-                  />
-                  <Pressable onPress={handleTextClear}>
-                    <CloseIcon width={'17'} height={'17'} />
-                  </Pressable>
-                </View>
-              </View>
-            )}
-
-            {!isSearching && (
-              <Pressable
-                style={styles.SearchOption}
-                onPress={handleSearchIconPress}>
-                <SearchIcon />
-              </Pressable>
-            )}
-          </View>
-          {selectedContact?.length > 0 && (
-            <Pressable
-              onPress={handleContactNav}
-              style={styles.elevationContainer}>
-              <View style={styles.ArrowIcon}>
-                {/* <RightArrowIcon width={'10'} height={'10'} color={'#fff'} /> */}
-                <ContactSendIcon width={'130'} height={'120'} />
-              </View>
-            </Pressable>
-          )}
-
-          {!fliterArray.length && (
-            <View style={styles.NoContact}>
-              <Text style={styles.NoContactTitle}>No contact found</Text>
+    <View style={commonStyles.flex1}>
+      <View style={styles.HeaderContainer}>
+        {!isSearching ? (
+          <View style={styles.HeadSubcontainer}>
+            <IconButton onPress={goBackToPreviousScreen}>
+              <BackArrowIcon />
+            </IconButton>
+            <View style={commonStyles.flex1}>
+              <Text style={styles.HeaderTitle}>Contacts to Send</Text>
+              <Text style={styles.SelectedItem}>
+                {selectedContacts.length} selected
+              </Text>
             </View>
-          )}
-          {selectedContact.length > 0 &&
-            selectedContact.length <= 6 &&
-            !clearItem && (
-              <View>
-                <View style={{ flexDirection: 'row' }}>
-                  {renderSelectedContacts()}
-                </View>
-                <View style={styles.BottomLine}></View>
-              </View>
-            )}
-          {contacts.length > 0 ? (
-            <FlatList
-              data={fliterArray}
-              showsVerticalScrollIndicator={false}
-              renderItem={renderItem}
-              keyExtractor={item => item.recordID}
+            <IconButton
+              containerStyle={styles.SearchOption}
+              onPress={toggleSearch}>
+              <SearchIcon />
+            </IconButton>
+          </View>
+        ) : (
+          <View style={styles.searchContainer}>
+            <IconButton onPress={toggleSearch}>
+              <BackArrowIcon color={'#767676'} />
+            </IconButton>
+            <TextInput
+              placeholderTextColor="#9D9D9D"
+              value={searchText}
+              style={styles.inputstyle}
+              onChangeText={handleSearch}
+              placeholder="Search..."
+              selectionColor={'#000'}
+              autoFocus={true}
             />
-          ) : null}
-        </>
-      ) : (
-        <ContactInfo
-          handleClose={handleBackBtn}
-          contactItem={selectedContact}
+            <IconButton
+              containerStyle={commonStyles.marginRight_8}
+              onPress={clearSearch}>
+              <CloseIcon width={'17'} height={'17'} />
+            </IconButton>
+          </View>
+        )}
+      </View>
+      {/* Selected Contacts Section */}
+      {selectedContacts.length > 0 && (
+        <View>
+          <View style={[commonStyles.hstack]}>{renderSelectedContacts()}</View>
+          <View style={styles.BottomLine} />
+        </View>
+      )}
+      {/* Filtered or all contacts list */}
+      {fliterArray.length > 0 ? (
+        <FlatList
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="always"
+          data={fliterArray}
+          showsVerticalScrollIndicator={false}
+          renderItem={renderItem}
+          keyExtractor={item => item.recordID}
         />
+      ) : (
+        <View style={styles.NoContact}>
+          <Text style={styles.NoContactTitle}>No contact found</Text>
+        </View>
+      )}
+      {/* Floating action button */}
+      {selectedContacts?.length > 0 && (
+        <Pressable onPress={handleContactNav} style={styles.elevationContainer}>
+          <View style={styles.ArrowIcon}>
+            <ContactSendIcon width={'130'} height={'120'} />
+          </View>
+        </Pressable>
       )}
     </View>
   );
@@ -277,15 +292,14 @@ export default ContactList;
 
 const styles = StyleSheet.create({
   HeaderContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F2F2F2',
     paddingLeft: 10,
+    height: 60,
     borderBottomWidth: 0.5,
     borderBottomColor: '#E2E2E2',
     elevation: 2,
-    paddingBottom: 8,
   },
   subtitle: {
     fontSize: 14,
@@ -300,41 +314,43 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: 10,
-    marginHorizontal: 15,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
   },
   contactName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#000',
+    color: '#000000',
     marginLeft: 20,
-    paddingTop: 12,
+    flex: 1,
   },
   phoneNumber: {
     fontSize: 16,
   },
   itemSeparator: {
-    width: 250,
-    paddingTop: 18,
-    marginLeft: 30,
-    borderBottomColor: '#00000036',
-    borderBottomWidth: 0.5,
+    marginLeft: 15 + 45 + 20,
+    borderBottomColor: '#d9d9d9',
+    borderBottomWidth: 1,
   },
   SubcontactItem: {
-    paddingHorizontal: 10,
-    paddingVertical: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    paddingBottom: 1,
+    width: 45,
+    height: 45,
     backgroundColor: '#9D9D9D',
     borderRadius: 25,
   },
-  NameContainer: {
-    flexDirection: 'column',
-  },
+  // NameContainer: {
+  //   flexDirection: 'column',
+  // },
   HeaderTitle: {
     fontSize: 17,
     fontWeight: 'bold',
     color: '#000',
-    marginLeft: 20,
-    marginTop: 10,
+    marginLeft: 10,
+    // marginTop: 10,
   },
   HeadSubcontainer: {
     flexDirection: 'row',
@@ -357,32 +373,31 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '400',
     color: '#767676',
-    marginLeft: 20,
+    marginLeft: 10,
   },
   SelectedItemContainer: {
-    marginLeft: 7,
-    marginTop: 8,
+    marginTop: 10,
+    justifyContent: 'center',
     alignItems: 'center',
-    width: 63,
+    width: maxScreenWidth / 5,
   },
   BottomLine: {
-    width: 340,
-    borderBottomColor: '#00000036',
-    borderBottomWidth: 0.5,
+    borderBottomColor: '#d9d9d9',
+    borderBottomWidth: 1,
     marginTop: 8,
-    marginLeft: 8,
     marginBottom: 5,
   },
   selectcontactName: {
     fontSize: 12,
     color: '#767676',
-    marginLeft: 3,
-    marginTop: -10,
+    marginTop: 3,
   },
   ClearIcon: {
-    marginLeft: 26,
-    padding: 4,
-    top: -11,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
     backgroundColor: '#9D9D9D',
     borderRadius: 10,
     borderWidth: 1,
@@ -391,23 +406,20 @@ const styles = StyleSheet.create({
     height: 15,
   },
   SelectedIcon: {
-    padding: 7,
-    paddingLeft: 8,
-    width: 40,
-    height: 40,
+    position: 'relative',
+    width: 45,
+    height: 45,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 1,
     backgroundColor: '#9D9D9D',
     borderRadius: 25,
   },
   inputstyle: {
-    width: 288,
+    flex: 1,
     color: 'black',
     fontSize: 18,
     marginLeft: 10,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -416,7 +428,7 @@ const styles = StyleSheet.create({
   selectedTickContainer: {
     position: 'absolute',
     bottom: 0,
-    left: 24,
+    right: 0,
     backgroundColor: '#32CD32',
     padding: 4,
     borderRadius: 10,

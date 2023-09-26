@@ -269,9 +269,10 @@ const ChatMessage = props => {
         return (
           <ContactCard
             handleReplyPress={handleReplyPress}
-            data={message}
+            message={message}
             status={getMessageStatus(message?.msgStatus)}
             timeStamp={getConversationHistoryTime(message?.createdAt)}
+            isSender={isSame}
           />
         );
       case 'location':

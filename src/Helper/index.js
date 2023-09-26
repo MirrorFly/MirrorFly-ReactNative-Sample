@@ -1,6 +1,6 @@
 import React from 'react';
 import { Toast } from 'native-base';
-import { Alert, Platform, Text, View } from 'react-native';
+import { Alert, Linking, Platform, Text, View } from 'react-native';
 import Graphemer from 'graphemer';
 import RNFS from 'react-native-fs';
 import { Image as ImageCompressor } from 'react-native-compressor';
@@ -12,6 +12,8 @@ import { profileDetail } from '../redux/Actions/ProfileAction';
 import SDK from '../SDK/SDK';
 import { updateUserProfileStore } from './Chat/ChatHelper';
 import { toastStyles } from '../common/commonStyles';
+import { MAP_THHUMBNAIL_URL } from '../constant';
+import config from '../components/chat/common/config';
 
 const toastLocalRef = React.createRef({});
 toastLocalRef.current = {};
@@ -192,4 +194,37 @@ export const fetchContactsFromSDK = async (
     updateUserProfileStore(contactsResponse.users);
   }
   return contactsResponse;
+};
+
+export const showCheckYourInternetToast = () => {
+  showToast('Please check your internet connection', {
+    id: 'no-internet-toast',
+  });
+};
+
+export const openLocationExternally = (latitude, longitude) => {
+  const scheme = Platform.select({
+    ios: 'maps://0,0?q=',
+    android: 'geo:0,0?q=',
+  });
+  const latLng = `${latitude},${longitude}`;
+  const locationUrl = Platform.select({
+    ios: `${scheme}${latLng}`,
+    android: `${scheme}${latLng}`,
+  });
+  if (Linking.canOpenURL(locationUrl)) {
+    Linking.openURL(locationUrl).catch(() => {
+      showToast('Unable to open the location', {
+        id: 'location-open-error-toast',
+      });
+    });
+  } else {
+    showToast('No app found to open location', {
+      id: 'location-open-error-toast',
+    });
+  }
+};
+
+export const getLocationImageURL = ({ latitude, longitude }) => {
+  return `${MAP_THHUMBNAIL_URL}?center=${latitude},${longitude}&zoom=15&size=195x170&markers=color:red|${latitude},${longitude}&key=${config.GOOGLE_LOCATION_API_KEY}`;
 };

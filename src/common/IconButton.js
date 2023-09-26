@@ -29,7 +29,7 @@ const IconButton = ({
       commonStyles.iconButton,
       ...(Array.isArray(containerStyle) ? containerStyle : [containerStyle]),
     ];
-  }, [style]);
+  }, [containerStyle]);
 
   return (
     <Pressable style={processedPresableStyle} onPress={onPress}>

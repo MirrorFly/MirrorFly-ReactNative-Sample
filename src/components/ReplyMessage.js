@@ -325,10 +325,9 @@ export default ReplyMessage;
 
 const styles = StyleSheet.create({
   replyContainer: {
-    marginTop: 4,
+    marginVertical: 4,
     paddingHorizontal: 16,
-    paddingVertical: 4,
-    marginBottom: 4,
+    paddingVertical: 7,
     borderRadius: 7,
   },
   mediaReplyContainer: {

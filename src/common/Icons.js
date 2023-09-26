@@ -2562,7 +2562,7 @@ export const ContactChatIcon = props => {
           data-name="contact-book (3)"
           transform="translate(45.297 144.595)">
           <G id="Group_7305" data-name="Group 7305" transform="translate(48)">
-            <path
+            <Path
               id="Path_9718"
               data-name="Path 9718"
               d="M58.466,1.675H57.21V.419A.419.419,0,0,0,56.792,0H49.256A1.257,1.257,0,0,0,48,1.256V11.722A1.676,1.676,0,0,0,49.675,13.4h8.792a.419.419,0,0,0,.419-.419V2.093A.419.419,0,0,0,58.466,1.675Zm-2.093,8.792a.419.419,0,0,1-.419.419H50.931a.419.419,0,0,1-.419-.419V9.629a2.1,2.1,0,0,1,2.093-2.093H54.28a2.1,2.1,0,0,1,2.093,2.093ZM51.768,5.024A1.675,1.675,0,1,1,53.442,6.7,1.676,1.676,0,0,1,51.768,5.024Zm4.605-3.349H49.256a.419.419,0,1,1,0-.837h7.117Z"
@@ -2779,8 +2779,8 @@ export const ContactInfoIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="21.396"
-      height="24.344"
+      width={props.width || '21.396'}
+      height={props.height || '24.344'}
       viewBox="0 0 21.396 24.344">
       <G id="user" transform="translate(-31)">
         <G id="Group_8868" data-name="Group 8868" transform="translate(35.279)">

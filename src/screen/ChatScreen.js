@@ -16,7 +16,7 @@ import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import { showToast } from '../Helper';
+import { showCheckYourInternetToast, showToast } from '../Helper';
 import { isSingleChat } from '../Helper/Chat/ChatHelper';
 import { DOCUMENT_FORMATS } from '../Helper/Chat/Constant';
 import {
@@ -73,6 +73,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { chatInputMessageRef } from '../components/ChatInput';
 import Location from '../components/Media/Location';
 import Modal, { ModalCenteredContent } from '../common/Modal';
+import { useNetworkStatus } from '../hooks';
 
 function ChatScreen() {
   const [replyMsg, setReplyMsg] = React.useState('');
@@ -90,6 +91,8 @@ function ChatScreen() {
   const [alert, setAlert] = React.useState(false);
   const [validate, setValidate] = React.useState('');
   const [isSearching, setIsSearching] = React.useState(false);
+
+  const isNetworkAvailable = useNetworkStatus();
 
   useFocusEffect(
     React.useCallback(() => {
@@ -215,7 +218,11 @@ function ChatScreen() {
     setLocalNav('ContactList');
   };
   const handleLocationSelect = async () => {
-    setLocalNav('LocationInfo');
+    if (isNetworkAvailable) {
+      setLocalNav('LocationInfo');
+    } else {
+      showCheckYourInternetToast();
+    }
   };
 
   const attachmentMenuIcons = [
@@ -527,12 +534,12 @@ function ChatScreen() {
     }
 
     const msgId = uuidv4();
+    const replyTo = replyMsg?.msgId || '';
     switch (messageType) {
       case 'media':
         parseAndSendMessage(message, 'chat', messageType);
         break;
       case 'location':
-        const replyTo = replyMsg?.msgId || '';
         const { latitude, longitude } = message.location || {};
         if (latitude && longitude) {
           const dataObj = {
@@ -554,6 +561,31 @@ function ChatScreen() {
             replyTo,
           );
         }
+        break;
+      case 'contact':
+        const updatedContacts = message.contacts.map(c => ({
+          ...c,
+          msgId: uuidv4(),
+        }));
+        for (const contact of updatedContacts) {
+          const dataObj = {
+            jid: toUserJid,
+            msgType: messageType,
+            userProfile: vCardData,
+            chatType: 'chat',
+            msgId: contact.msgId,
+            contact: { ...contact },
+            fromUserJid: currentUserJID,
+            replyTo: replyTo,
+          };
+          constructAndDispatchConversationAndRecentChatData(dataObj);
+        }
+        setReplyMsg('');
+        SDK.sendContactMessage(toUserJid, updatedContacts, replyTo).then(
+          res => {
+            console.log('Response from SDK , ', res);
+          },
+        );
         break;
       default: // default to text message
         if (message.content !== '') {
@@ -629,7 +661,12 @@ function ChatScreen() {
           ),
           UserInfo: <UserInfo setLocalNav={setLocalNav} toUserId={toUserId} />,
           UsersTapBarInfo: <UsersTapBarInfo setLocalNav={setLocalNav} />,
-          ContactList: <ContactList setLocalNav={setLocalNav} />,
+          ContactList: (
+            <ContactList
+              setLocalNav={setLocalNav}
+              handleSendMsg={handleSendMsg}
+            />
+          ),
           Gallery: (
             <SavePicture
               setLocalNav={setLocalNav}

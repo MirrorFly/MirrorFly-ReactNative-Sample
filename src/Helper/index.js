@@ -12,10 +12,9 @@ import { profileDetail } from '../redux/Actions/ProfileAction';
 import SDK from '../SDK/SDK';
 import { updateUserProfileStore } from './Chat/ChatHelper';
 import { toastStyles } from '../common/commonStyles';
-import { CHATSCREEN } from '../constant';
 import * as RootNav from '../Navigation/rootNavigation';
 import { navigate } from '../redux/Actions/NavigationAction';
-import { MAP_THHUMBNAIL_URL } from '../constant';
+import { MAP_THHUMBNAIL_URL, CHATSCREEN } from '../constant';
 import config from '../components/chat/common/config';
 
 const toastLocalRef = React.createRef({});

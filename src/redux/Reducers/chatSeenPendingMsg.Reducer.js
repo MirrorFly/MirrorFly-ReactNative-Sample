@@ -37,8 +37,8 @@ const chatSeenPendingMsgReducer = (state = initialState, action) => {
       };
       AsyncStorage.setItem('pendingSeenStatus', JSON.stringify(deleteSeen));
       return deleteSeen;
-      case RESET_STORE:
-        return initialState
+    case RESET_STORE:
+      return initialState;
     default:
       return state;
   }

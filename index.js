@@ -9,6 +9,7 @@ import {
   getNotifyMessage,
   getNotifyNickName,
 } from './src/components/RNCamera/Helper';
+import { handleSetPendingSeenStatus, updateRecentAndConversationStore } from './src/Helper';
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   try {
@@ -19,6 +20,7 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
     const notify = await SDK.getNotificationData(remoteMessage);
     console.log(notify, 'notify?.message');
     if (notify?.statusCode === 200) {
+      updateRecentAndConversationStore(notify?.data)
       pushNotify(
         notify?.data?.msgId,
         getNotifyNickName(notify?.data),
@@ -26,6 +28,7 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
         notify?.data?.fromUserJid,
         false,
       );
+      handleSetPendingSeenStatus(notify?.data);
     }
   } catch (error) {
     console.log('messaging().setBackgroundMessageHandler', error);

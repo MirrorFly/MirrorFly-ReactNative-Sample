@@ -42,7 +42,10 @@ import store from '../redux/store';
 import { updateUserProfileDetails } from '../Helper/index';
 import SDK from '../SDK/SDK';
 import { pushNotify, updateNotification } from '../Service/remoteNotifyHandle';
-import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
+import {
+  getNotifyMessage,
+  getNotifyNickName,
+} from '../components/RNCamera/Helper';
 
 export const callBacks = {
   connectionListener: response => {
@@ -69,15 +72,15 @@ export const callBacks = {
         case 'carbonSentMessage':
         case 'receiveMessage':
         case 'carbonReceiveMessage':
+          updateRecentChatMessage(res, store.getState());
+          updateConversationMessage(res, store.getState());
           pushNotify(
             res.msgId,
             getNotifyNickName(res, CALL_BACK),
-            getNotifyMessage(res),  
+            getNotifyMessage(res),
             res?.publisherJid,
             true,
           );
-          updateRecentChatMessage(res, store.getState());
-          updateConversationMessage(res, store.getState());
           break;
       }
     }

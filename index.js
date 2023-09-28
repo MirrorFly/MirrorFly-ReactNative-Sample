@@ -4,11 +4,18 @@ import { name as appName } from './app.json';
 import 'react-native-get-random-values';
 import messaging from '@react-native-firebase/messaging';
 import SDK from './src/SDK/SDK';
-import { pushNotify } from './src/Service/remoteNotifyHandle';
+import {
+  pushNotify,
+  updateNotification,
+} from './src/Service/remoteNotifyHandle';
 import {
   getNotifyMessage,
   getNotifyNickName,
 } from './src/components/RNCamera/Helper';
+import {
+  handleSetPendingSeenStatus,
+  updateRecentAndConversationStore,
+} from './src/Helper';
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   try {
@@ -16,16 +23,24 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
       'setBackgroundMessageHandler remoteMessage',
       JSON.stringify(remoteMessage, null, 2),
     );
+    if (remoteMessage.data.type === 'recall') {
+      updateNotification(remoteMessage.data.message_id);
+      return;
+    }
     const notify = await SDK.getNotificationData(remoteMessage);
     console.log(notify, 'notify?.message');
     if (notify?.statusCode === 200) {
-      pushNotify(
-        notify?.data?.msgId,
-        getNotifyNickName(notify?.data),
-        getNotifyMessage(notify?.data),
-        notify?.data?.fromUserJid,
-        false,
-      );
+      updateRecentAndConversationStore(notify?.data);
+      if (notify?.data?.type === 'receiveMessage') {
+        pushNotify(
+          notify?.data?.msgId,
+          getNotifyNickName(notify?.data),
+          getNotifyMessage(notify?.data),
+          notify?.data?.fromUserJid,
+          false,
+        );
+      }
+      handleSetPendingSeenStatus(notify?.data);
     }
   } catch (error) {
     console.log('messaging().setBackgroundMessageHandler', error);

@@ -129,11 +129,7 @@ const ChatMessage = props => {
 
   const getMessageStatus = currentStatus => {
     if (isSame && currentStatus === 3) {
-      return (
-        <View style={commonStyles.paddingHorizontal_12}>
-          <SandTimer />
-        </View>
-      );
+      return <SandTimer />;
     }
     return (
       <View style={[styles?.currentStatus, isSame ? statusVisible : '']} />

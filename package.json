@@ -11,10 +11,10 @@
     "rn:clean": "watchman watch-del-all && rm -rf package-lock.json node_modules &&  rm -rf android/build && rm -rf ios/Pods/ ios/Podfile.lock ios/build && rm -rf ~/Library/Developer/Xcode/DerivedData",
     "android:clean": "cd android && ./gradlew clean && cd ..",
     "build": "rollup -c ",
-    "android-build": "cd android && fastlane deploy_qa_release && cd ..",
-    "ios-build": "cd ios && fastlane qa_firebase && cd ..",
+    "android:build": "cd android && fastlane deploy_qa_release && cd ..",
+    "ios:build": "cd ios && fastlane qa_firebase && cd ..",
     "file:clean": "rm -rf package-lock.json node_modules",
-    "ios-install": "npx react-native setup-ios-permissions && cd ios && pod install && cd ..",
+    "ios:install": "npx react-native setup-ios-permissions && cd ios && pod install && cd ..",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
@@ -22,7 +22,7 @@
     "lint": "eslint .",
     "postinstall": "patch-package",
     "copy_pack": "cp -r dist/* /home/user/Web_Training/React_Native/SamplePoc/node_modules/mirrorfly/dist/",
-    "i": "npm i -f && npm run ios-install"
+    "i": "npm i -f && npm run ios:install"
   },
   "reactNativePermissionsIOS": [
     "AppTrackingTransparency",

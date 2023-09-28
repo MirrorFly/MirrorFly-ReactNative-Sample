@@ -7,6 +7,7 @@ import {
 } from 'react-native-permissions';
 import { Platform } from 'react-native';
 import SDK from '../SDK/SDK';
+import messaging from '@react-native-firebase/messaging';
 
 const toastConfig = {
   duration: 2500,
@@ -162,6 +163,10 @@ export const requestNotificationPermission = async () => {
   return request(
     Platform.OS === 'android' && PERMISSIONS.ANDROID.POST_NOTIFICATIONS,
   );
+};
+
+export const requestIOS_NotificationPermission = () => {
+  return messaging().requestPermission();
 };
 
 export const requestContactPermission = async () => {

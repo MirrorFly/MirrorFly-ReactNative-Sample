@@ -1,8 +1,16 @@
 import { showToast } from '../Helper/index';
 import SDK from '../SDK/SDK';
-import React from 'react';
-import { FlatList } from 'react-native';
+import React, { useRef } from 'react';
+import {
+  FlatList,
+  Linking,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
 import ChatMessage from './ChatMessage';
@@ -11,6 +19,10 @@ import { updateMsgSeenStatus } from './chat/common/createMessage';
 import { updateConversationTotalSearchResults } from '../redux/Actions/conversationSearchAction';
 import { useFocusEffect } from '@react-navigation/native';
 import { isActiveChatScreenRef } from './ChatConversation';
+import Modal, { ModalCenteredContent } from '../common/Modal';
+import ApplicationColors from '../config/appColors';
+import { INVITE_APP_URL, INVITE_SMS_CONTENT } from '../constant';
+import Pressable from '../common/Pressable';
 
 const ChatConversationList = ({
   handleMessageListUpdated,
@@ -35,6 +47,10 @@ const ChatConversationList = ({
   const filteredMessageIndexes = React.useRef([]);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const [highlightMessageId, setHighlightMessageId] = React.useState('');
+  const [showContactInviteModal, setShowContactInviteModal] =
+    React.useState(false);
+
+  const inviteContactMessageRef = useRef();
 
   const messageList = React.useMemo(() => {
     const id = getUserIdFromJid(fromUserJId);
@@ -185,6 +201,15 @@ const ChatConversationList = ({
     [handleMsgSelect, findMsgIndex],
   );
 
+  const toggleContactInviteModal = () => {
+    setShowContactInviteModal(val => !val);
+  };
+
+  const handleShowContactInviteModal = message => {
+    inviteContactMessageRef.current = message;
+    toggleContactInviteModal();
+  };
+
   const chatMessageRender = React.useCallback(
     ({ item }) => {
       const { deleteStatus = 0, msgId } = item;
@@ -198,6 +223,7 @@ const ChatConversationList = ({
           setLocalNav={setLocalNav}
           handleMsgSelect={handleMsgSelect}
           shouldSelectMessage={selectedMsgsIdRef?.current?.[msgId]}
+          showContactInviteModal={handleShowContactInviteModal}
           message={item}
         />
       ) : (
@@ -220,20 +246,77 @@ const ChatConversationList = ({
 
   const doNothing = () => null;
 
+  const handleCopyInviteLink = () => {
+    toggleContactInviteModal();
+    Clipboard.setString(INVITE_APP_URL);
+    showToast('Link Copied', { id: 'invite-link-copied-toast' });
+  };
+
+  const handleInviteContact = () => {
+    toggleContactInviteModal();
+    const ContactInfo = inviteContactMessageRef.current?.msgBody?.contact;
+    if (ContactInfo) {
+      // open the message app and invite the user to the app with content
+      const phoneNumber = ContactInfo.phone_number[0];
+      const separator = Platform.OS === 'ios' ? '&' : '?';
+      const url = `sms:${phoneNumber}${separator}body=${INVITE_SMS_CONTENT}`;
+      Linking.openURL(url);
+    }
+  };
+
   return (
-    <FlatList
-      keyboardShouldPersistTaps={'handled'}
-      ref={flatListRef}
-      data={messageList}
-      inverted
-      renderItem={chatMessageRender}
-      keyExtractor={item => item.msgId.toString()}
-      initialNumToRender={20}
-      maxToRenderPerBatch={40}
-      onScrollToIndexFailed={doNothing}
-      windowSize={15}
-    />
+    <>
+      <FlatList
+        keyboardShouldPersistTaps={'handled'}
+        ref={flatListRef}
+        data={messageList}
+        inverted
+        renderItem={chatMessageRender}
+        keyExtractor={item => item.msgId.toString()}
+        initialNumToRender={20}
+        maxToRenderPerBatch={40}
+        onScrollToIndexFailed={doNothing}
+        windowSize={15}
+      />
+      <Modal
+        visible={showContactInviteModal}
+        onRequestClose={toggleContactInviteModal}>
+        <ModalCenteredContent onPressOutside={toggleContactInviteModal}>
+          <View style={styles.inviteFriendModalContentContainer}>
+            <Text style={styles.modalTitle}>Invite Friend</Text>
+            <Pressable onPress={handleCopyInviteLink}>
+              <Text style={styles.modalOption}>Copy Link</Text>
+            </Pressable>
+            <Pressable onPress={handleInviteContact}>
+              <Text style={styles.modalOption}>Send SMS</Text>
+            </Pressable>
+          </View>
+        </ModalCenteredContent>
+      </Modal>
+    </>
   );
 };
 
 export default React.memo(ChatConversationList);
+
+const styles = StyleSheet.create({
+  inviteFriendModalContentContainer: {
+    maxWidth: 500,
+    width: '80%',
+    backgroundColor: ApplicationColors.mainbg,
+    borderRadius: 5,
+    paddingVertical: 10,
+  },
+  modalTitle: {
+    fontSize: 19,
+    color: '#3c3c3c',
+    fontWeight: '500',
+    marginVertical: 15,
+    paddingHorizontal: 25,
+  },
+  modalOption: {
+    paddingHorizontal: 25,
+    paddingVertical: 20,
+    fontSize: 17,
+  },
+});

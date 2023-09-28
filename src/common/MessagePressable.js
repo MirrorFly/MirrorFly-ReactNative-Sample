@@ -35,7 +35,7 @@ const MessagePressable = ({
     ];
   }, [contentContainerStyle]);
   return (
-    <RNPressable {...props}>
+    <RNPressable delayLongPress={300} {...props}>
       {({ pressed }) => (
         <View style={[processedContentContainerStyle]}>
           {children}

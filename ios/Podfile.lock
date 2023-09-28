@@ -288,7 +288,7 @@ PODS:
     - React-Core
   - react-native-cameraroll (4.1.2):
     - React-Core
-  - react-native-compressor (1.8.4):
+  - react-native-compressor (1.8.5):
     - NextLevelSessionExporter
     - React-Core
   - react-native-contacts (7.0.7):
@@ -689,7 +689,7 @@ SPEC CHECKSUMS:
   React-logger: da69d7f1c9501c78cd60776d52a60d7fa5e4d9c2
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: 2957f2bce63ae896a848fbe0d5352c1bd4d20866
-  react-native-compressor: 95efd0be7a2406a2f69d28580936a2d8eb032bb0
+  react-native-compressor: b1db8c511aacbd230dc6595b749e3c8df5736ef9
   react-native-contacts: 61971364bf9f11a846587eeb736a4e65632815d4
   react-native-create-thumbnail: e022bcdcba8a0b4529a50d3fa1a832ec921be39d
   react-native-document-picker: 2b8f18667caee73a96708a82b284a4f40b30a156
@@ -734,6 +734,6 @@ SPEC CHECKSUMS:
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   Yoga: 8a90b50af67eaa9fe94fd03e550bfeab06096873
 
-PODFILE CHECKSUM: 72a510fff33edb26122435df3b692532fc19f088
+PODFILE CHECKSUM: 319495661dd659403ffbc83479a757ab2dbd36d5
 
 COCOAPODS: 1.12.1

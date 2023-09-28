@@ -264,11 +264,10 @@ export const getPendingSeenStatusMsg = async () => {
 };
 
 export const handleSetPendingSeenStatus = async obj => {
-  const storedVal = await getPendingSeenStatusMsg();
-  if (storedVal) {
-    const parsedStoreVal = JSON.parse(storedVal);
+  const parsedStoreVal = await getPendingSeenStatusMsg();
+  if (parsedStoreVal) {
     const filterdArr = parsedStoreVal?.data.filter(
-      obj => obj.msgId !== obj.msgId && obj.msgStatus === 1,
+      o => o.msgId !== obj.msgId && obj.msgStatus === 1,
     );
     if (filterdArr?.length) {
       filterdArr?.forEach(element => {
@@ -284,7 +283,6 @@ export const handleSetPendingSeenStatus = async obj => {
 };
 
 export const updateRecentAndConversationStore = obj => {
-  console.log(obj, 'updateRecentAndConversationStore');
   updateRecentChatMessage(obj, Store.getState());
   updateConversationMessage(obj, Store.getState());
 };

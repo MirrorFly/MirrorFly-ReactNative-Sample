@@ -45,7 +45,8 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-  [RNCPushNotificationIOS didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+  // Commented because of automatically opens chat-screen when more that 2 notification received
+  // [RNCPushNotificationIOS didReceiveRemoteNo tification:userInfo fetchCompletionHandler:completionHandler];
 }
 // Required for the registrationError event.
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error

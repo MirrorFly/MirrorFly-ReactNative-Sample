@@ -1,4 +1,4 @@
-import { AppRegistry } from 'react-native';
+import { AppRegistry, Platform } from 'react-native';
 import App from './App';
 import { name as appName } from './app.json';
 import 'react-native-get-random-values';
@@ -9,7 +9,10 @@ import {
   getNotifyMessage,
   getNotifyNickName,
 } from './src/components/RNCamera/Helper';
-import { handleSetPendingSeenStatus, updateRecentAndConversationStore } from './src/Helper';
+import {
+  handleSetPendingSeenStatus,
+  updateRecentAndConversationStore,
+} from './src/Helper';
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   try {
@@ -20,7 +23,7 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
     const notify = await SDK.getNotificationData(remoteMessage);
     console.log(notify, 'notify?.message');
     if (notify?.statusCode === 200) {
-      updateRecentAndConversationStore(notify?.data)
+      updateRecentAndConversationStore(notify?.data);
       pushNotify(
         notify?.data?.msgId,
         getNotifyNickName(notify?.data),

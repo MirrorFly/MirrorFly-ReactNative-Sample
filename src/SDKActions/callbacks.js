@@ -76,7 +76,7 @@ export const callBacks = {
           updateConversationMessage(res, store.getState());
           pushNotify(
             res.msgId,
-            getNotifyNickName(res, CALL_BACK),
+            getNotifyNickName(res),
             getNotifyMessage(res),
             res?.publisherJid,
             true,

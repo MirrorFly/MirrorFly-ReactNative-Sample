@@ -36,6 +36,7 @@ const ChatMessage = props => {
     shouldHighlightMessage,
     shouldSelectMessage,
     handleMsgSelect,
+    showContactInviteModal,
   } = props;
   let isSame = currentUserJID === message?.fromUserJid;
   let statusVisible = 'notSend';
@@ -213,6 +214,14 @@ const ChatMessage = props => {
     handleMsgSelect(message);
   };
 
+  const handleContactInvitePress = _message => {
+    // Same as handleContentPress but calling showContactInviteModal function with _message as param
+    dismissKeyBoard();
+    isMessageSelectingRef.current
+      ? handleMessageSelect()
+      : showContactInviteModal(_message);
+  };
+
   const renderMessageBasedOnType = () => {
     switch (message?.msgBody?.message_type) {
       case 'text':
@@ -287,6 +296,8 @@ const ChatMessage = props => {
             message={message}
             status={getMessageStatus(message?.msgStatus)}
             timeStamp={getConversationHistoryTime(message?.createdAt)}
+            onInvitePress={handleContactInvitePress}
+            handleInvitetLongPress={handleContentLongPress}
             isSender={isSame}
           />
         );
@@ -297,8 +308,8 @@ const ChatMessage = props => {
             message={message}
             status={getMessageStatus(message?.msgStatus)}
             timeStamp={getConversationHistoryTime(message?.createdAt)}
-            handleContentLongPress={handleContentLongPress}
             handleContentPress={handleContentPress}
+            handleContentLongPress={handleContentLongPress}
             isSender={isSame}
           />
         );

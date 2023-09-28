@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: ApplicationColors.modalBg,
+    backgroundColor: ApplicationColors.modalOverlayBg,
   },
   modalCeneteredContentContainer: {
     flex: 1,

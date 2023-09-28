@@ -1,6 +1,6 @@
 const ApplicationColors = {
   mainColor: '#3276E2',
-  modalBg: 'rgba(0,0,0,.3)',
+  modalOverlayBg: 'rgba(0,0,0,.3)',
   mainbg: 'white',
   mainBorderColor: '#C1C1C1',
   invertedBg: 'black',

@@ -4,14 +4,7 @@ import {
   showCheckYourInternetToast,
 } from '../Helper/index';
 import React, { useState } from 'react';
-import {
-  Image,
-  Pressable,
-  ImageBackground,
-  StyleSheet,
-  View,
-  Text,
-} from 'react-native';
+import { Image, ImageBackground, StyleSheet, View, Text } from 'react-native';
 import ic_baloon from '../assets/ic_baloon.png';
 import { getImageSource } from '../common/utils';
 import ReplyMessage from './ReplyMessage';
@@ -19,11 +12,14 @@ import mapStaticFallbackImage from '../assets/google-maps-blur.png';
 import { useNetworkStatus } from '../hooks';
 import ApplicationColors from '../config/appColors';
 import commonStyles from '../common/commonStyles';
+import MessagePressable from '../common/MessagePressable';
 
 const MapCard = ({
   status,
   timeStamp,
   handleReplyPress,
+  handleContentPress,
+  handleContentLongPress,
   message,
   isSender,
 }) => {
@@ -41,12 +37,16 @@ const MapCard = ({
 
   const [isImageLoadingError, setIsImageLoadingError] = useState(false);
 
-  const mapHandler = () => {
-    if (!isInternetReachable) {
-      showCheckYourInternetToast();
-      return;
+  const handleMapPress = () => {
+    if (handleContentPress) {
+      handleContentPress();
+    } else {
+      if (!isInternetReachable) {
+        showCheckYourInternetToast();
+        return;
+      }
+      openLocationExternally(latitude, longitude);
     }
-    openLocationExternally(latitude, longitude);
   };
 
   const handleImageLoadError = () => {
@@ -62,7 +62,9 @@ const MapCard = ({
           isSame={isSender}
         />
       )}
-      <Pressable onPress={mapHandler}>
+      <MessagePressable
+        onPress={handleMapPress}
+        onLongPress={handleContentLongPress}>
         <Image
           source={
             isImageLoadingError
@@ -73,7 +75,7 @@ const MapCard = ({
           style={styles.mapImage}
           onError={handleImageLoadError}
         />
-      </Pressable>
+      </MessagePressable>
       <View style={styles.statusWithTimestampContainer}>
         <ImageBackground
           source={getImageSource(ic_baloon)}

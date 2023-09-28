@@ -15,7 +15,7 @@ import {
   updateConversationMessage,
   updateRecentChatMessage,
 } from '../components/chat/common/createMessage';
-import { CALL_BACK, REGISTERSCREEN } from '../constant';
+import { REGISTERSCREEN } from '../constant';
 import {
   ClearChatHistoryAction,
   DeleteChatHIstoryAction,

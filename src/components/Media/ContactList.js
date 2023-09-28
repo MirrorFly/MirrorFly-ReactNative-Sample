@@ -8,6 +8,7 @@ import {
   Dimensions,
   Platform,
   KeyboardAvoidingView,
+  ActivityIndicator,
 } from 'react-native';
 import Contacts from 'react-native-contacts';
 import React from 'react';
@@ -28,6 +29,7 @@ import IconButton from '../../common/IconButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { requestContactPermission } from '../../common/utils';
 import { openSettings } from 'react-native-permissions';
+import ApplicationColors from '../../config/appColors';
 
 const screenWidth = Dimensions.get('screen').width;
 
@@ -38,6 +40,7 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
   const [fliterArray, setFliterArray] = React.useState([]);
   const [searchText, setSearchText] = React.useState('');
   const [isSearching, setIsSearching] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [showSelectedContactsPreview, setShowSelectedContactsPreview] =
     React.useState(false);
   const [selectedContacts, setSelectedContacts] = React.useState([]);
@@ -58,35 +61,6 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
   }, [searchText, contacts]);
 
   React.useEffect(() => {
-    async function fetchContacts() {
-      try {
-        const isNotFirstTimeContactPermissionCheck = await AsyncStorage.getItem(
-          'contact_permission',
-        );
-        AsyncStorage.setItem('contact_permission', 'true');
-        const result = await requestContactPermission();
-        if (result === 'granted') {
-          Contacts.getAll().then(fetchedContacts => {
-            let filtered = fetchedContacts.filter(c => c.phoneNumbers.length);
-            if (Platform.OS === 'ios') {
-              filtered = filtered.map(c => ({
-                ...c,
-                displayName: c.givenName + c.familyName,
-              }));
-            }
-            setContacts(filtered);
-          });
-        } else if (isNotFirstTimeContactPermissionCheck) {
-          goBackToPreviousScreen();
-          openSettings();
-        } else {
-          goBackToPreviousScreen();
-        }
-      } catch (error) {
-        console.error('Error requesting contacts permission:', error);
-      }
-    }
-
     fetchContacts();
   }, []);
 
@@ -108,6 +82,43 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
       setFliterArray(filtered);
     }
   }, [searchText]);
+
+  const fetchContacts = async () => {
+    try {
+      const isNotFirstTimeContactPermissionCheck = await AsyncStorage.getItem(
+        'contact_permission',
+      );
+      AsyncStorage.setItem('contact_permission', 'true');
+      const result = await requestContactPermission();
+      if (result === 'granted') {
+        Contacts.getAll().then(fetchedContacts => {
+          let validContactsList = fetchedContacts.filter(
+            c => c.phoneNumbers.length,
+          );
+          if (Platform.OS === 'ios') {
+            validContactsList = validContactsList.map(c => ({
+              ...c,
+              displayName:
+                (c.givenName ? c.givenName + ' ' : c.givenName) + c.familyName,
+            }));
+          }
+          const sortedContacts = validContactsList.sort((a, b) =>
+            a.displayName.localeCompare(b.displayName),
+          );
+          setContacts(sortedContacts);
+        });
+      } else if (isNotFirstTimeContactPermissionCheck) {
+        goBackToPreviousScreen();
+        openSettings();
+      } else {
+        goBackToPreviousScreen();
+      }
+    } catch (error) {
+      console.error('Error requesting contacts permission:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const goBackToPreviousScreen = () => {
     if (showSelectedContactsPreview) {
@@ -220,6 +231,14 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
     );
   }
 
+  if (isLoading) {
+    return (
+      <View style={commonStyles.flex1_centeredContent}>
+        <ActivityIndicator size={'large'} color={ApplicationColors.mainColor} />
+      </View>
+    );
+  }
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : ''}
@@ -231,9 +250,9 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
               <BackArrowIcon />
             </IconButton>
             <View style={commonStyles.flex1}>
-              <Text style={styles.HeaderTitle}>Contacts to Send</Text>
+              <Text style={styles.HeaderTitle}>Contacts to send</Text>
               <Text style={styles.SelectedItem}>
-                {selectedContacts.length} selected
+                {selectedContacts.length} Selected
               </Text>
             </View>
             <IconButton
@@ -252,16 +271,18 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
               value={searchText}
               style={styles.inputstyle}
               onChangeText={handleSearch}
-              placeholder="Search..."
-              selectionColor={'#000'}
+              placeholder=" Search..."
               autoFocus={true}
               autoCorrect={false}
+              cursorColor={ApplicationColors.mainColor}
             />
-            <IconButton
-              containerStyle={commonStyles.marginRight_8}
-              onPress={clearSearch}>
-              <CloseIcon width={'17'} height={'17'} />
-            </IconButton>
+            {Boolean(searchText) && (
+              <IconButton
+                containerStyle={commonStyles.marginRight_8}
+                onPress={clearSearch}>
+                <CloseIcon width={'17'} height={'17'} />
+              </IconButton>
+            )}
           </View>
         )}
       </View>
@@ -284,7 +305,7 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
         />
       ) : (
         <View style={styles.NoContact}>
-          <Text style={styles.NoContactTitle}>No contact found</Text>
+          <Text style={styles.NoContactTitle}>No results found</Text>
         </View>
       )}
       {/* Floating action button */}

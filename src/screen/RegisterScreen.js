@@ -1,5 +1,5 @@
-import React from 'react';
-import { Linking, Platform, TextInput } from 'react-native';
+import React, { useEffect } from 'react';
+import { BackHandler, Linking, Platform, TextInput } from 'react-native';
 import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { navigate } from '../redux/Actions/NavigationAction';
@@ -47,6 +47,17 @@ const RegisterScreen = ({ navigation }) => {
   const PolicyHandler = () => {
     Linking.openURL('https://www.mirrorfly.com/privacy-policy.php');
   };
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        BackHandler.exitApp();
+        return true;
+      },
+    );
+    return () => backHandler.remove();
+  }, []);
 
   const selectCountryHandler = () => {
     let x = { screen: COUNTRYSCREEN };

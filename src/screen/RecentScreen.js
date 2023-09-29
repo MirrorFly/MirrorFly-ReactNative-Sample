@@ -263,7 +263,7 @@ function RecentScreen() {
       dispatch(navigate({ screen: REGISTERSCREEN }));
       dispatch(ResetStore());
     });
-    RootNav.navigate(REGISTERSCREEN);
+    RootNav.reset(REGISTERSCREEN);
   };
 
   const menuItems = React.useMemo(

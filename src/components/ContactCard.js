@@ -1,28 +1,25 @@
-import { Linking, Platform, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import Pressable from '../common/Pressable';
 import { ContactInfoIcon } from '../common/Icons';
 import ApplicationColors from '../config/appColors';
 import ReplyMessage from './ReplyMessage';
 import commonStyles from '../common/commonStyles';
-import { INVITE_SMS_CONTENT } from '../constant';
 
 const ContactCard = ({
   message,
   status,
   timeStamp,
   handleReplyPress,
+  onInvitePress,
+  handleInvitetLongPress,
   isSender,
 }) => {
   const ContactInfo = message.msgBody?.contact;
   const { msgBody: { replyTo = '' } = {} } = message;
 
-  const handleInvite = () => {
-    // open the message app and invite the user to the app with content
-    const phoneNumber = ContactInfo.phone_number[0];
-    const separator = Platform.OS === 'ios' ? '&' : '?';
-    const url = `sms:${phoneNumber}${separator}body=${INVITE_SMS_CONTENT}`;
-    Linking.openURL(url);
+  const handleInvitePress = () => {
+    onInvitePress?.(message);
   };
 
   return (
@@ -56,7 +53,8 @@ const ContactCard = ({
           <View style={styles.borderLine} />
           <Pressable
             contentContainerStyle={styles.inviteTextWrapper}
-            onPress={handleInvite}>
+            onPress={handleInvitePress}
+            onLongPress={handleInvitetLongPress}>
             <Text style={styles.inviteText}>Invite</Text>
           </Pressable>
         </>

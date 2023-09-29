@@ -31,10 +31,10 @@
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>This is app would like to access your music files</string>
-	<key>NSContactsUsageDescription</key>
-	<string>This app require your contacts</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This is app require your camera</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app require your contacts</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -46,6 +46,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
+		<string>processing</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>

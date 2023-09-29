@@ -26,6 +26,11 @@ export const pressableStyles = StyleSheet.create({
 
 const commonStyles = StyleSheet.create({
   flex1: { flex: 1 },
+  flex1_centeredContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   justifyContentCenter: {
     justifyContent: 'center',
   },

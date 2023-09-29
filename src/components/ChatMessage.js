@@ -14,25 +14,32 @@ import { getConversationHistoryTime } from '../common/TimeStamp';
 import { uploadFileToSDK } from '../Helper/Chat/ChatHelper';
 import { getThumbBase64URL } from '../Helper/Chat/Utility';
 import { singleChatSelectedMediaImage } from '../redux/Actions/SingleChatImageAction';
-import { showToast } from '../Helper';
+import {
+  openLocationExternally,
+  showCheckYourInternetToast,
+  showToast,
+} from '../Helper';
 import { isKeyboardVisibleRef } from '../ChatApp';
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
 import MessagePressable from '../common/MessagePressable';
 import { isMessageSelectingRef } from './ChatConversation';
+import { useNetworkStatus } from '../hooks';
 
 const ChatMessage = props => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
-  let isSame = currentUserJID === props?.message?.fromUserJid;
-  let statusVisible = 'notSend';
   const {
     message,
     setLocalNav,
     handleReplyPress,
     shouldHighlightMessage,
     shouldSelectMessage,
+    handleMsgSelect,
+    showContactInviteModal,
   } = props;
+  let isSame = currentUserJID === message?.fromUserJid;
+  let statusVisible = 'notSend';
   const {
     msgBody = {},
     msgBody: {
@@ -54,9 +61,11 @@ const ChatMessage = props => {
 
   const [imgSrc, saveImage] = React.useState(thumbURL);
   const dispatch = useDispatch();
-  const imageSize = props?.message?.msgBody?.media?.file_size || '';
+  const imageSize = message?.msgBody?.media?.file_size || '';
   const fileSize = imageSize;
   const [isSubscribed, setIsSubscribed] = React.useState(true);
+
+  const isInternetReachable = useNetworkStatus();
 
   const imgFileDownload = () => {
     try {
@@ -120,11 +129,7 @@ const ChatMessage = props => {
 
   const getMessageStatus = currentStatus => {
     if (isSame && currentStatus === 3) {
-      return (
-        <View style={commonStyles.paddingHorizontal_12}>
-          <SandTimer />
-        </View>
-      );
+      return <SandTimer />;
     }
     return (
       <View style={[styles?.currentStatus, isSame ? statusVisible : '']} />
@@ -134,28 +139,28 @@ const ChatMessage = props => {
   const handleMessageObj = () => {
     if (
       ['image', 'video'].includes(message?.msgBody?.message_type) &&
-      (props.message?.msgBody?.media?.local_path ||
-        props.message?.msgBody?.media?.file?.fileDetails?.uri)
+      (message?.msgBody?.media?.local_path ||
+        message?.msgBody?.media?.file?.fileDetails?.uri)
     ) {
       if (isKeyboardVisibleRef.current) {
         let hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-          dispatch(singleChatSelectedMediaImage(props.message));
+          dispatch(singleChatSelectedMediaImage(message));
           setLocalNav('PostPreView');
           hideSubscription.remove();
         });
         Keyboard.dismiss();
       } else {
-        dispatch(singleChatSelectedMediaImage(props.message));
+        dispatch(singleChatSelectedMediaImage(message));
         setLocalNav('PostPreView');
       }
     } else if (
       message?.msgBody?.message_type === 'file' &&
-      (props.message?.msgBody?.media?.local_path ||
-        props.message?.msgBody?.media?.file?.fileDetails?.uri)
+      (message?.msgBody?.media?.local_path ||
+        message?.msgBody?.media?.file?.fileDetails?.uri)
     ) {
       FileViewer.open(
-        props.message?.msgBody?.media?.local_path ||
-          props.message?.msgBody?.media?.file?.fileDetails?.uri,
+        message?.msgBody?.media?.local_path ||
+          message?.msgBody?.media?.file?.fileDetails?.uri,
         {
           showOpenWithDialog: true,
         },
@@ -169,6 +174,13 @@ const ChatMessage = props => {
             id: 'no-supported-app-to-open-file',
           });
         });
+    } else if (message?.msgBody?.message_type === 'location') {
+      if (!isInternetReachable) {
+        showCheckYourInternetToast();
+        return;
+      }
+      const { latitude = '', longitude = '' } = message.msgBody?.location || {};
+      openLocationExternally(latitude, longitude);
     }
   };
 
@@ -179,13 +191,13 @@ const ChatMessage = props => {
   const handleMessageSelect = () => {
     dismissKeyBoard();
     if (isMessageSelectingRef.current) {
-      props.handleMsgSelect(props.message);
+      handleMsgSelect(message);
     }
   };
 
   const handleMessageLongPress = () => {
     dismissKeyBoard();
-    props.handleMsgSelect(props.message);
+    handleMsgSelect(message);
   };
 
   const handleContentPress = () => {
@@ -195,7 +207,15 @@ const ChatMessage = props => {
 
   const handleContentLongPress = () => {
     dismissKeyBoard();
-    props.handleMsgSelect(props.message);
+    handleMsgSelect(message);
+  };
+
+  const handleContactInvitePress = _message => {
+    // Same as handleContentPress but calling showContactInviteModal function with _message as param
+    dismissKeyBoard();
+    isMessageSelectingRef.current
+      ? handleMessageSelect()
+      : showContactInviteModal(_message);
   };
 
   const renderMessageBasedOnType = () => {
@@ -208,8 +228,8 @@ const ChatMessage = props => {
             message={message}
             data={{
               message: message?.msgBody?.message,
-              timeStamp: getConversationHistoryTime(props?.message?.createdAt),
-              status: getMessageStatus(props?.message?.msgStatus),
+              timeStamp: getConversationHistoryTime(message?.createdAt),
+              status: getMessageStatus(message?.msgStatus),
             }}
           />
         );
@@ -272,6 +292,8 @@ const ChatMessage = props => {
             message={message}
             status={getMessageStatus(message?.msgStatus)}
             timeStamp={getConversationHistoryTime(message?.createdAt)}
+            onInvitePress={handleContactInvitePress}
+            handleInvitetLongPress={handleContentLongPress}
             isSender={isSame}
           />
         );
@@ -282,6 +304,8 @@ const ChatMessage = props => {
             message={message}
             status={getMessageStatus(message?.msgStatus)}
             timeStamp={getConversationHistoryTime(message?.createdAt)}
+            handleContentPress={handleContentPress}
+            handleContentLongPress={handleContentLongPress}
             isSender={isSame}
           />
         );

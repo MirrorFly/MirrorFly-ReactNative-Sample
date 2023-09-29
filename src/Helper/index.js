@@ -14,8 +14,14 @@ import { updateUserProfileStore } from './Chat/ChatHelper';
 import { toastStyles } from '../common/commonStyles';
 import * as RootNav from '../Navigation/rootNavigation';
 import { navigate } from '../redux/Actions/NavigationAction';
-import { MAP_THHUMBNAIL_URL, CHATSCREEN } from '../constant';
+import { MAP_THHUMBNAIL_URL, CHATSCREEN, CHATCONVERSATION } from '../constant';
 import config from '../components/chat/common/config';
+import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
+import { addchatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAction';
+import {
+  updateConversationMessage,
+  updateRecentChatMessage,
+} from '../components/chat/common/createMessage';
 
 const toastLocalRef = React.createRef({});
 toastLocalRef.current = {};
@@ -236,13 +242,47 @@ export const handleOpenUrl = async () => {
   if (push_url) {
     let regex = /[?&]([^=#]+)=([^&#]*)/g,
       match;
-    match = regex.exec(push_url);
+    match = regex.exec(JSON.parse(push_url));
     let x = {
       screen: CHATSCREEN,
       fromUserJID: match[2],
     };
     Store.dispatch(navigate(x));
+    Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
     RootNav.navigate(CHATSCREEN);
     AsyncStorage.setItem('push_url', '');
   }
+};
+
+export const addPendingSeenStatusMsg = obj => {
+  Store.dispatch(addchatSeenPendingMsg(obj));
+};
+
+export const getPendingSeenStatusMsg = async () => {
+  const storedVal = await AsyncStorage.getItem('pendingSeenStatus');
+  return JSON.parse(storedVal);
+};
+
+export const handleSetPendingSeenStatus = async obj => {
+  const parsedStoreVal = await getPendingSeenStatusMsg();
+  if (parsedStoreVal) {
+    const filterdArr = parsedStoreVal?.data.filter(
+      o => o.msgId !== obj.msgId && obj.msgStatus === 1,
+    );
+    if (filterdArr?.length) {
+      filterdArr?.forEach(element => {
+        addPendingSeenStatusMsg(element);
+      });
+    }
+    if (!parsedStoreVal?.data.length) {
+      addPendingSeenStatusMsg(obj);
+    }
+  } else {
+    addPendingSeenStatusMsg(obj);
+  }
+};
+
+export const updateRecentAndConversationStore = obj => {
+  updateRecentChatMessage(obj, Store.getState());
+  updateConversationMessage(obj, Store.getState());
 };

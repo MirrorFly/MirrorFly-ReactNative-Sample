@@ -119,7 +119,7 @@ const ContactPreviewScreen = ({
   return (
     <View style={styles.headerContainer}>
       <View style={styles.headerSubContainer}>
-        <ScreenHeader title="send contacts" onhandleBack={handleClose} />
+        <ScreenHeader title="Send contacts" onhandleBack={handleClose} />
       </View>
       <ScrollView
         showsVerticalScrollIndicator={true}

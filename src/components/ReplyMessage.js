@@ -251,7 +251,9 @@ function ReplyMessage(props) {
               height="12"
               color={props.isSame ? '#7285B5' : '#959595'}
             />
-            <Text style={styles.attachmentTypeText}>Contact: Ashiq</Text>
+            <Text style={styles.attachmentTypeText}>
+              Contact: {msgBody?.contact?.name}
+            </Text>
           </View>
         </View>
       );

@@ -592,12 +592,7 @@ function ChatScreen() {
           };
           constructAndDispatchConversationAndRecentChatData(dataObj);
         }
-        setReplyMsg('');
-        SDK.sendContactMessage(toUserJid, updatedContacts, replyTo).then(
-          res => {
-            console.log('Response from SDK , ', res);
-          },
-        );
+        SDK.sendContactMessage(toUserJid, updatedContacts, replyTo);
         break;
       default: // default to text message
         if (message.content !== '') {
@@ -621,6 +616,7 @@ function ChatScreen() {
         }
         break;
     }
+    setReplyMsg('');
   };
 
   const onClose = () => {

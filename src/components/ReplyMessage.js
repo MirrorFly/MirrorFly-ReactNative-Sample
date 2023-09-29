@@ -251,7 +251,10 @@ function ReplyMessage(props) {
               height="12"
               color={props.isSame ? '#7285B5' : '#959595'}
             />
-            <Text style={styles.attachmentTypeText}>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={styles.attachmentTypeText}>
               Contact: {msgBody?.contact?.name}
             </Text>
           </View>
@@ -263,7 +266,7 @@ function ReplyMessage(props) {
       return (
         <View
           style={[
-            styles.mediaReplyContainer,
+            styles.locationReplyContainer,
             props.isSame ? styles.senderBg : styles.receiverBg,
           ]}>
           <Text
@@ -340,6 +343,16 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     position: 'relative',
     minWidth: 200,
+    minHeight: 60,
+  },
+  locationReplyContainer: {
+    marginTop: 4,
+    marginBottom: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 7,
+    position: 'relative',
+    minWidth: 180,
     minHeight: 60,
   },
   senderBg: {

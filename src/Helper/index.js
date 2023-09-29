@@ -240,7 +240,8 @@ export const getLocationImageURL = ({ latitude, longitude }) => {
 export const handleOpenUrl = async () => {
   const push_url = await AsyncStorage.getItem('push_url');
   if (push_url) {
-    let regex = /[?&]([^=#]+)=([^&#]*)/g,
+    const regexStr = '[?&]([^=#]+)=([^&#]*)';
+    let regex = new RegExp(regexStr, 'g'),
       match;
     match = regex.exec(JSON.parse(push_url));
     let x = {

@@ -4,7 +4,14 @@ import {
   showCheckYourInternetToast,
 } from '../Helper/index';
 import React, { useState } from 'react';
-import { Image, ImageBackground, StyleSheet, View, Text } from 'react-native';
+import {
+  Image,
+  ImageBackground,
+  StyleSheet,
+  View,
+  Text,
+  ActivityIndicator,
+} from 'react-native';
 import ic_baloon from '../assets/ic_baloon.png';
 import { getImageSource } from '../common/utils';
 import ReplyMessage from './ReplyMessage';
@@ -27,15 +34,16 @@ const MapCard = ({
     msgBody: { replyTo = '' },
   } = message;
 
+  const [isImageLoading, setIsImageLoading] = useState(false);
+  const [isImageLoadingError, setIsImageLoadingError] = useState(false);
+
+  const isInternetReachable = useNetworkStatus();
+
   const { latitude = '', longitude = '' } = message.msgBody?.location || {};
 
   const locationImageUrl = React.useMemo(() => {
     return getLocationImageURL({ latitude, longitude });
   }, [latitude, longitude]);
-
-  const isInternetReachable = useNetworkStatus();
-
-  const [isImageLoadingError, setIsImageLoadingError] = useState(false);
 
   const handleMapPress = () => {
     if (handleContentPress) {
@@ -51,6 +59,15 @@ const MapCard = ({
 
   const handleImageLoadError = () => {
     setIsImageLoadingError(true);
+    setIsImageLoading(false);
+  };
+
+  const handleImageLoadStart = () => {
+    setIsImageLoading(true);
+  };
+
+  const handleImageLoadEnd = () => {
+    setIsImageLoading(false);
   };
 
   return (
@@ -64,17 +81,28 @@ const MapCard = ({
       )}
       <MessagePressable
         onPress={handleMapPress}
-        onLongPress={handleContentLongPress}>
+        onLongPress={handleContentLongPress}
+        contentContainerStyle={commonStyles.positionRelative}>
         <Image
           source={
             isImageLoadingError
               ? getImageSource(mapStaticFallbackImage)
               : { uri: locationImageUrl, cache: 'force-cache' }
           }
+          onLoadStart={handleImageLoadStart}
+          onLoadEnd={handleImageLoadEnd}
           resizeMode="cover"
           style={styles.mapImage}
           onError={handleImageLoadError}
         />
+        {isImageLoading && (
+          <View style={styles.imageLoaderWrapper}>
+            <ActivityIndicator
+              size={'large'}
+              color={ApplicationColors.mainColor}
+            />
+          </View>
+        )}
       </MessagePressable>
       <View style={styles.statusWithTimestampContainer}>
         <ImageBackground
@@ -121,5 +149,14 @@ const styles = StyleSheet.create({
     color: ApplicationColors.white,
     fontSize: 10,
     fontWeight: '400',
+  },
+  imageLoaderWrapper: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignContent: 'center',
   },
 });

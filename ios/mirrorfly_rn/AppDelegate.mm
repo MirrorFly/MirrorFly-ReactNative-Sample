@@ -6,6 +6,7 @@
 // Push notification set-up.
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
+#import "mirrorfly_rn-Swift.h"
 //==========================
 #import <React/RCTAppSetupUtils.h>
 

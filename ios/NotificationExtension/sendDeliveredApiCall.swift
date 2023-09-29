@@ -6,21 +6,6 @@
 //
 
 import Foundation
-#import "AsyncStorageBridge.h"
-
-// Your Swift code
-
-@objc(YourSwiftClass)
-class YourSwiftClass: NSObject {
-
-    @objc func getDeliveredApiUrl(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        AsyncStorageBridge().getDeliveredApiUrl(resolve, rejecter: reject)
-    }
-
-    @objc func getMirrorFlyToken(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        AsyncStorageBridge().getMirrorFlyToken(resolve, rejecter: reject)
-    }
-}
 
 
 //func getTokenFromReactNative() -> String? {

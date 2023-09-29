@@ -46,6 +46,7 @@ import {
   getNotifyMessage,
   getNotifyNickName,
 } from '../components/RNCamera/Helper';
+import { Platform } from 'react-native';
 
 export const callBacks = {
   connectionListener: response => {
@@ -74,13 +75,15 @@ export const callBacks = {
         case 'carbonReceiveMessage':
           updateRecentChatMessage(res, store.getState());
           updateConversationMessage(res, store.getState());
-          pushNotify(
-            res.msgId,
-            getNotifyNickName(res),
-            getNotifyMessage(res),
-            res?.publisherJid,
-            true,
-          );
+          if (Platform.OS === 'android') {
+            pushNotify(
+              res.msgId,
+              getNotifyNickName(res),
+              getNotifyMessage(res),
+              res?.publisherJid,
+              true,
+            );
+          }
           break;
       }
     }

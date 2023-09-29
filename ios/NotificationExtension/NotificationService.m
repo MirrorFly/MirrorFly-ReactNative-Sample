@@ -47,11 +47,13 @@
         NSLog(@"Message Type: %@", messageType);
         NSLog(@"Mentioned User IDs: %@", mentionedUserIds);
         NSLog(@"Nick Name: %@", nickName);
+        NSLog(@"[NotificationService res]%@", res);
+        self.bestAttemptContent.title = nickName;
+        self.bestAttemptContent.body = message;
     } else {
         NSLog(@"Error parsing JSON: %@", error);
     }
-    NSLog(@"[NotificationService res]%@", res);
-    self.bestAttemptContent.title = res;
+ 
   }
     // Modify the notification content here...
 //    self.bestAttemptContent.title = [NSString stringWithFormat:@"%@ [modified]", self.bestAttemptContent.title];

@@ -75,15 +75,15 @@ export const callBacks = {
         case 'carbonReceiveMessage':
           updateRecentChatMessage(res, store.getState());
           updateConversationMessage(res, store.getState());
-          if (Platform.OS === 'android') {
-            pushNotify(
-              res.msgId,
-              getNotifyNickName(res),
-              getNotifyMessage(res),
-              res?.publisherJid,
-              true,
-            );
-          }
+          // if (Platform.OS === 'android') {
+          pushNotify(
+            res.msgId,
+            getNotifyNickName(res),
+            getNotifyMessage(res),
+            res?.publisherJid,
+            true,
+          );
+          // }
           break;
       }
     }

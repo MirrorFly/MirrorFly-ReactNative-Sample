@@ -77,6 +77,7 @@
 		CE56DABB2AC447C100A2BB3A /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
 		CE56DABD2AC447C100A2BB3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CE57D1A62ABD800F0086E3A9 /* mirrorfly_rn.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = mirrorfly_rn.entitlements; path = mirrorfly_rn/mirrorfly_rn.entitlements; sourceTree = "<group>"; };
+		CE7BED412AC6A37D001F131C /* NotificationExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotificationExtension.entitlements; sourceTree = "<group>"; };
 		CEE75E9A2AAAED6700107397 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -197,6 +198,7 @@
 		CE56DAB92AC447C100A2BB3A /* NotificationExtension */ = {
 			isa = PBXGroup;
 			children = (
+				CE7BED412AC6A37D001F131C /* NotificationExtension.entitlements */,
 				CE56DABA2AC447C100A2BB3A /* NotificationService.h */,
 				CE56DABB2AC447C100A2BB3A /* NotificationService.m */,
 				CE56DABD2AC447C100A2BB3A /* Info.plist */,
@@ -793,6 +795,7 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = NotificationExtension/NotificationExtension.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
@@ -836,6 +839,7 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = NotificationExtension/NotificationExtension.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;

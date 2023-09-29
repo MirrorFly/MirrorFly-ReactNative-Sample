@@ -39,14 +39,16 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   if (@available(iOS 10.0, *)) {
     [UNUserNotificationCenter currentNotificationCenter].delegate = (id<UNUserNotificationCenterDelegate>) self;
   }
- [RNCPushNotificationIOS didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+  [[UIApplication sharedApplication] registerForRemoteNotifications];
+  [RNCPushNotificationIOS didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
 // Required for the notification event. You must call the completion handler after handling the remote notification.
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
+  NSLog(@"[RNCPushNotificationIOS didReceiveRemoteNotification userInfo]%@", userInfo);
   // Commented because of automatically opens chat-screen when more that 2 notification received
-  // [RNCPushNotificationIOS didReceiveRemoteNo tification:userInfo fetchCompletionHandler:completionHandler];
+   [RNCPushNotificationIOS didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
 // Required for the registrationError event.
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
@@ -59,6 +61,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
   NSMutableDictionary *userData = [NSMutableDictionary dictionaryWithDictionary:response.notification.request.content.userInfo];
   [userData setObject:@YES forKey:@"userInteraction"];
   [RNCPushNotificationIOS didReceiveRemoteNotification:userData];
+  NSLog(@"[RNCPushNotificationIOS didReceiveRemoteNotification userData]%@", userData);
 }
 //===========================================================================================================
 - (BOOL)application:(UIApplication *)application

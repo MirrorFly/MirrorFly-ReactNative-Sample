@@ -1,5 +1,19 @@
-import React, { createRef } from 'react';
-import { TextInput, Keyboard, StyleSheet, View, Text } from 'react-native';
+import React, {
+  createRef,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from 'react';
+import {
+  TextInput,
+  Keyboard,
+  StyleSheet,
+  View,
+  Text,
+  PermissionsAndroid,
+  TouchableOpacity,
+} from 'react-native';
 import { SendBtn } from '../common/Button';
 import {
   AttachmentIcon,
@@ -15,6 +29,17 @@ import ApplicationColors from '../config/appColors';
 import Modal, { ModalBottomContent } from '../common/Modal';
 import IconButton from '../common/IconButton';
 import commonStyles from '../common/commonStyles';
+import RNFS from 'react-native-fs';
+import AudioRecorderPlayer, {
+  AudioEncoderAndroidType,
+  OutputFormatAndroidType,
+  AVModeIOSType,
+} from 'react-native-audio-recorder-player';
+import { requestMicroPhonePermission } from '../common/utils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { openSettings } from 'react-native-permissions';
+import { enableFreeze } from 'react-native-screens';
+import { duration } from 'moment';
 
 export const chatInputMessageRef = createRef();
 chatInputMessageRef.current = '';
@@ -23,12 +48,88 @@ const ChatInput = props => {
   const { onSendMessage, attachmentMenuIcons, chatInputRef, fromUserJId } =
     props;
 
-  const [message, setMessage] = React.useState('');
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
-  const { data = {} } = useSelector(state => state.recoverMessage);
+  // console.log('onSendMessage', onSendMessage);
 
-  React.useEffect(() => {
+  const [message, setMessage] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const [isEmojiPickerShowing, setIsEmojiPickerShowing] = useState(false);
+  const { data = {} } = useSelector(state => state.recoverMessage);
+  const [showRecoderUi, setShowRecorderUi] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingDuration, setRecordingDuration] = useState(0);
+  const [audioPath, setAudioPath] = useState('');
+  const [totalDuration, setTotalDuration] = useState(0);
+
+  // const audioRecorderPlayer = React.useRef(new AudioRecorderPlayer()).current;
+  const audioRecorderPlayer = React.useRef(new AudioRecorderPlayer()).current;
+
+  useEffect(() => {
+    audioRecorderPlayer.addRecordBackListener(e => {
+      if (e.currentPosition !== undefined) {
+        setRecordingDuration(Math.floor(e.currentPosition));
+      }
+    });
+
+    return () => {
+      audioRecorderPlayer.removeRecordBackListener();
+    };
+  }, [audioRecorderPlayer]);
+
+  useEffect(() => {
+    if (!isRecording && recordingDuration > 0) {
+      setTotalDuration(recordingDuration);
+    }
+  }, [isRecording, recordingDuration]);
+
+  const startRecording = async () => {
+    if (!isRecording) {
+      try {
+        const isNotFirstTimeLocationPermissionCheck =
+          await AsyncStorage.getItem('MicroPhone_permission');
+        AsyncStorage.setItem('location_permission', 'true');
+        const result = await requestMicroPhonePermission();
+        if (result === 'granted' || result === 'limited') {
+          console.log('Micro phone granded');
+        } else if (isNotFirstTimeLocationPermissionCheck) {
+          openSettings();
+        } else {
+          console.log('Micro phone Not granded');
+        }
+
+        const path = await audioRecorderPlayer.startRecorder(
+          RNFS.DownloadDirectoryPath + '/sound_' + Date.now() + '.aac',
+          {
+            OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
+            AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
+          },
+        );
+        setIsRecording(true);
+        setShowRecorderUi(true);
+        setAudioPath(path);
+        setTotalDuration(0);
+        setRecordingDuration(0);
+        audioRecorderPlayer.setVolume(0.8);
+      } catch (error) {
+        console.error('Failed to start recording', error);
+      }
+    }
+  };
+
+  const stopRecording = async () => {
+    if (isRecording) {
+      try {
+        const path = await audioRecorderPlayer.stopRecorder();
+        setIsRecording(false);
+        setShowRecorderUi(true);
+        setAudioPath(path);
+        setTotalDuration(recordingDuration);
+      } catch (error) {
+        console.error('Failed to stop recording', error);
+      }
+    }
+  };
+
+  useEffect(() => {
     chatInputMessageRef.current = message;
   }, [message]);
 
@@ -46,7 +147,7 @@ const ChatInput = props => {
   };
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       setMessage(data[fromUserJId]?.textMessage || '');
     }, [fromUserJId]),
   );
@@ -80,48 +181,106 @@ const ChatInput = props => {
     item.formatter?.();
   };
 
+  const handleCancel = () => {
+    setShowRecorderUi(!showRecoderUi);
+  };
+
   return (
     <>
-      <View
-        style={[
-          styles.container,
-          Boolean(message) && commonStyles.paddingRight_0,
-        ]}>
-        <View style={styles.textInputContainer}>
-          <IconButton
-            containerStyle={styles.emojiPickerIconWrapper}
-            style={styles.emojiPickerIcon}
-            onPress={toggleEmojiPicker}>
-            {isEmojiPickerShowing ? <KeyboardIcon /> : <EmojiIcon />}
-          </IconButton>
+      {!showRecoderUi ? (
+        <View
+          style={[
+            styles.container,
+            Boolean(message) && commonStyles.paddingRight_0,
+          ]}>
+          <View style={styles.textInputContainer}>
+            <>
+              <IconButton
+                containerStyle={styles.emojiPickerIconWrapper}
+                style={styles.emojiPickerIcon}
+                onPress={toggleEmojiPicker}>
+                {isEmojiPickerShowing ? <KeyboardIcon /> : <EmojiIcon />}
+              </IconButton>
 
-          <TextInput
-            ref={chatInputRef}
-            value={message}
-            style={styles.inputTextbox}
-            onChangeText={onChangeMessage}
-            placeholder="Start Typing..."
-            placeholderTextColor="#767676"
-            numberOfLines={1}
-            multiline={true}
-          />
+              <TextInput
+                ref={chatInputRef}
+                value={message}
+                style={styles.inputTextbox}
+                onChangeText={onChangeMessage}
+                placeholder="Start Typing..."
+                placeholderTextColor="#767676"
+                numberOfLines={1}
+                multiline={true}
+              />
 
-          <IconButton
-            onPress={handleAttachmentconPressed}
-            style={styles.attachmentIcon}>
-            <AttachmentIcon />
-          </IconButton>
-          <IconButton
-            containerStyle={styles.audioRecordIconWrapper}
-            style={styles.audioRecordIcon}>
-            <MicIcon />
-          </IconButton>
+              <IconButton
+                onPress={handleAttachmentconPressed}
+                style={styles.attachmentIcon}>
+                <AttachmentIcon />
+              </IconButton>
+
+              <IconButton
+                containerStyle={styles.audioRecordIconWrapper}
+                onPress={startRecording}
+                style={styles.audioRecordIcon}>
+                <MicIcon />
+              </IconButton>
+            </>
+          </View>
+          {Boolean(message) && (
+            <SendBtn style={styles.sendButton} onPress={sendMessage} />
+          )}
         </View>
+      ) : null}
+      {showRecoderUi ? (
+        <View
+          style={[
+            styles.container,
+            Boolean(message) && commonStyles.paddingRight_0,
+          ]}>
+          <View style={styles.textInputContainer}>
+            {recordingDuration > 0 && !totalDuration && (
+              <View>
+                <Text style={styles.durationText}>
+                  {recordingDuration?.toFixed(2)}
+                </Text>
+              </View>
+            )}
+            <View style={styles.totalTimeMaincontainer}>
+              <View style={styles.totalTimeContainer}>
+                {totalDuration > 0 && (
+                  <View>
+                    <MicIcon height={'17'} width={'17'} color={'#3276E2'} />
+                  </View>
+                )}
+                {totalDuration > 0 && (
+                  <Text style={styles.totalDurationText}>
+                    {totalDuration?.toFixed(2)}
+                  </Text>
+                )}
+              </View>
+              <View>
+                {totalDuration > 0 && (
+                  <TouchableOpacity onPress={handleCancel}>
+                    <Text style={styles.cancelText}>Cancel</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+          </View>
 
-        {Boolean(message) && (
-          <SendBtn style={styles.sendButton} onPress={sendMessage} />
-        )}
-      </View>
+          <View>
+            {showRecoderUi && !totalDuration ? (
+              <TouchableOpacity style={styles.micIcon} onPress={stopRecording}>
+                <MicIcon color={'#fff'} />
+              </TouchableOpacity>
+            ) : (
+              <SendBtn style={styles.sendButton} onPress={sendMessage} />
+            )}
+          </View>
+        </View>
+      ) : null}
+
       <EmojiOverlay
         state={message}
         setState={setMessage}
@@ -230,5 +389,34 @@ const styles = StyleSheet.create({
     width: '32%',
     paddingVertical: 12,
     alignItems: 'center',
+  },
+  micIcon: {
+    backgroundColor: '#3276E2',
+    padding: 8,
+    borderRadius: 15,
+  },
+  durationText: {
+    fontSize: 12,
+    color: '#3276E2',
+    marginLeft: 20,
+  },
+  totalTimeContainer: {
+    flexDirection: 'row',
+    paddingVertical: 12,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  totalTimeMaincontainer: {
+    flex: 1,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 15,
+  },
+  totalDurationText: { fontSize: 12, color: '#3276E2', marginLeft: 6 },
+  cancelText: {
+    fontSize: 12,
+    color: 'rgb(255, 0, 0)',
+    fontWeight: '300',
   },
 });

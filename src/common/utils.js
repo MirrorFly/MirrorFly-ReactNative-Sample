@@ -158,6 +158,14 @@ export const requestLocationPermission = async () => {
   );
 };
 
+export const requestMicroPhonePermission = async () => {
+  return request(
+    Platform.OS === 'android'
+      ? PERMISSIONS.ANDROID.RECORD_AUDIO
+      : PERMISSIONS.IOS.MICROPHONE,
+  );
+};
+
 export const requestNotificationPermission = async () => {
   return request(
     Platform.OS === 'android' && PERMISSIONS.ANDROID.POST_NOTIFICATIONS,

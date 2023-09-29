@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import RCTAsyncLocalStorage
 
 @objc
 class AsyncStorage: NSObject {

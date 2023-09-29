@@ -5,6 +5,7 @@
 #import <React/RCTRootView.h>
 // Push notification set-up.
 #import <UserNotifications/UserNotifications.h>
+#import <React/RCTAsyncLocalStorage.h>
 #import <RNCPushNotificationIOS.h>
 #import "mirrorfly_rn-Swift.h"
 //==========================
@@ -80,7 +81,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
       NSLog(@"Something went wrong");
     }
   }];
-
+  
   [application registerForRemoteNotifications];
   //===========================================================================================================
   [FIRApp configure];

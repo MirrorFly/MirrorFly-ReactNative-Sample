@@ -59,7 +59,7 @@ export const callBacks = {
     } else if (response.status === 'LOGOUT') {
       console.log('LOGOUT');
       store.dispatch(navigate({ screen: REGISTERSCREEN }));
-      RootNav.navigate(REGISTERSCREEN);
+      RootNav.reset(REGISTERSCREEN);
     }
   },
   dbListener: res => {

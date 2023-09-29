@@ -102,9 +102,16 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
                 (c.givenName ? c.givenName + ' ' : c.givenName) + c.familyName,
             }));
           }
-          const sortedContacts = validContactsList.sort((a, b) =>
-            a.displayName.localeCompare(b.displayName),
-          );
+          const sortedContacts = validContactsList.sort((a, b) => {
+            const nameA = a.displayName.toLowerCase();
+            const nameB = b.displayName.toLowerCase();
+            if (nameA < nameB) {
+              return -1;
+            } else if (nameA > nameB) {
+              return 1;
+            }
+            return 0;
+          });
           setContacts(sortedContacts);
         });
       } else if (isNotFirstTimeContactPermissionCheck) {
@@ -153,7 +160,7 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
       selectedContactsRef.current[item.recordID] = true;
       setSelectedContacts([...selectedContacts, item]);
     } else {
-      showToast("can't share more than 5 contacts", {
+      showToast("Can't share more than 5 contacts", {
         id: 'contacts-max-user-toast',
       });
     }

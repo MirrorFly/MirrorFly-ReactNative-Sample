@@ -18,6 +18,7 @@
 		CE2DD47F2AC58EC9009815BD /* FlyEncryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2DD47E2AC58EC9009815BD /* FlyEncryption.swift */; };
 		CE56DABC2AC447C100A2BB3A /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE56DABB2AC447C100A2BB3A /* NotificationService.m */; };
 		CE56DAC02AC447C100A2BB3A /* NotificationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CE56DAB82AC447C100A2BB3A /* NotificationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		CE7BED472AC6E6F6001F131C /* sendDeliveredApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7BED462AC6E6F6001F131C /* sendDeliveredApiCall.swift */; };
 		CEE75E9B2AAAED6800107397 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CEE75E9A2AAAED6700107397 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -78,6 +79,7 @@
 		CE56DABD2AC447C100A2BB3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CE57D1A62ABD800F0086E3A9 /* mirrorfly_rn.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = mirrorfly_rn.entitlements; path = mirrorfly_rn/mirrorfly_rn.entitlements; sourceTree = "<group>"; };
 		CE7BED412AC6A37D001F131C /* NotificationExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotificationExtension.entitlements; sourceTree = "<group>"; };
+		CE7BED462AC6E6F6001F131C /* sendDeliveredApiCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sendDeliveredApiCall.swift; sourceTree = "<group>"; };
 		CEE75E9A2AAAED6700107397 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -203,6 +205,7 @@
 				CE56DABB2AC447C100A2BB3A /* NotificationService.m */,
 				CE56DABD2AC447C100A2BB3A /* Info.plist */,
 				CE2DD47C2AC589FD009815BD /* MyClass.swift */,
+				CE7BED462AC6E6F6001F131C /* sendDeliveredApiCall.swift */,
 				CE2DD47E2AC58EC9009815BD /* FlyEncryption.swift */,
 				CE2DD47B2AC589FC009815BD /* NotificationExtension-Bridging-Header.h */,
 			);
@@ -494,6 +497,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE2DD47F2AC58EC9009815BD /* FlyEncryption.swift in Sources */,
+				CE7BED472AC6E6F6001F131C /* sendDeliveredApiCall.swift in Sources */,
 				CE2DD47D2AC589FD009815BD /* MyClass.swift in Sources */,
 				CE56DABC2AC447C100A2BB3A /* NotificationService.m in Sources */,
 			);
@@ -593,6 +597,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = G44VFA67ZG;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = mirrorfly_rn/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -628,6 +633,7 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = G44VFA67ZG;
 				INFOPLIST_FILE = mirrorfly_rn/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -807,7 +813,7 @@
 				INFOPLIST_FILE = NotificationExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NotificationExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -852,7 +858,7 @@
 				INFOPLIST_FILE = NotificationExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NotificationExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

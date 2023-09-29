@@ -75,7 +75,6 @@ export const callBacks = {
         case 'carbonReceiveMessage':
           updateRecentChatMessage(res, store.getState());
           updateConversationMessage(res, store.getState());
-          // if (Platform.OS === 'android') {
           pushNotify(
             res.msgId,
             getNotifyNickName(res),
@@ -83,7 +82,6 @@ export const callBacks = {
             res?.publisherJid,
             true,
           );
-          // }
           break;
       }
     }

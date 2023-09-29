@@ -62,6 +62,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
   [userData setObject:@YES forKey:@"userInteraction"];
   [RNCPushNotificationIOS didReceiveRemoteNotification:userData];
   NSLog(@"[RNCPushNotificationIOS didReceiveRemoteNotification userData]%@", userData);
+  completionHandler();
 }
 //===========================================================================================================
 - (BOOL)application:(UIApplication *)application

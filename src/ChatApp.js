@@ -110,8 +110,6 @@ const RootNavigation = () => {
           dispatch(profileDetail(JSON.parse(vCardProfileLocal)));
         }
       }
-      const keys = await AsyncStorage.getAllKeys();
-      console.log(keys, 'AsyncStorage.getAllKeys');
       const currentUserJID = await AsyncStorage.getItem('currentUserJID');
       const screenObj = await AsyncStorage.getItem('screenObj');
       const parsedScreenOj = JSON.parse(screenObj);

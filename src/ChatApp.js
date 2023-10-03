@@ -130,7 +130,7 @@ const RootNavigation = () => {
       setIsLoading(false);
     }, 1000);
     setTimeout(async () => {
-      await handleOpenUrl();
+      await handleOpenUrl(setIsLoading);
     }, 1100);
   }, []);
 

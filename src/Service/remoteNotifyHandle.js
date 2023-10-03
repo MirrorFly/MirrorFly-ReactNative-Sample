@@ -1,7 +1,7 @@
 import PushNotifiLocal from './PushNotifiLocal';
 import PushNotification from 'react-native-push-notification';
 import { THIS_MESSAGE_WAS_DELETED } from '../Helper/Chat/Constant';
-import { AppState } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import { isActiveConversationUserOrGroup } from '../Helper/Chat/ChatHelper';
 
 let notifyObj = {};
@@ -25,7 +25,12 @@ export const pushNotify = async (
       ...notifyObj,
       [msgId]: { id, date, title, sent_from, onForGround },
     };
-    pushNotifiLocal.scheduleNotify(id, date, title, body, true);
+    if (
+      Platform.OS === 'android' ||
+      (Platform.OS === 'ios' && AppState.currentState === 'active')
+    ) {
+      pushNotifiLocal.scheduleNotify(id, date, title, body, true);
+    }
     ids.push(notifyObj[msgId].id);
     if (AppState.currentState === 'active') {
       setTimeout(() => {

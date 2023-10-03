@@ -4,7 +4,6 @@ import {
   Divider,
   HStack,
   Icon,
-  Pressable,
   ScrollView,
   Slide,
   Spacer,
@@ -38,6 +37,8 @@ import {
 } from '../Helper/Chat/Constant';
 import no_messages from '../assets/no_messages.png';
 import { getImageSource } from '../common/utils';
+import Pressable from '../common/Pressable';
+import commonStyles from '../common/commonStyles';
 
 const AudioIconFunc = () => (
   <AudioMusicIcon width="14" height="14" color={'#767676'} />
@@ -174,14 +175,11 @@ const RecentChatItem = ({
   return (
     <Box key={index}>
       <Pressable
-        py="2"
-        android_ripple={{ color: 'rgba(0, 0, 0, 0.1)' }}
+        contentContainerStyle={commonStyles.paddingVertical_8}
         onPress={_handlePress}
         onLongPress={() => {
           handleOnSelect(item);
-        }}
-        _dark={{ bg: 'coolGray.800' }}
-        _light={{ bg: isSelected ? '#E2E2E2' : 'white' }}>
+        }}>
         <Box pl="4" pr="5" py="2">
           <HStack
             space={3}

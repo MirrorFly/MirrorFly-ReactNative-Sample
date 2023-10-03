@@ -36,7 +36,7 @@ import messaging from '@react-native-firebase/messaging';
 import { requestNotificationPermission } from './common/utils';
 import { removeAllDeliveredNotificatoin } from './Service/remoteNotifyHandle';
 import { handleOpenUrl } from './Helper';
-// LogBox.ignoreAllLogs();
+LogBox.ignoreAllLogs();
 
 export const isKeyboardVisibleRef = createRef();
 isKeyboardVisibleRef.current = false;

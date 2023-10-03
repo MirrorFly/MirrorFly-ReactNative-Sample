@@ -4,13 +4,11 @@ import {
   THIS_MESSAGE_WAS_DELETED,
   YOU_DELETED_THIS_MESSAGE,
 } from '../Helper/Chat/Constant';
-// import { Box, HStack, Pressable, Text, View } from 'native-base';
-import { Keyboard, Pressable, StyleSheet, Text } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
 import { getSenderIdFromMsgObj } from '../Helper/Chat/Utility';
 import { getConversationHistoryTime } from '../common/TimeStamp';
 import commonStyles from '../common/commonStyles';
 import MessagePressable from '../common/MessagePressable';
-import { View } from 'react-native';
 import ApplicationColors from '../config/appColors';
 
 const DeletedMessage = (props = {}) => {

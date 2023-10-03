@@ -130,25 +130,25 @@ const recentChatReducer = (state = initialState, action) => {
       return {
         ...state,
         id: Date.now(),
-        data: deletedChatList(action.payload, StateToObj(state).data),
+        data: deletedChatList(action.payload, StateToObj(state.data)),
       };
     case RECENT_REMOVE_MESSAGE_UPDATE:
       return {
         ...state,
         id: Date.now(),
-        data: emptyMessage(action.payload, StateToObj(state).data),
+        data: emptyMessage(action.payload, StateToObj(state.data)),
       };
     case UPDATE_MSG_BY_LAST_MSGID:
       return {
         ...state,
         id: Date.now(),
-        data: updateMsgByLastMsgId(action.payload, StateToObj(state).data),
+        data: updateMsgByLastMsgId(action.payload, StateToObj(state.data)),
       };
     case RECENT_RECALL_UPDATE:
       return {
         ...state,
         id: Date.now(),
-        data: updateRecall(action.payload, StateToObj(state).data),
+        data: updateRecall(action.payload, StateToObj(state.data)),
       };
     case RESET_STORE:
       return initialState;

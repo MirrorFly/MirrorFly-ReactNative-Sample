@@ -55,7 +55,7 @@ export const ChatConversationHighlightedText = ({
     <Text>
       {parts.map((part, i) => {
         const isSearchMatch =
-          part.toLowerCase() === searchValue.toLowerCase()
+          part?.toLowerCase() === searchValue.toLowerCase()
             ? styles.highlight
             : {};
         return (

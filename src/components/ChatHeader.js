@@ -166,32 +166,29 @@ function ChatHeader({
   };
 
   const renderForwardIcon = () => {
-    if (selectedMsgs?.length === 1) {
-      const currentUserId = vCardProfile?.userId;
-      const _message = selectedMsgs[0];
-      const localPath = _message?.msgBody?.media?.local_path;
-      // checking for the message is not text and is_downloaded === 2
-      const isDownloadedOrUploaded =
-        _message?.publisherId === currentUserId
+    const currentUserId = vCardProfile?.userId;
+    const isMediaDownloadedOrUploaded = selectedMsgs.every(_message => {
+      if (_message.msgBody?.media) {
+        const isSender = _message?.publisherId === currentUserId;
+        const localPath = _message?.msgBody?.media?.local_path;
+        return isSender
           ? _message?.msgBody?.media?.is_uploading === 2
           : Boolean(localPath) || _message?.msgBody?.media?.is_downloaded === 2;
-      const isAllowForward = forwardMediaMessageTypes[
-        _message?.msgBody?.message_type
-      ]
-        ? isDownloadedOrUploaded
-        : true;
-      return _message?.msgStatus !== 3 &&
-        !selectedMsgs[0]?.recall &&
-        isAllowForward ? (
-        <IconButton
-          style={[commonStyles.padding_10_15]}
-          onPress={handleForwardMessage}>
-          <ForwardIcon />
-        </IconButton>
-      ) : null;
-    } else {
-      return null;
-    }
+      }
+      return true;
+    });
+
+    const isAllowForward = selectedMsgs.every(
+      _message => _message?.msgStatus !== 3 && _message?.deleteStatus === 0,
+    );
+
+    return isMediaDownloadedOrUploaded && isAllowForward ? (
+      <IconButton
+        style={[commonStyles.padding_10_15]}
+        onPress={handleForwardMessage}>
+        <ForwardIcon />
+      </IconButton>
+    ) : null;
   };
 
   const renderDeleteIcon = () => {

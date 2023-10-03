@@ -480,9 +480,13 @@ const ForwardMessage = () => {
       forwardMessages.length * Object.keys(selectedUsers).length;
 
     const _forwardMessages = forwardMessages.sort((a, b) => {
-      if (a.timestamp > b.timestamp) return 1;
-      else if (a.timestamp < b.timestamp) return -1;
-      else return 0;
+      if (a.timestamp > b.timestamp) {
+        return 1;
+      } else if (a.timestamp < b.timestamp) {
+        return -1;
+      } else {
+        return 0;
+      }
     });
     for (let i = 0; i < totalLength; i++) {
       newMsgIds.push(uuidv4());
@@ -515,7 +519,6 @@ const ForwardMessage = () => {
                 ? { userJid: toUserJid }
                 : { groupJid: toUserJid }), // check this when working for group chat
             };
-            console.log('dispatchData', JSON.stringify(dispatchData, null, 2));
             // adding conversation history
             dispatch(addChatConversationHistory(dispatchData));
           } else {

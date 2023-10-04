@@ -71,7 +71,7 @@ const DeletedMessage = (props = {}) => {
             <View style={styles.messageWrapper}>
               <BlockedIcon />
               <Text style={styles.message(isSender)}>
-                {isSender ? THIS_MESSAGE_WAS_DELETED : YOU_DELETED_THIS_MESSAGE}
+                {isSender ? YOU_DELETED_THIS_MESSAGE : THIS_MESSAGE_WAS_DELETED}
               </Text>
             </View>
             <View style={styles.timeStamp}>

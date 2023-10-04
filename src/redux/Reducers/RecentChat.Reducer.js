@@ -117,7 +117,7 @@ const recentChatReducer = (state = initialState, action) => {
         id: Date.now(),
         data: updateRecentChatMessageStatusFunc(
           action.payload,
-          StateToObj(state).data,
+          StateToObj(state.data),
         ),
       };
     case UPDATE_ROSTER_LAST_MESSAGE:

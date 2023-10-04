@@ -287,3 +287,7 @@ export const updateRecentAndConversationStore = obj => {
   updateRecentChatMessage(obj, Store.getState());
   updateConversationMessage(obj, Store.getState());
 };
+
+export const escapeRegExpReservedChars = str => {
+  return String(str).replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
+};

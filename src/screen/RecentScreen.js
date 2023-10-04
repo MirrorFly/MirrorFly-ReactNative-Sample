@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Animated,
-  BackHandler,
-  Dimensions,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
+import { BackHandler, Dimensions, StyleSheet, Text, View } from 'react-native';
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { FloatingBtn } from '../common/Button';
@@ -33,37 +27,15 @@ import {
 } from '../redux/Actions/RecentChatAction';
 import RecentHeader from '../components/RecentHeader';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
-import { HStack, Modal, Text } from 'native-base';
-import { DeleteChatHIstoryAction } from '../redux/Actions/ConversationAction';
+import { DeleteChatHistoryAction } from '../redux/Actions/ConversationAction';
 import { updateRosterData } from '../redux/Actions/rosterAction';
-
 import logo from '../assets/mirrorfly-logo.png';
-
-const FirstComponent = (
-  isSearching,
-  filteredData,
-  searchValue,
-  handleSelect,
-  handleOnSelect,
-  recentItem,
-  filteredMessages,
-) => (
-  <RecentChat
-    isSearching={isSearching}
-    data={filteredData}
-    searchValue={searchValue}
-    handleSelect={handleSelect}
-    handleOnSelect={handleOnSelect}
-    recentItem={recentItem}
-    filteredMessages={filteredMessages}
-  />
-);
+import Modal, { ModalCenteredContent } from '../common/Modal';
+import ApplicationColors from '../config/appColors';
+import commonStyles from '../common/commonStyles';
+import Pressable from '../common/Pressable';
 
 function RecentScreen() {
-  const av = new Animated.Value(0);
-  av.addListener(() => {
-    return;
-  }); /** resolving WARN Sending `onAnimatedValueUpdate` with no listeners registered */
   const dispatch = useDispatch();
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
@@ -77,7 +49,7 @@ function RecentScreen() {
   const [searchValue, setSearchValue] = React.useState('');
   const recentChatList = useSelector(state => state.recentChatData.data);
   const [recentItem, setRecentItem] = React.useState([]);
-  const [isOpenAlert, setIsOpenAlert] = React.useState(false);
+  const [showDeleteChatModal, setShowDeleteChatModal] = React.useState(false);
 
   const handleSearch = text => {
     setIsSearching(true);
@@ -90,7 +62,7 @@ function RecentScreen() {
       item =>
         item.fromUserId.toLowerCase().includes(text.toLowerCase()) ||
         item?.profileDetails?.nickName
-          .toLowerCase()
+          ?.toLowerCase()
           .includes(text.toLowerCase()),
     );
     SDK.messageSearch(text).then(res => {
@@ -101,22 +73,26 @@ function RecentScreen() {
     setFilteredData(filtered);
   };
 
+  const handleRecentItemSelect = item => {
+    let recentSelected = recentItem.some(selectedItem =>
+      selectedItem?.userJid
+        ? selectedItem?.userJid === item?.userJid
+        : selectedItem?.toUserId === item?.toUserId,
+    );
+    if (recentSelected) {
+      setRecentItem(prevArray =>
+        prevArray.filter(
+          selectedItem => selectedItem.userJid !== item?.userJid,
+        ),
+      );
+    } else {
+      setRecentItem(prevState => [...prevState, item]);
+    }
+  };
+
   const handleSelect = item => {
     if (recentItem.length) {
-      let recentSelected = recentItem.some(selectedItem =>
-        selectedItem?.userJid
-          ? selectedItem?.userJid === item?.userJid
-          : selectedItem?.toUserId === item?.toUserId,
-      );
-      if (recentSelected) {
-        setRecentItem(prevArray =>
-          prevArray.filter(
-            selectedItem => selectedItem.userJid !== item?.userJid,
-          ),
-        );
-      } else {
-        setRecentItem([item]);
-      }
+      handleRecentItemSelect(item);
     } else {
       let jid = formatUserIdToJid(
         item?.fromUserId,
@@ -194,13 +170,9 @@ function RecentScreen() {
           {!isSearching && (
             <TabBar
               {...props}
-              style={{ backgroundColor: '#F2F2F2', color: 'black' }}
-              indicatorStyle={{
-                backgroundColor: '#3276E2',
-                borderColor: '#3276E2',
-                borderWidth: 1.3,
-              }}
-              labelStyle={{ color: 'black', fontWeight: 'bold' }}
+              style={styles.tabbar}
+              indicatorStyle={styles.tabbarIndicator}
+              labelStyle={styles.tabarLabel}
               activeColor={'#3276E2'}
             />
           )}
@@ -223,16 +195,8 @@ function RecentScreen() {
     }
   };
 
-  const handleOnSelect = item => {
-    recentItem.length === 0 && setRecentItem([item]);
-  };
-
   const handleRemove = () => {
     setRecentItem([]);
-  };
-
-  const handleDeleteChat = () => {
-    setIsOpenAlert(true);
   };
 
   const deleteChat = () => {
@@ -248,11 +212,13 @@ function RecentScreen() {
         )
         */
       SDK.deleteChat(userJid);
-      dispatch(deleteActiveChatAction({ fromUserId: item?.fromUserId }));
-      dispatch(DeleteChatHIstoryAction({ fromUserId: item?.fromUserId }));
+      batch(() => {
+        dispatch(deleteActiveChatAction({ fromUserId: item?.fromUserId }));
+        dispatch(DeleteChatHistoryAction({ fromUserId: item?.fromUserId }));
+      });
     });
     setRecentItem([]);
-    setIsOpenAlert(false);
+    toggleDeleteModal();
   };
 
   useFocusEffect(() => {
@@ -281,6 +247,10 @@ function RecentScreen() {
     RootNav.reset(REGISTERSCREEN);
   };
 
+  const toggleDeleteModal = () => {
+    setShowDeleteChatModal(val => !val);
+  };
+
   const menuItems = React.useMemo(
     () => [
       {
@@ -299,32 +269,22 @@ function RecentScreen() {
     [],
   );
 
-  const filteredDataList = isSearching ? filteredData : recentData;
-
-  const renderScene = React.useMemo(
-    () =>
-      SceneMap({
-        first: () =>
-          FirstComponent(
-            isSearching,
-            filteredDataList,
-            searchValue,
-            handleSelect,
-            handleOnSelect,
-            recentItem,
-            filteredMessages,
-          ),
-        second: RecentCalls,
-      }),
-    [
-      isSearching,
-      filteredDataList,
-      searchValue,
-      recentItem,
-      recentData,
-      filteredMessages,
-    ],
-  );
+  const renderScene = React.useMemo(() => {
+    return SceneMap({
+      first: () => (
+        <RecentChat
+          isSearching={isSearching}
+          data={filteredData}
+          searchValue={searchValue}
+          handleSelect={handleSelect}
+          handleOnSelect={handleRecentItemSelect}
+          recentItem={recentItem}
+          filteredMessages={filteredMessages}
+        />
+      ),
+      second: RecentCalls,
+    });
+  }, [isSearching, filteredData, searchValue, recentItem, filteredMessages]);
 
   return (
     <>
@@ -343,7 +303,7 @@ function RecentScreen() {
         <RecentHeader
           handleRemove={handleRemove}
           recentItem={recentItem}
-          handleDeleteChat={handleDeleteChat}
+          handleDeleteChat={toggleDeleteModal}
         />
       )}
       <TabView
@@ -362,42 +322,33 @@ function RecentScreen() {
           dispatch(navigate({ screen: CONTACTLIST }));
         }}
       />
-      <Modal
-        isOpen={isOpenAlert}
-        safeAreaTop={true}
-        onClose={() => setIsOpenAlert(false)}>
-        <Modal.Content
-          w="88%"
-          borderRadius={0}
-          px="6"
-          py="4"
-          fontWeight={'300'}>
-          <Text fontSize={16} color={'#000'}>
-            {`${
-              'Delete chat with "' +
-              `${
-                recentItem[0]?.profileDetails?.nickName ||
-                recentItem[0]?.fromUserId
-              }"` +
-              '?'
-            }`}
-          </Text>
-          <HStack justifyContent={'flex-end'} pb={'1'} pt={'7'}>
-            <Pressable
-              onPress={() => {
-                setIsOpenAlert(false);
-              }}>
-              <Text pr={'6'} fontWeight={'500'} color={'#3276E2'}>
-                NO
-              </Text>
-            </Pressable>
-            <Pressable onPress={deleteChat}>
-              <Text fontWeight={'500'} color={'#3276E2'}>
-                YES
-              </Text>
-            </Pressable>
-          </HStack>
-        </Modal.Content>
+      <Modal visible={showDeleteChatModal} onRequestClose={toggleDeleteModal}>
+        <ModalCenteredContent onPressOutside={toggleDeleteModal}>
+          <View style={styles.deleteChatModalContentContainer}>
+            <Text style={styles.deleteChatModalTitle}>
+              {recentItem.length === 1
+                ? `${
+                    'Delete chat with "' +
+                    `${
+                      recentItem[0]?.profileDetails?.nickName ||
+                      recentItem[0]?.fromUserId
+                    }"` +
+                    '?'
+                  }`
+                : `Delete ${recentItem.length} selected chats?`}
+            </Text>
+            <View style={styles.modalActionButtonContainer}>
+              <Pressable
+                style={commonStyles.marginRight_8}
+                onPress={toggleDeleteModal}>
+                <Text style={styles.modalActionButtonText}>NO</Text>
+              </Pressable>
+              <Pressable onPress={deleteChat}>
+                <Text style={styles.modalActionButtonText}>YES</Text>
+              </Pressable>
+            </View>
+          </View>
+        </ModalCenteredContent>
       </Modal>
     </>
   );
@@ -408,4 +359,44 @@ export default RecentScreen;
 const styles = StyleSheet.create({
   tabView: { borderColor: 'black', borderWidth: 1 },
   activeTab: { backgroundColor: 'black' },
+  deleteChatModalContentContainer: {
+    backgroundColor: ApplicationColors.white,
+    width: '88%',
+    borderRadius: 0,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    fontWeight: '300',
+  },
+  deleteChatModalTitle: {
+    marginTop: 10,
+    marginLeft: 10,
+    fontSize: 16,
+    color: ApplicationColors.black,
+  },
+  modalActionButtonContainer: {
+    flexDirection: 'row',
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+    paddingBottom: 10,
+    marginTop: 20,
+  },
+  modalActionButtonText: {
+    fontWeight: '500',
+    color: ApplicationColors.mainColor,
+    paddingVertical: 2,
+    paddingHorizontal: 10,
+  },
+  tabbar: {
+    backgroundColor: '#F2F2F2',
+    color: 'black',
+  },
+  tabbarIndicator: {
+    backgroundColor: '#3276E2',
+    borderColor: '#3276E2',
+    borderWidth: 1.3,
+  },
+  tabarLabel: {
+    color: 'black',
+    fontWeight: 'bold',
+  },
 });

@@ -52,7 +52,7 @@ export const ClearChatHistoryAction = data => {
   };
 };
 
-export const DeleteChatHIstoryAction = data => {
+export const DeleteChatHistoryAction = data => {
   return {
     type: DELETE_CHAT_HISTORY,
     payload: data,

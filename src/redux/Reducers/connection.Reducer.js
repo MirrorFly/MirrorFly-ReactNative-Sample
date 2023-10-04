@@ -12,8 +12,8 @@ const connectionReducer = (state = initialState, action) => {
         id: Date.now(),
         xmppStatus: action.payload,
       };
-      case RESET_STORE:
-        return initialState
+    case RESET_STORE:
+      return initialState;
     default:
       return state;
   }

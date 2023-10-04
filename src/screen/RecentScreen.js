@@ -94,7 +94,14 @@ function RecentScreen() {
     if (recentItem.length) {
       handleRecentItemSelect(item);
     } else {
-      let jid = formatUserIdToJid(item?.fromUserId, item?.chatType);
+      let jid = formatUserIdToJid(
+        item?.fromUserId,
+      ); /** Need to add chat type here while working in Group
+      formatUserIdToJid(
+       item?.fromUserId,
+       item?.chatType,
+     )
+     */
       SDK.activeChatUser(jid);
       let x = {
         screen: CHATSCREEN,
@@ -195,7 +202,15 @@ function RecentScreen() {
   const deleteChat = () => {
     recentItem.forEach(item => {
       let userJid =
-        item?.userJid || formatUserIdToJid(item?.fromUserId, item?.chatType);
+        item?.userJid ||
+        formatUserIdToJid(
+          item?.fromUserId,
+        ); /** Need to add chat type here while working in Group
+         formatUserIdToJid(
+          item?.fromUserId,
+          item?.chatType,
+        )
+        */
       SDK.deleteChat(userJid);
       batch(() => {
         dispatch(deleteActiveChatAction({ fromUserId: item?.fromUserId }));

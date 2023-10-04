@@ -40,7 +40,7 @@ export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {
       ? userId
       : `${userId}@${currentUserJid?.split('@')[1] || ''}`;
   }
-  const jidResponse = SDK.getGroupJid(userId);
+  const jidResponse = SDK.getJid(userId);
   if (jidResponse.statusCode === 200) {
     return jidResponse.groupJid;
   }

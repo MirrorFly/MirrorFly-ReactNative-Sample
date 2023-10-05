@@ -234,7 +234,7 @@ export const openLocationExternally = (latitude, longitude) => {
 };
 
 export const getLocationImageURL = ({ latitude, longitude }) => {
-  return `${MAP_THHUMBNAIL_URL}?center=${latitude},${longitude}&zoom=15&size=195x170&markers=color:red|${latitude},${longitude}&key=${config.GOOGLE_LOCATION_API_KEY}`;
+  return `${MAP_THHUMBNAIL_URL}?center=${latitude},${longitude}&zoom=13&size=300x200&markers=color:red|${latitude},${longitude}&key=${config.GOOGLE_LOCATION_API_KEY}`;
 };
 
 export const handleOpenUrl = async () => {

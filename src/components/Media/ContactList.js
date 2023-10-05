@@ -54,10 +54,15 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
   }, [showSelectedContactsPreview]);
 
   React.useEffect(() => {
-    const filtered = contacts.filter(item =>
-      item.displayName?.toLowerCase().includes(searchText.toLowerCase()),
-    );
-    setFliterArray(filtered);
+    if (searchText === '') {
+      setFliterArray(contacts);
+    } else {
+      const filtered = contacts.filter(item =>
+        item?.displayName?.toLowerCase().includes(searchText.toLowerCase()),
+      );
+      setFliterArray(filtered);
+    }
+    isLoading && setIsLoading(false);
   }, [searchText, contacts]);
 
   React.useEffect(() => {
@@ -72,19 +77,9 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
     return () => backHandler.remove();
   }, [showSelectedContactsPreview]);
 
-  React.useEffect(() => {
-    if (searchText === '') {
-      setFliterArray(contacts);
-    } else {
-      const filtered = contacts.filter(item =>
-        item?.displayName?.toLowerCase().includes(searchText.toLowerCase()),
-      );
-      setFliterArray(filtered);
-    }
-  }, [searchText]);
-
   const fetchContacts = async () => {
     try {
+      setIsLoading(true);
       const isNotFirstTimeContactPermissionCheck = await AsyncStorage.getItem(
         'contact_permission',
       );
@@ -122,8 +117,6 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
       }
     } catch (error) {
       console.error('Error requesting contacts permission:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -238,18 +231,8 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
     );
   }
 
-  if (isLoading) {
+  const renderHeader = () => {
     return (
-      <View style={commonStyles.flex1_centeredContent}>
-        <ActivityIndicator size={'large'} color={ApplicationColors.mainColor} />
-      </View>
-    );
-  }
-
-  return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : ''}
-      style={commonStyles.flex1}>
       <View style={styles.HeaderContainer}>
         {!isSearching ? (
           <View style={styles.HeadSubcontainer}>
@@ -293,6 +276,27 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
           </View>
         )}
       </View>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <>
+        {renderHeader()}
+        <View style={commonStyles.flex1_centeredContent}>
+          <ActivityIndicator
+            size={'large'}
+            color={ApplicationColors.mainColor}
+          />
+        </View>
+      </>
+    );
+  }
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : ''}
+      style={commonStyles.flex1}>
+      {renderHeader()}
       {/* Selected Contacts Section */}
       {selectedContacts.length > 0 && (
         <View>

@@ -199,11 +199,7 @@ const RecentChatItem = ({
                 ) : (
                   isSame &&
                   item?.msgStatus === 3 &&
-                  Object.keys(item.msgBody).length > 0 && (
-                    <View style={commonStyles.paddingHorizontal_12}>
-                      <SandTimer />
-                    </View>
-                  )
+                  Object.keys(item.msgBody).length > 0 && <SandTimer />
                 )}
                 {renderLastSentMessageBasedOnType()}
               </View>

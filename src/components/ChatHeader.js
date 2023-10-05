@@ -54,13 +54,6 @@ function ChatHeader({
   isSearchClose,
   chatUserProfile,
 }) {
-  let selectedMsg = {};
-  if (selectedMsgs.length) {
-    selectedMsg = selectedMsgs[0];
-  }
-  const { msgBody: { media: { file = {}, local_path = '' } = {} } = {} } =
-    selectedMsg;
-  const imageUrl = local_path || file?.fileDetails?.uri;
   const navigation = useNavigation();
   const [remove, setRemove] = React.useState(false);
   const [deleteEveryOne, setDeleteEveryOne] = React.useState(false);
@@ -75,6 +68,7 @@ function ChatHeader({
   const dispatch = useDispatch();
 
   const searchInputRef = useRef();
+  const isMediaFileInSelectedMessageForDelete = useRef(false);
 
   React.useEffect(() => {
     return () => {
@@ -107,17 +101,19 @@ function ChatHeader({
   };
 
   const handleDelete = () => {
-    let msgIds = selectedMsgs
-      .sort((a, b) => (b.timestamp > a.timestamp ? -1 : 1))
-      .map(el => el.msgId);
-    let lastMsgIndex = selectedMsgs.findIndex(obj => obj.msgId === msgIds[0]);
-    let lastMsgTime = parseInt(selectedMsgs[lastMsgIndex].timestamp / 1000, 10);
+    isMediaFileInSelectedMessageForDelete.current = selectedMsgs.some(msg => {
+      const { msgBody: { media: { file = {}, local_path = '' } = {} } = {} } =
+        msg;
+      return Boolean(local_path || file?.fileDetails?.uri);
+    });
     const now = new Date().getTime();
-    const validTime = lastMsgTime + 30 * 1000;
+    const msgSentLessThan30SecondsAgo = selectedMsgs.every(
+      msg => parseInt(msg.timestamp / 1000, 10) + 30 * 1000 > now,
+    );
     const isSender = selectedMsgs.every(
       msg => msg.publisherId === vCardProfile.userId && msg.deleteStatus === 0,
     );
-    setDeleteEveryOne(validTime > now && isSender);
+    setDeleteEveryOne(msgSentLessThan30SecondsAgo && isSender);
     setRemove(!remove);
   };
 
@@ -170,32 +166,42 @@ function ChatHeader({
   };
 
   const renderForwardIcon = () => {
-    if (selectedMsgs?.length === 1) {
-      const currentUserId = vCardProfile?.userId;
-      const _message = selectedMsgs[0];
-      const localPath = _message?.msgBody?.media?.local_path;
-      // checking for the message is not text and is_downloaded === 2
-      const isDownloadedOrUploaded =
-        _message?.publisherId === currentUserId
+    const currentUserId = vCardProfile?.userId;
+    const isMediaDownloadedOrUploaded = selectedMsgs.every(_message => {
+      if (_message.msgBody?.media) {
+        const isSender = _message?.publisherId === currentUserId;
+        const localPath = _message?.msgBody?.media?.local_path;
+        return isSender
           ? _message?.msgBody?.media?.is_uploading === 2
           : Boolean(localPath) || _message?.msgBody?.media?.is_downloaded === 2;
-      const isAllowForward = forwardMediaMessageTypes[
-        _message?.msgBody?.message_type
-      ]
-        ? isDownloadedOrUploaded
-        : true;
-      return _message?.msgStatus !== 3 &&
-        !selectedMsgs[0]?.recall &&
-        isAllowForward ? (
-        <IconButton
-          style={[commonStyles.padding_10_15]}
-          onPress={handleForwardMessage}>
-          <ForwardIcon />
-        </IconButton>
-      ) : null;
-    } else {
-      return null;
-    }
+      }
+      return true;
+    });
+
+    const isAllowForward = selectedMsgs.every(
+      _message => _message?.msgStatus !== 3 && _message?.deleteStatus === 0,
+    );
+
+    return isMediaDownloadedOrUploaded && isAllowForward ? (
+      <IconButton
+        style={[commonStyles.padding_10_15]}
+        onPress={handleForwardMessage}>
+        <ForwardIcon />
+      </IconButton>
+    ) : null;
+  };
+
+  const renderDeleteIcon = () => {
+    const isMediaDownloadedOrUploaded = selectedMsgs.every(
+      msg =>
+        msg.msgBody?.media?.is_uploading !== 1 &&
+        msg.msgBody?.media?.is_downloaded !== 1,
+    );
+    return isMediaDownloadedOrUploaded ? (
+      <IconButton style={[commonStyles.padding_10_15]} onPress={handleDelete}>
+        <DeleteIcon />
+      </IconButton>
+    ) : null;
   };
 
   const showNoMessageFoundToast = () => {
@@ -313,15 +319,7 @@ function ChatHeader({
                 <FavouriteIcon />
               </IconButton>
             )}
-            {selectedMsgs?.length < 2 &&
-              selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 &&
-              selectedMsgs[0]?.msgBody?.media?.is_downloaded !== 1 && (
-                <IconButton
-                  style={[commonStyles.padding_10_15]}
-                  onPress={handleDelete}>
-                  <DeleteIcon />
-                </IconButton>
-              )}
+            {renderDeleteIcon()}
             {selectedMsgs?.length === 1 &&
               menuItems.length > 0 &&
               !selectedMsgs[0]?.recall && (
@@ -336,7 +334,7 @@ function ChatHeader({
             <Text style={styles.deleteModalContentText} numberOfLines={2}>
               Are you sure you want to delete selected Message?
             </Text>
-            {imageUrl && (
+            {isMediaFileInSelectedMessageForDelete.current === true && (
               <View
                 style={[commonStyles.hstack, commonStyles.paddingVertical_12]}>
                 <Checkbox

@@ -1,4 +1,4 @@
-import { AppRegistry, Platform } from 'react-native';
+import { AppRegistry } from 'react-native';
 import App from './App';
 import { name as appName } from './app.json';
 import 'react-native-get-random-values';
@@ -28,13 +28,9 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
       return;
     }
     const notify = await SDK.getNotificationData(remoteMessage);
-    console.log(notify, 'notify?.message');
     if (notify?.statusCode === 200) {
       updateRecentAndConversationStore(notify?.data);
-      if (
-        notify?.data?.type === 'receiveMessage' &&
-        Platform.OS === 'android'
-      ) {
+      if (notify?.data?.type === 'receiveMessage') {
         pushNotify(
           notify?.data?.msgId,
           getNotifyNickName(notify?.data),

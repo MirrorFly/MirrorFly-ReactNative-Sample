@@ -18,7 +18,7 @@ import {
 import { REGISTERSCREEN } from '../constant';
 import {
   ClearChatHistoryAction,
-  DeleteChatHIstoryAction,
+  DeleteChatHistoryAction,
   deleteMessageForEveryone,
   deleteMessageForMe,
   updateChatConversationHistory,
@@ -58,7 +58,7 @@ export const callBacks = {
     } else if (response.status === 'LOGOUT') {
       console.log('LOGOUT');
       store.dispatch(navigate({ screen: REGISTERSCREEN }));
-      RootNav.navigate(REGISTERSCREEN);
+      RootNav.reset(REGISTERSCREEN);
     }
   },
   dbListener: res => {
@@ -105,7 +105,7 @@ export const callBacks = {
       res.msgType === MSG_DELETE_CHAT_CARBON
     ) {
       store.dispatch(deleteActiveChatAction(res));
-      store.dispatch(DeleteChatHIstoryAction(res));
+      store.dispatch(DeleteChatHistoryAction(res));
     }
     if (
       res.msgType === MSG_DELETE_STATUS ||

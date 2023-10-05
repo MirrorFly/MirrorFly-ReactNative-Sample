@@ -3,6 +3,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import { useSelector } from 'react-redux';
 import ReplyMessage from './ReplyMessage';
 import commonStyles from '../common/commonStyles';
+import { escapeRegExpReservedChars } from '../Helper';
 
 const TextCard = props => {
   const { handleReplyPress, message } = props;
@@ -38,10 +39,6 @@ const TextCard = props => {
 };
 export default TextCard;
 
-const escapeRegExpReservedChars = str => {
-  return String(str).replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
-};
-
 export const ChatConversationHighlightedText = ({
   textStyle = {},
   text,
@@ -55,7 +52,7 @@ export const ChatConversationHighlightedText = ({
     <Text>
       {parts.map((part, i) => {
         const isSearchMatch =
-          part.toLowerCase() === searchValue.toLowerCase()
+          part?.toLowerCase() === searchValue.toLowerCase()
             ? styles.highlight
             : {};
         return (

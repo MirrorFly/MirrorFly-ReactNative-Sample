@@ -55,6 +55,7 @@ class PushNotifiLocal {
       when: date,
       id: id,
       playSound: playSound,
+      priority: 'high',
     });
   }
 }

@@ -311,7 +311,9 @@ const ProgressLoader = (props = {}) => {
   const isDownload = () => {
     return (
       <>
-        <Pressable style={styles.downloadIconWrapper} onPress={handleDownload}>
+        <Pressable
+          contentContainerStyle={styles.downloadIconWrapper}
+          onPress={handleDownload}>
           {/* <IconButton> */}
           <DownloadIcon />
           {/* </IconButton> */}
@@ -387,7 +389,8 @@ const styles = StyleSheet.create({
   },
   downloadIconWrapper: {
     flexDirection: 'row',
-    height: 9,
+    // height: 9,
+    padding: 10,
     width: 90,
     justifyContent: 'center',
     alignItems: 'center',

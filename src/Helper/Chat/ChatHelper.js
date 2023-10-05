@@ -40,7 +40,7 @@ export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {
       ? userId
       : `${userId}@${currentUserJid?.split('@')[1] || ''}`;
   }
-  const jidResponse = SDK.getGroupJid(userId);
+  const jidResponse = SDK.getJid(userId);
   if (jidResponse.statusCode === 200) {
     return jidResponse.groupJid;
   }
@@ -324,6 +324,9 @@ export const getUpdatedHistoryData = (data, stateData) => {
         currentMessage.msgBody.media.is_uploading = 2;
       }
 
+      /* commenting the below code as the status update callback will be triggered for every single message, so no need to update the previous messages statuses
+      and also the below code spread the actual data without checking any condition whether the msgStatus is not equal or same, so it causes unwanted rerendering and makes the app perform slow
+
       // Updating Old Msg Statuses to Current Status
       const currentMessageIndex = msgIds.indexOf(data.msgId);
       for (let i = 0; i < msgIds.length && i <= currentMessageIndex; i++) {
@@ -335,6 +338,7 @@ export const getUpdatedHistoryData = (data, stateData) => {
           }),
         };
       }
+      */
 
       return {
         ...stateData,

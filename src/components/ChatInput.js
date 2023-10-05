@@ -396,7 +396,7 @@ const ChatInput = props => {
         onClose={() => setIsEmojiPickerShowing(false)}
         onSelect={handleEmojiSelect}
       />
-      <Modal visible={isOpen} onRequestClose={closeModal}>
+      <Modal animationType="none" visible={isOpen} onRequestClose={closeModal}>
         <ModalBottomContent onPressOutside={closeModal}>
           <View style={styles.modalContent}>
             {attachmentMenuIcons.map(item => {

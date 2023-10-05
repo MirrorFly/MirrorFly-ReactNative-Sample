@@ -11,8 +11,10 @@ import {
   StyleSheet,
   View,
   Text,
-  PermissionsAndroid,
+  Animated,
+  Easing,
   TouchableOpacity,
+  PanResponder,
 } from 'react-native';
 import { SendBtn } from '../common/Button';
 import {
@@ -35,11 +37,12 @@ import AudioRecorderPlayer, {
   OutputFormatAndroidType,
   AVModeIOSType,
 } from 'react-native-audio-recorder-player';
-import { requestMicroPhonePermission } from '../common/utils';
+import { getExtention, requestMicroPhonePermission } from '../common/utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { openSettings } from 'react-native-permissions';
-import { enableFreeze } from 'react-native-screens';
-import { duration } from 'moment';
+import Sound from 'react-native-sound';
+import Swipeout from 'react-native-swipeout';
+//import { PanGestureHandler, State } from 'react-native-gesture-handler';
 
 export const chatInputMessageRef = createRef();
 chatInputMessageRef.current = '';
@@ -48,25 +51,77 @@ const ChatInput = props => {
   const { onSendMessage, attachmentMenuIcons, chatInputRef, fromUserJId } =
     props;
 
-  // console.log('onSendMessage', onSendMessage);
-
   const [message, setMessage] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [isEmojiPickerShowing, setIsEmojiPickerShowing] = useState(false);
   const { data = {} } = useSelector(state => state.recoverMessage);
   const [showRecoderUi, setShowRecorderUi] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
-  const [recordingDuration, setRecordingDuration] = useState(0);
+  const [recordingDuration, setRecordingDuration] = useState('00:00');
   const [audioPath, setAudioPath] = useState('');
   const [totalDuration, setTotalDuration] = useState(0);
+  const [recordingData, setRecordingData] = useState(null);
 
-  // const audioRecorderPlayer = React.useRef(new AudioRecorderPlayer()).current;
   const audioRecorderPlayer = React.useRef(new AudioRecorderPlayer()).current;
+  const filenameRef = useRef('');
+
+  const pulseAnimation = useRef(new Animated.Value(1)).current;
+  // const swipeRef = useRef(null);
+
+  // const handleSwipe = event => {
+  //   if (event.nativeEvent.state === State.ACTIVE) {
+  //     setShowRecorderUi(false); // Hide the recorder UI when swiped
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   // Start recording when showRecorderUi becomes true
+  //   if (showRecorderUi) {
+  //     startRecording();
+  //   } else {
+  //     // Stop recording or perform other cleanup when showRecorderUi is false
+  //     stopRecording();
+  //   }
+  // }, [showRecorderUi]);
+
+  useEffect(() => {
+    if (isRecording) {
+      startPulseAnimation();
+    } else {
+      pulseAnimation.setValue(1);
+    }
+  }, [isRecording]);
+
+  const startPulseAnimation = () => {
+    Animated.sequence([
+      Animated.timing(pulseAnimation, {
+        toValue: 0.8,
+        duration: 500,
+        useNativeDriver: true,
+        easing: Easing.inOut(Easing.ease),
+      }),
+      Animated.timing(pulseAnimation, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+        easing: Easing.inOut(Easing.ease),
+      }),
+    ]).start(event => {
+      if (event.finished && isRecording) {
+        startPulseAnimation();
+      }
+    });
+  };
+  const micStyle = {
+    transform: [{ scale: pulseAnimation }],
+  };
 
   useEffect(() => {
     audioRecorderPlayer.addRecordBackListener(e => {
       if (e.currentPosition !== undefined) {
-        setRecordingDuration(Math.floor(e.currentPosition));
+        setRecordingDuration(
+          audioRecorderPlayer.mmssss(e.currentPosition).slice(0, 5),
+        );
       }
     });
 
@@ -89,25 +144,26 @@ const ChatInput = props => {
         AsyncStorage.setItem('location_permission', 'true');
         const result = await requestMicroPhonePermission();
         if (result === 'granted' || result === 'limited') {
-          console.log('Micro phone granded');
+          console.log('Micro phone granted');
         } else if (isNotFirstTimeLocationPermissionCheck) {
           openSettings();
         } else {
-          console.log('Micro phone Not granded');
+          console.log('Micro phone Not granted');
         }
-
+        filenameRef.current = 'sound_' + Date.now() + '.aac';
         const path = await audioRecorderPlayer.startRecorder(
-          RNFS.DownloadDirectoryPath + '/sound_' + Date.now() + '.aac',
+          RNFS.DownloadDirectoryPath + '/' + filenameRef.current,
           {
             OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
             AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
           },
         );
+        console.log('pathstart', path);
         setIsRecording(true);
         setShowRecorderUi(true);
         setAudioPath(path);
         setTotalDuration(0);
-        setRecordingDuration(0);
+        setRecordingDuration('00:00');
         audioRecorderPlayer.setVolume(0.8);
       } catch (error) {
         console.error('Failed to start recording', error);
@@ -123,6 +179,33 @@ const ChatInput = props => {
         setShowRecorderUi(true);
         setAudioPath(path);
         setTotalDuration(recordingDuration);
+        if (path) {
+          const soundRes = new Sound(path, '', async error => {
+            if (error) {
+              console.log(error, 'Play Error');
+            } else {
+              const resDuration = soundRes.getDuration();
+              const statResult = await RNFS.stat(path);
+              const fileSize = statResult.size;
+
+              const recordingData = {
+                filename: filenameRef.current,
+                duration: resDuration * 1000 || 0,
+                extension: getExtention(path),
+                uri: path,
+                type: 'audio/aac',
+                fileSize: fileSize,
+              };
+              const resultData = onSendMessage({
+                type: 'media',
+                AudioRecorder: recordingData,
+              });
+              setRecordingData(recordingData);
+              // console.log('RecordingObject:', recordingData);
+              console.log('resultData:', resultData);
+            }
+          });
+        }
       } catch (error) {
         console.error('Failed to stop recording', error);
       }
@@ -136,14 +219,24 @@ const ChatInput = props => {
   const sendMessage = () => {
     if (message) {
       setMessage('');
+      // console.log('Message to send:', message); // Add this line for debugging
       setTimeout(() => {
-        onSendMessage(message.trim());
+        const msg = onSendMessage(message.trim());
+        console.log('onSendMessage', msg);
       }, 0);
     }
   };
 
   const onChangeMessage = text => {
     setMessage(text);
+  };
+
+  const sendAudioRecorderMessage = () => {
+    if (showRecoderUi) {
+      if (recordingData) {
+        onSendMessage({ type: 'media', AudioRecorder: recordingData });
+      }
+    }
   };
 
   useFocusEffect(
@@ -223,7 +316,7 @@ const ChatInput = props => {
                 containerStyle={styles.audioRecordIconWrapper}
                 onPress={startRecording}
                 style={styles.audioRecordIcon}>
-                <MicIcon />
+                <MicIcon style={isRecording && micStyle} />
               </IconButton>
             </>
           </View>
@@ -231,55 +324,70 @@ const ChatInput = props => {
             <SendBtn style={styles.sendButton} onPress={sendMessage} />
           )}
         </View>
-      ) : null}
-      {showRecoderUi ? (
+      ) : (
         <View
           style={[
             styles.container,
             Boolean(message) && commonStyles.paddingRight_0,
           ]}>
           <View style={styles.textInputContainer}>
-            {recordingDuration > 0 && !totalDuration && (
-              <View>
-                <Text style={styles.durationText}>
-                  {recordingDuration?.toFixed(2)}
-                </Text>
-              </View>
-            )}
             <View style={styles.totalTimeMaincontainer}>
               <View style={styles.totalTimeContainer}>
-                {totalDuration > 0 && (
+                {!isRecording && (
                   <View>
                     <MicIcon height={'17'} width={'17'} color={'#3276E2'} />
                   </View>
                 )}
-                {totalDuration > 0 && (
-                  <Text style={styles.totalDurationText}>
-                    {totalDuration?.toFixed(2)}
-                  </Text>
-                )}
+                <Text style={styles.totalDurationText}>
+                  {recordingDuration}
+                </Text>
               </View>
               <View>
-                {totalDuration > 0 && (
+                {!isRecording && (
                   <TouchableOpacity onPress={handleCancel}>
                     <Text style={styles.cancelText}>Cancel</Text>
                   </TouchableOpacity>
                 )}
               </View>
             </View>
+            <Swipeout
+              right={[
+                {
+                  text: 'Swipe to Cancel',
+                  backgroundColor: 'red', // Set your desired background color
+                  onPress: () => {
+                    // Handle the cancel action when swiped
+                    // You can put your logic here
+                  },
+                },
+              ]}
+              style={styles.swipeoutContainer}>
+              {isRecording && (
+                <View style={styles.recorderUI}>
+                  <Text>Swipe to Cancel</Text>
+                </View>
+              )}
+            </Swipeout>
           </View>
 
-          <View>
+          <View style={styles.Plusingcontainer}>
             {showRecoderUi && !totalDuration ? (
-              <TouchableOpacity style={styles.micIcon} onPress={stopRecording}>
-                <MicIcon color={'#fff'} />
-              </TouchableOpacity>
+              <View style={styles.PlusingSubcontainer}>
+                <TouchableOpacity
+                  style={[styles.micIcon, isRecording && micStyle]}
+                  onPress={stopRecording}>
+                  <MicIcon color={'#fff'} />
+                </TouchableOpacity>
+              </View>
             ) : (
-              <SendBtn style={styles.sendButton} onPress={sendMessage} />
+              <SendBtn
+                style={styles.sendButton}
+                onPress={sendAudioRecorderMessage}
+              />
             )}
           </View>
         </View>
-      ) : null}
+      )}
 
       <EmojiOverlay
         state={message}
@@ -317,7 +425,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     borderTopWidth: 0.25,
-    borderColor: ApplicationColors.mainBorderColor, // "#959595"
+    borderColor: ApplicationColors.mainBorderColor,
     padding: 8,
   },
   textInputContainer: {
@@ -328,7 +436,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderRadius: 40,
-    borderColor: ApplicationColors.mainBorderColor, // "#959595"
+    borderColor: ApplicationColors.mainBorderColor,
   },
   emojiPickerIconWrapper: {
     marginLeft: 5,
@@ -364,7 +472,7 @@ const styles = StyleSheet.create({
     maxHeight: 250,
   },
   sendButton: {
-    padding: 12,
+    padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -392,8 +500,8 @@ const styles = StyleSheet.create({
   },
   micIcon: {
     backgroundColor: '#3276E2',
-    padding: 8,
-    borderRadius: 15,
+    padding: 10,
+    borderRadius: 35,
   },
   durationText: {
     fontSize: 12,
@@ -418,5 +526,44 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'rgb(255, 0, 0)',
     fontWeight: '300',
+  },
+  Plusingcontainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 5,
+  },
+  PlusingSubcontainer: {
+    padding: 2,
+    backgroundColor: '#9db8e2',
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: '#9db8e2',
+  },
+
+  PlusingSubcontainerPulsing: {
+    backgroundColor: '#FF0000', // Background color when isPulsing is true
+    // Define other styles for PlusingSubcontainer when isPulsing is true
+  },
+
+  micIconPulsing: {
+    color: '#FFFFFF', // Icon color when isPulsing is true
+    // Define other styles for micIcon when isPulsing is true
+  },
+  recorderUI: {
+    position: 'absolute',
+    right: 5,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  slideToCancelText: {
+    color: '#363636',
+    fontWeight: '300',
+    fontSize: 13,
+  },
+  swipeoutContainer: {
+    backgroundColor: 'blue',
+    borderRadius: 10,
   },
 });

@@ -14,7 +14,6 @@ import {
   Animated,
   Easing,
   TouchableOpacity,
-  PanResponder,
 } from 'react-native';
 import { SendBtn } from '../common/Button';
 import {
@@ -23,6 +22,7 @@ import {
   EmojiIcon,
   KeyboardIcon,
 } from '../common/Icons';
+
 import EmojiOverlay from './EmojiPicker';
 import { soundRef } from './Media/AudioPlayer';
 import { useSelector } from 'react-redux';
@@ -41,15 +41,23 @@ import { getExtention, requestMicroPhonePermission } from '../common/utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
-import Swipeout from 'react-native-swipeout';
-//import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  PanGestureHandler,
+  State,
+} from 'react-native-gesture-handler';
 
 export const chatInputMessageRef = createRef();
 chatInputMessageRef.current = '';
 
 const ChatInput = props => {
-  const { onSendMessage, attachmentMenuIcons, chatInputRef, fromUserJId } =
-    props;
+  const {
+    onSendMessage,
+    attachmentMenuIcons,
+    chatInputRef,
+    fromUserJId,
+    handleSendMsg,
+  } = props;
 
   const [message, setMessage] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -60,29 +68,12 @@ const ChatInput = props => {
   const [recordingDuration, setRecordingDuration] = useState('00:00');
   const [audioPath, setAudioPath] = useState('');
   const [totalDuration, setTotalDuration] = useState(0);
-  const [recordingData, setRecordingData] = useState(null);
+  const [recordedData, setRecordedData] = React.useState({});
 
   const audioRecorderPlayer = React.useRef(new AudioRecorderPlayer()).current;
   const filenameRef = useRef('');
 
   const pulseAnimation = useRef(new Animated.Value(1)).current;
-  // const swipeRef = useRef(null);
-
-  // const handleSwipe = event => {
-  //   if (event.nativeEvent.state === State.ACTIVE) {
-  //     setShowRecorderUi(false); // Hide the recorder UI when swiped
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   // Start recording when showRecorderUi becomes true
-  //   if (showRecorderUi) {
-  //     startRecording();
-  //   } else {
-  //     // Stop recording or perform other cleanup when showRecorderUi is false
-  //     stopRecording();
-  //   }
-  // }, [showRecorderUi]);
 
   useEffect(() => {
     if (isRecording) {
@@ -189,20 +180,16 @@ const ChatInput = props => {
               const fileSize = statResult.size;
 
               const recordingData = {
-                filename: filenameRef.current,
-                duration: resDuration * 1000 || 0,
-                extension: getExtention(path),
-                uri: path,
-                type: 'audio/aac',
-                fileSize: fileSize,
+                fileDetails: {
+                  filename: filenameRef.current,
+                  duration: resDuration * 1000 || 0,
+                  extension: getExtention(path),
+                  uri: path,
+                  type: 'audio/aac',
+                  fileSize: fileSize,
+                },
               };
-              const resultData = onSendMessage({
-                type: 'media',
-                AudioRecorder: recordingData,
-              });
-              setRecordingData(recordingData);
-              // console.log('RecordingObject:', recordingData);
-              console.log('resultData:', resultData);
+              setRecordedData(recordingData);
             }
           });
         }
@@ -216,13 +203,26 @@ const ChatInput = props => {
     chatInputMessageRef.current = message;
   }, [message]);
 
+  const swipeRef = useRef(null);
+
+  const handleSwipe = event => {
+    if (event.nativeEvent.state === State.ACTIVE) {
+      if (isRecording) {
+        const { translationX } = event.nativeEvent;
+        if (translationX < -60) {
+          setShowRecorderUi(false);
+          setIsRecording(false);
+        } else {
+          console.log('translation else part ...');
+        }
+      }
+    }
+  };
   const sendMessage = () => {
     if (message) {
       setMessage('');
-      // console.log('Message to send:', message); // Add this line for debugging
       setTimeout(() => {
-        const msg = onSendMessage(message.trim());
-        console.log('onSendMessage', msg);
+        onSendMessage(message.trim());
       }, 0);
     }
   };
@@ -232,10 +232,14 @@ const ChatInput = props => {
   };
 
   const sendAudioRecorderMessage = () => {
-    if (showRecoderUi) {
-      if (recordingData) {
-        onSendMessage({ type: 'media', AudioRecorder: recordingData });
-      }
+    if (recordingDuration > '00:00' && recordingDuration <= '05:00') {
+      let AudioRecordInfo = {
+        type: 'media',
+        content: [recordedData],
+      };
+      handleSendMsg(AudioRecordInfo);
+      setShowRecorderUi(false);
+      setRecordedData({});
     }
   };
 
@@ -350,24 +354,21 @@ const ChatInput = props => {
                 )}
               </View>
             </View>
-            <Swipeout
-              right={[
-                {
-                  text: 'Swipe to Cancel',
-                  backgroundColor: 'red', // Set your desired background color
-                  onPress: () => {
-                    // Handle the cancel action when swiped
-                    // You can put your logic here
-                  },
-                },
-              ]}
-              style={styles.swipeoutContainer}>
-              {isRecording && (
-                <View style={styles.recorderUI}>
-                  <Text>Swipe to Cancel</Text>
+            <GestureHandlerRootView>
+              <PanGestureHandler
+                ref={swipeRef}
+                // activeOffsetX={[-80, 0]}
+                // shouldCancelWhenOutside={false}
+                onGestureEvent={handleSwipe}>
+                <View style={{ flex: 1, alignItems: 'center' }}>
+                  {isRecording && (
+                    <View style={styles.recorderUI}>
+                      <Text>Swipe to Cancel</Text>
+                    </View>
+                  )}
                 </View>
-              )}
-            </Swipeout>
+              </PanGestureHandler>
+            </GestureHandlerRootView>
           </View>
 
           <View style={styles.Plusingcontainer}>
@@ -396,7 +397,7 @@ const ChatInput = props => {
         onClose={() => setIsEmojiPickerShowing(false)}
         onSelect={handleEmojiSelect}
       />
-      <Modal animationType="none" visible={isOpen} onRequestClose={closeModal}>
+      <Modal visible={isOpen} onRequestClose={closeModal}>
         <ModalBottomContent onPressOutside={closeModal}>
           <View style={styles.modalContent}>
             {attachmentMenuIcons.map(item => {
@@ -539,31 +540,21 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#9db8e2',
   },
-
-  PlusingSubcontainerPulsing: {
-    backgroundColor: '#FF0000', // Background color when isPulsing is true
-    // Define other styles for PlusingSubcontainer when isPulsing is true
-  },
-
-  micIconPulsing: {
-    color: '#FFFFFF', // Icon color when isPulsing is true
-    // Define other styles for micIcon when isPulsing is true
-  },
   recorderUI: {
-    position: 'absolute',
-    right: 5,
-    top: 0,
-    bottom: 0,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    bottom: 0,
+    right: 18,
+    top: 0,
   },
   slideToCancelText: {
     color: '#363636',
     fontWeight: '300',
-    fontSize: 13,
+    fontSize: 10,
   },
   swipeoutContainer: {
-    backgroundColor: 'blue',
+    backgroundColor: '#9db8e2',
     borderRadius: 10,
   },
 });

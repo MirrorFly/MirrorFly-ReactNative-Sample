@@ -27,7 +27,12 @@ import {
   isSingleChat,
 } from '../Helper/Chat/ChatHelper';
 import { sortBydate } from '../Helper/Chat/RecentChat';
-import { debounce, fetchContactsFromSDK, showToast } from '../Helper/index';
+import {
+  debounce,
+  fetchContactsFromSDK,
+  showCheckYourInternetToast,
+  showToast,
+} from '../Helper/index';
 import SDK from '../SDK/SDK';
 import Avathar from '../common/Avathar';
 import {
@@ -533,17 +538,17 @@ const ForwardMessage = () => {
       formatUserIdToJid(u?.userJid || u?.userId),
     );
     const msgIds = forwardMessages.map(m => m.msgId);
-    await SDK.forwardMessagesToMultipleUsers(
+    SDK.forwardMessagesToMultipleUsers(
       contactsToForward,
       msgIds,
       true,
       newMsgIds,
     );
-    setShowLoader(false);
-    onMessageForwaded?.();
-    if (Object.values(selectedUsers).length === 1) {
-      // navigating the user after setTimeout to finish all the running things in background to avoid unwanted issues
-      setTimeout(() => {
+    // navigating the user after setTimeout to finish all the running things in background to avoid unwanted issues
+    setTimeout(() => {
+      setShowLoader(false);
+      onMessageForwaded?.();
+      if (Object.values(selectedUsers).length === 1) {
         dispatch(
           navigate({
             screen: CHATSCREEN,
@@ -560,13 +565,17 @@ const ForwardMessage = () => {
           }),
         );
         navigation.navigate(CONVERSATION_SCREEN);
-      }, 0);
-    } else {
-      navigation.goBack();
-    }
+      } else {
+        navigation.goBack();
+      }
+    }, 0);
   };
 
   const handleMessageSend = async () => {
+    if (!isInternetReachable) {
+      showCheckYourInternetToast();
+      return;
+    }
     setShowLoader(true);
     // doing the complete action in setTimeout to avoid UI render blocking
     setTimeout(forwardMessagesToSelectedUsers, 0);

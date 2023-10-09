@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Avathar from '../common/Avathar';
 import {
   AudioMusicIcon,
@@ -26,6 +26,15 @@ import Pressable from '../common/Pressable';
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
 import { escapeRegExpReservedChars } from '../Helper';
+import SDK from '../SDK/SDK';
+import { updateRosterData } from '../redux/Actions/rosterAction';
+import { addRecentChat } from '../redux/Actions/RecentChatAction';
+import { sortBydate } from '../Helper/Chat/RecentChat';
+import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
+import { CHATSCREEN } from '../constant';
+import { navigate } from '../redux/Actions/NavigationAction';
+import * as RootNav from '../Navigation/rootNavigation';
+import { updateRecentChatSelectedItems } from '../redux/Actions/recentChatSearchAction';
 
 const VideoSmallIconComponent = () => VideoSmallIcon('#767676');
 
@@ -219,24 +228,128 @@ const RecentChatItem = ({
   );
 };
 
-export default function RecentChat(props) {
-  const {
-    searchValue,
-    handleOnSelect,
-    handleSelect,
-    recentItem,
-    filteredMessages,
-  } = props;
+export default function RecentChat() {
+  const dispatch = useDispatch();
+  const [filteredData, setFilteredData] = React.useState([]);
+  const [filteredMessages, setFilteredMessages] = React.useState([]);
+  const [recentData, setrecentData] = React.useState([]);
+  const recentChatList = useSelector(state => state.recentChatData.data);
+  const { isSearching, selectedItems, searchText, selectedItemsObj } =
+    useSelector(state => state.recentChatSearchData) || {};
 
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
 
+  React.useEffect(() => {
+    (async () => {
+      const recentChats = await SDK.getRecentChatsDB();
+      const recentChatsFilter = recentChats?.data.filter(
+        item => item.chatType === 'chat',
+      );
+      dispatch(addRecentChat(recentChatsFilter));
+      updateRosterDataForRecentChats(recentChatsFilter);
+    })();
+  }, []);
+
+  React.useEffect(() => {
+    let recentChatItems = constructRecentChatItems(recentChatList);
+    setrecentData(recentChatItems);
+  }, [recentChatList]);
+
+  React.useEffect(() => {
+    if (!searchText) {
+      setFilteredData(recentData);
+    } else {
+      searchFilter(searchText);
+    }
+  }, [recentData, searchText]);
+
+  const updateRosterDataForRecentChats = singleRecentChatList => {
+    const userProfileDetails = singleRecentChatList.map(
+      chat => chat.profileDetails,
+    );
+    dispatch(updateRosterData(userProfileDetails));
+  };
+
+  const constructRecentChatItems = recentChatArrayConstruct => {
+    let recent = [];
+    sortBydate([...recentChatArrayConstruct]).map(async chat => {
+      recent.push(chat);
+    });
+
+    return recent.filter(eachmessage => eachmessage);
+  };
+
+  const searchFilter = text => {
+    const filtered = recentData?.filter(
+      item =>
+        item.fromUserId.toLowerCase().includes(text.toLowerCase()) ||
+        item?.profileDetails?.nickName
+          ?.toLowerCase()
+          .includes(text.toLowerCase()),
+    );
+    SDK.messageSearch(text).then(res => {
+      if (res.statusCode === 200) {
+        setFilteredMessages(res.data);
+      }
+    });
+    setFilteredData(filtered);
+  };
+
+  const handleRecentItemSelect = item => {
+    if (isSearching) {
+      handleSelect(item);
+    } else {
+      const _item = { ...item };
+      if (!_item.userJid) {
+        _item.userJid = formatUserIdToJid(
+          _item?.fromUserId,
+        ); /** Need to add chat type here while working in Group
+        formatUserIdToJid(
+         item?.fromUserId,
+         item?.chatType,
+       )
+       */
+      }
+      dispatch(updateRecentChatSelectedItems(_item));
+    }
+  };
+
+  const handleSelect = item => {
+    if (selectedItems.length) {
+      handleRecentItemSelect(item);
+    } else {
+      let jid = formatUserIdToJid(
+        item?.fromUserId,
+      ); /** Need to add chat type here while working in Group
+      formatUserIdToJid(
+       item?.fromUserId,
+       item?.chatType,
+     )
+     */
+      SDK.activeChatUser(jid);
+      let x = {
+        screen: CHATSCREEN,
+        fromUserJID: item?.userJid || jid,
+        profileDetails: item?.profileDetails,
+      };
+      dispatch(navigate(x));
+      RootNav.navigate(CHATSCREEN);
+    }
+  };
+
   const renderItem = (item, index) => {
     const isSame = currentUserJID?.split('@')[0] === item?.publisherId;
-    const isSelected = recentItem.some(selectedItem =>
-      selectedItem?.userJid
-        ? selectedItem?.userJid === item?.userJid
-        : selectedItem?.toUserId === item?.toUserId,
-    );
+    const jid =
+      item?.userJid ||
+      formatUserIdToJid(
+        item?.fromUserId,
+      ); /** Need to add chat type here while working in Group
+    formatUserIdToJid(
+     item?.fromUserId,
+     item?.chatType,
+   )
+   */
+    const isSelected = selectedItemsObj[jid];
     let statusVisible;
     switch (item?.msgStatus) {
       case 0:
@@ -257,13 +370,13 @@ export default function RecentChat(props) {
         isSame={isSame}
         isSelected={isSelected}
         statusVisible={statusVisible}
-        handleOnSelect={handleOnSelect}
+        handleOnSelect={handleRecentItemSelect}
         handleSelect={handleSelect}
-        searchValue={searchValue}
+        searchValue={searchText}
       />
     );
   };
-  if (!props?.data?.length && !filteredMessages.length) {
+  if (!filteredData.length && !filteredMessages.length) {
     return (
       <View style={styles.emptyChatView}>
         <Image
@@ -271,7 +384,7 @@ export default function RecentChat(props) {
           resizeMode="cover"
           source={getImageSource(no_messages)}
         />
-        {props.isSearching ? (
+        {isSearching ? (
           <Text style={styles.noMsg}>No Result Found</Text>
         ) : (
           <>
@@ -285,17 +398,17 @@ export default function RecentChat(props) {
 
   return (
     <ScrollView style={styles.scrollView}>
-      {searchValue && props.data.length > 0 && (
+      {searchText && filteredData.length > 0 && (
         <View style={styles.chatsSearchSubHeader}>
           <Text style={styles.chatsSearchSubHeaderText}>Chats</Text>
           <Text style={styles.chatsSearchSubHeaderCountText}>
-            ({props.data.length})
+            ({filteredData.length})
           </Text>
         </View>
       )}
-      {props.data.length > 0 &&
-        props.data.map((item, index) => renderItem(item, index))}
-      {searchValue && filteredMessages.length > 0 && (
+      {filteredData.length > 0 &&
+        filteredData.map((item, index) => renderItem(item, index))}
+      {searchText && filteredMessages.length > 0 && (
         <View style={styles.chatsSearchSubHeader}>
           <Text style={styles.chatsSearchSubHeaderText}>Messages</Text>
           <Text style={styles.chatsSearchSubHeaderCountText}>
@@ -303,7 +416,7 @@ export default function RecentChat(props) {
           </Text>
         </View>
       )}
-      {searchValue &&
+      {searchText &&
         filteredMessages.length > 0 &&
         filteredMessages.map((item, index) => renderItem(item, index))}
     </ScrollView>

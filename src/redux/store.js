@@ -18,10 +18,12 @@ import conversationSearchReducer from './Reducers/conversationSearch.Reducer';
 import rosterReducer from './Reducers/roster.Reducer';
 import recoverMessageReducer from './Reducers/RecoverMessage.Reducer';
 import chatConversationLocalNavReducer from './Reducers/ChatConversationLocalNav.Reducer';
+import recentChatSearchReducer from './Reducers/recentChatSearch.Reducer';
 
 const rootReducer = combineReducers({
   navigation: navigationReducer,
   recentChatData: recentChatReducer,
+  recentChatSearchData: recentChatSearchReducer,
   auth: authReducer,
   chatConversationData: conversationReducer,
   profile: profileReducer,

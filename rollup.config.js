@@ -63,6 +63,8 @@ export default {
     'react-native-push-notification',
     'react-native-slider',
     'react-native-svg-transformer',
+    '@react-native-community/push-notification-ios',
+    'react-native-maps',
   ],
   plugins: [
     replace({

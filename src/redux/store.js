@@ -19,6 +19,8 @@ import rosterReducer from './Reducers/roster.Reducer';
 import recoverMessageReducer from './Reducers/RecoverMessage.Reducer';
 import chatConversationLocalNavReducer from './Reducers/ChatConversationLocalNav.Reducer';
 import recentChatSearchReducer from './Reducers/recentChatSearch.Reducer';
+import streamDataReducer from './Reducers/streamReducer';
+import stateDataReducer from './Reducers/statusReducer';
 
 const rootReducer = combineReducers({
   navigation: navigationReducer,
@@ -40,6 +42,8 @@ const rootReducer = combineReducers({
   rosterData: rosterReducer,
   recoverMessage: recoverMessageReducer,
   chatConversationLocalNav: chatConversationLocalNavReducer,
+  streamData: streamDataReducer,
+  stateData: stateDataReducer,
 });
 
 const Store = legacy_createStore(rootReducer, applyMiddleware(thunkMiddleware));

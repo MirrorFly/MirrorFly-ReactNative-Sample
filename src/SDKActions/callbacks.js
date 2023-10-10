@@ -46,6 +46,12 @@ import {
   getNotifyMessage,
   getNotifyNickName,
 } from '../components/RNCamera/Helper';
+import Store from '../redux/store';
+import { clearStreamData, setStreamData } from '../redux/Actions/streamAction';
+import { MediaStream } from 'react-native-webrtc';
+import { clearStatusData, setStatusData } from '../redux/Actions/statusAction';
+let localStream = null;
+let remoteStream = [];
 
 export const callBacks = {
   connectionListener: response => {
@@ -223,4 +229,87 @@ export const callBacks = {
   adminBlockListener: res => {
     console.log('adminBlockListener = (res) => { }', res);
   },
+  incomingCallListener: function (res) {
+    console.log(res, 'incomingCallListener');
+    Store.dispatch(setStatusData(res));
+  },
+  callStatusListener: function (res) {
+    if (res.status === 'ended') {
+      Store.dispatch(clearStreamData());
+      Store.dispatch(clearStatusData());
+    }
+  },
+  userTrackListener: (res, check) => {
+    if (res.localUser) {
+      let mediaStream = null;
+      localStream = localStream || {};
+      if (res.track) {
+        mediaStream = new MediaStream();
+        mediaStream.addTrack(res.track);
+      }
+      localStream[res.trackType] = mediaStream;
+      const streamData = Store.getState().streamData;
+      const { data } = streamData;
+      Store.dispatch(
+        setStreamData({
+          ...(data || {}),
+          localStream: localStream,
+          remoteStream,
+          status: 'LOCALSTREAM',
+        }),
+      );
+    } else {
+      let mediaStream = null;
+      if (res.track) {
+        mediaStream = new MediaStream();
+        mediaStream.addTrack(res.track);
+      }
+      const streamType = res.trackType;
+      const userIndex = remoteStream.findIndex(
+        item => item.fromJid === res.userJid,
+      );
+      if (userIndex > -1) {
+        let { stream } = remoteStream[userIndex];
+        stream = stream || {};
+        stream[streamType] = mediaStream;
+        remoteStream[userIndex]['stream'] = stream;
+      } else {
+        let streamObject = {
+          fromJid: res.userJid,
+          stream: {
+            [streamType]: mediaStream,
+          },
+        };
+        remoteStream.push(streamObject);
+      }
+      const streamData = Store.getState().streamData;
+      const { data } = streamData;
+      Store.dispatch(
+        setStreamData({
+          ...(data || {}),
+          localStream,
+          remoteStream: remoteStream,
+          status: 'RemoteStream',
+        }),
+      );
+    }
+  },
+  mediaErrorListener: res => {
+    console.log(res, 'userProfileListener');
+  },
+  callSpeakingListener: res => { },
+  callUsersUpdateListener: res => {
+    console.log(res, 'userProfileListener');
+  },
+  helper: {
+    getDisplayName: () => { },
+    getImageUrl: () => { },
+  },
+  inviteUsersListener: res => { },
+  callUserJoinedListener: function (res) { },
+  callUserLeftListener: function (res) { },
+  missedCallListener: res => { },
+  callSwitchListener: function (res) { },
+  muteStatusListener: res => { },
+  adminBlockListener: function (res) { },
 };

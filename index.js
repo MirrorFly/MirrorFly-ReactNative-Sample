@@ -16,9 +16,16 @@ import {
   handleSetPendingSeenStatus,
   updateRecentAndConversationStore,
 } from './src/Helper';
+import { callBacks } from './src/SDKActions/callbacks';
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   try {
+    await SDK.initializeSDK({
+      apiBaseUrl: 'https://api-uikit-qa.contus.us/api/v1',
+      licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
+      callbackListeners: callBacks,
+      isSandbox: false,
+    });
     if (remoteMessage.data.type === 'recall') {
       updateNotification(remoteMessage.data.message_id);
       return;
@@ -32,7 +39,6 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
           getNotifyNickName(notify?.data),
           getNotifyMessage(notify?.data),
           notify?.data?.fromUserJid,
-          false,
         );
       }
       handleSetPendingSeenStatus(notify?.data);

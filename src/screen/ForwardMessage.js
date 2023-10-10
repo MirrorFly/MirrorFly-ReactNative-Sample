@@ -27,7 +27,12 @@ import {
   isSingleChat,
 } from '../Helper/Chat/ChatHelper';
 import { sortBydate } from '../Helper/Chat/RecentChat';
-import { debounce, fetchContactsFromSDK, showToast } from '../Helper/index';
+import {
+  debounce,
+  fetchContactsFromSDK,
+  showCheckYourInternetToast,
+  showToast,
+} from '../Helper/index';
 import SDK from '../SDK/SDK';
 import Avathar from '../common/Avathar';
 import {
@@ -492,7 +497,8 @@ const ForwardMessage = () => {
       newMsgIds.push(uuidv4());
     }
     const newMsgIdsCopy = [...newMsgIds];
-    for (const msg of _forwardMessages) {
+    for (let i = 0; i < forwardMessages.length; i++) {
+      const msg = forwardMessages[i];
       for (const userId in selectedUsers) {
         const chatType = 'chat';
         let toUserJid =
@@ -504,8 +510,10 @@ const ForwardMessage = () => {
           currentNewMsgId,
         );
         batch(() => {
-          // updating recent chat
-          dispatch(updateRecentChat(recentChatObj));
+          // updating recent chat for last message only
+          if (i === forwardMessages.length - 1) {
+            dispatch(updateRecentChat(recentChatObj));
+          }
           // updating convresations if active chat or delete conversations data
           if (toUserJid === activeChatUserJid) {
             const conversationChatObj = getMessageObjForward(
@@ -539,11 +547,11 @@ const ForwardMessage = () => {
       true,
       newMsgIds,
     );
-    setShowLoader(false);
-    onMessageForwaded?.();
-    if (Object.values(selectedUsers).length === 1) {
-      // navigating the user after setTimeout to finish all the running things in background to avoid unwanted issues
-      setTimeout(() => {
+    // navigating the user after setTimeout to finish all the running things in background to avoid unwanted issues
+    setTimeout(() => {
+      setShowLoader(false);
+      onMessageForwaded?.();
+      if (Object.values(selectedUsers).length === 1) {
         dispatch(
           navigate({
             screen: CHATSCREEN,
@@ -560,13 +568,17 @@ const ForwardMessage = () => {
           }),
         );
         navigation.navigate(CONVERSATION_SCREEN);
-      }, 0);
-    } else {
-      navigation.goBack();
-    }
+      } else {
+        navigation.goBack();
+      }
+    }, 0);
   };
 
   const handleMessageSend = async () => {
+    if (!isInternetReachable) {
+      showCheckYourInternetToast();
+      return;
+    }
     setShowLoader(true);
     // doing the complete action in setTimeout to avoid UI render blocking
     setTimeout(forwardMessagesToSelectedUsers, 0);

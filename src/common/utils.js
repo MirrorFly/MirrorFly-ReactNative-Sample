@@ -1,3 +1,4 @@
+import React from 'react';
 import DocumentPicker from 'react-native-document-picker';
 import { Box, Text } from 'native-base';
 import {

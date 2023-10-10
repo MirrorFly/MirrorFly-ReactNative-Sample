@@ -369,15 +369,10 @@ function ChatScreen() {
         profileDetails: {},
       };
       dispatch(navigate(x));
-      RootNav.navigate(RECENTCHATSCREEN);
+      RootNav.reset(RECENTCHATSCREEN);
     }
     return true;
   };
-
-  const backHandler = BackHandler.addEventListener(
-    'hardwareBackPress',
-    handleBackBtn,
-  );
 
   const getThumbImage = async uri => {
     const result = await ImageCompressor.compress(uri, {
@@ -653,7 +648,10 @@ function ChatScreen() {
   };
 
   React.useEffect(() => {
-    // handleImageConvert()
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackBtn,
+    );
     return () => {
       backHandler.remove();
     };

@@ -79,7 +79,6 @@ export const callBacks = {
             getNotifyNickName(res),
             getNotifyMessage(res),
             res?.publisherJid,
-            true,
           );
           break;
       }

@@ -121,6 +121,7 @@ const RootNavigation = () => {
           dispatch(addchatSeenPendingMsg(element));
         });
       }
+      dispatch(getCurrentUserJid(JSON.parse(currentUserJID)));
       const initialURL = await Linking.getInitialURL();
       if (initialURL) {
         const regexStr = '[?&]([^=#]+)=([^&#]*)';
@@ -135,7 +136,6 @@ const RootNavigation = () => {
         return dispatch(navigate(x));
       }
       if (JSON.parse(screenObj)) {
-        dispatch(getCurrentUserJid(JSON.parse(currentUserJID)));
         dispatch(navigate(parsedScreenOj));
         setInitialRouteValue(parsedScreenOj.screen);
       } else {

@@ -2,7 +2,7 @@ import { THIS_MESSAGE_WAS_DELETED } from '../Helper/Chat/Constant';
 import { AppState, Platform } from 'react-native';
 import { isActiveConversationUserOrGroup } from '../Helper/Chat/ChatHelper';
 import { displayRemoteNotification } from './PushNotify';
-import notifee from '@notifee/react-native';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 
 let notifyObj = {};
 let ids = [];
@@ -28,7 +28,14 @@ export const pushNotify = async (
       Platform.OS === 'android' ||
       (Platform.OS === 'ios' && AppState.currentState === 'active')
     ) {
-      displayRemoteNotification(id, date, title, body, sent_from);
+      displayRemoteNotification(
+        id,
+        date,
+        title,
+        body,
+        sent_from,
+        AndroidImportance.HIGH,
+      );
     }
     ids.push(notifyObj[msgId].id);
     if (AppState.currentState === 'active') {
@@ -50,6 +57,7 @@ export const updateNotification = msgId => {
       title,
       THIS_MESSAGE_WAS_DELETED,
       sent_from,
+      AndroidImportance.DEFAULT,
     );
   }
 };

@@ -5,6 +5,7 @@ import * as RootNav from '../../src/Navigation/rootNavigation';
 import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN } from '../constant';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
+import { removeAllDeliveredNotification } from './remoteNotifyHandle';
 
 export const displayRemoteNotification = async (
   id,
@@ -67,6 +68,7 @@ export const displayRemoteNotification = async (
       const push_url = 'mirrorfly_rn://CHATSCREEN?fromUserJID=' + fromUserJID;
       Store.dispatch(navigate(x));
       Linking.openURL(push_url);
+      removeAllDeliveredNotification();
     }
   });
 };

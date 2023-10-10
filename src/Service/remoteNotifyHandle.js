@@ -62,7 +62,7 @@ export const updateNotification = msgId => {
   }
 };
 
-export const removeAllDeliveredNotificatoin = () => {
+export const removeAllDeliveredNotification = () => {
   try {
     notifee.cancelAllNotifications();
   } catch (error) {

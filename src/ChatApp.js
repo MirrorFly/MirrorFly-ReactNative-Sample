@@ -35,7 +35,7 @@ import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
 import messaging from '@react-native-firebase/messaging';
 import { requestNotificationPermission } from './common/utils';
-import { removeAllDeliveredNotificatoin } from './Service/remoteNotifyHandle';
+import { removeAllDeliveredNotification } from './Service/remoteNotifyHandle';
 
 LogBox.ignoreAllLogs();
 
@@ -77,7 +77,7 @@ export const ChatApp = props => {
       });
       await messaging().requestPermission();
       requestNotificationPermission();
-      removeAllDeliveredNotificatoin();
+      removeAllDeliveredNotification();
     })();
     return () => {
       keyboardDidShowListener.remove();

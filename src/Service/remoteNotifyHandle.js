@@ -1,8 +1,8 @@
-import PushNotifiLocal from './PushNotifiLocal';
-import PushNotification from 'react-native-push-notification';
 import { THIS_MESSAGE_WAS_DELETED } from '../Helper/Chat/Constant';
 import { AppState, Platform } from 'react-native';
 import { isActiveConversationUserOrGroup } from '../Helper/Chat/ChatHelper';
+import { displayRemoteNotification } from './PushNotify';
+import notifee from '@notifee/react-native';
 
 let notifyObj = {};
 let ids = [];
@@ -20,7 +20,6 @@ export const pushNotify = async (
     !isActiveConversationUserOrGroup(sent_from) ||
     AppState.currentState === 'background'
   ) {
-    const pushNotifiLocal = new PushNotifiLocal(sent_from, onForGround);
     notifyObj = {
       ...notifyObj,
       [msgId]: { id, date, title, sent_from, onForGround },
@@ -29,12 +28,12 @@ export const pushNotify = async (
       Platform.OS === 'android' ||
       (Platform.OS === 'ios' && AppState.currentState === 'active')
     ) {
-      pushNotifiLocal.scheduleNotify(id, date, title, body, true);
+      displayRemoteNotification(id, date, title, body, sent_from);
     }
     ids.push(notifyObj[msgId].id);
     if (AppState.currentState === 'active') {
       setTimeout(() => {
-        PushNotification.removeDeliveredNotifications(Object.values(ids));
+        notifee.cancelDisplayedNotifications(Object.values(ids));
         ids = [];
         notifyObj = {};
       }, 5000);
@@ -44,21 +43,20 @@ export const pushNotify = async (
 
 export const updateNotification = msgId => {
   if (notifyObj[msgId]) {
-    const { id, date, title, sent_from, onForGround } = notifyObj[msgId];
-    const pushNotifiLocal = new PushNotifiLocal(sent_from, onForGround);
-    pushNotifiLocal.scheduleNotify(
+    const { id, date, title, sent_from } = notifyObj[msgId];
+    displayRemoteNotification(
       id,
       date,
       title,
       THIS_MESSAGE_WAS_DELETED,
-      false,
+      sent_from,
     );
   }
 };
 
 export const removeAllDeliveredNotificatoin = () => {
   try {
-    PushNotification.removeAllDeliveredNotifications();
+    notifee.cancelAllNotifications();
   } catch (error) {
     console.log('removeAllDeliveredNotificatoin', error);
   }

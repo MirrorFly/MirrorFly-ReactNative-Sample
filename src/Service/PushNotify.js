@@ -1,26 +1,67 @@
-import notifee from '@notifee/react-native';
+import notifee, {
+  AndroidImportance,
+  AndroidVisibility,
+  EventType,
+} from '@notifee/react-native';
+import { Linking } from 'react-native';
+import Store from '../redux/store';
+import * as RootNav from '../../src/Navigation/rootNavigation';
+import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN } from '../constant';
+import { navigate } from '../redux/Actions/NavigationAction';
+import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
 
-class PushNotify {
-  static displayRemoteNotification = async (title, data, body) => {
-    const channelId = await notifee.createChannel({
-      id: 'default',
-      name: 'Default Channel',
-    });
-    await notifee.requestPermission();
-    /** Display a notification */
-    await notifee.displayNotification({
-      id: '123',
-      title: title,
-      body: body,
-      data: data || null,
-      android: {
-        channelId,
-      },
-    });
-  };
-}
+export const displayRemoteNotification = async (id, date, title, body, jid) => {
+  const channelId = await notifee.createChannel({
+    id: 'default',
+    name: 'Default Channel',
+    importance: AndroidImportance.HIGH,
+    visibility: AndroidVisibility.PUBLIC,
+    sound: 'default',
+  });
 
-export default PushNotify;
+  /** Display a notification */
+  await notifee.displayNotification({
+    id: id,
+    title: title,
+    body: body,
+    data: { fromUserJID: jid } || null,
+    android: {
+      channelId,
+      sound: 'default',
+      timestamp: date,
+      smallIcon: 'ic_notification',
+      importance: AndroidImportance.HIGH,
+    },
+  });
+  notifee.onForegroundEvent(async ({ type, detail }) => {
+    switch (type) {
+      case EventType.PRESS:
+        const {
+          notification: { data: { fromUserJID } = '' },
+        } = detail;
+        let x = { screen: CHATSCREEN, fromUserJID };
+        Store.dispatch(navigate(x));
+        if (RootNav.getCurrentScreen() === CHATSCREEN) {
+          Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
+          return RootNav.navigate(CONVERSATION_SCREEN);
+        }
+        RootNav.navigate(CHATSCREEN);
+        Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
+        break;
+      default:
+        break;
+    }
+  });
+  notifee.onBackgroundEvent(async ({ type, detail }) => {
+    const {
+      notification: { data: { fromUserJID } = '' },
+    } = detail;
+    let x = { screen: CHATSCREEN, fromUserJID };
+    const push_url = 'mirrorfly_rn://CHATSCREEN?fromUserJID=' + fromUserJID;
+    Store.dispatch(navigate(x));
+    Linking.openURL(push_url);
+  });
+};
 
 export const handleNotifeeNotify = async () => {
   const channelId = await notifee.createChannel({

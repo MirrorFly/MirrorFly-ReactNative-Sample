@@ -19,10 +19,6 @@ import {
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   try {
-    console.log(
-      'setBackgroundMessageHandler remoteMessage',
-      JSON.stringify(remoteMessage, null, 2),
-    );
     if (remoteMessage.data.type === 'recall') {
       updateNotification(remoteMessage.data.message_id);
       return;

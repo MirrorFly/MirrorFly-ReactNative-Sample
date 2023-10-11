@@ -150,6 +150,7 @@ function ChatScreen() {
     const storage_permission = await AsyncStorage.getItem('storage_permission');
     AsyncStorage.setItem('storage_permission', 'true');
     let MediaPermission = await requestAudioStoragePermission();
+    console.log('contact audio result', MediaPermission);
     if (MediaPermission === 'granted' || MediaPermission === 'limited') {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       let response = await handleAudioPickerSingle();
@@ -233,6 +234,7 @@ function ChatScreen() {
       );
       AsyncStorage.setItem('contact_permission', 'true');
       const result = await requestContactPermission();
+      console.log('contact persmisssion result', result);
       if (result === 'granted') {
         setLocalNav('ContactList');
       } else if (isNotFirstTimeContactPermissionCheck) {
@@ -249,6 +251,7 @@ function ChatScreen() {
       );
       AsyncStorage.setItem('location_permission', 'true');
       const result = await requestLocationPermission();
+      console.log('contact audio result', result);
       if (result === 'granted' || result === 'limited') {
         if (isNetworkAvailable) {
           setLocalNav('LocationInfo');
@@ -274,6 +277,7 @@ function ChatScreen() {
       icon: CameraIcon,
       formatter: async () => {
         let cameraPermission = await requestCameraPermission();
+        console.log('camera permission result', cameraPermission);
         let imageReadPermission = await requestStoragePermission();
         const camera_permission = await AsyncStorage.getItem(
           'camera_permission',
@@ -299,6 +303,7 @@ function ChatScreen() {
         );
         AsyncStorage.setItem('storage_permission', 'true');
         let imageReadPermission = await requestStoragePermission();
+        console.log('camera permission result', imageReadPermission);
         if (
           imageReadPermission === 'granted' ||
           imageReadPermission === 'limited'

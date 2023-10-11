@@ -4,6 +4,7 @@ import { Box, NativeBaseProvider } from 'native-base';
 import React, { createRef } from 'react';
 import {
   Keyboard,
+  Linking,
   LogBox,
   SafeAreaView,
   StatusBar,
@@ -37,6 +38,8 @@ import { requestNotificationPermission } from './common/utils';
 import { removeAllDeliveredNotificatoin } from './Service/remoteNotifyHandle';
 import { handleOpenUrl } from './Helper';
 import CallJanus from './components/calls/CallJanus';
+import { removeAllDeliveredNotification } from './Service/remoteNotifyHandle';
+
 LogBox.ignoreAllLogs();
 
 export const isKeyboardVisibleRef = createRef();
@@ -77,7 +80,7 @@ export const ChatApp = props => {
       });
       await messaging().requestPermission();
       requestNotificationPermission();
-      removeAllDeliveredNotificatoin();
+      removeAllDeliveredNotification();
     })();
     return () => {
       keyboardDidShowListener.remove();
@@ -122,8 +125,21 @@ const RootNavigation = () => {
           dispatch(addchatSeenPendingMsg(element));
         });
       }
+      dispatch(getCurrentUserJid(JSON.parse(currentUserJID)));
+      const initialURL = await Linking.getInitialURL();
+      if (initialURL) {
+        const regexStr = '[?&]([^=#]+)=([^&#]*)';
+        let regex = new RegExp(regexStr, 'g'),
+          match;
+        match = regex.exec(initialURL);
+        let x = {
+          screen: CHATSCREEN,
+          fromUserJID: match[2],
+        };
+        setIsLoading(false);
+        return dispatch(navigate(x));
+      }
       if (JSON.parse(screenObj)) {
-        dispatch(getCurrentUserJid(JSON.parse(currentUserJID)));
         dispatch(navigate(parsedScreenOj));
         setInitialRouteValue(parsedScreenOj.screen);
       } else {
@@ -131,9 +147,6 @@ const RootNavigation = () => {
       }
       setIsLoading(false);
     }, 1000);
-    setTimeout(async () => {
-      await handleOpenUrl(setIsLoading);
-    }, 1100);
   }, []);
 
   return (

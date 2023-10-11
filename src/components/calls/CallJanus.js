@@ -19,6 +19,7 @@ import { requestCameraPermission } from '../../common/utils';
 import Store from '../../redux/store';
 import { SDK } from '../../SDK';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import messaging from '@react-native-firebase/messaging';
 
 const CallJanus = () => {
   const streamData = useSelector(state => state.streamData.data);
@@ -38,13 +39,16 @@ const CallJanus = () => {
     (async () => {
       let cameraPermission = await requestCameraPermission();
       if (cameraPermission === 'granted' || cameraPermission === 'limited') {
-        console.log("cameraPermission");
+        console.log('cameraPermission');
       } else {
         openSettings();
       }
-      const credential = await AsyncStorage.getItem('credential', JSON.stringify(register.data));
+      const credential = await AsyncStorage.getItem(
+        'credential',
+        JSON.stringify(register.data),
+      );
       if (credential) {
-        setAuth(true)
+        setAuth(true);
       }
     })();
 
@@ -59,9 +63,19 @@ const CallJanus = () => {
     setRemoteStream(streamData.remoteStream);
   }, [streamData.remoteStream]);
 
+  const fcmTokenCheck = async () => {
+    try {
+      const fcmToken = await messaging().getToken();
+      return fcmToken;
+    } catch (error) {
+      return false;
+    }
+  };
+
   const register = async () => {
     try {
-      const register = await SDK.register('91' + number);
+      const fcmToken = await fcmTokenCheck();
+      const register = await SDK.register('91' + number, fcmToken);
       const response = await SDK.connect(
         register.data.username,
         register.data.password,

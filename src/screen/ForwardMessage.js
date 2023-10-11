@@ -497,7 +497,8 @@ const ForwardMessage = () => {
       newMsgIds.push(uuidv4());
     }
     const newMsgIdsCopy = [...newMsgIds];
-    for (const msg of _forwardMessages) {
+    for (let i = 0; i < forwardMessages.length; i++) {
+      const msg = forwardMessages[i];
       for (const userId in selectedUsers) {
         const chatType = 'chat';
         let toUserJid =
@@ -509,8 +510,10 @@ const ForwardMessage = () => {
           currentNewMsgId,
         );
         batch(() => {
-          // updating recent chat
-          dispatch(updateRecentChat(recentChatObj));
+          // updating recent chat for last message only
+          if (i === forwardMessages.length - 1) {
+            dispatch(updateRecentChat(recentChatObj));
+          }
           // updating convresations if active chat or delete conversations data
           if (toUserJid === activeChatUserJid) {
             const conversationChatObj = getMessageObjForward(
@@ -538,7 +541,7 @@ const ForwardMessage = () => {
       formatUserIdToJid(u?.userJid || u?.userId),
     );
     const msgIds = forwardMessages.map(m => m.msgId);
-    SDK.forwardMessagesToMultipleUsers(
+    await SDK.forwardMessagesToMultipleUsers(
       contactsToForward,
       msgIds,
       true,

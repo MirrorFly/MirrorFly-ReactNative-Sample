@@ -1,17 +1,14 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import PushNotification from 'react-native-push-notification';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN } from '../constant';
 import store from '../redux/store';
 import { navigate } from '../redux/Actions/NavigationAction';
 import * as RootNav from '../../src/Navigation/rootNavigation';
 import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
-import { AppState, Platform } from 'react-native';
+import { AppState, Linking, Platform } from 'react-native';
 class PushNotifiLocal {
   constructor(fromUserJid, onForeGround) {
     PushNotification.configure({
-      onNotification: async function (notification) {
-        notification.finish(PushNotificationIOS.FetchResult.NoData);
+      onNotification: async function () {
         if (onForeGround || AppState.currentState === 'background') {
           let x = { screen: CHATSCREEN, fromUserJID: fromUserJid };
           await store.dispatch(navigate(x));
@@ -24,7 +21,7 @@ class PushNotifiLocal {
           return;
         }
         const push_url = 'mirrorfly_rn://CHATSCREEN?fromUserJid=' + fromUserJid;
-        await AsyncStorage.setItem('push_url', JSON.stringify(push_url));
+        Linking.openURL(push_url);
       },
       permissions: {
         alert: true,

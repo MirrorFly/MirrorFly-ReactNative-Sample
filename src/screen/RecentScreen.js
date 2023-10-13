@@ -9,11 +9,9 @@ import ScreenHeader from '../components/ScreenHeader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { ResetStore } from '../redux/Actions/ResetAction';
-import { sortBydate } from '../Helper/Chat/RecentChat';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import {
-  CHATSCREEN,
   CONTACTLIST,
   PROFILESCREEN,
   RECENTCHATSCREEN,
@@ -21,186 +19,93 @@ import {
 } from '../constant';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { profileDetail } from '../redux/Actions/ProfileAction';
-import {
-  addRecentChat,
-  deleteActiveChatAction,
-} from '../redux/Actions/RecentChatAction';
+import { deleteActiveChatAction } from '../redux/Actions/RecentChatAction';
 import RecentHeader from '../components/RecentHeader';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import { DeleteChatHistoryAction } from '../redux/Actions/ConversationAction';
-import { updateRosterData } from '../redux/Actions/rosterAction';
 import logo from '../assets/mirrorfly-logo.png';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import ApplicationColors from '../config/appColors';
 import commonStyles from '../common/commonStyles';
 import Pressable from '../common/Pressable';
+import {
+  clearRecentChatSelectedItems,
+  toggleRecentChatSearch,
+  updateRecentChatSearchText,
+} from '../redux/Actions/recentChatSearchAction';
+
+const scenesMap = SceneMap({
+  first: () => <RecentChat />,
+  second: RecentCalls,
+});
 
 function RecentScreen() {
   const dispatch = useDispatch();
+  const { isSearching, selectedItems } =
+    useSelector(state => state.recentChatSearchData) || {};
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: 'first', title: 'Chats' },
     { key: 'second', title: 'Calls' },
   ]);
-  const [filteredData, setFilteredData] = React.useState([]);
-  const [filteredMessages, setFilteredMessages] = React.useState([]);
-  const [isSearching, setIsSearching] = React.useState(false);
-  const [recentData, setrecentData] = React.useState([]);
-  const [searchValue, setSearchValue] = React.useState('');
-  const recentChatList = useSelector(state => state.recentChatData.data);
-  const [recentItem, setRecentItem] = React.useState([]);
   const [showDeleteChatModal, setShowDeleteChatModal] = React.useState(false);
 
-  const handleSearch = text => {
-    setIsSearching(true);
-    setSearchValue(text);
-    searchFilter(text);
-  };
-
-  const searchFilter = text => {
-    const filtered = recentData?.filter(
-      item =>
-        item.fromUserId.toLowerCase().includes(text.toLowerCase()) ||
-        item?.profileDetails?.nickName
-          ?.toLowerCase()
-          .includes(text.toLowerCase()),
+  useFocusEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackBtn,
     );
-    SDK.messageSearch(text).then(res => {
-      if (res.statusCode === 200) {
-        setFilteredMessages(res.data);
-      }
-    });
-    setFilteredData(filtered);
+    return () => {
+      backHandler.remove();
+    };
+  });
+
+  const closeSearch = () => {
+    dispatch(toggleRecentChatSearch(false));
+    dispatch(updateRecentChatSearchText(''));
   };
 
-  const handleRecentItemSelect = item => {
-    let recentSelected = recentItem.some(selectedItem =>
-      selectedItem?.userJid
-        ? selectedItem?.userJid === item?.userJid
-        : selectedItem?.toUserId === item?.toUserId,
-    );
-    if (recentSelected) {
-      setRecentItem(prevArray =>
-        prevArray.filter(
-          selectedItem => selectedItem.userJid !== item?.userJid,
-        ),
-      );
-    } else {
-      setRecentItem(prevState => [...prevState, item]);
-    }
+  const handleClearSearch = () => {
+    dispatch(updateRecentChatSearchText(''));
   };
-
-  const handleSelect = item => {
-    if (recentItem.length) {
-      handleRecentItemSelect(item);
-    } else {
-      let jid = formatUserIdToJid(
-        item?.fromUserId,
-      ); /** Need to add chat type here while working in Group
-      formatUserIdToJid(
-       item?.fromUserId,
-       item?.chatType,
-     )
-     */
-      SDK.activeChatUser(jid);
-      let x = {
-        screen: CHATSCREEN,
-        fromUserJID: item?.userJid || jid,
-        profileDetails: item?.profileDetails,
-      };
-      dispatch(navigate(x));
-      RootNav.navigate(CHATSCREEN);
-    }
-  };
-
-  const handleBack = () => {
-    setIsSearching(false);
-    setSearchValue('');
-  };
-
-  const handleClear = () => {
-    setFilteredData(recentData);
-    setSearchValue('');
-  };
-
-  React.useEffect(() => {
-    (async () => {
-      const recentChats = await SDK.getRecentChatsDB();
-      const recentChatsFilter = recentChats?.data.filter(
-        item => item.chatType === 'chat',
-      );
-      dispatch(addRecentChat(recentChatsFilter));
-      updateRosterDataForRecentChats(recentChatsFilter);
-    })();
-  }, []);
-
-  const constructRecentChatItems = recentChatArrayConstruct => {
-    let recent = [];
-    sortBydate([...recentChatArrayConstruct]).map(async chat => {
-      recent.push(chat);
-    });
-
-    return recent.filter(eachmessage => eachmessage);
-  };
-
-  const updateRosterDataForRecentChats = singleRecentChatList => {
-    const userProfileDetails = singleRecentChatList.map(
-      chat => chat.profileDetails,
-    );
-    dispatch(updateRosterData(userProfileDetails));
-  };
-
-  React.useEffect(() => {
-    let recentChatItems = constructRecentChatItems(recentChatList);
-    setrecentData(recentChatItems);
-  }, [recentChatList]);
-
-  React.useEffect(() => {
-    if (!searchValue) {
-      setFilteredData(recentData);
-    } else {
-      searchFilter(searchValue);
-    }
-  }, [recentData, isSearching]);
 
   const renderTabBar = React.useCallback(
     props => {
       return (
-        <>
-          {!isSearching && (
-            <TabBar
-              {...props}
-              style={styles.tabbar}
-              indicatorStyle={styles.tabbarIndicator}
-              labelStyle={styles.tabarLabel}
-              activeColor={'#3276E2'}
-            />
-          )}
-        </>
+        !isSearching && (
+          <TabBar
+            {...props}
+            style={styles.tabbar}
+            indicatorStyle={styles.tabbarIndicator}
+            labelStyle={styles.tabarLabel}
+            activeColor={'#3276E2'}
+          />
+        )
       );
     },
     [isSearching],
   );
 
   const handleBackBtn = () => {
-    if (recentItem.length) {
-      setRecentItem([]);
+    if (selectedItems.length) {
+      dispatch(clearRecentChatSelectedItems());
       return true;
     }
     if (isSearching) {
-      setFilteredMessages([]);
-      setIsSearching(false);
-      setSearchValue('');
+      batch(() => {
+        dispatch(toggleRecentChatSearch(false));
+        dispatch(updateRecentChatSearchText(''));
+      });
       return true;
     }
   };
 
   const handleRemove = () => {
-    setRecentItem([]);
+    dispatch(clearRecentChatSelectedItems());
   };
 
   const deleteChat = () => {
-    recentItem.forEach(item => {
+    selectedItems.forEach(item => {
       let userJid =
         item?.userJid ||
         formatUserIdToJid(
@@ -217,19 +122,9 @@ function RecentScreen() {
         dispatch(DeleteChatHistoryAction({ fromUserId: item?.fromUserId }));
       });
     });
-    setRecentItem([]);
+    dispatch(clearRecentChatSelectedItems());
     toggleDeleteModal();
   };
-
-  useFocusEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      handleBackBtn,
-    );
-    return () => {
-      backHandler.remove();
-    };
-  });
 
   const handleLogout = async () => {
     SDK.logout();
@@ -269,46 +164,37 @@ function RecentScreen() {
     [],
   );
 
-  const renderScene = React.useMemo(() => {
-    return SceneMap({
-      first: () => (
-        <RecentChat
-          isSearching={isSearching}
-          data={filteredData}
-          searchValue={searchValue}
-          handleSelect={handleSelect}
-          handleOnSelect={handleRecentItemSelect}
-          recentItem={recentItem}
-          filteredMessages={filteredMessages}
-        />
-      ),
-      second: RecentCalls,
-    });
-  }, [isSearching, filteredData, searchValue, recentItem, filteredMessages]);
+  const toggleSearching = val => {
+    dispatch(toggleRecentChatSearch(val));
+  };
+
+  const handleSearch = text => {
+    dispatch(updateRecentChatSearchText(text));
+  };
 
   return (
     <>
-      {!recentItem.length ? (
+      {!selectedItems.length ? (
         <ScreenHeader
-          setIsSearching={setIsSearching}
+          setIsSearching={toggleSearching}
           onhandleSearch={handleSearch}
-          onCloseSearch={handleBack}
+          onCloseSearch={closeSearch}
           menuItems={menuItems}
           logo={logo}
           handleBackBtn={handleBackBtn}
           isSearching={isSearching}
-          handleClear={handleClear}
+          handleClear={handleClearSearch}
         />
       ) : (
         <RecentHeader
           handleRemove={handleRemove}
-          recentItem={recentItem}
+          recentItem={selectedItems}
           handleDeleteChat={toggleDeleteModal}
         />
       )}
       <TabView
         navigationState={{ index, routes }}
-        renderScene={renderScene}
+        renderScene={scenesMap}
         onIndexChange={setIndex}
         initialLayout={{ width: Dimensions.get('window').width }}
         renderTabBar={renderTabBar}
@@ -326,16 +212,16 @@ function RecentScreen() {
         <ModalCenteredContent onPressOutside={toggleDeleteModal}>
           <View style={styles.deleteChatModalContentContainer}>
             <Text style={styles.deleteChatModalTitle}>
-              {recentItem.length === 1
+              {selectedItems.length === 1
                 ? `${
                     'Delete chat with "' +
                     `${
-                      recentItem[0]?.profileDetails?.nickName ||
-                      recentItem[0]?.fromUserId
+                      selectedItems[0]?.profileDetails?.nickName ||
+                      selectedItems[0]?.fromUserId
                     }"` +
                     '?'
                   }`
-                : `Delete ${recentItem.length} selected chats?`}
+                : `Delete ${selectedItems.length} selected chats?`}
             </Text>
             <View style={styles.modalActionButtonContainer}>
               <Pressable

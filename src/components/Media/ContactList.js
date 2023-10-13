@@ -80,43 +80,31 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
   const fetchContacts = async () => {
     try {
       setIsLoading(true);
-      const isNotFirstTimeContactPermissionCheck = await AsyncStorage.getItem(
-        'contact_permission',
-      );
-      AsyncStorage.setItem('contact_permission', 'true');
-      const result = await requestContactPermission();
-      if (result === 'granted') {
-        Contacts.getAll().then(fetchedContacts => {
-          let validContactsList = fetchedContacts.filter(
-            c => c.phoneNumbers.length,
-          );
-          if (Platform.OS === 'ios') {
-            validContactsList = validContactsList.map(c => ({
-              ...c,
-              displayName:
-                (c.givenName ? c.givenName + ' ' : c.givenName) + c.familyName,
-            }));
+      Contacts.getAll().then(fetchedContacts => {
+        let validContactsList = fetchedContacts.filter(
+          c => c.phoneNumbers.length,
+        );
+        if (Platform.OS === 'ios') {
+          validContactsList = validContactsList.map(c => ({
+            ...c,
+            displayName:
+              (c.givenName ? c.givenName + ' ' : c.givenName) + c.familyName,
+          }));
+        }
+        const sortedContacts = validContactsList.sort((a, b) => {
+          const nameA = a.displayName.toLowerCase();
+          const nameB = b.displayName.toLowerCase();
+          if (nameA < nameB) {
+            return -1;
+          } else if (nameA > nameB) {
+            return 1;
           }
-          const sortedContacts = validContactsList.sort((a, b) => {
-            const nameA = a.displayName.toLowerCase();
-            const nameB = b.displayName.toLowerCase();
-            if (nameA < nameB) {
-              return -1;
-            } else if (nameA > nameB) {
-              return 1;
-            }
-            return 0;
-          });
-          setContacts(sortedContacts);
+          return 0;
         });
-      } else if (isNotFirstTimeContactPermissionCheck) {
-        goBackToPreviousScreen();
-        openSettings();
-      } else {
-        goBackToPreviousScreen();
-      }
+        setContacts(sortedContacts);
+      });
     } catch (error) {
-      console.error('Error requesting contacts permission:', error);
+      console.error('Error fetching contacts: ', error);
     }
   };
 

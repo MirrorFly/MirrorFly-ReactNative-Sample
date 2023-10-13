@@ -288,7 +288,7 @@ PODS:
     - React-Core
   - react-native-cameraroll (4.1.2):
     - React-Core
-  - react-native-compressor (1.8.9):
+  - react-native-compressor (1.6.1):
     - NextLevelSessionExporter
     - React-Core
   - react-native-contacts (7.0.7):
@@ -303,7 +303,7 @@ PODS:
     - React
   - react-native-get-random-values (1.9.0):
     - React-Core
-  - react-native-maps (1.7.1):
+  - react-native-maps (1.8.0):
     - React-Core
   - react-native-mov-to-mp4 (0.2.2):
     - React
@@ -689,14 +689,14 @@ SPEC CHECKSUMS:
   React-logger: da69d7f1c9501c78cd60776d52a60d7fa5e4d9c2
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: 2957f2bce63ae896a848fbe0d5352c1bd4d20866
-  react-native-compressor: 2c248f49044634233b774bc896cff6ebbe9018f1
+  react-native-compressor: ebcf8bc36f8e44581a8f831583caee8a27e55a01
   react-native-contacts: 61971364bf9f11a846587eeb736a4e65632815d4
   react-native-create-thumbnail: e022bcdcba8a0b4529a50d3fa1a832ec921be39d
   react-native-document-picker: 2b8f18667caee73a96708a82b284a4f40b30a156
   react-native-geocoder: 757427682892bb256f3b3745858cc90eba148a8e
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
-  react-native-maps: 667f9b975549c6fa9b1631bf859440f68ebd3b8f
+  react-native-maps: f699e0753c22c4d5c3a44d03895b193a4dbca6c2
   react-native-mov-to-mp4: a04f17590618523487ab5d71c9310c6c4a7aaf99
   react-native-netinfo: 1a6035d3b9780221d407c277ebfb5722ace00658
   react-native-orientation-locker: 851f6510d8046ea2f14aa169b1e01fcd309a94ba

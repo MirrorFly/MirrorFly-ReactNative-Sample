@@ -54,8 +54,8 @@ const Location = ({ setLocalNav, handleSendMsg }) => {
       'hardwareBackPress',
       goBackToPreviousScreen,
     );
-    // checking permission and fetching current location
-    checkPermissionAndGetLocation();
+    // fetching current location
+    getCurrentLocation();
     return () => {
       backHandler.remove();
     };
@@ -66,27 +66,6 @@ const Location = ({ setLocalNav, handleSendMsg }) => {
       fetchAddressForLocation(location);
     }
   }, [location]);
-
-  const checkPermissionAndGetLocation = async () => {
-    try {
-      const isNotFirstTimeLocationPermissionCheck = await AsyncStorage.getItem(
-        'location_permission',
-      );
-      AsyncStorage.setItem('location_permission', 'true');
-      const result = await requestLocationPermission();
-      if (result === 'granted' || result === 'limited') {
-        getCurrentLocation();
-      } else if (isNotFirstTimeLocationPermissionCheck) {
-        goBackToPreviousScreen();
-        openSettings();
-      } else {
-        goBackToPreviousScreen();
-      }
-    } catch (error) {
-      setIsLoading(false);
-      console.error('Failed to request location permission:', error);
-    }
-  };
 
   const goBackToPreviousScreen = () => {
     setLocalNav(CHATCONVERSATION);
@@ -194,26 +173,31 @@ const Location = ({ setLocalNav, handleSendMsg }) => {
   };
 
   const getCurrentLocation = () => {
-    Geolocation.getCurrentPosition(
-      position => {
-        const { latitude, longitude } = position.coords;
-        setLocation({
-          latitude,
-          longitude,
-          latitudeDelta: mapDeltaValue.current.latitudeDelta,
-          longitudeDelta: mapDeltaValue.current.longitudeDelta,
-        });
-        setIsLoading(false);
-      },
-      error => {
-        setIsLoading(false);
-        console.error('Error getting current location:', error);
-        showToast('Unable to get current location', {
-          id: 'location-error-toast',
-        });
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
-    );
+    try {
+      Geolocation.getCurrentPosition(
+        position => {
+          const { latitude, longitude } = position.coords;
+          setLocation({
+            latitude,
+            longitude,
+            latitudeDelta: mapDeltaValue.current.latitudeDelta,
+            longitudeDelta: mapDeltaValue.current.longitudeDelta,
+          });
+          setIsLoading(false);
+        },
+        error => {
+          setIsLoading(false);
+          console.error('Error getting current location:', error);
+          showToast('Unable to get current location', {
+            id: 'location-error-toast',
+          });
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+      );
+    } catch (error) {
+      setIsLoading(false);
+      console.error('Failed to get current location: ', error);
+    }
   };
 
   const showNoConnectivityToast = () => {

@@ -14,6 +14,7 @@ import {
   Animated,
   Easing,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import { SendBtn } from '../common/Button';
 import {
@@ -46,6 +47,7 @@ import { showToast } from '../Helper/index';
 import { useNetworkStatus } from '../hooks';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import ForwardArrow from '../assets/ForwardArrow.png';
 
 export const chatInputMessageRef = createRef();
 chatInputMessageRef.current = '';
@@ -392,8 +394,6 @@ const ChatInput = props => {
                   </Text>
                 )}
               </View>
-
-              {/* </View> */}
             </View>
             {isRecording ? (
               <View style={styles.GestureHandlerContainer}>
@@ -406,7 +406,12 @@ const ChatInput = props => {
                       onSwipeableRightOpen={swipeFromRightOpen}
                       containerStyle={styles.SwipeContainer}
                       onSwipeableClose={onSwipeClose}>
-                      <View>
+                      <View style={styles.SlideContainer}>
+                        <Image
+                          source={ForwardArrow}
+                          resizeMode={'contain'}
+                          style={styles.arrowSlideIcon}
+                        />
                         <Text style={styles.cancelText}>Slide to Cancel</Text>
                       </View>
                     </Swipeable>
@@ -621,5 +626,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-end',
+  },
+  arrowSlideIcon: {
+    width: 10,
+    height: 10,
+    marginRight: 3,
+    marginTop: 4,
+  },
+  SlideContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
 });

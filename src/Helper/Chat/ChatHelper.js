@@ -132,9 +132,11 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
     updateObj.fileToken = response.fileToken;
     updateObj.thumbImage = response.thumbImage;
   } else {
-    updateObj.uploadStatus = 1;
+    updateObj.uploadStatus = 3;
   }
-  store.dispatch(updateUploadStatus(updateObj));
+  setTimeout(()=>{
+    store.dispatch(updateUploadStatus(updateObj));
+  }, 5000)
 };
 
 export const updateMediaUploadStatusHistory = (data, stateData) => {

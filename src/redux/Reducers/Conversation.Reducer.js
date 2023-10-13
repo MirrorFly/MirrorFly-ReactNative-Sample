@@ -42,7 +42,7 @@ const conversationReducer = (state = initialState, action) => {
       return {
         ...state,
         id: Date.now(),
-        data: getUpdatedHistoryData(action.payload, StateToObj(state).data),
+        data: getUpdatedHistoryData(action.payload, StateToObj(state.data)),
       };
     case UPDATE_UPLOAD_STATUS:
       return {
@@ -50,7 +50,7 @@ const conversationReducer = (state = initialState, action) => {
         id: Date.now(),
         data: getUpdatedHistoryDataUpload(
           action.payload,
-          StateToObj(state).data,
+          StateToObj(state.data),
         ),
       };
     case CANCEL_MEDIA_UPLOAD:
@@ -59,7 +59,7 @@ const conversationReducer = (state = initialState, action) => {
         id: Date.now(),
         data: updateMediaUploadStatusHistory(
           action.payload,
-          StateToObj(state).data,
+          StateToObj(state.data),
         ),
       };
     case CLEAR_CHAT_HISTORY:
@@ -78,7 +78,7 @@ const conversationReducer = (state = initialState, action) => {
       return {
         ...state,
         id: Date.now(),
-        data: deleteChatHandle(action.payload, StateToObj(state).data),
+        data: deleteChatHandle(action.payload, StateToObj(state.data)),
       };
     case DELETE_CONVERSATION:
       const _state = { ...state.data };

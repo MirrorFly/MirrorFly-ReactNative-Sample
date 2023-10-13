@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   mapImage: {
     width: 195,
     height: 170,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     borderRadius: 8,
   },
   statusWithTimestampContainer: {

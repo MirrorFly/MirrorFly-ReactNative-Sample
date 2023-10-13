@@ -43,7 +43,9 @@ import {
   mediaObjContructor,
   requestAudioStoragePermission,
   requestCameraPermission,
+  requestContactPermission,
   requestFileStoragePermission,
+  requestLocationPermission,
   requestStoragePermission,
 } from '../common/utils';
 import CameraPickView from '../components/CameraPickView';
@@ -224,14 +226,40 @@ function ChatScreen() {
     }
   };
 
-  const handleContactSelect = () => {
-    setLocalNav('ContactList');
+  const handleContactSelect = async () => {
+    try {
+      const isNotFirstTimeContactPermissionCheck = await AsyncStorage.getItem(
+        'contact_permission',
+      );
+      AsyncStorage.setItem('contact_permission', 'true');
+      const result = await requestContactPermission();
+      if (result === 'granted') {
+        setLocalNav('ContactList');
+      } else if (isNotFirstTimeContactPermissionCheck) {
+        openSettings();
+      }
+    } catch (error) {
+      console.error('Error requesting contacts permission:', error);
+    }
   };
   const handleLocationSelect = async () => {
-    if (isNetworkAvailable) {
-      setLocalNav('LocationInfo');
-    } else {
-      showCheckYourInternetToast();
+    try {
+      const isNotFirstTimeLocationPermissionCheck = await AsyncStorage.getItem(
+        'location_permission',
+      );
+      AsyncStorage.setItem('location_permission', 'true');
+      const result = await requestLocationPermission();
+      if (result === 'granted' || result === 'limited') {
+        if (isNetworkAvailable) {
+          setLocalNav('LocationInfo');
+        } else {
+          showCheckYourInternetToast();
+        }
+      } else if (isNotFirstTimeLocationPermissionCheck) {
+        openSettings();
+      }
+    } catch (error) {
+      console.error('Failed to request location permission:', error);
     }
   };
 
@@ -341,15 +369,10 @@ function ChatScreen() {
         profileDetails: {},
       };
       dispatch(navigate(x));
-      RootNav.navigate(RECENTCHATSCREEN);
+      RootNav.reset(RECENTCHATSCREEN);
     }
     return true;
   };
-
-  const backHandler = BackHandler.addEventListener(
-    'hardwareBackPress',
-    handleBackBtn,
-  );
 
   const getThumbImage = async uri => {
     const result = await ImageCompressor.compress(uri, {
@@ -625,7 +648,10 @@ function ChatScreen() {
   };
 
   React.useEffect(() => {
-    // handleImageConvert()
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackBtn,
+    );
     return () => {
       backHandler.remove();
     };

@@ -234,25 +234,7 @@ export const openLocationExternally = (latitude, longitude) => {
 };
 
 export const getLocationImageURL = ({ latitude, longitude }) => {
-  return `${MAP_THHUMBNAIL_URL}?center=${latitude},${longitude}&zoom=15&size=195x170&markers=color:red|${latitude},${longitude}&key=${config.GOOGLE_LOCATION_API_KEY}`;
-};
-
-export const handleOpenUrl = async () => {
-  const push_url = await AsyncStorage.getItem('push_url');
-  if (push_url) {
-    const regexStr = '[?&]([^=#]+)=([^&#]*)';
-    let regex = new RegExp(regexStr, 'g'),
-      match;
-    match = regex.exec(JSON.parse(push_url));
-    let x = {
-      screen: CHATSCREEN,
-      fromUserJID: match[2],
-    };
-    Store.dispatch(navigate(x));
-    Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
-    RootNav.navigate(CHATSCREEN);
-    AsyncStorage.setItem('push_url', '');
-  }
+  return `${MAP_THHUMBNAIL_URL}?center=${latitude},${longitude}&zoom=13&size=300x200&markers=color:red|${latitude},${longitude}&key=${config.GOOGLE_LOCATION_API_KEY}`;
 };
 
 export const addPendingSeenStatusMsg = obj => {
@@ -286,4 +268,8 @@ export const handleSetPendingSeenStatus = async obj => {
 export const updateRecentAndConversationStore = obj => {
   updateRecentChatMessage(obj, Store.getState());
   updateConversationMessage(obj, Store.getState());
+};
+
+export const escapeRegExpReservedChars = str => {
+  return String(str).replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
 };

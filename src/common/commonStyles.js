@@ -17,8 +17,10 @@ export const toastStyles = StyleSheet.create({
 export const pressableStyles = StyleSheet.create({
   highlightView: {
     position: 'absolute',
-    width: '100%',
-    height: '100%',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
     backgroundColor: ApplicationColors.pressedBg,
     zIndex: 10,
   },
@@ -83,11 +85,17 @@ const commonStyles = StyleSheet.create({
   marginLeft_10: {
     marginLeft: 10,
   },
+  marginLeft_15: {
+    marginLeft: 15,
+  },
   marginRight_4: {
     marginRight: 4,
   },
   marginRight_8: {
     marginRight: 8,
+  },
+  marginRight_28: {
+    marginRight: 24,
   },
   marginBottom_6: {
     marginBottom: 6,
@@ -150,6 +158,9 @@ const commonStyles = StyleSheet.create({
   paddingLeft_0: {
     paddingLeft: 0,
   },
+  paddingLeft_4: {
+    paddingLeft: 4,
+  },
   paddingRight_0: {
     paddingRight: 0,
   },
@@ -173,6 +184,9 @@ const commonStyles = StyleSheet.create({
   },
   bgBlack_04: {
     backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  overflowHidden: {
+    overflow: 'hidden',
   },
 });
 

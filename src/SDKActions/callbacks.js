@@ -18,7 +18,7 @@ import {
 import { REGISTERSCREEN } from '../constant';
 import {
   ClearChatHistoryAction,
-  DeleteChatHIstoryAction,
+  DeleteChatHistoryAction,
   deleteMessageForEveryone,
   deleteMessageForMe,
   updateChatConversationHistory,
@@ -80,7 +80,6 @@ export const callBacks = {
             getNotifyNickName(res),
             getNotifyMessage(res),
             res?.publisherJid,
-            true,
           );
           break;
       }
@@ -106,7 +105,7 @@ export const callBacks = {
       res.msgType === MSG_DELETE_CHAT_CARBON
     ) {
       store.dispatch(deleteActiveChatAction(res));
-      store.dispatch(DeleteChatHIstoryAction(res));
+      store.dispatch(DeleteChatHistoryAction(res));
     }
     if (
       res.msgType === MSG_DELETE_STATUS ||

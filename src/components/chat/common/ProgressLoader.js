@@ -174,8 +174,9 @@ const ProgressLoader = (props = {}) => {
     }
     if (getAnimateClass()) {
       return (
-        <View style={styles.loaderLine}>
+        <View>
           {/* <Animated.View
+          style={styles.loaderLine} // Add this to View tag
             style={[
               {
                 width: 40,
@@ -430,7 +431,9 @@ const styles = StyleSheet.create({
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
-    width: 85,
+    /** width: 85, Add this during Animation */
+    overflow: 'hidden',
+    borderRadius: 50,
   },
   cancelBtn: {
     position: 'absolute',

@@ -105,6 +105,7 @@
     "react-native-sound": "^0.11.0",
     "react-native-svg": "^13.10.0",
     "react-native-svg-transformer": "^1.1.0",
+    "react-native-swipe-gestures": "^1.0.5",
     "react-native-swipe-list-view": "^3.2.9",
     "react-native-tab-view": "^3.5.1",
     "react-native-video": "^5.2.1",

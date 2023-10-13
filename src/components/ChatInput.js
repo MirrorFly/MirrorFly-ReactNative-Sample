@@ -21,6 +21,7 @@ import {
   MicIcon,
   EmojiIcon,
   KeyboardIcon,
+  DeleteRedBinIcon,
 } from '../common/Icons';
 
 import EmojiOverlay from './EmojiPicker';
@@ -41,11 +42,10 @@ import { getExtention, requestMicroPhonePermission } from '../common/utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
-import {
-  GestureHandlerRootView,
-  PanGestureHandler,
-  State,
-} from 'react-native-gesture-handler';
+import { showToast } from '../Helper/index';
+import { useNetworkStatus } from '../hooks';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export const chatInputMessageRef = createRef();
 chatInputMessageRef.current = '';
@@ -69,11 +69,46 @@ const ChatInput = props => {
   const [audioPath, setAudioPath] = useState('');
   const [totalDuration, setTotalDuration] = useState(0);
   const [recordedData, setRecordedData] = React.useState({});
-
   const audioRecorderPlayer = React.useRef(new AudioRecorderPlayer()).current;
+  const [showDeleteIcon, setShowDeleteIcon] = useState(false);
+
   const filenameRef = useRef('');
+  const isConnected = useNetworkStatus();
 
   const pulseAnimation = useRef(new Animated.Value(1)).current;
+
+  const showMaximumLimitAudioToast = () => {
+    showToast('You can record maximum 300 seconds for audio recording', {
+      id: 'Recording-duration-toast',
+    });
+  };
+  const showInternetconnectionToast = () => {
+    showToast('Please check your internet connection', {
+      id: 'internet-connection-toast',
+    });
+  };
+
+  const showMinimumLimitAudioToast = () => {
+    showToast('Recorded audio time is too short', {
+      id: 'Recording-duration-short-toast',
+    });
+  };
+
+  const rightSwipeActions = () => {
+    return <View style={styles.rightSwipeActionsContainer} />;
+  };
+
+  const swipeFromRightOpen = () => {
+    setIsRecording(false);
+    setShowRecorderUi(false);
+    setRecordingDuration('00:00');
+    setShowDeleteIcon(false);
+    try {
+      audioRecorderPlayer.stopRecorder();
+    } catch (err) {
+      console.log(' error when stop recording ', err);
+    }
+  };
 
   useEffect(() => {
     if (isRecording) {
@@ -203,21 +238,6 @@ const ChatInput = props => {
     chatInputMessageRef.current = message;
   }, [message]);
 
-  const swipeRef = useRef(null);
-
-  const handleSwipe = event => {
-    if (event.nativeEvent.state === State.ACTIVE) {
-      if (isRecording) {
-        const { translationX } = event.nativeEvent;
-        if (translationX < -60) {
-          setShowRecorderUi(false);
-          setIsRecording(false);
-        } else {
-          console.log('translation else part ...');
-        }
-      }
-    }
-  };
   const sendMessage = () => {
     if (message) {
       setMessage('');
@@ -232,7 +252,10 @@ const ChatInput = props => {
   };
 
   const sendAudioRecorderMessage = () => {
-    if (recordingDuration > '00:00' && recordingDuration <= '05:00') {
+    if (recordingDuration >= '05:00') {
+      stopRecording();
+      showMaximumLimitAudioToast();
+    } else if (recordingDuration > '00:00') {
       let AudioRecordInfo = {
         type: 'media',
         content: [recordedData],
@@ -240,6 +263,10 @@ const ChatInput = props => {
       handleSendMsg(AudioRecordInfo);
       setShowRecorderUi(false);
       setRecordedData({});
+    } else if (recordingDuration === '00:00') {
+      showMinimumLimitAudioToast();
+    } else if (!isConnected) {
+      showInternetconnectionToast();
     }
   };
 
@@ -280,6 +307,19 @@ const ChatInput = props => {
 
   const handleCancel = () => {
     setShowRecorderUi(!showRecoderUi);
+    try {
+      audioRecorderPlayer.stopRecorder();
+    } catch (err) {
+      console.log(' error when stop recording ', err);
+    }
+  };
+
+  const onSwipeClose = () => {
+    setShowDeleteIcon(false);
+  };
+
+  const onTouchStart = () => {
+    setShowDeleteIcon(true);
   };
 
   return (
@@ -334,41 +374,50 @@ const ChatInput = props => {
             styles.container,
             Boolean(message) && commonStyles.paddingRight_0,
           ]}>
-          <View style={styles.textInputContainer}>
+          <View style={styles.RecordUIContainer}>
             <View style={styles.totalTimeMaincontainer}>
               <View style={styles.totalTimeContainer}>
-                {!isRecording && (
+                {!isRecording && recordingDuration && (
                   <View>
                     <MicIcon height={'17'} width={'17'} color={'#3276E2'} />
                   </View>
                 )}
-                <Text style={styles.totalDurationText}>
-                  {recordingDuration}
-                </Text>
-              </View>
-              <View>
-                {!isRecording && (
-                  <TouchableOpacity onPress={handleCancel}>
-                    <Text style={styles.cancelText}>Cancel</Text>
-                  </TouchableOpacity>
+                {showDeleteIcon ? (
+                  <View>
+                    <DeleteRedBinIcon />
+                  </View>
+                ) : (
+                  <Text style={styles.totalDurationText}>
+                    {recordingDuration}
+                  </Text>
                 )}
               </View>
+
+              {/* </View> */}
             </View>
-            <GestureHandlerRootView>
-              <PanGestureHandler
-                ref={swipeRef}
-                // activeOffsetX={[-80, 0]}
-                // shouldCancelWhenOutside={false}
-                onGestureEvent={handleSwipe}>
-                <View style={{ flex: 1, alignItems: 'center' }}>
-                  {isRecording && (
-                    <View style={styles.recorderUI}>
-                      <Text>Swipe to Cancel</Text>
-                    </View>
-                  )}
+            {isRecording ? (
+              <View style={styles.GestureHandlerContainer}>
+                <View style={styles.recorderUI}>
+                  <GestureHandlerRootView
+                    style={commonStyles.flex1}
+                    onTouchStart={onTouchStart}>
+                    <Swipeable
+                      renderRightActions={rightSwipeActions}
+                      onSwipeableRightOpen={swipeFromRightOpen}
+                      containerStyle={styles.SwipeContainer}
+                      onSwipeableClose={onSwipeClose}>
+                      <View>
+                        <Text style={styles.cancelText}>Slide to Cancel</Text>
+                      </View>
+                    </Swipeable>
+                  </GestureHandlerRootView>
                 </View>
-              </PanGestureHandler>
-            </GestureHandlerRootView>
+              </View>
+            ) : (
+              <TouchableOpacity onPress={handleCancel}>
+                <Text style={styles.cancelOptionText}>Cancel</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           <View style={styles.Plusingcontainer}>
@@ -434,6 +483,16 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 40,
+    borderColor: ApplicationColors.mainBorderColor,
+  },
+  RecordUIContainer: {
+    flexDirection: 'row',
+    flexGrow: 1,
+    flexShrink: 1,
+    justifyContent: 'space-between',
     alignItems: 'center',
     borderWidth: 1,
     borderRadius: 40,
@@ -510,23 +569,30 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   totalTimeContainer: {
+    //flex: 1,
     flexDirection: 'row',
     paddingVertical: 12,
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   totalTimeMaincontainer: {
-    flex: 1,
-    justifyContent: 'space-between',
+    //flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 15,
+    marginHorizontal: 10,
+    justifyContent: 'space-between',
   },
   totalDurationText: { fontSize: 12, color: '#3276E2', marginLeft: 6 },
   cancelText: {
+    color: '#363636',
+    fontWeight: '400',
     fontSize: 12,
-    color: 'rgb(255, 0, 0)',
-    fontWeight: '300',
+  },
+  cancelOptionText: {
+    color: '#ee2c2c',
+    fontWeight: '400',
+    fontSize: 12,
+    right: 20,
   },
   Plusingcontainer: {
     alignItems: 'center',
@@ -542,19 +608,20 @@ const styles = StyleSheet.create({
   },
   recorderUI: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    bottom: 0,
+    flexDirection: 'row',
     right: 18,
-    top: 0,
   },
-  slideToCancelText: {
-    color: '#363636',
-    fontWeight: '300',
-    fontSize: 10,
+  rightSwipeActionsContainer: {
+    width: '70%',
   },
-  swipeoutContainer: {
-    backgroundColor: '#9db8e2',
-    borderRadius: 10,
+  SwipeContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+  },
+  GestureHandlerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
   },
 });

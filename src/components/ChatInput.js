@@ -569,14 +569,12 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   totalTimeContainer: {
-    //flex: 1,
     flexDirection: 'row',
     paddingVertical: 12,
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   totalTimeMaincontainer: {
-    //flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 10,
@@ -612,7 +610,7 @@ const styles = StyleSheet.create({
     right: 18,
   },
   rightSwipeActionsContainer: {
-    width: '70%',
+    width: '60%',
   },
   SwipeContainer: {
     flex: 1,

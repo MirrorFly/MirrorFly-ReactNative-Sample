@@ -127,11 +127,9 @@ const RootNavigation = () => {
       } else {
         setInitialRouteValue(REGISTERSCREEN);
       }
+      await handleOpenUrl(setIsLoading);
       setIsLoading(false);
     }, 1000);
-    setTimeout(async () => {
-      await handleOpenUrl(setIsLoading);
-    }, 1100);
   }, []);
 
   return (

@@ -23,6 +23,7 @@ const ImageCard = props => {
   const {
     msgId = '',
     msgBody: { media },
+    msgStatus,
     msgBody: {
       replyTo = '',
       message_type = '',
@@ -57,6 +58,8 @@ const ImageCard = props => {
       imageUrl && !isSender && setImageSource(imageUrl);
     }
   }, [file_url, message_type, local_path]);
+
+  console.log('props.status msgId-->', msgId, msgStatus, props.status);
 
   return (
     <View style={commonStyles.paddingHorizontal_4}>

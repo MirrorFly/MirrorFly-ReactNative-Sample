@@ -65,6 +65,7 @@ export const callBacks = {
     console.log('dbListener', JSON.stringify(res));
   },
   messageListener: async res => {
+    console.log(res, 'messageListener');
     await nextFrame();
     if (res.chatType === 'chat') {
       switch (res.msgType) {
@@ -200,6 +201,7 @@ export const callBacks = {
     console.log('groupMsgInfoListener = (res) => { }', res);
   },
   mediaUploadListener: res => {
+    console.log('mediaUploadListener res', JSON.stringify(res, null, 2));
     store.dispatch(updateMediaUploadData(res));
   },
   mediaDownloadListener: res => {

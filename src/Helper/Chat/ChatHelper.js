@@ -53,11 +53,12 @@ export const getUniqueListBy = (arr, key) => {
 export const uploadFileToSDK = async (file, jid, msgId, media) => {
   const {
     caption = '',
-    fileDetails: { replyTo = '', duration = 0, audioType = '', type } = {},
+    fileDetails: { replyTo = '', duration = 0, audioType = '', type = '' } = {},
   } = file;
-
   const isDocument = DOCUMENT_FORMATS.includes(type);
-  const msgType = isDocument ? 'file' : type.split('/')[0];
+  const msgType = isDocument
+    ? 'file'
+    : type?.split('/')[0] || media.fileType.split('/')[0];
   let fileOptions = {
     msgId: msgId,
     caption: caption,
@@ -75,39 +76,50 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
   };
 
   let response = {};
-  if (msgType === 'file') {
-    response = await SDK.sendDocumentMessage(
-      jid,
-      file.fileDetails,
-      fileOptions,
-      replyTo,
-    );
-  } else if (msgType === 'image') {
-    response = await SDK.sendImageMessage(
-      jid,
-      file.fileDetails,
-      fileOptions,
-      replyTo,
-    );
-  } else if (msgType === 'video') {
-    response = await SDK.sendVideoMessage(
-      jid,
-      file.fileDetails,
-      fileOptions,
-      replyTo,
-    );
-  } else if (msgType === 'audio') {
-    response = await SDK.sendAudioMessage(
-      jid,
-      file.fileDetails,
-      fileOptions,
-      replyTo,
-    );
-  }
+  // response = await SDK.sendMediaMessage(
+  //   jid,
+  //   msgId,
+  //   msgType,
+  //   file.fileDetails,
+  //   fileOptions,
+  //   replyTo,
+  // );
+  /**
+  // if (msgType === 'file') {
+  //   // response = await SDK.sendDocumentMessage(
+  //   //   jid,
+  //   //   file.fileDetails,
+  //   //   fileOptions,
+  //   //   replyTo,
+  //   // );
+  // } else if (msgType === 'image') {
+  //   response = await SDK.sendImageMessage(
+  //     jid,
+  //     file.fileDetails,
+  //     fileOptions,
+  //     replyTo,
+  //   );
+  // } else if (msgType === 'video') {
+  //   response = await SDK.sendVideoMessage(
+  //     jid,
+  //     file.fileDetails,
+  //     fileOptions,
+  //     replyTo,
+  //   );
+  // } else if (msgType === 'audio') {
+  //   response = await SDK.sendAudioMessage(
+  //     jid,
+  //     file.fileDetails,
+  //     fileOptions,
+  //     replyTo,
+  //   );
+  // }
+   */
   let updateObj = {
     msgId,
     statusCode: response.statusCode,
     fromUserId: getUserIdFromJid(jid),
+    uploadStatus: 1,
   };
   console.log(response, 'uploadfile response');
   if (response.statusCode === 200) {
@@ -119,15 +131,15 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
         */
     updateObj.fileToken = response.fileToken;
     updateObj.thumbImage = response.thumbImage;
-  } else if (response.statusCode === 500) {
-    updateObj.uploadStatus = 3;
+  } else {
+    updateObj.uploadStatus = 1;
   }
   store.dispatch(updateUploadStatus(updateObj));
 };
 
 export const updateMediaUploadStatusHistory = (data, stateData) => {
   // Here Get the Current Active Chat History and Active Message
-  const currentChatData = stateData[data.fromUserId];
+  const currentChatData = stateData[getUserIdFromJid(data.fromUserId)];
   if (
     currentChatData?.messages &&
     Object.keys(currentChatData?.messages).length > 0
@@ -295,7 +307,9 @@ export const getChatHistoryData = (data, stateData) => {
       );
       return msg;
     });
-  } else newSortedData = sortedData;
+  } else {
+    newSortedData = sortedData;
+  }
 
   const finalData = { messages: arrayToObject(newSortedData, 'msgId') };
 

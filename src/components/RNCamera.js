@@ -192,6 +192,7 @@ const Camera = props => {
 
   const handlePressOut = () => {
     stopRecordingVideo();
+    clearInterval(recordingIntervalRef.current);
   };
 
   return (

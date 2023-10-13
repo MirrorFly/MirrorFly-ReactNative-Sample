@@ -105,6 +105,7 @@ const ChatMessage = props => {
   React.useEffect(() => {
     is_uploading === 8 && setUploadStatus(is_uploading);
     if (is_uploading === 1) {
+      setUploadStatus(is_uploading);
       uploadFileToSDK(file, fromUserJId, msgId, msgBody?.media);
     }
     (is_uploading === 3 || is_uploading === 7) && setUploadStatus(3);
@@ -128,6 +129,7 @@ const ChatMessage = props => {
   }
 
   const getMessageStatus = currentStatus => {
+    console.log('getMessageStatus currentStatus -->', msgId, currentStatus);
     if (isSame && currentStatus === 3) {
       return <SandTimer />;
     }
@@ -217,7 +219,7 @@ const ChatMessage = props => {
       ? handleMessageSelect()
       : showContactInviteModal(_message);
   };
-
+  console.log('message?.msgStatus', msgId, message?.msgStatus);
   const renderMessageBasedOnType = () => {
     switch (message?.msgBody?.message_type) {
       case 'text':

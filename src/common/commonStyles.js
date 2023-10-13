@@ -165,6 +165,15 @@ const commonStyles = StyleSheet.create({
   fontWeight_bold: {
     fontWeight: 'bold',
   },
+  colorWhite: {
+    color: '#fff',
+  },
+  fontSize_12: {
+    fontSize: 12,
+  },
+  bgBlack_04: {
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
 });
 
 export default commonStyles;

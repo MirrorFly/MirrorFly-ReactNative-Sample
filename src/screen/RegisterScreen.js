@@ -1,5 +1,5 @@
-import React from 'react';
-import { Linking, Platform, TextInput } from 'react-native';
+import React, { useEffect } from 'react';
+import { BackHandler, Linking, Platform, TextInput } from 'react-native';
 import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { navigate } from '../redux/Actions/NavigationAction';
@@ -29,7 +29,7 @@ import {
 import { useNetworkStatus } from '../hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SDK from '../SDK/SDK';
-/**import messaging from '@react-native-firebase/messaging';*/
+import messaging from '@react-native-firebase/messaging';
 
 const RegisterScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -47,6 +47,17 @@ const RegisterScreen = ({ navigation }) => {
   const PolicyHandler = () => {
     Linking.openURL('https://www.mirrorfly.com/privacy-policy.php');
   };
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        BackHandler.exitApp();
+        return true;
+      },
+    );
+    return () => backHandler.remove();
+  }, []);
 
   const selectCountryHandler = () => {
     let x = { screen: COUNTRYSCREEN };
@@ -128,21 +139,21 @@ const RegisterScreen = ({ navigation }) => {
       handleRegister();
     }
   };
-  /**
-  // const fcmTokenCheck = async () => {
-  //   try {
-  //     const fcmToken = await messaging().getToken();
-  //     return fcmToken;
-  //   } catch (error) {
-  //     return false;
-  //   }
-  // };
-   */
+  const fcmTokenCheck = async () => {
+    try {
+      const fcmToken = await messaging().getToken();
+      return fcmToken;
+    } catch (error) {
+      return false;
+    }
+  };
 
   const handleRegister = async () => {
     setIsToastShowing(false);
+    const fcmToken = await fcmTokenCheck();
     const register = await SDK.register(
       selectcountry?.dial_code + mobileNumber,
+      fcmToken,
     );
     if (register.statusCode === 200) {
       await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
@@ -181,7 +192,102 @@ const RegisterScreen = ({ navigation }) => {
       setIsLoading(false);
     }
   }, [isNetworkConnected]);
+  /**
+  const handleNotify = async () => {
+    const channelId = await notifee.createChannel({
+      id: 'default',
+      name: 'Default name',
+    });
 
+    // const notificationBody = `Hey There ....!!!!`;
+
+    // await notifee.displayNotification({
+    //   // title:"Sample App",
+    //   // body:notificationBody,
+    //   // android:{
+    //   //   channelId,
+    //   //   largeIcon: 'https://subli.info/wp-content/uploads/2015/05/google-maps-blur.png',
+    //   // },
+    //   // title: '<p style="color: #4caf50;"><b>Styled HTMLTitle</span></p></b></p> &#128576;',
+    //   titleWithImageAndStyle,
+    //   subtitle: '&#129395;',
+    //   body:
+    //     'The <p style="text-decoration: line-through">body can</p> also be <p style="color: #ffffff; background-color: #9c27b0"><i>styled too</i></p> &#127881;!',
+    //   android: {
+    //     channelId,
+    //     color: '#4caf50',
+    //     actions: [
+    //       {
+    //         title: '<b>Dance</b> &#128111;',
+    //         pressAction: { id: 'dance' },
+    //       },
+    //       {
+    //         title: '<p style="color: #f44336;"><b>Cry</b> &#128557;</p>',
+    //         pressAction: { id: 'cry' },
+    //       },
+    //     ],
+    //   },
+    // })
+
+    const notificationImage = 'https://your-image-url.com/your-image.png';
+    const notificationTitle = 'Styled HTMLTitle';
+    const notificationSubtitle = '&#129395;';
+    const notificationBody = 'The body can also be styled too! &#127881;';
+    const scheduleTime = new Date().getTime() + 5000;
+    // const notification = {
+    //   title: notificationTitle,
+    //   subtitle: notificationSubtitle,
+    //   body: notificationBody,
+    //   android: {
+    //     channelId,
+    //     color: '#4caf50',
+    //     actions: [
+    //       {
+    //         title: 'Dance',
+    //         pressAction: { id: 'dance' },
+    //       },
+    //       {
+    //         title: 'Cry',
+    //         pressAction: { id: 'cry' },
+    //       },
+    //     ],
+    //     customContentView: {
+    //       contentView: {
+    //         type: notifee.ContentType.BIG_TEXT,
+    //         title: 'Custom Notification',
+    //         content: `
+    //           <div style="display: flex; align-items: center;">
+
+    //             <span style="color: #4caf50; font-weight: bold;">${notificationTitle}</span>
+    //           </div>
+    //           <div>${notificationSubtitle}</div>
+    //           <div>${notificationBody}</div>
+    //         `,
+    //         htmlFormatContent: true,
+    //       },
+    //     },
+    //   },
+    // };
+
+    notifee.displayNotification({
+      // title: '<p style="color: #4caf50;"><b>Styled HTMLTitle</span></p></b></p> &#128576;',
+      // subtitle: '&#129395;',
+      // body:
+      //   '<img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" style="width: 20px; height: 20px;" />',
+      title: 'Title Push notification',
+      body: 'Title Body sample Notification',
+      android: {
+        channelId,
+        color: '#4caf50',
+        schedule: {
+          fireDate: scheduleTime,
+        },
+        smallIcon: 'ic_launcher',
+        largeIcon: require('../assets/BG.png'),
+      },
+    });
+  };
+ */
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}

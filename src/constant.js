@@ -45,3 +45,20 @@ export const mediaStatusConstants = {
   DOWNLOADED: 'DOWNLOADED',
   UPLOADED: 'UPLOADED',
 };
+// Notification constants
+export const deletedMessage = 'This message was deleted';
+export const imageEmoji = '📷';
+export const videoEmoji = '📽️';
+export const contactEmoji = '👤';
+export const audioEmoji = '🎵';
+export const fileEmoji = '📄';
+export const locationEmoji = '📌';
+
+// Others
+export const MAP_THHUMBNAIL_URL =
+  'https://maps.googleapis.com/maps/api/staticmap';
+export const INVITE_SMS_CONTENT =
+  'Hey, MirrorFly is a real time chat, Audio and Video call solution for B2B and B2C.\n Download the app from this URL: https://app.mirrorfly.com';
+export const INVITE_APP_URL = 'https://app.mirrorfly.com';
+export const CALL_BACK = 'CALL_BACK';
+export const NOTIFICATION = 'NOTIFICATION';

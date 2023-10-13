@@ -5,14 +5,14 @@ import { showToast } from '../Helper/index';
 import SDK from '../SDK/SDK';
 import { ClearChatHistoryAction } from '../redux/Actions/ConversationAction';
 import { clearLastMessageinRecentChat } from '../redux/Actions/RecentChatAction';
-import { Box, HStack, Modal, Stack, Text, View, useToast } from 'native-base';
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNetworkStatus } from '../../src/hooks';
@@ -35,6 +35,15 @@ import ReplyVideo from './ReplyVideo';
 import ReplyDeleted from './ReplyDeleted';
 import chatBackgroud from '../assets/chatBackgroud.png';
 import { getImageSource } from '../common/utils';
+import Modal, { ModalCenteredContent } from '../common/Modal';
+import Pressable from '../common/Pressable';
+import commonStyles from '../common/commonStyles';
+
+// below ref is used to check whether selecting is happening or not in other components without passing the selected Messages state as props
+export const isMessageSelectingRef = React.createRef();
+export const isActiveChatScreenRef = React.createRef();
+isActiveChatScreenRef.current = false;
+isMessageSelectingRef.current = false;
 
 const ChatConversation = React.memo(props => {
   const {
@@ -56,7 +65,12 @@ const ChatConversation = React.memo(props => {
   const [menuItems, setMenuItems] = React.useState([]);
   const [isOpenAlert, setIsOpenAlert] = React.useState(false);
   const isNetworkConnected = useNetworkStatus();
-  const toast = useToast();
+
+  const selectedMessagesIdRef = useRef({});
+
+  React.useEffect(() => {
+    isMessageSelectingRef.current = Boolean(selectedMsgs?.length);
+  }, [selectedMsgs]);
 
   const isSearchClose = () => {
     handleIsSearchingClose();
@@ -69,42 +83,6 @@ const ChatConversation = React.memo(props => {
   React.useEffect(() => {
     setReplyMsgs(replyMsg);
   }, [replyMsg]);
-  /**
-* const { vCardProfile, fromUserJId, messages } = useSelector((state) => ({
-vCardProfile: state.profile.profileDetails,
-fromUserJId: state.navigation.fromUserJid,
-messages: state.chatConversationData.data
-}))
-// const handleSwipeLeft = (rowKey) => {
-// chatInputRef.current.focus();
-// const filteredMsgInfo = messageList.filter(item => item.msgId === rowKey);
-// setReplyMsgs(filteredMsgInfo[0]);
-// };
-
-const renderHiddenItem = (data, rowMap) => {
-return (
-<HStack alignItems={'center'} flex={"0.8"} ml='2' >
-{isSwiping?.isActivated && isSwiping?.key === data.item.msgId &&
-<HStack alignItems={'center'} justifyContent={'center'} w={10} h={10} borderRadius={20} bg={'#E5E5E5'}><ReplyIcon /></HStack>}
-</HStack>
-)
-}
-const onLeftAction = (rowKey) => {
-handleSwipeLeft(rowKey);
-};
-const onLeftActionStatusChange = (res) => {
-setIsSwiping(res);
-};
-const leftActivationValue = 20; // Adjust as needed
-const leftActionValue = 20; // Adjust as needed
-const initialLeftActionState = false; // Adjust as needed
-// handleSwipeLeft(msgId);
-*/
-
-  const toastConfig = {
-    duration: 2500,
-    avoidKeyboard: true,
-  };
 
   const handleMessageListUpdated = messages => {
     if (
@@ -117,26 +95,19 @@ const initialLeftActionState = false; // Adjust as needed
   };
 
   const copyToClipboard = () => {
+    selectedMessagesIdRef.current = {};
     setSelectedMsgs([]);
     Clipboard.setString(
       selectedMsgs[0]?.msgBody.message ||
         selectedMsgs[0]?.msgBody?.media?.caption,
     );
-    toast.show({
-      ...toastConfig,
-      render: () => {
-        return (
-          <Box bg="black" px="2" py="1" rounded="sm">
-            <Text color={'#fff'} p="2">
-              1 Text copied successfully to the clipboard
-            </Text>
-          </Box>
-        );
-      },
+    showToast('1 Text copied successfully to the clipboard', {
+      id: 'text-copied-success-toast',
     });
   };
 
   const handleReply = msg => {
+    selectedMessagesIdRef.current = {};
     setSelectedMsgs([]);
     setReplyMsgs(msg);
     onReplyMessage(msg);
@@ -280,24 +251,32 @@ const initialLeftActionState = false; // Adjust as needed
   const onSelectedMessageUpdate = item => {
     if (Object.keys(item || {}).length !== 0 && selectedMsgs.length !== 0) {
       const updatedSeletedMessage = selectedMsgs.map(message => {
+        selectedMessagesIdRef.current[message?.msgId] = true;
         return item[message?.msgId];
       });
       setSelectedMsgs(updatedSeletedMessage);
     }
   };
 
-  const handleMsgSelect = (message, recall = false) => {
-    if (recall) {
-      message.recall = true;
-    }
-    if (selectedMsgs.find(msg => msg.msgId === message?.msgId)) {
-      setSelectedMsgs(prevArray =>
-        prevArray.filter(item => message.msgId !== item?.msgId),
-      );
-    } else {
-      setSelectedMsgs([...selectedMsgs, message]);
-    }
-  };
+  const handleMsgSelect = React.useCallback(
+    (message, recall = false) => {
+      if (recall) {
+        message.recall = true;
+      }
+      if (selectedMessagesIdRef.current[message?.msgId]) {
+        delete selectedMessagesIdRef.current[message?.msgId];
+        setSelectedMsgs(prevArray =>
+          prevArray.filter(item => message.msgId !== item?.msgId),
+        );
+      } else {
+        selectedMessagesIdRef.current[message?.msgId] = true;
+        setSelectedMsgs(prevArray => [...prevArray, message]);
+      }
+    },
+    [setSelectedMsgs],
+  );
+
+  const closeAlert = () => setIsOpenAlert(false);
 
   const renderReplyMessageTemplateAboveInput = () => {
     const {
@@ -360,6 +339,7 @@ const initialLeftActionState = false; // Adjust as needed
         fromUserJId={fromUserJId}
         selectedMsgs={selectedMsgs}
         setSelectedMsgs={setSelectedMsgs}
+        selectedMsgsIdRef={selectedMessagesIdRef}
         menuItems={menuItems}
         handleBackBtn={props.handleBackBtn}
         handleReply={handleReply}
@@ -378,15 +358,14 @@ const initialLeftActionState = false; // Adjust as needed
           handleMsgSelect={handleMsgSelect}
           onSelectedMessageUpdate={onSelectedMessageUpdate}
           selectedMsgs={selectedMsgs}
+          selectedMsgsIdRef={selectedMessagesIdRef}
         />
       </ImageBackground>
       {replyMsgs && !IsSearching ? (
-        <View paddingX={'1'} paddingY={'2'} backgroundColor={'#E2E8F9'}>
-          <Stack paddingX={'3'} paddingY={'0 '} backgroundColor={'#0000001A'}>
-            <View marginY={'3'} justifyContent={'flex-start'}>
-              {renderReplyMessageTemplateAboveInput()}
-            </View>
-          </Stack>
+        <View style={styles.replyingMessageContainer}>
+          <View style={styles.replyingMessageWrapper}>
+            {renderReplyMessageTemplateAboveInput()}
+          </View>
         </View>
       ) : null}
       {!IsSearching && (
@@ -398,35 +377,29 @@ const initialLeftActionState = false; // Adjust as needed
           fromUserJId={fromUserJId}
         />
       )}
-      <Modal
-        isOpen={isOpenAlert}
-        safeAreaTop={true}
-        onClose={() => setIsOpenAlert(false)}>
-        <Modal.Content
-          w="88%"
-          borderRadius={0}
-          px="6"
-          py="4"
-          fontWeight={'300'}>
-          <Text fontSize={16} color={'#5e5e5e'}>
-            {'Are you sure you want to clear the chat?'}
-          </Text>
-          <HStack justifyContent={'flex-end'} pb={'1'} pt={'7'}>
-            <Pressable
-              onPress={() => {
-                setIsOpenAlert(false);
-              }}>
-              <Text pr={'5'} fontWeight={'500'} color={'#3276E2'}>
-                CANCEL
-              </Text>
-            </Pressable>
-            <Pressable onPress={clearChat}>
-              <Text fontWeight={'500'} color={'#3276E2'}>
-                CLEAR
-              </Text>
-            </Pressable>
-          </HStack>
-        </Modal.Content>
+      <Modal visible={isOpenAlert} onRequestClose={closeAlert}>
+        <ModalCenteredContent onPressOutside={closeAlert}>
+          <View style={styles.modalContentContainer}>
+            <Text style={styles.modalContentText}>
+              Are you sure you want to clear the chat?
+            </Text>
+            <View style={styles.modalActionButtonContainer}>
+              <Pressable
+                contentContainerStyle={[
+                  commonStyles.p_4,
+                  commonStyles.marginRight_16,
+                ]}
+                onPress={closeAlert}>
+                <Text style={styles.modalCancelButtonText}>CANCEL</Text>
+              </Pressable>
+              <Pressable
+                contentContainerStyle={commonStyles.p_4}
+                onPress={clearChat}>
+                <Text style={styles.modalOkButtonText}>CLEAR</Text>
+              </Pressable>
+            </View>
+          </View>
+        </ModalCenteredContent>
       </Modal>
     </KeyboardAvoidingView>
   );
@@ -448,6 +421,44 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: 'black',
+  },
+  replyingMessageContainer: {
+    paddingHorizontal: 4,
+    paddingVertical: 8,
+    backgroundColor: '#E2E8F9',
+  },
+  replyingMessageWrapper: {
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    justifyContent: 'center',
+    backgroundColor: '#0000001A',
+  },
+  modalContentContainer: {
+    width: '88%',
+    borderRadius: 0,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    fontWeight: '300',
+    backgroundColor: '#fff',
+  },
+  modalContentText: {
+    fontSize: 16,
+    color: '#5e5e5e',
+  },
+  modalActionButtonContainer: {
+    flexDirection: 'row',
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+    paddingBottom: 4,
+    paddingTop: 28,
+  },
+  modalCancelButtonText: {
+    fontWeight: '500',
+    color: '#3276E2',
+  },
+  modalOkButtonText: {
+    fontWeight: '500',
+    color: '#3276E2',
   },
 });
 

@@ -48,6 +48,7 @@ function StackNavigationPage(props) {
       screenOptions={{
         headerShown: false,
         orientation: 'portrait',
+        gestureEnabled: false,
       }}
       initialRouteName={props.InitialValue}>
       {/* <Stack.Screen name="Splash" component={SplashScreen} /> */}

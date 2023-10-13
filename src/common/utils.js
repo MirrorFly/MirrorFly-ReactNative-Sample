@@ -1,3 +1,4 @@
+import React from 'react';
 import DocumentPicker from 'react-native-document-picker';
 import { Box, Text } from 'native-base';
 import {
@@ -7,11 +8,27 @@ import {
 } from 'react-native-permissions';
 import { Platform } from 'react-native';
 import SDK from '../SDK/SDK';
+import messaging from '@react-native-firebase/messaging';
 
 const toastConfig = {
   duration: 2500,
   avoidKeyboard: true,
 };
+
+const documentAttachmentTypes = [
+  DocumentPicker.types.pdf,
+  DocumentPicker.types.ppt,
+  DocumentPicker.types.pptx,
+  DocumentPicker.types.doc,
+  DocumentPicker.types.docx,
+  DocumentPicker.types.xls,
+  DocumentPicker.types.xlsx,
+  DocumentPicker.types.plainText,
+  DocumentPicker.types.zip,
+  DocumentPicker.types.csv,
+  /** need to add rar file type and verify that */
+  '.rar',
+];
 
 export const getExtention = filename => {
   // To get the file extension
@@ -50,6 +67,22 @@ export const handleAudioPickerSingle = async () => {
   } catch (error) {
     SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
     console.log(error);
+  }
+};
+
+export const handleDocumentPickSingle = async () => {
+  try {
+    const result = await DocumentPicker.pickSingle({
+      type: documentAttachmentTypes,
+      presentationStyle: 'fullScreen',
+      copyTo:
+        Platform.OS === 'android' ? 'documentDirectory' : 'cachesDirectory',
+    });
+    return result;
+  } catch (error) {
+    // updating the SDK flag back to false to behave as usual
+    SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+    console.log('Error in document picker pick single ', error);
   }
 };
 
@@ -117,6 +150,32 @@ export const requestFileStoragePermission = async () => {
     // returning granted as we don't need permission to access files in ios and Android version 13 or higher
     return Promise.resolve('granted');
   }
+};
+
+export const requestLocationPermission = async () => {
+  return request(
+    Platform.OS === 'android'
+      ? PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION
+      : PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+  );
+};
+
+export const requestNotificationPermission = async () => {
+  return request(
+    Platform.OS === 'android' && PERMISSIONS.ANDROID.POST_NOTIFICATIONS,
+  );
+};
+
+export const requestIOS_NotificationPermission = () => {
+  return messaging().requestPermission();
+};
+
+export const requestContactPermission = async () => {
+  return request(
+    Platform.OS === 'android'
+      ? PERMISSIONS.ANDROID.READ_CONTACTS
+      : PERMISSIONS.IOS.CONTACTS,
+  );
 };
 
 export const handleGalleryPickerMulti = async toast => {

@@ -935,12 +935,12 @@ export const EmojiIcon = () => {
     </Svg>
   );
 };
-export const TickMarkIcon = () => {
+export const TickMarkIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="16.923"
-      height="13.718"
+      width={props.width || '16.923'}
+      height={props.height || '13.718'}
       viewBox="0 0 16.923 13.718">
       <G id="tick" transform="translate(0 -46.298)">
         <G
@@ -1250,6 +1250,26 @@ export const LocationIcon = props => {
   );
 };
 
+export const LocationMarkerIcon = ({ width, height, color }) => {
+  return (
+    <Svg
+      width={width || '20'}
+      height={height || '20'}
+      viewBox="0 0 20 20"
+      version="1.1">
+      <G id="surface1">
+        <Path
+          stroke=""
+          fillRule="nonzero"
+          fill={color || 'rgb(0, 0, 0)'}
+          fillOpacity={1}
+          d="M 14.703125 9.1875 C 14.703125 6.703125 12.703125 4.703125 10.21875 4.703125 C 7.734375 4.703125 5.734375 6.703125 5.734375 9.1875 C 5.734375 11.671875 10.21875 16.308594 10.21875 16.308594 C 10.21875 16.308594 14.703125 11.671875 14.703125 9.1875 Z M 8.132812 9.097656 C 8.132812 7.957031 9.078125 7.011719 10.21875 7.011719 C 11.363281 7.011719 12.308594 7.933594 12.308594 9.097656 C 12.308594 10.242188 11.382812 11.1875 10.21875 11.1875 C 9.078125 11.1875 8.132812 10.242188 8.132812 9.097656 Z M 8.132812 9.097656 "
+        />
+      </G>
+    </Svg>
+  );
+};
+
 export const PreViewAddIcon = () => {
   return (
     <Svg
@@ -1551,16 +1571,16 @@ export const ClearTextIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="6.46"
-      height="6.4"
+      width={props.width || '6.46'}
+      height={props.height || '6.4'}
       viewBox="0 0 6.46 6.4">
       <Path
         id="Path_13610"
         data-name="Path 13610"
         d="M21.912,16.088a.3.3,0,0,0-.424,0L19,18.576l-2.488-2.488a.3.3,0,0,0-.424.424L18.576,19l-2.488,2.488a.3.3,0,1,0,.424.424L19,19.424l2.488,2.488a.3.3,0,1,0,.424-.424L19.424,19l2.488-2.488A.3.3,0,0,0,21.912,16.088Z"
         transform="translate(-15.77 -15.8)"
-        fill="#111b1d"
-        stroke="rgba(24, 24, 24,0.3)"
+        fill={props.color || '#111b1d'}
+        stroke={props.color || '#111b1d'}
         stroke-width="0.4"
       />
     </Svg>
@@ -2336,12 +2356,12 @@ export const CheckBox = () => {
   );
 };
 
-export const TickIcon = () => {
+export const TickIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="16.294"
-      height="12.811"
+      width={props.width || '16.294'}
+      height={props.height || '12.811'}
       viewBox="0 0 16.294 12.811">
       <Path
         id="Path_13812"
@@ -2354,12 +2374,12 @@ export const TickIcon = () => {
   );
 };
 
-export const RightArrowIcon = () => {
+export const RightArrowIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="5.085"
-      height="8.656"
+      width={props.width || '5.085'}
+      height={props.height || '8.656'}
       viewBox="0 0 5.085 8.656">
       <G id="right-arrow" transform="translate(-101.478)">
         <G
@@ -2371,7 +2391,7 @@ export const RightArrowIcon = () => {
             data-name="Path 13758"
             d="M106.425,3.99,102.573.138a.475.475,0,0,0-.67,0l-.284.284a.474.474,0,0,0,0,.67l3.235,3.235-3.238,3.238a.475.475,0,0,0,0,.67l.284.284a.474.474,0,0,0,.67,0l3.855-3.855a.478.478,0,0,0,0-.672Z"
             transform="translate(-101.478)"
-            fill="#fff"
+            fill={props.color || '#fff'}
           />
         </G>
       </G>
@@ -2542,7 +2562,7 @@ export const ContactChatIcon = props => {
           data-name="contact-book (3)"
           transform="translate(45.297 144.595)">
           <G id="Group_7305" data-name="Group 7305" transform="translate(48)">
-            <path
+            <Path
               id="Path_9718"
               data-name="Path 9718"
               d="M58.466,1.675H57.21V.419A.419.419,0,0,0,56.792,0H49.256A1.257,1.257,0,0,0,48,1.256V11.722A1.676,1.676,0,0,0,49.675,13.4h8.792a.419.419,0,0,0,.419-.419V2.093A.419.419,0,0,0,58.466,1.675Zm-2.093,8.792a.419.419,0,0,1-.419.419H50.931a.419.419,0,0,1-.419-.419V9.629a2.1,2.1,0,0,1,2.093-2.093H54.28a2.1,2.1,0,0,1,2.093,2.093ZM51.768,5.024A1.675,1.675,0,1,1,53.442,6.7,1.676,1.676,0,0,1,51.768,5.024Zm4.605-3.349H49.256a.419.419,0,1,1,0-.837h7.117Z"
@@ -2750,6 +2770,93 @@ export const TXTIcon = () => {
             fill="#fff"
           />
         </G>
+      </G>
+    </Svg>
+  );
+};
+
+export const ContactInfoIcon = props => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={props.width || '21.396'}
+      height={props.height || '24.344'}
+      viewBox="0 0 21.396 24.344">
+      <G id="user" transform="translate(-31)">
+        <G id="Group_8868" data-name="Group 8868" transform="translate(35.279)">
+          <G id="Group_8867" data-name="Group 8867">
+            <Path
+              id="Path_10201"
+              data-name="Path 10201"
+              d="M127.419,0a6.419,6.419,0,1,0,6.419,6.419A6.426,6.426,0,0,0,127.419,0Z"
+              transform="translate(-121)"
+              fill="#fff"
+            />
+          </G>
+        </G>
+        <G
+          id="Group_8870"
+          data-name="Group 8870"
+          transform="translate(31 14.264)">
+          <G id="Group_8869" data-name="Group 8869">
+            <Path
+              id="Path_10202"
+              data-name="Path 10202"
+              d="M49.684,302.767A9.15,9.15,0,0,0,43.124,300H40.271a9.15,9.15,0,0,0-6.56,2.767,9.354,9.354,0,0,0-2.712,6.6.713.713,0,0,0,.713.713H51.682a.713.713,0,0,0,.713-.713A9.354,9.354,0,0,0,49.684,302.767Z"
+              transform="translate(-31 -300)"
+              fill="#fff"
+            />
+          </G>
+        </G>
+      </G>
+    </Svg>
+  );
+};
+
+export const PhoneIcon = props => {
+  return (
+    <Svg
+      id="phone-call-button"
+      xmlns="http://www.w3.org/2000/svg"
+      width="13.651"
+      height="13.651"
+      viewBox="0 0 13.651 13.651">
+      <G id="call">
+        <Path
+          id="Path_9631"
+          data-name="Path 9631"
+          d="M2.73,5.915a11.807,11.807,0,0,0,5.005,5.005L9.4,9.252a.6.6,0,0,1,.758-.152,7.933,7.933,0,0,0,2.73.455.717.717,0,0,1,.758.758v2.579a.717.717,0,0,1-.758.758A12.882,12.882,0,0,1,0,.758.717.717,0,0,1,.758,0H3.413a.717.717,0,0,1,.758.758,8.589,8.589,0,0,0,.455,2.73.934.934,0,0,1-.152.758Z"
+          fill="#4879f9"
+        />
+      </G>
+    </Svg>
+  );
+};
+export const ContactSendIcon = props => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={props.width || '102'}
+      height={props.height || '102'}
+      viewBox="0 0 102 102">
+      <G id="Button" transform="translate(30 20)">
+        <G transform="matrix(1, 0, 0, 1, -30, -20)" filter="url(#Oval)">
+          <Circle
+            id="Oval-2"
+            data-name="Oval"
+            cx="21"
+            cy="21"
+            r="21"
+            transform="translate(30 20)"
+            fill={props.color || '#4879f9'}
+          />
+        </G>
+        <Path
+          id="Path"
+          d="M10.688,5.344,9.746,4.4,6.012,8.129V0H4.676V8.129L.949,4.4,0,5.344l5.344,5.344Z"
+          transform="translate(15.656 26.344) rotate(-90)"
+          fill={props.color || '#fcfdfd'}
+        />
       </G>
     </Svg>
   );

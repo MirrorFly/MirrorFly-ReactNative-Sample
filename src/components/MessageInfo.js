@@ -8,11 +8,16 @@ import {
 } from '../common/TimeStamp';
 import { useSelector } from 'react-redux';
 import SDK from '../SDK/SDK';
+import { SandTimer } from '../common/Icons';
+import commonStyles from '../common/commonStyles';
+import MapCard from './MapCard';
+import ContactCard from './ContactCard';
 
 function MessageInfo(props) {
   const messages = useSelector(state => state.chatConversationData.data);
   const [deliveredReport, setDeliveredReport] = React.useState();
   const [seenReport, setSeenReport] = React.useState();
+
   const handleBackBtn = () => {
     props.setLocalNav('CHATCONVERSATION');
     return true;
@@ -53,64 +58,109 @@ function MessageInfo(props) {
       break;
   }
 
+  const renderDefaultMessageWithData = (_data, isMedia) => {
+    return (
+      <View
+        px="2"
+        py="1.5"
+        minWidth="30%"
+        maxWidth="90%"
+        bgColor={'#E2E8F7'}
+        borderWidth={0}
+        borderRadius={10}
+        borderBottomRightRadius={0}
+        borderColor="#959595">
+        <Text
+          fontSize={14}
+          color="#313131"
+          {...(isMedia ? { italic: true } : {})}>
+          {_data}
+        </Text>
+        <HStack alignItems="center" alignSelf="flex-end">
+          <View style={[styles?.msgStatus, statusVisible]} />
+          <Text pl="1" color="#959595" fontSize="11">
+            {getConversationHistoryTime(props?.isMessageInfo?.createdAt)}
+          </Text>
+        </HStack>
+      </View>
+    );
+  };
+
+  const doNothing = () => {}; // NOSONAR
+
+  const getMessageStatus = currentStatus => {
+    if (currentStatus === 3) {
+      return (
+        <View style={commonStyles.paddingHorizontal_12}>
+          <SandTimer />
+        </View>
+      );
+    }
+    return <View style={[styles.currentStatus, statusVisible]} />;
+  };
+
+  const renderMapCard = () => {
+    const _message = props?.isMessageInfo;
+    return (
+      <MapCard
+        message={_message}
+        status={getMessageStatus(_message?.msgStatus)}
+        timeStamp={getConversationHistoryTime(_message?.createdAt)}
+        isSender={true}
+        handleReplyPress={doNothing}
+        showReply={false}
+      />
+    );
+  };
+
+  const renderContactCard = () => {
+    const _message = props?.isMessageInfo;
+    return (
+      <ContactCard
+        message={_message}
+        status={getMessageStatus(_message?.msgStatus)}
+        timeStamp={getConversationHistoryTime(_message?.createdAt)}
+        isSender={true}
+        handleReplyPress={doNothing}
+      />
+    );
+  };
+
+  const renderMessageBasedOnType = () => {
+    switch (props?.isMessageInfo?.msgBody?.message_type) {
+      case 'text':
+        return renderDefaultMessageWithData(
+          props?.isMessageInfo?.msgBody?.message,
+        );
+      case 'image':
+      case 'video':
+      case 'audio':
+      case 'file':
+        return renderDefaultMessageWithData(
+          props?.isMessageInfo?.msgBody?.message_type,
+          true,
+        );
+      case 'location':
+        return renderMapCard();
+      case 'contact':
+        return renderContactCard();
+    }
+  };
+
   return (
     <View>
       <ScreenHeader onhandleBack={handleBackBtn} title="Message Info" />
-      <HStack mt="5" alignSelf={'flex-end'} my="1" px="3">
-        <View
-          px="2"
-          py="1.5"
-          minWidth="30%"
-          maxWidth="90%"
-          bgColor={'#E2E8F7'}
-          borderWidth={0}
-          borderRadius={10}
-          borderBottomRightRadius={0}
-          borderColor="#959595">
-          {
-            {
-              text: (
-                <Text fontSize={14} color="#313131">
-                  {props?.isMessageInfo?.msgBody?.message}
-                </Text>
-              ),
-              image: (
-                <Text
-                  fontWeight={'600'}
-                  fontStyle={'italic'}
-                  fontSize={14}
-                  color="#313131">
-                  image
-                </Text>
-              ),
-              video: (
-                <Text
-                  fontWeight={'600'}
-                  fontStyle={'italic'}
-                  fontSize={14}
-                  color="#313131">
-                  video
-                </Text>
-              ),
-              audio: (
-                <Text
-                  fontWeight={'600'}
-                  fontStyle={'italic'}
-                  fontSize={14}
-                  color="#313131">
-                  audio
-                </Text>
-              ),
-            }[props?.isMessageInfo?.msgBody?.message_type]
-          }
-          <HStack alignItems="center" alignSelf="flex-end">
-            <View style={[styles?.msgStatus, statusVisible]}></View>
-            <Text pl="1" color="#959595" fontSize="11">
-              {getConversationHistoryTime(props?.isMessageInfo?.createdAt)}
-            </Text>
-          </HStack>
+      <View
+        style={[
+          commonStyles.paddingHorizontal_12,
+          commonStyles.alignSelfFlexEnd,
+        ]}>
+        <View style={styles.messageContentWrapper}>
+          <View style={[styles.messageContent]}>
+            {renderMessageBasedOnType()}
+          </View>
         </View>
-      </HStack>
+      </View>
       <Divider my="5" />
       <View px="5">
         <Text fontWeight={'600'} fontSize={'lg'}>
@@ -156,5 +206,29 @@ const styles = StyleSheet.create({
   },
   seen: {
     backgroundColor: '#66E824',
+  },
+  mapImage: {
+    width: 195,
+    height: 170,
+    resizeMode: 'contain',
+    borderRadius: 8,
+  },
+  messageContentWrapper: {
+    minWidth: '30%',
+    maxWidth: '80%',
+  },
+  messageContent: {
+    borderRadius: 10,
+    overflow: 'hidden',
+    borderColor: '#DDE3E5',
+    backgroundColor: '#E2E8F7',
+    borderWidth: 0,
+    borderBottomRightRadius: 0,
+  },
+  currentStatus: {
+    marginStart: 15,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
 });

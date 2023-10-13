@@ -12,11 +12,11 @@ function MenuContainer(props) {
         placement={position == 'auto' ? undefined : position}
         trigger={triggerProps => MenuIconBtn(triggerProps)}>
         {props?.menuItems?.map(item =>
-           item.label ? (
+          item.label ? (
             <Menu.Item key={item.label} onPress={item?.formatter}>
               {item.label}
             </Menu.Item>
-          ) : null 
+          ) : null,
         )}
       </Menu>
     </>

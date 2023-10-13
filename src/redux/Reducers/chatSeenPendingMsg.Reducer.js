@@ -25,7 +25,7 @@ const chatSeenPendingMsgReducer = (state = initialState, action) => {
       const addedSeen = {
         ...state,
         id: Date.now(),
-        data: [...StateToObj(state).data, action.payload],
+        data: [...StateToObj(state.data), action.payload],
       };
       AsyncStorage.setItem('pendingSeenStatus', JSON.stringify(addedSeen));
       return addedSeen;
@@ -33,12 +33,12 @@ const chatSeenPendingMsgReducer = (state = initialState, action) => {
       const deleteSeen = {
         ...state,
         id: Date.now(),
-        data: deleteData(StateToObj(state).data, action.payload),
+        data: deleteData(StateToObj(state.data), action.payload),
       };
       AsyncStorage.setItem('pendingSeenStatus', JSON.stringify(deleteSeen));
       return deleteSeen;
-      case RESET_STORE:
-        return initialState
+    case RESET_STORE:
+      return initialState;
     default:
       return state;
   }

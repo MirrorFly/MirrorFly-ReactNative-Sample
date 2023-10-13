@@ -1,12 +1,13 @@
-import { HStack, Image, Stack, Text, View } from 'native-base';
 import React from 'react';
-import { ImageBackground, StyleSheet } from 'react-native';
+import { Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
 import noPreview from '../assets/noPreview.png';
 import ProgressLoader from './chat/common/ProgressLoader';
 import { getThumbBase64URL } from '../Helper/Chat/Utility';
 import ReplyMessage from './ReplyMessage';
 import ic_baloon from '../assets/ic_baloon.png';
 import { getImageSource } from '../common/utils';
+import commonStyles from '../common/commonStyles';
+import ApplicationColors from '../config/appColors';
 
 const ImageCard = props => {
   const {
@@ -58,13 +59,7 @@ const ImageCard = props => {
   }, [file_url, message_type, local_path]);
 
   return (
-    <View
-      borderRadius={10}
-      overflow={'hidden'}
-      borderBottomRightRadius={isSender ? 0 : 10}
-      borderBottomLeftRadius={isSender ? 10 : 0}
-      backgroundColor={isSender ? '#E2E8F7' : '#fff'}
-      px="1">
+    <View style={commonStyles.paddingHorizontal_4}>
       {replyTo && (
         <ReplyMessage
           handleReplyPress={handleReplyPress}
@@ -72,35 +67,23 @@ const ImageCard = props => {
           isSame={isSender}
         />
       )}
-      <View py="1" position="relative">
+      <View style={styles.imageContainer}>
         {imageSource ? (
           <Image
-            width={replyTo ? 250 : androidWidth}
-            borderRadius={5}
-            height={replyTo ? 150 : androidHeight}
+            style={styles.image(androidWidth, androidHeight)}
             alt={fileName}
             source={{ uri: imageSource }}
-            resizeMode="cover"
           />
         ) : (
-          <View backgroundColor={'#fff'}>
+          <View style={styles.noPreviewWrapper}>
             <Image
-              resizeMode="contain"
+              style={styles.noPreview}
               alt={fileName}
               source={getImageSource(noPreview)}
-              width={androidWidth}
-              height={androidHeight}
             />
           </View>
         )}
-        <View
-          position={'absolute'}
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          justifyContent={'center'}
-          alignItems={'center'}>
+        <View style={styles.progressLoaderWrapper}>
           <ProgressLoader
             isSender={isSender}
             imageUrl={imageUrl}
@@ -112,29 +95,23 @@ const ImageCard = props => {
             uploadStatus={uploadStatus}
           />
         </View>
-        {!media.caption && (
-          <View position={'absolute'} bottom={2} right={2}>
+        {!media?.caption && (
+          <View style={styles.messgeStatusAndTimestampWithoutCaption}>
             <ImageBackground source={ic_baloon} style={styles.imageBg}>
               {props.status}
-              <Text pl="1" color="#fff" fontSize="9">
-                {props.timeStamp}
-              </Text>
+              <Text style={styles.timestampText}>{props.timeStamp}</Text>
             </ImageBackground>
           </View>
         )}
       </View>
-      {media.caption && (
-        <Stack pb={2} justifyContent={'space-between'}>
-          <Text color={'#000'} pl={3} fontSize={14}>
-            {media.caption}
-          </Text>
-          <HStack alignItems={'center'} justifyContent={'flex-end'}>
+      {media?.caption && (
+        <View style={styles.captionContainer}>
+          <Text style={styles.captionText}>{media.caption}</Text>
+          <View style={styles.messgeStatusAndTimestampWithCaption}>
             {props.status}
-            <Text pl="1" paddingRight={2} fontSize="9">
-              {props.timeStamp}
-            </Text>
-          </HStack>
-        </Stack>
+            <Text style={styles.timestampText}>{props.timeStamp}</Text>
+          </View>
+        </View>
       )}
     </View>
   );
@@ -143,11 +120,64 @@ const ImageCard = props => {
 export default ImageCard;
 
 const styles = StyleSheet.create({
+  imageContainer: {
+    paddingVertical: 4,
+    position: 'relative',
+  },
   imageBg: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
     width: 100,
     resizeMode: 'cover',
+    padding: 1,
+  },
+  image: (w, h) => ({
+    borderRadius: 5,
+    resizeMode: 'cover',
+    width: w,
+    height: h,
+  }),
+  noPreviewWrapper: {
+    backgroundColor: ApplicationColors.mainbg,
+  },
+  noPreviewImage: (w, h) => ({
+    resizeMode: 'contain',
+    width: w,
+    height: h,
+  }),
+  progressLoaderWrapper: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  messgeStatusAndTimestampWithoutCaption: {
+    position: 'absolute',
+    bottom: 5,
+    right: 2,
+  },
+  timestampText: {
+    paddingLeft: 4,
+    color: ApplicationColors.white,
+    fontSize: 10,
+    fontWeight: '400',
+  },
+  captionContainer: {
+    paddingBottom: 8,
+    justifyContent: 'space-between',
+  },
+  captionText: {
+    color: ApplicationColors.black,
+    paddingLeft: 12,
+    fontSize: 14,
+  },
+  messgeStatusAndTimestampWithCaption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
 });

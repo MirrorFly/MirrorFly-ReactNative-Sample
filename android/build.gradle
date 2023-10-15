@@ -4,6 +4,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 buildscript {
     ext {
+        // buildToolsVersion, compileSdkVersion, targetSdkVersion changed from 31 to 33 for gallery package to work properly in Android 13
         buildToolsVersion = "33.0.0"
         minSdkVersion = 21
         compileSdkVersion = 33
@@ -25,6 +26,7 @@ buildscript {
         classpath("com.android.tools.build:gradle:7.1.1")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("de.undercouch:gradle-download-task:5.0.1")
+         classpath ("com.google.gms:google-services:4.3.15")
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -49,5 +51,17 @@ allprojects {
         }
         google()
         maven { url 'https://www.jitpack.io' }
+    }
+}
+
+// Adding these below subprojects block to fix an error while taking release build
+subprojects {
+    afterEvaluate {project ->
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion rootProject.ext.compileSdkVersion
+                buildToolsVersion rootProject.ext.buildToolsVersion
+            }
+        }
     }
 }

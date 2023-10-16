@@ -1,8 +1,7 @@
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import React from 'react';
 import useFetchImage from '../hooks/useFetchImage';
 import { useNetworkStatus } from '../hooks';
-import { Spinner } from 'native-base';
 import { getUsernameGraphemes } from '../Helper/index';
 
 const Avathar = ({ profileImage, imageStyle, imageProps = {}, ...props }) => {
@@ -21,7 +20,7 @@ const Avathar = ({ profileImage, imageStyle, imageProps = {}, ...props }) => {
   };
 
   if (isLoading && profileImage) {
-    return <Spinner />;
+    return <ActivityIndicator />;
   }
 
   return profileImage && !isImageLoadError && imageUrl ? (

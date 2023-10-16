@@ -1,5 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import SDK from '../SDK/SDK';
+import { updateUserProfileStore } from '../Helper/Chat/ChatHelper';
 
 /**
  * @typedef {Object} userProfileDetails
@@ -27,6 +29,7 @@ const useRosterData = userId => {
     const userData = data[userId];
     if (!userData) {
       setUserProfileData({});
+      getUserProfile(userId);
     } else {
       setUserProfileData(userData);
     }
@@ -36,3 +39,11 @@ const useRosterData = userId => {
 };
 
 export default useRosterData;
+
+const getUserProfile = userId => {
+  SDK.getUserProfile(userId).then(res => {
+    if (res?.statusCode === 200) {
+      updateUserProfileStore(res.data);
+    }
+  });
+};

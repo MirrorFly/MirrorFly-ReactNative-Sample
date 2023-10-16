@@ -18,7 +18,7 @@ import {
 import { REGISTERSCREEN } from '../constant';
 import {
   ClearChatHistoryAction,
-  DeleteChatHIstoryAction,
+  DeleteChatHistoryAction,
   deleteMessageForEveryone,
   deleteMessageForMe,
   updateChatConversationHistory,
@@ -41,6 +41,11 @@ import { updateUserPresence } from '../redux/Actions/userAction';
 import store from '../redux/store';
 import { updateUserProfileDetails } from '../Helper/index';
 import SDK from '../SDK/SDK';
+import { pushNotify, updateNotification } from '../Service/remoteNotifyHandle';
+import {
+  getNotifyMessage,
+  getNotifyNickName,
+} from '../components/RNCamera/Helper';
 
 export const callBacks = {
   connectionListener: response => {
@@ -53,7 +58,7 @@ export const callBacks = {
     } else if (response.status === 'LOGOUT') {
       console.log('LOGOUT');
       store.dispatch(navigate({ screen: REGISTERSCREEN }));
-      RootNav.navigate(REGISTERSCREEN);
+      RootNav.reset(REGISTERSCREEN);
     }
   },
   dbListener: res => {
@@ -69,6 +74,12 @@ export const callBacks = {
         case 'carbonReceiveMessage':
           updateRecentChatMessage(res, store.getState());
           updateConversationMessage(res, store.getState());
+          pushNotify(
+            res.msgId,
+            getNotifyNickName(res),
+            getNotifyMessage(res),
+            res?.publisherJid,
+          );
           break;
       }
     }
@@ -93,7 +104,7 @@ export const callBacks = {
       res.msgType === MSG_DELETE_CHAT_CARBON
     ) {
       store.dispatch(deleteActiveChatAction(res));
-      store.dispatch(DeleteChatHIstoryAction(res));
+      store.dispatch(DeleteChatHistoryAction(res));
     }
     if (
       res.msgType === MSG_DELETE_STATUS ||
@@ -123,6 +134,9 @@ export const callBacks = {
     ) {
       store.dispatch(recentRecallUpdate(res));
       store.dispatch(deleteMessageForEveryone(res));
+      if (res.msgId) {
+        updateNotification(res.msgId);
+      }
     }
 
     /**

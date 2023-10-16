@@ -1,21 +1,35 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import PushNotification from 'react-native-push-notification';
-import { CHATSCREEN } from '../constant';
+import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN } from '../constant';
 import store from '../redux/store';
 import { navigate } from '../redux/Actions/NavigationAction';
-
+import * as RootNav from '../../src/Navigation/rootNavigation';
+import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
+import { AppState, Linking, Platform } from 'react-native';
 class PushNotifiLocal {
-  constructor(fromUserJid, onForGround) {
+  constructor(fromUserJid, onForeGround) {
     PushNotification.configure({
-      onNotification: async function (notification) {
-        if (onForGround) {
-          let x = { screen: CHATSCREEN, fromUserId: fromUserJid };
-          return store.dispatch(navigate(x));
+      onNotification: async function () {
+        if (onForeGround || AppState.currentState === 'background') {
+          let x = { screen: CHATSCREEN, fromUserJID: fromUserJid };
+          await store.dispatch(navigate(x));
+          if (RootNav.getCurrentScreen() === CHATSCREEN) {
+            store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
+            return RootNav.navigate(CONVERSATION_SCREEN);
+          }
+          RootNav.navigate(CHATSCREEN);
+          store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
+          return;
         }
-        await AsyncStorage.setItem('fromUserJId', fromUserJid);
+        const push_url = 'mirrorfly_rn://CHATSCREEN?fromUserJid=' + fromUserJid;
+        Linking.openURL(push_url);
+      },
+      permissions: {
+        alert: true,
+        badge: true,
+        sound: true,
       },
       popInitialNotification: true,
-      requestPermissions: false,
+      requestPermissions: Platform.OS === 'ios',
     });
     PushNotification.createChannel(
       {
@@ -27,12 +41,18 @@ class PushNotifiLocal {
     );
     PushNotification.getScheduledLocalNotifications(rn => {});
   }
-  scheduleNotify(date, title, body) {
+  scheduleNotify(id, date, title, body, playSound) {
     PushNotification.localNotification({
+      smallIcon: 'ic_notification',
+      largeIcon: '',
       channelId: 'reminders',
-      title: title ? title : 'Task reminder Notification',
-      message: body ? body : 'Reminder Task',
+      title: title || 'Task reminder Notification',
+      message: body || 'Reminder Task',
       date,
+      when: date,
+      id: id,
+      playSound: playSound,
+      priority: 'high',
     });
   }
 }

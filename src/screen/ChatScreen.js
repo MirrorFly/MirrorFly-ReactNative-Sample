@@ -1,24 +1,26 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SDK from '../SDK/SDK';
-import {
-  AlertDialog,
-  Box,
-  HStack,
-  Pressable,
-  Text,
-  Toast,
-  useToast,
-} from 'native-base';
 import React from 'react';
-import { Alert, BackHandler, Platform } from 'react-native';
+import {
+  Alert,
+  BackHandler,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
-import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import { showToast } from '../Helper';
+import {
+  getVideoThumbImage,
+  showCheckYourInternetToast,
+  showToast,
+} from '../Helper';
 import { isSingleChat } from '../Helper/Chat/ChatHelper';
 import { DOCUMENT_FORMATS } from '../Helper/Chat/Constant';
 import {
@@ -37,10 +39,13 @@ import {
 } from '../common/Icons';
 import {
   handleAudioPickerSingle,
+  handleDocumentPickSingle,
   mediaObjContructor,
   requestAudioStoragePermission,
   requestCameraPermission,
+  requestContactPermission,
   requestFileStoragePermission,
+  requestLocationPermission,
   requestStoragePermission,
 } from '../common/utils';
 import CameraPickView from '../components/CameraPickView';
@@ -62,7 +67,7 @@ import { addChatConversationHistory } from '../redux/Actions/ConversationAction'
 import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import store from '../redux/store';
 import SavePicture from './Gallery';
-import { createThumbnail } from 'react-native-create-thumbnail';
+import ContactList from '../components/Media/ContactList';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { clearConversationSearchData } from '../redux/Actions/conversationSearchAction';
 import {
@@ -71,6 +76,10 @@ import {
 } from '../redux/Actions/RecoverMessageAction';
 import { useFocusEffect } from '@react-navigation/native';
 import { chatInputMessageRef } from '../components/ChatInput';
+import Location from '../components/Media/Location';
+import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
+import Modal, { ModalCenteredContent } from '../common/Modal';
+import { useNetworkStatus } from '../hooks';
 
 function ChatScreen() {
   const [replyMsg, setReplyMsg] = React.useState('');
@@ -79,9 +88,10 @@ function ChatScreen() {
   const vCardData = useSelector(state => state.profile.profileDetails);
   const toUserJid = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
-  const [localNav, setLocalNav] = React.useState('CHATCONVERSATION');
+  const localNav = useSelector(
+    state => state.chatConversationLocalNav.chatConversationLocalNav,
+  );
   const [isMessageInfo, setIsMessageInfo] = React.useState({});
-  const toast = useToast();
   const dispatch = useDispatch();
   const [isToastShowing, setIsToastShowing] = React.useState(false);
   const [selectedImages, setSelectedImages] = React.useState([]);
@@ -90,11 +100,17 @@ function ChatScreen() {
   const [validate, setValidate] = React.useState('');
   const [isSearching, setIsSearching] = React.useState(false);
 
+  const isNetworkAvailable = useNetworkStatus();
+
   useFocusEffect(
     React.useCallback(() => {
       setReplyMsg(data[toUserJid]?.replyMessage || '');
     }, [toUserJid]),
   );
+
+  const setLocalNav = localname => {
+    dispatch(updateChatConversationLocalNav(localname));
+  };
 
   const handleIsSearching = () => {
     setIsSearching(true);
@@ -107,31 +123,6 @@ function ChatScreen() {
   const toUserId = React.useMemo(
     () => getUserIdFromJid(toUserJid),
     [toUserJid],
-  );
-
-  const toastConfig = {
-    duration: 1500,
-    avoidKeyboard: true,
-    onCloseComplete: () => {
-      setIsToastShowing(false);
-    },
-  };
-  const documentAttachmentTypes = React.useMemo(
-    () => [
-      DocumentPicker.types.pdf,
-      DocumentPicker.types.ppt,
-      DocumentPicker.types.pptx,
-      DocumentPicker.types.doc,
-      DocumentPicker.types.docx,
-      DocumentPicker.types.xls,
-      DocumentPicker.types.xlsx,
-      DocumentPicker.types.plainText,
-      DocumentPicker.types.zip,
-      DocumentPicker.types.csv,
-      /** need to add rar file type and verify that */
-      '.rar',
-    ],
-    [],
   );
 
   const getReplyMessage = message => {
@@ -159,32 +150,23 @@ function ChatScreen() {
     const storage_permission = await AsyncStorage.getItem('storage_permission');
     AsyncStorage.setItem('storage_permission', 'true');
     let MediaPermission = await requestAudioStoragePermission();
-    const size_toast = 'size_toast';
     if (MediaPermission === 'granted' || MediaPermission === 'limited') {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       let response = await handleAudioPickerSingle();
       let _validate = validation(response.type);
-      const size = validateFileSize(response.size, getType(response.type));
-      if (_validate && !size) {
+      const sizeError = validateFileSize(response.size, getType(response.type));
+      if (_validate && !sizeError) {
         setAlert(true);
         setValidate(_validate);
       }
       const audioDuration = await getAudioDuration(response.fileCopyUri);
       response.duration = audioDuration;
-      if (size && !Toast.isActive(size_toast)) {
-        return Toast.show({
-          id: size_toast,
-          ...toastConfig,
-          render: () => {
-            return (
-              <Box bg="black" px="2" py="1" rounded="sm">
-                <Text style={{ color: '#fff', padding: 5 }}>{size}</Text>
-              </Box>
-            );
-          },
+      if (sizeError) {
+        return showToast(sizeError, {
+          id: 'media-size-error-toast',
         });
       }
-      if (!_validate && !size) {
+      if (!_validate && !sizeError) {
         const transformedArray = {
           caption: '',
           fileDetails: mediaObjContructor('DOCUMENT_PICKER', response),
@@ -207,51 +189,77 @@ function ChatScreen() {
     if (permissionResult === 'granted' || permissionResult === 'limited') {
       // updating the SDK flag to keep the connection Alive when app goes background because of document picker
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
-      DocumentPicker.pickSingle({
-        type: documentAttachmentTypes,
-        copyTo:
-          Platform.OS === 'android' ? 'cachesDirectory' : 'documentDirectory',
-      })
-        .then(file => {
-          // updating the SDK flag back to false to behave as usual
-          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+      const file = await handleDocumentPickSingle();
+      // updating the SDK flag back to false to behave as usual
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
 
-          // Validating the file type and size
-          if (!isValidFileType(file.type)) {
-            Alert.alert(
-              'Mirrorfly',
-              'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
-            );
-            return;
-          }
-          const error = validateFileSize(file.size, 'file');
-          if (error) {
-            const toastOptions = {
-              id: 'document-too-large-toast',
-              duration: 2500,
-              avoidKeyboard: true,
-            };
-            showToast(error, toastOptions);
-            return;
-          }
+      // Validating the file type and size
+      if (!isValidFileType(file.type)) {
+        Alert.alert(
+          'Mirrorfly',
+          'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
+        );
+        return;
+      }
+      const error = validateFileSize(file.size, 'file');
+      if (error) {
+        const toastOptions = {
+          id: 'document-too-large-toast',
+          duration: 2500,
+          avoidKeyboard: true,
+        };
+        showToast(error, toastOptions);
+        return;
+      }
 
-          // preparing the object and passing it to the sendMessage function
-          const updatedFile = {
-            fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
-          };
-          const messageData = {
-            type: 'media',
-            content: [updatedFile],
-          };
-          handleSendMsg(messageData);
-        })
-        .catch(err => {
-          // updating the SDK flag back to false to behave as usual
-          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-          console.log('Error from documen picker', err);
-        });
+      // preparing the object and passing it to the sendMessage function
+      const updatedFile = {
+        fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
+      };
+      const messageData = {
+        type: 'media',
+        content: [updatedFile],
+      };
+      handleSendMsg(messageData);
     } else if (storage_permission) {
       openSettings();
+    }
+  };
+
+  const handleContactSelect = async () => {
+    try {
+      const isNotFirstTimeContactPermissionCheck = await AsyncStorage.getItem(
+        'contact_permission',
+      );
+      AsyncStorage.setItem('contact_permission', 'true');
+      const result = await requestContactPermission();
+      if (result === 'granted') {
+        setLocalNav('ContactList');
+      } else if (isNotFirstTimeContactPermissionCheck) {
+        openSettings();
+      }
+    } catch (error) {
+      console.error('Error requesting contacts permission:', error);
+    }
+  };
+  const handleLocationSelect = async () => {
+    try {
+      const isNotFirstTimeLocationPermissionCheck = await AsyncStorage.getItem(
+        'location_permission',
+      );
+      AsyncStorage.setItem('location_permission', 'true');
+      const result = await requestLocationPermission();
+      if (result === 'granted' || result === 'limited') {
+        if (isNetworkAvailable) {
+          setLocalNav('LocationInfo');
+        } else {
+          showCheckYourInternetToast();
+        }
+      } else if (isNotFirstTimeLocationPermissionCheck) {
+        openSettings();
+      }
+    } catch (error) {
+      console.error('Failed to request location permission:', error);
     }
   };
 
@@ -324,12 +332,14 @@ function ChatScreen() {
     {
       name: 'Contact',
       icon: ContactIcon,
-      formatter: () => {},
+      formatter: async () => {
+        handleContactSelect();
+      },
     },
     {
       name: 'Location',
       icon: LocationIcon,
-      formatter: () => {},
+      formatter: handleLocationSelect,
     },
   ];
 
@@ -359,15 +369,10 @@ function ChatScreen() {
         profileDetails: {},
       };
       dispatch(navigate(x));
-      RootNav.navigate(RECENTCHATSCREEN);
+      RootNav.reset(RECENTCHATSCREEN);
     }
     return true;
   };
-
-  const backHandler = BackHandler.addEventListener(
-    'hardwareBackPress',
-    handleBackBtn,
-  );
 
   const getThumbImage = async uri => {
     const result = await ImageCompressor.compress(uri, {
@@ -379,32 +384,34 @@ function ChatScreen() {
     return response;
   };
 
-  const getVideoThumbImage = async uri => {
-    let response;
-    if (Platform.OS === 'ios') {
-      if (uri.includes('ph://')) {
-        let result = await ImageCompressor.compress(uri, {
-          maxWidth: 600,
-          maxHeight: 600,
-          quality: 0.8,
-        });
-        response = await RNFS.readFile(result, 'base64');
-      } else {
-        const frame = await createThumbnail({
-          url: uri,
-          timeStamp: 10000,
-        });
-        response = await RNFS.readFile(frame.path, 'base64');
-      }
-    } else {
-      const frame = await createThumbnail({
-        url: uri,
-        timeStamp: 10000,
-      });
-      response = await RNFS.readFile(frame.path, 'base64');
-    }
-    return response;
-  };
+  /**
+  // const getVideoThumbImage = async uri => {
+  //   let response;
+  //   if (Platform.OS === 'ios') {
+  //     if (uri.includes('ph://')) {
+  //       let result = await ImageCompressor.compress(uri, {
+  //         maxWidth: 600,
+  //         maxHeight: 600,
+  //         quality: 0.8,
+  //       });
+  //       response = await RNFS.readFile(result, 'base64');
+  //     } else {
+  //       const frame = await createThumbnail({
+  //         url: uri,
+  //         timeStamp: 10000,
+  //       });
+  //       response = await RNFS.readFile(frame.path, 'base64');
+  //     }
+  //   } else {
+  //     const frame = await createThumbnail({
+  //       url: uri,
+  //       timeStamp: 10000,
+  //     });
+  //     response = await RNFS.readFile(frame.path, 'base64');
+  //   }
+  //   return response;
+  // };
+   */
 
   const sendMediaMessage = async (messageType, files, chatTypeSendMsg) => {
     let jidSendMediaMessage = toUserJid;
@@ -455,7 +462,7 @@ function ChatScreen() {
           fromUserJid: currentUserJID,
           replyTo,
         };
-        const conversationChatObj = await getMessageObjSender(dataObj, i);
+        const conversationChatObj = getMessageObjSender(dataObj, i);
         mediaData[msgId] = conversationChatObj;
         const recentChatObj = getRecentChatMsgObj(dataObj);
 
@@ -488,17 +495,10 @@ function ChatScreen() {
       fileDetails: mediaObjContructor('CAMERA_ROLL', item),
     };
     setIsToastShowing(true);
-    const size = validateFileSize(item.image.fileSize, getType(item.type));
-    if (size && !isToastShowing) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>{size}</Text>
-            </Box>
-          );
-        },
+    const sizeError = validateFileSize(item.image.fileSize, getType(item.type));
+    if (sizeError && !isToastShowing) {
+      return showToast(sizeError, {
+        id: 'media-size-error-toast',
       });
     }
     if (!isToastShowing) {
@@ -516,35 +516,19 @@ function ChatScreen() {
     };
     setIsToastShowing(true);
     setselectedSingle(false);
-    const size = validateFileSize(item.image.fileSize, getType(item.type));
+    const sizeError = validateFileSize(item.image.fileSize, getType(item.type));
     const isImageSelected = selectedImages.some(
       selectedItem => selectedItem.fileDetails?.uri === item?.image.uri,
     );
     if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>
-                Can't share more than 10 media items
-              </Text>
-            </Box>
-          );
-        },
+      return showToast("Can't share more than 10 media items", {
+        id: 'media-error-toast',
       });
     }
 
-    if (size && !isToastShowing) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{ color: '#fff', padding: 5 }}>{size}</Text>
-            </Box>
-          );
-        },
+    if (sizeError && !isToastShowing) {
+      return showToast(sizeError, {
+        id: 'media-size-error-toast',
       });
     }
 
@@ -562,43 +546,100 @@ function ChatScreen() {
     }
   };
 
+  const constructAndDispatchConversationAndRecentChatData = dataObj => {
+    const conversationChatObj = getMessageObjSender(dataObj);
+    const recentChatObj = getRecentChatMsgObj(dataObj);
+    const dispatchData = {
+      data: [conversationChatObj],
+      ...(isSingleChat('chat')
+        ? { userJid: dataObj.jid }
+        : { groupJid: dataObj.jid }), // check this when group works
+    };
+    batch(() => {
+      store.dispatch(addChatConversationHistory(dispatchData));
+      store.dispatch(updateRecentChat(recentChatObj));
+    });
+  };
+
   const handleSendMsg = async message => {
-    let messageType = message.type;
+    const messageType = message.type;
+
     if (toUserJid in data) {
       dispatch(deleteRecoverMessage(toUserJid));
     }
 
-    if (messageType === 'media') {
-      parseAndSendMessage(message, 'chat', messageType);
-      return;
+    const msgId = uuidv4();
+    const replyTo = replyMsg?.msgId || '';
+    switch (messageType) {
+      case 'media':
+        parseAndSendMessage(message, 'chat', messageType);
+        break;
+      case 'location':
+        const { latitude, longitude } = message.location || {};
+        if (latitude && longitude) {
+          const dataObj = {
+            jid: toUserJid,
+            msgType: messageType,
+            userProfile: vCardData,
+            chatType: 'chat',
+            msgId,
+            location: { latitude, longitude },
+            fromUserJid: currentUserJID,
+            replyTo: replyTo,
+          };
+          constructAndDispatchConversationAndRecentChatData(dataObj);
+          SDK.sendLocationMessage(
+            toUserJid,
+            latitude,
+            longitude,
+            msgId,
+            replyTo,
+          );
+        }
+        break;
+      case 'contact':
+        const updatedContacts = message.contacts.map(c => ({
+          ...c,
+          msgId: uuidv4(),
+        }));
+        for (const contact of updatedContacts) {
+          const dataObj = {
+            jid: toUserJid,
+            msgType: messageType,
+            userProfile: vCardData,
+            chatType: 'chat',
+            msgId: contact.msgId,
+            contact: { ...contact },
+            fromUserJid: currentUserJID,
+            replyTo: replyTo,
+          };
+          constructAndDispatchConversationAndRecentChatData(dataObj);
+        }
+        SDK.sendContactMessage(toUserJid, updatedContacts, replyTo);
+        break;
+      default: // default to text message
+        if (message.content !== '') {
+          const dataObj = {
+            jid: toUserJid,
+            msgType: 'text',
+            message: message.content,
+            userProfile: vCardData,
+            chatType: 'chat',
+            msgId,
+            fromUserJid: currentUserJID,
+            replyTo: message.replyTo,
+          };
+          constructAndDispatchConversationAndRecentChatData(dataObj);
+          SDK.sendTextMessage(
+            toUserJid,
+            message.content,
+            msgId,
+            message.replyTo,
+          );
+        }
+        break;
     }
-
-    if (message.content !== '') {
-      let jid = toUserJid;
-      let msgId = uuidv4();
-      const userProfile = vCardData;
-      const dataObj = {
-        jid: jid,
-        msgType: 'text',
-        message: message.content,
-        userProfile,
-        chatType: 'chat',
-        msgId,
-        fromUserJid: currentUserJID,
-        replyTo: message.replyTo,
-      };
-      const conversationChatObj = await getMessageObjSender(dataObj);
-      const recentChatObj = getRecentChatMsgObj(dataObj);
-      const dispatchData = {
-        data: [conversationChatObj],
-        ...(isSingleChat('chat') ? { userJid: jid } : { groupJid: jid }), // check this when group works
-      };
-      batch(() => {
-        store.dispatch(addChatConversationHistory(dispatchData));
-        store.dispatch(updateRecentChat(recentChatObj));
-      });
-      SDK.sendTextMessage(jid, message.content, msgId, message.replyTo);
-    }
+    setReplyMsg('');
   };
 
   const onClose = () => {
@@ -607,7 +648,10 @@ function ChatScreen() {
   };
 
   React.useEffect(() => {
-    // handleImageConvert()
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackBtn,
+    );
     return () => {
       backHandler.remove();
     };
@@ -651,6 +695,12 @@ function ChatScreen() {
           ),
           UserInfo: <UserInfo setLocalNav={setLocalNav} toUserId={toUserId} />,
           UsersTapBarInfo: <UsersTapBarInfo setLocalNav={setLocalNav} />,
+          ContactList: (
+            <ContactList
+              setLocalNav={setLocalNav}
+              handleSendMsg={handleSendMsg}
+            />
+          ),
           Gallery: (
             <SavePicture
               setLocalNav={setLocalNav}
@@ -682,29 +732,52 @@ function ChatScreen() {
               setSelectedImages={setSelectedImages}
             />
           ),
+
+          LocationInfo: (
+            <Location setLocalNav={setLocalNav} handleSendMsg={handleSendMsg} />
+          ),
         }[localNav]
       }
-      <AlertDialog isOpen={alert} onClose={alert}>
-        <AlertDialog.Content
-          w="85%"
-          borderRadius={0}
-          px="6"
-          py="4"
-          fontWeight={'600'}>
-          <Text fontSize={16} color={'black'}>
-            {validate}
-          </Text>
-          <HStack justifyContent={'flex-end'} mr={2} pb={'2'} pt={'6'}>
-            <Pressable onPress={onClose}>
-              <Text fontWeight={'500'} color={'#3276E2'}>
-                OK
-              </Text>
-            </Pressable>
-          </HStack>
-        </AlertDialog.Content>
-      </AlertDialog>
+      <Modal visible={alert}>
+        <ModalCenteredContent>
+          <View style={styles.modalContentContainer}>
+            <Text style={styles.modalMessageText}>{validate}</Text>
+            <View style={styles.modalActionButtonContainer}>
+              <Pressable onPress={onClose}>
+                <Text style={styles.modalOkButton}>OK</Text>
+              </Pressable>
+            </View>
+          </View>
+        </ModalCenteredContent>
+      </Modal>
     </>
   );
 }
 
 export default ChatScreen;
+
+const styles = StyleSheet.create({
+  modalContentContainer: {
+    width: '85%',
+    borderRadius: 0,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    backgroundColor: '#fff',
+  },
+  modalMessageText: {
+    fontSize: 16,
+    color: 'black',
+  },
+  modalOkButton: {
+    fontWeight: '500',
+    color: '#3276E2',
+  },
+  modalActionButtonContainer: {
+    flexDirection: 'row',
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+    marginRight: 8,
+    paddingBottom: 8,
+    paddingTop: 24,
+  },
+});

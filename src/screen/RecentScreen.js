@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Animated,
-  BackHandler,
-  Dimensions,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
+import { BackHandler, Dimensions, StyleSheet, Text, View } from 'react-native';
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { FloatingBtn } from '../common/Button';
@@ -15,11 +9,9 @@ import ScreenHeader from '../components/ScreenHeader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { ResetStore } from '../redux/Actions/ResetAction';
-import { sortBydate } from '../Helper/Chat/RecentChat';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import {
-  CHATSCREEN,
   CONTACTLIST,
   PROFILESCREEN,
   RECENTCHATSCREEN,
@@ -27,218 +19,36 @@ import {
 } from '../constant';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { profileDetail } from '../redux/Actions/ProfileAction';
-import {
-  addRecentChat,
-  deleteActiveChatAction,
-} from '../redux/Actions/RecentChatAction';
+import { deleteActiveChatAction } from '../redux/Actions/RecentChatAction';
 import RecentHeader from '../components/RecentHeader';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
-import { HStack, Modal, Text } from 'native-base';
-import { DeleteChatHIstoryAction } from '../redux/Actions/ConversationAction';
-import { updateRosterData } from '../redux/Actions/rosterAction';
-
+import { DeleteChatHistoryAction } from '../redux/Actions/ConversationAction';
 import logo from '../assets/mirrorfly-logo.png';
+import Modal, { ModalCenteredContent } from '../common/Modal';
+import ApplicationColors from '../config/appColors';
+import commonStyles from '../common/commonStyles';
+import Pressable from '../common/Pressable';
+import {
+  clearRecentChatSelectedItems,
+  toggleRecentChatSearch,
+  updateRecentChatSearchText,
+} from '../redux/Actions/recentChatSearchAction';
 
-const FirstComponent = (
-  isSearching,
-  filteredData,
-  searchValue,
-  handleSelect,
-  handleOnSelect,
-  recentItem,
-  filteredMessages,
-) => (
-  <RecentChat
-    isSearching={isSearching}
-    data={filteredData}
-    searchValue={searchValue}
-    handleSelect={handleSelect}
-    handleOnSelect={handleOnSelect}
-    recentItem={recentItem}
-    filteredMessages={filteredMessages}
-  />
-);
+const scenesMap = SceneMap({
+  first: () => <RecentChat />,
+  second: RecentCalls,
+});
 
 function RecentScreen() {
-  const av = new Animated.Value(0);
-  av.addListener(() => {
-    return;
-  }); /** resolving WARN Sending `onAnimatedValueUpdate` with no listeners registered */
   const dispatch = useDispatch();
+  const { isSearching, selectedItems } =
+    useSelector(state => state.recentChatSearchData) || {};
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: 'first', title: 'Chats' },
     { key: 'second', title: 'Calls' },
   ]);
-  const [filteredData, setFilteredData] = React.useState([]);
-  const [filteredMessages, setFilteredMessages] = React.useState([]);
-  const [isSearching, setIsSearching] = React.useState(false);
-  const [recentData, setrecentData] = React.useState([]);
-  const [searchValue, setSearchValue] = React.useState('');
-  const recentChatList = useSelector(state => state.recentChatData.data);
-  const [recentItem, setRecentItem] = React.useState([]);
-  const [isOpenAlert, setIsOpenAlert] = React.useState(false);
-
-  const handleSearch = text => {
-    setIsSearching(true);
-    setSearchValue(text);
-    searchFilter(text);
-  };
-
-  const searchFilter = text => {
-    const filtered = recentData?.filter(
-      item =>
-        item.fromUserId.toLowerCase().includes(text.toLowerCase()) ||
-        item?.profileDetails?.nickName
-          .toLowerCase()
-          .includes(text.toLowerCase()),
-    );
-    SDK.messageSearch(text).then(res => {
-      if (res.statusCode === 200) {
-        setFilteredMessages(res.data);
-      }
-    });
-    setFilteredData(filtered);
-  };
-
-  const handleSelect = item => {
-    if (recentItem.length) {
-      let recentSelected = recentItem.some(selectedItem =>
-        selectedItem?.userJid
-          ? selectedItem?.userJid === item?.userJid
-          : selectedItem?.toUserId === item?.toUserId,
-      );
-      if (recentSelected) {
-        setRecentItem(prevArray =>
-          prevArray.filter(
-            selectedItem => selectedItem.userJid !== item?.userJid,
-          ),
-        );
-      } else {
-        setRecentItem([item]);
-      }
-    } else {
-      let jid = formatUserIdToJid(item?.fromUserId, item?.chatType);
-      SDK.activeChatUser(jid);
-      let x = {
-        screen: CHATSCREEN,
-        fromUserJID: item?.userJid || jid,
-        profileDetails: item?.profileDetails,
-      };
-      dispatch(navigate(x));
-      RootNav.navigate(CHATSCREEN);
-    }
-  };
-
-  const handleBack = () => {
-    setIsSearching(false);
-    setSearchValue('');
-  };
-
-  const handleClear = () => {
-    setFilteredData(recentData);
-    setSearchValue('');
-  };
-
-  React.useEffect(() => {
-    (async () => {
-      const recentChats = await SDK.getRecentChatsDB();
-      const recentChatsFilter = recentChats?.data.filter(
-        item => item.chatType === 'chat',
-      );
-      dispatch(addRecentChat(recentChatsFilter));
-      updateRosterDataForRecentChats(recentChatsFilter);
-    })();
-  }, []);
-
-  const constructRecentChatItems = recentChatArrayConstruct => {
-    let recent = [];
-    sortBydate([...recentChatArrayConstruct]).map(async chat => {
-      recent.push(chat);
-    });
-
-    return recent.filter(eachmessage => eachmessage);
-  };
-
-  const updateRosterDataForRecentChats = singleRecentChatList => {
-    const userProfileDetails = singleRecentChatList.map(
-      chat => chat.profileDetails,
-    );
-    dispatch(updateRosterData(userProfileDetails));
-  };
-
-  React.useEffect(() => {
-    let recentChatItems = constructRecentChatItems(recentChatList);
-    setrecentData(recentChatItems);
-  }, [recentChatList]);
-
-  React.useEffect(() => {
-    if (!searchValue) {
-      setFilteredData(recentData);
-    } else {
-      searchFilter(searchValue);
-    }
-  }, [recentData, isSearching]);
-
-  const renderTabBar = React.useCallback(
-    props => {
-      return (
-        <>
-          {!isSearching && (
-            <TabBar
-              {...props}
-              style={{ backgroundColor: '#F2F2F2', color: 'black' }}
-              indicatorStyle={{
-                backgroundColor: '#3276E2',
-                borderColor: '#3276E2',
-                borderWidth: 1.3,
-              }}
-              labelStyle={{ color: 'black', fontWeight: 'bold' }}
-              activeColor={'#3276E2'}
-            />
-          )}
-        </>
-      );
-    },
-    [isSearching],
-  );
-
-  const handleBackBtn = () => {
-    if (recentItem.length) {
-      setRecentItem([]);
-      return true;
-    }
-    if (isSearching) {
-      setFilteredMessages([]);
-      setIsSearching(false);
-      setSearchValue('');
-      return true;
-    }
-  };
-
-  const handleOnSelect = item => {
-    recentItem.length === 0 && setRecentItem([item]);
-  };
-
-  const handleRemove = () => {
-    setRecentItem([]);
-  };
-
-  const handleDeleteChat = () => {
-    setIsOpenAlert(true);
-  };
-
-  const deleteChat = () => {
-    recentItem.forEach(item => {
-      let userJid =
-        item?.userJid || formatUserIdToJid(item?.fromUserId, item?.chatType);
-      SDK.deleteChat(userJid);
-      dispatch(deleteActiveChatAction({ fromUserId: item?.fromUserId }));
-      dispatch(DeleteChatHIstoryAction({ fromUserId: item?.fromUserId }));
-    });
-    setRecentItem([]);
-    setIsOpenAlert(false);
-  };
+  const [showDeleteChatModal, setShowDeleteChatModal] = React.useState(false);
 
   useFocusEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -250,8 +60,73 @@ function RecentScreen() {
     };
   });
 
+  const closeSearch = () => {
+    dispatch(toggleRecentChatSearch(false));
+    dispatch(updateRecentChatSearchText(''));
+  };
+
+  const handleClearSearch = () => {
+    dispatch(updateRecentChatSearchText(''));
+  };
+
+  const renderTabBar = React.useCallback(
+    props => {
+      return (
+        !isSearching && (
+          <TabBar
+            {...props}
+            style={styles.tabbar}
+            indicatorStyle={styles.tabbarIndicator}
+            labelStyle={styles.tabarLabel}
+            activeColor={'#3276E2'}
+          />
+        )
+      );
+    },
+    [isSearching],
+  );
+
+  const handleBackBtn = () => {
+    if (selectedItems.length) {
+      dispatch(clearRecentChatSelectedItems());
+      return true;
+    }
+    if (isSearching) {
+      batch(() => {
+        dispatch(toggleRecentChatSearch(false));
+        dispatch(updateRecentChatSearchText(''));
+      });
+      return true;
+    }
+  };
+
+  const handleRemove = () => {
+    dispatch(clearRecentChatSelectedItems());
+  };
+
+  const deleteChat = () => {
+    selectedItems.forEach(item => {
+      let userJid =
+        item?.userJid ||
+        formatUserIdToJid(
+          item?.fromUserId,
+        ); /** Need to add chat type here while working in Group
+         formatUserIdToJid(
+          item?.fromUserId,
+          item?.chatType,
+        )
+        */
+      SDK.deleteChat(userJid);
+      batch(() => {
+        dispatch(deleteActiveChatAction({ fromUserId: item?.fromUserId }));
+        dispatch(DeleteChatHistoryAction({ fromUserId: item?.fromUserId }));
+      });
+    });
+    dispatch(clearRecentChatSelectedItems());
+    toggleDeleteModal();
+  };
+
   const handleLogout = async () => {
-    console.log('logged out');
     SDK.logout();
     const getPrevUserIdentifier = await AsyncStorage.getItem('userIdentifier');
     AsyncStorage.setItem('prevUserIdentifier', getPrevUserIdentifier || '');
@@ -264,7 +139,11 @@ function RecentScreen() {
       dispatch(navigate({ screen: REGISTERSCREEN }));
       dispatch(ResetStore());
     });
-    RootNav.navigate(REGISTERSCREEN);
+    RootNav.reset(REGISTERSCREEN);
+  };
+
+  const toggleDeleteModal = () => {
+    setShowDeleteChatModal(val => !val);
   };
 
   const menuItems = React.useMemo(
@@ -285,56 +164,37 @@ function RecentScreen() {
     [],
   );
 
-  const filteredDataList = isSearching ? filteredData : recentData;
+  const toggleSearching = val => {
+    dispatch(toggleRecentChatSearch(val));
+  };
 
-  const renderScene = React.useMemo(
-    () =>
-      SceneMap({
-        first: () =>
-          FirstComponent(
-            isSearching,
-            filteredDataList,
-            searchValue,
-            handleSelect,
-            handleOnSelect,
-            recentItem,
-            filteredMessages,
-          ),
-        second: RecentCalls,
-      }),
-    [
-      isSearching,
-      filteredDataList,
-      searchValue,
-      recentItem,
-      recentData,
-      filteredMessages,
-    ],
-  );
+  const handleSearch = text => {
+    dispatch(updateRecentChatSearchText(text));
+  };
 
   return (
     <>
-      {!recentItem.length ? (
+      {!selectedItems.length ? (
         <ScreenHeader
-          setIsSearching={setIsSearching}
+          setIsSearching={toggleSearching}
           onhandleSearch={handleSearch}
-          onCloseSearch={handleBack}
+          onCloseSearch={closeSearch}
           menuItems={menuItems}
           logo={logo}
           handleBackBtn={handleBackBtn}
           isSearching={isSearching}
-          handleClear={handleClear}
+          handleClear={handleClearSearch}
         />
       ) : (
         <RecentHeader
           handleRemove={handleRemove}
-          recentItem={recentItem}
-          handleDeleteChat={handleDeleteChat}
+          recentItem={selectedItems}
+          handleDeleteChat={toggleDeleteModal}
         />
       )}
       <TabView
         navigationState={{ index, routes }}
-        renderScene={renderScene}
+        renderScene={scenesMap}
         onIndexChange={setIndex}
         initialLayout={{ width: Dimensions.get('window').width }}
         renderTabBar={renderTabBar}
@@ -348,42 +208,33 @@ function RecentScreen() {
           dispatch(navigate({ screen: CONTACTLIST }));
         }}
       />
-      <Modal
-        isOpen={isOpenAlert}
-        safeAreaTop={true}
-        onClose={() => setIsOpenAlert(false)}>
-        <Modal.Content
-          w="88%"
-          borderRadius={0}
-          px="6"
-          py="4"
-          fontWeight={'300'}>
-          <Text fontSize={16} color={'#000'}>
-            {`${
-              'Delete chat with "' +
-              `${
-                recentItem[0]?.profileDetails?.nickName ||
-                recentItem[0]?.fromUserId
-              }"` +
-              '?'
-            }`}
-          </Text>
-          <HStack justifyContent={'flex-end'} pb={'1'} pt={'7'}>
-            <Pressable
-              onPress={() => {
-                setIsOpenAlert(false);
-              }}>
-              <Text pr={'6'} fontWeight={'500'} color={'#3276E2'}>
-                NO
-              </Text>
-            </Pressable>
-            <Pressable onPress={deleteChat}>
-              <Text fontWeight={'500'} color={'#3276E2'}>
-                YES
-              </Text>
-            </Pressable>
-          </HStack>
-        </Modal.Content>
+      <Modal visible={showDeleteChatModal} onRequestClose={toggleDeleteModal}>
+        <ModalCenteredContent onPressOutside={toggleDeleteModal}>
+          <View style={styles.deleteChatModalContentContainer}>
+            <Text style={styles.deleteChatModalTitle}>
+              {selectedItems.length === 1
+                ? `${
+                    'Delete chat with "' +
+                    `${
+                      selectedItems[0]?.profileDetails?.nickName ||
+                      selectedItems[0]?.fromUserId
+                    }"` +
+                    '?'
+                  }`
+                : `Delete ${selectedItems.length} selected chats?`}
+            </Text>
+            <View style={styles.modalActionButtonContainer}>
+              <Pressable
+                style={commonStyles.marginRight_8}
+                onPress={toggleDeleteModal}>
+                <Text style={styles.modalActionButtonText}>NO</Text>
+              </Pressable>
+              <Pressable onPress={deleteChat}>
+                <Text style={styles.modalActionButtonText}>YES</Text>
+              </Pressable>
+            </View>
+          </View>
+        </ModalCenteredContent>
       </Modal>
     </>
   );
@@ -394,4 +245,44 @@ export default RecentScreen;
 const styles = StyleSheet.create({
   tabView: { borderColor: 'black', borderWidth: 1 },
   activeTab: { backgroundColor: 'black' },
+  deleteChatModalContentContainer: {
+    backgroundColor: ApplicationColors.white,
+    width: '88%',
+    borderRadius: 0,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    fontWeight: '300',
+  },
+  deleteChatModalTitle: {
+    marginTop: 10,
+    marginLeft: 10,
+    fontSize: 16,
+    color: ApplicationColors.black,
+  },
+  modalActionButtonContainer: {
+    flexDirection: 'row',
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+    paddingBottom: 10,
+    marginTop: 20,
+  },
+  modalActionButtonText: {
+    fontWeight: '500',
+    color: ApplicationColors.mainColor,
+    paddingVertical: 2,
+    paddingHorizontal: 10,
+  },
+  tabbar: {
+    backgroundColor: '#F2F2F2',
+    color: 'black',
+  },
+  tabbarIndicator: {
+    backgroundColor: '#3276E2',
+    borderColor: '#3276E2',
+    borderWidth: 1.3,
+  },
+  tabarLabel: {
+    color: 'black',
+    fontWeight: 'bold',
+  },
 });

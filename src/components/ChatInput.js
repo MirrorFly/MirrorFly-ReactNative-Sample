@@ -1,5 +1,5 @@
 import React, { createRef } from 'react';
-import { TextInput, Keyboard, StyleSheet } from 'react-native';
+import { TextInput, Keyboard, StyleSheet, View, Text } from 'react-native';
 import { SendBtn } from '../common/Button';
 import {
   AttachmentIcon,
@@ -7,19 +7,14 @@ import {
   EmojiIcon,
   KeyboardIcon,
 } from '../common/Icons';
-import {
-  HStack,
-  Icon,
-  IconButton,
-  Modal,
-  Flex,
-  Text,
-  VStack,
-} from 'native-base';
 import EmojiOverlay from './EmojiPicker';
 import { soundRef } from './Media/AudioPlayer';
 import { useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
+import ApplicationColors from '../config/appColors';
+import Modal, { ModalBottomContent } from '../common/Modal';
+import IconButton from '../common/IconButton';
+import commonStyles from '../common/commonStyles';
 
 export const chatInputMessageRef = createRef();
 chatInputMessageRef.current = '';
@@ -76,33 +71,29 @@ const ChatInput = props => {
     setIsOpen(true);
   };
 
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+  const handleAttachmentIconPressed = item => () => {
+    closeModal();
+    item.formatter?.();
+  };
+
   return (
     <>
-      <HStack
-        p="2"
-        w="full"
-        alignItems="center"
-        borderTopWidth={0.25}
-        borderColor="#959595">
-        <HStack
-          p="0"
-          position="relative"
-          w={message ? '90%' : '100%'}
-          justify={'center'}
-          alignItems="center"
-          borderWidth={1}
-          borderRadius={40}
-          borderColor="#959595">
+      <View
+        style={[
+          styles.container,
+          Boolean(message) && commonStyles.paddingRight_0,
+        ]}>
+        <View style={styles.textInputContainer}>
           <IconButton
-            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-            ml="2"
-            p="1"
-            icon={isEmojiPickerShowing ? <KeyboardIcon /> : <EmojiIcon />}
-            onPress={() => {
-              toggleEmojiPicker();
-            }}
-            borderRadius="full"
-          />
+            containerStyle={styles.emojiPickerIconWrapper}
+            style={styles.emojiPickerIcon}
+            onPress={toggleEmojiPicker}>
+            {isEmojiPickerShowing ? <KeyboardIcon /> : <EmojiIcon />}
+          </IconButton>
 
           <TextInput
             ref={chatInputRef}
@@ -117,26 +108,20 @@ const ChatInput = props => {
 
           <IconButton
             onPress={handleAttachmentconPressed}
-            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-            p="2"
-            icon={<Icon p="0" as={AttachmentIcon} name="emoji-happy" />}
-            borderRadius="full"
-          />
+            style={styles.attachmentIcon}>
+            <AttachmentIcon />
+          </IconButton>
           <IconButton
-            onPress={() => {}}
-            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-            p="2"
-            ml="3"
-            mr="2"
-            icon={<Icon p="0" as={MicIcon} name="emoji-happy" />}
-            borderRadius="full"
-          />
-        </HStack>
+            containerStyle={styles.audioRecordIconWrapper}
+            style={styles.audioRecordIcon}>
+            <MicIcon />
+          </IconButton>
+        </View>
 
         {Boolean(message) && (
           <SendBtn style={styles.sendButton} onPress={sendMessage} />
         )}
-      </HStack>
+      </View>
       <EmojiOverlay
         state={message}
         setState={setMessage}
@@ -144,34 +129,22 @@ const ChatInput = props => {
         onClose={() => setIsEmojiPickerShowing(false)}
         onSelect={handleEmojiSelect}
       />
-      <Modal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        safeAreaTop={true}>
-        <Modal.Content width={'90%'} style={styles.modalContent}>
-          <Modal.Body>
-            <Flex direction="row" justify={'space-between'} wrap="wrap">
-              {attachmentMenuIcons.map(item => (
-                <VStack
-                  py="3"
-                  key={item.name}
-                  alignItems={'center'}
-                  style={styles.attachmentMenuIconsContainer}>
-                  <IconButton
-                    _pressed={{ bg: 'transperent' }}
-                    onPress={() => {
-                      setIsOpen(false);
-                      item.formatter?.();
-                    }}
-                    icon={<Icon as={item.icon} name="emoji-happy" />}
-                    borderRadius="full"
-                  />
-                  <Text color={'#fff'}>{item.name}</Text>
-                </VStack>
-              ))}
-            </Flex>
-          </Modal.Body>
-        </Modal.Content>
+      <Modal animationType="none" visible={isOpen} onRequestClose={closeModal}>
+        <ModalBottomContent onPressOutside={closeModal}>
+          <View style={styles.modalContent}>
+            {attachmentMenuIcons.map(item => {
+              const { name, icon: MenuIcon } = item;
+              return (
+                <View key={name} style={styles.attachmentMenuIcon}>
+                  <IconButton onPress={handleAttachmentIconPressed(item)}>
+                    <MenuIcon />
+                  </IconButton>
+                  <Text style={styles.attachmentNameText}>{name}</Text>
+                </View>
+              );
+            })}
+          </View>
+        </ModalBottomContent>
       </Modal>
     </>
   );
@@ -181,10 +154,45 @@ export default React.memo(ChatInput);
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'center',
+    borderTopWidth: 0.25,
+    borderColor: ApplicationColors.mainBorderColor, // "#959595"
+    padding: 8,
+  },
+  textInputContainer: {
+    flexDirection: 'row',
+    flexGrow: 1,
+    flexShrink: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
+    borderWidth: 1,
+    borderRadius: 40,
+    borderColor: ApplicationColors.mainBorderColor, // "#959595"
+  },
+  emojiPickerIconWrapper: {
+    marginLeft: 5,
+    borderRadius: 50,
+    overflow: 'hidden',
+  },
+  emojiPickerIcon: {
+    padding: 10,
+  },
+  attachmentIcon: {
+    padding: 10,
+    paddingHorizontal: 12,
+  },
+  attachmentNameText: {
+    color: '#fff',
+  },
+  audioRecordIconWrapper: {
+    marginLeft: 4,
+    marginRight: 10,
+  },
+  audioRecordIcon: {
+    padding: 10,
+    paddingHorizontal: 12,
   },
   emojiPickerContainer: {
     flex: 1,
@@ -197,9 +205,7 @@ const styles = StyleSheet.create({
     maxHeight: 250,
   },
   sendButton: {
-    height: 30,
-    width: 30,
-    paddingLeft: 10,
+    padding: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -209,9 +215,20 @@ const styles = StyleSheet.create({
     maxHeight: 100,
   },
   modalContent: {
-    marginBottom: 30,
+    width: '93%',
+    marginBottom: 10,
     marginTop: 'auto',
     backgroundColor: '#181818',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    borderRadius: 6,
   },
-  attachmentMenuIconsContainer: { width: '32%' },
+  attachmentMenuIcon: {
+    width: '32%',
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
 });

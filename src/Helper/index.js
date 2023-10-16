@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Text, Toast } from 'native-base';
-import { Alert, Platform } from 'react-native';
+import { Toast } from 'native-base';
+import { Alert, Linking, Platform, Text, View } from 'react-native';
 import Graphemer from 'graphemer';
 import RNFS from 'react-native-fs';
 import { Image as ImageCompressor } from 'react-native-compressor';
@@ -11,6 +11,17 @@ import { updateRosterData } from '../redux/Actions/rosterAction';
 import { profileDetail } from '../redux/Actions/ProfileAction';
 import SDK from '../SDK/SDK';
 import { updateUserProfileStore } from './Chat/ChatHelper';
+import { toastStyles } from '../common/commonStyles';
+import * as RootNav from '../Navigation/rootNavigation';
+import { navigate } from '../redux/Actions/NavigationAction';
+import { MAP_THHUMBNAIL_URL, CHATSCREEN, CHATCONVERSATION } from '../constant';
+import config from '../components/chat/common/config';
+import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
+import { addchatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAction';
+import {
+  updateConversationMessage,
+  updateRecentChatMessage,
+} from '../components/chat/common/createMessage';
 
 const toastLocalRef = React.createRef({});
 toastLocalRef.current = {};
@@ -43,11 +54,9 @@ export const showToast = (message, options, ignoreDuplicateToast = true) => {
     ...options,
     render: () => {
       return (
-        <Box bg="black" px="2" py="1" rounded="sm">
-          <Text color={'#fff'} padding={2}>
-            {message}
-          </Text>
-        </Box>
+        <View style={toastStyles.toastContainer}>
+          <Text style={toastStyles.toastContent}>{message}</Text>
+        </View>
       );
     },
   });
@@ -193,4 +202,74 @@ export const fetchContactsFromSDK = async (
     updateUserProfileStore(contactsResponse.users);
   }
   return contactsResponse;
+};
+
+export const showCheckYourInternetToast = () => {
+  showToast('Please check your internet connection', {
+    id: 'no-internet-toast',
+  });
+};
+
+export const openLocationExternally = (latitude, longitude) => {
+  const scheme = Platform.select({
+    ios: 'maps://0,0?q=',
+    android: 'geo:0,0?q=',
+  });
+  const latLng = `${latitude},${longitude}`;
+  const locationUrl = Platform.select({
+    ios: `${scheme}${latLng}`,
+    android: `${scheme}${latLng}`,
+  });
+  if (Linking.canOpenURL(locationUrl)) {
+    Linking.openURL(locationUrl).catch(() => {
+      showToast('Unable to open the location', {
+        id: 'location-open-error-toast',
+      });
+    });
+  } else {
+    showToast('No app found to open location', {
+      id: 'location-open-error-toast',
+    });
+  }
+};
+
+export const getLocationImageURL = ({ latitude, longitude }) => {
+  return `${MAP_THHUMBNAIL_URL}?center=${latitude},${longitude}&zoom=13&size=300x200&markers=color:red|${latitude},${longitude}&key=${config.GOOGLE_LOCATION_API_KEY}`;
+};
+
+export const addPendingSeenStatusMsg = obj => {
+  Store.dispatch(addchatSeenPendingMsg(obj));
+};
+
+export const getPendingSeenStatusMsg = async () => {
+  const storedVal = await AsyncStorage.getItem('pendingSeenStatus');
+  return JSON.parse(storedVal);
+};
+
+export const handleSetPendingSeenStatus = async obj => {
+  const parsedStoreVal = await getPendingSeenStatusMsg();
+  if (parsedStoreVal) {
+    const filterdArr = parsedStoreVal?.data.filter(
+      o => o.msgId !== obj.msgId && obj.msgStatus === 1,
+    );
+    if (filterdArr?.length) {
+      filterdArr?.forEach(element => {
+        addPendingSeenStatusMsg(element);
+      });
+    }
+    if (!parsedStoreVal?.data.length) {
+      addPendingSeenStatusMsg(obj);
+    }
+  } else {
+    addPendingSeenStatusMsg(obj);
+  }
+};
+
+export const updateRecentAndConversationStore = obj => {
+  updateRecentChatMessage(obj, Store.getState());
+  updateConversationMessage(obj, Store.getState());
+};
+
+export const escapeRegExpReservedChars = str => {
+  return String(str).replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
 };

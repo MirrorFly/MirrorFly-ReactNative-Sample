@@ -22,3 +22,11 @@ export function reset(name) {
     });
   }
 }
+
+export const getCurrentScreen = () => {
+  if (navigationRef.isReady()) {
+    return navigationRef.getState().routes[
+      navigationRef.getState().routes.length - 1
+    ].name;
+  }
+};

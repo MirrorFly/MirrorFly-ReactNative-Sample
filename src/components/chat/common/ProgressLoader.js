@@ -1,14 +1,5 @@
-import {
-  HStack,
-  Icon,
-  IconButton,
-  Pressable,
-  Spinner,
-  Text,
-  View,
-} from 'native-base';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { DownloadIcon } from '../../../common/Icons';
 
 import { useNetworkStatus } from '../../../hooks';
@@ -17,6 +8,8 @@ import { updateUploadStatus } from '../../../redux/Actions/ConversationAction';
 import { updateDownloadData } from '../../../redux/Actions/MediaDownloadAction';
 import { getUserIdFromJid } from '../../../Helper/Chat/Utility';
 import SDK from '../../../SDK/SDK';
+import ApplicationColors from '../../../config/appColors';
+import Pressable from '../../../common/Pressable';
 
 /**
  * // import {
@@ -166,7 +159,7 @@ const ProgressLoader = (props = {}) => {
   const getActiveDownloadProgressClass = () =>
     mediaDownloadData[msgId]?.progress < 100 ? true : false;
 
-  const renderLoader = () => {
+  const renderUploadProgressLoader = () => {
     if (!getAnimateClass() && !getActiveProgressClass()) {
       return null;
     }
@@ -195,7 +188,7 @@ const ProgressLoader = (props = {}) => {
     }
   };
 
-  const renderDownloadLoader = () => {
+  const renderDownloadProgressLoader = () => {
     if (!getAnimateDownloadClass() && !getActiveDownloadProgressClass()) {
       return null;
     }
@@ -319,101 +312,71 @@ const ProgressLoader = (props = {}) => {
     return (
       <>
         <Pressable
-          bg="rgba(0, 0, 0, 0.3)"
-          borderRadius={5}
+          contentContainerStyle={styles.downloadIconWrapper}
           onPress={handleDownload}>
-          <HStack h="9" w="90" justifyContent={'center'} alignItems={'center'}>
-            {
-              <IconButton
-                p="0"
-                icon={
-                  <Icon color={'#fff'} as={DownloadIcon} name="emoji-happy" />
-                }
-              />
-            }
-            <Text pl="2" fontSize={'12'} color={'#fff'}>
-              {fileSizeInKB}
-            </Text>
-          </HStack>
+          {/* <IconButton> */}
+          <DownloadIcon />
+          {/* </IconButton> */}
+          <Text style={styles.fileSizeText}>{fileSizeInKB}</Text>
         </Pressable>
       </>
     );
   };
 
+  const renderLoader = () => (
+    <View style={styles.loaderWrapper}>
+      <ActivityIndicator size="large" color={'#3276E2'} />
+      {/* <HStack px="2" borderRadius={5} alignItems={'center'}>
+                <IconButton
+                  icon={
+                    <Icon
+                      px="1"
+                      color={'#fff'}
+                      as={DownloadCancel}
+                      name="emoji-happy"
+                    />
+                  }
+                />
+              </HStack> */}
+    </View>
+  );
+
   return (
     <>
-      <View>
-        {isNetworkConnected &&
-        (uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8) ? (
-          <View
-            overflow={'hidden'}
-            alignItems={'center'}
-            justifyContent={'space-between'}
-            // bg=" rgba(0, 0, 0, 0.3)"
-            borderRadius={5}>
-            <Pressable
-              h="9"
-              w="85"
-              alignItems={'center'}
-              justifyContent={'center'}>
-              <Spinner size="lg" color={'#3276E2'} />
-              {/* <HStack px="2" borderRadius={5} alignItems={'center'}>
-                <IconButton
-                  icon={
-                    <Icon
-                      px="1"
-                      color={'#fff'}
-                      as={DownloadCancel}
-                      name="emoji-happy"
-                    />
-                  }
-                />
-              </HStack> */}
-            </Pressable>
-            <View style={styles.loaderContent}>{renderLoader()}</View>
+      {isNetworkConnected &&
+      (uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8) ? (
+        <View style={styles.container}>
+          {renderLoader()}
+          <View style={styles.loaderContent}>
+            {renderUploadProgressLoader()}
           </View>
-        ) : null}
-        {/** {uploadStatus === 4 && isNetworkConnected ? progressViewdiffer()
+        </View>
+      ) : null}
+      {/** {uploadStatus === 4 && isNetworkConnected ? progressViewdiffer()
           : null} */}
-        {/**{uploadStatus === 3 && commonRetryAction()}
-         */}
-        {!imageUrl && !isSender && !isDownloading && isDownload()}
+      {/**{uploadStatus === 3 && commonRetryAction()}
+       */}
+      {!imageUrl && !isSender && !isDownloading && isDownload()}
 
-        {isDownloading && mediaDownloadData[msgId]?.isDownloaded !== 2 ? (
-          <View
-            overflow={'hidden'}
-            alignItems={'center'}
-            justifyContent={'space-between'}
-            // bg=" rgba(0, 0, 0, 0.3)"
-            borderRadius={5}>
-            <Pressable
-              h="9"
-              w="85"
-              alignItems={'center'}
-              justifyContent={'center'}>
-              <Spinner size="lg" color={'#3276E2'} />
-              {/* <HStack px="2" borderRadius={5} alignItems={'center'}>
-                <IconButton
-                  icon={
-                    <Icon
-                      px="1"
-                      color={'#fff'}
-                      as={DownloadCancel}
-                      name="emoji-happy"
-                    />
-                  }
-                />
-              </HStack> */}
-            </Pressable>
-            <View style={styles.loaderContent}>{renderDownloadLoader()}</View>
+      {isDownloading && mediaDownloadData[msgId]?.isDownloaded !== 2 ? (
+        <View style={styles.container}>
+          {renderLoader()}
+          <View style={styles.loaderContent}>
+            {renderDownloadProgressLoader()}
           </View>
-        ) : null}
-      </View>
+        </View>
+      ) : null}
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    overflow: 'hidden',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
   loaderContent: {
     paddingVertical: 1,
     overflow: 'hidden',
@@ -422,7 +385,27 @@ const styles = StyleSheet.create({
   loaderLine: {
     width: 90,
     height: 2,
-    backgroundColor: 'rgba(0, 0, 0, 0.1)', // You can set the color of the loader line here
+    backgroundColor: 'rgba(0, 0, 0, 0.2)', // You can set the color of the loader line here
+  },
+  downloadIconWrapper: {
+    flexDirection: 'row',
+    // height: 9,
+    padding: 10,
+    width: 90,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 5,
+  },
+  fileSizeText: {
+    paddingLeft: 8,
+    fontSize: 12,
+    color: ApplicationColors.white,
+  },
+  loaderWrapper: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 85,
   },
 });
 

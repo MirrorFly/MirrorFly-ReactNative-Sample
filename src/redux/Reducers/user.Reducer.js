@@ -12,7 +12,7 @@ const userReducer = (state = initialState, action) => {
         userPresence: action.payload,
       };
     case RESET_STORE:
-      return initialState
+      return initialState;
     default:
       return state;
   }

@@ -12,7 +12,8 @@ const ReplyContact = props => {
   const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
   const profileDetails = useSelector(state => state.navigation.profileDetails);
 
-  const { fromUserJid = '', fromUserId = '' } = replyMsgItems;
+  const { fromUserJid = '', fromUserId = '', msgBody } = replyMsgItems;
+  const contactInfo = msgBody?.contact;
   const isSender = fromUserJid === currentUserJID;
   let { nickName } = useRosterData(isSender ? '' : fromUserId);
   // updating default values
@@ -59,7 +60,7 @@ const ReplyContact = props => {
       <HStack alignItems={'center'} pl={1}>
         <ContactChatIcon />
         <Text pl={2} color="#313131" fontSize={14} fontWeight={400}>
-          Contact:{nickName}
+          Contact: {contactInfo?.name}
         </Text>
       </HStack>
     </View>

@@ -71,7 +71,6 @@ function GalleryPickView(props) {
   }, []);
 
   const handleIndexChange = ind => {
-    console.log(ind, 'index');
     scrollRef?.current.scrollToIndex({
       index: ind,
       animated: true,
@@ -289,4 +288,5 @@ const styles = StyleSheet.create({
     borderColor: '#3276E2',
     borderWidth: 2,
   },
+  miniPreviewList: { flexGrow: 0 },
 });

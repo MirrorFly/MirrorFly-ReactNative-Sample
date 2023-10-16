@@ -27,7 +27,12 @@ import {
   isSingleChat,
 } from '../Helper/Chat/ChatHelper';
 import { sortBydate } from '../Helper/Chat/RecentChat';
-import { debounce, fetchContactsFromSDK, showToast } from '../Helper/index';
+import {
+  debounce,
+  fetchContactsFromSDK,
+  showCheckYourInternetToast,
+  showToast,
+} from '../Helper/index';
 import SDK from '../SDK/SDK';
 import Avathar from '../common/Avathar';
 import {
@@ -55,71 +60,67 @@ const showMaxUsersLimitToast = () => {
   showToast('You can only forward upto 5 users or groups', options);
 };
 
-const Header = ({
-  onCancelPressed,
-  onSearchPressed,
-  onSearch,
-  isSearching,
-  searchText,
-}) => {
-  const handleSearchTextChange = value => {
-    onSearch(value);
-  };
+const Header = React.memo(
+  ({ onCancelPressed, onSearchPressed, onSearch, isSearching, searchText }) => {
+    const handleSearchTextChange = value => {
+      onSearch(value);
+    };
 
-  const handleClearSearch = () => {
-    onSearch('');
-  };
+    const handleClearSearch = () => {
+      onSearch('');
+    };
 
-  return (
-    <View style={styles.headerContainer}>
-      {isSearching ? (
-        <View style={styles.headerLeftSideContainer}>
-          <IconButton
-            style={styles.cancelIcon}
-            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-            onPress={onCancelPressed}
-            borderRadius="full">
-            <BackArrowIcon />
-          </IconButton>
-          <TextInput
-            value={searchText}
-            placeholder=" Search..."
-            autoFocus
-            onChangeText={handleSearchTextChange}
-            style={styles.searchInput}
-          />
-          {!!searchText && (
+    return (
+      <View style={styles.headerContainer}>
+        {isSearching ? (
+          <View style={styles.headerLeftSideContainer}>
             <IconButton
-              style={styles.searchIcon}
+              style={styles.cancelIcon}
               _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-              onPress={handleClearSearch}
+              onPress={onCancelPressed}
+              borderRadius="full">
+              <BackArrowIcon />
+            </IconButton>
+            <TextInput
+              value={searchText}
+              placeholder=" Search..."
+              autoFocus
+              onChangeText={handleSearchTextChange}
+              style={styles.searchInput}
+            />
+            {!!searchText && (
+              <IconButton
+                style={styles.searchIcon}
+                _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+                onPress={handleClearSearch}
+                borderRadius="full">
+                <CloseIcon />
+              </IconButton>
+            )}
+          </View>
+        ) : (
+          <View style={styles.headerLeftSideContainer}>
+            <IconButton
+              style={styles.cancelIcon}
+              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+              onPress={onCancelPressed}
               borderRadius="full">
               <CloseIcon />
             </IconButton>
-          )}
-        </View>
-      ) : (
-        <View style={styles.headerLeftSideContainer}>
-          <IconButton
-            style={styles.cancelIcon}
-            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-            onPress={onCancelPressed}
-            borderRadius="full">
-            <CloseIcon />
-          </IconButton>
-          <Text style={styles.forwardToText}>Forward to...</Text>
-        </View>
-      )}
-      <IconButton
-        style={styles.searchIcon}
-        _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-        onPress={onSearchPressed}
-        borderRadius="full">
-        <SearchIcon />
-      </IconButton>
-    </View>
-  );
-};
+            <Text style={styles.forwardToText}>Forward to...</Text>
+          </View>
+        )}
+        <IconButton
+          style={styles.searchIcon}
+          _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+          onPress={onSearchPressed}
+          borderRadius="full">
+          <SearchIcon />
+        </IconButton>
+      </View>
+    );
+  },
+);
 
 const ContactItem = ({
   name,
@@ -482,11 +483,22 @@ const ForwardMessage = () => {
     const newMsgIds = [];
     const totalLength =
       forwardMessages.length * Object.keys(selectedUsers).length;
+
+    const _forwardMessages = forwardMessages.sort((a, b) => {
+      if (a.timestamp > b.timestamp) {
+        return 1;
+      } else if (a.timestamp < b.timestamp) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
     for (let i = 0; i < totalLength; i++) {
       newMsgIds.push(uuidv4());
     }
-    for (const msg of forwardMessages) {
-      const newMsgIdsCopy = [...newMsgIds];
+    const newMsgIdsCopy = [...newMsgIds];
+    for (let i = 0; i < forwardMessages.length; i++) {
+      const msg = forwardMessages[i];
       for (const userId in selectedUsers) {
         const chatType = 'chat';
         let toUserJid =
@@ -498,8 +510,10 @@ const ForwardMessage = () => {
           currentNewMsgId,
         );
         batch(() => {
-          // updating recent chat
-          dispatch(updateRecentChat(recentChatObj));
+          // updating recent chat for last message only
+          if (i === forwardMessages.length - 1) {
+            dispatch(updateRecentChat(recentChatObj));
+          }
           // updating convresations if active chat or delete conversations data
           if (toUserJid === activeChatUserJid) {
             const conversationChatObj = getMessageObjForward(
@@ -523,7 +537,9 @@ const ForwardMessage = () => {
       }
     }
     // Sending params to SDK to forward message
-    const contactsToForward = Object.values(selectedUsers).map(u => u.userJid);
+    const contactsToForward = Object.values(selectedUsers).map(u =>
+      formatUserIdToJid(u?.userJid || u?.userId),
+    );
     const msgIds = forwardMessages.map(m => m.msgId);
     await SDK.forwardMessagesToMultipleUsers(
       contactsToForward,
@@ -531,11 +547,11 @@ const ForwardMessage = () => {
       true,
       newMsgIds,
     );
-    setShowLoader(false);
-    onMessageForwaded?.();
-    if (Object.values(selectedUsers).length === 1) {
-      // navigating the user after setTimeout to finish all the running things in background to avoid unwanted issues
-      setTimeout(() => {
+    // navigating the user after setTimeout to finish all the running things in background to avoid unwanted issues
+    setTimeout(() => {
+      setShowLoader(false);
+      onMessageForwaded?.();
+      if (Object.values(selectedUsers).length === 1) {
         dispatch(
           navigate({
             screen: CHATSCREEN,
@@ -552,13 +568,17 @@ const ForwardMessage = () => {
           }),
         );
         navigation.navigate(CONVERSATION_SCREEN);
-      }, 0);
-    } else {
-      navigation.goBack();
-    }
+      } else {
+        navigation.goBack();
+      }
+    }, 0);
   };
 
   const handleMessageSend = async () => {
+    if (!isInternetReachable) {
+      showCheckYourInternetToast();
+      return;
+    }
     setShowLoader(true);
     // doing the complete action in setTimeout to avoid UI render blocking
     setTimeout(forwardMessagesToSelectedUsers, 0);

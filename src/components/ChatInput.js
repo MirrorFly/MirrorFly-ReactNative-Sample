@@ -48,7 +48,6 @@ import { showToast } from '../Helper/index';
 import { useNetworkStatus } from '../hooks';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import ForwardArrow from '../assets/ForwardArrow.png';
 
 export const chatInputMessageRef = createRef();
 chatInputMessageRef.current = '';
@@ -408,11 +407,6 @@ const ChatInput = props => {
                       containerStyle={styles.SwipeContainer}
                       onSwipeableClose={onSwipeClose}>
                       <View style={styles.SlideContainer}>
-                        {/* <Image
-                          source={ForwardArrow}
-                          resizeMode={'contain'}
-                          style={styles.arrowSlideIcon}
-                        /> */}
                         <View style={{ marginRight: 4 }}>
                           <SideArrowIcon />
                         </View>

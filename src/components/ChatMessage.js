@@ -129,7 +129,6 @@ const ChatMessage = props => {
   }
 
   const getMessageStatus = currentStatus => {
-    console.log('getMessageStatus currentStatus -->', msgId, currentStatus);
     if (isSame && currentStatus === 3) {
       return <SandTimer />;
     }
@@ -219,7 +218,6 @@ const ChatMessage = props => {
       ? handleMessageSelect()
       : showContactInviteModal(_message);
   };
-  console.log('message?.msgStatus', msgId, message?.msgStatus);
   const renderMessageBasedOnType = () => {
     switch (message?.msgBody?.message_type) {
       case 'text':

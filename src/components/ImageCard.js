@@ -59,8 +59,6 @@ const ImageCard = props => {
     }
   }, [file_url, message_type, local_path]);
 
-  console.log('props.status msgId-->', msgId, msgStatus, props.status);
-
   return (
     <View style={commonStyles.paddingHorizontal_4}>
       {replyTo && (

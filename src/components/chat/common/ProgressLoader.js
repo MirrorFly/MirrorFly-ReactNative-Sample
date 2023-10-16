@@ -8,6 +8,7 @@ import {
 import { useNetworkStatus } from '../../../hooks';
 import { useSelector, useDispatch } from 'react-redux';
 import {
+  CancelMediaDownload,
   CancelMediaUpload,
   RetryMediaUpload,
   updateUploadStatus,
@@ -103,11 +104,10 @@ const ProgressLoader = (props = {}) => {
     }
   }
 
-  const stopAnimation = () => {
-    clearTimeout(animationTimer);
-  };
-
   /**
+   const stopAnimation = () => {
+     clearTimeout(animationTimer);
+   };
    const stopProgress = () => {};
   // const animatedStyle = useAnimatedStyle(() => {
   //   return {
@@ -219,12 +219,30 @@ const ProgressLoader = (props = {}) => {
       );
     }
     /** if (getActiveDownloadProgressClass()) {
-      return (
-        <View style={styles.loaderLine}>
+     return (
+       <View style={styles.loaderLine}>
           <Animated.View style={progressDownloadStyle} />
         </View>
       );
     } */
+  };
+
+  const cancelMediaDownload = () => {
+    const cancelObj = {
+      msgId,
+      fromUserId: fromUserJId,
+      is_downloaded: 9,
+    };
+    setisDownloading(false);
+    dispatch(CancelMediaDownload(cancelObj));
+
+    if (mediaDownloadData[msgId]) {
+      console.log(
+        ' mediaDownloadData[msgId]?.source? -->',
+        mediaDownloadData[msgId]?.source,
+      );
+      mediaDownloadData[msgId]?.source?.cancel?.('User Cancelled!');
+    }
   };
 
   const cancelMediaUpload = () => {
@@ -239,16 +257,8 @@ const ProgressLoader = (props = {}) => {
       return true;
     }
     if (mediaUploadData[msgId]) {
-      mediaUploadData[msgId].source?.cancel('User Cancelled!');
+      mediaUploadData[msgId]?.source?.cancel?.('User Cancelled!');
     }
-    // if (uploadStatus === 0 || uploadStatus === 1) {
-    //   const cancelObj = {
-    //     msgId,
-    //     fromUserId: fromUserJId,
-    //     uploadStatus: 7,
-    //   };
-    //   dispatch(CancelMediaUpload(cancelObj));
-    // }
     return false;
   };
 
@@ -319,13 +329,13 @@ const ProgressLoader = (props = {}) => {
       dispatch(updateDownloadData(response.data));
       dispatch(updateUploadStatus(updateObj));
     }
+    /**
     setTimeout(() => {
       setisDownloading(false);
       stopAnimation();
-      /**
        *  stopProgress();
-       */
     }, 3000);
+    */
   };
   const isDownload = () => {
     return (
@@ -343,13 +353,15 @@ const ProgressLoader = (props = {}) => {
   };
 
   const renderLoader = () => (
-    <View style={styles.loaderWrapper}>
-      <Pressable onPress={cancelMediaUpload}>
-        <ActivityIndicator size="large" color={'#3276E2'} />
-        <View style={styles.cancelBtn}>
-          <DownloadCancel />
-        </View>
-      </Pressable>
+    <View style={styles.loaderBg}>
+      <View style={styles.loaderWrapper}>
+        <Pressable onPress={isSender ? cancelMediaUpload : cancelMediaDownload}>
+          <ActivityIndicator size="large" color={'#3276E2'} />
+          <View style={styles.cancelBtn}>
+            <DownloadCancel />
+          </View>
+        </Pressable>
+      </View>
       {/* <HStack px="2" borderRadius={5} alignItems={'center'}>
         <IconButton
           onPress={handleCancel}
@@ -372,14 +384,16 @@ const ProgressLoader = (props = {}) => {
       (uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8) ? (
         <View style={styles.container}>
           {renderLoader()}
-          <View style={styles.loaderContent}>
+          {/* <View style={styles.loaderContent}>
             {renderUploadProgressLoader()}
-          </View>
+          </View> */}
         </View>
       ) : null}
       {/** {uploadStatus === 4 && isNetworkConnected ? progressViewdiffer()
           : null} */}
-      {(uploadStatus === 3 || uploadStatus === 7) && commonRetryAction()}
+      {isSender &&
+        (uploadStatus === 3 || uploadStatus === 7) &&
+        commonRetryAction()}
 
       {!imageUrl && !isSender && !isDownloading && isDownload()}
 
@@ -427,11 +441,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: ApplicationColors.white,
   },
-  loaderWrapper: {
+  loaderBg: {
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     /** width: 85, Add this during Animation */
+  },
+  loaderWrapper: {
     overflow: 'hidden',
     borderRadius: 50,
   },

@@ -1,4 +1,10 @@
-import { RESET_STORE, UPDATE_MEDIA_DOWNLOAD_DATA } from '../Actions/Constants';
+import { updateMediaDownloadStatusHistory } from '../../Helper/Chat/ChatHelper';
+import {
+  CANCEL_MEDIA_DOWNLOAD,
+  RESET_STORE,
+  UPDATE_MEDIA_DOWNLOAD_DATA,
+} from '../Actions/Constants';
+import { StateToObj } from '../reduxHelper';
 
 const initialState = {
   id: null,
@@ -6,21 +12,30 @@ const initialState = {
 };
 
 const mediaDownloadReducer = (state = initialState, action) => {
-  if (action.type === UPDATE_MEDIA_DOWNLOAD_DATA) {
-    return {
-      ...state,
-      ...{
-        id: Date.now(),
-        data: {
-          ...state.data,
-          [action.payload.msgId]: action.payload,
+  switch (action.type) {
+    case UPDATE_MEDIA_DOWNLOAD_DATA:
+      return {
+        ...state,
+        ...{
+          id: Date.now(),
+          data: {
+            ...state.data,
+            [action.payload.msgId]: action.payload,
+          },
         },
-      },
-    };
-  } else if (action.type === RESET_STORE) {
-    return initialState;
-  } else {
-    return state;
+      };
+    case CANCEL_MEDIA_DOWNLOAD:
+      return {
+        id: Date.now(),
+        data: updateMediaDownloadStatusHistory(
+          action.payload,
+          StateToObj(state.data),
+        ),
+      };
+    case RESET_STORE:
+      return initialState;
+    default:
+      return state;
   }
 };
 

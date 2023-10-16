@@ -51,40 +51,46 @@ export const getUniqueListBy = (arr, key) => {
 };
 
 export const uploadFileToSDK = async (file, jid, msgId, media) => {
-  const {
-    caption = '',
-    fileDetails: { replyTo = '', duration = 0, audioType = '', type = '' } = {},
-  } = file;
-  const isDocument = DOCUMENT_FORMATS.includes(type);
-  const msgType = isDocument
-    ? 'file'
-    : type?.split('/')[0] || media.fileType.split('/')[0];
-  let fileOptions = {
-    msgId: msgId,
-    caption: caption,
-    duration: duration,
-    webWidth: media.webWidth || 0,
-    webHeight: media.webHeight || 0,
-    androidWidth: media.androidWidth || 0,
-    androidHeight: media.androidHeight || 0,
-    originalWidth: media.originalWidth || 0,
-    originalHeight: media.originalHeight || 0,
-    ...((msgType === 'video' || msgType === 'image') && {
-      thumbImage: media?.thumb_image,
-    }),
-    ...(msgType === 'audio' && { audioType }),
-  };
+  try {
+    const {
+      caption = '',
+      fileDetails: {
+        replyTo = '',
+        duration = 0,
+        audioType = '',
+        type = '',
+      } = {},
+    } = file;
+    const isDocument = DOCUMENT_FORMATS.includes(type);
+    const msgType = isDocument
+      ? 'file'
+      : type?.split('/')[0] || media.fileType.split('/')[0];
+    let fileOptions = {
+      msgId: msgId,
+      caption: caption,
+      duration: duration,
+      webWidth: media.webWidth || 0,
+      webHeight: media.webHeight || 0,
+      androidWidth: media.androidWidth || 0,
+      androidHeight: media.androidHeight || 0,
+      originalWidth: media.originalWidth || 0,
+      originalHeight: media.originalHeight || 0,
+      ...((msgType === 'video' || msgType === 'image') && {
+        thumbImage: media?.thumb_image,
+      }),
+      ...(msgType === 'audio' && { audioType }),
+    };
 
-  let response = {};
-  // response = await SDK.sendMediaMessage(
-  //   jid,
-  //   msgId,
-  //   msgType,
-  //   file.fileDetails,
-  //   fileOptions,
-  //   replyTo,
-  // );
-  /**
+    let response = {};
+    response = await SDK.sendMediaMessage(
+      jid,
+      msgId,
+      msgType,
+      file.fileDetails,
+      fileOptions,
+      replyTo,
+    );
+    /**
   // if (msgType === 'file') {
   //   // response = await SDK.sendDocumentMessage(
   //   //   jid,
@@ -115,28 +121,28 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
   //   );
   // }
    */
-  let updateObj = {
-    msgId,
-    statusCode: response.statusCode,
-    fromUserId: getUserIdFromJid(jid),
-    uploadStatus: 1,
-  };
-  console.log(response, 'uploadfile response');
-  if (response.statusCode === 200) {
-    /**
+    console.log(response, 'uploadfile response');
+    let updateObj = {
+      msgId,
+      statusCode: response.statusCode,
+      fromUserId: getUserIdFromJid(jid),
+    };
+    if (response?.statusCode === 200) {
+      /**
         if (msgType === "image" || msgType === "audio") {
             // const fileBlob = await fileToBlob(file);
             // indexedDb.setImage(response.fileToken, fileBlob, getDbInstanceName(msgType));
         }
         */
-    updateObj.fileToken = response.fileToken;
-    updateObj.thumbImage = response.thumbImage;
-  } else {
-    updateObj.uploadStatus = 3;
-  }
-  setTimeout(()=>{
+      updateObj.fileToken = response.fileToken;
+      updateObj.thumbImage = response.thumbImage;
+    } else {
+      updateObj.uploadStatus = 3;
+    }
     store.dispatch(updateUploadStatus(updateObj));
-  }, 5000)
+  } catch (error) {
+    console.log('uploadFileToSDK -->', error);
+  }
 };
 
 export const updateMediaUploadStatusHistory = (data, stateData) => {
@@ -149,6 +155,30 @@ export const updateMediaUploadStatusHistory = (data, stateData) => {
     const currentMessage = currentChatData.messages[data.msgId];
     if (currentMessage) {
       currentMessage.msgBody.media.is_uploading = data.uploadStatus;
+      return {
+        ...stateData,
+        [data.fromUserId]: {
+          ...currentChatData,
+          [data.msgId]: currentMessage,
+        },
+      };
+    }
+  }
+  return {
+    ...stateData,
+  };
+};
+
+export const updateMediaDownloadStatusHistory = (data, stateData) => {
+  // Here Get the Current Active Chat History and Active Message
+  const currentChatData = stateData[getUserIdFromJid(data.fromUserId)];
+  if (
+    currentChatData?.messages &&
+    Object.keys(currentChatData?.messages).length > 0
+  ) {
+    const currentMessage = currentChatData.messages[data.msgId];
+    if (currentMessage) {
+      currentMessage.msgBody.media.is_downloaded = data.is_downloaded;
       return {
         ...stateData,
         [data.fromUserId]: {
@@ -303,10 +333,12 @@ export const getChatHistoryData = (data, stateData) => {
   const userId = localUserJid ? getUserIdFromJid(localUserJid) : '';
   if (userId === lastMessage?.publisherId) {
     newSortedData = sortedData.map(msg => {
-      msg.msgStatus = getMsgStatusInOrder(
-        msg.msgStatus,
-        lastMessage?.msgStatus,
-      );
+      if (msg.msgStatus !== 3) {
+        msg.msgStatus = getMsgStatusInOrder(
+          msg.msgStatus,
+          lastMessage?.msgStatus,
+        );
+      }
       return msg;
     });
   } else {

@@ -65,7 +65,6 @@ export const callBacks = {
     console.log('dbListener', JSON.stringify(res));
   },
   messageListener: async res => {
-    console.log(res, 'messageListener');
     await nextFrame();
     if (res.chatType === 'chat') {
       switch (res.msgType) {
@@ -179,7 +178,6 @@ export const callBacks = {
     }
   },
   presenceListener: res => {
-    console.log('presenceListener', res);
     store.dispatch(updateUserPresence(res));
   },
   userProfileListener: res => {

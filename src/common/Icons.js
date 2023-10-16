@@ -2934,3 +2934,25 @@ export const DeleteRedBinIcon = props => {
     </Svg>
   );
 };
+
+export const SideArrowIcon = props => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="5.338"
+      height="9.65"
+      viewBox="0 0 5.338 9.65">
+      <G id="noun_Arrow_2094744" transform="translate(0.25 0.253)">
+        <Path
+          id="Path_13789"
+          data-name="Path 13789"
+          d="M28.276,9a.26.26,0,0,1-.183.077A.25.25,0,0,1,27.911,9L23.6,4.693a.257.257,0,0,1,0-.366L27.911.015a.259.259,0,1,1,.366.366L24.148,4.51l4.128,4.128a.258.258,0,0,1,0,.366Z"
+          transform="translate(-23.523 0.067)"
+          fill="#363636"
+          stroke="#363636"
+          stroke-width="0.5"
+        />
+      </G>
+    </Svg>
+  );
+};

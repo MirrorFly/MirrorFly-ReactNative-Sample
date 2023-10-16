@@ -23,6 +23,7 @@ import {
   EmojiIcon,
   KeyboardIcon,
   DeleteRedBinIcon,
+  SideArrowIcon,
 } from '../common/Icons';
 
 import EmojiOverlay from './EmojiPicker';
@@ -407,11 +408,15 @@ const ChatInput = props => {
                       containerStyle={styles.SwipeContainer}
                       onSwipeableClose={onSwipeClose}>
                       <View style={styles.SlideContainer}>
-                        <Image
+                        {/* <Image
                           source={ForwardArrow}
                           resizeMode={'contain'}
                           style={styles.arrowSlideIcon}
-                        />
+                        /> */}
+                        <View style={{ marginRight: 4 }}>
+                          <SideArrowIcon />
+                        </View>
+
                         <Text style={styles.cancelText}>Slide to Cancel</Text>
                       </View>
                     </Swipeable>
@@ -636,5 +641,6 @@ const styles = StyleSheet.create({
   SlideContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
   },
 });

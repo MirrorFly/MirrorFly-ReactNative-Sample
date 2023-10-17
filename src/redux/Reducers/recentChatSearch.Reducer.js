@@ -1,4 +1,4 @@
-import { getObjectDeepClone } from '../../Helper';
+import { getObjectDeepClone } from '../reduxHelper';
 import {
   CLEAR_RECENT_CHAT_SELECTED_ITEMS,
   RESET_STORE,

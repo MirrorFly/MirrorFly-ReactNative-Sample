@@ -1,4 +1,4 @@
-import { getObjectDeepClone } from '../../Helper';
+import { getObjectDeepClone } from '../reduxHelper';
 import {
   RESET_SINGLE_CHAT_SELECTED_MEDIA_IMAGE,
   RESET_STORE,

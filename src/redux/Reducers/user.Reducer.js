@@ -1,4 +1,4 @@
-import { getObjectDeepClone } from '../../Helper';
+import { getObjectDeepClone } from '../reduxHelper';
 import { RESET_STORE, UPDATE_USER_PRESENCE } from '../Actions/Constants';
 
 const initialState = {

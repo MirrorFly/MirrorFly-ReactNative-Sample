@@ -1,5 +1,4 @@
 import { emptyMessage, updateRecall } from '../../components/Recall';
-import { getObjectDeepClone } from '../../Helper';
 import { getMsgStatusInOrder } from '../../Helper/Chat/ChatHelper';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import {
@@ -14,7 +13,7 @@ import {
   UPDATE_RECENT_CHAT_MESSAGE_STATUS,
   UPDATE_ROSTER_LAST_MESSAGE,
 } from '../Actions/Constants';
-import { StateToObj } from '../reduxHelper';
+import { StateToObj, getObjectDeepClone } from '../reduxHelper';
 
 const initialState = {
   id: Date.now(),

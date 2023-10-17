@@ -1,4 +1,4 @@
-import { getObjectDeepClone } from '../../Helper';
+import { getObjectDeepClone } from '../reduxHelper';
 import SDK from '../../SDK/SDK';
 import { RESET_STORE, UPDATE_ROSTER_DATA } from '../Actions/Constants';
 

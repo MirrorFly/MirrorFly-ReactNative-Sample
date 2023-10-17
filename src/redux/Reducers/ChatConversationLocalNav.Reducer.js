@@ -1,4 +1,4 @@
-import { getObjectDeepClone } from '../../Helper';
+import { getObjectDeepClone } from '../reduxHelper';
 import { CHATCONVERSATION } from '../../constant';
 import {
   RESET_STORE,

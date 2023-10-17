@@ -1,4 +1,3 @@
-import { getObjectDeepClone } from '../../Helper';
 import {
   getChatHistoryData,
   getUpdatedHistoryData,
@@ -20,7 +19,7 @@ import {
   UPDATE_CHAT_CONVERSATION_HISTORY,
   UPDATE_UPLOAD_STATUS,
 } from '../Actions/Constants';
-import { StateToObj } from '../reduxHelper';
+import { StateToObj, getObjectDeepClone } from '../reduxHelper';
 
 const initialState = {
   id: Date.now(),

@@ -1,4 +1,4 @@
-import { getObjectDeepClone } from '../../Helper';
+import { getObjectDeepClone } from '../reduxHelper';
 import {
   CLAER_CONVERSATION_SEARCH_DATA,
   RESET_STORE,

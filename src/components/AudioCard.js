@@ -1,5 +1,5 @@
 import React from 'react';
-import { AudioMusicIcon } from '../common/Icons';
+import { AudioMusicIcon, MicIcon } from '../common/Icons';
 import AudioPlayer from './Media/AudioPlayer';
 import { StyleSheet, Text, View } from 'react-native';
 import AttachmentProgressLoader from './chat/common/AttachmentProgressLoader';
@@ -16,13 +16,14 @@ const AudioCard = props => {
   } = messageObject;
   const uri = media.local_path || media?.file?.fileDetails?.uri;
 
-  const { mediaStatus, downloadMedia, retryUploadMedia } = useMediaProgress({
-    isSender,
-    mediaUrl: uri,
-    uploadStatus: media?.is_uploading || 0,
-    media: media,
-    msgId: msgId,
-  });
+  const { mediaStatus, downloadMedia, retryUploadMedia, cancelUploadMedia } =
+    useMediaProgress({
+      isSender,
+      mediaUrl: uri,
+      uploadStatus: media?.is_uploading || 0,
+      media: media,
+      msgId: msgId,
+    });
 
   return (
     <View style={[styles.container, replyTo ? commonStyles.p_4 : undefined]}>
@@ -44,6 +45,7 @@ const AudioCard = props => {
             mediaStatus={mediaStatus}
             onDownload={downloadMedia}
             onUpload={retryUploadMedia}
+            onCancel={cancelUploadMedia}
           />
         </View>
         <AudioPlayer

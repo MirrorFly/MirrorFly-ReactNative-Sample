@@ -977,18 +977,18 @@ export const SmileIcon = () => {
   );
 };
 
-export const MicIcon = () => {
+export const MicIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="13.017"
-      height="18.456"
+      width={props.width || '13.017'}
+      height={props.height || '18.456'}
       viewBox="0 0 13.017 18.456">
       <Path
         id="mic"
         d="M286.605,622.4v-2.443a6.359,6.359,0,0,1-5.938-6.264.495.495,0,0,1,.99,0,5.445,5.445,0,0,0,10.887,0,.495.495,0,0,1,.99,0,6.342,6.342,0,0,1-5.938,6.264V622.4m3.217-14.753v6.046a3.713,3.713,0,0,1-7.423,0v-6.046a3.713,3.713,0,0,1,7.423,0Zm-.99,0a2.723,2.723,0,0,0-5.444,0v6.046a2.723,2.723,0,0,0,5.444,0Z"
         transform="translate(-280.592 -603.944)"
-        fill="#363636"
+        fill={props.color || '#363636'}
         stroke-width="0.15"
       />
     </Svg>
@@ -2870,6 +2870,101 @@ export const DoubleDownArrow = ({ width, height }) => {
       viewBox="0 0 1792 1792"
       xmlns="http://www.w3.org/2000/svg">
       <Path d="M1395 864q0 13-10 23l-466 466q-10 10-23 10t-23-10l-466-466q-10-10-10-23t10-23l50-50q10-10 23-10t23 10l393 393 393-393q10-10 23-10t23 10l50 50q10 10 10 23zm0-384q0 13-10 23l-466 466q-10 10-23 10t-23-10l-466-466q-10-10-10-23t10-23l50-50q10-10 23-10t23 10l393 393 393-393q10-10 23-10t23 10l50 50q10 10 10 23z" />
+    </Svg>
+  );
+};
+
+export const DeleteRedBinIcon = props => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="19.66"
+      height="19.66"
+      viewBox="0 0 19.66 19.66">
+      <G id="delete" transform="translate(-4095 -697)">
+        <G id="Group_281" data-name="Group 281" transform="translate(4095 697)">
+          <G id="Group_279" data-name="Group 279" transform="translate(0)">
+            <G id="Group_277" data-name="Group 277">
+              <G id="star" transform="translate(0 0)">
+                <Rect
+                  id="Rectangle_188"
+                  data-name="Rectangle 188"
+                  width="19.66"
+                  height="19.66"
+                  fill="rgba(139,68,68,0)"
+                />
+              </G>
+            </G>
+          </G>
+        </G>
+        <G
+          id="Delete-2"
+          data-name="Delete"
+          transform="translate(4096.475 698.966)">
+          <G id="Group_3" transform="translate(0 0)">
+            <G id="Group_1" transform="translate(0 0)">
+              <Path
+                id="Path_1"
+                d="M138.131,424.9H126.606a.455.455,0,0,0-.331.107.343.343,0,0,0-.1.347l1.2,10.831a2.3,2.3,0,0,0,2.264,2.081h5.75a2.314,2.314,0,0,0,2.29-2.161l.992-10.8a.48.48,0,0,0-.1-.32A3.78,3.78,0,0,0,138.131,424.9Zm-1.45,11.2a1.36,1.36,0,0,1-1.374,1.254h-5.75a1.33,1.33,0,0,1-1.348-1.227L127,425.748l10.722.028Z"
+                transform="translate(-123.952 -422.483)"
+                fill="#dd3750"
+                stroke="#dd3750"
+                stroke-width="0.1"
+              />
+              <Path
+                id="Path_2"
+                d="M135.651,419.2h-4.986v-.825a1.4,1.4,0,0,0-1.294-1.479h-3.126a1.37,1.37,0,0,0-1.374,1.394h0v.91h-4.986a.513.513,0,0,0,0,1.024h15.739a.5.5,0,0,0,.485-.512.46.46,0,0,0-.458-.512Zm-5.929-.825v.825h-3.854v-.825a.411.411,0,0,1,.323-.455h3.126a.362.362,0,0,1,.4.37h0Z"
+                transform="translate(-119.4 -416.897)"
+                fill="#dd3750"
+                stroke="#dd3750"
+                stroke-width="0.1"
+              />
+            </G>
+            <G id="Group_2" transform="translate(5.224 5.071)">
+              <Path
+                id="Rectangle_1_3_"
+                d="M1269.919,1029.345v5.871a.526.526,0,0,1-.509.545h0a.526.526,0,0,1-.51-.545v-5.871a.526.526,0,0,1,.51-.545h0A.526.526,0,0,1,1269.919,1029.345Z"
+                transform="translate(-1268.9 -1028.8)"
+                fill="#dd3750"
+              />
+              <Path
+                id="Rectangle_2"
+                d="M1278.619,1029.345v5.871a.526.526,0,0,1-.51.545h0a.526.526,0,0,1-.51-.545v-5.871a.526.526,0,0,1,.51-.545h0A.526.526,0,0,1,1278.619,1029.345Z"
+                transform="translate(-1274.906 -1028.8)"
+                fill="#dd3750"
+              />
+              <Path
+                id="Rectangle_3"
+                d="M1287.419,1029.345v5.871a.526.526,0,0,1-.51.545h0a.526.526,0,0,1-.509-.545v-5.871a.526.526,0,0,1,.509-.545h0A.526.526,0,0,1,1287.419,1029.345Z"
+                transform="translate(-1280.981 -1028.8)"
+                fill="#dd3750"
+              />
+            </G>
+          </G>
+        </G>
+      </G>
+    </Svg>
+  );
+};
+
+export const SideArrowIcon = props => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="5.338"
+      height="9.65"
+      viewBox="0 0 5.338 9.65">
+      <G id="noun_Arrow_2094744" transform="translate(0.25 0.253)">
+        <Path
+          id="Path_13789"
+          data-name="Path 13789"
+          d="M28.276,9a.26.26,0,0,1-.183.077A.25.25,0,0,1,27.911,9L23.6,4.693a.257.257,0,0,1,0-.366L27.911.015a.259.259,0,1,1,.366.366L24.148,4.51l4.128,4.128a.258.258,0,0,1,0,.366Z"
+          transform="translate(-23.523 0.067)"
+          fill="#363636"
+          stroke="#363636"
+          stroke-width="0.5"
+        />
+      </G>
     </Svg>
   );
 };

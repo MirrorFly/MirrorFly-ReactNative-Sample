@@ -8,6 +8,7 @@ import {
 } from '../../Helper/Chat/ChatHelper';
 import {
   ADD_CHAT_CONVERSATION_HISTORY,
+  CANCEL_MEDIA_DOWNLOAD,
   CANCEL_MEDIA_UPLOAD,
   CLEAR_CHAT_HISTORY,
   DELETE_CHAT_HISTORY,
@@ -58,6 +59,14 @@ const conversationReducer = (state = initialStateClone, action) => {
       };
     case CANCEL_MEDIA_UPLOAD:
     case RETRY_MEDIA_UPLOAD:
+      return {
+        id: Date.now(),
+        data: updateMediaUploadStatusHistory(
+          action.payload,
+          StateToObj(state.data),
+        ),
+      };
+    case CANCEL_MEDIA_DOWNLOAD:
       return {
         id: Date.now(),
         data: updateMediaUploadStatusHistory(

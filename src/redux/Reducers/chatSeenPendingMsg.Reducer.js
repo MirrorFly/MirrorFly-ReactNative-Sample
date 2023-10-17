@@ -1,3 +1,4 @@
+import { getObjectDeepClone } from '../../Helper';
 import {
   ADD_CHAT_SEEN_PENDING_MSG,
   DELETE_CHAT_SEEN_PENDING_MSG,
@@ -11,6 +12,8 @@ const initialState = {
   data: [],
 };
 
+const initialStateClone = getObjectDeepClone(initialState);
+
 const deleteData = (data, payload) => {
   const msgIndex = data.findIndex(msg => msg.msgId === payload);
   if (msgIndex > -1) {
@@ -19,7 +22,7 @@ const deleteData = (data, payload) => {
   return data;
 };
 
-const chatSeenPendingMsgReducer = (state = initialState, action) => {
+const chatSeenPendingMsgReducer = (state = initialStateClone, action) => {
   switch (action.type) {
     case ADD_CHAT_SEEN_PENDING_MSG:
       const addedSeen = {
@@ -38,7 +41,7 @@ const chatSeenPendingMsgReducer = (state = initialState, action) => {
       AsyncStorage.setItem('pendingSeenStatus', JSON.stringify(deleteSeen));
       return deleteSeen;
     case RESET_STORE:
-      return initialState;
+      return getObjectDeepClone(initialState);
     default:
       return state;
   }

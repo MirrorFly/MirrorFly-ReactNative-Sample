@@ -273,3 +273,5 @@ export const updateRecentAndConversationStore = obj => {
 export const escapeRegExpReservedChars = str => {
   return String(str).replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
 };
+
+export const getObjectDeepClone = obj => JSON.parse(JSON.stringify(obj));

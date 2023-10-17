@@ -1,11 +1,14 @@
 import { emptyMessage, updateRecall } from '../../components/Recall';
+import { getObjectDeepClone } from '../../Helper';
 import { getMsgStatusInOrder } from '../../Helper/Chat/ChatHelper';
+import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import {
   ADD_RECENT_CHAT,
   DELETE_SINGLE_CHAT,
   RECENT_RECALL_UPDATE,
   RECENT_REMOVE_MESSAGE_UPDATE,
   RESET_STORE,
+  RESET_UNREAD_COUNT,
   UPDATE_MSG_BY_LAST_MSGID,
   UPDATE_RECENT_CHAT,
   UPDATE_RECENT_CHAT_MESSAGE_STATUS,
@@ -17,6 +20,8 @@ const initialState = {
   id: Date.now(),
   data: [],
 };
+
+const initialStateClone = getObjectDeepClone(initialState);
 
 const updateRecentChatFunc = (filterBy, newMessage, _state) => {
   const { data: recentChatArray = [] } = _state;
@@ -94,14 +99,29 @@ const deletedChatList = (deleteData, currentArray) => {
   );
 };
 
-const recentChatReducer = (state = initialState, action) => {
+const updateUnradCountForChat = (data, chatId) => {
+  chatId = getUserIdFromJid(chatId);
+  return data.map(chat => {
+    if (chat?.fromUserId === chatId) {
+      chat.isUnread = 0;
+      chat.unreadCount = 0;
+    }
+    return chat;
+  });
+};
+
+const recentChatReducer = (state = initialStateClone, action) => {
   switch (action.type) {
     case UPDATE_RECENT_CHAT:
       const { filterBy, ...rest } = action.payload;
+      const updatedRecentChatData = updateRecentChatFunc(filterBy, rest, state);
       return {
         ...state,
         id: Date.now(),
-        data: updateRecentChatFunc(filterBy, rest, state),
+        data: updatedRecentChatData,
+        rosterData: {
+          recentChatNames: getNames(updatedRecentChatData),
+        },
       };
     case ADD_RECENT_CHAT:
       return {
@@ -127,10 +147,17 @@ const recentChatReducer = (state = initialState, action) => {
         data: clearMessageInRecentChat(state.data, action.payload),
       };
     case DELETE_SINGLE_CHAT:
+      const deletedRecentChatData = deletedChatList(
+        action.payload,
+        StateToObj(state.data),
+      );
       return {
         ...state,
         id: Date.now(),
-        data: deletedChatList(action.payload, StateToObj(state.data)),
+        data: deletedRecentChatData,
+        rosterData: {
+          recentChatNames: getNames(deletedRecentChatData),
+        },
       };
     case RECENT_REMOVE_MESSAGE_UPDATE:
       return {
@@ -150,8 +177,14 @@ const recentChatReducer = (state = initialState, action) => {
         id: Date.now(),
         data: updateRecall(action.payload, StateToObj(state.data)),
       };
+    case RESET_UNREAD_COUNT:
+      return {
+        ...state,
+        id: Date.now(),
+        data: updateUnradCountForChat(StateToObj(state.data), action.payload),
+      };
     case RESET_STORE:
-      return initialState;
+      return getObjectDeepClone(initialState);
     default:
       return state;
   }

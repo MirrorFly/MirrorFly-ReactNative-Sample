@@ -1,3 +1,4 @@
+import { getObjectDeepClone } from '../../Helper';
 import {
   CLAER_CONVERSATION_SEARCH_DATA,
   RESET_STORE,
@@ -12,7 +13,9 @@ const initialState = {
   totalSearchResults: 0,
 };
 
-const conversationSearchReducer = (state = initialState, action) => {
+const initialStateClone = getObjectDeepClone(initialState);
+
+const conversationSearchReducer = (state = initialStateClone, action) => {
   switch (action.type) {
     case SET_CONVERSATION_SEARCH_TEXT:
       return {
@@ -39,7 +42,7 @@ const conversationSearchReducer = (state = initialState, action) => {
         totalSearchResults: 0,
       };
     case RESET_STORE:
-      return initialState;
+      return getObjectDeepClone(initialState);
     default:
       return state;
   }

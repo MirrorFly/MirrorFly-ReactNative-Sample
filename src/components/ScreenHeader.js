@@ -20,6 +20,7 @@ function ScreenHeader(props) {
   const handlingBackBtn = () => {
     setText('');
     setIsSearching(false);
+    props?.onhandleSearch?.('');
     if (!props?.onCloseSearch && isSearching) {
       return setIsSearching(false);
     }

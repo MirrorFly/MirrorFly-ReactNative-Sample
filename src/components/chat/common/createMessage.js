@@ -11,7 +11,10 @@ import {
   MSG_RECEIVE_STATUS,
   MSG_RECEIVE_STATUS_CARBON,
 } from '../../../Helper/Chat/Constant';
-import { getMessageObjReceiver } from '../../../Helper/Chat/Utility';
+import {
+  getMessageObjReceiver,
+  getUserIdFromJid,
+} from '../../../Helper/Chat/Utility';
 import SDK from '../../../SDK/SDK';
 import { changeTimeFormat } from '../../../common/TimeStamp';
 import { addChatConversationHistory } from '../../../redux/Actions/ConversationAction';
@@ -20,8 +23,10 @@ import { addchatSeenPendingMsg } from '../../../redux/Actions/chatSeenPendingMsg
 import store from '../../../redux/store';
 
 export const updateRecentChatMessage = (messgeObject, stateObject) => {
-  const { recentChatData } = stateObject;
-  const { rosterData: { recentChatNames } = {} } = recentChatData;
+  const { recentChatData, navigation } = stateObject;
+  const { rosterData: { recentChatNames } = {}, data: recentChatArray = [] } =
+    recentChatData;
+  const { fromUserJid: activeChatJid } = navigation || {};
   if (!recentChatNames) {
     return;
   }
@@ -45,8 +50,11 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
   let UTCseconds = x.getTime() + x.getTimezoneOffset() * 60 * 1000;
 
   // Temp - Reorder Issue Fix
-  if (Number(UTCseconds).toString().length > 13) UTCseconds = UTCseconds / 1000;
+  if (Number(UTCseconds).toString().length > 13) {
+    UTCseconds = UTCseconds / 1000;
+  }
 
+  const isActiveChatMsg = getUserIdFromJid(activeChatJid) === newChatTo;
   /**
    * update the chat message if message alredy exist in recent chat
    */
@@ -64,6 +72,13 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
       createdAt: updateTime,
       timestamp: parseInt(UTCseconds),
     };
+    // if the message received chat is not opened, then incrementing the unread count
+    if (!isActiveChatMsg) {
+      const existingUnReadCount =
+        recentChatArray.find(i => i.fromUserId === newChatTo)?.unreadCount || 0;
+      constructNewMessage.unreadCount = existingUnReadCount + 1;
+      constructNewMessage.isUnread = 1;
+    }
     store.dispatch(updateRecentChat(constructNewMessage));
   } else {
     /**
@@ -78,7 +93,8 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
       muteStatus: 0,
       msgType: msgBody.message_type ? msgBody.message_type : msgType,
       deleteStatus: 0,
-      unreadCount: 0,
+      unreadCount: 1,
+      isUnread: 1,
       fromUserId: newChatTo,
       timestamp: parseInt(UTCseconds),
       publisher: newChatFrom,
@@ -107,11 +123,9 @@ export const updateMsgSeenStatus = async () => {
         : message.fromUserId;
       const groupId = isGroupChat(message.chatType) ? message.fromUserId : '';
       if (isActiveConversationUserOrGroup(message.fromUserId)) {
-        if (GROUP_UPDATE_ACTIONS.indexOf(message?.profileUpdatedStatus) > -1) {
-          if (!isLocalUser(message.publisherId)) {
-            SDK.updateRecentChatUnreadCount(message?.fromUserJid);
-          }
-        } else {
+        if (
+          !(GROUP_UPDATE_ACTIONS.indexOf(message?.profileUpdatedStatus) > -1)
+        ) {
           SDK.sendSeenStatus(
             formatUserIdToJid(fromUserId),
             message.msgId,

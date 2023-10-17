@@ -1,3 +1,4 @@
+import { getObjectDeepClone } from '../../Helper';
 import { RESET_STORE, SET_XMPP_CONNECTION_STATUS } from '../Actions/Constants';
 
 const initialState = {
@@ -5,7 +6,9 @@ const initialState = {
   xmppStatus: '',
 };
 
-const connectionReducer = (state = initialState, action) => {
+const initialStateClone = getObjectDeepClone(initialState);
+
+const connectionReducer = (state = initialStateClone, action) => {
   switch (action.type) {
     case SET_XMPP_CONNECTION_STATUS:
       return {
@@ -13,7 +16,7 @@ const connectionReducer = (state = initialState, action) => {
         xmppStatus: action.payload,
       };
     case RESET_STORE:
-      return initialState;
+      return getObjectDeepClone(initialState);
     default:
       return state;
   }

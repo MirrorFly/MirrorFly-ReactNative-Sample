@@ -1,10 +1,13 @@
+import { getObjectDeepClone } from '../../Helper';
 import { RESET_STORE, UPDATE_USER_PRESENCE } from '../Actions/Constants';
 
 const initialState = {
   userPresence: {},
 };
 
-const userReducer = (state = initialState, action) => {
+const initialStateClone = getObjectDeepClone(initialState);
+
+const userReducer = (state = initialStateClone, action) => {
   switch (action.type) {
     case UPDATE_USER_PRESENCE:
       return {
@@ -12,7 +15,7 @@ const userReducer = (state = initialState, action) => {
         userPresence: action.payload,
       };
     case RESET_STORE:
-      return initialState;
+      return getObjectDeepClone(initialState);
     default:
       return state;
   }

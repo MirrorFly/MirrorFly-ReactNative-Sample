@@ -1,3 +1,4 @@
+import { getObjectDeepClone } from '../../Helper';
 import { RESET_STORE, UPDATE_MEDIA_DOWNLOAD_DATA } from '../Actions/Constants';
 
 const initialState = {
@@ -5,7 +6,9 @@ const initialState = {
   data: {},
 };
 
-const mediaDownloadReducer = (state = initialState, action) => {
+const initialStateClone = getObjectDeepClone(initialState);
+
+const mediaDownloadReducer = (state = initialStateClone, action) => {
   if (action.type === UPDATE_MEDIA_DOWNLOAD_DATA) {
     return {
       ...state,
@@ -18,7 +21,7 @@ const mediaDownloadReducer = (state = initialState, action) => {
       },
     };
   } else if (action.type === RESET_STORE) {
-    return initialState;
+    return getObjectDeepClone(initialState);
   } else {
     return state;
   }

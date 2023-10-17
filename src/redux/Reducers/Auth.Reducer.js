@@ -1,3 +1,4 @@
+import { getObjectDeepClone } from '../../Helper';
 import { NOTCONNECTED } from '../../constant';
 import { GET_USER_JID, RESET_STORE } from '../Actions/Constants';
 
@@ -9,7 +10,9 @@ const initialState = {
   error: null,
 };
 
-const authReducer = (state = initialState, action) => {
+const initialStateClone = getObjectDeepClone(initialState);
+
+const authReducer = (state = initialStateClone, action) => {
   switch (action.type) {
     case GET_USER_JID:
       return {
@@ -17,7 +20,7 @@ const authReducer = (state = initialState, action) => {
         currentUserJID: action.payload,
       };
     case RESET_STORE:
-      return initialState;
+      return getObjectDeepClone(initialState);
     default:
       return state;
   }

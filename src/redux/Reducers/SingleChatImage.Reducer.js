@@ -1,3 +1,4 @@
+import { getObjectDeepClone } from '../../Helper';
 import {
   RESET_SINGLE_CHAT_SELECTED_MEDIA_IMAGE,
   RESET_STORE,
@@ -9,7 +10,9 @@ const initialState = {
   data: {},
 };
 
-const singleChatImageReducer = (state = initialState, action) => {
+const initialStateClone = getObjectDeepClone(initialState);
+
+const singleChatImageReducer = (state = initialStateClone, action) => {
   if (action.type === UPDATE_SINGLE_CHAT_SELECTED_MEDIA_IMAGE) {
     return {
       id: Date.now(),
@@ -18,7 +21,7 @@ const singleChatImageReducer = (state = initialState, action) => {
   } else if (action.type === RESET_SINGLE_CHAT_SELECTED_MEDIA_IMAGE) {
     return initialState;
   } else if (action.type === RESET_STORE) {
-    return initialState;
+    return getObjectDeepClone(initialState);
   } else {
     return state;
   }

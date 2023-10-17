@@ -1,3 +1,4 @@
+import { getObjectDeepClone } from '../../Helper';
 import SDK from '../../SDK/SDK';
 import { RESET_STORE, UPDATE_ROSTER_DATA } from '../Actions/Constants';
 
@@ -23,7 +24,9 @@ const initialState = {
   data: {},
 };
 
-const rosterDataReducer = (state = initialState, action) => {
+const initialStateClone = getObjectDeepClone(initialState);
+
+const rosterDataReducer = (state = initialStateClone, action) => {
   switch (action.type) {
     case UPDATE_ROSTER_DATA:
       const data = action.payload;
@@ -39,7 +42,7 @@ const rosterDataReducer = (state = initialState, action) => {
       });
       return { data: _updatedData };
     case RESET_STORE:
-      return { ...initialState };
+      return getObjectDeepClone(initialState);
     default:
       return state;
   }

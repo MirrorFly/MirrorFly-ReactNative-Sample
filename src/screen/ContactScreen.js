@@ -5,7 +5,6 @@ import { CHATSCREEN, RECENTCHATSCREEN, SETTINGSCREEN } from '../constant';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { useDispatch } from 'react-redux';
 import ScreenHeader from '../components/ScreenHeader';
-import SDK from '../SDK/SDK';
 import FlatListView from '../components/FlatListView';
 import { useNetworkStatus } from '../hooks';
 import * as RootNav from '../Navigation/rootNavigation';
@@ -35,10 +34,10 @@ function ContactScreen() {
     handleBackBtn,
   );
 
-  const fetchContactList = () => {
+  const fetchContactList = text => {
     setIsFetching(true);
     setTimeout(async () => {
-      let updateUsersList = await fetchContactsFromSDK(searchText, '', 20);
+      let updateUsersList = await fetchContactsFromSDK(text?.trim?.(), '', 20);
       setIsSearchedList(updateUsersList.users);
       setIsFetching(false);
     }, 0);
@@ -67,7 +66,6 @@ function ContactScreen() {
     },
   ];
   const handlePress = item => {
-    SDK.activeChatUser(item.userJid);
     dispatch(
       navigate({
         screen: CHATSCREEN,
@@ -82,8 +80,8 @@ function ContactScreen() {
     if (isNetworkconneted) {
       setIsSearching(true);
       setIsFetching(true);
-      isNetworkconneted && fetchContactList();
       setSearchText(text);
+      isNetworkconneted && fetchContactList(text);
     }
   };
 

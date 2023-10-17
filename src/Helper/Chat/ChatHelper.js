@@ -295,7 +295,9 @@ export const getChatHistoryData = (data, stateData) => {
       );
       return msg;
     });
-  } else newSortedData = sortedData;
+  } else {
+    newSortedData = sortedData;
+  }
 
   const finalData = { messages: arrayToObject(newSortedData, 'msgId') };
 

@@ -1,3 +1,4 @@
+import { getObjectDeepClone } from '../../Helper';
 import {
   getChatHistoryData,
   getUpdatedHistoryData,
@@ -25,13 +26,15 @@ const initialState = {
   data: [],
 };
 
+const initialStateClone = getObjectDeepClone(initialState);
+
 const deleteChatHandle = (data, stateData) => {
   const currentData = { ...stateData };
   delete currentData[data.fromUserId];
   return currentData;
 };
 
-const conversationReducer = (state = initialState, action) => {
+const conversationReducer = (state = initialStateClone, action) => {
   switch (action.type) {
     case ADD_CHAT_CONVERSATION_HISTORY:
       return {
@@ -101,9 +104,8 @@ const conversationReducer = (state = initialState, action) => {
           state.data,
         ),
       };
-
     case RESET_STORE:
-      return initialState;
+      return getObjectDeepClone(initialState);
     default:
       return state;
   }

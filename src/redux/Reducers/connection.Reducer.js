@@ -1,4 +1,4 @@
-import { getObjectDeepClone } from '../../Helper';
+import { getObjectDeepClone } from '../reduxHelper';
 import { RESET_STORE, SET_XMPP_CONNECTION_STATUS } from '../Actions/Constants';
 
 const initialState = {

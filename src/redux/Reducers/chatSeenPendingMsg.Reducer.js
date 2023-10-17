@@ -1,10 +1,9 @@
-import { getObjectDeepClone } from '../../Helper';
 import {
   ADD_CHAT_SEEN_PENDING_MSG,
   DELETE_CHAT_SEEN_PENDING_MSG,
   RESET_STORE,
 } from '../Actions/Constants';
-import { StateToObj } from '../reduxHelper';
+import { StateToObj, getObjectDeepClone } from '../reduxHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initialState = {

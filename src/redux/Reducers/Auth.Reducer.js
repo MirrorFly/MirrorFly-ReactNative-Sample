@@ -1,4 +1,4 @@
-import { getObjectDeepClone } from '../../Helper';
+import { getObjectDeepClone } from '../reduxHelper';
 import { NOTCONNECTED } from '../../constant';
 import { GET_USER_JID, RESET_STORE } from '../Actions/Constants';
 

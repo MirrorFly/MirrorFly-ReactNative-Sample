@@ -178,7 +178,6 @@ export const callBacks = {
     }
   },
   presenceListener: res => {
-    console.log('presenceListener', res);
     store.dispatch(updateUserPresence(res));
   },
   userProfileListener: res => {
@@ -199,6 +198,7 @@ export const callBacks = {
     console.log('groupMsgInfoListener = (res) => { }', res);
   },
   mediaUploadListener: res => {
+    console.log('mediaUploadListener res', JSON.stringify(res, null, 2));
     store.dispatch(updateMediaUploadData(res));
   },
   mediaDownloadListener: res => {

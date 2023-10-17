@@ -1,4 +1,4 @@
-import { getObjectDeepClone } from '../../Helper';
+import { getObjectDeepClone } from '../reduxHelper';
 import {
   ADD_GALLERY_ALBUM,
   ADD_GALLERY_GROUP_NAME,

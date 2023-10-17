@@ -23,6 +23,7 @@ const ImageCard = props => {
   const {
     msgId = '',
     msgBody: { media },
+    msgStatus,
     msgBody: {
       replyTo = '',
       message_type = '',

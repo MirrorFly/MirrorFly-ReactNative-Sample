@@ -1,4 +1,4 @@
-import { getObjectDeepClone } from '../../Helper';
+import { getObjectDeepClone } from '../reduxHelper';
 import { RESET_STORE, UPDATE_MEDIA_UPLOAD_DATA } from '../Actions/Constants';
 
 const initialState = {
@@ -9,7 +9,7 @@ const initialState = {
 const initialStateClone = getObjectDeepClone(initialState);
 
 const mediaUploadReducer = (state = initialStateClone, action) => {
-  if (action === UPDATE_MEDIA_UPLOAD_DATA) {
+  if (action.type === UPDATE_MEDIA_UPLOAD_DATA) {
     return {
       ...state,
       ...{

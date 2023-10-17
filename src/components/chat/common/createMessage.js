@@ -143,11 +143,9 @@ export const updateConversationMessage = (messgeObject, currentState) => {
         groupId,
       );
     }
-  } else {
+  } else if (!isLocalUser(messgeObject.publisherId)) {
     // If the Chat is Already Opened but if it is Not Currently Active, Store the Messages for Sending Seen Status
-    if (!isLocalUser(messgeObject.publisherId)) {
-      store.dispatch(addchatSeenPendingMsg(messgeObject));
-    }
+    store.dispatch(addchatSeenPendingMsg(messgeObject));
   }
   const conversationHistory = getChatHistoryMessagesData();
   if (Object.keys(conversationHistory).includes(newChatTo)) {

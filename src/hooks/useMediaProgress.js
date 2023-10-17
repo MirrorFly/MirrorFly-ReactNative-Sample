@@ -4,6 +4,7 @@ import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { updateDownloadData } from '../redux/Actions/MediaDownloadAction';
 import {
+  CancelMediaUpload,
   RetryMediaUpload,
   updateUploadStatus,
 } from '../redux/Actions/ConversationAction';
@@ -54,6 +55,9 @@ const useMediaProgress = ({
 
   const dispatch = useDispatch();
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
+  const { data: mediaUploadData = {} } = useSelector(
+    state => state.mediaUploadData,
+  );
 
   const { file_url = '', thumb_image = '' } = media;
 
@@ -114,8 +118,25 @@ const useMediaProgress = ({
     dispatch(RetryMediaUpload(retryObj));
   };
 
+  const handleCancelUpload = () => {
+    console.log('handleCancelUpload');
+    const cancelObj = {
+      msgId,
+      fromUserId: fromUserJId,
+      uploadStatus: 7,
+    };
+    dispatch(CancelMediaUpload(cancelObj));
+    if (uploadStatus === 8) {
+      return true;
+    }
+    if (mediaUploadData[msgId]) {
+      mediaUploadData[msgId].source?.cancel('User Cancelled!');
+    }
+  };
+
   return {
     retryUploadMedia: handleUpload,
+    cancelUploadMedia: handleCancelUpload,
     downloadMedia: handleDownload,
     mediaStatus: mediaStatus,
   };

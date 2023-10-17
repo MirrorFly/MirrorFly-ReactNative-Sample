@@ -6,21 +6,22 @@ const initialState = {
 };
 
 const mediaDownloadReducer = (state = initialState, action) => {
-  if (action.type === UPDATE_MEDIA_DOWNLOAD_DATA) {
-    return {
-      ...state,
-      ...{
-        id: Date.now(),
-        data: {
-          ...state.data,
-          [action.payload.msgId]: action.payload,
+  switch (action.type) {
+    case UPDATE_MEDIA_DOWNLOAD_DATA:
+      return {
+        ...state,
+        ...{
+          id: Date.now(),
+          data: {
+            ...state.data,
+            [action.payload.msgId]: action.payload,
+          },
         },
-      },
-    };
-  } else if (action.type === RESET_STORE) {
-    return initialState;
-  } else {
-    return state;
+      };
+    case RESET_STORE:
+      return initialState;
+    default:
+      return state;
   }
 };
 

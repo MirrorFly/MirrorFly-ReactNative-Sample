@@ -7,7 +7,6 @@ const initialState = {
 
 const mediaUploadReducer = (state = initialState, action) => {
   if (action.type === UPDATE_MEDIA_UPLOAD_DATA) {
-    console.log('mediaUploadReducer action.payload -->', action.payload);
     return {
       ...state,
       ...{

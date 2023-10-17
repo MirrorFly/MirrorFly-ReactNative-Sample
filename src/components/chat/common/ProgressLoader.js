@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import {
   DownloadCancel,
   DownloadIcon,
@@ -20,15 +20,15 @@ import ApplicationColors from '../../../config/appColors';
 import Pressable from '../../../common/Pressable';
 import commonStyles from '../../../common/commonStyles';
 import { showToast } from '../../../Helper';
-
+import { Bar } from 'react-native-progress';
 /**
- * // import {
-//   useSharedValue,
-//   useAnimatedStyle,
-//   withTiming,
-//   Easing,
-//   withRepeat,
-// } from 'react-native-reanimated';
+ import {
+   useSharedValue,
+   useAnimatedStyle,
+   withTiming,
+   Easing,
+   withRepeat,
+ } from 'react-native-reanimated';
 import { DownloadCancel, DownloadIcon } from '../../../common/Icons';
   // const animation = useSharedValue(0);
   // const progress = useSharedValue(0);
@@ -62,9 +62,8 @@ import { DownloadCancel, DownloadIcon } from '../../../common/Icons';
 // 7 - Sender - User Cancelled
 // 8 - Forward Uploading
 // 9 - User Cancelled Downloading
- */
-
 let animationTimer = null;
+ */
 
 const ProgressLoader = (props = {}) => {
   const {
@@ -105,10 +104,23 @@ const ProgressLoader = (props = {}) => {
   }
 
   /**
-   const stopAnimation = () => {
-     clearTimeout(animationTimer);
-   };
-   const stopProgress = () => {};
+   // React.useEffect(() => {
+   //   startAnimation();
+   //   return stopAnimation();
+   // }, []);
+
+   // const loaderWidth = animation.interpolate({
+   //   inputRange: [0, 1],
+   //   outputRange: ['0%', '100%'],
+   // });
+  // const progressStyle = useAnimatedStyle(() => {
+  //   return {
+  //     width: mediaUploadData[msgId]?.progress,
+  //     height: 2,
+  //     backgroundColor: '#66E824',
+  //   };
+  // });
+  // const stopProgress = () => {};
   // const animatedStyle = useAnimatedStyle(() => {
   //   return {
   //     transform: [
@@ -121,6 +133,10 @@ const ProgressLoader = (props = {}) => {
   //   };
   // });
 
+  // const stopAnimation = () => {
+  //   clearTimeout(animationTimer);
+  // };
+
   // const progressStyle = useAnimatedStyle(() => {
   //   return {
   //     width: mediaUploadData[msgId]?.progress,
@@ -128,26 +144,26 @@ const ProgressLoader = (props = {}) => {
   //     backgroundColor: '#66E824',
   //   };
   // });
- */
-  /**  const progressDownloadStyle = useAnimatedStyle(() => {
-      return {
-        width: mediaDownloadData[msgId]?.progress,is_uploading
-        height: 2,
-        backgroundColor: '#66E824',
-      };
-   });
 
-   // React.useLayoutEffect(() => {
-   //   (mediaUploadData[msgId]?.progress === 100 ||
-   //     uploadStatus === 0 ||
-   //     uploadStatus === 1) &&
-   //     startAnimation();
-   // }, [uploadStatus]);
+  // const progressDownloadStyle = useAnimatedStyle(() => {
+  //   return {
+  //     width: mediaDownloadData[msgId]?.progress,
+  //     is_uploading,
+  //     height: 2,
+  //     backgroundColor: '#66E824',
+  //   };
+  // });
 
-   // React.useLayoutEffect(() => {
-   //   isDownloading && startAnimation();
-   // }, [isDownloading]);
-   */
+  // React.useLayoutEffect(() => {
+  //   (mediaUploadData[msgId]?.progress === 100 ||
+  //     uploadStatus === 0 ||
+  //     uploadStatus === 1) &&
+  //     startAnimation();
+  // }, [uploadStatus]);
+
+  // React.useLayoutEffect(() => {
+  //   isDownloading && startAnimation();
+  // }, [isDownloading]);
 
   const getAnimateClass = () =>
     mediaUploadData[msgId]?.progress === 100 ||
@@ -167,57 +183,50 @@ const ProgressLoader = (props = {}) => {
 
   const getActiveDownloadProgressClass = () =>
     mediaDownloadData[msgId]?.progress < 100 ? true : false;
-
-  const renderUploadProgressLoader = () => {
-    if (!getAnimateClass() && !getActiveProgressClass()) {
-      return null;
-    }
-    if (getAnimateClass()) {
-      return (
-        <View>
-          {/* <Animated.View
-          style={styles.loaderLine} // Add this to View tag
-            style={[
-              {
-                width: 40,
-                height: 2,
-                backgroundColor: '#f2f2f2',
-              },
-              animatedStyle,
-            ]}
-          /> */}
-        </View>
-      );
-    }
-    if (getActiveProgressClass()) {
-      return (
-        <View style={styles.loaderLine}>
-          {/* <Animated.View style={progressStyle} /> */}
-        </View>
-      );
-    }
-  };
+    // const renderUploadProgressLoader = () => {
+    //   if (!getAnimateClass() && !getActiveProgressClass()) {
+    //     return null;
+    //   }
+    //   if (getAnimateClass()) {
+    //     return (
+    //       <View>
+    //         <Animated.View
+    //           style={styles.loaderLine} // Add this to View tag
+    //           style={[animatedStyle]}
+    //         />
+    //       </View>
+    //     );
+    //   }
+    //   if (getActiveProgressClass()) {
+    //     return (
+    //       <View style={styles.loaderLine}>
+    //         <Animated.View style={progressStyle} />
+    //       </View>
+    //     );
+    //   }
+    // };
+ */
 
   const renderDownloadProgressLoader = () => {
-    if (!getAnimateDownloadClass() && !getActiveDownloadProgressClass()) {
-      return null;
-    }
-    if (getAnimateDownloadClass()) {
-      return (
-        <View style={styles.loaderLine}>
-          {/* <Animated.View
-            style={[
-              {
-                width: 40,
-                height: 2,
-                backgroundColor: '#f2f2f2',
-              },
-              animatedStyle,
-            ]}
-          /> */}
-        </View>
-      );
-    }
+    // if (!getAnimateDownloadClass() && !getActiveDownloadProgressClass()) {
+    //   return null;
+    // }
+    // if (getAnimateDownloadClass()) {
+    //   return (
+    //     <View style={styles.loaderLine}>
+    //       <Animated.View
+    //         style={[
+    //           {
+    //             width: 40,
+    //             height: 2,
+    //             backgroundColor: '#f2f2f2',
+    //           },
+    //           animatedStyle,
+    //         ]}
+    //       />
+    //     </View>
+    //   );
+    // }
     /** if (getActiveDownloadProgressClass()) {
      return (
        <View style={styles.loaderLine}>
@@ -237,10 +246,6 @@ const ProgressLoader = (props = {}) => {
     dispatch(CancelMediaDownload(cancelObj));
 
     if (mediaDownloadData[msgId]) {
-      console.log(
-        ' mediaDownloadData[msgId]?.source? -->',
-        mediaDownloadData[msgId]?.source,
-      );
       mediaDownloadData[msgId]?.source?.cancel?.('User Cancelled!');
     }
   };
@@ -343,9 +348,7 @@ const ProgressLoader = (props = {}) => {
         <Pressable
           contentContainerStyle={styles.downloadIconWrapper}
           onPress={handleDownload}>
-          {/* <IconButton> */}
           <DownloadIcon />
-          {/* </IconButton> */}
           <Text style={styles.fileSizeText}>{fileSizeInKB}</Text>
         </Pressable>
       </>
@@ -353,44 +356,93 @@ const ProgressLoader = (props = {}) => {
   };
 
   const renderLoader = () => (
-    <View style={styles.loaderBg}>
-      <View style={styles.loaderWrapper}>
-        <Pressable onPress={isSender ? cancelMediaUpload : cancelMediaDownload}>
-          <ActivityIndicator size="large" color={'#3276E2'} />
-          <View style={styles.cancelBtn}>
-            <DownloadCancel />
-          </View>
-        </Pressable>
-      </View>
-      {/* <HStack px="2" borderRadius={5} alignItems={'center'}>
-        <IconButton
-          onPress={handleCancel}
-          icon={
-            <Icon
-              px="1"
-              color={'#fff'}
-              as={DownloadCancel}
-              name="emoji-happy"
-            />
+    <>
+      <Pressable
+        contentContainerStyle={[
+          commonStyles.alignItemsCenter,
+          commonStyles.padding_10_15,
+        ]}
+        style={[commonStyles.bgBlack_04, commonStyles.width_80]}
+        onPress={isSender ? cancelMediaUpload : cancelMediaDownload}>
+        <DownloadCancel />
+      </Pressable>
+      {mediaDownloadData[msgId]?.progress ||
+      mediaUploadData[msgId]?.progress ? (
+        <Bar
+          progress={
+            mediaDownloadData[msgId]?.progress / 100 ||
+            mediaUploadData[msgId]?.progress / 100
           }
+          width={80}
+          height={2}
+          color="#fff"
+          borderWidth={0}
+          unfilledColor={'rgba(0, 0, 0, 0.5)'}
         />
-      </HStack> */}
-    </View>
+      ) : (
+        <Bar
+          indeterminate
+          width={80}
+          height={2}
+          color="#fff"
+          borderWidth={0}
+          unfilledColor={'rgba(0, 0, 0, 0.5)'}
+        />
+      )}
+    </>
+    /**
+    // <View style={styles.loaderBg}>
+    //   <View style={styles.loaderWrapper}>
+    //     <Pressable
+    //       contentContainerStyle={[
+    //         commonStyles.hstack,
+    //         commonStyles.alignItemsCenter,
+    //         commonStyles.padding_10_15,
+    //       ]}
+    //       style={[commonStyles.bgBlack_04]}
+    //       onPress={isSender ? cancelMediaUpload : cancelMediaDownload}>
+    //       <DownloadCancel />
+    //     </Pressable>
+    //     <Bar
+    //       indeterminate={!mediaUploadData[msgId]?.progress}
+    //       progress={mediaUploadData[msgId]?.progress}
+    //       width={80}
+    //       height={2}
+    //       color="#fff"
+    //       borderWidth={0}
+    //       unfilledColor="rgba(0, 0, 0, 0.3)"
+    //     />
+    //     {/* <Pressable onPress={isSender ? cancelMediaUpload : cancelMediaDownload}>
+    //       <ActivityIndicator size="large" color={'#3276E2'} />
+    //       <View style={styles.cancelBtn}>
+    //         <DownloadCancel />
+    //       </View>
+    //     </Pressable>
+    //   </View>
+    //   {/* <HStack px="2" borderRadius={5} alignItems={'center'}>
+    //     <IconButton
+    //       onPress={handleCancel}
+    //       icon={
+    //         <Icon
+    //           px="1"
+    //           color={'#fff'}
+    //           as={DownloadCancel}
+    //           name="emoji-happy"
+    //         />
+    //       }
+    //     />
+    //   </HStack>
+    // </View>
+    */
   );
 
   return (
     <>
       {isNetworkConnected &&
       (uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8) ? (
-        <View style={styles.container}>
-          {renderLoader()}
-          {/* <View style={styles.loaderContent}>
-            {renderUploadProgressLoader()}
-          </View> */}
-        </View>
+        <View style={styles.container}>{renderLoader()}</View>
       ) : null}
-      {/** {uploadStatus === 4 && isNetworkConnected ? progressViewdiffer()
-          : null} */}
+      {/* {uploadStatus === 4 && isNetworkConnected ? progressViewdiffer() : null} */}
       {isSender &&
         (uploadStatus === 3 || uploadStatus === 7) &&
         commonRetryAction()}
@@ -445,12 +497,12 @@ const styles = StyleSheet.create({
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     /** width: 85, Add this during Animation */
   },
   loaderWrapper: {
     overflow: 'hidden',
-    borderRadius: 50,
+    borderRadius: 5,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
   cancelBtn: {
     position: 'absolute',

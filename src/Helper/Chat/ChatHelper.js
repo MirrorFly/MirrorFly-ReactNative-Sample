@@ -171,7 +171,7 @@ export const updateMediaUploadStatusHistory = (data, stateData) => {
 
 export const updateMediaDownloadStatusHistory = (data, stateData) => {
   // Here Get the Current Active Chat History and Active Message
-  const currentChatData = stateData[getUserIdFromJid(data.fromUserId)];
+  const currentChatData = stateData(data.msgId);
   if (
     currentChatData?.messages &&
     Object.keys(currentChatData?.messages).length > 0

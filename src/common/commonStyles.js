@@ -188,6 +188,9 @@ const commonStyles = StyleSheet.create({
   overflowHidden: {
     overflow: 'hidden',
   },
+  width_80: {
+    width: 80,
+  },
 });
 
 export default commonStyles;

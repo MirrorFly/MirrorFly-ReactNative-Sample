@@ -1,5 +1,5 @@
 import React from 'react';
-import { AudioMusicIcon } from '../common/Icons';
+import { AudioMusicIcon, MicIcon } from '../common/Icons';
 import AudioPlayer from './Media/AudioPlayer';
 import { StyleSheet, Text, View } from 'react-native';
 import AttachmentProgressLoader from './chat/common/AttachmentProgressLoader';

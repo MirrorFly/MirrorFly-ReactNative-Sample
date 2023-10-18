@@ -369,7 +369,11 @@ function ChatScreen() {
         profileDetails: {},
       };
       dispatch(navigate(x));
-      RootNav.reset(RECENTCHATSCREEN);
+      if (RootNav.navigationRef.canGoBack()) {
+        RootNav.goBack();
+      } else {
+        RootNav.reset(RECENTCHATSCREEN);
+      }
     }
     return true;
   };

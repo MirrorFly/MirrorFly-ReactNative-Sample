@@ -1,11 +1,13 @@
+import { getObjectDeepClone } from '../reduxHelper';
 import { RESET_STORE, UPDATE_MEDIA_DOWNLOAD_DATA } from '../Actions/Constants';
 
 const initialState = {
   id: null,
   data: {},
 };
+const initialStateClone = getObjectDeepClone(initialState);
 
-const mediaDownloadReducer = (state = initialState, action) => {
+const mediaDownloadReducer = (state = initialStateClone, action) => {
   switch (action.type) {
     case UPDATE_MEDIA_DOWNLOAD_DATA:
       return {
@@ -19,7 +21,7 @@ const mediaDownloadReducer = (state = initialState, action) => {
         },
       };
     case RESET_STORE:
-      return initialState;
+      return getObjectDeepClone(initialState);
     default:
       return state;
   }

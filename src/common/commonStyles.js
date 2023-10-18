@@ -182,6 +182,9 @@ const commonStyles = StyleSheet.create({
   colorWhite: {
     color: '#fff',
   },
+  fontSize_11: {
+    fontSize: 11,
+  },
   fontSize_12: {
     fontSize: 12,
   },
@@ -193,6 +196,9 @@ const commonStyles = StyleSheet.create({
   },
   width_80: {
     width: 80,
+  },
+  typingText: {
+    color: ApplicationColors.mainColor,
   },
 });
 

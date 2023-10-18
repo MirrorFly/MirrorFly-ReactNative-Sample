@@ -46,6 +46,10 @@ import {
   getNotifyMessage,
   getNotifyNickName,
 } from '../components/RNCamera/Helper';
+import {
+  updateChatTypingGoneStatus,
+  updateChatTypingStatus,
+} from '../redux/Actions/TypingAction';
 
 export const callBacks = {
   connectionListener: response => {
@@ -90,6 +94,16 @@ export const callBacks = {
       case 'carbonSeen':
         store.dispatch(updateRecentChatMessageStatus(res));
         store.dispatch(updateChatConversationHistory(res));
+        break;
+      case 'composing':
+      case 'carbonComposing':
+        store.dispatch(updateChatTypingStatus(res?.groupId || res?.fromUserId));
+        break;
+      case 'carbonGone':
+      case 'gone':
+        store.dispatch(
+          updateChatTypingGoneStatus(res?.groupId || res?.fromUserId),
+        );
         break;
     }
     if (

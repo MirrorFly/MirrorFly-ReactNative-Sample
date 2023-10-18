@@ -2,6 +2,7 @@ import {
   Alert,
   Button,
   Keyboard,
+  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -20,6 +21,9 @@ import Store from '../../redux/store';
 import { SDK } from '../../SDK';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
+import RNVoipPushNotification from 'react-native-voip-push-notification';
+import RNCallKeep from 'react-native-callkeep';
+import { setupCallKit } from './ios';
 
 const CallJanus = () => {
   const streamData = useSelector(state => state.streamData.data);
@@ -29,6 +33,8 @@ const CallJanus = () => {
   const [number, setNumber] = React.useState('');
   const [toJid, setToJid] = React.useState('');
   const [auth, setAuth] = React.useState(false);
+  const [token, setToken] = React.useState('');
+
   const handleTernayAvoid = (callType = '') => {
     return callType ? `Incoming  ${callType} Call...` : '';
   };
@@ -36,6 +42,71 @@ const CallJanus = () => {
   const callStatus = handleTernayAvoid(status);
 
   React.useEffect(() => {
+    // ===== Step 1: subscribe `register` event =====
+    // --- this.onVoipPushNotificationRegistered
+    RNVoipPushNotification.addEventListener('register', token => {
+      // --- send token to your apn provider server
+      setToken(token);
+    });
+
+    // ===== Step 2: subscribe `notification` event =====
+    // --- this.onVoipPushNotificationiReceived
+    RNVoipPushNotification.addEventListener(
+      'notification',
+      async notification => {
+        // --- when receive remote voip push, register your VoIP client, show local notification ... etc
+        // this.doSomething();
+        let remoteMessage = {
+          data: notification,
+        };
+        console.log(remoteMessage, 'remoteMessage');
+        await SDK.getNotificationData(remoteMessage);
+        // --- optionally, if you `addCompletionHandler` from the native side, once you have done the js jobs to initiate a call, call `completion()`
+        RNVoipPushNotification.onVoipNotificationCompleted(notification.uuid);
+      },
+    );
+
+    RNCallKeep.addEventListener('answerCall', async ({ callUUID }) => {
+      console.log(callUUID, 'callUUID');
+      let call = {};
+      call = await SDK.answerCall();
+      Store.dispatch(clearStatusData());
+    });
+
+    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
+      const res = await SDK.endCall();
+      if (res.statusCode === 200) {
+        Store.dispatch(clearStatusData());
+        Store.dispatch(clearStreamData());
+      }
+    });
+
+    // ===== Step 3: subscribe `didLoadWithEvents` event =====
+    RNVoipPushNotification.addEventListener('didLoadWithEvents', events => {
+      // --- this will fire when there are events occured before js bridge initialized
+      // --- use this event to execute your event handler manually by event type
+      console.log(events, 'eventssss');
+      // if (!events || !Array.isArray(events) || events.length < 1) {
+      //     return;
+      // }
+      // for (let voipPushEvent of events) {
+      //     let { name, data } = voipPushEvent;
+      //     if (name === RNVoipPushNotification.RNVoipPushRemoteNotificationsRegisteredEvent) {
+      //         // this.onVoipPushNotificationRegistered(data);
+      //     } else if (name === RNVoipPushNotification.RNVoipPushRemoteNotificationReceivedEvent) {
+      //         // onVoipPushNotificationiReceived(data);
+      //     }
+      // }
+    });
+
+    if (Platform.OS === 'ios') {
+      setupCallKit();
+      // ===== Step 4: register =====
+      // --- it will be no-op if you have subscribed before (like in native side)
+      // --- but will fire `register` event if we have latest cahced voip token ( it may be empty if no token at all )
+      RNVoipPushNotification.registerVoipToken(); // --- register token
+    }
+
     (async () => {
       let cameraPermission = await requestCameraPermission();
       if (cameraPermission === 'granted' || cameraPermission === 'limited') {
@@ -53,6 +124,12 @@ const CallJanus = () => {
     })();
 
     InCallManager.setKeepScreenOn(true);
+
+    return () => {
+      RNVoipPushNotification.removeEventListener('didLoadWithEvents');
+      RNVoipPushNotification.removeEventListener('register');
+      RNVoipPushNotification.removeEventListener('notification');
+    };
   }, []);
 
   React.useEffect(() => {
@@ -75,17 +152,24 @@ const CallJanus = () => {
   const register = async () => {
     try {
       const fcmToken = await fcmTokenCheck();
-      const register = await SDK.register('91' + number, fcmToken);
+      const register = await SDK.register(
+        '91' + number,
+        fcmToken,
+        token,
+        false,
+      );
       const response = await SDK.connect(
         register.data.username,
         register.data.password,
       );
-      await AsyncStorage.setItem('credential', JSON.stringify(register.data));
-      console.log(response, 'response');
-      Alert.alert('Login Status', response.message, [
-        { text: 'OK', onPress: () => Keyboard.dismiss() },
-      ]);
-      setAuth(true);
+      if (register.statusCode === 200) {
+        await AsyncStorage.setItem('credential', JSON.stringify(register.data));
+        console.log(response, 'response');
+        Alert.alert('Login Status', response.message, [
+          { text: 'OK', onPress: () => Keyboard.dismiss() },
+        ]);
+        setAuth(true);
+      }
     } catch (error) {
       console.log(error, 'error');
     }
@@ -101,6 +185,7 @@ const CallJanus = () => {
   const answerCall = async () => {
     let call = {};
     call = await SDK.answerCall();
+    Keyboard.dismiss();
     Store.dispatch(clearStatusData());
     console.log('attend call', call);
   };

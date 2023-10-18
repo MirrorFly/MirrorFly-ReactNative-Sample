@@ -46,6 +46,7 @@ const AudioCard = props => {
             onDownload={downloadMedia}
             onUpload={retryUploadMedia}
             onCancel={cancelUploadMedia}
+            msgId={msgId}
           />
         </View>
         <AudioPlayer

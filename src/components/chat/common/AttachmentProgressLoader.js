@@ -1,28 +1,68 @@
 import React from 'react';
 import { mediaStatusConstants } from '../../../constant';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import {
   DownloadCancel,
   DownloadIcon,
   uploadIcon as UploadIcon,
 } from '../../../common/Icons';
+import { Bar } from 'react-native-progress';
+import commonStyles from '../../../common/commonStyles';
+import { useSelector } from 'react-redux';
 
 const AttachmentProgressLoader = ({
   mediaStatus,
   onDownload,
   onUpload,
   onCancel,
+  msgId,
 }) => {
+  const { data: mediaDownloadData = {} } = useSelector(
+    state => state.mediaDownloadData,
+  );
+
+  const { data: mediaUploadData = {} } = useSelector(
+    state => state.mediaUploadData,
+  );
+
   switch (mediaStatus) {
     case mediaStatusConstants.DOWNLOADING:
     case mediaStatusConstants.UPLOADING:
       return (
-        <Pressable style={styles.loaderWrapper} onPress={onCancel}>
-          <ActivityIndicator size="large" color={'#AFB8D0'} />
-          <View style={styles.cancelBtn}>
+        <View
+          style={[
+            commonStyles.positionRelative,
+            commonStyles.overflowHidden,
+            commonStyles.borderRadius_5,
+          ]}>
+          <Pressable style={styles.downloadIcon} onPress={onCancel}>
             <DownloadCancel />
-          </View>
-        </Pressable>
+          </Pressable>
+          {mediaDownloadData[msgId]?.progress ||
+          mediaUploadData[msgId]?.progress ? (
+            <Bar
+              style={[commonStyles.positionAbsolute, commonStyles.bottom_0]}
+              progress={
+                mediaDownloadData[msgId]?.progress / 100 ||
+                mediaUploadData[msgId]?.progress / 100
+              }
+              width={36}
+              height={2}
+              color="#fff"
+              borderWidth={0}
+              unfilledColor={'#AFB8D0'}
+            />
+          ) : (
+            <Bar
+              indeterminate
+              width={36}
+              height={2}
+              color="#fff"
+              borderWidth={0}
+              unfilledColor={'#AFB8D0'}
+            />
+          )}
+        </View>
       );
     case mediaStatusConstants.NOT_DOWNLOADED:
       return (

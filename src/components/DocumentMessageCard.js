@@ -38,6 +38,7 @@ const DocumentMessageCard = ({
       isSender,
       mediaUrl: mediaUrl,
       uploadStatus: message?.msgBody?.media?.is_uploading || 0,
+      downloadStatus: message?.msgBody?.media?.is_downloaded || 0,
       media: message?.msgBody?.media,
       msgId: message?.msgId,
     });
@@ -98,6 +99,7 @@ const DocumentMessageCard = ({
           onDownload={downloadMedia}
           onUpload={retryUploadMedia}
           onCancel={cancelUploadMedia}
+          msgId={message?.msgId}
         />
       </View>
       <View style={styles.statusAndTimestampWithFileSizeContainer}>

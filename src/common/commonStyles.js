@@ -73,6 +73,12 @@ const commonStyles = StyleSheet.create({
   positionRelative: {
     position: 'relative',
   },
+  positionAbsolute: {
+    position: 'absolute',
+  },
+  bottom_0: {
+    bottom: 0,
+  },
   pressedBg: {
     backgroundColor: ApplicationColors.pressedBg,
   },
@@ -190,6 +196,9 @@ const commonStyles = StyleSheet.create({
   },
   width_80: {
     width: 80,
+  },
+  borderRadius_5: {
+    borderRadius: 5,
   },
 });
 

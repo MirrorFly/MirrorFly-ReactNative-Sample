@@ -155,6 +155,7 @@ export const updateMediaUploadStatusHistory = (data, stateData) => {
     const currentMessage = currentChatData.messages[data.msgId];
     if (currentMessage) {
       currentMessage.msgBody.media.is_uploading = data.uploadStatus;
+      currentMessage.msgBody.media.is_downloaded = data.downloadStatus;
       return {
         ...stateData,
         [data.fromUserId]: {

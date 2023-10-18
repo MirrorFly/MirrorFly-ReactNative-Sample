@@ -309,6 +309,10 @@ const ProgressLoader = (props = {}) => {
   };
 
   const handleDownload = async () => {
+    if (!isNetworkConnected) {
+      showToast('Please check your internet connection', { id: 'MEDIA_RETRY' });
+      return;
+    }
     setisDownloading(true);
     let downloadData = {
       msgId,

@@ -24,6 +24,7 @@ import messaging from '@react-native-firebase/messaging';
 import RNVoipPushNotification from 'react-native-voip-push-notification';
 import RNCallKeep from 'react-native-callkeep';
 import { setupCallKit } from './ios';
+import { v4 as uuidv4 } from 'uuid';
 
 const CallJanus = () => {
   const streamData = useSelector(state => state.streamData.data);
@@ -208,6 +209,8 @@ const CallJanus = () => {
   };
 
   const endCall = async () => {
+    if(Platform.OS === "ios")
+    {RNCallKeep.endAllCalls();}
     const res = await SDK.endCall();
     if (res.statusCode === 200) {
       Store.dispatch(clearStatusData());

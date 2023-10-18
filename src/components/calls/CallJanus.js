@@ -42,65 +42,65 @@ const CallJanus = () => {
   const callStatus = handleTernayAvoid(status);
 
   React.useEffect(() => {
-    // ===== Step 1: subscribe `register` event =====
-    // --- this.onVoipPushNotificationRegistered
-    RNVoipPushNotification.addEventListener('register', token => {
-      // --- send token to your apn provider server
-      setToken(token);
-    });
-
-    // ===== Step 2: subscribe `notification` event =====
-    // --- this.onVoipPushNotificationiReceived
-    RNVoipPushNotification.addEventListener(
-      'notification',
-      async notification => {
-        // --- when receive remote voip push, register your VoIP client, show local notification ... etc
-        // this.doSomething();
-        let remoteMessage = {
-          data: notification,
-        };
-        console.log(remoteMessage, 'remoteMessage');
-        await SDK.getNotificationData(remoteMessage);
-        // --- optionally, if you `addCompletionHandler` from the native side, once you have done the js jobs to initiate a call, call `completion()`
-        RNVoipPushNotification.onVoipNotificationCompleted(notification.uuid);
-      },
-    );
-
-    RNCallKeep.addEventListener('answerCall', async ({ callUUID }) => {
-      console.log(callUUID, 'callUUID');
-      let call = {};
-      call = await SDK.answerCall();
-      Store.dispatch(clearStatusData());
-    });
-
-    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
-      const res = await SDK.endCall();
-      if (res.statusCode === 200) {
-        Store.dispatch(clearStatusData());
-        Store.dispatch(clearStreamData());
-      }
-    });
-
-    // ===== Step 3: subscribe `didLoadWithEvents` event =====
-    RNVoipPushNotification.addEventListener('didLoadWithEvents', events => {
-      // --- this will fire when there are events occured before js bridge initialized
-      // --- use this event to execute your event handler manually by event type
-      console.log(events, 'eventssss');
-      // if (!events || !Array.isArray(events) || events.length < 1) {
-      //     return;
-      // }
-      // for (let voipPushEvent of events) {
-      //     let { name, data } = voipPushEvent;
-      //     if (name === RNVoipPushNotification.RNVoipPushRemoteNotificationsRegisteredEvent) {
-      //         // this.onVoipPushNotificationRegistered(data);
-      //     } else if (name === RNVoipPushNotification.RNVoipPushRemoteNotificationReceivedEvent) {
-      //         // onVoipPushNotificationiReceived(data);
-      //     }
-      // }
-    });
-
     if (Platform.OS === 'ios') {
       setupCallKit();
+
+      // ===== Step 1: subscribe `register` event =====
+      // --- this.onVoipPushNotificationRegistered
+      RNVoipPushNotification.addEventListener('register', token => {
+        // --- send token to your apn provider server
+        setToken(token);
+      });
+
+      // ===== Step 2: subscribe `notification` event =====
+      // --- this.onVoipPushNotificationiReceived
+      RNVoipPushNotification.addEventListener(
+        'notification',
+        async notification => {
+          // --- when receive remote voip push, register your VoIP client, show local notification ... etc
+          // this.doSomething();
+          let remoteMessage = {
+            data: notification,
+          };
+          console.log(remoteMessage, 'remoteMessage');
+          await SDK.getNotificationData(remoteMessage);
+          // --- optionally, if you `addCompletionHandler` from the native side, once you have done the js jobs to initiate a call, call `completion()`
+          RNVoipPushNotification.onVoipNotificationCompleted(notification.uuid);
+        },
+      );
+
+      RNCallKeep.addEventListener('answerCall', async ({ callUUID }) => {
+        console.log(callUUID, 'callUUID');
+        let call = {};
+        call = await SDK.answerCall();
+        Store.dispatch(clearStatusData());
+      });
+
+      RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
+        const res = await SDK.endCall();
+        if (res.statusCode === 200) {
+          Store.dispatch(clearStatusData());
+          Store.dispatch(clearStreamData());
+        }
+      });
+
+      // ===== Step 3: subscribe `didLoadWithEvents` event =====
+      RNVoipPushNotification.addEventListener('didLoadWithEvents', events => {
+        // --- this will fire when there are events occured before js bridge initialized
+        // --- use this event to execute your event handler manually by event type
+        console.log(events, 'eventssss');
+        // if (!events || !Array.isArray(events) || events.length < 1) {
+        //     return;
+        // }
+        // for (let voipPushEvent of events) {
+        //     let { name, data } = voipPushEvent;
+        //     if (name === RNVoipPushNotification.RNVoipPushRemoteNotificationsRegisteredEvent) {
+        //         // this.onVoipPushNotificationRegistered(data);
+        //     } else if (name === RNVoipPushNotification.RNVoipPushRemoteNotificationReceivedEvent) {
+        //         // onVoipPushNotificationiReceived(data);
+        //     }
+        // }
+      });
       // ===== Step 4: register =====
       // --- it will be no-op if you have subscribed before (like in native side)
       // --- but will fire `register` event if we have latest cahced voip token ( it may be empty if no token at all )
@@ -156,7 +156,7 @@ const CallJanus = () => {
         '91' + number,
         fcmToken,
         token,
-        false,
+        true,
       );
       const response = await SDK.connect(
         register.data.username,

@@ -88,6 +88,9 @@ const commonStyles = StyleSheet.create({
   marginLeft_15: {
     marginLeft: 15,
   },
+  marginLeft_20: {
+    marginLeft: 20,
+  },
   marginRight_4: {
     marginRight: 4,
   },

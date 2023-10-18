@@ -42,7 +42,6 @@ export default useRosterData;
 
 const getUserProfile = userId => {
   SDK.getUserProfile(userId).then(res => {
-    console.log(res, 'getUserProfile');
     if (res?.statusCode === 200) {
       updateUserProfileStore(res.data);
     }

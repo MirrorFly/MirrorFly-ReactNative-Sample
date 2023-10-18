@@ -176,12 +176,21 @@ const RecentChatItem = ({
               ? commonStyles.alignItemsCenter
               : commonStyles.alignItemsFlexStart,
           ]}>
-          <Avathar
-            data={nickName}
-            backgroundColor={colorCode}
-            profileImage={image}
-          />
-          <View style={[commonStyles.flex1, commonStyles.marginLeft_15]}>
+          <View style={commonStyles.positionRelative}>
+            <Avathar
+              data={nickName}
+              backgroundColor={colorCode}
+              profileImage={image}
+            />
+            {item.unreadCount > 0 && (
+              <View style={styles.unreadCountWrapper}>
+                <Text style={styles.unreadCountText}>
+                  {item.unreadCount > 99 ? '99+' : item.unreadCount}
+                </Text>
+              </View>
+            )}
+          </View>
+          <View style={[commonStyles.flex1, commonStyles.marginLeft_20]}>
             <HighlightedText
               text={nickName || userId}
               searchValue={searchValue}
@@ -214,7 +223,11 @@ const RecentChatItem = ({
               </View>
             )}
           </View>
-          <Text style={styles.lastMessageTimestamp}>
+          <Text
+            style={[
+              styles.lastMessageTimestamp,
+              item.unreadCount > 0 && styles.mainColoredText,
+            ]}>
             {item?.createdAt &&
               formatChatDateTime(
                 convertUTCTOLocalTimeStamp(item?.createdAt),
@@ -326,7 +339,6 @@ export default function RecentChat() {
        item?.chatType,
      )
      */
-      SDK.activeChatUser(jid);
       let x = {
         screen: CHATSCREEN,
         fromUserJID: item?.userJid || jid,
@@ -592,5 +604,24 @@ const styles = StyleSheet.create({
   },
   highlightedMessageText: {
     color: '#767676',
+  },
+  unreadCountWrapper: {
+    position: 'absolute',
+    top: -3,
+    left: 30,
+    backgroundColor: ApplicationColors.mainColor,
+    minWidth: 20,
+    paddingVertical: 1,
+    paddingHorizontal: 4,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  unreadCountText: {
+    color: ApplicationColors.white,
+    fontSize: 13,
+  },
+  mainColoredText: {
+    color: ApplicationColors.mainColor,
   },
 });

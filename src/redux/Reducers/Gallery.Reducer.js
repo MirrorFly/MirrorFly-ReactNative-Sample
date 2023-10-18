@@ -1,3 +1,4 @@
+import { getObjectDeepClone } from '../reduxHelper';
 import {
   ADD_GALLERY_ALBUM,
   ADD_GALLERY_GROUP_NAME,
@@ -12,7 +13,9 @@ const initialState = {
   galleryName: '',
 };
 
-const galleryReducer = (state = initialState, action) => {
+const initialStateClone = getObjectDeepClone(initialState);
+
+const galleryReducer = (state = initialStateClone, action) => {
   switch (action.type) {
     case ADD_GALLERY_ALBUM:
       return {
@@ -30,9 +33,9 @@ const galleryReducer = (state = initialState, action) => {
         galleryName: action.payload,
       };
     case RESET_GALLERY_DATA:
-      return initialState;
+      return getObjectDeepClone(initialState);
     case RESET_STORE:
-      return initialState;
+      return getObjectDeepClone(initialState);
     default:
       return state;
   }

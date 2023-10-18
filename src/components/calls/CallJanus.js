@@ -156,7 +156,7 @@ const CallJanus = () => {
         '91' + number,
         fcmToken,
         token,
-        true,
+        false,
       );
       const response = await SDK.connect(
         register.data.username,

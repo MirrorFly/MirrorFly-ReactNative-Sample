@@ -73,6 +73,12 @@ const commonStyles = StyleSheet.create({
   positionRelative: {
     position: 'relative',
   },
+  positionAbsolute: {
+    position: 'absolute',
+  },
+  bottom_0: {
+    bottom: 0,
+  },
   pressedBg: {
     backgroundColor: ApplicationColors.pressedBg,
   },
@@ -199,6 +205,9 @@ const commonStyles = StyleSheet.create({
   },
   typingText: {
     color: ApplicationColors.mainColor,
+  },
+  borderRadius_5: {
+    borderRadius: 5,
   },
 });
 

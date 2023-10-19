@@ -65,6 +65,10 @@ export default {
     'react-native-svg-transformer',
     '@react-native-community/push-notification-ios',
     'react-native-maps',
+    'react-native-geolocation-service',
+    'react-native-geocoder',
+    'react-native-pager-view',
+    'react-native-tab-view',
   ],
   plugins: [
     replace({

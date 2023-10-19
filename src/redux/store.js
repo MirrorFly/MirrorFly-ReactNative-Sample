@@ -19,6 +19,7 @@ import rosterReducer from './Reducers/roster.Reducer';
 import recoverMessageReducer from './Reducers/RecoverMessage.Reducer';
 import chatConversationLocalNavReducer from './Reducers/ChatConversationLocalNav.Reducer';
 import recentChatSearchReducer from './Reducers/recentChatSearch.Reducer';
+import TypingReducer from './Reducers/Typing.Reducer';
 
 const rootReducer = combineReducers({
   navigation: navigationReducer,
@@ -40,6 +41,7 @@ const rootReducer = combineReducers({
   rosterData: rosterReducer,
   recoverMessage: recoverMessageReducer,
   chatConversationLocalNav: chatConversationLocalNavReducer,
+  typingStatusData: TypingReducer,
 });
 
 const Store = legacy_createStore(rootReducer, applyMiddleware(thunkMiddleware));

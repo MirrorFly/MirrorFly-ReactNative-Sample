@@ -47,6 +47,7 @@ const RecentChatItem = ({
   handleSelect,
   handleOnSelect,
   searchValue,
+  isTyping,
 }) => {
   const _handlePress = () => {
     handleSelect(item);
@@ -157,6 +158,35 @@ const RecentChatItem = ({
         return null;
     }
   };
+  const renderLastMessage = () => {
+    if (isTyping) {
+      return <Text style={commonStyles.typingText}>typing...</Text>;
+    }
+
+    return item.deleteStatus === 1 ? (
+      <View style={styles.lastSentDeletedMessageContainer}>
+        <Text style={styles.deletedMessageText}>
+          {isSame ? YOU_DELETED_THIS_MESSAGE : THIS_MESSAGE_WAS_DELETED}
+        </Text>
+      </View>
+    ) : (
+      <View style={styles.lastSentMessageContainer}>
+        {isSame && item?.msgStatus !== 3 ? (
+          <View
+            style={[
+              styles.msgStatus,
+              isSame && Object.keys(item.msgBody).length ? statusVisible : '',
+            ]}
+          />
+        ) : (
+          isSame &&
+          item?.msgStatus === 3 &&
+          Object.keys(item.msgBody).length > 0 && <SandTimer />
+        )}
+        {renderLastSentMessageBasedOnType()}
+      </View>
+    );
+  };
 
   return (
     <View key={index}>
@@ -196,32 +226,7 @@ const RecentChatItem = ({
               searchValue={searchValue}
               index={index}
             />
-
-            {item.deleteStatus === 1 ? (
-              <View style={styles.lastSentDeletedMessageContainer}>
-                <Text style={styles.deletedMessageText}>
-                  {isSame ? YOU_DELETED_THIS_MESSAGE : THIS_MESSAGE_WAS_DELETED}
-                </Text>
-              </View>
-            ) : (
-              <View style={styles.lastSentMessageContainer}>
-                {isSame && item?.msgStatus !== 3 ? (
-                  <View
-                    style={[
-                      styles.msgStatus,
-                      isSame && Object.keys(item.msgBody).length
-                        ? statusVisible
-                        : '',
-                    ]}
-                  />
-                ) : (
-                  isSame &&
-                  item?.msgStatus === 3 &&
-                  Object.keys(item.msgBody).length > 0 && <SandTimer />
-                )}
-                {renderLastSentMessageBasedOnType()}
-              </View>
-            )}
+            {renderLastMessage()}
           </View>
           <Text
             style={[
@@ -249,6 +254,8 @@ export default function RecentChat() {
   const recentChatList = useSelector(state => state.recentChatData.data);
   const { isSearching, selectedItems, searchText, selectedItemsObj } =
     useSelector(state => state.recentChatSearchData) || {};
+  const typingStatusData =
+    useSelector(state => state.typingStatusData?.data) || {};
 
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
 
@@ -374,6 +381,7 @@ export default function RecentChat() {
         statusVisible = styles.seen;
         break;
     }
+    const isTyping = Boolean(typingStatusData[item?.fromUserId]);
     return (
       <RecentChatItem
         key={item?.fromUserId}
@@ -385,6 +393,7 @@ export default function RecentChat() {
         handleOnSelect={handleRecentItemSelect}
         handleSelect={handleSelect}
         searchValue={searchText}
+        isTyping={isTyping}
       />
     );
   };

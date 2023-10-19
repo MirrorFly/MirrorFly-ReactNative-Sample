@@ -13,5 +13,6 @@ const config = {
   internetErrorMessage: 'Please check your Internet connection',
   reportMembers: 5,
   GOOGLE_LOCATION_API_KEY: 'AIzaSyBaKkrQnLT4nacpKblIE5d4QK6GpaX5luQ', // NOSONAR
+  typingStatusGoneWaitTime: 1500,
 };
 export default config;

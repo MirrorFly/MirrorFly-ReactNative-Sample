@@ -14,7 +14,7 @@ import {
   Animated,
   Easing,
   TouchableOpacity,
-  Image,
+  AppState,
 } from 'react-native';
 import { SendBtn } from '../common/Button';
 import {
@@ -38,19 +38,41 @@ import RNFS from 'react-native-fs';
 import AudioRecorderPlayer, {
   AudioEncoderAndroidType,
   OutputFormatAndroidType,
-  AVModeIOSType,
 } from 'react-native-audio-recorder-player';
 import { getExtention, requestMicroPhonePermission } from '../common/utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
-import { showToast } from '../Helper/index';
+import { debounce, showToast } from '../Helper/index';
 import { useNetworkStatus } from '../hooks';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import SDK from '../SDK/SDK';
+import config from './chat/common/config';
 
 export const chatInputMessageRef = createRef();
 chatInputMessageRef.current = '';
+
+let typingStatusSent = false;
+
+const updateTypingGoneStatus = jid => {
+  if (typingStatusSent) {
+    SDK.sendTypingGoneStatus(jid);
+    typingStatusSent = false;
+  }
+};
+
+const updateTypingGoneStatusWithDelay = debounce(jid => {
+  updateTypingGoneStatus(jid);
+}, config.typingStatusGoneWaitTime);
+
+const updateTypingStatus = jid => {
+  if (!typingStatusSent) {
+    SDK.sendTypingStatus(jid);
+    typingStatusSent = true;
+  }
+  updateTypingGoneStatusWithDelay(jid);
+};
 
 const ChatInput = props => {
   const {
@@ -78,6 +100,17 @@ const ChatInput = props => {
   const isConnected = useNetworkStatus();
 
   const pulseAnimation = useRef(new Animated.Value(1)).current;
+
+  React.useEffect(() => {
+    const listener = AppState.addEventListener('change', _state => {
+      if (_state === 'background' || _state === 'inactive') {
+        updateTypingGoneStatus(fromUserJId);
+      }
+    });
+    return () => {
+      listener.remove();
+    };
+  }, []);
 
   const showMaximumLimitAudioToast = () => {
     showToast('You can record maximum 300 seconds for audio recording', {
@@ -238,11 +271,19 @@ const ChatInput = props => {
 
   useEffect(() => {
     chatInputMessageRef.current = message;
+    if (isConnected) {
+      if (message) {
+        updateTypingStatus(fromUserJId);
+      } else {
+        updateTypingGoneStatus(fromUserJId);
+      }
+    }
   }, [message]);
 
   const sendMessage = () => {
     if (message) {
       setMessage('');
+      updateTypingGoneStatus(fromUserJId);
       setTimeout(() => {
         onSendMessage(message.trim());
       }, 0);
@@ -324,6 +365,10 @@ const ChatInput = props => {
     setShowDeleteIcon(true);
   };
 
+  const handleSwipeOpen = direction => {
+    direction === 'right' && swipeFromRightOpen();
+  };
+
   return (
     <>
       {!showRecoderUi ? (
@@ -403,11 +448,11 @@ const ChatInput = props => {
                     onTouchStart={onTouchStart}>
                     <Swipeable
                       renderRightActions={rightSwipeActions}
-                      onSwipeableRightOpen={swipeFromRightOpen}
+                      onSwipeableOpen={handleSwipeOpen}
                       containerStyle={styles.SwipeContainer}
                       onSwipeableClose={onSwipeClose}>
                       <View style={styles.SlideContainer}>
-                        <View style={{ marginRight: 4 }}>
+                        <View style={commonStyles.marginRight_4}>
                           <SideArrowIcon />
                         </View>
 

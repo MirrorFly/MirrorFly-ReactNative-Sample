@@ -69,6 +69,9 @@ export default {
     'react-native-geocoder',
     'react-native-pager-view',
     'react-native-tab-view',
+    '@notifee/react-native',
+    'fbjs',
+    'react-native-contacts',
   ],
   plugins: [
     replace({

@@ -555,7 +555,7 @@ const styles = StyleSheet.create({
     width: '83%',
     height: 1,
     alignSelf: 'flex-end',
-    backgroundColor: '#F2F2F2',
+    backgroundColor: ApplicationColors.dividerBg,
   },
   imageView: {
     flex: 0.72,

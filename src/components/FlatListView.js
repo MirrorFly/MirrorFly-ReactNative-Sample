@@ -12,7 +12,6 @@ import {
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
 import Pressable from '../common/Pressable';
-import Slide from '../common/Slide';
 
 const RenderItem = ({ item, index, onhandlePress }) => {
   let {
@@ -67,14 +66,14 @@ export default function FlatListView(props) {
   const renderLoaderIfFetching = () => {
     if (props.isLoading) {
       return (
-        <Slide slideFrom="top" offset={100}>
+        <View style={styles.loaderWrapper}>
           <View style={commonStyles.alignItemsCenter}>
             <ActivityIndicator
               size="large"
               color={ApplicationColors.mainColor}
             />
           </View>
-        </Slide>
+        </View>
       );
     }
   };
@@ -123,5 +122,11 @@ const styles = StyleSheet.create({
     height: 1,
     alignSelf: 'flex-end',
     backgroundColor: ApplicationColors.dividerBg,
+  },
+  loaderWrapper: {
+    position: 'absolute',
+    width: '100%',
+    top: 90,
+    zIndex: 100,
   },
 });

@@ -114,7 +114,7 @@ export const callBacks = {
       store.dispatch(ClearChatHistoryAction(res.fromUserId));
     }
     if (
-      res.msgType === MSG_DELETE_CHAT ||
+      /* res.msgType === MSG_DELETE_CHAT || */
       res.msgType === MSG_DELETE_CHAT_CARBON
     ) {
       store.dispatch(deleteActiveChatAction(res));

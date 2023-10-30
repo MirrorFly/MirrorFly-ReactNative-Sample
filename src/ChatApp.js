@@ -166,6 +166,7 @@ const RootNavigation = () => {
       <SafeAreaView style={styles.container}>
         <StatusBar translucent backgroundColor={safeAreaBgColor} />
         <NavigationContainer
+          independent={true}
           linking={linking}
           ref={navigationRef}
           theme={

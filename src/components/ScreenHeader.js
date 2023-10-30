@@ -74,7 +74,8 @@ function ScreenHeader(props) {
               autoFocus={true}
             />
           )}
-          {props?.logo && !isSearching && (
+          {/* Mirrorfly logo */}
+          {/* {props?.logo && !isSearching && (
             <Image
               ml="3"
               key="sm"
@@ -84,7 +85,7 @@ function ScreenHeader(props) {
               source={getImageSource(props?.logo)}
               alt="ic_logo.png"
             />
-          )}
+          )} */}
           {props?.title && !isSearching && (
             <Text fontSize="xl" px="3" fontWeight={'600'}>
               {props?.title}

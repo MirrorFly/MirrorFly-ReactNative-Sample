@@ -51,7 +51,6 @@ function StackNavigationPage(props) {
         gestureEnabled: false,
       }}
       initialRouteName={props.InitialValue}>
-      {/* <Stack.Screen name="Splash" component={SplashScreen} /> */}
       <Stack.Screen name={REGISTERSCREEN}>
         {prop => <RegisterScreen {...prop} />}
       </Stack.Screen>

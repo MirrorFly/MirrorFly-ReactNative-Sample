@@ -27,7 +27,7 @@ import Pressable from '../common/Pressable';
 import { DoubleDownArrow } from '../common/Icons';
 import { resetUnreadCountForChat } from '../redux/Actions/RecentChatAction';
 
-const listBottomYaxisLimit = 500;
+const listBottomYaxisLimit = 60;
 
 const ChatConversationList = ({
   handleMessageListUpdated,

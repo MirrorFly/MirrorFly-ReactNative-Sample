@@ -90,7 +90,7 @@ const ChatInput = props => {
   const [showRecoderUi, setShowRecorderUi] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState('00:00');
-  const [audioPath, setAudioPath] = useState('');
+  const [, setAudioPath] = useState('');
   const [totalDuration, setTotalDuration] = useState(0);
   const [recordedData, setRecordedData] = React.useState({});
   const audioRecorderPlayer = React.useRef(new AudioRecorderPlayer()).current;

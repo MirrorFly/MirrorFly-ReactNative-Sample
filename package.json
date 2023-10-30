@@ -1,6 +1,6 @@
 {
   "name": "mirrorfly-uikit-react-native",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "React-Native based UI kit for Mirrorfly",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -22,7 +22,7 @@
     "lint": "eslint .",
     "prepare": "patch-package",
     "copy_pack": "cp -r dist/* /home/user/Web_Training/React_Native/SamplePoc/node_modules/mirrorfly/dist/",
-    "build:pack:copy": "npm run build && npm pack && cp -r mirrorfly-uikit-react-native-1.0.2.tgz /home/siva/Documents/Mirrorfly-Product/rn_mirrorfly-package-compatibility-check/PackageCompatibility",
+    "build:pack:copy": "npm run build && npm pack && cp -r mirrorfly-uikit-react-native-1.0.3.tgz /Users/user/Desktop/mirrorfly/rn_npm/AwesomeProject",
     "i": "npm i -f && npm run ios:install"
   },
   "reactNativePermissionsIOS": [
@@ -121,7 +121,7 @@
     "react": "18.0.0",
     "react-native": "0.69.12",
     "react-native-camera": "^4.2.1",
-    "react-native-compressor": "^1.6.1",
+    "react-native-compressor": "1.6.1",
     "react-native-contacts": "^7.0.6",
     "react-native-convert-ph-asset": "^1.0.3",
     "react-native-create-thumbnail": "^1.6.4",

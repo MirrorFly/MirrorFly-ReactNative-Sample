@@ -40,6 +40,8 @@ Follow the below steps to get your license key:
  }
 ```
 
+>**Note :** Please refer the doc for more info about installation (https://www.mirrorfly.com/docs/uikit/reactnative/quick-start/)
+
 **Step 3:** Import ChatApp component from the mirrorfly-uikit-react-native package in node modules.
 
 ```jsx

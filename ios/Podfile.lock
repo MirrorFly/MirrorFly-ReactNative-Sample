@@ -409,6 +409,8 @@ PODS:
     - React-Core
   - RNFS (2.20.0):
     - React-Core
+  - RNGestureHandler (2.9.0):
+    - React-Core
   - RNImageCropPicker (0.38.1):
     - React-Core
     - React-RCTImage
@@ -719,6 +721,7 @@ SPEC CHECKSUMS:
   RNFBMessaging: 534bab7d0527d560cd1a35e74223735b4ed1eeee
   RNFileViewer: ce7ca3ac370e18554d35d6355cffd7c30437c592
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
+  RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNImageCropPicker: 648356d68fbf9911a1016b3e3723885d28373eda
   RNNotifee: f3c01b391dd8e98e67f539f9a35a9cbcd3bae744
   RNPermissions: 6aa8b0c4b55c3113d1b5a4bf328dc05415031b16

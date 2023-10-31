@@ -16,6 +16,10 @@ export const handleRegister = async (userIdentifier, fcmToken) => {
   if (registerRes.statusCode === 200) {
     const { data } = registerRes;
     await AsyncStorage.setItem('credential', JSON.stringify(data));
+    await AsyncStorage.setItem(
+      'userIdentifier',
+      JSON.stringify(userIdentifier),
+    );
     const connect = await SDK.connect(data.username, data.password);
     switch (connect?.statusCode) {
       case 200:
@@ -66,6 +70,22 @@ export const mirrorflyRegister = async args => {
       };
     }
     return handleRegister(userIdentifier, fcmToken);
+  } catch (error) {
+    return error;
+  }
+};
+
+export const mirrorflyProfileUpdate = async args => {
+  try {
+    const mobileNumber = await AsyncStorage.getItem('userIdentifier');
+    const { nickName, image, status, email } = args;
+    return SDK.setUserProfile(
+      nickName,
+      image,
+      status,
+      JSON.parse(mobileNumber),
+      email,
+    );
   } catch (error) {
     return error;
   }

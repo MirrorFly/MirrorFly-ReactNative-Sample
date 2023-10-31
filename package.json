@@ -1,6 +1,6 @@
 {
   "name": "mirrorfly-uikit-react-native",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "React-Native based UI kit for Mirrorfly",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -22,7 +22,7 @@
     "lint": "eslint .",
     "prepare": "patch-package",
     "copy_pack": "cp -r dist/* /home/user/Web_Training/React_Native/SamplePoc/node_modules/mirrorfly/dist/",
-    "build:pack:copy": "npm run build && npm pack && cp -r mirrorfly-uikit-react-native-1.0.3.tgz /Users/user/Desktop/mirrorfly/rn_npm/AwesomeProject",
+    "build:pack:copy": "npm run build && npm pack && cp -r mirrorfly-uikit-react-native-1.0.4.tgz /Users/user/Desktop/mirrorfly/rn_npm/AwesomeProject",
     "i": "npm i -f && npm run ios:install"
   },
   "reactNativePermissionsIOS": [

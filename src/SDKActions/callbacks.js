@@ -47,6 +47,7 @@ import {
   getNotifyNickName,
 } from '../components/RNCamera/Helper';
 import {
+  resetChatTypingStatus,
   updateChatTypingGoneStatus,
   updateChatTypingStatus,
 } from '../redux/Actions/TypingAction';
@@ -55,6 +56,7 @@ export const callBacks = {
   connectionListener: response => {
     console.log('connectionListener', response);
     store.dispatch(setXmppStatus(response.status));
+    store.dispatch(resetChatTypingStatus());
     if (response.status === 'CONNECTED') {
       console.log('Connection Established');
     } else if (response.status === 'DISCONNECTED') {

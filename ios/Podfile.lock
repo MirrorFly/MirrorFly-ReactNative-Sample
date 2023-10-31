@@ -391,7 +391,7 @@ PODS:
     - React
   - rn-fetch-blob (0.12.0):
     - React-Core
-  - RNAudioRecorderPlayer (3.6.1):
+  - RNAudioRecorderPlayer (3.6.2):
     - React-Core
   - RNCAsyncStorage (1.19.3):
     - React-Core
@@ -727,7 +727,7 @@ SPEC CHECKSUMS:
   ReactCommon: f4bb9e5209ea5c3c6ab25e100895119e58d6e50a
   RealmJS: 2e45ca6ed4c3732be369219b41816e890ce51024
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
-  RNAudioRecorderPlayer: 711f14e1f7634c9765e274245eeca51206c9cf0f
+  RNAudioRecorderPlayer: 30bcd668e4720d9ebbfeb3169836b3b07833f77a
   RNCAsyncStorage: c913ede1fa163a71cea118ed4670bbaaa4b511bb
   RNCClipboard: d77213bfa269013bf4b857b7a9ca37ee062d8ef1
   RNConvertPhAsset: 9b366b8a1abc194b76572712c6f7dd89c9e4e37f

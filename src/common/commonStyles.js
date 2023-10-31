@@ -94,6 +94,9 @@ const commonStyles = StyleSheet.create({
   marginRight_8: {
     marginRight: 8,
   },
+  marginRight_12: {
+    marginRight: 12,
+  },
   marginRight_28: {
     marginRight: 24,
   },
@@ -148,6 +151,9 @@ const commonStyles = StyleSheet.create({
   },
   marginHorizontal_4: {
     marginHorizontal: 4,
+  },
+  marginHorizontal_10: {
+    marginHorizontal: 10,
   },
   paddingHorizontal_6: {
     paddingHorizontal: 6,

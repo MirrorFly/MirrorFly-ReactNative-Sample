@@ -46,9 +46,11 @@ import {
   getNotifyMessage,
   getNotifyNickName,
 } from '../components/RNCamera/Helper';
+import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
 
 export const callBacks = {
   connectionListener: response => {
+    uikitCallbackListeners()?.callBack?.(response);
     console.log('connectionListener', response);
     store.dispatch(setXmppStatus(response.status));
     if (response.status === 'CONNECTED') {

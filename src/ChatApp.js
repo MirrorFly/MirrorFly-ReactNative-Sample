@@ -14,8 +14,6 @@ import {
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { navigationRef } from './Navigation/rootNavigation';
 import StackNavigationPage from './Navigation/stackNavigation';
-import SDK from './SDK/SDK';
-import { callBacks } from './SDKActions/callbacks';
 import ApplicationTheme from './config/appTheme';
 import {
   CAMERA,
@@ -33,9 +31,7 @@ import { profileDetail } from './redux/Actions/ProfileAction';
 import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction';
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
-import messaging from '@react-native-firebase/messaging';
-import { requestNotificationPermission } from './common/utils';
-import { removeAllDeliveredNotification } from './Service/remoteNotifyHandle';
+import { Text } from 'react-native';
 
 LogBox.ignoreAllLogs();
 
@@ -67,17 +63,14 @@ const linking = {
 };
 
 export const ChatApp = props => {
+  const { jid } = props;
+  const [isMfInit, setIsMfInit] = React.useState(false);
   React.useEffect(() => {
     (async () => {
-      await SDK.initializeSDK({
-        apiBaseUrl: props.apiUrl,
-        licenseKey: props.licenseKey,
-        callbackListeners: callBacks,
-        isSandbox: props.isSandbox,
-      });
-      await messaging().requestPermission();
-      requestNotificationPermission();
-      removeAllDeliveredNotification();
+      const mfInit = await AsyncStorage.getItem('mfInit');
+      if (mfInit) {
+        setIsMfInit(true);
+      }
     })();
     return () => {
       keyboardDidShowListener.remove();
@@ -88,13 +81,18 @@ export const ChatApp = props => {
   return (
     <Provider store={store}>
       <NativeBaseProvider>
-        <RootNavigation />
+        {isMfInit ? (
+          <RootNavigation jid={jid} />
+        ) : (
+          <Text>Mirrorfly Not Initialized</Text>
+        )}
       </NativeBaseProvider>
     </Provider>
   );
 };
 
-const RootNavigation = () => {
+const RootNavigation = props => {
+  const { jid } = props;
   const scheme = useColorScheme();
   const [initialRouteValue, setInitialRouteValue] = React.useState('Register');
   const [isLoading, setIsLoading] = React.useState(false);
@@ -141,10 +139,13 @@ const RootNavigation = () => {
       } else {
         setInitialRouteValue(REGISTERSCREEN);
       }
+      if (jid?.split('@').length > 1) {
+        setInitialRouteValue(RECENTCHATSCREEN);
+      }
       setIsLoading(false);
     }, 1000);
-  }, []);
-
+  }, [jid]);
+  console.log('initialRouteValue', initialRouteValue);
   return (
     <>
       {/** <Box safeAreaBottom backgroundColor={safeAreaBgColor} />

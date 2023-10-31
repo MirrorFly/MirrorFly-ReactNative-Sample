@@ -311,7 +311,7 @@ PODS:
     - React-Core
   - react-native-pager-view (6.2.2):
     - React-Core
-  - react-native-safe-area-context (4.7.4):
+  - react-native-safe-area-context (4.7.3):
     - React-Core
   - react-native-video (5.2.1):
     - React-Core
@@ -697,7 +697,7 @@ SPEC CHECKSUMS:
   react-native-mov-to-mp4: a04f17590618523487ab5d71c9310c6c4a7aaf99
   react-native-netinfo: 1a6035d3b9780221d407c277ebfb5722ace00658
   react-native-pager-view: 02a5c4962530f7efc10dd51ee9cdabeff5e6c631
-  react-native-safe-area-context: 2cd91d532de12acdb0a9cbc8d43ac72a8e4c897c
+  react-native-safe-area-context: 238cd8b619e05cb904ccad97ef42e84d1b5ae6ec
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
   React-perflogger: 5ade0a1627352f1647d283e78331819bb46cceae
   React-RCTActionSheet: 8e94f1e46e09c7035b81fe56c0ed8d78f3ccd340
@@ -724,7 +724,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNImageCropPicker: 648356d68fbf9911a1016b3e3723885d28373eda
   RNNotifee: f3c01b391dd8e98e67f539f9a35a9cbcd3bae744
-  RNPermissions: 6aa8b0c4b55c3113d1b5a4bf328dc05415031b16
+  RNPermissions: b0dc0c4f4502e97be60cde20737f27ef651e9e98
   RNScreens: 2b19e2471db8a581c83f381f4ea5d43071c9a3bf
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: d00c8f91c3cbf6d476451313a18f04d220d4f396

@@ -13,7 +13,9 @@ import {
 } from 'react-native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { navigationRef } from './Navigation/rootNavigation';
-import StackNavigationPage from './Navigation/stackNavigation';
+import StackNavigationPage, {
+  RecentStackNavigation,
+} from './Navigation/stackNavigation';
 import ApplicationTheme from './config/appTheme';
 import {
   CAMERA,
@@ -32,6 +34,7 @@ import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction'
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
 import { Text } from 'react-native';
+import { getAppInitialized } from './uikitHelpers/uikitMethods';
 
 LogBox.ignoreAllLogs();
 
@@ -62,16 +65,10 @@ const linking = {
   },
 };
 
-export const ChatApp = props => {
-  const { jid } = props;
-  const [isMfInit, setIsMfInit] = React.useState(false);
+export const ChatApp = React.memo(props => {
+  const { jid = '' } = props;
+  const isMfInit = getAppInitialized();
   React.useEffect(() => {
-    (async () => {
-      const mfInit = await AsyncStorage.getItem('mfInit');
-      if (mfInit) {
-        setIsMfInit(true);
-      }
-    })();
     return () => {
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
@@ -89,12 +86,13 @@ export const ChatApp = props => {
       </NativeBaseProvider>
     </Provider>
   );
-};
+});
 
 const RootNavigation = props => {
   const { jid } = props;
   const scheme = useColorScheme();
-  const [initialRouteValue, setInitialRouteValue] = React.useState('Register');
+  const [initialRouteValue, setInitialRouteValue] =
+    React.useState(REGISTERSCREEN);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const dispatch = useDispatch();
@@ -139,13 +137,18 @@ const RootNavigation = props => {
       } else {
         setInitialRouteValue(REGISTERSCREEN);
       }
-      if (jid?.split('@').length > 1) {
-        setInitialRouteValue(RECENTCHATSCREEN);
-      }
       setIsLoading(false);
-    }, 1000);
-  }, [jid]);
-  console.log('initialRouteValue', initialRouteValue);
+    });
+  }, []);
+
+  const renderStactNavigation = () => {
+    return jid ? (
+      <RecentStackNavigation />
+    ) : (
+      <StackNavigationPage InitialValue={initialRouteValue} />
+    );
+  };
+
   return (
     <>
       {/** <Box safeAreaBottom backgroundColor={safeAreaBgColor} />
@@ -175,11 +178,7 @@ const RootNavigation = props => {
               ? ApplicationTheme.darkTheme
               : ApplicationTheme.lightTheme
           }>
-          {isLoading ? (
-            <SplashScreen />
-          ) : (
-            <StackNavigationPage InitialValue={initialRouteValue} />
-          )}
+          {isLoading ? <SplashScreen /> : renderStactNavigation()}
         </NavigationContainer>
       </SafeAreaView>
       <Box safeAreaBottom backgroundColor={safeAreaBgColor} />

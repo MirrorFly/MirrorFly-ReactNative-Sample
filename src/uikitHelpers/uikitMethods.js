@@ -2,9 +2,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import SDK from '../SDK/SDK';
 import { callBacks as sdkCallBacks } from '../SDKActions/callbacks';
 
-let uiKitCallbackListenersVal = {};
+let uiKitCallbackListenersVal = {},
+  appInitialized = false;
 
 export const uikitCallbackListeners = () => uiKitCallbackListenersVal || {};
+
+export const setAppInitialized = state => (appInitialized = state);
+
+export const getAppInitialized = async () => appInitialized;
 
 export const handleRegister = async (userIdentifier, fcmToken) => {
   const registerRes = await SDK.register(userIdentifier, fcmToken);
@@ -39,7 +44,7 @@ export const mirrorflyInitialize = async args => {
     });
     uiKitCallbackListenersVal = { callBack };
     if (mfInit.statusCode === 200) {
-      await AsyncStorage.setItem('mfInit', mfInit.message);
+      setAppInitialized(true);
     }
     return mfInit;
   } catch (error) {
@@ -54,7 +59,11 @@ export const mirrorflyRegister = async args => {
     const _userJID = await AsyncStorage.getItem('currentUserJID');
     const parsedCredential = JSON.parse(_credential);
     if (parsedCredential?.username === userIdentifier) {
-      return { statusCode: 409, message: 'Registered User', jid: JSON.parse(_userJID) };
+      return {
+        statusCode: 409,
+        message: 'Registered User',
+        jid: JSON.parse(_userJID),
+      };
     }
     return handleRegister(userIdentifier, fcmToken);
   } catch (error) {

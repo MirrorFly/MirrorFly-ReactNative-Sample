@@ -42,6 +42,40 @@ const ChatScreenStackNavigation = () => {
   );
 };
 
+export function RecentStackNavigation(props) {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        orientation: 'portrait',
+        gestureEnabled: false,
+      }}
+      initialRouteName={RECENTCHATSCREEN}>
+      <Stack.Screen name={PROFILESCREEN}>
+        {prop => <ProfileScreen {...prop} />}
+      </Stack.Screen>
+      <Stack.Screen name={RECENTCHATSCREEN}>
+        {prop => <RecentScreen {...prop} />}
+      </Stack.Screen>
+      <Stack.Screen name={CHATSCREEN}>
+        {prop => <ChatScreenStackNavigation {...prop} />}
+      </Stack.Screen>
+      <Stack.Screen name={COUNTRYSCREEN}>
+        {prop => <CountryList {...prop} />}
+      </Stack.Screen>
+      <Stack.Screen name={CONTACTLIST}>
+        {prop => <ContactScreen {...prop} />}
+      </Stack.Screen>
+      <Stack.Screen name={SETTINGSCREEN}>
+        {prop => <SettingScreen {...prop} />}
+      </Stack.Screen>
+      <Stack.Screen name={CAMERA}>
+        {prop => <RNCamera {...prop} />}
+      </Stack.Screen>
+    </Stack.Navigator>
+  );
+}
+
 function StackNavigationPage(props) {
   return (
     <Stack.Navigator

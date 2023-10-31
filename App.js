@@ -4,6 +4,7 @@ import { requestNotificationPermission } from './src/common/utils';
 import { removeAllDeliveredNotification } from './src/Service/remoteNotifyHandle';
 import messaging from '@react-native-firebase/messaging';
 import { callBacks } from './src/SDKActions/callbacks';
+import { setAppInitialized } from './src/uikitHelpers/uikitMethods';
 
 function App() {
   const API_URL = 'https://api-uikit-qa.contus.us/api/v1';
@@ -17,6 +18,7 @@ function App() {
         callbackListeners: callBacks,
         isSandbox: false,
       });
+      setAppInitialized(true);
       await messaging().requestPermission();
       requestNotificationPermission();
       removeAllDeliveredNotification();

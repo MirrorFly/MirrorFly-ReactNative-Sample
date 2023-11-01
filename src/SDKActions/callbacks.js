@@ -233,6 +233,7 @@ export const callBacks = {
     Store.dispatch(setStatusData(res));
   },
   callStatusListener: function (res) {
+    console.log(res,"ressss");
     if (res.status === 'ended') {
       Store.dispatch(clearStreamData());
       Store.dispatch(clearStatusData());
@@ -307,7 +308,9 @@ export const callBacks = {
   inviteUsersListener: res => { },
   callUserJoinedListener: function (res) { },
   callUserLeftListener: function (res) { },
-  missedCallListener: res => { },
+  missedCallListener: res => { 
+    console.log(res,"missedCallListener");
+  },
   callSwitchListener: function (res) { },
   muteStatusListener: res => { },
   adminBlockListener: function (res) { },

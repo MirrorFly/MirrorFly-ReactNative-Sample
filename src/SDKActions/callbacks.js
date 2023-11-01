@@ -1,8 +1,8 @@
 import nextFrame from 'next-frame';
+import { MediaStream } from 'react-native-webrtc';
 import {
   MSG_CLEAR_CHAT,
   MSG_CLEAR_CHAT_CARBON,
-  MSG_DELETE_CHAT,
   MSG_DELETE_CHAT_CARBON,
   MSG_DELETE_STATUS,
   MSG_DELETE_STATUS_CARBON,
@@ -10,7 +10,14 @@ import {
   MSG_SEEN_STATUS,
   MSG_SENT_SEEN_STATUS_CARBON,
 } from '../Helper/Chat/Constant';
+import { updateUserProfileDetails } from '../Helper/index';
 import * as RootNav from '../Navigation/rootNavigation';
+import SDK from '../SDK/SDK';
+import { pushNotify, updateNotification } from '../Service/remoteNotifyHandle';
+import {
+  getNotifyMessage,
+  getNotifyNickName,
+} from '../components/RNCamera/Helper';
 import {
   updateConversationMessage,
   updateRecentChatMessage,
@@ -35,28 +42,28 @@ import {
   updateMsgByLastMsgId,
   updateRecentChatMessageStatus,
 } from '../redux/Actions/RecentChatAction';
+import {
+  resetChatTypingStatus,
+  updateChatTypingGoneStatus,
+  updateChatTypingStatus,
+} from '../redux/Actions/TypingAction';
 import { deleteChatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAction';
 import { setXmppStatus } from '../redux/Actions/connectionAction';
-import { updateUserPresence } from '../redux/Actions/userAction';
-import store from '../redux/store';
-import { updateUserProfileDetails } from '../Helper/index';
-import SDK from '../SDK/SDK';
-import { pushNotify, updateNotification } from '../Service/remoteNotifyHandle';
-import {
-  getNotifyMessage,
-  getNotifyNickName,
-} from '../components/RNCamera/Helper';
-import Store from '../redux/store';
-import { clearStreamData, setStreamData } from '../redux/Actions/streamAction';
-import { MediaStream } from 'react-native-webrtc';
 import { clearStatusData, setStatusData } from '../redux/Actions/statusAction';
+import { clearStreamData, setStreamData } from '../redux/Actions/streamAction';
+import { updateUserPresence } from '../redux/Actions/userAction';
+import { default as Store, default as store } from '../redux/store';
+import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+
 let localStream = null;
 let remoteStream = [];
 
 export const callBacks = {
   connectionListener: response => {
+    uikitCallbackListeners()?.callBack?.(response);
     console.log('connectionListener', response);
     store.dispatch(setXmppStatus(response.status));
+    store.dispatch(resetChatTypingStatus());
     if (response.status === 'CONNECTED') {
       console.log('Connection Established');
     } else if (response.status === 'DISCONNECTED') {
@@ -97,6 +104,16 @@ export const callBacks = {
         store.dispatch(updateRecentChatMessageStatus(res));
         store.dispatch(updateChatConversationHistory(res));
         break;
+      case 'composing':
+      case 'carbonComposing':
+        store.dispatch(updateChatTypingStatus(res?.groupId || res?.fromUserId));
+        break;
+      case 'carbonGone':
+      case 'gone':
+        store.dispatch(
+          updateChatTypingGoneStatus(res?.groupId || res?.fromUserId),
+        );
+        break;
     }
     if (
       res.msgType === MSG_CLEAR_CHAT ||
@@ -106,7 +123,7 @@ export const callBacks = {
       store.dispatch(ClearChatHistoryAction(res.fromUserId));
     }
     if (
-      res.msgType === MSG_DELETE_CHAT ||
+      /* res.msgType === MSG_DELETE_CHAT || */
       res.msgType === MSG_DELETE_CHAT_CARBON
     ) {
       store.dispatch(deleteActiveChatAction(res));
@@ -184,7 +201,6 @@ export const callBacks = {
     }
   },
   presenceListener: res => {
-    console.log('presenceListener', res);
     store.dispatch(updateUserPresence(res));
   },
   userProfileListener: res => {

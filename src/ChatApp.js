@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
-import { Box, NativeBaseProvider } from 'native-base';
+import { Box } from 'native-base';
 import React, { createRef } from 'react';
 import {
   Keyboard,
@@ -13,9 +13,10 @@ import {
 } from 'react-native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { navigationRef } from './Navigation/rootNavigation';
-import StackNavigationPage from './Navigation/stackNavigation';
-import SDK from './SDK/SDK';
-import { callBacks } from './SDKActions/callbacks';
+import StackNavigationPage, {
+  RecentStackNavigation,
+} from './Navigation/stackNavigation';
+import CallJanus from './components/calls/CallJanus';
 import ApplicationTheme from './config/appTheme';
 import {
   CAMERA,
@@ -33,12 +34,7 @@ import { profileDetail } from './redux/Actions/ProfileAction';
 import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction';
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
-import messaging from '@react-native-firebase/messaging';
-import { requestNotificationPermission } from './common/utils';
-import { removeAllDeliveredNotificatoin } from './Service/remoteNotifyHandle';
-import { handleOpenUrl } from './Helper';
-import CallJanus from './components/calls/CallJanus';
-import { removeAllDeliveredNotification } from './Service/remoteNotifyHandle';
+import { getAppInitialized } from './uikitHelpers/uikitMethods';
 
 LogBox.ignoreAllLogs();
 
@@ -69,19 +65,10 @@ const linking = {
   },
 };
 
-export const ChatApp = props => {
+export const ChatApp = React.memo(props => {
+  const { jid = '' } = props;
+  const isMfInit = getAppInitialized();
   React.useEffect(() => {
-    (async () => {
-      await SDK.initializeSDK({
-        apiBaseUrl: props.apiUrl,
-        licenseKey: props.licenseKey,
-        callbackListeners: callBacks,
-        isSandbox: props.isSandbox,
-      });
-      await messaging().requestPermission();
-      requestNotificationPermission();
-      removeAllDeliveredNotification();
-    })();
     return () => {
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
@@ -92,15 +79,21 @@ export const ChatApp = props => {
     <Provider store={store}>
       <CallJanus />
       {/* <NativeBaseProvider>
-        <RootNavigation />
+        {isMfInit ? (
+          <RootNavigation jid={jid} />
+        ) : (
+          <Text>Mirrorfly Not Initialized</Text>
+        )}
       </NativeBaseProvider> */}
     </Provider>
   );
-};
+});
 
-const RootNavigation = () => {
+const RootNavigation = props => {
+  const { jid } = props;
   const scheme = useColorScheme();
-  const [initialRouteValue, setInitialRouteValue] = React.useState('Register');
+  const [initialRouteValue, setInitialRouteValue] =
+    React.useState(REGISTERSCREEN);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const dispatch = useDispatch();
@@ -146,8 +139,16 @@ const RootNavigation = () => {
         setInitialRouteValue(REGISTERSCREEN);
       }
       setIsLoading(false);
-    }, 1000);
+    });
   }, []);
+
+  const renderStactNavigation = () => {
+    return jid ? (
+      <RecentStackNavigation />
+    ) : (
+      <StackNavigationPage InitialValue={initialRouteValue} />
+    );
+  };
 
   return (
     <>
@@ -170,6 +171,7 @@ const RootNavigation = () => {
       <SafeAreaView style={styles.container}>
         <StatusBar translucent backgroundColor={safeAreaBgColor} />
         <NavigationContainer
+          independent={true}
           linking={linking}
           ref={navigationRef}
           theme={
@@ -177,11 +179,7 @@ const RootNavigation = () => {
               ? ApplicationTheme.darkTheme
               : ApplicationTheme.lightTheme
           }>
-          {isLoading ? (
-            <SplashScreen />
-          ) : (
-            <StackNavigationPage InitialValue={initialRouteValue} />
-          )}
+          {isLoading ? <SplashScreen /> : renderStactNavigation()}
         </NavigationContainer>
       </SafeAreaView>
       <Box safeAreaBottom backgroundColor={safeAreaBgColor} />

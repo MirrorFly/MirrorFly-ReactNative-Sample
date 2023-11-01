@@ -307,19 +307,6 @@ function ChatScreen() {
         } else if (storage_permission) {
           openSettings();
         }
-        /** SavePicture()
-        RNimageGalleryLaunch()
-          const res = await handleGalleryPickerMulti(toast)
-          const transformedArray = res?.map((obj, index) => {
-            return {
-              caption: '',
-              image: obj
-            };
-          });
-          setSelectedImages(transformedArray)
-          if (res?.length) {
-            setLocalNav('GalleryPickView')
-          } */
       },
     },
     {
@@ -369,7 +356,11 @@ function ChatScreen() {
         profileDetails: {},
       };
       dispatch(navigate(x));
-      RootNav.reset(RECENTCHATSCREEN);
+      if (RootNav.navigationRef.canGoBack()) {
+        RootNav.goBack();
+      } else {
+        RootNav.reset(RECENTCHATSCREEN);
+      }
     }
     return true;
   };

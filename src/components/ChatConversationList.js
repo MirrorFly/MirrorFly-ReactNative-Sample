@@ -2,6 +2,7 @@ import { showToast } from '../Helper/index';
 import SDK from '../SDK/SDK';
 import React, { useRef } from 'react';
 import {
+  AppState,
   FlatList,
   Linking,
   Platform,
@@ -23,6 +24,10 @@ import Modal, { ModalCenteredContent } from '../common/Modal';
 import ApplicationColors from '../config/appColors';
 import { INVITE_APP_URL, INVITE_SMS_CONTENT } from '../constant';
 import Pressable from '../common/Pressable';
+import { DoubleDownArrow } from '../common/Icons';
+import { resetUnreadCountForChat } from '../redux/Actions/RecentChatAction';
+
+const listBottomYaxisLimit = 60;
 
 const ChatConversationList = ({
   handleMessageListUpdated,
@@ -44,23 +49,40 @@ const ChatConversationList = ({
   const xmppConnection = useSelector(state => state.connection.xmppStatus);
   const dispatch = useDispatch();
   const flatListRef = React.useRef(null);
+  const flatListScrollPositionRef = useRef({ x: 0, y: 0 });
   const filteredMessageIndexes = React.useRef([]);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const [highlightMessageId, setHighlightMessageId] = React.useState('');
   const [showContactInviteModal, setShowContactInviteModal] =
     React.useState(false);
+  const [showScrollToBottomIcon, setShowScrollToBottomIcon] =
+    React.useState(false);
+
+  const messageListRef = React.useRef([]);
+
+  const [newMsgCount, setNewMsgCount] = React.useState(0);
 
   const inviteContactMessageRef = useRef();
 
   const messageList = React.useMemo(() => {
     const id = getUserIdFromJid(fromUserJId);
     if (id) {
+      const _previousMessageList = messageListRef.current;
       const data = messages[id]?.messages
         ? Object.values(messages[id]?.messages)
         : [];
       data.reverse();
+      // update the new messages count
+      if (
+        data.length > _previousMessageList.length && // to check if there is any new msg
+        data[0]?.fromUserId === id && // to check if the new msg is received from the other user
+        flatListScrollPositionRef.current.y > listBottomYaxisLimit // to check if the list scroll position is not in the bottom
+      ) {
+        setNewMsgCount(val => val + 1);
+      }
       handleMessageListUpdated(messages[id]?.messages);
       onSelectedMessageUpdate(messages[id]?.messages);
+      messageListRef.current = data; // updating the ref to track the previously calculated data like the total message count
       return data;
     }
     return [];
@@ -71,6 +93,26 @@ const ChatConversationList = ({
       isActiveChatScreenRef.current = true;
       return () => (isActiveChatScreenRef.current = false);
     }, []),
+  );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      SDK.activeChatUser(fromUserJId || '');
+      SDK.updateRecentChatUnreadCount(fromUserJId);
+      dispatch(resetUnreadCountForChat(fromUserJId));
+      // App state change listener for background and foreground change
+      const subscription = AppState.addEventListener('change', _state => {
+        if (_state === 'active') {
+          SDK.activeChatUser(fromUserJId || '');
+        } else if (_state === 'background') {
+          SDK.activeChatUser('');
+        }
+      });
+      return () => {
+        SDK.activeChatUser('');
+        subscription.remove();
+      };
+    }, [fromUserJId]),
   );
 
   useFocusEffect(
@@ -264,6 +306,24 @@ const ChatConversationList = ({
     }
   };
 
+  const handleConversationScoll = ({ nativeEvent }) => {
+    const { contentOffset } = nativeEvent;
+    flatListScrollPositionRef.current = { ...contentOffset };
+    if (contentOffset.y > listBottomYaxisLimit) {
+      !showScrollToBottomIcon && setShowScrollToBottomIcon(true);
+    } else {
+      newMsgCount > 0 && setNewMsgCount(0);
+      showScrollToBottomIcon && setShowScrollToBottomIcon(false);
+    }
+  };
+
+  const handleScollToBottomPress = () => {
+    flatListRef.current.scrollToOffset({
+      indexoffset: 0,
+      animated: true,
+    });
+  };
+
   return (
     <>
       <FlatList
@@ -276,8 +336,31 @@ const ChatConversationList = ({
         initialNumToRender={20}
         maxToRenderPerBatch={40}
         onScrollToIndexFailed={doNothing}
+        onScroll={handleConversationScoll}
+        scrollEventThrottle={500}
         windowSize={15}
       />
+      {showScrollToBottomIcon && (
+        <Pressable
+          style={styles.floatingScrollToBottomIconWrapper}
+          contentContainerStyle={styles.floatingScrollToBottomIconContent}
+          pressedStyle={styles.floatingScrollToBottomIconPressed}
+          onPress={handleScollToBottomPress}>
+          {newMsgCount > 0 && (
+            <View
+              style={[
+                styles.newMessgesCountBadgeWrapper,
+                newMsgCount > 99 &&
+                  styles.newMessgesCountBadgeWrapperWith3Chars,
+              ]}>
+              <Text style={styles.newMessgesCountBadgeText}>
+                {newMsgCount > 99 ? '99+' : newMsgCount}
+              </Text>
+            </View>
+          )}
+          <DoubleDownArrow width={15} height={15} />
+        </Pressable>
+      )}
       <Modal
         visible={showContactInviteModal}
         onRequestClose={toggleContactInviteModal}>
@@ -300,6 +383,47 @@ const ChatConversationList = ({
 export default React.memo(ChatConversationList);
 
 const styles = StyleSheet.create({
+  floatingScrollToBottomIconWrapper: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: ApplicationColors.mainBorderColor,
+    opacity: 0.8,
+    zIndex: 100,
+  },
+  floatingScrollToBottomIconContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  floatingScrollToBottomIconPressed: {
+    backgroundColor: ApplicationColors.pressedBg,
+    borderRadius: 15,
+  },
+  newMessgesCountBadgeWrapper: {
+    position: 'absolute',
+    right: '100%',
+    marginRight: 2,
+    minWidth: 20,
+    paddingVertical: 1,
+    paddingHorizontal: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: ApplicationColors.mainColor,
+    borderRadius: 50,
+  },
+  newMessgesCountBadgeWrapperWith3Chars: {
+    width: 33,
+    paddingHorizontal: 0,
+  },
+  newMessgesCountBadgeText: {
+    color: ApplicationColors.white,
+  },
   inviteFriendModalContentContainer: {
     maxWidth: 500,
     width: '80%',

@@ -1,3 +1,4 @@
+import { getObjectDeepClone } from '../reduxHelper';
 import {
   CLEAR_RECENT_CHAT_SELECTED_ITEMS,
   RESET_STORE,
@@ -13,8 +14,10 @@ const initialState = {
   selectedItems: [],
 };
 
+const initialStateClone = getObjectDeepClone(initialState);
+
 const recentChatSearchReducer = (
-  state = initialState,
+  state = initialStateClone,
   { type, payload } = {},
 ) => {
   switch (type) {
@@ -47,7 +50,7 @@ const recentChatSearchReducer = (
         selectedItems: [],
       };
     case RESET_STORE:
-      return { ...initialState };
+      return getObjectDeepClone(initialState);
     default:
       return state;
   }

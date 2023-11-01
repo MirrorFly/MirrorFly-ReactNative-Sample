@@ -12,11 +12,8 @@ import { profileDetail } from '../redux/Actions/ProfileAction';
 import SDK from '../SDK/SDK';
 import { updateUserProfileStore } from './Chat/ChatHelper';
 import { toastStyles } from '../common/commonStyles';
-import * as RootNav from '../Navigation/rootNavigation';
-import { navigate } from '../redux/Actions/NavigationAction';
-import { MAP_THHUMBNAIL_URL, CHATSCREEN, CHATCONVERSATION } from '../constant';
+import { MAP_THHUMBNAIL_URL } from '../constant';
 import config from '../components/chat/common/config';
-import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
 import { addchatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAction';
 import {
   updateConversationMessage,

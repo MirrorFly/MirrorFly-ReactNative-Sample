@@ -3,13 +3,15 @@ import {
   DELETE_CHAT_SEEN_PENDING_MSG,
   RESET_STORE,
 } from '../Actions/Constants';
-import { StateToObj } from '../reduxHelper';
+import { StateToObj, getObjectDeepClone } from '../reduxHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initialState = {
   id: Date.now(),
   data: [],
 };
+
+const initialStateClone = getObjectDeepClone(initialState);
 
 const deleteData = (data, payload) => {
   const msgIndex = data.findIndex(msg => msg.msgId === payload);
@@ -19,7 +21,7 @@ const deleteData = (data, payload) => {
   return data;
 };
 
-const chatSeenPendingMsgReducer = (state = initialState, action) => {
+const chatSeenPendingMsgReducer = (state = initialStateClone, action) => {
   switch (action.type) {
     case ADD_CHAT_SEEN_PENDING_MSG:
       const addedSeen = {
@@ -38,7 +40,7 @@ const chatSeenPendingMsgReducer = (state = initialState, action) => {
       AsyncStorage.setItem('pendingSeenStatus', JSON.stringify(deleteSeen));
       return deleteSeen;
     case RESET_STORE:
-      return initialState;
+      return getObjectDeepClone(initialState);
     default:
       return state;
   }

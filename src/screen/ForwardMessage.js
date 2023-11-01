@@ -368,7 +368,7 @@ const ForwardMessage = () => {
 
   React.useLayoutEffect(() => {
     fetchContactListWithDebounce(searchText.trim());
-    searchTextValueRef.current = searchText;
+    searchTextValueRef.current = searchText.trim();
   }, [searchText]);
 
   React.useEffect(() => {
@@ -442,7 +442,7 @@ const ForwardMessage = () => {
 
   const fetchContactList = filter => {
     setShowLoadMoreLoader(true);
-    setTimeout(async () => {
+    setTimeout(() => {
       if (isInternetReachable) {
         fetchContactListFromSDK(filter);
       } else {
@@ -450,6 +450,7 @@ const ForwardMessage = () => {
           id: 'no-internet-toast',
         };
         showToast('Please check your internet connectivity', toastOptions);
+        setShowLoadMoreLoader(false);
       }
     }, 0);
   };
@@ -484,7 +485,7 @@ const ForwardMessage = () => {
     const totalLength =
       forwardMessages.length * Object.keys(selectedUsers).length;
 
-    const _forwardMessages = forwardMessages.sort((a, b) => {
+    forwardMessages.sort((a, b) => {
       if (a.timestamp > b.timestamp) {
         return 1;
       } else if (a.timestamp < b.timestamp) {

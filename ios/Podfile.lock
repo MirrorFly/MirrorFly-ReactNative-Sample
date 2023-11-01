@@ -289,7 +289,7 @@ PODS:
     - React-Core
   - react-native-cameraroll (4.1.2):
     - React-Core
-  - react-native-compressor (1.8.12):
+  - react-native-compressor (1.6.1):
     - NextLevelSessionExporter
     - React-Core
   - react-native-contacts (7.0.7):
@@ -304,13 +304,13 @@ PODS:
     - React
   - react-native-get-random-values (1.9.0):
     - React-Core
-  - react-native-maps (1.7.1):
+  - react-native-maps (1.8.0):
     - React-Core
   - react-native-mov-to-mp4 (0.2.2):
     - React
   - react-native-netinfo (8.3.1):
     - React-Core
-  - react-native-orientation-locker (1.5.0):
+  - react-native-pager-view (6.2.2):
     - React-Core
   - react-native-pager-view (6.2.2):
     - React-Core
@@ -399,6 +399,8 @@ PODS:
     - React-Core
   - RNCallKeep (4.3.12):
     - React
+  - RNAudioRecorderPlayer (3.6.2):
+    - React-Core
   - RNCAsyncStorage (1.19.3):
     - React-Core
   - RNCClipboard (1.12.1):
@@ -407,10 +409,10 @@ PODS:
     - React
   - RNCPushNotificationIOS (1.11.0):
     - React-Core
-  - RNFBApp (18.5.0):
+  - RNFBApp (18.6.0):
     - Firebase/CoreOnly (= 10.15.0)
     - React-Core
-  - RNFBMessaging (18.5.0):
+  - RNFBMessaging (18.6.0):
     - Firebase/Messaging (= 10.15.0)
     - FirebaseCoreExtension (= 10.15.0)
     - React-Core
@@ -418,6 +420,8 @@ PODS:
   - RNFileViewer (2.1.5):
     - React-Core
   - RNFS (2.20.0):
+    - React-Core
+  - RNGestureHandler (2.9.0):
     - React-Core
   - RNImageCropPicker (0.38.1):
     - React-Core
@@ -435,7 +439,7 @@ PODS:
     - React-Core
   - RNPermissions (3.10.0):
     - React-Core
-  - RNScreens (3.25.0):
+  - RNScreens (3.27.0):
     - React-Core
     - React-RCTImage
   - RNSound (0.11.2):
@@ -483,7 +487,6 @@ DEPENDENCIES:
   - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-mov-to-mp4 (from `../node_modules/react-native-mov-to-mp4`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
-  - react-native-orientation-locker (from `../node_modules/react-native-orientation-locker`)
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-video (from `../node_modules/react-native-video`)
@@ -504,6 +507,7 @@ DEPENDENCIES:
   - RealmJS (from `../node_modules/realm`)
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - RNCallKeep (from `../node_modules/react-native-callkeep`)
+  - RNAudioRecorderPlayer (from `../node_modules/react-native-audio-recorder-player`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - RNConvertPhAsset (from `../node_modules/react-native-convert-ph-asset`)
@@ -512,6 +516,7 @@ DEPENDENCIES:
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNFileViewer (from `../node_modules/react-native-file-viewer`)
   - RNFS (from `../node_modules/react-native-fs`)
+  - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNPermissions (from `../node_modules/react-native-permissions`)
@@ -602,8 +607,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-mov-to-mp4"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
-  react-native-orientation-locker:
-    :path: "../node_modules/react-native-orientation-locker"
   react-native-pager-view:
     :path: "../node_modules/react-native-pager-view"
   react-native-safe-area-context:
@@ -644,6 +647,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/rn-fetch-blob"
   RNCallKeep:
     :path: "../node_modules/react-native-callkeep"
+  RNAudioRecorderPlayer:
+    :path: "../node_modules/react-native-audio-recorder-player"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCClipboard:
@@ -660,6 +665,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-file-viewer"
   RNFS:
     :path: "../node_modules/react-native-fs"
+  RNGestureHandler:
+    :path: "../node_modules/react-native-gesture-handler"
   RNImageCropPicker:
     :path: "../node_modules/react-native-image-crop-picker"
   RNNotifee:
@@ -713,19 +720,21 @@ SPEC CHECKSUMS:
   React-logger: da69d7f1c9501c78cd60776d52a60d7fa5e4d9c2
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: 2957f2bce63ae896a848fbe0d5352c1bd4d20866
-  react-native-compressor: b006142c2ef14c221cacb52924aa31494be1091b
+  react-native-compressor: ebcf8bc36f8e44581a8f831583caee8a27e55a01
   react-native-contacts: 61971364bf9f11a846587eeb736a4e65632815d4
   react-native-create-thumbnail: e022bcdcba8a0b4529a50d3fa1a832ec921be39d
   react-native-document-picker: 2b8f18667caee73a96708a82b284a4f40b30a156
   react-native-geocoder: 757427682892bb256f3b3745858cc90eba148a8e
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
-  react-native-maps: 667f9b975549c6fa9b1631bf859440f68ebd3b8f
+  react-native-maps: f699e0753c22c4d5c3a44d03895b193a4dbca6c2
   react-native-mov-to-mp4: a04f17590618523487ab5d71c9310c6c4a7aaf99
   react-native-netinfo: 1a6035d3b9780221d407c277ebfb5722ace00658
   react-native-orientation-locker: 851f6510d8046ea2f14aa169b1e01fcd309a94ba
   react-native-pager-view: 02a5c4962530f7efc10dd51ee9cdabeff5e6c631
   react-native-safe-area-context: 7aa8e6d9d0f3100a820efb1a98af68aa747f9284
+  react-native-pager-view: 02a5c4962530f7efc10dd51ee9cdabeff5e6c631
+  react-native-safe-area-context: 2cd91d532de12acdb0a9cbc8d43ac72a8e4c897c
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
   react-native-webrtc: 4d1669c2ed29767fe70b0169428b4466589ecf8b
   React-perflogger: 5ade0a1627352f1647d283e78331819bb46cceae
@@ -744,18 +753,20 @@ SPEC CHECKSUMS:
   RealmJS: 2e45ca6ed4c3732be369219b41816e890ce51024
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNCallKeep: aa9b1f9286f8f60d7b7d41ee5de47de564356aac
+  RNAudioRecorderPlayer: 30bcd668e4720d9ebbfeb3169836b3b07833f77a
   RNCAsyncStorage: c913ede1fa163a71cea118ed4670bbaaa4b511bb
   RNCClipboard: d77213bfa269013bf4b857b7a9ca37ee062d8ef1
   RNConvertPhAsset: 9b366b8a1abc194b76572712c6f7dd89c9e4e37f
   RNCPushNotificationIOS: 64218f3c776c03d7408284a819b2abfda1834bc8
-  RNFBApp: 082df9f8ffba99f23f7aee3ecb64df703e7e1adb
-  RNFBMessaging: b167065ee2fcc7fe43a32b35d79d5eb23bceb4ad
+  RNFBApp: 29a81c55c97887851fe2d8180293e0c618523d02
+  RNFBMessaging: 534bab7d0527d560cd1a35e74223735b4ed1eeee
   RNFileViewer: ce7ca3ac370e18554d35d6355cffd7c30437c592
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
+  RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNImageCropPicker: 648356d68fbf9911a1016b3e3723885d28373eda
   RNNotifee: f3c01b391dd8e98e67f539f9a35a9cbcd3bae744
-  RNPermissions: b0dc0c4f4502e97be60cde20737f27ef651e9e98
-  RNScreens: 85d3880b52d34db7b8eeebe2f1a0e807c05e69fa
+  RNPermissions: 6aa8b0c4b55c3113d1b5a4bf328dc05415031b16
+  RNScreens: 2b19e2471db8a581c83f381f4ea5d43071c9a3bf
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: d00c8f91c3cbf6d476451313a18f04d220d4f396
   RNVoipPushNotification: 543e18f83089134a35e7f1d2eba4c8b1f7776b08

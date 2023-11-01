@@ -26,9 +26,6 @@ import ContactPreviewScreen from './ContactPreviewScreen';
 import commonStyles from '../../common/commonStyles';
 import Pressable from '../../common/Pressable';
 import IconButton from '../../common/IconButton';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { requestContactPermission } from '../../common/utils';
-import { openSettings } from 'react-native-permissions';
 import ApplicationColors from '../../config/appColors';
 
 const screenWidth = Dimensions.get('screen').width;

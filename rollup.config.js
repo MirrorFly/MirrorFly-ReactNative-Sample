@@ -46,7 +46,6 @@ export default {
     'emoji-datasource',
     '@react-navigation/native-stack',
     '@react-native-async-storage/async-storage',
-    'react-native-swipe-list-view',
     'react-native-mov-to-mp4',
     'react-native-image-crop-picker',
     'react-native-safe-area-context',
@@ -63,6 +62,15 @@ export default {
     'react-native-push-notification',
     'react-native-slider',
     'react-native-svg-transformer',
+    '@react-native-community/push-notification-ios',
+    'react-native-maps',
+    'react-native-geolocation-service',
+    'react-native-geocoder',
+    'react-native-pager-view',
+    'react-native-tab-view',
+    '@notifee/react-native',
+    'fbjs',
+    'react-native-contacts',
   ],
   plugins: [
     replace({

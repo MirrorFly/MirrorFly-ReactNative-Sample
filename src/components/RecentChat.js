@@ -47,6 +47,7 @@ const RecentChatItem = ({
   handleSelect,
   handleOnSelect,
   searchValue,
+  isTyping,
 }) => {
   const _handlePress = () => {
     handleSelect(item);
@@ -157,6 +158,35 @@ const RecentChatItem = ({
         return null;
     }
   };
+  const renderLastMessage = () => {
+    if (isTyping) {
+      return <Text style={commonStyles.typingText}>typing...</Text>;
+    }
+
+    return item.deleteStatus === 1 ? (
+      <View style={styles.lastSentDeletedMessageContainer}>
+        <Text style={styles.deletedMessageText}>
+          {isSame ? YOU_DELETED_THIS_MESSAGE : THIS_MESSAGE_WAS_DELETED}
+        </Text>
+      </View>
+    ) : (
+      <View style={styles.lastSentMessageContainer}>
+        {isSame && item?.msgStatus !== 3 ? (
+          <View
+            style={[
+              styles.msgStatus,
+              isSame && Object.keys(item.msgBody).length ? statusVisible : '',
+            ]}
+          />
+        ) : (
+          isSame &&
+          item?.msgStatus === 3 &&
+          Object.keys(item.msgBody).length > 0 && <SandTimer />
+        )}
+        {renderLastSentMessageBasedOnType()}
+      </View>
+    );
+  };
 
   return (
     <View key={index}>
@@ -176,45 +206,33 @@ const RecentChatItem = ({
               ? commonStyles.alignItemsCenter
               : commonStyles.alignItemsFlexStart,
           ]}>
-          <Avathar
-            data={nickName}
-            backgroundColor={colorCode}
-            profileImage={image}
-          />
-          <View style={[commonStyles.flex1, commonStyles.marginLeft_15]}>
+          <View style={commonStyles.positionRelative}>
+            <Avathar
+              data={nickName}
+              backgroundColor={colorCode}
+              profileImage={image}
+            />
+            {item.unreadCount > 0 && (
+              <View style={styles.unreadCountWrapper}>
+                <Text style={styles.unreadCountText}>
+                  {item.unreadCount > 99 ? '99+' : item.unreadCount}
+                </Text>
+              </View>
+            )}
+          </View>
+          <View style={[commonStyles.flex1, commonStyles.marginLeft_20]}>
             <HighlightedText
               text={nickName || userId}
               searchValue={searchValue}
               index={index}
             />
-
-            {item.deleteStatus === 1 ? (
-              <View style={styles.lastSentDeletedMessageContainer}>
-                <Text style={styles.deletedMessageText}>
-                  {isSame ? YOU_DELETED_THIS_MESSAGE : THIS_MESSAGE_WAS_DELETED}
-                </Text>
-              </View>
-            ) : (
-              <View style={styles.lastSentMessageContainer}>
-                {isSame && item?.msgStatus !== 3 ? (
-                  <View
-                    style={[
-                      styles.msgStatus,
-                      isSame && Object.keys(item.msgBody).length
-                        ? statusVisible
-                        : '',
-                    ]}
-                  />
-                ) : (
-                  isSame &&
-                  item?.msgStatus === 3 &&
-                  Object.keys(item.msgBody).length > 0 && <SandTimer />
-                )}
-                {renderLastSentMessageBasedOnType()}
-              </View>
-            )}
+            {renderLastMessage()}
           </View>
-          <Text style={styles.lastMessageTimestamp}>
+          <Text
+            style={[
+              styles.lastMessageTimestamp,
+              item.unreadCount > 0 && styles.mainColoredText,
+            ]}>
             {item?.createdAt &&
               formatChatDateTime(
                 convertUTCTOLocalTimeStamp(item?.createdAt),
@@ -236,6 +254,8 @@ export default function RecentChat() {
   const recentChatList = useSelector(state => state.recentChatData.data);
   const { isSearching, selectedItems, searchText, selectedItemsObj } =
     useSelector(state => state.recentChatSearchData) || {};
+  const typingStatusData =
+    useSelector(state => state.typingStatusData?.data) || {};
 
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
 
@@ -326,7 +346,6 @@ export default function RecentChat() {
        item?.chatType,
      )
      */
-      SDK.activeChatUser(jid);
       let x = {
         screen: CHATSCREEN,
         fromUserJID: item?.userJid || jid,
@@ -362,6 +381,7 @@ export default function RecentChat() {
         statusVisible = styles.seen;
         break;
     }
+    const isTyping = Boolean(typingStatusData[item?.fromUserId]);
     return (
       <RecentChatItem
         key={item?.fromUserId}
@@ -373,6 +393,7 @@ export default function RecentChat() {
         handleOnSelect={handleRecentItemSelect}
         handleSelect={handleSelect}
         searchValue={searchText}
+        isTyping={isTyping}
       />
     );
   };
@@ -592,5 +613,24 @@ const styles = StyleSheet.create({
   },
   highlightedMessageText: {
     color: '#767676',
+  },
+  unreadCountWrapper: {
+    position: 'absolute',
+    top: -3,
+    left: 30,
+    backgroundColor: ApplicationColors.mainColor,
+    minWidth: 20,
+    paddingVertical: 1,
+    paddingHorizontal: 4,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  unreadCountText: {
+    color: ApplicationColors.white,
+    fontSize: 13,
+  },
+  mainColoredText: {
+    color: ApplicationColors.mainColor,
   },
 });

@@ -4,6 +4,7 @@ import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { updateDownloadData } from '../redux/Actions/MediaDownloadAction';
 import {
+  CancelMediaUpload,
   RetryMediaUpload,
   updateUploadStatus,
 } from '../redux/Actions/ConversationAction';
@@ -11,6 +12,7 @@ import { mediaStatusConstants } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import config from '../components/chat/common/config';
 import { Box, Text, Toast } from 'native-base';
+import { showToast } from '../Helper';
 
 const toastId = 'network-error-upload-download';
 const toastRef = React.createRef(false);
@@ -19,6 +21,7 @@ const useMediaProgress = ({
   isSender,
   mediaUrl,
   uploadStatus = 0,
+  downloadStatus = 0,
   msgId,
   media,
 }) => {
@@ -44,16 +47,26 @@ const useMediaProgress = ({
           : mediaStatusConstants.NOT_UPLOADED;
       setMediaStatus(isUploading ? mediaStatusConstants.UPLOADING : isUploaded);
     } else {
+      const isDonwloadingStatus =
+        downloadStatus === 1
+          ? mediaStatusConstants.DOWNLOADING
+          : mediaStatusConstants.NOT_DOWNLOADED;
       setMediaStatus(
-        mediaUrl
-          ? mediaStatusConstants.DOWNLOADED
-          : mediaStatusConstants.NOT_DOWNLOADED,
+        mediaUrl ? mediaStatusConstants.DOWNLOADED : isDonwloadingStatus,
       );
     }
   }, [isSender, mediaUrl, uploadStatus, msgId, media]);
 
   const dispatch = useDispatch();
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
+
+  const { data: mediaDownloadData = {} } = useSelector(
+    state => state.mediaDownloadData,
+  );
+
+  const { data: mediaUploadData = {} } = useSelector(
+    state => state.mediaUploadData,
+  );
 
   const { file_url = '', thumb_image = '' } = media;
 
@@ -102,10 +115,22 @@ const useMediaProgress = ({
           dispatch(updateUploadStatus(updateObj));
         });
         toastRef.current = false;
+      } else {
+        const cancelObj = {
+          msgId,
+          fromUserId: fromUserJId,
+          uploadStatus: 7,
+          downloadStatus: 7,
+        };
+        dispatch(CancelMediaUpload(cancelObj));
       }
     }
   };
   const handleUpload = () => {
+    if (!networkState) {
+      showToast('Please check your internet connection', { id: 'MEDIA_RETRY' });
+      return;
+    }
     const retryObj = {
       msgId,
       fromUserId: getUserIdFromJid(fromUserJId),
@@ -114,8 +139,28 @@ const useMediaProgress = ({
     dispatch(RetryMediaUpload(retryObj));
   };
 
+  const handleCancelUpload = () => {
+    const cancelObj = {
+      msgId,
+      fromUserId: fromUserJId,
+      uploadStatus: 7,
+      downloadStatus: 7,
+    };
+    dispatch(CancelMediaUpload(cancelObj));
+    if (uploadStatus === 8) {
+      return true;
+    }
+    if (mediaDownloadData[msgId]?.source) {
+      mediaDownloadData[msgId].source?.cancel?.('User Cancelled!');
+    }
+    if (mediaUploadData[msgId]) {
+      mediaUploadData[msgId].source?.cancel?.('User Cancelled!');
+    }
+  };
+
   return {
     retryUploadMedia: handleUpload,
+    cancelUploadMedia: handleCancelUpload,
     downloadMedia: handleDownload,
     mediaStatus: mediaStatus,
   };

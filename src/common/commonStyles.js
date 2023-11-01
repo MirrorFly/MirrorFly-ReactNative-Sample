@@ -73,6 +73,12 @@ const commonStyles = StyleSheet.create({
   positionRelative: {
     position: 'relative',
   },
+  positionAbsolute: {
+    position: 'absolute',
+  },
+  bottom_0: {
+    bottom: 0,
+  },
   pressedBg: {
     backgroundColor: ApplicationColors.pressedBg,
   },
@@ -87,6 +93,9 @@ const commonStyles = StyleSheet.create({
   },
   marginLeft_15: {
     marginLeft: 15,
+  },
+  marginLeft_20: {
+    marginLeft: 20,
   },
   marginRight_4: {
     marginRight: 4,
@@ -182,8 +191,29 @@ const commonStyles = StyleSheet.create({
   fontWeight_bold: {
     fontWeight: 'bold',
   },
+  colorWhite: {
+    color: '#fff',
+  },
+  fontSize_11: {
+    fontSize: 11,
+  },
+  fontSize_12: {
+    fontSize: 12,
+  },
+  bgBlack_04: {
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
   overflowHidden: {
     overflow: 'hidden',
+  },
+  width_80: {
+    width: 80,
+  },
+  typingText: {
+    color: ApplicationColors.mainColor,
+  },
+  borderRadius_5: {
+    borderRadius: 5,
   },
 });
 

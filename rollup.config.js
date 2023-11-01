@@ -46,7 +46,6 @@ export default {
     'emoji-datasource',
     '@react-navigation/native-stack',
     '@react-native-async-storage/async-storage',
-    'react-native-swipe-list-view',
     'react-native-mov-to-mp4',
     'react-native-image-crop-picker',
     'react-native-safe-area-context',

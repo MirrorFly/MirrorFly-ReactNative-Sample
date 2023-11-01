@@ -12,7 +12,6 @@ import { CHATSCREEN, RECENTCHATSCREEN, SETTINGSCREEN } from '../constant';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { useDispatch } from 'react-redux';
 import ScreenHeader from '../components/ScreenHeader';
-import SDK from '../SDK/SDK';
 import FlatListView from '../components/FlatListView';
 import { useNetworkStatus } from '../hooks';
 import * as RootNav from '../Navigation/rootNavigation';
@@ -103,7 +102,7 @@ function ContactScreen() {
     300,
   );
 
-  const fetchContactList = (text) => {
+  const fetchContactList = text => {
     setIsFetching(true);
     setTimeout(() => {
       const _searchText = text?.trim?.();
@@ -128,7 +127,6 @@ function ContactScreen() {
     },
   ];
   const handlePress = item => {
-    SDK.activeChatUser(item.userJid);
     dispatch(
       navigate({
         screen: CHATSCREEN,

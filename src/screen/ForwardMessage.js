@@ -485,7 +485,7 @@ const ForwardMessage = () => {
     const totalLength =
       forwardMessages.length * Object.keys(selectedUsers).length;
 
-    const _forwardMessages = forwardMessages.sort((a, b) => {
+    forwardMessages.sort((a, b) => {
       if (a.timestamp > b.timestamp) {
         return 1;
       } else if (a.timestamp < b.timestamp) {

@@ -2,7 +2,6 @@ import nextFrame from 'next-frame';
 import {
   MSG_CLEAR_CHAT,
   MSG_CLEAR_CHAT_CARBON,
-  MSG_DELETE_CHAT,
   MSG_DELETE_CHAT_CARBON,
   MSG_DELETE_STATUS,
   MSG_DELETE_STATUS_CARBON,
@@ -47,12 +46,18 @@ import {
   getNotifyNickName,
 } from '../components/RNCamera/Helper';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import {
+  resetChatTypingStatus,
+  updateChatTypingGoneStatus,
+  updateChatTypingStatus,
+} from '../redux/Actions/TypingAction';
 
 export const callBacks = {
   connectionListener: response => {
     uikitCallbackListeners()?.callBack?.(response);
     console.log('connectionListener', response);
     store.dispatch(setXmppStatus(response.status));
+    store.dispatch(resetChatTypingStatus());
     if (response.status === 'CONNECTED') {
       console.log('Connection Established');
     } else if (response.status === 'DISCONNECTED') {
@@ -93,6 +98,16 @@ export const callBacks = {
         store.dispatch(updateRecentChatMessageStatus(res));
         store.dispatch(updateChatConversationHistory(res));
         break;
+      case 'composing':
+      case 'carbonComposing':
+        store.dispatch(updateChatTypingStatus(res?.groupId || res?.fromUserId));
+        break;
+      case 'carbonGone':
+      case 'gone':
+        store.dispatch(
+          updateChatTypingGoneStatus(res?.groupId || res?.fromUserId),
+        );
+        break;
     }
     if (
       res.msgType === MSG_CLEAR_CHAT ||
@@ -102,7 +117,7 @@ export const callBacks = {
       store.dispatch(ClearChatHistoryAction(res.fromUserId));
     }
     if (
-      res.msgType === MSG_DELETE_CHAT ||
+      /* res.msgType === MSG_DELETE_CHAT || */
       res.msgType === MSG_DELETE_CHAT_CARBON
     ) {
       store.dispatch(deleteActiveChatAction(res));
@@ -180,7 +195,6 @@ export const callBacks = {
     }
   },
   presenceListener: res => {
-    console.log('presenceListener', res);
     store.dispatch(updateUserPresence(res));
   },
   userProfileListener: res => {

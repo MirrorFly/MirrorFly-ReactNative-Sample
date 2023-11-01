@@ -68,3 +68,5 @@ dist/
 
 # vscode
 .vscode
+
+mirrorfly-uikit-react-native-*.tgz

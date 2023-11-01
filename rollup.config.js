@@ -71,6 +71,10 @@ export default {
     '@notifee/react-native',
     'fbjs',
     'react-native-contacts',
+    'react-native-audio-recorder-player',
+    'react-native-progress',
+    'react-native-gesture-handler',
+    'react-native-geocoding'
   ],
   plugins: [
     replace({
@@ -87,7 +91,7 @@ export default {
       extensions: ['.tsx', '.ts', '.jsx', '.js'],
       exclude: 'node_modules/**',
       presets: ['@babel/preset-react', '@babel/preset-typescript'],
-      plugins: ['transform-remove-console'],
+      // plugins: ['transform-remove-console'],
     }),
     commonjs(),
     nodeResolve({ browser: false }),

@@ -141,7 +141,7 @@ const ChatInput = props => {
     try {
       audioRecorderPlayer.stopRecorder();
     } catch (err) {
-      console.log(' error when stop recording ', err);
+      console.log('error when stop recording ', err);
     }
   };
 

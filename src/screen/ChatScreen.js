@@ -307,19 +307,6 @@ function ChatScreen() {
         } else if (storage_permission) {
           openSettings();
         }
-        /** SavePicture()
-        RNimageGalleryLaunch()
-          const res = await handleGalleryPickerMulti(toast)
-          const transformedArray = res?.map((obj, index) => {
-            return {
-              caption: '',
-              image: obj
-            };
-          });
-          setSelectedImages(transformedArray)
-          if (res?.length) {
-            setLocalNav('GalleryPickView')
-          } */
       },
     },
     {

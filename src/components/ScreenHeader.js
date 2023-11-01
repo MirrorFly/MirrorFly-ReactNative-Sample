@@ -78,13 +78,14 @@ function ScreenHeader(props) {
               autoFocus={true}
             />
           )}
-          {props?.logo && !isSearching && (
+          {/* Mirrorfly logo */}
+          {/* {props?.logo && !isSearching && (
             <Image
               style={styles.logoImage}
               source={getImageSource(props?.logo)}
               alt="ic_logo.png"
             />
-          )}
+          )} */}
           {props?.title && !isSearching && (
             <Text style={styles.titleText}>{props?.title}</Text>
           )}

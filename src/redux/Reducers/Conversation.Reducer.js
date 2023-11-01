@@ -58,13 +58,6 @@ const conversationReducer = (state = initialStateClone, action) => {
       };
     case CANCEL_MEDIA_UPLOAD:
     case RETRY_MEDIA_UPLOAD:
-      return {
-        id: Date.now(),
-        data: updateMediaUploadStatusHistory(
-          action.payload,
-          StateToObj(state.data),
-        ),
-      };
     case CANCEL_MEDIA_DOWNLOAD:
       return {
         id: Date.now(),

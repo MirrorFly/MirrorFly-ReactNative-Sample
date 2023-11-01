@@ -2,7 +2,6 @@ import nextFrame from 'next-frame';
 import {
   MSG_CLEAR_CHAT,
   MSG_CLEAR_CHAT_CARBON,
-  MSG_DELETE_CHAT,
   MSG_DELETE_CHAT_CARBON,
   MSG_DELETE_STATUS,
   MSG_DELETE_STATUS_CARBON,
@@ -46,6 +45,7 @@ import {
   getNotifyMessage,
   getNotifyNickName,
 } from '../components/RNCamera/Helper';
+import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
 import {
   resetChatTypingStatus,
   updateChatTypingGoneStatus,
@@ -54,6 +54,7 @@ import {
 
 export const callBacks = {
   connectionListener: response => {
+    uikitCallbackListeners()?.callBack?.(response);
     console.log('connectionListener', response);
     store.dispatch(setXmppStatus(response.status));
     store.dispatch(resetChatTypingStatus());

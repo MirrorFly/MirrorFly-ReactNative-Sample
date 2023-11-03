@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
-import { Box } from 'native-base';
+import { Box, NativeBaseProvider } from 'native-base';
 import React, { createRef } from 'react';
 import {
   Keyboard,
@@ -77,14 +77,14 @@ export const ChatApp = React.memo(props => {
 
   return (
     <Provider store={store}>
-      <CallJanus />
-      {/* <NativeBaseProvider>
+      {/* <CallJanus /> */}
+      <NativeBaseProvider>
         {isMfInit ? (
           <RootNavigation jid={jid} />
         ) : (
           <Text>Mirrorfly Not Initialized</Text>
         )}
-      </NativeBaseProvider> */}
+      </NativeBaseProvider>
     </Provider>
   );
 });

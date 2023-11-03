@@ -22,6 +22,8 @@ import recentChatSearchReducer from './Reducers/recentChatSearch.Reducer';
 import streamDataReducer from './Reducers/streamReducer';
 import stateDataReducer from './Reducers/statusReducer';
 import TypingReducer from './Reducers/Typing.Reducer';
+import showConfrenceReducer from './Reducers/Confrence.Reducer';
+import CallConnectionStateReducer from './Reducers/CallConnectionState.Reducer';
 
 const rootReducer = combineReducers({
   navigation: navigationReducer,
@@ -46,6 +48,8 @@ const rootReducer = combineReducers({
   streamData: streamDataReducer,
   stateData: stateDataReducer,
   typingStatusData: TypingReducer,
+  showConfrenceData: showConfrenceReducer,
+  callConnectionDate: CallConnectionStateReducer,
 });
 
 const Store = legacy_createStore(rootReducer, applyMiddleware(thunkMiddleware));

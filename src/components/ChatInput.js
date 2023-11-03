@@ -62,18 +62,6 @@ const updateTypingGoneStatus = jid => {
   }
 };
 
-const updateTypingGoneStatusWithDelay = debounce(jid => {
-  updateTypingGoneStatus(jid);
-}, config.typingStatusGoneWaitTime);
-
-const updateTypingStatus = jid => {
-  if (!typingStatusSent) {
-    SDK.sendTypingStatus(jid);
-    typingStatusSent = true;
-  }
-  updateTypingGoneStatusWithDelay(jid);
-};
-
 const ChatInput = props => {
   const {
     onSendMessage,
@@ -127,6 +115,18 @@ const ChatInput = props => {
     showToast('Recorded audio time is too short', {
       id: 'Recording-duration-short-toast',
     });
+  };
+
+  const updateTypingGoneStatusWithDelay = debounce(jid => {
+    updateTypingGoneStatus(jid);
+  }, config.typingStatusGoneWaitTime);
+
+  const updateTypingStatus = jid => {
+    if (!typingStatusSent) {
+      SDK.sendTypingStatus(jid);
+      typingStatusSent = true;
+    }
+    updateTypingGoneStatusWithDelay(jid);
   };
 
   const rightSwipeActions = () => {

@@ -55,8 +55,9 @@ import { clearStreamData, setStreamData } from '../redux/Actions/streamAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
-import { CallConnectionState } from '../redux/Actions/CallAction';
+import { CallConnectionState, showConfrence } from '../redux/Actions/CallAction';
 import { startMissedCallNotificationTimer } from '../calls/callUtils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let localStream = null,
     localVideoMuted = false,
@@ -89,12 +90,77 @@ const updatingUserStatusInRemoteStream = usersStatus => {
   });
 };
 
+const ringing = async res => {
+  if (!onCall) {
+    const callConnectionData = await AsyncStorage.getItem('call_connection_status');
+    console.log(callConnectionData,"callConnectionData");
+  }
+  //   if (callConnectionData.callType === 'audio') {
+  //     localVideoMuted = true;
+  //   }
+  //   Store.dispatch(
+  //     showConfrence({
+  //       callStatusText: 'Ringing',
+  //       showStreamingComponent: false,
+  //       localStream,
+  //       remoteStream,
+  //       localVideoMuted,
+  //       localAudioMuted,
+  //       showComponent: true,
+  //     }),
+  //   );
+  // } else {
+  //   const showConfrenceData = Store.getState().showConfrenceData;
+  //   const { data } = showConfrenceData;
+  //   const index = remoteStream.findIndex(item => item.fromJid === res.userJid);
+  //   if (index > -1) {
+  //     remoteStream[index] = {
+  //       ...remoteStream[index],
+  //       status: res.status,
+  //     };
+  //     Store.dispatch(
+  //       showConfrence({
+  //         ...(data || {}),
+  //         remoteStream: remoteStream,
+  //       }),
+  //     );
+  //   }
+  // }
+};
+
+const callStatus = res => {
+  if (res.status === 'ringing') {
+    ringing(res);
+  } 
+  // else if (res.status === 'connecting') {
+  //   connecting(res);
+  // } else if (res.status === 'connected') {
+  //   connected(res);
+  // } else if (res.status === 'busy') {
+  //   handleEngagedOrBusyStatus(res);
+  // } else if (res.status === 'disconnected') {
+  //   disconnected(res);
+  // } else if (res.status === 'engaged') {
+  //   handleEngagedOrBusyStatus(res);
+  // } else if (res.status === 'ended') {
+  //   ended(res);
+  // } else if (res.status === 'reconnecting') {
+  //   reconnecting(res);
+  // } else if (res.status === 'userstatus') {
+  //   userStatus(res);
+  // } else if (res.status === 'hold') {
+  //   hold(res);
+  // }
+};
+
 export const callBacks = {
   connectionListener: response => {
+    const connStatus = response.status || '';
     uikitCallbackListeners()?.callBack?.(response);
     console.log('connectionListener', response);
     store.dispatch(setXmppStatus(response.status));
     store.dispatch(resetChatTypingStatus());
+    AsyncStorage.setItem('connection_status', connStatus);
     if (response.status === 'CONNECTED') {
       console.log('Connection Established');
     } else if (response.status === 'DISCONNECTED') {
@@ -345,11 +411,11 @@ export const callBacks = {
     startCallingTimer();
   },
   callStatusListener: function (res) {
-    console.log(res, 'ressss');
-    if (res.status === 'ended') {
-      Store.dispatch(clearStreamData());
-      Store.dispatch(clearStatusData());
-    }
+    callStatus(res);
+    // if (res.status === 'ended') {
+    //   Store.dispatch(clearStreamData());
+    //   Store.dispatch(clearStatusData());
+    // }
   },
   userTrackListener: (res, check) => {
     if (res.localUser) {

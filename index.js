@@ -17,7 +17,11 @@ import {
   updateRecentAndConversationStore,
 } from './src/Helper';
 import { callBacks } from './src/SDKActions/callbacks';
-import notifee, { AndroidVisibility, EventType,AndroidImportance } from '@notifee/react-native';
+import notifee, {
+  AndroidVisibility,
+  EventType,
+  AndroidImportance,
+} from '@notifee/react-native';
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   try {
@@ -32,41 +36,41 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
       return;
     }
     const notify = await SDK.getNotificationData(remoteMessage);
-    console.log(notify,"notify");
-    if(remoteMessage.data.type === "mediacall"){
+    console.log(notify, 'notify');
+    if (remoteMessage.data.type === 'mediacall') {
       const channelId = await notifee.createChannel({
         id: 'default',
         name: 'Default Channel',
-        importance:AndroidImportance.HIGH,
+        importance: AndroidImportance.HIGH,
         visibility: AndroidVisibility.PUBLIC,
         sound: 'default',
       });
-        /** Display a notification */
-  await notifee.displayNotification({
-    id: notify.roomId,
-    title: notify.sdkStatus,
-    body: notify.status,
-    data: { fromUserJID: notify.userJid } || null,
-    android: {
-      channelId,
-      sound: 'default',
-      smallIcon: 'ic_notification',
-      importance:AndroidImportance.HIGH,
-    },
-    ios: {
-      foregroundPresentationOptions: {
-        alert: true,
-        badge: true,
-        sound: true,
-      },
-    },
-  });
-  notifee.onBackgroundEvent(async ({ type, detail }) => {
-    if (type === EventType.PRESS) {
-      const push_url = 'mirrorfly_rn://';
-      Linking.openURL(push_url);
-    }
-  });
+      /** Display a notification */
+      await notifee.displayNotification({
+        id: notify.roomId,
+        title: notify.sdkStatus,
+        body: notify.status,
+        data: { fromUserJID: notify.userJid } || null,
+        android: {
+          channelId,
+          sound: 'default',
+          smallIcon: 'ic_notification',
+          importance: AndroidImportance.HIGH,
+        },
+        ios: {
+          foregroundPresentationOptions: {
+            alert: true,
+            badge: true,
+            sound: true,
+          },
+        },
+      });
+      notifee.onBackgroundEvent(async ({ type, detail }) => {
+        if (type === EventType.PRESS) {
+          const push_url = 'mirrorfly_rn://';
+          Linking.openURL(push_url);
+        }
+      });
     }
     // if (notify?.statusCode === 200) {
     //   updateRecentAndConversationStore(notify?.data);

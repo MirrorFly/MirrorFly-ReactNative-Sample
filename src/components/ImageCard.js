@@ -1,19 +1,18 @@
 import React from 'react';
 import { Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
 import noPreview from '../assets/noPreview.png';
-import ProgressLoader from './chat/common/ProgressLoader';
 import { getThumbBase64URL } from '../Helper/Chat/Utility';
 import ReplyMessage from './ReplyMessage';
 import ic_baloon from '../assets/ic_baloon.png';
 import { getImageSource } from '../common/utils';
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
+import MediaProgressLoader from './chat/common/MediaProgressLoader';
+import useMediaProgress from '../hooks/useMediaProgress';
 
 const ImageCard = props => {
   const {
     imgSrc,
-    uploadStatus = 0,
-    setUploadStatus,
     isSender,
     fileSize,
     messageObject = {},
@@ -42,6 +41,14 @@ const ImageCard = props => {
   const [imageSource, setImageSource] = React.useState(
     imgSrc || getThumbBase64URL(thumb_image),
   );
+  const { mediaStatus, downloadMedia, retryUploadMedia, cancelUploadMedia } =
+    useMediaProgress({
+      isSender,
+      mediaUrl: imageUrl,
+      uploadStatus: media?.is_uploading || 0,
+      media: media,
+      msgId: msgId,
+    });
 
   React.useEffect(() => {
     if (imgSrc) {
@@ -84,7 +91,16 @@ const ImageCard = props => {
           </View>
         )}
         <View style={styles.progressLoaderWrapper}>
-          <ProgressLoader
+          <MediaProgressLoader
+            isSender={isSender}
+            mediaStatus={mediaStatus}
+            onDownload={downloadMedia}
+            onUpload={retryUploadMedia}
+            onCancel={cancelUploadMedia}
+            msgId={msgId}
+            fileSize={fileSize}
+          />
+          {/* <ProgressLoader
             isSender={isSender}
             imageUrl={imageUrl}
             media={media}
@@ -93,7 +109,7 @@ const ImageCard = props => {
             msgId={msgId}
             mediaData={media}
             uploadStatus={uploadStatus}
-          />
+          /> */}
         </View>
         {!media?.caption && (
           <View style={styles.messgeStatusAndTimestampWithoutCaption}>

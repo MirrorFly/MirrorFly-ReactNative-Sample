@@ -455,7 +455,7 @@ export const HighlightedText = ({ text, searchValue = '', index }) => {
     <View style={commonStyles.hstack}>
       {parts.map((part, i) => {
         const isSearchMatch =
-          part.toLowerCase() === searchValue.toLowerCase()
+          part?.toLowerCase() === searchValue.toLowerCase()
             ? styles.highlight
             : {};
         return (
@@ -483,7 +483,7 @@ export const HighlightedMessage = ({ text, searchValue = '', index }) => {
     <View style={commonStyles.hstack}>
       {parts.map((part, i) => {
         const isSearchMatch =
-          part.toLowerCase() === searchValue.toLowerCase()
+          part?.toLowerCase() === searchValue.toLowerCase()
             ? styles.highlight
             : {};
         return (

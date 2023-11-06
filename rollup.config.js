@@ -71,6 +71,10 @@ export default {
     '@notifee/react-native',
     'fbjs',
     'react-native-contacts',
+    'react-native-audio-recorder-player',
+    'react-native-progress',
+    'react-native-gesture-handler',
+    'react-native-geocoding',
   ],
   plugins: [
     replace({

@@ -55,7 +55,6 @@ const ChatMessage = props => {
     msgStatus,
   } = message;
 
-  const [uploadStatus, setUploadStatus] = React.useState(4);
   const imageUrl = local_path || file?.fileDetails?.uri;
   const thumbURL = thumb_image ? getThumbBase64URL(thumb_image) : '';
 
@@ -70,7 +69,6 @@ const ChatMessage = props => {
   const imgFileDownload = () => {
     try {
       if (imageUrl) {
-        setUploadStatus(2);
         saveImage(imageUrl);
       }
     } catch (error) {
@@ -82,7 +80,6 @@ const ChatMessage = props => {
 
   React.useEffect(() => {
     if (is_uploading === 0 || is_uploading === 1) {
-      setUploadStatus(is_uploading);
       if (isImageMessage()) {
         saveImage(getThumbBase64URL(thumb_image));
       }
@@ -99,16 +96,9 @@ const ChatMessage = props => {
   }, []);
 
   React.useEffect(() => {
-    msgStatus === 0 && setUploadStatus(2);
-  }, [msgStatus]);
-
-  React.useEffect(() => {
-    is_uploading === 8 && setUploadStatus(is_uploading);
     if (is_uploading === 1) {
-      setUploadStatus(is_uploading);
       uploadFileToSDK(file, fromUserJId, msgId, msgBody?.media);
     }
-    (is_uploading === 3 || is_uploading === 7) && setUploadStatus(3);
   }, [is_uploading]);
 
   const isImageMessage = () => message_type === 'image';
@@ -238,12 +228,10 @@ const ChatMessage = props => {
           <ImageCard
             handleReplyPress={handleReplyPress}
             messageObject={message}
-            setUploadStatus={setUploadStatus}
             imgSrc={imgSrc}
             isSender={isSame}
             status={getMessageStatus(message?.msgStatus)}
             timeStamp={getConversationHistoryTime(message?.createdAt)}
-            uploadStatus={uploadStatus}
             fileSize={fileSize}
           />
         );
@@ -252,11 +240,9 @@ const ChatMessage = props => {
           <VideoCard
             handleReplyPress={handleReplyPress}
             messageObject={message}
-            setUploadStatus={setUploadStatus}
             imgSrc={imgSrc}
             isSender={isSame}
             status={getMessageStatus(message?.msgStatus)}
-            uploadStatus={uploadStatus}
             fileSize={fileSize}
             timeStamp={getConversationHistoryTime(message?.createdAt)}
           />

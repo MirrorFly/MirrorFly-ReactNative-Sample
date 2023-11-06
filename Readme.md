@@ -49,13 +49,13 @@ import { ChatApp, mirrorflyInitialize} from 'mirrorfly-uikit-react-native';
 function App() {
 
   const API_URL = '****************';
-  const lisenceKey = '************';
+  const LICENSE_KEY = '************';
 
   React.useEffect(() => {
     (async () => {
       await mirrorflyInitialize({
         apiBaseUrl: API_URL,
-        licenseKey: lisenceKey,
+        licenseKey: LICENSE_KEY,
         isSandbox: true,
         callBack: res => {
           console.log(res);

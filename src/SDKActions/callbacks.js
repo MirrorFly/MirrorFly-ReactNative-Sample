@@ -1,6 +1,7 @@
 import nextFrame from 'next-frame';
 import { MediaStream } from 'react-native-webrtc';
 import {
+  CONNECTION_STATE_CONNECTING,
   MSG_CLEAR_CHAT,
   MSG_CLEAR_CHAT_CARBON,
   MSG_DELETE_CHAT_CARBON,
@@ -55,10 +56,38 @@ import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
 import { CallConnectionState } from '../redux/Actions/CallAction';
+import { startMissedCallNotificationTimer } from '../calls/callUtils';
 
 let localStream = null,
-  remoteStream = [],
-  localVideoMuted = false;
+    localVideoMuted = false,
+    localAudioMuted = false,
+    onCall = false;
+let remoteVideoMuted = [],
+    remoteStream = [],
+    remoteAudioMuted = [];
+
+const updatingUserStatusInRemoteStream = usersStatus => {
+  usersStatus.map(user => {
+    const index = remoteStream.findIndex(item => item.fromJid === user.userJid);
+    if (index > -1) {
+      remoteStream[index] = {
+        ...remoteStream[index],
+        status: user.status,
+      };
+      remoteVideoMuted[user.userJid] = user.videoMuted;
+      remoteAudioMuted[user.userJid] = user.audioMuted;
+    } else {uuidv4
+      let streamObject = {
+        id: Date.now(),
+        fromJid: user.userJid,
+        status: user.status || CONNECTION_STATE_CONNECTING,
+      };
+      remoteStream.push(streamObject);
+      remoteVideoMuted[user.userJid] = user.videoMuted;
+      remoteAudioMuted[user.userJid] = user.audioMuted;
+    }
+  });
+};
 
 export const callBacks = {
   connectionListener: response => {
@@ -296,7 +325,8 @@ export const callBacks = {
       //   }),
       // );
       updatingUserStatusInRemoteStream(res.usersStatus);
-      browserNotify.sendCallNotification(res);
+      // TODO: show call local notification
+      // browserNotify.sendCallNotification(res);
       startMissedCallNotificationTimer();
     } else {
       SDK.callEngaged();

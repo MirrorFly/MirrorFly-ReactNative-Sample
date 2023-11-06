@@ -1,4 +1,4 @@
-import { getLocalUserDetails } from '../Helpers/Chat/User';
+import { getLocalUserDetails } from '../../Helper/Chat/ChatHelper';
 import {
     CALLCONNECTION_STATE_DATA,
     CALL_DURATION_TIMESTAMP,

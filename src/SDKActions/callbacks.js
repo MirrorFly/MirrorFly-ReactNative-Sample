@@ -54,16 +54,19 @@ import { clearStreamData, setStreamData } from '../redux/Actions/streamAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let localStream = null;
 let remoteStream = [];
 
 export const callBacks = {
   connectionListener: response => {
+    const connStatus = response.status || "";
     uikitCallbackListeners()?.callBack?.(response);
     console.log('connectionListener', response);
     store.dispatch(setXmppStatus(response.status));
     store.dispatch(resetChatTypingStatus());
+    AsyncStorage.setItem("connection_status", connStatus);
     if (response.status === 'CONNECTED') {
       console.log('Connection Established');
     } else if (response.status === 'DISCONNECTED') {

@@ -1,12 +1,16 @@
 import { useNavigation } from '@react-navigation/native';
-import SDK from '../SDK/SDK';
 import { Checkbox } from 'native-base';
 import React, { useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { makeCalls } from '../Helper/Calls/Utility';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import { showToast } from '../Helper/index';
+import SDK from '../SDK/SDK';
 import Avathar from '../common/Avathar';
+import IconButton from '../common/IconButton';
 import {
+  AudioCall,
   CloseIcon,
   DeleteIcon,
   DownArrowIcon,
@@ -17,21 +21,22 @@ import {
   UpArrowIcon,
 } from '../common/Icons';
 import MenuContainer from '../common/MenuContainer';
-import LastSeen from './LastSeen';
-import {
-  setConversationSearchText,
-  clearConversationSearchData,
-  updateConversationSearchMessageIndex,
-} from '../redux/Actions/conversationSearchAction';
-import { showToast } from '../Helper/index';
-import { FORWARD_MESSSAGE_SCREEN } from '../constant';
-import useRosterData from '../hooks/useRosterData';
-import ApplicationColors from '../config/appColors';
-import ChatSearchInput from './ChatSearchInput';
-import commonStyles from '../common/commonStyles';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
-import IconButton from '../common/IconButton';
+import commonStyles from '../common/commonStyles';
+import ApplicationColors from '../config/appColors';
+import { FORWARD_MESSSAGE_SCREEN } from '../constant';
+import useRosterData from '../hooks/useRosterData';
+import {
+  clearConversationSearchData,
+  setConversationSearchText,
+  updateConversationSearchMessageIndex,
+} from '../redux/Actions/conversationSearchAction';
+import ChatSearchInput from './ChatSearchInput';
+import LastSeen from './LastSeen';
+import { requestMicroPhonePermission } from '../common/utils';
+import { openSettings } from 'react-native-permissions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function ChatHeader({
   fromUserJId,
@@ -263,6 +268,33 @@ function ChatHeader({
     );
   }
 
+  const makeOne2OneAudioCall = () => {
+    makeOne2OneCall('audio');
+  };
+
+  const makeOne2OneCall = async callType => {
+    const isPermissionChecked = await AsyncStorage.getItem(
+      'microPhone_Permission',
+    );
+    AsyncStorage.setItem('microPhone_Permission', 'true');
+    // updating the SDK flag to keep the connection Alive when app goes background because of document picker
+    SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
+    try {
+      const result = await requestMicroPhonePermission();
+      // updating the SDK flag back to false to behave as usual
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+      if (result === 'granted' || result === 'limited') {
+        makeCalls(callType, [fromUserId]);
+      } else if (isPermissionChecked) {
+        openSettings();
+      }
+    } catch (error) {
+      // updating the SDK flag back to false to behave as usual
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+      console.log('makeOne2OneCall', error);
+    }
+  };
+
   return (
     <>
       {selectedMsgs?.length <= 0 ? (
@@ -284,6 +316,11 @@ function ChatHeader({
               <LastSeen jid={fromUserJId} />
             </View>
           </Pressable>
+          <View style={styles.audioCallButton}>
+            <IconButton onPress={makeOne2OneAudioCall}>
+              <AudioCall />
+            </IconButton>
+          </View>
           <View style={styles.menuIconContainer}>
             {selectedMsgs?.length < 2 && menuItems.length > 0 && (
               <MenuContainer menuItems={menuItems} />
@@ -540,5 +577,8 @@ const styles = StyleSheet.create({
   deleteModalHorizontalActionButton: {
     paddingVertical: 4,
     paddingHorizontal: 8,
+  },
+  audioCallButton: {
+    padding: 4,
   },
 });

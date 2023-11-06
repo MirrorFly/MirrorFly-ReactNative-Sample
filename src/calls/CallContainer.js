@@ -7,9 +7,14 @@ const CallContainer = () => {
     //   case '':
     //   case '':
     // }
+    return null;
   };
 
-  return <Modal>{renderCallscreenBasedOnCallStatus()}</Modal>;
+  return (
+    <Modal visible={false} animationType="slide">
+      {renderCallscreenBasedOnCallStatus()}
+    </Modal>
+  );
 };
 
 export default CallContainer;

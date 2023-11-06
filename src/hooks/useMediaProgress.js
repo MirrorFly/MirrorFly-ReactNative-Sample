@@ -25,9 +25,52 @@ const useMediaProgress = ({
   msgId,
   media,
 }) => {
-  // 'NOT_DOWNLOADED' | 'NOT_UPLOADED' | 'DOWNLOADING' | 'UPLOADING' | 'DOWNLOADED' | 'UPLOADED'
-  const [mediaStatus, setMediaStatus] = React.useState('');
+  const dispatch = useDispatch();
   const networkState = useNetworkStatus();
+  /** 'NOT_DOWNLOADED' | 'NOT_UPLOADED' | 'DOWNLOADING' | 'UPLOADING' | 'DOWNLOADED' | 'UPLOADED'  */
+  const [mediaStatus, setMediaStatus] = React.useState('');
+
+  const fromUserJId = useSelector(state => state.navigation.fromUserJid);
+
+  const { data: mediaDownloadData = {} } = useSelector(
+    state => state.mediaDownloadData,
+  );
+
+  const { data: mediaUploadData = {} } = useSelector(
+    state => state.mediaUploadData,
+  );
+
+  React.useEffect(() => {
+    if (
+      mediaDownloadData[msgId]?.progress > 0 &&
+      mediaDownloadData[msgId]?.progress < 100
+    ) {
+      setMediaStatus(mediaStatusConstants.DOWNLOADING);
+    }
+    if (mediaDownloadData[msgId]?.progress === 100) {
+      setMediaStatus(mediaStatusConstants.DOWNLOADED);
+    }
+    if (mediaDownloadData[msgId]?.message) {
+      setMediaStatus(mediaStatusConstants.NOT_DOWNLOADED);
+      handleCancelUpload();
+    }
+  }, [mediaDownloadData[msgId]]);
+
+  React.useEffect(() => {
+    if (
+      mediaUploadData[msgId]?.progress > 0 &&
+      mediaUploadData[msgId]?.progress < 100
+    ) {
+      setMediaStatus(mediaStatusConstants.UPLOADING);
+    }
+    if (mediaUploadData[msgId]?.progress === 100) {
+      setMediaStatus(mediaStatusConstants.UPLOADED);
+    }
+    if (mediaUploadData[msgId]?.message) {
+      setMediaStatus(mediaStatusConstants.NOT_UPLOADED);
+      handleCancelUpload();
+    }
+  }, [mediaUploadData[msgId]]);
 
   const toastConfig = {
     duration: 2500,
@@ -56,17 +99,6 @@ const useMediaProgress = ({
       );
     }
   }, [isSender, mediaUrl, uploadStatus, msgId, media]);
-
-  const dispatch = useDispatch();
-  const fromUserJId = useSelector(state => state.navigation.fromUserJid);
-
-  const { data: mediaDownloadData = {} } = useSelector(
-    state => state.mediaDownloadData,
-  );
-
-  const { data: mediaUploadData = {} } = useSelector(
-    state => state.mediaUploadData,
-  );
 
   const { file_url = '', thumb_image = '' } = media;
 

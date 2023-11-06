@@ -2399,7 +2399,8 @@ export const RightArrowIcon = props => {
   );
 };
 
-export const DownloadCancel = () => {
+export const DownloadCancel = props => {
+  const { color = '#fff' } = props;
   return (
     <Svg
       id="download-fill"
@@ -2417,13 +2418,14 @@ export const DownloadCancel = () => {
         id="remove"
         d="M8.227.236,4.8,3.661,1.378.236A.807.807,0,0,0,.236,1.378L3.661,4.8.236,8.227A.807.807,0,0,0,1.378,9.368L4.8,5.944,8.227,9.368A.807.807,0,0,0,9.368,8.227L5.944,4.8,9.368,1.378A.807.807,0,0,0,8.227.236Z"
         transform="translate(11.604 2) rotate(90)"
-        fill="#fff"
+        fill={color}
       />
     </Svg>
   );
 };
 
-export const uploadIcon = () => {
+export const uploadIcon = (props) => {
+  const { color = '#fff' } = props;
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
@@ -2442,7 +2444,7 @@ export const uploadIcon = () => {
           data-name="Path 1546"
           d="M3.875,12.212H14.8v1.213H3.875ZM9.942,6.145h4.247L9.335,11,4.482,6.145H8.728V1.292H9.942Z"
           transform="translate(-2.055 -0.685)"
-          fill="#fff"
+          fill={color}
         />
       </G>
     </Svg>

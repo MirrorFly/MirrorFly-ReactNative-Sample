@@ -8,12 +8,9 @@
     "dist"
   ],
   "scripts": {
-    "rn:clean": "watchman watch-del-all && rm -rf package-lock.json node_modules &&  rm -rf android/build && rm -rf ios/Pods/ ios/Podfile.lock ios/build && rm -rf ~/Library/Developer/Xcode/DerivedData",
-    "android:clean": "cd android && ./gradlew clean && cd ..",
     "build": "rollup -c ",
     "android:build": "cd android && fastlane deploy_qa_release && cd ..",
     "ios:build": "cd ios && fastlane qa_firebase && cd ..",
-    "file:clean": "rm -rf package-lock.json node_modules",
     "ios:install": "npx react-native setup-ios-permissions && cd ios && pod install && cd ..",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
@@ -22,9 +19,13 @@
     "lint": "eslint .",
     "prepare": "patch-package",
     "copy_pack": "cp -r dist/* /home/user/Web_Training/React_Native/SamplePoc/node_modules/mirrorfly/dist/",
-    "build:pack:copy": "npm run build && npm pack && cp -r mirrorfly-uikit-react-native-1.0.5.tgz /Users/user/Desktop/mirrorfly/rn_npm/AwesomeProject",
+    "build:pack:copy": "npm run build && npm pack && cp -r mirrorfly-uikit-react-native-1.0.6.tgz /Users/user/Desktop/mirrorfly/rn_npm/AwesomeProject",
     "i": "npm i -f && npm run ios:install",
-    "devtools": "react-devtools"
+    "devtools": "react-devtools",
+    "android:clean": "cd android && ./gradlew clean && rm -rf build && cd ..",
+    "ios:clean":"rm -rf ios/Pods/ ios/Podfile.lock ios/build && rm -rf ~/Library/Developer/Xcode/DerivedData",
+    "file:clean": "rm -rf package-lock.json node_modules",
+    "rn:clean": "npm run android:clean && watchman watch-del-all && npm run ios:clean && npm run file:clean"
   },
  "reactNativePermissionsIOS": [
     "AppTrackingTransparency",

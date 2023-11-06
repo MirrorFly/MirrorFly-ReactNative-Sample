@@ -245,7 +245,7 @@ const timeoutErrorResponse = errorMessage => ({
 
 const validationErrorResponse = errorMessage => ({
   statusCode: 400,
-  message: errorMessage || __WEBPACK_IMPORTED_MODULE_1__constants__["_70" /* VALIDATION_ERROR */]
+  message: errorMessage || __WEBPACK_IMPORTED_MODULE_1__constants__["_71" /* VALIDATION_ERROR */]
 });
 /* harmony export (immutable) */ __webpack_exports__["C"] = validationErrorResponse;
 
@@ -477,14 +477,14 @@ const customValiadtionMediaMessage = (toJid = '', msgType = '', fileOptions = {}
   }];
 
   // Audio & Video Message Should Have Duration
-  (msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["h" /* AUDIO */] || msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["_71" /* VIDEO */]) && validation.push({
+  (msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["h" /* AUDIO */] || msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["_72" /* VIDEO */]) && validation.push({
     key: 'fileOptions.duration',
     value: fileOptions.duration,
     rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_46" /* REQUIRED */]
   });
 
   // Video Message Should Have Thumbnail Image
-  msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["_71" /* VIDEO */] && validation.push({
+  msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["_72" /* VIDEO */] && validation.push({
     key: 'fileOptions.thumbImg',
     value: fileOptions.thumbImg,
     rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_46" /* REQUIRED */]
@@ -636,7 +636,7 @@ const getGroupMessageStatus = (msgBody, publisherJid, userJid) => {
       break;
 
     case '3':
-      profileUpdatedStatus = publisherJid === userJid ? __WEBPACK_IMPORTED_MODULE_1__constants__["_68" /* USER_LEFT */] : __WEBPACK_IMPORTED_MODULE_1__constants__["_69" /* USER_REMOVED */];
+      profileUpdatedStatus = publisherJid === userJid ? __WEBPACK_IMPORTED_MODULE_1__constants__["_69" /* USER_LEFT */] : __WEBPACK_IMPORTED_MODULE_1__constants__["_70" /* USER_REMOVED */];
       break;
 
     case '4':
@@ -3070,7 +3070,7 @@ const fileValidation = (rule, file = {}) => {
     case 'video':
       if (__WEBPACK_IMPORTED_MODULE_5_react_native__["Platform"].OS == 'ios') {
         if (!__WEBPACK_IMPORTED_MODULE_3__constants__["X" /* IOS_VIDEO_FORMATS */].includes(file.type)) response = false;
-      } else if (!__WEBPACK_IMPORTED_MODULE_3__constants__["_73" /* VIDEO_FORMATS */].includes(file.type)) response = false;
+      } else if (!__WEBPACK_IMPORTED_MODULE_3__constants__["_74" /* VIDEO_FORMATS */].includes(file.type)) response = false;
       break;
 
     case 'document':
@@ -3683,7 +3683,7 @@ const CONNECTION_ERROR = 'Connection Error';
 /* harmony export (immutable) */ __webpack_exports__["u"] = CONNECTION_ERROR;
 
 const VALIDATION_ERROR = 'Validation Error';
-/* harmony export (immutable) */ __webpack_exports__["_70"] = VALIDATION_ERROR;
+/* harmony export (immutable) */ __webpack_exports__["_71"] = VALIDATION_ERROR;
 
 const INVALID_CREDENTIALS = 'Invalid Credentials';
 /* harmony export (immutable) */ __webpack_exports__["U"] = INVALID_CREDENTIALS;
@@ -3725,7 +3725,7 @@ const IMAGE = 'image';
 /* harmony export (immutable) */ __webpack_exports__["Q"] = IMAGE;
 
 const VIDEO = 'video';
-/* harmony export (immutable) */ __webpack_exports__["_71"] = VIDEO;
+/* harmony export (immutable) */ __webpack_exports__["_72"] = VIDEO;
 
 const AUDIO = 'audio';
 /* harmony export (immutable) */ __webpack_exports__["h"] = AUDIO;
@@ -3824,7 +3824,7 @@ const AUDIOFILE_REQUIRED = 'audio|required';
 /* harmony export (immutable) */ __webpack_exports__["i"] = AUDIOFILE_REQUIRED;
 
 const VIDEOFILE_REQUIRED = 'video|required';
-/* harmony export (immutable) */ __webpack_exports__["_72"] = VIDEOFILE_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_73"] = VIDEOFILE_REQUIRED;
 
 const DOCUMENTFILE_REQUIRED = 'document|required';
 /* harmony export (immutable) */ __webpack_exports__["y"] = DOCUMENTFILE_REQUIRED;
@@ -3851,10 +3851,10 @@ const USER_ADDED = 'userAdded';
 /* harmony export (immutable) */ __webpack_exports__["_65"] = USER_ADDED;
 
 const USER_LEFT = 'userLeft';
-/* harmony export (immutable) */ __webpack_exports__["_68"] = USER_LEFT;
+/* harmony export (immutable) */ __webpack_exports__["_69"] = USER_LEFT;
 
 const USER_REMOVED = 'userRemoved';
-/* harmony export (immutable) */ __webpack_exports__["_69"] = USER_REMOVED;
+/* harmony export (immutable) */ __webpack_exports__["_70"] = USER_REMOVED;
 
 const MADE_ADMIN = 'madeAdmin';
 /* harmony export (immutable) */ __webpack_exports__["_4"] = MADE_ADMIN;
@@ -3943,10 +3943,10 @@ const ADMIN_EXIT_GROUP = 'admin_exit_group';
 /* harmony export (immutable) */ __webpack_exports__["b"] = ADMIN_EXIT_GROUP;
 
 const USER_EXIT_GROUP = 'user_exit_group';
-/* harmony export (immutable) */ __webpack_exports__["_67"] = USER_EXIT_GROUP;
+/* harmony export (immutable) */ __webpack_exports__["_68"] = USER_EXIT_GROUP;
 
 const USER_DELETE_GROUP = 'user_delete_group';
-/* harmony export (immutable) */ __webpack_exports__["_66"] = USER_DELETE_GROUP;
+/* harmony export (immutable) */ __webpack_exports__["_67"] = USER_DELETE_GROUP;
 
 const GROUP_CHAT = 'group_chat';
 /* harmony export (immutable) */ __webpack_exports__["K"] = GROUP_CHAT;
@@ -4085,7 +4085,7 @@ const AUDIO_FORMATS = ['audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/mpeg', 'a
 /* harmony export (immutable) */ __webpack_exports__["j"] = AUDIO_FORMATS;
 
 const VIDEO_FORMATS = ['video/mp4'];
-/* harmony export (immutable) */ __webpack_exports__["_73"] = VIDEO_FORMATS;
+/* harmony export (immutable) */ __webpack_exports__["_74"] = VIDEO_FORMATS;
 
 const IOS_VIDEO_FORMATS = ['video', 'video/mov'];
 /* harmony export (immutable) */ __webpack_exports__["X"] = IOS_VIDEO_FORMATS;
@@ -4168,6 +4168,9 @@ const CHAT_HISTORY_LIMIT = 20;
 // api call error message
 const NETWORK_ERROR = 'Network Error';
 /* harmony export (immutable) */ __webpack_exports__["_22"] = NETWORK_ERROR;
+
+const USER_CANCELLED = 'User Cancelled!';
+/* harmony export (immutable) */ __webpack_exports__["_66"] = USER_CANCELLED;
 
 
 /***/ }),
@@ -9860,7 +9863,7 @@ const handleUnSentMsg = async () => {
         if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_20" /* MIX_BARE_JID */].test(element.fromUserJid)) Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(element.fromUserJid, element.mid, __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_53" /* TEXT */], cypherText);
         Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["d" /* sendMessageIQ */])(element.fromUserJid, element.msgId, __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_53" /* TEXT */], cypherText);
       }
-      if (element.msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["Q" /* IMAGE */] || element.msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_71" /* VIDEO */]) {
+      if (element.msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["Q" /* IMAGE */] || element.msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_72" /* VIDEO */]) {
         var _element$msgBody$medi = element.msgBody.media;
         const caption = _element$msgBody$medi.caption,
               duration = _element$msgBody$medi.duration,
@@ -10004,7 +10007,7 @@ const replyMsgConstructor = (replyId, realm) => {
   if (messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_53" /* TEXT */]) {
     _msgBody = Object(__WEBPACK_IMPORTED_MODULE_10__controllers_messageDetailTable__["b" /* getMessageDetail */])(replyId, realm);
   }
-  if (messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["Q" /* IMAGE */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_71" /* VIDEO */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["h" /* AUDIO */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["B" /* FILE */]) {
+  if (messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["Q" /* IMAGE */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_72" /* VIDEO */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["h" /* AUDIO */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["B" /* FILE */]) {
     const mediaDetail = Object(__WEBPACK_IMPORTED_MODULE_11__controllers_mediaDetailTable__["c" /* getMediaDetailWithRealm */])(mid, realm);
     _msgBody = mediaDetailConstructor(messageTable, mediaDetail);
   }
@@ -10042,7 +10045,7 @@ const msgBodyConstructor = (chatMessage, realm, nickName = '') => {
     msgBody.message_type = chatMessage.msgType;
     switch (chatMessage.msgType) {
       case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["Q" /* IMAGE */]:
-      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_71" /* VIDEO */]:
+      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_72" /* VIDEO */]:
       case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["h" /* AUDIO */]:
       case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["B" /* FILE */]:
         const mediaDetail = Object(__WEBPACK_IMPORTED_MODULE_11__controllers_mediaDetailTable__["c" /* getMediaDetailWithRealm */])(chatMessage.mid, realm);
@@ -13638,15 +13641,7 @@ const progressListner = (msgId, type, item, timeInterval) => {
   }
 };
 
-const sendRequest = async (method, apiEndPoint, inputdata, userToken, contentType, msgId = '', contentlength, type) => {
-  const headers = _extends({
-    'Content-Type': contentType ? contentType : 'application/json'
-  }, userToken && { authorization: userToken });
-
-  if (contentlength) {
-    headers['Content-Length'] = contentlength;
-  }
-  const source = CancelToken.source();
+const uploadProgress = (msgId, type, contentlength, source) => {
   if (msgId && contentlength) {
     const item = {
       msgId: msgId,
@@ -13658,10 +13653,21 @@ const sendRequest = async (method, apiEndPoint, inputdata, userToken, contentTyp
       },
       progress: 0
     };
-    const bandwidthBitsPerSecond = 100000;
+    const bandwidthBitsPerSecond = 1000000;
     const timeInterval = contentlength * 8 / bandwidthBitsPerSecond;
     progressListner(msgId, type, item, timeInterval);
   }
+};
+
+const sendRequest = async (method, apiEndPoint, inputdata, userToken, contentType, msgId = '', contentlength, type) => {
+  const headers = _extends({
+    'Content-Type': contentType ? contentType : 'application/json'
+  }, userToken && { authorization: userToken });
+
+  if (contentlength) {
+    headers['Content-Length'] = contentlength;
+  }
+  const source = CancelToken.source();
 
   const options = {
     method,
@@ -13673,6 +13679,7 @@ const sendRequest = async (method, apiEndPoint, inputdata, userToken, contentTyp
     onUploadProgress: p => {
       if (msgId) {
         console.log(p, 'SDK onUploadProgress');
+        uploadProgress(msgId, type, contentlength, source);
       }
     },
     onDownloadProgress: p => {
@@ -14996,7 +15003,7 @@ const handleMessageCreate = async (toJid, msgBody = '', msgId, replyTo = '', typ
       _locationData.mid = msgId;
       Object(__WEBPACK_IMPORTED_MODULE_13__locationMessageTable__["a" /* createLocationMsg */])(realm, _locationData);
     }
-    if (type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["Q" /* IMAGE */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_71" /* VIDEO */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["h" /* AUDIO */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["B" /* FILE */]) {
+    if (type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["Q" /* IMAGE */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_72" /* VIDEO */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["h" /* AUDIO */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["B" /* FILE */]) {
       var _file$type = file.type;
       const type = _file$type === undefined ? '' : _file$type;
       var _file$name = file.name;
@@ -15238,7 +15245,7 @@ const handleCreateIncomingMsg = async params => {
       };
       Object(__WEBPACK_IMPORTED_MODULE_14__contactMessageTable__["a" /* createContactMsg */])(realm, contactDetail);
     }
-    if (chatType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["p" /* CHAT */] && (msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["Q" /* IMAGE */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_71" /* VIDEO */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["B" /* FILE */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["h" /* AUDIO */])) {
+    if (chatType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["p" /* CHAT */] && (msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["Q" /* IMAGE */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_72" /* VIDEO */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["B" /* FILE */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["h" /* AUDIO */])) {
       const media = msgBody.media;
 
       realm.write(() => {
@@ -15286,7 +15293,7 @@ const deleteMsgBody = async (message, realm) => {
       });
       break;
     case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["Q" /* IMAGE */]:
-    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_71" /* VIDEO */]:
+    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_72" /* VIDEO */]:
     case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["B" /* FILE */]:
     case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["h" /* AUDIO */]:
       realm.write(() => {
@@ -15536,7 +15543,14 @@ const uploadMedia = async (file, chatType, touser, msgId) => {
       console.log('SDK _obj', _obj);
       Object(__WEBPACK_IMPORTED_MODULE_15__app_common__["c" /* addPendingUploads */])(_obj);
     }
-
+    if (apiResponse.message === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_66" /* USER_CANCELLED */]) {
+      Object(__WEBPACK_IMPORTED_MODULE_15__app_common__["j" /* removePendingUploads */])(msgId);
+    }
+    const item = {
+      msgId,
+      message: apiResponse.message
+    };
+    Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["a" /* callbackListeners */])().mediaUploadListener && msgId !== '' && Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["a" /* callbackListeners */])().mediaUploadListener(item);
     return {
       statusCode: apiResponse && apiResponse.status || 500,
       message: apiResponse && apiResponse.message || __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_10" /* MEDIA_UPLOAD_FAILED */]
@@ -15571,7 +15585,7 @@ const handleMediaMessage = async (msgBody = '', msgType, msgId, file, fileOption
     var _fileOptions$fileToke = fileOptions.fileToken;
     const fileToken = _fileOptions$fileToke === undefined ? '' : _fileOptions$fileToke;
 
-    if (!thumbImage && msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["Q" /* IMAGE */]) fileOptions.thumbImage = await getThumbImage(uri);else if (!thumbImage && msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_71" /* VIDEO */]) fileOptions.thumbImage = await getVideoThumbImage(uri);
+    if (!thumbImage && msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["Q" /* IMAGE */]) fileOptions.thumbImage = await getThumbImage(uri);else if (!thumbImage && msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_72" /* VIDEO */]) fileOptions.thumbImage = await getVideoThumbImage(uri);
     let updatedFile = {};
     const dbCheck = await Object(__WEBPACK_IMPORTED_MODULE_13__db_Utils__["b" /* dbCheckWithMsgId */])(msgId);
     if (dbCheck) {
@@ -16112,7 +16126,7 @@ const fileStoreInDevice = async file => {
               if (type === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["Q" /* IMAGE */]) {
                 __WEBPACK_IMPORTED_MODULE_0_react_native_fs___default.a.copyFile(res, destinationPath);
               }
-              if (type === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_71" /* VIDEO */]) {
+              if (type === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_72" /* VIDEO */]) {
                 convertedFilePath = await convertMovtoMP4(res, localPathName);
                 convertedFileName = convertedFilePath.split('/').pop();
               }
@@ -16454,7 +16468,7 @@ const sendVideoMessage = async (toJid, videoFile, fileOptions, replyTo = '') => 
   }, {
     key: 'videoFile',
     value: videoFile,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_72" /* VIDEOFILE_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_73" /* VIDEOFILE_REQUIRED */]
   }, {
     key: 'fileOptions',
     value: fileOptions,
@@ -16462,14 +16476,14 @@ const sendVideoMessage = async (toJid, videoFile, fileOptions, replyTo = '') => 
   }]);
   if (response.statusCode === 200) {
     const msgId = fileOptions.msgId ? fileOptions.msgId : Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["w" /* randomString */])(16, 'BA');
-    const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_71" /* VIDEO */], msgId, replyTo, toJid, videoFile, fileOptions);
+    const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_72" /* VIDEO */], msgId, replyTo, toJid, videoFile, fileOptions);
 
     if (msgResponse && msgResponse.statusCode === 200) {
       const cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), msgId),
             fileToken = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["o" /* getFileTokenFromMsgBody */])(msgResponse.message);
 
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_20" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_71" /* VIDEO */], cypherText, fileToken, msgResponse.message.media.thumb_image);
-      return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_71" /* VIDEO */], cypherText, fileToken, msgResponse.message.media.thumb_image);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_20" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_72" /* VIDEO */], cypherText, fileToken, msgResponse.message.media.thumb_image);
+      return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_72" /* VIDEO */], cypherText, fileToken, msgResponse.message.media.thumb_image);
     }
     return msgResponse;
   }
@@ -17320,7 +17334,7 @@ const sendMediaMessage = async (toJid, msgId, type = '', file = {}, fileOptions 
         return sendDocumentMessage(toJid, _file, _fileOptions, _replyTo);
       case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["Q" /* IMAGE */]:
         return sendImageMessage(toJid, _file, _fileOptions, _replyTo);
-      case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_71" /* VIDEO */]:
+      case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_72" /* VIDEO */]:
         return sendVideoMessage(toJid, _file, _fileOptions, _replyTo);
       case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["h" /* AUDIO */]:
         return sendAudioMessage(toJid, _file, _fileOptions, _replyTo);
@@ -26868,7 +26882,10 @@ const createMsgDetailTable = (realm, params) => {
 
 const getMessageDetail = (mid, realm) => {
   try {
-    return realm.objectForPrimaryKey('MessageDetailTable', mid).toJSON();
+    const data = realm.objectForPrimaryKey('MessageDetailTable', mid);
+    if (data) {
+      return JSON.parse(JSON.stringify(data));
+    }
   } catch (error) {
     console.log('getMessageDetail', error);
   }
@@ -48118,7 +48135,7 @@ const removeParticipantIQ = (groupJid, userJid, isAdmin, type) => new Promise(as
   } else {
     let status;
     if (type === 'exit') {
-      status = isAdmin ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["b" /* ADMIN_EXIT_GROUP */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_67" /* USER_EXIT_GROUP */];
+      status = isAdmin ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["b" /* ADMIN_EXIT_GROUP */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_68" /* USER_EXIT_GROUP */];
     } else {
       status = isAdmin ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["c" /* ADMIN_REMOVE_ADMIN */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["d" /* ADMIN_REMOVE_PARTICIPANT */];
     }
@@ -48154,7 +48171,7 @@ const userDeleteGroupIQ = groupJid => new Promise(async resolve => {
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["w" /* randomString */])(16, 'BA')
     }).c('query', {
       xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_29" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_66" /* USER_DELETE_GROUP */]
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_67" /* USER_DELETE_GROUP */]
     }).c('participant').t(userJid).up();
 
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["A" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_45" /* REQUEST_FAILED */])));
@@ -48741,6 +48758,20 @@ const downloadMedia = async (msgID, addInPending = true) => {
         const fileName = 'MFRN_' + Date.now() + '.' + ext;
         const destinationPath = __WEBPACK_IMPORTED_MODULE_1_react_native_fs___default.a.DocumentDirectoryPath + '/' + fileName;
         const response = await Object(__WEBPACK_IMPORTED_MODULE_6__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_11" /* METHOD_GET */], imageUrl.data.fileUrl, undefined, imageUrl.data.token, '', msgID, '', 'download');
+        console.log('SDK downloadMedia response ==>', response);
+        if (response.status === 500) {
+          const item = {
+            msgId: msgID,
+            message: response.message
+          };
+          Object(__WEBPACK_IMPORTED_MODULE_4__helpers_common__["a" /* callbackListeners */])().mediaDownloadListener && Object(__WEBPACK_IMPORTED_MODULE_4__helpers_common__["a" /* callbackListeners */])().mediaDownloadListener(item);
+        }
+        if (response.message === __WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_22" /* NETWORK_ERROR */]) {
+          Object(__WEBPACK_IMPORTED_MODULE_8__common__["b" /* addPendingDownloads */])(msgID);
+        }
+        if (response.message === __WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_66" /* USER_CANCELLED */]) {
+          Object(__WEBPACK_IMPORTED_MODULE_8__common__["i" /* removePendingDownloads */])(msgID);
+        }
         let image = btoa(new Uint8Array(response).reduce((data, byte) => data + String.fromCharCode(byte), ''));
         if (image) {
           const base64 = image;
@@ -48763,12 +48794,11 @@ const downloadMedia = async (msgID, addInPending = true) => {
           Object(__WEBPACK_IMPORTED_MODULE_4__helpers_common__["a" /* callbackListeners */])().mediaDownloadListener && Object(__WEBPACK_IMPORTED_MODULE_4__helpers_common__["a" /* callbackListeners */])().mediaDownloadListener(item);
           Object(__WEBPACK_IMPORTED_MODULE_2__db_controllers_mediaDetailTable__["d" /* updateMediaDetailTable */])(msgID, updateMediaDetail);
           successReturn.data = returnRes;
-          if (__WEBPACK_IMPORTED_MODULE_5_react_native__["Platform"].OS === 'ios') {
-            Object(__WEBPACK_IMPORTED_MODULE_8__common__["i" /* removePendingDownloads */])(msgID);
-          }
+          Object(__WEBPACK_IMPORTED_MODULE_8__common__["i" /* removePendingDownloads */])(msgID);
           return successReturn;
         } else return Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])('Media download failed');
       } else {
+        Object(__WEBPACK_IMPORTED_MODULE_8__common__["b" /* addPendingDownloads */])(msgID);
         return Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(imageUrl.message);
       }
     }
@@ -87954,7 +87984,9 @@ const appStateHandler = () => {
       Object(__WEBPACK_IMPORTED_MODULE_3__common__["k" /* setAppState */])(nextAppState);
       if (!isFirstTimeAppStateChange) {
         if (nextAppState === 'active') {
-          Object(__WEBPACK_IMPORTED_MODULE_3__common__["g" /* processPendingDownloads */])();
+          if (__WEBPACK_IMPORTED_MODULE_0_react_native__["Platform"].OS === 'ios') {
+            Object(__WEBPACK_IMPORTED_MODULE_3__common__["g" /* processPendingDownloads */])();
+          }
           return Object(__WEBPACK_IMPORTED_MODULE_2__reconnect__["a" /* reconnect */])();
         } else if ((nextAppState === 'background' || nextAppState === 'inactive') && !shouldKeepConnectionWhenAppGoesBackground) {
           // disconnecting the server in setTimeout to finish all the ongoing server requests
@@ -87973,8 +88005,9 @@ const appStateHandler = () => {
       Object(__WEBPACK_IMPORTED_MODULE_3__common__["l" /* setNetworkStatus */])(state.isInternetReachable);
       if (!isFirstTimeIntStateChange) {
         if (state.isInternetReachable) {
-          Object(__WEBPACK_IMPORTED_MODULE_3__common__["h" /* processPendingUploads */])();
           console.log('Reconnection from Internet state change');
+          Object(__WEBPACK_IMPORTED_MODULE_3__common__["h" /* processPendingUploads */])();
+          Object(__WEBPACK_IMPORTED_MODULE_3__common__["g" /* processPendingDownloads */])();
           return Object(__WEBPACK_IMPORTED_MODULE_2__reconnect__["a" /* reconnect */])();
         }
       }

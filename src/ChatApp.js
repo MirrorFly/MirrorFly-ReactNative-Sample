@@ -50,7 +50,7 @@ const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
 });
 
 const linking = {
-  prefixes: ['mirrorfly_rn://'], // Replace 'yourapp' with your app's custom scheme
+  prefixes: ['mirrorfly_rn://'], //NOSONAR Replace 'yourapp' with your app's custom scheme
   config: {
     screens: {
       [REGISTERSCREEN]: REGISTERSCREEN,

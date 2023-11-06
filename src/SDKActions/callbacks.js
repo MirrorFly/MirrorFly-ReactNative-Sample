@@ -1,5 +1,7 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import nextFrame from 'next-frame';
 import { MediaStream } from 'react-native-webrtc';
+import { callConnectionStoreData } from '../Helper/Calls/Call';
 import {
   MSG_CLEAR_CHAT,
   MSG_CLEAR_CHAT_CARBON,
@@ -23,6 +25,7 @@ import {
   updateRecentChatMessage,
 } from '../components/chat/common/createMessage';
 import { REGISTERSCREEN } from '../constant';
+import { CallConnectionState } from '../redux/Actions/CallAction';
 import {
   ClearChatHistoryAction,
   DeleteChatHistoryAction,
@@ -49,13 +52,10 @@ import {
 } from '../redux/Actions/TypingAction';
 import { deleteChatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAction';
 import { setXmppStatus } from '../redux/Actions/connectionAction';
-import { clearStatusData, setStatusData } from '../redux/Actions/statusAction';
-import { clearStreamData, setStreamData } from '../redux/Actions/streamAction';
+import { setStreamData } from '../redux/Actions/streamAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CallConnectionState, showConfrence } from '../redux/Actions/CallAction';
 
 let localStream = null,
   localVideoMuted = false,
@@ -67,7 +67,7 @@ let remoteVideoMuted = [],
 
 const ringing = async res => {
   if (!onCall) {
-    const callConnectionData = await AsyncStorage.getItem('call_connection_status');
+    const callConnectionData = callConnectionStoreData(Store.getState());
     console.log(callConnectionData,"callConnectionData");
   }
   //   if (callConnectionData.callType === 'audio') {

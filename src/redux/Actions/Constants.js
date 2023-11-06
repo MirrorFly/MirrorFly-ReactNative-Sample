@@ -188,3 +188,4 @@ export const STREAM_DATA = 'STREAM_DATA';
 export const STATUS_DATA = 'STATUS_DATA';
 export const CLEAR_STREAM = 'CLEAR_STREAM';
 export const CLEAR_STATUS = 'CLEAR_STATUS';
+export const CLOSE_CALL_MODAL = 'CLOSE_CALL_MODAL';

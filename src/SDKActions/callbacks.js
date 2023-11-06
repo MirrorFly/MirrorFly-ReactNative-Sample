@@ -55,18 +55,87 @@ import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CallConnectionState, showConfrence } from '../redux/Actions/CallAction';
 
-let localStream = null;
-let remoteStream = [];
+let localStream = null,
+  localVideoMuted = false,
+  localAudioMuted = false,
+  onCall = false;
+let remoteVideoMuted = [],
+  remoteStream = [],
+  remoteAudioMuted = [];
+
+const ringing = async res => {
+  if (!onCall) {
+    const callConnectionData = await AsyncStorage.getItem('call_connection_status');
+    console.log(callConnectionData,"callConnectionData");
+  }
+  //   if (callConnectionData.callType === 'audio') {
+  //     localVideoMuted = true;
+  //   }
+  //   Store.dispatch(
+  //     showConfrence({
+  //       callStatusText: 'Ringing',
+  //       showStreamingComponent: false,
+  //       localStream,
+  //       remoteStream,
+  //       localVideoMuted,
+  //       localAudioMuted,
+  //       showComponent: true,
+  //     }),
+  //   );
+  // } else {
+  //   const showConfrenceData = Store.getState().showConfrenceData;
+  //   const { data } = showConfrenceData;
+  //   const index = remoteStream.findIndex(item => item.fromJid === res.userJid);
+  //   if (index > -1) {
+  //     remoteStream[index] = {
+  //       ...remoteStream[index],
+  //       status: res.status,
+  //     };
+  //     Store.dispatch(
+  //       showConfrence({
+  //         ...(data || {}),
+  //         remoteStream: remoteStream,
+  //       }),
+  //     );
+  //   }
+  // }
+};
+
+const callStatus = res => {
+  if (res.status === 'ringing') {
+    ringing(res);
+  } 
+  // else if (res.status === 'connecting') {
+  //   connecting(res);
+  // } else if (res.status === 'connected') {
+  //   connected(res);
+  // } else if (res.status === 'busy') {
+  //   handleEngagedOrBusyStatus(res);
+  // } else if (res.status === 'disconnected') {
+  //   disconnected(res);
+  // } else if (res.status === 'engaged') {
+  //   handleEngagedOrBusyStatus(res);
+  // } else if (res.status === 'ended') {
+  //   ended(res);
+  // } else if (res.status === 'reconnecting') {
+  //   reconnecting(res);
+  // } else if (res.status === 'userstatus') {
+  //   userStatus(res);
+  // } else if (res.status === 'hold') {
+  //   hold(res);
+  // }
+};
 
 export const callBacks = {
   connectionListener: response => {
-    const connStatus = response.status || "";
+    const connStatus = response.status || '';
     uikitCallbackListeners()?.callBack?.(response);
     console.log('connectionListener', response);
     store.dispatch(setXmppStatus(response.status));
     store.dispatch(resetChatTypingStatus());
-    AsyncStorage.setItem("connection_status", connStatus);
+    AsyncStorage.setItem('connection_status', connStatus);
     if (response.status === 'CONNECTED') {
       console.log('Connection Established');
     } else if (response.status === 'DISCONNECTED') {
@@ -248,15 +317,79 @@ export const callBacks = {
     console.log('adminBlockListener = (res) => { }', res);
   },
   incomingCallListener: function (res) {
-    console.log(res, 'incomingCallListener');
-    Store.dispatch(setStatusData(res));
+    console.log(JSON.stringify(res, null, 2), 'incomingCallListener');
+    // web reference code ------------------------
+    // strophe = true;
+    remoteStream = [];
+    localStream = null;
+    let callMode = 'onetoone';
+    if (res.toUsers.length === 1 && res.groupId === null) {
+      res.from = res.toUsers[0];
+      res.to = res.userJid;
+      if (res.callType === 'audio') {
+        localVideoMuted = true;
+      }
+    } else {
+      callMode = 'onetomany';
+      res.from = res.userJid;
+      res.to = res.groupId ? res.groupId : res.userJid;
+      res.userList = res.allUsers.join(',');
+      if (res.callType === 'audio') {
+        localVideoMuted = true;
+      }
+    }
+    res.callMode = callMode;
+    // encryptAndStoreInLocalStorage(
+    //   'call_connection_status',
+    //   JSON.stringify(res),
+    // );
+
+    // TODO: get current room id from callData reducer
+    let roomId = Store.getState();
+
+    if (roomId === '' || roomId === null || roomId === undefined) {
+      resetPinAndLargeVideoUser();
+      // TODO: store the below details in callData reducer
+      // encryptAndStoreInLocalStorage('roomName', res.roomId);
+      // encryptAndStoreInLocalStorage('callType', res.callType);
+      // encryptAndStoreInLocalStorage('callFrom', res.from);
+      if (res.callType === 'audio') {
+        localVideoMuted = true;
+      }
+      Store.dispatch(CallConnectionState(res));
+      // TODO: update the below store data based on new reducer structure
+      // Store.dispatch(
+      //   showConfrence({
+      //     showComponent: false,
+      //     showStreamingComponent: false,
+      //     showCalleComponent: true,
+      //   }),
+      // );
+      updatingUserStatusInRemoteStream(res.usersStatus);
+      browserNotify.sendCallNotification(res);
+      startMissedCallNotificationTimer();
+    } else {
+      SDK.callEngaged();
+    }
+
+    callLogs.insert({
+      callMode: res.callMode,
+      callState: 0,
+      callTime: callLogs.initTime(),
+      callType: res.callType,
+      fromUser: res.from,
+      roomId: res.roomId,
+      userList: res.userList,
+      groupId: res.callMode === 'onetoone' ? '' : res.groupId,
+    });
+    startCallingTimer();
   },
   callStatusListener: function (res) {
-    console.log(res,"ressss");
-    if (res.status === 'ended') {
-      Store.dispatch(clearStreamData());
-      Store.dispatch(clearStatusData());
-    }
+    callStatus(res);
+    // if (res.status === 'ended') {
+    //   Store.dispatch(clearStreamData());
+    //   Store.dispatch(clearStatusData());
+    // }
   },
   userTrackListener: (res, check) => {
     if (res.localUser) {
@@ -316,21 +449,21 @@ export const callBacks = {
   mediaErrorListener: res => {
     console.log(res, 'userProfileListener');
   },
-  callSpeakingListener: res => { },
+  callSpeakingListener: res => {},
   callUsersUpdateListener: res => {
     console.log(res, 'userProfileListener');
   },
   helper: {
-    getDisplayName: () => { },
-    getImageUrl: () => { },
+    getDisplayName: () => {},
+    getImageUrl: () => {},
   },
-  inviteUsersListener: res => { },
-  callUserJoinedListener: function (res) { },
-  callUserLeftListener: function (res) { },
-  missedCallListener: res => { 
-    console.log(res,"missedCallListener");
+  inviteUsersListener: res => {},
+  callUserJoinedListener: function (res) {},
+  callUserLeftListener: function (res) {},
+  missedCallListener: res => {
+    console.log(res, 'missedCallListener');
   },
-  callSwitchListener: function (res) { },
-  muteStatusListener: res => { },
-  adminBlockListener: function (res) { },
+  callSwitchListener: function (res) {},
+  muteStatusListener: res => {},
+  adminBlockListener: function (res) {},
 };

@@ -102,7 +102,7 @@ const makeCall = async (
       callConnectionStatus.to = groupId;
       callConnectionStatus.groupId = groupId;
     }
-    // encryptAndStoreInLocalStorage('call_connection_status', JSON.stringify(callConnectionStatus))
+    // AsyncStorage.setItem('call_connection_status', JSON.stringify(callConnectionStatus))
     // encryptAndStoreInLocalStorage('callType', callType)
     // encryptAndStoreInLocalStorage('callingComponent', true)
     // encryptAndStoreInLocalStorage('callFrom', getFromLocalStorageAndDecrypt('loggedInUserJidWithResource'));

@@ -884,7 +884,7 @@ export const StatusIcon = () => {
   );
 };
 
-export const DownArrowIcon = ({ width, height }) => {
+export const DownArrowIcon = ({ width, height, color }) => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
@@ -896,7 +896,7 @@ export const DownArrowIcon = ({ width, height }) => {
         data-name="drop down"
         d="M333.342,175.667a.7.7,0,0,1-.5-.2l-4.3-4.277a.694.694,0,0,1,0-.985.7.7,0,0,1,.99,0l3.8,3.785,3.8-3.784a.7.7,0,0,1,.99,0,.694.694,0,0,1,0,.985l-4.3,4.277A.7.7,0,0,1,333.342,175.667Z"
         transform="translate(-328.342 -169.997)"
-        fill="#000"
+        fill={color || "#000"}
       />
     </Svg>
   );

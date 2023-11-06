@@ -3,6 +3,8 @@ import nextFrame from 'next-frame';
 import { MediaStream } from 'react-native-webrtc';
 import {
   callConnectionStoreData,
+  clearMissedCallNotificationTimer,
+  dispatchDisconnected,
   showConfrenceStoreData,
   startMissedCallNotificationTimer,
 } from '../Helper/Calls/Call';
@@ -32,6 +34,8 @@ import {
 import { REGISTERSCREEN } from '../constant';
 import {
   CallConnectionState,
+  resetConferencePopup,
+  resetData,
   showConfrence,
 } from '../redux/Actions/CallAction';
 import {
@@ -68,6 +72,7 @@ import {
   formatUserIdToJid,
   getLocalUserDetails,
 } from '../Helper/Chat/ChatHelper';
+import { CALL_STATUS_ENDED } from '../Helper/Calls/Constant';
 
 let localStream = null,
   localVideoMuted = false,
@@ -76,6 +81,27 @@ let localStream = null,
 let remoteVideoMuted = [],
   remoteStream = [],
   remoteAudioMuted = [];
+
+export const resetCallData = () => {
+  onCall = false;
+  remoteStream = [];
+  localStream = null;
+  remoteVideoMuted = [];
+  remoteAudioMuted = [];
+  localVideoMuted = false;
+  localAudioMuted = false;
+  // if (getFromLocalStorageAndDecrypt('isNewCallExist') === true) {
+  //   deleteItemFromLocalStorage('isNewCallExist');
+  // } else {
+  //   Store.dispatch(resetCallIntermediateScreen());
+  // }
+  // Store.dispatch(callDurationTimestamp());
+  Store.dispatch(resetConferencePopup());
+  resetData();
+  // setTimeout(() => {
+  //   Store.dispatch(isMuteAudioAction(false));
+  // }, 1000);
+};
 
 export const muteLocalVideo = isMuted => {
   localVideoMuted = isMuted;
@@ -156,7 +182,93 @@ const userStatus = res => {
   updatingUserStatusInRemoteStream(res.usersStatus);
 };
 
+const removingRemoteStream = (res) => {
+  remoteStream.forEach((item, key) => {
+      if (item.fromJid === res.userJid) {
+          remoteStream.splice(key, 1);
+      }
+  });
+}
+
+const updateCallConnectionStatus = (usersStatus) => {
+  const callConnectionData = callConnectionStoreData();
+  let usersLen;
+  if (usersStatus.length) {
+      let currentUsers = usersStatus.filter(el => el.status.toLowerCase() !== CALL_STATUS_ENDED);
+      usersLen = currentUsers.length;
+  }
+  let callDetailsObj = {
+      ...callConnectionData,
+      callMode: ((callConnectionData?.groupId && callConnectionData?.groupId !== null && callConnectionData?.groupId !== "") || usersLen > 2) ? "onetomany" : "onetoone"
+  }
+  Store.dispatch(CallConnectionState(callDetailsObj))
+  // encryptAndStoreInLocalStorage("call_connection_status", JSON.stringify(callDetailsObj));
+}
+
+const ended = res => {
+  // deleteItemFromLocalStorage('inviteStatus');
+  // let roomId = getFromLocalStorageAndDecrypt('roomName');
+  if (res.sessionStatus === 'closed') {
+    let callConnectionData = null;
+    if (remoteStream && !onCall && !res.carbonAttended) {
+      // Call ended before attend
+      callConnectionData = callConnectionStoreData();
+    }
+    // callLogs.update(roomId, {
+    //     "endTime": callLogs.initTime(),
+    //     "sessionStatus": res.sessionStatus
+    // });
+    dispatchDisconnected();
+    if (callConnectionData) {
+      clearMissedCallNotificationTimer();
+    }
+    localstoreCommon();
+    Store.dispatch(
+      showConfrence({
+        showComponent: false,
+        showStreamingComponent: false,
+        showCalleComponent: false,
+        callStatusText: null,
+      }),
+    );
+    // Store.dispatch(callConversion());
+    // Store.dispatch(hideModal());
+    Store.dispatch(CallConnectionState(res));
+    if (callConnectionData) {
+      const callDetailObj = callConnectionData
+        ? {
+            ...callConnectionData,
+          }
+        : {};
+      callDetailObj['status'] = 'ended';
+      // browserNotify.sendCallNotification(callDetailObj);
+    }
+    resetCallData();
+  } else {
+    if (
+      !onCall ||
+      (remoteStream && Array.isArray(remoteStream) && remoteStream.length < 1)
+    ) {
+      return;
+    }
+    removingRemoteStream(res);
+    // resetPinAndLargeVideoUser(res.userJid);
+    updateCallConnectionStatus(res.usersStatus);
+    const showConfrenceData = showConfrenceStoreData();
+    const { data } = showConfrenceData;
+    Store.dispatch(
+      showConfrence({
+        ...(data || {}),
+        remoteStream: remoteStream,
+        remoteVideoMuted,
+        remoteAudioMuted,
+      }),
+    );
+  }
+};
+
 const callStatus = res => {
+  console.log(res,"res");
   if (res.status === 'ringing') {
     ringing(res);
   } else if (res.status === 'connecting') {
@@ -170,7 +282,7 @@ const callStatus = res => {
   } else if (res.status === 'engaged') {
     // handleEngagedOrBusyStatus(res);
   } else if (res.status === 'ended') {
-    // ended(res);
+    ended(res);
   } else if (res.status === 'reconnecting') {
     // reconnecting(res);
   } else if (res.status === 'userstatus') {

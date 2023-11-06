@@ -1,6 +1,8 @@
+import { showConfrence } from '../../redux/Actions/CallAction';
 import Store from '../../redux/store';
 import {
   CALL_RINGING_DURATION,
+  CALL_STATUS_DISCONNECTED,
   DISCONNECTED_SCREEN_DURATION,
 } from './Constant';
 
@@ -32,3 +34,28 @@ export const callConnectionStoreData = () => {
 export const showConfrenceStoreData = () => {
   return Store.getState?.().showConfrenceData || {};
 };
+
+export const clearMissedCallNotificationTimer = () => {
+  if (missedCallNotificationTimer !== null) {
+      clearTimeout(missedCallNotificationTimer);
+      missedCallNotificationTimer = null;
+  }
+}
+
+export function dispatchDisconnected(statusMessage, remoteStreams = []) {
+  const {
+      getState,
+      dispatch
+  } = Store;
+  const showConfrenceData = getState().showConfrenceData;
+  const {
+      data
+  } = showConfrenceData;
+  statusMessage = statusMessage || CALL_STATUS_DISCONNECTED;
+  dispatch(showConfrence({
+      ...(data || {}),
+      callStatusText: statusMessage,
+      remoteStream: remoteStreams.length > 1 ? remoteStreams : data.remoteStream,
+      stopSound: true
+  }))
+}

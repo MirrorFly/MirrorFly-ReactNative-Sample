@@ -10,7 +10,7 @@ import {
   StatusBar,
   StyleSheet,
   useColorScheme,
-  Text
+  Text,
 } from 'react-native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { navigationRef } from './Navigation/rootNavigation';

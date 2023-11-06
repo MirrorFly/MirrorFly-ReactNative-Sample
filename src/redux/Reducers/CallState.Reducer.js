@@ -17,7 +17,7 @@ const CallStateReducer = (state = initialStateClone, action = {}) => {
         ...state,
         id: Date.now(),
         connectionState: action.payload,
-        showCallModal: true,
+        showCallModal: false,
       };
     case CLOSE_CALL_MODAL:
       return {

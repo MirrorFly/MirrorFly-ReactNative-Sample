@@ -7,6 +7,7 @@ import {
   CallConnectionState,
   showConfrence,
 } from '../../redux/Actions/CallAction';
+import { muteLocalVideo } from '../../SDKActions/callbacks';
 
 export const makeCalls = async (callType, userId) => {
   let userList = [];
@@ -120,10 +121,10 @@ const makeCall = async (
     );
     try {
       if (callType === 'audio') {
-        // muteLocalVideo(true);
+        muteLocalVideo(true);
         call = await SDK.makeVoiceCall(users, groupId);
       } else if (callType === 'video') {
-        // muteLocalVideo(false);
+        muteLocalVideo(false);
         call = await SDK.makeVideoCall(users, groupId);
       }
       if (call.statusCode !== 200 && call.message === PERMISSION_DENIED) {

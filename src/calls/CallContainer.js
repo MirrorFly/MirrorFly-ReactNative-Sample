@@ -6,8 +6,10 @@ import { useSelector } from 'react-redux';
 const CallContainer = () => {
   const { showCallModal, connectionState } =
     useSelector(state => state.callData) || {};
-
-  const callStatus = 'incoming';
+    const { data } =
+    useSelector(state => state.showConfrenceData) || {};
+  console.log(data,"data");
+  const callStatus = '';
 
   const renderCallscreenBasedOnCallStatus = () => {
     switch (callStatus) {

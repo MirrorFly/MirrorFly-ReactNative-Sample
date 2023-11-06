@@ -72,7 +72,7 @@ import {
   formatUserIdToJid,
   getLocalUserDetails,
 } from '../Helper/Chat/ChatHelper';
-import { CALL_STATUS_ENDED } from '../Helper/Calls/Constant';
+import { CALL_CONVERSION_STATUS_CANCEL, CALL_CONVERSION_STATUS_REQ_WAITING, CALL_STATUS_CONNECTED, CALL_STATUS_ENDED } from '../Helper/Calls/Constant';
 
 let localStream = null,
   localVideoMuted = false,
@@ -182,28 +182,36 @@ const userStatus = res => {
   updatingUserStatusInRemoteStream(res.usersStatus);
 };
 
-const removingRemoteStream = (res) => {
+const removingRemoteStream = res => {
   remoteStream.forEach((item, key) => {
-      if (item.fromJid === res.userJid) {
-          remoteStream.splice(key, 1);
-      }
+    if (item.fromJid === res.userJid) {
+      remoteStream.splice(key, 1);
+    }
   });
-}
+};
 
-const updateCallConnectionStatus = (usersStatus) => {
+const updateCallConnectionStatus = usersStatus => {
   const callConnectionData = callConnectionStoreData();
   let usersLen;
   if (usersStatus.length) {
-      let currentUsers = usersStatus.filter(el => el.status.toLowerCase() !== CALL_STATUS_ENDED);
-      usersLen = currentUsers.length;
+    let currentUsers = usersStatus.filter(
+      el => el.status.toLowerCase() !== CALL_STATUS_ENDED,
+    );
+    usersLen = currentUsers.length;
   }
   let callDetailsObj = {
-      ...callConnectionData,
-      callMode: ((callConnectionData?.groupId && callConnectionData?.groupId !== null && callConnectionData?.groupId !== "") || usersLen > 2) ? "onetomany" : "onetoone"
-  }
-  Store.dispatch(CallConnectionState(callDetailsObj))
+    ...callConnectionData,
+    callMode:
+      (callConnectionData?.groupId &&
+        callConnectionData?.groupId !== null &&
+        callConnectionData?.groupId !== '') ||
+      usersLen > 2
+        ? 'onetomany'
+        : 'onetoone',
+  };
+  Store.dispatch(CallConnectionState(callDetailsObj));
   // encryptAndStoreInLocalStorage("call_connection_status", JSON.stringify(callDetailsObj));
-}
+};
 
 const ended = res => {
   // deleteItemFromLocalStorage('inviteStatus');
@@ -268,7 +276,7 @@ const ended = res => {
 };
 
 const callStatus = res => {
-  console.log(res,"res");
+  console.log(res, 'res');
   if (res.status === 'ringing') {
     ringing(res);
   } else if (res.status === 'connecting') {
@@ -558,30 +566,72 @@ export const callBacks = {
   },
   userTrackListener: (res, check) => {
     if (res.localUser) {
-      let mediaStream = null;
+      if (!res.trackType) {
+        return;
+      }
       localStream = localStream || {};
+      let mediaStream = null;
       if (res.track) {
         mediaStream = new MediaStream();
         mediaStream.addTrack(res.track);
       }
       localStream[res.trackType] = mediaStream;
-      const streamData = Store.getState().streamData;
-      const { data } = streamData;
-      Store.dispatch(
-        setStreamData({
+      const { getState, dispatch } = Store;
+      const showConfrenceData = getState().showConfrenceData;
+      const { data } = showConfrenceData;
+      const usersStatus = res.usersStatus;
+      usersStatus.map(user => {
+        const index = remoteStream.findIndex(
+          item => item.fromJid === user.userJid,
+        );
+        if (index > -1) {
+          remoteStream[index] = {
+            ...remoteStream[index],
+            status: user.status,
+          };
+          remoteVideoMuted[user.userJid] = user.videoMuted;
+          remoteAudioMuted[user.userJid] = user.audioMuted;
+        } else {
+          let streamObject = {
+            id: Date.now(),
+            fromJid: user.userJid,
+            status: user.status,
+          };
+          remoteStream.push(streamObject);
+          remoteVideoMuted[user.userJid] = user.videoMuted;
+          remoteAudioMuted[user.userJid] = user.audioMuted;
+        }
+      });
+      // const roomName = getFromLocalStorageAndDecrypt('roomName');
+      // if (roomName === '' || roomName == null || roomName == undefined) {
+      //   const { roomId = '' } = SDK.getCallInfo();
+      //   console.log('localStorage roomId :>> ', roomId);
+      //   encryptAndStoreInLocalStorage('roomName', roomId);
+      // }
+
+      dispatch(
+        showConfrence({
+          localVideoMuted: localVideoMuted,
           ...(data || {}),
           localStream: localStream,
           remoteStream,
+          localAudioMuted: localAudioMuted,
           status: 'LOCALSTREAM',
         }),
       );
     } else {
+      onCall = true;
+      // encryptAndStoreInLocalStorage('callingComponent', false);
+      const streamType = res.trackType;
       let mediaStream = null;
       if (res.track) {
         mediaStream = new MediaStream();
         mediaStream.addTrack(res.track);
       }
-      const streamType = res.trackType;
+      const streamUniqueId = `stream${
+        streamType.charAt(0).toUpperCase() + streamType.slice(1)
+      }Id`;
+      updatingUserStatusInRemoteStream(res.usersStatus);
       const userIndex = remoteStream.findIndex(
         item => item.fromJid === res.userJid,
       );
@@ -589,26 +639,62 @@ export const callBacks = {
         let { stream } = remoteStream[userIndex];
         stream = stream || {};
         stream[streamType] = mediaStream;
+        stream['id'] = Date.now();
+        stream[streamUniqueId] = Date.now();
         remoteStream[userIndex]['stream'] = stream;
       } else {
         let streamObject = {
+          id: Date.now(),
           fromJid: res.userJid,
+          status: CALL_STATUS_CONNECTED,
           stream: {
+            [streamUniqueId]: Date.now(),
             [streamType]: mediaStream,
           },
         };
         remoteStream.push(streamObject);
       }
-      const streamData = Store.getState().streamData;
-      const { data } = streamData;
+
+      // When remoteStream user length is one, set that user as large video user
+      if (remoteStream.length === 2) {
+        // Store.dispatch(selectLargeVideoUser(res.userJid));
+      } else {
+        remoteStream.forEach(item => {
+          // return Store.dispatch(selectLargeVideoUser(item.userJid));
+        });
+      }
+
+      const { showConfrenceData, callConversionData } = Store.getState();
+      const { data } = showConfrenceData;
       Store.dispatch(
-        setStreamData({
+        showConfrence({
+          showCallingComponent: false,
+          localVideoMuted: localVideoMuted,
           ...(data || {}),
-          localStream,
+          localStream: localStream,
           remoteStream: remoteStream,
-          status: 'RemoteStream',
+          fromJid: res.userJid,
+          status: 'REMOTESTREAM',
+          localAudioMuted: localAudioMuted,
+          remoteVideoMuted: remoteVideoMuted,
+          remoteAudioMuted: remoteAudioMuted,
+          callStatusText: CALL_STATUS_CONNECTED,
         }),
       );
+
+      // Need to hide the call converison request & response screen when more than one remote
+      // users joined in call
+      if (remoteStream.length >= 3) {
+        const status =
+          callConversionData &&
+          callConversionData.status === CALL_CONVERSION_STATUS_REQ_WAITING
+            ? {
+                status: CALL_CONVERSION_STATUS_CANCEL,
+              }
+            : undefined;
+        // Store.dispatch(callConversion(status));
+        status && SDK.callConversion(CALL_CONVERSION_STATUS_CANCEL);
+      }
     }
   },
   mediaErrorListener: res => {

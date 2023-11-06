@@ -25,12 +25,10 @@ export const startMissedCallNotificationTimer = res => {
   }, CALL_RINGING_DURATION + DISCONNECTED_SCREEN_DURATION);
 };
 
-export const callConnectionStoreData = store => {
-  store = store || Store;
-  return store.getState?.().callData || {};
+export const callConnectionStoreData = () => {
+  return Store.getState?.().callData || {};
 };
 
-export const showConfrenceStoreData = store => {
-  store = store || Store;
-  return store.getState?.().showConfrenceData || {};
+export const showConfrenceStoreData = () => {
+  return Store.getState?.().showConfrenceData || {};
 };

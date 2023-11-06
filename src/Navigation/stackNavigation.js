@@ -10,6 +10,7 @@ import {
   CONVERSATION_SCREEN,
   COUNTRYSCREEN,
   FORWARD_MESSSAGE_SCREEN,
+  MEDIA_POST_PRE_VIEW_SCREEN,
   PROFILESCREEN,
   RECENTCHATSCREEN,
   REGISTERSCREEN,
@@ -21,6 +22,7 @@ import ContactScreen from '../screen/ContactScreen';
 import SettingScreen from '../screen/SettingScreen';
 import RNCamera from '../components/RNCamera';
 import ForwardMessage from '../screen/ForwardMessage';
+import PostPreViewPage from '../components/PostPreViewPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +39,9 @@ const ChatScreenStackNavigation = () => {
       </Stack.Screen>
       <Stack.Screen name={FORWARD_MESSSAGE_SCREEN}>
         {prop => <ForwardMessage {...prop} />}
+      </Stack.Screen>
+      <Stack.Screen name={MEDIA_POST_PRE_VIEW_SCREEN}>
+        {prop => <PostPreViewPage {...prop} />}
       </Stack.Screen>
     </Stack.Navigator>
   );

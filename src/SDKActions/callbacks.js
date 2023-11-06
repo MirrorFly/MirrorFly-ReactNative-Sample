@@ -54,9 +54,11 @@ import { clearStreamData, setStreamData } from '../redux/Actions/streamAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import { CallConnectionState } from '../redux/Actions/CallAction';
 
-let localStream = null;
-let remoteStream = [];
+let localStream = null,
+  remoteStream = [],
+  localVideoMuted = false;
 
 export const callBacks = {
   connectionListener: response => {
@@ -245,11 +247,75 @@ export const callBacks = {
     console.log('adminBlockListener = (res) => { }', res);
   },
   incomingCallListener: function (res) {
-    console.log(res, 'incomingCallListener');
-    Store.dispatch(setStatusData(res));
+    console.log(JSON.stringify(res, null, 2), 'incomingCallListener');
+    // web reference code ------------------------
+    // strophe = true;
+    remoteStream = [];
+    localStream = null;
+    let callMode = 'onetoone';
+    if (res.toUsers.length === 1 && res.groupId === null) {
+      res.from = res.toUsers[0];
+      res.to = res.userJid;
+      if (res.callType === 'audio') {
+        localVideoMuted = true;
+      }
+    } else {
+      callMode = 'onetomany';
+      res.from = res.userJid;
+      res.to = res.groupId ? res.groupId : res.userJid;
+      res.userList = res.allUsers.join(',');
+      if (res.callType === 'audio') {
+        localVideoMuted = true;
+      }
+    }
+    res.callMode = callMode;
+    // encryptAndStoreInLocalStorage(
+    //   'call_connection_status',
+    //   JSON.stringify(res),
+    // );
+
+    // TODO: get current room id from callData reducer
+    let roomId = Store.getState();
+
+    if (roomId === '' || roomId === null || roomId === undefined) {
+      resetPinAndLargeVideoUser();
+      // TODO: store the below details in callData reducer
+      // encryptAndStoreInLocalStorage('roomName', res.roomId);
+      // encryptAndStoreInLocalStorage('callType', res.callType);
+      // encryptAndStoreInLocalStorage('callFrom', res.from);
+      if (res.callType === 'audio') {
+        localVideoMuted = true;
+      }
+      Store.dispatch(CallConnectionState(res));
+      // TODO: update the below store data based on new reducer structure
+      // Store.dispatch(
+      //   showConfrence({
+      //     showComponent: false,
+      //     showStreamingComponent: false,
+      //     showCalleComponent: true,
+      //   }),
+      // );
+      updatingUserStatusInRemoteStream(res.usersStatus);
+      browserNotify.sendCallNotification(res);
+      startMissedCallNotificationTimer();
+    } else {
+      SDK.callEngaged();
+    }
+
+    callLogs.insert({
+      callMode: res.callMode,
+      callState: 0,
+      callTime: callLogs.initTime(),
+      callType: res.callType,
+      fromUser: res.from,
+      roomId: res.roomId,
+      userList: res.userList,
+      groupId: res.callMode === 'onetoone' ? '' : res.groupId,
+    });
+    startCallingTimer();
   },
   callStatusListener: function (res) {
-    console.log(res,"ressss");
+    console.log(res, 'ressss');
     if (res.status === 'ended') {
       Store.dispatch(clearStreamData());
       Store.dispatch(clearStatusData());
@@ -313,21 +379,21 @@ export const callBacks = {
   mediaErrorListener: res => {
     console.log(res, 'userProfileListener');
   },
-  callSpeakingListener: res => { },
+  callSpeakingListener: res => {},
   callUsersUpdateListener: res => {
     console.log(res, 'userProfileListener');
   },
   helper: {
-    getDisplayName: () => { },
-    getImageUrl: () => { },
+    getDisplayName: () => {},
+    getImageUrl: () => {},
   },
-  inviteUsersListener: res => { },
-  callUserJoinedListener: function (res) { },
-  callUserLeftListener: function (res) { },
-  missedCallListener: res => { 
-    console.log(res,"missedCallListener");
+  inviteUsersListener: res => {},
+  callUserJoinedListener: function (res) {},
+  callUserLeftListener: function (res) {},
+  missedCallListener: res => {
+    console.log(res, 'missedCallListener');
   },
-  callSwitchListener: function (res) { },
-  muteStatusListener: res => { },
-  adminBlockListener: function (res) { },
+  callSwitchListener: function (res) {},
+  muteStatusListener: res => {},
+  adminBlockListener: function (res) {},
 };

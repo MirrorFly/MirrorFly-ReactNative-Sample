@@ -1,7 +1,8 @@
-import { getLocalUserDetails } from '../Helpers/Chat/User';
+import { getLocalUserDetails } from '../../Helper/Chat/ChatHelper';
 import {
     CALLCONNECTION_STATE_DATA,
     CALL_DURATION_TIMESTAMP,
+    CLOSE_CALL_MODAL,
     CONFRENCE_POPUP_STATUS,
     LARGE_VIDEO_USER,
     PIN_USER,
@@ -193,3 +194,9 @@ export const resetData = () => {
   showVoiceDetect = false;
   pinUserData = {};
 };
+
+export const closeCallModal = () => {
+  return {
+    type: CLOSE_CALL_MODAL
+  }
+}

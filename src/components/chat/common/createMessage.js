@@ -124,7 +124,7 @@ export const updateMsgSeenStatus = async () => {
       const groupId = isGroupChat(message.chatType) ? message.fromUserId : '';
       if (isActiveConversationUserOrGroup(message.fromUserId)) {
         if (
-          !(GROUP_UPDATE_ACTIONS.indexOf(message?.profileUpdatedStatus) > -1)
+          !(GROUP_UPDATE_ACTIONS.indexOf(message?.profileUpdatedStatus) >= 0) //NOSONAR Changed from -1 to 0 due to sonar issue
         ) {
           SDK.sendSeenStatus(
             formatUserIdToJid(fromUserId),

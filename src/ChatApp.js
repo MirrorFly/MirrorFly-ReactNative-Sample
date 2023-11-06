@@ -10,6 +10,7 @@ import {
   StatusBar,
   StyleSheet,
   useColorScheme,
+  Text
 } from 'react-native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { navigationRef } from './Navigation/rootNavigation';
@@ -33,7 +34,6 @@ import { profileDetail } from './redux/Actions/ProfileAction';
 import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction';
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
-import { Text } from 'react-native';
 import { getAppInitialized } from './uikitHelpers/uikitMethods';
 
 LogBox.ignoreAllLogs();

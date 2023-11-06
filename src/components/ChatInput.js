@@ -405,7 +405,7 @@ const ChatInput = props => {
 
               <IconButton
                 containerStyle={styles.audioRecordIconWrapper}
-                // onPress={startRecording}
+                onPress={startRecording}
                 style={styles.audioRecordIcon}>
                 <MicIcon style={isRecording && micStyle} />
               </IconButton>

@@ -25,6 +25,8 @@ import ApplicationColors from '../config/appColors';
 import MessagePressable from '../common/MessagePressable';
 import { isMessageSelectingRef } from './ChatConversation';
 import { useNetworkStatus } from '../hooks';
+import { useNavigation } from '@react-navigation/native';
+import { MEDIA_POST_PRE_VIEW_SCREEN } from '../constant';
 
 const ChatMessage = props => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
@@ -54,7 +56,7 @@ const ChatMessage = props => {
     msgId,
     msgStatus,
   } = message;
-
+  const navigation = useNavigation();
   const imageUrl = local_path || file?.fileDetails?.uri;
   const thumbURL = thumb_image ? getThumbBase64URL(thumb_image) : '';
 
@@ -136,13 +138,13 @@ const ChatMessage = props => {
       if (isKeyboardVisibleRef.current) {
         let hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
           dispatch(singleChatSelectedMediaImage(message));
-          setLocalNav('PostPreView');
+          navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN);
           hideSubscription.remove();
         });
         Keyboard.dismiss();
       } else {
         dispatch(singleChatSelectedMediaImage(message));
-        setLocalNav('PostPreView');
+        navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN);
       }
     } else if (
       message?.msgBody?.message_type === 'file' &&

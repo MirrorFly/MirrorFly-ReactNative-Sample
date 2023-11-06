@@ -10,7 +10,6 @@ import {
   StatusBar,
   StyleSheet,
   useColorScheme,
-  Text, // NOSONAR
 } from 'react-native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { navigationRef } from './Navigation/rootNavigation';
@@ -23,6 +22,7 @@ import {
   CHATSCREEN,
   CONTACTLIST,
   COUNTRYSCREEN,
+  MIRRORFLY_RN,
   PROFILESCREEN,
   RECENTCHATSCREEN,
   REGISTERSCREEN,
@@ -50,7 +50,7 @@ const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
 });
 
 const linking = {
-  prefixes: ['mirrorfly_rn://'], // NOSONAR 
+  prefixes: [MIRRORFLY_RN], //NOSONAR 
   config: {
     screens: {
       [REGISTERSCREEN]: REGISTERSCREEN,

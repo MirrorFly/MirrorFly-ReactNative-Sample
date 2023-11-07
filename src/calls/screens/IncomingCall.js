@@ -7,10 +7,34 @@ import CloseCallModalButton from '../components/CloseCallModalButton';
 import commonStyles from '../../common/commonStyles';
 import ApplicationColors from '../../config/appColors';
 import Avathar from '../../common/Avathar';
-import { RectButton } from 'react-native-gesture-handler';
-import { useDispatch } from 'react-redux';
-import { closeCallModal } from '../../redux/Actions/CallAction';
-import InCallManager from 'react-native-incall-manager';
+import {
+  GestureHandlerRootView,
+  RectButton,
+} from 'react-native-gesture-handler';
+import { batch, useDispatch } from 'react-redux';
+import {
+  clearCallData,
+  closeCallModal,
+  resetConferencePopup,
+  showConfrence,
+} from '../../redux/Actions/CallAction';
+import {
+  clearMissedCallNotificationTimer,
+  dispatchDisconnected,
+  stopIncomingCallRingtone,
+} from '../../Helper/Calls/Call';
+import { resetCallData } from '../../SDKActions/callbacks';
+import {
+  CALL_CONNECTED_SCREEN,
+  CALL_RINGING_DURATION,
+  COMMON_ERROR_MESSAGE,
+  DISCONNECTED_SCREEN_DURATION,
+  PERMISSION_DENIED,
+} from '../../Helper/Calls/Constant';
+import { showToast } from '../../Helper';
+import SDK from '../../SDK/SDK';
+
+let autoCallEndInterval;
 
 const IncomingCall = ({ userId }) => {
   const userProfile = useRosterData(userId);
@@ -20,9 +44,12 @@ const IncomingCall = ({ userId }) => {
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    InCallManager.startRingtone();
+    autoCallEndInterval = setTimeout(() => {
+      endCall();
+    }, CALL_RINGING_DURATION);
     return () => {
-      InCallManager.stopRingtone();
+      clearTimeout(autoCallEndInterval);
+      stopIncomingCallRingtone();
     };
   }, []);
 
@@ -30,9 +57,102 @@ const IncomingCall = ({ userId }) => {
     dispatch(closeCallModal());
   };
 
-  const handleRejectCall = () => {};
+  // when user not attending the call and the timeout has been reached
+  const endCall = async () => {
+    clearTimeout(autoCallEndInterval);
+    console.log('Ending the call from the useEffect timeout');
+    SDK.endCall();
+    dispatchDisconnected();
+    resetCallData();
+    // TODO: update the Call logs when implementing
+    // callLogs.update(callConnectionDate.data.roomId, {
+    //     "endTime": callLogs.initTime(),
+    //     "sessionStatus": CALL_SESSION_STATUS_CLOSED
+    // });
+    setTimeout(() => {
+      // encryptAndStoreInLocalStorage('callingComponent',false)
+      // deleteItemFromLocalStorage('roomName')
+      // deleteItemFromLocalStorage('callType')
+      // deleteItemFromLocalStorage('call_connection_status')
+      // encryptAndStoreInLocalStorage("hideCallScreen", false);
+      batch(() => {
+        dispatch(clearCallData());
+        dispatch(resetConferencePopup());
+      });
+    }, DISCONNECTED_SCREEN_DURATION);
+  };
 
-  const handleAcceptCall = () => {};
+  // when user manually declined the call from the action buttons or swiping to decline the call
+  const declineCall = async () => {
+    clearTimeout(autoCallEndInterval);
+    stopIncomingCallRingtone();
+    clearMissedCallNotificationTimer();
+    let declineCallResponse = await SDK.declineCall();
+    console.log('declineCallResponse', declineCallResponse);
+    if (declineCallResponse.statusCode === 200) {
+      // TODO: update the Call logs when implementing
+      // callLogs.update(callConnectionDate.data.roomId, {
+      //   endTime: callLogs.initTime(),
+      //   sessionStatus: CALL_SESSION_STATUS_CLOSED,
+      // });
+      dispatchDisconnected();
+      setTimeout(() => {
+        // deleteItemFromLocalStorage('roomName');
+        // deleteItemFromLocalStorage('callType');
+        // deleteItemFromLocalStorage('call_connection_status');
+        // encryptAndStoreInLocalStorage('hideCallScreen', false);
+        batch(() => {
+          dispatch(closeCallModal());
+          dispatch(clearCallData());
+          dispatch(resetConferencePopup());
+        });
+        resetCallData();
+      }, DISCONNECTED_SCREEN_DURATION);
+    } else {
+      console.log(
+        'Error occured while rejecting the incoming call',
+        declineCallResponse.errorMessage,
+      );
+    }
+  };
+
+  const acceptCall = async () => {
+    clearTimeout(autoCallEndInterval);
+    stopIncomingCallRingtone();
+    clearMissedCallNotificationTimer();
+    const answerCallResonse = await SDK.answerCall();
+    console.log('answerCallResonse', answerCallResonse);
+    if (answerCallResonse.statusCode !== 200) {
+      if (answerCallResonse.message !== PERMISSION_DENIED) {
+        showToast(COMMON_ERROR_MESSAGE, { id: 'call-answer-error' });
+      }
+      // deleteItemFromLocalStorage('roomName');
+      // deleteItemFromLocalStorage('callType');
+      // deleteItemFromLocalStorage('call_connection_status');
+      // encryptAndStoreInLocalStorage('hideCallScreen', false);
+      // encryptAndStoreInLocalStorage('callingComponent', false);
+      // encryptAndStoreInLocalStorage('hideCallScreen', false);
+      batch(() => {
+        dispatch(clearCallData());
+        dispatch(resetConferencePopup());
+      });
+    } else {
+      // update the call screen Name instead of the below line
+      // encryptAndStoreInLocalStorage('connecting', true);
+      dispatch(
+        showConfrence({
+          // showComponent: true,
+          // showCalleComponent: false,
+          screenName: CALL_CONNECTED_SCREEN,
+        }),
+      );
+      // TODO: update the Call logs when implementing
+      // callLogs.update(callConnectionDate.data.roomId, {
+      //   startTime: callLogs.initTime(),
+      //   callState: 2,
+      // });
+    }
+  };
 
   return (
     <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>
@@ -58,18 +178,18 @@ const IncomingCall = ({ userId }) => {
         </View>
       </View>
       {/* call action buttons (Accept & Reject) */}
-      <View style={styles.actionButtonWrapper}>
+      <GestureHandlerRootView style={styles.actionButtonWrapper}>
         <RectButton
-          onPress={handleRejectCall}
+          onPress={declineCall}
           style={[styles.actionButton, styles.redButton]}>
           <Text style={styles.actionButtonText}>Reject</Text>
         </RectButton>
         <RectButton
-          onPress={handleAcceptCall}
+          onPress={acceptCall}
           style={[styles.actionButton, styles.greenButton]}>
           <Text style={styles.actionButtonText}>Accept</Text>
         </RectButton>
-      </View>
+      </GestureHandlerRootView>
     </ImageBackground>
   );
 };

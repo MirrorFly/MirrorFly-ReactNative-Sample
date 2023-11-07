@@ -1,4 +1,5 @@
 import RNCallKeep from 'react-native-callkeep';
+import InCallManager from 'react-native-incall-manager';
 import SDK from '../../SDK/SDK';
 import { removeRemoteStream, resetCallData } from '../../SDKActions/callbacks';
 import {
@@ -177,4 +178,20 @@ export const closeCallModalWithDelay = () => {
   setTimeout(() => {
     Store.dispatch(closeCallModal());
   }, DISCONNECTED_SCREEN_DURATION);
+};
+
+export const startIncomingCallRingtone = () => {
+  try {
+    InCallManager.startRingtone();
+  } catch (err) {
+    console.log('Error while starting the ringtone sound');
+  }
+};
+
+export const stopIncomingCallRingtone = () => {
+  try {
+    InCallManager.stopRingtone();
+  } catch (err) {
+    console.log('Error while stoping the ringtone sound');
+  }
 };

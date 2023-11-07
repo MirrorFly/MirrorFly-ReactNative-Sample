@@ -1,3 +1,4 @@
+import { INCOMING_CALL_SCREEN } from '../../Helper/Calls/Constant';
 import {
   CONFRENCE_POPUP_STATUS,
   RESET_CONFRENCE_POPUP_STATUS,
@@ -6,7 +7,9 @@ import { getObjectDeepClone } from '../reduxHelper';
 
 const initialState = {
   id: null,
-  data: {},
+  data: {
+    screenName: ''
+  },
 };
 
 const initialStateClone = getObjectDeepClone(initialState);

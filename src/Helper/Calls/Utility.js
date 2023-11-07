@@ -5,17 +5,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { SDK } from '../../SDK';
 import { muteLocalVideo } from '../../SDKActions/callbacks';
 import {
-  CallConnectionState,
+  updateCallConnectionState,
   showConfrence,
   updateCallerUUID,
 } from '../../redux/Actions/CallAction';
 import Store from '../../redux/store';
 import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
 import { getMaxUsersInCall, startCallingTimer } from './Call';
-import {
-  OUTGOING_CALL_SCREEN,
-  PERMISSION_DENIED
-} from './Constant';
+import { OUTGOING_CALL_SCREEN, PERMISSION_DENIED } from './Constant';
 
 export const makeCalls = async (callType, userId) => {
   let userList = [];
@@ -126,7 +123,7 @@ const makeCall = async (
       startCall(uuid, callerId, callerName, hasVideo);
     }
 
-    Store.dispatch(CallConnectionState(callConnectionStatus));
+    Store.dispatch(updateCallConnectionState(callConnectionStatus));
 
     const showConfrenceData = Store.getState().showConfrenceData;
     const { data: confrenceData } = showConfrenceData;
@@ -173,7 +170,7 @@ const makeCall = async (
         //   'call_connection_status',
         //   JSON.stringify(callConnectionStatusNew),
         // );
-        Store.dispatch(CallConnectionState(callConnectionStatusNew));
+        Store.dispatch(updateCallConnectionState(callConnectionStatusNew));
         startCallingTimer();
       }
     } catch (error) {

@@ -263,12 +263,12 @@ const Gallery = (props = {}) => {
     );
   };
 
-  const backHandler = BackHandler.addEventListener(
-    'hardwareBackPress',
-    handleBackBtn,
-  );
-
   React.useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackBtn,
+    );  
+
     fetchGallery();
     return () => {
       backHandler.remove();

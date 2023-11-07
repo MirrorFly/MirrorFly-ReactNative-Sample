@@ -4,6 +4,7 @@ import {
   CLOSE_CALL_MODAL,
   OPEN_CALL_MODAL,
   PIN_USER,
+  UPDATE_CALLER_UUID,
 } from '../Actions/Constants';
 import { getObjectDeepClone } from '../reduxHelper';
 
@@ -28,6 +29,7 @@ const initialState = {
     }
    */
   pinUserData: {},
+  callerUUID: '',
 };
 
 const initialStateClone = getObjectDeepClone(initialState);
@@ -63,7 +65,13 @@ const CallStateReducer = (state = initialStateClone, action = {}) => {
         ...state,
         id: Date.now(),
         pinUserData: action.payload,
-      }
+      };
+    case UPDATE_CALLER_UUID:
+      return {
+        ...state,
+        id: Date.now(),
+        callerUUID: action.payload,
+      };
   }
   return state;
 };

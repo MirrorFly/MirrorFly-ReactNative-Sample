@@ -8,6 +8,7 @@ import {
   OPEN_CALL_MODAL,
   PIN_USER,
   RESET_CONFRENCE_POPUP_STATUS,
+  UPDATE_CALLER_UUID
 } from './Constants';
 
 let volumeLevelsInDBBasedOnUserJid = [];
@@ -35,6 +36,13 @@ export const showConfrence = data => {
 export const resetConferencePopup = () => {
   return {
     type: RESET_CONFRENCE_POPUP_STATUS,
+  };
+};
+
+export const updateCallerUUID = data => {
+  return {
+    type: UPDATE_CALLER_UUID,
+    payload:data,
   };
 };
 

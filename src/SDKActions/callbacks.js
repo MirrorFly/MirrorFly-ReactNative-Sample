@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import nextFrame from 'next-frame';
 import { MediaStream } from 'react-native-webrtc';
+import { batch } from 'react-redux';
 import {
   callConnectionStoreData,
   clearMissedCallNotificationTimer,
@@ -12,6 +13,17 @@ import {
   startCallingTimer,
   startMissedCallNotificationTimer,
 } from '../Helper/Calls/Call';
+import {
+  CALL_CONVERSION_STATUS_CANCEL,
+  CALL_CONVERSION_STATUS_REQ_WAITING,
+  CALL_STATUS_CONNECTED,
+  CALL_STATUS_ENDED,
+  INCOMING_CALL_SCREEN,
+} from '../Helper/Calls/Constant';
+import {
+  formatUserIdToJid,
+  getLocalUserDetails,
+} from '../Helper/Chat/ChatHelper';
 import {
   CONNECTION_STATE_CONNECTING,
   MSG_CLEAR_CHAT,
@@ -38,11 +50,10 @@ import {
 import { REGISTERSCREEN } from '../constant';
 import {
   CallConnectionState,
-  closeCallModal,
   opneCallModal,
   resetConferencePopup,
   resetData,
-  showConfrence,
+  showConfrence
 } from '../redux/Actions/CallAction';
 import {
   ClearChatHistoryAction,
@@ -70,22 +81,9 @@ import {
 } from '../redux/Actions/TypingAction';
 import { deleteChatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAction';
 import { setXmppStatus } from '../redux/Actions/connectionAction';
-import { setStreamData } from '../redux/Actions/streamAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
-import {
-  formatUserIdToJid,
-  getLocalUserDetails,
-} from '../Helper/Chat/ChatHelper';
-import {
-  CALL_CONVERSION_STATUS_CANCEL,
-  CALL_CONVERSION_STATUS_REQ_WAITING,
-  CALL_STATUS_CONNECTED,
-  CALL_STATUS_ENDED,
-  INCOMING_CALL_SCREEN,
-} from '../Helper/Calls/Constant';
-import { batch } from 'react-redux';
 
 let localStream = null,
   localVideoMuted = false,
@@ -293,7 +291,6 @@ const ended = res => {
 };
 
 const callStatus = res => {
-  console.log(res, 'res');
   if (res.status === 'ringing') {
     ringing(res);
   } else if (res.status === 'connecting') {

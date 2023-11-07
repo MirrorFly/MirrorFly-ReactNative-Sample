@@ -7,6 +7,12 @@ import { callBacks } from './src/SDKActions/callbacks';
 import { setAppInitialized } from './src/uikitHelpers/uikitMethods';
 import SDK from './src/SDK/SDK';
 import CallComponent from './src/calls/CallComponent';
+import { setupCallKit } from './src/components/calls/ios';
+
+// Setup ios callkit
+if (Platform.OS === 'ios') {
+  setupCallKit();
+}
 
 function App() {
   const API_URL = 'https://api-uikit-qa.contus.us/api/v1';

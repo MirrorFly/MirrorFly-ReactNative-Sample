@@ -8,6 +8,8 @@ import {
   showConfrence,
 } from '../../redux/Actions/CallAction';
 import { muteLocalVideo } from '../../SDKActions/callbacks';
+import RNCallKeep from 'react-native-callkeep';
+import { v4 as uuidv4 } from 'uuid';
 
 export const makeCalls = async (callType, userId) => {
   let userList = [];
@@ -47,9 +49,9 @@ const makeOne2OneCall = async (callType, usersList) => {
     });
   }
   if (users.length === 1) {
-    makeCall(callMode, callType, users, '');
+    makeCall(callMode, callType, users, usersList, '',);
   } else if (users.length > 1) {
-    makeCall(callMode, callType, users, '');
+    makeCall(callMode, callType, users, usersList, '',);
   } else {
     // if(toast.error.length > 1) {
     //     toast.dismiss();
@@ -62,6 +64,7 @@ const makeCall = async (
   callMode,
   callType,
   groupCallMemberDetails,
+  usersList,
   groupId = null,
 ) => {
   let connectionStatus = await AsyncStorage.getItem('connection_status');
@@ -88,6 +91,8 @@ const makeCall = async (
       }
     }
 
+    const callerName = usersList.map(ele => ele.name).join(',')
+
     let callConnectionStatus = {
       callMode: callMode,
       callStatus: 'CALLING',
@@ -107,7 +112,12 @@ const makeCall = async (
     // encryptAndStoreInLocalStorage('callType', callType)
     // encryptAndStoreInLocalStorage('callingComponent', true)
     // encryptAndStoreInLocalStorage('callFrom', getFromLocalStorageAndDecrypt('loggedInUserJidWithResource'));
+    
+    const hasVideo = callType === "video"
+    startCall(users,callerName,hasVideo);
+
     Store.dispatch(CallConnectionState(callConnectionStatus));
+
     const showConfrenceData = Store.getState().showConfrenceData;
     const { data: confrenceData } = showConfrenceData;
     Store.dispatch(
@@ -181,6 +191,10 @@ const makeCall = async (
   }
 };
 
+const startCall = (uuid,callerId,callerName,hasVideo) => {
+  RNCallKeep.startCall(uuid, callerId, callerName, "generic", true);
+};
+
 const deleteAndDispatchAction = () => {
   // deleteItemFromLocalStorage('roomName')
   // deleteItemFromLocalStorage('callType')
@@ -211,7 +225,7 @@ export const getCallData = async userJid => {
           isDeletedUser: false,
           isFriend: true,
           mobileNumber: profileData.data.mobileNumber,
-          name: profileData.nickName,
+          name: profileData.data.nickName,
           nickName: profileData.data.nickName,
           status: profileData.data.status,
           userColor: '',
@@ -226,8 +240,8 @@ export const getCallData = async userJid => {
           isDeletedUser: false,
           isFriend: true,
           mobileNumber: profileData.data.mobileNumber,
-          name: profileData.nickName,
-          nickName: profileData.nickName,
+          name: profileData.data.nickName,
+          nickName: profileData.data.nickName,
           roster: response,
           userId: profileData.data.userId,
           userJid: jid,

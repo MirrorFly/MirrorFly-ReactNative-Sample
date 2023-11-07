@@ -33,7 +33,6 @@ const ChatMessage = props => {
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
   const {
     message,
-    setLocalNav,
     handleReplyPress,
     shouldHighlightMessage,
     shouldSelectMessage,
@@ -54,7 +53,6 @@ const ChatMessage = props => {
       message_type,
     } = {},
     msgId,
-    msgStatus,
   } = message;
   const navigation = useNavigation();
   const imageUrl = local_path || file?.fileDetails?.uri;
@@ -81,11 +79,12 @@ const ChatMessage = props => {
   };
 
   React.useEffect(() => {
-    if (is_uploading === 0 || is_uploading === 1) {
-      if (isImageMessage()) {
-        saveImage(getThumbBase64URL(thumb_image));
-      }
-    } else if (is_uploading === 3 || is_uploading === 7) {
+    if (
+      is_uploading === 0 ||
+      is_uploading === 1 ||
+      is_uploading === 3 ||
+      is_uploading === 7
+    ) {
       if (isImageMessage()) {
         saveImage(getThumbBase64URL(thumb_image));
       }

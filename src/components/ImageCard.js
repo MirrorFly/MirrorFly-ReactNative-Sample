@@ -100,16 +100,6 @@ const ImageCard = props => {
             msgId={msgId}
             fileSize={fileSize}
           />
-          {/* <ProgressLoader
-            isSender={isSender}
-            imageUrl={imageUrl}
-            media={media}
-            fileSize={fileSize}
-            setUploadStatus={setUploadStatus}
-            msgId={msgId}
-            mediaData={media}
-            uploadStatus={uploadStatus}
-          /> */}
         </View>
         {!media?.caption && (
           <View style={styles.messgeStatusAndTimestampWithoutCaption}>

@@ -1,3 +1,6 @@
+// App Prefix
+export const MIRRORFLY_RN ='mirrorfly_rn://'
+
 // Screen Name
 export const REGISTERSCREEN = 'REGISTERSCREEN';
 export const OTPSCREEN = 'OTPSCREEN';

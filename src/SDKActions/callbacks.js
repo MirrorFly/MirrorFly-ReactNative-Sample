@@ -4,8 +4,12 @@ import { MediaStream } from 'react-native-webrtc';
 import {
   callConnectionStoreData,
   clearMissedCallNotificationTimer,
+  closeCallModalWithDelay,
   dispatchDisconnected,
+  getCurrentCallRoomId,
+  resetPinAndLargeVideoUser,
   showConfrenceStoreData,
+  startCallingTimer,
   startMissedCallNotificationTimer,
 } from '../Helper/Calls/Call';
 import {
@@ -34,6 +38,8 @@ import {
 import { REGISTERSCREEN } from '../constant';
 import {
   CallConnectionState,
+  closeCallModal,
+  opneCallModal,
   resetConferencePopup,
   resetData,
   showConfrence,
@@ -72,7 +78,14 @@ import {
   formatUserIdToJid,
   getLocalUserDetails,
 } from '../Helper/Chat/ChatHelper';
-import { CALL_CONVERSION_STATUS_CANCEL, CALL_CONVERSION_STATUS_REQ_WAITING, CALL_STATUS_CONNECTED, CALL_STATUS_ENDED } from '../Helper/Calls/Constant';
+import {
+  CALL_CONVERSION_STATUS_CANCEL,
+  CALL_CONVERSION_STATUS_REQ_WAITING,
+  CALL_STATUS_CONNECTED,
+  CALL_STATUS_ENDED,
+  INCOMING_CALL_SCREEN,
+} from '../Helper/Calls/Constant';
+import { batch } from 'react-redux';
 
 let localStream = null,
   localVideoMuted = false,
@@ -117,6 +130,14 @@ export const muteLocalAudio = isMuted => {
   let currentUser = vcardData?.fromUser;
   currentUser = formatUserIdToJid(currentUser);
   remoteAudioMuted[currentUser] = isMuted;
+};
+
+export const removeRemoteStream = userJid => {
+  remoteStream.forEach((item, key) => {
+    if (item.fromJid === userJid) {
+      remoteStream.splice(key, 1);
+    }
+  });
 };
 
 const updatingUserStatusInRemoteStream = usersStatus => {
@@ -230,18 +251,14 @@ const ended = res => {
     if (callConnectionData) {
       clearMissedCallNotificationTimer();
     }
-    localstoreCommon();
-    Store.dispatch(
-      showConfrence({
-        showComponent: false,
-        showStreamingComponent: false,
-        showCalleComponent: false,
-        callStatusText: null,
-      }),
-    );
-    // Store.dispatch(callConversion());
-    // Store.dispatch(hideModal());
-    Store.dispatch(CallConnectionState(res));
+    batch(() => {
+      // localstoreCommon();
+      Store.dispatch(resetConferencePopup());
+      // Store.dispatch(callConversion());
+      // Store.dispatch(hideModal());
+      Store.dispatch(CallConnectionState(res));
+    });
+    closeCallModalWithDelay();
     if (callConnectionData) {
       const callDetailObj = callConnectionData
         ? {
@@ -511,13 +528,13 @@ export const callBacks = {
       }
     }
     res.callMode = callMode;
+    // -------- Storing the below data in store instead
     // encryptAndStoreInLocalStorage(
     //   'call_connection_status',
     //   JSON.stringify(res),
     // );
 
-    // TODO: get current room id from callData reducer
-    let roomId = Store.getState();
+    let roomId = getCurrentCallRoomId();
 
     if (roomId === '' || roomId === null || roomId === undefined) {
       resetPinAndLargeVideoUser();
@@ -528,15 +545,19 @@ export const callBacks = {
       if (res.callType === 'audio') {
         localVideoMuted = true;
       }
-      Store.dispatch(CallConnectionState(res));
+      batch(() => {
+        Store.dispatch(CallConnectionState(res));
+        Store.dispatch(opneCallModal());
+      });
       // TODO: update the below store data based on new reducer structure
-      // Store.dispatch(
-      //   showConfrence({
-      //     showComponent: false,
-      //     showStreamingComponent: false,
-      //     showCalleComponent: true,
-      //   }),
-      // );
+      Store.dispatch(
+        showConfrence({
+          // showComponent: false,
+          // showStreamingComponent: false,
+          // showCalleComponent: true,
+          screenName: INCOMING_CALL_SCREEN,
+        }),
+      );
       updatingUserStatusInRemoteStream(res.usersStatus);
       // TODO: show call local notification
       // browserNotify.sendCallNotification(res);
@@ -545,16 +566,16 @@ export const callBacks = {
       SDK.callEngaged();
     }
 
-    callLogs.insert({
-      callMode: res.callMode,
-      callState: 0,
-      callTime: callLogs.initTime(),
-      callType: res.callType,
-      fromUser: res.from,
-      roomId: res.roomId,
-      userList: res.userList,
-      groupId: res.callMode === 'onetoone' ? '' : res.groupId,
-    });
+    // callLogs.insert({
+    //   callMode: res.callMode,
+    //   callState: 0,
+    //   callTime: callLogs.initTime(),
+    //   callType: res.callType,
+    //   fromUser: res.from,
+    //   roomId: res.roomId,
+    //   userList: res.userList,
+    //   groupId: res.callMode === 'onetoone' ? '' : res.groupId,
+    // });
     startCallingTimer();
   },
   callStatusListener: function (res) {

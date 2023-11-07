@@ -12,15 +12,17 @@ const initialState = {
 const initialStateClone = getObjectDeepClone(initialState);
 
 const showConfrenceReducer = (state = initialStateClone, action = {}) => {
-  if (action.type === CONFRENCE_POPUP_STATUS) {
-    return {
-      id: Date.now(),
-      data: action.payload,
-    };
-  } else if (action.type === RESET_CONFRENCE_POPUP_STATUS) {
-    return getObjectDeepClone(initialState);
+  switch (action.type) {
+    case CONFRENCE_POPUP_STATUS:
+      return {
+        id: Date.now(),
+        data: action.payload,
+      };
+    case RESET_CONFRENCE_POPUP_STATUS:
+      return getObjectDeepClone(initialState);
+    default:
+      return state;
   }
-  return state;
 };
 
 export default showConfrenceReducer;

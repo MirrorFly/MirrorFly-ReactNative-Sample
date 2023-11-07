@@ -1,12 +1,13 @@
 import { getLocalUserDetails } from '../../Helper/Chat/ChatHelper';
 import {
-    CALLCONNECTION_STATE_DATA,
-    CALL_DURATION_TIMESTAMP,
-    CLOSE_CALL_MODAL,
-    CONFRENCE_POPUP_STATUS,
-    LARGE_VIDEO_USER,
-    PIN_USER,
-    RESET_CONFRENCE_POPUP_STATUS
+  CALLCONNECTION_STATE_DATA,
+  CALL_DURATION_TIMESTAMP,
+  CLOSE_CALL_MODAL,
+  CONFRENCE_POPUP_STATUS,
+  LARGE_VIDEO_USER,
+  OPEN_CALL_MODAL,
+  PIN_USER,
+  RESET_CONFRENCE_POPUP_STATUS,
 } from './Constants';
 
 let volumeLevelsInDBBasedOnUserJid = [];
@@ -20,14 +21,14 @@ let pinUserData = {};
 export const CallConnectionState = data => {
   return {
     type: CALLCONNECTION_STATE_DATA,
-    payload: data
+    payload: data,
   };
 };
 
 export const showConfrence = data => {
   return {
     type: CONFRENCE_POPUP_STATUS,
-    payload: data
+    payload: data,
   };
 };
 
@@ -40,7 +41,7 @@ export const resetConferencePopup = () => {
 export const pinUser = userJid => {
   return (dispatch, getState) => {
     const state = getState();
-    pinUserData = state.pinUserData;
+    pinUserData = state.callData?.pinUserData || {};
     userJid = userJid && pinUserData.userJid !== userJid ? userJid : null;
 
     dispatch({
@@ -195,8 +196,14 @@ export const resetData = () => {
   pinUserData = {};
 };
 
+export const opneCallModal = () => {
+  return {
+    type: OPEN_CALL_MODAL,
+  };
+};
+
 export const closeCallModal = () => {
   return {
-    type: CLOSE_CALL_MODAL
-  }
-}
+    type: CLOSE_CALL_MODAL,
+  };
+};

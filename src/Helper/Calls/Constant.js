@@ -38,3 +38,8 @@ export const COMMON_ERROR_MESSAGE = "Something went wrong. Please try again.";
 export const PERMISSION_DENIED = "Permission denied";
 export const LARGE_VIDEO_USER = "LARGE_VIDEO_USER";
 
+// CALL SCREEN NAMES
+export const INCOMING_CALL_SCREEN = 'INCOMING_CALL_SCREEN';
+export const MAKE_CALL_SCREEN = 'MAKE_CALL_SCREEN';
+export const CALL_CONNECTED_SCREEN = 'CALL_CONNECTED_SCREEN';
+export const CALL_AGAIN_SCREEN = 'CALL_AGAIN_SCREEN';

@@ -10,17 +10,25 @@ import Avathar from '../../common/Avathar';
 import { RectButton } from 'react-native-gesture-handler';
 import { useDispatch } from 'react-redux';
 import { closeCallModal } from '../../redux/Actions/CallAction';
+import InCallManager from 'react-native-incall-manager';
 
 const IncomingCall = ({ userId }) => {
-  const userData = useRosterData(userId);
-  const nickName = userData.nickName || userData.userId;
+  const userProfile = useRosterData(userId);
+  const nickName = userProfile.nickName || userProfile.userId;
   const callStatus = 'Incoming audio call';
 
   const dispatch = useDispatch();
 
+  React.useEffect(() => {
+    InCallManager.startRingtone();
+    return () => {
+      InCallManager.stopRingtone();
+    };
+  }, []);
+
   const handleClosePress = () => {
     dispatch(closeCallModal());
-  }
+  };
 
   const handleRejectCall = () => {};
 
@@ -42,19 +50,23 @@ const IncomingCall = ({ userId }) => {
             <Avathar
               width={90}
               height={90}
-              backgroundColor={userData.colorCode}
+              backgroundColor={userProfile.colorCode}
               data={nickName}
-              profileImage={userData.image}
+              profileImage={userProfile.image}
             />
           </View>
         </View>
       </View>
       {/* call action buttons (Accept & Reject) */}
       <View style={styles.actionButtonWrapper}>
-        <RectButton onPress={handleRejectCall} style={[styles.actionButton, styles.redButton]}>
+        <RectButton
+          onPress={handleRejectCall}
+          style={[styles.actionButton, styles.redButton]}>
           <Text style={styles.actionButtonText}>Reject</Text>
         </RectButton>
-        <RectButton onPress={handleAcceptCall} style={[styles.actionButton, styles.greenButton]}>
+        <RectButton
+          onPress={handleAcceptCall}
+          style={[styles.actionButton, styles.greenButton]}>
           <Text style={styles.actionButtonText}>Accept</Text>
         </RectButton>
       </View>
@@ -108,10 +120,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   greenButton: {
-    backgroundColor: '#4DDB64'
+    backgroundColor: '#4DDB64',
   },
   redButton: {
-    backgroundColor: '#FB2B48'
+    backgroundColor: '#FB2B48',
   },
   actionButtonText: {
     color: ApplicationColors.white,

@@ -48,7 +48,7 @@ export const clearOldCallingTimer = () => {
 export const disconnectCallConnection = (remoteStreams = []) => {
   const callConnectionData = callConnectionStoreData();
   SDK.endCall();
-  let callerUUID = Store.getState().callData.callerUUID
+  let callerUUID = Store.getState().callData.callerUUID;
   RNCallKeep.endCall(callerUUID);
   dispatchDisconnected(CALL_STATUS_DISCONNECTED, remoteStreams);
   // TODO: update the callLogs when implementing the feature

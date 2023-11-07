@@ -51,12 +51,14 @@ import {
 } from '../components/chat/common/createMessage';
 import { REGISTERSCREEN } from '../constant';
 import {
+  clearCallData,
   closeCallModal,
   opneCallModal,
   resetConferencePopup,
   resetData,
   showConfrence,
   updateCallConnectionState,
+  updateCallerUUID,
 } from '../redux/Actions/CallAction';
 import {
   ClearChatHistoryAction,
@@ -87,6 +89,8 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import { Platform } from 'react-native';
+import { displayIncomingCallForIos } from '../Helper/Calls/Utility';
 
 let localStream = null,
   localVideoMuted = false,
@@ -111,6 +115,7 @@ export const resetCallData = () => {
   // }
   // Store.dispatch(callDurationTimestamp());
   Store.dispatch(resetConferencePopup());
+  Store.dispatch(clearCallData());
   resetData();
   // setTimeout(() => {
   //   Store.dispatch(isMuteAudioAction(false));
@@ -548,10 +553,16 @@ export const callBacks = {
       if (res.callType === 'audio') {
         localVideoMuted = true;
       }
+      const callUUID = Date.now();
       batch(() => {
         Store.dispatch(updateCallConnectionState(res));
-        Store.dispatch(opneCallModal());
+        Store.dispatch(updateCallerUUID(callUUID));
       });
+      if (Platform.OS === 'android') {
+        Store.dispatch(opneCallModal());
+      } else {
+        displayIncomingCallForIos(res, callUUID)
+      }
       startIncomingCallRingtone();
       // TODO: update the below store data based on new reducer structure
       Store.dispatch(

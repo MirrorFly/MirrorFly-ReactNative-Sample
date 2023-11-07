@@ -16,7 +16,6 @@ import {
   clearCallData,
   closeCallModal,
   resetConferencePopup,
-  showConfrence,
 } from '../../redux/Actions/CallAction';
 import {
   clearMissedCallNotificationTimer,
@@ -25,14 +24,14 @@ import {
 } from '../../Helper/Calls/Call';
 import { resetCallData } from '../../SDKActions/callbacks';
 import {
-  CALL_CONNECTED_SCREEN,
   CALL_RINGING_DURATION,
-  COMMON_ERROR_MESSAGE,
   DISCONNECTED_SCREEN_DURATION,
-  PERMISSION_DENIED,
 } from '../../Helper/Calls/Constant';
-import { showToast } from '../../Helper';
 import SDK from '../../SDK/SDK';
+import {
+  answerIncomingCall,
+  declineIncomingCall,
+} from '../../Helper/Calls/Utility';
 
 let autoCallEndInterval;
 
@@ -85,73 +84,12 @@ const IncomingCall = ({ userId }) => {
   // when user manually declined the call from the action buttons or swiping to decline the call
   const declineCall = async () => {
     clearTimeout(autoCallEndInterval);
-    stopIncomingCallRingtone();
-    clearMissedCallNotificationTimer();
-    let declineCallResponse = await SDK.declineCall();
-    console.log('declineCallResponse', declineCallResponse);
-    if (declineCallResponse.statusCode === 200) {
-      // TODO: update the Call logs when implementing
-      // callLogs.update(callConnectionDate.data.roomId, {
-      //   endTime: callLogs.initTime(),
-      //   sessionStatus: CALL_SESSION_STATUS_CLOSED,
-      // });
-      dispatchDisconnected();
-      setTimeout(() => {
-        // deleteItemFromLocalStorage('roomName');
-        // deleteItemFromLocalStorage('callType');
-        // deleteItemFromLocalStorage('call_connection_status');
-        // encryptAndStoreInLocalStorage('hideCallScreen', false);
-        batch(() => {
-          dispatch(closeCallModal());
-          dispatch(clearCallData());
-          dispatch(resetConferencePopup());
-        });
-        resetCallData();
-      }, DISCONNECTED_SCREEN_DURATION);
-    } else {
-      console.log(
-        'Error occured while rejecting the incoming call',
-        declineCallResponse.errorMessage,
-      );
-    }
+    declineIncomingCall();
   };
 
   const acceptCall = async () => {
     clearTimeout(autoCallEndInterval);
-    stopIncomingCallRingtone();
-    clearMissedCallNotificationTimer();
-    const answerCallResonse = await SDK.answerCall();
-    console.log('answerCallResonse', answerCallResonse);
-    if (answerCallResonse.statusCode !== 200) {
-      if (answerCallResonse.message !== PERMISSION_DENIED) {
-        showToast(COMMON_ERROR_MESSAGE, { id: 'call-answer-error' });
-      }
-      // deleteItemFromLocalStorage('roomName');
-      // deleteItemFromLocalStorage('callType');
-      // deleteItemFromLocalStorage('call_connection_status');
-      // encryptAndStoreInLocalStorage('hideCallScreen', false);
-      // encryptAndStoreInLocalStorage('callingComponent', false);
-      // encryptAndStoreInLocalStorage('hideCallScreen', false);
-      batch(() => {
-        dispatch(clearCallData());
-        dispatch(resetConferencePopup());
-      });
-    } else {
-      // update the call screen Name instead of the below line
-      // encryptAndStoreInLocalStorage('connecting', true);
-      dispatch(
-        showConfrence({
-          // showComponent: true,
-          // showCalleComponent: false,
-          screenName: CALL_CONNECTED_SCREEN,
-        }),
-      );
-      // TODO: update the Call logs when implementing
-      // callLogs.update(callConnectionDate.data.roomId, {
-      //   startTime: callLogs.initTime(),
-      //   callState: 2,
-      // });
-    }
+    answerIncomingCall();
   };
 
   return (

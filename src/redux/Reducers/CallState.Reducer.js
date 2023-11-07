@@ -1,9 +1,11 @@
 import { LARGE_VIDEO_USER } from '../../Helper/Calls/Constant';
 import {
   CALLCONNECTION_STATE_DATA,
+  CLEAR_CALL_DATA,
   CLOSE_CALL_MODAL,
   OPEN_CALL_MODAL,
   PIN_USER,
+  RESET_STORE,
 } from '../Actions/Constants';
 import { getObjectDeepClone } from '../reduxHelper';
 
@@ -63,7 +65,10 @@ const CallStateReducer = (state = initialStateClone, action = {}) => {
         ...state,
         id: Date.now(),
         pinUserData: action.payload,
-      }
+      };
+    case CLEAR_CALL_DATA:
+    case RESET_STORE:
+      return getObjectDeepClone(initialState);
   }
   return state;
 };

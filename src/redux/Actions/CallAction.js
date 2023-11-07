@@ -2,6 +2,7 @@ import { getLocalUserDetails } from '../../Helper/Chat/ChatHelper';
 import {
   CALLCONNECTION_STATE_DATA,
   CALL_DURATION_TIMESTAMP,
+  CLEAR_CALL_DATA,
   CLOSE_CALL_MODAL,
   CONFRENCE_POPUP_STATUS,
   LARGE_VIDEO_USER,
@@ -18,10 +19,16 @@ let largeUserJid = null;
 let showVoiceDetect = false;
 let pinUserData = {};
 
-export const CallConnectionState = data => {
+export const updateCallConnectionState = data => {
   return {
     type: CALLCONNECTION_STATE_DATA,
     payload: data,
+  };
+};
+
+export const clearCallData = () => {
+  return {
+    type: CLEAR_CALL_DATA,
   };
 };
 

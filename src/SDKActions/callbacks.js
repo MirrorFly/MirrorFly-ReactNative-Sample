@@ -4,13 +4,14 @@ import { MediaStream } from 'react-native-webrtc';
 import {
   callConnectionStoreData,
   clearMissedCallNotificationTimer,
-  closeCallModalWithDelay,
   dispatchDisconnected,
   getCurrentCallRoomId,
   resetPinAndLargeVideoUser,
   showConfrenceStoreData,
   startCallingTimer,
+  startIncomingCallRingtone,
   startMissedCallNotificationTimer,
+  stopIncomingCallRingtone,
 } from '../Helper/Calls/Call';
 import {
   CONNECTION_STATE_CONNECTING,
@@ -37,7 +38,7 @@ import {
 } from '../components/chat/common/createMessage';
 import { REGISTERSCREEN } from '../constant';
 import {
-  CallConnectionState,
+  updateCallConnectionState,
   closeCallModal,
   opneCallModal,
   resetConferencePopup,
@@ -83,6 +84,7 @@ import {
   CALL_CONVERSION_STATUS_REQ_WAITING,
   CALL_STATUS_CONNECTED,
   CALL_STATUS_ENDED,
+  DISCONNECTED_SCREEN_DURATION,
   INCOMING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
 import { batch } from 'react-redux';
@@ -230,11 +232,12 @@ const updateCallConnectionStatus = usersStatus => {
         ? 'onetomany'
         : 'onetoone',
   };
-  Store.dispatch(CallConnectionState(callDetailsObj));
+  Store.dispatch(updateCallConnectionState(callDetailsObj));
   // encryptAndStoreInLocalStorage("call_connection_status", JSON.stringify(callDetailsObj));
 };
 
 const ended = res => {
+  stopIncomingCallRingtone();
   // deleteItemFromLocalStorage('inviteStatus');
   // let roomId = getFromLocalStorageAndDecrypt('roomName');
   if (res.sessionStatus === 'closed') {
@@ -251,14 +254,16 @@ const ended = res => {
     if (callConnectionData) {
       clearMissedCallNotificationTimer();
     }
-    batch(() => {
-      // localstoreCommon();
-      Store.dispatch(resetConferencePopup());
-      // Store.dispatch(callConversion());
-      // Store.dispatch(hideModal());
-      Store.dispatch(CallConnectionState(res));
-    });
-    closeCallModalWithDelay();
+    Store.dispatch(updateCallConnectionState(res));
+    setTimeout(() => {
+      batch(() => {
+        // localstoreCommon();
+        // Store.dispatch(callConversion());
+        // Store.dispatch(hideModal());
+        Store.dispatch(resetConferencePopup());
+        Store.dispatch(closeCallModal());
+      });
+    }, DISCONNECTED_SCREEN_DURATION);
     if (callConnectionData) {
       const callDetailObj = callConnectionData
         ? {
@@ -546,9 +551,10 @@ export const callBacks = {
         localVideoMuted = true;
       }
       batch(() => {
-        Store.dispatch(CallConnectionState(res));
+        Store.dispatch(updateCallConnectionState(res));
         Store.dispatch(opneCallModal());
       });
+      startIncomingCallRingtone();
       // TODO: update the below store data based on new reducer structure
       Store.dispatch(
         showConfrence({

@@ -4,7 +4,7 @@ import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
 import { getMaxUsersInCall } from './Call';
 import Store from '../../redux/store';
 import {
-  CallConnectionState,
+  updateCallConnectionState,
   showConfrence,
 } from '../../redux/Actions/CallAction';
 import { muteLocalVideo } from '../../SDKActions/callbacks';
@@ -116,7 +116,7 @@ const makeCall = async (
     const hasVideo = callType === "video"
     startCall(users,callerName,hasVideo);
 
-    Store.dispatch(CallConnectionState(callConnectionStatus));
+    Store.dispatch(updateCallConnectionState(callConnectionStatus));
 
     const showConfrenceData = Store.getState().showConfrenceData;
     const { data: confrenceData } = showConfrenceData;
@@ -162,7 +162,7 @@ const makeCall = async (
         //   'call_connection_status',
         //   JSON.stringify(callConnectionStatusNew),
         // );
-        Store.dispatch(CallConnectionState(callConnectionStatusNew));
+        Store.dispatch(updateCallConnectionState(callConnectionStatusNew));
         // startCallingTimer();
       }
     } catch (error) {

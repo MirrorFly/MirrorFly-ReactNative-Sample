@@ -1,15 +1,21 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
+import RNCallKeep from 'react-native-callkeep';
+import { v4 as uuidv4 } from 'uuid';
 import { SDK } from '../../SDK';
-import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
-import { getMaxUsersInCall } from './Call';
-import Store from '../../redux/store';
+import { muteLocalVideo } from '../../SDKActions/callbacks';
 import {
   updateCallConnectionState,
   showConfrence,
+  updateCallerUUID,
 } from '../../redux/Actions/CallAction';
-import { muteLocalVideo } from '../../SDKActions/callbacks';
-import RNCallKeep from 'react-native-callkeep';
-import { v4 as uuidv4 } from 'uuid';
+import Store from '../../redux/store';
+import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
+import { getMaxUsersInCall, startCallingTimer } from './Call';
+import {
+  OUTGOING_CALL_SCREEN,
+  PERMISSION_DENIED
+} from './Constant';
 
 export const makeCalls = async (callType, userId) => {
   let userList = [];
@@ -49,9 +55,9 @@ const makeOne2OneCall = async (callType, usersList) => {
     });
   }
   if (users.length === 1) {
-    makeCall(callMode, callType, users, usersList, '',);
+    makeCall(callMode, callType, users, usersList, '');
   } else if (users.length > 1) {
-    makeCall(callMode, callType, users, usersList, '',);
+    makeCall(callMode, callType, users, usersList, '');
   } else {
     // if(toast.error.length > 1) {
     //     toast.dismiss();
@@ -91,8 +97,6 @@ const makeCall = async (
       }
     }
 
-    const callerName = usersList.map(ele => ele.name).join(',')
-
     let callConnectionStatus = {
       callMode: callMode,
       callStatus: 'CALLING',
@@ -112,9 +116,15 @@ const makeCall = async (
     // encryptAndStoreInLocalStorage('callType', callType)
     // encryptAndStoreInLocalStorage('callingComponent', true)
     // encryptAndStoreInLocalStorage('callFrom', getFromLocalStorageAndDecrypt('loggedInUserJidWithResource'));
-    
-    const hasVideo = callType === "video"
-    startCall(users,callerName,hasVideo);
+
+    if (Platform.OS === 'ios') {
+      const callerName = usersList.map(ele => ele.name).join(',');
+      const hasVideo = callType === 'video';
+      let uuid = uuidv4();
+      let callerId = users.join(',')?.split?.('@')?.[0];
+      Store.dispatch(updateCallerUUID(uuid));
+      startCall(uuid, callerId, callerName, hasVideo);
+    }
 
     Store.dispatch(updateCallConnectionState(callConnectionStatus));
 
@@ -125,7 +135,8 @@ const makeCall = async (
         localStream: confrenceData?.localStream,
         localVideoMuted: confrenceData?.localVideoMuted,
         localAudioMuted: confrenceData?.localAudioMuted,
-        showComponent: true,
+        // showComponent: true,
+        screenName: OUTGOING_CALL_SCREEN,
         callStatusText: 'Calling',
       }),
     );
@@ -163,7 +174,7 @@ const makeCall = async (
         //   JSON.stringify(callConnectionStatusNew),
         // );
         Store.dispatch(updateCallConnectionState(callConnectionStatusNew));
-        // startCallingTimer();
+        startCallingTimer();
       }
     } catch (error) {
       console.log('Error in making call', error);
@@ -191,8 +202,8 @@ const makeCall = async (
   }
 };
 
-const startCall = (uuid,callerId,callerName,hasVideo) => {
-  RNCallKeep.startCall(uuid, callerId, callerName, "generic", true);
+const startCall = (uuid, callerId, callerName, hasVideo) => {
+  RNCallKeep.startCall(uuid, callerId, callerName, 'generic', hasVideo);
 };
 
 const deleteAndDispatchAction = () => {

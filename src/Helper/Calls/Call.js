@@ -1,4 +1,5 @@
 import InCallManager from 'react-native-incall-manager';
+import SDK from '../../SDK/SDK';
 import { removeRemoteStream, resetCallData } from '../../SDKActions/callbacks';
 import {
   closeCallModal,
@@ -53,7 +54,7 @@ export const disconnectCallConnection = (remoteStreams = []) => {
   // 		"sessionStatus": CALL_SESSION_STATUS_CLOSED
   // });
   // TODO: getFromLocalStorageAndDecrypt("isNewCallExist") verify
-  const _isNewCallExist = /* getFromLocalStorageAndDecrypt("isNewCallExist") */ true;
+  const _isNewCallExist = /* getFromLocalStorageAndDecrypt("isNewCallExist") */ false;
   let timeOut = _isNewCallExist === true ? 0 : DISCONNECTED_SCREEN_DURATION;
   setTimeout(() => {
     // encryptAndStoreInLocalStorage('callingComponent', false)

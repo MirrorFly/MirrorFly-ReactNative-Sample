@@ -3,17 +3,34 @@ import { Platform } from 'react-native';
 import RNCallKeep from 'react-native-callkeep';
 import { v4 as uuidv4 } from 'uuid';
 import { SDK } from '../../SDK';
-import { muteLocalVideo } from '../../SDKActions/callbacks';
+import { muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
 import {
   openCallModal,
   showConfrence,
   updateCallConnectionState,
   updateCallerUUID,
+  clearCallData,
+  resetConferencePopup,
+  closeCallModal,
 } from '../../redux/Actions/CallAction';
 import Store from '../../redux/store';
 import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
-import { getMaxUsersInCall, startCallingTimer } from './Call';
-import { OUTGOING_CALL_SCREEN, PERMISSION_DENIED } from './Constant';
+import {
+  clearMissedCallNotificationTimer,
+  dispatchDisconnected,
+  getMaxUsersInCall,
+  startCallingTimer,
+  stopIncomingCallRingtone,
+} from './Call';
+import {
+  CALL_CONNECTED_SCREEN,
+  COMMON_ERROR_MESSAGE,
+  DISCONNECTED_SCREEN_DURATION,
+  OUTGOING_CALL_SCREEN,
+  PERMISSION_DENIED,
+} from './Constant';
+import { getUserIdFromJid } from '../Chat/Utility';
+import { batch } from 'react-redux';
 
 export const makeCalls = async (callType, userId) => {
   let userList = [];
@@ -203,6 +220,105 @@ const makeCall = async (
 
 const startCall = (uuid, callerId, callerName, hasVideo) => {
   RNCallKeep.startCall(uuid, callerId, callerName, 'generic', hasVideo);
+};
+
+export const answerIncomingCall = async () => {
+  stopIncomingCallRingtone();
+  clearMissedCallNotificationTimer();
+  const answerCallResonse = await SDK.answerCall();
+  console.log('answerCallResonse', answerCallResonse);
+  if (answerCallResonse.statusCode !== 200) {
+    if (answerCallResonse.message !== PERMISSION_DENIED) {
+      showToast(COMMON_ERROR_MESSAGE, { id: 'call-answer-error' });
+    }
+    // deleteItemFromLocalStorage('roomName');
+    // deleteItemFromLocalStorage('callType');
+    // deleteItemFromLocalStorage('call_connection_status');
+    // encryptAndStoreInLocalStorage('hideCallScreen', false);
+    // encryptAndStoreInLocalStorage('callingComponent', false);
+    // encryptAndStoreInLocalStorage('hideCallScreen', false);
+    batch(() => {
+      Store.dispatch(clearCallData());
+      Store.dispatch(resetConferencePopup());
+    });
+  } else {
+    // update the call screen Name instead of the below line
+    // encryptAndStoreInLocalStorage('connecting', true);
+    Store.dispatch(
+      showConfrence({
+        // showComponent: true,
+        // showCalleComponent: false,
+        screenName: CALL_CONNECTED_SCREEN,
+      }),
+    );
+    // TODO: update the Call logs when implementing
+    // callLogs.update(callConnectionDate.data.roomId, {
+    //   startTime: callLogs.initTime(),
+    //   callState: 2,
+    // });
+  }
+};
+
+export const declineIncomingCall = async () => {
+  stopIncomingCallRingtone();
+  clearMissedCallNotificationTimer();
+  let declineCallResponse = await SDK.declineCall();
+  console.log('declineCallResponse', declineCallResponse);
+  if (declineCallResponse.statusCode === 200) {
+    // TODO: update the Call logs when implementing
+    // callLogs.update(callConnectionDate.data.roomId, {
+    //   endTime: callLogs.initTime(),
+    //   sessionStatus: CALL_SESSION_STATUS_CLOSED,
+    // });
+    dispatchDisconnected();
+    setTimeout(() => {
+      // deleteItemFromLocalStorage('roomName');
+      // deleteItemFromLocalStorage('callType');
+      // deleteItemFromLocalStorage('call_connection_status');
+      // encryptAndStoreInLocalStorage('hideCallScreen', false);
+      batch(() => {
+        Store.dispatch(closeCallModal());
+        Store.dispatch(clearCallData());
+        Store.dispatch(resetConferencePopup());
+      });
+      resetCallData();
+    }, DISCONNECTED_SCREEN_DURATION);
+  } else {
+    console.log(
+      'Error occured while rejecting the incoming call',
+      declineCallResponse.errorMessage,
+    );
+  }
+};
+
+const handleIncoming_CallKeepListeners = () => {
+  RNCallKeep.addEventListener('answerCall', async ({ callUUID }) => {
+    console.log('callUUID from Call Keep answer call event', callUUID);
+    answerIncomingCall();
+  });
+  RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
+    console.log('callUUID from Call Keep end call event', callUUID);
+    declineIncomingCall();
+  });
+};
+
+export const displayIncomingCallForIos = (callResponse, uuid) => {
+  console.log('callResponse', JSON.stringify(callResponse, null, 2));
+  const callingUserData = callResponse.usersStatus?.find(
+    u => u.userJid === callResponse.userJid && u.localUser === false,
+  );
+  if (callingUserData) {
+    const contactNumber = getUserIdFromJid(callResponse.userJid);
+    const contactName = callingUserData.userDetails?.displayName || '';
+    handleIncoming_CallKeepListeners();
+    RNCallKeep.displayIncomingCall(
+      uuid,
+      contactNumber,
+      contactName,
+      'generic',
+      callResponse.callType === 'video',
+    );
+  }
 };
 
 const deleteAndDispatchAction = () => {

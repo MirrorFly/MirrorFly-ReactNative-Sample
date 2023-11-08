@@ -2,12 +2,7 @@ import RNCallKeep from 'react-native-callkeep';
 import InCallManager from 'react-native-incall-manager';
 import SDK from '../../SDK/SDK';
 import { removeRemoteStream, resetCallData } from '../../SDKActions/callbacks';
-import {
-   closeCallModal,
-   pinUser,
-   selectLargeVideoUser,
-   showConfrence,
-} from '../../redux/Actions/CallAction';
+import { closeCallModal, pinUser, selectLargeVideoUser, showConfrence } from '../../redux/Actions/CallAction';
 import Store from '../../redux/store';
 import {
    CALL_RINGING_DURATION,

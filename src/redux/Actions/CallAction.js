@@ -211,7 +211,7 @@ export const resetData = () => {
   pinUserData = {};
 };
 
-export const opneCallModal = () => {
+export const openCallModal = () => {
   return {
     type: OPEN_CALL_MODAL,
   };

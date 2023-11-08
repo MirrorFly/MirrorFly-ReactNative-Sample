@@ -27,7 +27,7 @@ export const CALL_STATUS_HOLD = 'hold';
 export const CALL_STATUS_ATTENDED = 'attended';
 
 // MESSAGE BASED ON CALL STATUS
-export const CALL_BUSY_STATUS_MESSAGE = 'User is busy...';
+export const CALL_BUSY_STATUS_MESSAGE = 'User is busy';
 export const CALL_ENGAGED_STATUS_MESSAGE = 'Busy on another call';
 export const CALL_HOLD_STATUS_MESSAGE = 'Call on hold';
 // CALL TYPE

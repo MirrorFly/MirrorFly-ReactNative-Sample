@@ -5,8 +5,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { SDK } from '../../SDK';
 import { muteLocalVideo } from '../../SDKActions/callbacks';
 import {
-  updateCallConnectionState,
+  openCallModal,
   showConfrence,
+  updateCallConnectionState,
   updateCallerUUID,
 } from '../../redux/Actions/CallAction';
 import Store from '../../redux/store';
@@ -137,6 +138,7 @@ const makeCall = async (
         callStatusText: 'Calling',
       }),
     );
+    Store.dispatch(openCallModal());
     try {
       if (callType === 'audio') {
         muteLocalVideo(true);

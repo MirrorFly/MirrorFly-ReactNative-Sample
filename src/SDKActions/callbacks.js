@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import nextFrame from 'next-frame';
 import { MediaStream } from 'react-native-webrtc';
+import { v4 as uuidv4 } from 'uuid';
 import { batch } from 'react-redux';
 import {
   callConnectionStoreData,
@@ -91,6 +92,7 @@ import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
 import { Platform } from 'react-native';
 import { displayIncomingCallForIos } from '../Helper/Calls/Utility';
+import RNCallKeep from 'react-native-callkeep';
 
 let localStream = null,
   localVideoMuted = false,
@@ -117,6 +119,8 @@ export const resetCallData = () => {
   Store.dispatch(resetConferencePopup());
   Store.dispatch(clearCallData());
   resetData();
+  RNCallKeep.removeEventListener('answerCall');
+  RNCallKeep.removeEventListener('endCall');
   // setTimeout(() => {
   //   Store.dispatch(isMuteAudioAction(false));
   // }, 1000);
@@ -553,7 +557,7 @@ export const callBacks = {
       if (res.callType === 'audio') {
         localVideoMuted = true;
       }
-      const callUUID = Date.now();
+      const callUUID = uuidv4();
       batch(() => {
         Store.dispatch(updateCallConnectionState(res));
         Store.dispatch(updateCallerUUID(callUUID));

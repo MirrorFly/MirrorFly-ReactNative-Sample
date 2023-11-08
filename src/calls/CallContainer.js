@@ -1,13 +1,15 @@
 import React from 'react';
-import { View, Modal } from 'react-native';
-import IncomingCall from './screens/IncomingCall';
+import { Modal, View } from 'react-native';
+import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import {
   ONGOING_CALL_SCREEN,
   INCOMING_CALL_SCREEN,
   OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import commonStyles from '../common/commonStyles';
+import IncomingCall from './screens/IncomingCall';
 import OutGoingCall from './screens/OutGoingCall';
 import OnGoingCall from './screens/OnGoingCall';
 
@@ -16,10 +18,10 @@ const CallContainer = () => {
     useSelector(state => state.callData) || {};
   const { data: confrenceData = {} } =
     useSelector(state => state.showConfrenceData) || {};
+  const insets = initialWindowMetrics.insets;
 
   const renderCallscreenBasedOnCallStatus = () => {
     const _screenName = confrenceData.screenName;
-    console.log(_screenName, '_screenName');
     switch (_screenName) {
       case INCOMING_CALL_SCREEN:
         const _userId = getUserIdFromJid(connectionState?.userJid);
@@ -27,13 +29,15 @@ const CallContainer = () => {
       case ONGOING_CALL_SCREEN:
         return <OnGoingCall />;
       case OUTGOING_CALL_SCREEN:
-        return <OutGoingCall userId={_userId} />;
+        return <OutGoingCall />;
     }
   };
 
   return (
-    <Modal visible={showCallModal} animationType="slide">
-      {renderCallscreenBasedOnCallStatus()}
+    <Modal visible={showCallModal} animationType="slide" statusBarTranslucent>
+      <View style={[commonStyles.flex1, { marginTop: insets.top }]}>
+        {renderCallscreenBasedOnCallStatus()}
+      </View>
     </Modal>
   );
 };

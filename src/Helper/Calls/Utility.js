@@ -5,8 +5,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { SDK } from '../../SDK';
 import { muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
 import {
-  updateCallConnectionState,
+  openCallModal,
   showConfrence,
+  updateCallConnectionState,
   updateCallerUUID,
   clearCallData,
   resetConferencePopup,
@@ -154,6 +155,7 @@ const makeCall = async (
         callStatusText: 'Calling',
       }),
     );
+    Store.dispatch(openCallModal());
     try {
       if (callType === 'audio') {
         muteLocalVideo(true);

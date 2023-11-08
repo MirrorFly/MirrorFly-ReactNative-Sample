@@ -23,11 +23,12 @@
     "i": "npm i -f && npm run ios:install",
     "devtools": "react-devtools",
     "android:clean": "cd android && ./gradlew clean && rm -rf build && cd ..",
-    "ios:clean":"rm -rf ios/Pods/ ios/Podfile.lock ios/build && rm -rf ~/Library/Developer/Xcode/DerivedData",
+    "ios:clean": "rm -rf ios/Pods/ ios/Podfile.lock ios/build && rm -rf ~/Library/Developer/Xcode/DerivedData",
     "file:clean": "rm -rf package-lock.json node_modules",
-    "rn:clean": "npm run android:clean && watchman watch-del-all && npm run ios:clean && npm run file:clean"
+    "rn:clean": "npm run android:clean && watchman watch-del-all && npm run ios:clean && npm run file:clean",
+    "patch:zip": "zip -r patches.zip ./patches"
   },
- "reactNativePermissionsIOS": [
+  "reactNativePermissionsIOS": [
     "AppTrackingTransparency",
     "BluetoothPeripheral",
     "Calendars",

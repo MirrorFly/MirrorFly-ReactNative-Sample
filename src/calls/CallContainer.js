@@ -4,11 +4,12 @@ import IncomingCall from './screens/IncomingCall';
 import { useSelector } from 'react-redux';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import {
-  CALL_CONNECTED_SCREEN,
+  ONGOING_CALL_SCREEN,
   INCOMING_CALL_SCREEN,
   OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
 import OutGoingCall from './screens/OutGoingCall';
+import OnGoingCall from './screens/OnGoingCall';
 
 const CallContainer = () => {
   const { showCallModal, connectionState } =
@@ -18,14 +19,15 @@ const CallContainer = () => {
 
   const renderCallscreenBasedOnCallStatus = () => {
     const _screenName = confrenceData.screenName;
-    console.log(_screenName,"_screenName");
+    console.log(_screenName, '_screenName');
     switch (_screenName) {
       case INCOMING_CALL_SCREEN:
-      case CALL_CONNECTED_SCREEN:
         const _userId = getUserIdFromJid(connectionState?.userJid);
         return <IncomingCall userId={_userId} />;
+      case ONGOING_CALL_SCREEN:
+        return <OnGoingCall />;
       case OUTGOING_CALL_SCREEN:
-        return <OutGoingCall userId={_userId}/>
+        return <OutGoingCall userId={_userId} />;
     }
   };
 

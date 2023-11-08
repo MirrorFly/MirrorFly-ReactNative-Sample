@@ -22,7 +22,7 @@ import {
   stopIncomingCallRingtone,
 } from './Call';
 import {
-  CALL_CONNECTED_SCREEN,
+  ONGOING_CALL_SCREEN,
   COMMON_ERROR_MESSAGE,
   DISCONNECTED_SCREEN_DURATION,
   OUTGOING_CALL_SCREEN,
@@ -246,7 +246,7 @@ export const answerIncomingCall = async () => {
       showConfrence({
         // showComponent: true,
         // showCalleComponent: false,
-        screenName: CALL_CONNECTED_SCREEN,
+        screenName: ONGOING_CALL_SCREEN,
       }),
     );
     // TODO: update the Call logs when implementing

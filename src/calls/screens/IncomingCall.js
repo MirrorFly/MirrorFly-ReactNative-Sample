@@ -18,7 +18,6 @@ import {
   resetConferencePopup,
 } from '../../redux/Actions/CallAction';
 import {
-  clearMissedCallNotificationTimer,
   dispatchDisconnected,
   stopIncomingCallRingtone,
 } from '../../Helper/Calls/Call';
@@ -53,7 +52,7 @@ const IncomingCall = ({ userId }) => {
   }, []);
 
   const handleClosePress = () => {
-    dispatch(closeCallModal());
+    // dispatch(closeCallModal());
   };
 
   // when user not attending the call and the timeout has been reached

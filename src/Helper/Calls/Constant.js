@@ -31,15 +31,15 @@ export const CALL_BUSY_STATUS_MESSAGE = 'User is busy...';
 export const CALL_ENGAGED_STATUS_MESSAGE = 'Busy on another call';
 export const CALL_HOLD_STATUS_MESSAGE = 'Call on hold';
 // CALL TYPE
-export const CALL_TYPE_AUDIO = "audio";
-export const CALL_TYPE_VIDEO = "video";
+export const CALL_TYPE_AUDIO = 'audio';
+export const CALL_TYPE_VIDEO = 'video';
 
-export const COMMON_ERROR_MESSAGE = "Something went wrong. Please try again.";
-export const PERMISSION_DENIED = "Permission denied";
-export const LARGE_VIDEO_USER = "LARGE_VIDEO_USER";
+export const COMMON_ERROR_MESSAGE = 'Something went wrong. Please try again.';
+export const PERMISSION_DENIED = 'Permission denied';
+export const LARGE_VIDEO_USER = 'LARGE_VIDEO_USER';
 
 // CALL SCREEN NAMES
 export const INCOMING_CALL_SCREEN = 'INCOMING_CALL_SCREEN';
 export const OUTGOING_CALL_SCREEN = 'OUTGOING_CALL_SCREEN';
-export const CALL_CONNECTED_SCREEN = 'CALL_CONNECTED_SCREEN';
+export const ONGOING_CALL_SCREEN = 'ONGOING_CALL_SCREEN';
 export const CALL_AGAIN_SCREEN = 'CALL_AGAIN_SCREEN';

@@ -72,7 +72,7 @@ const CallStateReducer = (state = initialStateClone, action = {}) => {
       return {
         ...state,
         id: Date.now(),
-        callerUUID: action.payload,
+        callerUUID: String(action.payload).toUpperCase(),
       };
     case CLEAR_CALL_DATA:
     case RESET_STORE:

@@ -24,7 +24,7 @@ const OutGoingCall = () => {
    const { to: userJid = '' } = connectionState;
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const { callStatusText: callStatus = '' } = confrenceData;
-   console.log(confrenceData,"confrenceData");
+   console.log(confrenceData, 'confrenceData');
    let timer = null;
    let uiChangetimer = null;
 
@@ -117,16 +117,17 @@ const OutGoingCall = () => {
             <View style={styles.userDetailsContainer}>
                <Text style={styles.userNameText}>{nickName}</Text>
                <View style={commonStyles.marginTop_15}>
-                  <Avathar
-                     width={90}
-                     height={90}
-                     backgroundColor={userProfile.colorCode}
-                     data={nickName}
-                     profileImage={userProfile.image}
-                  />
+                  <ProfilePictureWithPulse>
+                     <Avathar
+                        width={90}
+                        height={90}
+                        backgroundColor={userProfile.colorCode}
+                        data={nickName}
+                        profileImage={userProfile.image}
+                     />
+                  </ProfilePictureWithPulse>
                </View>
             </View>
-            <ProfilePictureWithPulse imageUrl={"https://pixabay.com/images/search/url/"} />
          </View>
          <View>
             {/* Call Control buttons (Mute & End & speaker) */}

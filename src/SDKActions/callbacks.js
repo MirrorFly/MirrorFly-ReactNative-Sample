@@ -111,14 +111,14 @@ export const resetCallData = () => {
    //   Store.dispatch(resetCallIntermediateScreen());
    // }
    // Store.dispatch(callDurationTimestamp());
-   Store.dispatch(resetConferencePopup());
-   Store.dispatch(clearCallData());
-   resetData();
    if (Platform.OS === 'ios') {
       RNCallKeep.removeEventListener('answerCall');
       RNCallKeep.removeEventListener('endCall');
       endCallForIos();
    }
+   Store.dispatch(resetConferencePopup());
+   Store.dispatch(clearCallData());
+   resetData();
    // setTimeout(() => {
    //   Store.dispatch(isMuteAudioAction(false));
    // }, 1000);

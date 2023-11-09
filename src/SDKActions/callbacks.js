@@ -28,7 +28,7 @@ import {
    INCOMING_CALL_SCREEN,
    OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
-import { displayIncomingCallForIos } from '../Helper/Calls/Utility';
+import { displayIncomingCallForIos, endCallForIos } from '../Helper/Calls/Utility';
 import { formatUserIdToJid, getLocalUserDetails } from '../Helper/Chat/ChatHelper';
 import {
    CONNECTION_STATE_CONNECTING,
@@ -52,12 +52,12 @@ import { REGISTERSCREEN } from '../constant';
 import {
    clearCallData,
    closeCallModal,
-   opneCallModal,
+   openCallModal,
    resetConferencePopup,
    resetData,
    showConfrence,
    updateCallConnectionState,
-   updateCallerUUID
+   updateCallerUUID,
 } from '../redux/Actions/CallAction';
 import {
    ClearChatHistoryAction,
@@ -114,8 +114,11 @@ export const resetCallData = () => {
    Store.dispatch(resetConferencePopup());
    Store.dispatch(clearCallData());
    resetData();
-   RNCallKeep.removeEventListener('answerCall');
-   RNCallKeep.removeEventListener('endCall');
+   if (Platform.OS === 'ios') {
+      RNCallKeep.removeEventListener('answerCall');
+      RNCallKeep.removeEventListener('endCall');
+      endCallForIos();
+   }
    // setTimeout(() => {
    //   Store.dispatch(isMuteAudioAction(false));
    // }, 1000);
@@ -618,7 +621,7 @@ export const callBacks = {
             Store.dispatch(updateCallerUUID(callUUID));
          });
          if (Platform.OS === 'android') {
-            Store.dispatch(opneCallModal());
+            Store.dispatch(openCallModal());
          } else {
             displayIncomingCallForIos(res, callUUID);
          }

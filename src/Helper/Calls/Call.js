@@ -192,3 +192,12 @@ export const stopIncomingCallRingtone = () => {
       console.log('Error while stoping the ringtone sound');
    }
 };
+
+export function getCallDuration(timerTime) {
+   if (!timerTime) return "";
+   let seconds = ("0" + (Math.floor(timerTime / 1000) % 60)).slice(-2);
+   let minutes = ("0" + (Math.floor(timerTime / 60000) % 60)).slice(-2);
+   let hours = ("0" + Math.floor(timerTime / 3600000)).slice(-2);
+   const minAndSecs = `${minutes}:${seconds}`;
+   return hours > 0 ? `${hours}:${minAndSecs}` : minAndSecs;
+}

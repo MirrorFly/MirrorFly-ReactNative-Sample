@@ -6,7 +6,7 @@ import { dispatchDisconnected } from '../../Helper/Calls/Call';
 import { DISCONNECTED_SCREEN_DURATION } from '../../Helper/Calls/Constant';
 import { capitalizeFirstLetter, getUserIdFromJid } from '../../Helper/Chat/Utility';
 import { resetCallData } from '../../SDKActions/callbacks';
-import CallsBg from '../../assets/calls-bg.png';
+import OutgoingCallBg from '../../assets/OutgoingCallBg.png';
 import { EndCallIcon } from '../../common/Icons';
 import { getImageSource } from '../../common/utils';
 import useRosterData from '../../hooks/useRosterData';
@@ -17,13 +17,14 @@ import ApplicationColors from '../../config/appColors';
 import commonStyles from '../../common/commonStyles';
 import Avathar from '../../common/Avathar';
 import CallControlButtons from '../components/CallControlButtons';
+import ProfilePictureWithPulse from '../components/ProfilePictureWithPulse';
 
 const OutGoingCall = () => {
    const { showCallModal, connectionState } = useSelector(state => state.callData) || {};
    const { to: userJid = '' } = connectionState;
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const { callStatusText: callStatus = '' } = confrenceData;
-
+   console.log(confrenceData,"confrenceData");
    let timer = null;
    let uiChangetimer = null;
 
@@ -97,8 +98,12 @@ const OutGoingCall = () => {
 
    const handleClosePress = () => {};
 
+   const handleAudioMute = () => {};
+
+   let localVideoMuted = confrenceData.localVideoMuted;
+
    return (
-      <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>
+      <ImageBackground style={styles.container} source={getImageSource(OutgoingCallBg)}>
          <View>
             {/* down arrow to close the modal */}
             <CloseCallModalButton onPress={handleClosePress} />
@@ -121,22 +126,26 @@ const OutGoingCall = () => {
                   />
                </View>
             </View>
+            <ProfilePictureWithPulse imageUrl={"https://pixabay.com/images/search/url/"} />
          </View>
-         {/* <CallControlButtons
-            // handleEndCall={endCall}
-            // handleAudioMute={handleAudioMute}
-            // handleVideoMute={handleVideoMute}
-            // videoMute={!!localVideoMuted}
-            // audioMute={true}
-            // audioControl={audioControl}
-            // videoControl={videoControl}
-         /> */}
-         {/* call action buttons (Accept & Reject) */}
-         <GestureHandlerRootView style={styles.actionButtonWrapper}>
-            <RectButton onPress={handleEndCall} style={[styles.actionButton, styles.redButton]}>
-               <EndCallIcon />
-            </RectButton>
-         </GestureHandlerRootView>
+         <View>
+            {/* Call Control buttons (Mute & End & speaker) */}
+            <CallControlButtons
+               // handleEndCall={endCall}
+               handleAudioMute={handleAudioMute}
+               // handleVideoMute={handleVideoMute}
+               videoMute={!!localVideoMuted}
+               // audioMute={true}
+               // audioControl={audioControl}
+               // videoControl={videoControl}
+            />
+            {/* call action buttons (Accept & Reject) */}
+            <GestureHandlerRootView style={styles.actionButtonWrapper}>
+               <RectButton onPress={handleEndCall} style={[styles.actionButton, styles.redButton]}>
+                  <EndCallIcon />
+               </RectButton>
+            </GestureHandlerRootView>
+         </View>
       </ImageBackground>
    );
 };

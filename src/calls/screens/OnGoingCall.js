@@ -26,7 +26,7 @@ const OnGoingCall = () => {
     useSelector(state => state.callData) || {};
 
   const userId = getUserIdFromJid(
-    '919094237501' || callData.userJid || callData.to,
+    callData.userJid || callData.to,
   );
   const userProfile = useRosterData(userId);
   const nickName = userProfile.nickName || userId || '';

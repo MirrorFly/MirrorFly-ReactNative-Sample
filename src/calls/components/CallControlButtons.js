@@ -1,12 +1,17 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
-import { AudioUnMuteIcon, SpeakerEnableIcon, VideoMuteIcon, VideoUnMuteIcon } from '../../common/Icons';
+import { AudioUnMuteIcon, SpeakerEnableIcon, VideoMuteIcon } from '../../common/Icons';
 
 const CallControlButtons = (props = {}) => {
    const { handleAudioMute } = props;
+   const [speakerToggle,setSpeakerToggle] = React.useState(false)
    let videoMute = true;
-   console.log(videoMute, 'videoMute');
+
+   const speakerOn = () => {
+      setSpeakerToggle(!speakerToggle)
+   };
+
    return (
       <View style={styles.container}>
          <GestureHandlerRootView style={styles.actionButtonWrapper}>
@@ -16,7 +21,7 @@ const CallControlButtons = (props = {}) => {
             <RectButton onPress={handleAudioMute} style={[styles.actionButton, videoMute && styles.activeButton]}>
                <VideoMuteIcon />
             </RectButton>
-            <RectButton onPress={handleAudioMute} style={[styles.actionButton]}>
+            <RectButton onPress={speakerOn} style={[styles.actionButton]}>
                <SpeakerEnableIcon />
             </RectButton>
          </GestureHandlerRootView>

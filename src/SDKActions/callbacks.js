@@ -114,14 +114,14 @@ export const resetCallData = () => {
    //   Store.dispatch(resetCallIntermediateScreen());
    // }
    // Store.dispatch(callDurationTimestamp());
-   Store.dispatch(resetConferencePopup());
-   Store.dispatch(clearCallData());
-   resetData();
    if (Platform.OS === 'ios') {
       RNCallKeep.removeEventListener('answerCall');
       RNCallKeep.removeEventListener('endCall');
       endCallForIos();
    }
+   Store.dispatch(resetConferencePopup());
+   Store.dispatch(clearCallData());
+   resetData();
    // setTimeout(() => {
    //   Store.dispatch(isMuteAudioAction(false));
    // }, 1000);
@@ -321,15 +321,14 @@ const handleEngagedOrBusyStatus = res => {
       const callStatusMsg = res.status === 'engaged' ? CALL_ENGAGED_STATUS_MESSAGE : CALL_BUSY_STATUS_MESSAGE;
       dispatchDisconnected(callStatusMsg);
 
-      showToast(callStatusMsg, {
-         id: 'User_Busy_Toast',
-      });
-      dispatchCommon();
-
-      //UI and toast show without delay
-      // setTimeout(() => {
-      //    //  localstoreCommon();
-      // }, DISCONNECTED_SCREEN_DURATION);
+      // //UI and toast show without delay
+      setTimeout(() => {
+         //  localstoreCommon();
+         showToast(callStatusMsg, {
+            id: 'User_Busy_Toast',
+         });
+         dispatchCommon();
+      }, DISCONNECTED_SCREEN_DURATION);
    } else {
       if (remoteStream && Array.isArray(remoteStream) && remoteStream.length < 1) {
          return;

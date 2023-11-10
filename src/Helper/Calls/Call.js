@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import RNCallKeep from 'react-native-callkeep';
 import InCallManager from 'react-native-incall-manager';
 import SDK from '../../SDK/SDK';
@@ -11,8 +12,6 @@ import {
    CALL_STATUS_RINGING,
    DISCONNECTED_SCREEN_DURATION,
 } from './Constant';
-import { Platform } from 'react-native';
-
 let missedCallNotificationTimer = null;
 let callingRemoteStreamRemovalTimer = null;
 
@@ -193,11 +192,37 @@ export const stopIncomingCallRingtone = () => {
    }
 };
 
+export const startRingingCallTone = () => {
+   try {
+      // if (Platform.OS === 'android') {
+      //    // Android implementation
+      //    const customRingbackUri = 'file:///path/to/custom_ringback.mp3';
+      //    InCallManager.start({ media: customRingbackUri, auto: false });
+      //  } else if (Platform.OS === 'ios') {
+      //    // iOS implementation
+      //    const customRingbackUri = 'file:///path/to/custom_ringback.mp3';
+      //    InCallManager.startRingback(customRingbackUri);
+      //  }
+      //   InCallManager.start({ media: 'incallmanager_ringback.mp3', auto: false });
+      // InCallManager.startRingback('incallmanager_ringback.mp3');
+   } catch (err) {
+      console.log('Error while starting the ringtone sound');
+   }
+};
+
+export const stopRingingCallTone = () => {
+   try {
+      InCallManager.stopRingback();
+   } catch (err) {
+      console.log('Error while starting the ringtone sound');
+   }
+};
+
 export function getCallDuration(timerTime) {
-   if (!timerTime) return "";
-   let seconds = ("0" + (Math.floor(timerTime / 1000) % 60)).slice(-2);
-   let minutes = ("0" + (Math.floor(timerTime / 60000) % 60)).slice(-2);
-   let hours = ("0" + Math.floor(timerTime / 3600000)).slice(-2);
+   if (!timerTime) return '';
+   let seconds = ('0' + (Math.floor(timerTime / 1000) % 60)).slice(-2);
+   let minutes = ('0' + (Math.floor(timerTime / 60000) % 60)).slice(-2);
+   let hours = ('0' + Math.floor(timerTime / 3600000)).slice(-2);
    const minAndSecs = `${minutes}:${seconds}`;
    return hours > 0 ? `${hours}:${minAndSecs}` : minAndSecs;
 }

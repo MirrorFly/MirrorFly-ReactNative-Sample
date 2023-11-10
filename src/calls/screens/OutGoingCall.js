@@ -2,21 +2,21 @@ import React from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import { batch, useDispatch, useSelector } from 'react-redux';
-import { dispatchDisconnected } from '../../Helper/Calls/Call';
 import { CALL_AGAIN_SCREEN, DISCONNECTED_SCREEN_DURATION } from '../../Helper/Calls/Constant';
+import { dispatchDisconnected, stopRingingCallTone } from '../../Helper/Calls/Call';
 import { capitalizeFirstLetter, getUserIdFromJid } from '../../Helper/Chat/Utility';
 import { resetCallData } from '../../SDKActions/callbacks';
 import OutgoingCallBg from '../../assets/OutgoingCallBg.png';
+import Avathar from '../../common/Avathar';
 import { EndCallIcon } from '../../common/Icons';
+import commonStyles from '../../common/commonStyles';
 import { getImageSource } from '../../common/utils';
+import ApplicationColors from '../../config/appColors';
 import useRosterData from '../../hooks/useRosterData';
 import { closeCallModal, setCallModalScreen, updateConference } from '../../redux/Actions/CallAction';
 import Store from '../../redux/store';
-import CloseCallModalButton from '../components/CloseCallModalButton';
-import ApplicationColors from '../../config/appColors';
-import commonStyles from '../../common/commonStyles';
-import Avathar from '../../common/Avathar';
 import CallControlButtons from '../components/CallControlButtons';
+import CloseCallModalButton from '../components/CloseCallModalButton';
 import ProfilePictureWithPulse from '../components/ProfilePictureWithPulse';
 import { updateCallAgainData } from '../../redux/Actions/CallAgainAction';
 
@@ -26,6 +26,7 @@ const OutGoingCall = () => {
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const { callStatusText: callStatus = '' } = confrenceData;
    console.log(connectionState, 'connectionState');
+   console.log(confrenceData, 'confrenceData');
    let timer = null;
    let uiChangetimer = null;
 
@@ -42,6 +43,7 @@ const OutGoingCall = () => {
    const nickName = userProfile.nickName || userID;
 
    React.useEffect(() => {
+      // startRingingCallTone();
       if (connectionState && connectionState) {
          setOutGoingCalls({
             ...outGoingCalls,
@@ -62,6 +64,7 @@ const OutGoingCall = () => {
          // stopAudio();
          clearTimeout(timer);
          clearTimeout(uiChangetimer);
+         stopRingingCallTone();
       };
    }, []);
 
@@ -137,7 +140,7 @@ const OutGoingCall = () => {
             {/* user profile details */}
             <View style={styles.userDetailsContainer}>
                <Text style={styles.userNameText}>{nickName}</Text>
-               <View style={commonStyles.marginTop_15}>
+               <View style={[commonStyles.marginTop_30, commonStyles.positionRelative]}>
                   <Avathar
                      width={90}
                      height={90}
@@ -145,9 +148,9 @@ const OutGoingCall = () => {
                      data={nickName}
                      profileImage={userProfile.image}
                   />
+                  <ProfilePictureWithPulse baseStyle={styles.animatedStyle} startDelay={1000} iterations={1} />
                </View>
             </View>
-            <ProfilePictureWithPulse imageUrl={'https://pixabay.com/images/search/url/'} />
          </View>
          <View>
             {/* Call Control buttons (Mute & End & speaker) */}
@@ -218,5 +221,10 @@ const styles = StyleSheet.create({
    },
    redButton: {
       backgroundColor: '#FB2B48',
+   },
+   animatedStyle: {
+      width: 90,
+      height: 90,
+      position: 'absolute',
    },
 });

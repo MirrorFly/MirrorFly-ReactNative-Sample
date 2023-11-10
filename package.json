@@ -159,7 +159,7 @@
     "react-native-progress": "^5.0.0",
     "react-native-geocoding": "^0.5.0",
     "react-native-callkeep": "^4.3.12",
-    "react-native-incall-manager": "^4.0.1",
+    "react-native-incall-manager": "^4.1.0",
     "react-native-voip-push-notification": "3.3.2",
     "react-native-webrtc": "111.0.3"
   },

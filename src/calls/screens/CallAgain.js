@@ -8,11 +8,13 @@ import commonStyles from '../../common/commonStyles';
 import ApplicationColors from '../../config/appColors';
 import Avathar from '../../common/Avathar';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
-import { useDispatch } from 'react-redux';
-import { closeCallModal } from '../../redux/Actions/CallAction';
+import { useDispatch, useSelector } from 'react-redux';
+import { closeCallModal, resetCallStateData } from '../../redux/Actions/CallAction';
 import { CloseIcon, PhoneIcon } from '../../common/Icons';
+import { makeCalls } from '../../Helper/Calls/Utility';
 
-const CallAgain = ({ userId }) => {
+const CallAgain = () => {
+   const { data: { callType, userId } = {} } = useSelector(state => state.callAgainData) || {};
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userProfile.userId;
    const callStatus = 'Unavailable, Try again later';
@@ -25,10 +27,15 @@ const CallAgain = ({ userId }) => {
 
    // when user manually declined the call from the action buttons or swiping to decline the call
    const handleCancelPress = async () => {
-      // dispatch(closeCallModal());
+      console.log('resetting call state data');
+      dispatch(resetCallStateData());
    };
 
-   const callAgain = async () => {};
+   const handleCallAgain = async () => {
+      if (callType && userId) {
+         makeCalls(callType, [userId]);
+      }
+   };
 
    return (
       <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>
@@ -62,7 +69,7 @@ const CallAgain = ({ userId }) => {
                <Text style={styles.actionButtonText}>Cancel</Text>
             </View>
             <View style={commonStyles.alignItemsCenter}>
-               <RectButton onPress={callAgain} style={[styles.actionButton, styles.greenButton]}>
+               <RectButton onPress={handleCallAgain} style={[styles.actionButton, styles.greenButton]}>
                   <PhoneIcon width={18} height={18} color={ApplicationColors.white} />
                </RectButton>
                <Text style={styles.actionButtonText}>Call Again</Text>

@@ -16,7 +16,6 @@ import { navigationRef } from './Navigation/rootNavigation';
 import StackNavigationPage, {
   RecentStackNavigation,
 } from './Navigation/stackNavigation';
-import CallJanus from './components/calls/CallJanus';
 import ApplicationTheme from './config/appTheme';
 import {
   CAMERA,
@@ -35,8 +34,6 @@ import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction'
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
 import { getAppInitialized } from './uikitHelpers/uikitMethods';
-import Store from './redux/store';
-import { openCallModal } from './redux/Actions/CallAction';
 
 LogBox.ignoreAllLogs();
 
@@ -71,7 +68,6 @@ export const ChatApp = React.memo(props => {
   const { jid = '' } = props;
   const isMfInit = getAppInitialized();
   React.useEffect(() => {
-    // Store.dispatch(openCallModal());
     return () => {
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();

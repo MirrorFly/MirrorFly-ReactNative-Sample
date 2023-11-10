@@ -14,6 +14,7 @@ export const CALL_CONVERSION_STATUS_REQ_WAITING = 'request_waiting';
 export const CALL_CONVERSION_STATUS_REQUEST_INIT = 'request_init';
 export const CALL_CONVERSION_STATUS_REQUEST = 'request';
 // CALL STATUS
+export const CALL_STATUS_INCOMING = 'Incoming audio call';
 export const CALL_STATUS_RECONNECT = 'reconnecting';
 export const CALL_STATUS_CONNECTED = 'connected';
 export const CALL_STATUS_DISCONNECTED = 'disconnected';

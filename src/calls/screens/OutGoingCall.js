@@ -1,16 +1,16 @@
 import React from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
-import { useSelector } from 'react-redux';
+import { batch, useDispatch, useSelector } from 'react-redux';
 import { dispatchDisconnected } from '../../Helper/Calls/Call';
-import { DISCONNECTED_SCREEN_DURATION } from '../../Helper/Calls/Constant';
+import { CALL_AGAIN_SCREEN, DISCONNECTED_SCREEN_DURATION } from '../../Helper/Calls/Constant';
 import { capitalizeFirstLetter, getUserIdFromJid } from '../../Helper/Chat/Utility';
 import { resetCallData } from '../../SDKActions/callbacks';
 import OutgoingCallBg from '../../assets/OutgoingCallBg.png';
 import { EndCallIcon } from '../../common/Icons';
 import { getImageSource } from '../../common/utils';
 import useRosterData from '../../hooks/useRosterData';
-import { closeCallModal } from '../../redux/Actions/CallAction';
+import { closeCallModal, setCallModalScreen, updateConference } from '../../redux/Actions/CallAction';
 import Store from '../../redux/store';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 import ApplicationColors from '../../config/appColors';
@@ -18,13 +18,14 @@ import commonStyles from '../../common/commonStyles';
 import Avathar from '../../common/Avathar';
 import CallControlButtons from '../components/CallControlButtons';
 import ProfilePictureWithPulse from '../components/ProfilePictureWithPulse';
+import { updateCallAgainData } from '../../redux/Actions/CallAgainAction';
 
 const OutGoingCall = () => {
    const { showCallModal, connectionState } = useSelector(state => state.callData) || {};
-   const { to: userJid = '' } = connectionState;
+   const { to: userJid = '', callType } = connectionState;
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const { callStatusText: callStatus = '' } = confrenceData;
-   console.log(confrenceData,"confrenceData");
+   console.log(connectionState, 'connectionState');
    let timer = null;
    let uiChangetimer = null;
 
@@ -33,6 +34,8 @@ const OutGoingCall = () => {
       showMemberNames: false,
       callingUiStatus: 'Trying to connect',
    });
+
+   const dispatch = useDispatch();
 
    let userID = getUserIdFromJid(userJid);
    const userProfile = useRosterData(userID);
@@ -52,7 +55,7 @@ const OutGoingCall = () => {
          });
       }, 10000);
       timer = setTimeout(() => {
-         endCall();
+         endCall(true);
       }, 30000);
 
       return () => {
@@ -62,7 +65,7 @@ const OutGoingCall = () => {
       };
    }, []);
 
-   const endCall = async () => {
+   const endCall = async (isFromTimeout = false) => {
       // stopAudio();
       const callConnectionDataEndCall = connectionState?.data;
       SDK.endCall();
@@ -79,7 +82,13 @@ const OutGoingCall = () => {
          // deleteItemFromLocalStorage('call_connection_status')
          // encryptAndStoreInLocalStorage("hideCallScreen", false);
          resetCallData();
-         Store.dispatch(closeCallModal());
+         if (isFromTimeout) {
+            const _userID = userID;
+            const _callType = callType;
+            updateCallAgainScreenData(_userID, _callType);
+         } else {
+            Store.dispatch(closeCallModal());
+         }
          // batch(()=>{
          //     Store.dispatch(showConfrence({
          //         showComponent: false,
@@ -90,6 +99,18 @@ const OutGoingCall = () => {
          //     }))
          // })
       }, DISCONNECTED_SCREEN_DURATION);
+   };
+
+   const updateCallAgainScreenData = (userID, callType) => {
+      batch(() => {
+         dispatch(
+            updateCallAgainData({
+               callType,
+               userId: userID,
+            }),
+         );
+         dispatch(setCallModalScreen(CALL_AGAIN_SCREEN));
+      });
    };
 
    const handleEndCall = () => {
@@ -126,7 +147,7 @@ const OutGoingCall = () => {
                   />
                </View>
             </View>
-            <ProfilePictureWithPulse imageUrl={"https://pixabay.com/images/search/url/"} />
+            <ProfilePictureWithPulse imageUrl={'https://pixabay.com/images/search/url/'} />
          </View>
          <View>
             {/* Call Control buttons (Mute & End & speaker) */}

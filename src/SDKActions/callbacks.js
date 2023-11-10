@@ -24,6 +24,7 @@ import {
    CALL_ENGAGED_STATUS_MESSAGE,
    CALL_STATUS_CONNECTED,
    CALL_STATUS_ENDED,
+   CALL_STATUS_INCOMING,
    DISCONNECTED_SCREEN_DURATION,
    INCOMING_CALL_SCREEN,
    OUTGOING_CALL_SCREEN,
@@ -55,9 +56,11 @@ import {
    openCallModal,
    resetConferencePopup,
    resetData,
+   setCallModalScreen,
    showConfrence,
    updateCallConnectionState,
    updateCallerUUID,
+   updateConference,
 } from '../redux/Actions/CallAction';
 import {
    ClearChatHistoryAction,
@@ -177,18 +180,20 @@ const ringing = async res => {
       if (callConnectionData.callType === 'audio') {
          localVideoMuted = true;
       }
-      Store.dispatch(
-         showConfrence({
-            callStatusText: 'Ringing',
-            showStreamingComponent: false,
-            localStream,
-            screenName: OUTGOING_CALL_SCREEN,
-            remoteStream,
-            localVideoMuted,
-            localAudioMuted,
-            showComponent: true,
-         }),
-      );
+      batch(() => {
+         Store.dispatch(
+            showConfrence({
+               callStatusText: 'Ringing',
+               showStreamingComponent: false,
+               localStream,
+               remoteStream,
+               localVideoMuted,
+               localAudioMuted,
+               showComponent: true,
+            }),
+         );
+         Store.dispatch(setCallModalScreen(OUTGOING_CALL_SCREEN));
+      });
    } else {
       const showConfrenceData = showConfrenceStoreData();
       const { data } = showConfrenceData;
@@ -263,7 +268,9 @@ const ended = res => {
             // localstoreCommon();
             // Store.dispatch(callConversion());
             // Store.dispatch(hideModal());
-            Store.dispatch(resetConferencePopup());
+            // console.log('Restting conference data in ended callback');
+            // Store.dispatch(resetConferencePopup());
+            resetCallData();
             Store.dispatch(closeCallModal());
          });
       }, DISCONNECTED_SCREEN_DURATION);
@@ -276,7 +283,6 @@ const ended = res => {
          callDetailObj['status'] = 'ended';
          // browserNotify.sendCallNotification(callDetailObj);
       }
-      resetCallData();
    } else {
       if (!onCall || (remoteStream && Array.isArray(remoteStream) && remoteStream.length < 1)) {
          return;
@@ -378,7 +384,7 @@ const handleEngagedOrBusyStatus = res => {
 };
 
 const callStatus = res => {
-   console.log(res.status, '699');
+   console.log(res, '699');
    if (res.status === 'ringing') {
       ringing(res);
    } else if (res.status === 'connecting') {
@@ -618,6 +624,11 @@ export const callBacks = {
          batch(() => {
             Store.dispatch(updateCallConnectionState(res));
             Store.dispatch(updateCallerUUID(callUUID));
+            Store.dispatch(
+               updateConference({
+                  callStatusText: CALL_STATUS_INCOMING,
+               }),
+            );
          });
          if (Platform.OS === 'android') {
             Store.dispatch(openCallModal());
@@ -626,14 +637,7 @@ export const callBacks = {
          }
          startIncomingCallRingtone();
          // TODO: update the below store data based on new reducer structure
-         Store.dispatch(
-            showConfrence({
-               // showComponent: false,
-               // showStreamingComponent: false,
-               // showCalleComponent: true,
-               screenName: INCOMING_CALL_SCREEN,
-            }),
-         );
+         Store.dispatch(setCallModalScreen(INCOMING_CALL_SCREEN));
          updatingUserStatusInRemoteStream(res.usersStatus);
          // TODO: show call local notification
          // browserNotify.sendCallNotification(res);

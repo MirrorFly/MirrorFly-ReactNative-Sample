@@ -12,6 +12,7 @@ import {
    clearCallData,
    resetConferencePopup,
    closeCallModal,
+   setCallModalScreen,
 } from '../../redux/Actions/CallAction';
 import Store from '../../redux/store';
 import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
@@ -139,17 +140,19 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
 
       const showConfrenceData = Store.getState().showConfrenceData;
       const { data: confrenceData } = showConfrenceData;
-      Store.dispatch(
-         showConfrence({
-            localStream: confrenceData?.localStream,
-            localVideoMuted: confrenceData?.localVideoMuted,
-            localAudioMuted: confrenceData?.localAudioMuted,
-            // showComponent: true,
-            screenName: OUTGOING_CALL_SCREEN,
-            callStatusText: 'Calling',
-         }),
-      );
-      Store.dispatch(openCallModal());
+      batch(() => {
+         Store.dispatch(
+            showConfrence({
+               localStream: confrenceData?.localStream,
+               localVideoMuted: confrenceData?.localVideoMuted,
+               localAudioMuted: confrenceData?.localAudioMuted,
+               // showComponent: true,
+               callStatusText: 'Calling',
+            }),
+         );
+         Store.dispatch(openCallModal());
+         Store.dispatch(setCallModalScreen(OUTGOING_CALL_SCREEN));
+      });
       try {
          if (callType === 'audio') {
             muteLocalVideo(true);
@@ -242,13 +245,7 @@ export const answerIncomingCall = async () => {
          if (Platform.OS === 'ios') {
             Store.dispatch(openCallModal());
          }
-         Store.dispatch(
-            showConfrence({
-               // showComponent: true,
-               // showCalleComponent: false,
-               screenName: ONGOING_CALL_SCREEN,
-            }),
-         );
+         Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
       });
       // TODO: update the Call logs when implementing
       // callLogs.update(callConnectionDate.data.roomId, {

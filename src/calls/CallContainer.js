@@ -7,6 +7,7 @@ import {
    INCOMING_CALL_SCREEN,
    OUTGOING_CALL_SCREEN,
    CALL_AGAIN_SCREEN,
+   CALL_STATUS_INCOMING,
 } from '../Helper/Calls/Constant';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import commonStyles from '../common/commonStyles';
@@ -16,23 +17,25 @@ import OnGoingCall from './screens/OnGoingCall';
 import CallAgain from './screens/CallAgain';
 
 const CallContainer = () => {
-   const { showCallModal, connectionState } = useSelector(state => state.callData) || {};
+   const { showCallModal, connectionState, screenName = '' } = useSelector(state => state.callData) || {};
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const insets = initialWindowMetrics.insets;
 
+   const getIncomingCallStatus = () => {
+      return confrenceData?.callStatusText || CALL_STATUS_INCOMING;
+   };
+
    const renderCallscreenBasedOnCallStatus = () => {
-      const _screenName = confrenceData.screenName;
-      console.log('_screenName', _screenName);
-      switch (_screenName) {
+      switch (screenName) {
          case INCOMING_CALL_SCREEN:
             const _userId = getUserIdFromJid(connectionState?.userJid);
-            return <IncomingCall userId={_userId} />;
+            return <IncomingCall userId={_userId} callStatus={getIncomingCallStatus()} />;
          case ONGOING_CALL_SCREEN:
             return <OnGoingCall />;
          case OUTGOING_CALL_SCREEN:
             return <OutGoingCall />;
          case CALL_AGAIN_SCREEN:
-            return <CallAgain userId={'919094237501'} />;
+            return <CallAgain />;
       }
    };
 

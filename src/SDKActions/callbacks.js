@@ -27,6 +27,7 @@ import {
    CALL_STATUS_INCOMING,
    DISCONNECTED_SCREEN_DURATION,
    INCOMING_CALL_SCREEN,
+   ONGOING_CALL_SCREEN,
    OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
 import { displayIncomingCallForIos, endCallForIos } from '../Helper/Calls/Utility';
@@ -184,12 +185,10 @@ const ringing = async res => {
          Store.dispatch(
             showConfrence({
                callStatusText: 'Ringing',
-               showStreamingComponent: false,
                localStream,
                remoteStream,
                localVideoMuted,
                localAudioMuted,
-               showComponent: true,
             }),
          );
          Store.dispatch(setCallModalScreen(OUTGOING_CALL_SCREEN));
@@ -233,7 +232,7 @@ const updateCallConnectionStatus = usersStatus => {
       usersLen = currentUsers.length;
    }
    let callDetailsObj = {
-      ...callConnectionData,
+      ...callConnectionData.connectionState,
       callMode:
          (callConnectionData?.groupId && callConnectionData?.groupId !== null && callConnectionData?.groupId !== '') ||
          usersLen > 2
@@ -383,14 +382,74 @@ const handleEngagedOrBusyStatus = res => {
    }
 };
 
+const connected = res => {
+   const userIndex = remoteStream.findIndex(item => item.fromJid === res.userJid);
+   console.log(remoteStream, 'userIndex');
+   if (userIndex > -1) {
+      let usersStatus = res.usersStatus;
+      updatingUserStatusInRemoteStream(usersStatus);
+      updateCallConnectionStatus(usersStatus);
+      const { getState, dispatch } = Store;
+      const showConfrenceData = getState().showConfrenceData;
+      const { data } = showConfrenceData;
+      // let showComponent = !!data.showComponent;
+      // let showStreamingComponent = !!data.showStreamingComponent;
+      // if (!showStreamingComponent) {
+      //    deleteItemFromLocalStorage('connecting');
+      //    showComponent = false;
+      //    showStreamingComponent = true;
+      // }
+      batch(() => {
+         dispatch(
+            showConfrence({
+               ...(data || {}),
+               remoteStream,
+               status: res.callStatus,
+               localVideoMuted: localVideoMuted,
+               localAudioMuted: localAudioMuted,
+               remoteVideoMuted: remoteVideoMuted,
+               remoteAudioMuted: remoteAudioMuted,
+            }),
+         );
+         !res.localUser && dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
+      });
+   }
+};
+
+const connecting = res => {
+   updatingUserStatusInRemoteStream(res.usersStatus);
+   // let roomId = getFromLocalStorageAndDecrypt('roomName');
+   // encryptAndStoreInLocalStorage('callingComponent', false);
+   const showConfrenceData = showConfrenceStoreData();
+   const { data } = showConfrenceData;
+   // If 'data.showStreamingComponent' property value is TRUE means, already call is connected &
+   // Streaming data has been shared between users. That's why we check condition here,
+   // If 'data.showStreamingComponent' is FALSE, then set the 'CONNECTING' state to display.
+   if (data && remoteStream.length === 0) {
+      remoteStream = [];
+      // encryptAndStoreInLocalStorage('connecting', true);
+      // Store.dispatch(
+      //    showConfrence({
+      //       showComponent: true,
+      //       showStreamingComponent: false,
+      //       showCallingComponent: false,
+      //    }),
+      // );
+      Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
+      // callLogs.update(roomId, {
+      //    sessionStatus: res.sessionStatus,
+      //    // "startTime": callLogs.initTime()
+      // });
+   }
+};
+
 const callStatus = res => {
-   console.log(res, '699');
    if (res.status === 'ringing') {
       ringing(res);
    } else if (res.status === 'connecting') {
       // connecting(res);
    } else if (res.status === 'connected') {
-      // connected(res);
+      connected(res);
    } else if (res.status === 'busy') {
       handleEngagedOrBusyStatus(res);
    } else if (res.status === 'disconnected') {

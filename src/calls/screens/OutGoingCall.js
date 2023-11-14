@@ -1,11 +1,8 @@
 import React from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
-import { useSelector } from 'react-redux';
-import { dispatchDisconnected, stopRingingCallTone } from '../../Helper/Calls/Call';
-import { DISCONNECTED_SCREEN_DURATION } from '../../Helper/Calls/Constant';
 import { batch, useDispatch, useSelector } from 'react-redux';
-import { dispatchDisconnected } from '../../Helper/Calls/Call';
+import { dispatchDisconnected, stopRingingCallTone } from '../../Helper/Calls/Call';
 import { CALL_AGAIN_SCREEN, DISCONNECTED_SCREEN_DURATION } from '../../Helper/Calls/Constant';
 import { capitalizeFirstLetter, getUserIdFromJid } from '../../Helper/Chat/Utility';
 import { resetCallData } from '../../SDKActions/callbacks';
@@ -16,20 +13,20 @@ import commonStyles from '../../common/commonStyles';
 import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
 import useRosterData from '../../hooks/useRosterData';
-import { closeCallModal, setCallModalScreen, updateConference } from '../../redux/Actions/CallAction';
+import { closeCallModal, setCallModalScreen } from '../../redux/Actions/CallAction';
+import { updateCallAgainData } from '../../redux/Actions/CallAgainAction';
 import Store from '../../redux/store';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 import ProfilePictureWithPulse from '../components/ProfilePictureWithPulse';
-import { updateCallAgainData } from '../../redux/Actions/CallAgainAction';
 
 const OutGoingCall = () => {
    const { showCallModal, connectionState } = useSelector(state => state.callData) || {};
    const { to: userJid = '', callType } = connectionState;
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const { callStatusText: callStatus = '' } = confrenceData;
-   console.log(confrenceData, 'confrenceData');
-   console.log(connectionState, 'connectionState');
+   // console.log(connectionState, 'connectionState');
+   // console.log(confrenceData, 'confrenceData');
    let timer = null;
    let uiChangetimer = null;
 
@@ -40,7 +37,6 @@ const OutGoingCall = () => {
    });
 
    const dispatch = useDispatch();
-
    let userID = getUserIdFromJid(userJid);
    const userProfile = useRosterData(userID);
    const nickName = userProfile.nickName || userID;
@@ -119,10 +115,6 @@ const OutGoingCall = () => {
       });
    };
 
-   const handleEndCall = () => {
-      endCall();
-   };
-
    const handleClosePress = () => {};
 
    const handleAudioMute = () => {};
@@ -158,7 +150,7 @@ const OutGoingCall = () => {
          <View>
             {/* Call Control buttons (Mute & End & speaker) */}
             <CallControlButtons
-               // handleEndCall={endCall}
+               handleEndCall={endCall}
                handleAudioMute={handleAudioMute}
                // handleVideoMute={handleVideoMute}
                videoMute={!!localVideoMuted}
@@ -166,12 +158,6 @@ const OutGoingCall = () => {
                // audioControl={audioControl}
                // videoControl={videoControl}
             />
-            {/* call action buttons (Accept & Reject) */}
-            <GestureHandlerRootView style={styles.actionButtonWrapper}>
-               <RectButton onPress={handleEndCall} style={[styles.actionButton, styles.redButton]}>
-                  <EndCallIcon />
-               </RectButton>
-            </GestureHandlerRootView>
          </View>
       </ImageBackground>
    );
@@ -208,22 +194,6 @@ const styles = StyleSheet.create({
       backgroundColor: '#9D9D9D',
       justifyContent: 'center',
       alignItems: 'center',
-   },
-   actionButtonWrapper: {
-      marginBottom: 30,
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-   },
-   actionButton: {
-      width: 200,
-      height: 50,
-      backgroundColor: 'salmon',
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderRadius: 25,
-   },
-   redButton: {
-      backgroundColor: '#FB2B48',
    },
    animatedStyle: {
       width: 90,

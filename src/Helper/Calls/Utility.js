@@ -32,15 +32,23 @@ import {
 } from './Constant';
 import { getUserIdFromJid } from '../Chat/Utility';
 import { batch } from 'react-redux';
+import { showToast } from '../index';
 
 export const makeCalls = async (callType, userId) => {
    let userList = [];
    if (!userId) {
       return;
    }
-   let userListData = await getCallData(userId);
-   userList = [...userListData];
-   makeOne2OneCall(callType, userList);
+   let connectionStatus = await AsyncStorage.getItem('connection_status');
+   if (connectionStatus === 'CONNECTED') {
+      let userListData = await getCallData(userId);
+      userList = [...userListData];
+      makeOne2OneCall(callType, userList);
+   } else {
+      showToast('Please check your internet connection', {
+         id: 'Network_error',
+      });
+   }
 };
 
 const makeOne2OneCall = async (callType, usersList) => {
@@ -136,11 +144,10 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          startCall(uuid, callerId, callerName, hasVideo);
       }
 
-      Store.dispatch(updateCallConnectionState(callConnectionStatus));
-
       const showConfrenceData = Store.getState().showConfrenceData;
       const { data: confrenceData } = showConfrenceData;
       batch(() => {
+         Store.dispatch(updateCallConnectionState(callConnectionStatus));
          Store.dispatch(
             showConfrence({
                localStream: confrenceData?.localStream,
@@ -210,6 +217,9 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
       }
       // // preventMultipleClick = false;
    } else {
+      showToast('Please check your internet connection', {
+         id: 'Network_error',
+      });
       // toast.error(NO_INTERNET)
       // // preventMultipleClick = false;
    }

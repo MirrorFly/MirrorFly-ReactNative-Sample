@@ -81,7 +81,7 @@ const CallStateReducer = (state = initialStateClone, action = {}) => {
          return {
             ...state,
             id: Date.now(),
-            callerUUID: action.payload,
+            callerUUID: String(action.payload).toUpperCase(),
          };
       case CLEAR_CALL_DATA:
          return {
@@ -91,7 +91,6 @@ const CallStateReducer = (state = initialStateClone, action = {}) => {
          };
       case RESET_CALL_DATA:
       case RESET_STORE:
-         console.log('reseting call state data', getObjectDeepClone(initialState));
          return getObjectDeepClone(initialState);
    }
    return state;

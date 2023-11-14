@@ -1,31 +1,40 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
-import { AudioUnMuteIcon, SpeakerEnableIcon, VideoMuteIcon } from '../../common/Icons';
+import { AudioUnMuteIcon, EndCallIcon, SpeakerEnableIcon, VideoMuteIcon } from '../../common/Icons';
 
 const CallControlButtons = (props = {}) => {
-   const { handleAudioMute } = props;
-   const [speakerToggle,setSpeakerToggle] = React.useState(false)
+   const { handleAudioMute, handleEndCall } = props;
+
+   const [speakerToggle, setSpeakerToggle] = React.useState(false);
    let videoMute = true;
 
    const speakerOn = () => {
-      setSpeakerToggle(!speakerToggle)
+      setSpeakerToggle(!speakerToggle);
    };
 
    return (
-      <View style={styles.container}>
-         <GestureHandlerRootView style={styles.actionButtonWrapper}>
-            <RectButton onPress={handleAudioMute} style={[styles.actionButton]}>
-               <AudioUnMuteIcon />
-            </RectButton>
-            <RectButton onPress={handleAudioMute} style={[styles.actionButton, videoMute && styles.activeButton]}>
-               <VideoMuteIcon />
-            </RectButton>
-            <RectButton onPress={speakerOn} style={[styles.actionButton]}>
-               <SpeakerEnableIcon />
+      <>
+         <View style={styles.container}>
+            <GestureHandlerRootView style={styles.actionButtonWrapper}>
+               <RectButton onPress={handleAudioMute} style={[styles.actionButton]}>
+                  <AudioUnMuteIcon />
+               </RectButton>
+               <RectButton onPress={handleAudioMute} style={[styles.actionButton, videoMute && styles.activeButton]}>
+                  <VideoMuteIcon />
+               </RectButton>
+               <RectButton onPress={speakerOn} style={[styles.actionButton]}>
+                  <SpeakerEnableIcon />
+               </RectButton>
+            </GestureHandlerRootView>
+         </View>
+         {/* call action buttons (Accept & Reject) */}
+         <GestureHandlerRootView style={styles.actionEndButtonWrapper}>
+            <RectButton onPress={handleEndCall} style={[styles.actionEndButton, styles.redButton]}>
+               <EndCallIcon />
             </RectButton>
          </GestureHandlerRootView>
-      </View>
+      </>
    );
 };
 
@@ -59,5 +68,21 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 28,
+   },
+   actionEndButtonWrapper: {
+      marginBottom: 30,
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+   },
+   actionEndButton: {
+      width: 200,
+      height: 50,
+      backgroundColor: 'salmon',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 25,
+   },
+   redButton: {
+      backgroundColor: '#FB2B48',
    },
 });

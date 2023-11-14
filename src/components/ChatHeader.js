@@ -1,7 +1,9 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { Checkbox } from 'native-base';
 import React, { useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { openSettings } from 'react-native-permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { makeCalls } from '../Helper/Calls/Utility';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
@@ -24,6 +26,7 @@ import MenuContainer from '../common/MenuContainer';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import commonStyles from '../common/commonStyles';
+import { requestMicroPhonePermission } from '../common/utils';
 import ApplicationColors from '../config/appColors';
 import { FORWARD_MESSSAGE_SCREEN } from '../constant';
 import useRosterData from '../hooks/useRosterData';
@@ -34,9 +37,6 @@ import {
 } from '../redux/Actions/conversationSearchAction';
 import ChatSearchInput from './ChatSearchInput';
 import LastSeen from './LastSeen';
-import { requestMicroPhonePermission } from '../common/utils';
-import { openSettings } from 'react-native-permissions';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function ChatHeader({
   fromUserJId,
@@ -269,7 +269,7 @@ function ChatHeader({
   }
 
   const makeOne2OneAudioCall = () => {
-    makeOne2OneCall('audio');
+      makeOne2OneCall('audio');
   };
 
   const makeOne2OneCall = async callType => {

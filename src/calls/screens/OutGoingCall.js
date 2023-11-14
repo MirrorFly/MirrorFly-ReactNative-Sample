@@ -1,6 +1,5 @@
 import React from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
-import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { dispatchDisconnected, stopRingingCallTone } from '../../Helper/Calls/Call';
 import { CALL_AGAIN_SCREEN, DISCONNECTED_SCREEN_DURATION } from '../../Helper/Calls/Constant';
@@ -8,7 +7,6 @@ import { capitalizeFirstLetter, getUserIdFromJid } from '../../Helper/Chat/Utili
 import { resetCallData } from '../../SDKActions/callbacks';
 import OutgoingCallBg from '../../assets/OutgoingCallBg.png';
 import Avathar from '../../common/Avathar';
-import { EndCallIcon } from '../../common/Icons';
 import commonStyles from '../../common/commonStyles';
 import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';

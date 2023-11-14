@@ -255,7 +255,7 @@ export const answerIncomingCall = async () => {
          if (Platform.OS === 'ios') {
             Store.dispatch(openCallModal());
          }
-         Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
+         // Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
       });
       // TODO: update the Call logs when implementing
       // callLogs.update(callConnectionDate.data.roomId, {

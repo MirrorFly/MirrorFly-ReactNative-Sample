@@ -3,10 +3,11 @@ import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { disconnectCallConnection } from '../../Helper/Calls/Call';
 import { CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
+import { formatUserIdToJid } from '../../Helper/Chat/ChatHelper';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
-import GradientBg from '../../assets/calls-gradient-bg.png';
 import Avathar from '../../common/Avathar';
+import MenuContainer from '../../common/MenuContainer';
 import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
 import useRosterData from '../../hooks/useRosterData';
@@ -15,8 +16,6 @@ import Store from '../../redux/store';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 import PulseAnimatedView from '../components/PulseAnimatedView';
-import MenuContainer from '../../common/MenuContainer';
-import { formatUserIdToJid, getLocalUserDetails } from '../../Helper/Chat/ChatHelper';
 import Timer from '../components/Timer';
 
 /**
@@ -33,6 +32,7 @@ const OnGoingCall = () => {
    const { connectionState: callData = {} } = useSelector(state => state.callData) || {};
    const { data: showConfrenceData = {}, data: { remoteStream = [] } = {} } =
       useSelector(state => state.showConfrenceData) || {};
+   const vCardData = useSelector(state => state.profile?.profileDetails);
 
    const userId = getUserIdFromJid(callData.userJid || callData.to);
    const userProfile = useRosterData(userId || '919988776655');
@@ -75,6 +75,7 @@ const OnGoingCall = () => {
 
    const renderLargeVideoTile = () => {
       if (layout === 'tile') {
+         // const largeVideoUserData = remoteStream.find
          return (
             <View style={styles.avatharWrapper}>
                {/* Pulse animation view here */}
@@ -164,8 +165,7 @@ const OnGoingCall = () => {
       const data = showConfrenceData || {};
       if (data.callStatusText === CALL_STATUS_DISCONNECTED || data.callStatusText === CALL_STATUS_RECONNECT)
          return data.callStatusText;
-      let vcardData = getLocalUserDetails();
-      let currentUser = vcardData.fromUser;
+      let currentUser = vCardData.fromUser;
       if (!userid) {
          userid = formatUserIdToJid(currentUser);
       }

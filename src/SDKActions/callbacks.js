@@ -326,10 +326,10 @@ const handleEngagedOrBusyStatus = res => {
       // //UI and toast show without delay
       setTimeout(() => {
          //  localstoreCommon();
+         dispatchCommon();
          showToast(callStatusMsg, {
             id: 'User_Busy_Toast',
          });
-         dispatchCommon();
       }, DISCONNECTED_SCREEN_DURATION);
    } else {
       if (remoteStream && Array.isArray(remoteStream) && remoteStream.length < 1) {

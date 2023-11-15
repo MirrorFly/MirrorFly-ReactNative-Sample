@@ -1,25 +1,25 @@
 import React from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
-import { getImageSource } from '../../common/utils';
-import CallsBg from '../../assets/calls-bg.png';
-import useRosterData from '../../hooks/useRosterData';
-import CloseCallModalButton from '../components/CloseCallModalButton';
-import commonStyles from '../../common/commonStyles';
-import ApplicationColors from '../../config/appColors';
-import Avathar from '../../common/Avathar';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import { batch, useDispatch } from 'react-redux';
-import { clearCallData, closeCallModal, resetConferencePopup } from '../../redux/Actions/CallAction';
-import { dispatchDisconnected, stopIncomingCallRingtone } from '../../Helper/Calls/Call';
-import { resetCallData } from '../../SDKActions/callbacks';
+import { dispatchDisconnected } from '../../Helper/Calls/Call';
 import {
    CALL_RINGING_DURATION,
    CALL_STATUS_DISCONNECTED,
    CALL_STATUS_INCOMING,
    DISCONNECTED_SCREEN_DURATION,
 } from '../../Helper/Calls/Constant';
-import SDK from '../../SDK/SDK';
 import { answerIncomingCall, declineIncomingCall } from '../../Helper/Calls/Utility';
+import SDK from '../../SDK/SDK';
+import { resetCallData } from '../../SDKActions/callbacks';
+import CallsBg from '../../assets/calls-bg.png';
+import Avathar from '../../common/Avathar';
+import commonStyles from '../../common/commonStyles';
+import { getImageSource } from '../../common/utils';
+import ApplicationColors from '../../config/appColors';
+import useRosterData from '../../hooks/useRosterData';
+import { clearCallData, resetCallStateData, resetConferencePopup } from '../../redux/Actions/CallAction';
+import CloseCallModalButton from '../components/CloseCallModalButton';
 
 let autoCallEndInterval;
 
@@ -63,6 +63,7 @@ const IncomingCall = ({ userId, callStatus = CALL_STATUS_INCOMING }) => {
          batch(() => {
             dispatch(clearCallData());
             dispatch(resetConferencePopup());
+            dispatch(resetCallStateData())
          });
       }, DISCONNECTED_SCREEN_DURATION);
    };

@@ -35,7 +35,7 @@ const OnGoingCall = () => {
    const vCardData = useSelector(state => state.profile?.profileDetails);
 
    const userId = getUserIdFromJid(callData.userJid || callData.to);
-   const userProfile = useRosterData(userId || '919988776655');
+   const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
 
    const dispatch = useDispatch();

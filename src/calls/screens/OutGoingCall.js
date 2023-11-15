@@ -23,8 +23,6 @@ const OutGoingCall = () => {
    const { to: userJid = '', callType } = connectionState;
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const { callStatusText: callStatus = '' } = confrenceData;
-   // console.log(connectionState, 'connectionState');
-   // console.log(confrenceData, 'confrenceData');
    let timer = null;
    let uiChangetimer = null;
 
@@ -50,7 +48,7 @@ const OutGoingCall = () => {
       uiChangetimer = setTimeout(() => {
          setOutGoingCalls({
             ...outGoingCalls,
-            callingUiStatus: 'User seems to be offline, Trying to connect',
+            callingUiStatus: 'Unavailable',
          });
       }, 10000);
       timer = setTimeout(() => {
@@ -58,15 +56,13 @@ const OutGoingCall = () => {
       }, 30000);
 
       return () => {
-         // stopAudio();
          clearTimeout(timer);
          clearTimeout(uiChangetimer);
-         stopRingingCallTone();
+         // stopRingingCallTone();
       };
    }, []);
 
    const endCall = async (isFromTimeout = false) => {
-      // stopAudio();
       const callConnectionDataEndCall = connectionState?.data;
       SDK.endCall();
       // endCallAction();

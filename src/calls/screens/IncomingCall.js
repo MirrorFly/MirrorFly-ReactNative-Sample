@@ -45,7 +45,6 @@ const IncomingCall = ({ userId, callStatus = CALL_STATUS_INCOMING }) => {
    // when user not attending the call and the timeout has been reached
    const endCall = async () => {
       clearTimeout(autoCallEndInterval);
-      console.log('Ending the call from the useEffect timeout');
       SDK.endCall();
       dispatchDisconnected(CALL_STATUS_DISCONNECTED);
       // TODO: update the Call logs when implementing

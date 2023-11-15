@@ -25,6 +25,7 @@ import {
    CALL_STATUS_CONNECTED,
    CALL_STATUS_ENDED,
    CALL_STATUS_INCOMING,
+   CALL_STATUS_RECONNECT,
    DISCONNECTED_SCREEN_DURATION,
    INCOMING_CALL_SCREEN,
    ONGOING_CALL_SCREEN,
@@ -312,7 +313,6 @@ const dispatchCommon = () => {
 };
 
 const handleEngagedOrBusyStatus = res => {
-   console.log(res, 'res');
    //  let roomId = getFromLocalStorageAndDecrypt('roomName');
    updatingUserStatusInRemoteStream(res.usersStatus);
    if (res.sessionStatus === 'closed') {
@@ -328,7 +328,7 @@ const handleEngagedOrBusyStatus = res => {
          //  localstoreCommon();
          dispatchCommon();
          showToast(callStatusMsg, {
-            id: 'User_Busy_Toast',
+            id: 'user-busy-toast',
          });
       }, DISCONNECTED_SCREEN_DURATION);
    } else {
@@ -446,7 +446,77 @@ const connecting = res => {
    }
 };
 
+const disconnected = res => {
+   console.log(res, 'disconnected');
+   // let roomId = getFromLocalStorageAndDecrypt('roomName');
+   let vcardData = getLocalUserDetails();
+   let currentUser = vcardData?.fromUser;
+   currentUser = formatUserIdToJid(currentUser);
+   updatingUserStatusInRemoteStream(res.usersStatus);
+   let disconnectedUser = res.userJid;
+   disconnectedUser = disconnectedUser.includes('@') ? disconnectedUser.split('@')[0] : disconnectedUser;
+   if (remoteStream.length < 1 || disconnectedUser === currentUser) {
+      // deleteItemFromLocalStorage('roomName');
+      // deleteItemFromLocalStorage('callType');
+      // deleteItemFromLocalStorage('call_connection_status');
+      // callLogs.update(roomId, {
+      //    endTime: callLogs.initTime(),
+      //    sessionStatus: res.sessionStatus,
+      // });
+      // Store.dispatch(
+      //    showConfrence({
+      //       showComponent: false,
+      //       showStreamingComponent: false,
+      //       showCalleComponent: false,
+      //    }),
+      // );
+      // resetPinAndLargeVideoUser();
+      // Store.dispatch(hideModal());
+      resetCallData();
+   } else {
+      Store.dispatch(
+         showConfrence({
+            showComponent: false,
+            showStreamingComponent: true,
+            showCallingComponent: false,
+            localStream: localStream,
+            remoteStream: remoteStream,
+            fromJid: '',
+            status: 'REMOTESTREAM',
+            localVideoMuted: localVideoMuted,
+            localAudioMuted: localAudioMuted,
+            remoteVideoMuted: remoteVideoMuted,
+            remoteAudioMuted: remoteAudioMuted,
+         }),
+      );
+      resetPinAndLargeVideoUser(res.fromJid);
+      removingRemoteStream(res);
+   }
+};
+
+const reconnecting = res => {
+   updatingUserStatusInRemoteStream(res.usersStatus);
+   const showConfrenceData = Store.getState().showConfrenceData;
+   const { data } = showConfrenceData;
+   Store.dispatch(
+      showConfrence({
+         showCallingComponent: false,
+         ...(data || {}),
+         localStream: localStream,
+         remoteStream: remoteStream,
+         fromJid: res.userJid,
+         status: 'REMOTESTREAM',
+         localVideoMuted: localVideoMuted,
+         localAudioMuted: localAudioMuted,
+         remoteVideoMuted: remoteVideoMuted,
+         remoteAudioMuted: remoteAudioMuted,
+         callStatusText: CALL_STATUS_RECONNECT,
+      }),
+   );
+};
+
 const callStatus = res => {
+   console.log(res.status, 'statusstatus');
    if (res.status === 'ringing') {
       ringing(res);
    } else if (res.status === 'connecting') {
@@ -456,13 +526,13 @@ const callStatus = res => {
    } else if (res.status === 'busy') {
       handleEngagedOrBusyStatus(res);
    } else if (res.status === 'disconnected') {
-      // disconnected(res);
+      disconnected(res);
    } else if (res.status === 'engaged') {
       handleEngagedOrBusyStatus(res);
    } else if (res.status === 'ended') {
       ended(res);
    } else if (res.status === 'reconnecting') {
-      // reconnecting(res);
+      reconnecting(res);
    } else if (res.status === 'userstatus') {
       userStatus(res);
    } else if (res.status === 'hold') {

@@ -43,7 +43,8 @@ export const clearOldCallingTimer = () => {
 export const disconnectCallConnection = (remoteStreams = []) => {
    const callConnectionData = callConnectionStoreData();
    SDK.endCall();
-   dispatchDisconnected(CALL_STATUS_DISCONNECTED, remoteStreams);
+   // dispatchDisconnected(CALL_STATUS_DISCONNECTED, remoteStreams);
+   dispatchDisconnected(remoteStreams);
    // TODO: update the callLogs when implementing the feature
    // callLogs.update(callConnectionData.roomId, {
    // 		"endTime": callLogs.initTime(),
@@ -131,10 +132,11 @@ export const clearMissedCallNotificationTimer = () => {
 };
 
 export function dispatchDisconnected(statusMessage, remoteStreams = []) {
+   console.log(statusMessage, 'statussss');
    const { getState, dispatch } = Store;
    const showConfrenceData = getState().showConfrenceData;
    const { data } = showConfrenceData;
-   statusMessage = statusMessage || CALL_STATUS_DISCONNECTED;
+   // statusMessage = statusMessage || CALL_STATUS_DISCONNECTED;
    dispatch(
       showConfrence({
          ...(data || {}),

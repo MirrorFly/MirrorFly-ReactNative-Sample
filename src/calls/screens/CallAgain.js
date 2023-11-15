@@ -27,7 +27,6 @@ const CallAgain = () => {
 
    // when user manually declined the call from the action buttons or swiping to decline the call
    const handleCancelPress = async () => {
-      console.log('resetting call state data');
       dispatch(resetCallStateData());
    };
 

@@ -52,6 +52,7 @@ import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Help
 import { updateConversationMessage, updateRecentChatMessage } from '../components/chat/common/createMessage';
 import { REGISTERSCREEN } from '../constant';
 import {
+   callDurationTimestamp,
    clearCallData,
    closeCallModal,
    openCallModal,
@@ -114,14 +115,16 @@ export const resetCallData = () => {
    // } else {
    //   Store.dispatch(resetCallIntermediateScreen());
    // }
-   // Store.dispatch(callDurationTimestamp());
    if (Platform.OS === 'ios') {
       RNCallKeep.removeEventListener('answerCall');
       RNCallKeep.removeEventListener('endCall');
       endCallForIos();
    }
-   Store.dispatch(resetConferencePopup());
-   Store.dispatch(clearCallData());
+   batch(() => {
+      Store.dispatch(callDurationTimestamp());
+      Store.dispatch(resetConferencePopup());
+      Store.dispatch(clearCallData());
+   });
    resetData();
    // setTimeout(() => {
    //   Store.dispatch(isMuteAudioAction(false));

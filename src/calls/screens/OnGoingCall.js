@@ -2,7 +2,7 @@ import React from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { disconnectCallConnection } from '../../Helper/Calls/Call';
-import { CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
+import { CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
 import GradientBg from '../../assets/calls-gradient-bg.png';
@@ -16,6 +16,8 @@ import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 import PulseAnimatedView from '../components/PulseAnimatedView';
 import MenuContainer from '../../common/MenuContainer';
+import { formatUserIdToJid, getLocalUserDetails } from '../../Helper/Chat/ChatHelper';
+import Timer from '../components/Timer';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType
@@ -29,11 +31,12 @@ const initialLayout = 'tile';
 const OnGoingCall = () => {
    const isCallConnected = true;
    const { connectionState: callData = {} } = useSelector(state => state.callData) || {};
-   const { data: showConfrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
+   const { data: showConfrenceData = {}, data: { remoteStream = [] } = {} } =
+      useSelector(state => state.showConfrenceData) || {};
+
    const userId = getUserIdFromJid(callData.userJid || callData.to);
    const userProfile = useRosterData(userId || '919988776655');
    const nickName = userProfile.nickName || userId || '';
-   const callTime = '0:00';
 
    const dispatch = useDispatch();
 
@@ -157,6 +160,21 @@ const OnGoingCall = () => {
    //     return user && user.status;
    //  };
 
+   const getCallStatus = userid => {
+      const data = showConfrenceData || {};
+      if (data.callStatusText === CALL_STATUS_DISCONNECTED || data.callStatusText === CALL_STATUS_RECONNECT)
+         return data.callStatusText;
+      let vcardData = getLocalUserDetails();
+      let currentUser = vcardData.fromUser;
+      if (!userid) {
+         userid = formatUserIdToJid(currentUser);
+      }
+      const user = remoteStream.find(item => item.fromJid === userid);
+      return user?.status;
+   };
+
+   let callStatus = getCallStatus();
+
    return (
       <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>
          <View>
@@ -176,9 +194,9 @@ const OnGoingCall = () => {
             </View>
             {/* user profile details and call timer */}
             <View style={styles.userDetailsContainer}>
-               {/* {callStatus && callStatus.toLowerCase() == CALL_STATUS_RECONNECT && <Timer callStatus={callStatus} />} */}
-
-               <Text style={styles.callTimeText}>{callTime}</Text>
+               {/* {callStatus && callStatus.toLowerCase() == CALL_STATUS_RECONNECT &&} */}
+               <Timer callStatus={callStatus} />
+               {/* <Text style={styles.callTimeText}>{callTime}</Text> */}
                {renderLargeVideoTile()}
             </View>
          </View>

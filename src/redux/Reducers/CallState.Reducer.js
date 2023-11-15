@@ -1,6 +1,7 @@
 import { LARGE_VIDEO_USER, ONGOING_CALL_SCREEN } from '../../Helper/Calls/Constant';
 import {
    CALLCONNECTION_STATE_DATA,
+   CALL_DURATION_TIMESTAMP,
    CLEAR_CALL_DATA,
    CLOSE_CALL_MODAL,
    OPEN_CALL_MODAL,
@@ -82,6 +83,12 @@ const CallStateReducer = (state = initialStateClone, action = {}) => {
             ...state,
             id: Date.now(),
             callerUUID: String(action.payload).toUpperCase(),
+         };
+      case CALL_DURATION_TIMESTAMP:
+         return {
+            ...state,
+            id: Date.now(),
+            callDuration: action.payload,
          };
       case CLEAR_CALL_DATA:
          return {

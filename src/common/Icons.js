@@ -605,7 +605,7 @@ export const CloseIcon = ({ width, height }) => {
    );
 };
 
-export const MenuIcon = ({ width, height }) => {
+export const MenuIcon = ({ width, height, color }) => {
    return (
       <Svg
          xmlns="http://www.w3.org/2000/svg"
@@ -617,7 +617,7 @@ export const MenuIcon = ({ width, height }) => {
             data-name="Shape 1 copy 7"
             d="M338.34,58.15a1.83,1.83,0,1,1,1.831,1.81A1.82,1.82,0,0,1,338.34,58.15Zm0-6.34a1.83,1.83,0,1,1,1.831,1.81A1.82,1.82,0,0,1,338.34,51.81Zm0-6.35a1.83,1.83,0,1,1,1.831,1.81A1.82,1.82,0,0,1,338.34,45.46Z"
             transform="translate(-338.34 -43.65)"
-            fill="#181818"
+            fill={color || '#181818'}
          />
       </Svg>
    );
@@ -2406,24 +2406,24 @@ export const ContactInfoIcon = props => {
    );
 };
 
-export const PhoneIcon = ({width, height, color}) => {
-  return (
-    <Svg
-      id="phone-call-button"
-      xmlns="http://www.w3.org/2000/svg"
-      width={width || "13.651"}
-      height={height || "13.651"}
-      viewBox="0 0 13.651 13.651">
-      <G id="call">
-        <Path
-          id="Path_9631"
-          data-name="Path 9631"
-          d="M2.73,5.915a11.807,11.807,0,0,0,5.005,5.005L9.4,9.252a.6.6,0,0,1,.758-.152,7.933,7.933,0,0,0,2.73.455.717.717,0,0,1,.758.758v2.579a.717.717,0,0,1-.758.758A12.882,12.882,0,0,1,0,.758.717.717,0,0,1,.758,0H3.413a.717.717,0,0,1,.758.758,8.589,8.589,0,0,0,.455,2.73.934.934,0,0,1-.152.758Z"
-          fill={color || "#4879f9"}
-        />
-      </G>
-    </Svg>
-  );
+export const PhoneIcon = ({ width, height, color }) => {
+   return (
+      <Svg
+         id="phone-call-button"
+         xmlns="http://www.w3.org/2000/svg"
+         width={width || '13.651'}
+         height={height || '13.651'}
+         viewBox="0 0 13.651 13.651">
+         <G id="call">
+            <Path
+               id="Path_9631"
+               data-name="Path 9631"
+               d="M2.73,5.915a11.807,11.807,0,0,0,5.005,5.005L9.4,9.252a.6.6,0,0,1,.758-.152,7.933,7.933,0,0,0,2.73.455.717.717,0,0,1,.758.758v2.579a.717.717,0,0,1-.758.758A12.882,12.882,0,0,1,0,.758.717.717,0,0,1,.758,0H3.413a.717.717,0,0,1,.758.758,8.589,8.589,0,0,0,.455,2.73.934.934,0,0,1-.152.758Z"
+               fill={color || '#4879f9'}
+            />
+         </G>
+      </Svg>
+   );
 };
 
 export const ContactSendIcon = props => {

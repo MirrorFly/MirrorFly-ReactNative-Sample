@@ -1,4 +1,4 @@
-import { LARGE_VIDEO_USER } from '../../Helper/Calls/Constant';
+import { LARGE_VIDEO_USER, ONGOING_CALL_SCREEN } from '../../Helper/Calls/Constant';
 import {
    CALLCONNECTION_STATE_DATA,
    CLEAR_CALL_DATA,
@@ -14,8 +14,8 @@ import { getObjectDeepClone } from '../reduxHelper';
 
 const initialState = {
    id: null,
-   showCallModal: false,
-   screenName: '',
+   showCallModal: true,
+   screenName: ONGOING_CALL_SCREEN,
    connectionState: {},
    callDuration: 0,
    /*

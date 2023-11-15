@@ -1,35 +1,146 @@
 import React from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { disconnectCallConnection } from '../../Helper/Calls/Call';
 import { CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
+import GradientBg from '../../assets/calls-gradient-bg.png';
 import Avathar from '../../common/Avathar';
 import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
 import useRosterData from '../../hooks/useRosterData';
-import { resetCallStateData } from '../../redux/Actions/CallAction';
+import { closeCallModal, resetCallStateData } from '../../redux/Actions/CallAction';
 import Store from '../../redux/store';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 import PulseAnimatedView from '../components/PulseAnimatedView';
+import MenuContainer from '../../common/MenuContainer';
+
+/**
+ * @typedef {'grid'|'tile'} LayoutType
+ */
+
+/**
+ * @type {LayoutType}
+ */
+const initialLayout = 'tile';
 
 const OnGoingCall = () => {
    const isCallConnected = true;
    const { connectionState: callData = {} } = useSelector(state => state.callData) || {};
    const { data: showConfrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const userId = getUserIdFromJid(callData.userJid || callData.to);
-   const userProfile = useRosterData(userId);
+   const userProfile = useRosterData(userId || '919988776655');
    const nickName = userProfile.nickName || userId || '';
    const callTime = '0:00';
 
+   const dispatch = useDispatch();
+
+   /**
+    * @type {[
+    *    layout: LayoutType,
+    *    setLayout: (layout: LayoutType) => void
+    * ]}
+    */
+   const [layout, setLayout] = React.useState(initialLayout);
+
+   const menuItems = React.useMemo(
+      () => [
+         {
+            label: `Click ${layout === 'tile' ? 'grid' : 'tile'} view`,
+            formatter: () => {
+               setLayout(val => (val === 'tile' ? 'grid' : 'tile'));
+            },
+         },
+      ],
+      [layout],
+   );
+
    const handleClosePress = () => {
-      // dispatch(closeCallModal());
+      dispatch(closeCallModal());
    };
 
    const handleHangUp = async e => {
       await endCall();
+   };
+
+   const endCall = async () => {
+      disconnectCallConnection(); //hangUp calls
+      Store.dispatch(resetCallStateData());
+   };
+
+   const renderLargeVideoTile = () => {
+      if (layout === 'tile') {
+         return (
+            <View style={styles.avatharWrapper}>
+               {/* Pulse animation view here */}
+               <PulseAnimatedView animateToValue={1.3} baseStyle={styles.avatharPulseAnimatedView} />
+               <Avathar
+                  width={90}
+                  height={90}
+                  backgroundColor={userProfile.colorCode}
+                  data={nickName}
+                  profileImage={userProfile.image}
+               />
+            </View>
+         );
+      }
+   };
+
+   const renderSmallVideoTile = () => {
+      if (layout === 'tile') {
+         return (
+            <View style={styles.smallVideoWrapper}>
+               <View style={styles.smallVideoVoiceLevelWrapper}>
+                  <View style={styles.smallVideoVoiceLevelIndicator} />
+                  <View style={styles.smallVideoVoiceLevelIndicator} />
+                  <View style={styles.smallVideoVoiceLevelIndicator} />
+               </View>
+               <View style={styles.smallVideoUserAvathar}>
+                  <Avathar
+                     width={50}
+                     height={50}
+                     backgroundColor={userProfile.colorCode}
+                     data={nickName}
+                     profileImage={userProfile.image}
+                  />
+               </View>
+               <View>
+                  <Text style={styles.smallVideoUserName}>You</Text>
+               </View>
+            </View>
+         );
+      }
+   };
+
+   const renderGridLayout = () => {
+      if (layout === 'grid') {
+         return (
+            <View style={styles.gridLayoutContainer}>
+               {/* Loop through the users and render the layout */}
+               <View style={styles.gridItemWrapper}>
+                  <View style={styles.smallVideoVoiceLevelWrapper}>
+                     <View style={styles.smallVideoVoiceLevelIndicator} />
+                     <View style={styles.smallVideoVoiceLevelIndicator} />
+                     <View style={styles.smallVideoVoiceLevelIndicator} />
+                  </View>
+                  <View style={styles.smallVideoUserAvathar}>
+                     <Avathar
+                        width={50}
+                        height={50}
+                        backgroundColor={userProfile.colorCode}
+                        data={nickName}
+                        profileImage={userProfile.image}
+                     />
+                  </View>
+                  <View>
+                     <Text style={styles.smallVideoUserName}>You</Text>
+                  </View>
+               </View>
+            </View>
+         );
+      }
    };
 
    //  const getCallStatus = userid => {
@@ -46,16 +157,15 @@ const OnGoingCall = () => {
    //     return user && user.status;
    //  };
 
-   const endCall = async () => {
-      disconnectCallConnection(); //hangUp calls
-      Store.dispatch(resetCallStateData());
-   };
-
    return (
       <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>
          <View>
             {/* down arrow to close the modal */}
             <CloseCallModalButton onPress={handleClosePress} />
+            {/* Menu for layout change */}
+            <View style={styles.menuIcon}>
+               <MenuContainer menuItems={menuItems} color={ApplicationColors.white} />
+            </View>
             {/* call status */}
             <View style={styles.callUsersWrapper}>
                {isCallConnected ? (
@@ -66,29 +176,16 @@ const OnGoingCall = () => {
             </View>
             {/* user profile details and call timer */}
             <View style={styles.userDetailsContainer}>
-               {callStatus && callStatus.toLowerCase() == CALL_STATUS_RECONNECT && <Timer callStatus={callStatus} />}
+               {/* {callStatus && callStatus.toLowerCase() == CALL_STATUS_RECONNECT && <Timer callStatus={callStatus} />} */}
 
                <Text style={styles.callTimeText}>{callTime}</Text>
-               <View style={styles.avatharWrapper}>
-                  {/* Pulse animation view here */}
-                  {/* <Animated.View
-              style={[
-                styles.avatharPulseAnimatedView,
-                { transform: [{ scale: 1 }] }, // apply scale from 1 to 1.3
-              ]}
-            /> */}
-                  <PulseAnimatedView animateToValue={1.3} baseStyle={styles.avatharPulseAnimatedView} />
-                  <Avathar
-                     width={90}
-                     height={90}
-                     backgroundColor={userProfile.colorCode}
-                     data={nickName}
-                     profileImage={userProfile.image}
-                  />
-               </View>
+               {renderLargeVideoTile()}
             </View>
          </View>
-         <View>
+         {renderGridLayout()}
+         <View /* style={layout === 'grid' && styles.} */>
+            {/* Small video tile */}
+            {renderSmallVideoTile()}
             {/* Call Control buttons (Mute & End & speaker) */}
             <CallControlButtons
                handleEndCall={handleHangUp}
@@ -115,6 +212,11 @@ const styles = StyleSheet.create({
    callUsersWrapper: {
       marginTop: 30,
       alignItems: 'center',
+   },
+   menuIcon: {
+      position: 'absolute',
+      top: 20,
+      right: 10,
    },
    callUsersText: {
       fontSize: 14,
@@ -166,5 +268,43 @@ const styles = StyleSheet.create({
    },
    actionButtonText: {
       color: ApplicationColors.white,
+   },
+   smallVideoWrapper: {
+      width: 110,
+      height: 140,
+      backgroundColor: '#1C2535',
+      borderRadius: 17,
+      alignSelf: 'flex-end',
+      margin: 10,
+      marginBottom: 40,
+      justifyContent: 'space-between',
+      padding: 10,
+   },
+   smallVideoVoiceLevelWrapper: {
+      backgroundColor: '#3ABF87',
+      width: 25,
+      height: 25,
+      borderRadius: 15,
+      alignSelf: 'flex-end',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+   },
+   smallVideoVoiceLevelIndicator: {
+      width: 4,
+      height: 4,
+      borderRadius: 3,
+      marginHorizontal: 1,
+      backgroundColor: ApplicationColors.white,
+   },
+   smallVideoUserAvathar: {
+      alignSelf: 'center',
+   },
+   smallVideoUserName: {
+      color: ApplicationColors.white,
+   },
+   gridLayoutContainer: {},
+   gridItemWrapper: {
+      flex: 1,
    },
 });

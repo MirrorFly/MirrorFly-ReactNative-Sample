@@ -849,7 +849,9 @@ export const callBacks = {
    mediaErrorListener: res => {
       console.log(res, 'userProfileListener');
    },
-   callSpeakingListener: res => {},
+   callSpeakingListener: res => {
+      // console.log('Speaking listener', res);
+   },
    callUsersUpdateListener: res => {
       console.log(res, 'userProfileListener');
    },

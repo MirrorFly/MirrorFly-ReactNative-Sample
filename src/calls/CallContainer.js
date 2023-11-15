@@ -15,6 +15,7 @@ import IncomingCall from './screens/IncomingCall';
 import OutGoingCall from './screens/OutGoingCall';
 import OnGoingCall from './screens/OnGoingCall';
 import CallAgain from './screens/CallAgain';
+import { NativeBaseProvider } from 'native-base';
 
 const CallContainer = () => {
    const { showCallModal, connectionState, screenName = '' } = useSelector(state => state.callData) || {};
@@ -41,7 +42,9 @@ const CallContainer = () => {
 
    return (
       <Modal visible={showCallModal} animationType="slide" statusBarTranslucent>
-         <View style={[commonStyles.flex1, { marginTop: insets.top }]}>{renderCallscreenBasedOnCallStatus()}</View>
+         <NativeBaseProvider>
+            <View style={[commonStyles.flex1, { marginTop: insets.top }]}>{renderCallscreenBasedOnCallStatus()}</View>
+         </NativeBaseProvider>
       </Modal>
    );
 };

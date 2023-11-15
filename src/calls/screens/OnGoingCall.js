@@ -2,7 +2,7 @@ import React from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { disconnectCallConnection } from '../../Helper/Calls/Call';
-import { CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
+import { CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
 import Avathar from '../../common/Avathar';
@@ -14,15 +14,18 @@ import Store from '../../redux/store';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 import PulseAnimatedView from '../components/PulseAnimatedView';
+import { formatUserIdToJid, getLocalUserDetails } from '../../Helper/Chat/ChatHelper';
+import Timer from '../components/Timer';
 
 const OnGoingCall = () => {
    const isCallConnected = true;
    const { connectionState: callData = {} } = useSelector(state => state.callData) || {};
-   const { data: showConfrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
+   const { data: showConfrenceData = {}, data: { remoteStream = [] } = {} } =
+      useSelector(state => state.showConfrenceData) || {};
+
    const userId = getUserIdFromJid(callData.userJid || callData.to);
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
-   const callTime = '0:00';
 
    const handleClosePress = () => {
       // dispatch(closeCallModal());
@@ -32,24 +35,25 @@ const OnGoingCall = () => {
       await endCall();
    };
 
-   //  const getCallStatus = userid => {
-   //     const data = showConfrenceData || {};
-   //     if (data.callStatusText === CALL_STATUS_DISCONNECTED || data.callStatusText === CALL_STATUS_RECONNECT)
-   //        return data.callStatusText;
-   //     let vcardData = getLocalUserDetails();
-   //     let currentUser = vcardData.fromUser;
-   //     const remoteStream = this.props.remoteStream;
-   //     if (!userid) {
-   //        userid = currentUser + '@' + REACT_APP_XMPP_SOCKET_HOST;
-   //     }
-   //     const user = remoteStream.find(item => item.fromJid === userid);
-   //     return user && user.status;
-   //  };
+   const getCallStatus = userid => {
+      const data = showConfrenceData || {};
+      if (data.callStatusText === CALL_STATUS_DISCONNECTED || data.callStatusText === CALL_STATUS_RECONNECT)
+         return data.callStatusText;
+      let vcardData = getLocalUserDetails();
+      let currentUser = vcardData.fromUser;
+      if (!userid) {
+         userid = formatUserIdToJid(currentUser);
+      }
+      const user = remoteStream.find(item => item.fromJid === userid);
+      return user?.status;
+   };
 
    const endCall = async () => {
       disconnectCallConnection(); //hangUp calls
       Store.dispatch(resetCallStateData());
    };
+
+   let callStatus = getCallStatus();
 
    return (
       <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>
@@ -66,9 +70,9 @@ const OnGoingCall = () => {
             </View>
             {/* user profile details and call timer */}
             <View style={styles.userDetailsContainer}>
-               {callStatus && callStatus.toLowerCase() == CALL_STATUS_RECONNECT && <Timer callStatus={callStatus} />}
-
-               <Text style={styles.callTimeText}>{callTime}</Text>
+               {/* {callStatus && callStatus.toLowerCase() == CALL_STATUS_RECONNECT &&} */}
+               <Timer callStatus={callStatus} />
+               {/* <Text style={styles.callTimeText}>{callTime}</Text> */}
                <View style={styles.avatharWrapper}>
                   {/* Pulse animation view here */}
                   {/* <Animated.View

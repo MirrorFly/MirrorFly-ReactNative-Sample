@@ -209,9 +209,7 @@ export const selectLargeVideoUser = (userJid, volumelevel) => {
 export const callDurationTimestamp = timestamp => {
    return {
       type: CALL_DURATION_TIMESTAMP,
-      payload: {
-         callDurationTimestamp: timestamp,
-      },
+      payload: timestamp,
    };
 };
 

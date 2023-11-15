@@ -23,6 +23,7 @@ import {
    CALL_CONVERSION_STATUS_REQ_WAITING,
    CALL_ENGAGED_STATUS_MESSAGE,
    CALL_STATUS_CONNECTED,
+   CALL_STATUS_DISCONNECTED,
    CALL_STATUS_ENDED,
    CALL_STATUS_INCOMING,
    CALL_STATUS_RECONNECT,
@@ -59,6 +60,7 @@ import {
    openCallModal,
    resetConferencePopup,
    resetData,
+   selectLargeVideoUser,
    setCallModalScreen,
    showConfrence,
    updateCallConnectionState,
@@ -261,7 +263,7 @@ const ended = res => {
       //     "endTime": callLogs.initTime(),
       //     "sessionStatus": res.sessionStatus
       // });
-      dispatchDisconnected();
+      dispatchDisconnected(CALL_STATUS_DISCONNECTED);
       if (callConnectionData) {
          clearMissedCallNotificationTimer();
       }
@@ -880,10 +882,10 @@ export const callBacks = {
 
          // When remoteStream user length is one, set that user as large video user
          if (remoteStream.length === 2) {
-            // Store.dispatch(selectLargeVideoUser(res.userJid));
+            Store.dispatch(selectLargeVideoUser(res.userJid));
          } else {
             remoteStream.forEach(item => {
-               // return Store.dispatch(selectLargeVideoUser(item.userJid));
+               return Store.dispatch(selectLargeVideoUser(item.userJid));
             });
          }
 

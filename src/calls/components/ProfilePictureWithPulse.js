@@ -4,7 +4,7 @@ import { Animated, Easing, StyleSheet } from 'react-native';
 const PulseAnimatedItem = ({ baseStyle, startDelay }) => {
    const [pulseValue] = useState(new Animated.Value(1));
    const [opacityValue] = useState(new Animated.Value(1));
-   console.log(startDelay, 'satrtt');
+
    useEffect(() => {
       const startPulseAnimation = () => {
          Animated.loop(

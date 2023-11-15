@@ -15,8 +15,8 @@ import { getObjectDeepClone } from '../reduxHelper';
 
 const initialState = {
    id: null,
-   showCallModal: true,
-   screenName: ONGOING_CALL_SCREEN,
+   showCallModal: false,
+   screenName: '',
    connectionState: {},
    callDuration: 0,
    /*

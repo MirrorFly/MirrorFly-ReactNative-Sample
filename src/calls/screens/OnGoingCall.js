@@ -20,6 +20,7 @@ import BigVideoTile from '../components/BigVideoTile';
 import SmallVideoTile from '../components/SmallVideoTile';
 import { ScrollView } from 'native-base';
 import { getUserProfile } from '../../Helper';
+import { endCall } from '../../Helper/Calls/Utility';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType
@@ -85,12 +86,6 @@ const OnGoingCall = () => {
 
    const handleHangUp = async e => {
       await endCall();
-   };
-
-   const endCall = async () => {
-      disconnectCallConnection([], CALL_STATUS_DISCONNECTED, () => {
-         Store.dispatch(resetCallStateData());
-      }); //hangUp calls
    };
 
    const renderLargeVideoTile = () => {

@@ -13,11 +13,13 @@ import {
    resetConferencePopup,
    closeCallModal,
    setCallModalScreen,
+   resetCallStateData,
 } from '../../redux/Actions/CallAction';
 import Store from '../../redux/store';
 import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
 import {
    clearMissedCallNotificationTimer,
+   disconnectCallConnection,
    dispatchDisconnected,
    getMaxUsersInCall,
    startCallingTimer,
@@ -29,6 +31,7 @@ import {
    DISCONNECTED_SCREEN_DURATION,
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
+   CALL_STATUS_DISCONNECTED,
 } from './Constant';
 import { getUserIdFromJid } from '../Chat/Utility';
 import { batch } from 'react-redux';
@@ -227,6 +230,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
 
 const startCall = (uuid, callerId, callerName, hasVideo) => {
    RNCallKeep.startCall(uuid, callerId, callerName, 'generic', hasVideo);
+   handleOutGoing_CallKeepListeners();
 };
 
 export const answerIncomingCall = async () => {
@@ -294,16 +298,32 @@ export const declineIncomingCall = async () => {
    }
 };
 
+const openApplicationBack = () => {
+   const appUrl = 'mirrorfly_rn://';
+   if (Linking.canOpenURL(appUrl)) Linking.openURL(appUrl);
+};
+
 const handleIncoming_CallKeepListeners = () => {
    RNCallKeep.addEventListener('answerCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep answer call event', callUUID);
-      const appUrl = 'mirrorfly_rn://';
-      if (Linking.canOpenURL(appUrl)) Linking.openURL(appUrl);
+      openApplicationBack();
       answerIncomingCall();
    });
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep end call event', callUUID);
       declineIncomingCall();
+   });
+};
+
+export const endCall = async () => {
+   disconnectCallConnection([], CALL_STATUS_DISCONNECTED, () => {
+      Store.dispatch(resetCallStateData());
+   }); //hangUp calls
+};
+
+const handleOutGoing_CallKeepListeners = () => {
+   RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
+      endCall();
    });
 };
 

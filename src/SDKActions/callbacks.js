@@ -931,8 +931,20 @@ export const callBacks = {
       console.log(res, 'userProfileListener');
    },
    helper: {
-      getDisplayName: () => {},
-      getImageUrl: () => {},
+      getDisplayName: () => {
+         let vcardData = getLocalUserDetails();
+         if (vcardData && vcardData.nickName) {
+            return vcardData.nickName;
+         }
+         return 'Anonymous user ';
+      },
+      getImageUrl: () => {
+         let vcardData = getLocalUserDetails();
+         if (vcardData) {
+            return vcardData.image;
+         }
+         return '';
+      },
    },
    inviteUsersListener: res => {},
    callUserJoinedListener: function (res) {},

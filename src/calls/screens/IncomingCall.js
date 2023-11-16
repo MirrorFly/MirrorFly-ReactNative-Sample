@@ -1,14 +1,9 @@
 import React from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
-import { batch, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { dispatchDisconnected } from '../../Helper/Calls/Call';
-import {
-   CALL_RINGING_DURATION,
-   CALL_STATUS_DISCONNECTED,
-   CALL_STATUS_INCOMING,
-   DISCONNECTED_SCREEN_DURATION,
-} from '../../Helper/Calls/Constant';
+import { CALL_RINGING_DURATION, CALL_STATUS_INCOMING, DISCONNECTED_SCREEN_DURATION } from '../../Helper/Calls/Constant';
 import { answerIncomingCall, declineIncomingCall } from '../../Helper/Calls/Utility';
 import SDK from '../../SDK/SDK';
 import { resetCallData } from '../../SDKActions/callbacks';
@@ -18,12 +13,12 @@ import commonStyles from '../../common/commonStyles';
 import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
 import useRosterData from '../../hooks/useRosterData';
-import { clearCallData, resetCallStateData, resetConferencePopup } from '../../redux/Actions/CallAction';
+import { resetCallStateData } from '../../redux/Actions/CallAction';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 
 let autoCallEndInterval;
 
-const IncomingCall = ({ userId, callStatus = CALL_STATUS_INCOMING }) => {
+const IncomingCall = ({ userId, callStatus }) => {
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userProfile.userId;
 
@@ -46,7 +41,7 @@ const IncomingCall = ({ userId, callStatus = CALL_STATUS_INCOMING }) => {
    const endCall = async () => {
       clearTimeout(autoCallEndInterval);
       SDK.endCall();
-      dispatchDisconnected(CALL_STATUS_DISCONNECTED);
+      dispatchDisconnected('');
       // TODO: update the Call logs when implementing
       // callLogs.update(callConnectionDate.data.roomId, {
       //     "endTime": callLogs.initTime(),
@@ -59,11 +54,7 @@ const IncomingCall = ({ userId, callStatus = CALL_STATUS_INCOMING }) => {
          // deleteItemFromLocalStorage('callType')
          // deleteItemFromLocalStorage('call_connection_status')
          // encryptAndStoreInLocalStorage("hideCallScreen", false);
-         batch(() => {
-            dispatch(clearCallData());
-            dispatch(resetConferencePopup());
-            dispatch(resetCallStateData())
-         });
+         dispatch(resetCallStateData());
       }, DISCONNECTED_SCREEN_DURATION);
    };
 

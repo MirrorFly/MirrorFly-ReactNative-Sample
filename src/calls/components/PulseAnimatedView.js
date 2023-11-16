@@ -6,23 +6,23 @@ const PulseAnimatedView = ({ animateToValue, baseStyle, animationDuration = 300,
 
    useEffect(() => {
       const startPulseAnimation = () => {
-         Animated.loop(
-            Animated.sequence([
-               Animated.delay(1000),
-               Animated.timing(scaleValue, {
-                  toValue: animateToValue, // Use the animateToValue
-                  duration: animationDuration,
-                  easing: Easing.inOut(Easing.ease),
-                  useNativeDriver: true, // Enabling native driver for performance
-               }),
-               Animated.timing(scaleValue, {
-                  toValue: 1, // Scale back to 1
-                  duration: animationDuration,
-                  easing: Easing.inOut(Easing.ease),
-                  useNativeDriver: true, // Enabling native driver for performance
-               }),
-            ]),
-         ).start();
+         // Animated.loop(
+         Animated.sequence([
+            Animated.delay(500),
+            Animated.timing(scaleValue, {
+               toValue: animateToValue, // Use the animateToValue
+               duration: animationDuration,
+               easing: Easing.inOut(Easing.ease),
+               useNativeDriver: true, // Enabling native driver for performance
+            }),
+            Animated.timing(scaleValue, {
+               toValue: 1, // Scale back to 1
+               duration: animationDuration,
+               easing: Easing.inOut(Easing.ease),
+               useNativeDriver: true, // Enabling native driver for performance
+            }),
+         ]).start();
+         // ).start();
       };
 
       startPulseAnimation();

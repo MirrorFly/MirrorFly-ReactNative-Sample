@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { disconnectCallConnection } from '../../Helper/Calls/Call';
 import { CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
@@ -15,8 +15,11 @@ import { closeCallModal, resetCallStateData } from '../../redux/Actions/CallActi
 import Store from '../../redux/store';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
-import PulseAnimatedView from '../components/PulseAnimatedView';
 import Timer from '../components/Timer';
+import BigVideoTile from '../components/BigVideoTile';
+import SmallVideoTile from '../components/SmallVideoTile';
+import { ScrollView } from 'native-base';
+import { getUserProfile } from '../../Helper';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType
@@ -29,14 +32,15 @@ const initialLayout = 'tile';
 
 const OnGoingCall = () => {
    const isCallConnected = true;
-   const { connectionState: callData = {} } = useSelector(state => state.callData) || {};
+   const localUserJid = useSelector(state => state.auth.currentUserJID);
+   const { connectionState: callData = {}, largeVideoUser = {} } = useSelector(state => state.callData) || {};
    const { data: showConfrenceData = {}, data: { remoteStream = [] } = {} } =
       useSelector(state => state.showConfrenceData) || {};
    const vCardData = useSelector(state => state.profile?.profileDetails);
 
-   const userId = getUserIdFromJid(callData.userJid || callData.to);
-   const userProfile = useRosterData(userId);
-   const nickName = userProfile.nickName || userId || '';
+   // const userId = getUserIdFromJid(callData.userJid || callData.to);
+   // const userProfile = useRosterData(userId);
+   // const nickName = userProfile.nickName || userId || '';
 
    const dispatch = useDispatch();
 
@@ -60,6 +64,21 @@ const OnGoingCall = () => {
       [layout],
    );
 
+   const callUsersNameText = React.useMemo(() => {
+      let usersText = 'You';
+      const _remoteUsers = remoteStream.filter(u => u.fromJid !== localUserJid);
+      _remoteUsers.forEach((_user, i) => {
+         const _userProfile = getUserProfile(_user.fromJid);
+         const _userNickName = _userProfile.nickName;
+         if (i + 1 === _remoteUsers.length) {
+            usersText = `${usersText} and ${_userNickName}`;
+         } else {
+            usersText = `${usersText}, ${_userNickName}`;
+         }
+      });
+      return usersText;
+   }, [remoteStream]);
+
    const handleClosePress = () => {
       dispatch(closeCallModal());
    };
@@ -69,81 +88,61 @@ const OnGoingCall = () => {
    };
 
    const endCall = async () => {
-      disconnectCallConnection(); //hangUp calls
-      Store.dispatch(resetCallStateData());
+      disconnectCallConnection([], CALL_STATUS_DISCONNECTED, () => {
+         Store.dispatch(resetCallStateData());
+      }); //hangUp calls
    };
 
    const renderLargeVideoTile = () => {
       if (layout === 'tile') {
-         // const largeVideoUserData = remoteStream.find
-         return (
-            <View style={styles.avatharWrapper}>
-               {/* Pulse animation view here */}
-               <PulseAnimatedView animateToValue={1.3} baseStyle={styles.avatharPulseAnimatedView} />
-               <Avathar
-                  width={90}
-                  height={90}
-                  backgroundColor={userProfile.colorCode}
-                  data={nickName}
-                  profileImage={userProfile.image}
-               />
-            </View>
-         );
+         const largeVideoUserJid =
+            largeVideoUser?.userJid || remoteStream.find(u => u.fromJid !== localUserJid)?.fromJid || '';
+         return <BigVideoTile userId={getUserIdFromJid(largeVideoUserJid)} />;
       }
    };
 
    const renderSmallVideoTile = () => {
       if (layout === 'tile') {
+         const smallVideoUsers = remoteStream.filter(u => u.fromJid !== largeVideoUser?.userJid) || [];
          return (
-            <View style={styles.smallVideoWrapper}>
-               <View style={styles.smallVideoVoiceLevelWrapper}>
-                  <View style={styles.smallVideoVoiceLevelIndicator} />
-                  <View style={styles.smallVideoVoiceLevelIndicator} />
-                  <View style={styles.smallVideoVoiceLevelIndicator} />
-               </View>
-               <View style={styles.smallVideoUserAvathar}>
-                  <Avathar
-                     width={50}
-                     height={50}
-                     backgroundColor={userProfile.colorCode}
-                     data={nickName}
-                     profileImage={userProfile.image}
-                  />
-               </View>
-               <View>
-                  <Text style={styles.smallVideoUserName}>You</Text>
-               </View>
-            </View>
+            <ScrollView horizontal contentContainerStyle={styles.smallVideoTileContainer}>
+               {smallVideoUsers.map(_user => (
+                  <SmallVideoTile user={_user} isLocalUser={_user.fromJid === localUserJid} />
+               ))}
+            </ScrollView>
          );
       }
    };
 
    const renderGridLayout = () => {
       if (layout === 'grid') {
-         return (
-            <View style={styles.gridLayoutContainer}>
-               {/* Loop through the users and render the layout */}
-               <View style={styles.gridItemWrapper}>
-                  <View style={styles.smallVideoVoiceLevelWrapper}>
-                     <View style={styles.smallVideoVoiceLevelIndicator} />
-                     <View style={styles.smallVideoVoiceLevelIndicator} />
-                     <View style={styles.smallVideoVoiceLevelIndicator} />
-                  </View>
-                  <View style={styles.smallVideoUserAvathar}>
-                     <Avathar
-                        width={50}
-                        height={50}
-                        backgroundColor={userProfile.colorCode}
-                        data={nickName}
-                        profileImage={userProfile.image}
-                     />
-                  </View>
-                  <View>
-                     <Text style={styles.smallVideoUserName}>You</Text>
-                  </View>
-               </View>
-            </View>
-         );
+         return remoteStream.map(_user => {
+            return null;
+         });
+         // return (
+         //    <View style={styles.gridLayoutContainer}>
+         //       {/* Loop through the users and render the layout */}
+         //       <View style={styles.gridItemWrapper}>
+         //          <View style={styles.smallVideoVoiceLevelWrapper}>
+         //             <View style={styles.smallVideoVoiceLevelIndicator} />
+         //             <View style={styles.smallVideoVoiceLevelIndicator} />
+         //             <View style={styles.smallVideoVoiceLevelIndicator} />
+         //          </View>
+         //          <View style={styles.smallVideoUserAvathar}>
+         //             <Avathar
+         //                width={50}
+         //                height={50}
+         //                backgroundColor={userProfile.colorCode}
+         //                data={nickName}
+         //                profileImage={userProfile.image}
+         //             />
+         //          </View>
+         //          <View>
+         //             <Text style={styles.smallVideoUserName}>You</Text>
+         //          </View>
+         //       </View>
+         //    </View>
+         // );
       }
    };
 
@@ -187,7 +186,7 @@ const OnGoingCall = () => {
             {/* call status */}
             <View style={styles.callUsersWrapper}>
                {isCallConnected ? (
-                  <Text style={styles.callUsersText}>{`You and ${nickName}`}</Text>
+                  <Text style={styles.callUsersText}>{callUsersNameText}</Text>
                ) : (
                   <Text style={styles.callUsersText}>Connecting...</Text>
                )}
@@ -248,23 +247,6 @@ const styles = StyleSheet.create({
       fontSize: 12,
       color: ApplicationColors.white,
    },
-   avatharWrapper: {
-      marginTop: 10,
-      width: 90 + 27, // 90 is the width of actual avathar + 27 is the additional width of pulse animation for the scale size of 1.30 for width 90
-      height: 90 + 27, // 90 is the height of actual avathar + 27 is the additional width of pulse animation for the scale size of 1.30 for height 90
-      borderRadius: 70,
-      justifyContent: 'center',
-      alignItems: 'center',
-      position: 'relative',
-   },
-   avatharPulseAnimatedView: {
-      position: 'absolute',
-      top: 27 / 2, // additional width / 2 to make the animated view perfectly into the place
-      width: 90,
-      height: 90,
-      borderRadius: 70,
-      backgroundColor: '#9d9d9d5f',
-   },
    actionButtonWrapper: {
       marginBottom: 80,
       flexDirection: 'row',
@@ -287,39 +269,9 @@ const styles = StyleSheet.create({
    actionButtonText: {
       color: ApplicationColors.white,
    },
-   smallVideoWrapper: {
-      width: 110,
-      height: 140,
-      backgroundColor: '#1C2535',
-      borderRadius: 17,
-      alignSelf: 'flex-end',
-      margin: 10,
-      marginBottom: 40,
-      justifyContent: 'space-between',
-      padding: 10,
-   },
-   smallVideoVoiceLevelWrapper: {
-      backgroundColor: '#3ABF87',
-      width: 25,
-      height: 25,
-      borderRadius: 15,
-      alignSelf: 'flex-end',
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-   },
-   smallVideoVoiceLevelIndicator: {
-      width: 4,
-      height: 4,
-      borderRadius: 3,
-      marginHorizontal: 1,
-      backgroundColor: ApplicationColors.white,
-   },
-   smallVideoUserAvathar: {
-      alignSelf: 'center',
-   },
-   smallVideoUserName: {
-      color: ApplicationColors.white,
+   smallVideoTileContainer: {
+      minWidth: '100%',
+      justifyContent: 'flex-end',
    },
    gridLayoutContainer: {},
    gridItemWrapper: {

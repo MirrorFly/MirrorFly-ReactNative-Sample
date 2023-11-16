@@ -40,11 +40,11 @@ export const clearOldCallingTimer = () => {
    }
 };
 
-export const disconnectCallConnection = (remoteStreams = []) => {
+export const disconnectCallConnection = (remoteStreams = [], callStatusMessage = '', cb) => {
    const callConnectionData = callConnectionStoreData();
    SDK.endCall();
    // dispatchDisconnected(CALL_STATUS_DISCONNECTED, remoteStreams);
-   dispatchDisconnected(remoteStreams);
+   dispatchDisconnected(callStatusMessage, remoteStreams);
    // TODO: update the callLogs when implementing the feature
    // callLogs.update(callConnectionData.roomId, {
    // 		"endTime": callLogs.initTime(),
@@ -61,6 +61,7 @@ export const disconnectCallConnection = (remoteStreams = []) => {
       // deleteItemFromLocalStorage('inviteStatus');
       // encryptAndStoreInLocalStorage("hideCallScreen", false);
       resetCallData();
+      cb?.();
       // TODO: commenting the below line as this reducer has been resetted form the above method. Verify once
       // Store.dispatch(showConfrence({
       // 		showComponent: false,
@@ -136,7 +137,7 @@ export function dispatchDisconnected(statusMessage, remoteStreams = []) {
    const { getState, dispatch } = Store;
    const showConfrenceData = getState().showConfrenceData;
    const { data } = showConfrenceData;
-   // statusMessage = statusMessage || CALL_STATUS_DISCONNECTED;
+   statusMessage = statusMessage || '';
    dispatch(
       showConfrence({
          ...(data || {}),

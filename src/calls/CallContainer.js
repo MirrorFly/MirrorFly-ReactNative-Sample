@@ -23,7 +23,7 @@ const CallContainer = () => {
    const insets = initialWindowMetrics.insets;
 
    const getIncomingCallStatus = () => {
-      return confrenceData?.callStatusText || CALL_STATUS_INCOMING;
+      return confrenceData?.callStatusText;
    };
 
    const renderCallscreenBasedOnCallStatus = () => {

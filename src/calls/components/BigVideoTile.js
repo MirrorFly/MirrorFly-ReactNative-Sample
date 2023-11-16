@@ -3,13 +3,14 @@ import useRosterData from '../../hooks/useRosterData';
 import { StyleSheet, View } from 'react-native';
 import PulseAnimatedView from './PulseAnimatedView';
 import Avathar from '../../common/Avathar';
+import { RTCView } from 'react-native-webrtc';
 
-const BigVideoTile = ({ userId }) => {
+const BigVideoTile = ({ userId, stream }) => {
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
 
    return (
-      <View style={styles.avatharWrapper}>
+      <RTCView style={styles.avatharWrapper} streamURL={stream.toURL()}>
          {/* Pulse animation view here */}
          <PulseAnimatedView animateToValue={1.3} baseStyle={styles.avatharPulseAnimatedView} />
          <Avathar
@@ -19,7 +20,7 @@ const BigVideoTile = ({ userId }) => {
             data={nickName}
             profileImage={userProfile.image}
          />
-      </View>
+      </RTCView>
    );
 };
 

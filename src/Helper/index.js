@@ -258,10 +258,11 @@ export const escapeRegExpReservedChars = str => {
 };
 
 export const getUserProfileFromSDK = userId => {
-   SDK.getUserProfile(userId).then(res => {
+   return SDK.getUserProfile(userId).then(res => {
       if (res?.statusCode === 200) {
          updateUserProfileStore(res.data);
       }
+		return res;
    });
 };
 
@@ -279,7 +280,7 @@ export const getUserProfile = userId => {
    } else if (_userId) {
       getUserProfileFromSDK(_userId);
 		return {
-			nickName: _userId,
+			nickName: '',
 			userId: _userId,
 		}
    } else {

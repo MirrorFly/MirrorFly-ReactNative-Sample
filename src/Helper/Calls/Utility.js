@@ -314,7 +314,8 @@ export const displayIncomingCallForIos = (callResponse, uuid) => {
    );
    if (callingUserData) {
       const contactNumber = getUserIdFromJid(callResponse.userJid);
-      const contactName = callingUserData.userDetails?.displayName || '';
+      const contactName =
+         callingUserData.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
       handleIncoming_CallKeepListeners();
       RNCallKeep.displayIncomingCall(uuid, contactNumber, contactName, 'generic', callResponse.callType === 'video');
    }

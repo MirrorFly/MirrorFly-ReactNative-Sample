@@ -27,7 +27,7 @@ const SmallVideoTile = ({ user, isLocalUser }) => {
             />
          </View>
          <View>
-            <Text style={styles.smallVideoUserName}>{isLocalUser ? 'You' : nickName}</Text>
+            <Text numberOfLines={1} ellipsizeMode='tail' style={styles.smallVideoUserName}>{isLocalUser ? 'You' : nickName}</Text>
          </View>
       </View>
    );
@@ -37,10 +37,10 @@ export default SmallVideoTile;
 
 const styles = StyleSheet.create({
    smallVideoWrapper: {
-      width: 110,
-      height: 140,
+      width: 100,
+      height: 130,
       backgroundColor: '#1C2535',
-      borderRadius: 17,
+      borderRadius: 10,
       margin: 10,
       marginBottom: 40,
       justifyContent: 'space-between',

@@ -20,6 +20,7 @@ import BigVideoTile from '../components/BigVideoTile';
 import SmallVideoTile from '../components/SmallVideoTile';
 import { ScrollView } from 'native-base';
 import { getUserProfile } from '../../Helper';
+import GridLayout from '../components/GridLayout';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType
@@ -29,6 +30,24 @@ import { getUserProfile } from '../../Helper';
  * @type {LayoutType}
  */
 const initialLayout = 'tile';
+
+const sampleRemoteStreamData = [
+   {
+      id: 1700030104346,
+      fromJid: '919988776655@xmpp-uikit-qa.contus.us',
+      status: 'CONNECTED',
+   },
+   {
+      id: 1700030104344,
+      fromJid: '919094237501@xmpp-uikit-qa.contus.us',
+      status: 'CONNECTED',
+   },
+   {
+      id: 17000301043666,
+      fromJid: '919966558899@xmpp-uikit-qa.contus.us',
+      status: 'CONNECTED',
+   },
+];
 
 const OnGoingCall = () => {
    const isCallConnected = true;
@@ -97,7 +116,8 @@ const OnGoingCall = () => {
       if (layout === 'tile') {
          const largeVideoUserJid =
             largeVideoUser?.userJid || remoteStream.find(u => u.fromJid !== localUserJid)?.fromJid || '';
-         return <BigVideoTile userId={getUserIdFromJid(largeVideoUserJid)} />;
+         const largeVideoUserStream = remoteStream.find(u => u.fromJid === largeVideoUserJid);
+         return <BigVideoTile userId={getUserIdFromJid(largeVideoUserJid)} stream={largeVideoUserStream} />;
       }
    };
 
@@ -105,7 +125,10 @@ const OnGoingCall = () => {
       if (layout === 'tile') {
          const smallVideoUsers = remoteStream.filter(u => u.fromJid !== largeVideoUser?.userJid) || [];
          return (
-            <ScrollView horizontal contentContainerStyle={styles.smallVideoTileContainer}>
+            <ScrollView
+               horizontal
+               showsHorizontalScrollIndicator={false}
+               contentContainerStyle={styles.smallVideoTileContainer}>
                {smallVideoUsers.map(_user => (
                   <SmallVideoTile user={_user} isLocalUser={_user.fromJid === localUserJid} />
                ))}
@@ -117,7 +140,7 @@ const OnGoingCall = () => {
    const renderGridLayout = () => {
       if (layout === 'grid') {
          return remoteStream.map(_user => {
-            return null;
+            return <GridLayout remoteStreams={remoteStream} localUserJid={localUserJid} />;
          });
          // return (
          //    <View style={styles.gridLayoutContainer}>

@@ -117,7 +117,7 @@ const OnGoingCall = () => {
          const largeVideoUserJid =
             largeVideoUser?.userJid || remoteStream.find(u => u.fromJid !== localUserJid)?.fromJid || '';
          const largeVideoUserStream = remoteStream.find(u => u.fromJid === largeVideoUserJid);
-         return <BigVideoTile userId={getUserIdFromJid(largeVideoUserJid)} stream={largeVideoUserStream} />;
+         return <BigVideoTile userId={getUserIdFromJid(largeVideoUserJid)} stream={largeVideoUserStream.stream.audio} />;
       }
    };
 

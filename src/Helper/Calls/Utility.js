@@ -35,6 +35,7 @@ import {
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
+import { requestMicroPhonePermission } from '../../common/utils';
 
 let preventMultipleClick = false;
 
@@ -226,39 +227,58 @@ const startCall = (uuid, callerId, callerName, hasVideo) => {
    handleOutGoing_CallKeepListeners();
 };
 
+const answerCallPermissionError = answerCallResonse => {
+   declineIncomingCall();
+   // End incoming call keep for iOS
+   Platform.OS === 'ios' && endCallForIos();
+   if (answerCallResonse && answerCallResonse?.message !== PERMISSION_DENIED) {
+      showToast(COMMON_ERROR_MESSAGE, { id: 'call-answer-error' });
+   }
+   // deleteItemFromLocalStorage('roomName');
+   // deleteItemFromLocalStorage('callType');
+   // deleteItemFromLocalStorage('call_connection_status');
+   // encryptAndStoreInLocalStorage('hideCallScreen', false);
+   // encryptAndStoreInLocalStorage('callingComponent', false);
+   // encryptAndStoreInLocalStorage('hideCallScreen', false);
+   batch(() => {
+      Store.dispatch(resetCallStateData());
+      Store.dispatch(resetConferencePopup());
+   });
+};
+
 export const answerIncomingCall = async () => {
    stopIncomingCallRingtone();
    clearMissedCallNotificationTimer();
-   const answerCallResonse = await SDK.answerCall();
-   console.log('answerCallResonse', answerCallResonse);
-   if (answerCallResonse.statusCode !== 200) {
-      if (answerCallResonse.message !== PERMISSION_DENIED) {
-         showToast(COMMON_ERROR_MESSAGE, { id: 'call-answer-error' });
-      }
-      // deleteItemFromLocalStorage('roomName');
-      // deleteItemFromLocalStorage('callType');
-      // deleteItemFromLocalStorage('call_connection_status');
-      // encryptAndStoreInLocalStorage('hideCallScreen', false);
-      // encryptAndStoreInLocalStorage('callingComponent', false);
-      // encryptAndStoreInLocalStorage('hideCallScreen', false);
-      batch(() => {
-         Store.dispatch(clearCallData());
-         Store.dispatch(resetConferencePopup());
-      });
-   } else {
-      // update the call screen Name instead of the below line
-      // encryptAndStoreInLocalStorage('connecting', true);
-      batch(() => {
-         if (Platform.OS === 'ios') {
-            Store.dispatch(openCallModal());
+   // updating the SDK flag to keep the connection Alive when app goes background because of document picker
+   SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
+   try {
+      const result = await requestMicroPhonePermission();
+      // updating the SDK flag back to false to behave as usual
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+      if (result === 'granted' || result === 'limited') {
+         const answerCallResonse = await SDK.answerCall();
+         if (answerCallResonse.statusCode !== 200) {
+            answerCallPermissionError(answerCallResonse);
+         } else {
+            // update the call screen Name instead of the below line
+            batch(() => {
+               if (Platform.OS === 'ios') {
+                  Store.dispatch(openCallModal());
+               }
+            });
+            // TODO: update the Call logs when implementing
+            // callLogs.update(callConnectionDate.data.roomId, {
+            //   startTime: callLogs.initTime(),
+            //   callState: 2,
+            // });
          }
-         // Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
-      });
-      // TODO: update the Call logs when implementing
-      // callLogs.update(callConnectionDate.data.roomId, {
-      //   startTime: callLogs.initTime(),
-      //   callState: 2,
-      // });
+      } else {
+         answerCallPermissionError();
+      }
+   } catch (error) {
+      // updating the SDK flag back to false to behave as usual
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+      console.log('makeOne2OneCall', error);
    }
 };
 
@@ -299,7 +319,7 @@ const openApplicationBack = () => {
 const handleIncoming_CallKeepListeners = () => {
    RNCallKeep.addEventListener('answerCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep answer call event', callUUID);
-      openApplicationBack();
+      // openApplicationBack();
       answerIncomingCall();
    });
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {

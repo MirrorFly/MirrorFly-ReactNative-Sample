@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { getImageSource } from '../../common/utils';
 import CallsBg from '../../assets/calls-bg.png';
 import useRosterData from '../../hooks/useRosterData';
@@ -8,10 +8,11 @@ import commonStyles from '../../common/commonStyles';
 import ApplicationColors from '../../config/appColors';
 import Avathar from '../../common/Avathar';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
-import { useDispatch, useSelector } from 'react-redux';
+import { batch, useDispatch, useSelector } from 'react-redux';
 import { closeCallModal, resetCallStateData } from '../../redux/Actions/CallAction';
 import { CloseIcon, PhoneIcon } from '../../common/Icons';
 import { makeCalls } from '../../Helper/Calls/Utility';
+import { resetCallAgainData } from '../../redux/Actions/CallAgainAction';
 
 const CallAgain = () => {
    const { data: { callType, userId } = {} } = useSelector(state => state.callAgainData) || {};
@@ -21,16 +22,14 @@ const CallAgain = () => {
 
    const dispatch = useDispatch();
 
-   const handleClosePress = () => {
-      dispatch(closeCallModal());
+   const closeScreen = () => {
+      batch(() => {
+         dispatch(resetCallStateData());
+         dispatch(resetCallAgainData());
+      });
    };
 
-   // when user manually declined the call from the action buttons or swiping to decline the call
-   const handleCancelPress = async () => {
-      dispatch(resetCallStateData());
-   };
-
-   const handleCallAgain = async () => {
+   const handleCallAgain = () => {
       if (callType && userId) {
          makeCalls(callType, [userId]);
       }
@@ -40,7 +39,7 @@ const CallAgain = () => {
       <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>
          <View>
             {/* down arrow to close the modal */}
-            <CloseCallModalButton onPress={handleClosePress} />
+            <CloseCallModalButton onPress={closeScreen} />
             {/* call status */}
             <View style={styles.callStatusWrapper}>
                <Text style={styles.callStatusText}>{callStatus}</Text>
@@ -62,7 +61,7 @@ const CallAgain = () => {
          {/* Bottom action buttons (Cancel & Call Again) */}
          <GestureHandlerRootView style={styles.actionButtonWrapper}>
             <View style={commonStyles.alignItemsCenter}>
-               <RectButton onPress={handleCancelPress} style={[styles.actionButton]}>
+               <RectButton onPress={closeScreen} style={[styles.actionButton]}>
                   <CloseIcon />
                </RectButton>
                <Text style={styles.actionButtonText}>Cancel</Text>

@@ -17,7 +17,7 @@ import OnGoingCall from './screens/OnGoingCall';
 import CallAgain from './screens/CallAgain';
 import { NativeBaseProvider } from 'native-base';
 
-const CallContainer = () => {
+const CallContainer = ({ hasNativeBaseProvider }) => {
    const { showCallModal, connectionState, screenName = '' } = useSelector(state => state.callData) || {};
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const insets = initialWindowMetrics.insets;
@@ -40,11 +40,16 @@ const CallContainer = () => {
       }
    };
 
+   const renderModalContent = () => {
+      const content = (
+         <View style={[commonStyles.flex1, { marginTop: insets.top }]}>{renderCallscreenBasedOnCallStatus()}</View>
+      );
+      return hasNativeBaseProvider ? content : <NativeBaseProvider>{content}</NativeBaseProvider>;
+   };
+
    return (
       <Modal visible={showCallModal} animationType="slide" statusBarTranslucent>
-         <NativeBaseProvider>
-            <View style={[commonStyles.flex1, { marginTop: insets.top }]}>{renderCallscreenBasedOnCallStatus()}</View>
-         </NativeBaseProvider>
+         {renderModalContent()}
       </Modal>
    );
 };

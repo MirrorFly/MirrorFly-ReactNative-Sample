@@ -1,4 +1,4 @@
-import { RESET_STORE, UPDTAE_CALL_AGAIN_DATA } from '../Actions/Constants';
+import { RESET_CALL_AGAIN_DATA, RESET_STORE, UPDTAE_CALL_AGAIN_DATA } from '../Actions/Constants';
 import { getObjectDeepClone } from '../reduxHelper';
 
 const initialState = {
@@ -21,6 +21,7 @@ const callAgainReducer = (state = initialStateClone, action) => {
             id: Date.now(),
             data: action.payload,
          };
+      case RESET_CALL_AGAIN_DATA:
       case RESET_STORE:
          return getObjectDeepClone(initialState);
       default:

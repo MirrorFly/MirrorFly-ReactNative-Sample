@@ -4,7 +4,7 @@ import Avathar from '../../common/Avathar';
 import useRosterData from '../../hooks/useRosterData';
 import PulseAnimatedView from './PulseAnimatedView';
 
-const BigVideoTile = ({ userId, stream }) => {
+const BigVideoTile = ({ userId }) => {
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
 

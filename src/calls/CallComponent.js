@@ -3,10 +3,10 @@ import { Provider } from 'react-redux';
 import Store from '../redux/store';
 import CallContainer from './CallContainer';
 
-const CallComponent = () => {
+const CallComponent = ({hasNativeBaseProvider = false}) => {
    return (
       <Provider store={Store}>
-         <CallContainer />
+         <CallContainer hasNativeBaseProvider={hasNativeBaseProvider} />
       </Provider>
    );
 };

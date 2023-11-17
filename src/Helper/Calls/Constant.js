@@ -36,7 +36,7 @@ export const CALL_TYPE_AUDIO = 'audio';
 export const CALL_TYPE_VIDEO = 'video';
 
 export const COMMON_ERROR_MESSAGE = 'Something went wrong. Please try again.';
-export const PERMISSION_DENIED = 'Permission denied';
+export const PERMISSION_DENIED = 'Permission denied.';
 export const LARGE_VIDEO_USER = 'LARGE_VIDEO_USER';
 
 // CALL SCREEN NAMES

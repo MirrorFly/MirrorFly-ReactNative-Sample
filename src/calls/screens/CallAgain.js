@@ -22,7 +22,7 @@ const CallAgain = () => {
    const dispatch = useDispatch();
 
    const handleClosePress = () => {
-      dispatch(closeCallModal());
+      dispatch(resetCallStateData());
    };
 
    // when user manually declined the call from the action buttons or swiping to decline the call

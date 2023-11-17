@@ -264,7 +264,7 @@ function ChatHeader({
          if (result === 'granted' || result === 'limited') {
             makeCalls(callType, [fromUserId]);
          } else if (isPermissionChecked) {
-            Alert.alert('Audio Permissions are needed for calling. Please enable it in Settings', '', [
+            Alert.alert('','Audio Permissions are needed for calling. Please enable it in Settings', [
                { text: 'OK', onPress: () => openSettings() },
             ]);
          }

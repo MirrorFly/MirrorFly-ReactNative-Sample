@@ -1,13 +1,13 @@
+import messaging from '@react-native-firebase/messaging';
 import React from 'react';
 import { ChatApp } from './src/ChatApp';
-import { requestNotificationPermission } from './src/common/utils';
-import { removeAllDeliveredNotification } from './src/Service/remoteNotifyHandle';
-import messaging from '@react-native-firebase/messaging';
-import { callBacks } from './src/SDKActions/callbacks';
-import { setAppInitialized } from './src/uikitHelpers/uikitMethods';
 import SDK from './src/SDK/SDK';
+import { callBacks } from './src/SDKActions/callbacks';
+import { removeAllDeliveredNotification } from './src/Service/remoteNotifyHandle';
 import CallComponent from './src/calls/CallComponent';
+import { requestNotificationPermission } from './src/common/utils';
 import { setupCallKit } from './src/components/calls/ios';
+import { setAppInitialized } from './src/uikitHelpers/uikitMethods';
 
 // Setup ios callkit
 if (Platform.OS === 'ios') {

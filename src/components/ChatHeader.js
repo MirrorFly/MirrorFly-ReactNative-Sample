@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { Checkbox } from 'native-base';
 import React, { useRef } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { ALREADY_ON_CALL } from '../Helper/Calls/Constant';
@@ -240,18 +240,17 @@ function ChatHeader({
       );
    }
 
-   const makeOne2OneAudioCall = React.useCallback(() => {
+   const makeOne2OneAudioCall = () => {
       if (!isRoomExist() && isNetworkConnected) {
          makeOne2OneCall('audio');
       } else if (!isNetworkConnected) {
-         console.log(isNetworkConnected, 'isneeere');
          showToast('Please check your internet connection', {
             id: 'Network_error',
          });
       } else {
          setShowRoomExist(true);
       }
-   }, [isNetworkConnected]);
+   };
 
    const makeOne2OneCall = async callType => {
       const isPermissionChecked = await AsyncStorage.getItem('microPhone_Permission');
@@ -265,7 +264,9 @@ function ChatHeader({
          if (result === 'granted' || result === 'limited') {
             makeCalls(callType, [fromUserId]);
          } else if (isPermissionChecked) {
-            openSettings();
+            Alert.alert('Audio Permissions are needed for calling. Please enable it in Settings', '', [
+               { text: 'OK', onPress: () => openSettings() },
+            ]);
          }
       } catch (error) {
          // updating the SDK flag back to false to behave as usual

@@ -1,26 +1,23 @@
+import { ScrollView } from 'native-base';
 import React from 'react';
-import { Dimensions, ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { disconnectCallConnection } from '../../Helper/Calls/Call';
+import { getUserProfile } from '../../Helper';
 import { CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
+import { endCall } from '../../Helper/Calls/Utility';
 import { formatUserIdToJid } from '../../Helper/Chat/ChatHelper';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
-import Avathar from '../../common/Avathar';
 import MenuContainer from '../../common/MenuContainer';
 import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
-import useRosterData from '../../hooks/useRosterData';
-import { closeCallModal, resetCallStateData } from '../../redux/Actions/CallAction';
-import Store from '../../redux/store';
+import { closeCallModal } from '../../redux/Actions/CallAction';
+import BigVideoTile from '../components/BigVideoTile';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
-import Timer from '../components/Timer';
-import BigVideoTile from '../components/BigVideoTile';
-import SmallVideoTile from '../components/SmallVideoTile';
-import { ScrollView } from 'native-base';
-import { getUserProfile } from '../../Helper';
 import GridLayout from '../components/GridLayout';
+import SmallVideoTile from '../components/SmallVideoTile';
+import Timer from '../components/Timer';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType
@@ -106,18 +103,12 @@ const OnGoingCall = () => {
       await endCall();
    };
 
-   const endCall = async () => {
-      disconnectCallConnection([], CALL_STATUS_DISCONNECTED, () => {
-         Store.dispatch(resetCallStateData());
-      }); //hangUp calls
-   };
-
    const renderLargeVideoTile = () => {
       if (layout === 'tile') {
          const largeVideoUserJid =
             largeVideoUser?.userJid || remoteStream.find(u => u.fromJid !== localUserJid)?.fromJid || '';
          const largeVideoUserStream = remoteStream.find(u => u.fromJid === largeVideoUserJid);
-         return <BigVideoTile userId={getUserIdFromJid(largeVideoUserJid)} stream={largeVideoUserStream.stream.audio} />;
+         return <BigVideoTile userId={getUserIdFromJid(largeVideoUserJid)} />;
       }
    };
 

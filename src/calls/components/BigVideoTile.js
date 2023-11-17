@@ -1,8 +1,8 @@
 import React from 'react';
-import useRosterData from '../../hooks/useRosterData';
 import { StyleSheet, View } from 'react-native';
-import PulseAnimatedView from './PulseAnimatedView';
 import Avathar from '../../common/Avathar';
+import useRosterData from '../../hooks/useRosterData';
+import PulseAnimatedView from './PulseAnimatedView';
 
 const BigVideoTile = ({ userId }) => {
    const userProfile = useRosterData(userId);

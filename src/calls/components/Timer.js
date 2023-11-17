@@ -43,7 +43,6 @@ const Timer = (props = {}) => {
    const startTimer = () => {
       // setTimerOn(true);
       let timerStart = callDuration || Date.now();
-      console.log(timerStart, callDuration, '8900');
       Store.dispatch(callDurationTimestamp(timerStart));
       clearInterval(interval);
       interval = setInterval(() => {

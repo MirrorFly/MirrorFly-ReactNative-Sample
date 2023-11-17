@@ -133,7 +133,6 @@ export const clearMissedCallNotificationTimer = () => {
 };
 
 export function dispatchDisconnected(statusMessage, remoteStreams = []) {
-   console.log(statusMessage, 'statussss');
    const { getState, dispatch } = Store;
    const showConfrenceData = getState().showConfrenceData;
    const { data } = showConfrenceData;

@@ -389,7 +389,6 @@ const handleEngagedOrBusyStatus = res => {
 
 const connected = res => {
    const userIndex = remoteStream.findIndex(item => item.fromJid === res.userJid);
-   console.log(remoteStream, 'userIndex');
    if (userIndex > -1) {
       let usersStatus = res.usersStatus;
       updatingUserStatusInRemoteStream(usersStatus);

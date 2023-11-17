@@ -1,26 +1,23 @@
+import { ScrollView } from 'native-base';
 import React from 'react';
-import { Dimensions, ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { disconnectCallConnection } from '../../Helper/Calls/Call';
+import { getUserProfile } from '../../Helper';
 import { CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
+import { endCall } from '../../Helper/Calls/Utility';
 import { formatUserIdToJid } from '../../Helper/Chat/ChatHelper';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
-import Avathar from '../../common/Avathar';
 import MenuContainer from '../../common/MenuContainer';
 import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
-import useRosterData from '../../hooks/useRosterData';
-import { closeCallModal, resetCallStateData } from '../../redux/Actions/CallAction';
-import Store from '../../redux/store';
+import { closeCallModal } from '../../redux/Actions/CallAction';
+import BigVideoTile from '../components/BigVideoTile';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
-import Timer from '../components/Timer';
-import BigVideoTile from '../components/BigVideoTile';
+import GridLayout from '../components/GridLayout';
 import SmallVideoTile from '../components/SmallVideoTile';
-import { ScrollView } from 'native-base';
-import { getUserProfile } from '../../Helper';
-import { endCall } from '../../Helper/Calls/Utility';
+import Timer from '../components/Timer';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType
@@ -30,6 +27,24 @@ import { endCall } from '../../Helper/Calls/Utility';
  * @type {LayoutType}
  */
 const initialLayout = 'tile';
+
+const sampleRemoteStreamData = [
+   {
+      id: 1700030104346,
+      fromJid: '919988776655@xmpp-uikit-qa.contus.us',
+      status: 'CONNECTED',
+   },
+   {
+      id: 1700030104344,
+      fromJid: '919094237501@xmpp-uikit-qa.contus.us',
+      status: 'CONNECTED',
+   },
+   {
+      id: 17000301043666,
+      fromJid: '919966558899@xmpp-uikit-qa.contus.us',
+      status: 'CONNECTED',
+   },
+];
 
 const OnGoingCall = () => {
    const isCallConnected = true;
@@ -92,6 +107,7 @@ const OnGoingCall = () => {
       if (layout === 'tile') {
          const largeVideoUserJid =
             largeVideoUser?.userJid || remoteStream.find(u => u.fromJid !== localUserJid)?.fromJid || '';
+         const largeVideoUserStream = remoteStream.find(u => u.fromJid === largeVideoUserJid);
          return <BigVideoTile userId={getUserIdFromJid(largeVideoUserJid)} />;
       }
    };
@@ -100,7 +116,10 @@ const OnGoingCall = () => {
       if (layout === 'tile') {
          const smallVideoUsers = remoteStream.filter(u => u.fromJid !== largeVideoUser?.userJid) || [];
          return (
-            <ScrollView horizontal contentContainerStyle={styles.smallVideoTileContainer}>
+            <ScrollView
+               horizontal
+               showsHorizontalScrollIndicator={false}
+               contentContainerStyle={styles.smallVideoTileContainer}>
                {smallVideoUsers.map(_user => (
                   <SmallVideoTile user={_user} isLocalUser={_user.fromJid === localUserJid} />
                ))}
@@ -112,7 +131,7 @@ const OnGoingCall = () => {
    const renderGridLayout = () => {
       if (layout === 'grid') {
          return remoteStream.map(_user => {
-            return null;
+            return <GridLayout remoteStreams={remoteStream} localUserJid={localUserJid} />;
          });
          // return (
          //    <View style={styles.gridLayoutContainer}>

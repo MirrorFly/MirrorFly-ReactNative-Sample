@@ -1,22 +1,25 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Linking, Platform } from 'react-native';
 import RNCallKeep from 'react-native-callkeep';
+import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { SDK } from '../../SDK';
 import { muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
 import {
+   clearCallData,
+   closeCallModal,
    openCallModal,
+   resetCallStateData,
+   resetConferencePopup,
+   setCallModalScreen,
    showConfrence,
    updateCallConnectionState,
    updateCallerUUID,
-   clearCallData,
-   resetConferencePopup,
-   closeCallModal,
-   setCallModalScreen,
-   resetCallStateData,
 } from '../../redux/Actions/CallAction';
 import Store from '../../redux/store';
 import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
+import { getUserIdFromJid } from '../Chat/Utility';
+import { getUserProfile, showToast } from '../index';
 import {
    clearMissedCallNotificationTimer,
    disconnectCallConnection,
@@ -26,24 +29,23 @@ import {
    stopIncomingCallRingtone,
 } from './Call';
 import {
-   ONGOING_CALL_SCREEN,
+   CALL_STATUS_DISCONNECTED,
    COMMON_ERROR_MESSAGE,
    DISCONNECTED_SCREEN_DURATION,
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
-   CALL_STATUS_DISCONNECTED,
 } from './Constant';
-import { getUserIdFromJid } from '../Chat/Utility';
-import { batch } from 'react-redux';
-import { showToast } from '../index';
+
+let preventMultipleClick = false;
 
 export const makeCalls = async (callType, userId) => {
    let userList = [];
-   if (!userId) {
+   if (!userId || preventMultipleClick) {
       return;
    }
    let connectionStatus = await AsyncStorage.getItem('connection_status');
    if (connectionStatus === 'CONNECTED') {
+      preventMultipleClick = true;
       let userListData = await getCallData(userId);
       userList = [...userListData];
       makeOne2OneCall(callType, userList);
@@ -51,15 +53,11 @@ export const makeCalls = async (callType, userId) => {
       showToast('Please check your internet connection', {
          id: 'Network_error',
       });
+      preventMultipleClick = false;
    }
 };
 
 const makeOne2OneCall = async (callType, usersList) => {
-   // const roomName = getFromLocalStorageAndDecrypt('roomName');
-   // if (roomName) {
-   //     toast.info("Can't place a new call while you're already in a call.");
-   //     return;
-   // }
    let callMode = 'onetoone';
    let users = [];
    const maxMemberReached = Boolean(usersList.length > getMaxUsersInCall() - 1);
@@ -156,13 +154,13 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
                localStream: confrenceData?.localStream,
                localVideoMuted: confrenceData?.localVideoMuted,
                localAudioMuted: confrenceData?.localAudioMuted,
-               // showComponent: true,
                callStatusText: 'Calling',
             }),
          );
          Store.dispatch(openCallModal());
          Store.dispatch(setCallModalScreen(OUTGOING_CALL_SCREEN));
       });
+      preventMultipleClick = false;
       try {
          if (callType === 'audio') {
             muteLocalVideo(true);
@@ -187,44 +185,39 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
             //         "groupId": groupId
             //     })
             // });
-            // encryptAndStoreInLocalStorage('roomName', roomId)
+
             let callConnectionStatusNew = {
                ...callConnectionStatus,
                roomId: roomId,
             };
-            // encryptAndStoreInLocalStorage(
-            //   'call_connection_status',
-            //   JSON.stringify(callConnectionStatusNew),
-            // );
+
             Store.dispatch(updateCallConnectionState(callConnectionStatusNew));
             startCallingTimer();
          }
       } catch (error) {
          console.log('Error in making call', error);
-         if (error.message === PERMISSION_DENIED) {
-            // deleteItemFromLocalStorage('roomName');
-            // deleteItemFromLocalStorage('callType');
-            // deleteItemFromLocalStorage('call_connection_status');
-            // encryptAndStoreInLocalStorage('hideCallScreen', false);
-            // encryptAndStoreInLocalStorage('callingComponent', false);
-            // encryptAndStoreInLocalStorage('hideCallScreen', false);
-            Store.dispatch(
-               showConfrence({
-                  showComponent: false,
-                  showCalleComponent: false,
-                  stopSound: true,
-                  callStatusText: null,
-               }),
-            );
-         }
+         // if (error.message === PERMISSION_DENIED) {
+         //    // deleteItemFromLocalStorage('roomName');
+         //    // deleteItemFromLocalStorage('callType');
+         //    // deleteItemFromLocalStorage('call_connection_status');
+         //    // encryptAndStoreInLocalStorage('hideCallScreen', false);
+         //    // encryptAndStoreInLocalStorage('callingComponent', false);
+         //    // encryptAndStoreInLocalStorage('hideCallScreen', false);
+         //    Store.dispatch(
+         //       showConfrence({
+         //          showComponent: false,
+         //          showCalleComponent: false,
+         //          stopSound: true,
+         //          callStatusText: null,
+         //       }),
+         //    );
+         // }
       }
-      // // preventMultipleClick = false;
    } else {
       showToast('Please check your internet connection', {
          id: 'Network_error',
       });
-      // toast.error(NO_INTERNET)
-      // // preventMultipleClick = false;
+      preventMultipleClick = false;
    }
 };
 
@@ -334,7 +327,8 @@ export const displayIncomingCallForIos = (callResponse, uuid) => {
    );
    if (callingUserData) {
       const contactNumber = getUserIdFromJid(callResponse.userJid);
-      const contactName = callingUserData.userDetails?.displayName || '';
+      const contactName =
+         callingUserData.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
       handleIncoming_CallKeepListeners();
       RNCallKeep.displayIncomingCall(uuid, contactNumber, contactName, 'generic', callResponse.callType === 'video');
    }
@@ -408,4 +402,9 @@ export const getCallData = async userJid => {
          }
       }),
    );
+};
+
+export const isRoomExist = () => {
+   let roomId = Store.getState().callData.connectionState.roomId || '';
+   return roomId;
 };

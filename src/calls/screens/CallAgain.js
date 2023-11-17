@@ -1,18 +1,20 @@
 import React from 'react';
-import { BackHandler, ImageBackground, StyleSheet, Text, View } from 'react-native';
-import { getImageSource } from '../../common/utils';
-import CallsBg from '../../assets/calls-bg.png';
-import useRosterData from '../../hooks/useRosterData';
-import CloseCallModalButton from '../components/CloseCallModalButton';
-import commonStyles from '../../common/commonStyles';
-import ApplicationColors from '../../config/appColors';
-import Avathar from '../../common/Avathar';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import { batch, useDispatch, useSelector } from 'react-redux';
-import { closeCallModal, resetCallStateData } from '../../redux/Actions/CallAction';
-import { CloseIcon, PhoneIcon } from '../../common/Icons';
+import { showCheckYourInternetToast } from '../../Helper';
 import { makeCalls } from '../../Helper/Calls/Utility';
+import CallsBg from '../../assets/calls-bg.png';
+import Avathar from '../../common/Avathar';
+import { CloseIcon, PhoneIcon } from '../../common/Icons';
+import commonStyles from '../../common/commonStyles';
+import { getImageSource } from '../../common/utils';
+import ApplicationColors from '../../config/appColors';
+import { useNetworkStatus } from '../../hooks';
+import useRosterData from '../../hooks/useRosterData';
+import { resetCallStateData } from '../../redux/Actions/CallAction';
 import { resetCallAgainData } from '../../redux/Actions/CallAgainAction';
+import CloseCallModalButton from '../components/CloseCallModalButton';
 
 const CallAgain = () => {
    const { data: { callType, userId } = {} } = useSelector(state => state.callAgainData) || {};
@@ -21,6 +23,7 @@ const CallAgain = () => {
    const callStatus = 'Unavailable, Try again later';
 
    const dispatch = useDispatch();
+   const isNetworkConnected = useNetworkStatus();
 
    const closeScreen = () => {
       batch(() => {
@@ -31,7 +34,12 @@ const CallAgain = () => {
 
    const handleCallAgain = () => {
       if (callType && userId) {
-         makeCalls(callType, [userId]);
+         if (isNetworkConnected) {
+            makeCalls(callType, [userId]);
+         } else {
+            closeScreen();
+            showCheckYourInternetToast();
+         }
       }
    };
 

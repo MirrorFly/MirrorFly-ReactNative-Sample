@@ -151,21 +151,6 @@ const RootNavigation = props => {
 
   return (
     <>
-      {/** <Box safeAreaBottom backgroundColor={safeAreaBgColor} />
-      <NavigationContainer
-        ref={navigationRef}
-        theme={
-          scheme === 'dark'
-            ? ApplicationTheme.darkTheme
-            : ApplicationTheme.lightTheme
-        }>
-        {isLoading ? (
-          <SplashScreen />
-        ) : (
-          <StackNavigationPage InitialValue={initialRouteValue} />
-        )}
-      </NavigationContainer>
-      <Box safeAreaBottom backgroundColor={safeAreaBgColor} /> */}
       <Box safeAreaTop backgroundColor={safeAreaBgColor} />
       <SafeAreaView style={styles.container}>
         <StatusBar translucent backgroundColor={safeAreaBgColor} />

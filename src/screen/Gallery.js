@@ -69,7 +69,10 @@ const Gallery = (props = {}) => {
     return (
       <View style={[commonStyles.positionRelative, commonStyles.padding_04]}>
         <Pressable
-          style={{ width: itemWidth }}
+          contentContainerStyle={commonStyles.bgBlack_01}
+          style={{
+            width: itemWidth,
+          }}
           delayLongPress={200}
           onPress={() => {
             setCheckbox(false);
@@ -115,9 +118,7 @@ const Gallery = (props = {}) => {
             bottom={1}
             left={1}>
             {item?.node.type.split('/')[0] === 'video' && (
-              <View p="0.5">
-                <Icon as={() => VideoSmallIcon()} name="emoji-happy" />
-              </View>
+              <View p="0.5">{VideoSmallIcon()}</View>
             )}
           </View>
         </Pressable>
@@ -271,7 +272,7 @@ const Gallery = (props = {}) => {
       return null;
     }
     return (
-      <View style={commonStyles.mb_100}>
+      <View style={commonStyles.mb_130}>
         <ActivityIndicator size="large" color={'#3276E2'} />
       </View>
     );
@@ -298,7 +299,8 @@ const Gallery = (props = {}) => {
         style={[
           commonStyles.padding_04,
           commonStyles.justifyContentSpaceBetween,
-        ]}>
+        ]}
+        contentContainerStyle={[commonStyles.bgBlack_01]}>
         <View
           style={[
             commonStyles.positionRelative,
@@ -316,19 +318,20 @@ const Gallery = (props = {}) => {
               commonStyles.positionAbsolute,
               commonStyles.bgBlack_01,
               commonStyles.bottom_1,
+              commonStyles.p_4,
               { width: '100%' },
             ]}>
             {item.value.title === 'Camera' ? (
-              <Icon as={CameraSmallIcon} name="emoji-happy" />
+              <CameraSmallIcon />
             ) : (
-              <Icon as={FolderIcon} name="emoji-happy" />
+              <FolderIcon />
             )}
             <Text
               style={[
                 commonStyles.colorWhite,
                 commonStyles.positionAbsolute,
                 commonStyles.fontSize_11,
-                commonStyles.marginLeft_15,
+                commonStyles.marginLeft_20,
                 galleryStyles.albumText,
               ]}
               numberOfLines={1}
@@ -382,6 +385,9 @@ const Gallery = (props = {}) => {
               bounces={false}
               ListFooterComponent={renderFooter}
               renderItem={albumRender}
+              initialNumToRender={20}
+              maxToRenderPerBatch={20}
+              windowSize={15}
             />
           </View>
         </View>

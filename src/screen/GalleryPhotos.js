@@ -66,13 +66,15 @@ const GalleryPhotos = (props = {}) => {
     );
   }, [checkBox, selectedImages]);
 
+  const memoizedData = React.useMemo(() => photos, [photos]);
+
   return (
     <View>
       {renderTitle}
-      <View style={commonStyles.mb_100}>
+      <View style={commonStyles.mb_130}>
         <FlatList
           numColumns={3}
-          data={photos}
+          data={memoizedData}
           keyExtractor={(item, index) => item.id + index.toString()}
           horizontal={false}
           showsVerticalScrollIndicator={false}

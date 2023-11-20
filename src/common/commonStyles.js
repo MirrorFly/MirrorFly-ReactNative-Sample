@@ -121,8 +121,8 @@ const commonStyles = StyleSheet.create({
   marginBottom_10: {
     marginBottom: 55,
   },
-  mb_100: {
-    marginBottom: 100,
+  mb_130: {
+    marginBottom: 130,
   },
   p_1: {
     padding: 1,

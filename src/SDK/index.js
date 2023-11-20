@@ -13683,7 +13683,6 @@ const sendRequest = async (method, apiEndPoint, inputdata, userToken, contentTyp
     cancelToken: source.token, // Needed to Cancel API on Client Side
     onUploadProgress: p => {
       if (msgId) {
-        console.log(p, 'SDK onUploadProgress');
         if (!progressInterval[msgId]) {
           uploadProgress(msgId, type, contentlength, source);
         }
@@ -13693,7 +13692,7 @@ const sendRequest = async (method, apiEndPoint, inputdata, userToken, contentTyp
       const item = {
         msgId: msgId,
         source: source, // Sending Cancel Source to Cancel Request by Message Id
-        progress: Math.round(p.loaded / p.total * 100)
+        progress: Math.ceil(p.loaded / p.total * 100)
       };
       Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["a" /* callbackListeners */])().mediaDownloadListener && msgId !== '' && Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["a" /* callbackListeners */])().mediaDownloadListener(item);
     }

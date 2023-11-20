@@ -96,7 +96,6 @@ function ChatScreen() {
   );
   const [isMessageInfo, setIsMessageInfo] = React.useState({});
   const dispatch = useDispatch();
-  const [isToastShowing, setIsToastShowing] = React.useState(false);
   const [selectedImages, setSelectedImages] = React.useState([]);
   const [selectedSingle, setselectedSingle] = React.useState(false);
   const [alert, setAlert] = React.useState(false);

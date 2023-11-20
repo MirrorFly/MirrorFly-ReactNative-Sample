@@ -1,5 +1,4 @@
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
-import { Icon } from 'native-base';
 import React from 'react';
 import ScreenHeader from '../components/ScreenHeader';
 import { useSelector } from 'react-redux';

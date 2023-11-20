@@ -54,34 +54,6 @@ const AttachmentProgressLoader = ({
             borderWidth={0}
             unfilledColor={'#AFB8D0'}
           />
-          {/* {mediaDownloadData[msgId]?.progress ||
-          mediaUploadData[msgId]?.progress ? (
-            <Bar
-              style={[
-                commonStyles.positionAbsolute,
-                commonStyles.bottom_0,
-              ]}
-              progress={
-                mediaDownloadData[msgId]?.progress / 100 ||
-                mediaUploadData[msgId]?.progress / 100
-              }
-              width={36}
-              height={3.5}
-              color="#7285B5"
-              borderWidth={0}
-              unfilledColor={'#AFB8D0'}
-            />
-          ) : (
-            <Bar
-              style={[commonStyles.positionAbsolute, commonStyles.bottom_0]}
-              indeterminate
-              width={36}
-              height={3.5}
-              color="#7285B5"
-              borderWidth={0}
-              unfilledColor={'#AFB8D0'}
-            />
-          )} */}
         </View>
       );
     case mediaStatusConstants.NOT_DOWNLOADED:

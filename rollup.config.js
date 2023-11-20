@@ -31,7 +31,7 @@ export default {
     'rn-fetch-blob',
     'realm',
     'native-base',
-    '@react-native-community/cameraroll',
+    '@react-native-camera-roll/camera-roll',
     'react-native-svg',
     'react-native-video',
     'react-native-sound',

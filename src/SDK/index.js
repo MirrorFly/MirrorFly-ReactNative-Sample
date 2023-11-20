@@ -15605,7 +15605,12 @@ const handleMediaMessage = async (msgBody = '', msgType, msgId, file, fileOption
 
       const destinationPath = _ref.destinationPath,
             localPath = _ref.localPath;
+      var _ref$statusCode = _ref.statusCode;
+      const statusCode = _ref$statusCode === undefined ? 200 : _ref$statusCode;
+      var _ref$message = _ref.message;
+      const message = _ref$message === undefined ? '' : _ref$message;
 
+      if (statusCode !== 200) return message;
       updatedFile = {
         duration: duration,
         fileCopyUri: destinationPath,
@@ -16151,6 +16156,7 @@ const fileStoreInDevice = async file => {
     };
   } catch (error) {
     console.log('fileStoreInDevice', error);
+    return Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["j" /* errorResponse */])('Failed to read file');
   }
 };
 /* unused harmony export fileStoreInDevice */
@@ -49145,7 +49151,8 @@ const _SDK = {
   messageSearch,
   getHashSha256: __WEBPACK_IMPORTED_MODULE_7__helpers_utils__["q" /* getHashSha256 */],
   updateRecentChatUnreadCount,
-  sendMediaMessage
+  sendMediaMessage,
+  randomString: __WEBPACK_IMPORTED_MODULE_7__helpers_utils__["w" /* randomString */]
 };
 
 if (!global.SDK) {

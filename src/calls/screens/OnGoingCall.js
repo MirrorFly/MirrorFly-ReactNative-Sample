@@ -200,7 +200,9 @@ const OnGoingCall = () => {
             {/* call status */}
             <View style={styles.callUsersWrapper}>
                {isCallConnected ? (
-                  <Text style={styles.callUsersText}>{callUsersNameText}</Text>
+                  <Text numberOfLines={1} ellipsizeMode="tail" style={styles.callUsersText}>
+                     {callUsersNameText}
+                  </Text>
                ) : (
                   <Text style={styles.callUsersText}>Connecting...</Text>
                )}
@@ -252,6 +254,8 @@ const styles = StyleSheet.create({
    callUsersText: {
       fontSize: 14,
       color: ApplicationColors.white,
+      width: '75%',
+      textAlign: 'center',
    },
    userDetailsContainer: {
       marginTop: 10,

@@ -54,7 +54,9 @@ const CallAgain = () => {
             </View>
             {/* user profile details */}
             <View style={styles.userDetailsContainer}>
-               <Text style={styles.userNameText}>{nickName}</Text>
+               <Text numberOfLines={1} ellipsizeMode="tail" style={styles.userNameText}>
+                  {nickName}
+               </Text>
                <View style={commonStyles.marginTop_15}>
                   <Avathar
                      width={90}
@@ -109,6 +111,8 @@ const styles = StyleSheet.create({
    userNameText: {
       fontSize: 18,
       color: ApplicationColors.white,
+      width: '80%',
+      textAlign: 'center',
    },
    avathar: {
       width: 90,

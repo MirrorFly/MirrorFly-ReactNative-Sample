@@ -93,7 +93,7 @@ const OnGoingCall = () => {
          }
       });
       return usersText;
-   }, [remoteStream,rosterData]);
+   }, [remoteStream, rosterData]);
 
    const handleClosePress = () => {
       dispatch(closeCallModal());

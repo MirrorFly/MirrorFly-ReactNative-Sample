@@ -137,7 +137,7 @@ export function dispatchDisconnected(statusMessage, remoteStreams = []) {
    const { getState, dispatch } = Store;
    const showConfrenceData = getState().showConfrenceData;
    const { data } = showConfrenceData;
-   statusMessage = capitalizeFirstLetter(statusMessage) || '';
+   statusMessage = statusMessage || '';
    dispatch(
       showConfrence({
          ...(data || {}),

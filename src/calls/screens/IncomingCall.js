@@ -15,6 +15,7 @@ import ApplicationColors from '../../config/appColors';
 import useRosterData from '../../hooks/useRosterData';
 import { resetCallStateData } from '../../redux/Actions/CallAction';
 import CloseCallModalButton from '../components/CloseCallModalButton';
+import { capitalizeFirstLetter } from '../../Helper/Chat/Utility';
 
 let autoCallEndInterval;
 
@@ -23,6 +24,10 @@ const IncomingCall = ({ userId, callStatus }) => {
    const nickName = userProfile.nickName || userProfile.userId;
 
    const dispatch = useDispatch();
+
+   let userCallStatus = React.useMemo(() => {
+      return capitalizeFirstLetter(callStatus) || '';
+   }, [callStatus]);
 
    React.useEffect(() => {
       autoCallEndInterval = setTimeout(() => {
@@ -76,7 +81,7 @@ const IncomingCall = ({ userId, callStatus }) => {
             <CloseCallModalButton onPress={handleClosePress} />
             {/* call status */}
             <View style={styles.callStatusWrapper}>
-               <Text style={styles.callStatusText}>{callStatus}</Text>
+               <Text style={styles.callStatusText}>{userCallStatus}</Text>
             </View>
             {/* user profile details */}
             <View style={styles.userDetailsContainer}>

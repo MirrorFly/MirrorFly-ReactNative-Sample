@@ -1,4 +1,5 @@
 PODS:
+  - BEMCheckBox (1.4.1)
   - boost (1.76.0)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.69.12)
@@ -286,12 +287,12 @@ PODS:
     - React-Core
   - react-native-camera/RN (4.2.1):
     - React-Core
-  - react-native-cameraroll (4.1.2):
+  - react-native-cameraroll (6.0.2):
     - React-Core
   - react-native-compressor (1.6.1):
     - NextLevelSessionExporter
     - React-Core
-  - react-native-contacts (7.0.7):
+  - react-native-contacts (7.0.8):
     - React-Core
   - react-native-create-thumbnail (1.6.4):
     - React-Core
@@ -301,7 +302,7 @@ PODS:
     - React
   - react-native-geolocation-service (5.3.1):
     - React
-  - react-native-get-random-values (1.9.0):
+  - react-native-get-random-values (1.10.0):
     - React-Core
   - react-native-maps (1.8.0):
     - React-Core
@@ -389,9 +390,12 @@ PODS:
     - React
   - rn-fetch-blob (0.12.0):
     - React-Core
-  - RNAudioRecorderPlayer (3.6.2):
+  - RNAudioRecorderPlayer (3.6.4):
     - React-Core
-  - RNCAsyncStorage (1.19.4):
+  - RNCAsyncStorage (1.19.5):
+    - React-Core
+  - RNCCheckbox (0.5.16):
+    - BEMCheckBox (~> 1.4)
     - React-Core
   - RNCClipboard (1.12.1):
     - React-Core
@@ -464,7 +468,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-camera (from `../node_modules/react-native-camera`)
-  - "react-native-cameraroll (from `../node_modules/@react-native-community/cameraroll`)"
+  - "react-native-cameraroll (from `../node_modules/@react-native-camera-roll/camera-roll`)"
   - react-native-compressor (from `../node_modules/react-native-compressor`)
   - react-native-contacts (from `../node_modules/react-native-contacts`)
   - react-native-create-thumbnail (from `../node_modules/react-native-create-thumbnail`)
@@ -494,6 +498,7 @@ DEPENDENCIES:
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - RNAudioRecorderPlayer (from `../node_modules/react-native-audio-recorder-player`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - "RNCCheckbox (from `../node_modules/@react-native-community/checkbox`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - RNConvertPhAsset (from `../node_modules/react-native-convert-ph-asset`)
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
@@ -512,6 +517,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - BEMCheckBox
     - Firebase
     - FirebaseCore
     - FirebaseCoreExtension
@@ -569,7 +575,7 @@ EXTERNAL SOURCES:
   react-native-camera:
     :path: "../node_modules/react-native-camera"
   react-native-cameraroll:
-    :path: "../node_modules/@react-native-community/cameraroll"
+    :path: "../node_modules/@react-native-camera-roll/camera-roll"
   react-native-compressor:
     :path: "../node_modules/react-native-compressor"
   react-native-contacts:
@@ -628,6 +634,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-audio-recorder-player"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
+  RNCCheckbox:
+    :path: "../node_modules/@react-native-community/checkbox"
   RNCClipboard:
     :path: "../node_modules/@react-native-clipboard/clipboard"
   RNConvertPhAsset:
@@ -660,6 +668,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  BEMCheckBox: 5ba6e37ade3d3657b36caecc35c8b75c6c2b1a4e
   boost: a7c83b31436843459a1961bfd74b96033dc77234
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: 6fab494fa11340bd4206edaebed07279a6bafad4
@@ -693,14 +702,14 @@ SPEC CHECKSUMS:
   React-jsinspector: f275698149311abc8c32ebb97797d6b97c44adde
   React-logger: da69d7f1c9501c78cd60776d52a60d7fa5e4d9c2
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
-  react-native-cameraroll: 2957f2bce63ae896a848fbe0d5352c1bd4d20866
+  react-native-cameraroll: 2a5be165d8799664f658569496f1e08178dc3eab
   react-native-compressor: ebcf8bc36f8e44581a8f831583caee8a27e55a01
-  react-native-contacts: 61971364bf9f11a846587eeb736a4e65632815d4
+  react-native-contacts: cb4f3b823550adbce0802901b9e63bf1526ec0af
   react-native-create-thumbnail: e022bcdcba8a0b4529a50d3fa1a832ec921be39d
   react-native-document-picker: 2b8f18667caee73a96708a82b284a4f40b30a156
   react-native-geocoder: 757427682892bb256f3b3745858cc90eba148a8e
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
-  react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
+  react-native-get-random-values: 384787fd76976f5aec9465aff6fa9e9129af1e74
   react-native-maps: f699e0753c22c4d5c3a44d03895b193a4dbca6c2
   react-native-mov-to-mp4: a04f17590618523487ab5d71c9310c6c4a7aaf99
   react-native-netinfo: 1a6035d3b9780221d407c277ebfb5722ace00658
@@ -721,8 +730,9 @@ SPEC CHECKSUMS:
   ReactCommon: f4bb9e5209ea5c3c6ab25e100895119e58d6e50a
   RealmJS: 2e45ca6ed4c3732be369219b41816e890ce51024
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
-  RNAudioRecorderPlayer: 30bcd668e4720d9ebbfeb3169836b3b07833f77a
-  RNCAsyncStorage: 3a8f7145d17cdd9f88e7b77666c94a09e4f759c8
+  RNAudioRecorderPlayer: 0f385cefff3f36b0f853c254b6ece7b76059d0fb
+  RNCAsyncStorage: f2974eca860c16a3e56eea5771fda8d12e2d2057
+  RNCCheckbox: 75255b03e604bbcc26411eb31c4cbe3e3865f538
   RNCClipboard: d77213bfa269013bf4b857b7a9ca37ee062d8ef1
   RNConvertPhAsset: 9b366b8a1abc194b76572712c6f7dd89c9e4e37f
   RNCPushNotificationIOS: 64218f3c776c03d7408284a819b2abfda1834bc8

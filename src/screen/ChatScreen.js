@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SDK from '../SDK/SDK';
-import React from 'react';
+import React, { createRef } from 'react';
 import {
   Alert,
   BackHandler,
@@ -81,6 +81,9 @@ import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversatio
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import { useNetworkStatus } from '../hooks';
 
+export const selectedMediaIdRef = createRef();
+selectedMediaIdRef.current = {};
+
 function ChatScreen() {
   const [replyMsg, setReplyMsg] = React.useState('');
   const chatInputRef = React.useRef(null);
@@ -93,7 +96,6 @@ function ChatScreen() {
   );
   const [isMessageInfo, setIsMessageInfo] = React.useState({});
   const dispatch = useDispatch();
-  const [isToastShowing, setIsToastShowing] = React.useState(false);
   const [selectedImages, setSelectedImages] = React.useState([]);
   const [selectedSingle, setselectedSingle] = React.useState(false);
   const [alert, setAlert] = React.useState(false);
@@ -469,6 +471,7 @@ function ChatScreen() {
         });
       }
       setSelectedImages([]);
+      selectedMediaIdRef.current = {};
     }
   };
 
@@ -481,61 +484,59 @@ function ChatScreen() {
   };
 
   const handleMedia = item => {
-    const transformedArray = {
-      caption: '',
-      fileDetails: mediaObjContructor('CAMERA_ROLL', item),
-    };
-    setIsToastShowing(true);
     const sizeError = validateFileSize(item.image.fileSize, getType(item.type));
-    if (sizeError && !isToastShowing) {
+    if (sizeError) {
       return showToast(sizeError, {
         id: 'media-size-error-toast',
       });
     }
-    if (!isToastShowing) {
-      setIsToastShowing(false);
-      setselectedSingle(true);
-      setSelectedImages([transformedArray]);
-      setLocalNav('GalleryPickView');
-    }
+    const transformedArray = {
+      caption: '',
+      fileDetails: mediaObjContructor('CAMERA_ROLL', item),
+    };
+    setselectedSingle(true);
+    setSelectedImages([transformedArray]);
+    setLocalNav('GalleryPickView');
   };
 
-  const handleSelectImage = item => {
-    const transformedArray = {
-      caption: '',
-      fileDetails: mediaObjContructor('CAMERA_ROLL', item),
-    };
-    setIsToastShowing(true);
-    setselectedSingle(false);
-    const sizeError = validateFileSize(item.image.fileSize, getType(item.type));
-    const isImageSelected = selectedImages.some(
-      selectedItem => selectedItem.fileDetails?.uri === item?.image.uri,
-    );
-    if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
-      return showToast("Can't share more than 10 media items", {
-        id: 'media-error-toast',
-      });
-    }
+  const handleSelectImage = React.useCallback(
+    item => {
+      setselectedSingle(false);
+      const sizeError = validateFileSize(
+        item.image.fileSize,
+        getType(item.type),
+      );
+      const isImageSelected = selectedMediaIdRef.current[item?.image?.uri];
 
-    if (sizeError && !isToastShowing) {
-      return showToast(sizeError, {
-        id: 'media-size-error-toast',
-      });
-    }
+      if (selectedImages.length >= 10 && !isImageSelected) {
+        return showToast("Can't share more than 10 media items", {
+          id: 'media-error-toast',
+        });
+      }
 
-    if (!isToastShowing) {
-      setIsToastShowing(false);
+      if (sizeError) {
+        return showToast(sizeError, {
+          id: 'media-size-error-toast',
+        });
+      }
+      const transformedArray = {
+        caption: '',
+        fileDetails: mediaObjContructor('CAMERA_ROLL', item),
+      };
       if (isImageSelected) {
+        delete selectedMediaIdRef.current[item?.image?.uri];
         setSelectedImages(prevArray =>
           prevArray.filter(
             selectedItem => selectedItem.fileDetails?.uri !== item?.image?.uri,
           ),
         );
       } else {
+        selectedMediaIdRef.current[item?.image?.uri] = true;
         setSelectedImages(prevArray => [...prevArray, transformedArray]);
       }
-    }
-  };
+    },
+    [selectedImages],
+  );
 
   const constructAndDispatchConversationAndRecentChatData = dataObj => {
     const conversationChatObj = getMessageObjSender(dataObj);

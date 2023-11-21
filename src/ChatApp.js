@@ -35,6 +35,7 @@ import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction'
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
 import { getAppInitialized } from './uikitHelpers/uikitMethods';
+import PropTypes from 'prop-types';
 
 LogBox.ignoreAllLogs();
 
@@ -50,7 +51,7 @@ const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
 });
 
 const linking = {
-  prefixes: [MIRRORFLY_RN], //NOSONAR 
+  prefixes: [MIRRORFLY_RN], //NOSONAR
   config: {
     screens: {
       [REGISTERSCREEN]: REGISTERSCREEN,
@@ -87,6 +88,10 @@ export const ChatApp = React.memo(props => {
     </Provider>
   );
 });
+
+ChatApp.propTypes = {
+  jid: PropTypes.string,
+};
 
 const RootNavigation = props => {
   const { jid } = props;
@@ -151,7 +156,7 @@ const RootNavigation = props => {
 
   return (
     <>
-      {/** <Box safeAreaBottom backgroundColor={safeAreaBgColor} />
+      {/* * <Box safeAreaBottom backgroundColor={safeAreaBgColor} />
       <NavigationContainer
         ref={navigationRef}
         theme={
@@ -185,6 +190,11 @@ const RootNavigation = props => {
     </>
   );
 };
+
+RootNavigation.propTypes = {
+  jid: PropTypes.string,
+};
+
 
 const styles = StyleSheet.create({
   container: {

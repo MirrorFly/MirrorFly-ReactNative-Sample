@@ -32,8 +32,8 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
     }
     const notify = await SDK.getNotificationData(remoteMessage);
     if (notify?.statusCode === 200) {
-      updateRecentAndConversationStore(notify?.data);
       if (notify?.data?.type === 'receiveMessage') {
+        updateRecentAndConversationStore(notify?.data);
         await handleSetPendingSeenStatus(notify?.data);
         pushNotify(
           notify?.data?.msgId,

@@ -47,6 +47,7 @@ const VideoCard = props => {
     isSender,
     mediaUrl: imageUrl,
     uploadStatus: media?.is_uploading || 0,
+    downloadStatus: media?.is_downloaded || 0,
     media: media,
     msgId: msgId,
   });

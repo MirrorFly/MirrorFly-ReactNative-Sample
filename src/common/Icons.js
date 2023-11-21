@@ -2360,8 +2360,8 @@ export const TickIcon = props => {
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width={props.width || '16.294'}
-      height={props.height || '12.811'}
+      width={props?.width || '16.294'}
+      height={props?.height || '12.811'}
       viewBox="0 0 16.294 12.811">
       <Path
         id="Path_13812"

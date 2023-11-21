@@ -209,6 +209,9 @@ const commonStyles = StyleSheet.create({
   bg_transparent: {
     backgroundColor: 'transparent',
   },
+  bg_white: {
+    backgroundColor: '#fff',
+  },
   fontWeight_bold: {
     fontWeight: 'bold',
   },
@@ -236,6 +239,9 @@ const commonStyles = StyleSheet.create({
   width_100_per: {
     width: '100%',
   },
+  height_100_per: {
+    height: '100%',
+  },
   typingText: {
     color: ApplicationColors.mainColor,
   },
@@ -247,6 +253,9 @@ const commonStyles = StyleSheet.create({
   },
   resizeCover: {
     resizeMode: 'cover',
+  },
+  r_5: {
+    right: 5,
   },
 });
 

@@ -1,16 +1,10 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import {
-  Center,
-  Checkbox,
-  Icon,
-  IconButton,
-  View as NBView,
-} from 'native-base';
+import CheckBox from '@react-native-community/checkbox';
 import React from 'react';
 import {
   ActivityIndicator,
   Modal,
-  Pressable,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -52,6 +46,8 @@ import {
 } from '../redux/Actions/ConversationAction';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { updateRecentChat } from '../redux/Actions/RecentChatAction';
+import Pressable from '../common/Pressable';
+import IconButton from '../common/IconButton';
 
 const showMaxUsersLimitToast = () => {
   const options = {
@@ -74,11 +70,7 @@ const Header = React.memo(
       <View style={styles.headerContainer}>
         {isSearching ? (
           <View style={styles.headerLeftSideContainer}>
-            <IconButton
-              style={styles.cancelIcon}
-              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-              onPress={onCancelPressed}
-              borderRadius="full">
+            <IconButton style={styles.cancelIcon} onPress={onCancelPressed}>
               <BackArrowIcon />
             </IconButton>
             <TextInput
@@ -89,11 +81,7 @@ const Header = React.memo(
               style={styles.searchInput}
             />
             {!!searchText && (
-              <IconButton
-                style={styles.searchIcon}
-                _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-                onPress={handleClearSearch}
-                borderRadius="full">
+              <IconButton style={styles.searchIcon} onPress={handleClearSearch}>
                 <CloseIcon />
               </IconButton>
             )}
@@ -165,6 +153,26 @@ const ContactItem = ({
     });
   };
 
+  const renderCheckBox = React.useMemo(() => {
+    return (
+      <CheckBox
+        onFillColor={ApplicationColors.mainColor}
+        onCheckColor={ApplicationColors.mainColor}
+        hideBox={true}
+        animationDuration={0.1}
+        onAnimationType={'stroke'}
+        tintColors={{
+          true: ApplicationColors.mainColor,
+          false: ApplicationColors.mainColor,
+        }}
+        value={isChecked}
+        isDisabled={!isChecked && !isCheckboxAllowed}
+        style={styles.checkbox}
+        onChange={Platform.OS !== 'ios' && handleChatItemSelect}
+      />
+    );
+  }, [isChecked]);
+
   return (
     <>
       <Pressable onPress={handleChatItemSelect}>
@@ -191,21 +199,7 @@ const ContactItem = ({
               </Text>
             </View>
           </View>
-          <Checkbox
-            aria-label="Select Recent Chat User"
-            isChecked={isChecked}
-            isDisabled={!isChecked && !isCheckboxAllowed}
-            style={styles.checkbox}
-            onChange={handleChatItemSelect}
-            _checked={{
-              backgroundColor: ApplicationColors.mainColor,
-              borderColor: ApplicationColors.mainColor,
-            }}
-            _pressed={{
-              backgroundColor: ApplicationColors.mainColor,
-              borderColor: ApplicationColors.mainColor,
-            }}
-          />
+          <View style={commonStyles.r_5}>{renderCheckBox}</View>
         </View>
       </Pressable>
       {/* Divider Line */}
@@ -280,7 +274,11 @@ const ContactsSectionList = ({
         ))}
       </View>
       {showLoadMoreLoader ? (
-        <ActivityIndicator size={'large'} style={styles.loadMoreLoader} />
+        <ActivityIndicator
+          size={'large'}
+          color={'#3276E2'}
+          style={styles.loadMoreLoader}
+        />
       ) : (
         <View style={styles.loadMoreLoaderPlaceholder} />
       )}
@@ -298,20 +296,20 @@ const SelectedUsersName = ({ users, onMessageSend }) => {
   }, [users]);
 
   return (
-    <NBView style={styles.selectedUsersNameContainer} shadow={2}>
+    <View style={styles.selectedUsersNameContainer} shadow={2}>
       <Text style={commonStyles.flex1}>{userNames}</Text>
       {users?.length > 0 && (
         <IconButton
           style={styles.sendButton}
           onPress={onMessageSend}
-          _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+          pressedStyle={{ bg: 'rgba(50,118,226, 0.1)' }}
           icon={
             <Icon as={<SendBlueIcon color="#fff" />} name="forward-message" />
           }
           borderRadius="full"
         />
       )}
-    </NBView>
+    </View>
   );
 };
 
@@ -609,38 +607,63 @@ const ForwardMessage = () => {
     }
   };
 
+  const renderHeader = React.useMemo(() => {
+    return (
+      <Header
+        onCancelPressed={handleCancel}
+        onSearchPressed={toggleSearching}
+        onSearch={setSearchText}
+        isSearching={isSearching}
+        searchText={searchText}
+      />
+    );
+  }, [isSearching, searchText]);
+
+  const renderRecentChat = React.useMemo(() => {
+    return (
+      <RecentChatSectionList
+        data={filteredRecentChatList}
+        selectedUsers={selectedUsers}
+        handleChatSelect={handleUserSelect}
+        searchText={searchText}
+      />
+    );
+  }, [filteredRecentChatList, selectedUsers]);
+
+  const renderContactList = React.useMemo(() => {
+    return (
+      <ContactsSectionList
+        data={filteredContactList}
+        selectedUsers={selectedUsers}
+        handleChatSelect={handleUserSelect}
+        searchText={searchText}
+        showLoadMoreLoader={showLoadMoreLoader}
+      />
+    );
+  }, [filteredContactList, selectedUsers, showLoadMoreLoader]);
+
   return (
     <>
       <View style={styles.container}>
-        <Header
-          onCancelPressed={handleCancel}
-          onSearchPressed={toggleSearching}
-          onSearch={setSearchText}
-          isSearching={isSearching}
-          searchText={searchText}
-        />
+        {renderHeader}
         {!filteredRecentChatList.length && !filteredContactList.length && (
-          <Center h="full" bgColor={'#fff'}>
+          <View
+            style={[
+              commonStyles.alignItemsCenter,
+              commonStyles.justifyContentCenter,
+              commonStyles.width_100_per,
+              commonStyles.height_100_per,
+              commonStyles.bg_white,
+            ]}>
             <Text style={styles.noMsg}>No Result Found</Text>
-          </Center>
+          </View>
         )}
         <ScrollView
           style={commonStyles.flex1}
           onScroll={handleScroll}
           scrollEventThrottle={150}>
-          <RecentChatSectionList
-            data={filteredRecentChatList}
-            selectedUsers={selectedUsers}
-            handleChatSelect={handleUserSelect}
-            searchText={searchText}
-          />
-          <ContactsSectionList
-            data={filteredContactList}
-            selectedUsers={selectedUsers}
-            handleChatSelect={handleUserSelect}
-            searchText={searchText}
-            showLoadMoreLoader={showLoadMoreLoader}
-          />
+          {renderRecentChat}
+          {renderContactList}
         </ScrollView>
         <SelectedUsersName
           users={selectedUsersArray}
@@ -683,9 +706,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#e8e8e8',
   },
   cancelIcon: {
-    marginHorizontal: 5,
-    width: 50,
-    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 45,
+    height: 45,
   },
   headerLeftSideContainer: {
     flexDirection: 'row',
@@ -703,6 +727,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   searchIcon: {
+    justifyContent: 'center',
+    alignItems: 'center',
     width: 50,
     height: 50,
   },
@@ -810,6 +836,9 @@ const styles = StyleSheet.create({
   },
   checkbox: {
     borderWidth: 2,
+    borderRadius: 5,
     borderColor: '#3276E2',
+    width: 20,
+    height: 20,
   },
 });

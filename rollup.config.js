@@ -31,7 +31,6 @@ export default {
     'rn-fetch-blob',
     'realm',
     'native-base',
-    '@react-native-camera-roll/camera-roll',
     'react-native-svg',
     'react-native-video',
     'react-native-sound',
@@ -75,6 +74,8 @@ export default {
     'react-native-progress',
     'react-native-gesture-handler',
     'react-native-geocoding',
+    '@react-native-camera-roll/camera-roll',
+    '@react-native-community/checkbox'
   ],
   plugins: [
     replace({

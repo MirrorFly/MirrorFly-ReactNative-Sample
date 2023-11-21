@@ -65,6 +65,7 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
          visible={showCallModal}
          animationType="slide"
          statusBarTranslucent
+         transparent
          onRequestClose={handleModalRequestClose}>
          {renderModalContent()}
       </Modal>

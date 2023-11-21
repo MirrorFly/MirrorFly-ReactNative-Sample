@@ -53,7 +53,7 @@ const OnGoingCall = () => {
    const { data: showConfrenceData = {}, data: { remoteStream = [] } = {} } =
       useSelector(state => state.showConfrenceData) || {};
    const vCardData = useSelector(state => state.profile?.profileDetails);
-
+   const rosterData = useSelector(state => state.rosterData.data);
    // const userId = getUserIdFromJid(callData.userJid || callData.to);
    // const userProfile = useRosterData(userId);
    // const nickName = userProfile.nickName || userId || '';
@@ -93,7 +93,7 @@ const OnGoingCall = () => {
          }
       });
       return usersText;
-   }, [remoteStream]);
+   }, [remoteStream,rosterData]);
 
    const handleClosePress = () => {
       dispatch(closeCallModal());

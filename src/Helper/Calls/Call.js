@@ -12,6 +12,7 @@ import {
    CALL_STATUS_RINGING,
    DISCONNECTED_SCREEN_DURATION,
 } from './Constant';
+import { capitalizeFirstLetter } from '../Chat/Utility';
 let missedCallNotificationTimer = null;
 let callingRemoteStreamRemovalTimer = null;
 
@@ -136,7 +137,7 @@ export function dispatchDisconnected(statusMessage, remoteStreams = []) {
    const { getState, dispatch } = Store;
    const showConfrenceData = getState().showConfrenceData;
    const { data } = showConfrenceData;
-   statusMessage = statusMessage || '';
+   statusMessage = capitalizeFirstLetter(statusMessage) || '';
    dispatch(
       showConfrence({
          ...(data || {}),

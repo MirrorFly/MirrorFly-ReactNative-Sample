@@ -428,3 +428,9 @@ export const isRoomExist = () => {
    let roomId = Store.getState().callData.connectionState.roomId || '';
    return roomId;
 };
+
+export const endOngoingCall = () => {
+   SDK.endCall();
+   resetCallData();
+   Store.dispatch(resetCallStateData());
+};

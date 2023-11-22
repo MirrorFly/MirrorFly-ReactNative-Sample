@@ -74,12 +74,13 @@ const Camera = props => {
     }
   }, [data]);
 
-  const backHandler = BackHandler.addEventListener(
-    'hardwareBackPress',
-    handleBackBtn,
-  );
 
   React.useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackBtn,
+    );  
+
     return () => {
       backHandler.remove();
     };

@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { Box, NativeBaseProvider } from 'native-base';
+import PropTypes from 'prop-types';
 import React, { createRef } from 'react';
 import { Keyboard, Linking, LogBox, SafeAreaView, StatusBar, StyleSheet, useColorScheme } from 'react-native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
@@ -12,10 +13,11 @@ import {
    CHATSCREEN,
    CONTACTLIST,
    COUNTRYSCREEN,
+   MIRRORFLY_RN,
    PROFILESCREEN,
    RECENTCHATSCREEN,
    REGISTERSCREEN,
-   SETTINGSCREEN,
+   SETTINGSCREEN
 } from './constant';
 import { getCurrentUserJid } from './redux/Actions/AuthAction';
 import { navigate } from './redux/Actions/NavigationAction';
@@ -39,19 +41,19 @@ const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
 });
 
 const linking = {
-   prefixes: ['mirrorfly_rn://'], // Replace 'yourapp' with your app's custom scheme
-   config: {
-      screens: {
-         [REGISTERSCREEN]: REGISTERSCREEN,
-         [PROFILESCREEN]: PROFILESCREEN,
-         [RECENTCHATSCREEN]: RECENTCHATSCREEN,
-         [CHATSCREEN]: CHATSCREEN,
-         [COUNTRYSCREEN]: COUNTRYSCREEN,
-         [CONTACTLIST]: CONTACTLIST,
-         [SETTINGSCREEN]: SETTINGSCREEN,
-         [CAMERA]: CAMERA,
-      },
-   },
+  prefixes: [MIRRORFLY_RN], //NOSONAR
+  config: {
+    screens: {
+      [REGISTERSCREEN]: REGISTERSCREEN,
+      [PROFILESCREEN]: PROFILESCREEN,
+      [RECENTCHATSCREEN]: RECENTCHATSCREEN,
+      [CHATSCREEN]: CHATSCREEN,
+      [COUNTRYSCREEN]: COUNTRYSCREEN,
+      [CONTACTLIST]: CONTACTLIST,
+      [SETTINGSCREEN]: SETTINGSCREEN,
+      [CAMERA]: CAMERA,
+    },
+  },
 };
 
 export const ChatApp = React.memo(({ hasNativeBaseProvider = false, ...props }) => {
@@ -76,6 +78,10 @@ export const ChatApp = React.memo(({ hasNativeBaseProvider = false, ...props }) 
       </Provider>
    );
 });
+
+ChatApp.propTypes = {
+  jid: PropTypes.string,
+};
 
 const RootNavigation = props => {
    const { jid } = props;
@@ -165,6 +171,11 @@ const RootNavigation = props => {
       </>
    );
 };
+
+RootNavigation.propTypes = {
+  jid: PropTypes.string,
+};
+
 
 const styles = StyleSheet.create({
    container: {

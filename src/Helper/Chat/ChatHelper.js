@@ -128,12 +128,7 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
       fromUserId: getUserIdFromJid(jid),
     };
     if (response?.statusCode === 200) {
-      /**
-        if (msgType === "image" || msgType === "audio") {
-            // const fileBlob = await fileToBlob(file);
-            // indexedDb.setImage(response.fileToken, fileBlob, getDbInstanceName(msgType));
-        }
-        */
+      updateObj.uploadStatus = 2;
       updateObj.fileToken = response.fileToken;
       updateObj.thumbImage = response.thumbImage;
     } else {

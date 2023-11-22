@@ -73,8 +73,9 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
       });
     }
     // if (notify?.statusCode === 200) {
-    //   updateRecentAndConversationStore(notify?.data);
     //   if (notify?.data?.type === 'receiveMessage') {
+    //     updateRecentAndConversationStore(notify?.data);
+    //     await handleSetPendingSeenStatus(notify?.data);
     //     pushNotify(
     //       notify?.data?.msgId,
     //       getNotifyNickName(notify?.data),
@@ -82,7 +83,6 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
     //       notify?.data?.fromUserJid,
     //     );
     //   }
-    //   handleSetPendingSeenStatus(notify?.data);
     // }
   } catch (error) {
     console.log('messaging().setBackgroundMessageHandler', error);

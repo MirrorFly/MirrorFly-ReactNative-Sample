@@ -5,12 +5,13 @@ import ImageInfo from './ImageInfo';
 import VideoInfo from './VideoInfo';
 import { BackArrowIcon } from '../common/Icons';
 import { Icon, IconButton, Text } from 'native-base';
+import { useNavigation } from '@react-navigation/native';
 
-const PostPreViewPage = props => {
-  const { setLocalNav } = props;
+const PostPreViewPage = () => {
   const chatSelectedMediaImage = useSelector(
     state => state.chatSelectedMedia.data,
   );
+  const navigation = useNavigation()
   const { msgBody } = chatSelectedMediaImage;
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const isSender = currentUserJID === chatSelectedMediaImage?.fromUserJid;
@@ -30,16 +31,16 @@ const PostPreViewPage = props => {
   }; */
 
   const handleBackBtn = () => {
-    setLocalNav('CHATCONVERSATION');
+    navigation.goBack()
     return true;
   };
 
-  const backHandler = BackHandler.addEventListener(
-    'hardwareBackPress',
-    handleBackBtn,
-  );
-
   React.useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackBtn,
+    );
+
     return () => {
       backHandler.remove();
     };

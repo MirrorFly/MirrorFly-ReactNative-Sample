@@ -96,7 +96,7 @@ const OnGoingCall = () => {
    }, [remoteStream, rosterData]);
 
    const handleClosePress = () => {
-      dispatch(closeCallModal());
+      // dispatch(closeCallModal());
    };
 
    const handleHangUp = async e => {

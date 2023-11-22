@@ -30,6 +30,7 @@ import { useNetworkStatus } from '../hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SDK from '../SDK/SDK';
 import messaging from '@react-native-firebase/messaging';
+import RNVoipPushNotification from 'react-native-voip-push-notification';
 
 const RegisterScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -39,6 +40,7 @@ const RegisterScreen = ({ navigation }) => {
   const [mobileNumber, setMobileNumber] = React.useState('');
   const [isToastShowing, setIsToastShowing] = React.useState(false);
   const isNetworkConnected = useNetworkStatus();
+  const [voipToken,setVoipToken] = React.useState('')
 
   const termsHandler = () => {
     Linking.openURL('https://www.mirrorfly.com/terms-and-conditions.php');
@@ -48,7 +50,20 @@ const RegisterScreen = ({ navigation }) => {
     Linking.openURL('https://www.mirrorfly.com/privacy-policy.php');
   };
 
+  const registerVoipToken = () =>{
+             RNVoipPushNotification.addEventListener('register', token => {
+            // --- send token to your apn provider server
+            setVoipToken(token);
+          });
+          // =====  register =====
+         RNVoipPushNotification.registerVoipToken();
+  }
+
   useEffect(() => {
+    if(Platform.OS === 'ios'){
+      registerVoipToken();
+    }
+    
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
@@ -56,7 +71,10 @@ const RegisterScreen = ({ navigation }) => {
         return true;
       },
     );
-    return () => backHandler.remove();
+    return () => {
+      backHandler.remove()
+      RNVoipPushNotification.removeEventListener('register');
+    };
   }, []);
 
   const selectCountryHandler = () => {
@@ -154,6 +172,8 @@ const RegisterScreen = ({ navigation }) => {
     const register = await SDK.register(
       selectcountry?.dial_code + mobileNumber,
       fcmToken,
+      voipToken,
+      false,
     );
     if (register.statusCode === 200) {
       await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');

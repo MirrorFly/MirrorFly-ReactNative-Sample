@@ -23,40 +23,42 @@ import streamDataReducer from './Reducers/streamReducer';
 import stateDataReducer from './Reducers/statusReducer';
 import TypingReducer from './Reducers/Typing.Reducer';
 import showConfrenceReducer from './Reducers/Confrence.Reducer';
-import CallConnectionStateReducer from './Reducers/CallConnectionState.Reducer';
+import CallStateReducer from './Reducers/CallState.Reducer';
+import callAgainReducer from './Reducers/callAgain.Reducer';
 
 const rootReducer = combineReducers({
-  navigation: navigationReducer,
-  recentChatData: recentChatReducer,
-  recentChatSearchData: recentChatSearchReducer,
-  auth: authReducer,
-  chatConversationData: conversationReducer,
-  profile: profileReducer,
-  chatSeenPendingMsgData: chatSeenPendingMsgReducer,
-  chat: chatReducer,
-  connection: connectionReducer,
-  user: userReducer,
-  galleryData: galleryReducer,
-  mediaUploadData: mediaUploadReducer,
-  chatSelectedMedia: singleChatImageReducer,
-  mediaDownloadData: mediaDownloadReducer,
-  safeArea: safeAreaReducer,
-  conversationSearchData: conversationSearchReducer,
-  rosterData: rosterReducer,
-  recoverMessage: recoverMessageReducer,
-  chatConversationLocalNav: chatConversationLocalNavReducer,
-  streamData: streamDataReducer,
-  stateData: stateDataReducer,
-  typingStatusData: TypingReducer,
-  showConfrenceData: showConfrenceReducer,
-  callConnectionDate: CallConnectionStateReducer,
+   navigation: navigationReducer,
+   recentChatData: recentChatReducer,
+   recentChatSearchData: recentChatSearchReducer,
+   auth: authReducer,
+   chatConversationData: conversationReducer,
+   profile: profileReducer,
+   chatSeenPendingMsgData: chatSeenPendingMsgReducer,
+   chat: chatReducer,
+   connection: connectionReducer,
+   user: userReducer,
+   galleryData: galleryReducer,
+   mediaUploadData: mediaUploadReducer,
+   chatSelectedMedia: singleChatImageReducer,
+   mediaDownloadData: mediaDownloadReducer,
+   safeArea: safeAreaReducer,
+   conversationSearchData: conversationSearchReducer,
+   rosterData: rosterReducer,
+   recoverMessage: recoverMessageReducer,
+   chatConversationLocalNav: chatConversationLocalNavReducer,
+   streamData: streamDataReducer,
+   stateData: stateDataReducer,
+   typingStatusData: TypingReducer,
+   showConfrenceData: showConfrenceReducer,
+   callData: CallStateReducer,
+   callAgainData: callAgainReducer,
 });
 
 const Store = legacy_createStore(rootReducer, applyMiddleware(thunkMiddleware));
 
 export const getStoreState = store => {
-  store = store || Store;
-  return store.getState?.() || {};
+   store = store || Store;
+   return store.getState?.() || {};
 };
 
 export default Store;

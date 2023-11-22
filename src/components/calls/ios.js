@@ -4,7 +4,7 @@ import React from "react";
 export const setupCallKit = async () => {
     await RNCallKeep.setup({
       ios: {
-        appName: 'mirrorfly_rn',
+        appName: 'Mirrorfly RN',
         supportsVideo: true,
         maximumCallGroups: '1',
         maximumCallsPerCallGroup: '8',

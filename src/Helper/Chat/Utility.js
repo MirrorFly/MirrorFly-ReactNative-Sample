@@ -309,3 +309,8 @@ export const getSenderIdFromMsgObj = msgObj => {
   const { fromUserJid, publisherId } = msgObj;
   return isSingleChat(msgObj.chatType) ? fromUserJid : publisherId;
 };
+
+export function capitalizeFirstLetter(string) {
+  if (!string) return null;
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}

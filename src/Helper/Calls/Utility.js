@@ -36,6 +36,7 @@ import {
    PERMISSION_DENIED,
 } from './Constant';
 import { requestMicroPhonePermission } from '../../common/utils';
+import { openSettings } from 'react-native-permissions';
 
 let preventMultipleClick = false;
 
@@ -273,6 +274,7 @@ export const answerIncomingCall = async () => {
             // });
          }
       } else {
+         openSettings();
          answerCallPermissionError();
       }
    } catch (error) {

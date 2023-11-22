@@ -72,11 +72,6 @@ const OutGoingCall = () => {
       //     "sessionStatus": CALL_SESSION_STATUS_CLOSED
       // });
       setTimeout(() => {
-         // encryptAndStoreInLocalStorage('callingComponent',false)
-         // deleteItemFromLocalStorage('roomName')
-         // deleteItemFromLocalStorage('callType')
-         // deleteItemFromLocalStorage('call_connection_status')
-         // encryptAndStoreInLocalStorage("hideCallScreen", false);
          resetCallData();
          if (isFromTimeout) {
             const _userID = userID;

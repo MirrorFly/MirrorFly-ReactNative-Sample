@@ -134,10 +134,6 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          callConnectionStatus.groupId = groupId;
       }
       // AsyncStorage.setItem('call_connection_status', JSON.stringify(callConnectionStatus))
-      // encryptAndStoreInLocalStorage('callType', callType)
-      // encryptAndStoreInLocalStorage('callingComponent', true)
-      // encryptAndStoreInLocalStorage('callFrom', getFromLocalStorageAndDecrypt('loggedInUserJidWithResource'));
-
       if (Platform.OS === 'ios') {
          const callerName = usersList.map(ele => ele.name).join(',');
          const hasVideo = callType === 'video';
@@ -198,22 +194,6 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          }
       } catch (error) {
          console.log('Error in making call', error);
-         // if (error.message === PERMISSION_DENIED) {
-         //    // deleteItemFromLocalStorage('roomName');
-         //    // deleteItemFromLocalStorage('callType');
-         //    // deleteItemFromLocalStorage('call_connection_status');
-         //    // encryptAndStoreInLocalStorage('hideCallScreen', false);
-         //    // encryptAndStoreInLocalStorage('callingComponent', false);
-         //    // encryptAndStoreInLocalStorage('hideCallScreen', false);
-         //    Store.dispatch(
-         //       showConfrence({
-         //          showComponent: false,
-         //          showCalleComponent: false,
-         //          stopSound: true,
-         //          callStatusText: null,
-         //       }),
-         //    );
-         // }
       }
    } else {
       showToast('Please check your internet connection', {
@@ -235,12 +215,6 @@ const answerCallPermissionError = answerCallResonse => {
    if (answerCallResonse && answerCallResonse?.message !== PERMISSION_DENIED) {
       showToast(COMMON_ERROR_MESSAGE, { id: 'call-answer-error' });
    }
-   // deleteItemFromLocalStorage('roomName');
-   // deleteItemFromLocalStorage('callType');
-   // deleteItemFromLocalStorage('call_connection_status');
-   // encryptAndStoreInLocalStorage('hideCallScreen', false);
-   // encryptAndStoreInLocalStorage('callingComponent', false);
-   // encryptAndStoreInLocalStorage('hideCallScreen', false);
    batch(() => {
       Store.dispatch(resetCallStateData());
       Store.dispatch(resetConferencePopup());
@@ -253,6 +227,8 @@ export const answerIncomingCall = async () => {
    // updating the SDK flag to keep the connection Alive when app goes background because of document picker
    SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
    try {
+      const isPermissionChecked = await AsyncStorage.getItem('microPhone_Permission');
+      AsyncStorage.setItem('microPhone_Permission', 'true');
       const result = await requestMicroPhonePermission();
       // updating the SDK flag back to false to behave as usual
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
@@ -273,8 +249,12 @@ export const answerIncomingCall = async () => {
             //   callState: 2,
             // });
          }
+      } else if (isPermissionChecked) {
+         setTimeout(() => {
+            openSettings();
+         }, 500);
+         answerCallPermissionError();
       } else {
-         openSettings();
          answerCallPermissionError();
       }
    } catch (error) {
@@ -297,10 +277,6 @@ export const declineIncomingCall = async () => {
       // });
       dispatchDisconnected();
       setTimeout(() => {
-         // deleteItemFromLocalStorage('roomName');
-         // deleteItemFromLocalStorage('callType');
-         // deleteItemFromLocalStorage('call_connection_status');
-         // encryptAndStoreInLocalStorage('hideCallScreen', false);
          batch(() => {
             Store.dispatch(closeCallModal());
             Store.dispatch(clearCallData());
@@ -370,12 +346,6 @@ export const endCallForIos = async () => {
 };
 
 const deleteAndDispatchAction = () => {
-   // deleteItemFromLocalStorage('roomName')
-   // deleteItemFromLocalStorage('callType')
-   // deleteItemFromLocalStorage('call_connection_status')
-   // encryptAndStoreInLocalStorage("hideCallScreen", false);
-   // encryptAndStoreInLocalStorage('callingComponent', false)
-   // encryptAndStoreInLocalStorage("hideCallScreen", false);
    Store.dispatch(
       showConfrence({
          showComponent: false,

@@ -54,11 +54,6 @@ const IncomingCall = ({ userId, callStatus }) => {
       // });
       setTimeout(() => {
          resetCallData();
-         // encryptAndStoreInLocalStorage('callingComponent',false)
-         // deleteItemFromLocalStorage('roomName')
-         // deleteItemFromLocalStorage('callType')
-         // deleteItemFromLocalStorage('call_connection_status')
-         // encryptAndStoreInLocalStorage("hideCallScreen", false);
          dispatch(resetCallStateData());
       }, DISCONNECTED_SCREEN_DURATION);
    };

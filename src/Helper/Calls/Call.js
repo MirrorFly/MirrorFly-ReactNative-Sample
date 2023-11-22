@@ -55,12 +55,6 @@ export const disconnectCallConnection = (remoteStreams = [], callStatusMessage =
    const _isNewCallExist = /* getFromLocalStorageAndDecrypt("isNewCallExist") */ false;
    let timeOut = _isNewCallExist === true ? 0 : DISCONNECTED_SCREEN_DURATION;
    setTimeout(() => {
-      // encryptAndStoreInLocalStorage('callingComponent', false)
-      // deleteItemFromLocalStorage('roomName')
-      // deleteItemFromLocalStorage('callType')
-      // deleteItemFromLocalStorage('call_connection_status');
-      // deleteItemFromLocalStorage('inviteStatus');
-      // encryptAndStoreInLocalStorage("hideCallScreen", false);
       resetCallData();
       cb?.();
       // TODO: commenting the below line as this reducer has been resetted form the above method. Verify once

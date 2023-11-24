@@ -300,14 +300,10 @@ const SelectedUsersName = ({ users, onMessageSend }) => {
       <Text style={commonStyles.flex1}>{userNames}</Text>
       {users?.length > 0 && (
         <IconButton
-          style={styles.sendButton}
           onPress={onMessageSend}
-          pressedStyle={{ bg: 'rgba(50,118,226, 0.1)' }}
-          icon={
-            <Icon as={<SendBlueIcon color="#fff" />} name="forward-message" />
-          }
-          borderRadius="full"
-        />
+          pressedStyle={{ bg: 'rgba(50,118,226, 0.1)' }}>
+          <SendBlueIcon width="45" height="45" />
+        </IconButton>
       )}
     </View>
   );
@@ -793,11 +789,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     paddingVertical: 5,
     borderRadius: 3,
-  },
-  sendButton: {
-    width: 40,
-    height: 40,
-    marginRight: 5,
   },
   // Loader styles
   loaderContainer: {

@@ -1333,12 +1333,13 @@ export const DeleteBinIcon = ({ color }) => {
   );
 };
 
-export const SendBlueIcon = () => {
+export const SendBlueIcon = props => {
+  const { width = '49', height = '49' } = props;
   return (
     <Svg
       xmlns="http://www.w3.org/2000/svg"
-      width="49"
-      height="49"
+      width={width}
+      height={height}
       viewBox="0 0 49 49">
       <G
         id="Group_15650"
@@ -2424,7 +2425,7 @@ export const DownloadCancel = props => {
   );
 };
 
-export const uploadIcon = (props) => {
+export const uploadIcon = props => {
   const { color = '#fff' } = props;
   return (
     <Svg

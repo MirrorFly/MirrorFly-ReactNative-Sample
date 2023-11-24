@@ -479,7 +479,7 @@ const sendMediaMessage = async (
     let mediaData = {};
     for (let i = 0; i < files.length; i++) {
       const file = files[i],
-        msgId = uuidv4();
+        msgId = SDK.randomString();
 
       const {
         caption = '',
@@ -582,7 +582,7 @@ export const sendMessageToUserOrGroup = async (
 
   if (message.content !== '') {
     let jid = toUserJid;
-    let msgId = uuidv4();
+    let msgId = SDK.randomString();
     const dataObj = {
       jid: jid,
       msgType: 'text',

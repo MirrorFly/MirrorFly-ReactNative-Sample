@@ -166,7 +166,7 @@ export const callBacks = {
             // }
             // store.dispatch(addMessageInfoUpdate(
             //     {
-            //         id: uuidv4(),
+            //         id: SDK.randomString(),
             //         activeUserId: res.publisherId,
             //         time: res.timestamp,
             //         messageStatus:

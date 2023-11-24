@@ -489,7 +489,7 @@ const ForwardMessage = () => {
       }
     });
     for (let i = 0; i < totalLength; i++) {
-      newMsgIds.push(uuidv4());
+      newMsgIds.push(SDK.randomString());
     }
     const newMsgIdsCopy = [...newMsgIds];
     for (let i = 0; i < forwardMessages.length; i++) {

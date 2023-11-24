@@ -232,7 +232,7 @@ const CollapsingToolbar = ({
           },
         )}>
         <View mx="3" mt={toolbarMaxHeight} minHeight={adaptiveMinHeight}>
-          <HStack my="7" justifyContent={'space-between'}>
+          {/* <HStack my="7" justifyContent={'space-between'}>
             <Text fontSize={14} fontWeight={500} color={'#181818'}>
               {' '}
               Mute Notification{' '}
@@ -244,8 +244,8 @@ const CollapsingToolbar = ({
               onThumbColor="blue.500"
               offThumbColor="indigo.50"
             />
-          </HStack>
-          <View mb={4} borderBottomWidth={1} borderBottomColor={'#f2f2f2'}>
+          </HStack> */}
+          <View mb={4} my="7" borderBottomWidth={1} borderBottomColor={'#f2f2f2'}>
             <Text mb={2} fontSize={14} color={'#181818'} fontWeight={500}>
               Email
             </Text>
@@ -278,7 +278,7 @@ const CollapsingToolbar = ({
               </Text>
             </HStack>
           </View>
-          <Pressable
+          {/* <Pressable
             onPress={handleTapDetails}
             borderBottomColor={'#f2f2f2'}
             borderBottomWidth={1}>
@@ -295,8 +295,8 @@ const CollapsingToolbar = ({
               </HStack>
               <FrontArrowIcon />
             </HStack>
-          </Pressable>
-          <Pressable onPress={handleModel}>
+          </Pressable> */}
+          {/* <Pressable onPress={handleModel}>
             <HStack
               my="3"
               alignItems={'center'}
@@ -308,7 +308,7 @@ const CollapsingToolbar = ({
                 </Text>
               </HStack>
             </HStack>
-          </Pressable>
+          </Pressable> */}
         </View>
       </Animated.ScrollView>
       <Center maxH={'40'} width={'60'}>

@@ -396,19 +396,19 @@ const ChatInput = props => {
                 numberOfLines={1}
                 multiline={true}
               />
-
-              <IconButton
-                onPress={handleAttachmentconPressed}
-                style={styles.attachmentIcon}>
-                <AttachmentIcon />
-              </IconButton>
-
-              <IconButton
+              <View style={commonStyles.marginRight_8}>
+                <IconButton
+                  onPress={handleAttachmentconPressed}
+                  style={styles.attachmentIcon}>
+                  <AttachmentIcon />
+                </IconButton>
+              </View>
+              {/* <IconButton
                 containerStyle={styles.audioRecordIconWrapper}
                 onPress={startRecording}
                 style={styles.audioRecordIcon}>
                 <MicIcon style={isRecording && micStyle} />
-              </IconButton>
+              </IconButton> */}
             </>
           </View>
           {Boolean(message) && (
@@ -424,11 +424,11 @@ const ChatInput = props => {
           <View style={styles.RecordUIContainer}>
             <View style={styles.totalTimeMaincontainer}>
               <View style={styles.totalTimeContainer}>
-                {!isRecording && recordingDuration && (
+                {/* {!isRecording && recordingDuration && (
                   <View>
                     <MicIcon height={'17'} width={'17'} color={'#3276E2'} />
                   </View>
-                )}
+                )} */}
                 {showDeleteIcon ? (
                   <View>
                     <DeleteRedBinIcon />
@@ -472,11 +472,11 @@ const ChatInput = props => {
           <View style={styles.Plusingcontainer}>
             {showRecoderUi && !totalDuration ? (
               <View style={styles.PlusingSubcontainer}>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={[styles.micIcon, isRecording && micStyle]}
                   onPress={stopRecording}>
                   <MicIcon color={'#fff'} />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
             ) : (
               <SendBtn

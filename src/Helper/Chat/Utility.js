@@ -283,7 +283,7 @@ export const getMessageObjReceiver = (messgeObject, newChatTo) => {
       userId: messgeObject.userId,
       userJid: messgeObject.userJid,
       msgId:
-        messgeObject.msgId || messgeObject.timestamp.toString() || uuidv4(),
+        messgeObject.msgId || messgeObject.timestamp.toString() || SDK.randomString(),
     }),
   };
 };

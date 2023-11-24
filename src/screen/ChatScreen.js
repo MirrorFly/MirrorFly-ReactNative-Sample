@@ -412,7 +412,7 @@ function ChatScreen() {
       let mediaData = {};
       for (let i = 0; i < files.length; i++) {
         const file = files[i],
-          msgId = uuidv4();
+          msgId = SDK.randomString();
 
         const {
           caption = '',
@@ -560,7 +560,7 @@ function ChatScreen() {
       dispatch(deleteRecoverMessage(toUserJid));
     }
 
-    const msgId = uuidv4();
+    const msgId = SDK.randomString();
     const replyTo = replyMsg?.msgId || '';
     switch (messageType) {
       case 'media':
@@ -592,7 +592,7 @@ function ChatScreen() {
       case 'contact':
         const updatedContacts = message.contacts.map(c => ({
           ...c,
-          msgId: uuidv4(),
+          msgId: SDK.randomString(),
         }));
         for (const contact of updatedContacts) {
           const dataObj = {

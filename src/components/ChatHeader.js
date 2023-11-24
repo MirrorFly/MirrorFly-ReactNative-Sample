@@ -309,13 +309,13 @@ function ChatHeader({
                 </IconButton>
               )}
             {renderForwardIcon()}
-            {!selectedMsgs[0]?.recall && (
+            {/* {!selectedMsgs[0]?.recall && (
               <IconButton
                 style={[commonStyles.padding_10_15]}
                 onPress={handleFavourite}>
                 <FavouriteIcon />
               </IconButton>
-            )}
+            )} */}
             {renderDeleteIcon()}
             {selectedMsgs?.length === 1 &&
               menuItems.length > 0 &&

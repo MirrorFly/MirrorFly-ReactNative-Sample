@@ -1,6 +1,6 @@
 import { ScrollView } from 'native-base';
 import React from 'react';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { Animated, ImageBackground, Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfile } from '../../Helper';
 import { CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
@@ -8,7 +8,6 @@ import { endCall } from '../../Helper/Calls/Utility';
 import { formatUserIdToJid } from '../../Helper/Chat/ChatHelper';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
-import MenuContainer from '../../common/MenuContainer';
 import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
 import { closeCallModal } from '../../redux/Actions/CallAction';
@@ -18,6 +17,9 @@ import CloseCallModalButton from '../components/CloseCallModalButton';
 import GridLayout from '../components/GridLayout';
 import SmallVideoTile from '../components/SmallVideoTile';
 import Timer from '../components/Timer';
+import IconButton from '../../common/IconButton';
+import { MenuIcon } from '../../common/Icons';
+import Pressable from '../../common/Pressable';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType
@@ -28,35 +30,28 @@ import Timer from '../components/Timer';
  */
 const initialLayout = 'tile';
 
-const sampleRemoteStreamData = [
-   {
-      id: 1700030104346,
-      fromJid: '919988776655@xmpp-uikit-qa.contus.us',
-      status: 'CONNECTED',
-   },
-   {
-      id: 1700030104344,
-      fromJid: '919094237501@xmpp-uikit-qa.contus.us',
-      status: 'CONNECTED',
-   },
-   {
-      id: 17000301043666,
-      fromJid: '919966558899@xmpp-uikit-qa.contus.us',
-      status: 'CONNECTED',
-   },
-];
+let hideControlsTimeout,
+   hideControlsTimeoutMilliSeconds = 6000,
+   controlsAnimationDuration = 400;
 
 const OnGoingCall = () => {
    const isCallConnected = true;
    const localUserJid = useSelector(state => state.auth.currentUserJID);
-   const { connectionState: callData = {}, largeVideoUser = {} } = useSelector(state => state.callData) || {};
+   const { largeVideoUser = {} } = useSelector(state => state.callData) || {};
    const { data: showConfrenceData = {}, data: { remoteStream = [] } = {} } =
       useSelector(state => state.showConfrenceData) || {};
    const vCardData = useSelector(state => state.profile?.profileDetails);
    const rosterData = useSelector(state => state.rosterData.data);
-   // const userId = getUserIdFromJid(callData.userJid || callData.to);
-   // const userProfile = useRosterData(userId);
-   // const nickName = userProfile.nickName || userId || '';
+
+   const showControlsRef = React.useRef(true);
+   const topViewControlsHeightRef = React.useRef(0);
+   const bottomControlsViewHeightRef = React.useRef(0);
+
+   // animated value states for toggling the controls and timer
+   const controlsOpacity = React.useRef(new Animated.Value(1)).current;
+   const controlsOffsetTop = React.useRef(new Animated.Value(0)).current;
+   const topPlaceHolderViewHeight = React.useRef(new Animated.Value(0)).current;
+   const controlsOffsetBottom = React.useRef(new Animated.Value(0)).current;
 
    const dispatch = useDispatch();
 
@@ -67,14 +62,31 @@ const OnGoingCall = () => {
     * ]}
     */
    const [layout, setLayout] = React.useState(initialLayout);
+   const [showMenuPopup, setShowMenuPopup] = React.useState(false);
+
+   React.useEffect(() => {
+      if (layout === 'grid') {
+         hideControlsTimeout = setTimeout(() => {
+            animateControls(0, 100);
+         }, hideControlsTimeoutMilliSeconds);
+      } else {
+         clearTimeout(hideControlsTimeout);
+         animateControls(1, 0);
+      }
+      return () => {
+         clearTimeout(hideControlsTimeout);
+      };
+   }, [layout]);
+
+   const toggleLayout = () => {
+      setLayout(val => (val === 'tile' ? 'grid' : 'tile'));
+   };
 
    const menuItems = React.useMemo(
       () => [
          {
             label: `Click ${layout === 'tile' ? 'grid' : 'tile'} view`,
-            formatter: () => {
-               setLayout(val => (val === 'tile' ? 'grid' : 'tile'));
-            },
+            formatter: toggleLayout,
          },
       ],
       [layout],
@@ -95,6 +107,35 @@ const OnGoingCall = () => {
       return usersText;
    }, [remoteStream, rosterData]);
 
+   const animateControls = (toOpacity, toOffset) => {
+      showControlsRef.current = Boolean(toOpacity);
+      const _offsetTop = ((toOffset * topViewControlsHeightRef.current) / 100) * -1;
+      const _offsetBottom = (toOffset * bottomControlsViewHeightRef.current) / 100;
+      const _placeholderHeight = (Math.abs(toOffset - 100) * topViewControlsHeightRef.current) / 100;
+      Animated.parallel([
+         Animated.timing(controlsOpacity, {
+            toValue: toOpacity,
+            duration: controlsAnimationDuration,
+            useNativeDriver: true,
+         }),
+         Animated.timing(controlsOffsetTop, {
+            toValue: _offsetTop,
+            duration: controlsAnimationDuration,
+            useNativeDriver: true,
+         }),
+         Animated.timing(controlsOffsetBottom, {
+            toValue: _offsetBottom,
+            duration: controlsAnimationDuration,
+            useNativeDriver: true,
+         }),
+         Animated.timing(topPlaceHolderViewHeight, {
+            toValue: _placeholderHeight,
+            duration: controlsAnimationDuration,
+            useNativeDriver: false,
+         }),
+      ]).start();
+   };
+
    const handleClosePress = () => {
       // dispatch(closeCallModal());
    };
@@ -103,11 +144,27 @@ const OnGoingCall = () => {
       await endCall();
    };
 
+   const toggleControls = () => {
+      clearTimeout(hideControlsTimeout);
+      if (showControlsRef.current) {
+         animateControls(0, 100);
+      } else {
+         animateControls(1, 0);
+         hideControlsTimeout = setTimeout(() => {
+            animateControls(0, 100);
+         }, hideControlsTimeoutMilliSeconds);
+      }
+   };
+
+   const toggleMenuPopup = () => {
+      setShowMenuPopup(val => !val);
+   };
+
    const renderLargeVideoTile = () => {
       if (layout === 'tile') {
          const largeVideoUserJid =
             largeVideoUser?.userJid || remoteStream.find(u => u.fromJid !== localUserJid)?.fromJid || '';
-         const largeVideoUserStream = remoteStream.find(u => u.fromJid === largeVideoUserJid);
+         /** const largeVideoUserStream = remoteStream.find(u => u.fromJid === largeVideoUserJid); */
          return <BigVideoTile userId={getUserIdFromJid(largeVideoUserJid)} />;
       }
    };
@@ -121,7 +178,7 @@ const OnGoingCall = () => {
                showsHorizontalScrollIndicator={false}
                contentContainerStyle={styles.smallVideoTileContainer}>
                {smallVideoUsers.map(_user => (
-                  <SmallVideoTile user={_user} isLocalUser={_user.fromJid === localUserJid} />
+                  <SmallVideoTile key={_user.fromJid} user={_user} isLocalUser={_user.fromJid === localUserJid} />
                ))}
             </ScrollView>
          );
@@ -130,49 +187,36 @@ const OnGoingCall = () => {
 
    const renderGridLayout = () => {
       if (layout === 'grid') {
-         return remoteStream.map(_user => {
-            return <GridLayout remoteStreams={remoteStream} localUserJid={localUserJid} />;
-         });
-         // return (
-         //    <View style={styles.gridLayoutContainer}>
-         //       {/* Loop through the users and render the layout */}
-         //       <View style={styles.gridItemWrapper}>
-         //          <View style={styles.smallVideoVoiceLevelWrapper}>
-         //             <View style={styles.smallVideoVoiceLevelIndicator} />
-         //             <View style={styles.smallVideoVoiceLevelIndicator} />
-         //             <View style={styles.smallVideoVoiceLevelIndicator} />
-         //          </View>
-         //          <View style={styles.smallVideoUserAvathar}>
-         //             <Avathar
-         //                width={50}
-         //                height={50}
-         //                backgroundColor={userProfile.colorCode}
-         //                data={nickName}
-         //                profileImage={userProfile.image}
-         //             />
-         //          </View>
-         //          <View>
-         //             <Text style={styles.smallVideoUserName}>You</Text>
-         //          </View>
-         //       </View>
-         //    </View>
-         // );
+         return (
+            <GridLayout
+               remoteStreams={remoteStream}
+               localUserJid={localUserJid}
+               onPressAnywhere={toggleControls}
+               offsetTop={topViewControlsHeightRef.current || 0}
+            />
+         );
       }
    };
 
-   //  const getCallStatus = userid => {
-   //     const data = showConfrenceData || {};
-   //     if (data.callStatusText === CALL_STATUS_DISCONNECTED || data.callStatusText === CALL_STATUS_RECONNECT)
-   //        return data.callStatusText;
-   //     let vcardData = getLocalUserDetails();
-   //     let currentUser = vcardData.fromUser;
-   //     const remoteStream = this.props.remoteStream;
-   //     if (!userid) {
-   //        userid = currentUser + '@' + REACT_APP_XMPP_SOCKET_HOST;
-   //     }
-   //     const user = remoteStream.find(item => item.fromJid === userid);
-   //     return user && user.status;
-   //  };
+   const menuPopupUI = React.useMemo(() => {
+      return showMenuPopup ? (
+         <RNPressable style={styles.menuPopupOverlay} onPress={toggleMenuPopup}>
+            <View style={styles.menuPopupWrapper}>
+               {menuItems.map(m => (
+                  <Pressable
+                     key={m.label}
+                     contentContainerStyle={styles.menuPopupItem}
+                     onPress={() => {
+                        toggleMenuPopup();
+                        m.formatter();
+                     }}>
+                     <Text style={styles.menuPopupItemText}>{m.label}</Text>
+                  </Pressable>
+               ))}
+            </View>
+         </RNPressable>
+      ) : null;
+   }, [showMenuPopup, menuItems]);
 
    const getCallStatus = userid => {
       const data = showConfrenceData || {};
@@ -186,49 +230,96 @@ const OnGoingCall = () => {
       return user?.status;
    };
 
+   const handleTopControlsUILayout = ({ nativeEvent }) => {
+      const { height } = nativeEvent.layout;
+      topViewControlsHeightRef.current = height;
+      Animated.timing(topPlaceHolderViewHeight, {
+         toValue: height,
+         duration: 200,
+         useNativeDriver: false,
+      }).start();
+   };
+
+   const handleBottomControlsUILayout = ({ nativeEvent }) => {
+      const { height } = nativeEvent.layout;
+      bottomControlsViewHeightRef.current = height;
+   };
+
    let callStatus = getCallStatus();
 
    return (
       <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>
+         {/* Menu pop up element */}
+         {menuPopupUI}
          <View>
-            {/* down arrow to close the modal */}
-            <CloseCallModalButton onPress={handleClosePress} />
-            {/* Menu for layout change */}
-            <View style={styles.menuIcon}>
-               <MenuContainer menuItems={menuItems} color={ApplicationColors.white} />
-            </View>
-            {/* call status */}
-            <View style={styles.callUsersWrapper}>
-               {isCallConnected ? (
-                  <Text numberOfLines={1} ellipsizeMode="tail" style={styles.callUsersText}>
-                     {callUsersNameText}
-                  </Text>
-               ) : (
-                  <Text style={styles.callUsersText}>Connecting...</Text>
-               )}
-            </View>
-            {/* user profile details and call timer */}
-            <View style={styles.userDetailsContainer}>
-               {/* {callStatus && callStatus.toLowerCase() == CALL_STATUS_RECONNECT &&} */}
-               <Timer callStatus={callStatus} />
-               {/* <Text style={styles.callTimeText}>{callTime}</Text> */}
-               {renderLargeVideoTile()}
-            </View>
+            {/* Top view to hide when toggling controls */}
+            <Animated.View
+               onLayout={handleTopControlsUILayout}
+               style={[
+                  styles.topControlsWrapper,
+                  {
+                     opacity: controlsOpacity,
+                     transform: [{ translateY: controlsOffsetTop }],
+                  },
+               ]}>
+               {/* down arrow to close the modal */}
+               <CloseCallModalButton onPress={handleClosePress} />
+               {/* Menu for layout change */}
+               <View style={styles.menuIcon}>
+                  <IconButton onPress={toggleMenuPopup}>
+                     <MenuIcon color={'#fff'} />
+                  </IconButton>
+               </View>
+               {/* call status */}
+               <View style={styles.callUsersWrapper}>
+                  {isCallConnected ? (
+                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.callUsersText}>
+                        {callUsersNameText}
+                     </Text>
+                  ) : (
+                     <Text style={styles.callUsersText}>Connecting...</Text>
+                  )}
+               </View>
+               {/* call timer */}
+               <View style={styles.callTimerWrapper}>
+                  <Timer callStatus={callStatus} />
+               </View>
+            </Animated.View>
+            {/* Place holder View to fill up the height of the above View because it is an obsolute positioned view */}
+            <Animated.View
+               style={{
+                  height: topPlaceHolderViewHeight,
+               }}
+            />
+
+            {/* large user profile details */}
+            <View style={styles.userDetailsContainer}>{renderLargeVideoTile()}</View>
          </View>
+
          {renderGridLayout()}
-         <View /* style={layout === 'grid' && styles.} */>
-            {/* Small video tile */}
+
+         <View>
             {renderSmallVideoTile()}
             {/* Call Control buttons (Mute & End & speaker) */}
-            <CallControlButtons
-               handleEndCall={handleHangUp}
-               // handleAudioMute={handleAudioMute}
-               // handleVideoMute={handleVideoMute}
-               // videoMute={!!localVideoMuted}
-               // audioMute={true}
-               // audioControl={audioControl}
-               // videoControl={videoControl}
-            />
+            <Animated.View
+               onLayout={handleBottomControlsUILayout}
+               style={[
+                  layout === 'grid' ? styles.positionAbsoluteBottomControls : null,
+                  {
+                     opacity: controlsOpacity,
+                     transform: [{ translateY: controlsOffsetBottom }],
+                  },
+               ]}>
+               <CallControlButtons
+                  handleEndCall={handleHangUp}
+                  // handleAudioMute={handleAudioMute}
+                  // handleVideoMute={handleVideoMute}
+                  // videoMute={!!localVideoMuted}
+                  // audioMute={true}
+                  // audioControl={audioControl}
+                  // videoControl={videoControl}
+               />
+            </Animated.View>
          </View>
       </ImageBackground>
    );
@@ -239,8 +330,14 @@ export default OnGoingCall;
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      backgroundColor: 'gray',
       justifyContent: 'space-between',
+   },
+   topControlsWrapper: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 10,
    },
    callUsersWrapper: {
       marginTop: 30,
@@ -250,6 +347,35 @@ const styles = StyleSheet.create({
       position: 'absolute',
       top: 20,
       right: 10,
+      zIndex: 10,
+   },
+   menuPopupOverlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 100,
+   },
+   menuPopupWrapper: {
+      position: 'absolute',
+      top: 20,
+      right: 10,
+      paddingVertical: 7,
+      borderRadius: 5,
+      backgroundColor: ApplicationColors.white,
+      elevation: 3,
+      shadowColor: ApplicationColors.shadowColor,
+      shadowOffset: { width: 3, height: 3 },
+      shadowOpacity: 0.3,
+      shadowRadius: 6,
+   },
+   menuPopupItem: {
+      paddingHorizontal: 15,
+      paddingVertical: 7,
+   },
+   menuPopupItemText: {
+      color: ApplicationColors.black,
    },
    callUsersText: {
       fontSize: 14,
@@ -257,13 +383,12 @@ const styles = StyleSheet.create({
       width: '75%',
       textAlign: 'center',
    },
-   userDetailsContainer: {
+   callTimerWrapper: {
+      alignSelf: 'center',
       marginTop: 10,
-      alignItems: 'center',
    },
-   callTimeText: {
-      fontSize: 12,
-      color: ApplicationColors.white,
+   userDetailsContainer: {
+      alignItems: 'center',
    },
    actionButtonWrapper: {
       marginBottom: 80,
@@ -294,5 +419,10 @@ const styles = StyleSheet.create({
    gridLayoutContainer: {},
    gridItemWrapper: {
       flex: 1,
+   },
+   positionAbsoluteBottomControls: {
+      position: 'absolute',
+      bottom: 0,
+      width: '100%',
    },
 });

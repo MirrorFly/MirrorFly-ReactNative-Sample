@@ -19,21 +19,25 @@ const initialState = {
    screenName: '',
    connectionState: {},
    callDuration: 0,
-   /*
-    // Example data for largeVideoUser property
-    largeVideoUser: {
+
+   /* // Example data for largeVideoUser property
+   largeVideoUser: {
       userJid: largeUserJid,
       volumeLevelsBasedOnUserJid: { '919988776655@xmpp.contus.us': 10 },
       showVoiceDetect: true | false,
-      volumeLevelVideo: 0
-    } */
+      volumeLevelVideo: 0,
+   }, */
    largeVideoUser: {},
-   /* 
-    // Example data for pinUserData property
-    pinUserData: {
-      userJid: '919988776655@xmpp.contus.us' | null
-    }
-   */
+   // largeVideoUser: {
+   //    userJid: '919094237501@xmpp-uikit-qa.contus.us',
+   //    volumeLevelsBasedOnUserJid: { '919094237501@xmpp-uikit-qa.contus.us': 10 },
+   //    showVoiceDetect: false,
+   //    volumeLevelVideo: 0,
+   // },
+   /* // Example data for pinUserData property
+   pinUserData: {
+      userJid: '919988776655@xmpp.contus.us' | null,
+   }, */
    pinUserData: {},
    callerUUID: '',
 };

@@ -4,7 +4,6 @@ import { Platform } from 'react-native';
 import RNCallKeep from 'react-native-callkeep';
 import { MediaStream } from 'react-native-webrtc';
 import { batch } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
 import {
    callConnectionStoreData,
    clearMissedCallNotificationTimer,
@@ -32,7 +31,7 @@ import {
    ONGOING_CALL_SCREEN,
    OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
-import { displayIncomingCallForIos, endCallForIos } from '../Helper/Calls/Utility';
+import { displayIncomingCallForIos, endCallForIos, updateMissedCallNotification } from '../Helper/Calls/Utility';
 import { formatUserIdToJid, getLocalUserDetails } from '../Helper/Chat/ChatHelper';
 import {
    CONNECTION_STATE_CONNECTING,
@@ -64,8 +63,7 @@ import {
    setCallModalScreen,
    showConfrence,
    updateCallConnectionState,
-   updateCallerUUID,
-   updateConference,
+   updateConference
 } from '../redux/Actions/CallAction';
 import {
    ClearChatHistoryAction,
@@ -753,10 +751,8 @@ export const callBacks = {
          if (res.callType === 'audio') {
             localVideoMuted = true;
          }
-         const callUUID = uuidv4();
          batch(() => {
             Store.dispatch(updateCallConnectionState(res));
-            Store.dispatch(updateCallerUUID(callUUID));
             Store.dispatch(
                updateConference({
                   callStatusText: CALL_STATUS_INCOMING,
@@ -766,7 +762,7 @@ export const callBacks = {
          if (Platform.OS === 'android') {
             Store.dispatch(openCallModal());
          } else {
-            displayIncomingCallForIos(res, callUUID);
+            displayIncomingCallForIos(res);
          }
          startIncomingCallRingtone();
          // TODO: update the below store data based on new reducer structure
@@ -950,6 +946,7 @@ export const callBacks = {
    callUserLeftListener: function (res) {},
    missedCallListener: res => {
       console.log(res, 'missedCallListener');
+      updateMissedCallNotification(res);
    },
    callSwitchListener: function (res) {},
    muteStatusListener: res => {},

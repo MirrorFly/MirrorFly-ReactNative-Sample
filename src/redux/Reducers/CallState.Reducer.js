@@ -95,6 +95,7 @@ const CallStateReducer = (state = initialStateClone, action = {}) => {
             ...state,
             id: Date.now(),
             connectionState: {},
+            callerUUID: '',
          };
       case RESET_CALL_DATA:
       case RESET_STORE:

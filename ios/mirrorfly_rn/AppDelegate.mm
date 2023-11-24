@@ -92,6 +92,9 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
   [FIRApp configure];
   RCTAppSetupPrepareApp(application);
 
+  // --- register VoipPushNotification here ASAP rather than in JS. Doing this from the JS side may be too slow for some use cases
+  // --- see: https://github.com/react-native-webrtc/react-native-voip-push-notification/issues/59#issuecomment-691685841  
+  [RNVoipPushNotificationManager voipRegistration];
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
 
 #if RCT_NEW_ARCH_ENABLED
@@ -181,13 +184,13 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
   // --- see: react-native-callkeep
 
   // --- Retrieve information from your voip push payload
-//  NSUUID *uuid = [NSUUID UUID];
-//  NSString *UUID = [uuid UUIDString];
   NSString *uuid = [[NSUUID UUID] UUIDString];
-  NSString *callerName = [NSString stringWithFormat:@"%@ (Connecting...)", payload.dictionaryPayload[@"caller_name"]];
+  NSString *callerName = payload.dictionaryPayload[@"caller_name"];
   NSString *handle = payload.dictionaryPayload[@"caller_id"];
   NSString *callerId = [[handle componentsSeparatedByString:@"@"] objectAtIndex:0];
-  
+  NSString *hasvideoValue = payload.dictionaryPayload[@"call_type"];
+  BOOL hasvideo = [hasvideoValue isEqualToString:@"video"] ? YES : NO;
+
   // --- this is optional, only required if you want to call `completion()` on the js side
   [RNVoipPushNotificationManager addCompletionHandler:uuid completionHandler:completion];
 
@@ -197,7 +200,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
   [RNCallKeep reportNewIncomingCall: uuid
                              handle: callerId
                          handleType: @"generic"
-                           hasVideo: YES
+                           hasVideo: hasvideo
                 localizedCallerName: callerName
                     supportsHolding: YES
                        supportsDTMF: YES

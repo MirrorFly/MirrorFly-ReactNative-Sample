@@ -2044,21 +2044,21 @@ export const CheckBox = () => {
 };
 
 export const TickIcon = props => {
-  return (
-    <Svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={props?.width || '16.294'}
-      height={props?.height || '12.811'}
-      viewBox="0 0 16.294 12.811">
-      <Path
-        id="Path_13812"
-        data-name="Path 13812"
-        d="M4.684,7.6,3.111,9.176l5.057,5.057L19.405,3,17.832,1.422,8.168,11.086Z"
-        transform="translate(-3.111 -1.422)"
-        fill="#fff"
-      />
-    </Svg>
-  );
+   return (
+      <Svg
+         xmlns="http://www.w3.org/2000/svg"
+         width={props?.width || '16.294'}
+         height={props?.height || '12.811'}
+         viewBox="0 0 16.294 12.811">
+         <Path
+            id="Path_13812"
+            data-name="Path 13812"
+            d="M4.684,7.6,3.111,9.176l5.057,5.057L19.405,3,17.832,1.422,8.168,11.086Z"
+            transform="translate(-3.111 -1.422)"
+            fill="#fff"
+         />
+      </Svg>
+   );
 };
 
 export const RightArrowIcon = props => {
@@ -2084,55 +2084,36 @@ export const RightArrowIcon = props => {
 };
 
 export const DownloadCancel = props => {
-  const { color = '#fff' } = props;
-  return (
-    <Svg
-      id="download-fill"
-      xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
-      viewBox="0 0 14 14">
-      <Path
-        id="Path_1545"
-        data-name="Path 1545"
-        d="M0,0H14V14H0Z"
-        fill="none"
-      />
-      <Path
-        id="remove"
-        d="M8.227.236,4.8,3.661,1.378.236A.807.807,0,0,0,.236,1.378L3.661,4.8.236,8.227A.807.807,0,0,0,1.378,9.368L4.8,5.944,8.227,9.368A.807.807,0,0,0,9.368,8.227L5.944,4.8,9.368,1.378A.807.807,0,0,0,8.227.236Z"
-        transform="translate(11.604 2) rotate(90)"
-        fill={color}
-      />
-    </Svg>
-  );
+   const { color = '#fff' } = props;
+   return (
+      <Svg id="download-fill" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
+         <Path id="Path_1545" data-name="Path 1545" d="M0,0H14V14H0Z" fill="none" />
+         <Path
+            id="remove"
+            d="M8.227.236,4.8,3.661,1.378.236A.807.807,0,0,0,.236,1.378L3.661,4.8.236,8.227A.807.807,0,0,0,1.378,9.368L4.8,5.944,8.227,9.368A.807.807,0,0,0,9.368,8.227L5.944,4.8,9.368,1.378A.807.807,0,0,0,8.227.236Z"
+            transform="translate(11.604 2) rotate(90)"
+            fill={color}
+         />
+      </Svg>
+   );
 };
 
-export const uploadIcon = (props) => {
-  const { color = '#fff' } = props;
-  return (
-    <Svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="14.56"
-      height="14.56"
-      viewBox="0 0 14.56 14.56">
-      <G id="download-fill" transform="translate(14.56 14.56) rotate(180)">
-        <Path
-          id="Path_1545"
-          data-name="Path 1545"
-          d="M0,0H14.56V14.56H0Z"
-          fill="none"
-        />
-        <Path
-          id="Path_1546"
-          data-name="Path 1546"
-          d="M3.875,12.212H14.8v1.213H3.875ZM9.942,6.145h4.247L9.335,11,4.482,6.145H8.728V1.292H9.942Z"
-          transform="translate(-2.055 -0.685)"
-          fill={color}
-        />
-      </G>
-    </Svg>
-  );
+export const uploadIcon = props => {
+   const { color = '#fff' } = props;
+   return (
+      <Svg xmlns="http://www.w3.org/2000/svg" width="14.56" height="14.56" viewBox="0 0 14.56 14.56">
+         <G id="download-fill" transform="translate(14.56 14.56) rotate(180)">
+            <Path id="Path_1545" data-name="Path 1545" d="M0,0H14.56V14.56H0Z" fill="none" />
+            <Path
+               id="Path_1546"
+               data-name="Path 1546"
+               d="M3.875,12.212H14.8v1.213H3.875ZM9.942,6.145h4.247L9.335,11,4.482,6.145H8.728V1.292H9.942Z"
+               transform="translate(-2.055 -0.685)"
+               fill={color}
+            />
+         </G>
+      </Svg>
+   );
 };
 
 export const imageIcon = () => {
@@ -2710,6 +2691,22 @@ export const VideoUnMuteIcon = props => {
                stroke-width="0.3"
             />
          </G>
+      </Svg>
+   );
+};
+
+export const LayoutIcon = ({width, height, color}) => {
+   return (
+      <Svg
+         width={width || "9.889"}
+         height={height || "10.25"}
+         viewBox="0 0 9.889 10.25">
+         <Path
+            d="M318.081,170.69h-3.06a.731.731,0,0,1-.729-.729v-4.313a.731.731,0,0,1,.729-.729h3.06a.731.731,0,0,1,.729.729v4.313A.731.731,0,0,1,318.081,170.69Zm0-10.25h-3.06a.731.731,0,0,0-.729.729v2.225a.731.731,0,0,0,.729.729h3.06a.731.731,0,0,0,.729-.729v-2.225A.731.731,0,0,0,318.081,160.44Zm-8.432.114h3.06a.731.731,0,0,1,.729.729v8.565a.731.731,0,0,1-.729.729h-3.06a.731.731,0,0,1-.729-.729v-8.565A.731.731,0,0,1,309.649,160.554Z"
+            transform="translate(-308.92 -160.44)"
+            fill={color || "#212121"}
+            fillRule="evenodd"
+         />
       </Svg>
    );
 };

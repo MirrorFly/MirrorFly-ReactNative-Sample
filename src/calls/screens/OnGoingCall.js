@@ -18,7 +18,7 @@ import GridLayout from '../components/GridLayout';
 import SmallVideoTile from '../components/SmallVideoTile';
 import Timer from '../components/Timer';
 import IconButton from '../../common/IconButton';
-import { MenuIcon } from '../../common/Icons';
+import { LayoutIcon, MenuIcon } from '../../common/Icons';
 import Pressable from '../../common/Pressable';
 
 /**
@@ -86,6 +86,7 @@ const OnGoingCall = () => {
       () => [
          {
             label: `Click ${layout === 'tile' ? 'grid' : 'tile'} view`,
+            icon: <LayoutIcon width={12} height={12} />,
             formatter: toggleLayout,
          },
       ],
@@ -210,6 +211,7 @@ const OnGoingCall = () => {
                         toggleMenuPopup();
                         m.formatter();
                      }}>
+                     {m.icon ? <View style={styles.menuPopupItemIcon}>{m.icon}</View> : null}
                      <Text style={styles.menuPopupItemText}>{m.label}</Text>
                   </Pressable>
                ))}
@@ -340,12 +342,12 @@ const styles = StyleSheet.create({
       zIndex: 10,
    },
    callUsersWrapper: {
-      marginTop: 30,
+      marginTop: 15,
       alignItems: 'center',
    },
    menuIcon: {
       position: 'absolute',
-      top: 20,
+      top: 10,
       right: 10,
       zIndex: 10,
    },
@@ -359,7 +361,7 @@ const styles = StyleSheet.create({
    },
    menuPopupWrapper: {
       position: 'absolute',
-      top: 20,
+      top: 10,
       right: 10,
       paddingVertical: 7,
       borderRadius: 5,
@@ -373,6 +375,11 @@ const styles = StyleSheet.create({
    menuPopupItem: {
       paddingHorizontal: 15,
       paddingVertical: 7,
+      flexDirection: 'row',
+      alignItems: 'center',
+   },
+   menuPopupItemIcon: {
+      marginRight: 10,
    },
    menuPopupItemText: {
       color: ApplicationColors.black,
@@ -389,28 +396,6 @@ const styles = StyleSheet.create({
    },
    userDetailsContainer: {
       alignItems: 'center',
-   },
-   actionButtonWrapper: {
-      marginBottom: 80,
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-   },
-   actionButton: {
-      width: 100,
-      height: 50,
-      backgroundColor: 'salmon',
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderRadius: 5,
-   },
-   greenButton: {
-      backgroundColor: '#4DDB64',
-   },
-   redButton: {
-      backgroundColor: '#FB2B48',
-   },
-   actionButtonText: {
-      color: ApplicationColors.white,
    },
    smallVideoTileContainer: {
       minWidth: '100%',

@@ -1,4 +1,4 @@
-import { LARGE_VIDEO_USER, ONGOING_CALL_SCREEN } from '../../Helper/Calls/Constant';
+import { LARGE_VIDEO_USER } from '../../Helper/Calls/Constant';
 import {
    CALLCONNECTION_STATE_DATA,
    CALL_DURATION_TIMESTAMP,

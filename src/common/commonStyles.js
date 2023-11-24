@@ -212,6 +212,9 @@ const commonStyles = StyleSheet.create({
    alignSelfFlexEnd: {
       alignSelf: 'flex-end',
    },
+   alignSelfCenter: {
+      alignSelf: 'center',
+   },
    bg_transparent: {
       backgroundColor: 'transparent',
    },

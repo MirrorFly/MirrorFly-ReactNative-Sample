@@ -205,7 +205,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
                                handle: callerId
                            handleType: @"generic"
                              hasVideo: hasvideo
-                  localizedCallerName: callerName
+                  localizedCallerName: callerId
                       supportsHolding: YES
                          supportsDTMF: YES
                      supportsGrouping: YES

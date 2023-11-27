@@ -1,79 +1,105 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
-import {useSelector} from 'react-redux';
-import {SandTimer} from '../common/Icons';
+import { Keyboard, StyleSheet, View, Pressable } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
+import FileViewer from 'react-native-file-viewer';
+import { SandTimer } from '../common/Icons';
 import ImageCard from './ImageCard';
 import VideoCard from './VideoCard';
-import PdfCard from './PdfCard';
+import DocumentMessageCard from './DocumentMessageCard';
 import AudioCard from './AudioCard';
 import MapCard from './MapCard';
 import ContactCard from './ContactCard';
 import TextCard from './TextCard';
-import {getConversationHistoryTime} from '../common/TimeStamp';
-import {Box, HStack, Icon, Pressable, View} from 'native-base';
-import {uploadFileToSDK} from '../Helper/Chat/ChatHelper';
-import {getThumbBase64URL} from '../Helper/Chat/Utility';
-import store from '../redux/store';
-import {singleChatSelectedMediaImage} from '../redux/SingleChatImageSlice';
+import { getConversationHistoryTime } from '../common/TimeStamp';
+import { uploadFileToSDK } from '../Helper/Chat/ChatHelper';
+import { getThumbBase64URL } from '../Helper/Chat/Utility';
+import { singleChatSelectedMediaImage } from '../redux/Actions/SingleChatImageAction';
+import {
+  openLocationExternally,
+  showCheckYourInternetToast,
+  showToast,
+} from '../Helper';
+import { isKeyboardVisibleRef } from '../ChatApp';
+import commonStyles from '../common/commonStyles';
+import ApplicationColors from '../config/appColors';
+import MessagePressable from '../common/MessagePressable';
+import { isMessageSelectingRef } from './ChatConversation';
+import { useNetworkStatus } from '../hooks';
+import { useNavigation } from '@react-navigation/native';
+import { MEDIA_POST_PRE_VIEW_SCREEN } from '../constant';
 
 const ChatMessage = props => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
-  let isSame = currentUserJID === props?.message?.fromUserJid;
+  const {
+    message,
+    handleReplyPress,
+    shouldHighlightMessage,
+    shouldSelectMessage,
+    handleMsgSelect,
+    showContactInviteModal,
+  } = props;
+  let isSame = currentUserJID === message?.fromUserJid;
   let statusVisible = 'notSend';
-  const {message, setLocalNav} = props;
   const {
     msgBody = {},
     msgBody: {
-      media: {file = {}, is_uploading, thumb_image = '', local_path = ''} = {},
+      media: {
+        file = {},
+        is_uploading,
+        thumb_image = '',
+        local_path = '',
+      } = {},
       message_type,
     } = {},
     msgId,
-    msgStatus,
   } = message;
-  const [uploadStatus, setUploadStatus] = React.useState(4);
-  const imageUrl = local_path ? local_path : file?.fileDetails?.image?.uri;
+  const navigation = useNavigation();
+  const imageUrl = local_path || file?.fileDetails?.uri;
   const thumbURL = thumb_image ? getThumbBase64URL(thumb_image) : '';
+
   const [imgSrc, saveImage] = React.useState(thumbURL);
-  const imageSize = props?.message?.msgBody?.media?.file_size || '';
+  const dispatch = useDispatch();
+  const imageSize = message?.msgBody?.media?.file_size || '';
   const fileSize = imageSize;
   const [isSubscribed, setIsSubscribed] = React.useState(true);
+
+  const isInternetReachable = useNetworkStatus();
 
   const imgFileDownload = () => {
     try {
       if (imageUrl) {
-        setUploadStatus(2);
         saveImage(imageUrl);
       }
     } catch (error) {
-      if (isSubscribed) saveImage(getThumbBase64URL(thumb_image));
+      if (isSubscribed) {
+        saveImage(getThumbBase64URL(thumb_image));
+      }
     }
   };
 
   React.useEffect(() => {
-    if (is_uploading === 0 || is_uploading === 1) {
-      setUploadStatus(is_uploading);
-      if (isImageMessage()) saveImage(getThumbBase64URL(thumb_image));
-    } else if (is_uploading === 3 || is_uploading === 7) {
-      if (isImageMessage()) saveImage(getThumbBase64URL(thumb_image));
+    if (
+      is_uploading === 0 ||
+      is_uploading === 1 ||
+      is_uploading === 3 ||
+      is_uploading === 7
+    ) {
+      if (isImageMessage()) {
+        saveImage(getThumbBase64URL(thumb_image));
+      }
     } else if (is_uploading !== 0 && is_uploading !== 8) {
-      if (isImageMessage()) imgFileDownload();
-      // else setUploadStatus(2);
+      if (isImageMessage()) {
+        imgFileDownload();
+      }
     }
     return () => setIsSubscribed(false);
   }, []);
 
   React.useEffect(() => {
-    msgStatus === 0 && setUploadStatus(2);
-  }, [msgStatus]);
-
-  React.useEffect(() => {
-    is_uploading === 8 && setUploadStatus(is_uploading);
     if (is_uploading === 1) {
       uploadFileToSDK(file, fromUserJId, msgId, msgBody?.media);
     }
-    (is_uploading === 3 || is_uploading === 7) && setUploadStatus(3);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [is_uploading]);
 
   const isImageMessage = () => message_type === 'image';
@@ -93,150 +119,232 @@ const ChatMessage = props => {
       break;
   }
 
-  const getMessageStatus = msgStatus => {
-    if (isSame && msgStatus === 3) {
-      return <Icon px="3" as={SandTimer} name="emoji-happy" />;
+  const getMessageStatus = currentStatus => {
+    if (isSame && currentStatus === 3) {
+      return <SandTimer />;
     }
     return (
-      <>
-        <View style={[styles?.msgStatus, isSame ? statusVisible : '']} />
-      </>
+      <View style={[styles?.currentStatus, isSame ? statusVisible : '']} />
     );
   };
 
   const handleMessageObj = () => {
     if (
-      props.message.msgBody.media.local_path ||
-      props.message.msgBody?.media?.file?.fileDetails?.image?.uri
+      ['image', 'video'].includes(message?.msgBody?.message_type) &&
+      (message?.msgBody?.media?.local_path ||
+        message?.msgBody?.media?.file?.fileDetails?.uri)
     ) {
-      store.dispatch(singleChatSelectedMediaImage(props.message));
-      setLocalNav('PostPreView');
+      if (isKeyboardVisibleRef.current) {
+        let hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+          dispatch(singleChatSelectedMediaImage(message));
+          navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN);
+          hideSubscription.remove();
+        });
+        Keyboard.dismiss();
+      } else {
+        dispatch(singleChatSelectedMediaImage(message));
+        navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN);
+      }
+    } else if (
+      message?.msgBody?.message_type === 'file' &&
+      (message?.msgBody?.media?.local_path ||
+        message?.msgBody?.media?.file?.fileDetails?.uri)
+    ) {
+      FileViewer.open(
+        message?.msgBody?.media?.local_path ||
+          message?.msgBody?.media?.file?.fileDetails?.uri,
+        {
+          showOpenWithDialog: true,
+        },
+      )
+        .then(res => {
+          console.log('Document opened externally', res);
+        })
+        .catch(err => {
+          console.log('Error while opening Document', err);
+          showToast('No apps available to open this file', {
+            id: 'no-supported-app-to-open-file',
+          });
+        });
+    } else if (message?.msgBody?.message_type === 'location') {
+      if (!isInternetReachable) {
+        showCheckYourInternetToast();
+        return;
+      }
+      const { latitude = '', longitude = '' } = message.msgBody?.location || {};
+      openLocationExternally(latitude, longitude);
     }
   };
 
+  const dismissKeyBoard = () => {
+    Keyboard.dismiss();
+  };
+
   const handleMessageSelect = () => {
-    if (props?.selectedMsgs?.length) {
-      props.handleMsgSelect(props.message);
+    dismissKeyBoard();
+    if (isMessageSelectingRef.current) {
+      handleMsgSelect(message);
+    }
+  };
+
+  const handleMessageLongPress = () => {
+    dismissKeyBoard();
+    handleMsgSelect(message);
+  };
+
+  const handleContentPress = () => {
+    dismissKeyBoard();
+    isMessageSelectingRef.current ? handleMessageSelect() : handleMessageObj();
+  };
+
+  const handleContentLongPress = () => {
+    dismissKeyBoard();
+    handleMsgSelect(message);
+  };
+
+  const handleContactInvitePress = _message => {
+    // Same as handleContentPress but calling showContactInviteModal function with _message as param
+    dismissKeyBoard();
+    isMessageSelectingRef.current
+      ? handleMessageSelect()
+      : showContactInviteModal(_message);
+  };
+  const renderMessageBasedOnType = () => {
+    switch (message?.msgBody?.message_type) {
+      case 'text':
+        return (
+          <TextCard
+            handleReplyPress={handleReplyPress}
+            isSame={isSame}
+            message={message}
+            data={{
+              message: message?.msgBody?.message,
+              timeStamp: getConversationHistoryTime(message?.createdAt),
+              status: getMessageStatus(message?.msgStatus),
+            }}
+          />
+        );
+      case 'image':
+        return (
+          <ImageCard
+            handleReplyPress={handleReplyPress}
+            messageObject={message}
+            imgSrc={imgSrc}
+            isSender={isSame}
+            status={getMessageStatus(message?.msgStatus)}
+            timeStamp={getConversationHistoryTime(message?.createdAt)}
+            fileSize={fileSize}
+          />
+        );
+      case 'video':
+        return (
+          <VideoCard
+            handleReplyPress={handleReplyPress}
+            messageObject={message}
+            imgSrc={imgSrc}
+            isSender={isSame}
+            status={getMessageStatus(message?.msgStatus)}
+            fileSize={fileSize}
+            timeStamp={getConversationHistoryTime(message?.createdAt)}
+          />
+        );
+      case 'audio':
+        return (
+          <AudioCard
+            handleReplyPress={handleReplyPress}
+            messageObject={message}
+            isSender={isSame}
+            mediaUrl={imageUrl}
+            status={getMessageStatus(message?.msgStatus)}
+            fileSize={fileSize}
+            timeStamp={getConversationHistoryTime(message?.createdAt)}
+          />
+        );
+      case 'file':
+        return (
+          <DocumentMessageCard
+            handleReplyPress={handleReplyPress}
+            message={message}
+            status={getMessageStatus(message?.msgStatus)}
+            timeStamp={getConversationHistoryTime(message?.createdAt)}
+            fileSize={fileSize}
+            isSender={isSame}
+            mediaUrl={imageUrl}
+          />
+        );
+      case 'contact':
+        return (
+          <ContactCard
+            handleReplyPress={handleReplyPress}
+            message={message}
+            status={getMessageStatus(message?.msgStatus)}
+            timeStamp={getConversationHistoryTime(message?.createdAt)}
+            onInvitePress={handleContactInvitePress}
+            handleInvitetLongPress={handleContentLongPress}
+            isSender={isSame}
+          />
+        );
+      case 'location':
+        return (
+          <MapCard
+            handleReplyPress={handleReplyPress}
+            message={message}
+            status={getMessageStatus(message?.msgStatus)}
+            timeStamp={getConversationHistoryTime(message?.createdAt)}
+            handleContentPress={handleContentPress}
+            handleContentLongPress={handleContentLongPress}
+            isSender={isSame}
+          />
+        );
     }
   };
 
   return (
     <Pressable
+      style={
+        shouldHighlightMessage && {
+          backgroundColor: ApplicationColors.highlighedMessageBg,
+        }
+      }
+      delayLongPress={300}
+      pressedStyle={commonStyles.bg_transparent}
       onPress={handleMessageSelect}
-      onLongPress={() =>
-        message?.msgStatus !== 3 && props.handleMsgSelect(props.message)
-      }>
-      {({isPressed}) => {
-        return (
-          <Box>
-            <Box
-              my={'1'}
-              bg={
-                props.selectedMsgs.includes(props.message)
-                  ? 'rgba(0,0,0,0.2)'
-                  : 'transparent'
-              }>
-              <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} px="3">
-                <Pressable
-                  onPress={handleMessageObj}
-                  minWidth="30%"
-                  maxWidth="80%">
-                  {
-                    {
-                      text: (
-                        <TextCard
-                          isSame={isSame}
-                          data={{
-                            message: message?.msgBody?.message,
-                            timeStamp: getConversationHistoryTime(
-                              props?.message?.createdAt,
-                            ),
-                            status: getMessageStatus(props?.message?.msgStatus),
-                          }}
-                        />
-                      ),
-                      image: (
-                        <ImageCard
-                          messageObject={message}
-                          setUploadStatus={setUploadStatus}
-                          imgSrc={imgSrc}
-                          isSender={isSame}
-                          status={getMessageStatus(message?.msgStatus)}
-                          timeStamp={getConversationHistoryTime(
-                            message?.createdAt,
-                          )}
-                          uploadStatus={uploadStatus}
-                          fileSize={fileSize}
-                        />
-                      ),
-                      video: (
-                        <VideoCard
-                          messageObject={message}
-                          setUploadStatus={setUploadStatus}
-                          imgSrc={imgSrc}
-                          isSender={isSame}
-                          status={getMessageStatus(message?.msgStatus)}
-                          uploadStatus={uploadStatus}
-                          fileSize={fileSize}
-                          timeStamp={getConversationHistoryTime(
-                            message?.createdAt,
-                          )}
-                        />
-                      ),
-                      audio: (
-                        <View style={{flex: 1}}>
-                          <AudioCard
-                            data={message}
-                            status={getMessageStatus(message?.msgStatus)}
-                            timeStamp={getConversationHistoryTime(
-                              message?.createdAt,
-                            )}
-                          />
-                        </View>
-                      ),
-                      file: (
-                        <PdfCard
-                          data={message}
-                          status={getMessageStatus(message?.msgStatus)}
-                          timeStamp={getConversationHistoryTime(
-                            message?.createdAt,
-                          )}
-                          fileSize={fileSize}
-                        />
-                      ),
-                      contact: (
-                        <ContactCard
-                          data={message}
-                          status={getMessageStatus(message?.msgStatus)}
-                          timeStamp={getConversationHistoryTime(
-                            message?.createdAt,
-                          )}
-                        />
-                      ),
-                      location: (
-                        <MapCard
-                          data={message}
-                          status={getMessageStatus(message?.msgStatus)}
-                          timeStamp={getConversationHistoryTime(
-                            message?.createdAt,
-                          )}
-                        />
-                      ),
-                    }[message?.msgBody?.message_type]
-                  }
-                </Pressable>
-              </HStack>
-            </Box>
-          </Box>
-        );
-      }}
+      onLongPress={handleMessageLongPress}>
+      {({ pressed }) => (
+        <View
+          style={[
+            styles.messageContainer,
+            shouldSelectMessage ? styles.highlightMessage : undefined,
+          ]}>
+          <View
+            style={[
+              commonStyles.paddingHorizontal_12,
+              isSame
+                ? commonStyles.alignSelfFlexEnd
+                : commonStyles.alignSelfFlexStart,
+            ]}>
+            <MessagePressable
+              forcePress={pressed}
+              style={styles.messageContentPressable}
+              contentContainerStyle={[
+                styles.messageCommonStyle,
+                isSame ? styles.sentMessage : styles.receivedMessage,
+              ]}
+              delayLongPress={300}
+              onPress={handleContentPress}
+              onLongPress={handleContentLongPress}>
+              {renderMessageBasedOnType()}
+            </MessagePressable>
+          </View>
+        </View>
+      )}
     </Pressable>
   );
 };
-export default ChatMessage;
+export default React.memo(ChatMessage);
 
 const styles = StyleSheet.create({
-  msgStatus: {
+  currentStatus: {
     marginStart: 15,
     width: 6,
     height: 6,
@@ -253,5 +361,31 @@ const styles = StyleSheet.create({
   },
   seen: {
     backgroundColor: '#66E824',
+  },
+  flex1: { flex: 1 },
+  messageContainer: {
+    marginBottom: 6,
+  },
+  highlightMessage: {
+    backgroundColor: ApplicationColors.highlighedMessageBg,
+  },
+  messageContentPressable: {
+    minWidth: '30%',
+    maxWidth: '80%',
+  },
+  messageCommonStyle: {
+    borderRadius: 10,
+    overflow: 'hidden',
+    borderColor: '#DDE3E5',
+  },
+  sentMessage: {
+    backgroundColor: '#E2E8F7',
+    borderWidth: 0,
+    borderBottomRightRadius: 0,
+  },
+  receivedMessage: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderBottomLeftRadius: 0,
   },
 });

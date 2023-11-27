@@ -1,7 +1,11 @@
+import {
+  ALLOWED_AUDIO_FORMATS,
+  AUDIO_FORMATS,
+  DOCUMENT_FORMATS,
+} from '../../../Helper/Chat/Constant';
 import config from './config';
 
 const {
-  maxAllowedMediaCount,
   fileSize,
   imageFileSize,
   videoFileSize,
@@ -13,12 +17,12 @@ const {
  * @param  {string} name=""
  * find last "DOT" and get file Type
  */
-export function getExtension(name = '') {
+export function getExtension(name = '', isDotrequired = true) {
   if (!name) {
     return '';
   }
   const lastDot = name.substring(name.lastIndexOf('.') + 1, name.length);
-  return '.' + lastDot;
+  return isDotrequired ? '.' + lastDot : lastDot;
 }
 
 export function getType(type = '') {
@@ -37,10 +41,9 @@ const getMaxAllowedFileSize = mediaType => {
   return fileSize;
 };
 
-export const validateFileSize = (file, mediaTypeFile) => {
-  const filemb = Math.round(file.fileSize / 1024);
+export const validateFileSize = (size, mediaTypeFile) => {
+  const filemb = Math.round(size / 1024);
   const maxAllowedSize = getMaxAllowedFileSize(mediaTypeFile);
-
   if (filemb >= maxAllowedSize * 1024) {
     const message = `File size is too large. Try uploading file size below ${maxAllowedSize}MB`;
     if (mediaTypeFile) {
@@ -48,4 +51,19 @@ export const validateFileSize = (file, mediaTypeFile) => {
     }
   }
   return '';
+};
+
+export const validation = type => {
+  let mediaType = getType(type);
+  if (!AUDIO_FORMATS.includes(type)) {
+    let message = 'You can upload only ';
+    if (mediaType === 'audio') {
+      message = message + `${ALLOWED_AUDIO_FORMATS.join(', ')} files`;
+    }
+    return message;
+  }
+  return '';
+};
+export const isValidFileType = type => {
+  return DOCUMENT_FORMATS.includes(type);
 };

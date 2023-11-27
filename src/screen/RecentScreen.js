@@ -1,170 +1,349 @@
 import React from 'react';
-import ScreenHeader from '../components/ScreenHeader';
-import RecentChat from '../components/RecentChat';
+import { BackHandler, Dimensions, StyleSheet, Text, View } from 'react-native';
+import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
+import { batch, useDispatch, useSelector } from 'react-redux';
+import { FloatingBtn } from '../common/Button';
 import RecentCalls from '../components/RecentCalls';
-import {Dimensions, Animated} from 'react-native';
-import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
-import {FloatingBtn} from '../common/Button';
-import {useDispatch, useSelector} from 'react-redux';
-import {logout} from '../redux/authSlice';
-import {navigate} from '../redux/navigationSlice';
-import {CONTACTLIST, PROFILESCREEN, RECENTCHATSCREEN} from '../constant';
-import SDK from '../SDK/SDK';
-import {addRecentChat} from '../redux/recentChatDataSlice';
-import {sortBydate} from '../Helper/Chat/RecentChat';
+import RecentChat from '../components/RecentChat';
+import ScreenHeader from '../components/ScreenHeader';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import { ResetStore } from '../redux/Actions/ResetAction';
 import * as RootNav from '../Navigation/rootNavigation';
+import SDK from '../SDK/SDK';
+import {
+  CONTACTLIST,
+  PROFILESCREEN,
+  RECENTCHATSCREEN,
+  REGISTERSCREEN,
+} from '../constant';
+import { navigate } from '../redux/Actions/NavigationAction';
+import { profileDetail } from '../redux/Actions/ProfileAction';
+import { deleteActiveChatAction } from '../redux/Actions/RecentChatAction';
+import RecentHeader from '../components/RecentHeader';
+import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
+import { DeleteChatHistoryAction } from '../redux/Actions/ConversationAction';
+import logo from '../assets/mirrorfly-logo.png';
+import Modal, { ModalCenteredContent } from '../common/Modal';
+import ApplicationColors from '../config/appColors';
+import commonStyles from '../common/commonStyles';
+import Pressable from '../common/Pressable';
+import {
+  clearRecentChatSelectedItems,
+  toggleRecentChatSearch,
+  updateRecentChatSearchText,
+} from '../redux/Actions/recentChatSearchAction';
 
-const logo = require('../assets/mirrorfly-logo.png');
-
-const FirstComponent = (isSearching, filteredData) => (
-  <RecentChat isSearching={isSearching} data={filteredData} />
-);
+const scenesMap = SceneMap({
+  chats: () => <RecentChat />,
+  calls: RecentCalls,
+});
 
 function RecentScreen() {
-  const av = new Animated.Value(0);
-  av.addListener(() => {
-    return;
-  }); /** resolving WARN Sending `onAnimatedValueUpdate` with no listeners registered */
   const dispatch = useDispatch();
+  const { isSearching, selectedItems } =
+    useSelector(state => state.recentChatSearchData) || {};
   const [index, setIndex] = React.useState(0);
+  const recentChatData = useSelector(state => state.recentChatData.data);
   const [routes] = React.useState([
-    {key: 'first', title: 'Chats'},
-    {key: 'second', title: 'Calls'},
+    { key: 'chats', title: 'Chats' },
+    { key: 'calls', title: 'Calls' },
   ]);
-  const [filteredData, setFilteredData] = React.useState([]);
-  const [isSearching, setIsSearching] = React.useState(false);
-  const [recentData, setrecentData] = React.useState([]);
-  const recentChatList = useSelector(state => state.recentChatData.data);
+  const [showDeleteChatModal, setShowDeleteChatModal] = React.useState(false);
+  const [chatsBadge, setChatsBadge] = React.useState('');
+  const [callsBadge] = React.useState('');
 
-  const handleSearch = React.useCallback(
-    text => {
-      setIsSearching(true);
-      const filtered = recentData?.filter(item =>
-        item.fromUserId.toLowerCase().includes(text.toLowerCase()),
-      );
-      setFilteredData(filtered);
-    },
-    [recentData],
-  );
+  const tabBarSceneBadgeMap = React.useMemo(() => {
+    return {
+      chats: chatsBadge,
+      calls: callsBadge,
+    };
+  }, [chatsBadge, callsBadge]);
 
-  const handleBack = React.useCallback(() => {
-    setIsSearching(false);
-  }, []);
-
-  const handleClear = React.useCallback(() => {
-    setFilteredData(recentData);
-  }, [recentData]);
+  useFocusEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackBtn,
+    );
+    return () => {
+      backHandler.remove();
+    };
+  });
 
   React.useEffect(() => {
-    (async () => {
-      const recentChats = await SDK.getRecentChatsDB();
-      const recentChatsFilter = recentChats?.data.filter(
-        item => item.chatType == 'chat',
+    if (recentChatData.length) {
+      const unreadChatCount = recentChatData.filter(
+        d => d.unreadCount > 0,
+      ).length;
+      setChatsBadge(
+        unreadChatCount > 99 ? '99+' : String(unreadChatCount || ''),
       );
-      dispatch(addRecentChat(recentChatsFilter));
-    })();
-  }, []);
+    } else {
+      setChatsBadge('');
+    }
+  }, [recentChatData]);
 
-  const constructRecentChatItems = recentChatArrayConstruct => {
-    let recent = [];
-    sortBydate([...recentChatArrayConstruct]).map(async chat => {
-      recent.push(chat);
-    });
-    return recent.filter(eachmessage => eachmessage);
+  const closeSearch = () => {
+    dispatch(toggleRecentChatSearch(false));
+    dispatch(updateRecentChatSearchText(''));
   };
 
-  React.useEffect(() => {
-    let recentChatItems = constructRecentChatItems(recentChatList);
-    setrecentData(recentChatItems);
-  }, [recentChatList]);
+  const handleClearSearch = () => {
+    dispatch(updateRecentChatSearchText(''));
+  };
+  const renderTabBadge = scene => {
+    const badgeValue = tabBarSceneBadgeMap[scene.route?.key] || '';
+    return badgeValue ? (
+      <View style={styles.tabBadgeWrapper}>
+        <Text style={styles.tabBadgeText}>{badgeValue}</Text>
+      </View>
+    ) : null;
+  };
 
-  React.useEffect(() => {
-    setFilteredData(recentData);
-  }, [recentData, isSearching]);
+  const renderLabel = React.useCallback(
+    scene => {
+      return (
+        <View style={commonStyles.hstack}>
+          <Text style={[styles.tabarLabel, { color: scene.color }]}>
+            {scene.route.title.toUpperCase()}
+          </Text>
+          {renderTabBadge(scene)}
+        </View>
+      );
+    },
+    [chatsBadge, callsBadge],
+  );
 
   const renderTabBar = React.useCallback(
     props => {
       return (
-        <>
-          {!isSearching && (
-            <TabBar
-              {...props}
-              style={{backgroundColor: '#F2F2F2', color: 'black'}}
-              indicatorStyle={{
-                backgroundColor: '#3276E2',
-                borderColor: '#3276E2',
-                borderWidth: 1.3,
-              }}
-              labelStyle={{color: 'black', fontWeight: 'bold'}}
-              activeColor={'#3276E2'}
-            />
-          )}
-        </>
+        !isSearching && (
+          <TabBar
+            {...props}
+            style={styles.tabbar}
+            indicatorStyle={styles.tabbarIndicator}
+            labelStyle={styles.tabarLabel}
+            renderLabel={renderLabel}
+            activeColor={ApplicationColors.mainColor}
+            inactiveColor={ApplicationColors.black}
+          />
+        )
       );
     },
-    [isSearching],
+    [isSearching, chatsBadge, callsBadge],
   );
+
+  const handleBackBtn = () => {
+    if (selectedItems.length) {
+      dispatch(clearRecentChatSelectedItems());
+      return true;
+    }
+    if (isSearching) {
+      batch(() => {
+        dispatch(toggleRecentChatSearch(false));
+        dispatch(updateRecentChatSearchText(''));
+      });
+      return true;
+    }
+  };
+
+  const handleRemove = () => {
+    dispatch(clearRecentChatSelectedItems());
+  };
+
+  const deleteChat = () => {
+    selectedItems.forEach(item => {
+      let userJid =
+        item?.userJid ||
+        formatUserIdToJid(
+          item?.fromUserId,
+        ); /** Need to add chat type here while working in Group
+         formatUserIdToJid(
+          item?.fromUserId,
+          item?.chatType,
+        )
+        */
+      SDK.deleteChat(userJid);
+      batch(() => {
+        dispatch(deleteActiveChatAction({ fromUserId: item?.fromUserId }));
+        dispatch(DeleteChatHistoryAction({ fromUserId: item?.fromUserId }));
+      });
+    });
+    dispatch(clearRecentChatSelectedItems());
+    toggleDeleteModal();
+  };
+
+  const handleLogout = async () => {
+    SDK.logout();
+    const getPrevUserIdentifier = await AsyncStorage.getItem('userIdentifier');
+    AsyncStorage.setItem('prevUserIdentifier', getPrevUserIdentifier || '');
+    AsyncStorage.setItem('credential', '');
+    AsyncStorage.setItem('userIdentifier', '');
+    AsyncStorage.setItem('screenObj', '');
+    AsyncStorage.setItem('vCardProfile', '');
+    batch(() => {
+      dispatch(profileDetail({}));
+      dispatch(navigate({ screen: REGISTERSCREEN }));
+      dispatch(ResetStore());
+    });
+    RootNav.reset(REGISTERSCREEN);
+  };
+
+  const toggleDeleteModal = () => {
+    setShowDeleteChatModal(val => !val);
+  };
 
   const menuItems = React.useMemo(
     () => [
       {
         label: 'Profile',
         formatter: () => {
-          let x = {prevScreen: RECENTCHATSCREEN, screen: PROFILESCREEN};
+          let x = { prevScreen: RECENTCHATSCREEN, screen: PROFILESCREEN };
           dispatch(navigate(x));
           RootNav.navigate(PROFILESCREEN);
         },
       },
       {
         label: 'Logout',
-        formatter: () => {
-          dispatch(logout());
-        },
+        formatter: handleLogout,
       },
     ],
     [],
   );
 
-  const filteredDataList = isSearching ? filteredData : recentData;
+  const toggleSearching = val => {
+    dispatch(toggleRecentChatSearch(val));
+  };
 
-  const renderScene = React.useMemo(
-    () =>
-      SceneMap({
-        first: () => FirstComponent(isSearching, filteredDataList),
-        second: RecentCalls,
-      }),
-    [isSearching, filteredDataList],
-  );
+  const handleSearch = text => {
+    dispatch(updateRecentChatSearchText(text));
+  };
 
   return (
     <>
-      <ScreenHeader
-        setIsSearching={setIsSearching}
-        onhandleSearch={handleSearch}
-        onCloseSearch={handleBack}
-        menuItems={menuItems}
-        logo={logo}
-        isSearching={isSearching}
-        handleClear={handleClear}
-      />
+      {!selectedItems.length ? (
+        <ScreenHeader
+          setIsSearching={toggleSearching}
+          onhandleSearch={handleSearch}
+          onCloseSearch={closeSearch}
+          menuItems={menuItems}
+          logo={logo}
+          handleBackBtn={handleBackBtn}
+          isSearching={isSearching}
+          handleClear={handleClearSearch}
+        />
+      ) : (
+        <RecentHeader
+          handleRemove={handleRemove}
+          recentItem={selectedItems}
+          handleDeleteChat={toggleDeleteModal}
+        />
+      )}
       <TabView
-        navigationState={{index, routes}}
-        renderScene={renderScene}
+        navigationState={{ index, routes }}
+        renderScene={scenesMap}
         onIndexChange={setIndex}
-        initialLayout={{width: Dimensions.get('window').width}}
+        initialLayout={{ width: Dimensions.get('window').width }}
         renderTabBar={renderTabBar}
-        tabStyle={{borderColor: 'black', borderWidth: 1}}
-        activeTabStyle={{backgroundColor: 'black'}}
+        tabStyle={styles.tabView}
+        activeTabStyle={styles.activeTab}
         lazy
       />
       <FloatingBtn
         onPress={() => {
           RootNav.navigate(CONTACTLIST);
-          dispatch(navigate({screen: CONTACTLIST}));
+          dispatch(navigate({ screen: CONTACTLIST }));
         }}
       />
+      <Modal visible={showDeleteChatModal} onRequestClose={toggleDeleteModal}>
+        <ModalCenteredContent onPressOutside={toggleDeleteModal}>
+          <View style={styles.deleteChatModalContentContainer}>
+            <Text style={styles.deleteChatModalTitle}>
+              {selectedItems.length === 1
+                ? `${
+                    'Delete chat with "' +
+                    `${
+                      selectedItems[0]?.profileDetails?.nickName ||
+                      selectedItems[0]?.fromUserId
+                    }"` +
+                    '?'
+                  }`
+                : `Delete ${selectedItems.length} selected chats?`}
+            </Text>
+            <View style={styles.modalActionButtonContainer}>
+              <Pressable
+                style={commonStyles.marginRight_8}
+                onPress={toggleDeleteModal}>
+                <Text style={styles.modalActionButtonText}>NO</Text>
+              </Pressable>
+              <Pressable onPress={deleteChat}>
+                <Text style={styles.modalActionButtonText}>YES</Text>
+              </Pressable>
+            </View>
+          </View>
+        </ModalCenteredContent>
+      </Modal>
     </>
   );
 }
 
 export default RecentScreen;
+
+const styles = StyleSheet.create({
+  tabView: { borderColor: 'black', borderWidth: 1 },
+  activeTab: { backgroundColor: 'black' },
+  deleteChatModalContentContainer: {
+    backgroundColor: ApplicationColors.white,
+    width: '88%',
+    borderRadius: 0,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    fontWeight: '300',
+  },
+  deleteChatModalTitle: {
+    marginTop: 10,
+    marginLeft: 10,
+    fontSize: 16,
+    color: ApplicationColors.black,
+  },
+  modalActionButtonContainer: {
+    flexDirection: 'row',
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+    paddingBottom: 10,
+    marginTop: 20,
+  },
+  modalActionButtonText: {
+    fontWeight: '500',
+    color: ApplicationColors.mainColor,
+    paddingVertical: 2,
+    paddingHorizontal: 10,
+  },
+  tabbar: {
+    backgroundColor: '#F2F2F2',
+    color: 'black',
+  },
+  tabbarIndicator: {
+    backgroundColor: '#3276E2',
+    borderColor: '#3276E2',
+    borderWidth: 1.3,
+  },
+  tabarLabel: {
+    color: 'black',
+    fontWeight: 'bold',
+  },
+  tabBadgeWrapper: {
+    minWidth: 20,
+    paddingVertical: 1,
+    paddingHorizontal: 4,
+    backgroundColor: ApplicationColors.mainColor,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 7,
+  },
+  tabBadgeText: {
+    color: ApplicationColors.white,
+    fontSize: 13,
+  },
+});

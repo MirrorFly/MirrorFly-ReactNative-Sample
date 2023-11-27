@@ -1,17 +1,18 @@
 import React from 'react';
-import {BackHandler, Pressable, View} from 'react-native';
-import {useSelector} from 'react-redux';
+import { BackHandler, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import ImageInfo from './ImageInfo';
 import VideoInfo from './VideoInfo';
-import {BackArrowIcon} from '../common/Icons';
-import {Text} from 'native-base';
+import { BackArrowIcon } from '../common/Icons';
+import { Icon, IconButton, Text } from 'native-base';
+import { useNavigation } from '@react-navigation/native';
 
-const PostPreViewPage = props => {
-  const {setLocalNav} = props;
+const PostPreViewPage = () => {
   const chatSelectedMediaImage = useSelector(
     state => state.chatSelectedMedia.data,
   );
-  const {msgBody} = chatSelectedMediaImage;
+  const navigation = useNavigation()
+  const { msgBody } = chatSelectedMediaImage;
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const isSender = currentUserJID === chatSelectedMediaImage?.fromUserJid;
 
@@ -30,23 +31,23 @@ const PostPreViewPage = props => {
   }; */
 
   const handleBackBtn = () => {
-    setLocalNav('CHATCONVERSATION');
+    navigation.goBack()
     return true;
   };
 
-  const backHandler = BackHandler.addEventListener(
-    'hardwareBackPress',
-    handleBackBtn,
-  );
-
   React.useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackBtn,
+    );
+
     return () => {
       backHandler.remove();
     };
   }, []);
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <View
         style={{
           flexDirection: 'row',
@@ -59,10 +60,13 @@ const PostPreViewPage = props => {
           borderBottomWidth: 1,
           zIndex: 10,
         }}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Pressable onPress={handleBackBtn} style={{marginLeft: 8}}>
-            <BackArrowIcon />
-          </Pressable>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <IconButton
+            onPress={handleBackBtn}
+            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+            borderRadius="full"
+            icon={<Icon as={BackArrowIcon} name="emoji-happy" />}
+          />
           <Text
             style={{
               color: '#000',

@@ -1,64 +1,151 @@
-import React from 'react'
-import { HStack, Icon, IconButton, Image, Menu, Text } from 'native-base';
+import React from 'react';
+import { Menu } from 'native-base';
 import { LeftArrowIcon, SearchIcon, CloseIcon } from '../common/Icons';
-import { TextInput } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, View } from 'react-native';
 import { MenuIconBtn } from '../common/Button';
+import { getImageSource } from '../common/utils';
+import ApplicationColors from '../config/appColors';
+import commonStyles from '../common/commonStyles';
+import IconButton from '../common/IconButton';
+
+const LeftArrowComponent = () => LeftArrowIcon();
 
 function ScreenHeader(props) {
-    const [position] = React.useState("auto");
-    const [isSearching, setIsSearching] = React.useState(false)
-    const [text, setText] = React.useState('');
+  const [position] = React.useState('auto');
+  const [isSearching, setIsSearching] = React.useState(false);
+  const [text, setText] = React.useState('');
 
-    const handlingBackBtn = () => {
-        setText('');
-        setIsSearching(false);
-        if (!props?.onCloseSearch && isSearching) {
-            return setIsSearching(false)
-        }
-        props?.onCloseSearch && props?.onCloseSearch();
-        props?.onhandleBack && props?.onhandleBack();
+  React.useEffect(() => {
+    setIsSearching(props.isSearching);
+    if (!props.isSearching) {
+      setText('');
     }
+  }, [props.isSearching]);
 
-    const handleClearBtn = () => {
-        setText('')
-        props.handleClear && props.handleClear()
+  const handlingBackBtn = () => {
+    setText('');
+    setIsSearching(false);
+    props?.onhandleSearch?.('');
+    if (!props?.onCloseSearch && isSearching) {
+      return setIsSearching(false);
     }
+    props?.onCloseSearch && props?.onCloseSearch();
+    props?.onhandleBack && props?.onhandleBack();
+  };
 
-    return (
-        <>
-            <HStack h={65} bg="#F2F2F2" pr="4" py="3" justifyContent="space-between" alignItems="center" w="full">
-                <HStack alignItems="center">
-                    {props?.onhandleBack && <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={handlingBackBtn} icon={<Icon as={()=>LeftArrowIcon()} name="emoji-happy" />} borderRadius="full" />}
-                    {props?.isSearching && <IconButton _pressed={{ bg: 'rgba(50,118,226, 0.1)' }} onPress={handlingBackBtn} icon={<Icon as={()=>LeftArrowIcon()} name="emoji-happy" />} borderRadius="full" />}
-                    {isSearching
-                        && <TextInput
-                            placeholderTextColor="#d3d3d3"
-                            value={text}
-                            style={{ flex: 0.7, color: 'black', fontSize: 16 }}
-                            onChangeText={(e) => { setText(e); props?.onhandleSearch(e) }}
-                            placeholder='Search...'
-                            selectionColor={'#3276E2'}
-                            autoFocus={true}
-                        />}
-                    {props?.logo && !isSearching && <Image ml='3' key='sm' size='xs' width={145} height={20.8} source={props?.logo} alt="ic_logo.png" />}
-                    {props?.title && !isSearching && <Text fontSize='xl' px="3" fontWeight={'600'}>{props?.title}</Text>}
-                    
-                </HStack>
-                <HStack alignItems="center">
-                    {text && <IconButton onPress={handleClearBtn} icon={<Icon as={CloseIcon} name="emoji-happy" />} borderRadius="full" />}
-                    {props?.onhandleSearch && !isSearching && <IconButton _pressed={{ bg: "rgba(50,118,226, 0.1)" }} onPress={() => { setIsSearching(true); props?.setIsSearching && props?.setIsSearching(true); }} icon={<Icon as={SearchIcon} name="emoji-happy" />} borderRadius="full" />}
-                    {!isSearching && props?.menuItems && <Menu w="160" shouldOverlapWithTrigger={true}
-                        placement={position == "auto" ? undefined : position}
-                        trigger={triggerProps => MenuIconBtn(triggerProps)}
-                    >
-                        {props?.menuItems.map((item) => (
-                            <Menu.Item key={item.label} onPress={item?.formatter}>{item.label}</Menu.Item>
-                        ))}
-                    </Menu>}
-                </HStack>
-            </HStack>
-        </>
-    )
+  const handleClearBtn = () => {
+    setText('');
+    props.handleClear && props.handleClear();
+  };
+
+  const handleSearchPress = () => {
+    setIsSearching(true);
+    props?.setIsSearching && props?.setIsSearching(true);
+  };
+
+  return (
+    <>
+      <View style={styles.container}>
+        <View
+          style={[
+            commonStyles.hstack,
+            commonStyles.alignItemsCenter,
+            commonStyles.flex1,
+          ]}>
+          {props?.onhandleBack && (
+            <IconButton onPress={handlingBackBtn}>
+              <LeftArrowComponent />
+            </IconButton>
+          )}
+          {props?.isSearching && (
+            <IconButton
+              style={commonStyles.marginRight_12}
+              onPress={handlingBackBtn}>
+              <LeftArrowComponent />
+            </IconButton>
+          )}
+          {isSearching && (
+            <TextInput
+              placeholderTextColor="#d3d3d3"
+              value={text}
+              style={styles.textInput}
+              onChangeText={e => {
+                setText(e);
+                props?.onhandleSearch(e);
+              }}
+              placeholder=" Search..."
+              cursorColor={ApplicationColors.mainColor}
+              autoFocus={true}
+            />
+          )}
+          {props?.logo && !isSearching && (
+            <Image
+              style={styles.logoImage}
+              source={getImageSource(props?.logo)}
+              alt="ic_logo.png"
+            />
+          )}
+          {props?.title && !isSearching && (
+            <Text style={styles.titleText}>{props?.title}</Text>
+          )}
+        </View>
+        <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+          {text && (
+            <IconButton onPress={handleClearBtn}>
+              <CloseIcon />
+            </IconButton>
+          )}
+          {props?.onhandleSearch && !isSearching && (
+            <IconButton onPress={handleSearchPress}>
+              <SearchIcon />
+            </IconButton>
+          )}
+          {!isSearching && props?.menuItems && (
+            <Menu
+              w="160"
+              shouldOverlapWithTrigger={true}
+              placement={position === 'auto' ? undefined : position}
+              trigger={triggerProps => MenuIconBtn(triggerProps)}>
+              {props?.menuItems.map(item => (
+                <Menu.Item key={item.label} onPress={item?.formatter}>
+                  {item.label}
+                </Menu.Item>
+              ))}
+            </Menu>
+          )}
+        </View>
+      </View>
+    </>
+  );
 }
 
-export default ScreenHeader
+export default ScreenHeader;
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    height: 65,
+    backgroundColor: ApplicationColors.headerBg,
+    paddingRight: 16,
+    paddingVertical: 12,
+  },
+  logoImage: {
+    marginLeft: 12,
+    width: 145,
+    height: 20.8,
+  },
+  titleText: {
+    fontSize: 18,
+    paddingHorizontal: 12,
+    fontWeight: '600',
+    color: ApplicationColors.black,
+  },
+  textInput: {
+    flex: 1,
+    color: 'black',
+    fontSize: 16,
+  },
+});

@@ -1,26 +1,35 @@
 import Video from 'react-native-video';
-import React, {useState} from 'react';
-import {Dimensions, Platform} from 'react-native';
-import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
-import {View} from 'native-base';
+import React from 'react';
+import { Platform, StyleSheet } from 'react-native';
+import MediaControls, { PLAYER_STATES } from './media-controls';
+import { View } from 'native-base';
 import RNConvertPhAsset from 'react-native-convert-ph-asset';
-
-const screenWidth = Dimensions.get('window').width;
+import { useAppState } from '../../hooks';
 
 const VideoPlayer = props => {
-  const {item: {fileDetails = {}} = {}} = props;
-  const {
-    image: {uri, height, width},
-  } = fileDetails;
+  const { item: { fileDetails = {} } = {} } = props;
+  const { uri } = fileDetails;
   const videoPlayer = React.useRef(null);
-  const [videoUri, setVideoUri] = useState('');
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [paused, setPaused] = useState(true);
-  const [playerState, setPlayerState] = useState(PLAYER_STATES.PAUSED);
-  const [dimention, setDimention] = React.useState(0);
-  const [mediaControlTop, setMediaControlTop] = React.useState(0);
+  const [videoUri, setVideoUri] = React.useState('');
+  const [currentTime, setCurrentTime] = React.useState(0);
+  const [duration, setDuration] = React.useState(0);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [paused, setPaused] = React.useState(true);
+  const [playerState, setPlayerState] = React.useState(PLAYER_STATES.PAUSED);
+  const [onEnded, setOnEnded] = React.useState(false);
+
+  const appState = useAppState();
+
+  React.useEffect(() => {
+    if (appState) {
+      if (!onEnded) {
+        setPlayerState(PLAYER_STATES.PAUSED);
+        setPaused(true);
+      } else {
+        setPaused(true);
+      }
+    }
+  }, [appState]);
 
   /**  const calculate = () => {
         let data = Math.max(width, height) / Math.min(width, height);
@@ -33,16 +42,29 @@ const VideoPlayer = props => {
 
   const onSeek = seek => {
     videoPlayer.current.seek(seek);
+    setOnEnded(false);
   };
 
-  const onPaused = playerState => {
+  const onPaused = state => {
     setPaused(!paused);
-    setPlayerState(playerState);
+    setPlayerState(state);
   };
 
   const onReplay = () => {
-    setPlayerState(PLAYER_STATES.PLAYING);
-    videoPlayer.current.seek(0);
+    videoPlayer?.current.seek(0);
+    setCurrentTime(0);
+    setOnEnded(false);
+    if (Platform.OS === 'android') {
+      setPlayerState(PLAYER_STATES.PAUSED);
+      setPaused(true);
+      setTimeout(() => {
+        setPlayerState(PLAYER_STATES.PLAYING);
+        setPaused(false);
+      });
+    } else {
+      setPlayerState(PLAYER_STATES.PLAYING);
+      setPaused(false);
+    }
   };
 
   const onProgress = data => {
@@ -57,7 +79,10 @@ const VideoPlayer = props => {
 
   /**   const onLoadStart = data => setIsLoading(true);
    */
-  const onEnd = () => setPlayerState(PLAYER_STATES.ENDED);
+  const onEnd = () => {
+    setPlayerState(PLAYER_STATES.ENDED);
+    setOnEnded(true);
+  };
 
   /**
         const onError = (error) => alert('Oh! ', error);
@@ -72,17 +97,15 @@ const VideoPlayer = props => {
           // else setScreenType('content');
       }; */
 
-  const onSeeking = currentTime => setCurrentTime(currentTime);
+  const onSeeking = time => {
+    setCurrentTime(time);
+    if (onEnded) {
+      setPlayerState(PLAYER_STATES.PAUSED);
+      setPaused(true);
+    }
+  };
 
   const handleLayout = e => {
-    const {height: _height} = e.nativeEvent.layout;
-    let ratio = height / width;
-    const dimension = Math.round(ratio * screenWidth);
-    const top = (_height - dimension) / 2;
-    setMediaControlTop(isNaN(top) ? 0 : top);
-    setDimention(
-      Platform.OS === 'ios' && dimension > _height ? dimension - 30 : dimension,
-    );
     setIsLoading(false);
   };
 
@@ -109,10 +132,11 @@ const VideoPlayer = props => {
   }, []);
 
   return (
-    <View style={{flex: 1}} onLayout={handleLayout}>
-      <View style={{flex: 1, justifyContent: 'center'}}>
+    <View style={{ flex: 1 }} onLayout={handleLayout}>
+      <View style={{ flex: 1, justifyContent: 'center' }}>
         {videoUri && (
           <Video
+            ignoreSilentSwitch={'ignore'}
             onEnd={onEnd}
             onLoad={onLoad}
             // onLoadStart={onLoadStart}
@@ -123,7 +147,7 @@ const VideoPlayer = props => {
             posterResizeMode={'contain'}
             ref={videoPlayer}
             resizeMode={'contain'}
-            source={{uri: videoUri}}
+            source={{ uri: videoUri }}
             style={{
               width: '100%',
               height: '100%',
@@ -135,33 +159,41 @@ const VideoPlayer = props => {
         )}
       </View>
       {!isLoading && (
-        <View
-          position={'absolute'}
-          top={mediaControlTop}
-          bottom={0}
-          left={0}
-          right={0}
-          justifyContent={'center'}>
-          <MediaControls
-            duration={duration}
-            isLoading={isLoading}
-            mainColor="#333"
-            onPaused={onPaused}
-            onReplay={onReplay}
-            onSeek={onSeek}
-            onSeeking={onSeeking}
-            playerState={playerState}
-            progress={currentTime}
-            containerStyle={{
-              flex: 1,
-              backgroundColor: 'rgba(0,0,0,0.2)',
-              height: dimention,
-            }}
-          />
-        </View>
+        // <View
+        //   position={'absolute'}
+        //   top={mediaControlTop}
+        //   bottom={0}
+        //   left={0}
+        //   right={0}
+        //   justifyContent={'center'}>
+        <MediaControls
+          duration={duration}
+          isLoading={isLoading}
+          mainColor="#333"
+          onPaused={onPaused}
+          onReplay={onReplay}
+          onSeek={onSeek}
+          onSeeking={onSeeking}
+          fadeOutDelay={1100}
+          playerState={playerState}
+          progress={currentTime}
+          containerStyle={styles.mediaControlStyle}
+        />
+        // </View>
       )}
     </View>
   );
 };
 
 export default React.memo(VideoPlayer);
+
+const styles = StyleSheet.create({
+  mediaControlStyle: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.1)',
+  },
+});

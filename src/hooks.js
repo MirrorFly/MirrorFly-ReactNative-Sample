@@ -1,12 +1,20 @@
-import React from 'react'
+import React from 'react';
 import NetInfo from '@react-native-community/netinfo';
+import { AppState } from 'react-native';
+
+let networkState = null;
+NetInfo.addEventListener(state => {
+  networkState = state;
+});
 
 export const useNetworkStatus = () => {
-  const [isConnected, setIsConnected] = React.useState(null);
+  const [isConnected, setIsConnected] = React.useState(
+    networkState?.isInternetReachable || null,
+  );
 
-  React.useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener((state) => {
-      setIsConnected(state.isConnected);
+  React.useLayoutEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsConnected(state.isInternetReachable);
     });
 
     return () => {
@@ -15,4 +23,20 @@ export const useNetworkStatus = () => {
   }, []);
 
   return isConnected;
+};
+
+export const useAppState = () => {
+  const [isActive, setIsActive] = React.useState(null);
+
+  React.useEffect(() => {
+    AppState.addEventListener('change', nextAppState => {
+      if (nextAppState === 'active') {
+        setIsActive(true);
+      } else {
+        setIsActive(false);
+      }
+    });
+  }, []);
+
+  return isActive;
 };

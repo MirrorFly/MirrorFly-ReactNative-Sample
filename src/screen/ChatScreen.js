@@ -1,6 +1,34 @@
-import React from 'react';
-import ChatConversation from '../components/ChatConversation';
-import MessageInfo from '../components/MessageInfo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import SDK from '../SDK/SDK';
+import React, { createRef } from 'react';
+import {
+  Alert,
+  BackHandler,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { Image as ImageCompressor } from 'react-native-compressor';
+import RNFS from 'react-native-fs';
+import { openSettings } from 'react-native-permissions';
+import Sound from 'react-native-sound';
+import { batch, useDispatch, useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
+import {
+  getVideoThumbImage,
+  showCheckYourInternetToast,
+  showToast,
+} from '../Helper';
+import { isSingleChat } from '../Helper/Chat/ChatHelper';
+import { DOCUMENT_FORMATS } from '../Helper/Chat/Constant';
+import {
+  getMessageObjSender,
+  getRecentChatMsgObj,
+  getUserIdFromJid,
+} from '../Helper/Chat/Utility';
+import * as RootNav from '../Navigation/rootNavigation';
 import {
   CameraIcon,
   ContactIcon,
@@ -9,121 +37,338 @@ import {
   HeadSetIcon,
   LocationIcon,
 } from '../common/Icons';
+import {
+  handleAudioPickerSingle,
+  handleDocumentPickSingle,
+  mediaObjContructor,
+  requestAudioStoragePermission,
+  requestCameraPermission,
+  requestContactPermission,
+  requestFileStoragePermission,
+  requestLocationPermission,
+  requestStoragePermission,
+} from '../common/utils';
+import CameraPickView from '../components/CameraPickView';
+import ChatConversation from '../components/ChatConversation';
 import GalleryPickView from '../components/GalleryPickView';
-import {requestStoragePermission} from '../common/utils';
-import {Box, Text, useToast} from 'native-base';
+import MessageInfo from '../components/MessageInfo';
+import PostPreViewPage from '../components/PostPreViewPage';
+import Camera from '../components/RNCamera';
 import UserInfo from '../components/UserInfo';
 import UsersTapBarInfo from '../components/UsersTapBarInfo';
-import {BackHandler} from 'react-native';
-import {RECENTCHATSCREEN} from '../constant';
-import {useSelector} from 'react-redux';
-import {v4 as uuidv4} from 'uuid';
-import {
-  getMessageObjSender,
-  getRecentChatMsgObj,
-  setDurationSecToMilli,
-} from '../Helper/Chat/Utility';
-import {updateRecentChat} from '../redux/recentChatDataSlice';
-import store from '../redux/store';
-import {isSingleChat} from '../Helper/Chat/ChatHelper';
-import {addChatConversationHistory} from '../redux/conversationSlice';
-import {SDK} from '../SDK';
-import SavePicture from './Gallery';
-import * as RootNav from '../Navigation/rootNavigation';
-import {Image as ImageCompressor} from 'react-native-compressor';
-import RNFS from 'react-native-fs';
 import {
   getType,
+  isValidFileType,
   validateFileSize,
+  validation,
 } from '../components/chat/common/fileUploadValidation';
-import PostPreViewPage from '../components/PostPreViewPage';
+import { RECENTCHATSCREEN } from '../constant';
+import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
+import { updateRecentChat } from '../redux/Actions/RecentChatAction';
+import store from '../redux/store';
+import SavePicture from './Gallery';
+import ContactList from '../components/Media/ContactList';
+import { navigate } from '../redux/Actions/NavigationAction';
+import { clearConversationSearchData } from '../redux/Actions/conversationSearchAction';
+import {
+  deleteRecoverMessage,
+  recoverMessage,
+} from '../redux/Actions/RecoverMessageAction';
+import { useFocusEffect } from '@react-navigation/native';
+import { chatInputMessageRef } from '../components/ChatInput';
+import Location from '../components/Media/Location';
+import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
+import Modal, { ModalCenteredContent } from '../common/Modal';
+import { useNetworkStatus } from '../hooks';
+
+export const selectedMediaIdRef = createRef();
+selectedMediaIdRef.current = {};
 
 function ChatScreen() {
+  const [replyMsg, setReplyMsg] = React.useState('');
+  const chatInputRef = React.useRef(null);
+  const { data = {} } = useSelector(state => state.recoverMessage);
   const vCardData = useSelector(state => state.profile.profileDetails);
-  const fromUserJId = useSelector(state => state.navigation.fromUserJid);
+  const toUserJid = useSelector(state => state.navigation.fromUserJid);
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
-  const [localNav, setLocalNav] = React.useState('CHATCONVERSATION');
+  const localNav = useSelector(
+    state => state.chatConversationLocalNav.chatConversationLocalNav,
+  );
   const [isMessageInfo, setIsMessageInfo] = React.useState({});
-  const toast = useToast();
-  const [isToastShowing, setIsToastShowing] = React.useState(false);
+  const dispatch = useDispatch();
   const [selectedImages, setSelectedImages] = React.useState([]);
   const [selectedSingle, setselectedSingle] = React.useState(false);
+  const [alert, setAlert] = React.useState(false);
+  const [validate, setValidate] = React.useState('');
+  const [isSearching, setIsSearching] = React.useState(false);
 
-  const toastConfig = {
-    duration: 2500,
-    avoidKeyboard: true,
-    onCloseComplete: () => {
-      setIsToastShowing(false);
-    },
+  const isNetworkAvailable = useNetworkStatus();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setReplyMsg(data[toUserJid]?.replyMessage || '');
+    }, [toUserJid]),
+  );
+
+  const setLocalNav = localname => {
+    dispatch(updateChatConversationLocalNav(localname));
+  };
+
+  const handleIsSearching = () => {
+    setIsSearching(true);
+  };
+
+  const handleIsSearchingClose = () => {
+    setIsSearching(false);
+  };
+
+  const toUserId = React.useMemo(
+    () => getUserIdFromJid(toUserJid),
+    [toUserJid],
+  );
+
+  const getReplyMessage = message => {
+    setReplyMsg(message);
+  };
+
+  const getAudioDuration = async path => {
+    return new Promise((resolve, reject) => {
+      const sound = new Sound(
+        path,
+        Platform.OS === 'ios' ? '' : Sound.MAIN_BUNDLE,
+        error => {
+          if (error) {
+            return reject(error);
+          } else {
+            const duration = sound.getDuration();
+            return resolve(duration);
+          }
+        },
+      );
+    });
+  };
+
+  const handleAudioSelect = async () => {
+    const storage_permission = await AsyncStorage.getItem('storage_permission');
+    AsyncStorage.setItem('storage_permission', 'true');
+    let MediaPermission = await requestAudioStoragePermission();
+    if (MediaPermission === 'granted' || MediaPermission === 'limited') {
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
+      let response = await handleAudioPickerSingle();
+      let _validate = validation(response.type);
+      const sizeError = validateFileSize(response.size, getType(response.type));
+      if (_validate && !sizeError) {
+        setAlert(true);
+        setValidate(_validate);
+      }
+      const audioDuration = await getAudioDuration(response.fileCopyUri);
+      response.duration = audioDuration;
+      if (sizeError) {
+        return showToast(sizeError, {
+          id: 'media-size-error-toast',
+        });
+      }
+      if (!_validate && !sizeError) {
+        const transformedArray = {
+          caption: '',
+          fileDetails: mediaObjContructor('DOCUMENT_PICKER', response),
+        };
+        let message = {
+          type: 'media',
+          content: [transformedArray],
+        };
+        handleSendMsg(message);
+      }
+    } else if (storage_permission) {
+      openSettings();
+    }
+  };
+
+  const openDocumentPicker = async () => {
+    const storage_permission = await AsyncStorage.getItem('storage_permission');
+    AsyncStorage.setItem('storage_permission', 'true');
+    const permissionResult = await requestFileStoragePermission();
+    if (permissionResult === 'granted' || permissionResult === 'limited') {
+      // updating the SDK flag to keep the connection Alive when app goes background because of document picker
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
+      const file = await handleDocumentPickSingle();
+      // updating the SDK flag back to false to behave as usual
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+
+      // Validating the file type and size
+      if (!isValidFileType(file.type)) {
+        Alert.alert(
+          'Mirrorfly',
+          'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
+        );
+        return;
+      }
+      const error = validateFileSize(file.size, 'file');
+      if (error) {
+        const toastOptions = {
+          id: 'document-too-large-toast',
+          duration: 2500,
+          avoidKeyboard: true,
+        };
+        showToast(error, toastOptions);
+        return;
+      }
+
+      // preparing the object and passing it to the sendMessage function
+      const updatedFile = {
+        fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
+      };
+      const messageData = {
+        type: 'media',
+        content: [updatedFile],
+      };
+      handleSendMsg(messageData);
+    } else if (storage_permission) {
+      openSettings();
+    }
+  };
+
+  const handleContactSelect = async () => {
+    try {
+      const isNotFirstTimeContactPermissionCheck = await AsyncStorage.getItem(
+        'contact_permission',
+      );
+      AsyncStorage.setItem('contact_permission', 'true');
+      const result = await requestContactPermission();
+      if (result === 'granted') {
+        setLocalNav('ContactList');
+      } else if (isNotFirstTimeContactPermissionCheck) {
+        openSettings();
+      }
+    } catch (error) {
+      console.error('Error requesting contacts permission:', error);
+    }
+  };
+  const handleLocationSelect = async () => {
+    try {
+      const isNotFirstTimeLocationPermissionCheck = await AsyncStorage.getItem(
+        'location_permission',
+      );
+      AsyncStorage.setItem('location_permission', 'true');
+      const result = await requestLocationPermission();
+      if (result === 'granted' || result === 'limited') {
+        if (isNetworkAvailable) {
+          setLocalNav('LocationInfo');
+        } else {
+          showCheckYourInternetToast();
+        }
+      } else if (isNotFirstTimeLocationPermissionCheck) {
+        openSettings();
+      }
+    } catch (error) {
+      console.error('Failed to request location permission:', error);
+    }
   };
 
   const attachmentMenuIcons = [
     {
       name: 'Document',
       icon: DocumentIcon,
-      formatter: () => {},
+      formatter: openDocumentPicker,
     },
     {
       name: 'Camera',
       icon: CameraIcon,
-      formatter: () => {},
+      formatter: async () => {
+        let cameraPermission = await requestCameraPermission();
+        let imageReadPermission = await requestStoragePermission();
+        const camera_permission = await AsyncStorage.getItem(
+          'camera_permission',
+        );
+        AsyncStorage.setItem('camera_permission', 'true');
+        if (
+          (cameraPermission === 'granted' || cameraPermission === 'limited') &&
+          (imageReadPermission === 'granted' ||
+            imageReadPermission === 'limited')
+        ) {
+          setLocalNav('CAMERAVIEW');
+        } else if (camera_permission) {
+          openSettings();
+        }
+      },
     },
     {
       name: 'Gallery',
       icon: GalleryIcon,
       formatter: async () => {
+        const storage_permission = await AsyncStorage.getItem(
+          'storage_permission',
+        );
+        AsyncStorage.setItem('storage_permission', 'true');
         let imageReadPermission = await requestStoragePermission();
-        console.log('imageReadPermission', imageReadPermission);
         if (
           imageReadPermission === 'granted' ||
           imageReadPermission === 'limited'
         ) {
           setLocalNav('Gallery');
+        } else if (storage_permission) {
+          openSettings();
         }
-        /** SavePicture()
-        RNimageGalleryLaunch()
-          const res = await handleGalleryPickerMulti(toast)
-          const transformedArray = res?.map((obj, index) => {
-            return {
-              caption: '',
-              image: obj
-            };
-          });
-          setSelectedImages(transformedArray)
-          if (res?.length) {
-            setLocalNav('GalleryPickView')
-          } */
       },
     },
     {
       name: 'Audio',
       icon: HeadSetIcon,
-      formatter: () => {},
+      formatter: async () => {
+        handleAudioSelect();
+      },
     },
     {
       name: 'Contact',
       icon: ContactIcon,
-      formatter: () => {},
+      formatter: async () => {
+        handleContactSelect();
+      },
     },
     {
       name: 'Location',
       icon: LocationIcon,
-      formatter: () => {},
+      formatter: handleLocationSelect,
     },
   ];
 
+  const handleRecoverMessage = () => {
+    let textMessage = chatInputMessageRef.current;
+    if (textMessage || replyMsg) {
+      const recoverMessageData = {
+        textMessage: textMessage || '',
+        replyMessage: replyMsg || '',
+        toUserJid: toUserJid || '',
+      };
+      dispatch(recoverMessage(recoverMessageData));
+    } else if (toUserJid in data) {
+      dispatch(deleteRecoverMessage(toUserJid));
+    }
+  };
+
   const handleBackBtn = () => {
-    localNav === 'CHATCONVERSATION' && RootNav.navigate(RECENTCHATSCREEN);
+    handleRecoverMessage();
+    if (isSearching) {
+      setIsSearching(false);
+      dispatch(clearConversationSearchData());
+    } else if (localNav === 'CHATCONVERSATION') {
+      let x = {
+        screen: RECENTCHATSCREEN,
+        fromUserJID: '',
+        profileDetails: {},
+      };
+      dispatch(navigate(x));
+      if (RootNav.navigationRef.canGoBack()) {
+        RootNav.goBack();
+      } else {
+        RootNav.reset(RECENTCHATSCREEN);
+      }
+    }
     return true;
   };
 
-  const backHandler = BackHandler.addEventListener(
-    'hardwareBackPress',
-    handleBackBtn,
-  );
-
-  const getThumbImage = async image => {
-    const result = await ImageCompressor.compress(image.uri, {
+  const getThumbImage = async uri => {
+    const result = await ImageCompressor.compress(uri, {
       maxWidth: 200,
       maxHeight: 200,
       quality: 0.8,
@@ -132,32 +377,69 @@ function ChatScreen() {
     return response;
   };
 
+  /**
+  // const getVideoThumbImage = async uri => {
+  //   let response;
+  //   if (Platform.OS === 'ios') {
+  //     if (uri.includes('ph://')) {
+  //       let result = await ImageCompressor.compress(uri, {
+  //         maxWidth: 600,
+  //         maxHeight: 600,
+  //         quality: 0.8,
+  //       });
+  //       response = await RNFS.readFile(result, 'base64');
+  //     } else {
+  //       const frame = await createThumbnail({
+  //         url: uri,
+  //         timeStamp: 10000,
+  //       });
+  //       response = await RNFS.readFile(frame.path, 'base64');
+  //     }
+  //   } else {
+  //     const frame = await createThumbnail({
+  //       url: uri,
+  //       timeStamp: 10000,
+  //     });
+  //     response = await RNFS.readFile(frame.path, 'base64');
+  //   }
+  //   return response;
+  // };
+   */
+
   const sendMediaMessage = async (messageType, files, chatTypeSendMsg) => {
-    let jidSendMediaMessage = fromUserJId;
+    let jidSendMediaMessage = toUserJid;
     if (messageType === 'media') {
       let mediaData = {};
       for (let i = 0; i < files.length; i++) {
         const file = files[i],
           msgId = uuidv4();
+
         const {
           caption = '',
           fileDetails = {},
           fileDetails: {
-            image: {fileSize, filename, playableDuration, uri},
+            fileSize,
+            filename,
+            duration,
+            uri,
             type,
+            replyTo = '',
           } = {},
         } = file;
-        const msgType = type.split('/')[0];
-        const thumbImage =
-          msgType === 'image' ? await getThumbImage(fileDetails.image) : '';
+
+        const isDocument = DOCUMENT_FORMATS.includes(type);
+        const msgType = isDocument ? 'file' : type.split('/')[0];
+        const thumbImage = msgType === 'image' ? await getThumbImage(uri) : '';
+        const thumbVideoImage =
+          msgType === 'video' ? await getVideoThumbImage(uri) : '';
         let fileOptions = {
           fileName: filename,
           fileSize: fileSize,
           caption: caption,
           uri: uri,
-          duration: playableDuration,
+          duration: duration,
           msgId: msgId,
-          thumbImage: thumbImage,
+          thumbImage: thumbImage || thumbVideoImage,
         };
         const userProfile = vCardData;
 
@@ -171,173 +453,197 @@ function ChatScreen() {
           fileOptions,
           fileDetails: fileDetails,
           fromUserJid: currentUserJID,
+          replyTo,
         };
-        const conversationChatObj = await getMessageObjSender(dataObj, i);
+        const conversationChatObj = getMessageObjSender(dataObj, i);
         mediaData[msgId] = conversationChatObj;
         const recentChatObj = getRecentChatMsgObj(dataObj);
 
         const dispatchData = {
           data: [conversationChatObj],
           ...(isSingleChat(chatTypeSendMsg)
-            ? {userJid: jidSendMediaMessage}
-            : {groupJid: jidSendMediaMessage}),
+            ? { userJid: jidSendMediaMessage }
+            : { groupJid: jidSendMediaMessage }),
         };
-        store.dispatch(addChatConversationHistory(dispatchData));
-        store.dispatch(updateRecentChat(recentChatObj));
+        batch(() => {
+          store.dispatch(addChatConversationHistory(dispatchData));
+          store.dispatch(updateRecentChat(recentChatObj));
+        });
       }
       setSelectedImages([]);
+      selectedMediaIdRef.current = {};
     }
   };
 
   const parseAndSendMessage = async (message, chatType, messageType) => {
-    const {content} = message;
+    const { content } = message;
+    const replyTo = replyMsg?.msgId || '';
+    content[0].fileDetails.replyTo = replyTo;
+    setReplyMsg('');
     sendMediaMessage(messageType, content, chatType);
   };
 
   const handleMedia = item => {
-    let {image} = item;
-    image.playableDuration = setDurationSecToMilli(image.playableDuration);
-    const transformedArray = {
-      caption: '',
-      fileDetails: item,
-    };
-    setIsToastShowing(true);
-    const size = validateFileSize(item.image, getType(item.type));
-    if (size && !isToastShowing) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{color: '#fff', padding: 5}}>{size}</Text>
-            </Box>
-          );
-        },
+    const sizeError = validateFileSize(item.image.fileSize, getType(item.type));
+    if (sizeError) {
+      return showToast(sizeError, {
+        id: 'media-size-error-toast',
       });
     }
-    if (!isToastShowing) {
-      setIsToastShowing(false);
-      setselectedSingle(true);
-      setSelectedImages([transformedArray]);
-      setLocalNav('GalleryPickView');
-    }
+    const transformedArray = {
+      caption: '',
+      fileDetails: mediaObjContructor('CAMERA_ROLL', item),
+    };
+    setselectedSingle(true);
+    setSelectedImages([transformedArray]);
+    setLocalNav('GalleryPickView');
   };
 
-  /**   const validation = (file) => {
-      const { image } = file
-      const fileExtension = getExtension(image.filename);
-      const allowedFilescheck = new RegExp("([a-zA-Z0-9s_\\.-:])+(" + ALLOWED_ALL_FILE_FORMATS.join("|") + ")$", "i");
-      let mediaType = getType(file.type);
-      if (!allowedFilescheck.test(fileExtension) || mediaType === "video/mpeg") {
-        let message = "Unsupported file format. Files allowed: ";
-        if (mediaType === "image") message = message + `${ALLOWED_IMAGE_VIDEO_FORMATS.join(", ")}`; 
-        if (!isToastShowing) {
-          return toast.show({
-            ...toastConfig,
-            render: () => {
-              return (
-                <Box bg="black" px="2" py="1" rounded="sm">
-                  <Text style={{ color: '#fff', padding: 5 }}>{message}</Text>
-                </Box>
-              );
-            },
-          });
-        }
+  const handleSelectImage = React.useCallback(
+    item => {
+      setselectedSingle(false);
+      const sizeError = validateFileSize(
+        item.image.fileSize,
+        getType(item.type),
+      );
+      const isImageSelected = selectedMediaIdRef.current[item?.image?.uri];
+
+      if (selectedImages.length >= 10 && !isImageSelected) {
+        return showToast("Can't share more than 10 media items", {
+          id: 'media-error-toast',
+        });
       }
-    }
-     */
 
-  const handleSelectImage = item => {
-    setIsToastShowing(true);
-    let {image} = item;
-    image.playableDuration = setDurationSecToMilli(image.playableDuration);
-    const transformedArray = {
-      caption: '',
-      fileDetails: item,
-    };
-    setselectedSingle(false);
-    const size = validateFileSize(item.image, getType(item.type));
-    const isImageSelected = selectedImages.some(
-      selectedItem => selectedItem.fileDetails?.image?.uri === item?.image.uri,
-    );
-    if (!isToastShowing && selectedImages.length >= 10 && !isImageSelected) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{color: '#fff', padding: 5}}>
-                Can't share more than 10 media items
-              </Text>
-            </Box>
-          );
-        },
-      });
-    }
-
-    if (size && !isToastShowing) {
-      return toast.show({
-        ...toastConfig,
-        render: () => {
-          return (
-            <Box bg="black" px="2" py="1" rounded="sm">
-              <Text style={{color: '#fff', padding: 5}}>{size}</Text>
-            </Box>
-          );
-        },
-      });
-    }
-
-    if (!isToastShowing) {
-      setIsToastShowing(false);
+      if (sizeError) {
+        return showToast(sizeError, {
+          id: 'media-size-error-toast',
+        });
+      }
+      const transformedArray = {
+        caption: '',
+        fileDetails: mediaObjContructor('CAMERA_ROLL', item),
+      };
       if (isImageSelected) {
+        delete selectedMediaIdRef.current[item?.image?.uri];
         setSelectedImages(prevArray =>
           prevArray.filter(
-            selectedItem =>
-              selectedItem.fileDetails?.image.uri !== item?.image?.uri,
+            selectedItem => selectedItem.fileDetails?.uri !== item?.image?.uri,
           ),
         );
       } else {
+        selectedMediaIdRef.current[item?.image?.uri] = true;
         setSelectedImages(prevArray => [...prevArray, transformedArray]);
       }
-    }
+    },
+    [selectedImages],
+  );
+
+  const constructAndDispatchConversationAndRecentChatData = dataObj => {
+    const conversationChatObj = getMessageObjSender(dataObj);
+    const recentChatObj = getRecentChatMsgObj(dataObj);
+    const dispatchData = {
+      data: [conversationChatObj],
+      ...(isSingleChat('chat')
+        ? { userJid: dataObj.jid }
+        : { groupJid: dataObj.jid }), // check this when group works
+    };
+    batch(() => {
+      store.dispatch(addChatConversationHistory(dispatchData));
+      store.dispatch(updateRecentChat(recentChatObj));
+    });
   };
 
   const handleSendMsg = async message => {
-    let messageType = message.type;
+    const messageType = message.type;
 
-    if (messageType === 'media') {
-      parseAndSendMessage(message, 'chat', messageType);
-      return;
+    if (toUserJid in data) {
+      dispatch(deleteRecoverMessage(toUserJid));
     }
 
-    if (message.content !== '') {
-      let jid = fromUserJId;
-      let msgId = uuidv4();
-      const userProfile = vCardData;
-      const dataObj = {
-        jid: jid,
-        msgType: 'text',
-        message: message.content,
-        userProfile,
-        chatType: 'chat',
-        msgId,
-        fromUserJid: currentUserJID,
-      };
-      const conversationChatObj = await getMessageObjSender(dataObj);
-      const recentChatObj = getRecentChatMsgObj(dataObj);
-      const dispatchData = {
-        data: [conversationChatObj],
-        ...(isSingleChat('chat') ? {userJid: jid} : {groupJid: jidSendMsg}),
-      };
-      store.dispatch(addChatConversationHistory(dispatchData));
-      store.dispatch(updateRecentChat(recentChatObj));
-      SDK.sendTextMessage(jid, message.content, msgId);
+    const msgId = uuidv4();
+    const replyTo = replyMsg?.msgId || '';
+    switch (messageType) {
+      case 'media':
+        parseAndSendMessage(message, 'chat', messageType);
+        break;
+      case 'location':
+        const { latitude, longitude } = message.location || {};
+        if (latitude && longitude) {
+          const dataObj = {
+            jid: toUserJid,
+            msgType: messageType,
+            userProfile: vCardData,
+            chatType: 'chat',
+            msgId,
+            location: { latitude, longitude },
+            fromUserJid: currentUserJID,
+            replyTo: replyTo,
+          };
+          constructAndDispatchConversationAndRecentChatData(dataObj);
+          SDK.sendLocationMessage(
+            toUserJid,
+            latitude,
+            longitude,
+            msgId,
+            replyTo,
+          );
+        }
+        break;
+      case 'contact':
+        const updatedContacts = message.contacts.map(c => ({
+          ...c,
+          msgId: uuidv4(),
+        }));
+        for (const contact of updatedContacts) {
+          const dataObj = {
+            jid: toUserJid,
+            msgType: messageType,
+            userProfile: vCardData,
+            chatType: 'chat',
+            msgId: contact.msgId,
+            contact: { ...contact },
+            fromUserJid: currentUserJID,
+            replyTo: replyTo,
+          };
+          constructAndDispatchConversationAndRecentChatData(dataObj);
+        }
+        SDK.sendContactMessage(toUserJid, updatedContacts, replyTo);
+        break;
+      default: // default to text message
+        if (message.content !== '') {
+          const dataObj = {
+            jid: toUserJid,
+            msgType: 'text',
+            message: message.content,
+            userProfile: vCardData,
+            chatType: 'chat',
+            msgId,
+            fromUserJid: currentUserJID,
+            replyTo: message.replyTo,
+          };
+          constructAndDispatchConversationAndRecentChatData(dataObj);
+          SDK.sendTextMessage(
+            toUserJid,
+            message.content,
+            msgId,
+            message.replyTo,
+          );
+        }
+        break;
     }
+    setReplyMsg('');
+  };
+
+  const onClose = () => {
+    setAlert(false);
+    setValidate('');
   };
 
   React.useEffect(() => {
-    // handleImageConvert()
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackBtn,
+    );
     return () => {
       backHandler.remove();
     };
@@ -349,12 +655,18 @@ function ChatScreen() {
         {
           CHATCONVERSATION: (
             <ChatConversation
+              replyMsg={replyMsg}
+              chatInputRef={chatInputRef}
+              onReplyMessage={getReplyMessage}
               handleBackBtn={handleBackBtn}
               setLocalNav={setLocalNav}
               setIsMessageInfo={setIsMessageInfo}
               attachmentMenuIcons={attachmentMenuIcons}
               selectedImages={selectedImages}
               handleSendMsg={handleSendMsg}
+              handleIsSearching={handleIsSearching}
+              handleIsSearchingClose={handleIsSearchingClose}
+              IsSearching={isSearching}
             />
           ),
           MESSAGEINFO: (
@@ -373,8 +685,14 @@ function ChatScreen() {
               handleSendMsg={handleSendMsg}
             />
           ),
-          UserInfo: <UserInfo setLocalNav={setLocalNav} />,
+          UserInfo: <UserInfo setLocalNav={setLocalNav} toUserId={toUserId} />,
           UsersTapBarInfo: <UsersTapBarInfo setLocalNav={setLocalNav} />,
+          ContactList: (
+            <ContactList
+              setLocalNav={setLocalNav}
+              handleSendMsg={handleSendMsg}
+            />
+          ),
           Gallery: (
             <SavePicture
               setLocalNav={setLocalNav}
@@ -384,11 +702,74 @@ function ChatScreen() {
               setSelectedImages={setSelectedImages}
             />
           ),
-          PostPreView: <PostPreViewPage setLocalNav={setLocalNav} />,
+          CAMERAVIEW: (
+            <Camera
+              setLocalNav={setLocalNav}
+              selectedImages={selectedImages}
+              setSelectedImages={setSelectedImages}
+            />
+          ),
+          CameraPickView: (
+            <CameraPickView
+              setSelectedImages={setSelectedImages}
+              selectedSingle={selectedSingle}
+              selectedImages={selectedImages}
+              setLocalNav={setLocalNav}
+              handleSendMsg={handleSendMsg}
+            />
+          ),
+          PostPreView: (
+            <PostPreViewPage
+              setLocalNav={setLocalNav}
+              setSelectedImages={setSelectedImages}
+            />
+          ),
+
+          LocationInfo: (
+            <Location setLocalNav={setLocalNav} handleSendMsg={handleSendMsg} />
+          ),
         }[localNav]
       }
+      <Modal visible={alert}>
+        <ModalCenteredContent>
+          <View style={styles.modalContentContainer}>
+            <Text style={styles.modalMessageText}>{validate}</Text>
+            <View style={styles.modalActionButtonContainer}>
+              <Pressable onPress={onClose}>
+                <Text style={styles.modalOkButton}>OK</Text>
+              </Pressable>
+            </View>
+          </View>
+        </ModalCenteredContent>
+      </Modal>
     </>
   );
 }
 
 export default ChatScreen;
+
+const styles = StyleSheet.create({
+  modalContentContainer: {
+    width: '85%',
+    borderRadius: 0,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    backgroundColor: '#fff',
+  },
+  modalMessageText: {
+    fontSize: 16,
+    color: 'black',
+  },
+  modalOkButton: {
+    fontWeight: '500',
+    color: '#3276E2',
+  },
+  modalActionButtonContainer: {
+    flexDirection: 'row',
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+    marginRight: 8,
+    paddingBottom: 8,
+    paddingTop: 24,
+  },
+});

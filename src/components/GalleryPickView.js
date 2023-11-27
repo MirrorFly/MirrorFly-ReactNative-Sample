@@ -1,7 +1,9 @@
 import React from 'react';
 import {
   BackHandler,
+  FlatList,
   Image,
+  Platform,
   Pressable,
   StyleSheet,
   TextInput,
@@ -11,12 +13,12 @@ import {
   HStack,
   Icon,
   IconButton,
-  ScrollView,
+  KeyboardAvoidingView,
   Spacer,
   Text,
   View,
 } from 'native-base';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   DeleteBinIcon,
   LeftArrowIcon,
@@ -25,9 +27,11 @@ import {
   SendBlueIcon,
 } from '../common/Icons';
 import Avathar from '../common/Avathar';
-import {SceneMap, TabView} from 'react-native-tab-view';
-import {getType} from './chat/common/fileUploadValidation';
+import { SceneMap, TabView } from 'react-native-tab-view';
+import { getType } from './chat/common/fileUploadValidation';
 import VideoPlayer from './Media/VideoPlayer';
+import useRosterData from '../hooks/useRosterData';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 
 function GalleryPickView(props) {
   const {
@@ -37,28 +41,41 @@ function GalleryPickView(props) {
     setSelectedImages,
     selectedImages,
   } = props;
-  const profileDetails = useSelector(state => state.navigation.profileDetails);
+  const scrollRef = React.useRef();
+  const fromUserJid = useSelector(state => state.navigation.fromUserJid);
   const [index, setIndex] = React.useState(0);
-
+  const [_selectedImages, set_selectedImages] = React.useState(selectedImages);
+  let {
+    nickName,
+    image: imageToken,
+    colorCode,
+  } = useRosterData(getUserIdFromJid(fromUserJid));
+  // updating the default values
+  nickName = nickName || getUserIdFromJid(fromUserJid) || '';
+  imageToken = imageToken || '';
   const handleBackBtn = () => {
     selectedSingle && setSelectedImages([]);
     setLocalNav('Gallery');
     return true;
   };
 
-  const backHandler = BackHandler.addEventListener(
-    'hardwareBackPress',
-    handleBackBtn,
-  );
-
   React.useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackBtn,
+    );
     return () => {
       backHandler.remove();
     };
   }, []);
 
-  const handleIndexChange = index => {
-    setIndex(index);
+  const handleIndexChange = ind => {
+    scrollRef?.current.scrollToIndex({
+      index: ind,
+      animated: true,
+      viewPosition: 0.5,
+    });
+    setIndex(ind);
   };
 
   const renderTabBar = () => {
@@ -68,36 +85,42 @@ function GalleryPickView(props) {
   const handleSendMedia = () => {
     let message = {
       type: 'media',
-      content: props.selectedImages,
+      content: _selectedImages,
     };
     handleSendMsg(message);
   };
 
-  const renderScene = SceneMap(
-    selectedImages?.reduce((scenes, item, itemIndex) => {
-      const type = getType(item?.fileDetails?.type);
-      scenes[`tab${itemIndex + 1}`] = () => (
-        <>
-          {type === 'image' && (
-            <Image
-              resizeMode="contain"
-              source={{uri: item?.fileDetails?.image?.uri}}
-              style={styles.tabContainer}
-            />
-          )}
-          {type === 'video' && <VideoPlayer item={item} />}
-        </>
-      );
-      return scenes;
-    }, {}),
+  const renderScene = React.useMemo(
+    () =>
+      SceneMap(
+        _selectedImages?.reduce((scenes, item, itemIndex) => {
+          const type = getType(item?.fileDetails?.type);
+          scenes[`tab${itemIndex + 1}`] = () => (
+            <>
+              {type === 'image' && (
+                <Image
+                  resizeMode="contain"
+                  source={{ uri: item?.fileDetails?.uri }}
+                  style={styles.tabContainer}
+                />
+              )}
+              {type === 'video' && <VideoPlayer item={item} />}
+            </>
+          );
+          return scenes;
+        }, {}),
+      ),
+    [_selectedImages],
   );
 
   return (
-    <>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.container}>
         <HStack mb={'2'} mt="5" alignItems={'center'}>
           <IconButton
-            _pressed={{bg: 'rgba(50,118,226, 0.1)'}}
+            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
             onPress={handleBackBtn}
             icon={<Icon as={() => LeftArrowIcon('#fff')} name="emoji-happy" />}
             borderRadius="full"
@@ -106,18 +129,21 @@ function GalleryPickView(props) {
             width={30}
             height={30}
             fontsize={14}
-            backgroundColor={profileDetails?.colorCode}
-            data={profileDetails?.nickName || '91'}
+            backgroundColor={colorCode}
+            data={nickName}
+            profileImage={imageToken}
           />
           <Spacer />
-          {selectedImages.length > 1 && (
+          {_selectedImages.length > 1 && (
             <IconButton
               mr={'2'}
               onPress={() => {
-                let filtered = selectedImages?.filter((item, i) => i !== index);
-                setSelectedImages(filtered);
+                let filtered = _selectedImages?.filter(
+                  (item, i) => i !== index,
+                );
+                set_selectedImages(filtered);
               }}
-              _pressed={{bg: 'rgba(50,118,226, 0.1)'}}
+              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
               icon={
                 <Icon as={<DeleteBinIcon color="#fff" />} name="emoji-happy" />
               }
@@ -128,7 +154,9 @@ function GalleryPickView(props) {
         <TabView
           navigationState={{
             index,
-            routes: props.selectedImages?.map((_, i) => ({key: `tab${i + 1}`})),
+            routes: _selectedImages?.map((_, i) => ({
+              key: `tab${i + 1}`,
+            })),
           }}
           renderTabBar={renderTabBar}
           renderScene={renderScene}
@@ -143,22 +171,23 @@ function GalleryPickView(props) {
             handleSendMedia();
             setLocalNav('CHATCONVERSATION');
           }}
-          _pressed={{bg: 'rgba(50,118,226, 0.1)'}}
+          _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
           icon={<Icon as={<SendBlueIcon color="#fff" />} name="emoji-happy" />}
           borderRadius="full"
         />
         <HStack ml="2" mb="1" alignItems={'center'}>
-          {selectedImages.length < 10 && (
+          {_selectedImages.length < 10 && (
             <IconButton
-              _pressed={{bg: 'rgba(50,118,226, 0.1)'}}
+              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
               onPress={async () => {
+                setSelectedImages(_selectedImages);
                 setLocalNav('Gallery');
               }}
               icon={<Icon as={PreViewAddIcon} name="emoji-happy" />}
               borderRadius="full"
             />
           )}
-          {selectedImages.length < 10 && (
+          {_selectedImages.length < 10 && (
             <Divider
               h="7"
               bg="#7f7f7f"
@@ -176,14 +205,12 @@ function GalleryPickView(props) {
               maxHeight: 100,
             }}
             defaultValue={
-              props.selectedImages[index]
-                ? props.selectedImages[index].caption
-                : ''
+              _selectedImages[index] ? _selectedImages[index].caption : ''
             }
             numberOfLines={1}
             multiline={true}
             onChangeText={text => {
-              selectedImages[index].caption = text;
+              _selectedImages[index].caption = text;
             }}
             placeholderTextColor="#7f7f7f"
             selectionColor={'#3276E2'}
@@ -195,31 +222,34 @@ function GalleryPickView(props) {
           <IconButton
             icon={<Icon as={() => RightArrowIcon('#fff')} name="emoji-happy" />}
           />
-          <Text color="#7f7f7f">{profileDetails?.nickName}</Text>
+          <Text color="#7f7f7f">{nickName}</Text>
         </HStack>
-        {selectedImages.length > 1 && (
-          <ScrollView flexGrow={0} horizontal>
-            <HStack>
-              {selectedImages?.map((item, i) => (
-                <Pressable
-                  activeOpacity={1}
-                  key={item?.fileDetails?.image.uri}
-                  style={styles.tabButton}
-                  onPress={() => handleIndexChange(i)}>
-                  <Image
-                    source={{uri: item?.fileDetails?.image.uri}}
-                    style={[
-                      styles.tabImage,
-                      index === i && styles.selectedTabImage,
-                    ]}
-                  />
-                </Pressable>
-              ))}
-            </HStack>
-          </ScrollView>
-        )}
+        <FlatList
+          ref={scrollRef}
+          data={_selectedImages}
+          style={styles.miniPreViewScroll}
+          horizontal
+          removeClippedSubviews={true}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={item => item.code}
+          renderItem={({ item, index: i }) => (
+            <Pressable
+              activeOpacity={1}
+              key={item?.fileDetails?.uri}
+              style={styles.tabButton}
+              onPress={() => handleIndexChange(i)}>
+              <Image
+                source={{ uri: item?.fileDetails?.uri }}
+                style={[
+                  styles.tabImage,
+                  index === i && styles.selectedTabImage,
+                ]}
+              />
+            </Pressable>
+          )}
+        />
       </View>
-    </>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -229,6 +259,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+  },
+  miniPreViewScroll: {
+    flexGrow: 0,
   },
   imageContainer: {
     flex: 1,
@@ -254,4 +287,5 @@ const styles = StyleSheet.create({
     borderColor: '#3276E2',
     borderWidth: 2,
   },
+  miniPreviewList: { flexGrow: 0 },
 });

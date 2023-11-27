@@ -1,13 +1,16 @@
-import {CameraRoll} from '@react-native-camera-roll/camera-roll';
-import {HStack, Icon, Image, Pressable, Text, View} from 'native-base';
+import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import React from 'react';
 import ScreenHeader from '../components/ScreenHeader';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   ActivityIndicator,
   BackHandler,
   Dimensions,
   FlatList,
+  View,
+  Image,
+  Text,
+  StyleSheet,
 } from 'react-native';
 import {
   CameraSmallIcon,
@@ -21,7 +24,12 @@ import {
   addGalleryAlbum,
   addGalleryPhotos,
   addGalleyGroupName,
-} from '../redux/galleryDataSlice';
+} from '../redux/Actions/GalleryAction';
+import useRosterData from '../hooks/useRosterData';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import Pressable from '../common/Pressable';
+import commonStyles from '../common/commonStyles';
+import { selectedMediaIdRef } from './ChatScreen';
 
 const Gallery = (props = {}) => {
   const PAGE_SIZE = 20;
@@ -32,10 +40,13 @@ const Gallery = (props = {}) => {
     setSelectedImages,
     handleMedia,
   } = props;
-  const profileDetails = useSelector(state => state.navigation.profileDetails);
-  const {galleryAlbum, galleryPhotos, galleryName} = useSelector(
+  const fromUserJid = useSelector(state => state.navigation.fromUserJid);
+  const { galleryAlbum, galleryPhotos, galleryName } = useSelector(
     state => state.galleryData,
   );
+
+  let { nickName } = useRosterData(getUserIdFromJid(fromUserJid));
+  nickName = nickName || getUserIdFromJid(fromUserJid);
   const [galleryData, setGalleryData] = React.useState(galleryAlbum || []);
   const [grpView, setGrpView] = React.useState(galleryName || '');
   const [photos, setPhotos] = React.useState(galleryPhotos || []);
@@ -52,15 +63,16 @@ const Gallery = (props = {}) => {
     setLocalNav('CHATCONVERSATION');
   };
 
-  const renderItem = ({item}) => {
-    const isImageSelected = selectedImages.some(
-      selectedItem =>
-        selectedItem?.fileDetails.image.uri === item?.node?.image.uri,
-    );
+  const renderItem = ({ item }) => {
+    const isImageSelected = selectedMediaIdRef.current[item?.node?.image.uri];
     return (
-      <View position="relative" padding={0.45}>
+      <View style={[commonStyles.positionRelative, commonStyles.padding_04]}>
         <Pressable
-          width={itemWidth}
+          contentContainerStyle={commonStyles.bgBlack_01}
+          style={{
+            width: itemWidth,
+          }}
+          delayLongPress={200}
           onPress={() => {
             setCheckbox(false);
             selectedImages.length === 0 && !checkBox
@@ -73,35 +85,41 @@ const Gallery = (props = {}) => {
           }}>
           <Image
             alt=""
-            width={itemWidth}
-            aspectRatio={1}
-            source={{uri: item?.node?.image.uri}}
+            style={{ width: itemWidth, aspectRatio: 1 }}
+            source={{ uri: item?.node?.image.uri }}
           />
           {isImageSelected && (
             <View
-              position="absolute"
-              padding={1}
-              width="100%"
-              aspectRatio={1}
-              marginRight={3}
-              backgroundColor="rgba(0,0,0,0.5)">
-              <View position={'absolute'} left={60} bottom={60}>
-                {<Icon as={TickIcon} name="emoji-happy" />}
+              style={[
+                commonStyles.positionAbsolute,
+                commonStyles.p_1,
+                commonStyles.width_100_per,
+                commonStyles.mr_3,
+                commonStyles.bgBlack_04,
+                { aspectRatio: 1 },
+              ]}>
+              <View
+                style={[
+                  commonStyles.positionAbsolute,
+                  { left: 60, bottom: 60 },
+                ]}>
+                {TickIcon()}
               </View>
             </View>
           )}
-          <HStack
-            borderRadius={'10'}
-            px={'0.5'}
-            position={'absolute'}
+          <View
+            style={[
+              commonStyles.paddingHorizontal_4,
+              commonStyles.borderRadius_5,
+              commonStyles.paddingHorizontal_4,
+              commonStyles.positionAbsolute,
+            ]}
             bottom={1}
             left={1}>
             {item?.node.type.split('/')[0] === 'video' && (
-              <View p="0.5">
-                <Icon as={() => VideoSmallIcon()} name="emoji-happy" />
-              </View>
+              <View p="0.5">{VideoSmallIcon()}</View>
             )}
-          </HStack>
+          </View>
         </Pressable>
       </View>
     );
@@ -113,7 +131,7 @@ const Gallery = (props = {}) => {
       const photo = await CameraRoll.getAlbums({
         assetType: 'All',
       });
-      const galleryData = await Promise.allSettled(
+      const _galleryData = await Promise.allSettled(
         photo.map(async item => {
           const params = {
             first: 5,
@@ -135,7 +153,8 @@ const Gallery = (props = {}) => {
                 filename.endsWith('.jpg') ||
                 filename.endsWith('.jpeg') ||
                 filename.endsWith('.png') ||
-                filename.endsWith('.mp4')
+                filename.endsWith('.mp4') ||
+                filename.endsWith('.MOV')
               );
             });
             if (node) {
@@ -149,7 +168,7 @@ const Gallery = (props = {}) => {
           });
         }),
       );
-      const filtertedData = galleryData.filter(item => item.value !== null);
+      const filtertedData = _galleryData.filter(item => item.value !== null);
       filtertedData.sort((a, b) => {
         const titleA = a.value.title.toUpperCase();
         const titleB = b.value.title.toUpperCase();
@@ -198,7 +217,8 @@ const Gallery = (props = {}) => {
             filename.endsWith('.jpg') ||
             filename.endsWith('.jpeg') ||
             filename.endsWith('.png') ||
-            filename.endsWith('.mp4')
+            filename.endsWith('.mp4') ||
+            filename.endsWith('.MOV')
           );
         });
         return {
@@ -210,10 +230,10 @@ const Gallery = (props = {}) => {
         };
       });
       /**
-                const data = await CameraRoll.getPhotos(params);
-                 console.log(data,"datadata");
-             * */
-      const {has_next_page, end_cursor} = data.page_info;
+        const data = await CameraRoll.getPhotos(params);
+        console.log(data,"datadata");
+      * */
+      const { has_next_page, end_cursor } = data.page_info;
       setEndCursor(end_cursor);
       setHasNextPage(has_next_page);
       let getPhoto = [];
@@ -222,10 +242,19 @@ const Gallery = (props = {}) => {
       } else {
         getPhoto = [...data.edges];
       }
-      setPhotos(getPhoto);
-      store.dispatch(addGalleryPhotos(getPhoto));
+      const updatedPhotos = [...getPhoto];
+      for (const newPhoto of getPhoto) {
+        const existingPhoto = updatedPhotos.find(
+          photo => photo.image?.uri === newPhoto.image?.uri,
+        );
+        if (!existingPhoto) {
+          updatedPhotos.push(newPhoto);
+        }
+      }
+      setPhotos(updatedPhotos);
+      store.dispatch(addGalleryPhotos(updatedPhotos));
     } catch (error) {
-      console.log('Photo_Error', error);
+      console.log('fetchPhotos', error);
     } finally {
       setLoading(false);
     }
@@ -242,65 +271,82 @@ const Gallery = (props = {}) => {
       return null;
     }
     return (
-      <View marginBottom={50}>
+      <View style={commonStyles.mb_130}>
         <ActivityIndicator size="large" color={'#3276E2'} />
       </View>
     );
   };
 
-  const backHandler = BackHandler.addEventListener(
-    'hardwareBackPress',
-    handleBackBtn,
-  );
-
   React.useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackBtn,
+    );
+
     fetchGallery();
     return () => {
       backHandler.remove();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const albumRender = ({item}) => {
+  const albumRender = ({ item }) => {
     return (
       <Pressable
         onPress={() => {
           fetchPhotos(item.value.title);
         }}
-        padding="0.4"
-        justifyContent={'space-between'}>
-        <View position={'relative'} width={itemWidth} height={itemWidth}>
+        style={[
+          commonStyles.padding_04,
+          commonStyles.justifyContentSpaceBetween,
+        ]}
+        contentContainerStyle={[commonStyles.bgBlack_01]}>
+        <View
+          style={[
+            commonStyles.positionRelative,
+            { width: itemWidth, height: itemWidth },
+          ]}>
           <Image
-            resizeMode="cover"
-            alt={item.value.title}
-            size={itemWidth}
-            source={{uri: item?.value?.uri}}
+            alt=""
+            style={{ width: itemWidth, aspectRatio: 1 }}
+            source={{ uri: item?.value?.uri }}
           />
-          <HStack
-            px={'0.5'}
-            backgroundColor={'rgba(0,0,0,0.1))'}
-            position="absolute"
-            alignItems={'center'}
-            bottom={1}
-            width={'100%'}>
+          <View
+            style={[
+              commonStyles.hstack,
+              commonStyles.alignItemsCenter,
+              commonStyles.positionAbsolute,
+              commonStyles.bgBlack_01,
+              commonStyles.bottom_1,
+              commonStyles.p_4,
+              { width: '100%' },
+            ]}>
             {item.value.title === 'Camera' ? (
-              <Icon as={CameraSmallIcon} name="emoji-happy" />
+              <CameraSmallIcon />
             ) : (
-              <Icon as={FolderIcon} name="emoji-happy" />
+              <FolderIcon />
             )}
             <Text
-              ml={1.5}
-              color="#fff"
-              width={'60%'}
+              style={[
+                commonStyles.colorWhite,
+                commonStyles.positionAbsolute,
+                commonStyles.fontSize_11,
+                commonStyles.marginLeft_20,
+                galleryStyles.albumText,
+              ]}
               numberOfLines={1}
-              ellipsizeMode="tail"
-              fontSize={10}>
+              ellipsizeMode="tail">
               {item.value.title}
             </Text>
-            <Text color="#fff" position={'absolute'} right={1} fontSize={10}>
+            <Text
+              style={[
+                commonStyles.colorWhite,
+                commonStyles.positionAbsolute,
+                commonStyles.fontSize_11,
+              ]}
+              right={1}>
               {/** {item.value.count} */}
             </Text>
-          </HStack>
+          </View>
         </View>
       </Pressable>
     );
@@ -309,30 +355,28 @@ const Gallery = (props = {}) => {
   return (
     <>
       {grpView ? (
-        <View mb={'0.5'} mr={'0.3'} ml={'0.1'}>
-          <GalleryPhotos
-            renderItem={renderItem}
-            handleLoadMore={handleLoadMore}
-            photos={photos}
-            setPhotos={setPhotos}
-            setCheckbox={setCheckbox}
-            checkBox={checkBox}
-            selectedImages={selectedImages}
-            handleBackBtn={handleBackBtn}
-            grpView={grpView}
-            setGrpView={setGrpView}
-            renderFooter={renderFooter}
-            setLocalNav={setLocalNav}
-            setSelectedImages={setSelectedImages}
-          />
-        </View>
+        <GalleryPhotos
+          renderItem={renderItem}
+          handleLoadMore={handleLoadMore}
+          photos={photos}
+          setPhotos={setPhotos}
+          setCheckbox={setCheckbox}
+          checkBox={checkBox}
+          selectedImages={selectedImages}
+          handleBackBtn={handleBackBtn}
+          grpView={grpView}
+          setGrpView={setGrpView}
+          renderFooter={renderFooter}
+          setLocalNav={setLocalNav}
+          setSelectedImages={setSelectedImages}
+        />
       ) : (
-        <View mb="20">
+        <View>
           <ScreenHeader
-            title={'Send to ' + profileDetails?.nickName}
+            title={'Send to ' + nickName}
             onhandleBack={handleBackBtn}
           />
-          <View ml={'0.1'} mb="16">
+          <View>
             <FlatList
               numColumns={3}
               data={galleryData}
@@ -340,6 +384,9 @@ const Gallery = (props = {}) => {
               bounces={false}
               ListFooterComponent={renderFooter}
               renderItem={albumRender}
+              initialNumToRender={20}
+              maxToRenderPerBatch={20}
+              windowSize={15}
             />
           </View>
         </View>
@@ -348,3 +395,9 @@ const Gallery = (props = {}) => {
   );
 };
 export default Gallery;
+
+const galleryStyles = StyleSheet.create({
+  albumText: {
+    width: '60%',
+  },
+});

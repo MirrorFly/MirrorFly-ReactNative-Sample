@@ -2,13 +2,13 @@ const ApplicationTheme = {
   darkTheme: {
     dark: true,
     colors: {
-      background: "rgb(1, 1, 1)",
-      border: "rgb(39, 39, 41)",
-      card: "rgb(18, 18, 18)",
-      notification: "rgb(255, 69, 58)",
-      primary: "rgb(10, 132, 255)",
-      text: "rgb(229, 229, 231)"
-    }
+      background: 'rgb(1, 1, 1)',
+      border: 'rgb(39, 39, 41)',
+      card: 'rgb(18, 18, 18)',
+      notification: 'rgb(255, 69, 58)',
+      primary: 'rgb(10, 132, 255)',
+      text: 'rgb(229, 229, 231)',
+    },
   },
 
   lightTheme: {
@@ -21,7 +21,11 @@ const ApplicationTheme = {
       border: 'rgb(216, 216, 216)',
       notification: 'rgb(255, 59, 48)',
     },
-  }
-}
+  },
+};
+
+export const touchEffect = {
+  backgroundColor: 'rgba(0,0,0,0.08)',
+};
 
 export default ApplicationTheme;

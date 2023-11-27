@@ -49594,7 +49594,8 @@ const _SDK = {
   getHashSha256: __WEBPACK_IMPORTED_MODULE_4__helpers_utils__["q" /* getHashSha256 */],
   updateRecentChatUnreadCount,
   sendMediaMessage,
-  randomString: __WEBPACK_IMPORTED_MODULE_4__helpers_utils__["x" /* randomString */]
+  randomString: __WEBPACK_IMPORTED_MODULE_4__helpers_utils__["x" /* randomString */],
+  decryptProfileDetails: __WEBPACK_IMPORTED_MODULE_4__helpers_utils__["g" /* decryptProfileDetails */]
 };
 
 if (!global.SDK) {

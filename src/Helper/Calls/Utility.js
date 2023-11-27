@@ -426,13 +426,19 @@ export const updateMissedCallNotification = callData => {
 };
 
 const onVoipPushNotificationiReceived = async data => {
-   let { payload, callUUID } = data;
+   let {
+      payload,
+      payload: { caller_id, caller_name },
+      callUUID,
+   } = data;
    const activeCallUUID = Store.getState().callData?.callerUUID || '';
    if (activeCallUUID !== '') {
       const calls = await RNCallKeep.getCalls();
       const activeCall = calls.find(c => c.callUUID === callUUID);
       RNCallKeep.reportEndCallWithUUID(activeCall.callUUID, CK_CONSTANTS.END_CALL_REASONS.MISSED);
    } else {
+      const decryptName = await SDK.decryptProfileDetails(caller_name, getUserIdFromJid(caller_id));
+      RNCallKeep.updateDisplay(callUUID, decryptName, getUserIdFromJid(caller_id));
       Store.dispatch(updateCallerUUID(callUUID));
    }
    let remoteMessage = {

@@ -17,7 +17,7 @@ import {
    PROFILESCREEN,
    RECENTCHATSCREEN,
    REGISTERSCREEN,
-   SETTINGSCREEN
+   SETTINGSCREEN,
 } from './constant';
 import { getCurrentUserJid } from './redux/Actions/AuthAction';
 import { navigate } from './redux/Actions/NavigationAction';
@@ -41,19 +41,19 @@ const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
 });
 
 const linking = {
-  prefixes: [MIRRORFLY_RN], //NOSONAR
-  config: {
-    screens: {
-      [REGISTERSCREEN]: REGISTERSCREEN,
-      [PROFILESCREEN]: PROFILESCREEN,
-      [RECENTCHATSCREEN]: RECENTCHATSCREEN,
-      [CHATSCREEN]: CHATSCREEN,
-      [COUNTRYSCREEN]: COUNTRYSCREEN,
-      [CONTACTLIST]: CONTACTLIST,
-      [SETTINGSCREEN]: SETTINGSCREEN,
-      [CAMERA]: CAMERA,
-    },
-  },
+   prefixes: [MIRRORFLY_RN], //NOSONAR
+   config: {
+      screens: {
+         [REGISTERSCREEN]: REGISTERSCREEN,
+         [PROFILESCREEN]: PROFILESCREEN,
+         [RECENTCHATSCREEN]: RECENTCHATSCREEN,
+         [CHATSCREEN]: CHATSCREEN,
+         [COUNTRYSCREEN]: COUNTRYSCREEN,
+         [CONTACTLIST]: CONTACTLIST,
+         [SETTINGSCREEN]: SETTINGSCREEN,
+         [CAMERA]: CAMERA,
+      },
+   },
 };
 
 export const ChatApp = React.memo(({ hasNativeBaseProvider = false, ...props }) => {
@@ -80,7 +80,7 @@ export const ChatApp = React.memo(({ hasNativeBaseProvider = false, ...props }) 
 });
 
 ChatApp.propTypes = {
-  jid: PropTypes.string,
+   jid: PropTypes.string,
 };
 
 const RootNavigation = props => {
@@ -115,7 +115,7 @@ const RootNavigation = props => {
          const initialURL = await Linking.getInitialURL();
          if (initialURL) {
             const regexStr = '[?&]([^=#]+)=([^&#]*)';
-            let regex = new RegExp(regexStr, 'g'),
+            let regex = new RegExp(regexStr, 'g'), //NOSONAR
                match;
             match = regex.exec(initialURL);
             let x = {
@@ -173,9 +173,8 @@ const RootNavigation = props => {
 };
 
 RootNavigation.propTypes = {
-  jid: PropTypes.string,
+   jid: PropTypes.string,
 };
-
 
 const styles = StyleSheet.create({
    container: {

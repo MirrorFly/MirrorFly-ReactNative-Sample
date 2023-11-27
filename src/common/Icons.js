@@ -1162,9 +1162,10 @@ export const DeleteBinIcon = ({ color }) => {
    );
 };
 
-export const SendBlueIcon = () => {
+export const SendBlueIcon = props => {
+   const { width = '49', height = '49' } = props;
    return (
-      <Svg xmlns="http://www.w3.org/2000/svg" width="49" height="49" viewBox="0 0 49 49">
+      <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 49 49">
          <G id="Group_15650" data-name="Group 15650" transform="translate(-300 -464)">
             <Circle
                id="Ellipse_91"
@@ -2695,16 +2696,13 @@ export const VideoUnMuteIcon = props => {
    );
 };
 
-export const LayoutIcon = ({width, height, color}) => {
+export const LayoutIcon = ({ width, height, color }) => {
    return (
-      <Svg
-         width={width || "9.889"}
-         height={height || "10.25"}
-         viewBox="0 0 9.889 10.25">
+      <Svg width={width || '9.889'} height={height || '10.25'} viewBox="0 0 9.889 10.25">
          <Path
             d="M318.081,170.69h-3.06a.731.731,0,0,1-.729-.729v-4.313a.731.731,0,0,1,.729-.729h3.06a.731.731,0,0,1,.729.729v4.313A.731.731,0,0,1,318.081,170.69Zm0-10.25h-3.06a.731.731,0,0,0-.729.729v2.225a.731.731,0,0,0,.729.729h3.06a.731.731,0,0,0,.729-.729v-2.225A.731.731,0,0,0,318.081,160.44Zm-8.432.114h3.06a.731.731,0,0,1,.729.729v8.565a.731.731,0,0,1-.729.729h-3.06a.731.731,0,0,1-.729-.729v-8.565A.731.731,0,0,1,309.649,160.554Z"
             transform="translate(-308.92 -160.44)"
-            fill={color || "#212121"}
+            fill={color || '#212121'}
             fillRule="evenodd"
          />
       </Svg>

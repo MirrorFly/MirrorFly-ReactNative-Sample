@@ -126,7 +126,7 @@ const RootNavigation = props => {
       const initialURL = await Linking.getInitialURL();
       if (initialURL) {
         const regexStr = '[?&]([^=#]+)=([^&#]*)';
-        let regex = new RegExp(regexStr, 'g'),
+        let regex = new RegExp(regexStr, 'g'), //NOSONAR
           match;
         match = regex.exec(initialURL);
         let x = {

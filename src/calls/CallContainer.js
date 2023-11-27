@@ -46,7 +46,9 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
 
    const renderModalContent = () => {
       const content = (
-         <View style={[commonStyles.flex1, { marginTop: insets.top }]}>{renderCallscreenBasedOnCallStatus()}</View>
+         <View style={[commonStyles.flex1, { marginTop: insets.top, overflow: 'hidden' }]}>
+            {renderCallscreenBasedOnCallStatus()}
+         </View>
       );
       return hasNativeBaseProvider ? content : <NativeBaseProvider>{content}</NativeBaseProvider>;
    };

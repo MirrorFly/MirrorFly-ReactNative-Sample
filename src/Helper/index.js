@@ -1,6 +1,6 @@
 import React from 'react';
 import { Toast } from 'native-base';
-import { Alert, Linking, Platform, Text, View } from 'react-native';
+import { Alert, AppState, Linking, Platform, Text, View } from 'react-native';
 import Graphemer from 'graphemer';
 import RNFS from 'react-native-fs';
 import { Image as ImageCompressor } from 'react-native-compressor';
@@ -232,20 +232,16 @@ export const getPendingSeenStatusMsg = async () => {
 };
 
 export const handleSetPendingSeenStatus = async obj => {
-   const parsedStoreVal = await getPendingSeenStatusMsg();
-   if (parsedStoreVal) {
-      const filterdArr = parsedStoreVal?.data.filter(o => o.msgId !== obj.msgId && obj.msgStatus === 1);
-      if (filterdArr?.length) {
-         filterdArr?.forEach(element => {
-            addPendingSeenStatusMsg(element);
-         });
-      }
-      if (!parsedStoreVal?.data.length) {
-         addPendingSeenStatusMsg(obj);
-      }
-   } else {
-      addPendingSeenStatusMsg(obj);
-   }
+  if (AppState.currentState === 'background') {
+    Store.dispatch(addchatSeenPendingMsg(obj));
+  } else {
+    const parsedStoreVal = await getPendingSeenStatusMsg();
+    if (parsedStoreVal?.data.length) {
+      parsedStoreVal?.data.forEach(element => {
+        Store.dispatch(addchatSeenPendingMsg(element));
+      });
+    }
+  }
 };
 
 export const updateRecentAndConversationStore = obj => {

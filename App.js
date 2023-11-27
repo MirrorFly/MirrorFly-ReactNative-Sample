@@ -1,4 +1,5 @@
 import messaging from '@react-native-firebase/messaging';
+import { NativeBaseProvider } from 'native-base';
 import React from 'react';
 import { ChatApp } from './src/ChatApp';
 import SDK from './src/SDK/SDK';
@@ -6,14 +7,7 @@ import { callBacks } from './src/SDKActions/callbacks';
 import { removeAllDeliveredNotification } from './src/Service/remoteNotifyHandle';
 import CallComponent from './src/calls/CallComponent';
 import { requestNotificationPermission } from './src/common/utils';
-import { setupCallKit } from './src/components/calls/ios';
 import { setAppInitialized } from './src/uikitHelpers/uikitMethods';
-import { NativeBaseProvider } from 'native-base';
-
-// Setup ios callkit
-if (Platform.OS === 'ios') {
-   setupCallKit();
-}
 
 function App() {
    const API_URL = 'https://api-uikit-qa.contus.us/api/v1';

@@ -68,3 +68,9 @@ dist/
 
 # vscode
 .vscode
+
+# tarball file
+mirrorfly-uikit-react-native-*.tgz
+
+# zip file
+*.zip

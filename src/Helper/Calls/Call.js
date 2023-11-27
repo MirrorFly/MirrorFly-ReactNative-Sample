@@ -219,3 +219,7 @@ export function getCallDuration(timerTime) {
    const minAndSecs = `${minutes}:${seconds}`;
    return hours > 0 ? `${hours}:${minAndSecs}` : minAndSecs;
 }
+
+export const getMissedCallMessage = callType => {
+   return `You missed an ${callType} call`;
+};

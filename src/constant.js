@@ -1,3 +1,6 @@
+// App Prefix
+export const MIRRORFLY_RN ='mirrorfly_rn://'
+
 // Screen Name
 export const REGISTERSCREEN = 'REGISTERSCREEN';
 export const OTPSCREEN = 'OTPSCREEN';
@@ -7,6 +10,7 @@ export const USERLISTSCREEN = 'USERLISTSCREEN';
 export const CHATSCREEN = 'CHATSCREEN';
 export const CONVERSATION_SCREEN = 'CONVERSATION_SCREEN';
 export const FORWARD_MESSSAGE_SCREEN = 'FORWARD_MESSSAGE_SCREEN';
+export const MEDIA_POST_PRE_VIEW_SCREEN = 'MEDIA_POST_PRE_VIEW_SCREEN';
 export const PROFILESCREEN = 'PROFILESCREEN';
 export const CONTACTLIST = 'CONTACTLIST';
 export const SETTINGSCREEN = 'SETTINGSCREEN';
@@ -62,3 +66,6 @@ export const INVITE_SMS_CONTENT =
 export const INVITE_APP_URL = 'https://app.mirrorfly.com';
 export const CALL_BACK = 'CALL_BACK';
 export const NOTIFICATION = 'NOTIFICATION';
+
+// api call error message
+export const NETWORK_ERROR = 'Network Error';

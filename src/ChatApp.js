@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { Box, NativeBaseProvider } from 'native-base';
+import PropTypes from 'prop-types';
 import React, { createRef } from 'react';
 import { Keyboard, Linking, LogBox, SafeAreaView, StatusBar, StyleSheet, useColorScheme } from 'react-native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
@@ -12,6 +13,7 @@ import {
    CHATSCREEN,
    CONTACTLIST,
    COUNTRYSCREEN,
+   MIRRORFLY_RN,
    PROFILESCREEN,
    RECENTCHATSCREEN,
    REGISTERSCREEN,
@@ -39,7 +41,7 @@ const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
 });
 
 const linking = {
-   prefixes: ['mirrorfly_rn://'], // Replace 'yourapp' with your app's custom scheme
+   prefixes: [MIRRORFLY_RN], //NOSONAR
    config: {
       screens: {
          [REGISTERSCREEN]: REGISTERSCREEN,
@@ -77,6 +79,10 @@ export const ChatApp = React.memo(({ hasNativeBaseProvider = false, ...props }) 
    );
 });
 
+ChatApp.propTypes = {
+   jid: PropTypes.string,
+};
+
 const RootNavigation = props => {
    const { jid } = props;
    const scheme = useColorScheme();
@@ -109,7 +115,7 @@ const RootNavigation = props => {
          const initialURL = await Linking.getInitialURL();
          if (initialURL) {
             const regexStr = '[?&]([^=#]+)=([^&#]*)';
-            let regex = new RegExp(regexStr, 'g'),
+            let regex = new RegExp(regexStr, 'g'), //NOSONAR
                match;
             match = regex.exec(initialURL);
             let x = {
@@ -164,6 +170,10 @@ const RootNavigation = props => {
          <Box safeAreaBottom backgroundColor={safeAreaBgColor} />
       </>
    );
+};
+
+RootNavigation.propTypes = {
+   jid: PropTypes.string,
 };
 
 const styles = StyleSheet.create({

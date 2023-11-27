@@ -15,6 +15,7 @@
 #import <PushKit/PushKit.h>
 #import <RNVoipPushNotificationManager.h>
 #import <RNCallKeep.h>
+#import <CallKit/CallKit.h>
 
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
@@ -92,6 +93,9 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
   [FIRApp configure];
   RCTAppSetupPrepareApp(application);
 
+  // --- register VoipPushNotification here ASAP rather than in JS. Doing this from the JS side may be too slow for some use cases
+  // --- see: https://github.com/react-native-webrtc/react-native-voip-push-notification/issues/59#issuecomment-691685841  
+  [RNVoipPushNotificationManager voipRegistration];
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
 
 #if RCT_NEW_ARCH_ENABLED
@@ -181,31 +185,51 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
   // --- see: react-native-callkeep
 
   // --- Retrieve information from your voip push payload
-//  NSUUID *uuid = [NSUUID UUID];
-//  NSString *UUID = [uuid UUIDString];
   NSString *uuid = [[NSUUID UUID] UUIDString];
-  NSString *callerName = [NSString stringWithFormat:@"%@ (Connecting...)", payload.dictionaryPayload[@"caller_name"]];
+  NSString *callerName = payload.dictionaryPayload[@"caller_name"];
   NSString *handle = payload.dictionaryPayload[@"caller_id"];
   NSString *callerId = [[handle componentsSeparatedByString:@"@"] objectAtIndex:0];
+  NSString *hasvideoValue = payload.dictionaryPayload[@"call_type"];
+  BOOL hasvideo = [hasvideoValue isEqualToString:@"video"] ? YES : NO;
+  CXCallObserver *callObserver = [[CXCallObserver alloc] init];
+  NSInteger count = callObserver.calls.count;
   
   // --- this is optional, only required if you want to call `completion()` on the js side
   [RNVoipPushNotificationManager addCompletionHandler:uuid completionHandler:completion];
 
   // --- Process the received push
   [RNVoipPushNotificationManager didReceiveIncomingPushWithPayload:payload forType:(NSString *)type];
-  
-  [RNCallKeep reportNewIncomingCall: uuid
-                             handle: callerId
-                         handleType: @"generic"
-                           hasVideo: YES
-                localizedCallerName: callerName
-                    supportsHolding: YES
-                       supportsDTMF: YES
-                   supportsGrouping: YES
-                 supportsUngrouping: YES
-                        fromPushKit: YES
-                            payload: [payload dictionaryPayload]
-              withCompletionHandler: completion];
+
+  if(count < 1) {
+    [RNCallKeep reportNewIncomingCall: uuid
+                               handle: callerId
+                           handleType: @"generic"
+                             hasVideo: hasvideo
+                  localizedCallerName: callerName
+                      supportsHolding: YES
+                         supportsDTMF: YES
+                     supportsGrouping: YES
+                   supportsUngrouping: YES
+                          fromPushKit: YES
+                              payload: [payload dictionaryPayload]
+                withCompletionHandler: completion];
+  }else{
+      // Report and end invalid call
+      [RNCallKeep reportNewIncomingCall: uuid
+                                 handle: callerId
+                             handleType: @"generic"
+                               hasVideo: hasvideo
+                    localizedCallerName: callerId
+                        supportsHolding: YES
+                           supportsDTMF: YES
+                       supportsGrouping: YES
+                     supportsUngrouping: YES
+                            fromPushKit: YES
+                                payload: [payload dictionaryPayload]
+                  withCompletionHandler: completion];
+      [RNCallKeep endCallWithUUID:uuid reason:2];
+  }
+
   
   // --- You don't need to call it if you stored `completion()` and will call it on the js side.
   completion();

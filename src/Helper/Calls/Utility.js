@@ -1,10 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Linking, Platform } from 'react-native';
-import RNCallKeep from 'react-native-callkeep';
+import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
+import { openSettings } from 'react-native-permissions';
 import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { SDK } from '../../SDK';
 import { muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
+import { pushNotify } from '../../Service/CallNotify';
+import { requestMicroPhonePermission } from '../../common/utils';
 import {
    clearCallData,
    closeCallModal,
@@ -19,12 +22,13 @@ import {
 import Store from '../../redux/store';
 import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
 import { getUserIdFromJid } from '../Chat/Utility';
-import { getUserProfile, showToast } from '../index';
+import { getUserProfile, getUserProfileFromSDK, showToast } from '../index';
 import {
    clearMissedCallNotificationTimer,
    disconnectCallConnection,
    dispatchDisconnected,
    getMaxUsersInCall,
+   getMissedCallMessage,
    startCallingTimer,
    stopIncomingCallRingtone,
 } from './Call';
@@ -35,8 +39,6 @@ import {
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
-import { requestMicroPhonePermission } from '../../common/utils';
-import { openSettings } from 'react-native-permissions';
 
 let preventMultipleClick = false;
 
@@ -297,7 +299,6 @@ const openApplicationBack = () => {
 const handleIncoming_CallKeepListeners = () => {
    RNCallKeep.addEventListener('answerCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep answer call event', callUUID);
-      // openApplicationBack();
       answerIncomingCall();
    });
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
@@ -318,18 +319,26 @@ const handleOutGoing_CallKeepListeners = () => {
    });
 };
 
-export const displayIncomingCallForIos = (callResponse, uuid) => {
-   console.log('callResponse', JSON.stringify(callResponse, null, 2));
+export const displayIncomingCallForIos = callResponse => {
    const callingUserData = callResponse.usersStatus?.find(
       u => u.userJid === callResponse.userJid && u.localUser === false,
    );
-   if (callingUserData) {
+   const activeCallUUID = Store.getState().callData?.callerUUID || '';
+   if (!activeCallUUID && callingUserData) {
+      const callUUID = uuidv4();
+      Store.dispatch(updateCallerUUID(callUUID));
       const contactNumber = getUserIdFromJid(callResponse.userJid);
       const contactName =
          callingUserData.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
-      handleIncoming_CallKeepListeners();
-      RNCallKeep.displayIncomingCall(uuid, contactNumber, contactName, 'generic', callResponse.callType === 'video');
+      RNCallKeep.displayIncomingCall(
+         callUUID,
+         contactNumber,
+         contactName,
+         'generic',
+         callResponse.callType === 'video',
+      );
    }
+   handleIncoming_CallKeepListeners();
 };
 
 export const endCallForIos = async () => {
@@ -405,4 +414,84 @@ export const endOngoingCall = () => {
    SDK.endCall();
    resetCallData();
    Store.dispatch(resetCallStateData());
+};
+
+export const updateMissedCallNotification = callData => {
+   if (!callData.localUser) {
+      let userID = getUserIdFromJid(callData.userJid);
+      const userProfile = getUserProfileFromSDK(userID);
+      const nickName = userProfile.nickName || userID;
+      pushNotify(callData?.roomId, nickName, getMissedCallMessage(callData?.callType), callData.userJid);
+   }
+};
+
+const onVoipPushNotificationiReceived = async data => {
+   let {
+      payload,
+      payload: { caller_id, caller_name },
+      callUUID,
+   } = data;
+   const activeCallUUID = Store.getState().callData?.callerUUID || '';
+   if (activeCallUUID !== '') {
+      const calls = await RNCallKeep.getCalls();
+      const activeCall = calls.find(c => c.callUUID === callUUID);
+      RNCallKeep.reportEndCallWithUUID(activeCall.callUUID, CK_CONSTANTS.END_CALL_REASONS.MISSED);
+   } else {
+      const decryptName = await SDK.decryptProfileDetails(caller_name, getUserIdFromJid(caller_id));
+      RNCallKeep.updateDisplay(callUUID, decryptName, getUserIdFromJid(caller_id));
+      Store.dispatch(updateCallerUUID(callUUID));
+   }
+   let remoteMessage = {
+      data: payload,
+   };
+   await SDK.getNotificationData(remoteMessage);
+};
+
+export const pushNotifyBackground = () => {
+   RNCallKeep.addEventListener('didLoadWithEvents', events => {
+      // `events` is passed as an Array chronologically, handle or ignore events based on the app's logic
+      // see example usage in https://github.com/react-native-webrtc/react-native-callkeep/pull/169 or https://github.com/react-native-webrtc/react-native-callkeep/pull/205
+      if (!events || !Array.isArray(events) || events.length < 1) {
+         return;
+      }
+      for (let voipPushEvent of events) {
+         let { name, data } = voipPushEvent;
+         if (name === 'RNCallKeepDidDisplayIncomingCall' && Number(data.fromPushKit) === 1) {
+            onVoipPushNotificationiReceived(data);
+         }
+      }
+   });
+
+   RNCallKeep.addEventListener('didDisplayIncomingCall', data => {
+      if (Number(data.fromPushKit) === 1) {
+         onVoipPushNotificationiReceived(data);
+      }
+   });
+
+   // RNVoipPushNotification.addEventListener('didLoadWithEvents', events => {
+   //    // --- this will fire when there are events occured before js bridge initialized
+   //    // --- use this event to execute your event handler manually by event type
+   //    if (!events || !Array.isArray(events) || events.length < 1) {
+   //       return;
+   //    }
+   //    for (let voipPushEvent of events) {
+   //       let { name, data } = voipPushEvent;
+   //       if (name === RNVoipPushNotification.RNVoipPushRemoteNotificationsRegisteredEvent) {
+   //          //   onVoipPushNotificationRegistered(data);
+   //       } else if (name === RNVoipPushNotification.RNVoipPushRemoteNotificationReceivedEvent) {
+   //          console.log(data,"data");
+
+   //          // onVoipPushNotificationiReceived(data, 'didLoadWithEvents');
+   //       }
+   //    }
+   // });
+
+   // RNVoipPushNotification.addEventListener('notification', async notification => {
+   //    // --- when receive remote voip push, register your VoIP client, show local notification ... etc
+   //    console.log(notification,"notification");
+   //    // Alert.alert('', 'RNVoipPushNotification')
+   //    // onVoipPushNotificationiReceived(notification, 'notification');
+   //    // --- optionally, if you `addCompletionHandler` from the native side, once you have done the js jobs to initiate a call, call `completion()`
+   //    RNVoipPushNotification.onVoipNotificationCompleted(notification.uuid);
+   // });
 };

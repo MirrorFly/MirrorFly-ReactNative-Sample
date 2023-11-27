@@ -1,4 +1,4 @@
-import { LARGE_VIDEO_USER, ONGOING_CALL_SCREEN } from '../../Helper/Calls/Constant';
+import { LARGE_VIDEO_USER } from '../../Helper/Calls/Constant';
 import {
    CALLCONNECTION_STATE_DATA,
    CALL_DURATION_TIMESTAMP,
@@ -19,21 +19,25 @@ const initialState = {
    screenName: '',
    connectionState: {},
    callDuration: 0,
-   /*
-    // Example data for largeVideoUser property
-    largeVideoUser: {
+
+   /* // Example data for largeVideoUser property
+   largeVideoUser: {
       userJid: largeUserJid,
       volumeLevelsBasedOnUserJid: { '919988776655@xmpp.contus.us': 10 },
       showVoiceDetect: true | false,
-      volumeLevelVideo: 0
-    } */
+      volumeLevelVideo: 0,
+   }, */
    largeVideoUser: {},
-   /* 
-    // Example data for pinUserData property
-    pinUserData: {
-      userJid: '919988776655@xmpp.contus.us' | null
-    }
-   */
+   // largeVideoUser: {
+   //    userJid: '919094237501@xmpp-uikit-qa.contus.us',
+   //    volumeLevelsBasedOnUserJid: { '919094237501@xmpp-uikit-qa.contus.us': 10 },
+   //    showVoiceDetect: false,
+   //    volumeLevelVideo: 0,
+   // },
+   /* // Example data for pinUserData property
+   pinUserData: {
+      userJid: '919988776655@xmpp.contus.us' | null,
+   }, */
    pinUserData: {},
    callerUUID: '',
 };
@@ -95,6 +99,7 @@ const CallStateReducer = (state = initialStateClone, action = {}) => {
             ...state,
             id: Date.now(),
             connectionState: {},
+            callerUUID: '',
          };
       case RESET_CALL_DATA:
       case RESET_STORE:

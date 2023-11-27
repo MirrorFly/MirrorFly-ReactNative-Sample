@@ -39,6 +39,9 @@ const commonStyles = StyleSheet.create({
    justifyContentSpaceEvenly: {
       justifyContent: 'space-evenly',
    },
+   justifyContentSpaceBetween: {
+      justifyContent: 'space-between',
+   },
    justifyContentFlexStart: {
       justifyContent: 'flex-start',
    },
@@ -79,6 +82,9 @@ const commonStyles = StyleSheet.create({
    bottom_0: {
       bottom: 0,
    },
+   bottom_1: {
+      bottom: 1,
+   },
    pressedBg: {
       backgroundColor: ApplicationColors.pressedBg,
    },
@@ -118,8 +124,20 @@ const commonStyles = StyleSheet.create({
    marginBottom_6: {
       marginBottom: 6,
    },
+   marginBottom_10: {
+      marginBottom: 55,
+   },
+   mb_130: {
+      marginBottom: 130,
+   },
+   p_1: {
+      padding: 1,
+   },
    p_4: {
       padding: 4,
+   },
+   p_10: {
+      padding: 10,
    },
    minWidth_250: {
       minWidth: 250,
@@ -157,6 +175,9 @@ const commonStyles = StyleSheet.create({
    padding_8: {
       padding: 8,
    },
+   padding_04: {
+      padding: 0.4,
+   },
    padding_10: {
       padding: 10,
    },
@@ -191,8 +212,14 @@ const commonStyles = StyleSheet.create({
    alignSelfFlexEnd: {
       alignSelf: 'flex-end',
    },
+   alignSelfCenter: {
+      alignSelf: 'center',
+   },
    bg_transparent: {
       backgroundColor: 'transparent',
+   },
+   bg_white: {
+      backgroundColor: '#fff',
    },
    fontWeight_bold: {
       fontWeight: 'bold',
@@ -209,17 +236,35 @@ const commonStyles = StyleSheet.create({
    bgBlack_04: {
       backgroundColor: 'rgba(0,0,0,0.4)',
    },
+   bgBlack_01: {
+      backgroundColor: 'rgba(0,0,0,0.1)',
+   },
    overflowHidden: {
       overflow: 'hidden',
    },
    width_80: {
       width: 80,
    },
+   width_100_per: {
+      width: '100%',
+   },
+   height_100_per: {
+      height: '100%',
+   },
    typingText: {
       color: ApplicationColors.mainColor,
    },
    borderRadius_5: {
       borderRadius: 5,
+   },
+   borderRadius_50: {
+      borderRadius: 50,
+   },
+   resizeCover: {
+      resizeMode: 'cover',
+   },
+   r_5: {
+      right: 5,
    },
 });
 

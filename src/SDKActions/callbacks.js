@@ -63,7 +63,7 @@ import {
    setCallModalScreen,
    showConfrence,
    updateCallConnectionState,
-   updateConference
+   updateConference,
 } from '../redux/Actions/CallAction';
 import {
    ClearChatHistoryAction,

@@ -131,7 +131,7 @@ export function dispatchDisconnected(statusMessage, remoteStreams = []) {
    const { getState, dispatch } = Store;
    const showConfrenceData = getState().showConfrenceData;
    const { data } = showConfrenceData;
-   statusMessage = statusMessage || '';
+   statusMessage = statusMessage || CALL_STATUS_DISCONNECTED;
    dispatch(
       showConfrence({
          ...(data || {}),

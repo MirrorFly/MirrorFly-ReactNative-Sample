@@ -157,7 +157,7 @@ const RegisterScreen = ({ navigation }) => {
    const handleRegister = async () => {
       setIsToastShowing(false);
       const fcmToken = await fcmTokenCheck();
-      const register = await SDK.register(selectcountry?.dial_code + mobileNumber, fcmToken, voipToken, false);
+      const register = await SDK.register(selectcountry?.dial_code + mobileNumber, fcmToken, voipToken, process.env?.NODE_ENV === "production");
       if (register.statusCode === 200) {
          await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
          await AsyncStorage.setItem('userIdentifier', JSON.stringify(selectcountry?.dial_code + mobileNumber));

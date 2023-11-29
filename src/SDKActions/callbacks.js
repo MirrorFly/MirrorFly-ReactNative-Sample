@@ -31,7 +31,7 @@ import {
    ONGOING_CALL_SCREEN,
    OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
-import { displayIncomingCallForIos, endCallForIos, updateMissedCallNotification } from '../Helper/Calls/Utility';
+import { displayIncomingCallForIos, endCallForIos, listnerForNetworkStateChangeWhenIncomingCall, unsubscribeListnerForNetworkStateChangeWhenIncomingCall, updateMissedCallNotification } from '../Helper/Calls/Utility';
 import { formatUserIdToJid, getLocalUserDetails } from '../Helper/Chat/ChatHelper';
 import {
    CONNECTION_STATE_CONNECTING,
@@ -117,6 +117,7 @@ export const resetCallData = () => {
    // } else {
    //   Store.dispatch(resetCallIntermediateScreen());
    // }
+   unsubscribeListnerForNetworkStateChangeWhenIncomingCall();
    if (Platform.OS === 'ios') {
       RNCallKeep.removeEventListener('answerCall');
       RNCallKeep.removeEventListener('endCall');
@@ -255,6 +256,9 @@ const resetCloseModel = () => {
 
 const ended = res => {
    stopIncomingCallRingtone();
+   if (Platform.OS === 'ios') {
+      endCallForIos();
+   }
    // deleteItemFromLocalStorage('inviteStatus');
    // let roomId = getFromLocalStorageAndDecrypt('roomName');
    if (res.sessionStatus === 'closed') {
@@ -763,6 +767,8 @@ export const callBacks = {
                }),
             );
          });
+         // Adding network state change listener 
+         listnerForNetworkStateChangeWhenIncomingCall();
          if (Platform.OS === 'android') {
             Store.dispatch(openCallModal());
          } else {

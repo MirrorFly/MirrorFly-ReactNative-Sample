@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Linking, Platform } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
 import { openSettings } from 'react-native-permissions';
 import { batch } from 'react-redux';
@@ -36,6 +37,7 @@ import {
    CALL_STATUS_DISCONNECTED,
    COMMON_ERROR_MESSAGE,
    DISCONNECTED_SCREEN_DURATION,
+   INCOMING_CALL_SCREEN,
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
@@ -494,4 +496,32 @@ export const pushNotifyBackground = () => {
    //    // --- optionally, if you `addCompletionHandler` from the native side, once you have done the js jobs to initiate a call, call `completion()`
    //    RNVoipPushNotification.onVoipNotificationCompleted(notification.uuid);
    // });
+};
+
+let networkListnerWhenIncomingCallSubscriber;
+
+export const listnerForNetworkStateChangeWhenIncomingCall = () => {
+   networkListnerWhenIncomingCallSubscriber = NetInfo.addEventListener(state => {
+      if (!state.isInternetReachable) {
+         const callState = Store.getState().callData;
+         if (callState?.screenName === INCOMING_CALL_SCREEN) {
+            SDK.endCall();
+            // unsubscrobing the listener
+            networkListnerWhenIncomingCallSubscriber();
+            // ending the call and clearing the data
+            stopIncomingCallRingtone();
+            clearMissedCallNotificationTimer();
+            resetCallData();
+            batch(() => {
+               Store.dispatch(closeCallModal());
+               Store.dispatch(resetCallStateData());
+            });
+         }
+      }
+   });
+};
+
+export const unsubscribeListnerForNetworkStateChangeWhenIncomingCall = () => {
+   // unsubscrobing the listener
+   networkListnerWhenIncomingCallSubscriber?.();
 };

@@ -71,6 +71,16 @@ export const GridLayout = ({ remoteStreams, localUserJid, onPressAnywhere, offse
       });
    };
 
+   const sortedRemoteStreams = React.useMemo(() => {
+      const _sortedData = [...(remoteStreams || [])];
+      const localStreamIndex = _sortedData.findIndex(s => s.fromJid === localUserJid);
+      if (localStreamIndex > -1) {
+         const _localStream = _sortedData.splice(localStreamIndex, 1);
+         _sortedData.push(..._localStream); // using spread operator while pushing bcoz the splice method will return an array of deleted elements
+      }
+      return _sortedData;
+   }, [remoteStreams]);
+
    const renderGridItem = ({ item }) => {
       return (
          <GridItem
@@ -95,9 +105,9 @@ export const GridLayout = ({ remoteStreams, localUserJid, onPressAnywhere, offse
                minHeight: scrollViewDimension.height - 100,
             },
          ]}
-         data={remoteStreams}
+         data={sortedRemoteStreams}
          renderItem={renderGridItem}
-         keyExtractor={_user => String(_user.id)}
+         keyExtractor={_user => String(_user.fromJid)}
       />
    );
 };

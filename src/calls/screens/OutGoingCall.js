@@ -78,12 +78,8 @@ const OutGoingCall = () => {
          updateCallAgainScreenData(_userID, _callType);
       } else {
          setTimeout(() => {
-            // if (isFromTimeout) {
-
-            // } else {
             resetCallData();
             Store.dispatch(closeCallModal());
-            // }
             // batch(()=>{
             //     Store.dispatch(showConfrence({
             //         showComponent: false,

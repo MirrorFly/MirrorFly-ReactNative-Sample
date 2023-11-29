@@ -113,7 +113,7 @@ export const startCallingTimer = () => {
 };
 
 export const callConnectionStoreData = () => {
-   return Store.getState?.().callData || {};
+   return Store.getState?.().callData.connectionState || {};
 };
 
 export const showConfrenceStoreData = () => {

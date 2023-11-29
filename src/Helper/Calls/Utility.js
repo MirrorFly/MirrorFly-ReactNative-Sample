@@ -160,7 +160,6 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          Store.dispatch(openCallModal());
          Store.dispatch(setCallModalScreen(OUTGOING_CALL_SCREEN));
       });
-      preventMultipleClick = false;
       try {
          if (callType === 'audio') {
             muteLocalVideo(true);
@@ -197,6 +196,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
       } catch (error) {
          console.log('Error in making call', error);
       }
+      preventMultipleClick = false;
    } else {
       showToast('Please check your internet connection', {
          id: 'Network_error',

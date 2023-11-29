@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import nextFrame from 'next-frame';
-import { Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import RNCallKeep from 'react-native-callkeep';
 import { MediaStream } from 'react-native-webrtc';
 import { batch } from 'react-redux';
@@ -94,6 +94,7 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import BackgroundTimer from 'react-native-background-timer';
 
 let localStream = null,
    localVideoMuted = false,
@@ -236,7 +237,7 @@ const updateCallConnectionStatus = usersStatus => {
       usersLen = currentUsers.length;
    }
    let callDetailsObj = {
-      ...callConnectionData.connectionState,
+      ...callConnectionData,
       callMode:
          (callConnectionData?.groupId && callConnectionData?.groupId !== null && callConnectionData?.groupId !== '') ||
          usersLen > 2
@@ -245,6 +246,11 @@ const updateCallConnectionStatus = usersStatus => {
    };
    Store.dispatch(updateCallConnectionState(callDetailsObj));
    // encryptAndStoreInLocalStorage("call_connection_status", JSON.stringify(callDetailsObj));
+};
+
+const resetCloseModel = () => {
+   resetCallData();
+   Store.dispatch(closeCallModal());
 };
 
 const ended = res => {
@@ -257,25 +263,23 @@ const ended = res => {
          // Call ended before attend
          callConnectionData = callConnectionStoreData();
       }
+      dispatchDisconnected(CALL_STATUS_DISCONNECTED);
       // callLogs.update(roomId, {
       //     "endTime": callLogs.initTime(),
       //     "sessionStatus": res.sessionStatus
       // });
-      dispatchDisconnected(CALL_STATUS_DISCONNECTED);
       if (callConnectionData) {
          clearMissedCallNotificationTimer();
       }
-      Store.dispatch(updateCallConnectionState(res));
-      setTimeout(() => {
-         batch(() => {
-            // localstoreCommon();
-            // Store.dispatch(callConversion());
-            // Store.dispatch(hideModal());
-            // console.log('Restting conference data in ended callback');
-            // Store.dispatch(resetConferencePopup());
-            resetCallData();
-            Store.dispatch(closeCallModal());
-         });
+      let callDetailsObj = {
+         ...callConnectionData,
+         ...res,
+      };
+      Store.dispatch(updateCallConnectionState(callDetailsObj));
+      // SetTimeout not working in background and killed state
+      BackgroundTimer.setTimeout(() => {
+         resetCloseModel();
+         // Store.dispatch(callConversion());
       }, DISCONNECTED_SCREEN_DURATION);
       if (callConnectionData) {
          const callDetailObj = callConnectionData

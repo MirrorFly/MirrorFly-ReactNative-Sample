@@ -426,11 +426,11 @@ export const endOngoingCall = () => {
    Store.dispatch(resetCallStateData());
 };
 
-export const updateMissedCallNotification = callData => {
+export const updateMissedCallNotification = async callData => {
    if (!callData.localUser) {
       let userID = getUserIdFromJid(callData.userJid);
-      const userProfile = getUserProfileFromSDK(userID);
-      const nickName = userProfile.nickName || userID;
+      const userProfile = await getUserProfileFromSDK(userID);
+      const nickName = userProfile?.data?.nickName || userID;
       pushNotify(callData?.roomId, nickName, getMissedCallMessage(callData?.callType), callData.userJid);
    }
 };

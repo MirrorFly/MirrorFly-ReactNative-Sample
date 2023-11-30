@@ -38,6 +38,7 @@ import {
    COMMON_ERROR_MESSAGE,
    DISCONNECTED_SCREEN_DURATION,
    INCOMING_CALL_SCREEN,
+   ONGOING_CALL_SCREEN,
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
@@ -237,21 +238,28 @@ export const answerIncomingCall = async () => {
       // updating the SDK flag back to false to behave as usual
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
       if (result === 'granted' || result === 'limited') {
-         const answerCallResonse = await SDK.answerCall();
-         if (answerCallResonse.statusCode !== 200) {
-            answerCallPermissionError(answerCallResonse);
-         } else {
-            // update the call screen Name instead of the below line
-            batch(() => {
-               if (Platform.OS === 'ios') {
-                  Store.dispatch(openCallModal());
-               }
-            });
-            // TODO: update the Call logs when implementing
-            // callLogs.update(callConnectionDate.data.roomId, {
-            //   startTime: callLogs.initTime(),
-            //   callState: 2,
-            // });
+         const callStateData = Store.getState().callData;
+         // validating call connectionState data because sometimes when permission popup is opened
+         // and call ended and then user accept the permission
+         // So validating the call is active when user permission has been given
+         if (Object.keys(callStateData?.connectionState || {}).length > 0) {
+            const answerCallResonse = await SDK.answerCall();
+            if (answerCallResonse.statusCode !== 200) {
+               answerCallPermissionError(answerCallResonse);
+            } else {
+               // update the call screen Name instead of the below line
+               batch(() => {
+                  Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
+                  if (Platform.OS === 'ios') {
+                     Store.dispatch(openCallModal());
+                  }
+               });
+               // TODO: update the Call logs when implementing
+               // callLogs.update(callConnectionDate.data.roomId, {
+               //   startTime: callLogs.initTime(),
+               //   callState: 2,
+               // });
+            }
          }
       } else if (isPermissionChecked) {
          setTimeout(() => {

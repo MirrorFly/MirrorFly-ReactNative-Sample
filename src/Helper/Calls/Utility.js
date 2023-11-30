@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Linking, Platform } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
 import { openSettings } from 'react-native-permissions';
 import { batch } from 'react-redux';
@@ -36,6 +37,8 @@ import {
    CALL_STATUS_DISCONNECTED,
    COMMON_ERROR_MESSAGE,
    DISCONNECTED_SCREEN_DURATION,
+   INCOMING_CALL_SCREEN,
+   ONGOING_CALL_SCREEN,
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
@@ -160,7 +163,6 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          Store.dispatch(openCallModal());
          Store.dispatch(setCallModalScreen(OUTGOING_CALL_SCREEN));
       });
-      preventMultipleClick = false;
       try {
          if (callType === 'audio') {
             muteLocalVideo(true);
@@ -197,6 +199,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
       } catch (error) {
          console.log('Error in making call', error);
       }
+      preventMultipleClick = false;
    } else {
       showToast('Please check your internet connection', {
          id: 'Network_error',
@@ -235,21 +238,28 @@ export const answerIncomingCall = async () => {
       // updating the SDK flag back to false to behave as usual
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
       if (result === 'granted' || result === 'limited') {
-         const answerCallResonse = await SDK.answerCall();
-         if (answerCallResonse.statusCode !== 200) {
-            answerCallPermissionError(answerCallResonse);
-         } else {
-            // update the call screen Name instead of the below line
-            batch(() => {
-               if (Platform.OS === 'ios') {
-                  Store.dispatch(openCallModal());
-               }
-            });
-            // TODO: update the Call logs when implementing
-            // callLogs.update(callConnectionDate.data.roomId, {
-            //   startTime: callLogs.initTime(),
-            //   callState: 2,
-            // });
+         const callStateData = Store.getState().callData;
+         // validating call connectionState data because sometimes when permission popup is opened
+         // and call ended and then user accept the permission
+         // So validating the call is active when user permission has been given
+         if (Object.keys(callStateData?.connectionState || {}).length > 0) {
+            const answerCallResonse = await SDK.answerCall();
+            if (answerCallResonse.statusCode !== 200) {
+               answerCallPermissionError(answerCallResonse);
+            } else {
+               // update the call screen Name instead of the below line
+               batch(() => {
+                  Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
+                  if (Platform.OS === 'ios') {
+                     Store.dispatch(openCallModal());
+                  }
+               });
+               // TODO: update the Call logs when implementing
+               // callLogs.update(callConnectionDate.data.roomId, {
+               //   startTime: callLogs.initTime(),
+               //   callState: 2,
+               // });
+            }
          }
       } else if (isPermissionChecked) {
          setTimeout(() => {
@@ -416,11 +426,11 @@ export const endOngoingCall = () => {
    Store.dispatch(resetCallStateData());
 };
 
-export const updateMissedCallNotification = callData => {
+export const updateMissedCallNotification = async callData => {
    if (!callData.localUser) {
       let userID = getUserIdFromJid(callData.userJid);
-      const userProfile = getUserProfileFromSDK(userID);
-      const nickName = userProfile.nickName || userID;
+      const userProfile = await getUserProfileFromSDK(userID);
+      const nickName = userProfile?.data?.nickName || userID;
       pushNotify(callData?.roomId, nickName, getMissedCallMessage(callData?.callType), callData.userJid);
    }
 };
@@ -494,4 +504,32 @@ export const pushNotifyBackground = () => {
    //    // --- optionally, if you `addCompletionHandler` from the native side, once you have done the js jobs to initiate a call, call `completion()`
    //    RNVoipPushNotification.onVoipNotificationCompleted(notification.uuid);
    // });
+};
+
+let networkListnerWhenIncomingCallSubscriber;
+
+export const listnerForNetworkStateChangeWhenIncomingCall = () => {
+   networkListnerWhenIncomingCallSubscriber = NetInfo.addEventListener(state => {
+      if (!state.isInternetReachable) {
+         const callState = Store.getState().callData;
+         if (callState?.screenName === INCOMING_CALL_SCREEN) {
+            SDK.endCall();
+            // unsubscrobing the listener
+            networkListnerWhenIncomingCallSubscriber();
+            // ending the call and clearing the data
+            stopIncomingCallRingtone();
+            clearMissedCallNotificationTimer();
+            resetCallData();
+            batch(() => {
+               Store.dispatch(closeCallModal());
+               Store.dispatch(resetCallStateData());
+            });
+         }
+      }
+   });
+};
+
+export const unsubscribeListnerForNetworkStateChangeWhenIncomingCall = () => {
+   // unsubscrobing the listener
+   networkListnerWhenIncomingCallSubscriber?.();
 };

@@ -1,16 +1,25 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import { AudioUnMuteIcon, EndCallIcon, SpeakerEnableIcon, VideoMuteIcon } from '../../common/Icons';
 
 const CallControlButtons = (props = {}) => {
    const { handleAudioMute, handleEndCall } = props;
+   let endActionButtonRef = useRef(false);
 
    const [speakerToggle, setSpeakerToggle] = React.useState(false);
    let videoMute = true;
 
    const speakerOn = () => {
       setSpeakerToggle(!speakerToggle);
+   };
+
+   const handleEndCallPress = () => {
+      // Preventing end call action for 5 sec  using ref
+      if (!endActionButtonRef.current) {
+         endActionButtonRef.current = true;
+         handleEndCall();
+      }
    };
 
    return (
@@ -30,7 +39,7 @@ const CallControlButtons = (props = {}) => {
          </View>
          {/* call action buttons (Accept & Reject) */}
          <GestureHandlerRootView style={styles.actionEndButtonWrapper}>
-            <RectButton onPress={handleEndCall} style={[styles.actionEndButton, styles.redButton]}>
+            <RectButton onPress={handleEndCallPress} style={[styles.actionEndButton, styles.redButton]}>
                <EndCallIcon />
             </RectButton>
          </GestureHandlerRootView>

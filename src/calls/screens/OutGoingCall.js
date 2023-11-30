@@ -71,25 +71,26 @@ const OutGoingCall = () => {
       //     "endTime": callLogs.initTime(),
       //     "sessionStatus": CALL_SESSION_STATUS_CLOSED
       // });
-      setTimeout(() => {
+      if (isFromTimeout) {
          resetCallData();
-         if (isFromTimeout) {
-            const _userID = userID;
-            const _callType = callType;
-            updateCallAgainScreenData(_userID, _callType);
-         } else {
+         const _userID = userID;
+         const _callType = callType;
+         updateCallAgainScreenData(_userID, _callType);
+      } else {
+         setTimeout(() => {
+            resetCallData();
             Store.dispatch(closeCallModal());
-         }
-         // batch(()=>{
-         //     Store.dispatch(showConfrence({
-         //         showComponent: false,
-         //         screenName:'',
-         //         showCalleComponent:false,
-         //         stopSound: true,
-         //         callStatusText: null
-         //     }))
-         // })
-      }, DISCONNECTED_SCREEN_DURATION);
+            // batch(()=>{
+            //     Store.dispatch(showConfrence({
+            //         showComponent: false,
+            //         screenName:'',
+            //         showCalleComponent:false,
+            //         stopSound: true,
+            //         callStatusText: null
+            //     }))
+            // })
+         }, DISCONNECTED_SCREEN_DURATION);
+      }
    };
 
    const updateCallAgainScreenData = (userID, callType) => {

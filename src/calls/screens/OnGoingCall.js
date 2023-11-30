@@ -3,7 +3,7 @@ import React from 'react';
 import { Animated, ImageBackground, Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfile } from '../../Helper';
-import { CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
+import { CALL_STATUS_CONNECTING, CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
 import { endCall } from '../../Helper/Calls/Utility';
 import { formatUserIdToJid } from '../../Helper/Chat/ChatHelper';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
@@ -35,9 +35,9 @@ let hideControlsTimeout,
    controlsAnimationDuration = 400;
 
 const OnGoingCall = () => {
-   const isCallConnected = true;
    const localUserJid = useSelector(state => state.auth.currentUserJID);
-   const { largeVideoUser = {} } = useSelector(state => state.callData) || {};
+   const { largeVideoUser = {}, connectionState: callConnectionState = {} } =
+      useSelector(state => state.callData) || {};
    const { data: showConfrenceData = {}, data: { remoteStream = [] } = {} } =
       useSelector(state => state.showConfrenceData) || {};
    const vCardData = useSelector(state => state.profile?.profileDetails);
@@ -108,6 +108,20 @@ const OnGoingCall = () => {
       return usersText;
    }, [remoteStream, rosterData]);
 
+   const getCallStatus = userid => {
+      const data = showConfrenceData || {};
+      if (data.callStatusText === CALL_STATUS_DISCONNECTED || data.callStatusText === CALL_STATUS_RECONNECT)
+         return data.callStatusText;
+      let currentUser = vCardData.fromUser;
+      if (!userid) {
+         userid = formatUserIdToJid(currentUser);
+      }
+      const user = remoteStream.find(item => item.fromJid === userid);
+      return user?.status;
+   };
+
+   let callStatus = getCallStatus() || '';
+
    const animateControls = (toOpacity, toOffset) => {
       showControlsRef.current = Boolean(toOpacity);
       const _offsetTop = ((toOffset * topViewControlsHeightRef.current) / 100) * -1;
@@ -142,7 +156,9 @@ const OnGoingCall = () => {
    };
 
    const handleHangUp = async e => {
-      await endCall();
+      if(callStatus.toLowerCase() !== CALL_STATUS_DISCONNECTED) {
+         await endCall();
+      }
    };
 
    const toggleControls = () => {
@@ -163,15 +179,22 @@ const OnGoingCall = () => {
 
    const renderLargeVideoTile = () => {
       if (layout === 'tile') {
-         const largeVideoUserJid =
-            largeVideoUser?.userJid || remoteStream.find(u => u.fromJid !== localUserJid)?.fromJid || '';
-         /** const largeVideoUserStream = remoteStream.find(u => u.fromJid === largeVideoUserJid); */
-         return <BigVideoTile userId={getUserIdFromJid(largeVideoUserJid)} />;
+         if (callStatus.toLowerCase() === CALL_STATUS_CONNECTING) {
+            // fetching the other user JID from connection state instead of 'largeVideoUser' data for 'connecting' call state
+            const largeVideoUserJid = callConnectionState.to || callConnectionState.userJid;
+            return <BigVideoTile userId={getUserIdFromJid(largeVideoUserJid)} />;
+         } else {
+            const largeVideoUserJid =
+               largeVideoUser?.userJid || remoteStream.find(u => u.fromJid !== localUserJid)?.fromJid || '';
+            /** const largeVideoUserStream = remoteStream.find(u => u.fromJid === largeVideoUserJid); */
+            return <BigVideoTile userId={getUserIdFromJid(largeVideoUserJid)} />;
+         }
       }
    };
 
    const renderSmallVideoTile = () => {
-      if (layout === 'tile') {
+      // not rendering the small video tile for 'connecting' call status
+      if (layout === 'tile' && callStatus.toLowerCase() !== CALL_STATUS_CONNECTING) {
          const smallVideoUsers = remoteStream.filter(u => u.fromJid !== largeVideoUser?.userJid) || [];
          return (
             <ScrollView
@@ -220,18 +243,6 @@ const OnGoingCall = () => {
       ) : null;
    }, [showMenuPopup, menuItems]);
 
-   const getCallStatus = userid => {
-      const data = showConfrenceData || {};
-      if (data.callStatusText === CALL_STATUS_DISCONNECTED || data.callStatusText === CALL_STATUS_RECONNECT)
-         return data.callStatusText;
-      let currentUser = vCardData.fromUser;
-      if (!userid) {
-         userid = formatUserIdToJid(currentUser);
-      }
-      const user = remoteStream.find(item => item.fromJid === userid);
-      return user?.status;
-   };
-
    const handleTopControlsUILayout = ({ nativeEvent }) => {
       const { height } = nativeEvent.layout;
       topViewControlsHeightRef.current = height;
@@ -246,8 +257,6 @@ const OnGoingCall = () => {
       const { height } = nativeEvent.layout;
       bottomControlsViewHeightRef.current = height;
    };
-
-   let callStatus = getCallStatus();
 
    return (
       <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>
@@ -274,13 +283,9 @@ const OnGoingCall = () => {
                </View>
                {/* call status */}
                <View style={styles.callUsersWrapper}>
-                  {isCallConnected ? (
-                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.callUsersText}>
-                        {callUsersNameText}
-                     </Text>
-                  ) : (
-                     <Text style={styles.callUsersText}>Connecting...</Text>
-                  )}
+                  <Text numberOfLines={1} ellipsizeMode="tail" style={styles.callUsersText}>
+                     {callUsersNameText}
+                  </Text>
                </View>
                {/* call timer */}
                <View style={styles.callTimerWrapper}>

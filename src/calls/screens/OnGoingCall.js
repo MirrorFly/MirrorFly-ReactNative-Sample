@@ -156,7 +156,9 @@ const OnGoingCall = () => {
    };
 
    const handleHangUp = async e => {
-      await endCall();
+      if(callStatus.toLowerCase() !== CALL_STATUS_DISCONNECTED) {
+         await endCall();
+      }
    };
 
    const toggleControls = () => {

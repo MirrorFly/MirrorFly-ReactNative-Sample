@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import { useDispatch } from 'react-redux';
@@ -22,7 +22,8 @@ let autoCallEndInterval;
 const IncomingCall = ({ userId, callStatus }) => {
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userProfile.userId;
-
+   const acceptButtonRef = useRef(false);
+   const declineButtonRef = useRef(false);
    const dispatch = useDispatch();
 
    let userCallStatus = React.useMemo(() => {
@@ -60,13 +61,19 @@ const IncomingCall = ({ userId, callStatus }) => {
 
    // when user manually declined the call from the action buttons or swiping to decline the call
    const declineCall = async () => {
-      clearTimeout(autoCallEndInterval);
-      declineIncomingCall();
+      if (!declineButtonRef.current) {
+         declineButtonRef.current = true;
+         clearTimeout(autoCallEndInterval);
+         declineIncomingCall();
+      }
    };
 
    const acceptCall = async () => {
-      clearTimeout(autoCallEndInterval);
-      answerIncomingCall();
+      if (!acceptButtonRef.current) {
+         acceptButtonRef.current = true;
+         clearTimeout(autoCallEndInterval);
+         answerIncomingCall();
+      }
    };
 
    return (

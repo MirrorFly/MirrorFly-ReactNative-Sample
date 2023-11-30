@@ -38,6 +38,7 @@ import {
    COMMON_ERROR_MESSAGE,
    DISCONNECTED_SCREEN_DURATION,
    INCOMING_CALL_SCREEN,
+   ONGOING_CALL_SCREEN,
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
@@ -248,6 +249,7 @@ export const answerIncomingCall = async () => {
             } else {
                // update the call screen Name instead of the below line
                batch(() => {
+                  Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
                   if (Platform.OS === 'ios') {
                      Store.dispatch(openCallModal());
                   }

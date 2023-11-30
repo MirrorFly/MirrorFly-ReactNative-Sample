@@ -85,7 +85,7 @@ const OnGoingCall = () => {
    const menuItems = React.useMemo(
       () => [
          {
-            label: `Click ${layout === 'tile' ? 'grid' : 'tile'} view`,
+            label: `${layout === 'tile' ? 'Grid' : 'Tile'} view`,
             icon: <LayoutIcon width={12} height={12} />,
             formatter: toggleLayout,
          },
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
    },
    menuPopupItemIcon: {
-      marginRight: 10,
+      marginRight: 7,
    },
    menuPopupItemText: {
       color: ApplicationColors.black,

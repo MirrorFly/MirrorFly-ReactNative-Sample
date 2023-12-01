@@ -33,7 +33,8 @@ const initialLayout = 'tile';
 
 let hideControlsTimeout,
    hideControlsTimeoutMilliSeconds = 6000,
-   controlsAnimationDuration = 400;
+   controlsAnimationDuration = 400,
+   layoutAnimationDuration = 200;
 
 const OnGoingCall = () => {
    const localUserJid = useSelector(state => state.auth.currentUserJID);
@@ -48,10 +49,12 @@ const OnGoingCall = () => {
    const topViewControlsHeightRef = React.useRef(0);
    const bottomControlsViewHeightRef = React.useRef(0);
 
-   // animated value states for toggling the controls and timer
+   // animated value variables for toggling the controls and timer
    const controlsOpacity = React.useRef(new Animated.Value(1)).current;
    const controlsOffsetTop = React.useRef(new Animated.Value(0)).current;
    const controlsOffsetBottom = React.useRef(new Animated.Value(0)).current;
+   // animated value variables for initial render of the user views
+   const layoutOpacity = React.useRef(new Animated.Value(0)).current;
 
    const dispatch = useDispatch();
 
@@ -65,6 +68,7 @@ const OnGoingCall = () => {
    const [showMenuPopup, setShowMenuPopup] = React.useState(false);
 
    React.useEffect(() => {
+      animateLayout(1);
       if (layout === 'grid') {
          hideControlsTimeout = setTimeout(() => {
             animateControls(0, 100);
@@ -79,7 +83,8 @@ const OnGoingCall = () => {
    }, [layout]);
 
    const toggleLayout = () => {
-      setLayout(val => (val === 'tile' ? 'grid' : 'tile'));
+      animateLayout(0);
+      setTimeout(() => setLayout(val => (val === 'tile' ? 'grid' : 'tile')), layoutAnimationDuration);
    };
 
    const menuItems = React.useMemo(
@@ -146,6 +151,14 @@ const OnGoingCall = () => {
       ]).start();
    };
 
+   const animateLayout = toValue => {
+      Animated.timing(layoutOpacity, {
+         toValue: toValue,
+         duration: layoutAnimationDuration,
+         useNativeDriver: true,
+      }).start();
+   };
+
    const handleClosePress = () => {
       // dispatch(closeCallModal());
    };
@@ -192,14 +205,17 @@ const OnGoingCall = () => {
       if (layout === 'tile' && callStatus.toLowerCase() !== CALL_STATUS_CONNECTING) {
          const smallVideoUsers = remoteStream.filter(u => u.fromJid !== largeVideoUser?.userJid) || [];
          return (
-            <ScrollView
+            <Animated.ScrollView
+               style={{
+                  opacity: layoutOpacity,
+               }}
                horizontal
                showsHorizontalScrollIndicator={false}
                contentContainerStyle={styles.smallVideoTileContainer}>
                {smallVideoUsers.map(_user => (
                   <SmallVideoTile key={_user.fromJid} user={_user} isLocalUser={_user.fromJid === localUserJid} />
                ))}
-            </ScrollView>
+            </Animated.ScrollView>
          );
       }
    };
@@ -207,13 +223,19 @@ const OnGoingCall = () => {
    const renderGridLayout = () => {
       if (layout === 'grid') {
          return (
-            <GridLayout
-               remoteStreams={remoteStream}
-               localUserJid={localUserJid}
-               onPressAnywhere={toggleControls}
-               offsetTop={topViewControlsHeightRef.current || 0}
-               animatedOffsetTop={controlsOffsetTop}
-            />
+            <Animated.View
+               style={{
+                  opacity: layoutOpacity,
+                  flex: 1
+               }}>
+               <GridLayout
+                  remoteStreams={remoteStream}
+                  localUserJid={localUserJid}
+                  onPressAnywhere={toggleControls}
+                  offsetTop={topViewControlsHeightRef.current || 0}
+                  animatedOffsetTop={controlsOffsetTop}
+               />
+            </Animated.View>
          );
       }
    };
@@ -285,7 +307,15 @@ const OnGoingCall = () => {
             </Animated.View>
 
             {/* large user profile details */}
-            <View style={styles.userDetailsContainer}>{renderLargeVideoTile()}</View>
+            <Animated.View
+               style={[
+                  styles.userDetailsContainer,
+                  {
+                     opacity: layoutOpacity,
+                  },
+               ]}>
+               {renderLargeVideoTile()}
+            </Animated.View>
          </View>
 
          {renderGridLayout()}

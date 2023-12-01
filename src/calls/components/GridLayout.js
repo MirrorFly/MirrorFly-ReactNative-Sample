@@ -44,6 +44,8 @@ export const GridLayout = ({ remoteStreams, localUserJid, onPressAnywhere, offse
 
    const [calculatedColumns, calculatedGridItemStyle] = React.useMemo(() => {
       let { width, height } = scrollViewDimension;
+      width = width ?? 0;
+      height = height ?? 0;
       width = width - 10; // subtracting the horizontal padding for the scroll view content
       const _usersLength = remoteStreams?.length || 0;
       const _calculatedColumns = _usersLength <= 3 ? 1 : 2;

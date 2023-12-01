@@ -20,6 +20,7 @@ import Timer from '../components/Timer';
 import IconButton from '../../common/IconButton';
 import { LayoutIcon, MenuIcon } from '../../common/Icons';
 import Pressable from '../../common/Pressable';
+import commonStyles from '../../common/commonStyles';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType
@@ -50,7 +51,6 @@ const OnGoingCall = () => {
    // animated value states for toggling the controls and timer
    const controlsOpacity = React.useRef(new Animated.Value(1)).current;
    const controlsOffsetTop = React.useRef(new Animated.Value(0)).current;
-   const topPlaceHolderViewHeight = React.useRef(new Animated.Value(0)).current;
    const controlsOffsetBottom = React.useRef(new Animated.Value(0)).current;
 
    const dispatch = useDispatch();
@@ -143,11 +143,6 @@ const OnGoingCall = () => {
             duration: controlsAnimationDuration,
             useNativeDriver: true,
          }),
-         Animated.timing(topPlaceHolderViewHeight, {
-            toValue: _placeholderHeight,
-            duration: controlsAnimationDuration,
-            useNativeDriver: false,
-         }),
       ]).start();
    };
 
@@ -156,7 +151,7 @@ const OnGoingCall = () => {
    };
 
    const handleHangUp = async e => {
-      if(callStatus.toLowerCase() !== CALL_STATUS_DISCONNECTED) {
+      if (callStatus.toLowerCase() !== CALL_STATUS_DISCONNECTED) {
          await endCall();
       }
    };
@@ -217,6 +212,7 @@ const OnGoingCall = () => {
                localUserJid={localUserJid}
                onPressAnywhere={toggleControls}
                offsetTop={topViewControlsHeightRef.current || 0}
+               animatedOffsetTop={controlsOffsetTop}
             />
          );
       }
@@ -246,11 +242,6 @@ const OnGoingCall = () => {
    const handleTopControlsUILayout = ({ nativeEvent }) => {
       const { height } = nativeEvent.layout;
       topViewControlsHeightRef.current = height;
-      Animated.timing(topPlaceHolderViewHeight, {
-         toValue: height,
-         duration: 200,
-         useNativeDriver: false,
-      }).start();
    };
 
    const handleBottomControlsUILayout = ({ nativeEvent }) => {
@@ -277,7 +268,7 @@ const OnGoingCall = () => {
                <CloseCallModalButton onPress={handleClosePress} />
                {/* Menu for layout change */}
                <View style={styles.menuIcon}>
-                  <IconButton onPress={toggleMenuPopup}>
+                  <IconButton onPress={toggleMenuPopup} style={commonStyles.paddingHorizontal_16}>
                      <MenuIcon color={'#fff'} />
                   </IconButton>
                </View>
@@ -292,12 +283,6 @@ const OnGoingCall = () => {
                   <Timer callStatus={callStatus} />
                </View>
             </Animated.View>
-            {/* Place holder View to fill up the height of the above View because it is an obsolute positioned view */}
-            <Animated.View
-               style={{
-                  height: topPlaceHolderViewHeight,
-               }}
-            />
 
             {/* large user profile details */}
             <View style={styles.userDetailsContainer}>{renderLargeVideoTile()}</View>
@@ -339,13 +324,7 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'space-between',
    },
-   topControlsWrapper: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      zIndex: 10,
-   },
+   topControlsWrapper: {},
    callUsersWrapper: {
       marginTop: 15,
       alignItems: 'center',

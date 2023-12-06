@@ -75,7 +75,7 @@ const DocumentMessageCard = ({
 
   return (
     <View style={styles.container}>
-      {replyTo && (
+      {Boolean(replyTo) && (
         <ReplyMessage
           handleReplyPress={handleReplyPress}
           message={message}

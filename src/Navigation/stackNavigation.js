@@ -89,7 +89,7 @@ function StackNavigationPage(props) {
         orientation: 'portrait',
         gestureEnabled: false,
       }}
-      initialRouteName={props.InitialValue}>
+      initialRouteName={props.initialValue}>
       <Stack.Screen name={REGISTERSCREEN}>
         {prop => <RegisterScreen {...prop} />}
       </Stack.Screen>

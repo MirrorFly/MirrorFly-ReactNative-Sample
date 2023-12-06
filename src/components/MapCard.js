@@ -72,7 +72,7 @@ const MapCard = ({
 
   return (
     <View style={[styles.container, replyTo && commonStyles.paddingTop_0]}>
-      {replyTo && (
+      {Boolean(replyTo) && (
         <ReplyMessage
           handleReplyPress={handleReplyPress}
           message={message}

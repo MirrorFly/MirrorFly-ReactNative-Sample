@@ -55,7 +55,7 @@ const VideoCard = props => {
 
   return (
     <View style={commonStyles.paddingHorizontal_4}>
-      {replyTo && (
+      {Boolean(replyTo) && (
         <ReplyMessage
           handleReplyPress={handleReplyPress}
           message={messageObject}
@@ -101,7 +101,7 @@ const VideoCard = props => {
           />
         </View>
 
-        {!media?.caption && (
+        {!Boolean(media?.caption) && (
           <View style={styles.messgeStatusAndTimestampWithoutCaption}>
             <ImageBackground source={ic_ballon} style={styles.imageBg}>
               {props.status}
@@ -115,7 +115,7 @@ const VideoCard = props => {
           </View>
         )}
       </View>
-      {media?.caption && (
+      {Boolean(media?.caption) && (
         <View style={styles.captionContainer}>
           <Text style={styles.captionText}>{media.caption}</Text>
           <View style={styles.messgeStatusAndTimestampWithCaption}>

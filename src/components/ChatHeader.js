@@ -300,7 +300,7 @@ function ChatHeader({
           </View>
           <View style={styles.selectedMsgsActionsContainer}>
             {selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 &&
-              !selectedMsgs[0]?.recall && (
+              !Boolean(selectedMsgs[0]?.recall) && (
                 <IconButton
                   style={[commonStyles.padding_10_15]}
                   onPress={handleReplyMessage}>
@@ -319,7 +319,7 @@ function ChatHeader({
             {renderDeleteIcon()}
             {selectedMsgs?.length === 1 &&
               menuItems.length > 0 &&
-              !selectedMsgs[0]?.recall && (
+              !Boolean(selectedMsgs[0]?.recall) && (
                 <MenuContainer menuItems={menuItems} />
               )}
           </View>

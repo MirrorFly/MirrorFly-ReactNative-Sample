@@ -258,7 +258,7 @@ const Camera = props => {
           </HStack>
         </View>
         <View>
-          {videoData?.uri && (
+          {Boolean(videoData?.uri) && (
             <View style={styles.video}>
               <Video
                 paused={true}

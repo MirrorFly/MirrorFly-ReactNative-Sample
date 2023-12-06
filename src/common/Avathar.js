@@ -23,7 +23,7 @@ const Avathar = ({ profileImage, imageStyle, imageProps = {}, ...props }) => {
     return <ActivityIndicator />;
   }
 
-  return profileImage && !isImageLoadError && imageUrl ? (
+  return Boolean(profileImage) && !isImageLoadError && Boolean(imageUrl) ? (
     <Image
       {...imageProps}
       style={imageStyle || styles.imageDiv(props)}

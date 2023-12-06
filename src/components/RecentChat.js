@@ -419,7 +419,7 @@ export default function RecentChat() {
 
   return (
     <ScrollView style={styles.scrollView}>
-      {searchText && filteredData.length > 0 && (
+      {Boolean(searchText) && filteredData.length > 0 && (
         <View style={styles.chatsSearchSubHeader}>
           <Text style={styles.chatsSearchSubHeaderText}>Chats</Text>
           <Text style={styles.chatsSearchSubHeaderCountText}>
@@ -429,7 +429,7 @@ export default function RecentChat() {
       )}
       {filteredData.length > 0 &&
         filteredData.map((item, index) => renderItem(item, index))}
-      {searchText && filteredMessages.length > 0 && (
+      {Boolean(searchText) && filteredMessages.length > 0 && (
         <View style={styles.chatsSearchSubHeader}>
           <Text style={styles.chatsSearchSubHeaderText}>Messages</Text>
           <Text style={styles.chatsSearchSubHeaderCountText}>
@@ -437,7 +437,7 @@ export default function RecentChat() {
           </Text>
         </View>
       )}
-      {searchText &&
+      {Boolean(searchText) &&
         filteredMessages.length > 0 &&
         filteredMessages.map((item, index) => renderItem(item, index))}
     </ScrollView>

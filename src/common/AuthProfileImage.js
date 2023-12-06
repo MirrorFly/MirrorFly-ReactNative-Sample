@@ -51,7 +51,7 @@ const AuthProfileImage = props => {
     const base64 = await response.readFile('base64');
     response.flush();
     const imageBase64 = `data:image/png;base64,${base64}`;
-    if (props.component == 'profileImage') storeProfileImage(imageBase64);
+    if (props?.component == 'profileImage') storeProfileImage(imageBase64);
     setImageSource(imageBase64);
     setIsFetching(false);
   };
@@ -62,11 +62,11 @@ const AuthProfileImage = props => {
 
   return (
     <Box>
-      {isFetching || props.imageUploading ? (
+      {isFetching || Boolean(props?.imageUploading) ? (
         <Spinner />
       ) : (
         <>
-          {imageSource ? (
+          {Boolean(imageSource) ? (
             <Image
               {...props}
               source={{ uri: imageSource }}

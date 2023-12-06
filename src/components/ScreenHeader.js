@@ -52,12 +52,12 @@ function ScreenHeader(props) {
             commonStyles.alignItemsCenter,
             commonStyles.flex1,
           ]}>
-          {props?.onhandleBack && (
+          {Boolean(props?.onhandleBack) && (
             <IconButton onPress={handlingBackBtn}>
               <LeftArrowComponent />
             </IconButton>
           )}
-          {props?.isSearching && (
+          {Boolean(props?.isSearching) && (
             <IconButton
               style={commonStyles.marginRight_12}
               onPress={handlingBackBtn}>
@@ -85,22 +85,22 @@ function ScreenHeader(props) {
               alt="ic_logo.png"
             />
           )} */}
-          {props?.title && !isSearching && (
+          {Boolean(props?.title) && !isSearching && (
             <Text style={styles.titleText}>{props?.title}</Text>
           )}
         </View>
         <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-          {text && (
+          {Boolean(text) && (
             <IconButton onPress={handleClearBtn}>
               <CloseIcon />
             </IconButton>
           )}
-          {props?.onhandleSearch && !isSearching && (
+          {Boolean(props?.onhandleSearch) && !isSearching && (
             <IconButton onPress={handleSearchPress}>
               <SearchIcon />
             </IconButton>
           )}
-          {!isSearching && props?.menuItems && (
+          {!isSearching && props?.menuItems?.length > 0 && (
             <Menu
               w="160"
               shouldOverlapWithTrigger={true}

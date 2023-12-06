@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   StatusBar,
   StyleSheet,
+  Text,
   useColorScheme,
 } from 'react-native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
@@ -115,6 +116,7 @@ const RootNavigation = props => {
       const currentUserJID = await AsyncStorage.getItem('currentUserJID');
       const screenObj = await AsyncStorage.getItem('screenObj');
       const parsedScreenOj = JSON.parse(screenObj);
+      console.log('parsedScreenOj ==>', parsedScreenOj)
       const storedVal = await AsyncStorage.getItem('pendingSeenStatus');
       const parsedStoreVal = JSON.parse(storedVal);
       if (parsedStoreVal?.data.length) {
@@ -150,7 +152,7 @@ const RootNavigation = props => {
     return jid ? (
       <RecentStackNavigation />
     ) : (
-      <StackNavigationPage InitialValue={initialRouteValue} />
+      <StackNavigationPage initialValue={initialRouteValue} />
     );
   };
 

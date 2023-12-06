@@ -361,7 +361,7 @@ const ChatConversation = React.memo(props => {
           selectedMsgsIdRef={selectedMessagesIdRef}
         />
       </ImageBackground>
-      {replyMsgs && !IsSearching ? (
+      {Boolean(replyMsgs) && !IsSearching ? (
         <View style={styles.replyingMessageContainer}>
           <View style={styles.replyingMessageWrapper}>
             {renderReplyMessageTemplateAboveInput()}

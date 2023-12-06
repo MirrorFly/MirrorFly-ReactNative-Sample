@@ -241,7 +241,7 @@ const Location = ({ setLocalNav, handleSendMsg }) => {
         showsMyLocationButton={true}
         showsScale={true}
         onPress={handleMapPress}>
-        {location && (
+        {Boolean(location) && (
           <Marker
             coordinate={{
               latitude: location.latitude,

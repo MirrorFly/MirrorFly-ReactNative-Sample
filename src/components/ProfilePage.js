@@ -428,8 +428,8 @@ const ProfilePage = props => {
                 position: 'relative',
               }}>
               <Pressable onPress={() => handleImage('big')}>
-                {props.profileInfo?.image && handleRenderAuthImage}
-                {!props.profileInfo?.image && nickName?.trim() && (
+                {Boolean(props.profileInfo?.image) && handleRenderAuthImage}
+                {!Boolean(props.profileInfo?.image) && Boolean(nickName?.trim()) && (
                   <Avathar
                     fontSize={60}
                     width={157}
@@ -438,7 +438,7 @@ const ProfilePage = props => {
                     backgroundColor={'#3276E2'}
                   />
                 )}
-                {!props.profileInfo?.image && !nickName?.trim() && (
+                {!Boolean(props.profileInfo?.image) && !Boolean(nickName?.trim()) && (
                   <Image
                     resizeMode="contain"
                     source={getImageSource(ProfileImage)}
@@ -601,7 +601,7 @@ const ProfilePage = props => {
                           Choose from Gallery
                         </Text>
                       </TouchableOpacity>
-                      {props.profileInfo?.image && (
+                      {Boolean(props.profileInfo?.image) && (
                         <TouchableOpacity
                           onPress={handleRemove}
                           style={{ paddingTop: 15 }}>
@@ -630,7 +630,7 @@ const ProfilePage = props => {
                     <TouchableOpacity onPress={() => setRemove(false)}>
                       <Text color={'blue.800'}>Cancel</Text>
                     </TouchableOpacity>
-                    {props.profileInfo?.image && (
+                    {Boolean(props.profileInfo?.image) && (
                       <TouchableOpacity color={'#3276E2'} onPress={onClose}>
                         <Text color={'blue.800'}>Remove</Text>
                       </TouchableOpacity>

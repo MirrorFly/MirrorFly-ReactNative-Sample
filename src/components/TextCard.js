@@ -15,7 +15,7 @@ const TextCard = props => {
 
   return (
     <View style={commonStyles.paddingHorizontal_4}>
-      {replyTo && (
+      {Boolean(replyTo) && (
         <ReplyMessage
           handleReplyPress={handleReplyPress}
           message={props.message}

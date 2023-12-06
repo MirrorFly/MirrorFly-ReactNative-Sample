@@ -88,7 +88,7 @@ const Gallery = (props = {}) => {
             style={{ width: itemWidth, aspectRatio: 1 }}
             source={{ uri: item?.node?.image.uri }}
           />
-          {isImageSelected && (
+          {Boolean(isImageSelected) && (
             <View
               style={[
                 commonStyles.positionAbsolute,

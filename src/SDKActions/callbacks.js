@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import nextFrame from 'next-frame';
-import { AppState, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import BackgroundTimer from 'react-native-background-timer';
 import RNCallKeep from 'react-native-callkeep';
 import { MediaStream } from 'react-native-webrtc';
 import { batch } from 'react-redux';
@@ -31,7 +32,13 @@ import {
    ONGOING_CALL_SCREEN,
    OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
-import { displayIncomingCallForIos, endCallForIos, listnerForNetworkStateChangeWhenIncomingCall, unsubscribeListnerForNetworkStateChangeWhenIncomingCall, updateMissedCallNotification } from '../Helper/Calls/Utility';
+import {
+   displayIncomingCallForIos,
+   endCallForIos,
+   listnerForNetworkStateChangeWhenIncomingCall,
+   unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
+   updateMissedCallNotification,
+} from '../Helper/Calls/Utility';
 import { formatUserIdToJid, getLocalUserDetails } from '../Helper/Chat/ChatHelper';
 import {
    CONNECTION_STATE_CONNECTING,
@@ -94,7 +101,6 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
-import BackgroundTimer from 'react-native-background-timer';
 
 let localStream = null,
    localVideoMuted = false,
@@ -767,7 +773,7 @@ export const callBacks = {
                }),
             );
          });
-         // Adding network state change listener 
+         // Adding network state change listener
          listnerForNetworkStateChangeWhenIncomingCall();
          if (Platform.OS === 'android') {
             Store.dispatch(openCallModal());

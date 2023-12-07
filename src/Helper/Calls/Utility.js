@@ -313,7 +313,9 @@ const handleIncoming_CallKeepListeners = () => {
    });
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep end call event', callUUID);
-      declineIncomingCall();
+      const { screenName } = Store.getState().callData;
+      if (screenName === INCOMING_CALL_SCREEN) declineIncomingCall();
+      else endCall();
    });
 };
 

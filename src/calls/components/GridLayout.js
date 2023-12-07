@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, FlatList, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Animated, Text, Pressable } from 'react-native';
 import Avathar from '../../common/Avathar';
 import useRosterData from '../../hooks/useRosterData';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
@@ -36,7 +36,7 @@ const GridItem = ({ wrapperStyle, item, isLocalUser, isFullSize, onPress }) => {
    );
 };
 
-export const GridLayout = ({ remoteStreams, localUserJid, onPressAnywhere, offsetTop }) => {
+export const GridLayout = ({ remoteStreams, localUserJid, onPressAnywhere, offsetTop, animatedOffsetTop }) => {
    const [scrollViewDimension, setScrollViewDimension] = React.useState({
       width: null,
       height: null,
@@ -44,6 +44,8 @@ export const GridLayout = ({ remoteStreams, localUserJid, onPressAnywhere, offse
 
    const [calculatedColumns, calculatedGridItemStyle] = React.useMemo(() => {
       let { width, height } = scrollViewDimension;
+      width = width ?? 0;
+      height = height ?? 0;
       width = width - 10; // subtracting the horizontal padding for the scroll view content
       const _usersLength = remoteStreams?.length || 0;
       const _calculatedColumns = _usersLength <= 3 ? 1 : 2;
@@ -94,11 +96,23 @@ export const GridLayout = ({ remoteStreams, localUserJid, onPressAnywhere, offse
    };
 
    return (
-      <FlatList
+      <Animated.FlatList
          key={calculatedColumns}
          numColumns={calculatedColumns}
          onLayout={handleLayout}
-         style={styles.container}
+         style={[
+            styles.container,
+            {
+               transform: [
+                  {
+                     translateY: animatedOffsetTop.interpolate({
+                        inputRange: [offsetTop * -1, 0],
+                        outputRange: [-22, 0],
+                     }),
+                  },
+               ],
+            },
+         ]}
          contentContainerStyle={[
             styles.scrollContentContainer,
             {

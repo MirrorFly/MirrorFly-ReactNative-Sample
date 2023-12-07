@@ -26,7 +26,7 @@ const Avathar = ({ profileImage, imageStyle, imageProps = {}, ...props }) => {
   return profileImage && !isImageLoadError && imageUrl ? (
     <Image
       {...imageProps}
-      style={imageStyle || styles.imageDiv(props)}
+      style={imageStyle || styles.imageDiv(props, true)}
       source={{
         uri: imageUrl,
         method: 'GET',
@@ -49,12 +49,12 @@ const Avathar = ({ profileImage, imageStyle, imageProps = {}, ...props }) => {
 export default Avathar;
 
 const styles = StyleSheet.create({
-  imageDiv: props => {
+  imageDiv: (props, hasImage) => {
     return {
       width: props.width || 48,
       height: props.height || 48,
       borderRadius: 100,
-      backgroundColor: props.backgroundColor || '#9D9D9D',
+      backgroundColor: hasImage ? 'transparent' : props.backgroundColor || '#9D9D9D',
       justifyContent: 'center',
       alignItems: 'center',
     };

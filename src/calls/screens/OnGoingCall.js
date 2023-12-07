@@ -20,6 +20,7 @@ import Timer from '../components/Timer';
 import IconButton from '../../common/IconButton';
 import { LayoutIcon, MenuIcon } from '../../common/Icons';
 import Pressable from '../../common/Pressable';
+import commonStyles from '../../common/commonStyles';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType
@@ -32,7 +33,8 @@ const initialLayout = 'tile';
 
 let hideControlsTimeout,
    hideControlsTimeoutMilliSeconds = 6000,
-   controlsAnimationDuration = 400;
+   controlsAnimationDuration = 400,
+   layoutAnimationDuration = 200;
 
 const OnGoingCall = () => {
    const localUserJid = useSelector(state => state.auth.currentUserJID);
@@ -47,11 +49,12 @@ const OnGoingCall = () => {
    const topViewControlsHeightRef = React.useRef(0);
    const bottomControlsViewHeightRef = React.useRef(0);
 
-   // animated value states for toggling the controls and timer
+   // animated value variables for toggling the controls and timer
    const controlsOpacity = React.useRef(new Animated.Value(1)).current;
    const controlsOffsetTop = React.useRef(new Animated.Value(0)).current;
-   const topPlaceHolderViewHeight = React.useRef(new Animated.Value(0)).current;
    const controlsOffsetBottom = React.useRef(new Animated.Value(0)).current;
+   // animated value variables for initial render of the user views
+   const layoutOpacity = React.useRef(new Animated.Value(0)).current;
 
    const dispatch = useDispatch();
 
@@ -65,6 +68,7 @@ const OnGoingCall = () => {
    const [showMenuPopup, setShowMenuPopup] = React.useState(false);
 
    React.useEffect(() => {
+      animateLayout(1);
       if (layout === 'grid') {
          hideControlsTimeout = setTimeout(() => {
             animateControls(0, 100);
@@ -79,13 +83,14 @@ const OnGoingCall = () => {
    }, [layout]);
 
    const toggleLayout = () => {
-      setLayout(val => (val === 'tile' ? 'grid' : 'tile'));
+      animateLayout(0);
+      setTimeout(() => setLayout(val => (val === 'tile' ? 'grid' : 'tile')), layoutAnimationDuration);
    };
 
    const menuItems = React.useMemo(
       () => [
          {
-            label: `Click ${layout === 'tile' ? 'grid' : 'tile'} view`,
+            label: `${layout === 'tile' ? 'Grid' : 'Tile'} view`,
             icon: <LayoutIcon width={12} height={12} />,
             formatter: toggleLayout,
          },
@@ -143,12 +148,15 @@ const OnGoingCall = () => {
             duration: controlsAnimationDuration,
             useNativeDriver: true,
          }),
-         Animated.timing(topPlaceHolderViewHeight, {
-            toValue: _placeholderHeight,
-            duration: controlsAnimationDuration,
-            useNativeDriver: false,
-         }),
       ]).start();
+   };
+
+   const animateLayout = toValue => {
+      Animated.timing(layoutOpacity, {
+         toValue: toValue,
+         duration: layoutAnimationDuration,
+         useNativeDriver: true,
+      }).start();
    };
 
    const handleClosePress = () => {
@@ -156,7 +164,7 @@ const OnGoingCall = () => {
    };
 
    const handleHangUp = async e => {
-      if(callStatus.toLowerCase() !== CALL_STATUS_DISCONNECTED) {
+      if (callStatus.toLowerCase() !== CALL_STATUS_DISCONNECTED) {
          await endCall();
       }
    };
@@ -197,14 +205,17 @@ const OnGoingCall = () => {
       if (layout === 'tile' && callStatus.toLowerCase() !== CALL_STATUS_CONNECTING) {
          const smallVideoUsers = remoteStream.filter(u => u.fromJid !== largeVideoUser?.userJid) || [];
          return (
-            <ScrollView
+            <Animated.ScrollView
+               style={{
+                  opacity: layoutOpacity,
+               }}
                horizontal
                showsHorizontalScrollIndicator={false}
                contentContainerStyle={styles.smallVideoTileContainer}>
                {smallVideoUsers.map(_user => (
                   <SmallVideoTile key={_user.fromJid} user={_user} isLocalUser={_user.fromJid === localUserJid} />
                ))}
-            </ScrollView>
+            </Animated.ScrollView>
          );
       }
    };
@@ -212,12 +223,19 @@ const OnGoingCall = () => {
    const renderGridLayout = () => {
       if (layout === 'grid') {
          return (
-            <GridLayout
-               remoteStreams={remoteStream}
-               localUserJid={localUserJid}
-               onPressAnywhere={toggleControls}
-               offsetTop={topViewControlsHeightRef.current || 0}
-            />
+            <Animated.View
+               style={{
+                  opacity: layoutOpacity,
+                  flex: 1
+               }}>
+               <GridLayout
+                  remoteStreams={remoteStream}
+                  localUserJid={localUserJid}
+                  onPressAnywhere={toggleControls}
+                  offsetTop={topViewControlsHeightRef.current || 0}
+                  animatedOffsetTop={controlsOffsetTop}
+               />
+            </Animated.View>
          );
       }
    };
@@ -246,11 +264,6 @@ const OnGoingCall = () => {
    const handleTopControlsUILayout = ({ nativeEvent }) => {
       const { height } = nativeEvent.layout;
       topViewControlsHeightRef.current = height;
-      Animated.timing(topPlaceHolderViewHeight, {
-         toValue: height,
-         duration: 200,
-         useNativeDriver: false,
-      }).start();
    };
 
    const handleBottomControlsUILayout = ({ nativeEvent }) => {
@@ -277,7 +290,7 @@ const OnGoingCall = () => {
                <CloseCallModalButton onPress={handleClosePress} />
                {/* Menu for layout change */}
                <View style={styles.menuIcon}>
-                  <IconButton onPress={toggleMenuPopup}>
+                  <IconButton onPress={toggleMenuPopup} style={commonStyles.paddingHorizontal_16}>
                      <MenuIcon color={'#fff'} />
                   </IconButton>
                </View>
@@ -292,15 +305,17 @@ const OnGoingCall = () => {
                   <Timer callStatus={callStatus} />
                </View>
             </Animated.View>
-            {/* Place holder View to fill up the height of the above View because it is an obsolute positioned view */}
-            <Animated.View
-               style={{
-                  height: topPlaceHolderViewHeight,
-               }}
-            />
 
             {/* large user profile details */}
-            <View style={styles.userDetailsContainer}>{renderLargeVideoTile()}</View>
+            <Animated.View
+               style={[
+                  styles.userDetailsContainer,
+                  {
+                     opacity: layoutOpacity,
+                  },
+               ]}>
+               {renderLargeVideoTile()}
+            </Animated.View>
          </View>
 
          {renderGridLayout()}
@@ -339,13 +354,7 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'space-between',
    },
-   topControlsWrapper: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      zIndex: 10,
-   },
+   topControlsWrapper: {},
    callUsersWrapper: {
       marginTop: 15,
       alignItems: 'center',
@@ -384,7 +393,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
    },
    menuPopupItemIcon: {
-      marginRight: 10,
+      marginRight: 7,
    },
    menuPopupItemText: {
       color: ApplicationColors.black,

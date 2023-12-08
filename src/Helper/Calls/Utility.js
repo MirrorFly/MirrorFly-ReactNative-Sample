@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Linking, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
 import { openSettings } from 'react-native-permissions';
@@ -238,11 +238,11 @@ export const answerIncomingCall = async () => {
       // updating the SDK flag back to false to behave as usual
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
       if (result === 'granted' || result === 'limited') {
-         const callStateData = Store.getState().callData;
+         const callConnectionStateData = Store.getState().callData?.connectionState || {};
          // validating call connectionState data because sometimes when permission popup is opened
          // and call ended and then user accept the permission
-         // So validating the call is active when user permission has been given
-         if (Object.keys(callStateData?.connectionState || {}).length > 0) {
+         // So validating the call is active when user permission has been given and not ended before the permission has been given
+         if (Object.keys(callConnectionStateData).length > 0 && callConnectionStateData.status !== 'ended') {
             const answerCallResonse = await SDK.answerCall();
             if (answerCallResonse.statusCode !== 200) {
                answerCallPermissionError(answerCallResonse);
@@ -299,11 +299,6 @@ export const declineIncomingCall = async () => {
    } else {
       console.log('Error occured while rejecting the incoming call', declineCallResponse.errorMessage);
    }
-};
-
-const openApplicationBack = () => {
-   const appUrl = 'mirrorfly_rn://';
-   if (Linking.canOpenURL(appUrl)) Linking.openURL(appUrl);
 };
 
 const handleIncoming_CallKeepListeners = () => {

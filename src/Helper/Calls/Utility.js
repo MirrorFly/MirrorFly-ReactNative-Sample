@@ -226,7 +226,7 @@ const answerCallPermissionError = answerCallResonse => {
    });
 };
 
-export const answerIncomingCall = async () => {
+export const answerIncomingCall = async callId => {
    stopIncomingCallRingtone();
    clearMissedCallNotificationTimer();
    // updating the SDK flag to keep the connection Alive when app goes background because of document picker
@@ -238,16 +238,22 @@ export const answerIncomingCall = async () => {
       // updating the SDK flag back to false to behave as usual
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
       if (result === 'granted' || result === 'limited') {
-         const callConnectionStateData = Store.getState().callData?.connectionState || {};
+         const callData = Store.getState().callData || {};
+         const callConnectionStateData = callData?.connectionState || {};
+         const activeCallerUUID = callData?.callerUUID;
          // validating call connectionState data because sometimes when permission popup is opened
          // and call ended and then user accept the permission
          // So validating the call is active when user permission has been given and not ended before the permission has been given
-         if (Object.keys(callConnectionStateData).length > 0 && callConnectionStateData.status !== 'ended') {
+         if (
+            Object.keys(callConnectionStateData).length > 0 &&
+            callConnectionStateData.status !== 'ended' &&
+            // making sure that the active callID and the callId given by CallKeep(iOS) or from Incoming call Screen (Android) are the same
+            callId?.toLowerCase?.() === activeCallerUUID?.toLowerCase?.()
+         ) {
             const answerCallResonse = await SDK.answerCall();
             if (answerCallResonse.statusCode !== 200) {
                answerCallPermissionError(answerCallResonse);
             } else {
-               // update the call screen Name instead of the below line
                batch(() => {
                   Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
                   if (Platform.OS === 'ios') {
@@ -304,7 +310,7 @@ export const declineIncomingCall = async () => {
 const handleIncoming_CallKeepListeners = () => {
    RNCallKeep.addEventListener('answerCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep answer call event', callUUID);
-      answerIncomingCall();
+      answerIncomingCall(callUUID);
    });
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep end call event', callUUID);

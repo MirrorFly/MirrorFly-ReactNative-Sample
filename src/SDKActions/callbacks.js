@@ -5,6 +5,7 @@ import BackgroundTimer from 'react-native-background-timer';
 import RNCallKeep from 'react-native-callkeep';
 import { MediaStream } from 'react-native-webrtc';
 import { batch } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 import {
    callConnectionStoreData,
    clearMissedCallNotificationTimer,
@@ -70,6 +71,7 @@ import {
    setCallModalScreen,
    showConfrence,
    updateCallConnectionState,
+   updateCallerUUID,
    updateConference,
 } from '../redux/Actions/CallAction';
 import {
@@ -776,7 +778,11 @@ export const callBacks = {
          // Adding network state change listener
          listnerForNetworkStateChangeWhenIncomingCall();
          if (Platform.OS === 'android') {
-            Store.dispatch(openCallModal());
+            const callUUID = uuidv4();
+            batch(()=> {
+               Store.dispatch(updateCallerUUID(callUUID));
+               Store.dispatch(openCallModal());
+            })
          } else {
             displayIncomingCallForIos(res);
          }

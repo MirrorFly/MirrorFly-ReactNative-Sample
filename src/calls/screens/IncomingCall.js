@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { dispatchDisconnected } from '../../Helper/Calls/Call';
 import { CALL_RINGING_DURATION, CALL_STATUS_INCOMING, DISCONNECTED_SCREEN_DURATION } from '../../Helper/Calls/Constant';
 import { answerIncomingCall, declineIncomingCall } from '../../Helper/Calls/Utility';
@@ -21,6 +21,7 @@ let autoCallEndInterval;
 
 const IncomingCall = ({ userId, callStatus }) => {
    const userProfile = useRosterData(userId);
+   const {callerUUID: activeCallUUID = ''} = useSelector(state => state.callData) || {};
    const nickName = userProfile.nickName || userProfile.userId;
    const acceptButtonRef = useRef(false);
    const declineButtonRef = useRef(false);
@@ -72,7 +73,7 @@ const IncomingCall = ({ userId, callStatus }) => {
       if (!acceptButtonRef.current) {
          acceptButtonRef.current = true;
          clearTimeout(autoCallEndInterval);
-         answerIncomingCall();
+         answerIncomingCall(activeCallUUID);
       }
    };
 

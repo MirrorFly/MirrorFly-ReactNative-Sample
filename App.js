@@ -8,16 +8,14 @@ import { removeAllDeliveredNotification } from './src/Service/remoteNotifyHandle
 import CallComponent from './src/calls/CallComponent';
 import { requestNotificationPermission } from './src/common/utils';
 import { setAppInitialized } from './src/uikitHelpers/uikitMethods';
+import config from './src/components/chat/common/config';
 
 function App() {
-   const API_URL = 'https://api-uikit-qa.contus.us/api/v1';
-   const QALisenceKey = 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp';
-
    React.useEffect(() => {
       (async () => {
          await SDK.initializeSDK({
-            apiBaseUrl: API_URL,
-            licenseKey: QALisenceKey,
+            apiBaseUrl: config.API_URL,
+            licenseKey: config.lisenceKey,
             callbackListeners: callBacks,
             isSandbox: false,
          });

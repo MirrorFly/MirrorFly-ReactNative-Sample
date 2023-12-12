@@ -25,6 +25,8 @@ import TypingReducer from './Reducers/Typing.Reducer';
 import showConfrenceReducer from './Reducers/Confrence.Reducer';
 import CallStateReducer from './Reducers/CallState.Reducer';
 import callAgainReducer from './Reducers/callAgain.Reducer';
+import callControlsReducer from './Reducers/CallControls.Reducer';
+import callModalToastReducer from './Reducers/CallModalToast.Reducer';
 
 const rootReducer = combineReducers({
    navigation: navigationReducer,
@@ -52,6 +54,8 @@ const rootReducer = combineReducers({
    showConfrenceData: showConfrenceReducer,
    callData: CallStateReducer,
    callAgainData: callAgainReducer,
+   callControlsData: callControlsReducer,
+   callModalToastData: callModalToastReducer
 });
 
 const Store = legacy_createStore(rootReducer, applyMiddleware(thunkMiddleware));

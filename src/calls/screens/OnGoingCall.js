@@ -42,6 +42,7 @@ const OnGoingCall = () => {
       useSelector(state => state.callData) || {};
    const { data: showConfrenceData = {}, data: { remoteStream = [] } = {} } =
       useSelector(state => state.showConfrenceData) || {};
+   const remoteAudioMuted = showConfrenceData?.remoteAudioMuted || [];
    const vCardData = useSelector(state => state.profile?.profileDetails);
    const rosterData = useSelector(state => state.rosterData.data);
 
@@ -190,12 +191,22 @@ const OnGoingCall = () => {
          if (callStatus.toLowerCase() === CALL_STATUS_CONNECTING) {
             // fetching the other user JID from connection state instead of 'largeVideoUser' data for 'connecting' call state
             const largeVideoUserJid = callConnectionState.to || callConnectionState.userJid;
-            return <BigVideoTile userId={getUserIdFromJid(largeVideoUserJid)} />;
+            return (
+               <BigVideoTile
+                  userId={getUserIdFromJid(largeVideoUserJid)}
+                  isAudioMuted={remoteAudioMuted[largeVideoUserJid] || false}
+               />
+            );
          } else {
             const largeVideoUserJid =
                largeVideoUser?.userJid || remoteStream.find(u => u.fromJid !== localUserJid)?.fromJid || '';
             /** const largeVideoUserStream = remoteStream.find(u => u.fromJid === largeVideoUserJid); */
-            return <BigVideoTile userId={getUserIdFromJid(largeVideoUserJid)} />;
+            return (
+               <BigVideoTile
+                  userId={getUserIdFromJid(largeVideoUserJid)}
+                  isAudioMuted={remoteAudioMuted[largeVideoUserJid] || false}
+               />
+            );
          }
       }
    };
@@ -213,7 +224,12 @@ const OnGoingCall = () => {
                showsHorizontalScrollIndicator={false}
                contentContainerStyle={styles.smallVideoTileContainer}>
                {smallVideoUsers.map(_user => (
-                  <SmallVideoTile key={_user.fromJid} user={_user} isLocalUser={_user.fromJid === localUserJid} />
+                  <SmallVideoTile
+                     key={_user.fromJid}
+                     user={_user}
+                     isLocalUser={_user.fromJid === localUserJid}
+                     isAudioMuted={remoteAudioMuted[_user?.fromJid] || false}
+                  />
                ))}
             </Animated.ScrollView>
          );
@@ -226,7 +242,7 @@ const OnGoingCall = () => {
             <Animated.View
                style={{
                   opacity: layoutOpacity,
-                  flex: 1
+                  flex: 1,
                }}>
                <GridLayout
                   remoteStreams={remoteStream}
@@ -234,6 +250,7 @@ const OnGoingCall = () => {
                   onPressAnywhere={toggleControls}
                   offsetTop={topViewControlsHeightRef.current || 0}
                   animatedOffsetTop={controlsOffsetTop}
+                  remoteAudioMuted={remoteAudioMuted}
                />
             </Animated.View>
          );
@@ -334,7 +351,6 @@ const OnGoingCall = () => {
                ]}>
                <CallControlButtons
                   handleEndCall={handleHangUp}
-                  // handleAudioMute={handleAudioMute}
                   // handleVideoMute={handleVideoMute}
                   // videoMute={!!localVideoMuted}
                   // audioMute={true}

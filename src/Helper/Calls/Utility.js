@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Linking, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
 import { openSettings } from 'react-native-permissions';
 import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { SDK } from '../../SDK';
-import { muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
+import { muteLocalAudio, muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
 import { pushNotify } from '../../Service/CallNotify';
 import { requestMicroPhonePermission } from '../../common/utils';
 import {
@@ -19,6 +19,7 @@ import {
    showConfrence,
    updateCallConnectionState,
    updateCallerUUID,
+   updateConference,
 } from '../../redux/Actions/CallAction';
 import Store from '../../redux/store';
 import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
@@ -42,6 +43,8 @@ import {
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
+import { updateCallAudioMutedAction } from '../../redux/Actions/CallControlsAction';
+import { showCallModalToastAction } from '../../redux/Actions/CallModalToasAction';
 
 let preventMultipleClick = false;
 
@@ -226,7 +229,7 @@ const answerCallPermissionError = answerCallResonse => {
    });
 };
 
-export const answerIncomingCall = async () => {
+export const answerIncomingCall = async callId => {
    stopIncomingCallRingtone();
    clearMissedCallNotificationTimer();
    // updating the SDK flag to keep the connection Alive when app goes background because of document picker
@@ -238,16 +241,22 @@ export const answerIncomingCall = async () => {
       // updating the SDK flag back to false to behave as usual
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
       if (result === 'granted' || result === 'limited') {
-         const callStateData = Store.getState().callData;
+         const callData = Store.getState().callData || {};
+         const callConnectionStateData = callData?.connectionState || {};
+         const activeCallerUUID = callData?.callerUUID;
          // validating call connectionState data because sometimes when permission popup is opened
          // and call ended and then user accept the permission
-         // So validating the call is active when user permission has been given
-         if (Object.keys(callStateData?.connectionState || {}).length > 0) {
+         // So validating the call is active when user permission has been given and not ended before the permission has been given
+         if (
+            Object.keys(callConnectionStateData).length > 0 &&
+            callConnectionStateData.status !== 'ended' &&
+            // making sure that the active callID and the callId given by CallKeep(iOS) or from Incoming call Screen (Android) are the same
+            callId?.toLowerCase?.() === activeCallerUUID?.toLowerCase?.()
+         ) {
             const answerCallResonse = await SDK.answerCall();
             if (answerCallResonse.statusCode !== 200) {
                answerCallPermissionError(answerCallResonse);
             } else {
-               // update the call screen Name instead of the below line
                batch(() => {
                   Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
                   if (Platform.OS === 'ios') {
@@ -301,21 +310,19 @@ export const declineIncomingCall = async () => {
    }
 };
 
-const openApplicationBack = () => {
-   const appUrl = 'mirrorfly_rn://';
-   if (Linking.canOpenURL(appUrl)) Linking.openURL(appUrl);
-};
-
 const handleIncoming_CallKeepListeners = () => {
    RNCallKeep.addEventListener('answerCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep answer call event', callUUID);
-      answerIncomingCall();
+      answerIncomingCall(callUUID);
    });
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep end call event', callUUID);
       const { screenName } = Store.getState().callData;
       if (screenName === INCOMING_CALL_SCREEN) declineIncomingCall();
       else endCall();
+   });
+   RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
+      updateCallAudioMute(muted, callUUID, true);
    });
 };
 
@@ -328,6 +335,9 @@ export const endCall = async () => {
 const handleOutGoing_CallKeepListeners = () => {
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
       endCall();
+   });
+   RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
+      updateCallAudioMute(muted, callUUID, true);
    });
 };
 
@@ -534,4 +544,33 @@ export const listnerForNetworkStateChangeWhenIncomingCall = () => {
 export const unsubscribeListnerForNetworkStateChangeWhenIncomingCall = () => {
    // unsubscrobing the listener
    networkListnerWhenIncomingCallSubscriber?.();
+};
+
+export const updateCallAudioMute = async (audioMuted, callUUID, isFromCallKeep = false) => {
+   const audioMuteResult = await SDK.muteAudio(audioMuted);
+   if (audioMuteResult.statusCode === 200) {
+      muteLocalAudio(audioMuted);
+      const vcardData = getLocalUserDetails();
+      showCallModalToast(`${vcardData.nickName}'s microphone turned ${audioMuted ? 'off' : 'on'}`);
+      if (Platform.OS === 'ios' && !isFromCallKeep && callUUID) {
+         RNCallKeep.setMutedCall(callUUID, audioMuted);
+      }
+      batch(() => {
+         Store.dispatch(updateCallAudioMutedAction(audioMuted));
+         Store.dispatch(
+            updateConference({
+               localAudioMuted: audioMuted,
+            }),
+         );
+      });
+   }
+};
+
+export const showCallModalToast = (message, duration) => {
+   Store.dispatch(
+      showCallModalToastAction({
+         message: message,
+         duration: duration,
+      }),
+   );
 };

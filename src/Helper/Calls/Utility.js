@@ -6,7 +6,7 @@ import { openSettings } from 'react-native-permissions';
 import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { SDK } from '../../SDK';
-import { muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
+import { muteLocalAudio, muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
 import { pushNotify } from '../../Service/CallNotify';
 import { requestMicroPhonePermission } from '../../common/utils';
 import {
@@ -19,6 +19,7 @@ import {
    showConfrence,
    updateCallConnectionState,
    updateCallerUUID,
+   updateConference,
 } from '../../redux/Actions/CallAction';
 import Store from '../../redux/store';
 import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
@@ -42,6 +43,8 @@ import {
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
+import { updateCallAudioMutedAction } from '../../redux/Actions/CallControlsAction';
+import { showCallModalToastAction } from '../../redux/Actions/CallModalToasAction';
 
 let preventMultipleClick = false;
 
@@ -318,6 +321,9 @@ const handleIncoming_CallKeepListeners = () => {
       if (screenName === INCOMING_CALL_SCREEN) declineIncomingCall();
       else endCall();
    });
+   RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
+      updateCallAudioMute(muted, callUUID, true);
+   });
 };
 
 export const endCall = async () => {
@@ -329,6 +335,9 @@ export const endCall = async () => {
 const handleOutGoing_CallKeepListeners = () => {
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
       endCall();
+   });
+   RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
+      updateCallAudioMute(muted, callUUID, true);
    });
 };
 
@@ -535,4 +544,33 @@ export const listnerForNetworkStateChangeWhenIncomingCall = () => {
 export const unsubscribeListnerForNetworkStateChangeWhenIncomingCall = () => {
    // unsubscrobing the listener
    networkListnerWhenIncomingCallSubscriber?.();
+};
+
+export const updateCallAudioMute = async (audioMuted, callUUID, isFromCallKeep = false) => {
+   const audioMuteResult = await SDK.muteAudio(audioMuted);
+   if (audioMuteResult.statusCode === 200) {
+      muteLocalAudio(audioMuted);
+      const vcardData = getLocalUserDetails();
+      showCallModalToast(`${vcardData.nickName}'s microphone turned ${audioMuted ? 'off' : 'on'}`);
+      if (Platform.OS === 'ios' && !isFromCallKeep && callUUID) {
+         RNCallKeep.setMutedCall(callUUID, audioMuted);
+      }
+      batch(() => {
+         Store.dispatch(updateCallAudioMutedAction(audioMuted));
+         Store.dispatch(
+            updateConference({
+               localAudioMuted: audioMuted,
+            }),
+         );
+      });
+   }
+};
+
+export const showCallModalToast = (message, duration) => {
+   Store.dispatch(
+      showCallModalToastAction({
+         message: message,
+         duration: duration,
+      }),
+   );
 };

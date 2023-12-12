@@ -28,6 +28,8 @@ import {
    CALL_STATUS_ENDED,
    CALL_STATUS_INCOMING,
    CALL_STATUS_RECONNECT,
+   CALL_TYPE_AUDIO,
+   CALL_TYPE_VIDEO,
    DISCONNECTED_SCREEN_DURATION,
    INCOMING_CALL_SCREEN,
    ONGOING_CALL_SCREEN,
@@ -103,6 +105,7 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import { resetCallControlsStateAction } from '../redux/Actions/CallControlsAction';
 
 let localStream = null,
    localVideoMuted = false,
@@ -129,12 +132,14 @@ export const resetCallData = () => {
    if (Platform.OS === 'ios') {
       RNCallKeep.removeEventListener('answerCall');
       RNCallKeep.removeEventListener('endCall');
+      RNCallKeep.removeEventListener('didPerformSetMutedCallAction');
       endCallForIos();
    }
    batch(() => {
       Store.dispatch(callDurationTimestamp());
       Store.dispatch(resetConferencePopup());
       Store.dispatch(clearCallData());
+      Store.dispatch(resetCallControlsStateAction());
    });
    resetData();
    // setTimeout(() => {
@@ -167,7 +172,7 @@ export const removeRemoteStream = userJid => {
 };
 
 const updatingUserStatusInRemoteStream = usersStatus => {
-   usersStatus.map(user => {
+   usersStatus.forEach(user => {
       const index = remoteStream.findIndex(item => item.fromJid === user.userJid);
       if (index > -1) {
          remoteStream[index] = {
@@ -779,10 +784,10 @@ export const callBacks = {
          listnerForNetworkStateChangeWhenIncomingCall();
          if (Platform.OS === 'android') {
             const callUUID = uuidv4();
-            batch(()=> {
+            batch(() => {
                Store.dispatch(updateCallerUUID(callUUID));
                Store.dispatch(openCallModal());
-            })
+            });
          } else {
             displayIncomingCallForIos(res);
          }
@@ -971,6 +976,48 @@ export const callBacks = {
       updateMissedCallNotification(res);
    },
    callSwitchListener: function (res) {},
-   muteStatusListener: res => {},
+   muteStatusListener: res => {
+      if (!res) return;
+      let localUser = false;
+      let vcardData = getLocalUserDetails();
+      const currentUser = vcardData && vcardData.fromUser;
+      let mutedUser = res.userJid;
+      mutedUser = mutedUser.includes('@') ? mutedUser.split('@')[0] : mutedUser;
+      if (res.localUser || currentUser === mutedUser) {
+         localUser = true;
+      }
+      if (localUser) {
+         if (res.trackType === CALL_TYPE_AUDIO) {
+            localAudioMuted = res.isMuted;
+         }
+         if (res.trackType === CALL_TYPE_VIDEO) {
+            localVideoMuted = res.isMuted;
+         }
+      } else {
+         if (res.trackType === CALL_TYPE_AUDIO) {
+            remoteAudioMuted[res.userJid] = res.isMuted;
+            if (res.isMuted) {
+               Store.dispatch(selectLargeVideoUser(res.userJid, -100));
+            }
+         }
+         if (res.trackType === CALL_TYPE_VIDEO) {
+            remoteVideoMuted[res.userJid] = res.isMuted;
+         }
+      }
+
+      Store.dispatch(
+         updateConference({
+            localStream: localStream,
+            remoteStream: remoteStream,
+            fromJid: res.userJid,
+            status: 'MUTESTATUS',
+            localVideoMuted: localVideoMuted,
+            localAudioMuted: localAudioMuted,
+            remoteVideoMuted: remoteVideoMuted,
+            remoteAudioMuted: remoteAudioMuted,
+         }),
+      );
+      // updateCallTypeAfterCallSwitch();
+   },
    adminBlockListener: function (res) {},
 };

@@ -4,19 +4,26 @@ import Avathar from '../../common/Avathar';
 import useRosterData from '../../hooks/useRosterData';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import ApplicationColors from '../../config/appColors';
+import { AudioMuteIcon } from '../../common/Icons';
 
-const GridItem = ({ wrapperStyle, item, isLocalUser, isFullSize, onPress }) => {
+const GridItem = ({ wrapperStyle, item, isLocalUser, isFullSize, onPress, isAudioMuted }) => {
    const userId = getUserIdFromJid(item?.fromJid || '');
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
    return (
       <Pressable style={[wrapperStyle]} onPress={onPress}>
          <View style={styles.gridItem}>
+         {isAudioMuted ? (
+            <View style={styles.gridItemUserMuteIcon}>
+               <AudioMuteIcon width={10} height={16} color={'#fff'} />
+            </View>
+         ) : (
             <View style={styles.gridItemVoiceLevelWrapper}>
                <View style={styles.gridItemVoiceLevelIndicator} />
                <View style={styles.gridItemVoiceLevelIndicator} />
                <View style={styles.gridItemVoiceLevelIndicator} />
             </View>
+         )}
             <View style={styles.gridItemUserAvathar}>
                <Avathar
                   width={isFullSize ? 100 : 60}
@@ -36,7 +43,7 @@ const GridItem = ({ wrapperStyle, item, isLocalUser, isFullSize, onPress }) => {
    );
 };
 
-export const GridLayout = ({ remoteStreams, localUserJid, onPressAnywhere, offsetTop, animatedOffsetTop }) => {
+export const GridLayout = ({ remoteStreams, localUserJid, onPressAnywhere, offsetTop, animatedOffsetTop, remoteAudioMuted }) => {
    const [scrollViewDimension, setScrollViewDimension] = React.useState({
       width: null,
       height: null,
@@ -84,6 +91,7 @@ export const GridLayout = ({ remoteStreams, localUserJid, onPressAnywhere, offse
    }, [remoteStreams]);
 
    const renderGridItem = ({ item }) => {
+      const isAudioMuted = remoteAudioMuted?.[item?.fromJid] || false;
       return (
          <GridItem
             wrapperStyle={calculatedGridItemStyle}
@@ -91,6 +99,7 @@ export const GridLayout = ({ remoteStreams, localUserJid, onPressAnywhere, offse
             isLocalUser={item?.fromJid === localUserJid}
             isFullSize={calculatedColumns === 1}
             onPress={onPressAnywhere}
+            isAudioMuted={isAudioMuted}
          />
       );
    };
@@ -152,6 +161,15 @@ const styles = StyleSheet.create({
       padding: 10,
       borderRadius: 10,
       backgroundColor: '#151F32',
+   },
+   gridItemUserMuteIcon: {
+      backgroundColor: 'rgba(0,0,0,.3)',
+      width: 25,
+      height: 25,
+      borderRadius: 15,
+      alignSelf: 'flex-end',
+      justifyContent: 'center',
+      alignItems: 'center',
    },
    gridItemVoiceLevelWrapper: {
       backgroundColor: '#3ABF87',

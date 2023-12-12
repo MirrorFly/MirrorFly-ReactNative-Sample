@@ -1,14 +1,24 @@
 import React, { useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
-import { AudioUnMuteIcon, EndCallIcon, SpeakerEnableIcon, VideoMuteIcon } from '../../common/Icons';
+import {
+   AudioMuteIcon,
+   AudioUnMuteIcon,
+   EndCallIcon,
+   SpeakerEnableIcon,
+   VideoMuteIcon,
+   VideoUnMuteIcon,
+} from '../../common/Icons';
+import { useSelector } from 'react-redux';
+import { updateCallAudioMute } from '../../Helper/Calls/Utility';
 
-const CallControlButtons = (props = {}) => {
-   const { handleAudioMute, handleEndCall } = props;
+const CallControlButtons = ({ handleEndCall, handleVideoMute }) => {
    let endActionButtonRef = useRef(false);
 
+   const { isAudioMuted, isVideoMuted, isSpeakerEnabled } = useSelector(state => state.callControlsData);
+   const { callerUUID } = useSelector(state => state.callData) || {};
+
    const [speakerToggle, setSpeakerToggle] = React.useState(false);
-   let videoMute = true;
 
    const speakerOn = () => {
       setSpeakerToggle(!speakerToggle);
@@ -22,18 +32,25 @@ const CallControlButtons = (props = {}) => {
       }
    };
 
+   const handleAudioMutePress = async () => {
+      const _audioMuted = !isAudioMuted;
+      updateCallAudioMute(_audioMuted, callerUUID);
+   };
+
    return (
       <>
          <View style={styles.container}>
             <GestureHandlerRootView style={styles.actionButtonWrapper}>
-               <RectButton onPress={handleAudioMute} style={[styles.actionButton]}>
-                  <AudioUnMuteIcon />
+               <RectButton
+                  onPress={handleAudioMutePress}
+                  style={[[styles.actionButton, isAudioMuted && styles.activeButton]]}>
+                  {isAudioMuted ? <AudioMuteIcon /> : <AudioUnMuteIcon />}
                </RectButton>
-               <RectButton onPress={handleAudioMute} style={[styles.actionButton, videoMute && styles.activeButton]}>
-                  <VideoMuteIcon />
+               <RectButton onPress={handleVideoMute} style={[styles.actionButton, isVideoMuted && styles.activeButton]}>
+                  {isVideoMuted ? <VideoMuteIcon /> : <VideoUnMuteIcon color={'#000'} />}
                </RectButton>
-               <RectButton onPress={speakerOn} style={[styles.actionButton]}>
-                  <SpeakerEnableIcon />
+               <RectButton onPress={speakerOn} style={[styles.actionButton, isSpeakerEnabled && styles.activeButton]}>
+                  <SpeakerEnableIcon color={isSpeakerEnabled ? '#000' : '#fff'} />
                </RectButton>
             </GestureHandlerRootView>
          </View>
@@ -71,12 +88,7 @@ const styles = StyleSheet.create({
       borderRadius: 28,
    },
    activeButton: {
-      width: 55,
-      height: 55,
       backgroundColor: '#fff',
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderRadius: 28,
    },
    actionEndButtonWrapper: {
       marginBottom: 30,

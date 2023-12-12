@@ -18,6 +18,7 @@ import CallAgain from './screens/CallAgain';
 import { NativeBaseProvider } from 'native-base';
 import { resetCallStateData } from '../redux/Actions/CallAction';
 import { resetCallAgainData } from '../redux/Actions/CallAgainAction';
+import CallModalToastContainer from './components/CallModalToastContainer';
 
 const CallContainer = ({ hasNativeBaseProvider }) => {
    const { showCallModal, connectionState, screenName = '' } = useSelector(state => state.callData) || {};
@@ -48,6 +49,7 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
       const content = (
          <View style={[commonStyles.flex1, { marginTop: insets.top, overflow: 'hidden' }]}>
             {renderCallscreenBasedOnCallStatus()}
+            <CallModalToastContainer />
          </View>
       );
       return hasNativeBaseProvider ? content : <NativeBaseProvider>{content}</NativeBaseProvider>;

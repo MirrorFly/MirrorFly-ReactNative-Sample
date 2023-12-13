@@ -45,3 +45,8 @@ export const OUTGOING_CALL_SCREEN = 'OUTGOING_CALL_SCREEN';
 export const ONGOING_CALL_SCREEN = 'ONGOING_CALL_SCREEN';
 export const CALL_AGAIN_SCREEN = 'CALL_AGAIN_SCREEN';
 export const ALREADY_ON_CALL = 'You are already on another call';
+
+// CALL AUDIO ROUTING TYPES
+export const AUDIO_ROUTE_SPEAKER = 'Speaker'
+export const AUDIO_ROUTE_PHONE = 'Phone'
+export const AUDIO_ROUTE_HEADSET = 'Headset'

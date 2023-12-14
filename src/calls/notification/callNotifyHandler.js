@@ -61,7 +61,7 @@ export const getIncomingCallNotification = async (
       name: 'Incoming Call',
       importance: AppState.currentState === 'active' ? AndroidImportance.DEFAULT : AndroidImportance.HIGH,
       visibility: AndroidVisibility.PUBLIC,
-      vibration: false,
+      vibration: true,
    });
 
    const notification = {

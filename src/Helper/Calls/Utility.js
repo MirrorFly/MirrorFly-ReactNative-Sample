@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
+import { Platform } from 'react-native';
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
 import RNInCallManager from 'react-native-incall-manager';
 import { openSettings } from 'react-native-permissions';
@@ -8,7 +8,7 @@ import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { SDK } from '../../SDK';
 import { muteLocalAudio, muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
-import { pushNotify } from '../../Service/CallNotify';
+import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
 import { requestMicroPhonePermission } from '../../common/utils';
 import {
    clearCallData,
@@ -22,16 +22,18 @@ import {
    updateCallerUUID,
    updateConference,
 } from '../../redux/Actions/CallAction';
+import { updateCallAudioMutedAction, updateCallSpeakerEnabledAction } from '../../redux/Actions/CallControlsAction';
+import { showCallModalToastAction } from '../../redux/Actions/CallModalToasAction';
 import Store from '../../redux/store';
 import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
 import { getUserIdFromJid } from '../Chat/Utility';
 import { getUserProfile, getUserProfileFromSDK, showToast } from '../index';
 import {
+   clearIncomingCallTimer,
    clearMissedCallNotificationTimer,
    disconnectCallConnection,
    dispatchDisconnected,
    getMaxUsersInCall,
-   getMissedCallMessage,
    startCallingTimer,
    stopIncomingCallRingtone,
 } from './Call';
@@ -45,11 +47,11 @@ import {
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
-import { updateCallAudioMutedAction, updateCallSpeakerEnabledAction } from '../../redux/Actions/CallControlsAction';
-import { showCallModalToastAction } from '../../redux/Actions/CallModalToasAction';
 
 let preventMultipleClick = false;
+let callBackgroundNotification = true;
 
+//Making OutGoing Call
 export const makeCalls = async (callType, userId) => {
    let userList = [];
    if (!userId || preventMultipleClick) {
@@ -162,7 +164,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
                localStream: confrenceData?.localStream,
                localVideoMuted: confrenceData?.localVideoMuted,
                localAudioMuted: confrenceData?.localAudioMuted,
-               callStatusText: 'Calling',
+               callStatusText: 'Trying to connect',
             }),
          );
          Store.dispatch(openCallModal());
@@ -197,7 +199,11 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
                ...callConnectionStatus,
                roomId: roomId,
             };
-
+            if (Platform.OS === 'android') {
+               const contactNumber = getUserIdFromJid(callConnectionStatus.to);
+               let nickName = getUserProfile(contactNumber).nickName || contactNumber;
+               callNotifyHandler(roomId, callConnectionStatus, callConnectionStatus.to, nickName, 'OUTGOING_CALL');
+            }
             Store.dispatch(updateCallConnectionState(callConnectionStatusNew));
             startCallingTimer();
          }
@@ -213,11 +219,13 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
    }
 };
 
+//Report outgoing call to callkit for ios
 const startCall = (uuid, callerId, callerName, hasVideo) => {
    RNCallKeep.startCall(uuid, callerId, callerName, 'generic', hasVideo);
    handleOutGoing_CallKeepListeners();
 };
 
+//PermissionError while answering the call
 const answerCallPermissionError = answerCallResonse => {
    declineIncomingCall();
    // End incoming call keep for iOS
@@ -231,7 +239,17 @@ const answerCallPermissionError = answerCallResonse => {
    });
 };
 
+//Answering the incoming call
 export const answerIncomingCall = async callId => {
+   const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
+   const { callStatusText } = confrenceData;
+   if (callStatusText === CALL_STATUS_DISCONNECTED) {
+      return;
+   }
+   if (Platform.OS === 'android') {
+      await stopForegroundServiceNotification();
+   }
+   clearIncomingCallTimer();
    stopIncomingCallRingtone();
    clearMissedCallNotificationTimer();
    // updating the SDK flag to keep the connection Alive when app goes background because of document picker
@@ -239,9 +257,11 @@ export const answerIncomingCall = async callId => {
    try {
       const isPermissionChecked = await AsyncStorage.getItem('microPhone_Permission');
       AsyncStorage.setItem('microPhone_Permission', 'true');
+      callBackgroundNotification = false;
       const result = await requestMicroPhonePermission();
       // updating the SDK flag back to false to behave as usual
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+      callBackgroundNotification = true;
       if (result === 'granted' || result === 'limited') {
          const callData = Store.getState().callData || {};
          const callConnectionStateData = callData?.connectionState || {};
@@ -283,15 +303,26 @@ export const answerIncomingCall = async callId => {
    } catch (error) {
       // updating the SDK flag back to false to behave as usual
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-      console.log('makeOne2OneCall', error);
+      callBackgroundNotification = true;
+      console.log('answerIncomingCall', error);
    }
 };
 
+//Decling the incoming call
 export const declineIncomingCall = async () => {
+   const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
+   const { callStatusText } = confrenceData;
+   if (callStatusText === CALL_STATUS_DISCONNECTED) {
+      return;
+   }
+   clearIncomingCallTimer();
    stopIncomingCallRingtone();
    clearMissedCallNotificationTimer();
    let declineCallResponse = await SDK.declineCall();
    console.log('declineCallResponse', declineCallResponse);
+   if (Platform.OS === 'android') {
+      await stopForegroundServiceNotification();
+   }
    if (declineCallResponse.statusCode === 200) {
       // TODO: update the Call logs when implementing
       // callLogs.update(callConnectionDate.data.roomId, {
@@ -319,6 +350,7 @@ const handleAudioRouteChangeListenerForIos = () => {
    });
 };
 
+//CallKit action buttons listeners for incoming call
 const handleIncoming_CallKeepListeners = () => {
    RNCallKeep.addEventListener('answerCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep answer call event', callUUID);
@@ -336,15 +368,20 @@ const handleIncoming_CallKeepListeners = () => {
    handleAudioRouteChangeListenerForIos();
 };
 
-export const endCall = async () => {
+//Endcall action for ongoing call
+export const endOnGoingCall = async () => {
+   if (Platform.OS === 'android') {
+      stopForegroundServiceNotification();
+   }
    disconnectCallConnection([], CALL_STATUS_DISCONNECTED, () => {
       Store.dispatch(resetCallStateData());
    }); //hangUp calls
 };
 
+//CallKit action buttons listeners for ongoing call
 const handleOutGoing_CallKeepListeners = () => {
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
-      endCall();
+      endOnGoingCall();
    });
    RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
       updateCallAudioMute(muted, callUUID, true);
@@ -372,6 +409,17 @@ export const displayIncomingCallForIos = callResponse => {
       );
    }
    handleIncoming_CallKeepListeners();
+};
+
+export const displayIncomingCallForAndroid = async callResponse => {
+   const callingUserData = callResponse.usersStatus?.find(
+      u => u.userJid === callResponse.userJid && u.localUser === false,
+   );
+   const contactNumber = getUserIdFromJid(callResponse.userJid);
+   const nickName =
+      callingUserData.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
+   Store.dispatch(openCallModal());
+   callNotifyHandler(callResponse.roomId, callResponse, callResponse.userJid, nickName, 'INCOMING_CALL', true);
 };
 
 export const endCallForIos = async () => {
@@ -443,7 +491,11 @@ export const isRoomExist = () => {
    return roomId;
 };
 
-export const endOngoingCall = () => {
+//End call method while logout
+export const endOngoingCallLogout = () => {
+   if (Platform.OS === 'android') {
+      stopForegroundServiceNotification();
+   }
    SDK.endCall();
    resetCallData();
    Store.dispatch(resetCallStateData());
@@ -454,7 +506,7 @@ export const updateMissedCallNotification = async callData => {
       let userID = getUserIdFromJid(callData.userJid);
       const userProfile = await getUserProfileFromSDK(userID);
       const nickName = userProfile?.data?.nickName || userID;
-      pushNotify(callData?.roomId, nickName, getMissedCallMessage(callData?.callType), callData.userJid);
+      callNotifyHandler(callData?.roomId, callData, callData.userJid, nickName, 'MISSED_CALL');
    }
 };
 
@@ -536,11 +588,15 @@ export const listnerForNetworkStateChangeWhenIncomingCall = () => {
       if (!state.isInternetReachable) {
          const callState = Store.getState().callData;
          if (callState?.screenName === INCOMING_CALL_SCREEN) {
+            if (Platform.OS === 'android') {
+               stopForegroundServiceNotification();
+            }
             SDK.endCall();
             // unsubscrobing the listener
             networkListnerWhenIncomingCallSubscriber();
             // ending the call and clearing the data
             stopIncomingCallRingtone();
+            clearIncomingCallTimer();
             clearMissedCallNotificationTimer();
             resetCallData();
             batch(() => {
@@ -555,6 +611,30 @@ export const listnerForNetworkStateChangeWhenIncomingCall = () => {
 export const unsubscribeListnerForNetworkStateChangeWhenIncomingCall = () => {
    // unsubscrobing the listener
    networkListnerWhenIncomingCallSubscriber?.();
+};
+
+export const getcallBackgroundNotification = () => {
+   return callBackgroundNotification;
+};
+
+export const showOngoingNotification = callResponse => {
+   const callingUserData = callResponse.usersStatus?.find(
+      u => u.userJid === callResponse.userJid && u.localUser === false,
+   );
+   const contactNumber = getUserIdFromJid(callResponse.userJid);
+   const nickName =
+      callingUserData.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
+   callNotifyHandler(contactNumber, callResponse, callResponse.userJid, nickName, 'ONGOING_CALL');
+};
+
+export const getNickName = callResponse => {
+   const callingUserData = callResponse.usersStatus?.find(
+      u => u.userJid === callResponse.userJid && u.localUser === false,
+   );
+   const contactNumber = getUserIdFromJid(callResponse.userJid);
+   const nickName =
+      callingUserData.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
+   return nickName;
 };
 
 export const updateCallAudioMute = async (audioMuted, callUUID, isFromCallKeep = false) => {

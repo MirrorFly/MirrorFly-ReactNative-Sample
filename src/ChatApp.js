@@ -118,12 +118,14 @@ const RootNavigation = props => {
             let regex = new RegExp(regexStr, 'g'), //NOSONAR
                match;
             match = regex.exec(initialURL);
-            let x = {
-               screen: CHATSCREEN,
-               fromUserJID: match[2],
-            };
-            setIsLoading(false);
-            return dispatch(navigate(x));
+            if(match && match?.length !== 0){
+               let x = {
+                  screen: CHATSCREEN,
+                  fromUserJID: match[2],
+               };
+               setIsLoading(false);
+               return dispatch(navigate(x));
+            }
          }
          if (JSON.parse(screenObj)) {
             dispatch(navigate(parsedScreenOj));

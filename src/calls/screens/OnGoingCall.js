@@ -1,27 +1,27 @@
-import { ScrollView } from 'native-base';
 import React from 'react';
 import { Animated, ImageBackground, Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
 import RNInCallManager from 'react-native-incall-manager';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfile } from '../../Helper';
 import { CALL_STATUS_CONNECTING, CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
-import { endCall } from '../../Helper/Calls/Utility';
+import { endOnGoingCall } from '../../Helper/Calls/Utility';
 import { formatUserIdToJid } from '../../Helper/Chat/ChatHelper';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
+import IconButton from '../../common/IconButton';
+import { LayoutIcon, MenuIcon } from '../../common/Icons';
+import Pressable from '../../common/Pressable';
+import commonStyles from '../../common/commonStyles';
 import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
-import { closeCallModal } from '../../redux/Actions/CallAction';
 import BigVideoTile from '../components/BigVideoTile';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 import GridLayout from '../components/GridLayout';
 import SmallVideoTile from '../components/SmallVideoTile';
 import Timer from '../components/Timer';
-import IconButton from '../../common/IconButton';
-import { LayoutIcon, MenuIcon } from '../../common/Icons';
-import Pressable from '../../common/Pressable';
-import commonStyles from '../../common/commonStyles';
+import { closeCallModal } from '../../redux/Actions/CallAction';
+import { Platform } from 'react-native';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType
@@ -85,8 +85,8 @@ const OnGoingCall = () => {
    }, [layout]);
 
    React.useEffect(() => {
-      RNInCallManager.startProximitySensor()
-   }, [])
+      RNInCallManager.startProximitySensor();
+   }, []);
 
    const toggleLayout = () => {
       animateLayout(0);
@@ -166,12 +166,14 @@ const OnGoingCall = () => {
    };
 
    const handleClosePress = () => {
-      // dispatch(closeCallModal());
+      if (Platform.OS === 'android') {
+         dispatch(closeCallModal());
+      }
    };
 
    const handleHangUp = async e => {
       if (callStatus.toLowerCase() !== CALL_STATUS_DISCONNECTED) {
-         await endCall();
+         await endOnGoingCall();
       }
    };
 

@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
+import RNInCallManager from 'react-native-incall-manager';
 import { openSettings } from 'react-native-permissions';
 import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
@@ -35,6 +36,7 @@ import {
    stopIncomingCallRingtone,
 } from './Call';
 import {
+   AUDIO_ROUTE_SPEAKER,
    CALL_STATUS_DISCONNECTED,
    COMMON_ERROR_MESSAGE,
    DISCONNECTED_SCREEN_DURATION,
@@ -43,7 +45,7 @@ import {
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
-import { updateCallAudioMutedAction } from '../../redux/Actions/CallControlsAction';
+import { updateCallAudioMutedAction, updateCallSpeakerEnabledAction } from '../../redux/Actions/CallControlsAction';
 import { showCallModalToastAction } from '../../redux/Actions/CallModalToasAction';
 
 let preventMultipleClick = false;
@@ -310,6 +312,13 @@ export const declineIncomingCall = async () => {
    }
 };
 
+const handleAudioRouteChangeListenerForIos = () => {
+   RNCallKeep.addEventListener('didChangeAudioRoute', ({ output, reason }) => {
+      const currentCallUUID = Store.getState().callData?.callerUUID;
+      updateCallSpeakerEnabled(output === AUDIO_ROUTE_SPEAKER, output, currentCallUUID, true);
+   });
+};
+
 const handleIncoming_CallKeepListeners = () => {
    RNCallKeep.addEventListener('answerCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep answer call event', callUUID);
@@ -324,6 +333,7 @@ const handleIncoming_CallKeepListeners = () => {
    RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
       updateCallAudioMute(muted, callUUID, true);
    });
+   handleAudioRouteChangeListenerForIos();
 };
 
 export const endCall = async () => {
@@ -339,6 +349,7 @@ const handleOutGoing_CallKeepListeners = () => {
    RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
       updateCallAudioMute(muted, callUUID, true);
    });
+   handleAudioRouteChangeListenerForIos();
 };
 
 export const displayIncomingCallForIos = callResponse => {
@@ -563,6 +574,40 @@ export const updateCallAudioMute = async (audioMuted, callUUID, isFromCallKeep =
             }),
          );
       });
+   }
+};
+
+export const updateCallSpeakerEnabled = async (speakerEnabled, audioRouteName, callUUID, isFromCallKeep = false) => {
+   /** console.log('Getting audio routes');
+   RNCallKeep.startCall('11111', '919090909090', 'Abdul Rahman');
+   RNCallKeep.getAudioRoutes().then(res => {
+      console.log('Audio Routings', JSON.stringify(res, null, 2));
+      RNCallKeep.setAudioRoute('11111', AUDIO_ROUTE_SPEAKER);
+   }); */
+   // console.log('updating speaker to', speakerEnabled);
+   // RNCallKeep.setAudioRoute(callUUID, mediaName);
+   // Store.dispatch(updateCallSpeakerEnabledAction(speakerEnabled));
+   // RNCallKeep.startCall('11111', '919090909090', 'Abdul Rahman');
+   // RNCallKeep.setAudioRoute('123456', mediaName);
+   // RNCallKeep.getAudioRoutes().then(res => {
+   //    console.log('Audio Routings', JSON.stringify(res, null, 2));
+   // });
+   // const audioRouted = RNInCallManager.chooseAudioRoute('SPEAKER_PHONE');
+   // audioRouted.then(res => {
+   //    console.log('audioRouted avaiable devices', res.availableAudioDeviceList, res.selectedAudioDevice);
+   // })
+   // RNInCallManager.getIsWiredHeadsetPluggedIn();
+   try {
+      if (Platform.OS === 'android') {
+         RNInCallManager.setSpeakerphoneOn(speakerEnabled);
+      } else {
+         if (!isFromCallKeep) {
+            RNCallKeep.setAudioRoute(callUUID, audioRouteName);
+         }
+      }
+      Store.dispatch(updateCallSpeakerEnabledAction(speakerEnabled));
+   } catch (err) {
+      console.log('Error while toggling speaker', err);
    }
 };
 

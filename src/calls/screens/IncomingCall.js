@@ -84,7 +84,7 @@ const IncomingCall = ({ userId, callStatus }) => {
             <CloseCallModalButton onPress={handleClosePress} />
             {/* call status */}
             <View style={styles.callStatusWrapper}>
-               <Text style={styles.callStatusText}>{userCallStatus}</Text>
+               <Text style={styles.callStatusText}> {userCallStatus} </Text>
             </View>
             {/* user profile details */}
             <View style={styles.userDetailsContainer}>
@@ -106,10 +106,10 @@ const IncomingCall = ({ userId, callStatus }) => {
          {callStatus === CALL_STATUS_INCOMING && (
             <GestureHandlerRootView style={styles.actionButtonWrapper}>
                <RectButton onPress={declineCall} style={[styles.actionButton, styles.redButton]}>
-                  <Text style={styles.actionButtonText}>Reject</Text>
+                  <Text style={styles.actionButtonText}> Reject </Text>
                </RectButton>
                <RectButton onPress={acceptCall} style={[styles.actionButton, styles.greenButton]}>
-                  <Text style={styles.actionButtonText}>Accept</Text>
+                  <Text style={styles.actionButtonText}> Accept </Text>
                </RectButton>
             </GestureHandlerRootView>
          )}

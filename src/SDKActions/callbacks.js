@@ -3,6 +3,7 @@ import nextFrame from 'next-frame';
 import { Platform } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import RNCallKeep from 'react-native-callkeep';
+import RNInCallManager from 'react-native-incall-manager';
 import { MediaStream } from 'react-native-webrtc';
 import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
@@ -133,7 +134,11 @@ export const resetCallData = () => {
       RNCallKeep.removeEventListener('answerCall');
       RNCallKeep.removeEventListener('endCall');
       RNCallKeep.removeEventListener('didPerformSetMutedCallAction');
+      RNCallKeep.removeEventListener('didChangeAudioRoute');
       endCallForIos();
+   } else {
+      RNInCallManager.setSpeakerphoneOn(false);
+      RNInCallManager.stopProximitySensor();
    }
    batch(() => {
       Store.dispatch(callDurationTimestamp());

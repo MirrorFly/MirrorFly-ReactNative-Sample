@@ -31,12 +31,11 @@ import { getUserProfile, getUserProfileFromSDK, showToast } from '../index';
 import {
    clearIncomingCallTimer,
    clearMissedCallNotificationTimer,
-   clearOutgoingTimer,
    disconnectCallConnection,
    dispatchDisconnected,
    getMaxUsersInCall,
    startCallingTimer,
-   stopIncomingCallRingtone,
+   stopIncomingCallRingtone
 } from './Call';
 import {
    AUDIO_ROUTE_SPEAKER,
@@ -619,7 +618,6 @@ export const getcallBackgroundNotification = () => {
 };
 
 export const showOngoingNotification = callResponse => {
-   clearOutgoingTimer();
    const callingUserData = callResponse.usersStatus?.find(
       u => u.userJid === callResponse.userJid && u.localUser === false,
    );

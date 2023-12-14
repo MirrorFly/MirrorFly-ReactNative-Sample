@@ -21,6 +21,7 @@ import GridLayout from '../components/GridLayout';
 import SmallVideoTile from '../components/SmallVideoTile';
 import Timer from '../components/Timer';
 import { closeCallModal } from '../../redux/Actions/CallAction';
+import { Platform } from 'react-native';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType
@@ -84,8 +85,8 @@ const OnGoingCall = () => {
    }, [layout]);
 
    React.useEffect(() => {
-      RNInCallManager.startProximitySensor()
-   }, [])
+      RNInCallManager.startProximitySensor();
+   }, []);
 
    const toggleLayout = () => {
       animateLayout(0);
@@ -165,7 +166,9 @@ const OnGoingCall = () => {
    };
 
    const handleClosePress = () => {
-      dispatch(closeCallModal());
+      if (Platform.OS === 'android') {
+         dispatch(closeCallModal());
+      }
    };
 
    const handleHangUp = async e => {

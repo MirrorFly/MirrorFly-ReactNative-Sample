@@ -439,9 +439,12 @@ const connected = async res => {
       //    showComponent = false;
       //    showStreamingComponent = true;
       // }
-      if (Platform.OS === 'android' && !res.localUser) {
-         await stopForegroundServiceNotification();
-         showOngoingNotification(res);
+      if (!res.localUser) {
+         clearOutgoingTimer();
+         if (Platform.OS === 'android') {
+            await stopForegroundServiceNotification();
+            showOngoingNotification(res);
+         }
       }
       batch(() => {
          dispatch(

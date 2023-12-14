@@ -79,10 +79,7 @@ export const getIncomingCallNotification = async (
          asForegroundService: true,
          actions: [
             { title: 'Decline', pressAction: { id: 'decline' } },
-            {
-               title: 'Accept',
-               pressAction: { id: 'accept', launchActivity: 'default' },
-            },
+            { title: 'Accept', pressAction: { id: 'accept', launchActivity: 'default' } },
          ],
          timestamp: Date.now(),
          showTimestamp: true,
@@ -231,6 +228,7 @@ const onChatNotificationBackGround = async ({ type, detail }) => {
 };
 
 export const onNotificationAction = async ({ type, detail }) => {
+   const { callerUUID: activeCallUUID = '' } = Store.getState().callData || {};
    if (!detail.notification?.data?.roomId) {
       if (AppState.currentState === 'active') {
          onChatNotificationForeGround({ type, detail });
@@ -251,8 +249,7 @@ export const onNotificationAction = async ({ type, detail }) => {
    }
 
    if (detail.pressAction?.id === 'accept') {
-      answerIncomingCall();
-      Store.dispatch(openCallModal());
+      answerIncomingCall(activeCallUUID);
    } else if (detail.pressAction?.id === 'decline') {
       declineIncomingCall();
    } else if (detail.pressAction?.id === 'hangup') {

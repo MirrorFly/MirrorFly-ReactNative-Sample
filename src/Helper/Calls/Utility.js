@@ -35,7 +35,7 @@ import {
    dispatchDisconnected,
    getMaxUsersInCall,
    startCallingTimer,
-   stopIncomingCallRingtone
+   stopIncomingCallRingtone,
 } from './Call';
 import {
    AUDIO_ROUTE_SPEAKER,

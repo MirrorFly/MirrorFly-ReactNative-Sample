@@ -307,13 +307,13 @@ PODS:
     - React
   - react-native-get-random-values (1.10.0):
     - React-Core
-  - react-native-maps (1.8.0):
+  - react-native-maps (1.8.3):
     - React-Core
   - react-native-mov-to-mp4 (0.2.2):
     - React
   - react-native-netinfo (8.3.1):
     - React-Core
-  - react-native-pager-view (6.2.2):
+  - react-native-pager-view (6.2.3):
     - React-Core
   - react-native-safe-area-context (4.7.4):
     - React-Core
@@ -443,7 +443,7 @@ PODS:
     - React-Core
   - RNPermissions (3.10.1):
     - React-Core
-  - RNScreens (3.27.0):
+  - RNScreens (3.29.0):
     - React-Core
     - React-RCTImage
   - RNSound (0.11.2):
@@ -740,10 +740,10 @@ SPEC CHECKSUMS:
   react-native-geocoder: 757427682892bb256f3b3745858cc90eba148a8e
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   react-native-get-random-values: 384787fd76976f5aec9465aff6fa9e9129af1e74
-  react-native-maps: f699e0753c22c4d5c3a44d03895b193a4dbca6c2
+  react-native-maps: a5f431a3eaaef69f2e6f8d39901fb3f2e9de931e
   react-native-mov-to-mp4: a04f17590618523487ab5d71c9310c6c4a7aaf99
   react-native-netinfo: 1a6035d3b9780221d407c277ebfb5722ace00658
-  react-native-pager-view: 02a5c4962530f7efc10dd51ee9cdabeff5e6c631
+  react-native-pager-view: c29d484f19c49ff19525a94105e4ab2c4d4ae273
   react-native-safe-area-context: 2cd91d532de12acdb0a9cbc8d43ac72a8e4c897c
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
   react-native-webrtc: 4d1669c2ed29767fe70b0169428b4466589ecf8b
@@ -777,7 +777,7 @@ SPEC CHECKSUMS:
   RNImageCropPicker: 648356d68fbf9911a1016b3e3723885d28373eda
   RNNotifee: f3c01b391dd8e98e67f539f9a35a9cbcd3bae744
   RNPermissions: 10db2b96c0a05b2c5fc4aba63675c68cabe8f4cd
-  RNScreens: 2b19e2471db8a581c83f381f4ea5d43071c9a3bf
+  RNScreens: fa9b582d85ae5d62c91c66003b5278458fed7aaa
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: d00c8f91c3cbf6d476451313a18f04d220d4f396
   RNVoipPushNotification: 543e18f83089134a35e7f1d2eba4c8b1f7776b08

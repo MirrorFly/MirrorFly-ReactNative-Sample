@@ -1,30 +1,24 @@
 import React from 'react';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
-import { batch, useDispatch, useSelector } from 'react-redux';
-import { dispatchDisconnected, stopRingingCallTone } from '../../Helper/Calls/Call';
-import { CALL_AGAIN_SCREEN, DISCONNECTED_SCREEN_DURATION } from '../../Helper/Calls/Constant';
+import { ImageBackground, Platform, StyleSheet, Text, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { endCall, startOutgoingcallTimer } from '../../Helper/Calls/Call';
 import { capitalizeFirstLetter, getUserIdFromJid } from '../../Helper/Chat/Utility';
-import { resetCallData } from '../../SDKActions/callbacks';
 import OutgoingCallBg from '../../assets/OutgoingCallBg.png';
 import Avathar from '../../common/Avathar';
 import commonStyles from '../../common/commonStyles';
 import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
 import useRosterData from '../../hooks/useRosterData';
-import { closeCallModal, setCallModalScreen } from '../../redux/Actions/CallAction';
-import { updateCallAgainData } from '../../redux/Actions/CallAgainAction';
-import Store from '../../redux/store';
+import { closeCallModal } from '../../redux/Actions/CallAction';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 import ProfilePictureWithPulse from '../components/ProfilePictureWithPulse';
 
 const OutGoingCall = () => {
-   const { showCallModal, connectionState } = useSelector(state => state.callData) || {};
+   const { connectionState } = useSelector(state => state.callData) || {};
    const { to: userJid = '', callType } = connectionState;
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const { callStatusText: callStatus = '' } = confrenceData;
-   let timer = null;
-   let uiChangetimer = null;
 
    const [outGoingCalls, setOutGoingCalls] = React.useState({
       callConnectionData: '',
@@ -45,67 +39,50 @@ const OutGoingCall = () => {
             callConnectionData: connectionState,
          });
       }
-      uiChangetimer = setTimeout(() => {
-         setOutGoingCalls({
-            ...outGoingCalls,
-            callingUiStatus: 'Unavailable',
-         });
-      }, 10000);
-      timer = setTimeout(() => {
-         endCall(true);
-      }, 30000);
-
-      return () => {
-         clearTimeout(timer);
-         clearTimeout(uiChangetimer);
-         // stopRingingCallTone();
-      };
+      startOutgoingcallTimer(userID, callType);
+      // uiChangetimer = _BackgroundTimer.setTimeout(() => {
+      //    dispatch(
+      //       updateConference({
+      //          callStatusText: 'Unavailable',
+      //       }),
+      //    );
+      //    setOutGoingCalls({
+      //       ...outGoingCalls,
+      //       callingUiStatus: 'Unavailable',
+      //    });
+      // }, 10000);
+      // timer = setTimeout(() => {
+      //    endCall(true);
+      // }, 30000);
    }, []);
 
-   const endCall = async (isFromTimeout = false) => {
-      const callConnectionDataEndCall = connectionState?.data;
-      SDK.endCall();
-      // endCallAction();
-      dispatchDisconnected();
-      // callLogs.update(callConnectionDataEndCall.roomId, {
-      //     "endTime": callLogs.initTime(),
-      //     "sessionStatus": CALL_SESSION_STATUS_CLOSED
-      // });
-      if (isFromTimeout) {
-         resetCallData();
-         const _userID = userID;
-         const _callType = callType;
-         updateCallAgainScreenData(_userID, _callType);
-      } else {
-         setTimeout(() => {
-            resetCallData();
-            Store.dispatch(closeCallModal());
-            // batch(()=>{
-            //     Store.dispatch(showConfrence({
-            //         showComponent: false,
-            //         screenName:'',
-            //         showCalleComponent:false,
-            //         stopSound: true,
-            //         callStatusText: null
-            //     }))
-            // })
-         }, DISCONNECTED_SCREEN_DURATION);
+   // React.useEffect(() => {
+   //    const backGroundNotificationRemove = async () => {
+   //       // BackgroundTimer.setTimeout(() => {
+   //       //    console.log('679000');
+   //       // }, 2000);
+   //       if (appState === false && callStatus !== 'Disconnected') {
+   //          handleBackGround();
+   //          // BackgroundTimer.clearTimeout(backGroundInterval);
+   //          // handleBackGround();
+   //          // backGroundInterval = BackgroundTimer.setTimeout(() => {
+   //          // }, 200);
+   //       } else {
+   //          // BackgroundTimer.clearTimeout(backGroundInterval);
+   //          // let getDisplayedNotification = await notifee.getDisplayedNotifications();
+   //          // let cancelIDS = getDisplayedNotification?.find(res => res.id === notificationData.id)?.id;
+   //          // cancelIDS && stopForegroundServiceNotification(cancelIDS);
+   //       }
+   //    };
+   //    showCallModal && backGroundNotificationRemove();
+   // }, [appState, notificationData]);
+
+   const handleClosePress = () => {
+      if (Platform.OS === 'android') {
+         dispatch(closeCallModal());
+         // callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'OUTGOING_CALL');
       }
    };
-
-   const updateCallAgainScreenData = (userID, callType) => {
-      batch(() => {
-         dispatch(
-            updateCallAgainData({
-               callType,
-               userId: userID,
-            }),
-         );
-         dispatch(setCallModalScreen(CALL_AGAIN_SCREEN));
-      });
-   };
-
-   const handleClosePress = () => {};
 
    const handleAudioMute = () => {};
 
@@ -118,9 +95,7 @@ const OutGoingCall = () => {
             <CloseCallModalButton onPress={handleClosePress} />
             {/* call status */}
             <View style={styles.callStatusWrapper}>
-               <Text style={styles.callStatusText}>
-                  {callStatus === 'Calling' ? outGoingCalls.callingUiStatus : capitalizeFirstLetter(callStatus)}
-               </Text>
+               <Text style={styles.callStatusText}>{capitalizeFirstLetter(callStatus)}</Text>
             </View>
             {/* user profile details */}
             <View style={styles.userDetailsContainer}>

@@ -1,69 +1,82 @@
+import notifee from '@notifee/react-native';
 import React, { useRef } from 'react';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, Platform, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
-import { useDispatch } from 'react-redux';
-import { dispatchDisconnected } from '../../Helper/Calls/Call';
-import { CALL_RINGING_DURATION, CALL_STATUS_INCOMING, DISCONNECTED_SCREEN_DURATION } from '../../Helper/Calls/Constant';
-import { answerIncomingCall, declineIncomingCall } from '../../Helper/Calls/Utility';
-import SDK from '../../SDK/SDK';
-import { resetCallData } from '../../SDKActions/callbacks';
+import { useDispatch, useSelector } from 'react-redux';
+import { startIncomingCallTimer } from '../../Helper/Calls/Call';
+import { CALL_STATUS_DISCONNECTED, CALL_STATUS_INCOMING } from '../../Helper/Calls/Constant';
+import { answerIncomingCall, declineIncomingCall, getcallBackgroundNotification } from '../../Helper/Calls/Utility';
+import { capitalizeFirstLetter } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
 import Avathar from '../../common/Avathar';
 import commonStyles from '../../common/commonStyles';
 import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
+import { useAppState } from '../../hooks';
 import useRosterData from '../../hooks/useRosterData';
-import { resetCallStateData } from '../../redux/Actions/CallAction';
+import { closeCallModal } from '../../redux/Actions/CallAction';
 import CloseCallModalButton from '../components/CloseCallModalButton';
-import { capitalizeFirstLetter } from '../../Helper/Chat/Utility';
+import { callNotifyHandler, stopForegroundServiceNotification } from '../notification/callNotifyHandler';
 
-let autoCallEndInterval;
 
-const IncomingCall = ({ userId, callStatus }) => {
+const IncomingCall = ({ userId, userJid, callStatus }) => {
+   const { connectionState, showCallModal } = useSelector(state => state.callData) || {};
+   const { data: notificationData = {} } = useSelector(state => state.notificationData) || {};
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userProfile.userId;
    const acceptButtonRef = useRef(false);
    const declineButtonRef = useRef(false);
    const dispatch = useDispatch();
+   const appState = useAppState();
+   let isActive = getcallBackgroundNotification();
 
    let userCallStatus = React.useMemo(() => {
       return capitalizeFirstLetter(callStatus) || '';
    }, [callStatus]);
 
    React.useEffect(() => {
-      autoCallEndInterval = setTimeout(() => {
-         endCall();
-      }, CALL_RINGING_DURATION);
-      return () => {
-         clearTimeout(autoCallEndInterval);
-      };
+      startIncomingCallTimer();
+      // return () => {
+      //    clearTimeout(autoCallEndInterval);
+      // };
    }, []);
 
-   const handleClosePress = () => {
-      // dispatch(closeCallModal());
+   // React.useEffect(() => {
+   //    const backGroundNotificationRemove = async () => {
+   //       if (appState === false && isActive && userCallStatus !== "Disconnected") {
+   //          BackgroundTimer.clearTimeout(backGroundInterval);
+   //          backGroundInterval = BackgroundTimer.setTimeout(() => {
+   //             handleBackGround();
+   //          }, 200);
+   //       } else {
+   //          // BackgroundTimer.clearTimeout(backGroundInterval);
+   //          // let getDisplayedNotification = await notifee.getDisplayedNotifications();
+   //          // let cancelIDS = getDisplayedNotification?.find(res => res.id === notificationData.id)?.id;
+   //          // cancelIDS && stopForegroundServiceNotification(cancelIDS);
+   //       }
+   //    };
+   //    showCallModal && backGroundNotificationRemove();
+   // }, [appState, notificationData]);
+
+   const handleBackGround = async () => {
+      let displayedNotificationId = await notifee.getDisplayedNotifications();
+      let cancelIDS = displayedNotificationId?.find(res => res.id === notificationData.id)?.id;
+      await stopForegroundServiceNotification(cancelIDS);
+      if (userCallStatus !== CALL_STATUS_DISCONNECTED)
+         callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'INCOMING_CALL', false);
    };
 
-   // when user not attending the call and the timeout has been reached
-   const endCall = async () => {
-      clearTimeout(autoCallEndInterval);
-      SDK.endCall();
-      dispatchDisconnected('');
-      // TODO: update the Call logs when implementing
-      // callLogs.update(callConnectionDate.data.roomId, {
-      //     "endTime": callLogs.initTime(),
-      //     "sessionStatus": CALL_SESSION_STATUS_CLOSED
-      // });
-      setTimeout(() => {
-         resetCallData();
-         dispatch(resetCallStateData());
-      }, DISCONNECTED_SCREEN_DURATION);
+   const handleClosePress = () => {
+      if (Platform.OS === 'android') {
+         dispatch(closeCallModal());
+         handleBackGround();
+      }
    };
 
    // when user manually declined the call from the action buttons or swiping to decline the call
    const declineCall = async () => {
       if (!declineButtonRef.current) {
          declineButtonRef.current = true;
-         clearTimeout(autoCallEndInterval);
          declineIncomingCall();
       }
    };
@@ -71,7 +84,6 @@ const IncomingCall = ({ userId, callStatus }) => {
    const acceptCall = async () => {
       if (!acceptButtonRef.current) {
          acceptButtonRef.current = true;
-         clearTimeout(autoCallEndInterval);
          answerIncomingCall();
       }
    };

@@ -4,7 +4,7 @@ import React from 'react';
 import { BackHandler, Dimensions, StyleSheet, Text, View } from 'react-native';
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import { batch, useDispatch, useSelector } from 'react-redux';
-import { endOngoingCall } from '../Helper/Calls/Utility';
+import { endOngoingCallLogout } from '../Helper/Calls/Utility';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
@@ -25,9 +25,9 @@ import { profileDetail } from '../redux/Actions/ProfileAction';
 import { deleteActiveChatAction } from '../redux/Actions/RecentChatAction';
 import { ResetStore } from '../redux/Actions/ResetAction';
 import {
-  clearRecentChatSelectedItems,
-  toggleRecentChatSearch,
-  updateRecentChatSearchText,
+   clearRecentChatSelectedItems,
+   toggleRecentChatSearch,
+   updateRecentChatSearchText,
 } from '../redux/Actions/recentChatSearchAction';
 
 const scenesMap = SceneMap({
@@ -164,7 +164,7 @@ function RecentScreen() {
       AsyncStorage.setItem('userIdentifier', '');
       AsyncStorage.setItem('screenObj', '');
       AsyncStorage.setItem('vCardProfile', '');
-      endOngoingCall();
+      endOngoingCallLogout();
       batch(() => {
          dispatch(profileDetail({}));
          dispatch(navigate({ screen: REGISTERSCREEN }));

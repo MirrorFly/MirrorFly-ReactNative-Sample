@@ -1,12 +1,12 @@
 import React from 'react';
+import { Platform } from 'react-native';
+import RNCallKeep from 'react-native-callkeep';
+import RNVoipPushNotification from 'react-native-voip-push-notification';
 import { Provider } from 'react-redux';
+import { pushNotifyBackground } from '../Helper/Calls/Utility';
 import Store from '../redux/store';
 import CallContainer from './CallContainer';
-import { setupCallKit } from '../components/calls/ios';
-import { Platform } from 'react-native';
-import { pushNotifyBackground } from '../Helper/Calls/Utility';
-import RNVoipPushNotification from 'react-native-voip-push-notification';
-import RNCallKeep from 'react-native-callkeep';
+import { setupCallKit } from './ios';
 
 // Setup ios callkit
 if (Platform.OS === 'ios') {

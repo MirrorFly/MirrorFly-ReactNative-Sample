@@ -1,3 +1,4 @@
+import notifee from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import nextFrame from 'next-frame';
 import { Platform } from 'react-native';
@@ -7,7 +8,9 @@ import { MediaStream } from 'react-native-webrtc';
 import { batch } from 'react-redux';
 import {
    callConnectionStoreData,
+   clearIncomingCallTimer,
    clearMissedCallNotificationTimer,
+   clearOutgoingTimer,
    dispatchDisconnected,
    getCurrentCallRoomId,
    resetPinAndLargeVideoUser,
@@ -33,9 +36,12 @@ import {
    OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
 import {
+   displayIncomingCallForAndroid,
    displayIncomingCallForIos,
    endCallForIos,
+   getNickName,
    listnerForNetworkStateChangeWhenIncomingCall,
+   showOngoingNotification,
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
    updateMissedCallNotification,
 } from '../Helper/Calls/Utility';
@@ -63,7 +69,6 @@ import {
    callDurationTimestamp,
    clearCallData,
    closeCallModal,
-   openCallModal,
    resetConferencePopup,
    resetData,
    selectLargeVideoUser,
@@ -101,6 +106,7 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import { callNotifyHandler, stopForegroundServiceNotification } from '../calls/notification/callNotifyHandler';
 
 let localStream = null,
    localVideoMuted = false,
@@ -260,14 +266,18 @@ const resetCloseModel = () => {
    Store.dispatch(closeCallModal());
 };
 
-const ended = res => {
+const ended = async res => {
    stopIncomingCallRingtone();
    if (Platform.OS === 'ios') {
       endCallForIos();
    }
-   // deleteItemFromLocalStorage('inviteStatus');
    // let roomId = getFromLocalStorageAndDecrypt('roomName');
    if (res.sessionStatus === 'closed') {
+      if (Platform.OS === 'android') {
+         stopForegroundServiceNotification();
+      }
+      clearIncomingCallTimer();
+      clearOutgoingTimer();
       let callConnectionData = null;
       if (remoteStream && !onCall && !res.carbonAttended) {
          // Call ended before attend
@@ -291,14 +301,13 @@ const ended = res => {
          resetCloseModel();
          // Store.dispatch(callConversion());
       }, DISCONNECTED_SCREEN_DURATION);
+
       if (callConnectionData) {
-         const callDetailObj = callConnectionData
-            ? {
-                 ...callConnectionData,
-              }
-            : {};
+         const callDetailObj = callConnectionData ? { ...callConnectionData } : {};
          callDetailObj['status'] = 'ended';
-         // browserNotify.sendCallNotification(callDetailObj);
+         let nickName = getNickName(callConnectionData);
+         // TODO: notify that call disconnected if needed
+         callNotifyHandler(callDetailObj.roomId, callDetailObj, callDetailObj.userJid, nickName, 'MISSED_CALL');
       }
    } else {
       if (!onCall || (remoteStream && Array.isArray(remoteStream) && remoteStream.length < 1)) {
@@ -330,6 +339,10 @@ const handleEngagedOrBusyStatus = res => {
    //  let roomId = getFromLocalStorageAndDecrypt('roomName');
    updatingUserStatusInRemoteStream(res.usersStatus);
    if (res.sessionStatus === 'closed') {
+      clearOutgoingTimer();
+      if (Platform.OS === 'android') {
+         stopForegroundServiceNotification();
+      }
       // callLogs.update(roomId, {
       //    endTime: callLogs.initTime(),
       //    sessionStatus: res.sessionStatus,
@@ -399,7 +412,7 @@ const handleEngagedOrBusyStatus = res => {
    }
 };
 
-const connected = res => {
+const connected = async res => {
    const userIndex = remoteStream.findIndex(item => item.fromJid === res.userJid);
    if (userIndex > -1) {
       let usersStatus = res.usersStatus;
@@ -415,6 +428,10 @@ const connected = res => {
       //    showComponent = false;
       //    showStreamingComponent = true;
       // }
+      if (Platform.OS === 'android' && !res.localUser) {
+         await stopForegroundServiceNotification();
+         showOngoingNotification(res);
+      }
       batch(() => {
          dispatch(
             showConfrence({
@@ -776,7 +793,7 @@ export const callBacks = {
          // Adding network state change listener
          listnerForNetworkStateChangeWhenIncomingCall();
          if (Platform.OS === 'android') {
-            Store.dispatch(openCallModal());
+            displayIncomingCallForAndroid(res);
          } else {
             displayIncomingCallForIos(res);
          }

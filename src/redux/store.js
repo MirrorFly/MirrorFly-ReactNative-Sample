@@ -25,6 +25,7 @@ import TypingReducer from './Reducers/Typing.Reducer';
 import showConfrenceReducer from './Reducers/Confrence.Reducer';
 import CallStateReducer from './Reducers/CallState.Reducer';
 import callAgainReducer from './Reducers/callAgain.Reducer';
+import notificationDataReducer from './Reducers/NotificationData.Reducer';
 
 const rootReducer = combineReducers({
    navigation: navigationReducer,
@@ -52,6 +53,7 @@ const rootReducer = combineReducers({
    showConfrenceData: showConfrenceReducer,
    callData: CallStateReducer,
    callAgainData: callAgainReducer,
+   notificationData: notificationDataReducer
 });
 
 const Store = legacy_createStore(rootReducer, applyMiddleware(thunkMiddleware));

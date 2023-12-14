@@ -217,7 +217,7 @@ const randomString = (length, chars, UUID = true) => {
 
 const successResponse = message => ({
   statusCode: 200,
-  message: message || __WEBPACK_IMPORTED_MODULE_1__constants__["_54" /* SUCCESS */]
+  message: message || __WEBPACK_IMPORTED_MODULE_1__constants__["_56" /* SUCCESS */]
 });
 /* harmony export (immutable) */ __webpack_exports__["B"] = successResponse;
 
@@ -231,21 +231,21 @@ const errorResponse = (errorMessage, statusCode = 500) => ({
 
 const connectionErrorResponse = errorMessage => ({
   statusCode: 500,
-  message: errorMessage || __WEBPACK_IMPORTED_MODULE_1__constants__["u" /* CONNECTION_ERROR */]
+  message: errorMessage || __WEBPACK_IMPORTED_MODULE_1__constants__["v" /* CONNECTION_ERROR */]
 });
 /* harmony export (immutable) */ __webpack_exports__["b"] = connectionErrorResponse;
 
 
 const timeoutErrorResponse = errorMessage => ({
   statusCode: 504,
-  message: errorMessage || __WEBPACK_IMPORTED_MODULE_1__constants__["_56" /* TIMEOUT_ERROR */]
+  message: errorMessage || __WEBPACK_IMPORTED_MODULE_1__constants__["_58" /* TIMEOUT_ERROR */]
 });
 /* harmony export (immutable) */ __webpack_exports__["C"] = timeoutErrorResponse;
 
 
 const validationErrorResponse = errorMessage => ({
   statusCode: 400,
-  message: errorMessage || __WEBPACK_IMPORTED_MODULE_1__constants__["_73" /* VALIDATION_ERROR */]
+  message: errorMessage || __WEBPACK_IMPORTED_MODULE_1__constants__["_75" /* VALIDATION_ERROR */]
 });
 /* harmony export (immutable) */ __webpack_exports__["D"] = validationErrorResponse;
 
@@ -453,41 +453,41 @@ const customValiadtionMediaMessage = (toJid = '', msgType = '', fileOptions = {}
   const validation = [{
     key: 'toJid',
     value: toJid,
-    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_1" /* JID_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_2" /* JID_REQUIRED */]
   }, {
     key: 'msgType',
     value: msgType,
-    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_22" /* MSGTYPES_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_24" /* MSGTYPES_REQUIRED */]
   }, {
     key: 'fileOptions',
     value: fileOptions,
-    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_40" /* OBJECT_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_42" /* OBJECT_REQUIRED */]
   }, {
     key: 'fileOptions.fileName',
     value: fileOptions.fileName,
-    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_48" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_50" /* REQUIRED */]
   }, {
     key: 'fileOptions.fileURL',
     value: fileOptions.fileURL,
-    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_48" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_50" /* REQUIRED */]
   }, {
     key: 'fileOptions.fileSize',
     value: fileOptions.fileSize,
-    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_39" /* NUMBER_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_41" /* NUMBER_REQUIRED */]
   }];
 
   // Audio & Video Message Should Have Duration
-  (msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["h" /* AUDIO */] || msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["_74" /* VIDEO */]) && validation.push({
+  (msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["i" /* AUDIO */] || msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["_76" /* VIDEO */]) && validation.push({
     key: 'fileOptions.duration',
     value: fileOptions.duration,
-    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_48" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_50" /* REQUIRED */]
   });
 
   // Video Message Should Have Thumbnail Image
-  msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["_74" /* VIDEO */] && validation.push({
+  msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["_76" /* VIDEO */] && validation.push({
     key: 'fileOptions.thumbImg',
     value: fileOptions.thumbImg,
-    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_48" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_50" /* REQUIRED */]
   });
 
   return Object(__WEBPACK_IMPORTED_MODULE_3__common__["b" /* clientSideValidation */])(validation);
@@ -600,7 +600,7 @@ const autoRefreshToken = token => {
 
   refreshInterval = setInterval(async () => {
     const parsedJwt = parseJwt(token);
-    const expiryTime = parsedJwt.exp + __WEBPACK_IMPORTED_MODULE_1__constants__["_58" /* TOKEN_EXPIRY_TIME */];
+    const expiryTime = parsedJwt.exp + __WEBPACK_IMPORTED_MODULE_1__constants__["_60" /* TOKEN_EXPIRY_TIME */];
     const currentTime = new Date().getTime() / 1000;
 
     if (currentTime > expiryTime) {
@@ -609,7 +609,7 @@ const autoRefreshToken = token => {
       const credentials = Object(__WEBPACK_IMPORTED_MODULE_3__common__["g" /* getCredentials */])();
       await Object(__WEBPACK_IMPORTED_MODULE_4__modules_profile__["j" /* getUserToken */])(credentials.username, credentials.password);
     }
-  }, __WEBPACK_IMPORTED_MODULE_1__constants__["_57" /* TOKEN_EXPIRY_INTERVAL */]);
+  }, __WEBPACK_IMPORTED_MODULE_1__constants__["_59" /* TOKEN_EXPIRY_INTERVAL */]);
 };
 /* harmony export (immutable) */ __webpack_exports__["a"] = autoRefreshToken;
 
@@ -628,23 +628,23 @@ const getGroupMessageStatus = (msgBody, publisherJid, userJid) => {
   let profileUpdatedStatus = '';
   switch (msgBody) {
     case '1':
-      profileUpdatedStatus = __WEBPACK_IMPORTED_MODULE_1__constants__["N" /* GROUP_CREATED */];
+      profileUpdatedStatus = __WEBPACK_IMPORTED_MODULE_1__constants__["O" /* GROUP_CREATED */];
       break;
 
     case '2':
-      profileUpdatedStatus = __WEBPACK_IMPORTED_MODULE_1__constants__["_67" /* USER_ADDED */];
+      profileUpdatedStatus = __WEBPACK_IMPORTED_MODULE_1__constants__["_69" /* USER_ADDED */];
       break;
 
     case '3':
-      profileUpdatedStatus = publisherJid === userJid ? __WEBPACK_IMPORTED_MODULE_1__constants__["_71" /* USER_LEFT */] : __WEBPACK_IMPORTED_MODULE_1__constants__["_72" /* USER_REMOVED */];
+      profileUpdatedStatus = publisherJid === userJid ? __WEBPACK_IMPORTED_MODULE_1__constants__["_73" /* USER_LEFT */] : __WEBPACK_IMPORTED_MODULE_1__constants__["_74" /* USER_REMOVED */];
       break;
 
     case '4':
-      profileUpdatedStatus = __WEBPACK_IMPORTED_MODULE_1__constants__["_42" /* PROFILE_UPDATED */];
+      profileUpdatedStatus = __WEBPACK_IMPORTED_MODULE_1__constants__["_44" /* PROFILE_UPDATED */];
       break;
 
     case '5':
-      profileUpdatedStatus = __WEBPACK_IMPORTED_MODULE_1__constants__["_5" /* MADE_ADMIN */];
+      profileUpdatedStatus = __WEBPACK_IMPORTED_MODULE_1__constants__["_7" /* MADE_ADMIN */];
       break;
 
     default:
@@ -694,15 +694,15 @@ const getUserIdFromJid = userJid => userJid.includes('@') ? userJid.split('@')[0
 /* harmony export (immutable) */ __webpack_exports__["u"] = getUserIdFromJid;
 
 
-const isSingleChat = chatType => chatType === __WEBPACK_IMPORTED_MODULE_1__constants__["p" /* CHAT */];
+const isSingleChat = chatType => chatType === __WEBPACK_IMPORTED_MODULE_1__constants__["q" /* CHAT */];
 /* unused harmony export isSingleChat */
 
 
-const isGroupChat = chatType => chatType === __WEBPACK_IMPORTED_MODULE_1__constants__["K" /* GROUPCHAT */];
+const isGroupChat = chatType => chatType === __WEBPACK_IMPORTED_MODULE_1__constants__["L" /* GROUPCHAT */];
 /* unused harmony export isGroupChat */
 
 
-const formatUserIdToJid = (userId, chatType = __WEBPACK_IMPORTED_MODULE_1__constants__["p" /* CHAT */]) => {
+const formatUserIdToJid = (userId, chatType = __WEBPACK_IMPORTED_MODULE_1__constants__["q" /* CHAT */]) => {
   if (!userId || userId.includes(`${Object(__WEBPACK_IMPORTED_MODULE_5__strophe_connection__["e" /* getServer */])()}`)) return userId;
   return isSingleChat(chatType) ? `${userId}@${Object(__WEBPACK_IMPORTED_MODULE_5__strophe_connection__["e" /* getServer */])()}` : `${userId}@mix.${Object(__WEBPACK_IMPORTED_MODULE_5__strophe_connection__["e" /* getServer */])()}`;
 };
@@ -759,11 +759,11 @@ const generateImageThumbnail = (file, fileExtension) => new Promise(resolve => {
         const height = img.height;
         const imageType = `image/${fileExtension}`;
         const canvas = document.createElement('canvas');
-        canvas.width = __WEBPACK_IMPORTED_MODULE_1__constants__["_17" /* MIN_THUMB_WIDTH */];
-        canvas.height = height / width * __WEBPACK_IMPORTED_MODULE_1__constants__["_17" /* MIN_THUMB_WIDTH */];
+        canvas.width = __WEBPACK_IMPORTED_MODULE_1__constants__["_19" /* MIN_THUMB_WIDTH */];
+        canvas.height = height / width * __WEBPACK_IMPORTED_MODULE_1__constants__["_19" /* MIN_THUMB_WIDTH */];
         const context = canvas.getContext('2d');
-        context.drawImage(img, 0, 0, __WEBPACK_IMPORTED_MODULE_1__constants__["_17" /* MIN_THUMB_WIDTH */], height / width * __WEBPACK_IMPORTED_MODULE_1__constants__["_17" /* MIN_THUMB_WIDTH */]);
-        imageData = canvas.toDataURL(imageType, __WEBPACK_IMPORTED_MODULE_1__constants__["U" /* IMAGE_THUMB_QUALITY */]);
+        context.drawImage(img, 0, 0, __WEBPACK_IMPORTED_MODULE_1__constants__["_19" /* MIN_THUMB_WIDTH */], height / width * __WEBPACK_IMPORTED_MODULE_1__constants__["_19" /* MIN_THUMB_WIDTH */]);
+        imageData = canvas.toDataURL(imageType, __WEBPACK_IMPORTED_MODULE_1__constants__["V" /* IMAGE_THUMB_QUALITY */]);
         const thumb = imageData.replace(/^data:image\/\w+;base64,/, '');
         resolve(thumb);
       };
@@ -2846,17 +2846,17 @@ const jidValidation = (rule, jid) => {
   switch (rule) {
     case 'jid':
       // We should have @ symbol in the jid
-      if (jid && !__WEBPACK_IMPORTED_MODULE_3__constants__["l" /* BARE_JID */].test(jid) && !__WEBPACK_IMPORTED_MODULE_3__constants__["_21" /* MIX_BARE_JID */].test(jid)) response = false;
+      if (jid && !__WEBPACK_IMPORTED_MODULE_3__constants__["m" /* BARE_JID */].test(jid) && !__WEBPACK_IMPORTED_MODULE_3__constants__["_23" /* MIX_BARE_JID */].test(jid)) response = false;
       break;
 
     case 'jidFormat':
       // We should have @ symbol in the jid
-      if (jid && !__WEBPACK_IMPORTED_MODULE_3__constants__["l" /* BARE_JID */].test(jid)) response = false;
+      if (jid && !__WEBPACK_IMPORTED_MODULE_3__constants__["m" /* BARE_JID */].test(jid)) response = false;
       break;
 
     case 'groupjidFormat':
       // We should have @mix string in the group jid
-      if (jid && !__WEBPACK_IMPORTED_MODULE_3__constants__["_21" /* MIX_BARE_JID */].test(jid)) response = false;
+      if (jid && !__WEBPACK_IMPORTED_MODULE_3__constants__["_23" /* MIX_BARE_JID */].test(jid)) response = false;
       break;
 
     default:
@@ -2872,24 +2872,24 @@ const fileValidation = (rule, file = {}) => {
     // TODO: need to check the File class is available in React Native or the file selected has a type of "File" in React Native
     case 'image':
       if (__WEBPACK_IMPORTED_MODULE_5_react_native__["Platform"].OS == 'ios') {
-        if (!__WEBPACK_IMPORTED_MODULE_3__constants__["X" /* IOS_IMAGE_FORMATS */].includes(file.type)) response = false;
+        if (!__WEBPACK_IMPORTED_MODULE_3__constants__["Y" /* IOS_IMAGE_FORMATS */].includes(file.type)) response = false;
       } else {
-        if (!__WEBPACK_IMPORTED_MODULE_3__constants__["T" /* IMAGE_FORMATS */].includes(file.type)) response = false;
+        if (!__WEBPACK_IMPORTED_MODULE_3__constants__["U" /* IMAGE_FORMATS */].includes(file.type)) response = false;
       }
       break;
 
     case 'audio':
-      if (!__WEBPACK_IMPORTED_MODULE_3__constants__["j" /* AUDIO_FORMATS */].includes(file.type)) response = false;
+      if (!__WEBPACK_IMPORTED_MODULE_3__constants__["k" /* AUDIO_FORMATS */].includes(file.type)) response = false;
       break;
 
     case 'video':
       if (__WEBPACK_IMPORTED_MODULE_5_react_native__["Platform"].OS == 'ios') {
-        if (!__WEBPACK_IMPORTED_MODULE_3__constants__["Y" /* IOS_VIDEO_FORMATS */].includes(file.type)) response = false;
-      } else if (!__WEBPACK_IMPORTED_MODULE_3__constants__["_76" /* VIDEO_FORMATS */].includes(file.type)) response = false;
+        if (!__WEBPACK_IMPORTED_MODULE_3__constants__["Z" /* IOS_VIDEO_FORMATS */].includes(file.type)) response = false;
+      } else if (!__WEBPACK_IMPORTED_MODULE_3__constants__["_78" /* VIDEO_FORMATS */].includes(file.type)) response = false;
       break;
 
     case 'document':
-      if (!__WEBPACK_IMPORTED_MODULE_3__constants__["z" /* DOCUMENT_FORMATS */].includes(fileType)) response = false;
+      if (!__WEBPACK_IMPORTED_MODULE_3__constants__["A" /* DOCUMENT_FORMATS */].includes(fileType)) response = false;
       break;
 
     default:
@@ -2943,7 +2943,7 @@ const otherValidation = (rule, value) => {
       break;
 
     case 'email':
-      if (value && __WEBPACK_IMPORTED_MODULE_3__constants__["A" /* EMAIL */].test(value) === false) response = false;
+      if (value && __WEBPACK_IMPORTED_MODULE_3__constants__["B" /* EMAIL */].test(value) === false) response = false;
       break;
 
     case 'msgTypes':
@@ -3015,7 +3015,7 @@ const clientSideValidation = params => {
           // To Validate whether all required callback methods are attached or not
           if (typeof value === 'object') {
             const cb = Object.keys(value);
-            const filtered = __WEBPACK_IMPORTED_MODULE_3__constants__["o" /* CALLBACK_LISTENERS */].filter(el => !cb.includes(el));
+            const filtered = __WEBPACK_IMPORTED_MODULE_3__constants__["p" /* CALLBACK_LISTENERS */].filter(el => !cb.includes(el));
             if (filtered.length) response = Object(__WEBPACK_IMPORTED_MODULE_0__utils__["D" /* validationErrorResponse */])(`${filtered.join(', ')} listener(s) not attached`);
           }
           break;
@@ -3129,7 +3129,7 @@ const setConfiguration = (host, port, ssl) => {
   XMPP_SERVER_PORT = port;
   SSL = ssl;
 };
-/* harmony export (immutable) */ __webpack_exports__["B"] = setConfiguration;
+/* harmony export (immutable) */ __webpack_exports__["C"] = setConfiguration;
 
 
 /**
@@ -3146,7 +3146,7 @@ const setCredentials = (username, password) => {
   };
   return true;
 };
-/* harmony export (immutable) */ __webpack_exports__["C"] = setCredentials;
+/* harmony export (immutable) */ __webpack_exports__["D"] = setCredentials;
 
 
 /**
@@ -3213,7 +3213,7 @@ const getIv = () => IV;
 const setIv = iv => {
   IV = iv;
 };
-/* harmony export (immutable) */ __webpack_exports__["D"] = setIv;
+/* harmony export (immutable) */ __webpack_exports__["E"] = setIv;
 
 
 /**
@@ -3231,7 +3231,7 @@ const getIvProfile = () => IVPROFILE;
 const setIvProfile = iv => {
   IVPROFILE = iv;
 };
-/* harmony export (immutable) */ __webpack_exports__["E"] = setIvProfile;
+/* harmony export (immutable) */ __webpack_exports__["F"] = setIvProfile;
 
 
 /**
@@ -3287,7 +3287,7 @@ const getJanusUrl = () => janusUrl;
 const setJanusUrl = url => {
   janusUrl = url;
 };
-/* harmony export (immutable) */ __webpack_exports__["F"] = setJanusUrl;
+/* harmony export (immutable) */ __webpack_exports__["G"] = setJanusUrl;
 
 
 /**
@@ -3305,7 +3305,7 @@ const getSignalServerUrl = () => signalServerUrl;
 const setSignalServerUrl = url => {
   signalServerUrl = url;
 };
-/* harmony export (immutable) */ __webpack_exports__["I"] = setSignalServerUrl;
+/* harmony export (immutable) */ __webpack_exports__["J"] = setSignalServerUrl;
 
 
 /**
@@ -3329,7 +3329,7 @@ const getEncryptLicenseKey = () => `${licenseKey}${licenseKey}${licenseKey}`;
  * @returns {String} - apiBaseUrl
  */
 const isSandboxMode = () => isSandbox;
-/* harmony export (immutable) */ __webpack_exports__["y"] = isSandboxMode;
+/* harmony export (immutable) */ __webpack_exports__["z"] = isSandboxMode;
 
 
 const getActiveConnectionId = () => activeConnectionId;
@@ -3337,11 +3337,11 @@ const getActiveConnectionId = () => activeConnectionId;
 
 
 const setActiveConnectionId = id => activeConnectionId = id;
-/* harmony export (immutable) */ __webpack_exports__["z"] = setActiveConnectionId;
+/* harmony export (immutable) */ __webpack_exports__["A"] = setActiveConnectionId;
 
 
 const isActiveConnectionId = id => activeConnectionId === id;
-/* harmony export (immutable) */ __webpack_exports__["x"] = isActiveConnectionId;
+/* harmony export (immutable) */ __webpack_exports__["y"] = isActiveConnectionId;
 
 
 const getMaxUsersOfCall = () => maxUsersForcall;
@@ -3351,7 +3351,7 @@ const getMaxUsersOfCall = () => maxUsersForcall;
 const setMaxUsersOfCall = count => {
   maxUsersForcall = count;
 };
-/* harmony export (immutable) */ __webpack_exports__["G"] = setMaxUsersOfCall;
+/* harmony export (immutable) */ __webpack_exports__["H"] = setMaxUsersOfCall;
 
 
 const getPingPongTime = () => pingPongTime;
@@ -3361,7 +3361,7 @@ const getPingPongTime = () => pingPongTime;
 const setPingPongTime = seconds => {
   pingPongTime = seconds;
 };
-/* harmony export (immutable) */ __webpack_exports__["H"] = setPingPongTime;
+/* harmony export (immutable) */ __webpack_exports__["I"] = setPingPongTime;
 
 
 const setMediaEncryptionDecrption = status => {
@@ -3415,7 +3415,7 @@ const setUserProfile = data => {
   profile = data;
   return true;
 };
-/* harmony export (immutable) */ __webpack_exports__["K"] = setUserProfile;
+/* harmony export (immutable) */ __webpack_exports__["L"] = setUserProfile;
 
 
 const getUserProfile = () => profile;
@@ -3437,7 +3437,7 @@ const getStunTurnServerUrl = () => iceServers;
 const setStunTurnServerUrl = url => {
   iceServers = url;
 };
-/* harmony export (immutable) */ __webpack_exports__["J"] = setStunTurnServerUrl;
+/* harmony export (immutable) */ __webpack_exports__["K"] = setStunTurnServerUrl;
 
 
 /**
@@ -3448,7 +3448,7 @@ const getJid = userId => {
   const response = clientSideValidation([{
     key: 'userId',
     value: userId,
-    rules: __WEBPACK_IMPORTED_MODULE_3__constants__["_48" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_3__constants__["_50" /* REQUIRED */]
   }]);
   if (response.statusCode === 200) {
     if (!XMPP_SERVER_HOST || XMPP_SERVER_HOST === '') {
@@ -3487,7 +3487,7 @@ const getCallDisconnectedStatus = () => callDisconnected;
 const setCallDisconnectedStatus = status => {
   callDisconnected = status;
 };
-/* harmony export (immutable) */ __webpack_exports__["A"] = setCallDisconnectedStatus;
+/* harmony export (immutable) */ __webpack_exports__["B"] = setCallDisconnectedStatus;
 
 
 const getFileNameFromUri = uri => {
@@ -3498,6 +3498,27 @@ const getFileNameFromUri = uri => {
   }
 };
 /* harmony export (immutable) */ __webpack_exports__["j"] = getFileNameFromUri;
+
+
+/**
+ * Handles Initialize SDK Validation with Multiple Cases
+ * Splitted Validation into Mulitple Sub Functions inorder to Meet Sonar Quality Gate Recommendation
+ * @returns {object} Success/Error Response
+ */
+const initializedSDKOrNot = () => {
+  let response = Object(__WEBPACK_IMPORTED_MODULE_0__utils__["B" /* successResponse */])();
+  if (licenseKey === "" || licenseKey === null || licenseKey === undefined) {
+    return Object(__WEBPACK_IMPORTED_MODULE_0__utils__["D" /* validationErrorResponse */])(__WEBPACK_IMPORTED_MODULE_3__constants__["_5" /* LICENSE_KEY_NOT_CONFIGURED_ERROR_MESSAGE */]);
+  }
+  // if (invalidLicenseKey) {
+  //   return validationErrorResponse(INVALID_LICENSE_KEY_ERROR_MESSAGE)
+  // }
+  if (apiBaseUrl === "" || apiBaseUrl === null || apiBaseUrl === undefined) {
+    return Object(__WEBPACK_IMPORTED_MODULE_0__utils__["D" /* validationErrorResponse */])(__WEBPACK_IMPORTED_MODULE_3__constants__["g" /* API_BASE_URL_NOT_CONFIGURED_ERROR_MESSAGE */]);
+  }
+  return response;
+};
+/* harmony export (immutable) */ __webpack_exports__["x"] = initializedSDKOrNot;
 
 
 /***/ }),
@@ -3699,94 +3720,94 @@ process.umask = function() { return 0; };
 
 // Static Contents
 const SUCCESS = 'Success';
-/* harmony export (immutable) */ __webpack_exports__["_54"] = SUCCESS;
+/* harmony export (immutable) */ __webpack_exports__["_56"] = SUCCESS;
 
 const CONNECTION_ERROR = 'Connection Error';
-/* harmony export (immutable) */ __webpack_exports__["u"] = CONNECTION_ERROR;
+/* harmony export (immutable) */ __webpack_exports__["v"] = CONNECTION_ERROR;
 
 const VALIDATION_ERROR = 'Validation Error';
-/* harmony export (immutable) */ __webpack_exports__["_73"] = VALIDATION_ERROR;
+/* harmony export (immutable) */ __webpack_exports__["_75"] = VALIDATION_ERROR;
 
 const INVALID_CREDENTIALS = 'Invalid Credentials';
-/* harmony export (immutable) */ __webpack_exports__["V"] = INVALID_CREDENTIALS;
+/* harmony export (immutable) */ __webpack_exports__["W"] = INVALID_CREDENTIALS;
 
 const TIMEOUT_ERROR = 'Timeout Error';
-/* harmony export (immutable) */ __webpack_exports__["_56"] = TIMEOUT_ERROR;
+/* harmony export (immutable) */ __webpack_exports__["_58"] = TIMEOUT_ERROR;
 
 const MEDIA_UPLOAD_FAILED = 'Media Upload Failed';
-/* harmony export (immutable) */ __webpack_exports__["_11"] = MEDIA_UPLOAD_FAILED;
+/* harmony export (immutable) */ __webpack_exports__["_13"] = MEDIA_UPLOAD_FAILED;
 
 const TYPE_GET = 'get';
-/* harmony export (immutable) */ __webpack_exports__["_60"] = TYPE_GET;
+/* harmony export (immutable) */ __webpack_exports__["_62"] = TYPE_GET;
 
 const TYPE_SET = 'set';
-/* harmony export (immutable) */ __webpack_exports__["_62"] = TYPE_SET;
+/* harmony export (immutable) */ __webpack_exports__["_64"] = TYPE_SET;
 
 const TYPE_RESULT = 'result';
-/* harmony export (immutable) */ __webpack_exports__["_61"] = TYPE_RESULT;
+/* harmony export (immutable) */ __webpack_exports__["_63"] = TYPE_RESULT;
 
 const TYPE_CHAT = 'chat';
-/* harmony export (immutable) */ __webpack_exports__["_59"] = TYPE_CHAT;
+/* harmony export (immutable) */ __webpack_exports__["_61"] = TYPE_CHAT;
 
 const METHOD_POST = 'POST';
-/* harmony export (immutable) */ __webpack_exports__["_13"] = METHOD_POST;
+/* harmony export (immutable) */ __webpack_exports__["_15"] = METHOD_POST;
 
 const METHOD_PUT = 'PUT';
-/* harmony export (immutable) */ __webpack_exports__["_14"] = METHOD_PUT;
+/* harmony export (immutable) */ __webpack_exports__["_16"] = METHOD_PUT;
 
 const METHOD_GET = 'GET';
-/* harmony export (immutable) */ __webpack_exports__["_12"] = METHOD_GET;
+/* harmony export (immutable) */ __webpack_exports__["_14"] = METHOD_GET;
 
 const TEXT = 'text';
-/* harmony export (immutable) */ __webpack_exports__["_55"] = TEXT;
+/* harmony export (immutable) */ __webpack_exports__["_57"] = TEXT;
 
 const AUTO_TEXT = 'auto_text';
-/* harmony export (immutable) */ __webpack_exports__["k"] = AUTO_TEXT;
+/* harmony export (immutable) */ __webpack_exports__["l"] = AUTO_TEXT;
 
 const IMAGE = 'image';
-/* harmony export (immutable) */ __webpack_exports__["R"] = IMAGE;
+/* harmony export (immutable) */ __webpack_exports__["S"] = IMAGE;
 
 const VIDEO = 'video';
-/* harmony export (immutable) */ __webpack_exports__["_74"] = VIDEO;
+/* harmony export (immutable) */ __webpack_exports__["_76"] = VIDEO;
 
 const AUDIO = 'audio';
-/* harmony export (immutable) */ __webpack_exports__["h"] = AUDIO;
+/* harmony export (immutable) */ __webpack_exports__["i"] = AUDIO;
 
 const FILE = 'file';
-/* harmony export (immutable) */ __webpack_exports__["B"] = FILE;
+/* harmony export (immutable) */ __webpack_exports__["C"] = FILE;
 
 const LOCATION = 'location';
-/* harmony export (immutable) */ __webpack_exports__["_4"] = LOCATION;
+/* harmony export (immutable) */ __webpack_exports__["_6"] = LOCATION;
 
 const CONTACT = 'contact';
-/* harmony export (immutable) */ __webpack_exports__["v"] = CONTACT;
+/* harmony export (immutable) */ __webpack_exports__["w"] = CONTACT;
 
 const PNG = 'png';
-/* harmony export (immutable) */ __webpack_exports__["_41"] = PNG;
+/* harmony export (immutable) */ __webpack_exports__["_43"] = PNG;
 
 const JPG = 'jpg';
-/* harmony export (immutable) */ __webpack_exports__["_3"] = JPG;
+/* harmony export (immutable) */ __webpack_exports__["_4"] = JPG;
 
 const JPEG = 'jpeg';
-/* harmony export (immutable) */ __webpack_exports__["_2"] = JPEG;
+/* harmony export (immutable) */ __webpack_exports__["_3"] = JPEG;
 
 const MP4 = 'mp4';
 /* unused harmony export MP4 */
 
 const CHAT = 'chat';
-/* harmony export (immutable) */ __webpack_exports__["p"] = CHAT;
+/* harmony export (immutable) */ __webpack_exports__["q"] = CHAT;
 
 const MIX = 'mix';
-/* harmony export (immutable) */ __webpack_exports__["_20"] = MIX;
+/* harmony export (immutable) */ __webpack_exports__["_22"] = MIX;
 
 const ANY = 'any';
 /* harmony export (immutable) */ __webpack_exports__["e"] = ANY;
 
 const NORMAL = 'normal';
-/* harmony export (immutable) */ __webpack_exports__["_24"] = NORMAL;
+/* harmony export (immutable) */ __webpack_exports__["_26"] = NORMAL;
 
 const RECALL = 'recall';
-/* harmony export (immutable) */ __webpack_exports__["_43"] = RECALL;
+/* harmony export (immutable) */ __webpack_exports__["_45"] = RECALL;
 
 const WEB = 'web';
 /* unused harmony export WEB */
@@ -3798,22 +3819,22 @@ const IOS = 'ios';
 /* unused harmony export IOS */
 
 const GROUPCHAT = 'groupchat';
-/* harmony export (immutable) */ __webpack_exports__["K"] = GROUPCHAT;
+/* harmony export (immutable) */ __webpack_exports__["L"] = GROUPCHAT;
 
 const GROUP = 'group';
-/* harmony export (immutable) */ __webpack_exports__["J"] = GROUP;
+/* harmony export (immutable) */ __webpack_exports__["K"] = GROUP;
 
 const INVALID_MESSAGE_TYPE = 'Invalid Message Type';
-/* harmony export (immutable) */ __webpack_exports__["W"] = INVALID_MESSAGE_TYPE;
+/* harmony export (immutable) */ __webpack_exports__["X"] = INVALID_MESSAGE_TYPE;
 
 const REQUIRED = 'required';
-/* harmony export (immutable) */ __webpack_exports__["_48"] = REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_50"] = REQUIRED;
 
 const FUNCTION_REQUIRED = "required|isFunction";
-/* harmony export (immutable) */ __webpack_exports__["C"] = FUNCTION_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["D"] = FUNCTION_REQUIRED;
 
 const JID_REQUIRED = 'jid|required';
-/* harmony export (immutable) */ __webpack_exports__["_1"] = JID_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_2"] = JID_REQUIRED;
 
 const MEDIA_TYPE_REQUIRED = 'media type|required';
 /* unused harmony export MEDIA_TYPE_REQUIRED */
@@ -3822,70 +3843,70 @@ const MID_REQUIRED = 'message id|required';
 /* unused harmony export MID_REQUIRED */
 
 const JID_FORMAT_REQUIRED = 'jidFormat|required';
-/* harmony export (immutable) */ __webpack_exports__["Z"] = JID_FORMAT_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_0"] = JID_FORMAT_REQUIRED;
 
 const JID_GROUP_REQUIRED = 'groupjidFormat|required';
-/* harmony export (immutable) */ __webpack_exports__["_0"] = JID_GROUP_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_1"] = JID_GROUP_REQUIRED;
 
 const STRING_REQUIRED = 'string|required';
-/* harmony export (immutable) */ __webpack_exports__["_53"] = STRING_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_55"] = STRING_REQUIRED;
 
 const BOOLEAN_REQUIRED = 'boolean|required';
-/* harmony export (immutable) */ __webpack_exports__["n"] = BOOLEAN_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["o"] = BOOLEAN_REQUIRED;
 
 const NUMBER_REQUIRED = 'number|required';
-/* harmony export (immutable) */ __webpack_exports__["_39"] = NUMBER_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_41"] = NUMBER_REQUIRED;
 
 const OBJECT_REQUIRED = 'object|required';
-/* harmony export (immutable) */ __webpack_exports__["_40"] = OBJECT_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_42"] = OBJECT_REQUIRED;
 
 const OBJECT_CALLBACK = 'object|callbackListeners';
 /* unused harmony export OBJECT_CALLBACK */
 
 const IMAGEFILE_REQUIRED = 'image|required';
-/* harmony export (immutable) */ __webpack_exports__["S"] = IMAGEFILE_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["T"] = IMAGEFILE_REQUIRED;
 
 const AUDIOFILE_REQUIRED = 'audio|required';
-/* harmony export (immutable) */ __webpack_exports__["i"] = AUDIOFILE_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["j"] = AUDIOFILE_REQUIRED;
 
 const VIDEOFILE_REQUIRED = 'video|required';
-/* harmony export (immutable) */ __webpack_exports__["_75"] = VIDEOFILE_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_77"] = VIDEOFILE_REQUIRED;
 
 const DOCUMENTFILE_REQUIRED = 'document|required';
-/* harmony export (immutable) */ __webpack_exports__["y"] = DOCUMENTFILE_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["z"] = DOCUMENTFILE_REQUIRED;
 
 const ARRAY_REQUIRED = 'isArray|arrayRequired|required';
-/* harmony export (immutable) */ __webpack_exports__["g"] = ARRAY_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["h"] = ARRAY_REQUIRED;
 
 const MSGTYPES_REQUIRED = 'msgTypes|required';
-/* harmony export (immutable) */ __webpack_exports__["_22"] = MSGTYPES_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_24"] = MSGTYPES_REQUIRED;
 
 const REQUEST_FAILED = 'Request Failed';
-/* harmony export (immutable) */ __webpack_exports__["_47"] = REQUEST_FAILED;
+/* harmony export (immutable) */ __webpack_exports__["_49"] = REQUEST_FAILED;
 
 const UNAVAILABLE = 'unavailable';
-/* harmony export (immutable) */ __webpack_exports__["_63"] = UNAVAILABLE;
+/* harmony export (immutable) */ __webpack_exports__["_65"] = UNAVAILABLE;
 
 const GROUP_PROFILE_UPDATE = 'groupProfileUpdated';
-/* harmony export (immutable) */ __webpack_exports__["P"] = GROUP_PROFILE_UPDATE;
+/* harmony export (immutable) */ __webpack_exports__["Q"] = GROUP_PROFILE_UPDATE;
 
 const GROUP_CREATED = 'groupCreated';
-/* harmony export (immutable) */ __webpack_exports__["N"] = GROUP_CREATED;
+/* harmony export (immutable) */ __webpack_exports__["O"] = GROUP_CREATED;
 
 const USER_ADDED = 'userAdded';
-/* harmony export (immutable) */ __webpack_exports__["_67"] = USER_ADDED;
+/* harmony export (immutable) */ __webpack_exports__["_69"] = USER_ADDED;
 
 const USER_LEFT = 'userLeft';
-/* harmony export (immutable) */ __webpack_exports__["_71"] = USER_LEFT;
+/* harmony export (immutable) */ __webpack_exports__["_73"] = USER_LEFT;
 
 const USER_REMOVED = 'userRemoved';
-/* harmony export (immutable) */ __webpack_exports__["_72"] = USER_REMOVED;
+/* harmony export (immutable) */ __webpack_exports__["_74"] = USER_REMOVED;
 
 const MADE_ADMIN = 'madeAdmin';
-/* harmony export (immutable) */ __webpack_exports__["_5"] = MADE_ADMIN;
+/* harmony export (immutable) */ __webpack_exports__["_7"] = MADE_ADMIN;
 
 const PROFILE_UPDATED = 'profileUpdated';
-/* harmony export (immutable) */ __webpack_exports__["_42"] = PROFILE_UPDATED;
+/* harmony export (immutable) */ __webpack_exports__["_44"] = PROFILE_UPDATED;
 
 const TO_JID_FORMAT = 'toJidFormatRequired';
 /* unused harmony export TO_JID_FORMAT */
@@ -3896,64 +3917,64 @@ const MSG_BODY_REQUIRED = 'messageBodyRequired';
 
 // Status
 const RECENT_CHAT = 'recent_chat';
-/* harmony export (immutable) */ __webpack_exports__["_44"] = RECENT_CHAT;
+/* harmony export (immutable) */ __webpack_exports__["_46"] = RECENT_CHAT;
 
 const SINGLE_CHAT = 'single_chat';
-/* harmony export (immutable) */ __webpack_exports__["_51"] = SINGLE_CHAT;
+/* harmony export (immutable) */ __webpack_exports__["_53"] = SINGLE_CHAT;
 
 const BLOCK_USER = 'block_user';
-/* harmony export (immutable) */ __webpack_exports__["m"] = BLOCK_USER;
+/* harmony export (immutable) */ __webpack_exports__["n"] = BLOCK_USER;
 
 const SINGLE_CHAT_MEDIA = 'single_chat_media';
-/* harmony export (immutable) */ __webpack_exports__["_52"] = SINGLE_CHAT_MEDIA;
+/* harmony export (immutable) */ __webpack_exports__["_54"] = SINGLE_CHAT_MEDIA;
 
 const SINGLE_CHAT_FULL_MEDIA = 'single_chat_fullmedia';
 /* unused harmony export SINGLE_CHAT_FULL_MEDIA */
 
 const REPLY_MESSAGE = 'reply_message';
-/* harmony export (immutable) */ __webpack_exports__["_46"] = REPLY_MESSAGE;
+/* harmony export (immutable) */ __webpack_exports__["_48"] = REPLY_MESSAGE;
 
 const SET_FAVOURITE_MESSAGE = 'set_favourite_message';
-/* harmony export (immutable) */ __webpack_exports__["_49"] = SET_FAVOURITE_MESSAGE;
+/* harmony export (immutable) */ __webpack_exports__["_51"] = SET_FAVOURITE_MESSAGE;
 
 const UPDATE_FAVOURITE_MESSAGE = 'update_favourite_message';
-/* harmony export (immutable) */ __webpack_exports__["_64"] = UPDATE_FAVOURITE_MESSAGE;
+/* harmony export (immutable) */ __webpack_exports__["_66"] = UPDATE_FAVOURITE_MESSAGE;
 
 const GET_FAVOURITE_MESSAGE = 'get_favourite_message';
-/* harmony export (immutable) */ __webpack_exports__["D"] = GET_FAVOURITE_MESSAGE;
+/* harmony export (immutable) */ __webpack_exports__["E"] = GET_FAVOURITE_MESSAGE;
 
 const CLEARALL_FAVOURITE_MESSAGE = 'clearall_favourite_message';
-/* harmony export (immutable) */ __webpack_exports__["q"] = CLEARALL_FAVOURITE_MESSAGE;
+/* harmony export (immutable) */ __webpack_exports__["r"] = CLEARALL_FAVOURITE_MESSAGE;
 
 const CLEAR_MESSAGE = 'clear_message';
-/* harmony export (immutable) */ __webpack_exports__["s"] = CLEAR_MESSAGE;
+/* harmony export (immutable) */ __webpack_exports__["t"] = CLEAR_MESSAGE;
 
 const CLEAR_ALL = 'clear_all';
-/* harmony export (immutable) */ __webpack_exports__["r"] = CLEAR_ALL;
+/* harmony export (immutable) */ __webpack_exports__["s"] = CLEAR_ALL;
 
 const DELETE_MESSAGE = 'delete_message';
-/* harmony export (immutable) */ __webpack_exports__["x"] = DELETE_MESSAGE;
+/* harmony export (immutable) */ __webpack_exports__["y"] = DELETE_MESSAGE;
 
 const CREATE_GROUP = 'create_group';
-/* harmony export (immutable) */ __webpack_exports__["w"] = CREATE_GROUP;
+/* harmony export (immutable) */ __webpack_exports__["x"] = CREATE_GROUP;
 
 const GROUP_PROFILE_UPDATED = 'group_profile_updated';
-/* harmony export (immutable) */ __webpack_exports__["Q"] = GROUP_PROFILE_UPDATED;
+/* harmony export (immutable) */ __webpack_exports__["R"] = GROUP_PROFILE_UPDATED;
 
 const ADD_PARTICIPANTS = 'add_participants';
 /* harmony export (immutable) */ __webpack_exports__["a"] = ADD_PARTICIPANTS;
 
 const SET_GROUP_INFO = 'set_group_info';
-/* harmony export (immutable) */ __webpack_exports__["_50"] = SET_GROUP_INFO;
+/* harmony export (immutable) */ __webpack_exports__["_52"] = SET_GROUP_INFO;
 
 const GET_GROUP_ID = 'get_group_id';
-/* harmony export (immutable) */ __webpack_exports__["E"] = GET_GROUP_ID;
+/* harmony export (immutable) */ __webpack_exports__["F"] = GET_GROUP_ID;
 
 const GET_GROUP_PROFILE = 'get_group_profile';
-/* harmony export (immutable) */ __webpack_exports__["F"] = GET_GROUP_PROFILE;
+/* harmony export (immutable) */ __webpack_exports__["G"] = GET_GROUP_PROFILE;
 
 const GET_PARTICIPANTS = 'get_participants';
-/* harmony export (immutable) */ __webpack_exports__["G"] = GET_PARTICIPANTS;
+/* harmony export (immutable) */ __webpack_exports__["H"] = GET_PARTICIPANTS;
 
 const ADMIN_REMOVE_ADMIN = 'admin_remove_admin';
 /* harmony export (immutable) */ __webpack_exports__["c"] = ADMIN_REMOVE_ADMIN;
@@ -3962,97 +3983,97 @@ const ADMIN_REMOVE_PARTICIPANT = 'admin_remove_participant';
 /* harmony export (immutable) */ __webpack_exports__["d"] = ADMIN_REMOVE_PARTICIPANT;
 
 const MAKE_ADMIN = 'make_admin';
-/* harmony export (immutable) */ __webpack_exports__["_6"] = MAKE_ADMIN;
+/* harmony export (immutable) */ __webpack_exports__["_8"] = MAKE_ADMIN;
 
 const ADMIN_EXIT_GROUP = 'admin_exit_group';
 /* harmony export (immutable) */ __webpack_exports__["b"] = ADMIN_EXIT_GROUP;
 
 const USER_EXIT_GROUP = 'user_exit_group';
-/* harmony export (immutable) */ __webpack_exports__["_70"] = USER_EXIT_GROUP;
+/* harmony export (immutable) */ __webpack_exports__["_72"] = USER_EXIT_GROUP;
 
 const USER_DELETE_GROUP = 'user_delete_group';
-/* harmony export (immutable) */ __webpack_exports__["_69"] = USER_DELETE_GROUP;
+/* harmony export (immutable) */ __webpack_exports__["_71"] = USER_DELETE_GROUP;
 
 const GROUP_CHAT = 'group_chat';
-/* harmony export (immutable) */ __webpack_exports__["L"] = GROUP_CHAT;
+/* harmony export (immutable) */ __webpack_exports__["M"] = GROUP_CHAT;
 
 const COMPOSING = 'composing';
-/* harmony export (immutable) */ __webpack_exports__["t"] = COMPOSING;
+/* harmony export (immutable) */ __webpack_exports__["u"] = COMPOSING;
 
 const GONE = 'gone';
-/* harmony export (immutable) */ __webpack_exports__["H"] = GONE;
+/* harmony export (immutable) */ __webpack_exports__["I"] = GONE;
 
 const GROUP_CHAT_MEDIA = 'group_chat_media';
-/* harmony export (immutable) */ __webpack_exports__["M"] = GROUP_CHAT_MEDIA;
+/* harmony export (immutable) */ __webpack_exports__["N"] = GROUP_CHAT_MEDIA;
 
 const GROUP_MESSAGE_STATUS = 'group_message_status';
-/* harmony export (immutable) */ __webpack_exports__["O"] = GROUP_MESSAGE_STATUS;
+/* harmony export (immutable) */ __webpack_exports__["P"] = GROUP_MESSAGE_STATUS;
 
 const UPDATE_MUTE_NOTIFICATION = 'update_mute_notification';
-/* harmony export (immutable) */ __webpack_exports__["_65"] = UPDATE_MUTE_NOTIFICATION;
+/* harmony export (immutable) */ __webpack_exports__["_67"] = UPDATE_MUTE_NOTIFICATION;
 
 const UPDATE_UNREAD_COUNT = 'update_unread_count';
-/* harmony export (immutable) */ __webpack_exports__["_66"] = UPDATE_UNREAD_COUNT;
+/* harmony export (immutable) */ __webpack_exports__["_68"] = UPDATE_UNREAD_COUNT;
 
 const NO_MEESAGE_FOUND_DB = 'No message found in DB';
-/* harmony export (immutable) */ __webpack_exports__["_26"] = NO_MEESAGE_FOUND_DB;
+/* harmony export (immutable) */ __webpack_exports__["_28"] = NO_MEESAGE_FOUND_DB;
 
 // NS xmls
 const NS_CARBON = 'urn:xmpp:carbons:2';
-/* harmony export (immutable) */ __webpack_exports__["_28"] = NS_CARBON;
+/* harmony export (immutable) */ __webpack_exports__["_30"] = NS_CARBON;
 
 const NS_RECEIPTS = 'urn:xmpp:receipts';
-/* harmony export (immutable) */ __webpack_exports__["_35"] = NS_RECEIPTS;
+/* harmony export (immutable) */ __webpack_exports__["_37"] = NS_RECEIPTS;
 
 const NS_BLOCKING = 'urn:xmpp:blocking';
-/* harmony export (immutable) */ __webpack_exports__["_27"] = NS_BLOCKING;
+/* harmony export (immutable) */ __webpack_exports__["_29"] = NS_BLOCKING;
 
 const NS_PING = 'urn:xmpp:ping';
-/* harmony export (immutable) */ __webpack_exports__["_34"] = NS_PING;
+/* harmony export (immutable) */ __webpack_exports__["_36"] = NS_PING;
 
 const NS_CONTENT = 'urn:xmpp:content';
-/* harmony export (immutable) */ __webpack_exports__["_30"] = NS_CONTENT;
+/* harmony export (immutable) */ __webpack_exports__["_32"] = NS_CONTENT;
 
 const NS_USER_ACTIVITIES = 'jabber:iq:user_activities';
-/* harmony export (immutable) */ __webpack_exports__["_36"] = NS_USER_ACTIVITIES;
+/* harmony export (immutable) */ __webpack_exports__["_38"] = NS_USER_ACTIVITIES;
 
 const NS_LAST = 'jabber:iq:last';
-/* harmony export (immutable) */ __webpack_exports__["_33"] = NS_LAST;
+/* harmony export (immutable) */ __webpack_exports__["_35"] = NS_LAST;
 
 const NS_VCARD = 'vcard-temp';
-/* harmony export (immutable) */ __webpack_exports__["_38"] = NS_VCARD;
+/* harmony export (immutable) */ __webpack_exports__["_40"] = NS_VCARD;
 
 const NS_USER_FAV = 'jabber:iq:user_fav';
-/* harmony export (immutable) */ __webpack_exports__["_37"] = NS_USER_FAV;
+/* harmony export (immutable) */ __webpack_exports__["_39"] = NS_USER_FAV;
 
 const NS_CHATSTATES = 'http://jabber.org/protocol/chatstates';
-/* harmony export (immutable) */ __webpack_exports__["_29"] = NS_CHATSTATES;
+/* harmony export (immutable) */ __webpack_exports__["_31"] = NS_CHATSTATES;
 
 const NS_HINTS = 'urn:xmpp:hints';
-/* harmony export (immutable) */ __webpack_exports__["_32"] = NS_HINTS;
+/* harmony export (immutable) */ __webpack_exports__["_34"] = NS_HINTS;
 
 const NS_GROUP_MIX = 'jabber:iq:mixgroupchat';
-/* harmony export (immutable) */ __webpack_exports__["_31"] = NS_GROUP_MIX;
+/* harmony export (immutable) */ __webpack_exports__["_33"] = NS_GROUP_MIX;
 
 
 // Values
 const RECENT_LIST_COUNT = 0;
-/* harmony export (immutable) */ __webpack_exports__["_45"] = RECENT_LIST_COUNT;
+/* harmony export (immutable) */ __webpack_exports__["_47"] = RECENT_LIST_COUNT;
 
 const CALLBACK_LISTENERS = ['connectionListener', 'presenceListener', 'friendsListListener', 'messageListener', 'userProfileListener', 'replyMessageListener', 'favouriteMessageListener', 'groupProfileListener', 'groupMsgInfoListener', 'mediaUploadListener', 'mediaDownloadListener', 'blockUserListener'];
-/* harmony export (immutable) */ __webpack_exports__["o"] = CALLBACK_LISTENERS;
+/* harmony export (immutable) */ __webpack_exports__["p"] = CALLBACK_LISTENERS;
 
 const TOKEN_EXPIRY_TIME = 54 * 60;
-/* harmony export (immutable) */ __webpack_exports__["_58"] = TOKEN_EXPIRY_TIME;
+/* harmony export (immutable) */ __webpack_exports__["_60"] = TOKEN_EXPIRY_TIME;
  // In Seconds - 54 Minitues
 const TOKEN_EXPIRY_INTERVAL = 1 * 60 * 1000;
-/* harmony export (immutable) */ __webpack_exports__["_57"] = TOKEN_EXPIRY_INTERVAL;
+/* harmony export (immutable) */ __webpack_exports__["_59"] = TOKEN_EXPIRY_INTERVAL;
  // In Seconds - 5 Mins Interval
 const IMAGE_THUMB_QUALITY = 0.5;
-/* harmony export (immutable) */ __webpack_exports__["U"] = IMAGE_THUMB_QUALITY;
+/* harmony export (immutable) */ __webpack_exports__["V"] = IMAGE_THUMB_QUALITY;
 
 const GOOGLE_TRANSLATE_URL = 'https://translation.googleapis.com/language/translate/v2';
-/* harmony export (immutable) */ __webpack_exports__["I"] = GOOGLE_TRANSLATE_URL;
+/* harmony export (immutable) */ __webpack_exports__["J"] = GOOGLE_TRANSLATE_URL;
 
 
 // Regex
@@ -4063,16 +4084,16 @@ const JID_OLD = /^[\w-\.]+@([\w-]+\/)+[Web]+\-[0-9a-zA-Z-]{1,}/;
 /* unused harmony export JID_OLD */
 
 const BARE_JID = /^([^( "'&\/:<>@\\)])+\@(((?!mix\.).)[^( "'&\/:<>@\\)]{1,})$/;
-/* harmony export (immutable) */ __webpack_exports__["l"] = BARE_JID;
+/* harmony export (immutable) */ __webpack_exports__["m"] = BARE_JID;
 
 const MIX_BARE_JID = /^([^( "'&\/:<>@\\)])+\@(mix\.[^( "'&\/:<>@\\)]{1,})$/;
-/* harmony export (immutable) */ __webpack_exports__["_21"] = MIX_BARE_JID;
+/* harmony export (immutable) */ __webpack_exports__["_23"] = MIX_BARE_JID;
 
 const JID = /^([^( "'&\/:<>@\\)])+\@([^( "'&\/:<>@\\)]{1,})+\/((Web|Mobile)[^( "'&\/:<>@\\)]{1,})/;
 /* unused harmony export JID */
 
 const EMAIL = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
-/* harmony export (immutable) */ __webpack_exports__["A"] = EMAIL;
+/* harmony export (immutable) */ __webpack_exports__["B"] = EMAIL;
 
 const TIMESTAMP = /^([0-9]{13,16}$)/;
 /* unused harmony export TIMESTAMP */
@@ -4101,22 +4122,22 @@ const ALLOWED_DOCUMENT_FORMATS = ['doc', 'docx', 'pdf', 'xls', 'xlsx', 'txt', 'c
 
 // MEDIA CONSTANTS
 const IMAGE_FORMATS = ['image/png', 'image/jpeg', 'image/jpg'];
-/* harmony export (immutable) */ __webpack_exports__["T"] = IMAGE_FORMATS;
+/* harmony export (immutable) */ __webpack_exports__["U"] = IMAGE_FORMATS;
 
 const IOS_IMAGE_FORMATS = ['image', 'image/png', 'image/jpeg', 'image/jpg'];
-/* harmony export (immutable) */ __webpack_exports__["X"] = IOS_IMAGE_FORMATS;
+/* harmony export (immutable) */ __webpack_exports__["Y"] = IOS_IMAGE_FORMATS;
 
 const AUDIO_FORMATS = ['audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/mpeg', 'audio/aac', 'audio/vnd.dlna.adts'];
-/* harmony export (immutable) */ __webpack_exports__["j"] = AUDIO_FORMATS;
+/* harmony export (immutable) */ __webpack_exports__["k"] = AUDIO_FORMATS;
 
 const VIDEO_FORMATS = ['video/mp4'];
-/* harmony export (immutable) */ __webpack_exports__["_76"] = VIDEO_FORMATS;
+/* harmony export (immutable) */ __webpack_exports__["_78"] = VIDEO_FORMATS;
 
 const IOS_VIDEO_FORMATS = ['video', 'video/mov'];
-/* harmony export (immutable) */ __webpack_exports__["Y"] = IOS_VIDEO_FORMATS;
+/* harmony export (immutable) */ __webpack_exports__["Z"] = IOS_VIDEO_FORMATS;
 
 const DOCUMENT_FORMATS = ['application/pdf', 'application/msword', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint', 'text/plain', 'text/csv', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/zip', 'application/x-zip-compressed', 'application/rar', 'application/vnd.rar', 'application/excel', 'application/x-excel', 'application/x-msexcel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'];
-/* harmony export (immutable) */ __webpack_exports__["z"] = DOCUMENT_FORMATS;
+/* harmony export (immutable) */ __webpack_exports__["A"] = DOCUMENT_FORMATS;
 
 const ALLOWED_ALL_FILE_FORMATS = ['jpg', 'jpeg', 'png', 'mp3', 'wav', 'aac', 'mpeg', 'mp4', 'doc', 'docx', 'pdf', 'xls', 'xlsx', 'txt', 'csv', 'ppt', 'zip', 'rar', 'pptx', 'acc'];
 /* unused harmony export ALLOWED_ALL_FILE_FORMATS */
@@ -4129,29 +4150,29 @@ const CHAT_AUDIOS = 'chataudios';
 
 
 const MAX_WIDTH_WEB = 330;
-/* harmony export (immutable) */ __webpack_exports__["_10"] = MAX_WIDTH_WEB;
+/* harmony export (immutable) */ __webpack_exports__["_12"] = MAX_WIDTH_WEB;
 
 const MIN_WIDTH_WEB = 240;
-/* harmony export (immutable) */ __webpack_exports__["_19"] = MIN_WIDTH_WEB;
+/* harmony export (immutable) */ __webpack_exports__["_21"] = MIN_WIDTH_WEB;
 
 const MAX_HEIGHT_WEB = 338;
-/* harmony export (immutable) */ __webpack_exports__["_8"] = MAX_HEIGHT_WEB;
+/* harmony export (immutable) */ __webpack_exports__["_10"] = MAX_HEIGHT_WEB;
 
 const MIN_HEIGHT_WEB = 83;
-/* harmony export (immutable) */ __webpack_exports__["_16"] = MIN_HEIGHT_WEB;
+/* harmony export (immutable) */ __webpack_exports__["_18"] = MIN_HEIGHT_WEB;
 
 
 const MAX_WIDTH_AND = 250;
-/* harmony export (immutable) */ __webpack_exports__["_9"] = MAX_WIDTH_AND;
+/* harmony export (immutable) */ __webpack_exports__["_11"] = MAX_WIDTH_AND;
 
 const MIN_WIDTH_AND = 210;
-/* harmony export (immutable) */ __webpack_exports__["_18"] = MIN_WIDTH_AND;
+/* harmony export (immutable) */ __webpack_exports__["_20"] = MIN_WIDTH_AND;
 
 const MAX_HEIGHT_AND = 320;
-/* harmony export (immutable) */ __webpack_exports__["_7"] = MAX_HEIGHT_AND;
+/* harmony export (immutable) */ __webpack_exports__["_9"] = MAX_HEIGHT_AND;
 
 const MIN_HEIGHT_AND = 80;
-/* harmony export (immutable) */ __webpack_exports__["_15"] = MIN_HEIGHT_AND;
+/* harmony export (immutable) */ __webpack_exports__["_17"] = MIN_HEIGHT_AND;
 
 
 const MIN_OFFSET_WIDTH = 280;
@@ -4162,7 +4183,7 @@ const MIN_OFFSET_HEIGHT = 280;
 
 
 const MIN_THUMB_WIDTH = 322;
-/* harmony export (immutable) */ __webpack_exports__["_17"] = MIN_THUMB_WIDTH;
+/* harmony export (immutable) */ __webpack_exports__["_19"] = MIN_THUMB_WIDTH;
 
 
 const PREVIEW_MEDIA_TYPES = ['image', 'video', 'audio', 'file'];
@@ -4192,15 +4213,89 @@ const CHAT_HISTORY_LIMIT = 20;
 
 // api call error message
 const NETWORK_ERROR = 'Network Error';
-/* harmony export (immutable) */ __webpack_exports__["_23"] = NETWORK_ERROR;
+/* harmony export (immutable) */ __webpack_exports__["_25"] = NETWORK_ERROR;
 
 const USER_CANCELLED = 'User Cancelled!';
-/* harmony export (immutable) */ __webpack_exports__["_68"] = USER_CANCELLED;
+/* harmony export (immutable) */ __webpack_exports__["_70"] = USER_CANCELLED;
 
 
 // Notification Message Contents
 const NOTIFY_CONTENTS = ['Text', 'Image', 'Video', 'Audio', 'Document', 'Location'];
-/* harmony export (immutable) */ __webpack_exports__["_25"] = NOTIFY_CONTENTS;
+/* harmony export (immutable) */ __webpack_exports__["_27"] = NOTIFY_CONTENTS;
+
+
+//error
+const ERROR_CODE = "403";
+/* unused harmony export ERROR_CODE */
+
+const ERROR_MESSAGE = "Feature unavailable for your plan";
+/* unused harmony export ERROR_MESSAGE */
+
+const LOGIN_EXCEEDED_ERROR_MESSAGE = "You have reached maximum sessions allowed.";
+/* unused harmony export LOGIN_EXCEEDED_ERROR_MESSAGE */
+
+const API_BASE_URL_EMPTY_ERROR_MESSAGE = "API base url cannot be empty";
+/* unused harmony export API_BASE_URL_EMPTY_ERROR_MESSAGE */
+
+const LICENSE_KEY_EMPTY_ERROR_MESSAGE = "License key cannot be null or empty";
+/* unused harmony export LICENSE_KEY_EMPTY_ERROR_MESSAGE */
+
+const INVALID_LICENSE_KEY_ERROR_MESSAGE = "Invalid License key";
+/* unused harmony export INVALID_LICENSE_KEY_ERROR_MESSAGE */
+
+const INVALID_API_BASE_URL_ERROR_MESSAGE = "Invalid api base url";
+/* unused harmony export INVALID_API_BASE_URL_ERROR_MESSAGE */
+
+const API_BASE_URL_NOT_CONFIGURED_ERROR_MESSAGE = "SDK is not initialized successfully, Please initialize the SDK.";
+/* harmony export (immutable) */ __webpack_exports__["g"] = API_BASE_URL_NOT_CONFIGURED_ERROR_MESSAGE;
+
+const LICENSE_KEY_NOT_CONFIGURED_ERROR_MESSAGE = "License key is not configured, Please configure license key in initializeSDK.";
+/* harmony export (immutable) */ __webpack_exports__["_5"] = LICENSE_KEY_NOT_CONFIGURED_ERROR_MESSAGE;
+
+const USER_IDENTIFIER_EMPTY_ERROR_MESSAGE = "User identifier is empty, Please pass valid user identifier";
+/* unused harmony export USER_IDENTIFIER_EMPTY_ERROR_MESSAGE */
+
+const USER_IDENTIFIER_WHITE_SPACE_ERROR_MESSAGE = "User identifier should not contain the whitespaces";
+/* unused harmony export USER_IDENTIFIER_WHITE_SPACE_ERROR_MESSAGE */
+
+const USER_IDENTIFIER_SPECIAL_CHARACTER_ERROR_MESSAGE = "User identifiers can only contain lowercase alphanumeric characters, hyphens (-), and underscores (_).";
+/* unused harmony export USER_IDENTIFIER_SPECIAL_CHARACTER_ERROR_MESSAGE */
+
+const XMPP_CONNECTION_ERROR_MESSAGE = "Not registered with MirrorFly SDK, Please call SDK.register() or SDK.connect() method before call this function";
+/* unused harmony export XMPP_CONNECTION_ERROR_MESSAGE */
+
+const TOJID_COMPARE_WITH_LOCAL_JID_ERROR_MESSAGE = "toJid should not be current user jid";
+/* unused harmony export TOJID_COMPARE_WITH_LOCAL_JID_ERROR_MESSAGE */
+
+const TOJID_COMPARE_WITH_API_BASE_URL_ERROR_MESSAGE = "Invalid toJid, Please get toJid from SDK.getJid() by passing user identifier";
+/* unused harmony export TOJID_COMPARE_WITH_API_BASE_URL_ERROR_MESSAGE */
+
+const TOJID_EMPTY_ERROR_MESSAGE = "ToJid cannot be empty";
+/* unused harmony export TOJID_EMPTY_ERROR_MESSAGE */
+
+const TEXT_MESSAGE_ERROR_MESSAGE = "Provided text message is empty";
+/* unused harmony export TEXT_MESSAGE_ERROR_MESSAGE */
+
+const MESSAGE_META_DATA_ERROR_MESSAGE = "Message Meta data type should be string";
+/* unused harmony export MESSAGE_META_DATA_ERROR_MESSAGE */
+
+const MESSAGE_TOPIC_ID_ERROR_MESSAGE = "Message Topic Id type should be string";
+/* unused harmony export MESSAGE_TOPIC_ID_ERROR_MESSAGE */
+
+const TOPIC_META_DATA_ERROR_MESSAGE = "Topic Meta data type should be string";
+/* unused harmony export TOPIC_META_DATA_ERROR_MESSAGE */
+
+const MEETLINK_ERROR_MESSAGE = "Meet link should not be empty or null";
+/* unused harmony export MEETLINK_ERROR_MESSAGE */
+
+const SCHEDULEDDATETIME_ERROR_MESSAGE = "Scheduled DateTime should not be empty or null";
+/* unused harmony export SCHEDULEDDATETIME_ERROR_MESSAGE */
+
+const SCHEDULEDDATETIME_INVALID_ERROR_MESSAGE = "Scheduled DateTime is invalid";
+/* unused harmony export SCHEDULEDDATETIME_INVALID_ERROR_MESSAGE */
+
+const INVALID_INPUT_DATA = "meetMessageObject is not valid";
+/* unused harmony export INVALID_INPUT_DATA */
 
 
 /***/ }),
@@ -8767,7 +8862,7 @@ const getUserDetails = callbackListener => {
 
 
 const getPermissionDeniedError = (callType, havingVideoPermission, havingAudioPermission) => {
-    if (callType === __WEBPACK_IMPORTED_MODULE_8__helpers_constants__["_74" /* VIDEO */] && !havingVideoPermission && !havingAudioPermission) {
+    if (callType === __WEBPACK_IMPORTED_MODULE_8__helpers_constants__["_76" /* VIDEO */] && !havingVideoPermission && !havingAudioPermission) {
         return {
             message: "Camera and microphone permissions denied",
             error: "Both camera and microphone permissions denied",
@@ -8776,7 +8871,7 @@ const getPermissionDeniedError = (callType, havingVideoPermission, havingAudioPe
             action: "makeCall",
             sdkStatus: __WEBPACK_IMPORTED_MODULE_1__constants__["_16" /* MEDIA_ACCESS_ERROR */]
         };
-    } else if (callType === __WEBPACK_IMPORTED_MODULE_8__helpers_constants__["_74" /* VIDEO */] && !havingVideoPermission) {
+    } else if (callType === __WEBPACK_IMPORTED_MODULE_8__helpers_constants__["_76" /* VIDEO */] && !havingVideoPermission) {
         return {
             message: "Camera permission denied",
             error: "Camera permission denied",
@@ -9690,14 +9785,14 @@ const handleUnSentMsg = async () => {
     let replyTo = '';
     unSentMessages.forEach(async element => {
       let msgResponse, cypherText, fileToken;
-      if (element.msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_55" /* TEXT */]) {
-        msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_6__modules_utils__["d" /* handleMessages */])(element.msgBody.message, __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_55" /* TEXT */], element.msgId, replyTo, element.fromUserJid, '', {});
+      if (element.msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_57" /* TEXT */]) {
+        msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_6__modules_utils__["d" /* handleMessages */])(element.msgBody.message, __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_57" /* TEXT */], element.msgId, replyTo, element.fromUserJid, '', {});
         cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), element.msgId);
         // Validating JID to Send Message to Single/Group Chat
-        if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_21" /* MIX_BARE_JID */].test(element.fromUserJid)) Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(element.fromUserJid, element.mid, __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_55" /* TEXT */], cypherText);
-        Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["d" /* sendMessageIQ */])(element.fromUserJid, element.msgId, __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_55" /* TEXT */], cypherText);
+        if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_23" /* MIX_BARE_JID */].test(element.fromUserJid)) Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(element.fromUserJid, element.mid, __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_57" /* TEXT */], cypherText);
+        Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["d" /* sendMessageIQ */])(element.fromUserJid, element.msgId, __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_57" /* TEXT */], cypherText);
       }
-      if (element.msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["R" /* IMAGE */] || element.msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_74" /* VIDEO */]) {
+      if (element.msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["S" /* IMAGE */] || element.msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_76" /* VIDEO */]) {
         var _element$msgBody$medi = element.msgBody.media;
         const caption = _element$msgBody$medi.caption,
               duration = _element$msgBody$medi.duration,
@@ -9732,7 +9827,7 @@ const handleUnSentMsg = async () => {
         cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), element.msgId);
         fileToken = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["o" /* getFileTokenFromMsgBody */])(msgResponse.message);
         if (msgResponse.statusCode === 200) {
-          if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_21" /* MIX_BARE_JID */].test(element.fromUserJid)) return Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(element.fromUserJid, element.msgId, element.msgBody.message_type, cypherText, fileToken, msgResponse.message.media.thumb_image);
+          if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_23" /* MIX_BARE_JID */].test(element.fromUserJid)) return Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(element.fromUserJid, element.msgId, element.msgBody.message_type, cypherText, fileToken, msgResponse.message.media.thumb_image);
           return Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["d" /* sendMessageIQ */])(element.fromUserJid, element.msgId, element.msgBody.message_type, cypherText, fileToken, msgResponse.message.media.thumb_image);
         }
       }
@@ -9838,10 +9933,10 @@ const mediaDetailConstructor = (chatMessage, mediaDetail) => {
 const replyMsgConstructor = (replyId, realm) => {
   const messageTable = realm.objectForPrimaryKey('MessageTable', replyId);
   let _msgBody = {};
-  if (messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_55" /* TEXT */]) {
+  if (messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_57" /* TEXT */]) {
     _msgBody = Object(__WEBPACK_IMPORTED_MODULE_10__controllers_messageDetailTable__["b" /* getMessageDetail */])(replyId, realm);
   }
-  if (messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["R" /* IMAGE */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_74" /* VIDEO */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["h" /* AUDIO */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["B" /* FILE */]) {
+  if (messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["S" /* IMAGE */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_76" /* VIDEO */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["i" /* AUDIO */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["C" /* FILE */]) {
     const mediaDetail = Object(__WEBPACK_IMPORTED_MODULE_11__controllers_mediaDetailTable__["c" /* getMediaDetailWithRealm */])(mid, realm);
     _msgBody = mediaDetailConstructor(messageTable, mediaDetail);
   }
@@ -9878,20 +9973,20 @@ const msgBodyConstructor = (chatMessage, realm, nickName = '') => {
     msgBody.nickName = nickName;
     msgBody.message_type = chatMessage.msgType;
     switch (chatMessage.msgType) {
-      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["R" /* IMAGE */]:
-      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_74" /* VIDEO */]:
-      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["h" /* AUDIO */]:
-      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["B" /* FILE */]:
+      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["S" /* IMAGE */]:
+      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_76" /* VIDEO */]:
+      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["i" /* AUDIO */]:
+      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["C" /* FILE */]:
         const mediaDetail = Object(__WEBPACK_IMPORTED_MODULE_11__controllers_mediaDetailTable__["c" /* getMediaDetailWithRealm */])(chatMessage.mid, realm);
         if (mediaDetail) {
           msgBody.media = mediaDetailConstructor(chatMessage, mediaDetail);
           msgBody.nickName = nickName;
         }
         break;
-      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_4" /* LOCATION */]:
+      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_6" /* LOCATION */]:
         msgBody.location = Object(__WEBPACK_IMPORTED_MODULE_14__controllers_locationMessageTable__["b" /* getLocationMsg */])(realm, chatMessage.mid);
         break;
-      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["v" /* CONTACT */]:
+      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["w" /* CONTACT */]:
         msgBody.contact = Object(__WEBPACK_IMPORTED_MODULE_15__controllers_contactMessageTable__["b" /* getContactMsg */])(realm, chatMessage.mid);
         break;
     }
@@ -9939,7 +10034,7 @@ const getMessageByIdDB = async mid => {
     const messageTable = realm.objectForPrimaryKey('MessageTable', mid);
     if (!messageTable) {
       successRes.data = {};
-      successRes.message = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_26" /* NO_MEESAGE_FOUND_DB */];
+      successRes.message = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_28" /* NO_MEESAGE_FOUND_DB */];
       return successRes.data;
     }
     const recentChatList = realm.objects('RecentTable').filtered('mid = $0', mid);
@@ -10550,7 +10645,7 @@ const accessTokenRegenerate = async () => {
     username: credentials.username,
     type: __WEBPACK_IMPORTED_MODULE_4_react_native__["Platform"].OS // TODO: change this as per the requirement once migration is done
   };
-  const apiResponse = await sendRequest(__WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_13" /* METHOD_POST */], apiEndPoints.login, JSON.stringify(data), '', '');
+  const apiResponse = await sendRequest(__WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_15" /* METHOD_POST */], apiEndPoints.login, JSON.stringify(data), '', '');
 
   if (apiResponse && apiResponse.status === 200) {
     const userToken = apiResponse.data.token;
@@ -12289,7 +12384,7 @@ const getChatMessagesDB = toJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["f" /* getMessages */])(toJid);
@@ -12324,11 +12419,11 @@ const getChatMessages = (toJid, position, lastRowId, limit = 20, sendSeen = true
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }]);
 
     if (response.statusCode === 200) {
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["f" /* getGroupChatIQ */])(toJid, position, lastRowId, limit, sendSeen);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["f" /* getGroupChatIQ */])(toJid, position, lastRowId, limit, sendSeen);
       return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["n" /* getSingleChatIQ */])(toJid, position, lastRowId, limit, sendSeen);
     }
     return response;
@@ -12353,22 +12448,22 @@ const sendTextMessage = async (toJid, msgBody, msgId, replyTo = '') => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }, {
       key: 'msgBody',
       value: msgBody,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
     }]);
 
     if (response.statusCode === 200) {
       const messageId = msgId ? msgId : Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA');
-      const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])(msgBody, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_55" /* TEXT */], messageId, replyTo, toJid, '', {});
+      const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])(msgBody, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_57" /* TEXT */], messageId, replyTo, toJid, '', {});
       if (msgResponse.statusCode === 200) {
-        Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, msgBody, msgId, replyTo, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_55" /* TEXT */]);
+        Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, msgBody, msgId, replyTo, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_57" /* TEXT */]);
         const cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), messageId);
         // Validating JID to Send Message to Single/Group Chat
-        if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, messageId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_55" /* TEXT */], cypherText);
-        return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, messageId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_55" /* TEXT */], cypherText);
+        if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, messageId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_57" /* TEXT */], cypherText);
+        return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, messageId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_57" /* TEXT */], cypherText);
       }
       return msgResponse;
     }
@@ -12393,7 +12488,7 @@ const sendAttachmentMessage = async (toJid, options, type, msgId, replyTo = '') 
   const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
     key: 'toJid',
     value: toJid,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
   }]);
 
   if (response.statusCode === 200) {
@@ -12402,7 +12497,7 @@ const sendAttachmentMessage = async (toJid, options, type, msgId, replyTo = '') 
 
     if (msgResponse.statusCode === 200) {
       const cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), messageId);
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, messageId, type, cypherText);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, messageId, type, cypherText);
       return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, messageId, type, cypherText);
     }
     return msgResponse;
@@ -12426,26 +12521,26 @@ const sendImageMessage = async (toJid, imageFile, fileOptions, replyTo = '') => 
   const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
     key: 'toJid',
     value: toJid,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
   }, {
     key: 'imageFile',
     value: imageFile,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["S" /* IMAGEFILE_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["T" /* IMAGEFILE_REQUIRED */]
   }, {
     key: 'fileOptions',
     value: fileOptions,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_40" /* OBJECT_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_42" /* OBJECT_REQUIRED */]
   }]);
   if (response.statusCode === 200) {
     const msgId = fileOptions.msgId ? fileOptions.msgId : Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA');
-    const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["R" /* IMAGE */], msgId, replyTo, toJid, imageFile, fileOptions);
+    const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["S" /* IMAGE */], msgId, replyTo, toJid, imageFile, fileOptions);
 
     if (msgResponse && msgResponse.statusCode === 200) {
       const cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), msgId),
             fileToken = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["o" /* getFileTokenFromMsgBody */])(msgResponse.message);
 
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["R" /* IMAGE */], cypherText, fileToken, msgResponse.message.media.thumb_image);
-      return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["R" /* IMAGE */], cypherText, fileToken, msgResponse.message.media.thumb_image);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["S" /* IMAGE */], cypherText, fileToken, msgResponse.message.media.thumb_image);
+      return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["S" /* IMAGE */], cypherText, fileToken, msgResponse.message.media.thumb_image);
     }
     return msgResponse;
   }
@@ -12468,27 +12563,27 @@ const sendAudioMessage = async (toJid, audioFile, fileOptions, replyTo = '') => 
   const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
     key: 'toJid',
     value: toJid,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
   }, {
     key: 'audioFile',
     value: audioFile,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["i" /* AUDIOFILE_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["j" /* AUDIOFILE_REQUIRED */]
   }, {
     key: 'fileOptions',
     value: fileOptions,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_40" /* OBJECT_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_42" /* OBJECT_REQUIRED */]
   }]);
 
   if (response.statusCode === 200) {
     const msgId = fileOptions.msgId ? fileOptions.msgId : Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA');
-    const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["h" /* AUDIO */], msgId, replyTo, toJid, audioFile, fileOptions);
+    const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["i" /* AUDIO */], msgId, replyTo, toJid, audioFile, fileOptions);
 
     if (msgResponse && msgResponse.statusCode === 200) {
       const cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), msgId),
             fileToken = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["o" /* getFileTokenFromMsgBody */])(msgResponse.message);
 
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["h" /* AUDIO */], cypherText, fileToken);
-      return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["h" /* AUDIO */], cypherText, fileToken);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["i" /* AUDIO */], cypherText, fileToken);
+      return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["i" /* AUDIO */], cypherText, fileToken);
     }
     return msgResponse;
   }
@@ -12511,26 +12606,26 @@ const sendVideoMessage = async (toJid, videoFile, fileOptions, replyTo = '') => 
   const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
     key: 'toJid',
     value: toJid,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
   }, {
     key: 'videoFile',
     value: videoFile,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_75" /* VIDEOFILE_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_77" /* VIDEOFILE_REQUIRED */]
   }, {
     key: 'fileOptions',
     value: fileOptions,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_40" /* OBJECT_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_42" /* OBJECT_REQUIRED */]
   }]);
   if (response.statusCode === 200) {
     const msgId = fileOptions.msgId ? fileOptions.msgId : Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA');
-    const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_74" /* VIDEO */], msgId, replyTo, toJid, videoFile, fileOptions);
+    const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_76" /* VIDEO */], msgId, replyTo, toJid, videoFile, fileOptions);
 
     if (msgResponse && msgResponse.statusCode === 200) {
       const cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), msgId),
             fileToken = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["o" /* getFileTokenFromMsgBody */])(msgResponse.message);
 
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_74" /* VIDEO */], cypherText, fileToken, msgResponse.message.media.thumb_image);
-      return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_74" /* VIDEO */], cypherText, fileToken, msgResponse.message.media.thumb_image);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_76" /* VIDEO */], cypherText, fileToken, msgResponse.message.media.thumb_image);
+      return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_76" /* VIDEO */], cypherText, fileToken, msgResponse.message.media.thumb_image);
     }
     return msgResponse;
   }
@@ -12553,27 +12648,27 @@ const sendDocumentMessage = async (toJid, documentFile, fileOptions, replyTo = '
   const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
     key: 'toJid',
     value: toJid,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
   }, {
     key: 'documentFile',
     value: documentFile,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["y" /* DOCUMENTFILE_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["z" /* DOCUMENTFILE_REQUIRED */]
   }, {
     key: 'fileOptions',
     value: fileOptions,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_40" /* OBJECT_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_42" /* OBJECT_REQUIRED */]
   }]);
 
   if (response.statusCode === 200) {
     const msgId = fileOptions.msgId ? fileOptions.msgId : Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA');
-    const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["B" /* FILE */], msgId, replyTo, toJid, documentFile, fileOptions);
+    const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["C" /* FILE */], msgId, replyTo, toJid, documentFile, fileOptions);
 
     if (msgResponse && msgResponse.statusCode === 200) {
       const cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), msgId),
             fileToken = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["o" /* getFileTokenFromMsgBody */])(msgResponse.message);
 
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["B" /* FILE */], cypherText, fileToken);
-      return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["B" /* FILE */], cypherText, fileToken);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["C" /* FILE */], cypherText, fileToken);
+      return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["C" /* FILE */], cypherText, fileToken);
     }
     return msgResponse;
   }
@@ -12599,7 +12694,7 @@ const sendMediaMessageData = async (toJid, msgType, fileOptions, msgId, replyTo 
     if (msgResponse.statusCode === 200) {
       const messageId = msgId || Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA');
       const cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), messageId);
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, messageId, msgType, cypherText);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, messageId, msgType, cypherText);
       return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, messageId, msgType, cypherText);
     }
     return msgResponse;
@@ -12621,11 +12716,11 @@ const sendSeenStatus = (toJid, msgId, groupId) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["Z" /* JID_FORMAT_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_0" /* JID_FORMAT_REQUIRED */]
     }, {
       key: 'msgId',
       value: msgId,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["e" /* sendSeenStatusIQ */])(toJid, msgId, groupId);
@@ -12652,7 +12747,7 @@ const getMediaMessages = (toJid, msgId = '') => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["k" /* getMediaMessagesIQ */])(toJid, msgId);
@@ -12677,7 +12772,7 @@ const getMessageById = (msgId, chatType) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'msgId',
       value: msgId,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_11__db_Utils__["f" /* getMessageByIdDB */])(msgId);
@@ -12703,7 +12798,7 @@ const getReplyMessage = (replyMsgId, chatType) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'replyMsgId',
       value: replyMsgId,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["m" /* getReplyMessageIQ */])(replyMsgId, chatType);
@@ -12728,11 +12823,11 @@ const forwardMessages = async (toJid, msgIds, isAsync = true) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }, {
       key: 'msgIds',
       value: msgIds,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["g" /* ARRAY_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["h" /* ARRAY_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       for (let i = 0; i < msgIds.length; i++) {
@@ -12761,11 +12856,11 @@ const forwardMessagesToMultipleUsers = async (toJids, msgIds, isAsync = true, ne
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJids',
       value: toJids,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["g" /* ARRAY_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["h" /* ARRAY_REQUIRED */]
     }, {
       key: 'msgIds',
       value: msgIds,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["g" /* ARRAY_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["h" /* ARRAY_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       // Iterating Each Message and Each User Jid
@@ -12800,15 +12895,15 @@ const updateFavouriteStatus = (toJid, msgIds, isFavourite) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }, {
       key: 'msgIds',
       value: msgIds,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["g" /* ARRAY_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["h" /* ARRAY_REQUIRED */]
     }, {
       key: 'isFavourite',
       value: isFavourite,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["n" /* BOOLEAN_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["o" /* BOOLEAN_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       for (let i = 0; i < msgIds.length; i++) {
@@ -12867,7 +12962,7 @@ const clearChat = async (toJid, favourites = true) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["a" /* clearChatDB */])(toJid);
@@ -12894,7 +12989,7 @@ const deleteChat = (toJid, favourites = true) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       Object(__WEBPACK_IMPORTED_MODULE_11__db_Utils__["e" /* deleteChatDB */])(toJid);
@@ -12951,7 +13046,7 @@ const deleteMessagesForMe = async (toJid, msgIds, deleteMediaFromMobile) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }, {
       key: 'msgIds',
       value: msgIds,
@@ -12982,7 +13077,7 @@ const deleteMessagesForEveryone = async (toJid, msgIds, deleteMediaFromMobile) =
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }, {
       key: 'msgIds',
       value: msgIds,
@@ -12990,7 +13085,7 @@ const deleteMessagesForEveryone = async (toJid, msgIds, deleteMediaFromMobile) =
     }]);
     if (response.statusCode === 200) {
       const iqSendMsdIds = await Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["c" /* deleteMessagesForEveryoneDB */])(toJid, msgIds);
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["p" /* recallGroupMessageIQ */])(toJid, iqSendMsdIds.join());
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["p" /* recallGroupMessageIQ */])(toJid, iqSendMsdIds.join());
       return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["a" /* recallMessageIQ */])(toJid, iqSendMsdIds.join());
     }
     return response;
@@ -13013,10 +13108,10 @@ const sendTypingStatus = toJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["u" /* sendTypingStatusGroupIQ */])(toJid);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["u" /* sendTypingStatusGroupIQ */])(toJid);
       return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["g" /* sendTypingStatusIQ */])(toJid);
     }
     return response;
@@ -13039,10 +13134,10 @@ const sendTypingGoneStatus = toJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["t" /* sendTypingGoneStatusGroupIQ */])(toJid);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["t" /* sendTypingGoneStatusGroupIQ */])(toJid);
       return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["f" /* sendTypingGoneStatusIQ */])(toJid);
     }
     return response;
@@ -13106,13 +13201,12 @@ const getNotificationData = async remoteMessage => {
     var _remoteMessage$notifi2 = _remoteMessage$notifi.title;
     const title = _remoteMessage$notifi2 === undefined ? '' : _remoteMessage$notifi2;
     var _remoteMessage$data = remoteMessage.data;
-    _remoteMessage$data = _remoteMessage$data === undefined ? {} : _remoteMessage$data;
-    const chat_type = _remoteMessage$data.chat_type,
+    const type = _remoteMessage$data.type,
+          chat_type = _remoteMessage$data.chat_type,
           to_user = _remoteMessage$data.to_user,
           message_time = _remoteMessage$data.message_time,
           message_content = _remoteMessage$data.message_content,
           push_from = _remoteMessage$data.push_from,
-          type = _remoteMessage$data.type,
           userDomain = _remoteMessage$data.userDomain,
           from_user = _remoteMessage$data.from_user,
           user_type = _remoteMessage$data.user_type,
@@ -13134,7 +13228,7 @@ const getNotificationData = async remoteMessage => {
       return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])('Data Saved');
     }
 
-    if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_25" /* NOTIFY_CONTENTS */].includes(androidTitle)) {
+    if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_27" /* NOTIFY_CONTENTS */].includes(androidTitle)) {
       const reqPayload = {
         carbon: false,
         chatType: chat_type,
@@ -13149,7 +13243,7 @@ const getNotificationData = async remoteMessage => {
         const delivered_api_url = await __WEBPACK_IMPORTED_MODULE_13__react_native_async_storage_async_storage___default.a.getItem('delivered_api_url');
         const iv = await __WEBPACK_IMPORTED_MODULE_13__react_native_async_storage_async_storage___default.a.getItem('iv');
         const userToken = await Object(__WEBPACK_IMPORTED_MODULE_15__helpers_localDb__["c" /* getToken */])();
-        const foundMsg = await Object(__WEBPACK_IMPORTED_MODULE_6__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_14" /* METHOD_PUT */], delivered_api_url, reqPayload, userToken);
+        const foundMsg = await Object(__WEBPACK_IMPORTED_MODULE_6__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_16" /* METHOD_PUT */], delivered_api_url, reqPayload, userToken);
         /**
          console.log(
            'SDK getNotificationData msgBody',
@@ -13176,7 +13270,7 @@ const getMediaURL = async (fileToken, mediaType) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'File Token',
       value: fileToken,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
     }]);
 
     if (response.statusCode === 200) {
@@ -13207,11 +13301,11 @@ async function updateMuteNotification(toJid, isMuted) {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }, {
       key: 'isMuted',
       value: isMuted,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["n" /* BOOLEAN_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["o" /* BOOLEAN_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["x" /* updateMuteStatusIQ */])(toJid, isMuted);
@@ -13248,7 +13342,7 @@ const sendLocationMessage = async (toJid, lat, long, msgId, replyTo = '') => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }]);
 
     if (response.statusCode === 200) {
@@ -13257,13 +13351,13 @@ const sendLocationMessage = async (toJid, lat, long, msgId, replyTo = '') => {
         latitude: lat.toString(),
         longitude: long.toString()
       };
-      const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_4" /* LOCATION */], messageId, replyTo, toJid, {}, fileOptions);
+      const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_6" /* LOCATION */], messageId, replyTo, toJid, {}, fileOptions);
       if (msgResponse.statusCode === 200) {
-        Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, '', msgId, replyTo, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_4" /* LOCATION */], {}, fileOptions);
+        Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, '', msgId, replyTo, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_6" /* LOCATION */], {}, fileOptions);
         // Validating JID to Send Message to Single/Group Chat
         // if (MIX_BARE_JID.test(toJid))
         //   return sendGroupMessageIQ(toJid, messageId, LOCATION, cypherText);
-        return sendAttachmentMessage(toJid, fileOptions, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_4" /* LOCATION */], msgId, replyTo);
+        return sendAttachmentMessage(toJid, fileOptions, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_6" /* LOCATION */], msgId, replyTo);
       }
       return msgResponse;
     }
@@ -13296,11 +13390,11 @@ const sendContactMessage = async (toJid, contacts, replyTo = '') => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }, {
       key: 'contacts',
       value: contacts,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["g" /* ARRAY_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["h" /* ARRAY_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       const messageResArr = [];
@@ -13308,12 +13402,12 @@ const sendContactMessage = async (toJid, contacts, replyTo = '') => {
         const msgId = contact.msgId;
 
         const messageId = msgId ? msgId : Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA');
-        const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["v" /* CONTACT */], messageId, replyTo, toJid, {}, contact);
+        const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["w" /* CONTACT */], messageId, replyTo, toJid, {}, contact);
         if (msgResponse.statusCode === 200) {
           // Storing data in DB
-          Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, '', messageId, replyTo, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["v" /* CONTACT */], {}, contact);
+          Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, '', messageId, replyTo, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["w" /* CONTACT */], {}, contact);
           // sending IQ to server
-          const result = await sendAttachmentMessage(toJid, contact, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["v" /* CONTACT */], msgId, replyTo);
+          const result = await sendAttachmentMessage(toJid, contact, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["w" /* CONTACT */], msgId, replyTo);
           messageResArr.push(result);
         }
       }
@@ -13345,7 +13439,7 @@ async function updateRecentChatUnreadCount(toJid) {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["y" /* updateRecentChatUnreadCountIQ */])(toJid);
@@ -13362,7 +13456,7 @@ const sendMediaMessage = async (toJid, msgId, type = '', file = {}, fileOptions 
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
     }]);
     if (response.statusCode !== 200) {
       return response;
@@ -13389,13 +13483,13 @@ const sendMediaMessage = async (toJid, msgId, type = '', file = {}, fileOptions 
       return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])('Media type is required', 202);
     }
     switch (_type) {
-      case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["B" /* FILE */]:
+      case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["C" /* FILE */]:
         return sendDocumentMessage(toJid, _file, _fileOptions, _replyTo);
-      case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["R" /* IMAGE */]:
+      case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["S" /* IMAGE */]:
         return sendImageMessage(toJid, _file, _fileOptions, _replyTo);
-      case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_74" /* VIDEO */]:
+      case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_76" /* VIDEO */]:
         return sendVideoMessage(toJid, _file, _fileOptions, _replyTo);
-      case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["h" /* AUDIO */]:
+      case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["i" /* AUDIO */]:
         return sendAudioMessage(toJid, _file, _fileOptions, _replyTo);
       default:
         return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])('Invalid Media type', 202);
@@ -14220,10 +14314,10 @@ const handleMessageCreate = async (toJid, msgBody = '', msgId, replyTo = '', typ
     const currentUserJid = await __WEBPACK_IMPORTED_MODULE_3__react_native_async_storage_async_storage___default.a.getItem('currentUserJID');
     const parsedCurrentJid = JSON.parse(currentUserJid);
     let userJid, chatType;
-    if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid)) {
-      chatType = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["K" /* GROUPCHAT */];
+    if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) {
+      chatType = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["L" /* GROUPCHAT */];
     } else {
-      chatType = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["p" /* CHAT */];
+      chatType = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["q" /* CHAT */];
       userJid = toJid.split('@').length > 1 ? toJid : `${toJid}@${parsedCurrentJid.split('@')[1]}`;
     }
     Object(__WEBPACK_IMPORTED_MODULE_0__roasterTable__["d" /* handleRoaster */])(userJid, chatType);
@@ -14235,7 +14329,7 @@ const handleMessageCreate = async (toJid, msgBody = '', msgId, replyTo = '', typ
       replyTo: replyTo
     };
     Object(__WEBPACK_IMPORTED_MODULE_6__messageDetailTable__["a" /* createMsgDetailTable */])(realm, msgDetail);
-    if (type === __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_4" /* LOCATION */]) {
+    if (type === __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_6" /* LOCATION */]) {
       const _locationData = {
         mid: msgId,
         latitude: fileOptions.latitude,
@@ -14244,7 +14338,7 @@ const handleMessageCreate = async (toJid, msgBody = '', msgId, replyTo = '', typ
       _locationData.mid = msgId;
       Object(__WEBPACK_IMPORTED_MODULE_13__locationMessageTable__["a" /* createLocationMsg */])(realm, _locationData);
     }
-    if (type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["R" /* IMAGE */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_74" /* VIDEO */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["h" /* AUDIO */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["B" /* FILE */]) {
+    if (type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["S" /* IMAGE */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_76" /* VIDEO */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["i" /* AUDIO */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["C" /* FILE */]) {
       var _file$type = file.type;
       const type = _file$type === undefined ? '' : _file$type;
       var _file$name = file.name;
@@ -14298,7 +14392,7 @@ const handleMessageCreate = async (toJid, msgBody = '', msgId, replyTo = '', typ
       };
       Object(__WEBPACK_IMPORTED_MODULE_7__mediaDetailTable__["a" /* createMediaDetailTable */])(realm, mediaDetail);
     }
-    if (type === __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["v" /* CONTACT */]) {
+    if (type === __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["w" /* CONTACT */]) {
       const _contactData = {
         mid: msgId,
         name: fileOptions.name,
@@ -14455,7 +14549,7 @@ const handleCreateIncomingMsg = async params => {
     const dbCheck = await Object(__WEBPACK_IMPORTED_MODULE_4__Utils__["b" /* dbCheckWithMsgId */])(msgId);
     if (dbCheck) return;
     const realm = await Object(__WEBPACK_IMPORTED_MODULE_12__realmDB__["a" /* getRealmDB */])();
-    if (msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_55" /* TEXT */] && chatType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["p" /* CHAT */]) {
+    if (msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_57" /* TEXT */] && chatType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["q" /* CHAT */]) {
       realm.write(() => {
         realm.create('MessageDetailTable', {
           mid: msgId,
@@ -14465,7 +14559,7 @@ const handleCreateIncomingMsg = async params => {
         });
       });
     }
-    if (msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_4" /* LOCATION */]) {
+    if (msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_6" /* LOCATION */]) {
       const location = msgBody.location;
 
       const locationDetail = {
@@ -14475,7 +14569,7 @@ const handleCreateIncomingMsg = async params => {
       };
       Object(__WEBPACK_IMPORTED_MODULE_13__locationMessageTable__["a" /* createLocationMsg */])(realm, locationDetail);
     }
-    if (msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["v" /* CONTACT */]) {
+    if (msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["w" /* CONTACT */]) {
       const contact = msgBody.contact;
 
       const contactDetail = {
@@ -14486,7 +14580,7 @@ const handleCreateIncomingMsg = async params => {
       };
       Object(__WEBPACK_IMPORTED_MODULE_14__contactMessageTable__["a" /* createContactMsg */])(realm, contactDetail);
     }
-    if (chatType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["p" /* CHAT */] && (msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["R" /* IMAGE */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_74" /* VIDEO */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["B" /* FILE */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["h" /* AUDIO */])) {
+    if (chatType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["q" /* CHAT */] && (msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["S" /* IMAGE */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_76" /* VIDEO */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["C" /* FILE */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["i" /* AUDIO */])) {
       const media = msgBody.media;
 
       realm.write(() => {
@@ -14525,7 +14619,7 @@ const deleteMsgBody = async (message, realm) => {
   // Delete records based on msgType
 
   switch (msgType) {
-    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_55" /* TEXT */]:
+    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_57" /* TEXT */]:
       realm.write(() => {
         const textMessage = realm.objectForPrimaryKey('MessageDetailTable', mid);
         if (textMessage) {
@@ -14533,10 +14627,10 @@ const deleteMsgBody = async (message, realm) => {
         }
       });
       break;
-    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["R" /* IMAGE */]:
-    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_74" /* VIDEO */]:
-    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["B" /* FILE */]:
-    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["h" /* AUDIO */]:
+    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["S" /* IMAGE */]:
+    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_76" /* VIDEO */]:
+    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["C" /* FILE */]:
+    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["i" /* AUDIO */]:
       realm.write(() => {
         const mediaMessage = realm.objectForPrimaryKey('MediaDetailTable', mid);
         if (mediaMessage) {
@@ -14545,7 +14639,7 @@ const deleteMsgBody = async (message, realm) => {
         }
       });
       break;
-    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_4" /* LOCATION */]:
+    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_6" /* LOCATION */]:
       realm.write(() => {
         const locationMessage = realm.objectForPrimaryKey('LocationMessageTable', mid);
         if (locationMessage) {
@@ -14553,7 +14647,7 @@ const deleteMsgBody = async (message, realm) => {
         }
       });
       break;
-    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["v" /* CONTACT */]:
+    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["w" /* CONTACT */]:
       realm.write(() => {
         const contactMessage = realm.objectForPrimaryKey('ContactMessageTable', mid);
         if (contactMessage) {
@@ -14626,10 +14720,10 @@ const deleteMessageDB = async (toJid, msgIds) => {
     });
     const latestMessage = await getLatestMessageByChatUser(toJid);
     let chatType = '';
-    if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid)) {
-      chatType = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["K" /* GROUPCHAT */];
+    if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) {
+      chatType = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["L" /* GROUPCHAT */];
     } else {
-      chatType = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["p" /* CHAT */];
+      chatType = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["q" /* CHAT */];
     }
     let params = {
       mid: '',
@@ -14749,7 +14843,7 @@ const initializeCall = (signallingServer = null, options = {}) => {
         const valiationRules = [{
             key: "signallingServer",
             value: signallingServer,
-            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_53" /* STRING_REQUIRED */]
+            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_55" /* STRING_REQUIRED */]
         }];
         const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
 
@@ -14779,7 +14873,7 @@ const makeCall = dataObj => {
     const valiationRules = [{
         key: "toUsers",
         value: toUsers,
-        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["g" /* ARRAY_REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["h" /* ARRAY_REQUIRED */]
     }];
     const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
     if (response.statusCode !== 200) return response;
@@ -14895,7 +14989,7 @@ const muteAudio = isMuted => {
     const valiationRules = [{
         key: "Audio mute",
         value: isMuted,
-        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["n" /* BOOLEAN_REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["o" /* BOOLEAN_REQUIRED */]
     }];
     const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
     if (response.statusCode !== 200) return response;
@@ -14908,7 +15002,7 @@ const muteVideo = isMuted => {
     const valiationRules = [{
         key: "Video mute",
         value: isMuted,
-        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["n" /* BOOLEAN_REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["o" /* BOOLEAN_REQUIRED */]
     }];
     const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
     if (response.statusCode !== 200) return response;
@@ -14932,7 +15026,7 @@ const isRemoteAudioMuted = userJid => {
     const validationRules = [{
         key: "userJid",
         value: userJid,
-        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_48" /* REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_50" /* REQUIRED */]
     }];
     const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(validationRules);
     if (response.statusCode !== 200) return response;
@@ -14947,7 +15041,7 @@ const isRemoteVideoMuted = userJid => {
     const valiationRules = [{
         key: "userJid",
         value: userJid,
-        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_48" /* REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_50" /* REQUIRED */]
     }];
     const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
     if (response.statusCode !== 200) return response;
@@ -14963,7 +15057,7 @@ const callSwitch = status => {
         const valiationRules = [{
             key: "status",
             value: status,
-            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_53" /* STRING_REQUIRED */]
+            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_55" /* STRING_REQUIRED */]
         }];
 
         let response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
@@ -15010,7 +15104,7 @@ const inviteUsers = toUsers => {
         const valiationRules = [{
             key: "toUsers",
             value: toUsers,
-            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["g" /* ARRAY_REQUIRED */]
+            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["h" /* ARRAY_REQUIRED */]
         }];
         const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
         if (response.statusCode !== 200) return response;
@@ -15045,7 +15139,7 @@ const sendCustomData = data => {
         const valiationRules = [{
             key: "Custom data",
             value: data,
-            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_48" /* REQUIRED */]
+            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_50" /* REQUIRED */]
         }];
         const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
         if (response.statusCode !== 200) return response;
@@ -15062,7 +15156,7 @@ const endUserFromCall = userJid => {
         const valiationRules = [{
             key: "User Jid",
             value: userJid,
-            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_48" /* REQUIRED */]
+            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_50" /* REQUIRED */]
         }];
         const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
         if (response.statusCode !== 200) return response;
@@ -15079,7 +15173,7 @@ const getUserCallStatus = userJid => {
         const valiationRules = [{
             key: "User Jid",
             value: userJid,
-            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_48" /* REQUIRED */]
+            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_50" /* REQUIRED */]
         }];
         const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
         if (response.statusCode !== 200) return response;
@@ -15102,7 +15196,7 @@ const showCallNotification = dataObj => {
         const valiationRules = [{
             key: "Input data",
             value: dataObj,
-            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_40" /* OBJECT_REQUIRED */]
+            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_42" /* OBJECT_REQUIRED */]
         }];
         const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
         if (response.statusCode !== 200) return response;
@@ -15130,11 +15224,11 @@ const subscribeCall = (roomLink, displayName, callback) => {
     const valiationRules = [{
         key: "roomLink",
         value: roomLink,
-        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_48" /* REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_50" /* REQUIRED */]
     }, {
         key: "callback",
         value: callback,
-        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["C" /* FUNCTION_REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["D" /* FUNCTION_REQUIRED */]
     }];
     const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
     if (response.statusCode !== 200) return response;
@@ -15151,7 +15245,7 @@ const joinCall = callback => {
     const valiationRules = [{
         key: "callback",
         value: callback,
-        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["C" /* FUNCTION_REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["D" /* FUNCTION_REQUIRED */]
     }];
     const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
     if (response.statusCode !== 200) return response;
@@ -15176,7 +15270,7 @@ const getCallUsername = userId => {
     const valiationRules = [{
         key: "userId",
         value: userId,
-        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_48" /* REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_50" /* REQUIRED */]
     }];
     const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
     if (response.statusCode !== 200) return response;
@@ -15200,7 +15294,7 @@ const getCallUsername = userId => {
 const createMeetLink = async () => {
     const apiEndPoints = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["d" /* getApiEndPoints */])();
     const token = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["t" /* getToken */])();
-    const response = await Object(__WEBPACK_IMPORTED_MODULE_13__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_13" /* METHOD_POST */], apiEndPoints.createRoom, {}, token);
+    const response = await Object(__WEBPACK_IMPORTED_MODULE_13__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_15" /* METHOD_POST */], apiEndPoints.createRoom, {}, token);
     if (response && response.status === 200) {
         const successResp = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
         successResp.data = response.data;
@@ -15409,7 +15503,7 @@ const receiveInviteUsers = data => {
  * @param {*} data - incoming call details
  */
 const incomingCall = data => {
-  Object(__WEBPACK_IMPORTED_MODULE_10__helpers_common__["A" /* setCallDisconnectedStatus */])(false);
+  Object(__WEBPACK_IMPORTED_MODULE_10__helpers_common__["B" /* setCallDisconnectedStatus */])(false);
   _sdk_incomingCallObj = data;
   let isVideoMute = true;
   if (data.callType === 'video') {
@@ -15438,7 +15532,7 @@ const incomingCall = data => {
  * User end the call
  */
 const _endCall = async status => {
-  Object(__WEBPACK_IMPORTED_MODULE_10__helpers_common__["A" /* setCallDisconnectedStatus */])(true);
+  Object(__WEBPACK_IMPORTED_MODULE_10__helpers_common__["B" /* setCallDisconnectedStatus */])(true);
   status = status || __WEBPACK_IMPORTED_MODULE_1__constants__["O" /* CALL_STATUS_ENDED */];
   Object(__WEBPACK_IMPORTED_MODULE_0__communication_callAdapter__["e" /* sendMessage */])(status);
   __WEBPACK_IMPORTED_MODULE_7__callLogs__["a" /* _sdk_callLogs */].update({
@@ -15456,7 +15550,7 @@ const _endCall = async status => {
  * @param {*} dataObj
  */
 const _makeCall = async dataObj => {
-  Object(__WEBPACK_IMPORTED_MODULE_10__helpers_common__["A" /* setCallDisconnectedStatus */])(false);
+  Object(__WEBPACK_IMPORTED_MODULE_10__helpers_common__["B" /* setCallDisconnectedStatus */])(false);
   await Object(__WEBPACK_IMPORTED_MODULE_5__functions__["w" /* resetCallData */])();
   const localUserCallId = Object(__WEBPACK_IMPORTED_MODULE_2__config__["d" /* generateLocalUserCallId */])();
   const toUsers = dataObj.toUsers,
@@ -15479,7 +15573,7 @@ const _makeCall = async dataObj => {
 
   try {
     const makeCallStream = await Object(__WEBPACK_IMPORTED_MODULE_3__media__["a" /* getMediaDevicesStream */])(callType);
-    havingVideoPermission = callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_74" /* VIDEO */] ? true : false;
+    havingVideoPermission = callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_76" /* VIDEO */] ? true : false;
     havingAudioPermission = true;
     Object(__WEBPACK_IMPORTED_MODULE_3__media__["e" /* setStream */])(makeCallStream);
     Object(__WEBPACK_IMPORTED_MODULE_8__users__["a" /* addOrUpdateCallUser */])({
@@ -15500,7 +15594,7 @@ const _makeCall = async dataObj => {
       havingAudioPermission = false;
     }
 
-    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_74" /* VIDEO */]) {
+    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_76" /* VIDEO */]) {
       const videoPermissionResponse = await Object(__WEBPACK_IMPORTED_MODULE_3__media__["b" /* getMediaDevicesTracks */])('video_only', 'makeCall', __WEBPACK_IMPORTED_MODULE_1__constants__["_17" /* MEDIA_DEVICE_CAMERA */]);
       if (videoPermissionResponse && (!videoPermissionResponse.statusCode || videoPermissionResponse.statusCode !== 500)) {
         Object(__WEBPACK_IMPORTED_MODULE_3__media__["g" /* stopTracks */])(videoPermissionResponse);
@@ -15628,7 +15722,7 @@ const createAndJoinRoomSuccess = async (roomId, dataObj, localUserCallId, userDe
  * Attend the received call & send the attended status to other users in the room
  */
 const _answerCall = async () => {
-  Object(__WEBPACK_IMPORTED_MODULE_10__helpers_common__["A" /* setCallDisconnectedStatus */])(false);
+  Object(__WEBPACK_IMPORTED_MODULE_10__helpers_common__["B" /* setCallDisconnectedStatus */])(false);
   const callInfo = Object(__WEBPACK_IMPORTED_MODULE_2__config__["e" /* getCallInfo */])();
   const localUserCallId = Object(__WEBPACK_IMPORTED_MODULE_2__config__["d" /* generateLocalUserCallId */])();
   const roomId = callInfo.roomId,
@@ -15647,7 +15741,7 @@ const _answerCall = async () => {
     //   uniqueId: localUserCallId,
     // });
     havingAudioPermission = true;
-    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_74" /* VIDEO */]) {
+    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_76" /* VIDEO */]) {
       havingVideoPermission = true;
     } else {
       havingVideoPermission = false;
@@ -15663,7 +15757,7 @@ const _answerCall = async () => {
       havingAudioPermission = false;
     }
     let videoPermissionResponse;
-    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_74" /* VIDEO */]) {
+    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_76" /* VIDEO */]) {
       videoPermissionResponse = await Object(__WEBPACK_IMPORTED_MODULE_3__media__["b" /* getMediaDevicesTracks */])('video_only', 'answerCall', __WEBPACK_IMPORTED_MODULE_1__constants__["_17" /* MEDIA_DEVICE_CAMERA */]);
       if (videoPermissionResponse && (!videoPermissionResponse.statusCode || videoPermissionResponse.statusCode !== 500)) {
         Object(__WEBPACK_IMPORTED_MODULE_3__media__["g" /* stopTracks */])(videoPermissionResponse);
@@ -15675,7 +15769,7 @@ const _answerCall = async () => {
       havingVideoPermission = true;
     }
     _endCall(__WEBPACK_IMPORTED_MODULE_1__constants__["J" /* CALL_STATUS_BUSY */]);
-    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_74" /* VIDEO */] && !havingVideoPermission && !havingAudioPermission) {
+    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_76" /* VIDEO */] && !havingVideoPermission && !havingAudioPermission) {
       const item = {
         message: videoPermissionResponse.message,
         error: videoPermissionResponse.error,
@@ -15686,7 +15780,7 @@ const _answerCall = async () => {
       };
       Object(__WEBPACK_IMPORTED_MODULE_5__functions__["x" /* sendDataToClient */])(item);
       return Object(__WEBPACK_IMPORTED_MODULE_4__helpers_utils__["j" /* errorResponse */])(videoPermissionResponse.message);
-    } else if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_74" /* VIDEO */] && !havingVideoPermission) {
+    } else if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_76" /* VIDEO */] && !havingVideoPermission) {
       const item = {
         message: videoPermissionResponse.message,
         error: videoPermissionResponse.error,
@@ -15772,14 +15866,14 @@ const _callReceived = async () => {
 
 
 const _declineCall = async () => {
-  Object(__WEBPACK_IMPORTED_MODULE_10__helpers_common__["A" /* setCallDisconnectedStatus */])(true);
+  Object(__WEBPACK_IMPORTED_MODULE_10__helpers_common__["B" /* setCallDisconnectedStatus */])(true);
   return _endCall(__WEBPACK_IMPORTED_MODULE_1__constants__["J" /* CALL_STATUS_BUSY */]);
 };
 /* harmony export (immutable) */ __webpack_exports__["d"] = _declineCall;
 
 
 const _callEngaged = async () => {
-  Object(__WEBPACK_IMPORTED_MODULE_10__helpers_common__["A" /* setCallDisconnectedStatus */])(true);
+  Object(__WEBPACK_IMPORTED_MODULE_10__helpers_common__["B" /* setCallDisconnectedStatus */])(true);
   return _endCall(__WEBPACK_IMPORTED_MODULE_1__constants__["P" /* CALL_STATUS_ENGAGED */]);
 };
 /* harmony export (immutable) */ __webpack_exports__["b"] = _callEngaged;
@@ -16068,7 +16162,7 @@ const handleCallMessage = async data => {
 
 
 const _subscribeCall = async (roomLink, displayName, callback) => {
-  Object(__WEBPACK_IMPORTED_MODULE_10__helpers_common__["A" /* setCallDisconnectedStatus */])(false);
+  Object(__WEBPACK_IMPORTED_MODULE_10__helpers_common__["B" /* setCallDisconnectedStatus */])(false);
   let localUserCallId = null;
   await Object(__WEBPACK_IMPORTED_MODULE_5__functions__["w" /* resetCallData */])();
   localUserCallId = Object(__WEBPACK_IMPORTED_MODULE_2__config__["d" /* generateLocalUserCallId */])();
@@ -16096,7 +16190,7 @@ const _subscribeCall = async (roomLink, displayName, callback) => {
       havingAudioPermission = false;
     }
     let videoPermissionResponse;
-    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_74" /* VIDEO */]) {
+    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_76" /* VIDEO */]) {
       videoPermissionResponse = await Object(__WEBPACK_IMPORTED_MODULE_3__media__["b" /* getMediaDevicesTracks */])('video_only', 'subscribeCall', __WEBPACK_IMPORTED_MODULE_1__constants__["_17" /* MEDIA_DEVICE_CAMERA */]);
       if (videoPermissionResponse && (!videoPermissionResponse.statusCode || videoPermissionResponse.statusCode !== 500)) {
         havingVideoPermission = true;
@@ -16254,7 +16348,7 @@ const _joinCall = async callback => {
 
 
 const _unsubscribeCall = () => {
-  Object(__WEBPACK_IMPORTED_MODULE_10__helpers_common__["A" /* setCallDisconnectedStatus */])(true);
+  Object(__WEBPACK_IMPORTED_MODULE_10__helpers_common__["B" /* setCallDisconnectedStatus */])(true);
   exit();
   return Object(__WEBPACK_IMPORTED_MODULE_4__helpers_utils__["B" /* successResponse */])();
 };
@@ -17319,8 +17413,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 
-const imgExtentions = [__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_41" /* PNG */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JPG */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JPEG */]],
-      msgTypes = [__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_55" /* TEXT */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_4" /* LOCATION */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["v" /* CONTACT */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["k" /* AUTO_TEXT */]];
+const imgExtentions = [__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_43" /* PNG */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_4" /* JPG */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JPEG */]],
+      msgTypes = [__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_57" /* TEXT */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_6" /* LOCATION */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["w" /* CONTACT */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["l" /* AUTO_TEXT */]];
 
 const uploadMedia = async (file, chatType, touser, msgId) => {
   try {
@@ -17328,11 +17422,11 @@ const uploadMedia = async (file, chatType, touser, msgId) => {
           token = await Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["v" /* getUserToken */])();
     const inputData = new FormData();
     inputData.append('file', file); // TODO: should check media upload in React Native
-    inputData.append('type', chatType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["J" /* GROUP */] ? __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["L" /* GROUP_CHAT */] : chatType);
+    inputData.append('type', chatType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["K" /* GROUP */] ? __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["M" /* GROUP_CHAT */] : chatType);
     inputData.append('toUser', touser);
     inputData.append('messageId', msgId);
 
-    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_1__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* METHOD_POST */], apiEndPoints.mediaUpload, inputData, token, 'multipart/form-data', msgId, file.size, 'upload');
+    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_1__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_15" /* METHOD_POST */], apiEndPoints.mediaUpload, inputData, token, 'multipart/form-data', msgId, file.size, 'upload');
     console.log('SDK uploadMedia apiResponse', apiResponse);
     if (apiResponse && apiResponse.status === 200) {
       Object(__WEBPACK_IMPORTED_MODULE_15__app_common__["j" /* removePendingUploads */])(msgId);
@@ -17347,7 +17441,7 @@ const uploadMedia = async (file, chatType, touser, msgId) => {
         fileToken: apiResponse.data.fileToken
       };
     }
-    if (apiResponse.message === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* NETWORK_ERROR */]) {
+    if (apiResponse.message === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_25" /* NETWORK_ERROR */]) {
       let _obj = {
         toJid: Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["m" /* formatUserIdToJid */])(touser),
         msgId
@@ -17355,7 +17449,7 @@ const uploadMedia = async (file, chatType, touser, msgId) => {
       console.log('SDK _obj', _obj);
       Object(__WEBPACK_IMPORTED_MODULE_15__app_common__["c" /* addPendingUploads */])(_obj);
     }
-    if (apiResponse.message === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_68" /* USER_CANCELLED */]) {
+    if (apiResponse.message === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_70" /* USER_CANCELLED */]) {
       Object(__WEBPACK_IMPORTED_MODULE_15__app_common__["j" /* removePendingUploads */])(msgId);
     }
     const item = {
@@ -17365,13 +17459,13 @@ const uploadMedia = async (file, chatType, touser, msgId) => {
     Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["a" /* callbackListeners */])().mediaUploadListener && msgId !== '' && Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["a" /* callbackListeners */])().mediaUploadListener(item);
     return {
       statusCode: apiResponse && apiResponse.status || 500,
-      message: apiResponse && apiResponse.message || __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_11" /* MEDIA_UPLOAD_FAILED */]
+      message: apiResponse && apiResponse.message || __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* MEDIA_UPLOAD_FAILED */]
     };
   } catch (error) {
     console.log('SDK uploadMedia error', error);
     return {
       statusCode: 500,
-      message: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_11" /* MEDIA_UPLOAD_FAILED */]
+      message: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* MEDIA_UPLOAD_FAILED */]
     };
   }
 };
@@ -17397,7 +17491,7 @@ const handleMediaMessage = async (msgBody = '', msgType, msgId, file, fileOption
     var _fileOptions$fileToke = fileOptions.fileToken;
     const fileToken = _fileOptions$fileToke === undefined ? '' : _fileOptions$fileToke;
 
-    if (!thumbImage && msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["R" /* IMAGE */]) fileOptions.thumbImage = await getThumbImage(uri);else if (!thumbImage && msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_74" /* VIDEO */]) fileOptions.thumbImage = await getVideoThumbImage(uri);
+    if (!thumbImage && msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["S" /* IMAGE */]) fileOptions.thumbImage = await getThumbImage(uri);else if (!thumbImage && msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_76" /* VIDEO */]) fileOptions.thumbImage = await getVideoThumbImage(uri);
     let updatedFile = {};
     const dbCheck = await Object(__WEBPACK_IMPORTED_MODULE_13__db_Utils__["b" /* dbCheckWithMsgId */])(msgId);
     if (dbCheck) {
@@ -17480,14 +17574,14 @@ const handleMessages = async (msgBody, msgType, msgId, replyTo, toJid, file, fil
   let msgContent = {};
   const mediaJson = {},
         toUser = Strophe.getNodeFromJid(toJid),
-        chatType = __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["K" /* GROUPCHAT */] : __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["p" /* CHAT */];
+        chatType = __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["L" /* GROUPCHAT */] : __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["q" /* CHAT */];
 
   // Msg type not equal of Text, Location & Contact - Media Messages Only
   if (file && msgTypes.indexOf(msgType) === -1) {
     const mediaResponse = await handleMediaMessage(msgBody, msgType, msgId, file, fileOptions || {}, toUser, chatType, replyTo);
     if (mediaResponse.statusCode !== 200) return mediaResponse;
     msgContent = mediaResponse.message;
-  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_4" /* LOCATION */]) {
+  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_6" /* LOCATION */]) {
     mediaJson.latitude = fileOptions.latitude;
     mediaJson.longitude = fileOptions.longitude;
     msgContent = _extends({
@@ -17495,7 +17589,7 @@ const handleMessages = async (msgBody, msgType, msgId, replyTo, toJid, file, fil
       message_type: msgType,
       location: mediaJson
     }, fileOptions);
-  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["v" /* CONTACT */]) {
+  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["w" /* CONTACT */]) {
     mediaJson.name = fileOptions.name;
     mediaJson.phone_number = fileOptions.phone_number;
     mediaJson.active_status = fileOptions.active_status;
@@ -17504,13 +17598,13 @@ const handleMessages = async (msgBody, msgType, msgId, replyTo, toJid, file, fil
       message_type: msgType,
       contact: mediaJson
     }, fileOptions);
-  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_55" /* TEXT */]) {
+  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_57" /* TEXT */]) {
     msgContent = {
       message: Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["A" /* stripTags */])(msgBody),
       message_type: msgType
     };
   } else {
-    return Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["c" /* customResponse */])(400, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["W" /* INVALID_MESSAGE_TYPE */]);
+    return Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["c" /* customResponse */])(400, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["X" /* INVALID_MESSAGE_TYPE */]);
   }
 
   const userProfile = await Object(__WEBPACK_IMPORTED_MODULE_4__helpers_localDb__["d" /* getUserProfile */])();
@@ -17544,7 +17638,7 @@ const composeMediaMessage = async (msgType, fileOptions, replyTo) => {
 
 const forwardMessageIQ = (orgMsgId, msgId, toJid) => new Promise(async resolve => {
   let response = {};
-  const chatType = __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["K" /* GROUPCHAT */] : __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["p" /* CHAT */];
+  const chatType = __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["L" /* GROUPCHAT */] : __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["q" /* CHAT */];
   const originalMsgs = await Object(__WEBPACK_IMPORTED_MODULE_13__db_Utils__["g" /* getMsgDetails */])(orgMsgId);
   var _originalMsgs$message = originalMsgs.message_type;
   const msgType = _originalMsgs$message === undefined ? '' : _originalMsgs$message;
@@ -17610,7 +17704,7 @@ const forwardMessageIQ = (orgMsgId, msgId, toJid) => new Promise(async resolve =
     };
     const apiEndPoints = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["d" /* getApiEndPoints */])(),
           token = await Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["v" /* getUserToken */])();
-    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_1__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* METHOD_POST */], apiEndPoints.forwardUrl, JSON.stringify(filesData), token, 'application/json; charset=utf-8', msgId);
+    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_1__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_15" /* METHOD_POST */], apiEndPoints.forwardUrl, JSON.stringify(filesData), token, 'application/json; charset=utf-8', msgId);
     if (apiResponse.status !== 200) {
       const mediaDetial = {
         isUploading: 3
@@ -17618,7 +17712,7 @@ const forwardMessageIQ = (orgMsgId, msgId, toJid) => new Promise(async resolve =
       Object(__WEBPACK_IMPORTED_MODULE_9__db_controllers_mediaDetailTable__["d" /* updateMediaDetailTable */])(msgId, mediaDetial);
       resolve({
         statusCode: apiResponse.status,
-        message: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_11" /* MEDIA_UPLOAD_FAILED */]
+        message: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* MEDIA_UPLOAD_FAILED */]
       });
     }
     console.log('SDK forward apiResponse', JSON.stringify(apiResponse, null, 2));
@@ -17635,14 +17729,14 @@ const forwardMessageIQ = (orgMsgId, msgId, toJid) => new Promise(async resolve =
       fileSize: file_size
     });
     response = await Object(__WEBPACK_IMPORTED_MODULE_2__chat__["D" /* sendMediaMessageData */])(toJid, msgType, fwdFileOptions, msgId);
-  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_55" /* TEXT */] || msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["k" /* AUTO_TEXT */]) {
+  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_57" /* TEXT */] || msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["l" /* AUTO_TEXT */]) {
     response = await Object(__WEBPACK_IMPORTED_MODULE_2__chat__["F" /* sendTextMessage */])(toJid, message, msgId);
-  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["v" /* CONTACT */]) {
-    Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, '', msgId, '', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["v" /* CONTACT */], '', contact);
-    response = await Object(__WEBPACK_IMPORTED_MODULE_2__chat__["w" /* sendAttachmentMessage */])(toJid, contact, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["v" /* CONTACT */], msgId);
-  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_4" /* LOCATION */]) {
-    Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, '', msgId, '', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_4" /* LOCATION */], '', location);
-    response = await Object(__WEBPACK_IMPORTED_MODULE_2__chat__["w" /* sendAttachmentMessage */])(toJid, location, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_4" /* LOCATION */], msgId);
+  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["w" /* CONTACT */]) {
+    Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, '', msgId, '', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["w" /* CONTACT */], '', contact);
+    response = await Object(__WEBPACK_IMPORTED_MODULE_2__chat__["w" /* sendAttachmentMessage */])(toJid, contact, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["w" /* CONTACT */], msgId);
+  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_6" /* LOCATION */]) {
+    Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, '', msgId, '', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_6" /* LOCATION */], '', location);
+    response = await Object(__WEBPACK_IMPORTED_MODULE_2__chat__["w" /* sendAttachmentMessage */])(toJid, location, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_6" /* LOCATION */], msgId);
   }
   resolve(response);
   /**
@@ -17728,14 +17822,14 @@ const forwardMessageIQ = (orgMsgId, msgId, toJid) => new Promise(async resolve =
 
 
 const uploadProfileImage = async (mediaUpload, inputData, userToken) => {
-  const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_1__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* METHOD_POST */], mediaUpload, inputData, userToken, 'multipart/form-data');
+  const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_1__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_15" /* METHOD_POST */], mediaUpload, inputData, userToken, 'multipart/form-data');
   console.log('profileUpdate apiResponse', apiResponse);
   if (apiResponse && apiResponse.status === 200) {
     const response = Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["B" /* successResponse */])();
     response.imageFileToken = apiResponse.data.fileToken;
     return response;
   }
-  return Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["c" /* customResponse */])(apiResponse.status, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_11" /* MEDIA_UPLOAD_FAILED */]);
+  return Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["c" /* customResponse */])(apiResponse.status, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* MEDIA_UPLOAD_FAILED */]);
 };
 /* unused harmony export uploadProfileImage */
 
@@ -17802,7 +17896,7 @@ const getToken = (username, password) => new Promise(async resolve => {
     type: __WEBPACK_IMPORTED_MODULE_7_react_native__["Platform"].OS // TODO: change this as per the requirement once migration is done
   };
 
-  const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_1__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* METHOD_POST */], apiEndPoints.login, JSON.stringify(data), '', '');
+  const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_1__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_15" /* METHOD_POST */], apiEndPoints.login, JSON.stringify(data), '', '');
   if (apiResponse.status === 200) {
     const response = Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["B" /* successResponse */])();
     response.userToken = apiResponse.data.token;
@@ -17821,34 +17915,34 @@ const calculateWidthAndHeight = (width, height) => {
   switch (true) {
     // Horizontal Video
     case width > height:
-      let resultHeight = Math.round(height / width * __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_10" /* MAX_WIDTH_WEB */]),
-          resultHeightAnd = Math.round(height / width * __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_9" /* MAX_WIDTH_AND */]);
+      let resultHeight = Math.round(height / width * __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_12" /* MAX_WIDTH_WEB */]),
+          resultHeightAnd = Math.round(height / width * __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_11" /* MAX_WIDTH_AND */]);
 
       response = {
-        webWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_10" /* MAX_WIDTH_WEB */],
-        webHeight: resultHeight > __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_16" /* MIN_HEIGHT_WEB */] ? resultHeight : __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_16" /* MIN_HEIGHT_WEB */],
-        androidWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_9" /* MAX_WIDTH_AND */],
-        androidHeight: resultHeightAnd > __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_15" /* MIN_HEIGHT_AND */] ? resultHeightAnd : __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_15" /* MIN_HEIGHT_AND */]
+        webWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_12" /* MAX_WIDTH_WEB */],
+        webHeight: resultHeight > __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_18" /* MIN_HEIGHT_WEB */] ? resultHeight : __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_18" /* MIN_HEIGHT_WEB */],
+        androidWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_11" /* MAX_WIDTH_AND */],
+        androidHeight: resultHeightAnd > __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_17" /* MIN_HEIGHT_AND */] ? resultHeightAnd : __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_17" /* MIN_HEIGHT_AND */]
       };
       break;
 
     // Vertical Video
     case width < height:
       response = {
-        webWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_19" /* MIN_WIDTH_WEB */],
-        webHeight: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_8" /* MAX_HEIGHT_WEB */],
-        androidWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_18" /* MIN_WIDTH_AND */],
-        androidHeight: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_7" /* MAX_HEIGHT_AND */]
+        webWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_21" /* MIN_WIDTH_WEB */],
+        webHeight: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_10" /* MAX_HEIGHT_WEB */],
+        androidWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_20" /* MIN_WIDTH_AND */],
+        androidHeight: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_9" /* MAX_HEIGHT_AND */]
       };
       break;
 
     // Default/Square Video
     default:
       response = {
-        webWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_10" /* MAX_WIDTH_WEB */],
-        webHeight: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_10" /* MAX_WIDTH_WEB */],
-        androidWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_9" /* MAX_WIDTH_AND */],
-        androidHeight: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_9" /* MAX_WIDTH_AND */]
+        webWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_12" /* MAX_WIDTH_WEB */],
+        webHeight: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_12" /* MAX_WIDTH_WEB */],
+        androidWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_11" /* MAX_WIDTH_AND */],
+        androidHeight: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_11" /* MAX_WIDTH_AND */]
       };
       break;
   }
@@ -17929,7 +18023,7 @@ const fileStoreInDevice = async file => {
     let convertedFileName;
     if (__WEBPACK_IMPORTED_MODULE_7_react_native__["Platform"].OS === 'ios') {
       switch (true) {
-        case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["X" /* IOS_IMAGE_FORMATS */].includes(type):
+        case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["Y" /* IOS_IMAGE_FORMATS */].includes(type):
           let result = await __WEBPACK_IMPORTED_MODULE_10_react_native_compressor__["Image"].compress(uri, {
             maxWidth: width,
             maxHeight: height,
@@ -17937,13 +18031,13 @@ const fileStoreInDevice = async file => {
           });
           await __WEBPACK_IMPORTED_MODULE_0_react_native_fs___default.a.copyFile(result, destinationPath);
           break;
-        case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["Y" /* IOS_VIDEO_FORMATS */].includes(type):
+        case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["Z" /* IOS_VIDEO_FORMATS */].includes(type):
           if (uri.includes('ph://')) {
             await convertPhToFile(uri).then(async res => {
-              if (type === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["R" /* IMAGE */]) {
+              if (type === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["S" /* IMAGE */]) {
                 __WEBPACK_IMPORTED_MODULE_0_react_native_fs___default.a.copyFile(res, destinationPath);
               }
-              if (type === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_74" /* VIDEO */]) {
+              if (type === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_76" /* VIDEO */]) {
                 convertedFilePath = await convertMovtoMP4(res, localPathName);
                 convertedFileName = convertedFilePath.split('/').pop();
               }
@@ -20933,7 +21027,7 @@ const getUserProfile = async userId => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
       key: 'userId',
       value: userId,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       const userid = userId.split('@').length > 1 ? Strophe.getNodeFromJid(userId) : userId;
@@ -20957,7 +21051,7 @@ const getLastSeen = toUserJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toUserJid',
       value: toUserJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["Z" /* JID_FORMAT_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_0" /* JID_FORMAT_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_2__strophe_profileiqstanza__["e" /* getLastActivityIQ */])(toUserJid);
@@ -20981,7 +21075,7 @@ const blockUser = toUserJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toUserJid',
       value: toUserJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["Z" /* JID_FORMAT_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_0" /* JID_FORMAT_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_2__strophe_profileiqstanza__["a" /* blockUserIQ */])(toUserJid);
@@ -21005,7 +21099,7 @@ const unblockUser = toUserJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toUserJid',
       value: toUserJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["Z" /* JID_FORMAT_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_0" /* JID_FORMAT_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_2__strophe_profileiqstanza__["g" /* unblockUserIQ */])(toUserJid);
@@ -21099,11 +21193,11 @@ async function getUserToken(username, password) {
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
       key: 'username',
       value: username,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
     }, {
       key: 'password',
       value: password,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return await Object(__WEBPACK_IMPORTED_MODULE_3__utils__["c" /* getToken */])(username, password);
@@ -21125,7 +21219,7 @@ async function setUserToken(token) {
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
       key: 'token',
       value: token,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       Object(__WEBPACK_IMPORTED_MODULE_4__helpers_localDb__["g" /* setToken */])(token);
@@ -21149,12 +21243,12 @@ const getTranslateLanguages = async (apiKey, target = 'en') => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
       key: 'apiKey',
       value: apiKey,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       const options = {
-        url: `${__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["I" /* GOOGLE_TRANSLATE_URL */]}/languages?key=${apiKey}&target=${target}`,
-        method: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_12" /* METHOD_GET */],
+        url: `${__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["J" /* GOOGLE_TRANSLATE_URL */]}/languages?key=${apiKey}&target=${target}`,
+        method: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_14" /* METHOD_GET */],
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json'
@@ -21193,11 +21287,11 @@ const translateText = async (apiKey, text, target = 'en') => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
       key: 'apiKey',
       value: apiKey,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
     }, {
       key: 'text',
       value: text,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
     }]);
 
     if (response.statusCode === 200) {
@@ -21207,8 +21301,8 @@ const translateText = async (apiKey, text, target = 'en') => {
       fd.append('q', text);
 
       const options = {
-        url: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["I" /* GOOGLE_TRANSLATE_URL */],
-        method: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* METHOD_POST */],
+        url: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["J" /* GOOGLE_TRANSLATE_URL */],
+        method: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_15" /* METHOD_POST */],
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json'
@@ -21251,14 +21345,14 @@ const getUsersList = (name, page, limit) => {
       validations.push({
         key: 'page',
         value: page,
-        rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_39" /* NUMBER_REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_41" /* NUMBER_REQUIRED */]
       });
     }
     if (limit) {
       validations.push({
         key: 'limit',
         value: limit,
-        rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_39" /* NUMBER_REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_41" /* NUMBER_REQUIRED */]
       });
     }
     if (validations.length > 0) {
@@ -21369,7 +21463,7 @@ const reconnect = async () => {
       }
     } else {
       response.status = 'BACKGROUND';
-      Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["C" /* setCredentials */])(parsedCredential.username, parsedCredential.password);
+      Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["D" /* setCredentials */])(parsedCredential.username, parsedCredential.password);
       if (Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["a" /* callbackListeners */])() && Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["a" /* callbackListeners */])().connectionListener) {
         Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["a" /* callbackListeners */])().connectionListener(response);
       }
@@ -24366,15 +24460,15 @@ const connectionHandler = async (connStatus, callback, connObj) => {
   switch (connStatus) {
     case Strophe.Status.AUTHFAIL:
       connectionStatus.isConnected = false;
-      if (!Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["x" /* isActiveConnectionId */])(connObj.options.connectionId)) return;
+      if (!Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["y" /* isActiveConnectionId */])(connObj.options.connectionId)) return;
       callbacks.connectionListener({ status: 'AUTHENTICATIONFAILED' });
       Object(__WEBPACK_IMPORTED_MODULE_15__modules_call_config__["s" /* setIsUserOnline */])(false);
-      callback(Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["c" /* customResponse */])(422, __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["V" /* INVALID_CREDENTIALS */]));
+      callback(Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["c" /* customResponse */])(422, __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["W" /* INVALID_CREDENTIALS */]));
       break;
 
     case Strophe.Status.CONNFAIL:
       connectionStatus.isConnected = false;
-      if (!Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["x" /* isActiveConnectionId */])(connObj.options.connectionId)) return;
+      if (!Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["y" /* isActiveConnectionId */])(connObj.options.connectionId)) return;
       callbacks.connectionListener({ status: 'CONNECTIONFAILED' });
       Object(__WEBPACK_IMPORTED_MODULE_15__modules_call_config__["s" /* setIsUserOnline */])(false);
       callback(Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["c" /* customResponse */])(500, 'connectionFailed'));
@@ -24382,7 +24476,7 @@ const connectionHandler = async (connStatus, callback, connObj) => {
 
     case Strophe.Status.CONNTIMEOUT:
       connectionStatus.isConnected = false;
-      if (!Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["x" /* isActiveConnectionId */])(connObj.options.connectionId)) return;
+      if (!Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["y" /* isActiveConnectionId */])(connObj.options.connectionId)) return;
       callbacks.connectionListener({ status: 'CONNECTIONTIMEOUT' });
       Object(__WEBPACK_IMPORTED_MODULE_15__modules_call_config__["s" /* setIsUserOnline */])(false);
       callback(Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["C" /* timeoutErrorResponse */])('connectionTimeout'));
@@ -24390,7 +24484,7 @@ const connectionHandler = async (connStatus, callback, connObj) => {
 
     case Strophe.Status.ERROR:
       connectionStatus.isConnected = false;
-      if (!Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["x" /* isActiveConnectionId */])(connObj.options.connectionId)) return;
+      if (!Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["y" /* isActiveConnectionId */])(connObj.options.connectionId)) return;
       callbacks.connectionListener({ status: 'ERROROCCURED' });
       Object(__WEBPACK_IMPORTED_MODULE_15__modules_call_config__["s" /* setIsUserOnline */])(false);
       callback(Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["b" /* connectionErrorResponse */])());
@@ -24398,7 +24492,7 @@ const connectionHandler = async (connStatus, callback, connObj) => {
 
     case Strophe.Status.DISCONNECTED:
       connectionStatus.isConnected = false;
-      if (!Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["x" /* isActiveConnectionId */])(connObj.options.connectionId)) return;
+      if (!Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["y" /* isActiveConnectionId */])(connObj.options.connectionId)) return;
       callbacks.connectionListener({ status: 'DISCONNECTED' });
       Object(__WEBPACK_IMPORTED_MODULE_15__modules_call_config__["s" /* setIsUserOnline */])(false);
       Object(__WEBPACK_IMPORTED_MODULE_13__modules_app_reconnect__["a" /* reconnect */])();
@@ -24409,11 +24503,11 @@ const connectionHandler = async (connStatus, callback, connObj) => {
       // Add handlers in order to get callback listeners response
       connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["f" /* presenceHandler */], null, 'presence', null);
       connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["h" /* streamHandler */], null, 'failure', null);
-      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["e" /* pingHandler */], __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_34" /* NS_PING */], 'iq', __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_60" /* TYPE_GET */]);
-      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["i" /* userProfileHandler */], __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_38" /* NS_VCARD */], 'iq', __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_61" /* TYPE_RESULT */]);
-      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["a" /* blockUserHandler */], __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_27" /* NS_BLOCKING */], 'iq', __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_62" /* TYPE_SET */]);
+      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["e" /* pingHandler */], __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_36" /* NS_PING */], 'iq', __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_62" /* TYPE_GET */]);
+      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["i" /* userProfileHandler */], __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_40" /* NS_VCARD */], 'iq', __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_63" /* TYPE_RESULT */]);
+      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["a" /* blockUserHandler */], __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_29" /* NS_BLOCKING */], 'iq', __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_64" /* TYPE_SET */]);
       connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["c" /* messageHandler */], null, 'message', null, null, null);
-      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["b" /* friendsListHandler */], Strophe.NS.ROSTER, 'iq', __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_61" /* TYPE_RESULT */]);
+      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["b" /* friendsListHandler */], Strophe.NS.ROSTER, 'iq', __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_63" /* TYPE_RESULT */]);
       connObj.send($pres().c('priority').t('1'));
       Object(__WEBPACK_IMPORTED_MODULE_15__modules_call_config__["s" /* setIsUserOnline */])(true);
       Object(__WEBPACK_IMPORTED_MODULE_3__strophe__["a" /* carbonEnable */])();
@@ -24439,7 +24533,7 @@ const connectionHandler = async (connStatus, callback, connObj) => {
  */
 const chatConnect = async (username, password, callback) => {
   const resourceId = await __WEBPACK_IMPORTED_MODULE_12__react_native_async_storage_async_storage___default.a.getItem('resourceId', resourceId);
-  Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["z" /* setActiveConnectionId */])(resourceId);
+  Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["A" /* setActiveConnectionId */])(resourceId);
   const userJid = `${username}@${Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["e" /* getServer */])()}/Mobile-${resourceId}`;
   const connObj = Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["b" /* getConnection */])();
   connObj.connect(userJid, password, connStatus => {
@@ -24456,20 +24550,20 @@ const login = async (username, password, forceLogin) => new Promise((resolve, re
   const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
     key: 'username',
     value: username,
-    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_48" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_50" /* REQUIRED */]
   }, {
     key: 'password',
     value: password,
-    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_48" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_50" /* REQUIRED */]
   }]);
   if (response.statusCode === 200) {
     if (!forceLogin && Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["c" /* getConnectionObj */])() && Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["c" /* getConnectionObj */])().connected && Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["c" /* getConnectionObj */])().authenticated) {
       resolve(Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["c" /* customResponse */])(409, 'Already Logged In'));
     } else {
-      Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["z" /* setActiveConnectionId */])(Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["x" /* randomString */])(16, 'BA'));
+      Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["A" /* setActiveConnectionId */])(Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["x" /* randomString */])(16, 'BA'));
       Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["a" /* disconnect */])();
       chatConnect(username, password, obj => {
-        if (obj.statusCode === 200) Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["C" /* setCredentials */])(username, password);
+        if (obj.statusCode === 200) Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["D" /* setCredentials */])(username, password);
         resolve(obj);
       });
     }
@@ -24489,11 +24583,11 @@ const connect = async (username, password, forceLogin) => new Promise(async reso
   const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
     key: 'username',
     value: username,
-    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_48" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_50" /* REQUIRED */]
   }, {
     key: 'password',
     value: password,
-    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_48" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_50" /* REQUIRED */]
   }]);
   if (response.statusCode === 200) {
     const passwordJson = {
@@ -24501,7 +24595,7 @@ const connect = async (username, password, forceLogin) => new Promise(async reso
       currentTimestamp: Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["t" /* getUTCTimestamp */])()
     };
     let cypherText = '';
-    if (Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["y" /* isSandboxMode */])()) {
+    if (Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["z" /* isSandboxMode */])()) {
       cypherText = password;
     } else {
       cypherText = Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["h" /* encryptAPIData */])(JSON.stringify(passwordJson), Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["h" /* getEncryptLicenseKey */])());
@@ -24512,7 +24606,7 @@ const connect = async (username, password, forceLogin) => new Promise(async reso
       password: cypherText,
       type: __WEBPACK_IMPORTED_MODULE_10_react_native__["Platform"].OS
     };
-    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_7__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_13" /* METHOD_POST */], apiEndPoints.login, inputData, '', '');
+    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_7__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_15" /* METHOD_POST */], apiEndPoints.login, inputData, '', '');
     if (apiResponse.status === 200) {
       Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["z" /* setUserToken */])(apiResponse.data.token);
       const configResponse = await Object(__WEBPACK_IMPORTED_MODULE_9__feedback__["a" /* fetchAndConfigureServerDetails */])(username);
@@ -24520,10 +24614,10 @@ const connect = async (username, password, forceLogin) => new Promise(async reso
         if (!forceLogin && Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["c" /* getConnectionObj */])() && Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["c" /* getConnectionObj */])().connected && Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["c" /* getConnectionObj */])().authenticated) {
           resolve(Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["c" /* customResponse */])(409, 'Already Logged In'));
         } else {
-          Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["z" /* setActiveConnectionId */])(Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["x" /* randomString */])(16, 'BA'));
+          Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["A" /* setActiveConnectionId */])(Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["x" /* randomString */])(16, 'BA'));
           Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["a" /* disconnect */])();
           chatConnect(username, cypherText, async obj => {
-            if (obj.statusCode === 200) Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["C" /* setCredentials */])(username, password);
+            if (obj.statusCode === 200) Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["D" /* setCredentials */])(username, password);
             resolve(obj);
           });
         }
@@ -24552,7 +24646,7 @@ const register = async (userIdentifier, fcmtoken, voipDeviceToken, mode) => new 
   const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
     key: 'userIdentifier',
     value: userIdentifier,
-    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_48" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_50" /* REQUIRED */]
   }]);
 
   if (response.statusCode === 200) {
@@ -24564,7 +24658,7 @@ const register = async (userIdentifier, fcmtoken, voipDeviceToken, mode) => new 
     let API_URL = '',
         inputData = {};
 
-    if (Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["y" /* isSandboxMode */])()) {
+    if (Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["z" /* isSandboxMode */])()) {
       API_URL = apiEndPoints.sandboxRegister;
       inputData = {
         deviceType: __WEBPACK_IMPORTED_MODULE_10_react_native__["Platform"].OS,
@@ -24577,7 +24671,7 @@ const register = async (userIdentifier, fcmtoken, voipDeviceToken, mode) => new 
         userIdentifier
       };
       if (fcmtoken) inputData.pushServerType = 'fcm';
-      console.log('inputData isSandboxMode()', Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["y" /* isSandboxMode */])(), JSON.stringify(inputData, null, 2));
+      console.log('inputData isSandboxMode()', Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["z" /* isSandboxMode */])(), JSON.stringify(inputData, null, 2));
     } else {
       API_URL = apiEndPoints.register;
       const inputObj = {
@@ -24590,13 +24684,13 @@ const register = async (userIdentifier, fcmtoken, voipDeviceToken, mode) => new 
         licenseKey
       };
       if (fcmtoken) inputObj.pushServerType = 'fcm';
-      console.log('inputObj isSandboxMode()', Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["y" /* isSandboxMode */])(), JSON.stringify(inputObj, null, 2));
+      console.log('inputObj isSandboxMode()', Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["z" /* isSandboxMode */])(), JSON.stringify(inputObj, null, 2));
       const cypherText = Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["h" /* encryptAPIData */])(JSON.stringify(inputObj), decryptKey);
       inputData = {
         registerData: cypherText
       };
     }
-    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_7__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_13" /* METHOD_POST */], API_URL, inputData, '', false, '');
+    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_7__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_15" /* METHOD_POST */], API_URL, inputData, '', false, '');
 
     if (apiResponse && apiResponse.status === 200) {
       await Object(__WEBPACK_IMPORTED_MODULE_14__db_Utils__["d" /* dbRegisterClear */])(userIdentifier);
@@ -24611,7 +24705,7 @@ const register = async (userIdentifier, fcmtoken, voipDeviceToken, mode) => new 
       var _JSON$parse$config = _JSON$parse.config;
       const config = _JSON$parse$config === undefined ? {} : _JSON$parse$config;
 
-      Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["C" /* setCredentials */])(username, password);
+      Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["D" /* setCredentials */])(username, password);
       const configuration = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["f" /* getConfiguration */])();
 
       if (config && Object.keys(config).length > 0 && configuration.XMPP_SERVER_HOST === '') {
@@ -24640,14 +24734,14 @@ const register = async (userIdentifier, fcmtoken, voipDeviceToken, mode) => new 
         };
         Object(__WEBPACK_IMPORTED_MODULE_17__db_controllers_ConfigCredentialsTable__["a" /* createConfigCredentialsTable */])(realm, params);
 
-        if (xmppHost !== '' && xmppPortWeb !== '') Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["B" /* setConfiguration */])(xmppHost, xmppPortWeb, true);
+        if (xmppHost !== '' && xmppPortWeb !== '') Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["C" /* setConfiguration */])(xmppHost, xmppPortWeb, true);
         if (signalServerDomain !== '') {
-          Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["I" /* setSignalServerUrl */])(signalServerDomain);
+          Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["J" /* setSignalServerUrl */])(signalServerDomain);
           await Object(__WEBPACK_IMPORTED_MODULE_8__modules_call_initialize__["m" /* initializeCall */])(signalServerDomain);
         }
-        if (callRoutingServer !== '') Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["F" /* setJanusUrl */])(callRoutingServer);
-        if (iv !== '') Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["D" /* setIv */])(iv);
-        if (ivProfile !== '') Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["E" /* setIvProfile */])(ivProfile);
+        if (callRoutingServer !== '') Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["G" /* setJanusUrl */])(callRoutingServer);
+        if (iv !== '') Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["E" /* setIv */])(iv);
+        if (ivProfile !== '') Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["F" /* setIvProfile */])(ivProfile);
         if (turns && turns.length > 0 || stuns && stuns.length > 0) {
           const urls = [];
           if (stuns && stuns.length > 0) {
@@ -24664,10 +24758,10 @@ const register = async (userIdentifier, fcmtoken, voipDeviceToken, mode) => new 
               });
             });
           }
-          Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["J" /* setStunTurnServerUrl */])(urls);
+          Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["K" /* setStunTurnServerUrl */])(urls);
         }
-        Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["H" /* setPingPongTime */])(60);
-        Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["G" /* setMaxUsersOfCall */])(8);
+        Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["I" /* setPingPongTime */])(60);
+        Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["H" /* setMaxUsersOfCall */])(8);
         if (callRoutingServer !== '') Object(__WEBPACK_IMPORTED_MODULE_8__modules_call_initialize__["n" /* initializeJanus */])(callRoutingServer, Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["s" /* getStunTurnServerUrl */])());
       }
       await Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["z" /* setUserToken */])(token);
@@ -24675,7 +24769,7 @@ const register = async (userIdentifier, fcmtoken, voipDeviceToken, mode) => new 
       successRes.data = {
         username,
         password,
-        isSandbox: Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["y" /* isSandboxMode */])(),
+        isSandbox: Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["z" /* isSandboxMode */])(),
         isProfileUpdated
       };
       resolve(successRes);
@@ -24697,7 +24791,7 @@ const syncContacts = async userIdentifier => new Promise(async resolve => {
   const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
     key: 'userIdentifier',
     value: userIdentifier,
-    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_48" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_50" /* REQUIRED */]
   }]);
 
   if (response.statusCode === 200) {
@@ -24710,7 +24804,7 @@ const syncContacts = async userIdentifier => new Promise(async resolve => {
       licenseKey
     };
 
-    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_7__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_13" /* METHOD_POST */], API_URL, inputData, '', false, '');
+    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_7__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_15" /* METHOD_POST */], API_URL, inputData, '', false, '');
     if (apiResponse && apiResponse.status === 200) {
       return resolve(Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["B" /* successResponse */])());
     }
@@ -24792,10 +24886,10 @@ const sendMessageIQ = (toUserJid, msgId, msgType, cypherText, mediaFileToken = '
   try {
     const messageIQ = $msg({
       to: toUserJid,
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_59" /* TYPE_CHAT */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
       id: msgId
     }).c('chatcontent', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_30" /* NS_CONTENT */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_32" /* NS_CONTENT */],
       message_type: msgType,
       broadcast_id: ''
     }).up().c('body', {
@@ -24813,7 +24907,7 @@ const sendMessageIQ = (toUserJid, msgId, msgType, cypherText, mediaFileToken = '
       resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])('Network Error'));
     }
   } catch (error) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */]));
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["d"] = sendMessageIQ;
@@ -24831,10 +24925,10 @@ const sendDeliveredStatusIQ = (toUserJid, msgId, groupId = '') => new Promise(as
   try {
     const deliveryIQ = $msg({
       to: toUserJid,
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_59" /* TYPE_CHAT */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, '#A')
     }).c('delivered', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_35" /* NS_RECEIPTS */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_37" /* NS_RECEIPTS */],
       id: msgId,
       group_id: groupId
     });
@@ -24842,7 +24936,7 @@ const sendDeliveredStatusIQ = (toUserJid, msgId, groupId = '') => new Promise(as
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(deliveryIQ);
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])());
   } catch (error) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */]));
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["b"] = sendDeliveredStatusIQ;
@@ -24859,11 +24953,11 @@ const sendSeenStatusIQ = (toUserJid, msgId, groupId = '') => new Promise(async r
 
   try {
     const seenIQ = $msg({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_59" /* TYPE_CHAT */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
       to: toUserJid,
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, '!A')
     }).c('seen', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_35" /* NS_RECEIPTS */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_37" /* NS_RECEIPTS */],
       id: msgId,
       group_id: groupId
     });
@@ -24871,7 +24965,7 @@ const sendSeenStatusIQ = (toUserJid, msgId, groupId = '') => new Promise(async r
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(seenIQ);
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])());
   } catch (error) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */]));
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["e"] = sendSeenStatusIQ;
@@ -24887,12 +24981,12 @@ const recallMessageIQ = (toJid, msgIds) => new Promise(async resolve => {
   try {
     const recallMsg = $msg({
       to: toJid,
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_59" /* TYPE_CHAT */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('recall', {
       id: msgIds,
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_35" /* NS_RECEIPTS */],
-      chat_type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_59" /* TYPE_CHAT */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_37" /* NS_RECEIPTS */],
+      chat_type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */]
     });
     if (Object(__WEBPACK_IMPORTED_MODULE_3__helpers_localDb__["b" /* getOnlineStatus */])()) {
       await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(recallMsg);
@@ -24904,7 +24998,7 @@ const recallMessageIQ = (toJid, msgIds) => new Promise(async resolve => {
       resolve(successResp);
     }
   } catch (error) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */]));
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["a"] = recallMessageIQ;
@@ -24921,18 +25015,18 @@ const sendTypingStatusIQ = toUserJid => new Promise(async resolve => {
   try {
     const typingIQ = $msg({
       to: toUserJid,
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_59" /* TYPE_CHAT */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('composing', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_29" /* NS_CHATSTATES */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_CHATSTATES */]
     }).c('no-store', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_32" /* NS_HINTS */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_HINTS */]
     });
 
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(typingIQ);
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])());
   } catch (error) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */]));
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["g"] = sendTypingStatusIQ;
@@ -24949,18 +25043,18 @@ const sendTypingGoneStatusIQ = toUserJid => new Promise(async resolve => {
   try {
     const typingGoneIQ = $msg({
       to: toUserJid,
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_59" /* TYPE_CHAT */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('gone', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_29" /* NS_CHATSTATES */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_CHATSTATES */]
     }).c('no-store', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_32" /* NS_HINTS */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_HINTS */]
     });
 
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(typingGoneIQ);
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])());
   } catch (error) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */]));
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["f"] = sendTypingGoneStatusIQ;
@@ -24995,7 +25089,7 @@ const sendGroupMessageIQ = (groupJid, msgId, msgType, cypherText, mediaFileToken
       resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])('Network Error'));
     }
   } catch (error) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */]));
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["c"] = sendGroupMessageIQ;
@@ -25031,7 +25125,7 @@ const submitFeedback = async (title, description) => {
     };
     const apiEndPoints = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["d" /* getApiEndPoints */])();
     const token = await Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["v" /* getUserToken */])();
-    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_13" /* METHOD_POST */], apiEndPoints.feedbackSubmit, inputData, token);
+    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_15" /* METHOD_POST */], apiEndPoints.feedbackSubmit, inputData, token);
     if (apiResponse && apiResponse.status === 200) {
         return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
     }
@@ -25052,7 +25146,7 @@ const submitDeleteMyAccount = async (reason, feedback) => {
     };
     const apiEndPoints = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["d" /* getApiEndPoints */])();
     const token = await Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["v" /* getUserToken */])();
-    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_13" /* METHOD_POST */], apiEndPoints.deleteMyAccount, inputData, token);
+    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_15" /* METHOD_POST */], apiEndPoints.deleteMyAccount, inputData, token);
     if (apiResponse && apiResponse.status === 200) {
         return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
     }
@@ -25066,7 +25160,7 @@ const fetchAndConfigureServerDetails = async username => {
     if (config.XMPP_SERVER_HOST === "") {
         const apiEndPoints = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["d" /* getApiEndPoints */])();
         const token = await Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["v" /* getUserToken */])();
-        const configApiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_12" /* METHOD_GET */], apiEndPoints.getConfig, undefined, token, false);
+        const configApiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_14" /* METHOD_GET */], apiEndPoints.getConfig, undefined, token, false);
         if (configApiResponse && configApiResponse.status === 200) {
             const decryptedConfig = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["e" /* decryptAPIData */])(configApiResponse.data, username + username + username);
 
@@ -25083,14 +25177,14 @@ const fetchAndConfigureServerDetails = async username => {
             var _JSON$parse$turns = _JSON$parse.turns;
             const turns = _JSON$parse$turns === undefined ? [] : _JSON$parse$turns;
 
-            if (xmppHost !== "" && xmppPortWeb !== "") Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["B" /* setConfiguration */])(xmppHost, xmppPortWeb, true);
+            if (xmppHost !== "" && xmppPortWeb !== "") Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["C" /* setConfiguration */])(xmppHost, xmppPortWeb, true);
             if (signalServerDomain !== "") {
-                Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["I" /* setSignalServerUrl */])(signalServerDomain);
+                Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["J" /* setSignalServerUrl */])(signalServerDomain);
                 await Object(__WEBPACK_IMPORTED_MODULE_3__modules_call_initialize__["m" /* initializeCall */])(signalServerDomain);
             }
-            if (callRoutingServer !== "") Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["F" /* setJanusUrl */])(callRoutingServer);
-            if (iv !== "") Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["D" /* setIv */])(iv);
-            if (ivProfile !== "") Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["E" /* setIvProfile */])(ivProfile);
+            if (callRoutingServer !== "") Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["G" /* setJanusUrl */])(callRoutingServer);
+            if (iv !== "") Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["E" /* setIv */])(iv);
+            if (ivProfile !== "") Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["F" /* setIvProfile */])(ivProfile);
             if (turns && turns.length > 0 || stuns && stuns.length > 0) {
                 const urls = [];
                 if (stuns && stuns.length > 0) {
@@ -25103,10 +25197,10 @@ const fetchAndConfigureServerDetails = async username => {
                         urls.push({ urls: turn.turn, username: turn.username, credential: turn.password });
                     });
                 }
-                Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["J" /* setStunTurnServerUrl */])(urls);
+                Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["K" /* setStunTurnServerUrl */])(urls);
             }
-            Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["H" /* setPingPongTime */])(60);
-            Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["G" /* setMaxUsersOfCall */])(8);
+            Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["I" /* setPingPongTime */])(60);
+            Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["H" /* setMaxUsersOfCall */])(8);
             if (callRoutingServer !== "") Object(__WEBPACK_IMPORTED_MODULE_3__modules_call_initialize__["n" /* initializeJanus */])(callRoutingServer, Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["s" /* getStunTurnServerUrl */])());
             return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
         }
@@ -25120,7 +25214,7 @@ const fetchAndConfigureServerDetails = async username => {
 const fetchUserList = async (searchText, page, limit) => {
     const apiEndpoints = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["d" /* getApiEndPoints */])();
     const token = await Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["v" /* getUserToken */])();
-    const userListApiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_12" /* METHOD_GET */], `${apiEndpoints.userList}?name=${searchText}&page=${page}&size=${limit}`, undefined, token, false);
+    const userListApiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_14" /* METHOD_GET */], `${apiEndpoints.userList}?name=${searchText}&page=${page}&size=${limit}`, undefined, token, false);
     if (userListApiResponse && userListApiResponse.status === 200) {
         const successResp = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
         let users = [];
@@ -25155,7 +25249,7 @@ const fetchVcard = async userId => {
         const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
         const apiEndPoints = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["d" /* getApiEndPoints */])();
         const token = await Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["v" /* getUserToken */])();
-        const getvcardApiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_12" /* METHOD_GET */], apiEndPoints.getVcard + "?userId=" + userId, undefined, token, false);
+        const getvcardApiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_14" /* METHOD_GET */], apiEndPoints.getVcard + "?userId=" + userId, undefined, token, false);
         if (getvcardApiResponse && getvcardApiResponse.status === 200) {
             const item = _extends({}, getvcardApiResponse.data, {
                 email: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["g" /* decryptProfileDetails */])(getvcardApiResponse.data.email, userId),
@@ -25164,7 +25258,7 @@ const fetchVcard = async userId => {
                 fromUser: userId,
                 userJid: userId
             });
-            userId === Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["v" /* getloggedinUserJid */])() && Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["K" /* setUserProfile */])(item);
+            userId === Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["v" /* getloggedinUserJid */])() && Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["L" /* setUserProfile */])(item);
             response.data = item;
             return response;
         } else if (getvcardApiResponse && getvcardApiResponse.status === 204) {
@@ -27155,7 +27249,7 @@ const handleBlockedUser = (blockedUser, stanzaType = "") => {
   if (type === "block_user") {
     const item = {
       fromUserJid: `${blockedUserId}@${Object(__WEBPACK_IMPORTED_MODULE_3__connection__["e" /* getServer */])()}`,
-      status: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_63" /* UNAVAILABLE */]
+      status: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_65" /* UNAVAILABLE */]
     };
     Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["a" /* callbackListeners */])().presenceListener && Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["a" /* callbackListeners */])().presenceListener(item);
   }
@@ -29148,12 +29242,12 @@ const getRecentChatsIQ = () => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const recentChatsIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, '#A')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_36" /* NS_USER_ACTIVITIES */],
-      limit: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_45" /* RECENT_LIST_COUNT */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_44" /* RECENT_CHAT */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
+      limit: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* RECENT_LIST_COUNT */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_46" /* RECENT_CHAT */]
     });
 
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(recentChatsIQ, response => {
@@ -29161,7 +29255,7 @@ const getRecentChatsIQ = () => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["l"] = getRecentChatsIQ;
@@ -29180,15 +29274,15 @@ const getSingleChatIQ = (toUserJid, position, rowId, limit, sendSeen) => new Pro
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const singleChatIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_36" /* NS_USER_ACTIVITIES */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
       position: position,
       message_id: '',
       row_id: rowId,
       limit: limit,
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_51" /* SINGLE_CHAT */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_53" /* SINGLE_CHAT */],
       to_user: toUserJid,
       send_seen: sendSeen ? '1' : '0'
     });
@@ -29199,7 +29293,7 @@ const getSingleChatIQ = (toUserJid, position, rowId, limit, sendSeen) => new Pro
       successRes.userJid = toUserJid;
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["n"] = getSingleChatIQ;
@@ -29215,12 +29309,12 @@ const getMediaMessagesIQ = (toJid, msgId) => new Promise(async resolve => {
   if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
-    const status = __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["M" /* GROUP_CHAT_MEDIA */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_52" /* SINGLE_CHAT_MEDIA */];
+    const status = __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["N" /* GROUP_CHAT_MEDIA */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_54" /* SINGLE_CHAT_MEDIA */];
     const mediaIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_36" /* NS_USER_ACTIVITIES */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
       status: status,
       message_id: msgId,
       to_user: toJid
@@ -29231,7 +29325,7 @@ const getMediaMessagesIQ = (toJid, msgId) => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["k"] = getMediaMessagesIQ;
@@ -29248,11 +29342,11 @@ const getMessageByIdIQ = (msgId, chatType = 'chat') => new Promise(async resolve
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const msgIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_36" /* NS_USER_ACTIVITIES */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_46" /* REPLY_MESSAGE */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_48" /* REPLY_MESSAGE */],
       chat_type: chatType,
       message_id: '', // Need to remove this from ejabberd
       reply_id: msgId
@@ -29263,7 +29357,7 @@ const getMessageByIdIQ = (msgId, chatType = 'chat') => new Promise(async resolve
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* unused harmony export getMessageByIdIQ */
@@ -29279,11 +29373,11 @@ const getReplyMessageIQ = (replyMsgId, chatType = 'chat') => new Promise(async r
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const replyMsgIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_36" /* NS_USER_ACTIVITIES */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_46" /* REPLY_MESSAGE */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_48" /* REPLY_MESSAGE */],
       chat_type: chatType,
       message_id: '', // Need to remove this from ejabberd
       reply_id: replyMsgId
@@ -29295,7 +29389,7 @@ const getReplyMessageIQ = (replyMsgId, chatType = 'chat') => new Promise(async r
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["m"] = getReplyMessageIQ;
@@ -29312,11 +29406,11 @@ const getOriginalMsgDetails = async (msgId, chatType, callBack) => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const forwardIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_36" /* NS_USER_ACTIVITIES */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_46" /* REPLY_MESSAGE */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_48" /* REPLY_MESSAGE */],
       message_id: msgId,
       reply_id: msgId,
       chat_type: chatType
@@ -29340,18 +29434,18 @@ const updateFavouriteStatusIQ = (toJid, msgId, isFavourite) => new Promise(async
   if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
-    const status = isFavourite ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* SET_FAVOURITE_MESSAGE */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* UPDATE_FAVOURITE_MESSAGE */];
+    const status = isFavourite ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_51" /* SET_FAVOURITE_MESSAGE */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_66" /* UPDATE_FAVOURITE_MESSAGE */];
     const favMsgIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
       to_user: toJid,
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_37" /* NS_USER_FAV */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_FAV */],
       status: status,
       message_id: msgId
     });
 
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(favMsgIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(favMsgIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["w"] = updateFavouriteStatusIQ;
@@ -29366,13 +29460,13 @@ const getFavouritedMsgListIQ = () => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const favMsgIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_37" /* NS_USER_FAV */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_FAV */],
       chat_type: '',
       to_user: '',
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["D" /* GET_FAVOURITE_MESSAGE */]
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["E" /* GET_FAVOURITE_MESSAGE */]
     });
 
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(favMsgIQ, response => {
@@ -29380,7 +29474,7 @@ const getFavouritedMsgListIQ = () => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["e"] = getFavouritedMsgListIQ;
@@ -29395,14 +29489,14 @@ const removeAllFavouritedMsgIQ = () => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const favMsgIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_37" /* NS_USER_FAV */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["q" /* CLEARALL_FAVOURITE_MESSAGE */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_FAV */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["r" /* CLEARALL_FAVOURITE_MESSAGE */]
     });
 
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(favMsgIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(favMsgIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["r"] = removeAllFavouritedMsgIQ;
@@ -29415,18 +29509,18 @@ const removeAllFavouritedMsgIQ = () => new Promise(async resolve => {
  * @returns {Object} Success/Error Response
  */
 const clearOrDeleteChatMsgIQ = (toJid, deleteType, favourites) => new Promise(async resolve => {
-  const chatType = __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["K" /* GROUPCHAT */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["p" /* CHAT */];
+  const chatType = __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["L" /* GROUPCHAT */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["q" /* CHAT */];
   const favourite = favourites ? 0 : 1;
 
   const clearChatIQ = $iq({
-    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
     id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
   }).c('query', {
-    xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_36" /* NS_USER_ACTIVITIES */],
+    xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
     remove_user: Strophe.getNodeFromJid(toJid),
-    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_59" /* TYPE_CHAT */],
+    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
     favourite: favourite,
-    status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["s" /* CLEAR_MESSAGE */],
+    status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["t" /* CLEAR_MESSAGE */],
     chat_type: chatType,
     delete_type: deleteType
   });
@@ -29453,16 +29547,16 @@ const removeAllChatMsgIQ = deleteType => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const clearChatIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_36" /* NS_USER_ACTIVITIES */],
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_59" /* TYPE_CHAT */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["r" /* CLEAR_ALL */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["s" /* CLEAR_ALL */],
       delete_type: deleteType
     });
 
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(clearChatIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(clearChatIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["q"] = removeAllChatMsgIQ;
@@ -29475,17 +29569,17 @@ const removeAllChatMsgIQ = deleteType => new Promise(async resolve => {
  * @returns {Object} Success/Error Response
  */
 const deleteMessageIQ = (toJid, msgIds) => new Promise(async resolve => {
-  const chatType = __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_21" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["K" /* GROUPCHAT */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["p" /* CHAT */];
+  const chatType = __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["L" /* GROUPCHAT */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["q" /* CHAT */];
   const deleteMsgIQ = $iq({
-    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
     id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
   }).c('query', {
     to_user: toJid,
     chat_type: chatType,
     message_ids: msgIds,
-    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_59" /* TYPE_CHAT */],
-    status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["x" /* DELETE_MESSAGE */],
-    xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_36" /* NS_USER_ACTIVITIES */]
+    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
+    status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["y" /* DELETE_MESSAGE */],
+    xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */]
   });
   if (Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["b" /* getOnlineStatus */])()) {
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(deleteMsgIQ);
@@ -29520,16 +29614,16 @@ const createGroupIQ = (groupName, participants, groupImage = '') => new Promise(
       const imageUrl = profileResponse.imageFileToken || groupImage;
 
       const groupIQ = $iq({
-        type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
-        to: `${__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_20" /* MIX */]}.${Object(__WEBPACK_IMPORTED_MODULE_1__connection__["e" /* getServer */])()}`,
+        type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
+        to: `${__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_22" /* MIX */]}.${Object(__WEBPACK_IMPORTED_MODULE_1__connection__["e" /* getServer */])()}`,
         id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
       }).c('query', {
-        xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_GROUP_MIX */],
-        status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["w" /* CREATE_GROUP */],
+        xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
+        status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["x" /* CREATE_GROUP */],
         group_id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'AB')
       });
 
-      groupIQ.c('profile', {}).c('vCard', { xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_VCARD */] }).c('nickName').t(groupName);
+      groupIQ.c('profile', {}).c('vCard', { xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_40" /* NS_VCARD */] }).c('nickName').t(groupName);
       imageUrl && groupIQ.up().c('image').t(imageUrl);
       groupIQ.up().up().up().c('participants', {});
       participants.forEach(el => groupIQ.c('participant').t(el).up());
@@ -29538,9 +29632,9 @@ const createGroupIQ = (groupName, participants, groupImage = '') => new Promise(
         Object(__WEBPACK_IMPORTED_MODULE_7__modules_groupchat__["f" /* getGroupsList */])();
         Object(__WEBPACK_IMPORTED_MODULE_8__modules_chat__["r" /* getRecentChats */])();
         resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])());
-      }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+      }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
     } catch (error) {
-      resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */]));
+      resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
     }
   }
 });
@@ -29560,19 +29654,19 @@ const addParticipantsIQ = (groupJid, groupName, participants) => new Promise(asy
   } else {
     try {
       const addMembersIq = $iq({
-        type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+        type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
         id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA'),
         to: groupJid
       }).c('query', {
         status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["a" /* ADD_PARTICIPANTS */],
-        xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_GROUP_MIX */]
+        xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */]
       }).c('subscriptions', {}).c('subscribe', { node: 'urn:xmpp:mix:nodes:messages' }).up().c('subscribe', { node: 'urn:xmpp:mix:nodes:presence' }).up().c('subscribe', { node: 'urn:xmpp:mix:nodes:participants' }).up().c('subscribe', { node: 'urn:xmpp:mix:nodes:info' }).up().c('subscribe', { node: 'urn:xmpp:mix:nodes:config' }).up().up().c('participants', {});
       participants.forEach(element => addMembersIq.c('participant').t(element).up());
       addMembersIq.up().c('nick').t(groupName).up();
 
-      await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(addMembersIq, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+      await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(addMembersIq, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
     } catch (error) {
-      resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */]));
+      resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
     }
   }
 });
@@ -29598,12 +29692,12 @@ const setGroupProfileIQ = async (groupJid, groupName, groupImage) => new Promise
     const imageUrl = profileResponse.imageFileToken || groupImage;
 
     const groupProfileIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA'),
       to: groupJid
     }).c('query', {
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* SET_GROUP_INFO */],
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_GROUP_MIX */]
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_52" /* SET_GROUP_INFO */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */]
     }).c('profile', {}).c('vCard', {
       xmlns: 'vcard-temp'
     }).c('nickName').t(groupName).up().c('image').t(imageUrl).up();
@@ -29612,7 +29706,7 @@ const setGroupProfileIQ = async (groupJid, groupName, groupImage) => new Promise
       const iqResponse = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
       iqResponse.fileToken = imageUrl;
       resolve(iqResponse);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["v"] = setGroupProfileIQ;
@@ -29627,12 +29721,12 @@ const getGroupsListIQ = () => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const groupIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
-      to: `${__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["e" /* ANY */]}@${__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_20" /* MIX */]}.${Object(__WEBPACK_IMPORTED_MODULE_1__connection__["e" /* getServer */])()}`,
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
+      to: `${__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["e" /* ANY */]}@${__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_22" /* MIX */]}.${Object(__WEBPACK_IMPORTED_MODULE_1__connection__["e" /* getServer */])()}`,
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["E" /* GET_GROUP_ID */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["F" /* GET_GROUP_ID */]
     });
 
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, response => {
@@ -29640,7 +29734,7 @@ const getGroupsListIQ = () => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["j"] = getGroupsListIQ;
@@ -29656,12 +29750,12 @@ const getGroupProfileIQ = groupJid => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const groupIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
       to: groupJid,
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["F" /* GET_GROUP_PROFILE */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["G" /* GET_GROUP_PROFILE */],
       group_id: Strophe.getNodeFromJid(groupJid)
     });
 
@@ -29670,7 +29764,7 @@ const getGroupProfileIQ = groupJid => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
       successRes.data = item[0] || {};
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["i"] = getGroupProfileIQ;
@@ -29686,12 +29780,12 @@ const getGroupParticipantsIQ = groupJid => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const groupIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
       to: groupJid,
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["G" /* GET_PARTICIPANTS */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["H" /* GET_PARTICIPANTS */]
     });
 
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, response => {
@@ -29699,7 +29793,7 @@ const getGroupParticipantsIQ = groupJid => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["h"] = getGroupParticipantsIQ;
@@ -29716,15 +29810,15 @@ const makeAsAdminIQ = (groupJid, userJid) => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const groupIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
       to: groupJid,
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_6" /* MAKE_ADMIN */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_8" /* MAKE_ADMIN */]
     }).c('participant').t(userJid).up();
 
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["o"] = makeAsAdminIQ;
@@ -29743,21 +29837,21 @@ const removeParticipantIQ = (groupJid, userJid, isAdmin, type) => new Promise(as
   } else {
     let status;
     if (type === 'exit') {
-      status = isAdmin ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["b" /* ADMIN_EXIT_GROUP */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_70" /* USER_EXIT_GROUP */];
+      status = isAdmin ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["b" /* ADMIN_EXIT_GROUP */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_72" /* USER_EXIT_GROUP */];
     } else {
       status = isAdmin ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["c" /* ADMIN_REMOVE_ADMIN */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["d" /* ADMIN_REMOVE_PARTICIPANT */];
     }
 
     const groupIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
       to: groupJid,
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_GROUP_MIX */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
       status: status
     }).c('participant').t(userJid).up();
 
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["s"] = removeParticipantIQ;
@@ -29774,15 +29868,15 @@ const userDeleteGroupIQ = groupJid => new Promise(async resolve => {
   } else {
     const userJid = `${Object(__WEBPACK_IMPORTED_MODULE_6__helpers_common__["v" /* getloggedinUserJid */])()}@${Object(__WEBPACK_IMPORTED_MODULE_1__connection__["e" /* getServer */])()}`;
     const groupIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
       to: groupJid,
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_69" /* USER_DELETE_GROUP */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_71" /* USER_DELETE_GROUP */]
     }).c('participant').t(userJid).up();
 
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["z"] = userDeleteGroupIQ;
@@ -29801,15 +29895,15 @@ const getGroupChatIQ = (groupJid, position, rowId, limit, sendSeen) => new Promi
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const groupChatIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_36" /* NS_USER_ACTIVITIES */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
       position: position,
       message_id: '',
       row_id: rowId,
       limit: limit,
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["L" /* GROUP_CHAT */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["M" /* GROUP_CHAT */],
       to_user: groupJid,
       send_seen: sendSeen ? '1' : '0'
     });
@@ -29820,7 +29914,7 @@ const getGroupChatIQ = (groupJid, position, rowId, limit, sendSeen) => new Promi
       successRes.data = item;
       successRes.groupJid = groupJid;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["f"] = getGroupChatIQ;
@@ -29836,17 +29930,17 @@ const sendTypingStatusGroupIQ = toJid => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const typingIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
       to: toJid,
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["t" /* COMPOSING */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["u" /* COMPOSING */]
     }).c('no-store', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_32" /* NS_HINTS */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_HINTS */]
     });
 
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(typingIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(typingIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["u"] = sendTypingStatusGroupIQ;
@@ -29862,17 +29956,17 @@ const sendTypingGoneStatusGroupIQ = toJid => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const typingGoneIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
       to: toJid,
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["H" /* GONE */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["I" /* GONE */]
     }).c('no-store', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_32" /* NS_HINTS */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_HINTS */]
     });
 
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(typingGoneIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(typingGoneIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["t"] = sendTypingGoneStatusGroupIQ;
@@ -29889,12 +29983,12 @@ const getGroupMsgInfoIQ = (groupJid, msgId) => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const msgInfoIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
       to: groupJid,
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["O" /* GROUP_MESSAGE_STATUS */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["P" /* GROUP_MESSAGE_STATUS */],
       message_id: msgId
     });
 
@@ -29904,7 +29998,7 @@ const getGroupMsgInfoIQ = (groupJid, msgId) => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["g"] = getGroupMsgInfoIQ;
@@ -29921,17 +30015,17 @@ const recallGroupMessageIQ = (toJid, msgIds) => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const recallIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA'),
       to: toJid
     }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_43" /* RECALL */],
-      chat_type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_24" /* NORMAL */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_45" /* RECALL */],
+      chat_type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_26" /* NORMAL */],
       msgid: msgIds
     });
 
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(recallIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(recallIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["p"] = recallGroupMessageIQ;
@@ -29948,16 +30042,16 @@ const updateMuteStatusIQ = (toJid, isMuted) => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const muteMsgIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('query', {
       to_user: toJid,
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_36" /* NS_USER_ACTIVITIES */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* UPDATE_MUTE_NOTIFICATION */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_67" /* UPDATE_MUTE_NOTIFICATION */],
       mute_status: isMuted ? '1' : '0'
     });
 
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(muteMsgIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(muteMsgIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["x"] = updateMuteStatusIQ;
@@ -29971,15 +30065,15 @@ const updateMuteStatusIQ = (toJid, isMuted) => new Promise(async resolve => {
 const updateRecentChatUnreadCountIQ = toJid => new Promise(async resolve => {
   const iqId = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA');
   const unreadIQ = $iq({
-    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
     id: iqId
   }).c('query', {
     to_user: toJid,
-    xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_36" /* NS_USER_ACTIVITIES */],
-    status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_66" /* UPDATE_UNREAD_COUNT */]
+    xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
+    status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_68" /* UPDATE_UNREAD_COUNT */]
   });
   if (Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["b" /* getOnlineStatus */])()) {
-    Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(unreadIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(unreadIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   } else {
     Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["a" /* addStanza */])(unreadIQ.toString(), iqId, 'updateUnreadCount');
     resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])());
@@ -43498,7 +43592,7 @@ const messageHandler = async message => {
     // Handling received msg stanzas
     if (received) {
       // Validating for carbon messages
-      if (received.getAttribute('xmlns') === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_28" /* NS_CARBON */]) {
+      if (received.getAttribute('xmlns') === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_30" /* NS_CARBON */]) {
         carbon = true;
         item = Object(__WEBPACK_IMPORTED_MODULE_9__utils__["a" /* handleCarbonMessage */])(received);
         // Incoming call carbon copy
@@ -43640,7 +43734,7 @@ const replyMessageHandler = message => {
 const favouriteMsgListHandler = listIQ => {
   const query = Object(__WEBPACK_IMPORTED_MODULE_4__helpers_utils__["l" /* findXML */])(listIQ, 'query');
   const type = query.getAttribute('type') || '';
-  if (type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["D" /* GET_FAVOURITE_MESSAGE */]) {
+  if (type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["E" /* GET_FAVOURITE_MESSAGE */]) {
     const item = Object(__WEBPACK_IMPORTED_MODULE_9__utils__["n" /* handleStarredMessage */])(listIQ);
     Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["a" /* callbackListeners */])().favouriteMessageListener && Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["a" /* callbackListeners */])().favouriteMessageListener(item);
   } else {
@@ -46196,97 +46290,113 @@ const _handleIncomingCall = async (message, isCarbon) => {
 
 
 const validateAndHandleCallMessage = async message => {
-  var _message$data = message.data;
-  _message$data = _message$data === undefined ? {} : _message$data;
-  let room_id = _message$data.room_id,
-      call_time = _message$data.call_time;
+  try {
+    var _message$data = message.data;
+    _message$data = _message$data === undefined ? {} : _message$data;
+    let room_id = _message$data.room_id,
+        call_time = _message$data.call_time;
 
-  const token = await Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["v" /* getUserToken */])();
-  const apiEndpoints = Object(__WEBPACK_IMPORTED_MODULE_4__helpers_common__["d" /* getApiEndPoints */])();
+    const token = await Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["v" /* getUserToken */])();
+    const apiEndpoints = Object(__WEBPACK_IMPORTED_MODULE_4__helpers_common__["d" /* getApiEndPoints */])();
 
-  let inputdata = {
-    callingTime: call_time,
-    deviceType: __WEBPACK_IMPORTED_MODULE_8_react_native__["Platform"].OS,
-    roomId: room_id
-  };
+    let inputdata = {
+      callingTime: call_time,
+      deviceType: __WEBPACK_IMPORTED_MODULE_8_react_native__["Platform"].OS,
+      roomId: room_id
+    };
 
-  let apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_6__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_13" /* METHOD_POST */], `${apiEndpoints.validateCall}`, inputdata, token, false);
+    let apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_6__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_15" /* METHOD_POST */], `${apiEndpoints.validateCall}`, inputdata, token, false);
 
-  if (apiResponse.data.anotherResourceHandledThisCall === false) {
-    if (apiResponse.data.validCall) {
-      return handleIncomingCall(message);
+    if (apiResponse.status === 200) {
+      if (apiResponse.data.anotherResourceHandledThisCall === false) {
+        if (apiResponse.data.validCall) {
+          return handleIncomingCall(message);
+        } else {
+          Object(__WEBPACK_IMPORTED_MODULE_5__functions__["y" /* sendMissedCallDataToClient */])(message);
+          await Object(__WEBPACK_IMPORTED_MODULE_5__functions__["w" /* resetCallData */])();
+        }
+      } else return;
     } else {
-      Object(__WEBPACK_IMPORTED_MODULE_5__functions__["y" /* sendMissedCallDataToClient */])(message);
-      await Object(__WEBPACK_IMPORTED_MODULE_5__functions__["w" /* resetCallData */])();
+      return Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["j" /* errorResponse */])(apiResponse.message);
     }
+  } catch (err) {
+    console.log(err, 'validateAndHandleCallMessage');
+    return Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["j" /* errorResponse */])(err);
   }
 };
 /* harmony export (immutable) */ __webpack_exports__["d"] = validateAndHandleCallMessage;
 
 
 const handleIncomingCall = async message => {
-  var _message$data2 = message.data;
-  _message$data2 = _message$data2 === undefined ? {} : _message$data2;
-  let caller_id = _message$data2.caller_id,
-      call_status = _message$data2.call_status,
-      room_id = _message$data2.room_id,
-      call_type = _message$data2.call_type,
-      call_time = _message$data2.call_time,
-      group_id = _message$data2.group_id,
-      users = _message$data2.users;
-  var _message$data2$invite = _message$data2.inviteUsersJson;
-  let inviteUsersJson = _message$data2$invite === undefined ? {} : _message$data2$invite;
+  try {
+    var _message$data2 = message.data;
+    _message$data2 = _message$data2 === undefined ? {} : _message$data2;
+    let caller_id = _message$data2.caller_id,
+        call_status = _message$data2.call_status,
+        room_id = _message$data2.room_id,
+        call_type = _message$data2.call_type,
+        call_time = _message$data2.call_time,
+        group_id = _message$data2.group_id,
+        users = _message$data2.users;
+    var _message$data2$invite = _message$data2.inviteUsersJson;
+    let inviteUsersJson = _message$data2$invite === undefined ? {} : _message$data2$invite;
 
-  let userJid = Object(__WEBPACK_IMPORTED_MODULE_4__helpers_common__["u" /* getUserJidFromResource */])(caller_id);
-  let toUsers = [];
-  let usersJson = {};
+    let userJid = Object(__WEBPACK_IMPORTED_MODULE_4__helpers_common__["u" /* getUserJidFromResource */])(caller_id);
+    let toUsers = [];
+    let usersJson = {};
 
-  if (users) {
-    usersJson = typeof users === 'object' ? users : { user: users };
+    if (users) {
+      usersJson = typeof users === 'object' ? users : { user: users };
+    }
+
+    if (usersJson && usersJson.user) {
+      toUsers = Array.isArray(usersJson.user) ? usersJson.user : [usersJson.user];
+    }
+
+    let inviteUsers = [];
+    if (inviteUsersJson && inviteUsersJson.user) {
+      inviteUsers = (await Array.isArray(inviteUsersJson.user)) ? inviteUsersJson.user : [inviteUsersJson.user];
+    }
+
+    const item = {
+      userJid,
+      status: call_status,
+      sdkStatus: __WEBPACK_IMPORTED_MODULE_3__constants__["v" /* CALL_STATE_INCOMING_CALL */],
+      roomId: room_id,
+      callType: call_type,
+      callTime: call_time,
+      groupId: group_id,
+      toUsers
+    };
+
+    item['allUsers'] = [userJid, ...toUsers];
+
+    if (call_status === __WEBPACK_IMPORTED_MODULE_3__constants__["K" /* CALL_STATUS_CALLING */]) {
+      inviteUsers.map(inviteUserJid => {
+        if (item['toUsers'].indexOf(inviteUserJid) === -1) {
+          item['toUsers'] = [...item.toUsers, inviteUserJid];
+        }
+        if (item['allUsers'].indexOf(inviteUserJid) === -1) {
+          item['allUsers'] = [...item.allUsers, inviteUserJid];
+        }
+        return undefined;
+      });
+      Object(__WEBPACK_IMPORTED_MODULE_5__functions__["c" /* consoleLog */])('handleIncomingCall --- ', item);
+      Object(__WEBPACK_IMPORTED_MODULE_2__call__["A" /* incomingCall */])(item);
+    } else if (call_status === __WEBPACK_IMPORTED_MODULE_3__constants__["w" /* CALL_STATE_INVITE_USERS */]) {
+      item['inviteUsers'] = inviteUsers;
+      item['allUsers'] = [...item.allUsers, ...inviteUsers];
+      item['sdkStatus'] = __WEBPACK_IMPORTED_MODULE_3__constants__["w" /* CALL_STATE_INVITE_USERS */];
+      Object(__WEBPACK_IMPORTED_MODULE_5__functions__["c" /* consoleLog */])('handleIncomingCall - Invite Users --- ', item);
+      Object(__WEBPACK_IMPORTED_MODULE_2__call__["B" /* receiveInviteUsers */])(item);
+    }
+    let success = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["B" /* successResponse */])();
+    success.data = item;
+    return success;
+  } catch (error) {
+    console.log(error, 'handleIncomingCall');
+    return Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["j" /* errorResponse */])(error);
   }
-
-  if (usersJson && usersJson.user) {
-    toUsers = Array.isArray(usersJson.user) ? usersJson.user : [usersJson.user];
-  }
-
-  let inviteUsers = [];
-  if (inviteUsersJson && inviteUsersJson.user) {
-    inviteUsers = (await Array.isArray(inviteUsersJson.user)) ? inviteUsersJson.user : [inviteUsersJson.user];
-  }
-
-  const item = {
-    userJid,
-    status: call_status,
-    sdkStatus: __WEBPACK_IMPORTED_MODULE_3__constants__["v" /* CALL_STATE_INCOMING_CALL */],
-    roomId: room_id,
-    callType: call_type,
-    callTime: call_time,
-    groupId: group_id,
-    toUsers
-  };
-
-  item['allUsers'] = [userJid, ...toUsers];
-
-  if (call_status === __WEBPACK_IMPORTED_MODULE_3__constants__["K" /* CALL_STATUS_CALLING */]) {
-    inviteUsers.map(inviteUserJid => {
-      if (item['toUsers'].indexOf(inviteUserJid) === -1) {
-        item['toUsers'] = [...item.toUsers, inviteUserJid];
-      }
-      if (item['allUsers'].indexOf(inviteUserJid) === -1) {
-        item['allUsers'] = [...item.allUsers, inviteUserJid];
-      }
-      return undefined;
-    });
-    Object(__WEBPACK_IMPORTED_MODULE_5__functions__["c" /* consoleLog */])('handleIncomingCall --- ', item);
-    Object(__WEBPACK_IMPORTED_MODULE_2__call__["A" /* incomingCall */])(item);
-  } else if (call_status === __WEBPACK_IMPORTED_MODULE_3__constants__["w" /* CALL_STATE_INVITE_USERS */]) {
-    item['inviteUsers'] = inviteUsers;
-    item['allUsers'] = [...item.allUsers, ...inviteUsers];
-    item['sdkStatus'] = __WEBPACK_IMPORTED_MODULE_3__constants__["w" /* CALL_STATE_INVITE_USERS */];
-    Object(__WEBPACK_IMPORTED_MODULE_5__functions__["c" /* consoleLog */])('handleIncomingCall - Invite Users --- ', item);
-    Object(__WEBPACK_IMPORTED_MODULE_2__call__["B" /* receiveInviteUsers */])(item);
-  }
-  return item;
 };
 /* harmony export (immutable) */ __webpack_exports__["c"] = handleIncomingCall;
 
@@ -47444,7 +47554,7 @@ const downloadMedia = async (msgID, addInPending = true) => {
         const successReturn = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
         const fileName = 'MFRN_' + Date.now() + '.' + ext;
         const destinationPath = __WEBPACK_IMPORTED_MODULE_1_react_native_fs___default.a.DocumentDirectoryPath + '/' + fileName;
-        const response = await Object(__WEBPACK_IMPORTED_MODULE_6__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_12" /* METHOD_GET */], imageUrl.data.fileUrl, undefined, imageUrl.data.token, '', msgID, '', 'download');
+        const response = await Object(__WEBPACK_IMPORTED_MODULE_6__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_14" /* METHOD_GET */], imageUrl.data.fileUrl, undefined, imageUrl.data.token, '', msgID, '', 'download');
         console.log('SDK downloadMedia response ==>', response);
         if (response.status === 500) {
           const item = {
@@ -47453,10 +47563,10 @@ const downloadMedia = async (msgID, addInPending = true) => {
           };
           Object(__WEBPACK_IMPORTED_MODULE_4__helpers_common__["a" /* callbackListeners */])().mediaDownloadListener && Object(__WEBPACK_IMPORTED_MODULE_4__helpers_common__["a" /* callbackListeners */])().mediaDownloadListener(item);
         }
-        if (response.message === __WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_23" /* NETWORK_ERROR */]) {
+        if (response.message === __WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_25" /* NETWORK_ERROR */]) {
           Object(__WEBPACK_IMPORTED_MODULE_8__common__["b" /* addPendingDownloads */])(msgID);
         }
-        if (response.message === __WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_68" /* USER_CANCELLED */]) {
+        if (response.message === __WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_70" /* USER_CANCELLED */]) {
           Object(__WEBPACK_IMPORTED_MODULE_8__common__["i" /* removePendingDownloads */])(msgID);
         }
         let image = btoa(new Uint8Array(response).reduce((data, byte) => data + String.fromCharCode(byte), ''));
@@ -47543,7 +47653,7 @@ const handleIncomingMsg = async (message, msgBody, params) => {
     msgId = message.getAttribute('id');
     sendFrom = params.from;
   } else {
-    chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */];
+    chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */];
     const stanzaId = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["l" /* findXML */])(message, 'submission-id'),
           jid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["l" /* findXML */])(message, 'jid');
     msgId = Strophe.getText(stanzaId);
@@ -47557,7 +47667,7 @@ const handleIncomingMsg = async (message, msgBody, params) => {
   userID !== publisherId && Object(__WEBPACK_IMPORTED_MODULE_1__msgstanza__["b" /* sendDeliveredStatusIQ */])(sendFrom, msgId, groupId);
 
   // If it is Group Chat - Restrict Message from the Same User (Sent Message should not be Received)
-  if (chatType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */] && userID === publisherId) return {};
+  if (chatType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] && userID === publisherId) return {};
 
   try {
     msgbody = JSON.parse(Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["f" /* decryptMsg */])(msgbody, msgId));
@@ -47642,9 +47752,9 @@ const handleInfoMessages = (infoMsg, params) => {
   const msgItem = {
     msgId: '',
     msgBody: {},
-    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */],
+    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */],
     publisherId: Strophe.getNodeFromJid(publisherJid),
-    msgType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["P" /* GROUP_PROFILE_UPDATE */],
+    msgType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */],
     profileUpdatedStatus: 'profileUpdated',
     timestamp: Number(params.timeStamp),
     msgStatus: 0,
@@ -47681,9 +47791,9 @@ const handleGroupParticipantAdded = (participant, params) => {
   const msgItem = {
     msgId: '',
     msgBody: {},
-    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */],
+    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */],
     publisherId: Strophe.getNodeFromJid(params.publisher),
-    msgType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["P" /* GROUP_PROFILE_UPDATE */],
+    msgType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */],
     profileUpdatedStatus: 'userAdded',
     timestamp: Number(params.timeStamp),
     msgStatus: 0,
@@ -47719,9 +47829,9 @@ const handleParticipantRemoval = (itemsIQ, params) => {
   const msgItem = {
     msgId: '',
     msgBody: {},
-    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */],
+    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */],
     publisherId: Strophe.getNodeFromJid(params.publisher),
-    msgType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["P" /* GROUP_PROFILE_UPDATE */],
+    msgType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */],
     profileUpdatedStatus: msgType,
     timestamp: Number(params.timeStamp),
     msgStatus: 0,
@@ -47751,9 +47861,9 @@ const handleNewAdmin = (infoIQ, params) => {
   const msgItem = {
     msgId: '',
     msgBody: {},
-    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */],
+    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */],
     publisherId: Strophe.getNodeFromJid(publisherJid),
-    msgType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["P" /* GROUP_PROFILE_UPDATE */],
+    msgType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */],
     profileUpdatedStatus: 'madeAdmin',
     timestamp: Number(params.timeStamp),
     msgStatus: 0,
@@ -47774,7 +47884,7 @@ const handleFavouriteMessage = favourite => {
   const type = favourite.getAttribute('type'),
         msgId = favourite.getAttribute('message_id'),
         fromUserJid = favourite.getAttribute('to_user');
-  const favouriteStatus = type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_49" /* SET_FAVOURITE_MESSAGE */] ? 1 : 0;
+  const favouriteStatus = type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_51" /* SET_FAVOURITE_MESSAGE */] ? 1 : 0;
 
   if (type !== 'delete_favourite_message') {
     const item = {
@@ -47806,7 +47916,7 @@ const handleCarbonMessage = received => {
       messageId = receivedMsg.getAttribute('id');
       sendFrom = from;
     } else {
-      chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */];
+      chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */];
       const stanzaId = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["l" /* findXML */])(receivedMsg, 'submission-id'),
             jid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["l" /* findXML */])(receivedMsg, 'jid');
       messageId = Strophe.getText(stanzaId);
@@ -47819,7 +47929,7 @@ const handleCarbonMessage = received => {
           toUserJid = receivedMsg.getAttribute('to');
 
     // If it is Group Chat - Restrict Message from the Same User (Sent Message should not be Received)
-    if (chatType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */] && userID === publisherId) return {};
+    if (chatType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] && userID === publisherId) return {};
 
     try {
       msgBody = JSON.parse(Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["f" /* decryptMsg */])(msgBody, messageId));
@@ -47890,7 +48000,7 @@ const handleCarbonMessage = received => {
     let fromUserId, fromUserJid, publisherId, publisherJid;
     if (groupId) {
       fromUserId = groupId;
-      fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(groupId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */]);
+      fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(groupId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */]);
       publisherJid = Strophe.getBareJidFromJid(from);
       publisherId = Strophe.getNodeFromJid(from);
     } else {
@@ -47921,7 +48031,7 @@ const handleCarbonMessage = received => {
     let fromUserId, fromUserJid, publisherId, publisherJid;
     if (groupId) {
       fromUserId = groupId;
-      fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(groupId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */]);
+      fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(groupId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */]);
       publisherJid = Strophe.getBareJidFromJid(from);
       publisherId = Strophe.getNodeFromJid(from);
     } else {
@@ -47955,7 +48065,7 @@ const handleCarbonMessage = received => {
     let fromUserId = Strophe.getNodeFromJid(from);
     if (chatType === 'normal') {
       fromUserId = groupId;
-      chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */];
+      chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */];
     }
 
     return {
@@ -47973,7 +48083,7 @@ const handleCarbonMessage = received => {
     const type = messageClear.getAttribute('type'),
           chatType = messageClear.getAttribute('chat_type');
 
-    if (type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["s" /* CLEAR_MESSAGE */]) {
+    if (type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["t" /* CLEAR_MESSAGE */]) {
       const fromUserId = messageClear.getAttribute('remove_message_user'),
             deleteType = messageClear.getAttribute('delete_type');
       const msgType = Number(deleteType) === 1 ? 'carbonClearChat' : 'carbonDeleteChat';
@@ -47981,16 +48091,16 @@ const handleCarbonMessage = received => {
       return {
         msgType,
         fromUserId,
-        chatType: chatType === 'normal' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */] : chatType
+        chatType: chatType === 'normal' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] : chatType
       };
-    } else if (type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["r" /* CLEAR_ALL */]) {
+    } else if (type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["s" /* CLEAR_ALL */]) {
       const deleteType = messageClear.getAttribute('delete_type');
       const msgType = Number(deleteType) === 1 ? 'carbonClearAllChat' : 'carbonDeleteAllChat';
 
       return {
         msgType
       };
-    } else if (type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["x" /* DELETE_MESSAGE */]) {
+    } else if (type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["y" /* DELETE_MESSAGE */]) {
       const messageIds = messageClear.getAttribute('message_ids'),
             lastMesageId = messageClear.getAttribute('last_message_id'),
             fromUserId = messageClear.getAttribute('to_user'),
@@ -48015,7 +48125,7 @@ const handleCarbonMessage = received => {
   const groupDelete = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["l" /* findXML */])(receivedMsg.childNodes, 'groupdelete');
   if (groupDelete) {
     return {
-      chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */],
+      chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */],
       msgType: 'carbonDeleteChat',
       fromUserId: groupDelete.getAttribute('group_id')
     };
@@ -48059,8 +48169,8 @@ const handleRecentChatIQ = chatIQ => {
       }
 
       if (msgfrom) {
-        const chatType = chattype === 'normal' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */] : chattype,
-              msgType = Message_type === 'notification' || Message_type === '0' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["P" /* GROUP_PROFILE_UPDATE */] : Message_type;
+        const chatType = chattype === 'normal' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] : chattype,
+              msgType = Message_type === 'notification' || Message_type === '0' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */] : Message_type;
 
         const item = {
           msgBody,
@@ -48078,7 +48188,7 @@ const handleRecentChatIQ = chatIQ => {
           deleteStatus: Number(recallstatus),
           timestamp: new Date(time).getTime()
         };
-        if (chatType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */] && msgType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["P" /* GROUP_PROFILE_UPDATE */]) {
+        if (chatType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] && msgType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */]) {
           item.msgBody = {};
           item.profileUpdatedStatus = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["p" /* getGroupMessageStatus */])(message, publisher, Notification_to);
         }
@@ -48204,14 +48314,14 @@ const handleSentMsg = sent => {
         timestamp: Number(sentTime),
         msgId: recall.getAttribute('id') || '',
         fromUserId: Strophe.getNodeFromJid(to),
-        chatType: chatType === 'normal' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */] : chatType
+        chatType: chatType === 'normal' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] : chatType
       };
     }
 
     // Handling Incoming Message
     const bodyMsg = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["l" /* findXML */])(message.childNodes, 'body');
     if (bodyMsg) {
-      sentChatType = to.includes('mix') ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */] : 'chat';
+      sentChatType = to.includes('mix') ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] : 'chat';
       msgBody = Strophe.getText(bodyMsg);
       try {
         msgBody = JSON.parse(Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["f" /* decryptMsg */])(msgBody, msgId));
@@ -48251,7 +48361,7 @@ const handleMediaIQ = mediaIQ => {
       let messageContent = {},
           msgBody;
       try {
-        const messageBody = chatMedia.childNodes[i].tagName === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */] ? media.body : media.message;
+        const messageBody = chatMedia.childNodes[i].tagName === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] ? media.body : media.message;
         const decryptedText = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["f" /* decryptMsg */])(messageBody, msgid);
         msgBody = JSON.parse(decryptedText);
       } catch (error) {}
@@ -48307,9 +48417,9 @@ const handleMessageById = message => {
           profileUpdatedStatus = '';
 
       if (chat_type === 'normal') {
-        chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */];
+        chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */];
         fromUserId = replyFromUser;
-        fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(fromUserId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */]);
+        fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(fromUserId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */]);
         publisherId = Strophe.getNodeFromJid(fromNotification);
         publisherJid = fromNotification;
         profileUpdatedStatus = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["p" /* getGroupMessageStatus */])(msgNotification, publisherId, toNotification);
@@ -48323,7 +48433,7 @@ const handleMessageById = message => {
         publisherId = replyFromUser;
         publisherJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(replyFromUser);
       }
-      msgType = msgNotification === '0' ? msgBodyContent.message_type : __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["P" /* GROUP_PROFILE_UPDATE */];
+      msgType = msgNotification === '0' ? msgBodyContent.message_type : __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */];
 
       const item = {
         msgId,
@@ -48381,7 +48491,7 @@ const handleReplyMessage = message => {
       let chatType, fromUserId, groupId;
 
       if (chat_type === 'normal') {
-        chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */];
+        chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */];
         fromUserId = Strophe.getNodeFromJid(fromNotification);
         groupId = replyFromUser;
       } else {
@@ -48467,9 +48577,9 @@ const handleStarredMessage = listIQ => {
       let chatType, fromUserId, fromUserJid, publisherId, publisherJid;
 
       if (chat_type === 'normal') {
-        chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */];
+        chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */];
         fromUserId = user;
-        fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(fromUserId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */]);
+        fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(fromUserId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */]);
         publisherId = Strophe.getNodeFromJid(from_notification);
         publisherJid = from_notification;
       } else {
@@ -48582,7 +48692,7 @@ const handleGroupParticipantsIQ = participantsIQ => {
 
 const handleGroupDelete = deleteIQ => {
   const item = {
-    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */],
+    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */],
     msgType: 'deleteChat',
     fromUserId: deleteIQ.getAttribute('group_id')
   };
@@ -48621,7 +48731,7 @@ const handleGroupChatIQ = (chatIQ, sendSeen) => {
             favouritestatus = chatElements.favouritestatus;
 
 
-      let msgType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["P" /* GROUP_PROFILE_UPDATE */];
+      let msgType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */];
       if (msgtype !== '0') {
         try {
           msgType = msgtype;
@@ -48642,7 +48752,7 @@ const handleGroupChatIQ = (chatIQ, sendSeen) => {
       const publisherId = fromuser.split('@').length > 1 ? Strophe.getNodeFromJid(fromuser) : fromuser;
       const item = {
         rowId: row_id,
-        chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */],
+        chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */],
         msgId: msgid,
         createdAt: time,
         fromUserId: user,
@@ -48657,7 +48767,7 @@ const handleGroupChatIQ = (chatIQ, sendSeen) => {
         msgType: msgType,
         favouriteStatus: Number(favouritestatus)
       };
-      if (msgType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["P" /* GROUP_PROFILE_UPDATE */]) {
+      if (msgType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */]) {
         item.msgBody = {};
         item.profileUpdatedStatus = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["p" /* getGroupMessageStatus */])(message_notification, publisherId, to_notification);
       }
@@ -48708,7 +48818,7 @@ const handleDeleteMessages = async deleteIQ => {
         chatType = deleteIQ.getAttribute('chat_type');
   let item = {};
 
-  if (type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["s" /* CLEAR_MESSAGE */]) {
+  if (type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["t" /* CLEAR_MESSAGE */]) {
     const fromUserId = deleteIQ.getAttribute('remove_message_user'),
           deleteType = deleteIQ.getAttribute('delete_type');
 
@@ -48716,16 +48826,16 @@ const handleDeleteMessages = async deleteIQ => {
     item = {
       msgType,
       fromUserId,
-      chatType: chatType === 'normal' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */] : chatType
+      chatType: chatType === 'normal' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] : chatType
     };
-  } else if (type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["r" /* CLEAR_ALL */]) {
+  } else if (type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["s" /* CLEAR_ALL */]) {
     const deleteType = deleteIQ.getAttribute('delete_type');
     const msgType = Number(deleteType) === 1 ? 'clearAllChat' : 'deleteAllChat';
 
     item = {
       msgType
     };
-  } else if (type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["x" /* DELETE_MESSAGE */]) {
+  } else if (type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["y" /* DELETE_MESSAGE */]) {
     const messageIds = deleteIQ.getAttribute('message_ids'),
           lastMesageId = deleteIQ.getAttribute('last_message_id'),
           fromUserId = deleteIQ.getAttribute('to_user'),
@@ -48754,7 +48864,7 @@ const handleGroupActivities = (eventMsg, params) => {
   const infoMsg = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["l" /* findXML */])(eventMsg.childNodes, 'info');
   if (infoMsg) {
     const status = infoMsg.getAttribute('status');
-    if (status && status === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATED */]) return handleInfoMessages(infoMsg, params);
+    if (status && status === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["R" /* GROUP_PROFILE_UPDATED */]) return handleInfoMessages(infoMsg, params);
     return handleNewAdmin(infoMsg, params);
   }
 
@@ -48840,7 +48950,7 @@ const handleNonCarbonMessage = async message => {
     let fromUserId, fromUserJid, publisherId, publisherJid;
     if (groupId) {
       fromUserId = groupId;
-      fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(groupId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */]);
+      fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(groupId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */]);
       publisherJid = Strophe.getBareJidFromJid(params.from);
       publisherId = Strophe.getNodeFromJid(params.from);
     } else {
@@ -48873,7 +48983,7 @@ const handleNonCarbonMessage = async message => {
     let fromUserId, fromUserJid, publisherId, publisherJid;
     if (groupId) {
       fromUserId = groupId;
-      fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(groupId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */]);
+      fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(groupId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */]);
       publisherJid = Strophe.getBareJidFromJid(params.from);
       publisherId = Strophe.getNodeFromJid(params.from);
     } else {
@@ -48907,7 +49017,7 @@ const handleNonCarbonMessage = async message => {
     let fromUserId = Strophe.getNodeFromJid(params.from);
     if (chatType === 'normal') {
       fromUserId = groupId;
-      chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["K" /* GROUPCHAT */];
+      chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */];
     }
     const recallObj = {
       msgType: 'recallMessage',
@@ -49032,14 +49142,14 @@ const createGroup = (groupName, participants, groupImage) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupName",
       value: groupName,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_50" /* REQUIRED */]
     }, {
       key: "participants",
       value: participants,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["g" /* ARRAY_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["h" /* ARRAY_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
-      const participantsJid = participants.every(el => __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["l" /* BARE_JID */].test(el));
+      const participantsJid = participants.every(el => __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["m" /* BARE_JID */].test(el));
       if (participantsJid) {
         return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["c" /* createGroupIQ */])(groupName, participants, groupImage);
       }
@@ -49066,18 +49176,18 @@ const addParticipants = (groupJid, groupName, participants) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_0" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
     }, {
       key: "groupName",
       value: groupName,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_50" /* REQUIRED */]
     }, {
       key: "participants",
       value: participants,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["g" /* ARRAY_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["h" /* ARRAY_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
-      const participantsJid = participants.every(el => __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["l" /* BARE_JID */].test(el));
+      const participantsJid = participants.every(el => __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["m" /* BARE_JID */].test(el));
       if (participantsJid) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["a" /* addParticipantsIQ */])(groupJid, groupName, participants);
       return Object(__WEBPACK_IMPORTED_MODULE_1__helpers_utils__["D" /* validationErrorResponse */])("Invalid Participant(s) Jid");
     }
@@ -49103,11 +49213,11 @@ const setGroupProfile = async (groupJid, groupName, groupImage = "") => {
     const response = await Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_0" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
     }, {
       key: "groupName",
       value: groupName,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_50" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return await Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["v" /* setGroupProfileIQ */])(groupJid, groupName, groupImage);
@@ -49146,7 +49256,7 @@ const getGroupProfile = groupJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_0" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["i" /* getGroupProfileIQ */])(groupJid);
@@ -49170,7 +49280,7 @@ const getGroupParticipants = groupJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_0" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["h" /* getGroupParticipantsIQ */])(groupJid);
@@ -49197,15 +49307,15 @@ const removeParticipant = (groupJid, userJid, isAdmin) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_0" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
     }, {
       key: "userJid",
       value: userJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Z" /* JID_FORMAT_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_0" /* JID_FORMAT_REQUIRED */]
     }, {
       key: "isAdmin",
       value: isAdmin,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["n" /* BOOLEAN_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["o" /* BOOLEAN_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["s" /* removeParticipantIQ */])(groupJid, userJid, isAdmin);
@@ -49230,11 +49340,11 @@ const makeAsAdmin = (groupJid, userJid) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_0" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
     }, {
       key: "userJid",
       value: userJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Z" /* JID_FORMAT_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_0" /* JID_FORMAT_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["o" /* makeAsAdminIQ */])(groupJid, userJid);
@@ -49260,15 +49370,15 @@ const userExitGroup = (groupJid, userJid, isAdmin) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_0" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
     }, {
       key: "userJid",
       value: userJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Z" /* JID_FORMAT_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_0" /* JID_FORMAT_REQUIRED */]
     }, {
       key: "isAdmin",
       value: isAdmin,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["n" /* BOOLEAN_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["o" /* BOOLEAN_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       // Using Method of Removeparticipant
@@ -49293,7 +49403,7 @@ const userDeleteGroup = groupJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_0" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["z" /* userDeleteGroupIQ */])(groupJid);
@@ -49318,11 +49428,11 @@ function getGroupMsgInfo(groupJid, msgId) {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_0" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
     }, {
       key: "msgId",
       value: msgId,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_50" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["g" /* getGroupMsgInfoIQ */])(groupJid, msgId);
@@ -86665,7 +86775,7 @@ const getFriendsListIQ = () => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const friendsIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, "BA")
     }).c("query", {
       xmlns: Strophe.NS.ROSTER
@@ -86676,7 +86786,7 @@ const getFriendsListIQ = () => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["d"] = getFriendsListIQ;
@@ -86692,11 +86802,11 @@ const getUserProfileIQ = userJid => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const profileIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, "!A"),
       to: userJid
     }).c("vCard", {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_VCARD */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_40" /* NS_VCARD */]
     });
 
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(profileIQ, response => {
@@ -86704,7 +86814,7 @@ const getUserProfileIQ = userJid => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* unused harmony export getUserProfileIQ */
@@ -86720,11 +86830,11 @@ const getLastActivityIQ = toUserJid => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const lastActivityIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, "BA"),
       to: toUserJid
     }).c("query", {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_LAST */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_35" /* NS_LAST */]
     });
 
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(lastActivityIQ, response => {
@@ -86732,7 +86842,7 @@ const getLastActivityIQ = toUserJid => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["e"] = getLastActivityIQ;
@@ -86748,15 +86858,15 @@ const blockUserIQ = toUserJid => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const blockuserIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, "BA")
     }).c("block", {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_27" /* NS_BLOCKING */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_29" /* NS_BLOCKING */]
     }).c("item", {
       jid: toUserJid
     }).up();
 
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(blockuserIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(blockuserIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["a"] = blockUserIQ;
@@ -86772,15 +86882,15 @@ const unblockUserIQ = toUserJid => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const unblockuserIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, "BA")
     }).c("unblock", {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_27" /* NS_BLOCKING */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_29" /* NS_BLOCKING */]
     }).c("item", {
       jid: toUserJid
     }).up();
 
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(unblockuserIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(unblockuserIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["g"] = unblockUserIQ;
@@ -86795,10 +86905,10 @@ const blockedListIQ = () => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const blockListIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, "#A")
     }).c("blocklist", {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_27" /* NS_BLOCKING */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_29" /* NS_BLOCKING */]
     });
 
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(blockListIQ, response => {
@@ -86806,7 +86916,7 @@ const blockedListIQ = () => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["b"] = blockedListIQ;
@@ -86821,11 +86931,11 @@ const blockedUserListIQ = () => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const blockUserListIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_60" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, "!A")
     }).c("query", {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_36" /* NS_USER_ACTIVITIES */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["m" /* BLOCK_USER */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["n" /* BLOCK_USER */]
     });
 
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(blockUserListIQ, response => {
@@ -86833,7 +86943,7 @@ const blockedUserListIQ = () => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["c"] = blockedUserListIQ;
@@ -86860,7 +86970,7 @@ const setUserProfileIQ = async (nickName, image, status, mobileNumber, email) =>
     const fileUrl = profileResponse.imageFileToken || image;
 
     const userProfileIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, "BA")
     }).c("vCard", {
       xmlns: "vcard-temp"
@@ -86870,7 +86980,7 @@ const setUserProfileIQ = async (nickName, image, status, mobileNumber, email) =>
       const iqSuccessResponse = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
       iqSuccessResponse.fileToken = fileUrl;
       resolve(iqSuccessResponse);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["f"] = setUserProfileIQ;
@@ -86896,10 +87006,10 @@ const setUserProfileIQ = async (nickName, image, status, mobileNumber, email) =>
  */
 const carbonEnable = () => {
   const carbon = $iq({
-    type: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_62" /* TYPE_SET */],
+    type: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_64" /* TYPE_SET */],
     id: Object(__WEBPACK_IMPORTED_MODULE_1__helpers_utils__["x" /* randomString */])(16, "#A")
   }).c("enable", {
-    xmlns: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_28" /* NS_CARBON */]
+    xmlns: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_30" /* NS_CARBON */]
   });
 
   Object(__WEBPACK_IMPORTED_MODULE_0__connection__["b" /* getConnection */])().send(carbon);
@@ -86941,7 +87051,7 @@ const translateUrl = "/chat/device/translate";
 const contactList = "/contacts/";
 /* harmony export (immutable) */ __webpack_exports__["b"] = contactList;
 
-const validateCall = "/users/calls/validateCall/";
+const validateCall = "/users/calls/validateCall";
 /* harmony export (immutable) */ __webpack_exports__["o"] = validateCall;
 
 const register = "/register";
@@ -86988,6 +87098,12 @@ const vcard = "/contacts/vcard";
  * @returns {Object} Success or Failure
  */
 const initializeSDK = async options => {
+  const initializeSDKRes = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["x" /* initializedSDKOrNot */])();
+
+  if (initializeSDKRes.statusCode === 200) {
+    return initializeSDKRes;
+  }
+
   if (options && typeof options === 'object') {
     var _options$xmppSocketHo = options.xmppSocketHost;
     const xmppSocketHost = _options$xmppSocketHo === undefined ? '' : _options$xmppSocketHo;
@@ -87022,11 +87138,11 @@ const initializeSDK = async options => {
     const validateObj = [{
       key: 'apiBaseUrl',
       value: apiBaseUrl,
-      rules: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_50" /* REQUIRED */]
     }, {
       key: 'licenseKey',
       value: licenseKey,
-      rules: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_48" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_50" /* REQUIRED */]
     }];
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])(validateObj);
 
@@ -87073,7 +87189,7 @@ const initializeSDK = async options => {
           });
         }
         urlsss = urls;
-        Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["J" /* setStunTurnServerUrl */])(urls);
+        Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["K" /* setStunTurnServerUrl */])(urls);
       }
 
       const initializeObj = {

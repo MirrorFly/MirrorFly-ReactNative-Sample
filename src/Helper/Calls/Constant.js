@@ -52,3 +52,8 @@ export const INCOMING_CALL = 'INCOMING_CALL';
 export const OUTGOING_CALL = 'OUTGOING_CALL';
 export const ONGOING_CALL = 'ONGOING_CALL';
 export const MISSED_CALL = 'MISSED_CALL';
+
+// CALL AUDIO ROUTING TYPES
+export const AUDIO_ROUTE_SPEAKER = 'Speaker'
+export const AUDIO_ROUTE_PHONE = 'Phone'
+export const AUDIO_ROUTE_HEADSET = 'Headset'

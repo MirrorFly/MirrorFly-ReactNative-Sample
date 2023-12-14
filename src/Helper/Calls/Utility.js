@@ -2,11 +2,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { Platform } from 'react-native';
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
+import RNInCallManager from 'react-native-incall-manager';
 import { openSettings } from 'react-native-permissions';
 import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { SDK } from '../../SDK';
-import { muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
+import { muteLocalAudio, muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
 import { requestMicroPhonePermission } from '../../common/utils';
 import {
@@ -19,7 +20,10 @@ import {
    showConfrence,
    updateCallConnectionState,
    updateCallerUUID,
+   updateConference,
 } from '../../redux/Actions/CallAction';
+import { updateCallAudioMutedAction, updateCallSpeakerEnabledAction } from '../../redux/Actions/CallControlsAction';
+import { showCallModalToastAction } from '../../redux/Actions/CallModalToasAction';
 import Store from '../../redux/store';
 import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
 import { getUserIdFromJid } from '../Chat/Utility';
@@ -32,9 +36,10 @@ import {
    dispatchDisconnected,
    getMaxUsersInCall,
    startCallingTimer,
-   stopIncomingCallRingtone
+   stopIncomingCallRingtone,
 } from './Call';
 import {
+   AUDIO_ROUTE_SPEAKER,
    CALL_STATUS_DISCONNECTED,
    COMMON_ERROR_MESSAGE,
    DISCONNECTED_SCREEN_DURATION,
@@ -236,7 +241,7 @@ const answerCallPermissionError = answerCallResonse => {
 };
 
 //Answering the incoming call
-export const answerIncomingCall = async () => {
+export const answerIncomingCall = async callId => {
    const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
    const { callStatusText } = confrenceData;
    if (callStatusText === CALL_STATUS_DISCONNECTED) {
@@ -259,16 +264,22 @@ export const answerIncomingCall = async () => {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
       callBackgroundNotification = true;
       if (result === 'granted' || result === 'limited') {
-         const callStateData = Store.getState().callData;
+         const callData = Store.getState().callData || {};
+         const callConnectionStateData = callData?.connectionState || {};
+         const activeCallerUUID = callData?.callerUUID;
          // validating call connectionState data because sometimes when permission popup is opened
          // and call ended and then user accept the permission
-         // So validating the call is active when user permission has been given
-         if (Object.keys(callStateData?.connectionState || {}).length > 0) {
+         // So validating the call is active when user permission has been given and not ended before the permission has been given
+         if (
+            Object.keys(callConnectionStateData).length > 0 &&
+            callConnectionStateData.status !== 'ended' &&
+            // making sure that the active callID and the callId given by CallKeep(iOS) or from Incoming call Screen (Android) are the same
+            callId?.toLowerCase?.() === activeCallerUUID?.toLowerCase?.()
+         ) {
             const answerCallResonse = await SDK.answerCall();
             if (answerCallResonse.statusCode !== 200) {
                answerCallPermissionError(answerCallResonse);
             } else {
-               // update the call screen Name instead of the below line
                batch(() => {
                   Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
                   if (Platform.OS === 'ios') {
@@ -333,11 +344,18 @@ export const declineIncomingCall = async () => {
    }
 };
 
+const handleAudioRouteChangeListenerForIos = () => {
+   RNCallKeep.addEventListener('didChangeAudioRoute', ({ output, reason }) => {
+      const currentCallUUID = Store.getState().callData?.callerUUID;
+      updateCallSpeakerEnabled(output === AUDIO_ROUTE_SPEAKER, output, currentCallUUID, true);
+   });
+};
+
 //CallKit action buttons listeners for incoming call
 const handleIncoming_CallKeepListeners = () => {
    RNCallKeep.addEventListener('answerCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep answer call event', callUUID);
-      answerIncomingCall();
+      answerIncomingCall(callUUID);
    });
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep end call event', callUUID);
@@ -345,6 +363,10 @@ const handleIncoming_CallKeepListeners = () => {
       if (screenName === INCOMING_CALL_SCREEN) declineIncomingCall();
       else endCall();
    });
+   RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
+      updateCallAudioMute(muted, callUUID, true);
+   });
+   handleAudioRouteChangeListenerForIos();
 };
 
 //Endcall action for ongoing call
@@ -362,6 +384,10 @@ const handleOutGoing_CallKeepListeners = () => {
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
       endOnGoingCall();
    });
+   RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
+      updateCallAudioMute(muted, callUUID, true);
+   });
+   handleAudioRouteChangeListenerForIos();
 };
 
 export const displayIncomingCallForIos = callResponse => {
@@ -611,4 +637,67 @@ export const getNickName = callResponse => {
    const nickName =
       callingUserData.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
    return nickName;
+};
+
+export const updateCallAudioMute = async (audioMuted, callUUID, isFromCallKeep = false) => {
+   const audioMuteResult = await SDK.muteAudio(audioMuted);
+   if (audioMuteResult.statusCode === 200) {
+      muteLocalAudio(audioMuted);
+      const vcardData = getLocalUserDetails();
+      showCallModalToast(`${vcardData.nickName}'s microphone turned ${audioMuted ? 'off' : 'on'}`);
+      if (Platform.OS === 'ios' && !isFromCallKeep && callUUID) {
+         RNCallKeep.setMutedCall(callUUID, audioMuted);
+      }
+      batch(() => {
+         Store.dispatch(updateCallAudioMutedAction(audioMuted));
+         Store.dispatch(
+            updateConference({
+               localAudioMuted: audioMuted,
+            }),
+         );
+      });
+   }
+};
+
+export const updateCallSpeakerEnabled = async (speakerEnabled, audioRouteName, callUUID, isFromCallKeep = false) => {
+   /** console.log('Getting audio routes');
+   RNCallKeep.startCall('11111', '919090909090', 'Abdul Rahman');
+   RNCallKeep.getAudioRoutes().then(res => {
+      console.log('Audio Routings', JSON.stringify(res, null, 2));
+      RNCallKeep.setAudioRoute('11111', AUDIO_ROUTE_SPEAKER);
+   }); */
+   // console.log('updating speaker to', speakerEnabled);
+   // RNCallKeep.setAudioRoute(callUUID, mediaName);
+   // Store.dispatch(updateCallSpeakerEnabledAction(speakerEnabled));
+   // RNCallKeep.startCall('11111', '919090909090', 'Abdul Rahman');
+   // RNCallKeep.setAudioRoute('123456', mediaName);
+   // RNCallKeep.getAudioRoutes().then(res => {
+   //    console.log('Audio Routings', JSON.stringify(res, null, 2));
+   // });
+   // const audioRouted = RNInCallManager.chooseAudioRoute('SPEAKER_PHONE');
+   // audioRouted.then(res => {
+   //    console.log('audioRouted avaiable devices', res.availableAudioDeviceList, res.selectedAudioDevice);
+   // })
+   // RNInCallManager.getIsWiredHeadsetPluggedIn();
+   try {
+      if (Platform.OS === 'android') {
+         RNInCallManager.setSpeakerphoneOn(speakerEnabled);
+      } else {
+         if (!isFromCallKeep) {
+            RNCallKeep.setAudioRoute(callUUID, audioRouteName);
+         }
+      }
+      Store.dispatch(updateCallSpeakerEnabledAction(speakerEnabled));
+   } catch (err) {
+      console.log('Error while toggling speaker', err);
+   }
+};
+
+export const showCallModalToast = (message, duration) => {
+   Store.dispatch(
+      showCallModalToastAction({
+         message: message,
+         duration: duration,
+      }),
+   );
 };

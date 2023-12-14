@@ -1,11 +1,12 @@
-import notifee from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import nextFrame from 'next-frame';
 import { Platform } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import RNCallKeep from 'react-native-callkeep';
+import RNInCallManager from 'react-native-incall-manager';
 import { MediaStream } from 'react-native-webrtc';
 import { batch } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 import {
    callConnectionStoreData,
    clearIncomingCallTimer,
@@ -30,6 +31,8 @@ import {
    CALL_STATUS_ENDED,
    CALL_STATUS_INCOMING,
    CALL_STATUS_RECONNECT,
+   CALL_TYPE_AUDIO,
+   CALL_TYPE_VIDEO,
    DISCONNECTED_SCREEN_DURATION,
    INCOMING_CALL_SCREEN,
    ONGOING_CALL_SCREEN,
@@ -62,6 +65,7 @@ import { showToast, updateUserProfileDetails } from '../Helper/index';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import { pushNotify, updateNotification } from '../Service/remoteNotifyHandle';
+import { callNotifyHandler, stopForegroundServiceNotification } from '../calls/notification/callNotifyHandler';
 import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
 import { updateConversationMessage, updateRecentChatMessage } from '../components/chat/common/createMessage';
 import { REGISTERSCREEN } from '../constant';
@@ -75,8 +79,10 @@ import {
    setCallModalScreen,
    showConfrence,
    updateCallConnectionState,
+   updateCallerUUID,
    updateConference,
 } from '../redux/Actions/CallAction';
+import { resetCallControlsStateAction } from '../redux/Actions/CallControlsAction';
 import {
    ClearChatHistoryAction,
    DeleteChatHistoryAction,
@@ -106,7 +112,6 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
-import { callNotifyHandler, stopForegroundServiceNotification } from '../calls/notification/callNotifyHandler';
 
 let localStream = null,
    localVideoMuted = false,
@@ -133,12 +138,18 @@ export const resetCallData = () => {
    if (Platform.OS === 'ios') {
       RNCallKeep.removeEventListener('answerCall');
       RNCallKeep.removeEventListener('endCall');
+      RNCallKeep.removeEventListener('didPerformSetMutedCallAction');
+      RNCallKeep.removeEventListener('didChangeAudioRoute');
       endCallForIos();
+   } else {
+      RNInCallManager.setSpeakerphoneOn(false);
+      RNInCallManager.stopProximitySensor();
    }
    batch(() => {
       Store.dispatch(callDurationTimestamp());
       Store.dispatch(resetConferencePopup());
       Store.dispatch(clearCallData());
+      Store.dispatch(resetCallControlsStateAction());
    });
    resetData();
    // setTimeout(() => {
@@ -171,7 +182,7 @@ export const removeRemoteStream = userJid => {
 };
 
 const updatingUserStatusInRemoteStream = usersStatus => {
-   usersStatus.map(user => {
+   usersStatus.forEach(user => {
       const index = remoteStream.findIndex(item => item.fromJid === user.userJid);
       if (index > -1) {
          remoteStream[index] = {
@@ -793,6 +804,8 @@ export const callBacks = {
          // Adding network state change listener
          listnerForNetworkStateChangeWhenIncomingCall();
          if (Platform.OS === 'android') {
+            const callUUID = uuidv4();
+            Store.dispatch(updateCallerUUID(callUUID));
             displayIncomingCallForAndroid(res);
          } else {
             displayIncomingCallForIos(res);
@@ -982,6 +995,48 @@ export const callBacks = {
       updateMissedCallNotification(res);
    },
    callSwitchListener: function (res) {},
-   muteStatusListener: res => {},
+   muteStatusListener: res => {
+      if (!res) return;
+      let localUser = false;
+      let vcardData = getLocalUserDetails();
+      const currentUser = vcardData && vcardData.fromUser;
+      let mutedUser = res.userJid;
+      mutedUser = mutedUser.includes('@') ? mutedUser.split('@')[0] : mutedUser;
+      if (res.localUser || currentUser === mutedUser) {
+         localUser = true;
+      }
+      if (localUser) {
+         if (res.trackType === CALL_TYPE_AUDIO) {
+            localAudioMuted = res.isMuted;
+         }
+         if (res.trackType === CALL_TYPE_VIDEO) {
+            localVideoMuted = res.isMuted;
+         }
+      } else {
+         if (res.trackType === CALL_TYPE_AUDIO) {
+            remoteAudioMuted[res.userJid] = res.isMuted;
+            if (res.isMuted) {
+               Store.dispatch(selectLargeVideoUser(res.userJid, -100));
+            }
+         }
+         if (res.trackType === CALL_TYPE_VIDEO) {
+            remoteVideoMuted[res.userJid] = res.isMuted;
+         }
+      }
+
+      Store.dispatch(
+         updateConference({
+            localStream: localStream,
+            remoteStream: remoteStream,
+            fromJid: res.userJid,
+            status: 'MUTESTATUS',
+            localVideoMuted: localVideoMuted,
+            localAudioMuted: localAudioMuted,
+            remoteVideoMuted: remoteVideoMuted,
+            remoteAudioMuted: remoteAudioMuted,
+         }),
+      );
+      // updateCallTypeAfterCallSwitch();
+   },
    adminBlockListener: function (res) {},
 };

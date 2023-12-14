@@ -4,19 +4,26 @@ import Avathar from '../../common/Avathar';
 import useRosterData from '../../hooks/useRosterData';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import ApplicationColors from '../../config/appColors';
+import { AudioMuteIcon } from '../../common/Icons';
 
-const SmallVideoTile = ({ user, isLocalUser }) => {
+const SmallVideoTile = ({ user, isLocalUser, isAudioMuted }) => {
    const userId = getUserIdFromJid(user.fromJid);
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
 
    return (
       <View style={styles.smallVideoWrapper}>
-         <View style={styles.smallVideoVoiceLevelWrapper}>
-            <View style={styles.smallVideoVoiceLevelIndicator} />
-            <View style={styles.smallVideoVoiceLevelIndicator} />
-            <View style={styles.smallVideoVoiceLevelIndicator} />
-         </View>
+         {isAudioMuted ? (
+            <View style={styles.smallVideoUserMuteIcon}>
+               <AudioMuteIcon width={10} height={16} color={'#fff'} />
+            </View>
+         ) : (
+            <View style={styles.smallVideoVoiceLevelWrapper}>
+               <View style={styles.smallVideoVoiceLevelIndicator} />
+               <View style={styles.smallVideoVoiceLevelIndicator} />
+               <View style={styles.smallVideoVoiceLevelIndicator} />
+            </View>
+         )}
          <View style={styles.smallVideoUserAvathar}>
             <Avathar
                width={50}
@@ -27,7 +34,9 @@ const SmallVideoTile = ({ user, isLocalUser }) => {
             />
          </View>
          <View>
-            <Text numberOfLines={1} ellipsizeMode='tail' style={styles.smallVideoUserName}>{isLocalUser ? 'You' : nickName}</Text>
+            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.smallVideoUserName}>
+               {isLocalUser ? 'You' : nickName}
+            </Text>
          </View>
       </View>
    );
@@ -45,6 +54,15 @@ const styles = StyleSheet.create({
       marginBottom: 40,
       justifyContent: 'space-between',
       padding: 10,
+   },
+   smallVideoUserMuteIcon: {
+      backgroundColor: 'rgba(0,0,0,.3)',
+      width: 25,
+      height: 25,
+      borderRadius: 15,
+      alignSelf: 'flex-end',
+      justifyContent: 'center',
+      alignItems: 'center',
    },
    smallVideoVoiceLevelWrapper: {
       backgroundColor: '#3ABF87',

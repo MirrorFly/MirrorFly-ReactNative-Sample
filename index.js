@@ -9,12 +9,13 @@ import { callBacks } from './src/SDKActions/callbacks';
 import { pushNotify, updateNotification } from './src/Service/remoteNotifyHandle';
 import { setNotificationForegroundService } from './src/calls/notification/callNotifyHandler';
 import { getNotifyMessage, getNotifyNickName } from './src/components/RNCamera/Helper';
+import config from './src/components/chat/common/config';
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
    try {
       await SDK.initializeSDK({
-         apiBaseUrl: 'https://api-uikit-qa.contus.us/api/v1',
-         licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
+         apiBaseUrl: config.API_URL,
+         licenseKey: config.lisenceKey,
          callbackListeners: callBacks,
          isSandbox: false,
       });

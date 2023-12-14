@@ -23,6 +23,7 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
    const { connectionState, showCallModal } = useSelector(state => state.callData) || {};
    const { data: notificationData = {} } = useSelector(state => state.notificationData) || {};
    const userProfile = useRosterData(userId);
+   const {callerUUID: activeCallUUID = ''} = useSelector(state => state.callData) || {};
    const nickName = userProfile.nickName || userProfile.userId;
    const acceptButtonRef = useRef(false);
    const declineButtonRef = useRef(false);
@@ -84,7 +85,7 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
    const acceptCall = async () => {
       if (!acceptButtonRef.current) {
          acceptButtonRef.current = true;
-         answerIncomingCall();
+         answerIncomingCall(activeCallUUID);
       }
    };
 
@@ -95,7 +96,7 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
             <CloseCallModalButton onPress={handleClosePress} />
             {/* call status */}
             <View style={styles.callStatusWrapper}>
-               <Text style={styles.callStatusText}>{userCallStatus}</Text>
+               <Text style={styles.callStatusText}> {userCallStatus} </Text>
             </View>
             {/* user profile details */}
             <View style={styles.userDetailsContainer}>
@@ -117,10 +118,10 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
          {callStatus === CALL_STATUS_INCOMING && (
             <GestureHandlerRootView style={styles.actionButtonWrapper}>
                <RectButton onPress={declineCall} style={[styles.actionButton, styles.redButton]}>
-                  <Text style={styles.actionButtonText}>Reject</Text>
+                  <Text style={styles.actionButtonText}> Reject </Text>
                </RectButton>
                <RectButton onPress={acceptCall} style={[styles.actionButton, styles.greenButton]}>
-                  <Text style={styles.actionButtonText}>Accept</Text>
+                  <Text style={styles.actionButtonText}> Accept </Text>
                </RectButton>
             </GestureHandlerRootView>
          )}

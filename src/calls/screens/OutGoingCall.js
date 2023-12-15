@@ -103,14 +103,16 @@ const OutGoingCall = () => {
                   {nickName}
                </Text>
                <View style={[commonStyles.marginTop_30, commonStyles.positionRelative]}>
-                  <Avathar
-                     width={90}
-                     height={90}
-                     backgroundColor={userProfile.colorCode}
-                     data={nickName}
-                     profileImage={userProfile.image}
-                  />
-                  <ProfilePictureWithPulse baseStyle={styles.animatedStyle} startDelay={1000} iterations={1} />
+                  <ProfilePictureWithPulse animateToValue={1.5} baseStyle={styles.avatharPulseAnimatedView} />
+                  <View style={[styles.avathar]}>
+                     <Avathar
+                        width={90}
+                        height={90}
+                        backgroundColor={userProfile.colorCode}
+                        data={nickName}
+                        profileImage={userProfile.image}
+                     />
+                  </View>
                </View>
             </View>
          </View>
@@ -131,7 +133,6 @@ const OutGoingCall = () => {
 };
 
 export default OutGoingCall;
-
 const styles = StyleSheet.create({
    container: {
       flex: 1,
@@ -156,11 +157,20 @@ const styles = StyleSheet.create({
       width: '80%',
       textAlign: 'center',
    },
+   avatharPulseAnimatedView: {
+      position: 'absolute',
+      width: 90,
+      height: 90,
+      borderRadius: 70,
+      zIndex: 0,
+      backgroundColor: 'rgba(255,255,255,0.7)',
+   },
    avathar: {
       width: 90,
       height: 90,
       borderRadius: 50,
-      backgroundColor: '#9D9D9D',
+      zIndex: 10,
+      elevation: 3,
       justifyContent: 'center',
       alignItems: 'center',
    },

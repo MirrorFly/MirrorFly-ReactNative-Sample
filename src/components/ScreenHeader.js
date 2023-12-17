@@ -1,9 +1,14 @@
 import React from 'react';
-import { HStack, Icon, IconButton, Image, Menu, Text } from 'native-base';
+import { Menu } from 'native-base';
 import { LeftArrowIcon, SearchIcon, CloseIcon } from '../common/Icons';
-import { TextInput } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, View } from 'react-native';
 import { MenuIconBtn } from '../common/Button';
 import { getImageSource } from '../common/utils';
+import ApplicationColors from '../config/appColors';
+import commonStyles from '../common/commonStyles';
+import IconButton from '../common/IconButton';
+
+const LeftArrowComponent = () => LeftArrowIcon();
 
 function ScreenHeader(props) {
   const [position] = React.useState('auto');
@@ -20,6 +25,7 @@ function ScreenHeader(props) {
   const handlingBackBtn = () => {
     setText('');
     setIsSearching(false);
+    props?.onhandleSearch?.('');
     if (!props?.onCloseSearch && isSearching) {
       return setIsSearching(false);
     }
@@ -32,89 +38,73 @@ function ScreenHeader(props) {
     props.handleClear && props.handleClear();
   };
 
+  const handleSearchPress = () => {
+    setIsSearching(true);
+    props?.setIsSearching && props?.setIsSearching(true);
+  };
+
   return (
     <>
-      <HStack
-        h={65}
-        bg="#F2F2F2"
-        pr="4"
-        py="3"
-        justifyContent="space-between"
-        alignItems="center"
-        w="full">
-        <HStack alignItems="center">
+      <View style={styles.container}>
+        <View
+          style={[
+            commonStyles.hstack,
+            commonStyles.alignItemsCenter,
+            commonStyles.flex1,
+          ]}>
           {props?.onhandleBack && (
-            <IconButton
-              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-              onPress={handlingBackBtn}
-              icon={<Icon as={() => LeftArrowIcon()} name="emoji-happy" />}
-              borderRadius="full"
-            />
+            <IconButton onPress={handlingBackBtn}>
+              <LeftArrowComponent />
+            </IconButton>
           )}
           {props?.isSearching && (
             <IconButton
-              marginRight={3}
-              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-              onPress={handlingBackBtn}
-              icon={<Icon as={() => LeftArrowIcon()} name="emoji-happy" />}
-              borderRadius="full"
-            />
+              style={commonStyles.marginRight_12}
+              onPress={handlingBackBtn}>
+              <LeftArrowComponent />
+            </IconButton>
           )}
           {isSearching && (
             <TextInput
               placeholderTextColor="#d3d3d3"
               value={text}
-              style={{ flex: 0.7, color: 'black', fontSize: 16 }}
+              style={styles.textInput}
               onChangeText={e => {
                 setText(e);
                 props?.onhandleSearch(e);
               }}
-              placeholder="Search..."
-              selectionColor={'#3276E2'}
+              placeholder=" Search..."
+              cursorColor={ApplicationColors.mainColor}
               autoFocus={true}
             />
           )}
           {props?.logo && !isSearching && (
             <Image
-              ml="3"
-              key="sm"
-              size="xs"
-              width={145}
-              height={20.8}
+              style={styles.logoImage}
               source={getImageSource(props?.logo)}
               alt="ic_logo.png"
             />
           )}
           {props?.title && !isSearching && (
-            <Text fontSize="xl" px="3" fontWeight={'600'}>
-              {props?.title}
-            </Text>
+            <Text style={styles.titleText}>{props?.title}</Text>
           )}
-        </HStack>
-        <HStack alignItems="center">
+        </View>
+        <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
           {text && (
-            <IconButton
-              onPress={handleClearBtn}
-              icon={<Icon as={CloseIcon} name="emoji-happy" />}
-              borderRadius="full"
-            />
+            <IconButton onPress={handleClearBtn}>
+              <CloseIcon />
+            </IconButton>
           )}
           {props?.onhandleSearch && !isSearching && (
-            <IconButton
-              _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-              onPress={() => {
-                setIsSearching(true);
-                props?.setIsSearching && props?.setIsSearching(true);
-              }}
-              icon={<Icon as={SearchIcon} name="emoji-happy" />}
-              borderRadius="full"
-            />
+            <IconButton onPress={handleSearchPress}>
+              <SearchIcon />
+            </IconButton>
           )}
           {!isSearching && props?.menuItems && (
             <Menu
               w="160"
               shouldOverlapWithTrigger={true}
-              placement={position == 'auto' ? undefined : position}
+              placement={position === 'auto' ? undefined : position}
               trigger={triggerProps => MenuIconBtn(triggerProps)}>
               {props?.menuItems.map(item => (
                 <Menu.Item key={item.label} onPress={item?.formatter}>
@@ -123,10 +113,39 @@ function ScreenHeader(props) {
               ))}
             </Menu>
           )}
-        </HStack>
-      </HStack>
+        </View>
+      </View>
     </>
   );
 }
 
 export default ScreenHeader;
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    height: 65,
+    backgroundColor: ApplicationColors.headerBg,
+    paddingRight: 16,
+    paddingVertical: 12,
+  },
+  logoImage: {
+    marginLeft: 12,
+    width: 145,
+    height: 20.8,
+  },
+  titleText: {
+    fontSize: 18,
+    paddingHorizontal: 12,
+    fontWeight: '600',
+    color: ApplicationColors.black,
+  },
+  textInput: {
+    flex: 1,
+    color: 'black',
+    fontSize: 16,
+  },
+});

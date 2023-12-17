@@ -9,6 +9,7 @@ const ApplicationColors = {
   // pressedBg: 'rgba(50,118,226, 0.1)',
   pressedBg: 'rgba(0, 0, 0, 0.1)',
   headerBg: '#F2F2F2',
+  dividerBg: '#F2F2F2',
   modalTextColor: '#767676',
   highlighedMessageBg: 'rgba(0,0,0,0.2)',
   sentMessageBg: '#E2E8F7',

@@ -3,17 +3,16 @@ import { PlayIcon, VideoIcon } from '../common/Icons';
 import noPreview from '../assets/noPreview.png';
 import { Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
-import ProgressLoader from './chat/common/ProgressLoader';
 import ReplyMessage from './ReplyMessage';
 import ic_ballon from '../assets/ic_baloon.png';
 import { getImageSource } from '../common/utils';
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
+import MediaProgressLoader from './chat/common/MediaProgressLoader';
+import useMediaProgress from '../hooks/useMediaProgress';
 
 const VideoCard = props => {
   const {
-    uploadStatus = 0,
-    setUploadStatus,
     isSender,
     fileSize,
     messageObject = {},
@@ -26,6 +25,7 @@ const VideoCard = props => {
     msgBody: {
       replyTo = '',
       media: {
+        file: { fileDetails = {} } = {},
         duration = 0,
         is_uploading,
         androidHeight,
@@ -40,8 +40,18 @@ const VideoCard = props => {
   const durationInSeconds = duration;
   const durationInMinutes = millisToMinutesAndSeconds(durationInSeconds);
   const base64ImageData = 'data:image/jpg;base64,' + thumb_image;
-  const imageUrl = local_path;
+  const imageUrl = local_path || fileDetails?.uri;
   const checkDownloaded = isSender ? is_uploading === 2 : imageUrl;
+  const { mediaStatus, downloadMedia, retryUploadMedia, cancelUploadMedia } =
+  useMediaProgress({
+    isSender,
+    mediaUrl: imageUrl,
+    uploadStatus: media?.is_uploading || 0,
+    downloadStatus: media?.is_downloaded || 0,
+    media: media,
+    msgId: msgId,
+  });
+
 
   return (
     <View style={commonStyles.paddingHorizontal_4}>
@@ -80,15 +90,14 @@ const VideoCard = props => {
         </View>
 
         <View style={styles.progressLoaderWrapper}>
-          <ProgressLoader
+          <MediaProgressLoader
             isSender={isSender}
-            imageUrl={imageUrl}
-            media={media}
-            fileSize={fileSize}
-            setUploadStatus={setUploadStatus}
+            mediaStatus={mediaStatus}
+            onDownload={downloadMedia}
+            onUpload={retryUploadMedia}
+            onCancel={cancelUploadMedia}
             msgId={msgId}
-            mediaData={media}
-            uploadStatus={uploadStatus}
+            fileSize={fileSize}
           />
         </View>
 

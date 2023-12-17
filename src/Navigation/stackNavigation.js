@@ -10,6 +10,7 @@ import {
   CONVERSATION_SCREEN,
   COUNTRYSCREEN,
   FORWARD_MESSSAGE_SCREEN,
+  MEDIA_POST_PRE_VIEW_SCREEN,
   PROFILESCREEN,
   RECENTCHATSCREEN,
   REGISTERSCREEN,
@@ -21,6 +22,7 @@ import ContactScreen from '../screen/ContactScreen';
 import SettingScreen from '../screen/SettingScreen';
 import RNCamera from '../components/RNCamera';
 import ForwardMessage from '../screen/ForwardMessage';
+import PostPreViewPage from '../components/PostPreViewPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,9 +40,46 @@ const ChatScreenStackNavigation = () => {
       <Stack.Screen name={FORWARD_MESSSAGE_SCREEN}>
         {prop => <ForwardMessage {...prop} />}
       </Stack.Screen>
+      <Stack.Screen name={MEDIA_POST_PRE_VIEW_SCREEN}>
+        {prop => <PostPreViewPage {...prop} />}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 };
+
+export function RecentStackNavigation(props) {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        orientation: 'portrait',
+        gestureEnabled: false,
+      }}
+      initialRouteName={RECENTCHATSCREEN}>
+      <Stack.Screen name={PROFILESCREEN}>
+        {prop => <ProfileScreen {...prop} />}
+      </Stack.Screen>
+      <Stack.Screen name={RECENTCHATSCREEN}>
+        {prop => <RecentScreen {...prop} />}
+      </Stack.Screen>
+      <Stack.Screen name={CHATSCREEN}>
+        {prop => <ChatScreenStackNavigation {...prop} />}
+      </Stack.Screen>
+      <Stack.Screen name={COUNTRYSCREEN}>
+        {prop => <CountryList {...prop} />}
+      </Stack.Screen>
+      <Stack.Screen name={CONTACTLIST}>
+        {prop => <ContactScreen {...prop} />}
+      </Stack.Screen>
+      <Stack.Screen name={SETTINGSCREEN}>
+        {prop => <SettingScreen {...prop} />}
+      </Stack.Screen>
+      <Stack.Screen name={CAMERA}>
+        {prop => <RNCamera {...prop} />}
+      </Stack.Screen>
+    </Stack.Navigator>
+  );
+}
 
 function StackNavigationPage(props) {
   return (
@@ -51,7 +90,6 @@ function StackNavigationPage(props) {
         gestureEnabled: false,
       }}
       initialRouteName={props.InitialValue}>
-      {/* <Stack.Screen name="Splash" component={SplashScreen} /> */}
       <Stack.Screen name={REGISTERSCREEN}>
         {prop => <RegisterScreen {...prop} />}
       </Stack.Screen>

@@ -2,7 +2,6 @@ import React from 'react';
 import {
   StyleSheet,
   Modal as RNModal,
-  // eslint-disable-next-line no-unused-vars
   ModalProps, // NOSONAR
   Pressable,
   View,

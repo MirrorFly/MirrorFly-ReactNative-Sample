@@ -1,8 +1,9 @@
 import React from 'react';
-import {HStack, Icon, IconButton, Text} from 'native-base';
-import {LeftArrowIcon, CheckBox} from '../common/Icons';
-import {Pressable} from 'react-native';
+import { LeftArrowIcon, CheckBox } from '../common/Icons';
+import { StyleSheet, Text, View } from 'react-native';
 import ApplicationColors from '../config/appColors';
+import commonStyles from '../common/commonStyles';
+import Pressable from '../common/Pressable';
 
 function GalleryHeader(props) {
   const {
@@ -17,46 +18,63 @@ function GalleryHeader(props) {
   };
 
   return (
-    <>
-      <HStack
-        h={65}
-        bg="#F2F2F2"
-        pr="4"
-        py="3"
-        justifyContent="space-between"
-        alignItems="center"
-        w="full">
-        <HStack alignItems="center">
-          {props?.onhandleBack && (
-            <IconButton
-              _pressed={{bg: 'rgba(50,118,226, 0.1)'}}
-              onPress={handlingBackBtn}
-              icon={<Icon as={() => LeftArrowIcon()} name="emoji-happy" />}
-              borderRadius="full"
-            />
-          )}
-          <Text fontSize="xl" px="3" fontWeight={'600'}>
-            {props?.title}
-          </Text>
-        </HStack>
-        <HStack alignItems="center">
+    <View
+      style={[commonStyles.hstack, styles.container]}
+      justifyContent="space-between"
+      alignItems="center">
+      <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+        {props?.onhandleBack && (
           <Pressable
-            onPress={() => {
-              setCheckbox(true);
-              selectedImages.length > 0 && setLocalNav('GalleryPickView');
-            }}>
-            {selectedImages.length > 0 ? (
-              <Text color={ApplicationColors.mainColor} fontWeight={'600'}>
-                DONE
-              </Text>
-            ) : (
-              !checkBox && <CheckBox />
-            )}
+            contentContainerStyle={commonStyles.p_10}
+            pressedStyle={[
+              commonStyles.bgBlack_01,
+              commonStyles.borderRadius_50,
+            ]}
+            onPress={handlingBackBtn}>
+            {LeftArrowIcon()}
           </Pressable>
-        </HStack>
-      </HStack>
-    </>
+        )}
+        <Text style={styles.title}>{props?.title}</Text>
+      </View>
+      <View style={[commonStyles.hstack]}>
+        <Pressable
+            contentContainerStyle={commonStyles.p_10}
+            pressedStyle={[
+              commonStyles.bgBlack_01,
+              commonStyles.borderRadius_50,
+            ]}
+          onPress={() => {
+            setCheckbox(true);
+            selectedImages.length > 0 && setLocalNav('GalleryPickView');
+          }}>
+          {selectedImages.length > 0 ? (
+            <Text style={styles.subTitle}>DONE</Text>
+          ) : (
+            !checkBox && <CheckBox />
+          )}
+        </Pressable>
+      </View>
+    </View>
   );
 }
 
 export default GalleryHeader;
+
+const styles = StyleSheet.create({
+  container: {
+    height: 65,
+    paddingRight: 16,
+    paddingVertical: 12,
+    width: '100%',
+  },
+  title: {
+    fontSize: 20,
+    paddingHorizontal: 12,
+    fontWeight: '600',
+    color: '#000',
+  },
+  subTitle: {
+    color: ApplicationColors.mainColor,
+    fontWeight: '600',
+  },
+});

@@ -25,13 +25,14 @@ import ApplicationColors from '../config/appColors';
 import MessagePressable from '../common/MessagePressable';
 import { isMessageSelectingRef } from './ChatConversation';
 import { useNetworkStatus } from '../hooks';
+import { useNavigation } from '@react-navigation/native';
+import { MEDIA_POST_PRE_VIEW_SCREEN } from '../constant';
 
 const ChatMessage = props => {
   const currentUserJID = useSelector(state => state.auth.currentUserJID);
   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
   const {
     message,
-    setLocalNav,
     handleReplyPress,
     shouldHighlightMessage,
     shouldSelectMessage,
@@ -52,10 +53,8 @@ const ChatMessage = props => {
       message_type,
     } = {},
     msgId,
-    msgStatus,
   } = message;
-
-  const [uploadStatus, setUploadStatus] = React.useState(4);
+  const navigation = useNavigation();
   const imageUrl = local_path || file?.fileDetails?.uri;
   const thumbURL = thumb_image ? getThumbBase64URL(thumb_image) : '';
 
@@ -70,7 +69,6 @@ const ChatMessage = props => {
   const imgFileDownload = () => {
     try {
       if (imageUrl) {
-        setUploadStatus(2);
         saveImage(imageUrl);
       }
     } catch (error) {
@@ -81,12 +79,12 @@ const ChatMessage = props => {
   };
 
   React.useEffect(() => {
-    if (is_uploading === 0 || is_uploading === 1) {
-      setUploadStatus(is_uploading);
-      if (isImageMessage()) {
-        saveImage(getThumbBase64URL(thumb_image));
-      }
-    } else if (is_uploading === 3 || is_uploading === 7) {
+    if (
+      is_uploading === 0 ||
+      is_uploading === 1 ||
+      is_uploading === 3 ||
+      is_uploading === 7
+    ) {
       if (isImageMessage()) {
         saveImage(getThumbBase64URL(thumb_image));
       }
@@ -99,15 +97,9 @@ const ChatMessage = props => {
   }, []);
 
   React.useEffect(() => {
-    msgStatus === 0 && setUploadStatus(2);
-  }, [msgStatus]);
-
-  React.useEffect(() => {
-    is_uploading === 8 && setUploadStatus(is_uploading);
     if (is_uploading === 1) {
       uploadFileToSDK(file, fromUserJId, msgId, msgBody?.media);
     }
-    (is_uploading === 3 || is_uploading === 7) && setUploadStatus(3);
   }, [is_uploading]);
 
   const isImageMessage = () => message_type === 'image';
@@ -145,13 +137,13 @@ const ChatMessage = props => {
       if (isKeyboardVisibleRef.current) {
         let hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
           dispatch(singleChatSelectedMediaImage(message));
-          setLocalNav('PostPreView');
+          navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN);
           hideSubscription.remove();
         });
         Keyboard.dismiss();
       } else {
         dispatch(singleChatSelectedMediaImage(message));
-        setLocalNav('PostPreView');
+        navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN);
       }
     } else if (
       message?.msgBody?.message_type === 'file' &&
@@ -217,7 +209,6 @@ const ChatMessage = props => {
       ? handleMessageSelect()
       : showContactInviteModal(_message);
   };
-
   const renderMessageBasedOnType = () => {
     switch (message?.msgBody?.message_type) {
       case 'text':
@@ -238,12 +229,10 @@ const ChatMessage = props => {
           <ImageCard
             handleReplyPress={handleReplyPress}
             messageObject={message}
-            setUploadStatus={setUploadStatus}
             imgSrc={imgSrc}
             isSender={isSame}
             status={getMessageStatus(message?.msgStatus)}
             timeStamp={getConversationHistoryTime(message?.createdAt)}
-            uploadStatus={uploadStatus}
             fileSize={fileSize}
           />
         );
@@ -252,11 +241,9 @@ const ChatMessage = props => {
           <VideoCard
             handleReplyPress={handleReplyPress}
             messageObject={message}
-            setUploadStatus={setUploadStatus}
             imgSrc={imgSrc}
             isSender={isSame}
             status={getMessageStatus(message?.msgStatus)}
-            uploadStatus={uploadStatus}
             fileSize={fileSize}
             timeStamp={getConversationHistoryTime(message?.createdAt)}
           />

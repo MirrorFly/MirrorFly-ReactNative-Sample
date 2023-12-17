@@ -1,10 +1,8 @@
 import React from 'react';
 import {
   Pressable as RNPressable,
-  // eslint-disable-next-line no-unused-vars
   PressableProps, // NOSONAR
   View,
-  // eslint-disable-next-line no-unused-vars
   ViewStyle, // NOSONAR
 } from 'react-native';
 import commonStyles, { pressableStyles } from './commonStyles';

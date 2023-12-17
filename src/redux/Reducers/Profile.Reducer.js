@@ -1,3 +1,4 @@
+import { getObjectDeepClone } from '../reduxHelper';
 import {
   RESET_STORE,
   SET_PROFILE_DETAILS,
@@ -9,7 +10,9 @@ const initialState = {
   profileDetails: {},
 };
 
-const profileReducer = (state = initialState, action) => {
+const initialStateClone = getObjectDeepClone(initialState);
+
+const profileReducer = (state = initialStateClone, action) => {
   switch (action.type) {
     case SET_PROFILE_DETAILS:
       return {
@@ -28,7 +31,7 @@ const profileReducer = (state = initialState, action) => {
       }
       return state;
     case RESET_STORE:
-      return initialState;
+      return getObjectDeepClone(initialState);
     default:
       return state;
   }

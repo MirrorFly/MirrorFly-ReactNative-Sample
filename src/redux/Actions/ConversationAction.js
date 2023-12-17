@@ -1,5 +1,6 @@
 import {
   ADD_CHAT_CONVERSATION_HISTORY,
+  CANCEL_MEDIA_DOWNLOAD,
   CANCEL_MEDIA_UPLOAD,
   CLEAR_CHAT_HISTORY,
   DELETE_CHAT_HISTORY,
@@ -27,6 +28,12 @@ export const updateChatConversationHistory = data => {
 export const CancelMediaUpload = data => {
   return {
     type: CANCEL_MEDIA_UPLOAD,
+    payload: data,
+  };
+};
+export const CancelMediaDownload = data => {
+  return {
+    type: CANCEL_MEDIA_DOWNLOAD,
     payload: data,
   };
 };

@@ -33,13 +33,6 @@ import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import IconButton from '../common/IconButton';
 
-const forwardMediaMessageTypes = {
-  image: true,
-  video: true,
-  audio: true,
-  file: true,
-};
-
 function ChatHeader({
   fromUserJId,
   selectedMsgs,
@@ -102,9 +95,13 @@ function ChatHeader({
 
   const handleDelete = () => {
     isMediaFileInSelectedMessageForDelete.current = selectedMsgs.some(msg => {
-      const { msgBody: { media: { file = {}, local_path = '' } = {} } = {} } =
-        msg;
-      return Boolean(local_path || file?.fileDetails?.uri);
+      const {
+        deleteStatus,
+        msgBody: { media: { file = {}, local_path = '' } = {} } = {},
+      } = msg;
+      return Boolean(
+        (local_path || file?.fileDetails?.uri) && deleteStatus === 0,
+      );
     });
     const now = new Date().getTime();
     const msgSentLessThan30SecondsAgo = selectedMsgs.every(

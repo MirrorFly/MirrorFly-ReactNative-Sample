@@ -7,6 +7,7 @@ import {
 } from '../../Helper/Chat/ChatHelper';
 import {
   ADD_CHAT_CONVERSATION_HISTORY,
+  CANCEL_MEDIA_DOWNLOAD,
   CANCEL_MEDIA_UPLOAD,
   CLEAR_CHAT_HISTORY,
   DELETE_CHAT_HISTORY,
@@ -18,12 +19,14 @@ import {
   UPDATE_CHAT_CONVERSATION_HISTORY,
   UPDATE_UPLOAD_STATUS,
 } from '../Actions/Constants';
-import { StateToObj } from '../reduxHelper';
+import { StateToObj, getObjectDeepClone } from '../reduxHelper';
 
 const initialState = {
   id: Date.now(),
   data: [],
 };
+
+const initialStateClone = getObjectDeepClone(initialState);
 
 const deleteChatHandle = (data, stateData) => {
   const currentData = { ...stateData };
@@ -31,7 +34,7 @@ const deleteChatHandle = (data, stateData) => {
   return currentData;
 };
 
-const conversationReducer = (state = initialState, action) => {
+const conversationReducer = (state = initialStateClone, action) => {
   switch (action.type) {
     case ADD_CHAT_CONVERSATION_HISTORY:
       return {
@@ -55,6 +58,7 @@ const conversationReducer = (state = initialState, action) => {
       };
     case CANCEL_MEDIA_UPLOAD:
     case RETRY_MEDIA_UPLOAD:
+    case CANCEL_MEDIA_DOWNLOAD:
       return {
         id: Date.now(),
         data: updateMediaUploadStatusHistory(
@@ -101,9 +105,8 @@ const conversationReducer = (state = initialState, action) => {
           state.data,
         ),
       };
-
     case RESET_STORE:
-      return initialState;
+      return getObjectDeepClone(initialState);
     default:
       return state;
   }

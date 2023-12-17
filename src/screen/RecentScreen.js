@@ -35,8 +35,8 @@ import {
 } from '../redux/Actions/recentChatSearchAction';
 
 const scenesMap = SceneMap({
-  first: () => <RecentChat />,
-  second: RecentCalls,
+  chats: () => <RecentChat />,
+  calls: RecentCalls,
 });
 
 function RecentScreen() {
@@ -44,11 +44,21 @@ function RecentScreen() {
   const { isSearching, selectedItems } =
     useSelector(state => state.recentChatSearchData) || {};
   const [index, setIndex] = React.useState(0);
+  const recentChatData = useSelector(state => state.recentChatData.data);
   const [routes] = React.useState([
-    { key: 'first', title: 'Chats' },
-    { key: 'second', title: 'Calls' },
+    { key: 'chats', title: 'Chats' },
+    { key: 'calls', title: 'Calls' },
   ]);
   const [showDeleteChatModal, setShowDeleteChatModal] = React.useState(false);
+  const [chatsBadge, setChatsBadge] = React.useState('');
+  const [callsBadge] = React.useState('');
+
+  const tabBarSceneBadgeMap = React.useMemo(() => {
+    return {
+      chats: chatsBadge,
+      calls: callsBadge,
+    };
+  }, [chatsBadge, callsBadge]);
 
   useFocusEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -60,6 +70,19 @@ function RecentScreen() {
     };
   });
 
+  React.useEffect(() => {
+    if (recentChatData.length) {
+      const unreadChatCount = recentChatData.filter(
+        d => d.unreadCount > 0,
+      ).length;
+      setChatsBadge(
+        unreadChatCount > 99 ? '99+' : String(unreadChatCount || ''),
+      );
+    } else {
+      setChatsBadge('');
+    }
+  }, [recentChatData]);
+
   const closeSearch = () => {
     dispatch(toggleRecentChatSearch(false));
     dispatch(updateRecentChatSearchText(''));
@@ -68,6 +91,28 @@ function RecentScreen() {
   const handleClearSearch = () => {
     dispatch(updateRecentChatSearchText(''));
   };
+  const renderTabBadge = scene => {
+    const badgeValue = tabBarSceneBadgeMap[scene.route?.key] || '';
+    return badgeValue ? (
+      <View style={styles.tabBadgeWrapper}>
+        <Text style={styles.tabBadgeText}>{badgeValue}</Text>
+      </View>
+    ) : null;
+  };
+
+  const renderLabel = React.useCallback(
+    scene => {
+      return (
+        <View style={commonStyles.hstack}>
+          <Text style={[styles.tabarLabel, { color: scene.color }]}>
+            {scene.route.title.toUpperCase()}
+          </Text>
+          {renderTabBadge(scene)}
+        </View>
+      );
+    },
+    [chatsBadge, callsBadge],
+  );
 
   const renderTabBar = React.useCallback(
     props => {
@@ -78,12 +123,14 @@ function RecentScreen() {
             style={styles.tabbar}
             indicatorStyle={styles.tabbarIndicator}
             labelStyle={styles.tabarLabel}
-            activeColor={'#3276E2'}
+            renderLabel={renderLabel}
+            activeColor={ApplicationColors.mainColor}
+            inactiveColor={ApplicationColors.black}
           />
         )
       );
     },
-    [isSearching],
+    [isSearching, chatsBadge, callsBadge],
   );
 
   const handleBackBtn = () => {
@@ -284,5 +331,19 @@ const styles = StyleSheet.create({
   tabarLabel: {
     color: 'black',
     fontWeight: 'bold',
+  },
+  tabBadgeWrapper: {
+    minWidth: 20,
+    paddingVertical: 1,
+    paddingHorizontal: 4,
+    backgroundColor: ApplicationColors.mainColor,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 7,
+  },
+  tabBadgeText: {
+    color: ApplicationColors.white,
+    fontSize: 13,
   },
 });

@@ -373,6 +373,7 @@ const ChatConversation = React.memo(props => {
           chatInputRef={chatInputRef}
           attachmentMenuIcons={props.attachmentMenuIcons}
           onSendMessage={handleMessageSend}
+          handleSendMsg={handleSendMsg}
           selectedMsgs={selectedMsgs}
           fromUserJId={fromUserJId}
         />

@@ -13,15 +13,16 @@ import {
 } from 'react-native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { navigationRef } from './Navigation/rootNavigation';
-import StackNavigationPage from './Navigation/stackNavigation';
-import SDK from './SDK/SDK';
-import { callBacks } from './SDKActions/callbacks';
+import StackNavigationPage, {
+  RecentStackNavigation,
+} from './Navigation/stackNavigation';
 import ApplicationTheme from './config/appTheme';
 import {
   CAMERA,
   CHATSCREEN,
   CONTACTLIST,
   COUNTRYSCREEN,
+  MIRRORFLY_RN,
   PROFILESCREEN,
   RECENTCHATSCREEN,
   REGISTERSCREEN,
@@ -33,9 +34,8 @@ import { profileDetail } from './redux/Actions/ProfileAction';
 import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction';
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
-import messaging from '@react-native-firebase/messaging';
-import { requestNotificationPermission } from './common/utils';
-import { removeAllDeliveredNotification } from './Service/remoteNotifyHandle';
+import { getAppInitialized } from './uikitHelpers/uikitMethods';
+import PropTypes from 'prop-types';
 
 LogBox.ignoreAllLogs();
 
@@ -51,7 +51,7 @@ const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
 });
 
 const linking = {
-  prefixes: ['mirrorfly_rn://'], // Replace 'yourapp' with your app's custom scheme
+  prefixes: [MIRRORFLY_RN], //NOSONAR
   config: {
     screens: {
       [REGISTERSCREEN]: REGISTERSCREEN,
@@ -66,19 +66,10 @@ const linking = {
   },
 };
 
-export const ChatApp = props => {
+export const ChatApp = React.memo(props => {
+  const { jid = '' } = props;
+  const isMfInit = getAppInitialized();
   React.useEffect(() => {
-    (async () => {
-      await SDK.initializeSDK({
-        apiBaseUrl: props.apiUrl,
-        licenseKey: props.licenseKey,
-        callbackListeners: callBacks,
-        isSandbox: props.isSandbox,
-      });
-      await messaging().requestPermission();
-      requestNotificationPermission();
-      removeAllDeliveredNotification();
-    })();
     return () => {
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
@@ -88,15 +79,25 @@ export const ChatApp = props => {
   return (
     <Provider store={store}>
       <NativeBaseProvider>
-        <RootNavigation />
+        {isMfInit ? (
+          <RootNavigation jid={jid} />
+        ) : (
+          <Text>Mirrorfly Not Initialized</Text>
+        )}
       </NativeBaseProvider>
     </Provider>
   );
+});
+
+ChatApp.propTypes = {
+  jid: PropTypes.string,
 };
 
-const RootNavigation = () => {
+const RootNavigation = props => {
+  const { jid } = props;
   const scheme = useColorScheme();
-  const [initialRouteValue, setInitialRouteValue] = React.useState('Register');
+  const [initialRouteValue, setInitialRouteValue] =
+    React.useState(REGISTERSCREEN);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const dispatch = useDispatch();
@@ -125,7 +126,7 @@ const RootNavigation = () => {
       const initialURL = await Linking.getInitialURL();
       if (initialURL) {
         const regexStr = '[?&]([^=#]+)=([^&#]*)';
-        let regex = new RegExp(regexStr, 'g'),
+        let regex = new RegExp(regexStr, 'g'), //NOSONAR
           match;
         match = regex.exec(initialURL);
         let x = {
@@ -142,12 +143,20 @@ const RootNavigation = () => {
         setInitialRouteValue(REGISTERSCREEN);
       }
       setIsLoading(false);
-    }, 1000);
+    });
   }, []);
+
+  const renderStactNavigation = () => {
+    return jid ? (
+      <RecentStackNavigation />
+    ) : (
+      <StackNavigationPage InitialValue={initialRouteValue} />
+    );
+  };
 
   return (
     <>
-      {/** <Box safeAreaBottom backgroundColor={safeAreaBgColor} />
+      {/* * <Box safeAreaBottom backgroundColor={safeAreaBgColor} />
       <NavigationContainer
         ref={navigationRef}
         theme={
@@ -166,6 +175,7 @@ const RootNavigation = () => {
       <SafeAreaView style={styles.container}>
         <StatusBar translucent backgroundColor={safeAreaBgColor} />
         <NavigationContainer
+          independent={true}
           linking={linking}
           ref={navigationRef}
           theme={
@@ -173,17 +183,18 @@ const RootNavigation = () => {
               ? ApplicationTheme.darkTheme
               : ApplicationTheme.lightTheme
           }>
-          {isLoading ? (
-            <SplashScreen />
-          ) : (
-            <StackNavigationPage InitialValue={initialRouteValue} />
-          )}
+          {isLoading ? <SplashScreen /> : renderStactNavigation()}
         </NavigationContainer>
       </SafeAreaView>
       <Box safeAreaBottom backgroundColor={safeAreaBgColor} />
     </>
   );
 };
+
+RootNavigation.propTypes = {
+  jid: PropTypes.string,
+};
+
 
 const styles = StyleSheet.create({
   container: {

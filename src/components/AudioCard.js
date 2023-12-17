@@ -16,13 +16,14 @@ const AudioCard = props => {
   } = messageObject;
   const uri = media.local_path || media?.file?.fileDetails?.uri;
 
-  const { mediaStatus, downloadMedia, retryUploadMedia } = useMediaProgress({
-    isSender,
-    mediaUrl: uri,
-    uploadStatus: media?.is_uploading || 0,
-    media: media,
-    msgId: msgId,
-  });
+  const { mediaStatus, downloadMedia, retryUploadMedia, cancelUploadMedia } =
+    useMediaProgress({
+      isSender,
+      mediaUrl: uri,
+      uploadStatus: media?.is_uploading || 0,
+      media: media,
+      msgId: msgId,
+    });
 
   return (
     <View style={[styles.container, replyTo ? commonStyles.p_4 : undefined]}>
@@ -44,6 +45,8 @@ const AudioCard = props => {
             mediaStatus={mediaStatus}
             onDownload={downloadMedia}
             onUpload={retryUploadMedia}
+            onCancel={cancelUploadMedia}
+            msgId={msgId}
           />
         </View>
         <AudioPlayer

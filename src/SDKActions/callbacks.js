@@ -9,7 +9,9 @@ import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import {
    callConnectionStoreData,
+   clearIncomingCallTimer,
    clearMissedCallNotificationTimer,
+   clearOutgoingTimer,
    dispatchDisconnected,
    getCurrentCallRoomId,
    resetPinAndLargeVideoUser,
@@ -40,9 +42,12 @@ import {
    OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
 import {
+   displayIncomingCallForAndroid,
    displayIncomingCallForIos,
    endCallForIos,
+   getNickName,
    listnerForNetworkStateChangeWhenIncomingCall,
+   showOngoingNotification,
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
    updateMissedCallNotification,
 } from '../Helper/Calls/Utility';
@@ -63,6 +68,7 @@ import { showToast, updateUserProfileDetails } from '../Helper/index';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import { pushNotify, updateNotification } from '../Service/remoteNotifyHandle';
+import { callNotifyHandler, stopForegroundServiceNotification } from '../calls/notification/callNotifyHandler';
 import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
 import { updateConversationMessage, updateRecentChatMessage } from '../components/chat/common/createMessage';
 import { REGISTERSCREEN } from '../constant';
@@ -70,7 +76,6 @@ import {
    callDurationTimestamp,
    clearCallData,
    closeCallModal,
-   openCallModal,
    resetConferencePopup,
    resetData,
    selectLargeVideoUser,
@@ -80,6 +85,7 @@ import {
    updateCallerUUID,
    updateConference,
 } from '../redux/Actions/CallAction';
+import { resetCallControlsStateAction } from '../redux/Actions/CallControlsAction';
 import {
    ClearChatHistoryAction,
    DeleteChatHistoryAction,
@@ -109,7 +115,6 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
-import { resetCallControlsStateAction } from '../redux/Actions/CallControlsAction';
 
 let localStream = null,
    localVideoMuted = false,
@@ -277,16 +282,20 @@ const resetCloseModel = () => {
    Store.dispatch(closeCallModal());
 };
 
-const ended = res => {
+const ended = async res => {
    stopIncomingCallRingtone();
    stopOutgoingCallRingingTone();
    stopReconnectingTone();
    if (Platform.OS === 'ios') {
       endCallForIos();
    }
-   // deleteItemFromLocalStorage('inviteStatus');
    // let roomId = getFromLocalStorageAndDecrypt('roomName');
    if (res.sessionStatus === 'closed') {
+      if (Platform.OS === 'android') {
+         stopForegroundServiceNotification();
+      }
+      clearIncomingCallTimer();
+      clearOutgoingTimer();
       let callConnectionData = null;
       if (remoteStream && !onCall && !res.carbonAttended) {
          // Call ended before attend
@@ -310,14 +319,13 @@ const ended = res => {
          resetCloseModel();
          // Store.dispatch(callConversion());
       }, DISCONNECTED_SCREEN_DURATION);
+
       if (callConnectionData) {
-         const callDetailObj = callConnectionData
-            ? {
-                 ...callConnectionData,
-              }
-            : {};
+         const callDetailObj = callConnectionData ? { ...callConnectionData } : {};
          callDetailObj['status'] = 'ended';
-         // browserNotify.sendCallNotification(callDetailObj);
+         let nickName = getNickName(callConnectionData);
+         // TODO: notify that call disconnected if needed
+         callNotifyHandler(callDetailObj.roomId, callDetailObj, callDetailObj.userJid, nickName, 'MISSED_CALL');
       }
    } else {
       if (!onCall || (remoteStream && Array.isArray(remoteStream) && remoteStream.length < 1)) {
@@ -350,6 +358,10 @@ const handleEngagedOrBusyStatus = res => {
    //  let roomId = getFromLocalStorageAndDecrypt('roomName');
    updatingUserStatusInRemoteStream(res.usersStatus);
    if (res.sessionStatus === 'closed') {
+      clearOutgoingTimer();
+      if (Platform.OS === 'android') {
+         stopForegroundServiceNotification();
+      }
       // callLogs.update(roomId, {
       //    endTime: callLogs.initTime(),
       //    sessionStatus: res.sessionStatus,
@@ -419,7 +431,7 @@ const handleEngagedOrBusyStatus = res => {
    }
 };
 
-const connected = res => {
+const connected = async res => {
    const userIndex = remoteStream.findIndex(item => item.fromJid === res.userJid);
    if (userIndex > -1) {
       let usersStatus = res.usersStatus;
@@ -438,6 +450,11 @@ const connected = res => {
       if (!res.localUser) {
          stopOutgoingCallRingingTone();
          stopReconnectingTone();
+         clearOutgoingTimer();
+         if (Platform.OS === 'android') {
+            await stopForegroundServiceNotification();
+            showOngoingNotification(res);
+         }
       }
       batch(() => {
          dispatch(
@@ -804,10 +821,8 @@ export const callBacks = {
          listnerForNetworkStateChangeWhenIncomingCall();
          if (Platform.OS === 'android') {
             const callUUID = uuidv4();
-            batch(() => {
-               Store.dispatch(updateCallerUUID(callUUID));
-               Store.dispatch(openCallModal());
-            });
+            Store.dispatch(updateCallerUUID(callUUID));
+            displayIncomingCallForAndroid(res);
          } else {
             displayIncomingCallForIos(res);
          }

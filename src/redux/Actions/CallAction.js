@@ -10,7 +10,9 @@ import {
    PIN_USER,
    RESET_CALL_DATA,
    RESET_CONFRENCE_POPUP_STATUS,
+   RESET_NOTIFICATION_DATA,
    SET_CALL_MODAL_SCREEN,
+   SET_NOTIFICATION_DATA,
    UPDATE_CALLER_UUID,
    UPDATE_CONFRENCE_POPUP_STATUS,
 } from './Constants';
@@ -241,3 +243,16 @@ export const setCallModalScreen = payload => {
       payload,
    };
 };
+
+export const setNotificationData = payload =>{
+   return{
+      type: SET_NOTIFICATION_DATA,
+      payload,
+   }
+}
+
+export const resetNotificationData = () =>{
+   return{
+      type: RESET_NOTIFICATION_DATA,
+   }
+}

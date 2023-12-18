@@ -307,7 +307,7 @@ PODS:
     - React
   - react-native-get-random-values (1.10.0):
     - React-Core
-  - react-native-maps (1.8.3):
+  - react-native-maps (1.8.4):
     - React-Core
   - react-native-mov-to-mp4 (0.2.2):
     - React
@@ -740,7 +740,7 @@ SPEC CHECKSUMS:
   react-native-geocoder: 757427682892bb256f3b3745858cc90eba148a8e
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   react-native-get-random-values: 384787fd76976f5aec9465aff6fa9e9129af1e74
-  react-native-maps: a5f431a3eaaef69f2e6f8d39901fb3f2e9de931e
+  react-native-maps: e2b78affd8e90c807a87bd042dc6b1af2decbcf1
   react-native-mov-to-mp4: a04f17590618523487ab5d71c9310c6c4a7aaf99
   react-native-netinfo: 1a6035d3b9780221d407c277ebfb5722ace00658
   react-native-pager-view: c29d484f19c49ff19525a94105e4ab2c4d4ae273

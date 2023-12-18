@@ -1,24 +1,23 @@
+import { NativeBaseProvider } from 'native-base';
 import React from 'react';
-import { Modal, Text, View } from 'react-native';
+import { Modal, View } from 'react-native';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import {
-   ONGOING_CALL_SCREEN,
-   INCOMING_CALL_SCREEN,
-   OUTGOING_CALL_SCREEN,
    CALL_AGAIN_SCREEN,
-   CALL_STATUS_INCOMING,
+   INCOMING_CALL_SCREEN,
+   ONGOING_CALL_SCREEN,
+   OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import commonStyles from '../common/commonStyles';
-import IncomingCall from './screens/IncomingCall';
-import OutGoingCall from './screens/OutGoingCall';
-import OnGoingCall from './screens/OnGoingCall';
-import CallAgain from './screens/CallAgain';
-import { NativeBaseProvider } from 'native-base';
 import { resetCallStateData } from '../redux/Actions/CallAction';
 import { resetCallAgainData } from '../redux/Actions/CallAgainAction';
 import CallModalToastContainer from './components/CallModalToastContainer';
+import CallAgain from './screens/CallAgain';
+import IncomingCall from './screens/IncomingCall';
+import OnGoingCall from './screens/OnGoingCall';
+import OutGoingCall from './screens/OutGoingCall';
 
 const CallContainer = ({ hasNativeBaseProvider }) => {
    const { showCallModal, connectionState, screenName = '' } = useSelector(state => state.callData) || {};
@@ -35,7 +34,9 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
       switch (screenName) {
          case INCOMING_CALL_SCREEN:
             const _userId = getUserIdFromJid(connectionState?.userJid);
-            return <IncomingCall userId={_userId} callStatus={getIncomingCallStatus()} />;
+            return (
+               <IncomingCall userId={_userId} userJid={connectionState?.userJid} callStatus={getIncomingCallStatus()} />
+            );
          case ONGOING_CALL_SCREEN:
             return <OnGoingCall />;
          case OUTGOING_CALL_SCREEN:

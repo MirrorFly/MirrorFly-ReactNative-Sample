@@ -26,6 +26,7 @@ export const CALL_STATUS_ENGAGED = 'engaged';
 export const CALL_STATUS_RINGING = 'ringing';
 export const CALL_STATUS_HOLD = 'hold';
 export const CALL_STATUS_ATTENDED = 'attended';
+export const CALL_STATUS_TRYING = 'Trying to connect';
 
 // MESSAGE BASED ON CALL STATUS
 export const CALL_BUSY_STATUS_MESSAGE = 'User is busy';
@@ -45,6 +46,12 @@ export const OUTGOING_CALL_SCREEN = 'OUTGOING_CALL_SCREEN';
 export const ONGOING_CALL_SCREEN = 'ONGOING_CALL_SCREEN';
 export const CALL_AGAIN_SCREEN = 'CALL_AGAIN_SCREEN';
 export const ALREADY_ON_CALL = 'You are already on another call';
+
+//NOTIFICATIONS NAMES
+export const INCOMING_CALL = 'INCOMING_CALL';
+export const OUTGOING_CALL = 'OUTGOING_CALL';
+export const ONGOING_CALL = 'ONGOING_CALL';
+export const MISSED_CALL = 'MISSED_CALL';
 
 // CALL AUDIO ROUTING TYPES
 export const AUDIO_ROUTE_SPEAKER = 'Speaker'

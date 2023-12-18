@@ -1,38 +1,106 @@
 import { Platform } from 'react-native';
+import BackgroundTimer from 'react-native-background-timer';
 import InCallManager from 'react-native-incall-manager';
+import { batch } from 'react-redux';
 import SDK from '../../SDK/SDK';
 import { removeRemoteStream, resetCallData } from '../../SDKActions/callbacks';
-import { closeCallModal, pinUser, selectLargeVideoUser, showConfrence } from '../../redux/Actions/CallAction';
+import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
+import {
+   closeCallModal,
+   pinUser,
+   resetCallStateData,
+   selectLargeVideoUser,
+   setCallModalScreen,
+   showConfrence,
+   updateConference,
+} from '../../redux/Actions/CallAction';
+import { updateCallAgainData } from '../../redux/Actions/CallAgainAction';
 import Store from '../../redux/store';
 import {
+   CALL_AGAIN_SCREEN,
    CALL_RINGING_DURATION,
    CALL_STATUS_CALLING,
    CALL_STATUS_DISCONNECTED,
    CALL_STATUS_RINGING,
+   CALL_STATUS_TRYING,
    DISCONNECTED_SCREEN_DURATION,
 } from './Constant';
+import { getNickName } from './Utility';
+
 let missedCallNotificationTimer = null;
-let callingRemoteStreamRemovalTimer = null,
-   isPlayingRingintTone = false;
+let callingRemoteStreamRemovalTimer = null;
+let outgoingCallTimer = null;
+let endOutgoingCallTimer = null;
+let endIncomingCallTimer = null;
+let isPlayingRingintTone = false;
 
 export const getMaxUsersInCall = () => 8;
 
-export const getIsPlayingRingingTone = () => {
-   return isPlayingRingintTone;
+export const startOutgoingCallRingingTone = (callType = 'audio') => {
+   try {
+      // custom ringback added in the android and iOS folders and bundled with the app
+      if (Platform.OS === 'ios') {
+         InCallManager.startRingback('_BUNDLE_');
+      } else {
+         InCallManager.start({ media: callType, ringback: '_BUNDLE_' });
+      }
+      isPlayingRingintTone = true;
+      // In Android when starting the ringback tone it is playing it in speaker
+      // so turning off the speaker before starting the ringing tone
+      // if (Platform.OS === 'android') {
+      //    InCallManager.setSpeakerphoneOn(false);
+      //    InCallManager.setForceSpeakerphoneOn(false);
+      // }
+   } catch (err) {
+      console.log('Error while starting the ringtone sound');
+   }
+};
+
+export const stopOutgoingCallRingingTone = () => {
+   try {
+      isPlayingRingintTone = false;
+      if (Platform.OS === 'ios') {
+         InCallManager.stopRingback();
+      } else {
+         InCallManager.stop();
+      }
+   } catch (err) {
+      console.log('Error while starting the ringtone sound');
+   }
+};
+
+export const startReconnectingTone = () => {
+   try {
+      // InCallManager.startRingtone('_BUNDLE_');
+   } catch (err) {
+      console.log('Error when starting reconnecting rigntone', err);
+   }
+};
+
+export const stopReconnectingTone = () => {
+   try {
+      // InCallManager.stopRingtone();
+   } catch (err) {
+      console.log('Error when stopping reconnecting rigntone', err);
+   }
+};
+
+export const clearMissedCallNotificationTimer = () => {
+   if (missedCallNotificationTimer !== null) {
+      BackgroundTimer.clearTimeout(missedCallNotificationTimer);
+      missedCallNotificationTimer = null;
+   }
 };
 
 export const startMissedCallNotificationTimer = res => {
-   missedCallNotificationTimer = setTimeout(() => {
-      let callConnectionData = callConnectionStoreData();
+   let callConnectionData = callConnectionStoreData();
+   missedCallNotificationTimer = BackgroundTimer.setTimeout(() => {
       if (callConnectionData) {
-         const callDetailObj = callConnectionData
-            ? {
-                 ...callConnectionData,
-              }
-            : {};
+         const callDetailObj = callConnectionData ? { ...callConnectionData } : {};
          callDetailObj['status'] = 'ended';
+         let nickName = getNickName(callConnectionData);
          // TODO: notify that call disconnected if needed
-         // browserNotify.sendCallNotification(callDetailObj);
+         callNotifyHandler(callDetailObj.roomId, callDetailObj, callDetailObj.userJid, nickName, 'MISSED_CALL');
       }
    }, CALL_RINGING_DURATION + DISCONNECTED_SCREEN_DURATION);
 };
@@ -115,19 +183,129 @@ export const startCallingTimer = () => {
    }, CALL_RINGING_DURATION);
 };
 
+//OutGoingCall Timer
+export const clearEndOutgoingCallTimer = () => {
+   if (endOutgoingCallTimer !== null) {
+      BackgroundTimer.clearTimeout(endOutgoingCallTimer);
+      endOutgoingCallTimer = null;
+   }
+};
+
+export const clearOutgoingCallTimer = () => {
+   if (outgoingCallTimer !== null) {
+      BackgroundTimer.clearTimeout(outgoingCallTimer);
+      outgoingCallTimer = null;
+   }
+};
+
+export const clearOutgoingTimer = () => {
+   clearOutgoingCallTimer();
+   clearEndOutgoingCallTimer();
+};
+
+//Call Again Screen
+const updateCallAgainScreenData = (userID, callType) => {
+   batch(() => {
+      Store.dispatch(
+         updateCallAgainData({
+            callType,
+            userId: userID,
+         }),
+      );
+      Store.dispatch(setCallModalScreen(CALL_AGAIN_SCREEN));
+   });
+};
+
+export const endCall = async (isFromTimeout = false, userId, callType) => {
+   clearOutgoingTimer();
+   SDK.endCall();
+   stopOutgoingCallRingingTone();
+   if (Platform.OS === 'android') {
+      stopForegroundServiceNotification();
+   }
+   // endCallAction();
+   dispatchDisconnected();
+   // callLogs.update(callConnectionDataEndCall.roomId, {
+   //     "endTime": callLogs.initTime(),
+   //     "sessionStatus": CALL_SESSION_STATUS_CLOSED
+   // });
+
+   if (isFromTimeout) {
+      resetCallData();
+      const _userID = userId;
+      const _callType = callType;
+      updateCallAgainScreenData(_userID, _callType);
+   } else {
+      BackgroundTimer.setTimeout(() => {
+         resetCallData();
+         Store.dispatch(closeCallModal());
+         // batch(()=>{
+         //     Store.dispatch(showConfrence({
+         //         showComponent: false,
+         //         screenName:'',
+         //         showCalleComponent:false,
+         //         stopSound: true,
+         //         callStatusText: null
+         //     }))
+         // })
+      }, DISCONNECTED_SCREEN_DURATION);
+   }
+};
+
+export const startOutgoingcallTimer = (userId, callType) => {
+   if (endOutgoingCallTimer === null) {
+      outgoingCallTimer = BackgroundTimer.setTimeout(() => {
+         let callStatus = Store.getState().showConfrenceData?.data?.callStatusText;
+         callStatus === CALL_STATUS_TRYING &&
+            Store.dispatch(
+               updateConference({
+                  callStatusText: 'Unavailable',
+               }),
+            );
+      }, 10000);
+      endOutgoingCallTimer = BackgroundTimer.setTimeout(() => {
+         endCall(true, userId, callType);
+      }, 30000);
+   }
+};
+
+//IncomingCall Timer
+export const clearIncomingCallTimer = () => {
+   if (endIncomingCallTimer !== null) {
+      BackgroundTimer.clearTimeout(endIncomingCallTimer);
+      endIncomingCallTimer = null;
+   }
+};
+
+export const endIncomingCall = () => {
+   clearIncomingCallTimer();
+   SDK.endCall();
+   dispatchDisconnected('');
+   // TODO: update the Call logs when implementing
+   // callLogs.update(callConnectionDate.data.roomId, {
+   //     "endTime": callLogs.initTime(),
+   //     "sessionStatus": CALL_SESSION_STATUS_CLOSED
+   // });
+   BackgroundTimer.setTimeout(() => {
+      resetCallData();
+      Store.dispatch(resetCallStateData());
+   }, DISCONNECTED_SCREEN_DURATION);
+};
+
+export const startIncomingCallTimer = () => {
+   if (endIncomingCallTimer === null) {
+      endIncomingCallTimer = BackgroundTimer.setTimeout(() => {
+         endIncomingCall();
+      }, CALL_RINGING_DURATION);
+   }
+};
+
 export const callConnectionStoreData = () => {
    return Store.getState?.().callData.connectionState || {};
 };
 
 export const showConfrenceStoreData = () => {
    return Store.getState?.().showConfrenceData || {};
-};
-
-export const clearMissedCallNotificationTimer = () => {
-   if (missedCallNotificationTimer !== null) {
-      clearTimeout(missedCallNotificationTimer);
-      missedCallNotificationTimer = null;
-   }
 };
 
 export function dispatchDisconnected(statusMessage, remoteStreams = []) {
@@ -185,55 +363,6 @@ export const stopIncomingCallRingtone = () => {
       InCallManager.stopRingtone();
    } catch (err) {
       console.log('Error while stoping the ringtone sound');
-   }
-};
-
-export const startOutgoingCallRingingTone = (callType = 'audio') => {
-   try {
-      // custom ringback added in the android and iOS folders and bundled with the app
-      if (Platform.OS === 'ios') {
-         InCallManager.startRingback('_BUNDLE_');
-      } else {
-         InCallManager.start({ media: callType, ringback: '_BUNDLE_' });
-      }
-      isPlayingRingintTone = true;
-      // In Android when starting the ringback tone it is playing it in speaker
-      // so turning off the speaker before starting the ringing tone
-      // if (Platform.OS === 'android') {
-      //    InCallManager.setSpeakerphoneOn(false);
-      //    InCallManager.setForceSpeakerphoneOn(false);
-      // }
-   } catch (err) {
-      console.log('Error while starting the ringtone sound');
-   }
-};
-
-export const stopOutgoingCallRingingTone = () => {
-   try {
-      isPlayingRingintTone = false;
-      if (Platform.OS === 'ios') {
-         InCallManager.stopRingback();
-      } else {
-         InCallManager.stop();
-      }
-   } catch (err) {
-      console.log('Error while starting the ringtone sound');
-   }
-};
-
-export const startReconnectingTone = () => {
-   try {
-      // InCallManager.startRingtone('_BUNDLE_');
-   } catch (err) {
-      console.log('Error when starting reconnecting rigntone', err);
-   }
-};
-
-export const stopReconnectingTone = () => {
-   try {
-      // InCallManager.stopRingtone();
-   } catch (err) {
-      console.log('Error when stopping reconnecting rigntone', err);
    }
 };
 

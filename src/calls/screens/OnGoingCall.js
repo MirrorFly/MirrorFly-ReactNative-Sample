@@ -84,10 +84,6 @@ const OnGoingCall = () => {
       };
    }, [layout]);
 
-   React.useEffect(() => {
-      RNInCallManager.startProximitySensor()
-   }, [])
-
    const toggleLayout = () => {
       animateLayout(0);
       setTimeout(() => setLayout(val => (val === 'tile' ? 'grid' : 'tile')), layoutAnimationDuration);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { batch, useDispatch, useSelector } from 'react-redux';
-import { dispatchDisconnected, stopRingingCallTone } from '../../Helper/Calls/Call';
+import { dispatchDisconnected, stopOutgoingCallRingingTone, stopRingingCallTone } from '../../Helper/Calls/Call';
 import { CALL_AGAIN_SCREEN, DISCONNECTED_SCREEN_DURATION } from '../../Helper/Calls/Constant';
 import { capitalizeFirstLetter, getUserIdFromJid } from '../../Helper/Chat/Utility';
 import { resetCallData } from '../../SDKActions/callbacks';
@@ -65,6 +65,7 @@ const OutGoingCall = () => {
    const endCall = async (isFromTimeout = false) => {
       const callConnectionDataEndCall = connectionState?.data;
       SDK.endCall();
+      stopOutgoingCallRingingTone();
       // endCallAction();
       dispatchDisconnected();
       // callLogs.update(callConnectionDataEndCall.roomId, {

@@ -1,5 +1,4 @@
 import { Platform } from 'react-native';
-import RNCallKeep from 'react-native-callkeep';
 import InCallManager from 'react-native-incall-manager';
 import SDK from '../../SDK/SDK';
 import { removeRemoteStream, resetCallData } from '../../SDKActions/callbacks';
@@ -12,11 +11,15 @@ import {
    CALL_STATUS_RINGING,
    DISCONNECTED_SCREEN_DURATION,
 } from './Constant';
-import { capitalizeFirstLetter } from '../Chat/Utility';
 let missedCallNotificationTimer = null;
-let callingRemoteStreamRemovalTimer = null;
+let callingRemoteStreamRemovalTimer = null,
+   isPlayingRingintTone = false;
 
 export const getMaxUsersInCall = () => 8;
+
+export const getIsPlayingRingingTone = () => {
+   return isPlayingRingintTone;
+};
 
 export const startMissedCallNotificationTimer = res => {
    missedCallNotificationTimer = setTimeout(() => {
@@ -185,29 +188,52 @@ export const stopIncomingCallRingtone = () => {
    }
 };
 
-export const startRingingCallTone = () => {
+export const startOutgoingCallRingingTone = (callType = 'audio') => {
    try {
+      // custom ringback added in the android and iOS folders and bundled with the app
+      if (Platform.OS === 'ios') {
+         InCallManager.startRingback('_BUNDLE_');
+      } else {
+         InCallManager.start({ media: callType, ringback: '_BUNDLE_' });
+      }
+      isPlayingRingintTone = true;
+      // In Android when starting the ringback tone it is playing it in speaker
+      // so turning off the speaker before starting the ringing tone
       // if (Platform.OS === 'android') {
-      //    // Android implementation
-      //    const customRingbackUri = 'file:///path/to/custom_ringback.mp3';
-      //    InCallManager.start({ media: customRingbackUri, auto: false });
-      //  } else if (Platform.OS === 'ios') {
-      //    // iOS implementation
-      //    const customRingbackUri = 'file:///path/to/custom_ringback.mp3';
-      //    InCallManager.startRingback(customRingbackUri);
-      //  }
-      //   InCallManager.start({ media: 'incallmanager_ringback.mp3', auto: false });
-      // InCallManager.startRingback('incallmanager_ringback.mp3');
+      //    InCallManager.setSpeakerphoneOn(false);
+      //    InCallManager.setForceSpeakerphoneOn(false);
+      // }
    } catch (err) {
       console.log('Error while starting the ringtone sound');
    }
 };
 
-export const stopRingingCallTone = () => {
+export const stopOutgoingCallRingingTone = () => {
    try {
-      InCallManager.stopRingback();
+      isPlayingRingintTone = false;
+      if (Platform.OS === 'ios') {
+         InCallManager.stopRingback();
+      } else {
+         InCallManager.stop();
+      }
    } catch (err) {
       console.log('Error while starting the ringtone sound');
+   }
+};
+
+export const startReconnectingTone = () => {
+   try {
+      // InCallManager.startRingtone('_BUNDLE_');
+   } catch (err) {
+      console.log('Error when starting reconnecting rigntone', err);
+   }
+};
+
+export const stopReconnectingTone = () => {
+   try {
+      // InCallManager.stopRingtone();
+   } catch (err) {
+      console.log('Error when stopping reconnecting rigntone', err);
    }
 };
 

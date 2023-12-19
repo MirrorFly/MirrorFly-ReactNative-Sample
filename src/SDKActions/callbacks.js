@@ -119,13 +119,15 @@ import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
 let localStream = null,
    localVideoMuted = false,
    localAudioMuted = false,
-   onCall = false;
+   onCall = false,
+   onReconnect = false;
 let remoteVideoMuted = [],
    remoteStream = [],
    remoteAudioMuted = [];
 
 export const resetCallData = () => {
    onCall = false;
+   onReconnect = false;
    remoteStream = [];
    localStream = null;
    remoteVideoMuted = [];
@@ -451,11 +453,11 @@ const connected = async res => {
          stopOutgoingCallRingingTone();
          stopReconnectingTone();
          clearOutgoingTimer();
-         console.log('Store.getState()?.callData?.callDuration', Store.getState()?.callData?.callDuration);
-         if (Platform.OS === 'android' && !Store.getState()?.callData?.callDuration) {
+         if (Platform.OS === 'android' && !onReconnect) {
             await stopForegroundServiceNotification();
             showOngoingNotification(res);
          }
+         onReconnect = false;
       }
       batch(() => {
          dispatch(
@@ -552,6 +554,7 @@ const disconnected = res => {
 };
 
 const reconnecting = res => {
+   onReconnect = true;
    startReconnectingTone();
    updatingUserStatusInRemoteStream(res.usersStatus);
    const showConfrenceData = Store.getState().showConfrenceData;
@@ -574,7 +577,6 @@ const reconnecting = res => {
 };
 
 const callStatus = res => {
-   console.log(res.status, 'statusstatus');
    if (res.status === 'ringing') {
       ringing(res);
    } else if (res.status === 'connecting') {

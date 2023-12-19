@@ -56,7 +56,6 @@ export const getIncomingCallNotification = async (
    callStatusType,
    isFullScreenIntent,
 ) => {
-   await notifee.deleteChannel('Incoming Call');
    let channelId = await notifee.createChannel({
       id: 'Incoming Call',
       name: 'Incoming Call',
@@ -97,7 +96,6 @@ export const getIncomingCallNotification = async (
 };
 
 export const getOutGoingCallNotification = async (roomId, data, userJid, nickName, callStatusType) => {
-   // await notifee.deleteChannel('OutGoing Call');
    let channelId = await notifee.createChannel({
       id: 'OutGoing Call',
       name: 'OutGoing Call',
@@ -128,7 +126,6 @@ export const getOutGoingCallNotification = async (roomId, data, userJid, nickNam
 };
 
 export const getOnGoingCallNotification = async (roomId, data, userJid, nickName, callStatusType) => {
-   // await notifee.deleteChannel('OnGoing Call');
    let channelId = await notifee.createChannel({
       id: 'OnGoing Call',
       name: 'OnGoing Call',
@@ -321,8 +318,8 @@ export const stopForegroundServiceNotification = async (cancelID = '') => {
       let displayedNotificationId = await notifee.getDisplayedNotifications();
       let cancelIDS = displayedNotificationId?.find(res => res.id === notifications.id)?.id;
       cancelIDS && (await notifee.cancelDisplayedNotification(cancelIDS));
-      let channelId = notifications.android?.channelId;
-      let channel = channelId && (await notifee.getChannels()).find(res => res.id === channelId);
+      // let channelId = notifications.android?.channelId;
+      // let channel = channelId && (await notifee.getChannels()).find(res => res.id === channelId);
       // _BackgroundTimer.setTimeout(async () => {
       //    channel?.id && (await notifee.deleteChannel(channel?.id));
       // }, 0);

@@ -64,7 +64,7 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
       // let cancelIDS = displayedNotificationId?.find(res => res.id === notificationData.id)?.id;
       await stopForegroundServiceNotification();
       if (userCallStatus !== CALL_STATUS_DISCONNECTED)
-         callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'INCOMING_CALL', false);
+      await callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'INCOMING_CALL', false);
    };
 
    const handleClosePress = () => {

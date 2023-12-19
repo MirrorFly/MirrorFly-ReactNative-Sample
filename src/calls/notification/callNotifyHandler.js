@@ -56,6 +56,7 @@ export const getIncomingCallNotification = async (
    callStatusType,
    isFullScreenIntent,
 ) => {
+   await notifee.deleteChannel('Incoming Call');
    let channelId = await notifee.createChannel({
       id: 'Incoming Call',
       name: 'Incoming Call',
@@ -96,10 +97,11 @@ export const getIncomingCallNotification = async (
 };
 
 export const getOutGoingCallNotification = async (roomId, data, userJid, nickName, callStatusType) => {
+   // await notifee.deleteChannel('OutGoing Call');
    let channelId = await notifee.createChannel({
       id: 'OutGoing Call',
       name: 'OutGoing Call',
-      importance: AndroidImportance.HIGH,
+      importance: AndroidImportance.DEFAULT,
       visibility: AndroidVisibility.PUBLIC,
       vibration: false,
    });
@@ -111,7 +113,7 @@ export const getOutGoingCallNotification = async (roomId, data, userJid, nickNam
          color: '#36A8F4',
          onlyAlertOnce: true,
          channelId: channelId,
-         importance: AndroidImportance.HIGH,
+         importance: AndroidImportance.DEFAULT,
          sound: '',
          category: AndroidCategory.CALL,
          smallIcon: 'ic_call_notification',
@@ -126,10 +128,11 @@ export const getOutGoingCallNotification = async (roomId, data, userJid, nickNam
 };
 
 export const getOnGoingCallNotification = async (roomId, data, userJid, nickName, callStatusType) => {
+   // await notifee.deleteChannel('OnGoing Call');
    let channelId = await notifee.createChannel({
       id: 'OnGoing Call',
       name: 'OnGoing Call',
-      importance: AndroidImportance.HIGH,
+      importance: AndroidImportance.DEFAULT,
       visibility: AndroidVisibility.PUBLIC,
       vibration: false,
    });
@@ -141,7 +144,7 @@ export const getOnGoingCallNotification = async (roomId, data, userJid, nickName
          color: '#36A8F4',
          onlyAlertOnce: true,
          channelId: channelId,
-         importance: AndroidImportance.HIGH,
+         importance: AndroidImportance.DEFAULT,
          sound: '',
          smallIcon: 'ic_call_notification',
          asForegroundService: true,
@@ -270,6 +273,7 @@ export async function setNotificationForegroundService() {
             let callStartTime = Store.getState()?.callData?.callDuration;
             if (!callStartTime) {
                callStartTime = Date.now();
+               console.log('callStartTime from foreground service', callStartTime);
                Store.dispatch(callDurationTimestamp(callStartTime));
             }
             interval = _BackgroundTimer.setInterval(() => {
@@ -319,7 +323,9 @@ export const stopForegroundServiceNotification = async (cancelID = '') => {
       cancelIDS && (await notifee.cancelDisplayedNotification(cancelIDS));
       let channelId = notifications.android?.channelId;
       let channel = channelId && (await notifee.getChannels()).find(res => res.id === channelId);
-      channel?.id && (await notifee.deleteChannel(channel?.id));
+      // _BackgroundTimer.setTimeout(async () => {
+      //    channel?.id && (await notifee.deleteChannel(channel?.id));
+      // }, 0);
       Store.dispatch(resetNotificationData());
    } catch (error) {
       console.log('Error when stopping foreground service ', error);

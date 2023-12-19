@@ -151,9 +151,9 @@ export const resetCallData = () => {
    stopOutgoingCallRingingTone();
    stopReconnectingTone();
    batch(() => {
-      Store.dispatch(callDurationTimestamp());
       Store.dispatch(resetConferencePopup());
       Store.dispatch(clearCallData());
+      Store.dispatch(callDurationTimestamp());
       Store.dispatch(resetCallControlsStateAction());
    });
    resetData();
@@ -451,7 +451,8 @@ const connected = async res => {
          stopOutgoingCallRingingTone();
          stopReconnectingTone();
          clearOutgoingTimer();
-         if (Platform.OS === 'android') {
+         console.log('Store.getState()?.callData?.callDuration', Store.getState()?.callData?.callDuration);
+         if (Platform.OS === 'android' && !Store.getState()?.callData?.callDuration) {
             await stopForegroundServiceNotification();
             showOngoingNotification(res);
          }

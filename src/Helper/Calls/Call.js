@@ -26,6 +26,7 @@ import {
    DISCONNECTED_SCREEN_DURATION,
 } from './Constant';
 import { getNickName } from './Utility';
+import Sound from 'react-native-sound';
 
 let missedCallNotificationTimer = null;
 let callingRemoteStreamRemovalTimer = null;
@@ -33,6 +34,7 @@ let outgoingCallTimer = null;
 let endOutgoingCallTimer = null;
 let endIncomingCallTimer = null;
 let isPlayingRingintTone = false;
+let reconnectingSound = null;
 
 export const getMaxUsersInCall = () => 8;
 
@@ -71,7 +73,14 @@ export const stopOutgoingCallRingingTone = () => {
 
 export const startReconnectingTone = () => {
    try {
-      // InCallManager.startRingtone('_BUNDLE_');
+      reconnectingSound = new Sound('fly_reconnecting_tone.mp3', Sound.MAIN_BUNDLE, error => {
+         if (error) {
+            console.log('Error Loading reconnecting sound from bundle', error);
+            return;
+         }
+         reconnectingSound?.play?.();
+         reconnectingSound?.setNumberOfLoops(-1);
+      });
    } catch (err) {
       console.log('Error when starting reconnecting rigntone', err);
    }
@@ -79,7 +88,9 @@ export const startReconnectingTone = () => {
 
 export const stopReconnectingTone = () => {
    try {
-      // InCallManager.stopRingtone();
+      reconnectingSound?.stop?.();
+      reconnectingSound?.release?.();
+      reconnectingSound = null;
    } catch (err) {
       console.log('Error when stopping reconnecting rigntone', err);
    }

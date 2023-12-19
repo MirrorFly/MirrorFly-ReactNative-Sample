@@ -38,6 +38,7 @@ import {
    startOutgoingCallRingingTone,
    stopIncomingCallRingtone,
    stopOutgoingCallRingingTone,
+   stopReconnectingTone,
 } from './Call';
 import {
    AUDIO_ROUTE_SPEAKER,
@@ -374,6 +375,7 @@ const handleIncoming_CallKeepListeners = () => {
 
 //Endcall action for ongoing call
 export const endOnGoingCall = async () => {
+   stopReconnectingTone();
    if (Platform.OS === 'android') {
       stopForegroundServiceNotification();
    }
@@ -642,22 +644,24 @@ export const getNickName = callResponse => {
 };
 
 export const updateCallAudioMute = async (audioMuted, callUUID, isFromCallKeep = false) => {
-   const audioMuteResult = await SDK.muteAudio(audioMuted);
-   if (audioMuteResult.statusCode === 200) {
-      muteLocalAudio(audioMuted);
-      const vcardData = getLocalUserDetails();
-      showCallModalToast(`${vcardData.nickName}'s microphone turned ${audioMuted ? 'off' : 'on'}`);
-      if (Platform.OS === 'ios' && !isFromCallKeep && callUUID) {
-         RNCallKeep.setMutedCall(callUUID, audioMuted);
+   try {
+      const audioMuteResult = await SDK.muteAudio(audioMuted);
+      if (audioMuteResult.statusCode === 200) {
+         muteLocalAudio(audioMuted);
+         if (Platform.OS === 'ios' && !isFromCallKeep && callUUID) {
+            RNCallKeep.setMutedCall(callUUID, audioMuted);
+         }
+         batch(() => {
+            Store.dispatch(updateCallAudioMutedAction(audioMuted));
+            Store.dispatch(
+               updateConference({
+                  localAudioMuted: audioMuted,
+               }),
+            );
+         });
       }
-      batch(() => {
-         Store.dispatch(updateCallAudioMutedAction(audioMuted));
-         Store.dispatch(
-            updateConference({
-               localAudioMuted: audioMuted,
-            }),
-         );
-      });
+   } catch (error) {
+      console.log('Error when muting/unmuting local user audio', error);
    }
 };
 

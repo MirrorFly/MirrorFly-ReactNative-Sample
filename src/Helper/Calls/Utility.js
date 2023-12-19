@@ -403,7 +403,7 @@ export const displayIncomingCallForIos = callResponse => {
       Store.dispatch(updateCallerUUID(callUUID));
       const contactNumber = getUserIdFromJid(callResponse.userJid);
       const contactName =
-         callingUserData.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
+         callingUserData?.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
       RNCallKeep.displayIncomingCall(
          callUUID,
          contactNumber,
@@ -421,7 +421,7 @@ export const displayIncomingCallForAndroid = async callResponse => {
    );
    const contactNumber = getUserIdFromJid(callResponse.userJid);
    const nickName =
-      callingUserData.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
+      callingUserData?.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
    Store.dispatch(openCallModal());
    callNotifyHandler(callResponse.roomId, callResponse, callResponse.userJid, nickName, 'INCOMING_CALL', true);
 };
@@ -627,7 +627,7 @@ export const showOngoingNotification = callResponse => {
    );
    const contactNumber = getUserIdFromJid(callResponse.userJid);
    const nickName =
-      callingUserData.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
+      callingUserData?.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
    callNotifyHandler(contactNumber, callResponse, callResponse.userJid, nickName, 'ONGOING_CALL');
 };
 
@@ -637,7 +637,7 @@ export const getNickName = callResponse => {
    );
    const contactNumber = getUserIdFromJid(callResponse.userJid);
    const nickName =
-      callingUserData.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
+      callingUserData?.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
    return nickName;
 };
 

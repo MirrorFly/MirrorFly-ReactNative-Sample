@@ -60,9 +60,9 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
    // }, [appState, notificationData]);
 
    const handleBackGround = async () => {
-      let displayedNotificationId = await notifee.getDisplayedNotifications();
-      let cancelIDS = displayedNotificationId?.find(res => res.id === notificationData.id)?.id;
-      await stopForegroundServiceNotification(cancelIDS);
+      // let displayedNotificationId = await notifee.getDisplayedNotifications();
+      // let cancelIDS = displayedNotificationId?.find(res => res.id === notificationData.id)?.id;
+      await stopForegroundServiceNotification();
       if (userCallStatus !== CALL_STATUS_DISCONNECTED)
          callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'INCOMING_CALL', false);
    };

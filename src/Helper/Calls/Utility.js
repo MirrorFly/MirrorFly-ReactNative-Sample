@@ -35,7 +35,10 @@ import {
    dispatchDisconnected,
    getMaxUsersInCall,
    startCallingTimer,
+   startOutgoingCallRingingTone,
    stopIncomingCallRingtone,
+   stopOutgoingCallRingingTone,
+   stopReconnectingTone,
 } from './Call';
 import {
    AUDIO_ROUTE_SPEAKER,
@@ -179,6 +182,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
             call = await SDK.makeVideoCall(users, groupId);
          }
          if (call.statusCode !== 200 && call.message === PERMISSION_DENIED) {
+            stopOutgoingCallRingingTone();
             deleteAndDispatchAction();
          } else {
             roomId = call.roomId;
@@ -206,6 +210,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
             }
             Store.dispatch(updateCallConnectionState(callConnectionStatusNew));
             startCallingTimer();
+            startOutgoingCallRingingTone(callType);
          }
       } catch (error) {
          console.log('Error in making call', error);
@@ -370,6 +375,7 @@ const handleIncoming_CallKeepListeners = () => {
 
 //Endcall action for ongoing call
 export const endOnGoingCall = async () => {
+   stopReconnectingTone();
    if (Platform.OS === 'android') {
       stopForegroundServiceNotification();
    }
@@ -638,22 +644,24 @@ export const getNickName = callResponse => {
 };
 
 export const updateCallAudioMute = async (audioMuted, callUUID, isFromCallKeep = false) => {
-   const audioMuteResult = await SDK.muteAudio(audioMuted);
-   if (audioMuteResult.statusCode === 200) {
-      muteLocalAudio(audioMuted);
-      const vcardData = getLocalUserDetails();
-      showCallModalToast(`${vcardData.nickName}'s microphone turned ${audioMuted ? 'off' : 'on'}`);
-      if (Platform.OS === 'ios' && !isFromCallKeep && callUUID) {
-         RNCallKeep.setMutedCall(callUUID, audioMuted);
+   try {
+      const audioMuteResult = await SDK.muteAudio(audioMuted);
+      if (audioMuteResult.statusCode === 200) {
+         muteLocalAudio(audioMuted);
+         if (Platform.OS === 'ios' && !isFromCallKeep && callUUID) {
+            RNCallKeep.setMutedCall(callUUID, audioMuted);
+         }
+         batch(() => {
+            Store.dispatch(updateCallAudioMutedAction(audioMuted));
+            Store.dispatch(
+               updateConference({
+                  localAudioMuted: audioMuted,
+               }),
+            );
+         });
       }
-      batch(() => {
-         Store.dispatch(updateCallAudioMutedAction(audioMuted));
-         Store.dispatch(
-            updateConference({
-               localAudioMuted: audioMuted,
-            }),
-         );
-      });
+   } catch (error) {
+      console.log('Error when muting/unmuting local user audio', error);
    }
 };
 
@@ -664,7 +672,7 @@ export const updateCallSpeakerEnabled = async (speakerEnabled, audioRouteName, c
       console.log('Audio Routings', JSON.stringify(res, null, 2));
       RNCallKeep.setAudioRoute('11111', AUDIO_ROUTE_SPEAKER);
    }); */
-   // console.log('updating speaker to', speakerEnabled);
+   /** // console.log('updating speaker to', speakerEnabled);
    // RNCallKeep.setAudioRoute(callUUID, mediaName);
    // Store.dispatch(updateCallSpeakerEnabledAction(speakerEnabled));
    // RNCallKeep.startCall('11111', '919090909090', 'Abdul Rahman');
@@ -676,14 +684,16 @@ export const updateCallSpeakerEnabled = async (speakerEnabled, audioRouteName, c
    // audioRouted.then(res => {
    //    console.log('audioRouted avaiable devices', res.availableAudioDeviceList, res.selectedAudioDevice);
    // })
-   // RNInCallManager.getIsWiredHeadsetPluggedIn();
+   // RNInCallManager.getIsWiredHeadsetPluggedIn(); */
    try {
       if (Platform.OS === 'android') {
          RNInCallManager.setSpeakerphoneOn(speakerEnabled);
-      } else {
-         if (!isFromCallKeep) {
-            RNCallKeep.setAudioRoute(callUUID, audioRouteName);
-         }
+      } else if (!isFromCallKeep) {
+         RNCallKeep.setAudioRoute(callUUID, audioRouteName);
+         // if the user is on outgoing call screen and the call is in ringing state, then routing the audio to speaker will not route the ringing tone to speaker
+         // because we are routing only the stream and not the ringing tone. So manually enabling/disabling the speaker
+         RNInCallManager.setSpeakerphoneOn(speakerEnabled);
+         RNInCallManager.setForceSpeakerphoneOn(speakerEnabled);
       }
       Store.dispatch(updateCallSpeakerEnabledAction(speakerEnabled));
    } catch (err) {

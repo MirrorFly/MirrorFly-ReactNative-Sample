@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import InCallManager from 'react-native-incall-manager';
 import { batch } from 'react-redux';
@@ -24,16 +25,76 @@ import {
    CALL_STATUS_TRYING,
    DISCONNECTED_SCREEN_DURATION,
 } from './Constant';
-import { Platform } from 'react-native';
 import { getNickName } from './Utility';
+import Sound from 'react-native-sound';
 
 let missedCallNotificationTimer = null;
 let callingRemoteStreamRemovalTimer = null;
 let outgoingCallTimer = null;
 let endOutgoingCallTimer = null;
 let endIncomingCallTimer = null;
+let isPlayingRingintTone = false;
+let reconnectingSound = null;
 
 export const getMaxUsersInCall = () => 8;
+
+export const startOutgoingCallRingingTone = (callType = 'audio') => {
+   try {
+      // custom ringback added in the android and iOS folders and bundled with the app
+      if (Platform.OS === 'ios') {
+         InCallManager.startRingback('_BUNDLE_');
+      } else {
+         InCallManager.start({ media: callType, ringback: '_BUNDLE_' });
+      }
+      isPlayingRingintTone = true;
+      // In Android when starting the ringback tone it is playing it in speaker
+      // so turning off the speaker before starting the ringing tone
+      // if (Platform.OS === 'android') {
+      //    InCallManager.setSpeakerphoneOn(false);
+      //    InCallManager.setForceSpeakerphoneOn(false);
+      // }
+   } catch (err) {
+      console.log('Error while starting the ringtone sound');
+   }
+};
+
+export const stopOutgoingCallRingingTone = () => {
+   try {
+      isPlayingRingintTone = false;
+      if (Platform.OS === 'ios') {
+         InCallManager.stopRingback();
+      } else {
+         InCallManager.stop();
+      }
+   } catch (err) {
+      console.log('Error while starting the ringtone sound');
+   }
+};
+
+export const startReconnectingTone = () => {
+   try {
+      reconnectingSound = new Sound('fly_reconnecting_tone.mp3', Sound.MAIN_BUNDLE, error => {
+         if (error) {
+            console.log('Error Loading reconnecting sound from bundle', error);
+            return;
+         }
+         reconnectingSound?.play?.();
+         reconnectingSound?.setNumberOfLoops(-1);
+      });
+   } catch (err) {
+      console.log('Error when starting reconnecting rigntone', err);
+   }
+};
+
+export const stopReconnectingTone = () => {
+   try {
+      reconnectingSound?.stop?.();
+      reconnectingSound?.release?.();
+      reconnectingSound = null;
+   } catch (err) {
+      console.log('Error when stopping reconnecting rigntone', err);
+   }
+};
 
 export const clearMissedCallNotificationTimer = () => {
    if (missedCallNotificationTimer !== null) {
@@ -169,6 +230,7 @@ const updateCallAgainScreenData = (userID, callType) => {
 export const endCall = async (isFromTimeout = false, userId, callType) => {
    clearOutgoingTimer();
    SDK.endCall();
+   stopOutgoingCallRingingTone();
    if (Platform.OS === 'android') {
       stopForegroundServiceNotification();
    }
@@ -312,32 +374,6 @@ export const stopIncomingCallRingtone = () => {
       InCallManager.stopRingtone();
    } catch (err) {
       console.log('Error while stoping the ringtone sound');
-   }
-};
-
-export const startRingingCallTone = () => {
-   try {
-      // if (Platform.OS === 'android') {
-      //    // Android implementation
-      //    const customRingbackUri = 'file:///path/to/custom_ringback.mp3';
-      //    InCallManager.start({ media: customRingbackUri, auto: false });
-      //  } else if (Platform.OS === 'ios') {
-      //    // iOS implementation
-      //    const customRingbackUri = 'file:///path/to/custom_ringback.mp3';
-      //    InCallManager.startRingback(customRingbackUri);
-      //  }
-      //   InCallManager.start({ media: 'incallmanager_ringback.mp3', auto: false });
-      // InCallManager.startRingback('incallmanager_ringback.mp3');
-   } catch (err) {
-      console.log('Error while starting the ringtone sound');
-   }
-};
-
-export const stopRingingCallTone = () => {
-   try {
-      InCallManager.stopRingback();
-   } catch (err) {
-      console.log('Error while starting the ringtone sound');
    }
 };
 

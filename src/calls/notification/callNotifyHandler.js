@@ -310,17 +310,21 @@ export async function setNotificationForegroundService() {
 }
 
 export const stopForegroundServiceNotification = async (cancelID = '') => {
-   _BackgroundTimer.clearInterval(interval);
-   let notifications = Store.getState().notificationData.data;
-   if (!cancelID) {
-      let displayedNotificationId = await notifee.getDisplayedNotifications();
-      let cancelIDS = displayedNotificationId?.find(res => res.id === notifications.id)?.id;
-      cancelIDS && (await notifee.cancelDisplayedNotification(cancelIDS));
-   } else {
-      cancelID && (await notifee.cancelDisplayedNotification(cancelID));
+   try {
+      _BackgroundTimer.clearInterval(interval);
+      let notifications = Store.getState().notificationData.data;
+      if (!cancelID) {
+         let displayedNotificationId = await notifee.getDisplayedNotifications();
+         let cancelIDS = displayedNotificationId?.find(res => res.id === notifications.id)?.id;
+         cancelIDS && (await notifee.cancelDisplayedNotification(cancelIDS));
+      } else {
+         cancelID && (await notifee.cancelDisplayedNotification(cancelID));
+      }
+      await notifee.stopForegroundService();
+      let channelId = notifications.android?.channelId;
+      channelId && (await notifee.deleteChannel(channelId));
+      Store.dispatch(resetNotificationData());
+   } catch (error) {
+      console.log('Error when stopping foreground service ', error);
    }
-   await notifee.stopForegroundService();
-   let channelId = notifications.android?.channelId;
-   channelId && (await notifee.deleteChannel(channelId));
-   Store.dispatch(resetNotificationData());
 };

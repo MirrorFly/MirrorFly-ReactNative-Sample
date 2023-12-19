@@ -19,7 +19,10 @@ import {
    startCallingTimer,
    startIncomingCallRingtone,
    startMissedCallNotificationTimer,
+   startReconnectingTone,
    stopIncomingCallRingtone,
+   stopOutgoingCallRingingTone,
+   stopReconnectingTone,
 } from '../Helper/Calls/Call';
 import {
    CALL_BUSY_STATUS_MESSAGE,
@@ -140,11 +143,13 @@ export const resetCallData = () => {
       RNCallKeep.removeEventListener('endCall');
       RNCallKeep.removeEventListener('didPerformSetMutedCallAction');
       RNCallKeep.removeEventListener('didChangeAudioRoute');
+      RNInCallManager.setForceSpeakerphoneOn(false);
       endCallForIos();
    } else {
       RNInCallManager.setSpeakerphoneOn(false);
-      RNInCallManager.stopProximitySensor();
    }
+   stopOutgoingCallRingingTone();
+   stopReconnectingTone();
    batch(() => {
       Store.dispatch(callDurationTimestamp());
       Store.dispatch(resetConferencePopup());
@@ -279,6 +284,8 @@ const resetCloseModel = () => {
 
 const ended = async res => {
    stopIncomingCallRingtone();
+   stopOutgoingCallRingingTone();
+   stopReconnectingTone();
    if (Platform.OS === 'ios') {
       endCallForIos();
    }
@@ -347,6 +354,7 @@ const dispatchCommon = () => {
 };
 
 const handleEngagedOrBusyStatus = res => {
+   stopOutgoingCallRingingTone();
    //  let roomId = getFromLocalStorageAndDecrypt('roomName');
    updatingUserStatusInRemoteStream(res.usersStatus);
    if (res.sessionStatus === 'closed') {
@@ -440,6 +448,8 @@ const connected = async res => {
       //    showStreamingComponent = true;
       // }
       if (!res.localUser) {
+         stopOutgoingCallRingingTone();
+         stopReconnectingTone();
          clearOutgoingTimer();
          if (Platform.OS === 'android') {
             await stopForegroundServiceNotification();
@@ -491,6 +501,8 @@ const connecting = res => {
 };
 
 const disconnected = res => {
+   stopOutgoingCallRingingTone();
+   stopReconnectingTone();
    console.log(res, 'disconnected');
    // let roomId = getFromLocalStorageAndDecrypt('roomName');
    let vcardData = getLocalUserDetails();
@@ -539,6 +551,7 @@ const disconnected = res => {
 };
 
 const reconnecting = res => {
+   startReconnectingTone();
    updatingUserStatusInRemoteStream(res.usersStatus);
    const showConfrenceData = Store.getState().showConfrenceData;
    const { data } = showConfrenceData;

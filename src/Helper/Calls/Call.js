@@ -1,6 +1,8 @@
-import { Platform } from 'react-native';
+import { AppState, Platform, Vibration } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import InCallManager from 'react-native-incall-manager';
+import { RINGER_MODE, getRingerMode } from 'react-native-ringer-mode';
+import Sound from 'react-native-sound';
 import { batch } from 'react-redux';
 import SDK from '../../SDK/SDK';
 import { removeRemoteStream, resetCallData } from '../../SDKActions/callbacks';
@@ -26,7 +28,6 @@ import {
    DISCONNECTED_SCREEN_DURATION,
 } from './Constant';
 import { getNickName } from './Utility';
-import Sound from 'react-native-sound';
 
 let missedCallNotificationTimer = null;
 let callingRemoteStreamRemovalTimer = null;
@@ -228,6 +229,11 @@ const updateCallAgainScreenData = (userID, callType) => {
 };
 
 export const endCall = async (isFromTimeout = false, userId, callType) => {
+   const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
+   const { callStatusText } = confrenceData;
+   if (callStatusText === CALL_STATUS_DISCONNECTED) {
+      return;
+   }
    clearOutgoingTimer();
    SDK.endCall();
    stopOutgoingCallRingingTone();
@@ -361,17 +367,38 @@ export const closeCallModalWithDelay = () => {
    }, DISCONNECTED_SCREEN_DURATION);
 };
 
-export const startIncomingCallRingtone = () => {
+export const startVibration = () => {
+   let timerSec = AppState.currentState === 'active' ? 0 : 200;
+   BackgroundTimer.setTimeout(() => {
+      Vibration.vibrate([800, 1000], true);
+   }, timerSec);
+};
+
+export const startIncomingCallRingtone = async () => {
    try {
       InCallManager.startRingtone();
+      const currentMode = await getRingerMode();
+      if (Platform.OS === 'android' && currentMode !== RINGER_MODE.silent) {
+         startVibration();
+      }
    } catch (err) {
       console.log('Error while starting the ringtone sound');
    }
 };
 
-export const stopIncomingCallRingtone = () => {
+export const stopVibration = () => {
+   BackgroundTimer.setTimeout(() => {
+      Vibration.cancel();
+   }, 0);
+};
+
+export const stopIncomingCallRingtone = async () => {
    try {
       InCallManager.stopRingtone();
+      const currentMode = await getRingerMode();
+      if (Platform.OS === 'android' && currentMode !== RINGER_MODE.silent) {
+         stopVibration();
+      }
    } catch (err) {
       console.log('Error while stoping the ringtone sound');
    }

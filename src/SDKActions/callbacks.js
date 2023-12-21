@@ -322,7 +322,7 @@ const ended = async res => {
          // Store.dispatch(callConversion());
       }, DISCONNECTED_SCREEN_DURATION);
 
-      if (callConnectionData) {
+      if (callConnectionData && !res.localUser) {
          const callDetailObj = callConnectionData ? { ...callConnectionData } : {};
          callDetailObj['status'] = 'ended';
          let nickName = getNickName(callConnectionData);

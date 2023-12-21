@@ -61,7 +61,7 @@ export const getIncomingCallNotification = async (
       name: 'Incoming Call',
       importance: AppState.currentState === 'active' ? AndroidImportance.DEFAULT : AndroidImportance.HIGH,
       visibility: AndroidVisibility.PUBLIC,
-      vibration: true,
+      vibration: false,
    });
 
    const notification = {
@@ -134,7 +134,7 @@ export const getOnGoingCallNotification = async (roomId, data, userJid, nickName
       vibration: false,
    });
    const notification = {
-      title: 'OnGoing audio call',
+      title: 'Ongoing audio call',
       body: `Call duration: ${'00:00'}`,
       data: { roomId: roomId } || null,
       android: {

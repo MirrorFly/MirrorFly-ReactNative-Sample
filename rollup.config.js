@@ -75,7 +75,8 @@ export default {
     'react-native-gesture-handler',
     'react-native-geocoding',
     '@react-native-camera-roll/camera-roll',
-    '@react-native-community/checkbox'
+    '@react-native-community/checkbox',
+    'react-native-webrtc',
   ],
   plugins: [
     replace({

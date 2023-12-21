@@ -354,6 +354,7 @@ const OnGoingCall = () => {
                ]}>
                <CallControlButtons
                   handleEndCall={handleHangUp}
+                  callStatus={callStatus}
                   // handleVideoMute={handleVideoMute}
                   // videoMute={!!localVideoMuted}
                   // audioMute={true}

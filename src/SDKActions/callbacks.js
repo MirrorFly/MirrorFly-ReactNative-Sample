@@ -119,13 +119,15 @@ import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
 let localStream = null,
    localVideoMuted = false,
    localAudioMuted = false,
-   onCall = false;
+   onCall = false,
+   onReconnect = false;
 let remoteVideoMuted = [],
    remoteStream = [],
    remoteAudioMuted = [];
 
 export const resetCallData = () => {
    onCall = false;
+   onReconnect = false;
    remoteStream = [];
    localStream = null;
    remoteVideoMuted = [];
@@ -151,9 +153,9 @@ export const resetCallData = () => {
    stopOutgoingCallRingingTone();
    stopReconnectingTone();
    batch(() => {
-      Store.dispatch(callDurationTimestamp());
       Store.dispatch(resetConferencePopup());
       Store.dispatch(clearCallData());
+      Store.dispatch(callDurationTimestamp());
       Store.dispatch(resetCallControlsStateAction());
    });
    resetData();
@@ -320,7 +322,7 @@ const ended = async res => {
          // Store.dispatch(callConversion());
       }, DISCONNECTED_SCREEN_DURATION);
 
-      if (callConnectionData) {
+      if (callConnectionData && !res.localUser) {
          const callDetailObj = callConnectionData ? { ...callConnectionData } : {};
          callDetailObj['status'] = 'ended';
          let nickName = getNickName(callConnectionData);
@@ -451,10 +453,11 @@ const connected = async res => {
          stopOutgoingCallRingingTone();
          stopReconnectingTone();
          clearOutgoingTimer();
-         if (Platform.OS === 'android') {
+         if (Platform.OS === 'android' && !onReconnect) {
             await stopForegroundServiceNotification();
             showOngoingNotification(res);
          }
+         onReconnect = false;
       }
       batch(() => {
          dispatch(
@@ -551,6 +554,7 @@ const disconnected = res => {
 };
 
 const reconnecting = res => {
+   onReconnect = true;
    startReconnectingTone();
    updatingUserStatusInRemoteStream(res.usersStatus);
    const showConfrenceData = Store.getState().showConfrenceData;
@@ -573,7 +577,6 @@ const reconnecting = res => {
 };
 
 const callStatus = res => {
-   console.log(res.status, 'statusstatus');
    if (res.status === 'ringing') {
       ringing(res);
    } else if (res.status === 'connecting') {

@@ -23,7 +23,7 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
    const { connectionState, showCallModal } = useSelector(state => state.callData) || {};
    const { data: notificationData = {} } = useSelector(state => state.notificationData) || {};
    const userProfile = useRosterData(userId);
-   const {callerUUID: activeCallUUID = ''} = useSelector(state => state.callData) || {};
+   const { callerUUID: activeCallUUID = '' } = useSelector(state => state.callData) || {};
    const nickName = userProfile.nickName || userProfile.userId;
    const acceptButtonRef = useRef(false);
    const declineButtonRef = useRef(false);
@@ -37,9 +37,6 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
 
    React.useEffect(() => {
       startIncomingCallTimer();
-      // return () => {
-      //    clearTimeout(autoCallEndInterval);
-      // };
    }, []);
 
    // React.useEffect(() => {
@@ -60,11 +57,11 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
    // }, [appState, notificationData]);
 
    const handleBackGround = async () => {
-      let displayedNotificationId = await notifee.getDisplayedNotifications();
-      let cancelIDS = displayedNotificationId?.find(res => res.id === notificationData.id)?.id;
-      await stopForegroundServiceNotification(cancelIDS);
+      // let displayedNotificationId = await notifee.getDisplayedNotifications();
+      // let cancelIDS = displayedNotificationId?.find(res => res.id === notificationData.id)?.id;
+      await stopForegroundServiceNotification();
       if (userCallStatus !== CALL_STATUS_DISCONNECTED)
-         callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'INCOMING_CALL', false);
+         await callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'INCOMING_CALL', false);
    };
 
    const handleClosePress = () => {

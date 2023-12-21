@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 import { updateCallAudioMute, updateCallSpeakerEnabled } from '../../Helper/Calls/Utility';
 import RNCallKeep from 'react-native-callkeep';
 import Pressable from '../../common/Pressable';
-import { AUDIO_ROUTE_HEADSET, AUDIO_ROUTE_SPEAKER } from '../../Helper/Calls/Constant';
+import { AUDIO_ROUTE_HEADSET, AUDIO_ROUTE_SPEAKER, CALL_STATUS_DISCONNECTED } from '../../Helper/Calls/Constant';
 
 const sortAudioRoutes = (a, b) => {
    const nameA = a.name.toLowerCase();
@@ -27,7 +27,7 @@ const sortAudioRoutes = (a, b) => {
    return 0;
 };
 
-const CallControlButtons = ({ handleEndCall, handleVideoMute }) => {
+const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute }) => {
    let endActionButtonRef = useRef(false);
    const RBSheetRef = useRef(null);
 
@@ -37,6 +37,9 @@ const CallControlButtons = ({ handleEndCall, handleVideoMute }) => {
    const { callerUUID } = useSelector(state => state.callData) || {};
 
    const toggleSpeaker = () => {
+      if (callStatus?.toLowerCase() === CALL_STATUS_DISCONNECTED) {
+         return;
+      }
       RNCallKeep.getAudioRoutes().then(_routes => {
          /** sample data from 'getAudioRoutes' method   
           * const sampleAudioRoutes = [
@@ -70,6 +73,9 @@ const CallControlButtons = ({ handleEndCall, handleVideoMute }) => {
    };
 
    const handleAudioMutePress = async () => {
+      if (callStatus?.toLowerCase() === CALL_STATUS_DISCONNECTED) {
+         return;
+      }
       const _audioMuted = !isAudioMuted;
       updateCallAudioMute(_audioMuted, callerUUID);
    };

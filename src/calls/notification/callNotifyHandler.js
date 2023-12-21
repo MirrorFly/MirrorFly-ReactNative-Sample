@@ -61,7 +61,7 @@ export const getIncomingCallNotification = async (
       name: 'Incoming Call',
       importance: AppState.currentState === 'active' ? AndroidImportance.DEFAULT : AndroidImportance.HIGH,
       visibility: AndroidVisibility.PUBLIC,
-      vibration: true,
+      vibration: false,
    });
 
    const notification = {
@@ -99,7 +99,7 @@ export const getOutGoingCallNotification = async (roomId, data, userJid, nickNam
    let channelId = await notifee.createChannel({
       id: 'OutGoing Call',
       name: 'OutGoing Call',
-      importance: AndroidImportance.HIGH,
+      importance: AndroidImportance.DEFAULT,
       visibility: AndroidVisibility.PUBLIC,
       vibration: false,
    });
@@ -111,7 +111,7 @@ export const getOutGoingCallNotification = async (roomId, data, userJid, nickNam
          color: '#36A8F4',
          onlyAlertOnce: true,
          channelId: channelId,
-         importance: AndroidImportance.HIGH,
+         importance: AndroidImportance.DEFAULT,
          sound: '',
          category: AndroidCategory.CALL,
          smallIcon: 'ic_call_notification',
@@ -129,19 +129,19 @@ export const getOnGoingCallNotification = async (roomId, data, userJid, nickName
    let channelId = await notifee.createChannel({
       id: 'OnGoing Call',
       name: 'OnGoing Call',
-      importance: AndroidImportance.HIGH,
+      importance: AndroidImportance.DEFAULT,
       visibility: AndroidVisibility.PUBLIC,
       vibration: false,
    });
    const notification = {
-      title: 'OnGoing audio call',
+      title: 'Ongoing audio call',
       body: `Call duration: ${'00:00'}`,
       data: { roomId: roomId } || null,
       android: {
          color: '#36A8F4',
          onlyAlertOnce: true,
          channelId: channelId,
-         importance: AndroidImportance.HIGH,
+         importance: AndroidImportance.DEFAULT,
          sound: '',
          smallIcon: 'ic_call_notification',
          asForegroundService: true,
@@ -270,6 +270,7 @@ export async function setNotificationForegroundService() {
             let callStartTime = Store.getState()?.callData?.callDuration;
             if (!callStartTime) {
                callStartTime = Date.now();
+               console.log('callStartTime from foreground service', callStartTime);
                Store.dispatch(callDurationTimestamp(callStartTime));
             }
             interval = _BackgroundTimer.setInterval(() => {
@@ -313,16 +314,15 @@ export const stopForegroundServiceNotification = async (cancelID = '') => {
    try {
       _BackgroundTimer.clearInterval(interval);
       let notifications = Store.getState().notificationData.data;
-      if (!cancelID) {
-         let displayedNotificationId = await notifee.getDisplayedNotifications();
-         let cancelIDS = displayedNotificationId?.find(res => res.id === notifications.id)?.id;
-         cancelIDS && (await notifee.cancelDisplayedNotification(cancelIDS));
-      } else {
-         cancelID && (await notifee.cancelDisplayedNotification(cancelID));
-      }
       await notifee.stopForegroundService();
-      let channelId = notifications.android?.channelId;
-      channelId && (await notifee.deleteChannel(channelId));
+      let displayedNotificationId = await notifee.getDisplayedNotifications();
+      let cancelIDS = displayedNotificationId?.find(res => res.id === notifications.id)?.id;
+      cancelIDS && (await notifee.cancelDisplayedNotification(cancelIDS));
+      // let channelId = notifications.android?.channelId;
+      // let channel = channelId && (await notifee.getChannels()).find(res => res.id === channelId);
+      // _BackgroundTimer.setTimeout(async () => {
+      //    channel?.id && (await notifee.deleteChannel(channel?.id));
+      // }, 0);
       Store.dispatch(resetNotificationData());
    } catch (error) {
       console.log('Error when stopping foreground service ', error);

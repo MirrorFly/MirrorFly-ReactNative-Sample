@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
-import { Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
 import RNInCallManager from 'react-native-incall-manager';
 import { openSettings } from 'react-native-permissions';
@@ -246,6 +246,9 @@ const answerCallPermissionError = answerCallResonse => {
 
 //Answering the incoming call
 export const answerIncomingCall = async callId => {
+   stopIncomingCallRingtone();
+   clearIncomingCallTimer();
+   clearMissedCallNotificationTimer();
    const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
    const { callStatusText } = confrenceData;
    if (callStatusText === CALL_STATUS_DISCONNECTED) {
@@ -254,9 +257,6 @@ export const answerIncomingCall = async callId => {
    if (Platform.OS === 'android') {
       await stopForegroundServiceNotification();
    }
-   clearIncomingCallTimer();
-   stopIncomingCallRingtone();
-   clearMissedCallNotificationTimer();
    // updating the SDK flag to keep the connection Alive when app goes background because of document picker
    SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
    try {
@@ -286,7 +286,7 @@ export const answerIncomingCall = async callId => {
             } else {
                batch(() => {
                   Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
-                  if (Platform.OS === 'ios') {
+                  if (!callData.showCallModal) {
                      Store.dispatch(openCallModal());
                   }
                });
@@ -375,9 +375,14 @@ const handleIncoming_CallKeepListeners = () => {
 
 //Endcall action for ongoing call
 export const endOnGoingCall = async () => {
+   const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
+   const { callStatusText } = confrenceData;
+   if (callStatusText === CALL_STATUS_DISCONNECTED) {
+      return;
+   }
    stopReconnectingTone();
    if (Platform.OS === 'android') {
-      stopForegroundServiceNotification();
+      await stopForegroundServiceNotification();
    }
    disconnectCallConnection([], CALL_STATUS_DISCONNECTED, () => {
       Store.dispatch(resetCallStateData());
@@ -405,7 +410,7 @@ export const displayIncomingCallForIos = callResponse => {
       Store.dispatch(updateCallerUUID(callUUID));
       const contactNumber = getUserIdFromJid(callResponse.userJid);
       const contactName =
-         callingUserData.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
+         callingUserData?.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
       RNCallKeep.displayIncomingCall(
          callUUID,
          contactNumber,
@@ -423,8 +428,10 @@ export const displayIncomingCallForAndroid = async callResponse => {
    );
    const contactNumber = getUserIdFromJid(callResponse.userJid);
    const nickName =
-      callingUserData.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
-   Store.dispatch(openCallModal());
+      callingUserData?.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
+   if (AppState.currentState === 'active') {
+      Store.dispatch(openCallModal());
+   }
    callNotifyHandler(callResponse.roomId, callResponse, callResponse.userJid, nickName, 'INCOMING_CALL', true);
 };
 
@@ -629,7 +636,7 @@ export const showOngoingNotification = callResponse => {
    );
    const contactNumber = getUserIdFromJid(callResponse.userJid);
    const nickName =
-      callingUserData.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
+      callingUserData?.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
    callNotifyHandler(contactNumber, callResponse, callResponse.userJid, nickName, 'ONGOING_CALL');
 };
 
@@ -639,7 +646,7 @@ export const getNickName = callResponse => {
    );
    const contactNumber = getUserIdFromJid(callResponse.userJid);
    const nickName =
-      callingUserData.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
+      callingUserData?.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
    return nickName;
 };
 

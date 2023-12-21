@@ -112,7 +112,7 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute }) => {
          </GestureHandlerRootView>
          <RBSheet
             animationType="slide"
-            height={180}
+            height={150}
             ref={RBSheetRef}
             closeOnDragDown={true}
             closeOnPressMask={true}

@@ -125,6 +125,16 @@ let remoteVideoMuted = [],
    remoteStream = [],
    remoteAudioMuted = [];
 
+export const clearIosCallListeners = () => {
+   if (Platform.OS === 'ios') {
+      RNCallKeep.removeEventListener('answerCall');
+      RNCallKeep.removeEventListener('endCall');
+      RNCallKeep.removeEventListener('didPerformSetMutedCallAction');
+      RNCallKeep.removeEventListener('didChangeAudioRoute');
+      RNInCallManager.setForceSpeakerphoneOn(false);
+   }
+};
+
 export const resetCallData = () => {
    onCall = false;
    onReconnect = false;
@@ -141,11 +151,7 @@ export const resetCallData = () => {
    // }
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall();
    if (Platform.OS === 'ios') {
-      RNCallKeep.removeEventListener('answerCall');
-      RNCallKeep.removeEventListener('endCall');
-      RNCallKeep.removeEventListener('didPerformSetMutedCallAction');
-      RNCallKeep.removeEventListener('didChangeAudioRoute');
-      RNInCallManager.setForceSpeakerphoneOn(false);
+      clearIosCallListeners();
       endCallForIos();
    } else {
       RNInCallManager.setSpeakerphoneOn(false);
@@ -288,9 +294,10 @@ const ended = async res => {
    stopIncomingCallRingtone();
    stopOutgoingCallRingingTone();
    stopReconnectingTone();
-   if (Platform.OS === 'ios') {
-      endCallForIos();
-   }
+
+   clearIosCallListeners();
+   endCallForIos();
+
    // let roomId = getFromLocalStorageAndDecrypt('roomName');
    if (res.sessionStatus === 'closed') {
       if (Platform.OS === 'android') {

@@ -39,7 +39,7 @@ let hideControlsTimeout,
 
 const OnGoingCall = () => {
    const localUserJid = useSelector(state => state.auth.currentUserJID);
-   const { largeVideoUser = {}, connectionState: callConnectionState = {} } =
+   const { largeVideoUser: largeVideoUserData = {}, connectionState: callConnectionState = {} } =
       useSelector(state => state.callData) || {};
    const { data: showConfrenceData = {}, data: { remoteStream = [] } = {} } =
       useSelector(state => state.showConfrenceData) || {};
@@ -100,6 +100,23 @@ const OnGoingCall = () => {
       [layout],
    );
 
+   const largeVideoUser = React.useMemo(() => {
+      if (largeVideoUserData?.userJid) {
+         // largeVideoUserData does not have the fromJid property, so adding it
+         return {
+            ...largeVideoUserData,
+            fromJid: largeVideoUserData?.userJid,
+         };
+      } else {
+         const firstRemoteUser = remoteStream.find(u => u.fromJid !== localUserJid) || {};
+         // firstRemoteUser does not have the userJid property, so adding it
+         return {
+            ...firstRemoteUser,
+            userJid: firstRemoteUser?.fromJid || '',
+         };
+      }
+   }, [largeVideoUserData, remoteStream]);
+
    const callUsersNameText = React.useMemo(() => {
       let usersText = 'You';
       const _remoteUsers = remoteStream.filter(u => u.fromJid !== localUserJid);
@@ -133,7 +150,6 @@ const OnGoingCall = () => {
       showControlsRef.current = Boolean(toOpacity);
       const _offsetTop = ((toOffset * topViewControlsHeightRef.current) / 100) * -1;
       const _offsetBottom = (toOffset * bottomControlsViewHeightRef.current) / 100;
-      const _placeholderHeight = (Math.abs(toOffset - 100) * topViewControlsHeightRef.current) / 100;
       Animated.parallel([
          Animated.timing(controlsOpacity, {
             toValue: toOpacity,
@@ -201,9 +217,7 @@ const OnGoingCall = () => {
                />
             );
          } else {
-            const largeVideoUserJid =
-               largeVideoUser?.userJid || remoteStream.find(u => u.fromJid !== localUserJid)?.fromJid || '';
-            /** const largeVideoUserStream = remoteStream.find(u => u.fromJid === largeVideoUserJid); */
+            const largeVideoUserJid = largeVideoUser?.userJid || '';
             return (
                <BigVideoTile
                   userId={getUserIdFromJid(largeVideoUserJid)}

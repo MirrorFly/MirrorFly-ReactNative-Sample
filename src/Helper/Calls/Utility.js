@@ -7,7 +7,7 @@ import { openSettings } from 'react-native-permissions';
 import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { SDK } from '../../SDK';
-import { muteLocalAudio, muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
+import { clearIosCallListeners, muteLocalAudio, muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
 import { requestMicroPhonePermission } from '../../common/utils';
 import {
@@ -33,6 +33,7 @@ import {
    clearMissedCallNotificationTimer,
    disconnectCallConnection,
    dispatchDisconnected,
+   endCall,
    getMaxUsersInCall,
    startCallingTimer,
    startOutgoingCallRingingTone,
@@ -233,8 +234,10 @@ const startCall = (uuid, callerId, callerName, hasVideo) => {
 //PermissionError while answering the call
 const answerCallPermissionError = answerCallResonse => {
    declineIncomingCall();
-   // End incoming call keep for iOS
-   Platform.OS === 'ios' && endCallForIos();
+   // End incoming call keep and clearing the listeners for iOS
+   clearIosCallListeners();
+   endCallForIos();
+
    if (answerCallResonse && answerCallResonse?.message !== PERMISSION_DENIED) {
       showToast(COMMON_ERROR_MESSAGE, { id: 'call-answer-error' });
    }
@@ -363,6 +366,8 @@ const handleIncoming_CallKeepListeners = () => {
    });
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep end call event', callUUID);
+      // clearing all the call keep related listeners, because call keep reports speaker change event when call disconnected by other user
+      clearIosCallListeners();
       const { screenName } = Store.getState().callData;
       if (screenName === INCOMING_CALL_SCREEN) declineIncomingCall();
       else endCall();
@@ -429,15 +434,17 @@ export const displayIncomingCallForAndroid = async callResponse => {
 };
 
 export const endCallForIos = async () => {
-   try {
-      const activeCallUUID = Store.getState().callData?.callerUUID || '';
-      const calls = await RNCallKeep.getCalls();
-      const activeCall = calls.find(c => c.callUUID === activeCallUUID);
-      if (activeCall?.callUUID) {
-         RNCallKeep.endCall(activeCall.callUUID);
+   if (Platform.OS === 'ios') {
+      try {
+         const activeCallUUID = Store.getState().callData?.callerUUID || '';
+         const calls = await RNCallKeep.getCalls();
+         const activeCall = calls.find(c => c.callUUID === activeCallUUID);
+         if (activeCall?.callUUID) {
+            RNCallKeep.endCall(activeCall.callUUID);
+         }
+      } catch (err) {
+         console.log('Error while ending the call on iOS', err);
       }
-   } catch (err) {
-      console.log('Error while ending the call on iOS', err);
    }
 };
 

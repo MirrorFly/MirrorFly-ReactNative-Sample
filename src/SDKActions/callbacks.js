@@ -115,6 +115,7 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import KeepAwake from 'react-native-keep-awake';
 
 let localStream = null,
    localVideoMuted = false,
@@ -825,6 +826,7 @@ export const callBacks = {
          if (Platform.OS === 'android') {
             const callUUID = uuidv4();
             Store.dispatch(updateCallerUUID(callUUID));
+            KeepAwake.activate();
             displayIncomingCallForAndroid(res);
          } else {
             displayIncomingCallForIos(res);

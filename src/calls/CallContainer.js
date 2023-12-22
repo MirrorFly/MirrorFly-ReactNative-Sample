@@ -40,9 +40,11 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
             getIncomingCallStatus() !== DISCONNECTED
          ) {
             startVibration();
+         } else if (screenName !== INCOMING_CALL_SCREEN) {
+            stopVibration();
          }
       }
-   }, [silent]);
+   }, [silent, screenName]);
 
    React.useEffect(() => {
       if (Platform.OS === 'android') {

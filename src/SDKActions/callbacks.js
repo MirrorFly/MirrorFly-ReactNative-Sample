@@ -2,9 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import nextFrame from 'next-frame';
 import { Platform } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
-import KeyEvent from 'react-native-keyevent';
 import RNCallKeep from 'react-native-callkeep';
+import HeadphoneDetection from 'react-native-headphone-detection';
 import RNInCallManager from 'react-native-incall-manager';
+import KeepAwake from 'react-native-keep-awake';
+import KeyEvent from 'react-native-keyevent';
 import { MediaStream } from 'react-native-webrtc';
 import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
@@ -117,7 +119,6 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
-import HeadphoneDetection from 'react-native-headphone-detection';
 
 let localStream = null,
    localVideoMuted = false,
@@ -334,7 +335,7 @@ const ended = async res => {
          // Store.dispatch(callConversion());
       }, DISCONNECTED_SCREEN_DURATION);
 
-      if (callConnectionData) {
+      if (callConnectionData && !res.localUser) {
          const callDetailObj = callConnectionData ? { ...callConnectionData } : {};
          callDetailObj['status'] = 'ended';
          let nickName = getNickName(callConnectionData);
@@ -828,6 +829,7 @@ export const callBacks = {
          if (Platform.OS === 'android') {
             const callUUID = uuidv4();
             Store.dispatch(updateCallerUUID(callUUID));
+            KeepAwake.activate();
             displayIncomingCallForAndroid(res);
          } else {
             displayIncomingCallForIos(res);

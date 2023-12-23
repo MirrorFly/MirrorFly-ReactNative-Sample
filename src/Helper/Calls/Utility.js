@@ -1,9 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
-import { Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
-import KeyEvent from 'react-native-keyevent';
+import HeadphoneDetection from 'react-native-headphone-detection';
 import RNInCallManager from 'react-native-incall-manager';
+import KeepAwake from 'react-native-keep-awake';
+import KeyEvent from 'react-native-keyevent';
 import { openSettings } from 'react-native-permissions';
 import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
@@ -56,7 +58,6 @@ import {
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
-import HeadphoneDetection from 'react-native-headphone-detection';
 
 let preventMultipleClick = false;
 let callBackgroundNotification = true;
@@ -288,6 +289,9 @@ const answerCallPermissionError = answerCallResonse => {
 
 //Answering the incoming call
 export const answerIncomingCall = async callId => {
+   stopIncomingCallRingtone();
+   clearIncomingCallTimer();
+   clearMissedCallNotificationTimer();
    const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
    const { callStatusText } = confrenceData;
    if (callStatusText === CALL_STATUS_DISCONNECTED) {
@@ -296,9 +300,6 @@ export const answerIncomingCall = async callId => {
    if (Platform.OS === 'android') {
       await stopForegroundServiceNotification();
    }
-   clearIncomingCallTimer();
-   stopIncomingCallRingtone();
-   clearMissedCallNotificationTimer();
    // updating the SDK flag to keep the connection Alive when app goes background because of document picker
    SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
    try {
@@ -328,7 +329,7 @@ export const answerIncomingCall = async callId => {
             } else {
                batch(() => {
                   Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
-                  if (Platform.OS === 'ios') {
+                  if (!callData.showCallModal) {
                      Store.dispatch(openCallModal());
                   }
                });
@@ -419,9 +420,14 @@ const handleIncoming_CallKeepListeners = () => {
 
 //Endcall action for ongoing call
 export const endOnGoingCall = async () => {
+   const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
+   const { callStatusText } = confrenceData;
+   if (callStatusText === CALL_STATUS_DISCONNECTED) {
+      return;
+   }
    stopReconnectingTone();
    if (Platform.OS === 'android') {
-      stopForegroundServiceNotification();
+      await stopForegroundServiceNotification();
    }
    disconnectCallConnection([], CALL_STATUS_DISCONNECTED, () => {
       Store.dispatch(resetCallStateData());
@@ -468,8 +474,11 @@ export const displayIncomingCallForAndroid = async callResponse => {
    const contactNumber = getUserIdFromJid(callResponse.userJid);
    const nickName =
       callingUserData?.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
-   Store.dispatch(openCallModal());
+   if (AppState.currentState === 'active') {
+      Store.dispatch(openCallModal());
+   }
    callNotifyHandler(callResponse.roomId, callResponse, callResponse.userJid, nickName, 'INCOMING_CALL', true);
+   KeepAwake.deactivate();
 };
 
 export const endCallForIos = async () => {

@@ -61,7 +61,7 @@ export const getIncomingCallNotification = async (
       name: 'Incoming Call',
       importance: AppState.currentState === 'active' ? AndroidImportance.DEFAULT : AndroidImportance.HIGH,
       visibility: AndroidVisibility.PUBLIC,
-      vibration: true,
+      vibration: false,
    });
 
    const notification = {
@@ -75,6 +75,7 @@ export const getIncomingCallNotification = async (
          onlyAlertOnce: true,
          importance: AndroidImportance.HIGH,
          sound: '',
+         autoCancel: false,
          smallIcon: 'ic_call_notification',
          asForegroundService: true,
          actions: [
@@ -113,6 +114,7 @@ export const getOutGoingCallNotification = async (roomId, data, userJid, nickNam
          channelId: channelId,
          importance: AndroidImportance.DEFAULT,
          sound: '',
+         autoCancel: false,
          category: AndroidCategory.CALL,
          smallIcon: 'ic_call_notification',
          asForegroundService: true,
@@ -134,13 +136,14 @@ export const getOnGoingCallNotification = async (roomId, data, userJid, nickName
       vibration: false,
    });
    const notification = {
-      title: 'OnGoing audio call',
+      title: 'Ongoing audio call',
       body: `Call duration: ${'00:00'}`,
       data: { roomId: roomId } || null,
       android: {
          color: '#36A8F4',
          onlyAlertOnce: true,
          channelId: channelId,
+         autoCancel: false,
          importance: AndroidImportance.DEFAULT,
          sound: '',
          smallIcon: 'ic_call_notification',

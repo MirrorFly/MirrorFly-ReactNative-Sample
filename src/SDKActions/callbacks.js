@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import nextFrame from 'next-frame';
 import { Platform } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
+import KeyEvent from 'react-native-keyevent';
 import RNCallKeep from 'react-native-callkeep';
 import RNInCallManager from 'react-native-incall-manager';
 import { MediaStream } from 'react-native-webrtc';
@@ -42,6 +43,7 @@ import {
    OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
 import {
+   addHeadphonesConnectedListenerForCall,
    displayIncomingCallForAndroid,
    displayIncomingCallForIos,
    endCallForIos,
@@ -115,6 +117,7 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import HeadphoneDetection from 'react-native-headphone-detection';
 
 let localStream = null,
    localVideoMuted = false,
@@ -150,6 +153,8 @@ export const resetCallData = () => {
    //   Store.dispatch(resetCallIntermediateScreen());
    // }
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall();
+   HeadphoneDetection.remove?.();
+   KeyEvent.removeKeyUpListener();
    if (Platform.OS === 'ios') {
       clearIosCallListeners();
       endCallForIos();
@@ -781,8 +786,8 @@ export const callBacks = {
    },
    incomingCallListener: function (res) {
       console.log(JSON.stringify(res, null, 2), 'incomingCallListener');
-      // web reference code ------------------------
-      // strophe = true;
+      addHeadphonesConnectedListenerForCall();
+
       remoteStream = [];
       localStream = null;
       let callMode = 'onetoone';
@@ -802,20 +807,11 @@ export const callBacks = {
          }
       }
       res.callMode = callMode;
-      // -------- Storing the below data in store instead
-      // encryptAndStoreInLocalStorage(
-      //   'call_connection_status',
-      //   JSON.stringify(res),
-      // );
 
       let roomId = getCurrentCallRoomId();
 
       if (roomId === '' || roomId === null || roomId === undefined) {
          resetPinAndLargeVideoUser();
-         // TODO: store the below details in callData reducer
-         // encryptAndStoreInLocalStorage('roomName', res.roomId);
-         // encryptAndStoreInLocalStorage('callType', res.callType);
-         // encryptAndStoreInLocalStorage('callFrom', res.from);
          if (res.callType === 'audio') {
             localVideoMuted = true;
          }
@@ -837,11 +833,8 @@ export const callBacks = {
             displayIncomingCallForIos(res);
          }
          startIncomingCallRingtone();
-         // TODO: update the below store data based on new reducer structure
          Store.dispatch(setCallModalScreen(INCOMING_CALL_SCREEN));
          updatingUserStatusInRemoteStream(res.usersStatus);
-         // TODO: show call local notification
-         // browserNotify.sendCallNotification(res);
          startMissedCallNotificationTimer();
       } else {
          SDK.callEngaged();

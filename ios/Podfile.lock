@@ -307,6 +307,10 @@ PODS:
     - React
   - react-native-get-random-values (1.10.0):
     - React-Core
+  - react-native-headphone-detection (1.3.0):
+    - React
+  - react-native-keyevent (0.3.2):
+    - React
   - react-native-maps (1.8.4):
     - React-Core
   - react-native-mov-to-mp4 (0.2.2):
@@ -398,7 +402,7 @@ PODS:
     - React
   - rn-fetch-blob (0.12.0):
     - React-Core
-  - RNAudioRecorderPlayer (3.6.4):
+  - RNAudioRecorderPlayer (3.6.0):
     - React-Core
   - RNCallKeep (4.3.12):
     - React
@@ -489,6 +493,8 @@ DEPENDENCIES:
   - react-native-geocoder (from `../node_modules/react-native-geocoder`)
   - react-native-geolocation-service (from `../node_modules/react-native-geolocation-service`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
+  - react-native-headphone-detection (from `../node_modules/react-native-headphone-detection`)
+  - react-native-keyevent (from `../node_modules/react-native-keyevent`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-mov-to-mp4 (from `../node_modules/react-native-mov-to-mp4`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
@@ -610,6 +616,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-geolocation-service"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
+  react-native-headphone-detection:
+    :path: "../node_modules/react-native-headphone-detection"
+  react-native-keyevent:
+    :path: "../node_modules/react-native-keyevent"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   react-native-mov-to-mp4:
@@ -740,6 +750,8 @@ SPEC CHECKSUMS:
   react-native-geocoder: 757427682892bb256f3b3745858cc90eba148a8e
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   react-native-get-random-values: 384787fd76976f5aec9465aff6fa9e9129af1e74
+  react-native-headphone-detection: 4192cc8cfd94068a1f32cb41cc7c4cd5aa0f8b3b
+  react-native-keyevent: 0babd7e275086da5386d831211e3283b624dc0b5
   react-native-maps: e2b78affd8e90c807a87bd042dc6b1af2decbcf1
   react-native-mov-to-mp4: a04f17590618523487ab5d71c9310c6c4a7aaf99
   react-native-netinfo: 1a6035d3b9780221d407c277ebfb5722ace00658
@@ -762,7 +774,7 @@ SPEC CHECKSUMS:
   ReactNativeIncallManager: 2385505fa5dfdbbc78925e3b8d23b30ce0cde40e
   RealmJS: 2e45ca6ed4c3732be369219b41816e890ce51024
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
-  RNAudioRecorderPlayer: 0f385cefff3f36b0f853c254b6ece7b76059d0fb
+  RNAudioRecorderPlayer: 4690a7cd9e4fd8e58d9671936a7bc3b686e59051
   RNCallKeep: aa9b1f9286f8f60d7b7d41ee5de47de564356aac
   RNCAsyncStorage: 618d03a5f52fbccb3d7010076bc54712844c18ef
   RNCCheckbox: 75255b03e604bbcc26411eb31c4cbe3e3865f538

@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { Platform } from 'react-native';
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
+import KeyEvent from 'react-native-keyevent';
 import RNInCallManager from 'react-native-incall-manager';
 import { openSettings } from 'react-native-permissions';
 import { batch } from 'react-redux';
@@ -22,7 +23,11 @@ import {
    updateCallerUUID,
    updateConference,
 } from '../../redux/Actions/CallAction';
-import { updateCallAudioMutedAction, updateCallSpeakerEnabledAction } from '../../redux/Actions/CallControlsAction';
+import {
+   updateCallAudioMutedAction,
+   updateCallSpeakerEnabledAction,
+   updateCallWiredHeadsetConnected,
+} from '../../redux/Actions/CallControlsAction';
 import { showCallModalToastAction } from '../../redux/Actions/CallModalToasAction';
 import Store from '../../redux/store';
 import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
@@ -51,9 +56,42 @@ import {
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
+import HeadphoneDetection from 'react-native-headphone-detection';
 
 let preventMultipleClick = false;
 let callBackgroundNotification = true;
+let preventEndCallFromHeadsetButton = false;
+
+export const addHeadphonesConnectedListenerForCall = (shouldUpdateInitialValue = true) => {
+   HeadphoneDetection.addListener(data => {
+      Store.dispatch(updateCallWiredHeadsetConnected(data.audioJack));
+      if (data.audioJack && Platform.OS === 'android') {
+         updateCallSpeakerEnabled(false, '', '', false); // 2nd, 3rd and 4th params will not be used in Android so passing empty data
+      }
+   });
+   if (shouldUpdateInitialValue) {
+      HeadphoneDetection.isAudioDeviceConnected().then(data => {
+         Store.dispatch(updateCallWiredHeadsetConnected(data.audioJack));
+      });
+   }
+
+   preventEndCallFromHeadsetButton = false;
+   // ending/declining the call in iOS will be taken care by the callKeep
+   // so adding a keyup listener for android to end/decline the call when headset play/pause button pressed
+   KeyEvent.onKeyUpListener(keyEvent => {
+      if (Platform.OS === 'android' && keyEvent.keyCode === 79) {
+         // keyCode 79 is KEYCODE_HEADSETHOOK which is the play/pause button on headset
+         const { screenName, connectionState, callerUUID } = Store.getState().callData;
+         if (Object.keys(connectionState || {}).length > 0) {
+            if (screenName === INCOMING_CALL_SCREEN) answerIncomingCall(callerUUID);
+            else if (!preventEndCallFromHeadsetButton) {
+               preventEndCallFromHeadsetButton = true;
+               endCall();
+            }
+         }
+      }
+   });
+};
 
 //Making OutGoing Call
 export const makeCalls = async (callType, userId) => {
@@ -150,6 +188,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          callConnectionStatus.groupId = groupId;
       }
       // AsyncStorage.setItem('call_connection_status', JSON.stringify(callConnectionStatus))
+      addHeadphonesConnectedListenerForCall();
       if (Platform.OS === 'ios') {
          const callerName = usersList.map(ele => ele.name).join(',');
          const hasVideo = callType === 'video';

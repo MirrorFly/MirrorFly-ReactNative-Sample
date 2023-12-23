@@ -5,6 +5,7 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import {
    AudioMuteIcon,
    AudioUnMuteIcon,
+   CallHeadsetIcon,
    EndCallIcon,
    SpeakerEnableIcon,
    VideoMuteIcon,
@@ -33,8 +34,21 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute }) => {
 
    const [audioRoutes, setAudioRoutes] = React.useState([]);
 
-   const { isAudioMuted, isVideoMuted, isSpeakerEnabled } = useSelector(state => state.callControlsData);
+   const { isAudioMuted, isVideoMuted, isSpeakerEnabled, isWiredHeadsetConnected } = useSelector(
+      state => state.callControlsData,
+   );
+
    const { callerUUID } = useSelector(state => state.callData) || {};
+
+   const audioRouteIcon = React.useMemo(() => {
+      if (isSpeakerEnabled) {
+         return <SpeakerEnableIcon color={'#000'} />;
+      } else if (isWiredHeadsetConnected) {
+         return <CallHeadsetIcon />;
+      } else {
+         return <SpeakerEnableIcon color={'#fff'} />;
+      }
+   }, [isSpeakerEnabled, isWiredHeadsetConnected]);
 
    const toggleSpeaker = () => {
       if (callStatus?.toLowerCase() === CALL_STATUS_DISCONNECTED) {
@@ -99,8 +113,8 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute }) => {
                </RectButton>
                <RectButton
                   onPress={toggleSpeaker}
-                  style={[styles.actionButton, isSpeakerEnabled && styles.activeButton]}>
-                  <SpeakerEnableIcon color={isSpeakerEnabled ? '#000' : '#fff'} />
+                  style={[styles.actionButton, (isSpeakerEnabled || isWiredHeadsetConnected) && styles.activeButton]}>
+                  {audioRouteIcon}
                </RectButton>
             </GestureHandlerRootView>
          </View>

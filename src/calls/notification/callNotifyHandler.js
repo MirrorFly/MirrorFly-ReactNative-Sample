@@ -75,6 +75,7 @@ export const getIncomingCallNotification = async (
          onlyAlertOnce: true,
          importance: AndroidImportance.HIGH,
          sound: '',
+         autoCancel: false,
          smallIcon: 'ic_call_notification',
          asForegroundService: true,
          actions: [
@@ -113,6 +114,7 @@ export const getOutGoingCallNotification = async (roomId, data, userJid, nickNam
          channelId: channelId,
          importance: AndroidImportance.DEFAULT,
          sound: '',
+         autoCancel: false,
          category: AndroidCategory.CALL,
          smallIcon: 'ic_call_notification',
          asForegroundService: true,
@@ -141,6 +143,7 @@ export const getOnGoingCallNotification = async (roomId, data, userJid, nickName
          color: '#36A8F4',
          onlyAlertOnce: true,
          channelId: channelId,
+         autoCancel: false,
          importance: AndroidImportance.DEFAULT,
          sound: '',
          smallIcon: 'ic_call_notification',

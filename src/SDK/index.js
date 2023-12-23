@@ -24494,7 +24494,7 @@ const connectionHandler = async (connStatus, callback, connObj) => {
       connectionStatus.isConnected = false;
       if (!Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["y" /* isActiveConnectionId */])(connObj.options.connectionId)) return;
       callbacks.connectionListener({ status: 'DISCONNECTED' });
-      Object(__WEBPACK_IMPORTED_MODULE_15__modules_call_config__["s" /* setIsUserOnline */])(false);
+      // setIsUserOnline(false);
       Object(__WEBPACK_IMPORTED_MODULE_13__modules_app_reconnect__["a" /* reconnect */])();
       break;
 

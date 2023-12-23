@@ -50,6 +50,7 @@ import {
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
+import KeepAwake from 'react-native-keep-awake';
 
 let preventMultipleClick = false;
 let callBackgroundNotification = true;
@@ -433,6 +434,7 @@ export const displayIncomingCallForAndroid = async callResponse => {
       Store.dispatch(openCallModal());
    }
    callNotifyHandler(callResponse.roomId, callResponse, callResponse.userJid, nickName, 'INCOMING_CALL', true);
+   KeepAwake.deactivate();
 };
 
 export const endCallForIos = async () => {

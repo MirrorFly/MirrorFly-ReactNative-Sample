@@ -80,7 +80,7 @@ const Timer = (props = {}) => {
    } else {
       content = getCallDuration(timerTime);
    }
-   return <Text style={styles.callTimeText}>{content}</Text>;
+   return <Text style={styles.callTimeText}> {content} </Text>;
 };
 
 export default Timer;

@@ -28,6 +28,7 @@ import rosterReducer from './Reducers/roster.Reducer';
 import stateDataReducer from './Reducers/statusReducer';
 import streamDataReducer from './Reducers/streamReducer';
 import userReducer from './Reducers/user.Reducer';
+import permissionReducer from './Reducers/PermissionReducer';
 
 const rootReducer = combineReducers({
    navigation: navigationReducer,
@@ -58,6 +59,7 @@ const rootReducer = combineReducers({
    notificationData: notificationDataReducer,
    callControlsData: callControlsReducer,
    callModalToastData: callModalToastReducer,
+   permissionData: permissionReducer,
 });
 
 const Store = legacy_createStore(rootReducer, applyMiddleware(thunkMiddleware));

@@ -2,19 +2,18 @@ import { AppState, Platform, Vibration } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import InCallManager from 'react-native-incall-manager';
 import { RINGER_MODE, getRingerMode } from 'react-native-ringer-mode';
+import { subscribe as vibrationEventListener } from 'react-native-silentmode-detector';
 import Sound from 'react-native-sound';
 import { batch } from 'react-redux';
 import SDK from '../../SDK/SDK';
 import { clearIosCallListeners, removeRemoteStream, resetCallData } from '../../SDKActions/callbacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
 import {
-   closeCallModal,
    pinUser,
-   resetCallStateData,
    selectLargeVideoUser,
    setCallModalScreen,
    showConfrence,
-   updateConference,
+   updateConference
 } from '../../redux/Actions/CallAction';
 import { updateCallAgainData } from '../../redux/Actions/CallAgainAction';
 import Store from '../../redux/store';
@@ -25,11 +24,9 @@ import {
    CALL_STATUS_DISCONNECTED,
    CALL_STATUS_RINGING,
    CALL_STATUS_TRYING,
-   DISCONNECTED_SCREEN_DURATION,
-   INCOMING_CALL_SCREEN,
+   DISCONNECTED_SCREEN_DURATION
 } from './Constant';
 import { closeCallModalActivity, endCallForIos, getNickName, resetCallModalActivity } from './Utility';
-import { subscribe as vibrationEventListener } from 'react-native-silentmode-detector';
 
 let missedCallNotificationTimer = null;
 let callingRemoteStreamRemovalTimer = null;

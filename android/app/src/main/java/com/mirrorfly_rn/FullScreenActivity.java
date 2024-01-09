@@ -1,16 +1,12 @@
 package com.mirrorfly_rn;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -18,10 +14,6 @@ import androidx.core.content.ContextCompat;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
-
-// KeyEvent
-import android.view.KeyEvent;
-
 import com.github.kevinejohn.keyevent.KeyEventModule;
 
 public class FullScreenActivity extends ReactActivity {

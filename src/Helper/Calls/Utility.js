@@ -58,6 +58,7 @@ import {
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
+import { closePermissionModal } from '../../redux/Actions/PermissionAction';
 const { ActivityModule } = NativeModules;
 
 let preventMultipleClick = false;
@@ -309,6 +310,9 @@ export const answerIncomingCall = async callId => {
       const isPermissionChecked = await AsyncStorage.getItem('microPhone_Permission');
       AsyncStorage.setItem('microPhone_Permission', 'true');
       callBackgroundNotification = false;
+      setTimeout(() => {
+         Store.dispatch(closePermissionModal());
+      }, 0);
       const result = await requestMicroPhonePermission();
       // updating the SDK flag back to false to behave as usual
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
@@ -512,7 +516,6 @@ export const openCallModelActivity = async () => {
    Store.dispatch(openCallModal());
    if (Platform.OS === 'android') {
       let deviceLocked = await getDeviceLockState();
-      appKeepAliveActivityChange();
       if (!deviceLocked) {
          ActivityModule.openActivity();
       }

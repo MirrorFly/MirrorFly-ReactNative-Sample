@@ -1,6 +1,13 @@
 // import { AppState, Platform } from 'react-native';
 // import { isActiveConversationUserOrGroup } from '../Helper/Chat/ChatHelper';
-import notifee, { AndroidCategory, AndroidImportance, AndroidVisibility, EventType } from '@notifee/react-native';
+import notifee, {
+   AndroidCategory,
+   AndroidFlags,
+   AndroidImportance,
+   AndroidLaunchActivityFlag,
+   AndroidVisibility,
+   EventType,
+} from '@notifee/react-native';
 import { AppState, Linking } from 'react-native';
 import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN } from '../../constant';
 import { updateChatConversationLocalNav } from '../../redux/Actions/ChatConversationLocalNavAction';
@@ -8,6 +15,7 @@ import Store from '../../redux/store';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { getCurrentUserJid } from '../redux/Actions/AuthAction';
 // import Store from '../redux/store';
+import { NativeModules } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
 import * as RootNav from '../../../src/Navigation/rootNavigation';
 import { endCall, getCallDuration } from '../../Helper/Calls/Call';
@@ -18,15 +26,16 @@ import {
    ONGOING_CALL,
    OUTGOING_CALL,
 } from '../../Helper/Calls/Constant';
-import { answerIncomingCall, declineIncomingCall, endOnGoingCall } from '../../Helper/Calls/Utility';
-import { removeAllDeliveredNotification } from '../../Service/remoteNotifyHandle';
 import {
-   callDurationTimestamp,
-   openCallModal,
-   resetNotificationData,
-   setNotificationData,
-} from '../../redux/Actions/CallAction';
+   answerIncomingCall,
+   declineIncomingCall,
+   endOnGoingCall,
+   openCallModelActivity,
+} from '../../Helper/Calls/Utility';
+import { removeAllDeliveredNotification } from '../../Service/remoteNotifyHandle';
+import { callDurationTimestamp, resetNotificationData, setNotificationData } from '../../redux/Actions/CallAction';
 import { navigate } from '../../redux/Actions/NavigationAction';
+const { ActivityModule } = NativeModules;
 
 let interval;
 export const callNotifyHandler = async (
@@ -56,10 +65,13 @@ export const getIncomingCallNotification = async (
    callStatusType,
    isFullScreenIntent,
 ) => {
+   let launchActivityState = AppState.currentState === 'active' ? 'com.mirrorfly_rn.FullScreenActivity' : 'default';
+   let importanceState = AppState.currentState === 'active' ? AndroidImportance.DEFAULT : AndroidImportance.HIGH;
+   const channelIds = AppState.currentState === 'active' ? 'IncomingCallLow' : 'IncomingCallHigh';
    let channelId = await notifee.createChannel({
-      id: 'Incoming Call',
+      id: channelIds,
       name: 'Incoming Call',
-      importance: AppState.currentState === 'active' ? AndroidImportance.DEFAULT : AndroidImportance.HIGH,
+      importance: importanceState,
       visibility: AndroidVisibility.PUBLIC,
       vibration: false,
    });
@@ -74,6 +86,7 @@ export const getIncomingCallNotification = async (
          category: AndroidCategory.CALL,
          onlyAlertOnce: true,
          ongoing: true,
+         flags: [AndroidFlags.FLAG_NO_CLEAR],
          importance: AndroidImportance.HIGH,
          sound: '',
          autoCancel: false,
@@ -81,7 +94,13 @@ export const getIncomingCallNotification = async (
          asForegroundService: true,
          actions: [
             { title: 'Decline', pressAction: { id: 'decline' } },
-            { title: 'Accept', pressAction: { id: 'accept', launchActivity: 'default' } },
+            {
+               title: 'Accept',
+               pressAction: {
+                  id: 'accept',
+                  launchActivity: launchActivityState,
+               },
+            },
          ],
          timestamp: Date.now(),
          showTimestamp: true,
@@ -91,6 +110,8 @@ export const getIncomingCallNotification = async (
    if (isFullScreenIntent) {
       notification.android.fullScreenAction = {
          id: 'default',
+         launchActivityFlags: [AndroidLaunchActivityFlag.NEW_TASK],
+         launchActivity: 'com.mirrorfly_rn.FullScreenActivity',
       };
    }
    /** Display a notification */
@@ -244,12 +265,29 @@ export const onNotificationAction = async ({ type, detail }) => {
          return;
       }
    }
+
    if (type === EventType.PRESS) {
       let checkChannelID = detail?.notification?.android?.channelId;
-      const push_url = 'mirrorfly_rn://';
-      Linking.openURL(push_url);
       if (checkChannelID !== MISSED_CALL) {
-         Store.dispatch(openCallModal());
+         let showCallModal = Store.getState()?.callData?.showCallModal;
+         if (AppState.currentState === 'active') {
+            if (showCallModal) {
+               return;
+            } else {
+               openCallModelActivity();
+            }
+         } else {
+            let activity = await ActivityModule.getActivity();
+            if (activity !== 'undefined') {
+               // const push_url = 'mirrorfly_rn://';
+               // Linking.openURL(push_url).then(() => {
+               openCallModelActivity();
+               // });
+            } else {
+               const push_url = 'mirrorfly_rn://CALLSCREEN';
+               Linking.openURL(push_url);
+            }
+         }
       }
       // stopForegroundServiceNotification(cancelIDS);
    }
@@ -324,11 +362,11 @@ export const stopForegroundServiceNotification = async (cancelID = '') => {
       let displayedNotificationId = await notifee.getDisplayedNotifications();
       let cancelIDS = displayedNotificationId?.find(res => res.id === notifications.id)?.id;
       cancelIDS && (await notifee.cancelDisplayedNotification(cancelIDS));
-      // let channelId = notifications.android?.channelId;
-      // let channel = channelId && (await notifee.getChannels()).find(res => res.id === channelId);
-      // _BackgroundTimer.setTimeout(async () => {
-      //    channel?.id && (await notifee.deleteChannel(channel?.id));
-      // }, 0);
+      let channelId = notifications.android?.channelId;
+      let channel =
+         channelId &&
+         (await notifee.getChannels()).find(res => res.id === channelId && res?.id?.includes('IncomingCall'))?.id;
+      channel && (await notifee.deleteChannel(channel));
       Store.dispatch(resetNotificationData());
    } catch (error) {
       console.log('Error when stopping foreground service ', error);

@@ -26,8 +26,10 @@ import {
    CALL_STATUS_RINGING,
    CALL_STATUS_TRYING,
    DISCONNECTED_SCREEN_DURATION,
+   INCOMING_CALL_SCREEN,
 } from './Constant';
-import { endCallForIos, getNickName } from './Utility';
+import { closeCallModalActivity, endCallForIos, getNickName, resetCallModalActivity } from './Utility';
+import { subscribe as vibrationEventListener } from 'react-native-silentmode-detector';
 
 let missedCallNotificationTimer = null;
 let callingRemoteStreamRemovalTimer = null;
@@ -36,6 +38,8 @@ let endOutgoingCallTimer = null;
 let endIncomingCallTimer = null;
 let isPlayingRingintTone = false;
 let reconnectingSound = null;
+let unsubscribeVibrationEvent;
+let silentEvent = false;
 
 export const getMaxUsersInCall = () => 8;
 
@@ -260,7 +264,8 @@ export const endCall = async (isFromTimeout = false, userId, callType) => {
       endCallForIos();
       BackgroundTimer.setTimeout(() => {
          resetCallData();
-         Store.dispatch(closeCallModal());
+         closeCallModalActivity();
+         // Store.dispatch(closeCallModal());
          // batch(()=>{
          //     Store.dispatch(showConfrence({
          //         showComponent: false,
@@ -310,7 +315,8 @@ export const endIncomingCall = () => {
    // });
    BackgroundTimer.setTimeout(() => {
       resetCallData();
-      Store.dispatch(resetCallStateData());
+      resetCallModalActivity();
+      // Store.dispatch(resetCallStateData());
    }, DISCONNECTED_SCREEN_DURATION);
 };
 
@@ -368,42 +374,65 @@ export const getCurrentCallRoomId = () => {
 
 export const closeCallModalWithDelay = () => {
    setTimeout(() => {
-      Store.dispatch(closeCallModal());
+      closeCallModalActivity();
+      // Store.dispatch(closeCallModal());
    }, DISCONNECTED_SCREEN_DURATION);
 };
 
-export const startVibration = () => {
-   let timerSec = AppState.currentState === 'active' ? 0 : 200;
-   BackgroundTimer.setTimeout(() => {
-      Vibration.vibrate([800, 1000], true);
-   }, timerSec);
+export const startVibration = async () => {
+   const currentMode = await getRingerMode();
+   if (Platform.OS === 'android' && currentMode !== RINGER_MODE.silent) {
+      let timerSec = AppState.currentState === 'active' ? 0 : 200;
+      BackgroundTimer.setTimeout(() => {
+         Vibration.vibrate([800, 1000], true);
+      }, timerSec);
+   }
 };
 
-export const startIncomingCallRingtone = async () => {
+export const startVibrationBasedOnEvent = () => {
+   if (Platform.OS === 'android') {
+      silentEvent = true;
+      unsubscribeVibrationEvent = vibrationEventListener(async () => {
+         const currentMode = await getRingerMode();
+         if (currentMode === RINGER_MODE.silent) {
+            stopVibration();
+         } else if (currentMode !== RINGER_MODE.silent) {
+            startVibration();
+         }
+      });
+   }
+};
+
+export const clearVibrationEvent = () => {
+   if (Platform.OS === 'android' && silentEvent) {
+      unsubscribeVibrationEvent();
+      silentEvent = false;
+   }
+};
+
+export const startIncomingCallRingtone = () => {
    try {
       InCallManager.startRingtone();
-      const currentMode = await getRingerMode();
-      if (Platform.OS === 'android' && currentMode !== RINGER_MODE.silent) {
-         startVibration();
-      }
+      startVibration();
+      startVibrationBasedOnEvent();
    } catch (err) {
       console.log('Error while starting the ringtone sound');
    }
 };
 
-export const stopVibration = () => {
-   BackgroundTimer.setTimeout(() => {
-      Vibration.cancel();
-   }, 0);
+export const stopVibration = async () => {
+   if (Platform.OS === 'android') {
+      BackgroundTimer.setTimeout(() => {
+         Vibration.cancel();
+      }, 0);
+   }
 };
 
-export const stopIncomingCallRingtone = async () => {
+export const stopIncomingCallRingtone = () => {
    try {
       InCallManager.stopRingtone();
-      const currentMode = await getRingerMode();
-      if (Platform.OS === 'android' && currentMode !== RINGER_MODE.silent) {
-         stopVibration();
-      }
+      clearVibrationEvent();
+      stopVibration();
    } catch (err) {
       console.log('Error while stoping the ringtone sound');
    }

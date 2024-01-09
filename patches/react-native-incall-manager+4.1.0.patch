@@ -1,0 +1,23 @@
+diff --git a/node_modules/react-native-incall-manager/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/react-native-incall-manager/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
+new file mode 100644
+index 0000000..a041c7b
+Binary files /dev/null and b/node_modules/react-native-incall-manager/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
+diff --git a/node_modules/react-native-incall-manager/android/src/main/java/com/zxcpoiu/incallmanager/InCallManagerModule.java b/node_modules/react-native-incall-manager/android/src/main/java/com/zxcpoiu/incallmanager/InCallManagerModule.java
+index 7ae63eb..d255bac 100644
+--- a/node_modules/react-native-incall-manager/android/src/main/java/com/zxcpoiu/incallmanager/InCallManagerModule.java
++++ b/node_modules/react-native-incall-manager/android/src/main/java/com/zxcpoiu/incallmanager/InCallManagerModule.java
+@@ -1579,10 +1579,10 @@ public class InCallManagerModule extends ReactContextBaseJavaModule implements L
+     @Override
+     public void onHostDestroy() {
+         Log.d(TAG, "onDestroy()");
+-        stopRingtone();
+-        stopRingback();
+-        stopBusytone();
+-        stop();
++//        stopRingtone();
++//        stopRingback();
++//        stopBusytone();
++//        stop();
+     }
+ 
+     private void updateAudioRoute() {

@@ -55,6 +55,20 @@
             <data android:scheme="mirrorfly_rn" />
         </intent-filter>
       </activity>
+      <activity
+          android:name=".FullScreenActivity"
+          android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden|uiMode"
+          android:excludeFromRecents="true"
+          android:launchMode="singleTask"
+          android:exported="false"
+          android:lockTaskMode="if_whitelisted"
+          android:resizeableActivity="false"
+          android:screenOrientation="portrait"
+          android:showOnLockScreen="true"
+          android:showWhenLocked="true"
+          android:supportsPictureInPicture="true"
+          android:turnScreenOn="true"
+          android:windowSoftInputMode="stateHidden"/>
     </application>
     <queries>
       <intent>

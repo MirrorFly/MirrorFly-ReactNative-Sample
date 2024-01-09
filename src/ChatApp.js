@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import React, { createRef } from 'react';
 import { Keyboard, Linking, LogBox, SafeAreaView, StatusBar, StyleSheet, useColorScheme } from 'react-native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
+import { callConnectionStoreData } from './Helper/Calls/Call';
+import { openCallModelActivity } from './Helper/Calls/Utility';
 import { navigationRef } from './Navigation/rootNavigation';
 import StackNavigationPage, { RecentStackNavigation } from './Navigation/stackNavigation';
 import ApplicationTheme from './config/appTheme';
@@ -55,7 +57,6 @@ const linking = {
       },
    },
 };
-
 export const ChatApp = React.memo(({ hasNativeBaseProvider = false, ...props }) => {
    const { jid = '' } = props;
    const isMfInit = getAppInitialized();
@@ -118,7 +119,14 @@ const RootNavigation = props => {
             let regex = new RegExp(regexStr, 'g'), //NOSONAR
                match;
             match = regex.exec(initialURL);
-            if(match && match?.length !== 0){
+            if (
+               Platform.OS === 'android' &&
+               initialURL.includes('mirrorfly_rn://CALLSCREEN') &&
+               Object.keys(callConnectionStoreData()).length !== 0
+            ) {
+               openCallModelActivity();
+            }
+            if (match && match?.length !== 0) {
                let x = {
                   screen: CHATSCREEN,
                   fromUserJID: match[2],

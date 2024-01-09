@@ -244,15 +244,15 @@ export const setCallModalScreen = payload => {
    };
 };
 
-export const setNotificationData = payload =>{
-   return{
+export const setNotificationData = payload => {
+   return {
       type: SET_NOTIFICATION_DATA,
       payload,
-   }
-}
+   };
+};
 
-export const resetNotificationData = () =>{
-   return{
+export const resetNotificationData = () => {
+   return {
       type: RESET_NOTIFICATION_DATA,
-   }
-}
+   };
+};

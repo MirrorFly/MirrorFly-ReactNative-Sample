@@ -25772,63 +25772,65 @@ const register = async (userIdentifier, fcmtoken, voipDeviceToken, mode) => new 
 
       Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["D" /* setCredentials */])(username, password);
       const configuration = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["f" /* getConfiguration */])();
+      if (config && Object.keys(config).length > 0
+      // &&
+      // configuration.XMPP_SERVER_HOST === ''
+      ) {
+          var _config$xmppHost = config.xmppHost;
+          const xmppHost = _config$xmppHost === undefined ? '' : _config$xmppHost;
+          var _config$xmppPortWeb = config.xmppPortWeb;
+          const xmppPortWeb = _config$xmppPortWeb === undefined ? '' : _config$xmppPortWeb;
+          var _config$signalServerD = config.signalServerDomain;
+          const signalServerDomain = _config$signalServerD === undefined ? '' : _config$signalServerD;
+          var _config$callRoutingSe = config.callRoutingServer;
+          const callRoutingServer = _config$callRoutingSe === undefined ? '' : _config$callRoutingSe;
+          var _config$iv = config.iv;
+          const iv = _config$iv === undefined ? '' : _config$iv;
+          var _config$ivProfile = config.ivProfile;
+          const ivProfile = _config$ivProfile === undefined ? '' : _config$ivProfile;
+          var _config$stuns = config.stuns;
+          const stuns = _config$stuns === undefined ? [] : _config$stuns;
+          var _config$turns = config.turns;
+          const turns = _config$turns === undefined ? [] : _config$turns;
 
-      if (config && Object.keys(config).length > 0 && configuration.XMPP_SERVER_HOST === '') {
-        var _config$xmppHost = config.xmppHost;
-        const xmppHost = _config$xmppHost === undefined ? '' : _config$xmppHost;
-        var _config$xmppPortWeb = config.xmppPortWeb;
-        const xmppPortWeb = _config$xmppPortWeb === undefined ? '' : _config$xmppPortWeb;
-        var _config$signalServerD = config.signalServerDomain;
-        const signalServerDomain = _config$signalServerD === undefined ? '' : _config$signalServerD;
-        var _config$callRoutingSe = config.callRoutingServer;
-        const callRoutingServer = _config$callRoutingSe === undefined ? '' : _config$callRoutingSe;
-        var _config$iv = config.iv;
-        const iv = _config$iv === undefined ? '' : _config$iv;
-        var _config$ivProfile = config.ivProfile;
-        const ivProfile = _config$ivProfile === undefined ? '' : _config$ivProfile;
-        var _config$stuns = config.stuns;
-        const stuns = _config$stuns === undefined ? [] : _config$stuns;
-        var _config$turns = config.turns;
-        const turns = _config$turns === undefined ? [] : _config$turns;
 
+          const realm = await Object(__WEBPACK_IMPORTED_MODULE_16__db_realmDB__["a" /* getRealmDB */])();
+          const params = {
+            key: 'ConfigCredentials',
+            value: JSON.stringify(config)
+          };
+          Object(__WEBPACK_IMPORTED_MODULE_17__db_controllers_ConfigCredentialsTable__["a" /* createConfigCredentialsTable */])(realm, params);
 
-        const realm = await Object(__WEBPACK_IMPORTED_MODULE_16__db_realmDB__["a" /* getRealmDB */])();
-        const params = {
-          key: 'ConfigCredentials',
-          value: JSON.stringify(config)
-        };
-        Object(__WEBPACK_IMPORTED_MODULE_17__db_controllers_ConfigCredentialsTable__["a" /* createConfigCredentialsTable */])(realm, params);
-
-        if (xmppHost !== '' && xmppPortWeb !== '') Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["C" /* setConfiguration */])(xmppHost, xmppPortWeb, true);
-        if (signalServerDomain !== '') {
-          Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["J" /* setSignalServerUrl */])(signalServerDomain);
-          await Object(__WEBPACK_IMPORTED_MODULE_8__modules_call_initialize__["m" /* initializeCall */])(signalServerDomain);
-        }
-        if (callRoutingServer !== '') Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["G" /* setJanusUrl */])(callRoutingServer);
-        if (iv !== '') Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["E" /* setIv */])(iv);
-        if (ivProfile !== '') Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["F" /* setIvProfile */])(ivProfile);
-        if (turns && turns.length > 0 || stuns && stuns.length > 0) {
-          const urls = [];
-          if (stuns && stuns.length > 0) {
-            stuns.forEach(stun => {
-              urls.push({ urls: stun });
-            });
+          if (xmppHost !== '' && xmppPortWeb !== '') Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["C" /* setConfiguration */])(xmppHost, xmppPortWeb, true);
+          if (signalServerDomain !== '') {
+            Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["J" /* setSignalServerUrl */])(signalServerDomain);
+            await Object(__WEBPACK_IMPORTED_MODULE_8__modules_call_initialize__["m" /* initializeCall */])(signalServerDomain);
           }
-          if (turns && turns.length > 0) {
-            turns.forEach(turn => {
-              urls.push({
-                urls: turn.turn,
-                username: turn.username,
-                credential: turn.password
+          if (callRoutingServer !== '') Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["G" /* setJanusUrl */])(callRoutingServer);
+          if (iv !== '') Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["E" /* setIv */])(iv);
+          if (ivProfile !== '') Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["F" /* setIvProfile */])(ivProfile);
+          if (turns && turns.length > 0 || stuns && stuns.length > 0) {
+            const urls = [];
+            if (stuns && stuns.length > 0) {
+              stuns.forEach(stun => {
+                urls.push({ urls: stun });
               });
-            });
+            }
+            if (turns && turns.length > 0) {
+              turns.forEach(turn => {
+                urls.push({
+                  urls: turn.turn,
+                  username: turn.username,
+                  credential: turn.password
+                });
+              });
+            }
+            Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["K" /* setStunTurnServerUrl */])(urls);
           }
-          Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["K" /* setStunTurnServerUrl */])(urls);
+          Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["I" /* setPingPongTime */])(60);
+          Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["H" /* setMaxUsersOfCall */])(8);
+          if (callRoutingServer !== '') Object(__WEBPACK_IMPORTED_MODULE_8__modules_call_initialize__["n" /* initializeJanus */])(callRoutingServer, Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["s" /* getStunTurnServerUrl */])());
         }
-        Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["I" /* setPingPongTime */])(60);
-        Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["H" /* setMaxUsersOfCall */])(8);
-        if (callRoutingServer !== '') Object(__WEBPACK_IMPORTED_MODULE_8__modules_call_initialize__["n" /* initializeJanus */])(callRoutingServer, Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["s" /* getStunTurnServerUrl */])());
-      }
       await Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["z" /* setUserToken */])(token);
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["B" /* successResponse */])();
       successRes.data = {

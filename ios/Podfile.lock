@@ -419,7 +419,7 @@ PODS:
     - React
   - RNCAsyncStorage (1.21.0):
     - React-Core
-  - RNCCheckbox (0.5.16):
+  - RNCCheckbox (0.5.17):
     - BEMCheckBox (~> 1.4)
     - React-Core
   - RNCClipboard (1.13.2):
@@ -798,7 +798,7 @@ SPEC CHECKSUMS:
   RNAudioRecorderPlayer: 4690a7cd9e4fd8e58d9671936a7bc3b686e59051
   RNCallKeep: aa9b1f9286f8f60d7b7d41ee5de47de564356aac
   RNCAsyncStorage: 618d03a5f52fbccb3d7010076bc54712844c18ef
-  RNCCheckbox: 75255b03e604bbcc26411eb31c4cbe3e3865f538
+  RNCCheckbox: a3ca9978cb0846b981d28da4e9914bd437403d77
   RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
   RNConvertPhAsset: 9b366b8a1abc194b76572712c6f7dd89c9e4e37f
   RNCPushNotificationIOS: 64218f3c776c03d7408284a819b2abfda1834bc8

@@ -5,7 +5,7 @@ import { RINGER_MODE, getRingerMode } from 'react-native-ringer-mode';
 import Sound from 'react-native-sound';
 import { batch } from 'react-redux';
 import SDK from '../../SDK/SDK';
-import { removeRemoteStream, resetCallData } from '../../SDKActions/callbacks';
+import { clearIosCallListeners, removeRemoteStream, resetCallData } from '../../SDKActions/callbacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
 import {
    closeCallModal,
@@ -27,7 +27,7 @@ import {
    CALL_STATUS_TRYING,
    DISCONNECTED_SCREEN_DURATION,
 } from './Constant';
-import { getNickName } from './Utility';
+import { endCallForIos, getNickName } from './Utility';
 
 let missedCallNotificationTimer = null;
 let callingRemoteStreamRemovalTimer = null;
@@ -127,6 +127,9 @@ export const clearOldCallingTimer = () => {
 export const disconnectCallConnection = (remoteStreams = [], callStatusMessage = '', cb) => {
    const callConnectionData = callConnectionStoreData();
    SDK.endCall();
+   clearIosCallListeners();
+   endCallForIos();
+
    // dispatchDisconnected(CALL_STATUS_DISCONNECTED, remoteStreams);
    dispatchDisconnected(callStatusMessage, remoteStreams);
    // TODO: update the callLogs when implementing the feature
@@ -253,6 +256,8 @@ export const endCall = async (isFromTimeout = false, userId, callType) => {
       const _callType = callType;
       updateCallAgainScreenData(_userID, _callType);
    } else {
+      clearIosCallListeners();
+      endCallForIos();
       BackgroundTimer.setTimeout(() => {
          resetCallData();
          Store.dispatch(closeCallModal());

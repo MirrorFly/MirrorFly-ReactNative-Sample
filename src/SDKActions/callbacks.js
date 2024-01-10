@@ -3,7 +3,10 @@ import nextFrame from 'next-frame';
 import { Platform } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import RNCallKeep from 'react-native-callkeep';
+import HeadphoneDetection from 'react-native-headphone-detection';
 import RNInCallManager from 'react-native-incall-manager';
+import KeepAwake from 'react-native-keep-awake';
+import KeyEvent from 'react-native-keyevent';
 import { MediaStream } from 'react-native-webrtc';
 import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
@@ -42,6 +45,7 @@ import {
    OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
 import {
+   addHeadphonesConnectedListenerForCall,
    displayIncomingCallForAndroid,
    displayIncomingCallForIos,
    endCallForIos,
@@ -115,7 +119,6 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
-import KeepAwake from 'react-native-keep-awake';
 
 let localStream = null,
    localVideoMuted = false,
@@ -125,6 +128,16 @@ let localStream = null,
 let remoteVideoMuted = [],
    remoteStream = [],
    remoteAudioMuted = [];
+
+export const clearIosCallListeners = () => {
+   if (Platform.OS === 'ios') {
+      RNCallKeep.removeEventListener('answerCall');
+      RNCallKeep.removeEventListener('endCall');
+      RNCallKeep.removeEventListener('didPerformSetMutedCallAction');
+      RNCallKeep.removeEventListener('didChangeAudioRoute');
+      RNInCallManager.setForceSpeakerphoneOn(false);
+   }
+};
 
 export const resetCallData = () => {
    onCall = false;
@@ -141,12 +154,10 @@ export const resetCallData = () => {
    //   Store.dispatch(resetCallIntermediateScreen());
    // }
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall();
+   HeadphoneDetection.remove?.();
+   KeyEvent.removeKeyUpListener();
    if (Platform.OS === 'ios') {
-      RNCallKeep.removeEventListener('answerCall');
-      RNCallKeep.removeEventListener('endCall');
-      RNCallKeep.removeEventListener('didPerformSetMutedCallAction');
-      RNCallKeep.removeEventListener('didChangeAudioRoute');
-      RNInCallManager.setForceSpeakerphoneOn(false);
+      clearIosCallListeners();
       endCallForIos();
    } else {
       RNInCallManager.setSpeakerphoneOn(false);
@@ -289,9 +300,10 @@ const ended = async res => {
    stopIncomingCallRingtone();
    stopOutgoingCallRingingTone();
    stopReconnectingTone();
-   if (Platform.OS === 'ios') {
-      endCallForIos();
-   }
+
+   clearIosCallListeners();
+   endCallForIos();
+
    // let roomId = getFromLocalStorageAndDecrypt('roomName');
    if (res.sessionStatus === 'closed') {
       if (Platform.OS === 'android') {
@@ -775,8 +787,8 @@ export const callBacks = {
    },
    incomingCallListener: function (res) {
       console.log(JSON.stringify(res, null, 2), 'incomingCallListener');
-      // web reference code ------------------------
-      // strophe = true;
+      addHeadphonesConnectedListenerForCall();
+
       remoteStream = [];
       localStream = null;
       let callMode = 'onetoone';
@@ -796,20 +808,11 @@ export const callBacks = {
          }
       }
       res.callMode = callMode;
-      // -------- Storing the below data in store instead
-      // encryptAndStoreInLocalStorage(
-      //   'call_connection_status',
-      //   JSON.stringify(res),
-      // );
 
       let roomId = getCurrentCallRoomId();
 
       if (roomId === '' || roomId === null || roomId === undefined) {
          resetPinAndLargeVideoUser();
-         // TODO: store the below details in callData reducer
-         // encryptAndStoreInLocalStorage('roomName', res.roomId);
-         // encryptAndStoreInLocalStorage('callType', res.callType);
-         // encryptAndStoreInLocalStorage('callFrom', res.from);
          if (res.callType === 'audio') {
             localVideoMuted = true;
          }
@@ -832,11 +835,8 @@ export const callBacks = {
             displayIncomingCallForIos(res);
          }
          startIncomingCallRingtone();
-         // TODO: update the below store data based on new reducer structure
          Store.dispatch(setCallModalScreen(INCOMING_CALL_SCREEN));
          updatingUserStatusInRemoteStream(res.usersStatus);
-         // TODO: show call local notification
-         // browserNotify.sendCallNotification(res);
          startMissedCallNotificationTimer();
       } else {
          SDK.callEngaged();

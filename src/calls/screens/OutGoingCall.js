@@ -95,7 +95,7 @@ const OutGoingCall = () => {
             <CloseCallModalButton onPress={handleClosePress} />
             {/* call status */}
             <View style={styles.callStatusWrapper}>
-               <Text style={styles.callStatusText}>{capitalizeFirstLetter(callStatus)}</Text>
+               <Text style={styles.callStatusText}> {capitalizeFirstLetter(callStatus)} </Text>
             </View>
             {/* user profile details */}
             <View style={styles.userDetailsContainer}>

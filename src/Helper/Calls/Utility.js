@@ -2,12 +2,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { AppState, Platform } from 'react-native';
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
+import HeadphoneDetection from 'react-native-headphone-detection';
 import RNInCallManager from 'react-native-incall-manager';
+import KeepAwake from 'react-native-keep-awake';
+import KeyEvent from 'react-native-keyevent';
 import { openSettings } from 'react-native-permissions';
 import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { SDK } from '../../SDK';
-import { muteLocalAudio, muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
+import { clearIosCallListeners, muteLocalAudio, muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
 import { requestMicroPhonePermission } from '../../common/utils';
 import {
@@ -22,7 +25,11 @@ import {
    updateCallerUUID,
    updateConference,
 } from '../../redux/Actions/CallAction';
-import { updateCallAudioMutedAction, updateCallSpeakerEnabledAction } from '../../redux/Actions/CallControlsAction';
+import {
+   updateCallAudioMutedAction,
+   updateCallSpeakerEnabledAction,
+   updateCallWiredHeadsetConnected,
+} from '../../redux/Actions/CallControlsAction';
 import { showCallModalToastAction } from '../../redux/Actions/CallModalToasAction';
 import Store from '../../redux/store';
 import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
@@ -33,6 +40,7 @@ import {
    clearMissedCallNotificationTimer,
    disconnectCallConnection,
    dispatchDisconnected,
+   endCall,
    getMaxUsersInCall,
    startCallingTimer,
    startOutgoingCallRingingTone,
@@ -50,10 +58,41 @@ import {
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
-import KeepAwake from 'react-native-keep-awake';
 
 let preventMultipleClick = false;
 let callBackgroundNotification = true;
+let preventEndCallFromHeadsetButton = false;
+
+export const addHeadphonesConnectedListenerForCall = (shouldUpdateInitialValue = true) => {
+   HeadphoneDetection.addListener(data => {
+      Store.dispatch(updateCallWiredHeadsetConnected(data.audioJack));
+      if (data.audioJack && Platform.OS === 'android') {
+         updateCallSpeakerEnabled(false, '', '', false); // 2nd, 3rd and 4th params will not be used in Android so passing empty data
+      }
+   });
+   if (shouldUpdateInitialValue) {
+      HeadphoneDetection.isAudioDeviceConnected().then(data => {
+         Store.dispatch(updateCallWiredHeadsetConnected(data.audioJack));
+      });
+   }
+
+   preventEndCallFromHeadsetButton = false;
+   // ending/declining the call in iOS will be taken care by the callKeep
+   // so adding a keyup listener for android to end/decline the call when headset play/pause button pressed
+   KeyEvent.onKeyUpListener(keyEvent => {
+      if (Platform.OS === 'android' && keyEvent.keyCode === 79) {
+         // keyCode 79 is KEYCODE_HEADSETHOOK which is the play/pause button on headset
+         const { screenName, connectionState, callerUUID } = Store.getState().callData;
+         if (Object.keys(connectionState || {}).length > 0) {
+            if (screenName === INCOMING_CALL_SCREEN) answerIncomingCall(callerUUID);
+            else if (!preventEndCallFromHeadsetButton) {
+               preventEndCallFromHeadsetButton = true;
+               endCall();
+            }
+         }
+      }
+   });
+};
 
 //Making OutGoing Call
 export const makeCalls = async (callType, userId) => {
@@ -150,6 +189,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          callConnectionStatus.groupId = groupId;
       }
       // AsyncStorage.setItem('call_connection_status', JSON.stringify(callConnectionStatus))
+      addHeadphonesConnectedListenerForCall();
       if (Platform.OS === 'ios') {
          const callerName = usersList.map(ele => ele.name).join(',');
          const hasVideo = callType === 'video';
@@ -234,8 +274,10 @@ const startCall = (uuid, callerId, callerName, hasVideo) => {
 //PermissionError while answering the call
 const answerCallPermissionError = answerCallResonse => {
    declineIncomingCall();
-   // End incoming call keep for iOS
-   Platform.OS === 'ios' && endCallForIos();
+   // End incoming call keep and clearing the listeners for iOS
+   clearIosCallListeners();
+   endCallForIos();
+
    if (answerCallResonse && answerCallResonse?.message !== PERMISSION_DENIED) {
       showToast(COMMON_ERROR_MESSAGE, { id: 'call-answer-error' });
    }
@@ -364,6 +406,8 @@ const handleIncoming_CallKeepListeners = () => {
    });
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep end call event', callUUID);
+      // clearing all the call keep related listeners, because call keep reports speaker change event when call disconnected by other user
+      clearIosCallListeners();
       const { screenName } = Store.getState().callData;
       if (screenName === INCOMING_CALL_SCREEN) declineIncomingCall();
       else endCall();
@@ -438,15 +482,17 @@ export const displayIncomingCallForAndroid = async callResponse => {
 };
 
 export const endCallForIos = async () => {
-   try {
-      const activeCallUUID = Store.getState().callData?.callerUUID || '';
-      const calls = await RNCallKeep.getCalls();
-      const activeCall = calls.find(c => c.callUUID === activeCallUUID);
-      if (activeCall?.callUUID) {
-         RNCallKeep.endCall(activeCall.callUUID);
+   if (Platform.OS === 'ios') {
+      try {
+         const activeCallUUID = Store.getState().callData?.callerUUID || '';
+         const calls = await RNCallKeep.getCalls();
+         const activeCall = calls.find(c => c.callUUID === activeCallUUID);
+         if (activeCall?.callUUID) {
+            RNCallKeep.endCall(activeCall.callUUID);
+         }
+      } catch (err) {
+         console.log('Error while ending the call on iOS', err);
       }
-   } catch (err) {
-      console.log('Error while ending the call on iOS', err);
    }
 };
 

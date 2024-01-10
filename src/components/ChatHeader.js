@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { Checkbox } from 'native-base';
 import React, { useRef } from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { ALREADY_ON_CALL } from '../Helper/Calls/Constant';
@@ -30,7 +30,9 @@ import commonStyles from '../common/commonStyles';
 import { requestMicroPhonePermission } from '../common/utils';
 import ApplicationColors from '../config/appColors';
 import { FORWARD_MESSSAGE_SCREEN } from '../constant';
+import { useNetworkStatus } from '../hooks';
 import useRosterData from '../hooks/useRosterData';
+import { closePermissionModal, showPermissionModal } from '../redux/Actions/PermissionAction';
 import {
    clearConversationSearchData,
    setConversationSearchText,
@@ -38,7 +40,6 @@ import {
 } from '../redux/Actions/conversationSearchAction';
 import ChatSearchInput from './ChatSearchInput';
 import LastSeen from './LastSeen';
-import { useNetworkStatus } from '../hooks';
 
 function ChatHeader({
    fromUserJId,
@@ -60,6 +61,7 @@ function ChatHeader({
    const [deleteEveryOne, setDeleteEveryOne] = React.useState(false);
    const profileDetails = useSelector(state => state.navigation.profileDetails);
    const vCardProfile = useSelector(state => state.profile.profileDetails);
+   const permissionData = useSelector(state => state.permissionData.permissionStatus);
    const [isSelected, setSelection] = React.useState(false);
    const [showRoomExist, setShowRoomExist] = React.useState(false);
    const {
@@ -264,9 +266,7 @@ function ChatHeader({
          if (result === 'granted' || result === 'limited') {
             makeCalls(callType, [fromUserId]);
          } else if (isPermissionChecked) {
-            Alert.alert('','Audio Permissions are needed for calling. Please enable it in Settings', [
-               { text: 'OK', onPress: () => openSettings() },
-            ]);
+            dispatch(showPermissionModal());
          }
       } catch (error) {
          // updating the SDK flag back to false to behave as usual
@@ -281,22 +281,45 @@ function ChatHeader({
 
    const renderRoomExistModal = () => {
       return (
-         <Modal visible={showRoomExist} onRequestClose={closeIsRoomExist}>
-            <ModalCenteredContent onPressOutside={closeIsRoomExist}>
-               <View style={styles.callModalContentContainer}>
-                  <Text style={styles.callModalContentText} numberOfLines={1}>
-                     {ALREADY_ON_CALL}
-                  </Text>
-                  <View style={styles.callModalHorizontalActionButtonsContainer}>
-                     <Pressable
-                        contentContainerStyle={styles.deleteModalHorizontalActionButton}
-                        onPress={() => closeIsRoomExist()}>
-                        <Text style={styles.deleteModalActionButtonText}>OK</Text>
-                     </Pressable>
+         <>
+            {/* display modal already in the call */}
+            <Modal visible={showRoomExist} onRequestClose={closeIsRoomExist}>
+               <ModalCenteredContent onPressOutside={closeIsRoomExist}>
+                  <View style={styles.callModalContentContainer}>
+                     <Text style={styles.callModalContentText} numberOfLines={1}>
+                        {ALREADY_ON_CALL}
+                     </Text>
+                     <View style={styles.callModalHorizontalActionButtonsContainer}>
+                        <Pressable
+                           contentContainerStyle={styles.deleteModalHorizontalActionButton}
+                           onPress={() => closeIsRoomExist()}>
+                           <Text style={styles.deleteModalActionButtonText}>OK</Text>
+                        </Pressable>
+                     </View>
                   </View>
-               </View>
-            </ModalCenteredContent>
-         </Modal>
+               </ModalCenteredContent>
+            </Modal>
+            {/* display permission Model */}
+            <Modal visible={permissionData}>
+               <ModalCenteredContent>
+                  <View style={styles.callModalContentContainer}>
+                     <Text style={styles.callModalContentText}>
+                        {'Audio Permissions are needed for calling. Please enable it in Settings'}
+                     </Text>
+                     <View style={styles.callModalHorizontalActionButtonsContainer}>
+                        <Pressable
+                           contentContainerStyle={styles.deleteModalHorizontalActionButton}
+                           onPress={() => {
+                              openSettings();
+                              dispatch(closePermissionModal());
+                           }}>
+                           <Text style={styles.deleteModalActionButtonText}>OK</Text>
+                        </Pressable>
+                     </View>
+                  </View>
+               </ModalCenteredContent>
+            </Modal>
+         </>
       );
    };
 

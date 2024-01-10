@@ -10,6 +10,7 @@ import { pushNotify, updateNotification } from './src/Service/remoteNotifyHandle
 import { setNotificationForegroundService } from './src/calls/notification/callNotifyHandler';
 import { getNotifyMessage, getNotifyNickName } from './src/components/RNCamera/Helper';
 import config from './src/components/chat/common/config';
+import CallComponent from './src/calls/CallComponent';
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
    try {
@@ -42,6 +43,7 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 });
 if (Platform.OS === 'android') {
    setNotificationForegroundService();
+   AppRegistry.registerComponent('IncomingCall', () => CallComponent);
 }
 /**
 // messaging().onMessage(async remoteMessage => {

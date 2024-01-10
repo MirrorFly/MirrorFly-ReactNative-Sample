@@ -9,6 +9,7 @@ import CallComponent from './src/calls/CallComponent';
 import { requestNotificationPermission } from './src/common/utils';
 import { setAppInitialized } from './src/uikitHelpers/uikitMethods';
 import config from './src/components/chat/common/config';
+import { Platform } from 'react-native';
 
 function App() {
    React.useEffect(() => {
@@ -24,12 +25,16 @@ function App() {
          requestNotificationPermission();
          removeAllDeliveredNotification();
       })();
-   });
+   }, []);
+
+   const renderCallComponent = () => {
+      return Platform.OS === 'ios' ? <CallComponent hasNativeBaseProvider={true} /> : null;
+   };
 
    return (
       <NativeBaseProvider>
          <ChatApp hasNativeBaseProvider={true} />
-         <CallComponent hasNativeBaseProvider={true} />
+         {renderCallComponent()}
       </NativeBaseProvider>
    );
 }

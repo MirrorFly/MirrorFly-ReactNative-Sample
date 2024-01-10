@@ -13,18 +13,19 @@ import {
    selectLargeVideoUser,
    setCallModalScreen,
    showConfrence,
-   updateConference
+   updateConference,
 } from '../../redux/Actions/CallAction';
 import { updateCallAgainData } from '../../redux/Actions/CallAgainAction';
 import Store from '../../redux/store';
 import {
    CALL_AGAIN_SCREEN,
+   CALL_BUSY_STATUS_MESSAGE,
    CALL_RINGING_DURATION,
    CALL_STATUS_CALLING,
    CALL_STATUS_DISCONNECTED,
    CALL_STATUS_RINGING,
    CALL_STATUS_TRYING,
-   DISCONNECTED_SCREEN_DURATION
+   DISCONNECTED_SCREEN_DURATION,
 } from './Constant';
 import { closeCallModalActivity, endCallForIos, getNickName, resetCallModalActivity } from './Utility';
 
@@ -235,7 +236,7 @@ const updateCallAgainScreenData = (userID, callType) => {
 export const endCall = async (isFromTimeout = false, userId, callType) => {
    const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
    const { callStatusText } = confrenceData;
-   if (callStatusText === CALL_STATUS_DISCONNECTED) {
+   if (callStatusText === CALL_STATUS_DISCONNECTED || callStatusText === undefined) {
       return;
    }
    clearOutgoingTimer();

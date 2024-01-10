@@ -435,12 +435,12 @@ export const endOnGoingCall = async () => {
       return;
    }
    stopReconnectingTone();
-   if (Platform.OS === 'android') {
-      await stopForegroundServiceNotification();
-   }
-   disconnectCallConnection([], CALL_STATUS_DISCONNECTED, () => {
+   disconnectCallConnection([], CALL_STATUS_DISCONNECTED, async () => {
       // Store.dispatch(resetCallStateData());
       resetCallModalActivity();
+      if (Platform.OS === 'android') {
+         await stopForegroundServiceNotification();
+      }
    }); //hangUp calls
 };
 

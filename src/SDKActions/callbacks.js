@@ -311,7 +311,7 @@ const ended = async res => {
    // let roomId = getFromLocalStorageAndDecrypt('roomName');
    if (res.sessionStatus === 'closed') {
       if (Platform.OS === 'android') {
-         stopForegroundServiceNotification();
+         await stopForegroundServiceNotification();
       }
       clearIncomingCallTimer();
       clearOutgoingTimer();

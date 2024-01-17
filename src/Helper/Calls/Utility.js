@@ -9,7 +9,7 @@ import KeyEvent from 'react-native-keyevent';
 import { openSettings } from 'react-native-permissions';
 import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import { SDK } from '../../SDK';
+import SDK from '../../SDK/SDK';
 import { clearIosCallListeners, muteLocalAudio, muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
 import { requestMicroPhonePermission } from '../../common/utils';
@@ -657,7 +657,7 @@ const onVoipPushNotificationiReceived = async data => {
    let remoteMessage = {
       data: payload,
    };
-   await SDK.getNotificationData(remoteMessage);
+   await SDK.getCallNotification(remoteMessage);
 };
 
 export const pushNotifyBackground = () => {

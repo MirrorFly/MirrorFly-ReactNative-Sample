@@ -31,7 +31,7 @@ public class ActivityModule extends ReactContextBaseJavaModule {
         final Activity activity = getReactApplicationContext().getCurrentActivity();
         if (activity != null) {
             final String className = getReactApplicationContext().getCurrentActivity().getComponentName().getClassName();
-            if (className.contains("FullScreenActivity")) {
+            if (className.contains("CallScreenActivity")) {
                 activity.finish();
             }
         }
@@ -72,7 +72,7 @@ public class ActivityModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void openActivity() {
-        Intent intent = new Intent(getReactApplicationContext(), FullScreenActivity.class);
+        Intent intent = new Intent(getReactApplicationContext(), CallScreenActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         getReactApplicationContext().startActivity(intent);
     }

@@ -56,7 +56,7 @@
         </intent-filter>
       </activity>
       <activity
-          android:name=".FullScreenActivity"
+          android:name=".CallScreenActivity"
           android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden|uiMode"
           android:excludeFromRecents="true"
           android:launchMode="singleTask"

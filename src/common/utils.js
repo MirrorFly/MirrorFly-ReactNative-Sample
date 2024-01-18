@@ -277,7 +277,7 @@ export const permissioncheckRedmi = async () => {
 
 export const checkAndRequestPermission = async () => {
    const checkAdditionalPermission = await AsyncStorage.getItem('additional_permission');
-   const buildInfo = Platform.constants.Brand.toLowerCase();
+   const buildInfo = (Platform.OS === 'android' && Platform.constants.Brand.toLowerCase()) || '';
    if (!checkAdditionalPermission) {
       switch (buildInfo) {
          case BRAND_XIAOMI:

@@ -26,7 +26,6 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
    const dispatch = useDispatch();
 
    React.useLayoutEffect(()=>{
-      console.log(connectionState,"connectionState");
       if(Object.keys(connectionState).length === 0){
          closeCallModalActivity();
       }

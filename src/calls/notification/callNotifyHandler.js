@@ -111,7 +111,7 @@ export const getIncomingCallNotification = async (
       notification.android.fullScreenAction = {
          id: 'default',
          launchActivityFlags: [AndroidLaunchActivityFlag.NEW_TASK],
-         launchActivity: 'com.mirrorfly_rn.FullScreenActivity',
+         launchActivity: 'com.mirrorfly_rn.CallScreenActivity',
       };
    }
    /** Display a notification */

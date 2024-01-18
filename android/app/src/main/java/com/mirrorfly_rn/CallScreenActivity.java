@@ -37,6 +37,9 @@ public class CallScreenActivity extends ReactActivity {
         super.onResume();
         Integer permission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
         boolean rational = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO);
+        if(onCall){
+            getWindow().getDecorView().setBackgroundColor(Color.parseColor("#F2F2F2"));
+        }
         if (permission == -1 && rational && !onCall) {
             onCall = true;
             editor.putBoolean("onCall", true);

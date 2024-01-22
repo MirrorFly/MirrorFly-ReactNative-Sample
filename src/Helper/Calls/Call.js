@@ -48,12 +48,6 @@ export const startOutgoingCallRingingTone = (callType = 'audio') => {
          InCallManager.start({ media: callType, ringback: '_BUNDLE_' });
       }
       isPlayingRingintTone = true;
-      // In Android when starting the ringback tone it is playing it in speaker
-      // so turning off the speaker before starting the ringing tone
-      // if (Platform.OS === 'android') {
-      //    InCallManager.setSpeakerphoneOn(false);
-      //    InCallManager.setForceSpeakerphoneOn(false);
-      // }
    } catch (err) {
       console.log('Error while starting the ringtone sound');
    }
@@ -287,7 +281,7 @@ export const startOutgoingcallTimer = (userId, callType) => {
       }, 10000);
       endOutgoingCallTimer = BackgroundTimer.setTimeout(() => {
          endCall(true, userId, callType);
-      }, 30000);
+      }, CALL_RINGING_DURATION);
    }
 };
 
@@ -380,14 +374,16 @@ export const startVibration = () => {
 };
 
 export const startIncomingCallRingtone = async () => {
-   try {
-      InCallManager.startRingtone();
-      const currentMode = await getRingerMode();
-      if (Platform.OS === 'android' && currentMode !== RINGER_MODE.silent) {
-         startVibration();
+   if (Platform.OS === 'android') {
+      try {
+         InCallManager.startRingtone();
+         const currentMode = await getRingerMode();
+         if (Platform.OS === 'android' && currentMode !== RINGER_MODE.silent) {
+            startVibration();
+         }
+      } catch (err) {
+         console.log('Error while starting the ringtone sound');
       }
-   } catch (err) {
-      console.log('Error while starting the ringtone sound');
    }
 };
 
@@ -398,14 +394,16 @@ export const stopVibration = () => {
 };
 
 export const stopIncomingCallRingtone = async () => {
-   try {
-      InCallManager.stopRingtone();
-      const currentMode = await getRingerMode();
-      if (Platform.OS === 'android' && currentMode !== RINGER_MODE.silent) {
-         stopVibration();
+   if (Platform.OS === 'android') {
+      try {
+         InCallManager.stopRingtone();
+         const currentMode = await getRingerMode();
+         if (Platform.OS === 'android' && currentMode !== RINGER_MODE.silent) {
+            stopVibration();
+         }
+      } catch (err) {
+         console.log('Error while stoping the ringtone sound');
       }
-   } catch (err) {
-      console.log('Error while stoping the ringtone sound');
    }
 };
 

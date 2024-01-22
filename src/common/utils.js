@@ -5,6 +5,7 @@ import {
   request,
   PERMISSIONS,
   requestMultiple,
+  check,
 } from 'react-native-permissions';
 import { Platform } from 'react-native';
 import SDK from '../SDK/SDK';
@@ -162,6 +163,14 @@ export const requestLocationPermission = async () => {
 
 export const requestMicroPhonePermission = async () => {
   return request(
+    Platform.OS === 'android'
+      ? PERMISSIONS.ANDROID.RECORD_AUDIO
+      : PERMISSIONS.IOS.MICROPHONE,
+  );
+};
+
+export const checkMicroPhonePermission = async () => {
+  return check(
     Platform.OS === 'android'
       ? PERMISSIONS.ANDROID.RECORD_AUDIO
       : PERMISSIONS.IOS.MICROPHONE,

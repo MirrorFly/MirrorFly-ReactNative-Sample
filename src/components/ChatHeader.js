@@ -257,7 +257,7 @@ function ChatHeader({
    const makeOne2OneCall = async callType => {
       const isPermissionChecked = await AsyncStorage.getItem('microPhone_Permission');
       AsyncStorage.setItem('microPhone_Permission', 'true');
-      // updating the SDK flag to keep the connection Alive when app goes background because of document picker
+      // updating the SDK flag to keep the connection Alive when app goes background because of microphone permission popup
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       try {
          const result = await requestMicroPhonePermission();

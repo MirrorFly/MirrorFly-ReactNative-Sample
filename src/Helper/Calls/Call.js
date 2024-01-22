@@ -50,12 +50,6 @@ export const startOutgoingCallRingingTone = (callType = 'audio') => {
          InCallManager.start({ media: callType, ringback: '_BUNDLE_' });
       }
       isPlayingRingintTone = true;
-      // In Android when starting the ringback tone it is playing it in speaker
-      // so turning off the speaker before starting the ringing tone
-      // if (Platform.OS === 'android') {
-      //    InCallManager.setSpeakerphoneOn(false);
-      //    InCallManager.setForceSpeakerphoneOn(false);
-      // }
    } catch (err) {
       console.log('Error while starting the ringtone sound');
    }
@@ -290,7 +284,7 @@ export const startOutgoingcallTimer = (userId, callType) => {
       }, 10000);
       endOutgoingCallTimer = BackgroundTimer.setTimeout(() => {
          endCall(true, userId, callType);
-      }, 30000);
+      }, CALL_RINGING_DURATION);
    }
 };
 
@@ -409,12 +403,14 @@ export const clearVibrationEvent = () => {
 };
 
 export const startIncomingCallRingtone = () => {
-   try {
-      InCallManager.startRingtone();
-      startVibration();
-      startVibrationBasedOnEvent();
-   } catch (err) {
-      console.log('Error while starting the ringtone sound');
+   if (Platform.OS === 'android') {
+      try {
+         InCallManager.startRingtone();
+         startVibration();
+         startVibrationBasedOnEvent();
+      } catch (err) {
+         console.log('Error while starting the ringtone sound');
+      }
    }
 };
 
@@ -427,12 +423,14 @@ export const stopVibration = async () => {
 };
 
 export const stopIncomingCallRingtone = () => {
-   try {
-      InCallManager.stopRingtone();
-      clearVibrationEvent();
-      stopVibration();
-   } catch (err) {
-      console.log('Error while stoping the ringtone sound');
+   if (Platform.OS === 'android') {
+      try {
+         InCallManager.stopRingtone();
+         clearVibrationEvent();
+         stopVibration();
+      } catch (err) {
+         console.log('Error while stoping the ringtone sound');
+      }
    }
 };
 

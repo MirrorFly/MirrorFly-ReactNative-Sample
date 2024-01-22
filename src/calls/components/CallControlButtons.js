@@ -57,9 +57,9 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute }) => {
       RNCallKeep.getAudioRoutes().then(_routes => {
          /** sample data from 'getAudioRoutes' method   
           * const sampleAudioRoutes = [
-            { name: 'Speaker', type: 'Speaker' },
-            { name: 'Headset', selected: true, type: 'Headset' },
-            { name: 'Phone', type: 'Phone' },
+            { "name": "Speaker", "type": "Speaker" },
+            { "name": "iPhone Microphone", "type": "Phone" },
+            { "name": "Headset Microphone", "selected": true, "type": "Headset" }
          ]; */
          if (Array.isArray(_routes)) {
             if (_routes.length === 2) {

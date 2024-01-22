@@ -16,10 +16,10 @@ import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.github.kevinejohn.keyevent.KeyEventModule;
 
-public class FullScreenActivity extends ReactActivity {
+public class CallScreenActivity extends ReactActivity {
+    public Boolean onCall = false;
     SharedPreferences sharedPreferences = null;
     SharedPreferences.Editor editor = null;
-    public Boolean onCall = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +37,9 @@ public class FullScreenActivity extends ReactActivity {
         super.onResume();
         Integer permission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
         boolean rational = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO);
+        if(onCall){
+            getWindow().getDecorView().setBackgroundColor(Color.parseColor("#F2F2F2"));
+        }
         if (permission == -1 && rational && !onCall) {
             onCall = true;
             editor.putBoolean("onCall", true);
@@ -60,7 +63,7 @@ public class FullScreenActivity extends ReactActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d("TAG", "FullScreenActivityonPause: ");
+        Log.d("TAG", "CallScreenActivityOnPause: ");
     }
 
     @Override
@@ -68,7 +71,7 @@ public class FullScreenActivity extends ReactActivity {
         super.onDestroy();
         editor.clear();
         editor.commit();
-        Log.d("TAG", "FullScreenActivityonDestroy: ");
+        Log.d("TAG", "CallScreenActivityOnDestroy: ");
     }
 
     /**
@@ -78,7 +81,7 @@ public class FullScreenActivity extends ReactActivity {
      */
     @Override
     protected String getMainComponentName() {
-        return "IncomingCall";
+        return "CallScreen";
     }
 
     @Override // <--- Addding this method for keyDown events

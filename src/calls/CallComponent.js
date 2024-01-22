@@ -14,7 +14,7 @@ if (Platform.OS === 'ios') {
    pushNotifyBackground();
 }
 
-const CallComponent = ({ hasNativeBaseProvider = false }) => {
+export const CallComponent = ({ hasNativeBaseProvider = false }) => {
    React.useEffect(() => {
       return () => {
          RNCallKeep.removeEventListener('didDisplayIncomingCall');
@@ -31,5 +31,3 @@ const CallComponent = ({ hasNativeBaseProvider = false }) => {
       </Provider>
    );
 };
-
-export default CallComponent;

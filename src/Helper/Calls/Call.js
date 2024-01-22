@@ -2,15 +2,14 @@ import { AppState, Platform, Vibration } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import InCallManager from 'react-native-incall-manager';
 import { RINGER_MODE, getRingerMode } from 'react-native-ringer-mode';
+import { subscribe as vibrationEventListener } from 'react-native-silentmode-detector';
 import Sound from 'react-native-sound';
 import { batch } from 'react-redux';
 import SDK from '../../SDK/SDK';
 import { clearIosCallListeners, removeRemoteStream, resetCallData } from '../../SDKActions/callbacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
 import {
-   closeCallModal,
    pinUser,
-   resetCallStateData,
    selectLargeVideoUser,
    setCallModalScreen,
    showConfrence,
@@ -20,6 +19,7 @@ import { updateCallAgainData } from '../../redux/Actions/CallAgainAction';
 import Store from '../../redux/store';
 import {
    CALL_AGAIN_SCREEN,
+   CALL_BUSY_STATUS_MESSAGE,
    CALL_RINGING_DURATION,
    CALL_STATUS_CALLING,
    CALL_STATUS_DISCONNECTED,
@@ -27,7 +27,7 @@ import {
    CALL_STATUS_TRYING,
    DISCONNECTED_SCREEN_DURATION,
 } from './Constant';
-import { endCallForIos, getNickName } from './Utility';
+import { closeCallModalActivity, endCallForIos, getNickName, resetCallModalActivity } from './Utility';
 
 let missedCallNotificationTimer = null;
 let callingRemoteStreamRemovalTimer = null;
@@ -36,6 +36,8 @@ let endOutgoingCallTimer = null;
 let endIncomingCallTimer = null;
 let isPlayingRingintTone = false;
 let reconnectingSound = null;
+let unsubscribeVibrationEvent;
+let silentEvent = false;
 
 export const getMaxUsersInCall = () => 8;
 
@@ -228,7 +230,7 @@ const updateCallAgainScreenData = (userID, callType) => {
 export const endCall = async (isFromTimeout = false, userId, callType) => {
    const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
    const { callStatusText } = confrenceData;
-   if (callStatusText === CALL_STATUS_DISCONNECTED) {
+   if (callStatusText === CALL_STATUS_DISCONNECTED || callStatusText === undefined) {
       return;
    }
    clearOutgoingTimer();
@@ -254,7 +256,8 @@ export const endCall = async (isFromTimeout = false, userId, callType) => {
       endCallForIos();
       BackgroundTimer.setTimeout(() => {
          resetCallData();
-         Store.dispatch(closeCallModal());
+         closeCallModalActivity();
+         // Store.dispatch(closeCallModal());
          // batch(()=>{
          //     Store.dispatch(showConfrence({
          //         showComponent: false,
@@ -304,7 +307,8 @@ export const endIncomingCall = () => {
    // });
    BackgroundTimer.setTimeout(() => {
       resetCallData();
-      Store.dispatch(resetCallStateData());
+      resetCallModalActivity();
+      // Store.dispatch(resetCallStateData());
    }, DISCONNECTED_SCREEN_DURATION);
 };
 
@@ -362,45 +366,68 @@ export const getCurrentCallRoomId = () => {
 
 export const closeCallModalWithDelay = () => {
    setTimeout(() => {
-      Store.dispatch(closeCallModal());
+      closeCallModalActivity();
+      // Store.dispatch(closeCallModal());
    }, DISCONNECTED_SCREEN_DURATION);
 };
 
-export const startVibration = () => {
-   let timerSec = AppState.currentState === 'active' ? 0 : 200;
-   BackgroundTimer.setTimeout(() => {
-      Vibration.vibrate([800, 1000], true);
-   }, timerSec);
+export const startVibration = async () => {
+   const currentMode = await getRingerMode();
+   if (Platform.OS === 'android' && currentMode !== RINGER_MODE.silent) {
+      let timerSec = AppState.currentState === 'active' ? 0 : 200;
+      BackgroundTimer.setTimeout(() => {
+         Vibration.vibrate([800, 1000], true);
+      }, timerSec);
+   }
 };
 
-export const startIncomingCallRingtone = async () => {
+export const startVibrationBasedOnEvent = () => {
+   if (Platform.OS === 'android') {
+      silentEvent = true;
+      unsubscribeVibrationEvent = vibrationEventListener(async () => {
+         const currentMode = await getRingerMode();
+         if (currentMode === RINGER_MODE.silent) {
+            stopVibration();
+         } else if (currentMode !== RINGER_MODE.silent) {
+            startVibration();
+         }
+      });
+   }
+};
+
+export const clearVibrationEvent = () => {
+   if (Platform.OS === 'android' && silentEvent) {
+      unsubscribeVibrationEvent();
+      silentEvent = false;
+   }
+};
+
+export const startIncomingCallRingtone = () => {
    if (Platform.OS === 'android') {
       try {
          InCallManager.startRingtone();
-         const currentMode = await getRingerMode();
-         if (Platform.OS === 'android' && currentMode !== RINGER_MODE.silent) {
-            startVibration();
-         }
+         startVibration();
+         startVibrationBasedOnEvent();
       } catch (err) {
          console.log('Error while starting the ringtone sound');
       }
    }
 };
 
-export const stopVibration = () => {
-   BackgroundTimer.setTimeout(() => {
-      Vibration.cancel();
-   }, 0);
+export const stopVibration = async () => {
+   if (Platform.OS === 'android') {
+      BackgroundTimer.setTimeout(() => {
+         Vibration.cancel();
+      }, 0);
+   }
 };
 
-export const stopIncomingCallRingtone = async () => {
+export const stopIncomingCallRingtone = () => {
    if (Platform.OS === 'android') {
       try {
          InCallManager.stopRingtone();
-         const currentMode = await getRingerMode();
-         if (Platform.OS === 'android' && currentMode !== RINGER_MODE.silent) {
-            stopVibration();
-         }
+         clearVibrationEvent();
+         stopVibration();
       } catch (err) {
          console.log('Error while stoping the ringtone sound');
       }

@@ -1,11 +1,15 @@
-import notifee from '@notifee/react-native';
 import React, { useRef } from 'react';
 import { ImageBackground, Platform, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
 import { startIncomingCallTimer } from '../../Helper/Calls/Call';
-import { CALL_STATUS_DISCONNECTED, CALL_STATUS_INCOMING } from '../../Helper/Calls/Constant';
-import { answerIncomingCall, declineIncomingCall, getcallBackgroundNotification } from '../../Helper/Calls/Utility';
+import { CALL_STATUS_INCOMING } from '../../Helper/Calls/Constant';
+import {
+   answerIncomingCall,
+   closeCallModalActivity,
+   declineIncomingCall,
+   getcallBackgroundNotification,
+} from '../../Helper/Calls/Utility';
 import { capitalizeFirstLetter } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
 import Avathar from '../../common/Avathar';
@@ -14,10 +18,7 @@ import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
 import { useAppState } from '../../hooks';
 import useRosterData from '../../hooks/useRosterData';
-import { closeCallModal } from '../../redux/Actions/CallAction';
 import CloseCallModalButton from '../components/CloseCallModalButton';
-import { callNotifyHandler, stopForegroundServiceNotification } from '../notification/callNotifyHandler';
-
 
 const IncomingCall = ({ userId, userJid, callStatus }) => {
    const { connectionState, showCallModal } = useSelector(state => state.callData) || {};
@@ -56,18 +57,19 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
    //    showCallModal && backGroundNotificationRemove();
    // }, [appState, notificationData]);
 
-   const handleBackGround = async () => {
-      // let displayedNotificationId = await notifee.getDisplayedNotifications();
-      // let cancelIDS = displayedNotificationId?.find(res => res.id === notificationData.id)?.id;
-      await stopForegroundServiceNotification();
-      if (userCallStatus !== CALL_STATUS_DISCONNECTED)
-         await callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'INCOMING_CALL', false);
-   };
+   // const handleBackGround = async () => {
+   //    // let displayedNotificationId = await notifee.getDisplayedNotifications();
+   //    // let cancelIDS = displayedNotificationId?.find(res => res.id === notificationData.id)?.id;
+   //    // await stopForegroundServiceNotification();
+   //    // if (userCallStatus !== CALL_STATUS_DISCONNECTED)
+   //    // await callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'INCOMING_CALL', false);
+   //    ActivityModule.CloseActivity();
+   // };
 
    const handleClosePress = () => {
       if (Platform.OS === 'android') {
-         dispatch(closeCallModal());
-         handleBackGround();
+         // dispatch(closeCallModal());
+         closeCallModalActivity();
       }
    };
 
@@ -114,6 +116,7 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
          {/* call action buttons (Accept & Reject) */}
          {callStatus === CALL_STATUS_INCOMING && (
             <GestureHandlerRootView style={styles.actionButtonWrapper}>
+               {/* <GestureAnimationScreen /> */}
                <RectButton onPress={declineCall} style={[styles.actionButton, styles.redButton]}>
                   <Text style={styles.actionButtonText}> Reject </Text>
                </RectButton>

@@ -46,11 +46,13 @@ import {
 } from '../Helper/Calls/Constant';
 import {
    addHeadphonesConnectedListenerForCall,
+   closeCallModalActivity,
    displayIncomingCallForAndroid,
    displayIncomingCallForIos,
    endCallForIos,
    getNickName,
    listnerForNetworkStateChangeWhenIncomingCall,
+   showCallModalToast,
    showOngoingNotification,
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
    updateCallSpeakerEnabled,
@@ -80,7 +82,6 @@ import { REGISTERSCREEN } from '../constant';
 import {
    callDurationTimestamp,
    clearCallData,
-   closeCallModal,
    resetConferencePopup,
    resetData,
    selectLargeVideoUser,
@@ -91,6 +92,7 @@ import {
    updateConference,
 } from '../redux/Actions/CallAction';
 import { resetCallControlsStateAction } from '../redux/Actions/CallControlsAction';
+import { resetCallModalToastDataAction } from '../redux/Actions/CallModalToasAction';
 import {
    ClearChatHistoryAction,
    DeleteChatHistoryAction,
@@ -170,6 +172,7 @@ export const resetCallData = () => {
       Store.dispatch(clearCallData());
       Store.dispatch(callDurationTimestamp());
       Store.dispatch(resetCallControlsStateAction());
+      Store.dispatch(resetCallModalToastDataAction());
    });
    resetData();
    // setTimeout(() => {
@@ -294,7 +297,8 @@ const updateCallConnectionStatus = usersStatus => {
 
 const resetCloseModel = () => {
    resetCallData();
-   Store.dispatch(closeCallModal());
+   closeCallModalActivity();
+   // Store.dispatch(closeCallModal());
 };
 
 const ended = async res => {
@@ -308,7 +312,7 @@ const ended = async res => {
    // let roomId = getFromLocalStorageAndDecrypt('roomName');
    if (res.sessionStatus === 'closed') {
       if (Platform.OS === 'android') {
-         stopForegroundServiceNotification();
+         await stopForegroundServiceNotification();
       }
       clearIncomingCallTimer();
       clearOutgoingTimer();
@@ -365,7 +369,8 @@ const ended = async res => {
 
 const dispatchCommon = () => {
    // Store.dispatch(callConversion());
-   Store.dispatch(closeCallModal());
+   closeCallModalActivity();
+   // Store.dispatch(closeCallModal());
    resetCallData();
 };
 
@@ -384,14 +389,10 @@ const handleEngagedOrBusyStatus = res => {
       // });
       const callStatusMsg = res.status === 'engaged' ? CALL_ENGAGED_STATUS_MESSAGE : CALL_BUSY_STATUS_MESSAGE;
       dispatchDisconnected(callStatusMsg);
-
-      // //UI and toast show without delay
+      showCallModalToast(callStatusMsg, 2500);
+      // UI and toast show without delay
       setTimeout(() => {
-         //  localstoreCommon();
          dispatchCommon();
-         showToast(callStatusMsg, {
-            id: 'user-busy-toast',
-         });
       }, DISCONNECTED_SCREEN_DURATION);
    } else {
       if (remoteStream && Array.isArray(remoteStream) && remoteStream.length < 1) {
@@ -796,7 +797,7 @@ export const callBacks = {
    },
    incomingCallListener: function (res) {
       addHeadphonesConnectedListenerForCall();
-
+      startIncomingCallRingtone();
       remoteStream = [];
       localStream = null;
       let callMode = 'onetoone';
@@ -842,7 +843,6 @@ export const callBacks = {
          } else {
             displayIncomingCallForIos(res);
          }
-         startIncomingCallRingtone();
          Store.dispatch(setCallModalScreen(INCOMING_CALL_SCREEN));
          updatingUserStatusInRemoteStream(res.usersStatus);
          startMissedCallNotificationTimer();

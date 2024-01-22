@@ -1,9 +1,9 @@
 import React from 'react';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, Platform, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { showCheckYourInternetToast } from '../../Helper';
-import { makeCalls } from '../../Helper/Calls/Utility';
+import { makeCalls, resetCallModalActivity, showCallModalToast } from '../../Helper/Calls/Utility';
 import CallsBg from '../../assets/calls-bg.png';
 import Avathar from '../../common/Avathar';
 import { CloseIcon, PhoneIcon } from '../../common/Icons';
@@ -12,7 +12,6 @@ import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
 import { useNetworkStatus } from '../../hooks';
 import useRosterData from '../../hooks/useRosterData';
-import { resetCallStateData } from '../../redux/Actions/CallAction';
 import { resetCallAgainData } from '../../redux/Actions/CallAgainAction';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 
@@ -27,7 +26,8 @@ const CallAgain = () => {
 
    const closeScreen = () => {
       batch(() => {
-         dispatch(resetCallStateData());
+         resetCallModalActivity();
+         // dispatch(resetCallStateData());
          dispatch(resetCallAgainData());
       });
    };
@@ -37,8 +37,8 @@ const CallAgain = () => {
          if (isNetworkConnected) {
             makeCalls(callType, [userId]);
          } else {
-            closeScreen();
-            showCheckYourInternetToast();
+            // closeScreen();
+            showCallModalToast('Please check your internet connection', 2500);
          }
       }
    };

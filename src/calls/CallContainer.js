@@ -1,21 +1,17 @@
 import { NativeBaseProvider } from 'native-base';
 import React from 'react';
-import { Modal, Platform, View } from 'react-native';
-import { RINGER_MODE, getRingerMode } from 'react-native-ringer-mode';
+import { Modal, View } from 'react-native';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
-import { subscribe } from 'react-native-silentmode-detector';
 import { batch, useDispatch, useSelector } from 'react-redux';
-import { startVibration, stopVibration } from '../Helper/Calls/Call';
 import {
    CALL_AGAIN_SCREEN,
    INCOMING_CALL_SCREEN,
    ONGOING_CALL_SCREEN,
    OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
+import { resetCallModalActivity } from '../Helper/Calls/Utility';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import commonStyles from '../common/commonStyles';
-import { DISCONNECTED } from '../constant';
-import { resetCallStateData } from '../redux/Actions/CallAction';
 import { resetCallAgainData } from '../redux/Actions/CallAgainAction';
 import CallModalToastContainer from './components/CallModalToastContainer';
 import CallAgain from './screens/CallAgain';
@@ -27,37 +23,6 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
    const { showCallModal, connectionState, screenName = '' } = useSelector(state => state.callData) || {};
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const insets = initialWindowMetrics.insets;
-   const [silent, setSilent] = React.useState(false);
-
-   React.useEffect(() => {
-      if (Platform.OS === 'android') {
-         if (screenName === INCOMING_CALL_SCREEN && silent === RINGER_MODE.silent) {
-            stopVibration();
-         } else if (
-            screenName === INCOMING_CALL_SCREEN &&
-            silent !== RINGER_MODE.silent &&
-            Object.keys(connectionState).length !== 0 &&
-            getIncomingCallStatus() !== DISCONNECTED
-         ) {
-            startVibration();
-         } else if (screenName !== INCOMING_CALL_SCREEN) {
-            stopVibration();
-         }
-      }
-   }, [silent, screenName]);
-
-   React.useEffect(() => {
-      if (Platform.OS === 'android') {
-         const unsubscribe = subscribe(async () => {
-            const currentMode = await getRingerMode();
-            setSilent(currentMode);
-         });
-         return () => {
-            unsubscribe();
-         };
-      }
-   }, []);
-
    const dispatch = useDispatch();
 
    const getIncomingCallStatus = () => {
@@ -82,7 +47,7 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
 
    const renderModalContent = () => {
       const content = (
-         <View style={[commonStyles.flex1, { marginTop: insets.top, overflow: 'hidden' }]}>
+         <View style={[commonStyles.flex1, { marginTop: insets?.top, overflow: 'hidden' }]}>
             {renderCallscreenBasedOnCallStatus()}
             <CallModalToastContainer />
          </View>
@@ -93,7 +58,8 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
    const handleModalRequestClose = () => {
       if (screenName === CALL_AGAIN_SCREEN) {
          batch(() => {
-            dispatch(resetCallStateData());
+            resetCallModalActivity();
+            // dispatch(resetCallStateData());
             dispatch(resetCallAgainData());
          });
       }
@@ -102,7 +68,7 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
    return (
       <Modal
          visible={showCallModal}
-         animationType="slide"
+         animationType="none"
          statusBarTranslucent
          transparent
          onRequestClose={handleModalRequestClose}>

@@ -2,6 +2,7 @@ import React from 'react';
 import { ImageBackground, Platform, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { endCall, startOutgoingcallTimer } from '../../Helper/Calls/Call';
+import { closeCallModalActivity } from '../../Helper/Calls/Utility';
 import { capitalizeFirstLetter, getUserIdFromJid } from '../../Helper/Chat/Utility';
 import OutgoingCallBg from '../../assets/OutgoingCallBg.png';
 import Avathar from '../../common/Avathar';
@@ -9,7 +10,6 @@ import commonStyles from '../../common/commonStyles';
 import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
 import useRosterData from '../../hooks/useRosterData';
-import { closeCallModal } from '../../redux/Actions/CallAction';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 import ProfilePictureWithPulse from '../components/ProfilePictureWithPulse';
@@ -79,7 +79,8 @@ const OutGoingCall = () => {
 
    const handleClosePress = () => {
       if (Platform.OS === 'android') {
-         dispatch(closeCallModal());
+         closeCallModalActivity();
+         // dispatch(closeCallModal());
          // callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'OUTGOING_CALL');
       }
    };

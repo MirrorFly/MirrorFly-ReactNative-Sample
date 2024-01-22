@@ -1,10 +1,9 @@
 import React from 'react';
-import { Animated, ImageBackground, Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
-import RNInCallManager from 'react-native-incall-manager';
+import { Animated, ImageBackground, Platform, Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfile } from '../../Helper';
 import { CALL_STATUS_CONNECTING, CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
-import { endOnGoingCall } from '../../Helper/Calls/Utility';
+import { closeCallModalActivity, endOnGoingCall } from '../../Helper/Calls/Utility';
 import { formatUserIdToJid } from '../../Helper/Chat/ChatHelper';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
@@ -20,8 +19,6 @@ import CloseCallModalButton from '../components/CloseCallModalButton';
 import GridLayout from '../components/GridLayout';
 import SmallVideoTile from '../components/SmallVideoTile';
 import Timer from '../components/Timer';
-import { closeCallModal } from '../../redux/Actions/CallAction';
-import { Platform } from 'react-native';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType
@@ -179,7 +176,8 @@ const OnGoingCall = () => {
 
    const handleClosePress = () => {
       if (Platform.OS === 'android') {
-         dispatch(closeCallModal());
+         closeCallModalActivity();
+         // dispatch(closeCallModal());
       }
    };
 

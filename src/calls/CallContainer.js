@@ -9,7 +9,7 @@ import {
    ONGOING_CALL_SCREEN,
    OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
-import { resetCallModalActivity } from '../Helper/Calls/Utility';
+import { closeCallModalActivity, resetCallModalActivity } from '../Helper/Calls/Utility';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import commonStyles from '../common/commonStyles';
 import { resetCallAgainData } from '../redux/Actions/CallAgainAction';
@@ -24,6 +24,12 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const insets = initialWindowMetrics.insets;
    const dispatch = useDispatch();
+
+   React.useLayoutEffect(()=>{
+      if(Object.keys(connectionState).length === 0){
+         closeCallModalActivity();
+      }
+   },[])
 
    const getIncomingCallStatus = () => {
       return confrenceData?.callStatusText;

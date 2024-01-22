@@ -28,6 +28,7 @@ import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction'
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
 import { getAppInitialized } from './uikitHelpers/uikitMethods';
+import { checkAndRequestPermission } from './common/utils';
 
 LogBox.ignoreAllLogs();
 
@@ -142,6 +143,7 @@ const RootNavigation = props => {
             setInitialRouteValue(REGISTERSCREEN);
          }
          setIsLoading(false);
+         checkAndRequestPermission();
       });
    }, []);
 

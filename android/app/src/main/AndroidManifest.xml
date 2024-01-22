@@ -19,9 +19,12 @@
   <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
   <!-- Contact permission-->
   <uses-permission android:name="android.permission.READ_CONTACTS" />
+  <!-- Calls permission-->
   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
   <uses-permission android:name="android.permission.VIBRATE"/> 
   <uses-permission android:name="android.permission.WAKE_LOCK" />
+  <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <application
       android:name=".MainApplication"
@@ -56,7 +59,7 @@
         </intent-filter>
       </activity>
       <activity
-          android:name=".FullScreenActivity"
+          android:name=".CallScreenActivity"
           android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden|uiMode"
           android:excludeFromRecents="true"
           android:launchMode="singleTask"

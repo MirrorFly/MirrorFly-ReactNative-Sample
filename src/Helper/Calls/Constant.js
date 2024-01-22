@@ -54,6 +54,14 @@ export const ONGOING_CALL = 'ONGOING_CALL';
 export const MISSED_CALL = 'MISSED_CALL';
 
 // CALL AUDIO ROUTING TYPES
-export const AUDIO_ROUTE_SPEAKER = 'Speaker'
-export const AUDIO_ROUTE_PHONE = 'Phone'
-export const AUDIO_ROUTE_HEADSET = 'Headset'
+export const AUDIO_ROUTE_SPEAKER = 'Speaker';
+export const AUDIO_ROUTE_PHONE = 'Phone';
+export const AUDIO_ROUTE_HEADSET = 'Headset';
+
+// Device Types and Package Names
+export const BRAND_XIAOMI = 'xiaomi';
+export const BRAND_REDMI = 'redmi';
+export const PACKAGE_XIAOMI = 'com.miui.securitycenter';
+export const PACKAGE_XIAOMI_WINDOW_COMPONENT = 'com.miui.permcenter.permissions.PermissionsEditorActivity';
+export const alertPermissionMessage =
+   'Allow MirrorFly to send you notifications while the app in background.\n\n Please continue to app Settings > select OthersPermission > enable the all permissions.';

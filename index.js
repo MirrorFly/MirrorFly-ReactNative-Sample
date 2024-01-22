@@ -10,7 +10,7 @@ import { pushNotify, updateNotification } from './src/Service/remoteNotifyHandle
 import { setNotificationForegroundService } from './src/calls/notification/callNotifyHandler';
 import { getNotifyMessage, getNotifyNickName } from './src/components/RNCamera/Helper';
 import config from './src/components/chat/common/config';
-import CallComponent from './src/calls/CallComponent';
+import { CallComponent } from './src/calls/CallComponent';
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
    try {
@@ -23,6 +23,9 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
       if (remoteMessage.data.type === 'recall') {
          updateNotification(remoteMessage.data.message_id);
          return;
+      }
+      if (remoteMessage?.data.type === 'mediacall') {
+         await SDK.getCallNotification(remoteMessage);
       }
       const notify = await SDK.getNotificationData(remoteMessage);
       if (notify?.statusCode === 200) {
@@ -43,7 +46,7 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 });
 if (Platform.OS === 'android') {
    setNotificationForegroundService();
-   AppRegistry.registerComponent('IncomingCall', () => CallComponent);
+   AppRegistry.registerComponent('CallScreen', () => CallComponent);
 }
 /**
 // messaging().onMessage(async remoteMessage => {

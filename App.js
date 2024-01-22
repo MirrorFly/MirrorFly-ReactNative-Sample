@@ -5,7 +5,7 @@ import { ChatApp } from './src/ChatApp';
 import SDK from './src/SDK/SDK';
 import { callBacks } from './src/SDKActions/callbacks';
 import { removeAllDeliveredNotification } from './src/Service/remoteNotifyHandle';
-import CallComponent from './src/calls/CallComponent';
+import { CallComponent } from './src/calls/CallComponent';
 import { requestNotificationPermission } from './src/common/utils';
 import { setAppInitialized } from './src/uikitHelpers/uikitMethods';
 import config from './src/components/chat/common/config';

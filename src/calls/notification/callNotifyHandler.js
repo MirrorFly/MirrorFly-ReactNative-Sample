@@ -111,7 +111,7 @@ export const getIncomingCallNotification = async (
       notification.android.fullScreenAction = {
          id: 'default',
          launchActivityFlags: [AndroidLaunchActivityFlag.NEW_TASK],
-         launchActivity: 'com.mirrorfly_rn.FullScreenActivity',
+         launchActivity: 'com.mirrorfly_rn.CallScreenActivity',
       };
    }
    /** Display a notification */
@@ -303,7 +303,7 @@ export const onNotificationAction = async ({ type, detail }) => {
    }
 };
 
-export async function setNotificationForegroundService() {
+export const setNotificationForegroundService = async () => {
    // Register foreground service, NOOP
    notifee.registerForegroundService(notification => {
       const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
@@ -352,7 +352,7 @@ export async function setNotificationForegroundService() {
    //  Register notification listeners
    notifee.onBackgroundEvent(onNotificationAction);
    notifee.onForegroundEvent(onNotificationAction);
-}
+};
 
 export const stopForegroundServiceNotification = async (cancelID = '') => {
    try {

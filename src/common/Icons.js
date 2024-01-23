@@ -2743,3 +2743,97 @@ export const NotificationAudioIcon = ({ width, height, color }) => {
       </Svg>
    );
 };
+
+export const IncomingCallAccept = ({ width, height, color }) => {
+   return (
+      <Svg
+         id="phone-call-button"
+         xmlns="http://www.w3.org/2000/svg"
+         width={width || '17.607'}
+         height={height || '17.607'}
+         viewBox="0 0 17.607 17.607">
+         <G id="call">
+            <Path
+               id="Path_9631"
+               data-name="Path 9631"
+               d="M3.521,7.63a15.228,15.228,0,0,0,6.456,6.456l2.152-2.152a.779.779,0,0,1,.978-.2,10.232,10.232,0,0,0,3.521.587.924.924,0,0,1,.978.978v3.326a.924.924,0,0,1-.978.978A16.615,16.615,0,0,1,0,.978.924.924,0,0,1,.978,0H4.4A.924.924,0,0,1,5.38.978,11.078,11.078,0,0,0,5.967,4.5a1.2,1.2,0,0,1-.2.978Z"
+               fill="#4cda64"
+            />
+         </G>
+      </Svg>
+   );
+};
+
+export const IncomingCallEnd = ({ width, height, color }) => {
+   return (
+      <Svg
+         xmlns="http://www.w3.org/2000/svg"
+         width={width || '26.269'}
+         height={height || '26.269'}
+         viewBox="0 0 26.269 26.269">
+         <G id="phone-call-button" transform="translate(26.269 13.134) rotate(135)">
+            <G id="call" transform="translate(0 0)">
+               <Path
+                  id="Path_9631"
+                  data-name="Path 9631"
+                  d="M3.715,8.049a16.065,16.065,0,0,0,6.811,6.811l2.27-2.27a.822.822,0,0,1,1.032-.206A10.794,10.794,0,0,0,17.543,13a.975.975,0,0,1,1.032,1.032v3.509a.975.975,0,0,1-1.032,1.032A17.528,17.528,0,0,1,0,1.032.975.975,0,0,1,1.032,0H4.644A.975.975,0,0,1,5.676,1.032a11.687,11.687,0,0,0,.619,3.715,1.271,1.271,0,0,1-.206,1.032Z"
+                  transform="translate(0 0)"
+                  fill="#fa2b49"
+               />
+            </G>
+         </G>
+      </Svg>
+   );
+};
+
+export const IncomingCallIcon = ({ width, height, color }) => {
+   return (
+      <Svg
+         id="phone-call-button"
+         xmlns="http://www.w3.org/2000/svg"
+         width={width || '17.607'}
+         height={height || '17.607'}
+         viewBox="0 0 17.607 17.607">
+         <G id="call">
+            <Path
+               id="Path_9631"
+               data-name="Path 9631"
+               d="M3.521,7.63a15.228,15.228,0,0,0,6.456,6.456l2.152-2.152a.779.779,0,0,1,.978-.2,10.232,10.232,0,0,0,3.521.587.924.924,0,0,1,.978.978v3.326a.924.924,0,0,1-.978.978A16.615,16.615,0,0,1,0,.978.924.924,0,0,1,.978,0H4.4A.924.924,0,0,1,5.38.978,11.078,11.078,0,0,0,5.967,4.5a1.2,1.2,0,0,1-.2.978Z"
+               fill="#4879f9"
+            />
+         </G>
+      </Svg>
+   );
+};
+
+export const CallUpArrow1 = () => {
+   return (
+      <Svg xmlns="http://www.w3.org/2000/svg" width="15.714" height="8.958" viewBox="0 0 15.714 8.958">
+         <G id="arrow-point-to-right" transform="translate(15.714) rotate(90)" opacity="0.45">
+            <Path
+               id="Path_9632"
+               data-name="Path 9632"
+               d="M.322,8.635l6.757,6.757a1.1,1.1,0,1,0,1.556-1.556L2.657,7.857,8.635,1.879A1.1,1.1,0,1,0,7.079.322L.322,7.079a1.1,1.1,0,0,0,0,1.556Z"
+               transform="translate(0 0)"
+               fill="#fff"
+            />
+         </G>
+      </Svg>
+   );
+};
+
+export const CallUpArrow2 = () => {
+   return (
+      <Svg xmlns="http://www.w3.org/2000/svg" width="14.063" height="8.016" viewBox="0 0 14.063 8.016">
+         <G id="arrow-point-to-right" transform="translate(14.063) rotate(90)" opacity="0.2">
+            <Path
+               id="Path_9632"
+               data-name="Path 9632"
+               d="M.288,7.728l6.047,6.047a.985.985,0,1,0,1.393-1.393L2.378,7.031l5.35-5.35A.985.985,0,0,0,6.335.288L.288,6.335a.985.985,0,0,0,0,1.392Z"
+               transform="translate(0 0)"
+               fill="#fff"
+            />
+         </G>
+      </Svg>
+   );
+};

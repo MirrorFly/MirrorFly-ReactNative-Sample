@@ -67,9 +67,13 @@ let preventEndCallFromHeadsetButton = false;
 
 export const addHeadphonesConnectedListenerForCall = (shouldUpdateInitialValue = true) => {
    HeadphoneDetection.addListener(data => {
-      Store.dispatch(updateCallWiredHeadsetConnected(data.audioJack));
-      if (data.audioJack && Platform.OS === 'android') {
-         updateCallSpeakerEnabled(false, '', '', false); // 2nd, 3rd and 4th params will not be used in Android so passing empty data
+      const callControlsData = Store.getState().callControlsData;
+      const isWiredHeadsetConnected = callControlsData?.isWiredHeadsetConnected || false;
+      data.audioJack !== isWiredHeadsetConnected && Store.dispatch(updateCallWiredHeadsetConnected(data.audioJack));
+      const isSpeakerEnabledInUI = callControlsData?.isSpeakerEnabled || false;
+      if (Platform.OS === 'android' && isSpeakerEnabledInUI) {
+         const shouldEnableSpeaker = data.audioJack ? false : isSpeakerEnabledInUI;
+         updateCallSpeakerEnabled(shouldEnableSpeaker, '', ''); // only 1st param will be used in Android so passing empty data for remaining params
       }
    });
    if (shouldUpdateInitialValue) {
@@ -403,7 +407,7 @@ export const declineIncomingCall = async () => {
 const handleAudioRouteChangeListenerForIos = () => {
    RNCallKeep.addEventListener('didChangeAudioRoute', ({ output, reason }) => {
       const currentCallUUID = Store.getState().callData?.callerUUID;
-      updateCallSpeakerEnabled(output === AUDIO_ROUTE_SPEAKER, output, currentCallUUID, true);
+      updateCallSpeakerEnabled(output === AUDIO_ROUTE_SPEAKER, output, currentCallUUID, true, reason);
    });
 };
 
@@ -484,7 +488,6 @@ export const displayIncomingCallForAndroid = async callResponse => {
    const contactNumber = getUserIdFromJid(callResponse.userJid);
    const nickName =
       callingUserData?.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
-   console.log(AppState.currentState, 'currentState');
    if (AppState.currentState === 'active') {
       // Store.dispatch(openCallModal());
       openCallModelActivity();
@@ -522,10 +525,10 @@ export const openCallModelActivity = async () => {
    }
 };
 
-export const appKeepAliveActivity = () => {
+export const appKeepAliveActivity = async () => {
    let appStateWhenGoesBackground = AppState.addEventListener('change', async nextAppState => {
-      let deviceLocked = await getDeviceLockState();
-      if (nextAppState === 'active' && deviceLocked) {
+      let activity = await ActivityModule.getActivity();
+      if (nextAppState === 'active' && activity.includes('CallScreenActivity')) {
          Store.dispatch(openCallModal());
          appStateWhenGoesBackground.remove();
       }
@@ -638,7 +641,7 @@ export const updateMissedCallNotification = async callData => {
    }
 };
 
-const onVoipPushNotificationiReceived = async data => {
+const onVoipPushNotificationReceived = async data => {
    let {
       payload,
       payload: { caller_id, caller_name },
@@ -670,14 +673,14 @@ export const pushNotifyBackground = () => {
       for (let voipPushEvent of events) {
          let { name, data } = voipPushEvent;
          if (name === 'RNCallKeepDidDisplayIncomingCall' && Number(data.fromPushKit) === 1) {
-            onVoipPushNotificationiReceived(data);
+            onVoipPushNotificationReceived(data);
          }
       }
    });
 
    RNCallKeep.addEventListener('didDisplayIncomingCall', data => {
       if (Number(data.fromPushKit) === 1) {
-         onVoipPushNotificationiReceived(data);
+         onVoipPushNotificationReceived(data);
       }
    });
 
@@ -694,7 +697,7 @@ export const pushNotifyBackground = () => {
    //       } else if (name === RNVoipPushNotification.RNVoipPushRemoteNotificationReceivedEvent) {
    //          console.log(data,"data");
 
-   //          // onVoipPushNotificationiReceived(data, 'didLoadWithEvents');
+   //          // onVoipPushNotificationReceived(data, 'didLoadWithEvents');
    //       }
    //    }
    // });
@@ -703,7 +706,7 @@ export const pushNotifyBackground = () => {
    //    // --- when receive remote voip push, register your VoIP client, show local notification ... etc
    //    console.log(notification,"notification");
    //    // Alert.alert('', 'RNVoipPushNotification')
-   //    // onVoipPushNotificationiReceived(notification, 'notification');
+   //    // onVoipPushNotificationReceived(notification, 'notification');
    //    // --- optionally, if you `addCompletionHandler` from the native side, once you have done the js jobs to initiate a call, call `completion()`
    //    RNVoipPushNotification.onVoipNotificationCompleted(notification.uuid);
    // });
@@ -789,27 +792,15 @@ export const updateCallAudioMute = async (audioMuted, callUUID, isFromCallKeep =
    }
 };
 
-export const updateCallSpeakerEnabled = async (speakerEnabled, audioRouteName, callUUID, isFromCallKeep = false) => {
-   /** console.log('Getting audio routes');
-   RNCallKeep.startCall('11111', '919090909090', 'Abdul Rahman');
-   RNCallKeep.getAudioRoutes().then(res => {
-      console.log('Audio Routings', JSON.stringify(res, null, 2));
-      RNCallKeep.setAudioRoute('11111', AUDIO_ROUTE_SPEAKER);
-   }); */
-   /** // console.log('updating speaker to', speakerEnabled);
-   // RNCallKeep.setAudioRoute(callUUID, mediaName);
-   // Store.dispatch(updateCallSpeakerEnabledAction(speakerEnabled));
-   // RNCallKeep.startCall('11111', '919090909090', 'Abdul Rahman');
-   // RNCallKeep.setAudioRoute('123456', mediaName);
-   // RNCallKeep.getAudioRoutes().then(res => {
-   //    console.log('Audio Routings', JSON.stringify(res, null, 2));
-   // });
-   // const audioRouted = RNInCallManager.chooseAudioRoute('SPEAKER_PHONE');
-   // audioRouted.then(res => {
-   //    console.log('audioRouted avaiable devices', res.availableAudioDeviceList, res.selectedAudioDevice);
-   // })
-   // RNInCallManager.getIsWiredHeadsetPluggedIn(); */
+export const updateCallSpeakerEnabled = async (
+   speakerEnabled,
+   audioRouteName,
+   callUUID,
+   isFromCallKeep = false,
+   audioRouteChangeReason = '',
+) => {
    try {
+      const isSpeakerEnabledInUI = Store.getState().callControlsData?.isSpeakerEnabled;
       if (Platform.OS === 'android') {
          RNInCallManager.setSpeakerphoneOn(speakerEnabled);
       } else if (!isFromCallKeep) {
@@ -818,8 +809,23 @@ export const updateCallSpeakerEnabled = async (speakerEnabled, audioRouteName, c
          // because we are routing only the stream and not the ringing tone. So manually enabling/disabling the speaker
          RNInCallManager.setSpeakerphoneOn(speakerEnabled);
          RNInCallManager.setForceSpeakerphoneOn(speakerEnabled);
+      } else {
+         switch (audioRouteChangeReason) {
+            // iOS audio route change reasons
+            case 3: // Category change
+               // change the category based on the call type and already selected audio route
+               if (isSpeakerEnabledInUI && audioRouteName?.toLowerCase?.() !== 'speaker') {
+                  updateCallSpeakerEnabled(true, 'Speaker', callUUID);
+                  return;
+               }
+               break;
+            case 4: // override
+               // already the audio route has been overriden by the callKeep, so ignoring this case
+               break;
+         }
       }
-      Store.dispatch(updateCallSpeakerEnabledAction(speakerEnabled));
+
+      isSpeakerEnabledInUI !== speakerEnabled && Store.dispatch(updateCallSpeakerEnabledAction(speakerEnabled));
    } catch (err) {
       console.log('Error while toggling speaker', err);
    }

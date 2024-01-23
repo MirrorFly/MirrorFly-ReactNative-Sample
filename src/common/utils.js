@@ -1,7 +1,12 @@
 import React from 'react';
 import DocumentPicker from 'react-native-document-picker';
 import { Box, Text } from 'native-base';
-import { request, PERMISSIONS, requestMultiple } from 'react-native-permissions';
+import {
+  request,
+  PERMISSIONS,
+  requestMultiple,
+  check,
+} from 'react-native-permissions';
 import { Alert, Linking, NativeModules, Platform } from 'react-native';
 import SDK from '../SDK/SDK';
 import messaging from '@react-native-firebase/messaging';
@@ -145,6 +150,14 @@ export const requestLocationPermission = async () => {
 
 export const requestMicroPhonePermission = async () => {
    return request(Platform.OS === 'android' ? PERMISSIONS.ANDROID.RECORD_AUDIO : PERMISSIONS.IOS.MICROPHONE);
+};
+
+export const checkMicroPhonePermission = async () => {
+  return check(
+    Platform.OS === 'android'
+      ? PERMISSIONS.ANDROID.RECORD_AUDIO
+      : PERMISSIONS.IOS.MICROPHONE,
+  );
 };
 
 export const requestNotificationPermission = async () => {

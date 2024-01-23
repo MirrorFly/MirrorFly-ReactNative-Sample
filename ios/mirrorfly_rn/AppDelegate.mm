@@ -3,6 +3,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
+#import <React/RCTEventEmitter.h>
 // Push notification set-up.
 #import <UserNotifications/UserNotifications.h>
 #import <React/RCTAsyncLocalStorage.h>
@@ -17,6 +18,10 @@
 #import <RNCallKeep.h>
 #import <CallKit/CallKit.h>
 #import <RNKeyEvent.h>
+#import <AVFoundation/AVFoundation.h>
+#import <UIKit/UIKit.h>
+
+#import <UserNotifications/UserNotifications.h>
 
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
@@ -202,6 +207,11 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
   [RNVoipPushNotificationManager didReceiveIncomingPushWithPayload:payload forType:(NSString *)type];
 
   if(count < 1) {
+    
+  //  Check the Mic permission and if the permission is not provided then end the call
+
+    AVAuthorizationStatus micPermissionStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
+    
     [RNCallKeep reportNewIncomingCall: uuid
                                handle: callerId
                            handleType: @"generic"
@@ -214,6 +224,31 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
                           fromPushKit: YES
                               payload: [payload dictionaryPayload]
                 withCompletionHandler: completion];
+    
+    if (micPermissionStatus != AVAuthorizationStatusAuthorized) {
+      [RNCallKeep endCallWithUUID:uuid reason:1]; // ending the call with reason Failed
+
+        if (micPermissionStatus == AVAuthorizationStatusNotDetermined) {
+          [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {}];
+      }
+      
+      // Showing local notification for the ended incoming call
+      UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+      content.title = callerId;
+      content.body = [NSString stringWithFormat:@"You missed %@ %@. Please enable permission in App Settings to help you connect with your friends.", hasvideo ? @"a" : @"an", hasvideo ? @"video call" : @"audio call"];
+      content.sound = [UNNotificationSound defaultSound];
+
+      UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:@"ImmediateNotification"
+                                                                            content:content
+                                                                            trigger:nil];
+
+      UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+      [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+          if (error) {
+              NSLog(@"Error scheduling local notification: %@", error);
+          }
+      }];
+    }
   }else{
       // Report and end invalid call
       [RNCallKeep reportNewIncomingCall: uuid
@@ -230,7 +265,6 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
                   withCompletionHandler: completion];
       [RNCallKeep endCallWithUUID:uuid reason:2];
   }
-
   
   // --- You don't need to call it if you stored `completion()` and will call it on the js side.
   completion();

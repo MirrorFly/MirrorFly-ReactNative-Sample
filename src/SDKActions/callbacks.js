@@ -55,6 +55,7 @@ import {
    showCallModalToast,
    showOngoingNotification,
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
+   updateCallSpeakerEnabled,
    updateMissedCallNotification,
 } from '../Helper/Calls/Utility';
 import { formatUserIdToJid, getLocalUserDetails } from '../Helper/Chat/ChatHelper';
@@ -467,9 +468,17 @@ const connected = async res => {
          stopOutgoingCallRingingTone();
          stopReconnectingTone();
          clearOutgoingTimer();
-         if (Platform.OS === 'android' && !onReconnect) {
-            await stopForegroundServiceNotification();
-            showOngoingNotification(res);
+         if (Platform.OS === 'android') {
+            // once the call is connected, already selected audio route is not automatically working
+            // so manually rerouting the audio to the selected one if it is changed
+            const isSpeakerEnabledInUI = Store.getState().callControlsData?.isSpeakerEnabled || false;
+            if (isSpeakerEnabledInUI) {
+               updateCallSpeakerEnabled(true, '', ''); // only 1st param will be used in Android so passing empty data for remaining params
+            }
+            if (!onReconnect) {
+               await stopForegroundServiceNotification();
+               showOngoingNotification(res);
+            }
          }
          onReconnect = false;
       }
@@ -787,7 +796,6 @@ export const callBacks = {
       console.log('adminBlockListener = (res) => { }', res);
    },
    incomingCallListener: function (res) {
-      console.log(JSON.stringify(res, null, 2), 'incomingCallListener');
       addHeadphonesConnectedListenerForCall();
       startIncomingCallRingtone();
       remoteStream = [];

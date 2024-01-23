@@ -21,6 +21,7 @@ const GestureAnimationScreen = (props = {}) => {
    let [swipeColor, setSwipeColors] = React.useState('#F2F2F2');
    const duration = 300;
    const delay = 100;
+   let swipeHandle = false;
 
    React.useEffect(() => {
       const createAnimation = (target, startDelay) => {
@@ -103,19 +104,23 @@ const GestureAnimationScreen = (props = {}) => {
                if (gesture.dy < -80) {
                   setSwipeColor('#4cda64');
                   if (gesture.dy < -100) {
+                     swipeHandle = true;
                      acceptCall();
                   }
                } else if (gesture.dy > 80) {
                   setSwipeColor('red');
                   if (gesture.dy > 100) {
+                     swipeHandle = true;
                      declineCall();
                   }
                }
             },
             onPanResponderRelease: () => {
                // Reset styles or perform cleanup when the gesture is released
-               Animated.spring(panY, { toValue: 0, useNativeDriver: false }).start();
-               setSwipeColor('#F2F2F2');
+               if (!swipeHandle) {
+                  Animated.spring(panY, { toValue: 0, useNativeDriver: false }).start();
+                  setSwipeColor('#F2F2F2');
+               }
             },
          }),
       [],

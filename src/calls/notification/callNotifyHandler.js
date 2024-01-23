@@ -8,7 +8,7 @@ import notifee, {
    AndroidVisibility,
    EventType,
 } from '@notifee/react-native';
-import { AppState, Linking } from 'react-native';
+import { AppState, Linking, Platform } from 'react-native';
 import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN } from '../../constant';
 import { updateChatConversationLocalNav } from '../../redux/Actions/ChatConversationLocalNavAction';
 import Store from '../../redux/store';
@@ -187,7 +187,8 @@ export const getMissedCallNotification = async (roomId, callDetailObj = {}, user
    let notificationExist = displayedNotificationId.find(
       res => res?.notification?.title === title && res?.notification?.body === nickName,
    );
-   let channelId = notificationExist ? notificationExist?.notification?.android?.channelId : '';
+   let channelId =
+      notificationExist && Platform.OS === 'android' ? notificationExist?.notification?.android?.channelId : '';
    if (!notificationExist) {
       channelId = await notifee.createChannel({
          id: MISSED_CALL,
@@ -223,6 +224,9 @@ export const getMissedCallNotification = async (roomId, callDetailObj = {}, user
    if (notificationExist) notification.id = notificationExist?.notification?.id;
    /** Display a notification */
    await notifee.displayNotification(notification);
+   if (Platform.OS === 'ios') {
+      registerNotificationEvents();
+   }
 };
 
 const onChatNotificationForeGround = async ({ type, detail }) => {
@@ -285,7 +289,7 @@ export const onNotificationAction = async ({ type, detail }) => {
                // });
             } else {
                const push_url = 'mirrorfly_rn://CALLSCREEN';
-               Linking.openURL(push_url);
+               await Linking.openURL(push_url);
             }
          }
       }
@@ -348,7 +352,10 @@ export const setNotificationForegroundService = async () => {
          }
       });
    });
+   registerNotificationEvents();
+};
 
+export const registerNotificationEvents = () => {
    //  Register notification listeners
    notifee.onBackgroundEvent(onNotificationAction);
    notifee.onForegroundEvent(onNotificationAction);

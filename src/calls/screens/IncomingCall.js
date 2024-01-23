@@ -19,6 +19,7 @@ import ApplicationColors from '../../config/appColors';
 import { useAppState } from '../../hooks';
 import useRosterData from '../../hooks/useRosterData';
 import CloseCallModalButton from '../components/CloseCallModalButton';
+import GestureAnimationScreen from './GestureAnimationScreen';
 
 const IncomingCall = ({ userId, userJid, callStatus }) => {
    const { connectionState, showCallModal } = useSelector(state => state.callData) || {};
@@ -116,13 +117,13 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
          {/* call action buttons (Accept & Reject) */}
          {callStatus === CALL_STATUS_INCOMING && (
             <GestureHandlerRootView style={styles.actionButtonWrapper}>
-               {/* <GestureAnimationScreen /> */}
-               <RectButton onPress={declineCall} style={[styles.actionButton, styles.redButton]}>
+               <GestureAnimationScreen acceptCall={acceptCall} declineCall={declineCall} />
+               {/* <RectButton onPress={declineCall} style={[styles.actionButton, styles.redButton]}>
                   <Text style={styles.actionButtonText}> Reject </Text>
                </RectButton>
                <RectButton onPress={acceptCall} style={[styles.actionButton, styles.greenButton]}>
                   <Text style={styles.actionButtonText}> Accept </Text>
-               </RectButton>
+               </RectButton> */}
             </GestureHandlerRootView>
          )}
       </ImageBackground>
@@ -164,9 +165,9 @@ const styles = StyleSheet.create({
       alignItems: 'center',
    },
    actionButtonWrapper: {
-      marginBottom: 80,
-      flexDirection: 'row',
-      justifyContent: 'space-around',
+      marginBottom: 20,
+      // flexDirection: 'row',
+      // justifyContent: 'space-around',
    },
    actionButton: {
       width: 100,

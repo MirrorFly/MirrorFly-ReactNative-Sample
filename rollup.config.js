@@ -84,8 +84,8 @@ export default {
       'react-native-background-timer',
       'react-native-silentmode-detector',
       'react-native-headphone-detection',
-      '@notifee/react-native',
       'react-native-callkeep',
+      'react-native-voip-push-notification',
    ],
    plugins: [
       replace({

@@ -25,11 +25,11 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
    const insets = initialWindowMetrics.insets;
    const dispatch = useDispatch();
 
-   React.useLayoutEffect(()=>{
-      if(Object.keys(connectionState).length === 0){
+   React.useLayoutEffect(() => {
+      if (Object.keys(connectionState).length === 0) {
          closeCallModalActivity();
       }
-   },[])
+   }, []);
 
    const getIncomingCallStatus = () => {
       return confrenceData?.callStatusText;

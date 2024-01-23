@@ -484,7 +484,6 @@ export const displayIncomingCallForAndroid = async callResponse => {
    const contactNumber = getUserIdFromJid(callResponse.userJid);
    const nickName =
       callingUserData?.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
-   console.log(AppState.currentState, 'currentState');
    if (AppState.currentState === 'active') {
       // Store.dispatch(openCallModal());
       openCallModelActivity();
@@ -522,10 +521,10 @@ export const openCallModelActivity = async () => {
    }
 };
 
-export const appKeepAliveActivity = () => {
+export const appKeepAliveActivity = async () => {
    let appStateWhenGoesBackground = AppState.addEventListener('change', async nextAppState => {
-      let deviceLocked = await getDeviceLockState();
-      if (nextAppState === 'active' && deviceLocked) {
+      let activity = await ActivityModule.getActivity();
+      if (nextAppState === 'active' && activity.includes('CallScreenActivity')) {
          Store.dispatch(openCallModal());
          appStateWhenGoesBackground.remove();
       }
@@ -638,7 +637,7 @@ export const updateMissedCallNotification = async callData => {
    }
 };
 
-const onVoipPushNotificationiReceived = async data => {
+const onVoipPushNotificationReceived = async data => {
    let {
       payload,
       payload: { caller_id, caller_name },
@@ -670,14 +669,14 @@ export const pushNotifyBackground = () => {
       for (let voipPushEvent of events) {
          let { name, data } = voipPushEvent;
          if (name === 'RNCallKeepDidDisplayIncomingCall' && Number(data.fromPushKit) === 1) {
-            onVoipPushNotificationiReceived(data);
+            onVoipPushNotificationReceived(data);
          }
       }
    });
 
    RNCallKeep.addEventListener('didDisplayIncomingCall', data => {
       if (Number(data.fromPushKit) === 1) {
-         onVoipPushNotificationiReceived(data);
+         onVoipPushNotificationReceived(data);
       }
    });
 
@@ -694,7 +693,7 @@ export const pushNotifyBackground = () => {
    //       } else if (name === RNVoipPushNotification.RNVoipPushRemoteNotificationReceivedEvent) {
    //          console.log(data,"data");
 
-   //          // onVoipPushNotificationiReceived(data, 'didLoadWithEvents');
+   //          // onVoipPushNotificationReceived(data, 'didLoadWithEvents');
    //       }
    //    }
    // });
@@ -703,7 +702,7 @@ export const pushNotifyBackground = () => {
    //    // --- when receive remote voip push, register your VoIP client, show local notification ... etc
    //    console.log(notification,"notification");
    //    // Alert.alert('', 'RNVoipPushNotification')
-   //    // onVoipPushNotificationiReceived(notification, 'notification');
+   //    // onVoipPushNotificationReceived(notification, 'notification');
    //    // --- optionally, if you `addCompletionHandler` from the native side, once you have done the js jobs to initiate a call, call `completion()`
    //    RNVoipPushNotification.onVoipNotificationCompleted(notification.uuid);
    // });

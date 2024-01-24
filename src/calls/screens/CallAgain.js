@@ -2,7 +2,6 @@ import React from 'react';
 import { ImageBackground, Platform, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import { batch, useDispatch, useSelector } from 'react-redux';
-import { showCheckYourInternetToast } from '../../Helper';
 import { makeCalls, resetCallModalActivity, showCallModalToast } from '../../Helper/Calls/Utility';
 import CallsBg from '../../assets/calls-bg.png';
 import Avathar from '../../common/Avathar';
@@ -47,7 +46,7 @@ const CallAgain = () => {
       <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>
          <View>
             {/* down arrow to close the modal */}
-            <CloseCallModalButton onPress={closeScreen} />
+            {Platform.OS === 'android' && <CloseCallModalButton onPress={closeScreen} />}
             {/* call status */}
             <View style={styles.callStatusWrapper}>
                <Text style={styles.callStatusText}>{callStatus}</Text>

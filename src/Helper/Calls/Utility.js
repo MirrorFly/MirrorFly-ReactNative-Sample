@@ -14,6 +14,7 @@ import { clearIosCallListeners, muteLocalAudio, muteLocalVideo, resetCallData } 
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
 import { requestMicroPhonePermission } from '../../common/utils';
 import {
+   callDurationTimestamp,
    clearCallData,
    closeCallModal,
    openCallModal,
@@ -838,4 +839,13 @@ export const showCallModalToast = (message, duration) => {
          duration: duration,
       }),
    );
+};
+
+export const startDurationTimer = () => {
+   if (Platform.OS === 'ios') {
+      let callConnectionData = Store.getState?.().callData;
+      callConnectionData.callDuration === 0 &&
+         !callConnectionData.showCallModal &&
+         Store.dispatch(callDurationTimestamp(Date.now()));
+   }
 };

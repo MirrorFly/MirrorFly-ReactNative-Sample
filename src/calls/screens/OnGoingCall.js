@@ -175,10 +175,8 @@ const OnGoingCall = () => {
    };
 
    const handleClosePress = () => {
-      if (Platform.OS === 'android') {
-         closeCallModalActivity();
-         // dispatch(closeCallModal());
-      }
+      closeCallModalActivity();
+      // dispatch(closeCallModal());
    };
 
    const handleHangUp = async e => {

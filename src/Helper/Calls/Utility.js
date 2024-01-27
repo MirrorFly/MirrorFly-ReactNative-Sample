@@ -60,6 +60,7 @@ import {
    PERMISSION_DENIED,
 } from './Constant';
 import { closePermissionModal } from '../../redux/Actions/PermissionAction';
+// import RNVoipPushNotification from 'react-native-voip-push-notification';
 const { ActivityModule } = NativeModules;
 
 let preventMultipleClick = false;
@@ -696,7 +697,7 @@ export const pushNotifyBackground = () => {
    //       if (name === RNVoipPushNotification.RNVoipPushRemoteNotificationsRegisteredEvent) {
    //          //   onVoipPushNotificationRegistered(data);
    //       } else if (name === RNVoipPushNotification.RNVoipPushRemoteNotificationReceivedEvent) {
-   //          console.log(data,"data");
+   //          console.log('RNVoipPushNotification - RNVoipPushRemoteNotificationReceivedEvent  ==>> ', data);
 
    //          // onVoipPushNotificationReceived(data, 'didLoadWithEvents');
    //       }
@@ -705,7 +706,7 @@ export const pushNotifyBackground = () => {
 
    // RNVoipPushNotification.addEventListener('notification', async notification => {
    //    // --- when receive remote voip push, register your VoIP client, show local notification ... etc
-   //    console.log(notification,"notification");
+   //    console.log('RNVoipPushNotification notification ==>>', notification);
    //    // Alert.alert('', 'RNVoipPushNotification')
    //    // onVoipPushNotificationReceived(notification, 'notification');
    //    // --- optionally, if you `addCompletionHandler` from the native side, once you have done the js jobs to initiate a call, call `completion()`

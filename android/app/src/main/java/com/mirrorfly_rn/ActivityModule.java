@@ -9,36 +9,52 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.util.Log;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ActivityModule extends ReactContextBaseJavaModule {
-    private final ReactApplicationContext reactContext;
+    public static final String CALL_SCREEN_ACTIVITY_STATE_CHANGE = "CALL_SCREEN_ACTIVITY_STATE_CHANGE";
+    private static DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = null;
+
+    public ReactApplicationContext reactContext;
+    public static ActivityModule instance = null;
 
     public ActivityModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
     }
 
+    private ActivityModule() {}
+
+
+    public static synchronized ActivityModule getInstance() {
+        if (instance == null) {
+            instance = new ActivityModule();
+        }
+        return instance;
+    }
     @Override
     public String getName() {
         return "ActivityModule";
     }
 
+    @Override
+    public void initialize() {
+        super.initialize();
+        eventEmitter = this.reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+    }
+
     @ReactMethod
     public void CloseActivity() {
-        final Activity activity = getReactApplicationContext().getCurrentActivity();
-        if (activity != null) {
-            final String className = getReactApplicationContext().getCurrentActivity().getComponentName().getClassName();
-            if (className.contains("CallScreenActivity")) {
-                activity.finish();
-            }
-        }
+        ActivityManager.getInstance().finishActivity(CallScreenActivity.class);
     }
 
     @ReactMethod
@@ -105,6 +121,10 @@ public class ActivityModule extends ReactContextBaseJavaModule {
             return true;
         else
             return false;
+    }
+
+    public void onCallScreenActivityStateChange(String state) {
+        eventEmitter.emit(CALL_SCREEN_ACTIVITY_STATE_CHANGE, state);
     }
 
     @ReactMethod

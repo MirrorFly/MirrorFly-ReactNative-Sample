@@ -1,7 +1,18 @@
 import React from 'react';
-import { Animated, ImageBackground, Platform, Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
+import {
+   Animated,
+   AppState,
+   ImageBackground,
+   Platform,
+   Pressable as RNPressable,
+   StyleSheet,
+   Text,
+   View,
+   NativeModules,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUserProfile } from '../../Helper';
+import PipHandler, { usePipModeListener } from '../../customModules/PipModule';
+import { enablePipModeIfCallConnected, getUserProfile } from '../../Helper';
 import { CALL_STATUS_CONNECTING, CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
 import { closeCallModalActivity, endOnGoingCall } from '../../Helper/Calls/Utility';
 import { formatUserIdToJid } from '../../Helper/Chat/ChatHelper';
@@ -19,7 +30,9 @@ import CloseCallModalButton from '../components/CloseCallModalButton';
 import GridLayout from '../components/GridLayout';
 import SmallVideoTile from '../components/SmallVideoTile';
 import Timer from '../components/Timer';
-
+import PipGridLayoutAndroid from '../components/PipGridLayoutAndroid';
+import useCallScreenStateChange from '../../hooks/useCallScreenStateChange';
+const { ActivityModule } = NativeModules;
 /**
  * @typedef {'grid'|'tile'} LayoutType
  */
@@ -44,6 +57,10 @@ const OnGoingCall = () => {
    const vCardData = useSelector(state => state.profile?.profileDetails);
    const rosterData = useSelector(state => state.rosterData.data);
 
+   const isPipMode = usePipModeListener();
+
+   // const callScreenActivityState = useCallScreenStateChange();
+
    const showControlsRef = React.useRef(true);
    const topViewControlsHeightRef = React.useRef(0);
    const bottomControlsViewHeightRef = React.useRef(0);
@@ -55,7 +72,32 @@ const OnGoingCall = () => {
    // animated value variables for initial render of the user views
    const layoutOpacity = React.useRef(new Animated.Value(0)).current;
 
+   const appStateListener = React.useRef();
+
    const dispatch = useDispatch();
+
+   // React.useEffect(() => {
+   //    if (Platform.OS === 'android' && callScreenActivityState === 'background' && !isPipMode) {
+   //       enablePipModeIfCallConnected();
+
+   //       // console.log('Attaching Listsner', isPipMode);
+   //       // appStateListener.current = AppState.addEventListener('change', _state => {
+   //       //    if (_state === 'background') {
+   //       //       console.log('Enabling PIP throught background Listsner', isPipMode);
+   //       //       if (!isPipMode) {
+   //       //          enablePipModeIfCallConnected();
+   //       //          // removing the app state change listener when pip mode is enabled
+   //       //          appStateListener.current?.remove();
+   //       //          appStateListener.current = null;
+   //       //       }
+   //       //    }
+   //       // });
+   //       // return () => {
+   //       //    console.log('Removing Listsner');
+   //       //    appStateListener.current?.remove();
+   //       // };
+   //    }
+   // }, [callScreenActivityState, isPipMode]);
 
    /**
     * @type {[
@@ -176,7 +218,13 @@ const OnGoingCall = () => {
 
    const handleClosePress = () => {
       if (Platform.OS === 'android') {
-         closeCallModalActivity();
+         if (!isPipMode) {
+            enablePipModeIfCallConnected();
+            // // removing the app state change listener when pip mode is enabled
+            // appStateListener.current?.remove();
+            // appStateListener.current = null;
+         }
+         // closeCallModalActivity();
          // dispatch(closeCallModal());
       }
    };
@@ -302,6 +350,17 @@ const OnGoingCall = () => {
       const { height } = nativeEvent.layout;
       bottomControlsViewHeightRef.current = height;
    };
+
+   // if in PIP mode then returning PIP layout
+   if (isPipMode) {
+      return (
+         <PipGridLayoutAndroid
+            remoteStream={remoteStream}
+            localUserJid={localUserJid}
+            remoteAudioMuted={remoteAudioMuted}
+         />
+      );
+   }
 
    return (
       <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>

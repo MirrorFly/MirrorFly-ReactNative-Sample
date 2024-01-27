@@ -14,6 +14,7 @@ public class Mymodule implements ReactPackage {
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new ActivityModule(reactContext));
+        modules.add(new PipAndroidModule(reactContext));
         return modules;
     }
 

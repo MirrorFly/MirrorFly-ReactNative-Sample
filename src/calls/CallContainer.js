@@ -1,8 +1,9 @@
 import { NativeBaseProvider } from 'native-base';
 import React from 'react';
 import { Modal, View } from 'react-native';
+import { usePipModeListener } from '../customModules/PipModule';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
-import { batch, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
    CALL_AGAIN_SCREEN,
    INCOMING_CALL_SCREEN,
@@ -18,6 +19,7 @@ import CallAgain from './screens/CallAgain';
 import IncomingCall from './screens/IncomingCall';
 import OnGoingCall from './screens/OnGoingCall';
 import OutGoingCall from './screens/OutGoingCall';
+import { enablePipModeIfCallConnected } from '../Helper';
 
 const CallContainer = ({ hasNativeBaseProvider }) => {
    const { showCallModal, connectionState, screenName = '' } = useSelector(state => state.callData) || {};
@@ -25,11 +27,13 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
    const insets = initialWindowMetrics.insets;
    const dispatch = useDispatch();
 
-   React.useLayoutEffect(()=>{
-      if(Object.keys(connectionState).length === 0){
+   const isPipMode = usePipModeListener();
+
+   React.useLayoutEffect(() => {
+      if (Object.keys(connectionState).length === 0) {
          closeCallModalActivity();
       }
-   },[])
+   }, []);
 
    const getIncomingCallStatus = () => {
       return confrenceData?.callStatusText;
@@ -53,7 +57,7 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
 
    const renderModalContent = () => {
       const content = (
-         <View style={[commonStyles.flex1, { marginTop: insets?.top, overflow: 'hidden' }]}>
+         <View style={[commonStyles.flex1, { marginTop: isPipMode ? 0 : insets?.top, overflow: 'hidden' }]}>
             {renderCallscreenBasedOnCallStatus()}
             <CallModalToastContainer />
          </View>
@@ -63,11 +67,14 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
 
    const handleModalRequestClose = () => {
       if (screenName === CALL_AGAIN_SCREEN) {
-         batch(() => {
-            resetCallModalActivity();
-            // dispatch(resetCallStateData());
-            dispatch(resetCallAgainData());
-         });
+         resetCallModalActivity();
+         // dispatch(resetCallStateData());
+         dispatch(resetCallAgainData());
+      } else {
+         const pipEnabled = enablePipModeIfCallConnected();
+         if (!pipEnabled) {
+            closeCallModalActivity();
+         }
       }
    };
 

@@ -60,7 +60,7 @@ import {
    PERMISSION_DENIED,
 } from './Constant';
 import { closePermissionModal } from '../../redux/Actions/PermissionAction';
-// import RNVoipPushNotification from 'react-native-voip-push-notification';
+import RNVoipPushNotification from 'react-native-voip-push-notification';
 const { ActivityModule } = NativeModules;
 
 let preventMultipleClick = false;
@@ -704,14 +704,14 @@ export const pushNotifyBackground = () => {
    //    }
    // });
 
-   // RNVoipPushNotification.addEventListener('notification', async notification => {
-   //    // --- when receive remote voip push, register your VoIP client, show local notification ... etc
-   //    console.log('RNVoipPushNotification notification ==>>', notification);
-   //    // Alert.alert('', 'RNVoipPushNotification')
-   //    // onVoipPushNotificationReceived(notification, 'notification');
-   //    // --- optionally, if you `addCompletionHandler` from the native side, once you have done the js jobs to initiate a call, call `completion()`
-   //    RNVoipPushNotification.onVoipNotificationCompleted(notification.uuid);
-   // });
+   RNVoipPushNotification.addEventListener('notification', async notification => {
+      // this callback will be called only when the incoming call is received while the user is already on a call
+      // so sending the notification payload to SDK to send busy status to the caller
+      let remoteMessage = {
+         data: notification,
+      };
+      SDK.getCallNotification(remoteMessage);
+   });
 };
 
 let networkListnerWhenIncomingCallSubscriber;

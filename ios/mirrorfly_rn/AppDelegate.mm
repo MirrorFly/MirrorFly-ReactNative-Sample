@@ -203,9 +203,6 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
   // --- this is optional, only required if you want to call `completion()` on the js side
   [RNVoipPushNotificationManager addCompletionHandler:uuid completionHandler:completion];
 
-  // --- Process the received push
-  [RNVoipPushNotificationManager didReceiveIncomingPushWithPayload:payload forType:(NSString *)type];
-
   if(count < 1) {
     
   //  Check the Mic permission and if the permission is not provided then end the call
@@ -264,22 +261,9 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 //                                payload: [payload dictionaryPayload]
 //                  withCompletionHandler: completion];
 //      [RNCallKeep endCallWithUUID:uuid reason:2];
-    // Showing local notification for the ended incoming call
-    UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-    content.title = [NSString stringWithFormat:@"You missed %@ %@.", hasvideo ? @"a" : @"an", hasvideo ? @"video call" : @"audio call"];
-    content.body = callerName;
-    content.sound = [UNNotificationSound defaultSound];
-
-    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:@"ImmediateNotification"
-                                                                          content:content
-                                                                          trigger:nil];
-
-    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
-        if (error) {
-            NSLog(@"Error scheduling local notification: %@", error);
-        }
-    }];
+    
+    // --- sending the received push to JS for the incoming call (while the user is already on a call) to send busy status to the caller
+    [RNVoipPushNotificationManager didReceiveIncomingPushWithPayload:payload forType:(NSString *)type];
   }
   
   // --- You don't need to call it if you stored `completion()` and will call it on the js side.

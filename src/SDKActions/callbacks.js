@@ -28,6 +28,7 @@ import {
    stopReconnectingTone,
 } from '../Helper/Calls/Call';
 import {
+   CALL_AGAIN_SCREEN,
    CALL_BUSY_STATUS_MESSAGE,
    CALL_CONVERSION_STATUS_CANCEL,
    CALL_CONVERSION_STATUS_REQ_WAITING,
@@ -83,6 +84,7 @@ import { REGISTERSCREEN } from '../constant';
 import {
    callDurationTimestamp,
    clearCallData,
+   closeCallModal,
    resetConferencePopup,
    resetData,
    selectLargeVideoUser,
@@ -846,6 +848,13 @@ export const callBacks = {
             displayIncomingCallForAndroid(res);
          } else {
             displayIncomingCallForIos(res);
+         }
+         // In iOS if the user is in call again screen, and he receives an incoming call then
+         // we should close the call again screen to prevent the user from seeing the Incoming call screen UI, because the incoming call screen UI is only for Android.
+         // for iOS incoming call will only be shown in call kit
+         const { showCallModal: isCallModalOpen, screenName: currentCallModalScreen } = Store.getState().callData || {};
+         if(Platform.OS === 'ios' && isCallModalOpen & currentCallModalScreen === CALL_AGAIN_SCREEN) {
+            Store.dispatch(closeCallModal());
          }
          Store.dispatch(setCallModalScreen(INCOMING_CALL_SCREEN));
          updatingUserStatusInRemoteStream(res.usersStatus);

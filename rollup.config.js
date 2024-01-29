@@ -86,6 +86,7 @@ export default {
       'react-native-headphone-detection',
       '@notifee/react-native',
       'react-native-callkeep',
+      'react-native-voip-push-notification',
    ],
    plugins: [
       replace({

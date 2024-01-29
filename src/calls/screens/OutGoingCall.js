@@ -78,11 +78,9 @@ const OutGoingCall = () => {
    // }, [appState, notificationData]);
 
    const handleClosePress = () => {
-      if (Platform.OS === 'android') {
-         closeCallModalActivity();
-         // dispatch(closeCallModal());
-         // callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'OUTGOING_CALL');
-      }
+      closeCallModalActivity();
+      // dispatch(closeCallModal());
+      // callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'OUTGOING_CALL');
    };
 
    const handleAudioMute = () => {};

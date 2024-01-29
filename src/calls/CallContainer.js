@@ -1,9 +1,9 @@
 import { NativeBaseProvider } from 'native-base';
 import React from 'react';
-import { Modal, View } from 'react-native';
-import { usePipModeListener } from '../customModules/PipModule';
+import { Modal, Platform, View } from 'react-native';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
+import { enablePipModeIfCallConnected } from '../Helper';
 import {
    CALL_AGAIN_SCREEN,
    INCOMING_CALL_SCREEN,
@@ -13,16 +13,18 @@ import {
 import { closeCallModalActivity, resetCallModalActivity } from '../Helper/Calls/Utility';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import commonStyles from '../common/commonStyles';
+import { usePipModeListener } from '../customModules/PipModule';
 import { resetCallAgainData } from '../redux/Actions/CallAgainAction';
 import CallModalToastContainer from './components/CallModalToastContainer';
 import CallAgain from './screens/CallAgain';
 import IncomingCall from './screens/IncomingCall';
 import OnGoingCall from './screens/OnGoingCall';
 import OutGoingCall from './screens/OutGoingCall';
-import { enablePipModeIfCallConnected } from '../Helper';
+import PipViewIos from './screens/PipViewIos';
 
 const CallContainer = ({ hasNativeBaseProvider }) => {
-   const { showCallModal, connectionState, screenName = '' } = useSelector(state => state.callData) || {};
+   const { showCallModal, connectionState = {}, screenName = '' } = useSelector(state => state.callData) || {};
+   const _userId = getUserIdFromJid(connectionState.to || connectionState.userJid);
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const insets = initialWindowMetrics.insets;
    const dispatch = useDispatch();
@@ -79,14 +81,20 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
    };
 
    return (
-      <Modal
-         visible={showCallModal}
-         animationType="none"
-         statusBarTranslucent
-         transparent
-         onRequestClose={handleModalRequestClose}>
-         {renderModalContent()}
-      </Modal>
+      <>
+         {Platform.OS === 'ios' &&
+            !showCallModal &&
+            Object.keys(connectionState).length !== 0 &&
+            screenName !== INCOMING_CALL_SCREEN && <PipViewIos userId={_userId} />}
+         <Modal
+            visible={showCallModal}
+            animationType={Platform.OS === 'ios' ? 'slide' : 'none'}
+            statusBarTranslucent
+            transparent
+            onRequestClose={handleModalRequestClose}>
+            {renderModalContent()}
+         </Modal>
+      </>
    );
 };
 

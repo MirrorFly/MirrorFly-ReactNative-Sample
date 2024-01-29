@@ -54,6 +54,7 @@ import {
    listnerForNetworkStateChangeWhenIncomingCall,
    showCallModalToast,
    showOngoingNotification,
+   startDurationTimer,
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
    updateCallSpeakerEnabled,
    updateMissedCallNotification,
@@ -170,7 +171,7 @@ export const resetCallData = () => {
    batch(() => {
       Store.dispatch(resetConferencePopup());
       Store.dispatch(clearCallData());
-      Store.dispatch(callDurationTimestamp());
+      Store.dispatch(callDurationTimestamp(0));
       Store.dispatch(resetCallControlsStateAction());
       Store.dispatch(resetCallModalToastDataAction());
    });
@@ -494,7 +495,10 @@ const connected = async res => {
                remoteAudioMuted: remoteAudioMuted,
             }),
          );
-         !res.localUser && dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
+         if (!res.localUser) {
+            dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
+            startDurationTimer();
+         }
       });
    }
 };

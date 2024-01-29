@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-   Animated,
-   ImageBackground,
-   Platform,
-   Pressable as RNPressable,
-   StyleSheet,
-   Text,
-   View
-} from 'react-native';
+import { Animated, ImageBackground, Platform, Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { enablePipModeIfCallConnected, getUserProfile } from '../../Helper';
 import { CALL_STATUS_CONNECTING, CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
@@ -29,6 +21,7 @@ import GridLayout from '../components/GridLayout';
 import PipGridLayoutAndroid from '../components/PipGridLayoutAndroid';
 import SmallVideoTile from '../components/SmallVideoTile';
 import Timer from '../components/Timer';
+import { closeCallModal } from '../../redux/Actions/CallAction';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType
@@ -191,6 +184,8 @@ const OnGoingCall = () => {
          if (!isPipMode) {
             enablePipModeIfCallConnected();
          }
+      } else {
+         dispatch(closeCallModal());
       }
    };
 

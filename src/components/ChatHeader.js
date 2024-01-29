@@ -264,7 +264,12 @@ function ChatHeader({
          // updating the SDK flag back to false to behave as usual
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
          if (result === 'granted' || result === 'limited') {
-            makeCalls(callType, [fromUserId]);
+            // Checking If Room exist when user granted permission
+            if (!isRoomExist()) {
+               makeCalls(callType, [fromUserId]);
+            } else {
+               setShowRoomExist(true);
+            }
          } else if (isPermissionChecked) {
             dispatch(showPermissionModal());
          }

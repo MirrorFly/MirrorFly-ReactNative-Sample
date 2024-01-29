@@ -33,9 +33,6 @@ public class CallScreenActivity extends ReactActivity {
     public Boolean onCall = false;
     SharedPreferences sharedPreferences = null;
     SharedPreferences.Editor editor = null;
-    public static final String ACTIVITY_STATE_ACTIVE = "active";
-    public static final String ACTIVITY_STATE_BACKGROUND = "background";
-    public static final String ACTIVITY_STATE_KILLED = "killed";
 
     public Context context;
 
@@ -53,7 +50,6 @@ public class CallScreenActivity extends ReactActivity {
         
         // Register the activity with the ActivityManager
         ActivityManager.getInstance().addActivity(this);
-        ActivityModule.getInstance().onCallScreenActivityStateChange(ACTIVITY_STATE_ACTIVE);
     }
 
     @Override
@@ -83,21 +79,18 @@ public class CallScreenActivity extends ReactActivity {
                 editor.commit();
             }
         }
-//        ActivityModule.getInstance().onCallScreenActivityStateChange(ACTIVITY_STATE_ACTIVE);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         Log.d("TAG", "CallScreenActivity== CallScreenActivityOnPause: ");
-//        ActivityModule.getInstance().onCallScreenActivityStateChange(ACTIVITY_STATE_BACKGROUND);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         Log.d("TAG", "CallScreenActivity== CallScreenActivityOnStop: ");
-//        ActivityModule.getInstance().onCallScreenActivityStateChange(ACTIVITY_STATE_BACKGROUND);
     }
 
     @Override
@@ -109,7 +102,6 @@ public class CallScreenActivity extends ReactActivity {
         editor.clear();
         editor.commit();
         Log.d("TAG", "CallScreenActivity== CallScreenActivityOnDestroy: ");
-        ActivityModule.getInstance().onCallScreenActivityStateChange(ACTIVITY_STATE_KILLED);
     }
 
     @Override
@@ -121,41 +113,29 @@ public class CallScreenActivity extends ReactActivity {
             Boolean isPipAllowedInSystem = AppOpsManager.MODE_ALLOWED == appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE, Process.myUid(), this.getPackageName());
             Log.d("TAG", "isPipAllowed: before validation " + isPipAllowedInSystem);
             if (isPipAllowedInSystem) {
-//                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-//                        @Override
-//                        public void run() {
-
-                new android.os.Handler().postDelayed(
-                        new Runnable() {
-                            public void run() {
-                                try {
-                                    Log.d("TAG", "enterPipMode: before validation ");
-                                    if (this.toString().toLowerCase().contains("callscreenactivity") && !CallScreenActivity.this.isInPictureInPictureMode()) {
+                try {
+                    Log.d("TAG", "enterPipMode: before validation ");
+                    if (!this.isInPictureInPictureMode()) {
 
 
-                                        Rational ratio
-                                                = new Rational(300, 500);
-                                        PictureInPictureParams.Builder
-                                                pip_Builder
-                                                = null;
+                        Rational ratio
+                                = new Rational(300, 500);
+                        PictureInPictureParams.Builder
+                                pip_Builder
+                                = null;
 
-                                        pip_Builder = new PictureInPictureParams
-                                                .Builder();
-                                        pip_Builder.setAspectRatio(ratio).build();
-                                        CallScreenActivity.this.enterPictureInPictureMode(pip_Builder.build());
-                                        Log.d("TAG", "_enterPipMode: PIP Enabled from Android Java");
-                                    }
-                                } catch (Exception e) {
-                                    Log.d("TAG", "Error in CallScreenActivity enterPipMode method: " + e);
-                                }
-//                        }
-//                    });
-                            }
-                        }, 10);
+                        pip_Builder = new PictureInPictureParams
+                                .Builder();
+                        pip_Builder.setAspectRatio(ratio).build();
+                        CallScreenActivity.this.enterPictureInPictureMode(pip_Builder.build());
+                        Log.d("TAG", "_enterPipMode: PIP Enabled from Android Java");
+                    }
+                } catch (Exception e) {
+                    Log.d("TAG", "Error in CallScreenActivity enterPipMode method: " + e);
+                }
             }
         }
         super.onUserLeaveHint();
-//        ActivityModule.getInstance().onCallScreenActivityStateChange(ACTIVITY_STATE_BACKGROUND);
     }
 
     /**
@@ -225,13 +205,8 @@ public class CallScreenActivity extends ReactActivity {
     @SuppressLint("MissingSuperCall")
     @Override
     public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
-        PipAndroidModule.pipModeChanged(isInPictureInPictureMode);
+        PipAndroidModule.pipModeChanged(isInPictureInPictureMode, getLifecycle().getCurrentState(), this);
     }
-
-    // @Override
-    // protected ReactActivityDelegate createReactActivityDelegate() {
-    // return new MainActivityDelegate(this, getMainComponentName());
-    // }
 
     public static class MainActivityDelegate extends ReactActivityDelegate {
         public MainActivityDelegate(ReactActivity activity, String mainComponentName) {

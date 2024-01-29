@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ActivityModule extends ReactContextBaseJavaModule {
-    public static final String CALL_SCREEN_ACTIVITY_STATE_CHANGE = "CALL_SCREEN_ACTIVITY_STATE_CHANGE";
-    private static DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = null;
 
     public ReactApplicationContext reactContext;
     public static ActivityModule instance = null;
@@ -44,12 +42,6 @@ public class ActivityModule extends ReactContextBaseJavaModule {
     @Override
     public String getName() {
         return "ActivityModule";
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-        eventEmitter = this.reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
     }
 
     @ReactMethod
@@ -121,10 +113,6 @@ public class ActivityModule extends ReactContextBaseJavaModule {
             return true;
         else
             return false;
-    }
-
-    public void onCallScreenActivityStateChange(String state) {
-        eventEmitter.emit(CALL_SCREEN_ACTIVITY_STATE_CHANGE, state);
     }
 
     @ReactMethod

@@ -1,19 +1,17 @@
 package com.mirrorfly_rn;
 
+import android.app.Activity;
 import android.app.AppOpsManager;
 import android.app.PictureInPictureParams;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Process;
 import android.util.Log;
 import android.util.Rational;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
 
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -28,8 +26,12 @@ public class PipAndroidModule extends ReactContextBaseJavaModule {
 
     ReactApplicationContext reactApplicationContext;
 
-    public static void pipModeChanged(Boolean isInPictureInPictureMode) {
+    public static void pipModeChanged(Boolean isInPictureInPictureMode, Lifecycle.State currentState, CallScreenActivity callScreenActivity) {
         eventEmitter.emit(PIP_MODE_CHANGE, isInPictureInPictureMode);
+        if(!isInPictureInPictureMode && currentState.equals(Lifecycle.State.CREATED)) {
+            // PIP is closed, so finishing the CallScreen activity
+            ActivityManager.getInstance().finishActivity(CallScreenActivity.class);
+        }
     }
 
     public PipAndroidModule(ReactApplicationContext reactContext) {
@@ -51,49 +53,6 @@ public class PipAndroidModule extends ReactContextBaseJavaModule {
         eventEmitter = getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
     }
 
-    public void _enterPipMode(int width, int height) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && getCurrentActivity() != null) {
-                AppOpsManager appOpsManager;
-                appOpsManager = (AppOpsManager) getCurrentActivity().getSystemService(Context.APP_OPS_SERVICE);
-                Boolean isPipAllowedInSystem = AppOpsManager.MODE_ALLOWED == appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE, Process.myUid(), getCurrentActivity().getPackageName());
-                Log.d("TAG", "isPipAllowed: before validation " + isPipAllowedInSystem);
-                if (isPipAllowedInSystem) {
-//                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                    new android.os.Handler().postDelayed(
-//                            new Runnable() {
-//                                public void run() {
-                                    try {
-                                        Log.d("TAG", "enterPipMode: before validation ");
-                                        if (getCurrentActivity().toString().toLowerCase().contains("callscreenactivity") && !getCurrentActivity().isInPictureInPictureMode()) {
-                                            int ratWidth = width > 0 ? width : 380;
-                                            int ratHeight = height > 0 ? height : 214;
-
-                                            Rational ratio
-                                                    = new Rational(ratWidth, ratHeight);
-                                            PictureInPictureParams.Builder
-                                                    pip_Builder
-                                                    = null;
-
-                                            pip_Builder = new PictureInPictureParams
-                                                    .Builder();
-                                            pip_Builder.setAspectRatio(ratio).build();
-                                            reactApplicationContext.getCurrentActivity().enterPictureInPictureMode(pip_Builder.build());
-                                            Log.d("TAG", "_enterPipMode: PIP Enabled from Android Java");
-                                        }
-                                    } catch (Exception e) {
-                                        Log.d("TAG", "Error in CallScreenActivity enterPipMode method: " + e);
-                                    }
-//                        }
-//                    });
-//                                }
-//                            }, 500);
-                }
-            }
-
-    }
-
     @ReactMethod
     public void enterPipMode(int width, int height) {
         try {
@@ -103,10 +62,7 @@ public class PipAndroidModule extends ReactContextBaseJavaModule {
                 Boolean isPipAllowedInSystem = AppOpsManager.MODE_ALLOWED == appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE, Process.myUid(), getCurrentActivity().getPackageName());
                 Log.d("TAG", "isPipAllowed: before validation " + isPipAllowedInSystem);
                 if (isPipAllowedInSystem) {
-//                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-//                        @Override
-//                        public void run() {
-                            Log.d("TAG", "enterPipMode: before validation ");
+                            Log.d("TAG", "enterPipMode: before validation "+ getCurrentActivity().toString().toLowerCase() + " ___ " + getCurrentActivity().isInPictureInPictureMode());
                             if (getCurrentActivity().toString().toLowerCase().contains("callscreenactivity") && !getCurrentActivity().isInPictureInPictureMode()) {
                                 int ratWidth = width > 0 ? width : 380;
                                 int ratHeight = height > 0 ? height : 214;
@@ -122,8 +78,6 @@ public class PipAndroidModule extends ReactContextBaseJavaModule {
                                 pip_Builder.setAspectRatio(ratio).build();
                                 reactApplicationContext.getCurrentActivity().enterPictureInPictureMode(pip_Builder.build());
                             }
-//                        }
-//                    });
                 }
             }
         } catch (Exception e) {

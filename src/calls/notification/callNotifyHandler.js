@@ -270,14 +270,21 @@ export const onNotificationAction = async ({ type, detail }) => {
       let checkChannelID = detail?.notification?.android?.channelId;
       if (checkChannelID !== MISSED_CALL) {
          let showCallModal = Store.getState()?.callData?.showCallModal;
+         let activity = await ActivityModule.getActivity();
+         console.log('while pressing the notification before validation', AppState.currentState, activity);
          if (AppState.currentState === 'active') {
-            if (showCallModal) {
+            console.log(
+               'while pressing the notification',
+               showCallModal && activity.includes('CallScreenActivity'),
+               showCallModal,
+               activity.includes('CallScreenActivity'),
+            );
+            if (showCallModal && activity.includes('CallScreenActivity')) {
                return;
             } else {
                openCallModelActivity();
             }
          } else {
-            let activity = await ActivityModule.getActivity();
             if (activity !== 'undefined') {
                // const push_url = 'mirrorfly_rn://';
                // Linking.openURL(push_url).then(() => {
@@ -285,7 +292,9 @@ export const onNotificationAction = async ({ type, detail }) => {
                // });
             } else {
                const push_url = 'mirrorfly_rn://CALLSCREEN';
-               Linking.openURL(push_url);
+               Linking.openURL(push_url).then(() => {
+                  openCallModelActivity();
+               });
             }
          }
       }

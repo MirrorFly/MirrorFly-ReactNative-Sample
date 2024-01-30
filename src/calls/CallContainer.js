@@ -11,7 +11,6 @@ import {
    OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
 import { closeCallModalActivity, resetCallModalActivity } from '../Helper/Calls/Utility';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import commonStyles from '../common/commonStyles';
 import { usePipModeListener } from '../customModules/PipModule';
 import { resetCallAgainData } from '../redux/Actions/CallAgainAction';
@@ -21,6 +20,7 @@ import IncomingCall from './screens/IncomingCall';
 import OnGoingCall from './screens/OnGoingCall';
 import OutGoingCall from './screens/OutGoingCall';
 import PipViewIos from './screens/PipViewIos';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 
 const CallContainer = ({ hasNativeBaseProvider }) => {
    const { showCallModal, connectionState = {}, screenName = '' } = useSelector(state => state.callData) || {};

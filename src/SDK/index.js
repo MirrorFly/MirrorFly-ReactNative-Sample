@@ -7,7 +7,7 @@
 		exports["SDK"] = factory(require("react-native"), require("@react-native-async-storage/async-storage"), require("react-native-fs"), require("react-native-webrtc"), require("realm"), require("moment"), require("react-native-compressor"), require("react-native-convert-ph-asset"), require("react-native-mov-to-mp4"), require("react-native-create-thumbnail"), require("react-native-get-random-values"), require("@react-native-community/netinfo"), require("react-native-background-timer"));
 	else
 		root["SDK"] = factory(root["react-native"], root["@react-native-async-storage/async-storage"], root["react-native-fs"], root["react-native-webrtc"], root["realm"], root["moment"], root["react-native-compressor"], root["react-native-convert-ph-asset"], root["react-native-mov-to-mp4"], root["react-native-create-thumbnail"], root["react-native-get-random-values"], root["@react-native-community/netinfo"], root["react-native-background-timer"]);
-})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_18__, __WEBPACK_EXTERNAL_MODULE_21__, __WEBPACK_EXTERNAL_MODULE_72__, __WEBPACK_EXTERNAL_MODULE_167__, __WEBPACK_EXTERNAL_MODULE_314__, __WEBPACK_EXTERNAL_MODULE_380__, __WEBPACK_EXTERNAL_MODULE_381__, __WEBPACK_EXTERNAL_MODULE_382__, __WEBPACK_EXTERNAL_MODULE_383__, __WEBPACK_EXTERNAL_MODULE_384__, __WEBPACK_EXTERNAL_MODULE_389__, __WEBPACK_EXTERNAL_MODULE_391__, __WEBPACK_EXTERNAL_MODULE_392__) {
+})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_19__, __WEBPACK_EXTERNAL_MODULE_21__, __WEBPACK_EXTERNAL_MODULE_72__, __WEBPACK_EXTERNAL_MODULE_167__, __WEBPACK_EXTERNAL_MODULE_314__, __WEBPACK_EXTERNAL_MODULE_380__, __WEBPACK_EXTERNAL_MODULE_381__, __WEBPACK_EXTERNAL_MODULE_382__, __WEBPACK_EXTERNAL_MODULE_383__, __WEBPACK_EXTERNAL_MODULE_384__, __WEBPACK_EXTERNAL_MODULE_389__, __WEBPACK_EXTERNAL_MODULE_391__, __WEBPACK_EXTERNAL_MODULE_392__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -114,11 +114,11 @@ if (typeof Object.create === 'function') {
 /* harmony export (immutable) */ __webpack_exports__["n"] = getExtension;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__CryptLib__ = __webpack_require__(214);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constants__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__localDb__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_profile__ = __webpack_require__(73);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__strophe_connection__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__db_Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__db_Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__db_controllers_messageTable__ = __webpack_require__(38);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__db_controllers_vcardTable__ = __webpack_require__(29);
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
@@ -2803,7 +2803,7 @@ function isnan (val) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__strophe_connection__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__constants__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_call_initialize__ = __webpack_require__(39);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_react_native__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_app_reconnect__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__react_native_async_storage_async_storage__ = __webpack_require__(21);
@@ -8769,7 +8769,7 @@ const getRealmDB = async () => {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constants__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__call__ = __webpack_require__(40);
@@ -9439,6 +9439,12 @@ const CALL_STATUS_SUBSCRIBED = 'SUBSCRIBED';
 const CALL_STATUS_JOINING = 'JOINING';
 /* harmony export (immutable) */ __webpack_exports__["R"] = CALL_STATUS_JOINING;
 
+const CALL_STATE_RECONNECTING = 'reconnecting';
+/* unused harmony export CALL_STATE_RECONNECTING */
+
+const CALL_STATE_DISCONNECT = 'disconnected';
+/* unused harmony export CALL_STATE_DISCONNECT */
+
 
 // Media device
 const MEDIA_DEVICE_MIC = 'mic';
@@ -9545,6 +9551,337 @@ const CAMERA_MIC_PERMISSION_DENIED = 100608;
 
 /***/ }),
 /* 16 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_utils__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__functions__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__call__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__constants__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__users__ = __webpack_require__(25);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+
+
+
+
+
+
+/**
+ * User filter key
+ */
+const _SDK_USER_FILTER_KEY = 'userJid';
+/* harmony export (immutable) */ __webpack_exports__["a"] = _SDK_USER_FILTER_KEY;
+
+
+/**
+ * Hold the local user jid which is given by user
+ */
+let _sdk_localUserCustomJid = null;
+/**
+ * Hold user online/offline status
+ */
+let _sdk_userOnline = false;
+
+/**
+ * Hole the local user call ID
+ */
+let _sdk_localUserCallId = null;
+/**
+ * Hold the socket connection object
+ */
+let _sdk_socket = null;
+/**
+ * Hold the socket ID
+ * @exmple 'ntade6obZgBmxkcDAAUI'
+ */
+let _sdk_socketId = null;
+/**
+ * Hold the call detils default obejct
+ */
+let _sdk_default_callInfo = {
+  roomId: null,
+  roomLink: null,
+  callType: null,
+  groupId: null,
+  isAudioMute: false,
+  isVideoMute: false,
+  joinMode: null,
+  userDetails: {},
+  toUsers: null,
+  behaviour: "call"
+};
+/**
+ * Hold the current call details
+ * @exmple
+ * {
+ *      roomId: 'sdftgds',
+ *      callType: audio|video,
+ *      groupId: CALL_GROUP_ID
+ * }
+ */
+let _sdk_callInfo = _extends({}, _sdk_default_callInfo);
+
+let _sdk_calling_object = {};
+
+/**
+ * Set the custom jid given by user
+ */
+const setLocalUserCustomJid = value => _sdk_localUserCustomJid = value;
+/* harmony export (immutable) */ __webpack_exports__["w"] = setLocalUserCustomJid;
+
+
+/**
+ * get the custom jid given by user
+ */
+const getLocalUserCustomJid = () => _sdk_localUserCustomJid;
+/* harmony export (immutable) */ __webpack_exports__["h"] = getLocalUserCustomJid;
+
+
+/**
+ * Generate the local user call Id
+ */
+const generateLocalUserCallId = () => Object(__WEBPACK_IMPORTED_MODULE_1__functions__["e" /* getCallLocalUserJid */])();
+/* harmony export (immutable) */ __webpack_exports__["d"] = generateLocalUserCallId;
+
+/**
+ * Getter of local user call Id
+ */
+const getLocalUserCallId = () => _sdk_localUserCallId;
+/* harmony export (immutable) */ __webpack_exports__["g"] = getLocalUserCallId;
+
+/**
+ * Setter of local user call Id
+ * @param {*} socketConnObj
+ */
+const setLocalUserCallId = localUserCallId => _sdk_localUserCallId = localUserCallId;
+/* harmony export (immutable) */ __webpack_exports__["v"] = setLocalUserCallId;
+
+
+/**
+ * Get the local user filter value
+ * Need to use this method to get the filter value for local. In future, If filter value is changed,
+ * then change this method only, not any other code
+ */
+const getLocalUserFilterValue = () => {
+  return _SDK_USER_FILTER_KEY === 'userCallId' ? getLocalUserCallId() : Object(__WEBPACK_IMPORTED_MODULE_1__functions__["e" /* getCallLocalUserJid */])();
+};
+/* harmony export (immutable) */ __webpack_exports__["i"] = getLocalUserFilterValue;
+
+
+/**
+ * Generate the some random string & return it
+ */
+const generateRoomId = () => Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["s" /* getRandomNumber */])().toString(36).replace(/[^a-z]+/g, "").substring(0, 9);
+/* unused harmony export generateRoomId */
+
+
+/**
+ * return the user online/offline status
+ */
+const isUserOnline = () => _sdk_userOnline;
+/* harmony export (immutable) */ __webpack_exports__["m"] = isUserOnline;
+
+
+/**
+ * set the user online/offline status
+ */
+const setIsUserOnline = onlineStatus => {
+  _sdk_userOnline = onlineStatus;
+};
+/* harmony export (immutable) */ __webpack_exports__["s"] = setIsUserOnline;
+
+
+/**
+ * Getter of socket connection object
+ */
+const getSocket = () => {
+  if (!_sdk_socket) {
+    return null;
+  }
+  return _sdk_socket;
+};
+/* harmony export (immutable) */ __webpack_exports__["j"] = getSocket;
+
+
+/**
+ * Setter of socket connection object
+ * @param {*} socketConnObj
+ */
+const setSocket = socketConnObj => _sdk_socket = socketConnObj;
+/* unused harmony export setSocket */
+
+
+/**
+ * Add/Update the socket connection object
+ * @param {*} socket
+ */
+const addOrUpdateSocket = socket => setSocket(socket);
+/* harmony export (immutable) */ __webpack_exports__["b"] = addOrUpdateSocket;
+
+
+/**
+ * Getter of socker ID
+ */
+const getSocketId = () => {
+  if (!_sdk_socketId) {
+    return null;
+  }
+  return _sdk_socketId;
+};
+/* harmony export (immutable) */ __webpack_exports__["k"] = getSocketId;
+
+
+/**
+ * Setter of socket ID
+ * @param {*} socketId
+ */
+const setSocketId = socketId => _sdk_socketId = socketId;
+/* unused harmony export setSocketId */
+
+
+/**
+ * Add/Update the socketId.
+ * This method has been called in socket ID callback event
+ * @param {*} socketId
+ */
+const addOrUpdateSocketId = socketId => {
+  Object(__WEBPACK_IMPORTED_MODULE_1__functions__["c" /* consoleLog */])('socketId --- ', socketId);
+  const currentSocketId = getSocketId();
+  if ((Object(__WEBPACK_IMPORTED_MODULE_1__functions__["q" /* isUserAttendedCall */])() || Object(__WEBPACK_IMPORTED_MODULE_1__functions__["t" /* isUserJoiningCall */])()) && currentSocketId && currentSocketId !== socketId) {
+    Object(__WEBPACK_IMPORTED_MODULE_2__call__["w" /* createAndJoinRoom */])();
+  } else if (Object(__WEBPACK_IMPORTED_MODULE_1__functions__["v" /* isUserSubscribedCall */])() && currentSocketId && currentSocketId !== socketId) {
+    Object(__WEBPACK_IMPORTED_MODULE_2__call__["F" /* subscribeRoom */])();
+  }
+  return setSocketId(socketId);
+};
+/* harmony export (immutable) */ __webpack_exports__["c"] = addOrUpdateSocketId;
+
+
+/**
+ * Setter of current call details
+ * @param {*} dataObj
+ */
+const setCallInfo = dataObj => {
+  if (!dataObj) {
+    _sdk_callInfo = _extends({}, _sdk_default_callInfo);
+    return;
+  }
+  const callDetailKeysArr = Object.keys(_sdk_default_callInfo);
+  const newDataObj = _extends({}, dataObj);
+  for (const key in newDataObj) {
+    if (callDetailKeysArr.indexOf(key) > -1 && typeof newDataObj[key] != 'undefined') {
+      _sdk_callInfo[key] = newDataObj[key];
+    }
+  }
+};
+/* harmony export (immutable) */ __webpack_exports__["q"] = setCallInfo;
+
+
+/**
+ * Getter of current call details
+ */
+const getCallInfo = () => {
+  return _extends({}, _sdk_callInfo);
+};
+/* harmony export (immutable) */ __webpack_exports__["e"] = getCallInfo;
+
+
+const onetooneCallTypeUpdate = () => {
+  const users = Object(__WEBPACK_IMPORTED_MODULE_4__users__["e" /* getCallUsers */])();
+  if (users && Array.isArray(users) && users.length === 2) {
+    const isAllUsersVideoMuted = users.every(user => user.videoMuted);
+    const callType = isAllUsersVideoMuted ? __WEBPACK_IMPORTED_MODULE_3__constants__["_4" /* CALL_TYPE_AUDIO */] : __WEBPACK_IMPORTED_MODULE_3__constants__["_5" /* CALL_TYPE_VIDEO */];
+    setCallInfo({ callType });
+  }
+};
+/* harmony export (immutable) */ __webpack_exports__["p"] = onetooneCallTypeUpdate;
+
+
+const setCallingObject = data => {
+  _sdk_calling_object = data;
+};
+/* harmony export (immutable) */ __webpack_exports__["r"] = setCallingObject;
+
+
+const getCallingObject = () => _sdk_calling_object;
+/* harmony export (immutable) */ __webpack_exports__["f"] = getCallingObject;
+
+
+let _sdk_subscribe_call_request = null;
+
+const subscribeCallRequest = () => _sdk_subscribe_call_request;
+/* harmony export (immutable) */ __webpack_exports__["A"] = subscribeCallRequest;
+
+
+const setSubscribeCallRequest = data => {
+  _sdk_subscribe_call_request = data;
+};
+/* harmony export (immutable) */ __webpack_exports__["x"] = setSubscribeCallRequest;
+
+
+let _sdk_subscribe_call_request_callback = null;
+
+const subscribeCallRequestCallback = () => _sdk_subscribe_call_request_callback;
+/* harmony export (immutable) */ __webpack_exports__["B"] = subscribeCallRequestCallback;
+
+
+const setSubscribeCallRequestCallback = data => {
+  _sdk_subscribe_call_request_callback = data;
+};
+/* harmony export (immutable) */ __webpack_exports__["y"] = setSubscribeCallRequestCallback;
+
+
+let _sdk_join_call_request = null;
+
+const joinCallRequest = () => _sdk_join_call_request;
+/* harmony export (immutable) */ __webpack_exports__["n"] = joinCallRequest;
+
+
+const setJoinCallRequest = data => {
+  _sdk_join_call_request = data;
+};
+/* harmony export (immutable) */ __webpack_exports__["t"] = setJoinCallRequest;
+
+
+let _sdk_join_call_request_callback = null;
+
+const joinCallRequestCallback = () => _sdk_join_call_request_callback;
+/* harmony export (immutable) */ __webpack_exports__["o"] = joinCallRequestCallback;
+
+
+const setJoinCallRequestCallback = data => {
+  _sdk_join_call_request_callback = data;
+};
+/* harmony export (immutable) */ __webpack_exports__["u"] = setJoinCallRequestCallback;
+
+
+let subscribeRoomData = null;
+
+const setSubscribeRoomData = data => {
+  subscribeRoomData = data;
+};
+/* harmony export (immutable) */ __webpack_exports__["z"] = setSubscribeRoomData;
+
+
+const getSubscribeRoomData = () => subscribeRoomData;
+/* harmony export (immutable) */ __webpack_exports__["l"] = getSubscribeRoomData;
+
+
+let joinRoomData = null;
+
+const setJoinRoomData = data => {
+  joinRoomData = data;
+};
+/* unused harmony export setJoinRoomData */
+
+
+const getJoinRoomData = () => joinRoomData;
+/* unused harmony export getJoinRoomData */
+
+
+/***/ }),
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9829,12 +10166,12 @@ exports.shr64_lo = shr64_lo;
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__strophe_connection__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_native__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__react_native_async_storage_async_storage__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__react_native_async_storage_async_storage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__react_native_async_storage_async_storage__);
@@ -10109,13 +10446,13 @@ const getUserProfile = async () => {
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_18__;
+module.exports = __WEBPACK_EXTERNAL_MODULE_19__;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -10568,337 +10905,6 @@ const searchMessageDB = async (string, toJid) => {
 
 
 /***/ }),
-/* 20 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_utils__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__functions__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__call__ = __webpack_require__(40);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__constants__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__users__ = __webpack_require__(25);
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-
-
-
-
-
-
-/**
- * User filter key
- */
-const _SDK_USER_FILTER_KEY = 'userJid';
-/* harmony export (immutable) */ __webpack_exports__["a"] = _SDK_USER_FILTER_KEY;
-
-
-/**
- * Hold the local user jid which is given by user
- */
-let _sdk_localUserCustomJid = null;
-/**
- * Hold user online/offline status
- */
-let _sdk_userOnline = false;
-
-/**
- * Hole the local user call ID
- */
-let _sdk_localUserCallId = null;
-/**
- * Hold the socket connection object
- */
-let _sdk_socket = null;
-/**
- * Hold the socket ID
- * @exmple 'ntade6obZgBmxkcDAAUI'
- */
-let _sdk_socketId = null;
-/**
- * Hold the call detils default obejct
- */
-let _sdk_default_callInfo = {
-  roomId: null,
-  roomLink: null,
-  callType: null,
-  groupId: null,
-  isAudioMute: false,
-  isVideoMute: false,
-  joinMode: null,
-  userDetails: {},
-  toUsers: null,
-  behaviour: "call"
-};
-/**
- * Hold the current call details
- * @exmple
- * {
- *      roomId: 'sdftgds',
- *      callType: audio|video,
- *      groupId: CALL_GROUP_ID
- * }
- */
-let _sdk_callInfo = _extends({}, _sdk_default_callInfo);
-
-let _sdk_calling_object = {};
-
-/**
- * Set the custom jid given by user
- */
-const setLocalUserCustomJid = value => _sdk_localUserCustomJid = value;
-/* harmony export (immutable) */ __webpack_exports__["w"] = setLocalUserCustomJid;
-
-
-/**
- * get the custom jid given by user
- */
-const getLocalUserCustomJid = () => _sdk_localUserCustomJid;
-/* harmony export (immutable) */ __webpack_exports__["h"] = getLocalUserCustomJid;
-
-
-/**
- * Generate the local user call Id
- */
-const generateLocalUserCallId = () => Object(__WEBPACK_IMPORTED_MODULE_1__functions__["e" /* getCallLocalUserJid */])();
-/* harmony export (immutable) */ __webpack_exports__["d"] = generateLocalUserCallId;
-
-/**
- * Getter of local user call Id
- */
-const getLocalUserCallId = () => _sdk_localUserCallId;
-/* harmony export (immutable) */ __webpack_exports__["g"] = getLocalUserCallId;
-
-/**
- * Setter of local user call Id
- * @param {*} socketConnObj
- */
-const setLocalUserCallId = localUserCallId => _sdk_localUserCallId = localUserCallId;
-/* harmony export (immutable) */ __webpack_exports__["v"] = setLocalUserCallId;
-
-
-/**
- * Get the local user filter value
- * Need to use this method to get the filter value for local. In future, If filter value is changed,
- * then change this method only, not any other code
- */
-const getLocalUserFilterValue = () => {
-  return _SDK_USER_FILTER_KEY === 'userCallId' ? getLocalUserCallId() : Object(__WEBPACK_IMPORTED_MODULE_1__functions__["e" /* getCallLocalUserJid */])();
-};
-/* harmony export (immutable) */ __webpack_exports__["i"] = getLocalUserFilterValue;
-
-
-/**
- * Generate the some random string & return it
- */
-const generateRoomId = () => Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["s" /* getRandomNumber */])().toString(36).replace(/[^a-z]+/g, "").substring(0, 9);
-/* unused harmony export generateRoomId */
-
-
-/**
- * return the user online/offline status
- */
-const isUserOnline = () => _sdk_userOnline;
-/* harmony export (immutable) */ __webpack_exports__["m"] = isUserOnline;
-
-
-/**
- * set the user online/offline status
- */
-const setIsUserOnline = onlineStatus => {
-  _sdk_userOnline = onlineStatus;
-};
-/* harmony export (immutable) */ __webpack_exports__["s"] = setIsUserOnline;
-
-
-/**
- * Getter of socket connection object
- */
-const getSocket = () => {
-  if (!_sdk_socket) {
-    return null;
-  }
-  return _sdk_socket;
-};
-/* harmony export (immutable) */ __webpack_exports__["j"] = getSocket;
-
-
-/**
- * Setter of socket connection object
- * @param {*} socketConnObj
- */
-const setSocket = socketConnObj => _sdk_socket = socketConnObj;
-/* unused harmony export setSocket */
-
-
-/**
- * Add/Update the socket connection object
- * @param {*} socket
- */
-const addOrUpdateSocket = socket => setSocket(socket);
-/* harmony export (immutable) */ __webpack_exports__["b"] = addOrUpdateSocket;
-
-
-/**
- * Getter of socker ID
- */
-const getSocketId = () => {
-  if (!_sdk_socketId) {
-    return null;
-  }
-  return _sdk_socketId;
-};
-/* harmony export (immutable) */ __webpack_exports__["k"] = getSocketId;
-
-
-/**
- * Setter of socket ID
- * @param {*} socketId
- */
-const setSocketId = socketId => _sdk_socketId = socketId;
-/* unused harmony export setSocketId */
-
-
-/**
- * Add/Update the socketId.
- * This method has been called in socket ID callback event
- * @param {*} socketId
- */
-const addOrUpdateSocketId = socketId => {
-  Object(__WEBPACK_IMPORTED_MODULE_1__functions__["c" /* consoleLog */])('socketId --- ', socketId);
-  const currentSocketId = getSocketId();
-  if ((Object(__WEBPACK_IMPORTED_MODULE_1__functions__["q" /* isUserAttendedCall */])() || Object(__WEBPACK_IMPORTED_MODULE_1__functions__["t" /* isUserJoiningCall */])()) && currentSocketId && currentSocketId !== socketId) {
-    Object(__WEBPACK_IMPORTED_MODULE_2__call__["w" /* createAndJoinRoom */])();
-  } else if (Object(__WEBPACK_IMPORTED_MODULE_1__functions__["v" /* isUserSubscribedCall */])() && currentSocketId && currentSocketId !== socketId) {
-    Object(__WEBPACK_IMPORTED_MODULE_2__call__["F" /* subscribeRoom */])();
-  }
-  return setSocketId(socketId);
-};
-/* harmony export (immutable) */ __webpack_exports__["c"] = addOrUpdateSocketId;
-
-
-/**
- * Setter of current call details
- * @param {*} dataObj
- */
-const setCallInfo = dataObj => {
-  if (!dataObj) {
-    _sdk_callInfo = _extends({}, _sdk_default_callInfo);
-    return;
-  }
-  const callDetailKeysArr = Object.keys(_sdk_default_callInfo);
-  const newDataObj = _extends({}, dataObj);
-  for (const key in newDataObj) {
-    if (callDetailKeysArr.indexOf(key) > -1 && typeof newDataObj[key] != 'undefined') {
-      _sdk_callInfo[key] = newDataObj[key];
-    }
-  }
-};
-/* harmony export (immutable) */ __webpack_exports__["q"] = setCallInfo;
-
-
-/**
- * Getter of current call details
- */
-const getCallInfo = () => {
-  return _extends({}, _sdk_callInfo);
-};
-/* harmony export (immutable) */ __webpack_exports__["e"] = getCallInfo;
-
-
-const onetooneCallTypeUpdate = () => {
-  const users = Object(__WEBPACK_IMPORTED_MODULE_4__users__["e" /* getCallUsers */])();
-  if (users && Array.isArray(users) && users.length === 2) {
-    const isAllUsersVideoMuted = users.every(user => user.videoMuted);
-    const callType = isAllUsersVideoMuted ? __WEBPACK_IMPORTED_MODULE_3__constants__["_4" /* CALL_TYPE_AUDIO */] : __WEBPACK_IMPORTED_MODULE_3__constants__["_5" /* CALL_TYPE_VIDEO */];
-    setCallInfo({ callType });
-  }
-};
-/* harmony export (immutable) */ __webpack_exports__["p"] = onetooneCallTypeUpdate;
-
-
-const setCallingObject = data => {
-  _sdk_calling_object = data;
-};
-/* harmony export (immutable) */ __webpack_exports__["r"] = setCallingObject;
-
-
-const getCallingObject = () => _sdk_calling_object;
-/* harmony export (immutable) */ __webpack_exports__["f"] = getCallingObject;
-
-
-let _sdk_subscribe_call_request = null;
-
-const subscribeCallRequest = () => _sdk_subscribe_call_request;
-/* harmony export (immutable) */ __webpack_exports__["A"] = subscribeCallRequest;
-
-
-const setSubscribeCallRequest = data => {
-  _sdk_subscribe_call_request = data;
-};
-/* harmony export (immutable) */ __webpack_exports__["x"] = setSubscribeCallRequest;
-
-
-let _sdk_subscribe_call_request_callback = null;
-
-const subscribeCallRequestCallback = () => _sdk_subscribe_call_request_callback;
-/* harmony export (immutable) */ __webpack_exports__["B"] = subscribeCallRequestCallback;
-
-
-const setSubscribeCallRequestCallback = data => {
-  _sdk_subscribe_call_request_callback = data;
-};
-/* harmony export (immutable) */ __webpack_exports__["y"] = setSubscribeCallRequestCallback;
-
-
-let _sdk_join_call_request = null;
-
-const joinCallRequest = () => _sdk_join_call_request;
-/* harmony export (immutable) */ __webpack_exports__["n"] = joinCallRequest;
-
-
-const setJoinCallRequest = data => {
-  _sdk_join_call_request = data;
-};
-/* harmony export (immutable) */ __webpack_exports__["t"] = setJoinCallRequest;
-
-
-let _sdk_join_call_request_callback = null;
-
-const joinCallRequestCallback = () => _sdk_join_call_request_callback;
-/* harmony export (immutable) */ __webpack_exports__["o"] = joinCallRequestCallback;
-
-
-const setJoinCallRequestCallback = data => {
-  _sdk_join_call_request_callback = data;
-};
-/* harmony export (immutable) */ __webpack_exports__["u"] = setJoinCallRequestCallback;
-
-
-let subscribeRoomData = null;
-
-const setSubscribeRoomData = data => {
-  subscribeRoomData = data;
-};
-/* harmony export (immutable) */ __webpack_exports__["z"] = setSubscribeRoomData;
-
-
-const getSubscribeRoomData = () => subscribeRoomData;
-/* harmony export (immutable) */ __webpack_exports__["l"] = getSubscribeRoomData;
-
-
-let joinRoomData = null;
-
-const setJoinRoomData = data => {
-  joinRoomData = data;
-};
-/* unused harmony export setJoinRoomData */
-
-
-const getJoinRoomData = () => joinRoomData;
-/* unused harmony export getJoinRoomData */
-
-
-/***/ }),
 /* 21 */
 /***/ (function(module, exports) {
 
@@ -10913,7 +10919,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_21__;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_constants__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_react_native__);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -11672,7 +11678,7 @@ module.exports = CipherBase
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__functions__ = __webpack_require__(14);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -12798,13 +12804,13 @@ function filterStats(result, track, outbound) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__ = __webpack_require__(38);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__db_controllers_messageDetailTable__ = __webpack_require__(106);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__db_controllers_recentTable__ = __webpack_require__(105);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__db_Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__db_Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__app_reconnect__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__react_native_async_storage_async_storage__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__react_native_async_storage_async_storage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_13__react_native_async_storage_async_storage__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_14_react_native__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__helpers_localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__helpers_localDb__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__db_controllers_vcardTable__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__call_communication_iq__ = __webpack_require__(192);
 // migration done (10-12-21) - (13-12-21)
@@ -14685,7 +14691,7 @@ Object.defineProperty(Duplex.prototype, 'destroyed', {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__react_native_async_storage_async_storage__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__react_native_async_storage_async_storage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__react_native_async_storage_async_storage__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__recentTable__ = __webpack_require__(105);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__messageDetailTable__ = __webpack_require__(106);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__mediaDetailTable__ = __webpack_require__(71);
@@ -14693,7 +14699,7 @@ Object.defineProperty(Duplex.prototype, 'destroyed', {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_react_native_fs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_react_native_fs__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__strophe_connection__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__helpers_localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__helpers_localDb__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__realmDB__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__locationMessageTable__ = __webpack_require__(195);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__contactMessageTable__ = __webpack_require__(196);
@@ -15302,7 +15308,7 @@ const deleteMessagesForEveryoneDB = async (toJid, msgIds) => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__call__ = __webpack_require__(40);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__callSwitch__ = __webpack_require__(193);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__communication_callAdapter__ = __webpack_require__(41);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__callLogs__ = __webpack_require__(69);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__service_notification__ = __webpack_require__(379);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__service_notification___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__service_notification__);
@@ -15820,7 +15826,7 @@ const getCallBehaviour = () => {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "p", function() { return _sdk_incomingCallObj; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__communication_callAdapter__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constants__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__media__ = __webpack_require__(166);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__functions__ = __webpack_require__(14);
@@ -16395,7 +16401,7 @@ const _muteAudio = async isMuted => {
       [__WEBPACK_IMPORTED_MODULE_2__config__["a" /* _SDK_USER_FILTER_KEY */]]: Object(__WEBPACK_IMPORTED_MODULE_2__config__["i" /* getLocalUserFilterValue */])(),
       audioMuted: isMuted
     });
-    if (Object(__WEBPACK_IMPORTED_MODULE_5__functions__["s" /* isUserConnectedCall */])() && Object(__WEBPACK_IMPORTED_MODULE_2__config__["m" /* isUserOnline */])()) {
+    if ((Object(__WEBPACK_IMPORTED_MODULE_5__functions__["s" /* isUserConnectedCall */])() || __WEBPACK_IMPORTED_MODULE_1__constants__["M" /* CALL_STATUS_CONNECTING */]) && Object(__WEBPACK_IMPORTED_MODULE_2__config__["m" /* isUserOnline */])()) {
       Object(__WEBPACK_IMPORTED_MODULE_0__communication_callAdapter__["e" /* sendMessage */])(__WEBPACK_IMPORTED_MODULE_1__constants__["m" /* CALL_STATE_AUDIO_MUTE */], {
         payload: {
           isMute: isMuted
@@ -18060,7 +18066,7 @@ exports.decodePayloadAsBinary = function (data, binaryType, callback) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react_native__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__db_controllers_vcardTable__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__chat__ = __webpack_require__(31);
@@ -18183,10 +18189,10 @@ const removePendingUploads = mid => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__service_api__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__chat__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_common__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_localDb__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_constants__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__helpers_utils__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_react_native__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__ = __webpack_require__(38);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__db_controllers_mediaDetailTable__ = __webpack_require__(71);
@@ -18196,7 +18202,7 @@ const removePendingUploads = mid => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_react_native_convert_ph_asset___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_11_react_native_convert_ph_asset__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_react_native_mov_to_mp4__ = __webpack_require__(383);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_react_native_mov_to_mp4___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_12_react_native_mov_to_mp4__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__db_Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__db_Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_react_native_create_thumbnail__ = __webpack_require__(384);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_react_native_create_thumbnail___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_14_react_native_create_thumbnail__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__app_common__ = __webpack_require__(45);
@@ -19049,7 +19055,7 @@ function objectToString(o) {
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 var assert = __webpack_require__(11);
 
 function BlockHash() {
@@ -19307,7 +19313,7 @@ EncoderBuffer.prototype.join = function join(out, offset) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vcardTable__ = __webpack_require__(29);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__realmDB__ = __webpack_require__(13);
 
 
@@ -21731,7 +21737,7 @@ const _sdk_callLogs = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__call_constants__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__call_callLogs__ = __webpack_require__(69);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__call_users__ = __webpack_require__(25);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__call_config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__call_config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__helpers_common__ = __webpack_require__(4);
 
 
@@ -22124,7 +22130,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_72__;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__strophe_profileiqstanza__ = __webpack_require__(385);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_localDb__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_constants__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_axios__ = __webpack_require__(168);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__service_feedback__ = __webpack_require__(98);
@@ -24533,7 +24539,7 @@ defineCurve('secp256k1', {
 
 var hash = exports;
 
-hash.utils = __webpack_require__(16);
+hash.utils = __webpack_require__(17);
 hash.common = __webpack_require__(50);
 hash.sha = __webpack_require__(278);
 hash.ripemd = __webpack_require__(282);
@@ -25482,20 +25488,20 @@ exports.tagByName = reverse(exports.tag);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__strophe_handler__ = __webpack_require__(165);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__strophe__ = __webpack_require__(386);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_localDb__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__helpers_constants__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__api__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_call_initialize__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__feedback__ = __webpack_require__(98);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_react_native__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__db_controllers_statusTable__ = __webpack_require__(108);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__react_native_async_storage_async_storage__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__react_native_async_storage_async_storage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_12__react_native_async_storage_async_storage__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__modules_app_reconnect__ = __webpack_require__(54);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__db_Utils__ = __webpack_require__(19);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__modules_call_config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__db_Utils__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__modules_call_config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__db_realmDB__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__db_controllers_ConfigCredentialsTable__ = __webpack_require__(199);
 // migration done (14-12-21)
@@ -25945,7 +25951,7 @@ const logout = async () => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_constants__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__connection__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_utils__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_localDb__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__db_controllers_messageTable__ = __webpack_require__(38);
 // migration done (14-12-21)
 
@@ -27179,7 +27185,7 @@ Transport.prototype.onClose = function () {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__functions__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__communication_callAdapter__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__call__ = __webpack_require__(40);
@@ -27928,7 +27934,7 @@ const handleCallInviteUsersMsg = data => {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__roasterTable__ = __webpack_require__(52);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__react_native_async_storage_async_storage__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__react_native_async_storage_async_storage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__react_native_async_storage_async_storage__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__realmDB__ = __webpack_require__(13);
@@ -28213,7 +28219,7 @@ const getMessageDetail = (mid, realm) => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_constants__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__connection__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_localDb__ = __webpack_require__(18);
 // migration done (14-12-21)
 
 
@@ -30330,7 +30336,7 @@ try{
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_groupchat__ = __webpack_require__(200);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_chat__ = __webpack_require__(31);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__helpers_localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__helpers_localDb__ = __webpack_require__(18);
 // migration done (14-12-21)
 
 
@@ -39852,7 +39858,7 @@ curve.edwards = __webpack_require__(277);
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 var rotr32 = utils.rotr32;
 
 function ft_1(s, x, y, z) {
@@ -39908,7 +39914,7 @@ exports.g1_256 = g1_256;
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 var common = __webpack_require__(50);
 var shaCommon = __webpack_require__(152);
 var assert = __webpack_require__(11);
@@ -40020,7 +40026,7 @@ SHA256.prototype._digest = function digest(enc) {
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 var common = __webpack_require__(50);
 var assert = __webpack_require__(11);
 
@@ -44660,7 +44666,7 @@ module.exports = withPublic
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__db_Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__db_Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__db_controllers_vcardTable__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_constants__ = __webpack_require__(6);
@@ -47348,7 +47354,7 @@ module.exports = function(obj, fn){
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__functions__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__service_api__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__helpers_constants__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_react_native__);
 
 
@@ -47598,7 +47604,7 @@ const handleIncomingCall = async message => {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constants__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__functions__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_utils__ = __webpack_require__(1);
@@ -48711,7 +48717,7 @@ const getContactMsg = (realm, mid) => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__db_controllers_mediaDetailTable__ = __webpack_require__(71);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_common__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_react_native__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__service_api__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__helpers_constants__ = __webpack_require__(6);
@@ -48812,7 +48818,7 @@ const downloadMedia = async (msgID, addInPending = true) => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__connection__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__profileutils__ = __webpack_require__(107);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__db_controllers_messageTable__ = __webpack_require__(38);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__db_Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__db_Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_profile__ = __webpack_require__(73);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__db_controllers_vcardTable__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__db_controllers_roasterTable__ = __webpack_require__(52);
@@ -50661,7 +50667,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__service_auth__ = __webpack_require__(96);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_react_native_get_random_values__ = __webpack_require__(389);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_react_native_get_random_values___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_react_native_get_random_values__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__db_Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__db_Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__modules_app_appState__ = __webpack_require__(390);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__modules_app_common__ = __webpack_require__(45);
@@ -70803,7 +70809,7 @@ exports.sha512 = __webpack_require__(154);
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 var common = __webpack_require__(50);
 var shaCommon = __webpack_require__(152);
 
@@ -70884,7 +70890,7 @@ SHA1.prototype._digest = function digest(enc) {
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 var SHA256 = __webpack_require__(153);
 
 function SHA224() {
@@ -70921,7 +70927,7 @@ SHA224.prototype._digest = function digest(enc) {
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 
 var SHA512 = __webpack_require__(154);
 
@@ -70963,7 +70969,7 @@ SHA384.prototype._digest = function digest(enc) {
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 var common = __webpack_require__(50);
 
 var rotl32 = utils.rotl32;
@@ -71116,7 +71122,7 @@ var sh = [
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 var assert = __webpack_require__(11);
 
 function Hmac(hash, key, enc) {
@@ -75481,7 +75487,7 @@ const realmConfig = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constants__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__callAdapter__ = __webpack_require__(41);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__functions__ = __webpack_require__(14);
 
 
@@ -81330,7 +81336,7 @@ Backoff.prototype.setJitter = function(jitter){
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_common_js__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_utils_js__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__call_config_js__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__call_config_js__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__call_functions__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__call_initialize_js__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__janus_js__ = __webpack_require__(368);
@@ -89188,7 +89194,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_389__;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react_native__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__strophe_connection__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__reconnect__ = __webpack_require__(54);
@@ -89197,6 +89203,8 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_389__;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__react_native_community_netinfo___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__react_native_community_netinfo__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_native_background_timer__ = __webpack_require__(392);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_native_background_timer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_react_native_background_timer__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__call_config__ = __webpack_require__(16);
+
 
 
 
@@ -89208,7 +89216,8 @@ let previousStatus = null,
     previousState = '',
     isFirstTimeAppStateChange = true,
     isFirstTimeIntStateChange = true,
-    isCheckBackground;
+    isCheckBackground,
+    socketTimer;
 /**
  * Flag to keep track whether or not to keep the connection even when app goes to background
  * Because in some cases app will go to background state but still we need to keep the connection alive
@@ -89238,6 +89247,7 @@ const appStateHandler = () => {
       Object(__WEBPACK_IMPORTED_MODULE_3__common__["k" /* setAppState */])(nextAppState);
       if (!isFirstTimeAppStateChange) {
         if (nextAppState === 'active') {
+          __WEBPACK_IMPORTED_MODULE_5_react_native_background_timer___default.a.clearInterval(socketTimer);
           __WEBPACK_IMPORTED_MODULE_5_react_native_background_timer___default.a.clearTimeout(isCheckBackground);
           if (__WEBPACK_IMPORTED_MODULE_0_react_native__["Platform"].OS === 'ios') {
             Object(__WEBPACK_IMPORTED_MODULE_3__common__["g" /* processPendingDownloads */])();
@@ -89248,6 +89258,11 @@ const appStateHandler = () => {
           isCheckBackground = __WEBPACK_IMPORTED_MODULE_5_react_native_background_timer___default.a.setTimeout(() => {
             Object(__WEBPACK_IMPORTED_MODULE_1__strophe_connection__["a" /* disconnect */])();
           }, 1000);
+        } else if (nextAppState === 'background' && shouldKeepConnectionWhenAppGoesBackground) {
+          socketTimer = __WEBPACK_IMPORTED_MODULE_5_react_native_background_timer___default.a.setInterval(() => {
+            const socket = Object(__WEBPACK_IMPORTED_MODULE_6__call_config__["j" /* getSocket */])();
+            socket.emit('online');
+          }, 4500);
         }
       } else isFirstTimeAppStateChange = false;
     }

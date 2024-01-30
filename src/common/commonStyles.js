@@ -88,6 +88,9 @@ const commonStyles = StyleSheet.create({
    pressedBg: {
       backgroundColor: ApplicationColors.pressedBg,
    },
+   marginTop_5: {
+      marginTop: 5,
+   },
    marginTop_15: {
       marginTop: 15,
    },

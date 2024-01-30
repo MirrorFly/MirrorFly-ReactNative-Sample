@@ -31,7 +31,7 @@ const GestureAnimationScreen = (props = {}) => {
                Animated.timing(target, {
                   toValue: 0,
                   duration,
-                  useNativeDriver: true, // 'false' is required for opacity animation
+                  useNativeDriver: true,
                }),
                Animated.timing(target, {
                   toValue: 1,
@@ -52,7 +52,7 @@ const GestureAnimationScreen = (props = {}) => {
                Animated.timing(target, {
                   toValue: 0,
                   duration,
-                  useNativeDriver: true, // 'false' is required for opacity animation
+                  useNativeDriver: true,
                }),
                Animated.timing(target, {
                   toValue: 1,

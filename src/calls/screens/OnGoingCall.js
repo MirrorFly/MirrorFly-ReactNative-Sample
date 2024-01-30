@@ -1,9 +1,9 @@
 import React from 'react';
 import { Animated, ImageBackground, Platform, Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUserProfile } from '../../Helper';
+import { enablePipModeIfCallConnected, getUserProfile } from '../../Helper';
 import { CALL_STATUS_CONNECTING, CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
-import { closeCallModalActivity, endOnGoingCall } from '../../Helper/Calls/Utility';
+import { endOnGoingCall } from '../../Helper/Calls/Utility';
 import { formatUserIdToJid } from '../../Helper/Chat/ChatHelper';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
@@ -13,12 +13,15 @@ import Pressable from '../../common/Pressable';
 import commonStyles from '../../common/commonStyles';
 import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
+import { usePipModeListener } from '../../customModules/PipModule';
 import BigVideoTile from '../components/BigVideoTile';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 import GridLayout from '../components/GridLayout';
+import PipGridLayoutAndroid from '../components/PipGridLayoutAndroid';
 import SmallVideoTile from '../components/SmallVideoTile';
 import Timer from '../components/Timer';
+import { closeCallModal } from '../../redux/Actions/CallAction';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType
@@ -43,6 +46,8 @@ const OnGoingCall = () => {
    const remoteAudioMuted = showConfrenceData?.remoteAudioMuted || [];
    const vCardData = useSelector(state => state.profile?.profileDetails);
    const rosterData = useSelector(state => state.rosterData.data);
+
+   const isPipMode = usePipModeListener();
 
    const showControlsRef = React.useRef(true);
    const topViewControlsHeightRef = React.useRef(0);
@@ -175,8 +180,13 @@ const OnGoingCall = () => {
    };
 
    const handleClosePress = () => {
-      closeCallModalActivity();
-      // dispatch(closeCallModal());
+      if (Platform.OS === 'android') {
+         if (!isPipMode) {
+            enablePipModeIfCallConnected();
+         }
+      } else {
+         dispatch(closeCallModal());
+      }
    };
 
    const handleHangUp = async e => {
@@ -300,6 +310,17 @@ const OnGoingCall = () => {
       const { height } = nativeEvent.layout;
       bottomControlsViewHeightRef.current = height;
    };
+
+   // if in PIP mode then returning PIP layout
+   if (isPipMode) {
+      return (
+         <PipGridLayoutAndroid
+            remoteStream={remoteStream}
+            localUserJid={localUserJid}
+            remoteAudioMuted={remoteAudioMuted}
+         />
+      );
+   }
 
    return (
       <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>

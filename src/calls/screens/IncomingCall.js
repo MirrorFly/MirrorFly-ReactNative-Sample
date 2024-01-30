@@ -166,8 +166,6 @@ const styles = StyleSheet.create({
    },
    actionButtonWrapper: {
       marginBottom: 20,
-      // flexDirection: 'row',
-      // justifyContent: 'space-around',
    },
    actionButton: {
       width: 100,

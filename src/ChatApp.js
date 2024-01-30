@@ -120,13 +120,6 @@ const RootNavigation = props => {
             let regex = new RegExp(regexStr, 'g'), //NOSONAR
                match;
             match = regex.exec(initialURL);
-            if (
-               Platform.OS === 'android' &&
-               initialURL.includes('mirrorfly_rn://CALLSCREEN') &&
-               Object.keys(callConnectionStoreData()).length !== 0
-            ) {
-               openCallModelActivity();
-            }
             if (match && match?.length !== 0) {
                let x = {
                   screen: CHATSCREEN,

@@ -3,6 +3,7 @@ import { Toast } from 'native-base';
 import { Alert, AppState, Linking, Platform, Text, View } from 'react-native';
 import Graphemer from 'graphemer';
 import RNFS from 'react-native-fs';
+import PipHandler from '../customModules/PipModule';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import { createThumbnail } from 'react-native-create-thumbnail';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,6 +18,7 @@ import config from '../components/chat/common/config';
 import { addchatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAction';
 import { updateConversationMessage, updateRecentChatMessage } from '../components/chat/common/createMessage';
 import { getUserIdFromJid } from './Chat/Utility';
+import { CALL_STATUS_CONNECTED } from './Calls/Constant';
 
 const toastLocalRef = React.createRef({});
 toastLocalRef.current = {};
@@ -232,16 +234,16 @@ export const getPendingSeenStatusMsg = async () => {
 };
 
 export const handleSetPendingSeenStatus = async obj => {
-  if (AppState.currentState === 'background') {
-    Store.dispatch(addchatSeenPendingMsg(obj));
-  } else {
-    const parsedStoreVal = await getPendingSeenStatusMsg();
-    if (parsedStoreVal?.data.length) {
-      parsedStoreVal?.data.forEach(element => {
-        Store.dispatch(addchatSeenPendingMsg(element));
-      });
-    }
-  }
+   if (AppState.currentState === 'background') {
+      Store.dispatch(addchatSeenPendingMsg(obj));
+   } else {
+      const parsedStoreVal = await getPendingSeenStatusMsg();
+      if (parsedStoreVal?.data.length) {
+         parsedStoreVal?.data.forEach(element => {
+            Store.dispatch(addchatSeenPendingMsg(element));
+         });
+      }
+   }
 };
 
 export const updateRecentAndConversationStore = obj => {
@@ -258,7 +260,7 @@ export const getUserProfileFromSDK = userId => {
       if (res?.statusCode === 200) {
          updateUserProfileStore(res.data);
       }
-		return res;
+      return res;
    });
 };
 
@@ -275,11 +277,27 @@ export const getUserProfile = userId => {
       return rosterData[_userId];
    } else if (_userId) {
       getUserProfileFromSDK(_userId);
-		return {
-			nickName: '',
-			userId: _userId,
-		}
+      return {
+         nickName: '',
+         userId: _userId,
+      };
    } else {
-		return {}
-	}
+      return {};
+   }
+};
+
+/**
+ * Helper function to enable PIP mode for Android if the call is connected
+ * @param {number} width 
+ * @param {number} height 
+ * @returns {boolean} - whether PIP mode has enabled or not based on the call connected status condition
+ */
+export const enablePipModeIfCallConnected = (width = 300, height = 600) => {
+   if (Platform.OS === 'android') {
+      const remoteStream = Store.getState().showConfrenceData?.data?.remoteStream || [];
+      const isCallConnected = remoteStream.filter(s => s.status?.toLowerCase() === CALL_STATUS_CONNECTED)?.length > 1;
+      isCallConnected && PipHandler.enterPipMode(width, height);
+      isCallConnected && console.log('PIP mode has enabled');
+      return isCallConnected;
+   }
 };

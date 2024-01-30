@@ -2,7 +2,8 @@ import { NativeBaseProvider } from 'native-base';
 import React from 'react';
 import { Modal, Platform, View } from 'react-native';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
-import { batch, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { enablePipModeIfCallConnected } from '../Helper';
 import {
    CALL_AGAIN_SCREEN,
    INCOMING_CALL_SCREEN,
@@ -11,6 +12,7 @@ import {
 } from '../Helper/Calls/Constant';
 import { closeCallModalActivity, resetCallModalActivity } from '../Helper/Calls/Utility';
 import commonStyles from '../common/commonStyles';
+import { usePipModeListener } from '../customModules/PipModule';
 import { resetCallAgainData } from '../redux/Actions/CallAgainAction';
 import CallModalToastContainer from './components/CallModalToastContainer';
 import CallAgain from './screens/CallAgain';
@@ -26,6 +28,8 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const insets = initialWindowMetrics.insets;
    const dispatch = useDispatch();
+
+   const isPipMode = usePipModeListener();
 
    React.useLayoutEffect(() => {
       if (Object.keys(connectionState).length === 0) {
@@ -55,7 +59,7 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
 
    const renderModalContent = () => {
       const content = (
-         <View style={[commonStyles.flex1, { marginTop: insets?.top, overflow: 'hidden' }]}>
+         <View style={[commonStyles.flex1, { marginTop: isPipMode ? 0 : insets?.top, overflow: 'hidden' }]}>
             {renderCallscreenBasedOnCallStatus()}
             <CallModalToastContainer />
          </View>
@@ -65,11 +69,14 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
 
    const handleModalRequestClose = () => {
       if (screenName === CALL_AGAIN_SCREEN) {
-         batch(() => {
-            resetCallModalActivity();
-            // dispatch(resetCallStateData());
-            dispatch(resetCallAgainData());
-         });
+         resetCallModalActivity();
+         // dispatch(resetCallStateData());
+         dispatch(resetCallAgainData());
+      } else {
+         const pipEnabled = enablePipModeIfCallConnected();
+         if (!pipEnabled) {
+            closeCallModalActivity();
+         }
       }
    };
 

@@ -1,19 +1,32 @@
 package com.mirrorfly_rn;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.AppOpsManager;
+import android.app.PictureInPictureParams;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Process;
 import android.util.Log;
+import android.util.Rational;
 import android.view.KeyEvent;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
+import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.github.kevinejohn.keyevent.KeyEventModule;
 
 public class CallScreenActivity extends ReactActivity {
@@ -21,25 +34,33 @@ public class CallScreenActivity extends ReactActivity {
     SharedPreferences sharedPreferences = null;
     SharedPreferences.Editor editor = null;
 
+    public Context context;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(null);
-        getWindow().getDecorView().setBackgroundColor(Color.parseColor("#0D2852"));
+        this.context = this;
+       getWindow().getDecorView().setBackgroundColor(Color.parseColor("#0D2852"));
         // Get SharedPreferences instance
         sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
         // Write to SharedPreferences
         editor = sharedPreferences.edit();
         onCall = sharedPreferences.getBoolean("onCall", false);
+        
+        // Register the activity with the ActivityManager
+        ActivityManager.getInstance().addActivity(this);
     }
 
     @Override
     protected void onResume() {
+        Log.d("TAG", "CallScreenActivity== CallScreenActivityOnResume: ");
         super.onResume();
         Integer permission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
         boolean rational = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO);
-        if(onCall){
-            getWindow().getDecorView().setBackgroundColor(Color.parseColor("#F2F2F2"));
-        }
+       if(onCall){
+           getWindow().getDecorView().setBackgroundColor(Color.parseColor("#F2F2F2"));
+       }
         if (permission == -1 && rational && !onCall) {
             onCall = true;
             editor.putBoolean("onCall", true);
@@ -63,15 +84,58 @@ public class CallScreenActivity extends ReactActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d("TAG", "CallScreenActivityOnPause: ");
+        Log.d("TAG", "CallScreenActivity== CallScreenActivityOnPause: ");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("TAG", "CallScreenActivity== CallScreenActivityOnStop: ");
     }
 
     @Override
     protected void onDestroy() {
+        // Unregister the activity from the ActivityManager
+        ActivityManager.getInstance().removeActivity(this);
+
         super.onDestroy();
         editor.clear();
         editor.commit();
-        Log.d("TAG", "CallScreenActivityOnDestroy: ");
+        Log.d("TAG", "CallScreenActivity== CallScreenActivityOnDestroy: ");
+    }
+
+    @Override
+    protected void onUserLeaveHint() {
+        Log.d("TAG", "CallScreenActivity==  onUserLeaveHint: Happening");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AppOpsManager appOpsManager;
+            appOpsManager = (AppOpsManager) this.getSystemService(Context.APP_OPS_SERVICE);
+            Boolean isPipAllowedInSystem = AppOpsManager.MODE_ALLOWED == appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE, Process.myUid(), this.getPackageName());
+            Log.d("TAG", "isPipAllowed: before validation " + isPipAllowedInSystem);
+            if (isPipAllowedInSystem) {
+                try {
+                    Log.d("TAG", "enterPipMode: before validation ");
+                    if (!this.isInPictureInPictureMode()) {
+
+
+                        Rational ratio
+                                = new Rational(300, 500);
+                        PictureInPictureParams.Builder
+                                pip_Builder
+                                = null;
+
+                        pip_Builder = new PictureInPictureParams
+                                .Builder();
+                        pip_Builder.setAspectRatio(ratio).build();
+                        CallScreenActivity.this.enterPictureInPictureMode(pip_Builder.build());
+                        Log.d("TAG", "_enterPipMode: PIP Enabled from Android Java");
+                    }
+                } catch (Exception e) {
+                    Log.d("TAG", "Error in CallScreenActivity enterPipMode method: " + e);
+                }
+            }
+        }
+        super.onUserLeaveHint();
     }
 
     /**
@@ -138,10 +202,11 @@ public class CallScreenActivity extends ReactActivity {
         return super.onKeyMultiple(keyCode, repeatCount, event);
     }
 
-    // @Override
-    // protected ReactActivityDelegate createReactActivityDelegate() {
-    // return new MainActivityDelegate(this, getMainComponentName());
-    // }
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
+        PipAndroidModule.pipModeChanged(isInPictureInPictureMode, getLifecycle().getCurrentState(), this);
+    }
 
     public static class MainActivityDelegate extends ReactActivityDelegate {
         public MainActivityDelegate(ReactActivity activity, String mainComponentName) {

@@ -203,9 +203,6 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
   // --- this is optional, only required if you want to call `completion()` on the js side
   [RNVoipPushNotificationManager addCompletionHandler:uuid completionHandler:completion];
 
-  // --- Process the received push
-  [RNVoipPushNotificationManager didReceiveIncomingPushWithPayload:payload forType:(NSString *)type];
-
   if(count < 1) {
     
   //  Check the Mic permission and if the permission is not provided then end the call
@@ -251,19 +248,22 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     }
   }else{
       // Report and end invalid call
-      [RNCallKeep reportNewIncomingCall: uuid
-                                 handle: callerId
-                             handleType: @"generic"
-                               hasVideo: hasvideo
-                    localizedCallerName: callerId
-                        supportsHolding: YES
-                           supportsDTMF: YES
-                       supportsGrouping: YES
-                     supportsUngrouping: YES
-                            fromPushKit: YES
-                                payload: [payload dictionaryPayload]
-                  withCompletionHandler: completion];
-      [RNCallKeep endCallWithUUID:uuid reason:2];
+//      [RNCallKeep reportNewIncomingCall: uuid
+//                                 handle: callerId
+//                             handleType: @"generic"
+//                               hasVideo: hasvideo
+//                    localizedCallerName: callerId
+//                        supportsHolding: YES
+//                           supportsDTMF: YES
+//                       supportsGrouping: YES
+//                     supportsUngrouping: YES
+//                            fromPushKit: YES
+//                                payload: [payload dictionaryPayload]
+//                  withCompletionHandler: completion];
+//      [RNCallKeep endCallWithUUID:uuid reason:2];
+    
+    // --- sending the received push to JS for the incoming call (while the user is already on a call) to send busy status to the caller
+    [RNVoipPushNotificationManager didReceiveIncomingPushWithPayload:payload forType:(NSString *)type];
   }
   
   // --- You don't need to call it if you stored `completion()` and will call it on the js side.

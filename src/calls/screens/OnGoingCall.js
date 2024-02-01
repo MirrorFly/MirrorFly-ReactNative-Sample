@@ -2,7 +2,7 @@ import React from 'react';
 import { Animated, ImageBackground, Platform, Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { enablePipModeIfCallConnected, getUserProfile } from '../../Helper';
-import { CALL_STATUS_CONNECTING, CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
+import { CALL_RINGING_DURATION, CALL_STATUS_CONNECTING, CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
 import { endOnGoingCall } from '../../Helper/Calls/Utility';
 import { formatUserIdToJid } from '../../Helper/Chat/ChatHelper';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
@@ -22,6 +22,7 @@ import PipGridLayoutAndroid from '../components/PipGridLayoutAndroid';
 import SmallVideoTile from '../components/SmallVideoTile';
 import Timer from '../components/Timer';
 import { closeCallModal } from '../../redux/Actions/CallAction';
+import _BackgroundTimer from 'react-native-background-timer';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType
@@ -35,7 +36,8 @@ const initialLayout = 'tile';
 let hideControlsTimeout,
    hideControlsTimeoutMilliSeconds = 6000,
    controlsAnimationDuration = 400,
-   layoutAnimationDuration = 200;
+   layoutAnimationDuration = 200,
+   connectingCallStatusTimeout;
 
 const OnGoingCall = () => {
    const localUserJid = useSelector(state => state.auth.currentUserJID);
@@ -146,7 +148,21 @@ const OnGoingCall = () => {
       return user?.status;
    };
 
-   let callStatus = getCallStatus() || '';
+   let callStatus = React.useMemo(() => getCallStatus() || '', [showConfrenceData, vCardData]);
+
+   // the below useEffect to set a timeout for 30 seconds when call is in connecting status to end the call
+   // because when the user goes offline or the call could not be connected for 30 seconds then we are ending the call in the timeout
+   React.useEffect(() => {
+      if(callStatus.toLowerCase() === CALL_STATUS_CONNECTING.toLowerCase()) {
+         _BackgroundTimer.clearTimeout(connectingCallStatusTimeout);
+         connectingCallStatusTimeout = _BackgroundTimer.setTimeout(() => {
+            const _currentCallStatus = (getCallStatus() || '').toLowerCase();
+            if(_currentCallStatus === CALL_STATUS_CONNECTING.toLowerCase()) {
+               endOnGoingCall();
+            }
+         }, CALL_RINGING_DURATION);
+      }
+   }, [callStatus]);
 
    const animateControls = (toOpacity, toOffset) => {
       showControlsRef.current = Boolean(toOpacity);

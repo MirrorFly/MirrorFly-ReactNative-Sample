@@ -7,7 +7,7 @@
 		exports["SDK"] = factory(require("react-native"), require("@react-native-async-storage/async-storage"), require("react-native-fs"), require("react-native-webrtc"), require("realm"), require("moment"), require("react-native-compressor"), require("react-native-convert-ph-asset"), require("react-native-mov-to-mp4"), require("react-native-create-thumbnail"), require("react-native-get-random-values"), require("@react-native-community/netinfo"), require("react-native-background-timer"));
 	else
 		root["SDK"] = factory(root["react-native"], root["@react-native-async-storage/async-storage"], root["react-native-fs"], root["react-native-webrtc"], root["realm"], root["moment"], root["react-native-compressor"], root["react-native-convert-ph-asset"], root["react-native-mov-to-mp4"], root["react-native-create-thumbnail"], root["react-native-get-random-values"], root["@react-native-community/netinfo"], root["react-native-background-timer"]);
-})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_18__, __WEBPACK_EXTERNAL_MODULE_21__, __WEBPACK_EXTERNAL_MODULE_72__, __WEBPACK_EXTERNAL_MODULE_167__, __WEBPACK_EXTERNAL_MODULE_314__, __WEBPACK_EXTERNAL_MODULE_380__, __WEBPACK_EXTERNAL_MODULE_381__, __WEBPACK_EXTERNAL_MODULE_382__, __WEBPACK_EXTERNAL_MODULE_383__, __WEBPACK_EXTERNAL_MODULE_384__, __WEBPACK_EXTERNAL_MODULE_389__, __WEBPACK_EXTERNAL_MODULE_391__, __WEBPACK_EXTERNAL_MODULE_392__) {
+})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_19__, __WEBPACK_EXTERNAL_MODULE_21__, __WEBPACK_EXTERNAL_MODULE_72__, __WEBPACK_EXTERNAL_MODULE_167__, __WEBPACK_EXTERNAL_MODULE_314__, __WEBPACK_EXTERNAL_MODULE_380__, __WEBPACK_EXTERNAL_MODULE_381__, __WEBPACK_EXTERNAL_MODULE_382__, __WEBPACK_EXTERNAL_MODULE_383__, __WEBPACK_EXTERNAL_MODULE_384__, __WEBPACK_EXTERNAL_MODULE_389__, __WEBPACK_EXTERNAL_MODULE_391__, __WEBPACK_EXTERNAL_MODULE_392__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -114,11 +114,11 @@ if (typeof Object.create === 'function') {
 /* harmony export (immutable) */ __webpack_exports__["n"] = getExtension;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__CryptLib__ = __webpack_require__(214);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constants__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__localDb__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_profile__ = __webpack_require__(73);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__strophe_connection__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__db_Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__db_Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__db_controllers_messageTable__ = __webpack_require__(38);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__db_controllers_vcardTable__ = __webpack_require__(29);
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
@@ -217,7 +217,7 @@ const randomString = (length, chars, UUID = true) => {
 
 const successResponse = message => ({
   statusCode: 200,
-  message: message || __WEBPACK_IMPORTED_MODULE_1__constants__["_56" /* SUCCESS */]
+  message: message || __WEBPACK_IMPORTED_MODULE_1__constants__["_57" /* SUCCESS */]
 });
 /* harmony export (immutable) */ __webpack_exports__["B"] = successResponse;
 
@@ -238,14 +238,14 @@ const connectionErrorResponse = errorMessage => ({
 
 const timeoutErrorResponse = errorMessage => ({
   statusCode: 504,
-  message: errorMessage || __WEBPACK_IMPORTED_MODULE_1__constants__["_58" /* TIMEOUT_ERROR */]
+  message: errorMessage || __WEBPACK_IMPORTED_MODULE_1__constants__["_59" /* TIMEOUT_ERROR */]
 });
 /* harmony export (immutable) */ __webpack_exports__["C"] = timeoutErrorResponse;
 
 
 const validationErrorResponse = errorMessage => ({
   statusCode: 400,
-  message: errorMessage || __WEBPACK_IMPORTED_MODULE_1__constants__["_75" /* VALIDATION_ERROR */]
+  message: errorMessage || __WEBPACK_IMPORTED_MODULE_1__constants__["_76" /* VALIDATION_ERROR */]
 });
 /* harmony export (immutable) */ __webpack_exports__["D"] = validationErrorResponse;
 
@@ -453,41 +453,41 @@ const customValiadtionMediaMessage = (toJid = '', msgType = '', fileOptions = {}
   const validation = [{
     key: 'toJid',
     value: toJid,
-    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_2" /* JID_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_3" /* JID_REQUIRED */]
   }, {
     key: 'msgType',
     value: msgType,
-    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_24" /* MSGTYPES_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_25" /* MSGTYPES_REQUIRED */]
   }, {
     key: 'fileOptions',
     value: fileOptions,
-    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_42" /* OBJECT_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_43" /* OBJECT_REQUIRED */]
   }, {
     key: 'fileOptions.fileName',
     value: fileOptions.fileName,
-    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_50" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_51" /* REQUIRED */]
   }, {
     key: 'fileOptions.fileURL',
     value: fileOptions.fileURL,
-    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_50" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_51" /* REQUIRED */]
   }, {
     key: 'fileOptions.fileSize',
     value: fileOptions.fileSize,
-    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_41" /* NUMBER_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_42" /* NUMBER_REQUIRED */]
   }];
 
   // Audio & Video Message Should Have Duration
-  (msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["i" /* AUDIO */] || msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["_76" /* VIDEO */]) && validation.push({
+  (msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["i" /* AUDIO */] || msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["_77" /* VIDEO */]) && validation.push({
     key: 'fileOptions.duration',
     value: fileOptions.duration,
-    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_50" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_51" /* REQUIRED */]
   });
 
   // Video Message Should Have Thumbnail Image
-  msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["_76" /* VIDEO */] && validation.push({
+  msgType === __WEBPACK_IMPORTED_MODULE_1__constants__["_77" /* VIDEO */] && validation.push({
     key: 'fileOptions.thumbImg',
     value: fileOptions.thumbImg,
-    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_50" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_1__constants__["_51" /* REQUIRED */]
   });
 
   return Object(__WEBPACK_IMPORTED_MODULE_3__common__["b" /* clientSideValidation */])(validation);
@@ -600,7 +600,7 @@ const autoRefreshToken = token => {
 
   refreshInterval = setInterval(async () => {
     const parsedJwt = parseJwt(token);
-    const expiryTime = parsedJwt.exp + __WEBPACK_IMPORTED_MODULE_1__constants__["_60" /* TOKEN_EXPIRY_TIME */];
+    const expiryTime = parsedJwt.exp + __WEBPACK_IMPORTED_MODULE_1__constants__["_61" /* TOKEN_EXPIRY_TIME */];
     const currentTime = new Date().getTime() / 1000;
 
     if (currentTime > expiryTime) {
@@ -609,7 +609,7 @@ const autoRefreshToken = token => {
       const credentials = Object(__WEBPACK_IMPORTED_MODULE_3__common__["g" /* getCredentials */])();
       await Object(__WEBPACK_IMPORTED_MODULE_4__modules_profile__["j" /* getUserToken */])(credentials.username, credentials.password);
     }
-  }, __WEBPACK_IMPORTED_MODULE_1__constants__["_59" /* TOKEN_EXPIRY_INTERVAL */]);
+  }, __WEBPACK_IMPORTED_MODULE_1__constants__["_60" /* TOKEN_EXPIRY_INTERVAL */]);
 };
 /* harmony export (immutable) */ __webpack_exports__["a"] = autoRefreshToken;
 
@@ -628,23 +628,23 @@ const getGroupMessageStatus = (msgBody, publisherJid, userJid) => {
   let profileUpdatedStatus = '';
   switch (msgBody) {
     case '1':
-      profileUpdatedStatus = __WEBPACK_IMPORTED_MODULE_1__constants__["O" /* GROUP_CREATED */];
+      profileUpdatedStatus = __WEBPACK_IMPORTED_MODULE_1__constants__["P" /* GROUP_CREATED */];
       break;
 
     case '2':
-      profileUpdatedStatus = __WEBPACK_IMPORTED_MODULE_1__constants__["_69" /* USER_ADDED */];
+      profileUpdatedStatus = __WEBPACK_IMPORTED_MODULE_1__constants__["_70" /* USER_ADDED */];
       break;
 
     case '3':
-      profileUpdatedStatus = publisherJid === userJid ? __WEBPACK_IMPORTED_MODULE_1__constants__["_73" /* USER_LEFT */] : __WEBPACK_IMPORTED_MODULE_1__constants__["_74" /* USER_REMOVED */];
+      profileUpdatedStatus = publisherJid === userJid ? __WEBPACK_IMPORTED_MODULE_1__constants__["_74" /* USER_LEFT */] : __WEBPACK_IMPORTED_MODULE_1__constants__["_75" /* USER_REMOVED */];
       break;
 
     case '4':
-      profileUpdatedStatus = __WEBPACK_IMPORTED_MODULE_1__constants__["_44" /* PROFILE_UPDATED */];
+      profileUpdatedStatus = __WEBPACK_IMPORTED_MODULE_1__constants__["_45" /* PROFILE_UPDATED */];
       break;
 
     case '5':
-      profileUpdatedStatus = __WEBPACK_IMPORTED_MODULE_1__constants__["_7" /* MADE_ADMIN */];
+      profileUpdatedStatus = __WEBPACK_IMPORTED_MODULE_1__constants__["_8" /* MADE_ADMIN */];
       break;
 
     default:
@@ -698,7 +698,7 @@ const isSingleChat = chatType => chatType === __WEBPACK_IMPORTED_MODULE_1__const
 /* unused harmony export isSingleChat */
 
 
-const isGroupChat = chatType => chatType === __WEBPACK_IMPORTED_MODULE_1__constants__["L" /* GROUPCHAT */];
+const isGroupChat = chatType => chatType === __WEBPACK_IMPORTED_MODULE_1__constants__["M" /* GROUPCHAT */];
 /* unused harmony export isGroupChat */
 
 
@@ -759,11 +759,11 @@ const generateImageThumbnail = (file, fileExtension) => new Promise(resolve => {
         const height = img.height;
         const imageType = `image/${fileExtension}`;
         const canvas = document.createElement('canvas');
-        canvas.width = __WEBPACK_IMPORTED_MODULE_1__constants__["_19" /* MIN_THUMB_WIDTH */];
-        canvas.height = height / width * __WEBPACK_IMPORTED_MODULE_1__constants__["_19" /* MIN_THUMB_WIDTH */];
+        canvas.width = __WEBPACK_IMPORTED_MODULE_1__constants__["_20" /* MIN_THUMB_WIDTH */];
+        canvas.height = height / width * __WEBPACK_IMPORTED_MODULE_1__constants__["_20" /* MIN_THUMB_WIDTH */];
         const context = canvas.getContext('2d');
-        context.drawImage(img, 0, 0, __WEBPACK_IMPORTED_MODULE_1__constants__["_19" /* MIN_THUMB_WIDTH */], height / width * __WEBPACK_IMPORTED_MODULE_1__constants__["_19" /* MIN_THUMB_WIDTH */]);
-        imageData = canvas.toDataURL(imageType, __WEBPACK_IMPORTED_MODULE_1__constants__["V" /* IMAGE_THUMB_QUALITY */]);
+        context.drawImage(img, 0, 0, __WEBPACK_IMPORTED_MODULE_1__constants__["_20" /* MIN_THUMB_WIDTH */], height / width * __WEBPACK_IMPORTED_MODULE_1__constants__["_20" /* MIN_THUMB_WIDTH */]);
+        imageData = canvas.toDataURL(imageType, __WEBPACK_IMPORTED_MODULE_1__constants__["W" /* IMAGE_THUMB_QUALITY */]);
         const thumb = imageData.replace(/^data:image\/\w+;base64,/, '');
         resolve(thumb);
       };
@@ -2803,7 +2803,7 @@ function isnan (val) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__strophe_connection__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__constants__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_call_initialize__ = __webpack_require__(39);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_react_native__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_app_reconnect__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__react_native_async_storage_async_storage__ = __webpack_require__(21);
@@ -2846,7 +2846,7 @@ const jidValidation = (rule, jid) => {
   switch (rule) {
     case 'jid':
       // We should have @ symbol in the jid
-      if (jid && !__WEBPACK_IMPORTED_MODULE_3__constants__["m" /* BARE_JID */].test(jid) && !__WEBPACK_IMPORTED_MODULE_3__constants__["_23" /* MIX_BARE_JID */].test(jid)) response = false;
+      if (jid && !__WEBPACK_IMPORTED_MODULE_3__constants__["m" /* BARE_JID */].test(jid) && !__WEBPACK_IMPORTED_MODULE_3__constants__["_24" /* MIX_BARE_JID */].test(jid)) response = false;
       break;
 
     case 'jidFormat':
@@ -2856,7 +2856,7 @@ const jidValidation = (rule, jid) => {
 
     case 'groupjidFormat':
       // We should have @mix string in the group jid
-      if (jid && !__WEBPACK_IMPORTED_MODULE_3__constants__["_23" /* MIX_BARE_JID */].test(jid)) response = false;
+      if (jid && !__WEBPACK_IMPORTED_MODULE_3__constants__["_24" /* MIX_BARE_JID */].test(jid)) response = false;
       break;
 
     default:
@@ -2872,9 +2872,9 @@ const fileValidation = (rule, file = {}) => {
     // TODO: need to check the File class is available in React Native or the file selected has a type of "File" in React Native
     case 'image':
       if (__WEBPACK_IMPORTED_MODULE_5_react_native__["Platform"].OS == 'ios') {
-        if (!__WEBPACK_IMPORTED_MODULE_3__constants__["Y" /* IOS_IMAGE_FORMATS */].includes(file.type)) response = false;
+        if (!__WEBPACK_IMPORTED_MODULE_3__constants__["Z" /* IOS_IMAGE_FORMATS */].includes(file.type)) response = false;
       } else {
-        if (!__WEBPACK_IMPORTED_MODULE_3__constants__["U" /* IMAGE_FORMATS */].includes(file.type)) response = false;
+        if (!__WEBPACK_IMPORTED_MODULE_3__constants__["V" /* IMAGE_FORMATS */].includes(file.type)) response = false;
       }
       break;
 
@@ -2884,8 +2884,8 @@ const fileValidation = (rule, file = {}) => {
 
     case 'video':
       if (__WEBPACK_IMPORTED_MODULE_5_react_native__["Platform"].OS == 'ios') {
-        if (!__WEBPACK_IMPORTED_MODULE_3__constants__["Z" /* IOS_VIDEO_FORMATS */].includes(file.type)) response = false;
-      } else if (!__WEBPACK_IMPORTED_MODULE_3__constants__["_78" /* VIDEO_FORMATS */].includes(file.type)) response = false;
+        if (!__WEBPACK_IMPORTED_MODULE_3__constants__["_0" /* IOS_VIDEO_FORMATS */].includes(file.type)) response = false;
+      } else if (!__WEBPACK_IMPORTED_MODULE_3__constants__["_79" /* VIDEO_FORMATS */].includes(file.type)) response = false;
       break;
 
     case 'document':
@@ -3448,7 +3448,7 @@ const getJid = userId => {
   const response = clientSideValidation([{
     key: 'userId',
     value: userId,
-    rules: __WEBPACK_IMPORTED_MODULE_3__constants__["_50" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_3__constants__["_51" /* REQUIRED */]
   }]);
   if (response.statusCode === 200) {
     if (!XMPP_SERVER_HOST || XMPP_SERVER_HOST === '') {
@@ -3508,7 +3508,7 @@ const getFileNameFromUri = uri => {
 const initializedSDKOrNot = () => {
   let response = Object(__WEBPACK_IMPORTED_MODULE_0__utils__["B" /* successResponse */])();
   if (licenseKey === "" || licenseKey === null || licenseKey === undefined) {
-    return Object(__WEBPACK_IMPORTED_MODULE_0__utils__["D" /* validationErrorResponse */])(__WEBPACK_IMPORTED_MODULE_3__constants__["_5" /* LICENSE_KEY_NOT_CONFIGURED_ERROR_MESSAGE */]);
+    return Object(__WEBPACK_IMPORTED_MODULE_0__utils__["D" /* validationErrorResponse */])(__WEBPACK_IMPORTED_MODULE_3__constants__["_6" /* LICENSE_KEY_NOT_CONFIGURED_ERROR_MESSAGE */]);
   }
   // if (invalidLicenseKey) {
   //   return validationErrorResponse(INVALID_LICENSE_KEY_ERROR_MESSAGE)
@@ -3720,55 +3720,55 @@ process.umask = function() { return 0; };
 
 // Static Contents
 const SUCCESS = 'Success';
-/* harmony export (immutable) */ __webpack_exports__["_56"] = SUCCESS;
+/* harmony export (immutable) */ __webpack_exports__["_57"] = SUCCESS;
 
 const CONNECTION_ERROR = 'Connection Error';
 /* harmony export (immutable) */ __webpack_exports__["v"] = CONNECTION_ERROR;
 
 const VALIDATION_ERROR = 'Validation Error';
-/* harmony export (immutable) */ __webpack_exports__["_75"] = VALIDATION_ERROR;
+/* harmony export (immutable) */ __webpack_exports__["_76"] = VALIDATION_ERROR;
 
 const INVALID_CREDENTIALS = 'Invalid Credentials';
-/* harmony export (immutable) */ __webpack_exports__["W"] = INVALID_CREDENTIALS;
+/* harmony export (immutable) */ __webpack_exports__["X"] = INVALID_CREDENTIALS;
 
 const TIMEOUT_ERROR = 'Timeout Error';
-/* harmony export (immutable) */ __webpack_exports__["_58"] = TIMEOUT_ERROR;
+/* harmony export (immutable) */ __webpack_exports__["_59"] = TIMEOUT_ERROR;
 
 const MEDIA_UPLOAD_FAILED = 'Media Upload Failed';
-/* harmony export (immutable) */ __webpack_exports__["_13"] = MEDIA_UPLOAD_FAILED;
+/* harmony export (immutable) */ __webpack_exports__["_14"] = MEDIA_UPLOAD_FAILED;
 
 const TYPE_GET = 'get';
-/* harmony export (immutable) */ __webpack_exports__["_62"] = TYPE_GET;
+/* harmony export (immutable) */ __webpack_exports__["_63"] = TYPE_GET;
 
 const TYPE_SET = 'set';
-/* harmony export (immutable) */ __webpack_exports__["_64"] = TYPE_SET;
+/* harmony export (immutable) */ __webpack_exports__["_65"] = TYPE_SET;
 
 const TYPE_RESULT = 'result';
-/* harmony export (immutable) */ __webpack_exports__["_63"] = TYPE_RESULT;
+/* harmony export (immutable) */ __webpack_exports__["_64"] = TYPE_RESULT;
 
 const TYPE_CHAT = 'chat';
-/* harmony export (immutable) */ __webpack_exports__["_61"] = TYPE_CHAT;
+/* harmony export (immutable) */ __webpack_exports__["_62"] = TYPE_CHAT;
 
 const METHOD_POST = 'POST';
-/* harmony export (immutable) */ __webpack_exports__["_15"] = METHOD_POST;
+/* harmony export (immutable) */ __webpack_exports__["_16"] = METHOD_POST;
 
 const METHOD_PUT = 'PUT';
-/* harmony export (immutable) */ __webpack_exports__["_16"] = METHOD_PUT;
+/* harmony export (immutable) */ __webpack_exports__["_17"] = METHOD_PUT;
 
 const METHOD_GET = 'GET';
-/* harmony export (immutable) */ __webpack_exports__["_14"] = METHOD_GET;
+/* harmony export (immutable) */ __webpack_exports__["_15"] = METHOD_GET;
 
 const TEXT = 'text';
-/* harmony export (immutable) */ __webpack_exports__["_57"] = TEXT;
+/* harmony export (immutable) */ __webpack_exports__["_58"] = TEXT;
 
 const AUTO_TEXT = 'auto_text';
 /* harmony export (immutable) */ __webpack_exports__["l"] = AUTO_TEXT;
 
 const IMAGE = 'image';
-/* harmony export (immutable) */ __webpack_exports__["S"] = IMAGE;
+/* harmony export (immutable) */ __webpack_exports__["T"] = IMAGE;
 
 const VIDEO = 'video';
-/* harmony export (immutable) */ __webpack_exports__["_76"] = VIDEO;
+/* harmony export (immutable) */ __webpack_exports__["_77"] = VIDEO;
 
 const AUDIO = 'audio';
 /* harmony export (immutable) */ __webpack_exports__["i"] = AUDIO;
@@ -3777,19 +3777,19 @@ const FILE = 'file';
 /* harmony export (immutable) */ __webpack_exports__["C"] = FILE;
 
 const LOCATION = 'location';
-/* harmony export (immutable) */ __webpack_exports__["_6"] = LOCATION;
+/* harmony export (immutable) */ __webpack_exports__["_7"] = LOCATION;
 
 const CONTACT = 'contact';
 /* harmony export (immutable) */ __webpack_exports__["w"] = CONTACT;
 
 const PNG = 'png';
-/* harmony export (immutable) */ __webpack_exports__["_43"] = PNG;
+/* harmony export (immutable) */ __webpack_exports__["_44"] = PNG;
 
 const JPG = 'jpg';
-/* harmony export (immutable) */ __webpack_exports__["_4"] = JPG;
+/* harmony export (immutable) */ __webpack_exports__["_5"] = JPG;
 
 const JPEG = 'jpeg';
-/* harmony export (immutable) */ __webpack_exports__["_3"] = JPEG;
+/* harmony export (immutable) */ __webpack_exports__["_4"] = JPEG;
 
 const MP4 = 'mp4';
 /* unused harmony export MP4 */
@@ -3798,16 +3798,16 @@ const CHAT = 'chat';
 /* harmony export (immutable) */ __webpack_exports__["q"] = CHAT;
 
 const MIX = 'mix';
-/* harmony export (immutable) */ __webpack_exports__["_22"] = MIX;
+/* harmony export (immutable) */ __webpack_exports__["_23"] = MIX;
 
 const ANY = 'any';
 /* harmony export (immutable) */ __webpack_exports__["e"] = ANY;
 
 const NORMAL = 'normal';
-/* harmony export (immutable) */ __webpack_exports__["_26"] = NORMAL;
+/* harmony export (immutable) */ __webpack_exports__["_27"] = NORMAL;
 
 const RECALL = 'recall';
-/* harmony export (immutable) */ __webpack_exports__["_45"] = RECALL;
+/* harmony export (immutable) */ __webpack_exports__["_46"] = RECALL;
 
 const WEB = 'web';
 /* unused harmony export WEB */
@@ -3819,22 +3819,22 @@ const IOS = 'ios';
 /* unused harmony export IOS */
 
 const GROUPCHAT = 'groupchat';
-/* harmony export (immutable) */ __webpack_exports__["L"] = GROUPCHAT;
+/* harmony export (immutable) */ __webpack_exports__["M"] = GROUPCHAT;
 
 const GROUP = 'group';
-/* harmony export (immutable) */ __webpack_exports__["K"] = GROUP;
+/* harmony export (immutable) */ __webpack_exports__["L"] = GROUP;
 
 const INVALID_MESSAGE_TYPE = 'Invalid Message Type';
-/* harmony export (immutable) */ __webpack_exports__["X"] = INVALID_MESSAGE_TYPE;
+/* harmony export (immutable) */ __webpack_exports__["Y"] = INVALID_MESSAGE_TYPE;
 
 const REQUIRED = 'required';
-/* harmony export (immutable) */ __webpack_exports__["_50"] = REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_51"] = REQUIRED;
 
 const FUNCTION_REQUIRED = "required|isFunction";
 /* harmony export (immutable) */ __webpack_exports__["D"] = FUNCTION_REQUIRED;
 
 const JID_REQUIRED = 'jid|required';
-/* harmony export (immutable) */ __webpack_exports__["_2"] = JID_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_3"] = JID_REQUIRED;
 
 const MEDIA_TYPE_REQUIRED = 'media type|required';
 /* unused harmony export MEDIA_TYPE_REQUIRED */
@@ -3843,34 +3843,34 @@ const MID_REQUIRED = 'message id|required';
 /* unused harmony export MID_REQUIRED */
 
 const JID_FORMAT_REQUIRED = 'jidFormat|required';
-/* harmony export (immutable) */ __webpack_exports__["_0"] = JID_FORMAT_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_1"] = JID_FORMAT_REQUIRED;
 
 const JID_GROUP_REQUIRED = 'groupjidFormat|required';
-/* harmony export (immutable) */ __webpack_exports__["_1"] = JID_GROUP_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_2"] = JID_GROUP_REQUIRED;
 
 const STRING_REQUIRED = 'string|required';
-/* harmony export (immutable) */ __webpack_exports__["_55"] = STRING_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_56"] = STRING_REQUIRED;
 
 const BOOLEAN_REQUIRED = 'boolean|required';
 /* harmony export (immutable) */ __webpack_exports__["o"] = BOOLEAN_REQUIRED;
 
 const NUMBER_REQUIRED = 'number|required';
-/* harmony export (immutable) */ __webpack_exports__["_41"] = NUMBER_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_42"] = NUMBER_REQUIRED;
 
 const OBJECT_REQUIRED = 'object|required';
-/* harmony export (immutable) */ __webpack_exports__["_42"] = OBJECT_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_43"] = OBJECT_REQUIRED;
 
 const OBJECT_CALLBACK = 'object|callbackListeners';
 /* unused harmony export OBJECT_CALLBACK */
 
 const IMAGEFILE_REQUIRED = 'image|required';
-/* harmony export (immutable) */ __webpack_exports__["T"] = IMAGEFILE_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["U"] = IMAGEFILE_REQUIRED;
 
 const AUDIOFILE_REQUIRED = 'audio|required';
 /* harmony export (immutable) */ __webpack_exports__["j"] = AUDIOFILE_REQUIRED;
 
 const VIDEOFILE_REQUIRED = 'video|required';
-/* harmony export (immutable) */ __webpack_exports__["_77"] = VIDEOFILE_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_78"] = VIDEOFILE_REQUIRED;
 
 const DOCUMENTFILE_REQUIRED = 'document|required';
 /* harmony export (immutable) */ __webpack_exports__["z"] = DOCUMENTFILE_REQUIRED;
@@ -3879,34 +3879,34 @@ const ARRAY_REQUIRED = 'isArray|arrayRequired|required';
 /* harmony export (immutable) */ __webpack_exports__["h"] = ARRAY_REQUIRED;
 
 const MSGTYPES_REQUIRED = 'msgTypes|required';
-/* harmony export (immutable) */ __webpack_exports__["_24"] = MSGTYPES_REQUIRED;
+/* harmony export (immutable) */ __webpack_exports__["_25"] = MSGTYPES_REQUIRED;
 
 const REQUEST_FAILED = 'Request Failed';
-/* harmony export (immutable) */ __webpack_exports__["_49"] = REQUEST_FAILED;
+/* harmony export (immutable) */ __webpack_exports__["_50"] = REQUEST_FAILED;
 
 const UNAVAILABLE = 'unavailable';
-/* harmony export (immutable) */ __webpack_exports__["_65"] = UNAVAILABLE;
+/* harmony export (immutable) */ __webpack_exports__["_66"] = UNAVAILABLE;
 
 const GROUP_PROFILE_UPDATE = 'groupProfileUpdated';
-/* harmony export (immutable) */ __webpack_exports__["Q"] = GROUP_PROFILE_UPDATE;
+/* harmony export (immutable) */ __webpack_exports__["R"] = GROUP_PROFILE_UPDATE;
 
 const GROUP_CREATED = 'groupCreated';
-/* harmony export (immutable) */ __webpack_exports__["O"] = GROUP_CREATED;
+/* harmony export (immutable) */ __webpack_exports__["P"] = GROUP_CREATED;
 
 const USER_ADDED = 'userAdded';
-/* harmony export (immutable) */ __webpack_exports__["_69"] = USER_ADDED;
+/* harmony export (immutable) */ __webpack_exports__["_70"] = USER_ADDED;
 
 const USER_LEFT = 'userLeft';
-/* harmony export (immutable) */ __webpack_exports__["_73"] = USER_LEFT;
+/* harmony export (immutable) */ __webpack_exports__["_74"] = USER_LEFT;
 
 const USER_REMOVED = 'userRemoved';
-/* harmony export (immutable) */ __webpack_exports__["_74"] = USER_REMOVED;
+/* harmony export (immutable) */ __webpack_exports__["_75"] = USER_REMOVED;
 
 const MADE_ADMIN = 'madeAdmin';
-/* harmony export (immutable) */ __webpack_exports__["_7"] = MADE_ADMIN;
+/* harmony export (immutable) */ __webpack_exports__["_8"] = MADE_ADMIN;
 
 const PROFILE_UPDATED = 'profileUpdated';
-/* harmony export (immutable) */ __webpack_exports__["_44"] = PROFILE_UPDATED;
+/* harmony export (immutable) */ __webpack_exports__["_45"] = PROFILE_UPDATED;
 
 const TO_JID_FORMAT = 'toJidFormatRequired';
 /* unused harmony export TO_JID_FORMAT */
@@ -3917,28 +3917,31 @@ const MSG_BODY_REQUIRED = 'messageBodyRequired';
 
 // Status
 const RECENT_CHAT = 'recent_chat';
-/* harmony export (immutable) */ __webpack_exports__["_46"] = RECENT_CHAT;
+/* harmony export (immutable) */ __webpack_exports__["_47"] = RECENT_CHAT;
+
+const GET_RECENTCHAT_PROFILE = 'get_recentchat_profile';
+/* harmony export (immutable) */ __webpack_exports__["I"] = GET_RECENTCHAT_PROFILE;
 
 const SINGLE_CHAT = 'single_chat';
-/* harmony export (immutable) */ __webpack_exports__["_53"] = SINGLE_CHAT;
+/* harmony export (immutable) */ __webpack_exports__["_54"] = SINGLE_CHAT;
 
 const BLOCK_USER = 'block_user';
 /* harmony export (immutable) */ __webpack_exports__["n"] = BLOCK_USER;
 
 const SINGLE_CHAT_MEDIA = 'single_chat_media';
-/* harmony export (immutable) */ __webpack_exports__["_54"] = SINGLE_CHAT_MEDIA;
+/* harmony export (immutable) */ __webpack_exports__["_55"] = SINGLE_CHAT_MEDIA;
 
 const SINGLE_CHAT_FULL_MEDIA = 'single_chat_fullmedia';
 /* unused harmony export SINGLE_CHAT_FULL_MEDIA */
 
 const REPLY_MESSAGE = 'reply_message';
-/* harmony export (immutable) */ __webpack_exports__["_48"] = REPLY_MESSAGE;
+/* harmony export (immutable) */ __webpack_exports__["_49"] = REPLY_MESSAGE;
 
 const SET_FAVOURITE_MESSAGE = 'set_favourite_message';
-/* harmony export (immutable) */ __webpack_exports__["_51"] = SET_FAVOURITE_MESSAGE;
+/* harmony export (immutable) */ __webpack_exports__["_52"] = SET_FAVOURITE_MESSAGE;
 
 const UPDATE_FAVOURITE_MESSAGE = 'update_favourite_message';
-/* harmony export (immutable) */ __webpack_exports__["_66"] = UPDATE_FAVOURITE_MESSAGE;
+/* harmony export (immutable) */ __webpack_exports__["_67"] = UPDATE_FAVOURITE_MESSAGE;
 
 const GET_FAVOURITE_MESSAGE = 'get_favourite_message';
 /* harmony export (immutable) */ __webpack_exports__["E"] = GET_FAVOURITE_MESSAGE;
@@ -3959,13 +3962,13 @@ const CREATE_GROUP = 'create_group';
 /* harmony export (immutable) */ __webpack_exports__["x"] = CREATE_GROUP;
 
 const GROUP_PROFILE_UPDATED = 'group_profile_updated';
-/* harmony export (immutable) */ __webpack_exports__["R"] = GROUP_PROFILE_UPDATED;
+/* harmony export (immutable) */ __webpack_exports__["S"] = GROUP_PROFILE_UPDATED;
 
 const ADD_PARTICIPANTS = 'add_participants';
 /* harmony export (immutable) */ __webpack_exports__["a"] = ADD_PARTICIPANTS;
 
 const SET_GROUP_INFO = 'set_group_info';
-/* harmony export (immutable) */ __webpack_exports__["_52"] = SET_GROUP_INFO;
+/* harmony export (immutable) */ __webpack_exports__["_53"] = SET_GROUP_INFO;
 
 const GET_GROUP_ID = 'get_group_id';
 /* harmony export (immutable) */ __webpack_exports__["F"] = GET_GROUP_ID;
@@ -3983,97 +3986,97 @@ const ADMIN_REMOVE_PARTICIPANT = 'admin_remove_participant';
 /* harmony export (immutable) */ __webpack_exports__["d"] = ADMIN_REMOVE_PARTICIPANT;
 
 const MAKE_ADMIN = 'make_admin';
-/* harmony export (immutable) */ __webpack_exports__["_8"] = MAKE_ADMIN;
+/* harmony export (immutable) */ __webpack_exports__["_9"] = MAKE_ADMIN;
 
 const ADMIN_EXIT_GROUP = 'admin_exit_group';
 /* harmony export (immutable) */ __webpack_exports__["b"] = ADMIN_EXIT_GROUP;
 
 const USER_EXIT_GROUP = 'user_exit_group';
-/* harmony export (immutable) */ __webpack_exports__["_72"] = USER_EXIT_GROUP;
+/* harmony export (immutable) */ __webpack_exports__["_73"] = USER_EXIT_GROUP;
 
 const USER_DELETE_GROUP = 'user_delete_group';
-/* harmony export (immutable) */ __webpack_exports__["_71"] = USER_DELETE_GROUP;
+/* harmony export (immutable) */ __webpack_exports__["_72"] = USER_DELETE_GROUP;
 
 const GROUP_CHAT = 'group_chat';
-/* harmony export (immutable) */ __webpack_exports__["M"] = GROUP_CHAT;
+/* harmony export (immutable) */ __webpack_exports__["N"] = GROUP_CHAT;
 
 const COMPOSING = 'composing';
 /* harmony export (immutable) */ __webpack_exports__["u"] = COMPOSING;
 
 const GONE = 'gone';
-/* harmony export (immutable) */ __webpack_exports__["I"] = GONE;
+/* harmony export (immutable) */ __webpack_exports__["J"] = GONE;
 
 const GROUP_CHAT_MEDIA = 'group_chat_media';
-/* harmony export (immutable) */ __webpack_exports__["N"] = GROUP_CHAT_MEDIA;
+/* harmony export (immutable) */ __webpack_exports__["O"] = GROUP_CHAT_MEDIA;
 
 const GROUP_MESSAGE_STATUS = 'group_message_status';
-/* harmony export (immutable) */ __webpack_exports__["P"] = GROUP_MESSAGE_STATUS;
+/* harmony export (immutable) */ __webpack_exports__["Q"] = GROUP_MESSAGE_STATUS;
 
 const UPDATE_MUTE_NOTIFICATION = 'update_mute_notification';
-/* harmony export (immutable) */ __webpack_exports__["_67"] = UPDATE_MUTE_NOTIFICATION;
+/* harmony export (immutable) */ __webpack_exports__["_68"] = UPDATE_MUTE_NOTIFICATION;
 
 const UPDATE_UNREAD_COUNT = 'update_unread_count';
-/* harmony export (immutable) */ __webpack_exports__["_68"] = UPDATE_UNREAD_COUNT;
+/* harmony export (immutable) */ __webpack_exports__["_69"] = UPDATE_UNREAD_COUNT;
 
 const NO_MEESAGE_FOUND_DB = 'No message found in DB';
-/* harmony export (immutable) */ __webpack_exports__["_28"] = NO_MEESAGE_FOUND_DB;
+/* harmony export (immutable) */ __webpack_exports__["_29"] = NO_MEESAGE_FOUND_DB;
 
 // NS xmls
 const NS_CARBON = 'urn:xmpp:carbons:2';
-/* harmony export (immutable) */ __webpack_exports__["_30"] = NS_CARBON;
+/* harmony export (immutable) */ __webpack_exports__["_31"] = NS_CARBON;
 
 const NS_RECEIPTS = 'urn:xmpp:receipts';
-/* harmony export (immutable) */ __webpack_exports__["_37"] = NS_RECEIPTS;
+/* harmony export (immutable) */ __webpack_exports__["_38"] = NS_RECEIPTS;
 
 const NS_BLOCKING = 'urn:xmpp:blocking';
-/* harmony export (immutable) */ __webpack_exports__["_29"] = NS_BLOCKING;
+/* harmony export (immutable) */ __webpack_exports__["_30"] = NS_BLOCKING;
 
 const NS_PING = 'urn:xmpp:ping';
-/* harmony export (immutable) */ __webpack_exports__["_36"] = NS_PING;
+/* harmony export (immutable) */ __webpack_exports__["_37"] = NS_PING;
 
 const NS_CONTENT = 'urn:xmpp:content';
-/* harmony export (immutable) */ __webpack_exports__["_32"] = NS_CONTENT;
+/* harmony export (immutable) */ __webpack_exports__["_33"] = NS_CONTENT;
 
 const NS_USER_ACTIVITIES = 'jabber:iq:user_activities';
-/* harmony export (immutable) */ __webpack_exports__["_38"] = NS_USER_ACTIVITIES;
+/* harmony export (immutable) */ __webpack_exports__["_39"] = NS_USER_ACTIVITIES;
 
 const NS_LAST = 'jabber:iq:last';
-/* harmony export (immutable) */ __webpack_exports__["_35"] = NS_LAST;
+/* harmony export (immutable) */ __webpack_exports__["_36"] = NS_LAST;
 
 const NS_VCARD = 'vcard-temp';
-/* harmony export (immutable) */ __webpack_exports__["_40"] = NS_VCARD;
+/* harmony export (immutable) */ __webpack_exports__["_41"] = NS_VCARD;
 
 const NS_USER_FAV = 'jabber:iq:user_fav';
-/* harmony export (immutable) */ __webpack_exports__["_39"] = NS_USER_FAV;
+/* harmony export (immutable) */ __webpack_exports__["_40"] = NS_USER_FAV;
 
 const NS_CHATSTATES = 'http://jabber.org/protocol/chatstates';
-/* harmony export (immutable) */ __webpack_exports__["_31"] = NS_CHATSTATES;
+/* harmony export (immutable) */ __webpack_exports__["_32"] = NS_CHATSTATES;
 
 const NS_HINTS = 'urn:xmpp:hints';
-/* harmony export (immutable) */ __webpack_exports__["_34"] = NS_HINTS;
+/* harmony export (immutable) */ __webpack_exports__["_35"] = NS_HINTS;
 
 const NS_GROUP_MIX = 'jabber:iq:mixgroupchat';
-/* harmony export (immutable) */ __webpack_exports__["_33"] = NS_GROUP_MIX;
+/* harmony export (immutable) */ __webpack_exports__["_34"] = NS_GROUP_MIX;
 
 
 // Values
 const RECENT_LIST_COUNT = 0;
-/* harmony export (immutable) */ __webpack_exports__["_47"] = RECENT_LIST_COUNT;
+/* harmony export (immutable) */ __webpack_exports__["_48"] = RECENT_LIST_COUNT;
 
 const CALLBACK_LISTENERS = ['connectionListener', 'presenceListener', 'friendsListListener', 'messageListener', 'userProfileListener', 'replyMessageListener', 'favouriteMessageListener', 'groupProfileListener', 'groupMsgInfoListener', 'mediaUploadListener', 'mediaDownloadListener', 'blockUserListener'];
 /* harmony export (immutable) */ __webpack_exports__["p"] = CALLBACK_LISTENERS;
 
 const TOKEN_EXPIRY_TIME = 54 * 60;
-/* harmony export (immutable) */ __webpack_exports__["_60"] = TOKEN_EXPIRY_TIME;
+/* harmony export (immutable) */ __webpack_exports__["_61"] = TOKEN_EXPIRY_TIME;
  // In Seconds - 54 Minitues
 const TOKEN_EXPIRY_INTERVAL = 1 * 60 * 1000;
-/* harmony export (immutable) */ __webpack_exports__["_59"] = TOKEN_EXPIRY_INTERVAL;
+/* harmony export (immutable) */ __webpack_exports__["_60"] = TOKEN_EXPIRY_INTERVAL;
  // In Seconds - 5 Mins Interval
 const IMAGE_THUMB_QUALITY = 0.5;
-/* harmony export (immutable) */ __webpack_exports__["V"] = IMAGE_THUMB_QUALITY;
+/* harmony export (immutable) */ __webpack_exports__["W"] = IMAGE_THUMB_QUALITY;
 
 const GOOGLE_TRANSLATE_URL = 'https://translation.googleapis.com/language/translate/v2';
-/* harmony export (immutable) */ __webpack_exports__["J"] = GOOGLE_TRANSLATE_URL;
+/* harmony export (immutable) */ __webpack_exports__["K"] = GOOGLE_TRANSLATE_URL;
 
 
 // Regex
@@ -4087,7 +4090,7 @@ const BARE_JID = /^([^( "'&\/:<>@\\)])+\@(((?!mix\.).)[^( "'&\/:<>@\\)]{1,})$/;
 /* harmony export (immutable) */ __webpack_exports__["m"] = BARE_JID;
 
 const MIX_BARE_JID = /^([^( "'&\/:<>@\\)])+\@(mix\.[^( "'&\/:<>@\\)]{1,})$/;
-/* harmony export (immutable) */ __webpack_exports__["_23"] = MIX_BARE_JID;
+/* harmony export (immutable) */ __webpack_exports__["_24"] = MIX_BARE_JID;
 
 const JID = /^([^( "'&\/:<>@\\)])+\@([^( "'&\/:<>@\\)]{1,})+\/((Web|Mobile)[^( "'&\/:<>@\\)]{1,})/;
 /* unused harmony export JID */
@@ -4122,19 +4125,19 @@ const ALLOWED_DOCUMENT_FORMATS = ['doc', 'docx', 'pdf', 'xls', 'xlsx', 'txt', 'c
 
 // MEDIA CONSTANTS
 const IMAGE_FORMATS = ['image/png', 'image/jpeg', 'image/jpg'];
-/* harmony export (immutable) */ __webpack_exports__["U"] = IMAGE_FORMATS;
+/* harmony export (immutable) */ __webpack_exports__["V"] = IMAGE_FORMATS;
 
 const IOS_IMAGE_FORMATS = ['image', 'image/png', 'image/jpeg', 'image/jpg'];
-/* harmony export (immutable) */ __webpack_exports__["Y"] = IOS_IMAGE_FORMATS;
+/* harmony export (immutable) */ __webpack_exports__["Z"] = IOS_IMAGE_FORMATS;
 
 const AUDIO_FORMATS = ['audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/mpeg', 'audio/aac', 'audio/vnd.dlna.adts'];
 /* harmony export (immutable) */ __webpack_exports__["k"] = AUDIO_FORMATS;
 
 const VIDEO_FORMATS = ['video/mp4'];
-/* harmony export (immutable) */ __webpack_exports__["_78"] = VIDEO_FORMATS;
+/* harmony export (immutable) */ __webpack_exports__["_79"] = VIDEO_FORMATS;
 
 const IOS_VIDEO_FORMATS = ['video', 'video/mov'];
-/* harmony export (immutable) */ __webpack_exports__["Z"] = IOS_VIDEO_FORMATS;
+/* harmony export (immutable) */ __webpack_exports__["_0"] = IOS_VIDEO_FORMATS;
 
 const DOCUMENT_FORMATS = ['application/pdf', 'application/msword', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint', 'text/plain', 'text/csv', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/zip', 'application/x-zip-compressed', 'application/rar', 'application/vnd.rar', 'application/excel', 'application/x-excel', 'application/x-msexcel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'];
 /* harmony export (immutable) */ __webpack_exports__["A"] = DOCUMENT_FORMATS;
@@ -4150,29 +4153,29 @@ const CHAT_AUDIOS = 'chataudios';
 
 
 const MAX_WIDTH_WEB = 330;
-/* harmony export (immutable) */ __webpack_exports__["_12"] = MAX_WIDTH_WEB;
+/* harmony export (immutable) */ __webpack_exports__["_13"] = MAX_WIDTH_WEB;
 
 const MIN_WIDTH_WEB = 240;
-/* harmony export (immutable) */ __webpack_exports__["_21"] = MIN_WIDTH_WEB;
+/* harmony export (immutable) */ __webpack_exports__["_22"] = MIN_WIDTH_WEB;
 
 const MAX_HEIGHT_WEB = 338;
-/* harmony export (immutable) */ __webpack_exports__["_10"] = MAX_HEIGHT_WEB;
+/* harmony export (immutable) */ __webpack_exports__["_11"] = MAX_HEIGHT_WEB;
 
 const MIN_HEIGHT_WEB = 83;
-/* harmony export (immutable) */ __webpack_exports__["_18"] = MIN_HEIGHT_WEB;
+/* harmony export (immutable) */ __webpack_exports__["_19"] = MIN_HEIGHT_WEB;
 
 
 const MAX_WIDTH_AND = 250;
-/* harmony export (immutable) */ __webpack_exports__["_11"] = MAX_WIDTH_AND;
+/* harmony export (immutable) */ __webpack_exports__["_12"] = MAX_WIDTH_AND;
 
 const MIN_WIDTH_AND = 210;
-/* harmony export (immutable) */ __webpack_exports__["_20"] = MIN_WIDTH_AND;
+/* harmony export (immutable) */ __webpack_exports__["_21"] = MIN_WIDTH_AND;
 
 const MAX_HEIGHT_AND = 320;
-/* harmony export (immutable) */ __webpack_exports__["_9"] = MAX_HEIGHT_AND;
+/* harmony export (immutable) */ __webpack_exports__["_10"] = MAX_HEIGHT_AND;
 
 const MIN_HEIGHT_AND = 80;
-/* harmony export (immutable) */ __webpack_exports__["_17"] = MIN_HEIGHT_AND;
+/* harmony export (immutable) */ __webpack_exports__["_18"] = MIN_HEIGHT_AND;
 
 
 const MIN_OFFSET_WIDTH = 280;
@@ -4183,7 +4186,7 @@ const MIN_OFFSET_HEIGHT = 280;
 
 
 const MIN_THUMB_WIDTH = 322;
-/* harmony export (immutable) */ __webpack_exports__["_19"] = MIN_THUMB_WIDTH;
+/* harmony export (immutable) */ __webpack_exports__["_20"] = MIN_THUMB_WIDTH;
 
 
 const PREVIEW_MEDIA_TYPES = ['image', 'video', 'audio', 'file'];
@@ -4213,15 +4216,15 @@ const CHAT_HISTORY_LIMIT = 20;
 
 // api call error message
 const NETWORK_ERROR = 'Network Error';
-/* harmony export (immutable) */ __webpack_exports__["_25"] = NETWORK_ERROR;
+/* harmony export (immutable) */ __webpack_exports__["_26"] = NETWORK_ERROR;
 
 const USER_CANCELLED = 'User Cancelled!';
-/* harmony export (immutable) */ __webpack_exports__["_70"] = USER_CANCELLED;
+/* harmony export (immutable) */ __webpack_exports__["_71"] = USER_CANCELLED;
 
 
 // Notification Message Contents
 const NOTIFY_CONTENTS = ['Text', 'Image', 'Video', 'Audio', 'Document', 'Location'];
-/* harmony export (immutable) */ __webpack_exports__["_27"] = NOTIFY_CONTENTS;
+/* harmony export (immutable) */ __webpack_exports__["_28"] = NOTIFY_CONTENTS;
 
 
 //error
@@ -4250,7 +4253,7 @@ const API_BASE_URL_NOT_CONFIGURED_ERROR_MESSAGE = "SDK is not initialized succes
 /* harmony export (immutable) */ __webpack_exports__["g"] = API_BASE_URL_NOT_CONFIGURED_ERROR_MESSAGE;
 
 const LICENSE_KEY_NOT_CONFIGURED_ERROR_MESSAGE = "License key is not configured, Please configure license key in initializeSDK.";
-/* harmony export (immutable) */ __webpack_exports__["_5"] = LICENSE_KEY_NOT_CONFIGURED_ERROR_MESSAGE;
+/* harmony export (immutable) */ __webpack_exports__["_6"] = LICENSE_KEY_NOT_CONFIGURED_ERROR_MESSAGE;
 
 const USER_IDENTIFIER_EMPTY_ERROR_MESSAGE = "User identifier is empty, Please pass valid user identifier";
 /* unused harmony export USER_IDENTIFIER_EMPTY_ERROR_MESSAGE */
@@ -8769,7 +8772,7 @@ const getRealmDB = async () => {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constants__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__call__ = __webpack_require__(40);
@@ -8891,6 +8894,7 @@ const getClientData = (dataObj = {}) => {
  * @param {*} dataObj
  */
 const sendDataToClient = dataObj => {
+    console.log('SDK ==>> sendDataToClient dataObj', dataObj);
     const eventListenerMap = {
         [__WEBPACK_IMPORTED_MODULE_1__constants__["n" /* CALL_STATE_CALL_STATUS */]]: 'callStatusListener',
         [__WEBPACK_IMPORTED_MODULE_1__constants__["A" /* CALL_STATE_MISSED_CALL */]]: 'missedCallListener',
@@ -8910,7 +8914,10 @@ const sendDataToClient = dataObj => {
     const callbackListener = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["a" /* callbackListeners */])();
     dataObj = getClientData(dataObj);
     const sdkStatus = dataObj.sdkStatus;
+    console.log('SDK ==>> sendDataToClient sdkStatus', sdkStatus);
     let statusListener = eventListenerMap[sdkStatus];
+    console.log('SDK ==>> sendDataToClient statusListener', statusListener);
+    console.log('SDK ==>> sendDataToClient callbackListener[statusListener]', callbackListener[statusListener], JSON.stringify(callbackListener, null, 2));
     if (!callbackListener[statusListener]) {
         statusListener = statusListener || sdkStatus;
         console.error(`${statusListener} callback method is not registered. So user will not receive the data from SDK.`);
@@ -9238,7 +9245,7 @@ const getUserDetails = callbackListener => {
 
 
 const getPermissionDeniedError = (callType, havingVideoPermission, havingAudioPermission) => {
-    if (callType === __WEBPACK_IMPORTED_MODULE_8__helpers_constants__["_76" /* VIDEO */] && !havingVideoPermission && !havingAudioPermission) {
+    if (callType === __WEBPACK_IMPORTED_MODULE_8__helpers_constants__["_77" /* VIDEO */] && !havingVideoPermission && !havingAudioPermission) {
         return {
             message: "Camera and microphone permissions denied",
             error: "Both camera and microphone permissions denied",
@@ -9247,7 +9254,7 @@ const getPermissionDeniedError = (callType, havingVideoPermission, havingAudioPe
             action: "makeCall",
             sdkStatus: __WEBPACK_IMPORTED_MODULE_1__constants__["_16" /* MEDIA_ACCESS_ERROR */]
         };
-    } else if (callType === __WEBPACK_IMPORTED_MODULE_8__helpers_constants__["_76" /* VIDEO */] && !havingVideoPermission) {
+    } else if (callType === __WEBPACK_IMPORTED_MODULE_8__helpers_constants__["_77" /* VIDEO */] && !havingVideoPermission) {
         return {
             message: "Camera permission denied",
             error: "Camera permission denied",
@@ -9439,6 +9446,12 @@ const CALL_STATUS_SUBSCRIBED = 'SUBSCRIBED';
 const CALL_STATUS_JOINING = 'JOINING';
 /* harmony export (immutable) */ __webpack_exports__["R"] = CALL_STATUS_JOINING;
 
+const CALL_STATE_RECONNECTING = 'reconnecting';
+/* unused harmony export CALL_STATE_RECONNECTING */
+
+const CALL_STATE_DISCONNECT = 'disconnected';
+/* unused harmony export CALL_STATE_DISCONNECT */
+
 
 // Media device
 const MEDIA_DEVICE_MIC = 'mic';
@@ -9545,1030 +9558,6 @@ const CAMERA_MIC_PERMISSION_DENIED = 100608;
 
 /***/ }),
 /* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var assert = __webpack_require__(11);
-var inherits = __webpack_require__(0);
-
-exports.inherits = inherits;
-
-function isSurrogatePair(msg, i) {
-  if ((msg.charCodeAt(i) & 0xFC00) !== 0xD800) {
-    return false;
-  }
-  if (i < 0 || i + 1 >= msg.length) {
-    return false;
-  }
-  return (msg.charCodeAt(i + 1) & 0xFC00) === 0xDC00;
-}
-
-function toArray(msg, enc) {
-  if (Array.isArray(msg))
-    return msg.slice();
-  if (!msg)
-    return [];
-  var res = [];
-  if (typeof msg === 'string') {
-    if (!enc) {
-      // Inspired by stringToUtf8ByteArray() in closure-library by Google
-      // https://github.com/google/closure-library/blob/8598d87242af59aac233270742c8984e2b2bdbe0/closure/goog/crypt/crypt.js#L117-L143
-      // Apache License 2.0
-      // https://github.com/google/closure-library/blob/master/LICENSE
-      var p = 0;
-      for (var i = 0; i < msg.length; i++) {
-        var c = msg.charCodeAt(i);
-        if (c < 128) {
-          res[p++] = c;
-        } else if (c < 2048) {
-          res[p++] = (c >> 6) | 192;
-          res[p++] = (c & 63) | 128;
-        } else if (isSurrogatePair(msg, i)) {
-          c = 0x10000 + ((c & 0x03FF) << 10) + (msg.charCodeAt(++i) & 0x03FF);
-          res[p++] = (c >> 18) | 240;
-          res[p++] = ((c >> 12) & 63) | 128;
-          res[p++] = ((c >> 6) & 63) | 128;
-          res[p++] = (c & 63) | 128;
-        } else {
-          res[p++] = (c >> 12) | 224;
-          res[p++] = ((c >> 6) & 63) | 128;
-          res[p++] = (c & 63) | 128;
-        }
-      }
-    } else if (enc === 'hex') {
-      msg = msg.replace(/[^a-z0-9]+/ig, '');
-      if (msg.length % 2 !== 0)
-        msg = '0' + msg;
-      for (i = 0; i < msg.length; i += 2)
-        res.push(parseInt(msg[i] + msg[i + 1], 16));
-    }
-  } else {
-    for (i = 0; i < msg.length; i++)
-      res[i] = msg[i] | 0;
-  }
-  return res;
-}
-exports.toArray = toArray;
-
-function toHex(msg) {
-  var res = '';
-  for (var i = 0; i < msg.length; i++)
-    res += zero2(msg[i].toString(16));
-  return res;
-}
-exports.toHex = toHex;
-
-function htonl(w) {
-  var res = (w >>> 24) |
-            ((w >>> 8) & 0xff00) |
-            ((w << 8) & 0xff0000) |
-            ((w & 0xff) << 24);
-  return res >>> 0;
-}
-exports.htonl = htonl;
-
-function toHex32(msg, endian) {
-  var res = '';
-  for (var i = 0; i < msg.length; i++) {
-    var w = msg[i];
-    if (endian === 'little')
-      w = htonl(w);
-    res += zero8(w.toString(16));
-  }
-  return res;
-}
-exports.toHex32 = toHex32;
-
-function zero2(word) {
-  if (word.length === 1)
-    return '0' + word;
-  else
-    return word;
-}
-exports.zero2 = zero2;
-
-function zero8(word) {
-  if (word.length === 7)
-    return '0' + word;
-  else if (word.length === 6)
-    return '00' + word;
-  else if (word.length === 5)
-    return '000' + word;
-  else if (word.length === 4)
-    return '0000' + word;
-  else if (word.length === 3)
-    return '00000' + word;
-  else if (word.length === 2)
-    return '000000' + word;
-  else if (word.length === 1)
-    return '0000000' + word;
-  else
-    return word;
-}
-exports.zero8 = zero8;
-
-function join32(msg, start, end, endian) {
-  var len = end - start;
-  assert(len % 4 === 0);
-  var res = new Array(len / 4);
-  for (var i = 0, k = start; i < res.length; i++, k += 4) {
-    var w;
-    if (endian === 'big')
-      w = (msg[k] << 24) | (msg[k + 1] << 16) | (msg[k + 2] << 8) | msg[k + 3];
-    else
-      w = (msg[k + 3] << 24) | (msg[k + 2] << 16) | (msg[k + 1] << 8) | msg[k];
-    res[i] = w >>> 0;
-  }
-  return res;
-}
-exports.join32 = join32;
-
-function split32(msg, endian) {
-  var res = new Array(msg.length * 4);
-  for (var i = 0, k = 0; i < msg.length; i++, k += 4) {
-    var m = msg[i];
-    if (endian === 'big') {
-      res[k] = m >>> 24;
-      res[k + 1] = (m >>> 16) & 0xff;
-      res[k + 2] = (m >>> 8) & 0xff;
-      res[k + 3] = m & 0xff;
-    } else {
-      res[k + 3] = m >>> 24;
-      res[k + 2] = (m >>> 16) & 0xff;
-      res[k + 1] = (m >>> 8) & 0xff;
-      res[k] = m & 0xff;
-    }
-  }
-  return res;
-}
-exports.split32 = split32;
-
-function rotr32(w, b) {
-  return (w >>> b) | (w << (32 - b));
-}
-exports.rotr32 = rotr32;
-
-function rotl32(w, b) {
-  return (w << b) | (w >>> (32 - b));
-}
-exports.rotl32 = rotl32;
-
-function sum32(a, b) {
-  return (a + b) >>> 0;
-}
-exports.sum32 = sum32;
-
-function sum32_3(a, b, c) {
-  return (a + b + c) >>> 0;
-}
-exports.sum32_3 = sum32_3;
-
-function sum32_4(a, b, c, d) {
-  return (a + b + c + d) >>> 0;
-}
-exports.sum32_4 = sum32_4;
-
-function sum32_5(a, b, c, d, e) {
-  return (a + b + c + d + e) >>> 0;
-}
-exports.sum32_5 = sum32_5;
-
-function sum64(buf, pos, ah, al) {
-  var bh = buf[pos];
-  var bl = buf[pos + 1];
-
-  var lo = (al + bl) >>> 0;
-  var hi = (lo < al ? 1 : 0) + ah + bh;
-  buf[pos] = hi >>> 0;
-  buf[pos + 1] = lo;
-}
-exports.sum64 = sum64;
-
-function sum64_hi(ah, al, bh, bl) {
-  var lo = (al + bl) >>> 0;
-  var hi = (lo < al ? 1 : 0) + ah + bh;
-  return hi >>> 0;
-}
-exports.sum64_hi = sum64_hi;
-
-function sum64_lo(ah, al, bh, bl) {
-  var lo = al + bl;
-  return lo >>> 0;
-}
-exports.sum64_lo = sum64_lo;
-
-function sum64_4_hi(ah, al, bh, bl, ch, cl, dh, dl) {
-  var carry = 0;
-  var lo = al;
-  lo = (lo + bl) >>> 0;
-  carry += lo < al ? 1 : 0;
-  lo = (lo + cl) >>> 0;
-  carry += lo < cl ? 1 : 0;
-  lo = (lo + dl) >>> 0;
-  carry += lo < dl ? 1 : 0;
-
-  var hi = ah + bh + ch + dh + carry;
-  return hi >>> 0;
-}
-exports.sum64_4_hi = sum64_4_hi;
-
-function sum64_4_lo(ah, al, bh, bl, ch, cl, dh, dl) {
-  var lo = al + bl + cl + dl;
-  return lo >>> 0;
-}
-exports.sum64_4_lo = sum64_4_lo;
-
-function sum64_5_hi(ah, al, bh, bl, ch, cl, dh, dl, eh, el) {
-  var carry = 0;
-  var lo = al;
-  lo = (lo + bl) >>> 0;
-  carry += lo < al ? 1 : 0;
-  lo = (lo + cl) >>> 0;
-  carry += lo < cl ? 1 : 0;
-  lo = (lo + dl) >>> 0;
-  carry += lo < dl ? 1 : 0;
-  lo = (lo + el) >>> 0;
-  carry += lo < el ? 1 : 0;
-
-  var hi = ah + bh + ch + dh + eh + carry;
-  return hi >>> 0;
-}
-exports.sum64_5_hi = sum64_5_hi;
-
-function sum64_5_lo(ah, al, bh, bl, ch, cl, dh, dl, eh, el) {
-  var lo = al + bl + cl + dl + el;
-
-  return lo >>> 0;
-}
-exports.sum64_5_lo = sum64_5_lo;
-
-function rotr64_hi(ah, al, num) {
-  var r = (al << (32 - num)) | (ah >>> num);
-  return r >>> 0;
-}
-exports.rotr64_hi = rotr64_hi;
-
-function rotr64_lo(ah, al, num) {
-  var r = (ah << (32 - num)) | (al >>> num);
-  return r >>> 0;
-}
-exports.rotr64_lo = rotr64_lo;
-
-function shr64_hi(ah, al, num) {
-  return ah >>> num;
-}
-exports.shr64_hi = shr64_hi;
-
-function shr64_lo(ah, al, num) {
-  var r = (ah << (32 - num)) | (al >>> num);
-  return r >>> 0;
-}
-exports.shr64_lo = shr64_lo;
-
-
-/***/ }),
-/* 17 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__strophe_connection__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_native__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_native__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__react_native_async_storage_async_storage__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__react_native_async_storage_async_storage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__react_native_async_storage_async_storage__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db_controllers_OfflineActionTable__ = __webpack_require__(313);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__db_realmDB__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__service_auth__ = __webpack_require__(96);
-// migration Done (09-12-21)
-
-/* eslint-disable prefer-const */
-/* eslint-disable arrow-body-style */
-
-
-
-
-
-
-
-const KEY_TOKEN = 'mirrorFlyToken';
-const KEY_USER_PROFILE = 'profile';
-
-let /* _indexDbSupported = false, */
-// _db,
-_token,
-
-// _transaction,
-// isOnline,
-_sdk_offlineStanzas = [];
-
-/**
- * returns true if the currentState is "active"
- * and false for other states like "inactive" or "background"
- * @returns {boolean}
- */
-// export const getOnlineStatus = () => isOnline;
-const getOnlineStatus = () => __WEBPACK_IMPORTED_MODULE_1_react_native__["AppState"].currentState === 'active' && Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["c" /* getConnectionObj */])() && Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["c" /* getConnectionObj */])().connected && __WEBPACK_IMPORTED_MODULE_5__service_auth__["b" /* connectionStatus */].isConnected;
-/* harmony export (immutable) */ __webpack_exports__["b"] = getOnlineStatus;
-
-
-// const addEventListeners = () => {
-//   window.addEventListener("online", async () => {
-//     isOnline = true;
-//   });
-//   window.addEventListener("offline", () => {
-//     isOnline = false;
-//   });
-// };
-
-// const dbHasObjectStore = (objectName) => {
-//   if (!_db || !objectName) return false;
-//   return _db.objectStoreNames.contains(objectName);
-// };
-
-// const createObjectStore = (objectName) => {
-//   if (!_db || !objectName) return;
-//   !dbHasObjectStore(objectName) && _db.createObjectStore(objectName);
-// };
-
-const getStanzas = async () => _sdk_offlineStanzas.length ? _sdk_offlineStanzas : await Object(__WEBPACK_IMPORTED_MODULE_3__db_controllers_OfflineActionTable__["c" /* getOfflineAction */])();
-/* unused harmony export getStanzas */
-
-
-const processFailedStanzas = async () => {
-  const pendingStanzas = await getStanzas();
-  for (const element of pendingStanzas) {
-    const stanza = element;
-    const xmlDoc = new window.DOMParser().parseFromString(stanza, 'text/xml').firstChild;
-    if (getOnlineStatus()) {
-      Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["b" /* getConnection */])().sendIQ(xmlDoc);
-      Object(__WEBPACK_IMPORTED_MODULE_3__db_controllers_OfflineActionTable__["b" /* deleteOfflineAction */])(element);
-    } else {
-      break;
-    }
-  }
-  _sdk_offlineStanzas = [];
-};
-/* harmony export (immutable) */ __webpack_exports__["e"] = processFailedStanzas;
-
-
-// export const initializeDatabase = () => {
-//   return new Promise((resolve) => {
-//     if (_db) {
-//       resolve();
-//       return;
-//     }
-
-//     require("fake-indexeddb/auto");
-//     _indexDbSupported = false;
-//     _db = null;
-//     _token = null;
-//     isOnline = navigator.onLine;
-//     // addEventListeners(); // unsupported code
-
-//     if ("indexedDB" in window) {
-//       const openRequest = window.indexedDB.open("mirrorfly", 1);
-//       openRequest.onupgradeneeded = (e) => {
-//         _db = e.target.result;
-//         createObjectStore("userDetails");
-//       };
-//       openRequest.onsuccess = (e) => {
-//         _indexDbSupported = true;
-//         _db = e.target.result;
-//         resolve();
-//       };
-//       openRequest.onerror = (e) => {
-//         resolve(e);
-//       };
-//     }
-//   });
-// };
-
-const setStanza = allStanzas => {
-  _sdk_offlineStanzas = allStanzas;
-};
-/* unused harmony export setStanza */
-
-
-const addStanza = async (stanza, id = '', type = '') => {
-  _sdk_offlineStanzas.push(stanza);
-  const params = {
-    _id: id,
-    toJid: id,
-    actionType: type,
-    iqString: stanza
-  };
-  Object(__WEBPACK_IMPORTED_MODULE_3__db_controllers_OfflineActionTable__["a" /* createOfflineAction */])(params);
-};
-/* harmony export (immutable) */ __webpack_exports__["a"] = addStanza;
-
-
-const removeStanza = async msgId => {
-  const _offlineStanzas = await getStanzas();
-  const realm = await Object(__WEBPACK_IMPORTED_MODULE_4__db_realmDB__["a" /* getRealmDB */])();
-  const updatedStanza = _offlineStanzas.filter(element => {
-    const stanza = realm.objects('OfflineActionTable').filtered(`iqString CONTAINS[c] "${msgId}"`);
-    if (element === stanza[0].iqString) {
-      // We have check this for multiple stanza remove
-      Object(__WEBPACK_IMPORTED_MODULE_3__db_controllers_OfflineActionTable__["b" /* deleteOfflineAction */])(element);
-    }
-    if (element !== stanza[0].iqString) return element;
-  });
-  setStanza(updatedStanza);
-  // const updatedStanza = _offlineStanzas.foreach(xmlString => {
-  //   console.log(xmlString.includes(`id='${msgId}'`), 'xmlString.includes()');
-  //   if (xmlString.includes(`id='${msgId}'`)) {
-  //     console.log(xmlString, 'removeStanza xmlString');
-  //     deleteOfflineAction(xmlString);
-  //   }
-  //   if (!xmlString.includes(`id='${msgId}'`)) return xmlString;
-  // });
-  // setStanza(updatedStanza);
-};
-/* harmony export (immutable) */ __webpack_exports__["f"] = removeStanza;
-
-
-/**
- * Sets the data to the given key in AsyncStorage
- * @returns {Promise}
- */
-const setAsyncData = (key, value) => {
-  let updatedValue = value;
-  if (typeof value === 'object') {
-    updatedValue = JSON.stringify(value);
-  }
-  return __WEBPACK_IMPORTED_MODULE_2__react_native_async_storage_async_storage___default.a.setItem(key, updatedValue);
-};
-
-/**
- * Gets the data for the given key from AsyncStorage
- * @returns {Promise}
- */
-const getAsyncData = key => __WEBPACK_IMPORTED_MODULE_2__react_native_async_storage_async_storage___default.a.getItem(key);
-
-/**
- * Gets the data for the given key from AsyncStorage and parse the string to JSON(object)
- * @returns {Promise}
- */
-const getJSONParsedAsyncData = key => getAsyncData(key).then(data => JSON.parse(data || '{}'));
-
-// const getCookie = (sKey) => {
-//   const cookie =
-//     decodeURIComponent(
-//       document.cookie.replace(
-//         new RegExp(
-//           "(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"
-//         ),
-//         "$1"
-//       )
-//     ) || null;
-//   return Promise.resolve(cookie);
-// };
-
-// const setCookie = (sKey, sValue, vEnd, sPath, sDomain, bSecure) => {
-//   if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) {
-//     return false;
-//   }
-//   let sExpires = "";
-//   if (vEnd) {
-//     switch (vEnd.constructor) {
-//       case Number:
-//         sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
-//         break;
-//       case String:
-//         sExpires = "; expires=" + vEnd;
-//         break;
-//       case Date:
-//         sExpires = "; expires=" + vEnd.toUTCString();
-//         break;
-//       default:
-//         break;
-//     }
-//   }
-//   document.cookie =
-//     encodeURIComponent(sKey) +
-//     "=" +
-//     encodeURIComponent(sValue) +
-//     sExpires +
-//     (sDomain ? "; domain=" + sDomain : "") +
-//     (sPath ? "; path=" + sPath : "") +
-//     (bSecure ? "; secure" : "");
-//   return true;
-// };
-
-const setToken = token => {
-  _token = token;
-  return setAsyncData(KEY_TOKEN, token);
-  // window.localStorage.setItem("token", token);
-  // if (!_indexDbSupported) return setCookie("token", token);
-  // _transaction = _db.transaction(["userDetails"], "readwrite");
-  // _transaction.objectStore("userDetails").put(token, "token");
-  // _token = token;
-  // return token;
-};
-/* harmony export (immutable) */ __webpack_exports__["g"] = setToken;
-
-
-const getToken = () => {
-  if (_token) return Promise.resolve(_token);
-  return getAsyncData(KEY_TOKEN);
-  // if (!_indexDbSupported) return getCookie("token");
-  // return new Promise((resolve) => {
-  //   _transaction = _db.transaction(["userDetails"], "readwrite");
-  //   _transaction.objectStore("userDetails").get("token").onsuccess = (e) => resolve(e.target.result);
-  // });
-};
-/* harmony export (immutable) */ __webpack_exports__["c"] = getToken;
-
-
-const setUserProfile = profile => {
-  // setAsyncData(KEY_USER_PROFILE, JSON.stringify(profile));
-  // updateVcardDetail(profile)
-  // if (!_indexDbSupported) return setCookie("profile", JSON.stringify(profile));
-  // _transaction = _db.transaction(["userDetails"], "readwrite");
-  // _transaction.objectStore("userDetails").put(JSON.stringify(profile), "profile");
-  return true;
-};
-/* harmony export (immutable) */ __webpack_exports__["h"] = setUserProfile;
-
-
-const getUserProfile = async () => {
-  return getJSONParsedAsyncData(KEY_USER_PROFILE);
-  // if (!_indexDbSupported) {
-  //   const userProfile = (await getCookie("profile")) || "{}";
-  //   return JSON.parse(userProfile);
-  // }
-  // return new Promise((resolve) => {
-  //   _transaction = _db.transaction(["userDetails"], "readwrite");
-  //   _transaction.objectStore("userDetails").get("profile").onsuccess = (e) =>
-  //     resolve(e.target.result ? JSON.parse(e.target.result) : {});
-  // });
-};
-/* harmony export (immutable) */ __webpack_exports__["d"] = getUserProfile;
-
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_18__;
-
-/***/ }),
-/* 19 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__react_native_async_storage_async_storage__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__react_native_async_storage_async_storage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__react_native_async_storage_async_storage__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_constants__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_utils__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__ = __webpack_require__(97);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__controllers_messageTable__ = __webpack_require__(38);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_moment__ = __webpack_require__(380);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_moment__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_utils__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_react_native_fs__ = __webpack_require__(72);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_react_native_fs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_react_native_fs__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__controllers_recentTable__ = __webpack_require__(105);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__controllers_roasterTable__ = __webpack_require__(52);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__controllers_messageDetailTable__ = __webpack_require__(106);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__controllers_mediaDetailTable__ = __webpack_require__(71);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__helpers_common__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__realmDB__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__controllers_locationMessageTable__ = __webpack_require__(195);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__controllers_contactMessageTable__ = __webpack_require__(196);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const handleUnSentMsg = async () => {
-  try {
-    const unSentMessages = await Object(__WEBPACK_IMPORTED_MODULE_4__controllers_messageTable__["d" /* getAllUnSentMsg */])();
-    let replyTo = '';
-    unSentMessages.forEach(async element => {
-      let msgResponse, cypherText, fileToken;
-      if (element.msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_57" /* TEXT */]) {
-        msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_6__modules_utils__["d" /* handleMessages */])(element.msgBody.message, __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_57" /* TEXT */], element.msgId, replyTo, element.fromUserJid, '', {});
-        cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), element.msgId);
-        // Validating JID to Send Message to Single/Group Chat
-        if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_23" /* MIX_BARE_JID */].test(element.fromUserJid)) Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(element.fromUserJid, element.mid, __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_57" /* TEXT */], cypherText);
-        Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["d" /* sendMessageIQ */])(element.fromUserJid, element.msgId, __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_57" /* TEXT */], cypherText);
-      }
-      if (element.msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["S" /* IMAGE */] || element.msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_76" /* VIDEO */]) {
-        var _element$msgBody$medi = element.msgBody.media;
-        const caption = _element$msgBody$medi.caption,
-              duration = _element$msgBody$medi.duration,
-              local_path = _element$msgBody$medi.local_path,
-              file_size = _element$msgBody$medi.file_size,
-              originalWidth = _element$msgBody$medi.originalWidth,
-              originalHeight = _element$msgBody$medi.originalHeight,
-              fileName = _element$msgBody$medi.fileName,
-              thumb_image = _element$msgBody$medi.thumb_image,
-              file_url = _element$msgBody$medi.file_url,
-              webWidth = _element$msgBody$medi.webWidth,
-              webHeight = _element$msgBody$medi.webHeight;
-
-        const file = {
-          modificationTimestamp: Date.now(),
-          extension: local_path,
-          uri: local_path,
-          fileSize: file_size,
-          width: originalWidth,
-          height: originalHeight,
-          filename: fileName,
-          duration: duration
-        },
-              fileOptions = {
-          caption: caption,
-          thumbImage: thumb_image,
-          fileToken: file_url,
-          webHeight,
-          webWidth
-        };
-        msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_6__modules_utils__["d" /* handleMessages */])('', element.msgBody.message_type, element.msgId, '', element.fromUserJid, file, fileOptions);
-        cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), element.msgId);
-        fileToken = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["o" /* getFileTokenFromMsgBody */])(msgResponse.message);
-        if (msgResponse.statusCode === 200) {
-          if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_23" /* MIX_BARE_JID */].test(element.fromUserJid)) return Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(element.fromUserJid, element.msgId, element.msgBody.message_type, cypherText, fileToken, msgResponse.message.media.thumb_image);
-          return Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["d" /* sendMessageIQ */])(element.fromUserJid, element.msgId, element.msgBody.message_type, cypherText, fileToken, msgResponse.message.media.thumb_image);
-        }
-      }
-    });
-  } catch (error) {
-    console.log('handleUnSentMsg', error);
-  }
-};
-/* unused harmony export handleUnSentMsg */
-
-
-/**
- * changeTimeFormat() method to perform convert Timestamp it's effectively works for 16 digit to Time format.
- *
- * @param {timeStamp} time
- */
-
-const changeTimeFormat = time => {
-  if (!time) {
-    return '';
-  } else if (time.toString().length === 16) {
-    return __WEBPACK_IMPORTED_MODULE_5_moment___default()(time / 1000000 * 1000).utc().format('YYYY-MM-DD HH:mm:ss');
-  } else {
-    return __WEBPACK_IMPORTED_MODULE_5_moment___default()(time).utc().format('YYYY-MM-DD HH:mm:ss');
-  }
-};
-/* harmony export (immutable) */ __webpack_exports__["a"] = changeTimeFormat;
-
-const getRandomColorCode = () => {
-  let colorCode;
-  do {
-    colorCode = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
-  } while (isTooLight(colorCode)); // Check if the color is too light
-  return colorCode;
-};
-/* harmony export (immutable) */ __webpack_exports__["h"] = getRandomColorCode;
-
-
-const isTooLight = colorCode => {
-  // Convert colorCode to RGB values
-  const r = parseInt(colorCode.substr(1, 2), 16);
-  const g = parseInt(colorCode.substr(3, 2), 16);
-  const b = parseInt(colorCode.substr(5, 2), 16);
-
-  // Calculate relative luminance (perceptual brightness)
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-
-  // Return true if the luminance is too high (i.e., color is too light)
-  return luminance > 0.5;
-};
-
-const dbClear = async () => {
-  const realm = await Object(__WEBPACK_IMPORTED_MODULE_13__realmDB__["a" /* getRealmDB */])();
-  realm.write(() => {
-    realm.deleteAll();
-  });
-};
-/* harmony export (immutable) */ __webpack_exports__["c"] = dbClear;
-
-
-const dbRegisterClear = async userIdentifier => {
-  const realm = await Object(__WEBPACK_IMPORTED_MODULE_13__realmDB__["a" /* getRealmDB */])();
-  const prevUser = await __WEBPACK_IMPORTED_MODULE_0__react_native_async_storage_async_storage___default.a.getItem('prevUserIdentifier');
-  if (prevUser && userIdentifier !== prevUser) {
-    realm.write(() => {
-      realm.deleteAll();
-    });
-  }
-};
-/* harmony export (immutable) */ __webpack_exports__["d"] = dbRegisterClear;
-
-
-const mediaDetailConstructor = (chatMessage, mediaDetail) => {
-  try {
-    return {
-      androidHeight: mediaDetail.mobileHeight,
-      androidWidth: mediaDetail.mobileWidth,
-      caption: mediaDetail.caption,
-      duration: mediaDetail.duration,
-      fileName: mediaDetail.fileName,
-      file_key: mediaDetail.fileKey,
-      file_url: mediaDetail.fileUrl,
-      file_size: mediaDetail.fileSize,
-      is_downloaded: mediaDetail.isDownloaded,
-      is_uploading: mediaDetail.isUploading,
-      local_path: mediaDetail.localPath ? 'file://' + __WEBPACK_IMPORTED_MODULE_7_react_native_fs___default.a.DocumentDirectoryPath + '/' + mediaDetail.localPath : '',
-      msgId: chatMessage.mid,
-      originalHeight: mediaDetail.originalHeight,
-      originalWidth: mediaDetail.originalWidth,
-      thumb_image: mediaDetail.thumbImage,
-      webWidth: mediaDetail.webWidth,
-      webHeight: mediaDetail.webHeight,
-      fileType: mediaDetail.fileType
-    };
-  } catch (error) {
-    console.log('mediaDetailConstructor', error);
-    return {};
-  }
-};
-/* unused harmony export mediaDetailConstructor */
-
-
-const replyMsgConstructor = (replyId, realm) => {
-  const messageTable = realm.objectForPrimaryKey('MessageTable', replyId);
-  let _msgBody = {};
-  if (messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_57" /* TEXT */]) {
-    _msgBody = Object(__WEBPACK_IMPORTED_MODULE_10__controllers_messageDetailTable__["b" /* getMessageDetail */])(replyId, realm);
-  }
-  if (messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["S" /* IMAGE */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_76" /* VIDEO */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["i" /* AUDIO */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["C" /* FILE */]) {
-    const mediaDetail = Object(__WEBPACK_IMPORTED_MODULE_11__controllers_mediaDetailTable__["c" /* getMediaDetailWithRealm */])(mid, realm);
-    _msgBody = mediaDetailConstructor(messageTable, mediaDetail);
-  }
-  const chatType = !messageTable ? '' : messageTable.chatType,
-        createdAt = !messageTable ? 0 : changeTimeFormat(messageTable.msgTime),
-        deleteStatus = !messageTable ? 0 : messageTable.isDeleted,
-        fromUserId = messageTable.publisherJid.split('@')[0],
-        msgBody = _msgBody,
-        msgId = !messageTable ? '' : messageTable.mid,
-        msgStatus = !messageTable ? 3 : messageTable.status,
-        msgType = !messageTable ? '' : messageTable.msgType,
-        publisherId = !messageTable ? '' : messageTable.publisherJid.split('@')[0],
-        timestamp = messageTable.msgTime;
-  return {
-    chatType,
-    createdAt,
-    deleteStatus,
-    fromUserId,
-    msgId,
-    msgStatus,
-    msgBody,
-    msgType,
-    publisherId,
-    timestamp
-  };
-};
-/* unused harmony export replyMsgConstructor */
-
-
-const msgBodyConstructor = (chatMessage, realm, nickName = '') => {
-  try {
-    let msgBody = {};
-    msgBody = Object(__WEBPACK_IMPORTED_MODULE_10__controllers_messageDetailTable__["b" /* getMessageDetail */])(chatMessage.mid, realm) || {};
-    msgBody.nickName = nickName;
-    msgBody.message_type = chatMessage.msgType;
-    switch (chatMessage.msgType) {
-      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["S" /* IMAGE */]:
-      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_76" /* VIDEO */]:
-      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["i" /* AUDIO */]:
-      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["C" /* FILE */]:
-        const mediaDetail = Object(__WEBPACK_IMPORTED_MODULE_11__controllers_mediaDetailTable__["c" /* getMediaDetailWithRealm */])(chatMessage.mid, realm);
-        if (mediaDetail) {
-          msgBody.media = mediaDetailConstructor(chatMessage, mediaDetail);
-          msgBody.nickName = nickName;
-        }
-        break;
-      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_6" /* LOCATION */]:
-        msgBody.location = Object(__WEBPACK_IMPORTED_MODULE_14__controllers_locationMessageTable__["b" /* getLocationMsg */])(realm, chatMessage.mid);
-        break;
-      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["w" /* CONTACT */]:
-        msgBody.contact = Object(__WEBPACK_IMPORTED_MODULE_15__controllers_contactMessageTable__["b" /* getContactMsg */])(realm, chatMessage.mid);
-        break;
-    }
-    return msgBody;
-  } catch (error) {
-    console.log('msgBodyConstructor', error);
-  }
-};
-/* harmony export (immutable) */ __webpack_exports__["i"] = msgBodyConstructor;
-
-
-const deleteChatDB = toJid => {
-  try {
-    Object(__WEBPACK_IMPORTED_MODULE_9__controllers_roasterTable__["a" /* deleteRoaster */])(toJid);
-    Object(__WEBPACK_IMPORTED_MODULE_8__controllers_recentTable__["a" /* deleteRecentChat */])(toJid);
-    Object(__WEBPACK_IMPORTED_MODULE_4__controllers_messageTable__["a" /* clearChatDB */])(toJid);
-  } catch (error) {
-    console.log('deleteChatDB', error);
-  }
-};
-/* harmony export (immutable) */ __webpack_exports__["e"] = deleteChatDB;
-
-
-const getMsgDetails = async mid => {
-  try {
-    const realm = await Object(__WEBPACK_IMPORTED_MODULE_13__realmDB__["a" /* getRealmDB */])();
-    const chatMessage = Object(__WEBPACK_IMPORTED_MODULE_4__controllers_messageTable__["e" /* getMessagefrmDB */])(realm, mid);
-    let msgBody = {};
-    if (chatMessage) {
-      msgBody = msgBodyConstructor(chatMessage, realm);
-    }
-    return msgBody;
-  } catch (error) {
-    console.log('getMsgDetail', error);
-    return {};
-  }
-};
-/* harmony export (immutable) */ __webpack_exports__["g"] = getMsgDetails;
-
-
-const getMessageByIdDB = async mid => {
-  try {
-    const realm = await Object(__WEBPACK_IMPORTED_MODULE_13__realmDB__["a" /* getRealmDB */])();
-    const successRes = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
-    const messageTable = realm.objectForPrimaryKey('MessageTable', mid);
-    if (!messageTable) {
-      successRes.data = {};
-      successRes.message = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_28" /* NO_MEESAGE_FOUND_DB */];
-      return successRes.data;
-    }
-    const recentChatList = realm.objects('RecentTable').filtered('mid = $0', mid);
-    let chatUserJid, msgTime;
-    if (recentChatList.length) {
-      chatUserJid = recentChatList[0].jid;
-      msgTime = recentChatList[0].msgTime;
-    } else {
-      chatUserJid = messageTable.chatUser;
-      msgTime = messageTable.msgTime;
-    }
-    const roaster = realm.objectForPrimaryKey('RoasterTable', chatUserJid);
-    const message = {
-      mid: mid,
-      msgType: messageTable ? messageTable.msgType : ''
-    };
-    const chatType = messageTable.chatType,
-          createdAt = !messageTable ? '' : changeTimeFormat(messageTable.msgTime),
-          deleteStatus = !messageTable ? 0 : messageTable.isDeleted,
-          fromUserId = roaster.jid.split('@')[0],
-          fromUserJid = roaster.jid,
-          msgBody = msgBodyConstructor(message, realm, ''),
-          msgId = !messageTable ? '' : messageTable.mid,
-          msgStatus = !messageTable ? 4 : messageTable.status,
-          msgType = !messageTable ? '' : messageTable.msgType,
-          publisherId = !messageTable ? '' : messageTable.publisherJid.split('@')[0],
-          publisherJid = messageTable.publisherJid,
-          timestamp = msgTime,
-          userId = roaster.jid.split('@')[0],
-          userJid = roaster.jid;
-
-    const data = {
-      chatType,
-      createdAt,
-      deleteStatus,
-      deletedBy: '0',
-      fromUserId,
-      fromUserJid,
-      msgBody,
-      msgId,
-      msgStatus,
-      msgType,
-      profileUpdatedStatus: '',
-      publisherId,
-      publisherJid,
-      timestamp,
-      userId,
-      userJid
-    };
-    Object(__WEBPACK_IMPORTED_MODULE_12__helpers_common__["a" /* callbackListeners */])().singleMessageDataListener && Object(__WEBPACK_IMPORTED_MODULE_12__helpers_common__["a" /* callbackListeners */])().singleMessageDataListener(data);
-    successRes.data = data;
-    return successRes;
-  } catch (error) {
-    console.log('getMessageByIdDB DB', error);
-  }
-};
-/* harmony export (immutable) */ __webpack_exports__["f"] = getMessageByIdDB;
-
-
-const dbCheckWithMsgId = async mid => {
-  try {
-    const realm = await Object(__WEBPACK_IMPORTED_MODULE_13__realmDB__["a" /* getRealmDB */])();
-    const messageTable = realm.objectForPrimaryKey('MessageTable', mid);
-    return Boolean(messageTable);
-  } catch (error) {
-    return false;
-  }
-};
-/* harmony export (immutable) */ __webpack_exports__["b"] = dbCheckWithMsgId;
-
-
-const getMessageByIdDBWithRealm = async (mid, realm) => {
-  try {
-    const successRes = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
-    const messageTable = realm.objectForPrimaryKey('MessageTable', mid);
-    const recentChatList = realm.objects('RecentTable').filtered('mid = $0', mid);
-    let chatUserJid, msgTime;
-    if (recentChatList.length) {
-      chatUserJid = recentChatList[0].jid;
-      msgTime = recentChatList[0].msgTime;
-    } else {
-      chatUserJid = messageTable.chatUser;
-      msgTime = messageTable.msgTime;
-    }
-    const roaster = realm.objectForPrimaryKey('RoasterTable', chatUserJid);
-    const message = {
-      mid: mid,
-      msgType: messageTable ? messageTable.msgType : ''
-    };
-    const chatType = messageTable.chatType,
-          createdAt = !messageTable ? '' : changeTimeFormat(messageTable.msgTime),
-          deleteStatus = !messageTable ? 0 : messageTable.isDeleted,
-          fromUserId = roaster.jid.split('@')[0],
-          fromUserJid = roaster.jid,
-          msgBody = msgBodyConstructor(message, realm, ''),
-          msgId = !messageTable ? '' : messageTable.mid,
-          msgStatus = !messageTable ? 4 : messageTable.status,
-          msgType = !messageTable ? '' : messageTable.msgType,
-          publisherId = !messageTable ? '' : messageTable.publisherJid.split('@')[0],
-          publisherJid = messageTable.publisherJid,
-          timestamp = msgTime,
-          userId = roaster.jid.split('@')[0],
-          userJid = roaster.jid;
-
-    const data = {
-      chatType,
-      createdAt,
-      deleteStatus,
-      deletedBy: '0',
-      fromUserId,
-      fromUserJid,
-      msgBody,
-      msgId,
-      msgStatus,
-      msgType,
-      profileUpdatedStatus: '',
-      publisherId,
-      publisherJid,
-      timestamp,
-      userId,
-      userJid
-    };
-    successRes.data = data;
-    return successRes;
-  } catch (error) {
-    console.log('getMessageByIdDB DB', error);
-  }
-};
-/* unused harmony export getMessageByIdDBWithRealm */
-
-
-const searchMessageDB = async (string, toJid) => {
-  try {
-    const realm = await Object(__WEBPACK_IMPORTED_MODULE_13__realmDB__["a" /* getRealmDB */])();
-    const messages = realm.objects('MessageDetailTable').filtered(`message CONTAINS[c] "${string}"`);
-    const captions = realm.objects('MediaDetailTable').filtered(`caption CONTAINS[c] "${string}"`);
-    const contactname = realm.objects('ContactMessageTable').filtered(`name CONTAINS[c] "${string}"`);
-    const consolidatedArr = [...messages, ...captions, ...contactname];
-    const fetchedVal = await Promise.allSettled(consolidatedArr.map(async item => {
-      const msgObj = await getMessageByIdDBWithRealm(item.mid, realm);
-      if (msgObj.statusCode === 200) {
-        return msgObj.data;
-      }
-    }));
-    const returnArr = fetchedVal.map(item => item.status === 'fulfilled' && item.value).filter(Boolean);
-    const successRes = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
-    successRes.data = returnArr;
-    return successRes;
-  } catch (error) {
-    console.log('searchMessageDB', error);
-    return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(error);
-  }
-};
-/* harmony export (immutable) */ __webpack_exports__["j"] = searchMessageDB;
-
-
-/***/ }),
-/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -10899,6 +9888,1030 @@ const getJoinRoomData = () => joinRoomData;
 
 
 /***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var assert = __webpack_require__(11);
+var inherits = __webpack_require__(0);
+
+exports.inherits = inherits;
+
+function isSurrogatePair(msg, i) {
+  if ((msg.charCodeAt(i) & 0xFC00) !== 0xD800) {
+    return false;
+  }
+  if (i < 0 || i + 1 >= msg.length) {
+    return false;
+  }
+  return (msg.charCodeAt(i + 1) & 0xFC00) === 0xDC00;
+}
+
+function toArray(msg, enc) {
+  if (Array.isArray(msg))
+    return msg.slice();
+  if (!msg)
+    return [];
+  var res = [];
+  if (typeof msg === 'string') {
+    if (!enc) {
+      // Inspired by stringToUtf8ByteArray() in closure-library by Google
+      // https://github.com/google/closure-library/blob/8598d87242af59aac233270742c8984e2b2bdbe0/closure/goog/crypt/crypt.js#L117-L143
+      // Apache License 2.0
+      // https://github.com/google/closure-library/blob/master/LICENSE
+      var p = 0;
+      for (var i = 0; i < msg.length; i++) {
+        var c = msg.charCodeAt(i);
+        if (c < 128) {
+          res[p++] = c;
+        } else if (c < 2048) {
+          res[p++] = (c >> 6) | 192;
+          res[p++] = (c & 63) | 128;
+        } else if (isSurrogatePair(msg, i)) {
+          c = 0x10000 + ((c & 0x03FF) << 10) + (msg.charCodeAt(++i) & 0x03FF);
+          res[p++] = (c >> 18) | 240;
+          res[p++] = ((c >> 12) & 63) | 128;
+          res[p++] = ((c >> 6) & 63) | 128;
+          res[p++] = (c & 63) | 128;
+        } else {
+          res[p++] = (c >> 12) | 224;
+          res[p++] = ((c >> 6) & 63) | 128;
+          res[p++] = (c & 63) | 128;
+        }
+      }
+    } else if (enc === 'hex') {
+      msg = msg.replace(/[^a-z0-9]+/ig, '');
+      if (msg.length % 2 !== 0)
+        msg = '0' + msg;
+      for (i = 0; i < msg.length; i += 2)
+        res.push(parseInt(msg[i] + msg[i + 1], 16));
+    }
+  } else {
+    for (i = 0; i < msg.length; i++)
+      res[i] = msg[i] | 0;
+  }
+  return res;
+}
+exports.toArray = toArray;
+
+function toHex(msg) {
+  var res = '';
+  for (var i = 0; i < msg.length; i++)
+    res += zero2(msg[i].toString(16));
+  return res;
+}
+exports.toHex = toHex;
+
+function htonl(w) {
+  var res = (w >>> 24) |
+            ((w >>> 8) & 0xff00) |
+            ((w << 8) & 0xff0000) |
+            ((w & 0xff) << 24);
+  return res >>> 0;
+}
+exports.htonl = htonl;
+
+function toHex32(msg, endian) {
+  var res = '';
+  for (var i = 0; i < msg.length; i++) {
+    var w = msg[i];
+    if (endian === 'little')
+      w = htonl(w);
+    res += zero8(w.toString(16));
+  }
+  return res;
+}
+exports.toHex32 = toHex32;
+
+function zero2(word) {
+  if (word.length === 1)
+    return '0' + word;
+  else
+    return word;
+}
+exports.zero2 = zero2;
+
+function zero8(word) {
+  if (word.length === 7)
+    return '0' + word;
+  else if (word.length === 6)
+    return '00' + word;
+  else if (word.length === 5)
+    return '000' + word;
+  else if (word.length === 4)
+    return '0000' + word;
+  else if (word.length === 3)
+    return '00000' + word;
+  else if (word.length === 2)
+    return '000000' + word;
+  else if (word.length === 1)
+    return '0000000' + word;
+  else
+    return word;
+}
+exports.zero8 = zero8;
+
+function join32(msg, start, end, endian) {
+  var len = end - start;
+  assert(len % 4 === 0);
+  var res = new Array(len / 4);
+  for (var i = 0, k = start; i < res.length; i++, k += 4) {
+    var w;
+    if (endian === 'big')
+      w = (msg[k] << 24) | (msg[k + 1] << 16) | (msg[k + 2] << 8) | msg[k + 3];
+    else
+      w = (msg[k + 3] << 24) | (msg[k + 2] << 16) | (msg[k + 1] << 8) | msg[k];
+    res[i] = w >>> 0;
+  }
+  return res;
+}
+exports.join32 = join32;
+
+function split32(msg, endian) {
+  var res = new Array(msg.length * 4);
+  for (var i = 0, k = 0; i < msg.length; i++, k += 4) {
+    var m = msg[i];
+    if (endian === 'big') {
+      res[k] = m >>> 24;
+      res[k + 1] = (m >>> 16) & 0xff;
+      res[k + 2] = (m >>> 8) & 0xff;
+      res[k + 3] = m & 0xff;
+    } else {
+      res[k + 3] = m >>> 24;
+      res[k + 2] = (m >>> 16) & 0xff;
+      res[k + 1] = (m >>> 8) & 0xff;
+      res[k] = m & 0xff;
+    }
+  }
+  return res;
+}
+exports.split32 = split32;
+
+function rotr32(w, b) {
+  return (w >>> b) | (w << (32 - b));
+}
+exports.rotr32 = rotr32;
+
+function rotl32(w, b) {
+  return (w << b) | (w >>> (32 - b));
+}
+exports.rotl32 = rotl32;
+
+function sum32(a, b) {
+  return (a + b) >>> 0;
+}
+exports.sum32 = sum32;
+
+function sum32_3(a, b, c) {
+  return (a + b + c) >>> 0;
+}
+exports.sum32_3 = sum32_3;
+
+function sum32_4(a, b, c, d) {
+  return (a + b + c + d) >>> 0;
+}
+exports.sum32_4 = sum32_4;
+
+function sum32_5(a, b, c, d, e) {
+  return (a + b + c + d + e) >>> 0;
+}
+exports.sum32_5 = sum32_5;
+
+function sum64(buf, pos, ah, al) {
+  var bh = buf[pos];
+  var bl = buf[pos + 1];
+
+  var lo = (al + bl) >>> 0;
+  var hi = (lo < al ? 1 : 0) + ah + bh;
+  buf[pos] = hi >>> 0;
+  buf[pos + 1] = lo;
+}
+exports.sum64 = sum64;
+
+function sum64_hi(ah, al, bh, bl) {
+  var lo = (al + bl) >>> 0;
+  var hi = (lo < al ? 1 : 0) + ah + bh;
+  return hi >>> 0;
+}
+exports.sum64_hi = sum64_hi;
+
+function sum64_lo(ah, al, bh, bl) {
+  var lo = al + bl;
+  return lo >>> 0;
+}
+exports.sum64_lo = sum64_lo;
+
+function sum64_4_hi(ah, al, bh, bl, ch, cl, dh, dl) {
+  var carry = 0;
+  var lo = al;
+  lo = (lo + bl) >>> 0;
+  carry += lo < al ? 1 : 0;
+  lo = (lo + cl) >>> 0;
+  carry += lo < cl ? 1 : 0;
+  lo = (lo + dl) >>> 0;
+  carry += lo < dl ? 1 : 0;
+
+  var hi = ah + bh + ch + dh + carry;
+  return hi >>> 0;
+}
+exports.sum64_4_hi = sum64_4_hi;
+
+function sum64_4_lo(ah, al, bh, bl, ch, cl, dh, dl) {
+  var lo = al + bl + cl + dl;
+  return lo >>> 0;
+}
+exports.sum64_4_lo = sum64_4_lo;
+
+function sum64_5_hi(ah, al, bh, bl, ch, cl, dh, dl, eh, el) {
+  var carry = 0;
+  var lo = al;
+  lo = (lo + bl) >>> 0;
+  carry += lo < al ? 1 : 0;
+  lo = (lo + cl) >>> 0;
+  carry += lo < cl ? 1 : 0;
+  lo = (lo + dl) >>> 0;
+  carry += lo < dl ? 1 : 0;
+  lo = (lo + el) >>> 0;
+  carry += lo < el ? 1 : 0;
+
+  var hi = ah + bh + ch + dh + eh + carry;
+  return hi >>> 0;
+}
+exports.sum64_5_hi = sum64_5_hi;
+
+function sum64_5_lo(ah, al, bh, bl, ch, cl, dh, dl, eh, el) {
+  var lo = al + bl + cl + dl + el;
+
+  return lo >>> 0;
+}
+exports.sum64_5_lo = sum64_5_lo;
+
+function rotr64_hi(ah, al, num) {
+  var r = (al << (32 - num)) | (ah >>> num);
+  return r >>> 0;
+}
+exports.rotr64_hi = rotr64_hi;
+
+function rotr64_lo(ah, al, num) {
+  var r = (ah << (32 - num)) | (al >>> num);
+  return r >>> 0;
+}
+exports.rotr64_lo = rotr64_lo;
+
+function shr64_hi(ah, al, num) {
+  return ah >>> num;
+}
+exports.shr64_hi = shr64_hi;
+
+function shr64_lo(ah, al, num) {
+  var r = (ah << (32 - num)) | (al >>> num);
+  return r >>> 0;
+}
+exports.shr64_lo = shr64_lo;
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__strophe_connection__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_native__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_native__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__react_native_async_storage_async_storage__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__react_native_async_storage_async_storage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__react_native_async_storage_async_storage__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db_controllers_OfflineActionTable__ = __webpack_require__(313);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__db_realmDB__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__service_auth__ = __webpack_require__(97);
+// migration Done (09-12-21)
+
+/* eslint-disable prefer-const */
+/* eslint-disable arrow-body-style */
+
+
+
+
+
+
+
+const KEY_TOKEN = 'mirrorFlyToken';
+const KEY_USER_PROFILE = 'profile';
+
+let /* _indexDbSupported = false, */
+// _db,
+_token,
+
+// _transaction,
+// isOnline,
+_sdk_offlineStanzas = [];
+
+/**
+ * returns true if the currentState is "active"
+ * and false for other states like "inactive" or "background"
+ * @returns {boolean}
+ */
+// export const getOnlineStatus = () => isOnline;
+const getOnlineStatus = () => __WEBPACK_IMPORTED_MODULE_1_react_native__["AppState"].currentState === 'active' && Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["c" /* getConnectionObj */])() && Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["c" /* getConnectionObj */])().connected && __WEBPACK_IMPORTED_MODULE_5__service_auth__["b" /* connectionStatus */].isConnected;
+/* harmony export (immutable) */ __webpack_exports__["b"] = getOnlineStatus;
+
+
+// const addEventListeners = () => {
+//   window.addEventListener("online", async () => {
+//     isOnline = true;
+//   });
+//   window.addEventListener("offline", () => {
+//     isOnline = false;
+//   });
+// };
+
+// const dbHasObjectStore = (objectName) => {
+//   if (!_db || !objectName) return false;
+//   return _db.objectStoreNames.contains(objectName);
+// };
+
+// const createObjectStore = (objectName) => {
+//   if (!_db || !objectName) return;
+//   !dbHasObjectStore(objectName) && _db.createObjectStore(objectName);
+// };
+
+const getStanzas = async () => _sdk_offlineStanzas.length ? _sdk_offlineStanzas : await Object(__WEBPACK_IMPORTED_MODULE_3__db_controllers_OfflineActionTable__["c" /* getOfflineAction */])();
+/* unused harmony export getStanzas */
+
+
+const processFailedStanzas = async () => {
+  const pendingStanzas = await getStanzas();
+  for (const element of pendingStanzas) {
+    const stanza = element;
+    const xmlDoc = new window.DOMParser().parseFromString(stanza, 'text/xml').firstChild;
+    if (getOnlineStatus()) {
+      Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["b" /* getConnection */])().sendIQ(xmlDoc);
+      Object(__WEBPACK_IMPORTED_MODULE_3__db_controllers_OfflineActionTable__["b" /* deleteOfflineAction */])(element);
+    } else {
+      break;
+    }
+  }
+  _sdk_offlineStanzas = [];
+};
+/* harmony export (immutable) */ __webpack_exports__["e"] = processFailedStanzas;
+
+
+// export const initializeDatabase = () => {
+//   return new Promise((resolve) => {
+//     if (_db) {
+//       resolve();
+//       return;
+//     }
+
+//     require("fake-indexeddb/auto");
+//     _indexDbSupported = false;
+//     _db = null;
+//     _token = null;
+//     isOnline = navigator.onLine;
+//     // addEventListeners(); // unsupported code
+
+//     if ("indexedDB" in window) {
+//       const openRequest = window.indexedDB.open("mirrorfly", 1);
+//       openRequest.onupgradeneeded = (e) => {
+//         _db = e.target.result;
+//         createObjectStore("userDetails");
+//       };
+//       openRequest.onsuccess = (e) => {
+//         _indexDbSupported = true;
+//         _db = e.target.result;
+//         resolve();
+//       };
+//       openRequest.onerror = (e) => {
+//         resolve(e);
+//       };
+//     }
+//   });
+// };
+
+const setStanza = allStanzas => {
+  _sdk_offlineStanzas = allStanzas;
+};
+/* unused harmony export setStanza */
+
+
+const addStanza = async (stanza, id = '', type = '') => {
+  _sdk_offlineStanzas.push(stanza);
+  const params = {
+    _id: id,
+    toJid: id,
+    actionType: type,
+    iqString: stanza
+  };
+  Object(__WEBPACK_IMPORTED_MODULE_3__db_controllers_OfflineActionTable__["a" /* createOfflineAction */])(params);
+};
+/* harmony export (immutable) */ __webpack_exports__["a"] = addStanza;
+
+
+const removeStanza = async msgId => {
+  const _offlineStanzas = await getStanzas();
+  const realm = await Object(__WEBPACK_IMPORTED_MODULE_4__db_realmDB__["a" /* getRealmDB */])();
+  const updatedStanza = _offlineStanzas.filter(element => {
+    const stanza = realm.objects('OfflineActionTable').filtered(`iqString CONTAINS[c] "${msgId}"`);
+    if (element === stanza[0].iqString) {
+      // We have check this for multiple stanza remove
+      Object(__WEBPACK_IMPORTED_MODULE_3__db_controllers_OfflineActionTable__["b" /* deleteOfflineAction */])(element);
+    }
+    if (element !== stanza[0].iqString) return element;
+  });
+  setStanza(updatedStanza);
+  // const updatedStanza = _offlineStanzas.foreach(xmlString => {
+  //   console.log(xmlString.includes(`id='${msgId}'`), 'xmlString.includes()');
+  //   if (xmlString.includes(`id='${msgId}'`)) {
+  //     console.log(xmlString, 'removeStanza xmlString');
+  //     deleteOfflineAction(xmlString);
+  //   }
+  //   if (!xmlString.includes(`id='${msgId}'`)) return xmlString;
+  // });
+  // setStanza(updatedStanza);
+};
+/* harmony export (immutable) */ __webpack_exports__["f"] = removeStanza;
+
+
+/**
+ * Sets the data to the given key in AsyncStorage
+ * @returns {Promise}
+ */
+const setAsyncData = (key, value) => {
+  let updatedValue = value;
+  if (typeof value === 'object') {
+    updatedValue = JSON.stringify(value);
+  }
+  return __WEBPACK_IMPORTED_MODULE_2__react_native_async_storage_async_storage___default.a.setItem(key, updatedValue);
+};
+
+/**
+ * Gets the data for the given key from AsyncStorage
+ * @returns {Promise}
+ */
+const getAsyncData = key => __WEBPACK_IMPORTED_MODULE_2__react_native_async_storage_async_storage___default.a.getItem(key);
+
+/**
+ * Gets the data for the given key from AsyncStorage and parse the string to JSON(object)
+ * @returns {Promise}
+ */
+const getJSONParsedAsyncData = key => getAsyncData(key).then(data => JSON.parse(data || '{}'));
+
+// const getCookie = (sKey) => {
+//   const cookie =
+//     decodeURIComponent(
+//       document.cookie.replace(
+//         new RegExp(
+//           "(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"
+//         ),
+//         "$1"
+//       )
+//     ) || null;
+//   return Promise.resolve(cookie);
+// };
+
+// const setCookie = (sKey, sValue, vEnd, sPath, sDomain, bSecure) => {
+//   if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) {
+//     return false;
+//   }
+//   let sExpires = "";
+//   if (vEnd) {
+//     switch (vEnd.constructor) {
+//       case Number:
+//         sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+//         break;
+//       case String:
+//         sExpires = "; expires=" + vEnd;
+//         break;
+//       case Date:
+//         sExpires = "; expires=" + vEnd.toUTCString();
+//         break;
+//       default:
+//         break;
+//     }
+//   }
+//   document.cookie =
+//     encodeURIComponent(sKey) +
+//     "=" +
+//     encodeURIComponent(sValue) +
+//     sExpires +
+//     (sDomain ? "; domain=" + sDomain : "") +
+//     (sPath ? "; path=" + sPath : "") +
+//     (bSecure ? "; secure" : "");
+//   return true;
+// };
+
+const setToken = token => {
+  _token = token;
+  return setAsyncData(KEY_TOKEN, token);
+  // window.localStorage.setItem("token", token);
+  // if (!_indexDbSupported) return setCookie("token", token);
+  // _transaction = _db.transaction(["userDetails"], "readwrite");
+  // _transaction.objectStore("userDetails").put(token, "token");
+  // _token = token;
+  // return token;
+};
+/* harmony export (immutable) */ __webpack_exports__["g"] = setToken;
+
+
+const getToken = () => {
+  if (_token) return Promise.resolve(_token);
+  return getAsyncData(KEY_TOKEN);
+  // if (!_indexDbSupported) return getCookie("token");
+  // return new Promise((resolve) => {
+  //   _transaction = _db.transaction(["userDetails"], "readwrite");
+  //   _transaction.objectStore("userDetails").get("token").onsuccess = (e) => resolve(e.target.result);
+  // });
+};
+/* harmony export (immutable) */ __webpack_exports__["c"] = getToken;
+
+
+const setUserProfile = profile => {
+  // setAsyncData(KEY_USER_PROFILE, JSON.stringify(profile));
+  // updateVcardDetail(profile)
+  // if (!_indexDbSupported) return setCookie("profile", JSON.stringify(profile));
+  // _transaction = _db.transaction(["userDetails"], "readwrite");
+  // _transaction.objectStore("userDetails").put(JSON.stringify(profile), "profile");
+  return true;
+};
+/* harmony export (immutable) */ __webpack_exports__["h"] = setUserProfile;
+
+
+const getUserProfile = async () => {
+  return getJSONParsedAsyncData(KEY_USER_PROFILE);
+  // if (!_indexDbSupported) {
+  //   const userProfile = (await getCookie("profile")) || "{}";
+  //   return JSON.parse(userProfile);
+  // }
+  // return new Promise((resolve) => {
+  //   _transaction = _db.transaction(["userDetails"], "readwrite");
+  //   _transaction.objectStore("userDetails").get("profile").onsuccess = (e) =>
+  //     resolve(e.target.result ? JSON.parse(e.target.result) : {});
+  // });
+};
+/* harmony export (immutable) */ __webpack_exports__["d"] = getUserProfile;
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_19__;
+
+/***/ }),
+/* 20 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__react_native_async_storage_async_storage__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__react_native_async_storage_async_storage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__react_native_async_storage_async_storage__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_constants__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_utils__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__ = __webpack_require__(98);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__controllers_messageTable__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_moment__ = __webpack_require__(380);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_moment__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_utils__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_react_native_fs__ = __webpack_require__(72);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_react_native_fs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_react_native_fs__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__controllers_recentTable__ = __webpack_require__(106);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__controllers_roasterTable__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__controllers_messageDetailTable__ = __webpack_require__(107);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__controllers_mediaDetailTable__ = __webpack_require__(71);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__helpers_common__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__realmDB__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__controllers_locationMessageTable__ = __webpack_require__(195);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__controllers_contactMessageTable__ = __webpack_require__(196);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const handleUnSentMsg = async () => {
+  try {
+    const unSentMessages = await Object(__WEBPACK_IMPORTED_MODULE_4__controllers_messageTable__["d" /* getAllUnSentMsg */])();
+    let replyTo = '';
+    unSentMessages.forEach(async element => {
+      let msgResponse, cypherText, fileToken;
+      if (element.msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_58" /* TEXT */]) {
+        msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_6__modules_utils__["d" /* handleMessages */])(element.msgBody.message, __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_58" /* TEXT */], element.msgId, replyTo, element.fromUserJid, '', {});
+        cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), element.msgId);
+        // Validating JID to Send Message to Single/Group Chat
+        if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_24" /* MIX_BARE_JID */].test(element.fromUserJid)) Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(element.fromUserJid, element.mid, __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_58" /* TEXT */], cypherText);
+        Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["d" /* sendMessageIQ */])(element.fromUserJid, element.msgId, __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_58" /* TEXT */], cypherText);
+      }
+      if (element.msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["T" /* IMAGE */] || element.msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_77" /* VIDEO */]) {
+        var _element$msgBody$medi = element.msgBody.media;
+        const caption = _element$msgBody$medi.caption,
+              duration = _element$msgBody$medi.duration,
+              local_path = _element$msgBody$medi.local_path,
+              file_size = _element$msgBody$medi.file_size,
+              originalWidth = _element$msgBody$medi.originalWidth,
+              originalHeight = _element$msgBody$medi.originalHeight,
+              fileName = _element$msgBody$medi.fileName,
+              thumb_image = _element$msgBody$medi.thumb_image,
+              file_url = _element$msgBody$medi.file_url,
+              webWidth = _element$msgBody$medi.webWidth,
+              webHeight = _element$msgBody$medi.webHeight;
+
+        const file = {
+          modificationTimestamp: Date.now(),
+          extension: local_path,
+          uri: local_path,
+          fileSize: file_size,
+          width: originalWidth,
+          height: originalHeight,
+          filename: fileName,
+          duration: duration
+        },
+              fileOptions = {
+          caption: caption,
+          thumbImage: thumb_image,
+          fileToken: file_url,
+          webHeight,
+          webWidth
+        };
+        msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_6__modules_utils__["d" /* handleMessages */])('', element.msgBody.message_type, element.msgId, '', element.fromUserJid, file, fileOptions);
+        cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), element.msgId);
+        fileToken = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["o" /* getFileTokenFromMsgBody */])(msgResponse.message);
+        if (msgResponse.statusCode === 200) {
+          if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_24" /* MIX_BARE_JID */].test(element.fromUserJid)) return Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(element.fromUserJid, element.msgId, element.msgBody.message_type, cypherText, fileToken, msgResponse.message.media.thumb_image);
+          return Object(__WEBPACK_IMPORTED_MODULE_3__strophe_msgstanza__["d" /* sendMessageIQ */])(element.fromUserJid, element.msgId, element.msgBody.message_type, cypherText, fileToken, msgResponse.message.media.thumb_image);
+        }
+      }
+    });
+  } catch (error) {
+    console.log('handleUnSentMsg', error);
+  }
+};
+/* unused harmony export handleUnSentMsg */
+
+
+/**
+ * changeTimeFormat() method to perform convert Timestamp it's effectively works for 16 digit to Time format.
+ *
+ * @param {timeStamp} time
+ */
+
+const changeTimeFormat = time => {
+  if (!time) {
+    return '';
+  } else if (time.toString().length === 16) {
+    return __WEBPACK_IMPORTED_MODULE_5_moment___default()(time / 1000000 * 1000).utc().format('YYYY-MM-DD HH:mm:ss');
+  } else {
+    return __WEBPACK_IMPORTED_MODULE_5_moment___default()(time).utc().format('YYYY-MM-DD HH:mm:ss');
+  }
+};
+/* harmony export (immutable) */ __webpack_exports__["a"] = changeTimeFormat;
+
+const getRandomColorCode = () => {
+  let colorCode;
+  do {
+    colorCode = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+  } while (isTooLight(colorCode)); // Check if the color is too light
+  return colorCode;
+};
+/* harmony export (immutable) */ __webpack_exports__["h"] = getRandomColorCode;
+
+
+const isTooLight = colorCode => {
+  // Convert colorCode to RGB values
+  const r = parseInt(colorCode.substr(1, 2), 16);
+  const g = parseInt(colorCode.substr(3, 2), 16);
+  const b = parseInt(colorCode.substr(5, 2), 16);
+
+  // Calculate relative luminance (perceptual brightness)
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+
+  // Return true if the luminance is too high (i.e., color is too light)
+  return luminance > 0.5;
+};
+
+const dbClear = async () => {
+  const realm = await Object(__WEBPACK_IMPORTED_MODULE_13__realmDB__["a" /* getRealmDB */])();
+  realm.write(() => {
+    realm.deleteAll();
+  });
+};
+/* harmony export (immutable) */ __webpack_exports__["c"] = dbClear;
+
+
+const dbRegisterClear = async userIdentifier => {
+  const realm = await Object(__WEBPACK_IMPORTED_MODULE_13__realmDB__["a" /* getRealmDB */])();
+  const prevUser = await __WEBPACK_IMPORTED_MODULE_0__react_native_async_storage_async_storage___default.a.getItem('prevUserIdentifier');
+  if (prevUser && userIdentifier !== prevUser) {
+    realm.write(() => {
+      realm.deleteAll();
+    });
+  }
+};
+/* harmony export (immutable) */ __webpack_exports__["d"] = dbRegisterClear;
+
+
+const mediaDetailConstructor = (chatMessage, mediaDetail) => {
+  try {
+    return {
+      androidHeight: mediaDetail.mobileHeight,
+      androidWidth: mediaDetail.mobileWidth,
+      caption: mediaDetail.caption,
+      duration: mediaDetail.duration,
+      fileName: mediaDetail.fileName,
+      file_key: mediaDetail.fileKey,
+      file_url: mediaDetail.fileUrl,
+      file_size: mediaDetail.fileSize,
+      is_downloaded: mediaDetail.isDownloaded,
+      is_uploading: mediaDetail.isUploading,
+      local_path: mediaDetail.localPath ? 'file://' + __WEBPACK_IMPORTED_MODULE_7_react_native_fs___default.a.DocumentDirectoryPath + '/' + mediaDetail.localPath : '',
+      msgId: chatMessage.mid,
+      originalHeight: mediaDetail.originalHeight,
+      originalWidth: mediaDetail.originalWidth,
+      thumb_image: mediaDetail.thumbImage,
+      webWidth: mediaDetail.webWidth,
+      webHeight: mediaDetail.webHeight,
+      fileType: mediaDetail.fileType
+    };
+  } catch (error) {
+    console.log('mediaDetailConstructor', error);
+    return {};
+  }
+};
+/* unused harmony export mediaDetailConstructor */
+
+
+const replyMsgConstructor = (replyId, realm) => {
+  const messageTable = realm.objectForPrimaryKey('MessageTable', replyId);
+  let _msgBody = {};
+  if (messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_58" /* TEXT */]) {
+    _msgBody = Object(__WEBPACK_IMPORTED_MODULE_10__controllers_messageDetailTable__["b" /* getMessageDetail */])(replyId, realm);
+  }
+  if (messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["T" /* IMAGE */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_77" /* VIDEO */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["i" /* AUDIO */] || messageTable.msgType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["C" /* FILE */]) {
+    const mediaDetail = Object(__WEBPACK_IMPORTED_MODULE_11__controllers_mediaDetailTable__["c" /* getMediaDetailWithRealm */])(mid, realm);
+    _msgBody = mediaDetailConstructor(messageTable, mediaDetail);
+  }
+  const chatType = !messageTable ? '' : messageTable.chatType,
+        createdAt = !messageTable ? 0 : changeTimeFormat(messageTable.msgTime),
+        deleteStatus = !messageTable ? 0 : messageTable.isDeleted,
+        fromUserId = messageTable.publisherJid.split('@')[0],
+        msgBody = _msgBody,
+        msgId = !messageTable ? '' : messageTable.mid,
+        msgStatus = !messageTable ? 3 : messageTable.status,
+        msgType = !messageTable ? '' : messageTable.msgType,
+        publisherId = !messageTable ? '' : messageTable.publisherJid.split('@')[0],
+        timestamp = messageTable.msgTime;
+  return {
+    chatType,
+    createdAt,
+    deleteStatus,
+    fromUserId,
+    msgId,
+    msgStatus,
+    msgBody,
+    msgType,
+    publisherId,
+    timestamp
+  };
+};
+/* unused harmony export replyMsgConstructor */
+
+
+const msgBodyConstructor = (chatMessage, realm, nickName = '') => {
+  try {
+    let msgBody = {};
+    msgBody = Object(__WEBPACK_IMPORTED_MODULE_10__controllers_messageDetailTable__["b" /* getMessageDetail */])(chatMessage.mid, realm) || {};
+    msgBody.nickName = nickName;
+    msgBody.message_type = chatMessage.msgType;
+    switch (chatMessage.msgType) {
+      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["T" /* IMAGE */]:
+      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_77" /* VIDEO */]:
+      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["i" /* AUDIO */]:
+      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["C" /* FILE */]:
+        const mediaDetail = Object(__WEBPACK_IMPORTED_MODULE_11__controllers_mediaDetailTable__["c" /* getMediaDetailWithRealm */])(chatMessage.mid, realm);
+        if (mediaDetail) {
+          msgBody.media = mediaDetailConstructor(chatMessage, mediaDetail);
+          msgBody.nickName = nickName;
+        }
+        break;
+      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_7" /* LOCATION */]:
+        msgBody.location = Object(__WEBPACK_IMPORTED_MODULE_14__controllers_locationMessageTable__["b" /* getLocationMsg */])(realm, chatMessage.mid);
+        break;
+      case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["w" /* CONTACT */]:
+        msgBody.contact = Object(__WEBPACK_IMPORTED_MODULE_15__controllers_contactMessageTable__["b" /* getContactMsg */])(realm, chatMessage.mid);
+        break;
+    }
+    return msgBody;
+  } catch (error) {
+    console.log('msgBodyConstructor', error);
+  }
+};
+/* harmony export (immutable) */ __webpack_exports__["i"] = msgBodyConstructor;
+
+
+const deleteChatDB = toJid => {
+  try {
+    Object(__WEBPACK_IMPORTED_MODULE_9__controllers_roasterTable__["a" /* deleteRoaster */])(toJid);
+    Object(__WEBPACK_IMPORTED_MODULE_8__controllers_recentTable__["a" /* deleteRecentChat */])(toJid);
+    Object(__WEBPACK_IMPORTED_MODULE_4__controllers_messageTable__["a" /* clearChatDB */])(toJid);
+  } catch (error) {
+    console.log('deleteChatDB', error);
+  }
+};
+/* harmony export (immutable) */ __webpack_exports__["e"] = deleteChatDB;
+
+
+const getMsgDetails = async mid => {
+  try {
+    const realm = await Object(__WEBPACK_IMPORTED_MODULE_13__realmDB__["a" /* getRealmDB */])();
+    const chatMessage = Object(__WEBPACK_IMPORTED_MODULE_4__controllers_messageTable__["e" /* getMessagefrmDB */])(realm, mid);
+    let msgBody = {};
+    if (chatMessage) {
+      msgBody = msgBodyConstructor(chatMessage, realm);
+    }
+    return msgBody;
+  } catch (error) {
+    console.log('getMsgDetail', error);
+    return {};
+  }
+};
+/* harmony export (immutable) */ __webpack_exports__["g"] = getMsgDetails;
+
+
+const getMessageByIdDB = async mid => {
+  try {
+    const realm = await Object(__WEBPACK_IMPORTED_MODULE_13__realmDB__["a" /* getRealmDB */])();
+    const successRes = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
+    const messageTable = realm.objectForPrimaryKey('MessageTable', mid);
+    if (!messageTable) {
+      successRes.data = {};
+      successRes.message = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_29" /* NO_MEESAGE_FOUND_DB */];
+      return successRes.data;
+    }
+    const recentChatList = realm.objects('RecentTable').filtered('mid = $0', mid);
+    let chatUserJid, msgTime;
+    if (recentChatList.length) {
+      chatUserJid = recentChatList[0].jid;
+      msgTime = recentChatList[0].msgTime;
+    } else {
+      chatUserJid = messageTable.chatUser;
+      msgTime = messageTable.msgTime;
+    }
+    const roaster = realm.objectForPrimaryKey('RoasterTable', chatUserJid);
+    const message = {
+      mid: mid,
+      msgType: messageTable ? messageTable.msgType : ''
+    };
+    const chatType = messageTable.chatType,
+          createdAt = !messageTable ? '' : changeTimeFormat(messageTable.msgTime),
+          deleteStatus = !messageTable ? 0 : messageTable.isDeleted,
+          fromUserId = roaster.jid.split('@')[0],
+          fromUserJid = roaster.jid,
+          msgBody = msgBodyConstructor(message, realm, ''),
+          msgId = !messageTable ? '' : messageTable.mid,
+          msgStatus = !messageTable ? 4 : messageTable.status,
+          msgType = !messageTable ? '' : messageTable.msgType,
+          publisherId = !messageTable ? '' : messageTable.publisherJid.split('@')[0],
+          publisherJid = messageTable.publisherJid,
+          timestamp = msgTime,
+          userId = roaster.jid.split('@')[0],
+          userJid = roaster.jid;
+
+    const data = {
+      chatType,
+      createdAt,
+      deleteStatus,
+      deletedBy: '0',
+      fromUserId,
+      fromUserJid,
+      msgBody,
+      msgId,
+      msgStatus,
+      msgType,
+      profileUpdatedStatus: '',
+      publisherId,
+      publisherJid,
+      timestamp,
+      userId,
+      userJid
+    };
+    Object(__WEBPACK_IMPORTED_MODULE_12__helpers_common__["a" /* callbackListeners */])().singleMessageDataListener && Object(__WEBPACK_IMPORTED_MODULE_12__helpers_common__["a" /* callbackListeners */])().singleMessageDataListener(data);
+    successRes.data = data;
+    return successRes;
+  } catch (error) {
+    console.log('getMessageByIdDB DB', error);
+  }
+};
+/* harmony export (immutable) */ __webpack_exports__["f"] = getMessageByIdDB;
+
+
+const dbCheckWithMsgId = async mid => {
+  try {
+    const realm = await Object(__WEBPACK_IMPORTED_MODULE_13__realmDB__["a" /* getRealmDB */])();
+    const messageTable = realm.objectForPrimaryKey('MessageTable', mid);
+    return Boolean(messageTable);
+  } catch (error) {
+    return false;
+  }
+};
+/* harmony export (immutable) */ __webpack_exports__["b"] = dbCheckWithMsgId;
+
+
+const getMessageByIdDBWithRealm = async (mid, realm) => {
+  try {
+    const successRes = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
+    const messageTable = realm.objectForPrimaryKey('MessageTable', mid);
+    const recentChatList = realm.objects('RecentTable').filtered('mid = $0', mid);
+    let chatUserJid, msgTime;
+    if (recentChatList.length) {
+      chatUserJid = recentChatList[0].jid;
+      msgTime = recentChatList[0].msgTime;
+    } else {
+      chatUserJid = messageTable.chatUser;
+      msgTime = messageTable.msgTime;
+    }
+    const roaster = realm.objectForPrimaryKey('RoasterTable', chatUserJid);
+    const message = {
+      mid: mid,
+      msgType: messageTable ? messageTable.msgType : ''
+    };
+    const chatType = messageTable.chatType,
+          createdAt = !messageTable ? '' : changeTimeFormat(messageTable.msgTime),
+          deleteStatus = !messageTable ? 0 : messageTable.isDeleted,
+          fromUserId = roaster.jid.split('@')[0],
+          fromUserJid = roaster.jid,
+          msgBody = msgBodyConstructor(message, realm, ''),
+          msgId = !messageTable ? '' : messageTable.mid,
+          msgStatus = !messageTable ? 4 : messageTable.status,
+          msgType = !messageTable ? '' : messageTable.msgType,
+          publisherId = !messageTable ? '' : messageTable.publisherJid.split('@')[0],
+          publisherJid = messageTable.publisherJid,
+          timestamp = msgTime,
+          userId = roaster.jid.split('@')[0],
+          userJid = roaster.jid;
+
+    const data = {
+      chatType,
+      createdAt,
+      deleteStatus,
+      deletedBy: '0',
+      fromUserId,
+      fromUserJid,
+      msgBody,
+      msgId,
+      msgStatus,
+      msgType,
+      profileUpdatedStatus: '',
+      publisherId,
+      publisherJid,
+      timestamp,
+      userId,
+      userJid
+    };
+    successRes.data = data;
+    return successRes;
+  } catch (error) {
+    console.log('getMessageByIdDB DB', error);
+  }
+};
+/* unused harmony export getMessageByIdDBWithRealm */
+
+
+const searchMessageDB = async (string, toJid) => {
+  try {
+    const realm = await Object(__WEBPACK_IMPORTED_MODULE_13__realmDB__["a" /* getRealmDB */])();
+    const messages = realm.objects('MessageDetailTable').filtered(`message CONTAINS[c] "${string}"`);
+    const captions = realm.objects('MediaDetailTable').filtered(`caption CONTAINS[c] "${string}"`);
+    const contactname = realm.objects('ContactMessageTable').filtered(`name CONTAINS[c] "${string}"`);
+    const consolidatedArr = [...messages, ...captions, ...contactname];
+    const fetchedVal = await Promise.allSettled(consolidatedArr.map(async item => {
+      const msgObj = await getMessageByIdDBWithRealm(item.mid, realm);
+      if (msgObj.statusCode === 200) {
+        return msgObj.data;
+      }
+    }));
+    const returnArr = fetchedVal.map(item => item.status === 'fulfilled' && item.value).filter(Boolean);
+    const successRes = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
+    successRes.data = returnArr;
+    return successRes;
+  } catch (error) {
+    console.log('searchMessageDB', error);
+    return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(error);
+  }
+};
+/* harmony export (immutable) */ __webpack_exports__["j"] = searchMessageDB;
+
+
+/***/ }),
 /* 21 */
 /***/ (function(module, exports) {
 
@@ -10913,7 +10926,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_21__;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_constants__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_react_native__);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -11026,7 +11039,7 @@ const accessTokenRegenerate = async () => {
     username: credentials.username,
     type: __WEBPACK_IMPORTED_MODULE_4_react_native__["Platform"].OS // TODO: change this as per the requirement once migration is done
   };
-  const apiResponse = await sendRequest(__WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_15" /* METHOD_POST */], apiEndPoints.login, JSON.stringify(data), '', '');
+  const apiResponse = await sendRequest(__WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_16" /* METHOD_POST */], apiEndPoints.login, JSON.stringify(data), '', '');
 
   if (apiResponse && apiResponse.status === 200) {
     const userToken = apiResponse.data.token;
@@ -11672,7 +11685,7 @@ module.exports = CipherBase
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__functions__ = __webpack_require__(14);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -11749,12 +11762,14 @@ const addOrUpdateCallUser = (dataObj = {}) => {
         newCallUsers = [...callUsers];
         let newCallUsersData = newCallUsers.map((ele, ind) => ind === userIndex ? _extends({}, ele, dataToUpdate) : _extends({}, ele));
         callUsers = [...newCallUsersData];
+        console.log('SDK ==>> setCallUsers = callUsers', callUsers);
         setCallUsers(callUsers);
         return callUsers;
     }
     dataToUpdate['localUser'] = !!dataToUpdate.localUser;
     dataToUpdate['callInitiator'] = !!dataToUpdate.callInitiator;
     callUsers.push(dataToUpdate);
+    console.log('SDK ==>> dataToUpdate', callUsers);
     return callUsers;
 };
 /* harmony export (immutable) */ __webpack_exports__["a"] = addOrUpdateCallUser;
@@ -12232,7 +12247,7 @@ var objectKeys = Object.keys || function (obj) {
 module.exports = Duplex;
 
 /*<replacement>*/
-var processNextTick = __webpack_require__(79);
+var processNextTick = __webpack_require__(80);
 /*</replacement>*/
 
 /*<replacement>*/
@@ -12241,7 +12256,7 @@ util.inherits = __webpack_require__(0);
 /*</replacement>*/
 
 var Readable = __webpack_require__(124);
-var Writable = __webpack_require__(80);
+var Writable = __webpack_require__(81);
 
 util.inherits(Duplex, Readable);
 
@@ -12295,7 +12310,7 @@ function forEach(xs, f) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_utils__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__service_feedback__ = __webpack_require__(98);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__service_feedback__ = __webpack_require__(99);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__realmDB__ = __webpack_require__(13);
 
 
@@ -12787,8 +12802,8 @@ function filterStats(result, track, outbound) {
 /* harmony export (immutable) */ __webpack_exports__["M"] = updateMuteNotification;
 /* harmony export (immutable) */ __webpack_exports__["v"] = messageSearch;
 /* harmony export (immutable) */ __webpack_exports__["N"] = updateRecentChatUnreadCount;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__ = __webpack_require__(110);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__ = __webpack_require__(97);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__ = __webpack_require__(74);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__ = __webpack_require__(98);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils__ = __webpack_require__(46);
@@ -12796,15 +12811,15 @@ function filterStats(result, track, outbound) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__service_api__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__profile__ = __webpack_require__(73);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__ = __webpack_require__(38);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__db_controllers_messageDetailTable__ = __webpack_require__(106);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__db_controllers_recentTable__ = __webpack_require__(105);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__db_Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__db_controllers_messageDetailTable__ = __webpack_require__(107);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__db_controllers_recentTable__ = __webpack_require__(106);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__db_Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__app_reconnect__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__react_native_async_storage_async_storage__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__react_native_async_storage_async_storage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_13__react_native_async_storage_async_storage__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_14_react_native__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__helpers_localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__helpers_localDb__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__db_controllers_vcardTable__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__call_communication_iq__ = __webpack_require__(192);
 // migration done (10-12-21) - (13-12-21)
@@ -12849,7 +12864,7 @@ const getRecentChatsDB = () => {
  */
 const getRecentChats = () => {
   try {
-    return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["l" /* getRecentChatsIQ */])();
+    return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["m" /* getRecentChatsIQ */])();
   } catch (error) {
     return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(error.message);
   }
@@ -12867,7 +12882,7 @@ const getChatMessagesDB = toJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["f" /* getMessages */])(toJid);
@@ -12902,12 +12917,12 @@ const getChatMessages = (toJid, position, lastRowId, limit = 20, sendSeen = true
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }]);
 
     if (response.statusCode === 200) {
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["f" /* getGroupChatIQ */])(toJid, position, lastRowId, limit, sendSeen);
-      return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["n" /* getSingleChatIQ */])(toJid, position, lastRowId, limit, sendSeen);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["f" /* getGroupChatIQ */])(toJid, position, lastRowId, limit, sendSeen);
+      return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["o" /* getSingleChatIQ */])(toJid, position, lastRowId, limit, sendSeen);
     }
     return response;
   } catch (error) {
@@ -12931,22 +12946,22 @@ const sendTextMessage = async (toJid, msgBody, msgId, replyTo = '') => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }, {
       key: 'msgBody',
       value: msgBody,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_51" /* REQUIRED */]
     }]);
 
     if (response.statusCode === 200) {
       const messageId = msgId ? msgId : Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA');
-      const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])(msgBody, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_57" /* TEXT */], messageId, replyTo, toJid, '', {});
+      const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])(msgBody, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_58" /* TEXT */], messageId, replyTo, toJid, '', {});
       if (msgResponse.statusCode === 200) {
-        Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, msgBody, msgId, replyTo, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_57" /* TEXT */]);
+        Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, msgBody, msgId, replyTo, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_58" /* TEXT */]);
         const cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), messageId);
         // Validating JID to Send Message to Single/Group Chat
-        if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, messageId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_57" /* TEXT */], cypherText);
-        return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, messageId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_57" /* TEXT */], cypherText);
+        if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, messageId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_58" /* TEXT */], cypherText);
+        return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, messageId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_58" /* TEXT */], cypherText);
       }
       return msgResponse;
     }
@@ -12971,7 +12986,7 @@ const sendAttachmentMessage = async (toJid, options, type, msgId, replyTo = '') 
   const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
     key: 'toJid',
     value: toJid,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
   }]);
 
   if (response.statusCode === 200) {
@@ -12980,7 +12995,7 @@ const sendAttachmentMessage = async (toJid, options, type, msgId, replyTo = '') 
 
     if (msgResponse.statusCode === 200) {
       const cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), messageId);
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, messageId, type, cypherText);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, messageId, type, cypherText);
       return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, messageId, type, cypherText);
     }
     return msgResponse;
@@ -13004,26 +13019,26 @@ const sendImageMessage = async (toJid, imageFile, fileOptions, replyTo = '') => 
   const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
     key: 'toJid',
     value: toJid,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
   }, {
     key: 'imageFile',
     value: imageFile,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["T" /* IMAGEFILE_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["U" /* IMAGEFILE_REQUIRED */]
   }, {
     key: 'fileOptions',
     value: fileOptions,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_42" /* OBJECT_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_43" /* OBJECT_REQUIRED */]
   }]);
   if (response.statusCode === 200) {
     const msgId = fileOptions.msgId ? fileOptions.msgId : Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA');
-    const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["S" /* IMAGE */], msgId, replyTo, toJid, imageFile, fileOptions);
+    const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["T" /* IMAGE */], msgId, replyTo, toJid, imageFile, fileOptions);
 
     if (msgResponse && msgResponse.statusCode === 200) {
       const cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), msgId),
             fileToken = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["o" /* getFileTokenFromMsgBody */])(msgResponse.message);
 
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["S" /* IMAGE */], cypherText, fileToken, msgResponse.message.media.thumb_image);
-      return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["S" /* IMAGE */], cypherText, fileToken, msgResponse.message.media.thumb_image);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["T" /* IMAGE */], cypherText, fileToken, msgResponse.message.media.thumb_image);
+      return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["T" /* IMAGE */], cypherText, fileToken, msgResponse.message.media.thumb_image);
     }
     return msgResponse;
   }
@@ -13046,7 +13061,7 @@ const sendAudioMessage = async (toJid, audioFile, fileOptions, replyTo = '') => 
   const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
     key: 'toJid',
     value: toJid,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
   }, {
     key: 'audioFile',
     value: audioFile,
@@ -13054,7 +13069,7 @@ const sendAudioMessage = async (toJid, audioFile, fileOptions, replyTo = '') => 
   }, {
     key: 'fileOptions',
     value: fileOptions,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_42" /* OBJECT_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_43" /* OBJECT_REQUIRED */]
   }]);
 
   if (response.statusCode === 200) {
@@ -13065,7 +13080,7 @@ const sendAudioMessage = async (toJid, audioFile, fileOptions, replyTo = '') => 
       const cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), msgId),
             fileToken = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["o" /* getFileTokenFromMsgBody */])(msgResponse.message);
 
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["i" /* AUDIO */], cypherText, fileToken);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["i" /* AUDIO */], cypherText, fileToken);
       return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["i" /* AUDIO */], cypherText, fileToken);
     }
     return msgResponse;
@@ -13089,26 +13104,26 @@ const sendVideoMessage = async (toJid, videoFile, fileOptions, replyTo = '') => 
   const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
     key: 'toJid',
     value: toJid,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
   }, {
     key: 'videoFile',
     value: videoFile,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_77" /* VIDEOFILE_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_78" /* VIDEOFILE_REQUIRED */]
   }, {
     key: 'fileOptions',
     value: fileOptions,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_42" /* OBJECT_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_43" /* OBJECT_REQUIRED */]
   }]);
   if (response.statusCode === 200) {
     const msgId = fileOptions.msgId ? fileOptions.msgId : Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA');
-    const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_76" /* VIDEO */], msgId, replyTo, toJid, videoFile, fileOptions);
+    const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_77" /* VIDEO */], msgId, replyTo, toJid, videoFile, fileOptions);
 
     if (msgResponse && msgResponse.statusCode === 200) {
       const cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), msgId),
             fileToken = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["o" /* getFileTokenFromMsgBody */])(msgResponse.message);
 
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_76" /* VIDEO */], cypherText, fileToken, msgResponse.message.media.thumb_image);
-      return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_76" /* VIDEO */], cypherText, fileToken, msgResponse.message.media.thumb_image);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_77" /* VIDEO */], cypherText, fileToken, msgResponse.message.media.thumb_image);
+      return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_77" /* VIDEO */], cypherText, fileToken, msgResponse.message.media.thumb_image);
     }
     return msgResponse;
   }
@@ -13131,7 +13146,7 @@ const sendDocumentMessage = async (toJid, documentFile, fileOptions, replyTo = '
   const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
     key: 'toJid',
     value: toJid,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
   }, {
     key: 'documentFile',
     value: documentFile,
@@ -13139,7 +13154,7 @@ const sendDocumentMessage = async (toJid, documentFile, fileOptions, replyTo = '
   }, {
     key: 'fileOptions',
     value: fileOptions,
-    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_42" /* OBJECT_REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_43" /* OBJECT_REQUIRED */]
   }]);
 
   if (response.statusCode === 200) {
@@ -13150,7 +13165,7 @@ const sendDocumentMessage = async (toJid, documentFile, fileOptions, replyTo = '
       const cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), msgId),
             fileToken = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["o" /* getFileTokenFromMsgBody */])(msgResponse.message);
 
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["C" /* FILE */], cypherText, fileToken);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["C" /* FILE */], cypherText, fileToken);
       return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, msgId, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["C" /* FILE */], cypherText, fileToken);
     }
     return msgResponse;
@@ -13177,7 +13192,7 @@ const sendMediaMessageData = async (toJid, msgType, fileOptions, msgId, replyTo 
     if (msgResponse.statusCode === 200) {
       const messageId = msgId || Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA');
       const cypherText = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["i" /* encryptMsg */])(JSON.stringify(msgResponse.message), messageId);
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, messageId, msgType, cypherText);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["c" /* sendGroupMessageIQ */])(toJid, messageId, msgType, cypherText);
       return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["d" /* sendMessageIQ */])(toJid, messageId, msgType, cypherText);
     }
     return msgResponse;
@@ -13199,11 +13214,11 @@ const sendSeenStatus = (toJid, msgId, groupId) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_0" /* JID_FORMAT_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_FORMAT_REQUIRED */]
     }, {
       key: 'msgId',
       value: msgId,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_51" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["e" /* sendSeenStatusIQ */])(toJid, msgId, groupId);
@@ -13230,7 +13245,7 @@ const getMediaMessages = (toJid, msgId = '') => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["k" /* getMediaMessagesIQ */])(toJid, msgId);
@@ -13255,7 +13270,7 @@ const getMessageById = (msgId, chatType) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'msgId',
       value: msgId,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_51" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_11__db_Utils__["f" /* getMessageByIdDB */])(msgId);
@@ -13281,10 +13296,10 @@ const getReplyMessage = (replyMsgId, chatType) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'replyMsgId',
       value: replyMsgId,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_51" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
-      return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["m" /* getReplyMessageIQ */])(replyMsgId, chatType);
+      return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["n" /* getReplyMessageIQ */])(replyMsgId, chatType);
     }
     return response;
   } catch (error) {
@@ -13306,7 +13321,7 @@ const forwardMessages = async (toJid, msgIds, isAsync = true) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }, {
       key: 'msgIds',
       value: msgIds,
@@ -13378,7 +13393,7 @@ const updateFavouriteStatus = (toJid, msgIds, isFavourite) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }, {
       key: 'msgIds',
       value: msgIds,
@@ -13390,7 +13405,7 @@ const updateFavouriteStatus = (toJid, msgIds, isFavourite) => {
     }]);
     if (response.statusCode === 200) {
       for (let i = 0; i < msgIds.length; i++) {
-        Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["w" /* updateFavouriteStatusIQ */])(toJid, msgIds[i], isFavourite);
+        Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["x" /* updateFavouriteStatusIQ */])(toJid, msgIds[i], isFavourite);
       }
       return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
     }
@@ -13424,7 +13439,7 @@ const getAllFavouriteMessages = () => {
  */
 const removeAllFavouriteMessages = () => {
   try {
-    return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["r" /* removeAllFavouritedMsgIQ */])();
+    return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["s" /* removeAllFavouritedMsgIQ */])();
   } catch (error) {
     return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(error.message);
   }
@@ -13445,7 +13460,7 @@ const clearChat = async (toJid, favourites = true) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["a" /* clearChatDB */])(toJid);
@@ -13472,7 +13487,7 @@ const deleteChat = (toJid, favourites = true) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       Object(__WEBPACK_IMPORTED_MODULE_11__db_Utils__["e" /* deleteChatDB */])(toJid);
@@ -13493,7 +13508,7 @@ const deleteChat = (toJid, favourites = true) => {
  */
 const clearAllChat = () => {
   try {
-    return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["q" /* removeAllChatMsgIQ */])(1);
+    return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["r" /* removeAllChatMsgIQ */])(1);
   } catch (error) {
     return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(error.message);
   }
@@ -13508,7 +13523,7 @@ const clearAllChat = () => {
  */
 const deleteAllChat = () => {
   try {
-    return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["q" /* removeAllChatMsgIQ */])(0);
+    return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["r" /* removeAllChatMsgIQ */])(0);
   } catch (error) {
     return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(error.message);
   }
@@ -13529,7 +13544,7 @@ const deleteMessagesForMe = async (toJid, msgIds, deleteMediaFromMobile) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }, {
       key: 'msgIds',
       value: msgIds,
@@ -13560,7 +13575,7 @@ const deleteMessagesForEveryone = async (toJid, msgIds, deleteMediaFromMobile) =
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }, {
       key: 'msgIds',
       value: msgIds,
@@ -13568,7 +13583,7 @@ const deleteMessagesForEveryone = async (toJid, msgIds, deleteMediaFromMobile) =
     }]);
     if (response.statusCode === 200) {
       const iqSendMsdIds = await Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["c" /* deleteMessagesForEveryoneDB */])(toJid, msgIds);
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["p" /* recallGroupMessageIQ */])(toJid, iqSendMsdIds.join());
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["q" /* recallGroupMessageIQ */])(toJid, iqSendMsdIds.join());
       return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["a" /* recallMessageIQ */])(toJid, iqSendMsdIds.join());
     }
     return response;
@@ -13591,10 +13606,10 @@ const sendTypingStatus = toJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["u" /* sendTypingStatusGroupIQ */])(toJid);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["v" /* sendTypingStatusGroupIQ */])(toJid);
       return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["g" /* sendTypingStatusIQ */])(toJid);
     }
     return response;
@@ -13617,10 +13632,10 @@ const sendTypingGoneStatus = toJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
-      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["t" /* sendTypingGoneStatusGroupIQ */])(toJid);
+      if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid)) return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["u" /* sendTypingGoneStatusGroupIQ */])(toJid);
       return Object(__WEBPACK_IMPORTED_MODULE_1__strophe_msgstanza__["f" /* sendTypingGoneStatusIQ */])(toJid);
     }
     return response;
@@ -13723,7 +13738,7 @@ const getNotificationData = async remoteMessage => {
       return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])('Data Saved');
     }
 
-    if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_27" /* NOTIFY_CONTENTS */].includes(androidTitle)) {
+    if (__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_28" /* NOTIFY_CONTENTS */].includes(androidTitle)) {
       const reqPayload = {
         carbon: false,
         chatType: chat_type,
@@ -13738,7 +13753,7 @@ const getNotificationData = async remoteMessage => {
         const delivered_api_url = await __WEBPACK_IMPORTED_MODULE_13__react_native_async_storage_async_storage___default.a.getItem('delivered_api_url');
         const iv = await __WEBPACK_IMPORTED_MODULE_13__react_native_async_storage_async_storage___default.a.getItem('iv');
         const userToken = await Object(__WEBPACK_IMPORTED_MODULE_15__helpers_localDb__["c" /* getToken */])();
-        const foundMsg = await Object(__WEBPACK_IMPORTED_MODULE_6__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_16" /* METHOD_PUT */], delivered_api_url, reqPayload, userToken);
+        const foundMsg = await Object(__WEBPACK_IMPORTED_MODULE_6__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_17" /* METHOD_PUT */], delivered_api_url, reqPayload, userToken);
         /**
          console.log(
            'SDK getNotificationData msgBody',
@@ -13765,7 +13780,7 @@ const getMediaURL = async (fileToken, mediaType) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'File Token',
       value: fileToken,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_51" /* REQUIRED */]
     }]);
 
     if (response.statusCode === 200) {
@@ -13796,14 +13811,14 @@ async function updateMuteNotification(toJid, isMuted) {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }, {
       key: 'isMuted',
       value: isMuted,
       rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["o" /* BOOLEAN_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
-      return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["x" /* updateMuteStatusIQ */])(toJid, isMuted);
+      return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["y" /* updateMuteStatusIQ */])(toJid, isMuted);
     }
     return response;
   } catch (error) {
@@ -13837,7 +13852,7 @@ const sendLocationMessage = async (toJid, lat, long, msgId, replyTo = '') => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }]);
 
     if (response.statusCode === 200) {
@@ -13846,13 +13861,13 @@ const sendLocationMessage = async (toJid, lat, long, msgId, replyTo = '') => {
         latitude: lat.toString(),
         longitude: long.toString()
       };
-      const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_6" /* LOCATION */], messageId, replyTo, toJid, {}, fileOptions);
+      const msgResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleMessages */])('', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_7" /* LOCATION */], messageId, replyTo, toJid, {}, fileOptions);
       if (msgResponse.statusCode === 200) {
-        Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, '', msgId, replyTo, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_6" /* LOCATION */], {}, fileOptions);
+        Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, '', msgId, replyTo, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_7" /* LOCATION */], {}, fileOptions);
         // Validating JID to Send Message to Single/Group Chat
         // if (MIX_BARE_JID.test(toJid))
         //   return sendGroupMessageIQ(toJid, messageId, LOCATION, cypherText);
-        return sendAttachmentMessage(toJid, fileOptions, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_6" /* LOCATION */], msgId, replyTo);
+        return sendAttachmentMessage(toJid, fileOptions, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_7" /* LOCATION */], msgId, replyTo);
       }
       return msgResponse;
     }
@@ -13885,7 +13900,7 @@ const sendContactMessage = async (toJid, contacts, replyTo = '') => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }, {
       key: 'contacts',
       value: contacts,
@@ -13934,10 +13949,10 @@ async function updateRecentChatUnreadCount(toJid) {
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
-      Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["y" /* updateRecentChatUnreadCountIQ */])(toJid);
+      Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["z" /* updateRecentChatUnreadCountIQ */])(toJid);
       Object(__WEBPACK_IMPORTED_MODULE_10__db_controllers_recentTable__["e" /* updateRecentChatUnreadCountInDB */])(toJid);
     }
     return response;
@@ -13951,7 +13966,7 @@ const sendMediaMessage = async (toJid, msgId, type = '', file = {}, fileOptions 
     const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toJid',
       value: toJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_2" /* JID_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JID_REQUIRED */]
     }]);
     if (response.statusCode !== 200) {
       return response;
@@ -13980,9 +13995,9 @@ const sendMediaMessage = async (toJid, msgId, type = '', file = {}, fileOptions 
     switch (_type) {
       case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["C" /* FILE */]:
         return sendDocumentMessage(toJid, _file, _fileOptions, _replyTo);
-      case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["S" /* IMAGE */]:
+      case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["T" /* IMAGE */]:
         return sendImageMessage(toJid, _file, _fileOptions, _replyTo);
-      case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_76" /* VIDEO */]:
+      case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_77" /* VIDEO */]:
         return sendVideoMessage(toJid, _file, _fileOptions, _replyTo);
       case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["i" /* AUDIO */]:
         return sendAudioMessage(toJid, _file, _fileOptions, _replyTo);
@@ -14685,15 +14700,15 @@ Object.defineProperty(Duplex.prototype, 'destroyed', {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__react_native_async_storage_async_storage__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__react_native_async_storage_async_storage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__react_native_async_storage_async_storage__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Utils__ = __webpack_require__(19);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__recentTable__ = __webpack_require__(105);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__messageDetailTable__ = __webpack_require__(106);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Utils__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__recentTable__ = __webpack_require__(106);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__messageDetailTable__ = __webpack_require__(107);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__mediaDetailTable__ = __webpack_require__(71);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_react_native_fs__ = __webpack_require__(72);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_react_native_fs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_react_native_fs__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__strophe_connection__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__helpers_localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__helpers_localDb__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__realmDB__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__locationMessageTable__ = __webpack_require__(195);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__contactMessageTable__ = __webpack_require__(196);
@@ -14809,8 +14824,8 @@ const handleMessageCreate = async (toJid, msgBody = '', msgId, replyTo = '', typ
     const currentUserJid = await __WEBPACK_IMPORTED_MODULE_3__react_native_async_storage_async_storage___default.a.getItem('currentUserJID');
     const parsedCurrentJid = JSON.parse(currentUserJid);
     let userJid, chatType;
-    if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) {
-      chatType = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["L" /* GROUPCHAT */];
+    if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid)) {
+      chatType = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["M" /* GROUPCHAT */];
     } else {
       chatType = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["q" /* CHAT */];
       userJid = toJid.split('@').length > 1 ? toJid : `${toJid}@${parsedCurrentJid.split('@')[1]}`;
@@ -14824,7 +14839,7 @@ const handleMessageCreate = async (toJid, msgBody = '', msgId, replyTo = '', typ
       replyTo: replyTo
     };
     Object(__WEBPACK_IMPORTED_MODULE_6__messageDetailTable__["a" /* createMsgDetailTable */])(realm, msgDetail);
-    if (type === __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_6" /* LOCATION */]) {
+    if (type === __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_7" /* LOCATION */]) {
       const _locationData = {
         mid: msgId,
         latitude: fileOptions.latitude,
@@ -14833,7 +14848,7 @@ const handleMessageCreate = async (toJid, msgBody = '', msgId, replyTo = '', typ
       _locationData.mid = msgId;
       Object(__WEBPACK_IMPORTED_MODULE_13__locationMessageTable__["a" /* createLocationMsg */])(realm, _locationData);
     }
-    if (type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["S" /* IMAGE */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_76" /* VIDEO */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["i" /* AUDIO */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["C" /* FILE */]) {
+    if (type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["T" /* IMAGE */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_77" /* VIDEO */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["i" /* AUDIO */] || type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["C" /* FILE */]) {
       var _file$type = file.type;
       const type = _file$type === undefined ? '' : _file$type;
       var _file$name = file.name;
@@ -15044,7 +15059,7 @@ const handleCreateIncomingMsg = async params => {
     const dbCheck = await Object(__WEBPACK_IMPORTED_MODULE_4__Utils__["b" /* dbCheckWithMsgId */])(msgId);
     if (dbCheck) return;
     const realm = await Object(__WEBPACK_IMPORTED_MODULE_12__realmDB__["a" /* getRealmDB */])();
-    if (msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_57" /* TEXT */] && chatType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["q" /* CHAT */]) {
+    if (msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_58" /* TEXT */] && chatType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["q" /* CHAT */]) {
       realm.write(() => {
         realm.create('MessageDetailTable', {
           mid: msgId,
@@ -15054,7 +15069,7 @@ const handleCreateIncomingMsg = async params => {
         });
       });
     }
-    if (msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_6" /* LOCATION */]) {
+    if (msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_7" /* LOCATION */]) {
       const location = msgBody.location;
 
       const locationDetail = {
@@ -15075,7 +15090,7 @@ const handleCreateIncomingMsg = async params => {
       };
       Object(__WEBPACK_IMPORTED_MODULE_14__contactMessageTable__["a" /* createContactMsg */])(realm, contactDetail);
     }
-    if (chatType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["q" /* CHAT */] && (msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["S" /* IMAGE */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_76" /* VIDEO */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["C" /* FILE */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["i" /* AUDIO */])) {
+    if (chatType == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["q" /* CHAT */] && (msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["T" /* IMAGE */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_77" /* VIDEO */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["C" /* FILE */] || msgBody.message_type == __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["i" /* AUDIO */])) {
       const media = msgBody.media;
 
       realm.write(() => {
@@ -15114,7 +15129,7 @@ const deleteMsgBody = async (message, realm) => {
   // Delete records based on msgType
 
   switch (msgType) {
-    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_57" /* TEXT */]:
+    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_58" /* TEXT */]:
       realm.write(() => {
         const textMessage = realm.objectForPrimaryKey('MessageDetailTable', mid);
         if (textMessage) {
@@ -15122,8 +15137,8 @@ const deleteMsgBody = async (message, realm) => {
         }
       });
       break;
-    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["S" /* IMAGE */]:
-    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_76" /* VIDEO */]:
+    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["T" /* IMAGE */]:
+    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_77" /* VIDEO */]:
     case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["C" /* FILE */]:
     case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["i" /* AUDIO */]:
       realm.write(() => {
@@ -15134,7 +15149,7 @@ const deleteMsgBody = async (message, realm) => {
         }
       });
       break;
-    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_6" /* LOCATION */]:
+    case __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_7" /* LOCATION */]:
       realm.write(() => {
         const locationMessage = realm.objectForPrimaryKey('LocationMessageTable', mid);
         if (locationMessage) {
@@ -15215,8 +15230,8 @@ const deleteMessageDB = async (toJid, msgIds) => {
     });
     const latestMessage = await getLatestMessageByChatUser(toJid);
     let chatType = '';
-    if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid)) {
-      chatType = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["L" /* GROUPCHAT */];
+    if (__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid)) {
+      chatType = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["M" /* GROUPCHAT */];
     } else {
       chatType = __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["q" /* CHAT */];
     }
@@ -15302,7 +15317,7 @@ const deleteMessagesForEveryoneDB = async (toJid, msgIds) => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__call__ = __webpack_require__(40);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__callSwitch__ = __webpack_require__(193);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__communication_callAdapter__ = __webpack_require__(41);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__callLogs__ = __webpack_require__(69);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__service_notification__ = __webpack_require__(379);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__service_notification___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__service_notification__);
@@ -15338,7 +15353,7 @@ const initializeCall = (signallingServer = null, options = {}) => {
         const valiationRules = [{
             key: "signallingServer",
             value: signallingServer,
-            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_55" /* STRING_REQUIRED */]
+            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_56" /* STRING_REQUIRED */]
         }];
         const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
 
@@ -15521,7 +15536,7 @@ const isRemoteAudioMuted = userJid => {
     const validationRules = [{
         key: "userJid",
         value: userJid,
-        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_50" /* REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_51" /* REQUIRED */]
     }];
     const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(validationRules);
     if (response.statusCode !== 200) return response;
@@ -15536,7 +15551,7 @@ const isRemoteVideoMuted = userJid => {
     const valiationRules = [{
         key: "userJid",
         value: userJid,
-        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_50" /* REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_51" /* REQUIRED */]
     }];
     const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
     if (response.statusCode !== 200) return response;
@@ -15552,7 +15567,7 @@ const callSwitch = status => {
         const valiationRules = [{
             key: "status",
             value: status,
-            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_55" /* STRING_REQUIRED */]
+            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_56" /* STRING_REQUIRED */]
         }];
 
         let response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
@@ -15634,7 +15649,7 @@ const sendCustomData = data => {
         const valiationRules = [{
             key: "Custom data",
             value: data,
-            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_50" /* REQUIRED */]
+            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_51" /* REQUIRED */]
         }];
         const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
         if (response.statusCode !== 200) return response;
@@ -15651,7 +15666,7 @@ const endUserFromCall = userJid => {
         const valiationRules = [{
             key: "User Jid",
             value: userJid,
-            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_50" /* REQUIRED */]
+            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_51" /* REQUIRED */]
         }];
         const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
         if (response.statusCode !== 200) return response;
@@ -15668,7 +15683,7 @@ const getUserCallStatus = userJid => {
         const valiationRules = [{
             key: "User Jid",
             value: userJid,
-            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_50" /* REQUIRED */]
+            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_51" /* REQUIRED */]
         }];
         const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
         if (response.statusCode !== 200) return response;
@@ -15691,7 +15706,7 @@ const showCallNotification = dataObj => {
         const valiationRules = [{
             key: "Input data",
             value: dataObj,
-            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_42" /* OBJECT_REQUIRED */]
+            rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_43" /* OBJECT_REQUIRED */]
         }];
         const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
         if (response.statusCode !== 200) return response;
@@ -15719,7 +15734,7 @@ const subscribeCall = (roomLink, displayName, callback) => {
     const valiationRules = [{
         key: "roomLink",
         value: roomLink,
-        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_50" /* REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_51" /* REQUIRED */]
     }, {
         key: "callback",
         value: callback,
@@ -15765,7 +15780,7 @@ const getCallUsername = userId => {
     const valiationRules = [{
         key: "userId",
         value: userId,
-        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_50" /* REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_51" /* REQUIRED */]
     }];
     const response = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["b" /* clientSideValidation */])(valiationRules);
     if (response.statusCode !== 200) return response;
@@ -15789,7 +15804,7 @@ const getCallUsername = userId => {
 const createMeetLink = async () => {
     const apiEndPoints = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["d" /* getApiEndPoints */])();
     const token = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["t" /* getToken */])();
-    const response = await Object(__WEBPACK_IMPORTED_MODULE_13__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_15" /* METHOD_POST */], apiEndPoints.createRoom, {}, token);
+    const response = await Object(__WEBPACK_IMPORTED_MODULE_13__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_16" /* METHOD_POST */], apiEndPoints.createRoom, {}, token);
     if (response && response.status === 200) {
         const successResp = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
         successResp.data = response.data;
@@ -15820,11 +15835,11 @@ const getCallBehaviour = () => {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "p", function() { return _sdk_incomingCallObj; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__communication_callAdapter__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constants__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__media__ = __webpack_require__(166);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__functions__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__callHandleMessage__ = __webpack_require__(104);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__callHandleMessage__ = __webpack_require__(105);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__callLogs__ = __webpack_require__(69);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__users__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__janus_index__ = __webpack_require__(70);
@@ -16073,7 +16088,7 @@ const _makeCall = async dataObj => {
 
   try {
     const makeCallStream = await Object(__WEBPACK_IMPORTED_MODULE_3__media__["a" /* getMediaDevicesStream */])(callType);
-    havingVideoPermission = callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_76" /* VIDEO */] ? true : false;
+    havingVideoPermission = callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_77" /* VIDEO */] ? true : false;
     havingAudioPermission = true;
     Object(__WEBPACK_IMPORTED_MODULE_3__media__["e" /* setStream */])(makeCallStream);
     Object(__WEBPACK_IMPORTED_MODULE_8__users__["a" /* addOrUpdateCallUser */])({
@@ -16094,7 +16109,7 @@ const _makeCall = async dataObj => {
       havingAudioPermission = false;
     }
 
-    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_76" /* VIDEO */]) {
+    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_77" /* VIDEO */]) {
       const videoPermissionResponse = await Object(__WEBPACK_IMPORTED_MODULE_3__media__["b" /* getMediaDevicesTracks */])('video_only', 'makeCall', __WEBPACK_IMPORTED_MODULE_1__constants__["_17" /* MEDIA_DEVICE_CAMERA */]);
       if (videoPermissionResponse && (!videoPermissionResponse.statusCode || videoPermissionResponse.statusCode !== 500)) {
         Object(__WEBPACK_IMPORTED_MODULE_3__media__["g" /* stopTracks */])(videoPermissionResponse);
@@ -16241,7 +16256,7 @@ const _answerCall = async () => {
     //   uniqueId: localUserCallId,
     // });
     havingAudioPermission = true;
-    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_76" /* VIDEO */]) {
+    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_77" /* VIDEO */]) {
       havingVideoPermission = true;
     } else {
       havingVideoPermission = false;
@@ -16257,7 +16272,7 @@ const _answerCall = async () => {
       havingAudioPermission = false;
     }
     let videoPermissionResponse;
-    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_76" /* VIDEO */]) {
+    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_77" /* VIDEO */]) {
       videoPermissionResponse = await Object(__WEBPACK_IMPORTED_MODULE_3__media__["b" /* getMediaDevicesTracks */])('video_only', 'answerCall', __WEBPACK_IMPORTED_MODULE_1__constants__["_17" /* MEDIA_DEVICE_CAMERA */]);
       if (videoPermissionResponse && (!videoPermissionResponse.statusCode || videoPermissionResponse.statusCode !== 500)) {
         Object(__WEBPACK_IMPORTED_MODULE_3__media__["g" /* stopTracks */])(videoPermissionResponse);
@@ -16269,7 +16284,7 @@ const _answerCall = async () => {
       havingVideoPermission = true;
     }
     _endCall(__WEBPACK_IMPORTED_MODULE_1__constants__["J" /* CALL_STATUS_BUSY */]);
-    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_76" /* VIDEO */] && !havingVideoPermission && !havingAudioPermission) {
+    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_77" /* VIDEO */] && !havingVideoPermission && !havingAudioPermission) {
       const item = {
         message: videoPermissionResponse.message,
         error: videoPermissionResponse.error,
@@ -16280,7 +16295,7 @@ const _answerCall = async () => {
       };
       Object(__WEBPACK_IMPORTED_MODULE_5__functions__["x" /* sendDataToClient */])(item);
       return Object(__WEBPACK_IMPORTED_MODULE_4__helpers_utils__["j" /* errorResponse */])(videoPermissionResponse.message);
-    } else if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_76" /* VIDEO */] && !havingVideoPermission) {
+    } else if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_77" /* VIDEO */] && !havingVideoPermission) {
       const item = {
         message: videoPermissionResponse.message,
         error: videoPermissionResponse.error,
@@ -16395,7 +16410,7 @@ const _muteAudio = async isMuted => {
       [__WEBPACK_IMPORTED_MODULE_2__config__["a" /* _SDK_USER_FILTER_KEY */]]: Object(__WEBPACK_IMPORTED_MODULE_2__config__["i" /* getLocalUserFilterValue */])(),
       audioMuted: isMuted
     });
-    if (Object(__WEBPACK_IMPORTED_MODULE_5__functions__["s" /* isUserConnectedCall */])() && Object(__WEBPACK_IMPORTED_MODULE_2__config__["m" /* isUserOnline */])()) {
+    if ((Object(__WEBPACK_IMPORTED_MODULE_5__functions__["s" /* isUserConnectedCall */])() || __WEBPACK_IMPORTED_MODULE_1__constants__["M" /* CALL_STATUS_CONNECTING */]) && Object(__WEBPACK_IMPORTED_MODULE_2__config__["m" /* isUserOnline */])()) {
       Object(__WEBPACK_IMPORTED_MODULE_0__communication_callAdapter__["e" /* sendMessage */])(__WEBPACK_IMPORTED_MODULE_1__constants__["m" /* CALL_STATE_AUDIO_MUTE */], {
         payload: {
           isMute: isMuted
@@ -16589,6 +16604,7 @@ const _stopScreenShare = () => {
  * @param {object} data
  */
 const handleCallMessage = async data => {
+  console.log('SDK ==>> handleCallMessage data', data.type, data);
   const type = data.type;
 
   switch (type) {
@@ -16690,7 +16706,7 @@ const _subscribeCall = async (roomLink, displayName, callback) => {
       havingAudioPermission = false;
     }
     let videoPermissionResponse;
-    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_76" /* VIDEO */]) {
+    if (callType === __WEBPACK_IMPORTED_MODULE_11__helpers_constants__["_77" /* VIDEO */]) {
       videoPermissionResponse = await Object(__WEBPACK_IMPORTED_MODULE_3__media__["b" /* getMediaDevicesTracks */])('video_only', 'subscribeCall', __WEBPACK_IMPORTED_MODULE_1__constants__["_17" /* MEDIA_DEVICE_CAMERA */]);
       if (videoPermissionResponse && (!videoPermissionResponse.statusCode || videoPermissionResponse.statusCode !== 500)) {
         havingVideoPermission = true;
@@ -18060,7 +18076,7 @@ exports.decodePayloadAsBinary = function (data, binaryType, callback) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react_native__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__db_controllers_vcardTable__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__chat__ = __webpack_require__(31);
@@ -18183,10 +18199,10 @@ const removePendingUploads = mid => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__service_api__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__chat__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_common__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_localDb__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_constants__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__helpers_utils__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_react_native__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__ = __webpack_require__(38);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__db_controllers_mediaDetailTable__ = __webpack_require__(71);
@@ -18196,7 +18212,7 @@ const removePendingUploads = mid => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_react_native_convert_ph_asset___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_11_react_native_convert_ph_asset__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_react_native_mov_to_mp4__ = __webpack_require__(383);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_react_native_mov_to_mp4___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_12_react_native_mov_to_mp4__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__db_Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__db_Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_react_native_create_thumbnail__ = __webpack_require__(384);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_react_native_create_thumbnail___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_14_react_native_create_thumbnail__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__app_common__ = __webpack_require__(45);
@@ -18220,8 +18236,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 
-const imgExtentions = [__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_43" /* PNG */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_4" /* JPG */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_3" /* JPEG */]],
-      msgTypes = [__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_57" /* TEXT */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_6" /* LOCATION */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["w" /* CONTACT */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["l" /* AUTO_TEXT */]];
+const imgExtentions = [__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_44" /* PNG */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_5" /* JPG */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_4" /* JPEG */]],
+      msgTypes = [__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_58" /* TEXT */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_7" /* LOCATION */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["w" /* CONTACT */], __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["l" /* AUTO_TEXT */]];
 
 const uploadMedia = async (file, chatType, touser, msgId) => {
   try {
@@ -18229,11 +18245,11 @@ const uploadMedia = async (file, chatType, touser, msgId) => {
           token = await Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["v" /* getUserToken */])();
     const inputData = new FormData();
     inputData.append('file', file); // TODO: should check media upload in React Native
-    inputData.append('type', chatType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["K" /* GROUP */] ? __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["M" /* GROUP_CHAT */] : chatType);
+    inputData.append('type', chatType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["L" /* GROUP */] ? __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["N" /* GROUP_CHAT */] : chatType);
     inputData.append('toUser', touser);
     inputData.append('messageId', msgId);
 
-    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_1__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_15" /* METHOD_POST */], apiEndPoints.mediaUpload, inputData, token, 'multipart/form-data', msgId, file.size, 'upload');
+    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_1__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_16" /* METHOD_POST */], apiEndPoints.mediaUpload, inputData, token, 'multipart/form-data', msgId, file.size, 'upload');
     console.log('SDK uploadMedia apiResponse', apiResponse);
     if (apiResponse && apiResponse.status === 200) {
       Object(__WEBPACK_IMPORTED_MODULE_15__app_common__["j" /* removePendingUploads */])(msgId);
@@ -18248,7 +18264,7 @@ const uploadMedia = async (file, chatType, touser, msgId) => {
         fileToken: apiResponse.data.fileToken
       };
     }
-    if (apiResponse.message === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_25" /* NETWORK_ERROR */]) {
+    if (apiResponse.message === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_26" /* NETWORK_ERROR */]) {
       let _obj = {
         toJid: Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["m" /* formatUserIdToJid */])(touser),
         msgId
@@ -18256,7 +18272,7 @@ const uploadMedia = async (file, chatType, touser, msgId) => {
       console.log('SDK _obj', _obj);
       Object(__WEBPACK_IMPORTED_MODULE_15__app_common__["c" /* addPendingUploads */])(_obj);
     }
-    if (apiResponse.message === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_70" /* USER_CANCELLED */]) {
+    if (apiResponse.message === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_71" /* USER_CANCELLED */]) {
       Object(__WEBPACK_IMPORTED_MODULE_15__app_common__["j" /* removePendingUploads */])(msgId);
     }
     const item = {
@@ -18266,13 +18282,13 @@ const uploadMedia = async (file, chatType, touser, msgId) => {
     Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["a" /* callbackListeners */])().mediaUploadListener && msgId !== '' && Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["a" /* callbackListeners */])().mediaUploadListener(item);
     return {
       statusCode: apiResponse && apiResponse.status || 500,
-      message: apiResponse && apiResponse.message || __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* MEDIA_UPLOAD_FAILED */]
+      message: apiResponse && apiResponse.message || __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_14" /* MEDIA_UPLOAD_FAILED */]
     };
   } catch (error) {
     console.log('SDK uploadMedia error', error);
     return {
       statusCode: 500,
-      message: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* MEDIA_UPLOAD_FAILED */]
+      message: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_14" /* MEDIA_UPLOAD_FAILED */]
     };
   }
 };
@@ -18298,7 +18314,7 @@ const handleMediaMessage = async (msgBody = '', msgType, msgId, file, fileOption
     var _fileOptions$fileToke = fileOptions.fileToken;
     const fileToken = _fileOptions$fileToke === undefined ? '' : _fileOptions$fileToke;
 
-    if (!thumbImage && msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["S" /* IMAGE */]) fileOptions.thumbImage = await getThumbImage(uri);else if (!thumbImage && msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_76" /* VIDEO */]) fileOptions.thumbImage = await getVideoThumbImage(uri);
+    if (!thumbImage && msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["T" /* IMAGE */]) fileOptions.thumbImage = await getThumbImage(uri);else if (!thumbImage && msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_77" /* VIDEO */]) fileOptions.thumbImage = await getVideoThumbImage(uri);
     let updatedFile = {};
     const dbCheck = await Object(__WEBPACK_IMPORTED_MODULE_13__db_Utils__["b" /* dbCheckWithMsgId */])(msgId);
     if (dbCheck) {
@@ -18381,14 +18397,14 @@ const handleMessages = async (msgBody, msgType, msgId, replyTo, toJid, file, fil
   let msgContent = {};
   const mediaJson = {},
         toUser = Strophe.getNodeFromJid(toJid),
-        chatType = __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["L" /* GROUPCHAT */] : __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["q" /* CHAT */];
+        chatType = __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["M" /* GROUPCHAT */] : __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["q" /* CHAT */];
 
   // Msg type not equal of Text, Location & Contact - Media Messages Only
   if (file && msgTypes.indexOf(msgType) === -1) {
     const mediaResponse = await handleMediaMessage(msgBody, msgType, msgId, file, fileOptions || {}, toUser, chatType, replyTo);
     if (mediaResponse.statusCode !== 200) return mediaResponse;
     msgContent = mediaResponse.message;
-  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_6" /* LOCATION */]) {
+  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_7" /* LOCATION */]) {
     mediaJson.latitude = fileOptions.latitude;
     mediaJson.longitude = fileOptions.longitude;
     msgContent = _extends({
@@ -18405,13 +18421,13 @@ const handleMessages = async (msgBody, msgType, msgId, replyTo, toJid, file, fil
       message_type: msgType,
       contact: mediaJson
     }, fileOptions);
-  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_57" /* TEXT */]) {
+  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_58" /* TEXT */]) {
     msgContent = {
       message: Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["A" /* stripTags */])(msgBody),
       message_type: msgType
     };
   } else {
-    return Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["c" /* customResponse */])(400, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["X" /* INVALID_MESSAGE_TYPE */]);
+    return Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["c" /* customResponse */])(400, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["Y" /* INVALID_MESSAGE_TYPE */]);
   }
 
   const userProfile = await Object(__WEBPACK_IMPORTED_MODULE_4__helpers_localDb__["d" /* getUserProfile */])();
@@ -18445,7 +18461,7 @@ const composeMediaMessage = async (msgType, fileOptions, replyTo) => {
 
 const forwardMessageIQ = (orgMsgId, msgId, toJid) => new Promise(async resolve => {
   let response = {};
-  const chatType = __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["L" /* GROUPCHAT */] : __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["q" /* CHAT */];
+  const chatType = __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["M" /* GROUPCHAT */] : __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["q" /* CHAT */];
   const originalMsgs = await Object(__WEBPACK_IMPORTED_MODULE_13__db_Utils__["g" /* getMsgDetails */])(orgMsgId);
   var _originalMsgs$message = originalMsgs.message_type;
   const msgType = _originalMsgs$message === undefined ? '' : _originalMsgs$message;
@@ -18511,7 +18527,7 @@ const forwardMessageIQ = (orgMsgId, msgId, toJid) => new Promise(async resolve =
     };
     const apiEndPoints = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_common__["d" /* getApiEndPoints */])(),
           token = await Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["v" /* getUserToken */])();
-    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_1__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_15" /* METHOD_POST */], apiEndPoints.forwardUrl, JSON.stringify(filesData), token, 'application/json; charset=utf-8', msgId);
+    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_1__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_16" /* METHOD_POST */], apiEndPoints.forwardUrl, JSON.stringify(filesData), token, 'application/json; charset=utf-8', msgId);
     if (apiResponse.status !== 200) {
       const mediaDetial = {
         isUploading: 3
@@ -18519,7 +18535,7 @@ const forwardMessageIQ = (orgMsgId, msgId, toJid) => new Promise(async resolve =
       Object(__WEBPACK_IMPORTED_MODULE_9__db_controllers_mediaDetailTable__["d" /* updateMediaDetailTable */])(msgId, mediaDetial);
       resolve({
         statusCode: apiResponse.status,
-        message: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* MEDIA_UPLOAD_FAILED */]
+        message: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_14" /* MEDIA_UPLOAD_FAILED */]
       });
     }
     console.log('SDK forward apiResponse', JSON.stringify(apiResponse, null, 2));
@@ -18536,14 +18552,14 @@ const forwardMessageIQ = (orgMsgId, msgId, toJid) => new Promise(async resolve =
       fileSize: file_size
     });
     response = await Object(__WEBPACK_IMPORTED_MODULE_2__chat__["E" /* sendMediaMessageData */])(toJid, msgType, fwdFileOptions, msgId);
-  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_57" /* TEXT */] || msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["l" /* AUTO_TEXT */]) {
+  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_58" /* TEXT */] || msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["l" /* AUTO_TEXT */]) {
     response = await Object(__WEBPACK_IMPORTED_MODULE_2__chat__["G" /* sendTextMessage */])(toJid, message, msgId);
   } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["w" /* CONTACT */]) {
     Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, '', msgId, '', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["w" /* CONTACT */], '', contact);
     response = await Object(__WEBPACK_IMPORTED_MODULE_2__chat__["x" /* sendAttachmentMessage */])(toJid, contact, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["w" /* CONTACT */], msgId);
-  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_6" /* LOCATION */]) {
-    Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, '', msgId, '', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_6" /* LOCATION */], '', location);
-    response = await Object(__WEBPACK_IMPORTED_MODULE_2__chat__["x" /* sendAttachmentMessage */])(toJid, location, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_6" /* LOCATION */], msgId);
+  } else if (msgType === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_7" /* LOCATION */]) {
+    Object(__WEBPACK_IMPORTED_MODULE_8__db_controllers_messageTable__["h" /* handleMessageCreate */])(toJid, '', msgId, '', __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_7" /* LOCATION */], '', location);
+    response = await Object(__WEBPACK_IMPORTED_MODULE_2__chat__["x" /* sendAttachmentMessage */])(toJid, location, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_7" /* LOCATION */], msgId);
   }
   resolve(response);
   /**
@@ -18629,14 +18645,14 @@ const forwardMessageIQ = (orgMsgId, msgId, toJid) => new Promise(async resolve =
 
 
 const uploadProfileImage = async (mediaUpload, inputData, userToken) => {
-  const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_1__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_15" /* METHOD_POST */], mediaUpload, inputData, userToken, 'multipart/form-data');
+  const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_1__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_16" /* METHOD_POST */], mediaUpload, inputData, userToken, 'multipart/form-data');
   console.log('profileUpdate apiResponse', apiResponse);
   if (apiResponse && apiResponse.status === 200) {
     const response = Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["B" /* successResponse */])();
     response.imageFileToken = apiResponse.data.fileToken;
     return response;
   }
-  return Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["c" /* customResponse */])(apiResponse.status, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* MEDIA_UPLOAD_FAILED */]);
+  return Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["c" /* customResponse */])(apiResponse.status, __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_14" /* MEDIA_UPLOAD_FAILED */]);
 };
 /* unused harmony export uploadProfileImage */
 
@@ -18703,7 +18719,7 @@ const getToken = (username, password) => new Promise(async resolve => {
     type: __WEBPACK_IMPORTED_MODULE_7_react_native__["Platform"].OS // TODO: change this as per the requirement once migration is done
   };
 
-  const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_1__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_15" /* METHOD_POST */], apiEndPoints.login, JSON.stringify(data), '', '');
+  const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_1__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_16" /* METHOD_POST */], apiEndPoints.login, JSON.stringify(data), '', '');
   if (apiResponse.status === 200) {
     const response = Object(__WEBPACK_IMPORTED_MODULE_6__helpers_utils__["B" /* successResponse */])();
     response.userToken = apiResponse.data.token;
@@ -18722,34 +18738,34 @@ const calculateWidthAndHeight = (width, height) => {
   switch (true) {
     // Horizontal Video
     case width > height:
-      let resultHeight = Math.round(height / width * __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_12" /* MAX_WIDTH_WEB */]),
-          resultHeightAnd = Math.round(height / width * __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_11" /* MAX_WIDTH_AND */]);
+      let resultHeight = Math.round(height / width * __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* MAX_WIDTH_WEB */]),
+          resultHeightAnd = Math.round(height / width * __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_12" /* MAX_WIDTH_AND */]);
 
       response = {
-        webWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_12" /* MAX_WIDTH_WEB */],
-        webHeight: resultHeight > __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_18" /* MIN_HEIGHT_WEB */] ? resultHeight : __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_18" /* MIN_HEIGHT_WEB */],
-        androidWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_11" /* MAX_WIDTH_AND */],
-        androidHeight: resultHeightAnd > __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_17" /* MIN_HEIGHT_AND */] ? resultHeightAnd : __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_17" /* MIN_HEIGHT_AND */]
+        webWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* MAX_WIDTH_WEB */],
+        webHeight: resultHeight > __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_19" /* MIN_HEIGHT_WEB */] ? resultHeight : __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_19" /* MIN_HEIGHT_WEB */],
+        androidWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_12" /* MAX_WIDTH_AND */],
+        androidHeight: resultHeightAnd > __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_18" /* MIN_HEIGHT_AND */] ? resultHeightAnd : __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_18" /* MIN_HEIGHT_AND */]
       };
       break;
 
     // Vertical Video
     case width < height:
       response = {
-        webWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_21" /* MIN_WIDTH_WEB */],
-        webHeight: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_10" /* MAX_HEIGHT_WEB */],
-        androidWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_20" /* MIN_WIDTH_AND */],
-        androidHeight: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_9" /* MAX_HEIGHT_AND */]
+        webWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_22" /* MIN_WIDTH_WEB */],
+        webHeight: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_11" /* MAX_HEIGHT_WEB */],
+        androidWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_21" /* MIN_WIDTH_AND */],
+        androidHeight: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_10" /* MAX_HEIGHT_AND */]
       };
       break;
 
     // Default/Square Video
     default:
       response = {
-        webWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_12" /* MAX_WIDTH_WEB */],
-        webHeight: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_12" /* MAX_WIDTH_WEB */],
-        androidWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_11" /* MAX_WIDTH_AND */],
-        androidHeight: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_11" /* MAX_WIDTH_AND */]
+        webWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* MAX_WIDTH_WEB */],
+        webHeight: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_13" /* MAX_WIDTH_WEB */],
+        androidWidth: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_12" /* MAX_WIDTH_AND */],
+        androidHeight: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_12" /* MAX_WIDTH_AND */]
       };
       break;
   }
@@ -18830,7 +18846,7 @@ const fileStoreInDevice = async file => {
     let convertedFileName;
     if (__WEBPACK_IMPORTED_MODULE_7_react_native__["Platform"].OS === 'ios') {
       switch (true) {
-        case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["Y" /* IOS_IMAGE_FORMATS */].includes(type):
+        case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["Z" /* IOS_IMAGE_FORMATS */].includes(type):
           let result = await __WEBPACK_IMPORTED_MODULE_10_react_native_compressor__["Image"].compress(uri, {
             maxWidth: width,
             maxHeight: height,
@@ -18838,13 +18854,13 @@ const fileStoreInDevice = async file => {
           });
           await __WEBPACK_IMPORTED_MODULE_0_react_native_fs___default.a.copyFile(result, destinationPath);
           break;
-        case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["Z" /* IOS_VIDEO_FORMATS */].includes(type):
+        case __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_0" /* IOS_VIDEO_FORMATS */].includes(type):
           if (uri.includes('ph://')) {
             await convertPhToFile(uri).then(async res => {
-              if (type === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["S" /* IMAGE */]) {
+              if (type === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["T" /* IMAGE */]) {
                 __WEBPACK_IMPORTED_MODULE_0_react_native_fs___default.a.copyFile(res, destinationPath);
               }
-              if (type === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_76" /* VIDEO */]) {
+              if (type === __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_77" /* VIDEO */]) {
                 convertedFilePath = await convertMovtoMP4(res, localPathName);
                 convertedFileName = convertedFilePath.split('/').pop();
               }
@@ -18882,9 +18898,9 @@ const fileStoreInDevice = async file => {
 "use strict";
 
 var inherits = __webpack_require__(0)
-var MD5 = __webpack_require__(74)
-var RIPEMD160 = __webpack_require__(77)
-var sha = __webpack_require__(78)
+var MD5 = __webpack_require__(75)
+var RIPEMD160 = __webpack_require__(78)
+var sha = __webpack_require__(79)
 var Base = __webpack_require__(24)
 
 function Hash (hash) {
@@ -19049,7 +19065,7 @@ function objectToString(o) {
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 var assert = __webpack_require__(11);
 
 function BlockHash() {
@@ -19149,8 +19165,8 @@ BlockHash.prototype._pad = function pad() {
 
 
 const inherits = __webpack_require__(0);
-const Reporter = __webpack_require__(94).Reporter;
-const Buffer = __webpack_require__(92).Buffer;
+const Reporter = __webpack_require__(95).Reporter;
+const Buffer = __webpack_require__(93).Buffer;
 
 function DecoderBuffer(base, options) {
   Reporter.call(this, options);
@@ -19307,7 +19323,7 @@ EncoderBuffer.prototype.join = function join(out, offset) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vcardTable__ = __webpack_require__(29);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__realmDB__ = __webpack_require__(13);
 
 
@@ -19442,7 +19458,7 @@ const deleteAllRoaster = async () => {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__service_auth__ = __webpack_require__(96);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__service_auth__ = __webpack_require__(97);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__strophe_connection__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__react_native_async_storage_async_storage__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__react_native_async_storage_async_storage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__react_native_async_storage_async_storage__);
@@ -20294,7 +20310,7 @@ module.exports.AES = AES
 /***/ (function(module, exports, __webpack_require__) {
 
 var Buffer = __webpack_require__(2).Buffer
-var MD5 = __webpack_require__(74)
+var MD5 = __webpack_require__(75)
 
 /* eslint-disable camelcase */
 function EVP_BytesToKey (password, salt, keyBits, ivLen) {
@@ -20735,7 +20751,7 @@ BasePoint.prototype.dblp = function dblp(k) {
 var asn1 = __webpack_require__(293)
 var aesid = __webpack_require__(300)
 var fixProc = __webpack_require__(301)
-var ciphers = __webpack_require__(83)
+var ciphers = __webpack_require__(84)
 var compat = __webpack_require__(130)
 var Buffer = __webpack_require__(2).Buffer
 module.exports = parseKeys
@@ -21727,11 +21743,11 @@ const _sdk_callLogs = {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functions__ = __webpack_require__(367);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__call_functions__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__call_callHandleMessage__ = __webpack_require__(104);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__call_callHandleMessage__ = __webpack_require__(105);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__call_constants__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__call_callLogs__ = __webpack_require__(69);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__call_users__ = __webpack_require__(25);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__call_config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__call_config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__helpers_common__ = __webpack_require__(4);
 
 
@@ -22124,11 +22140,11 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_72__;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__strophe_profileiqstanza__ = __webpack_require__(385);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_localDb__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_constants__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_axios__ = __webpack_require__(168);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__service_feedback__ = __webpack_require__(98);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__db_controllers_statusTable__ = __webpack_require__(108);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__service_feedback__ = __webpack_require__(99);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__db_controllers_statusTable__ = __webpack_require__(109);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__db_controllers_vcardTable__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__db_controllers_roasterTable__ = __webpack_require__(52);
 // migration done (13-12-21)
@@ -22172,7 +22188,7 @@ const getUserProfile = async userId => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
       key: 'userId',
       value: userId,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_51" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       const userid = userId.split('@').length > 1 ? Strophe.getNodeFromJid(userId) : userId;
@@ -22196,7 +22212,7 @@ const getLastSeen = toUserJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toUserJid',
       value: toUserJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_0" /* JID_FORMAT_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_FORMAT_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_2__strophe_profileiqstanza__["e" /* getLastActivityIQ */])(toUserJid);
@@ -22220,7 +22236,7 @@ const blockUser = toUserJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toUserJid',
       value: toUserJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_0" /* JID_FORMAT_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_FORMAT_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_2__strophe_profileiqstanza__["a" /* blockUserIQ */])(toUserJid);
@@ -22244,7 +22260,7 @@ const unblockUser = toUserJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
       key: 'toUserJid',
       value: toUserJid,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_0" /* JID_FORMAT_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_1" /* JID_FORMAT_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_2__strophe_profileiqstanza__["g" /* unblockUserIQ */])(toUserJid);
@@ -22338,11 +22354,11 @@ async function getUserToken(username, password) {
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
       key: 'username',
       value: username,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_51" /* REQUIRED */]
     }, {
       key: 'password',
       value: password,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_51" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return await Object(__WEBPACK_IMPORTED_MODULE_3__utils__["c" /* getToken */])(username, password);
@@ -22364,7 +22380,7 @@ async function setUserToken(token) {
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
       key: 'token',
       value: token,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_51" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       Object(__WEBPACK_IMPORTED_MODULE_4__helpers_localDb__["g" /* setToken */])(token);
@@ -22388,12 +22404,12 @@ const getTranslateLanguages = async (apiKey, target = 'en') => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
       key: 'apiKey',
       value: apiKey,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_51" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       const options = {
-        url: `${__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["J" /* GOOGLE_TRANSLATE_URL */]}/languages?key=${apiKey}&target=${target}`,
-        method: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_14" /* METHOD_GET */],
+        url: `${__WEBPACK_IMPORTED_MODULE_5__helpers_constants__["K" /* GOOGLE_TRANSLATE_URL */]}/languages?key=${apiKey}&target=${target}`,
+        method: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_15" /* METHOD_GET */],
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json'
@@ -22432,11 +22448,11 @@ const translateText = async (apiKey, text, target = 'en') => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
       key: 'apiKey',
       value: apiKey,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_51" /* REQUIRED */]
     }, {
       key: 'text',
       value: text,
-      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_51" /* REQUIRED */]
     }]);
 
     if (response.statusCode === 200) {
@@ -22446,8 +22462,8 @@ const translateText = async (apiKey, text, target = 'en') => {
       fd.append('q', text);
 
       const options = {
-        url: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["J" /* GOOGLE_TRANSLATE_URL */],
-        method: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_15" /* METHOD_POST */],
+        url: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["K" /* GOOGLE_TRANSLATE_URL */],
+        method: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_16" /* METHOD_POST */],
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json'
@@ -22490,14 +22506,14 @@ const getUsersList = (name, page, limit) => {
       validations.push({
         key: 'page',
         value: page,
-        rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_41" /* NUMBER_REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_42" /* NUMBER_REQUIRED */]
       });
     }
     if (limit) {
       validations.push({
         key: 'limit',
         value: limit,
-        rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_41" /* NUMBER_REQUIRED */]
+        rules: __WEBPACK_IMPORTED_MODULE_5__helpers_constants__["_42" /* NUMBER_REQUIRED */]
       });
     }
     if (validations.length > 0) {
@@ -22558,6 +22574,911 @@ const deleteProfileStatus = async status => {
 
 /***/ }),
 /* 74 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_constants__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__connection__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__handler__ = __webpack_require__(165);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_utils__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils__ = __webpack_require__(198);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__modules_utils__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__helpers_common__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_groupchat__ = __webpack_require__(200);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_chat__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__helpers_localDb__ = __webpack_require__(18);
+// migration done (14-12-21)
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Sends Get Recent Chats IQ Request to server
+ * @returns {Object} Success/Error Response
+ */
+const getRecentChatsIQ = () => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const recentChatsIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, '#A')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_ACTIVITIES */],
+      limit: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_48" /* RECENT_LIST_COUNT */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* RECENT_CHAT */]
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(recentChatsIQ, response => {
+      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["j" /* handleRecentChatIQ */])(response);
+      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+      successRes.data = item;
+      resolve(successRes);
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["m"] = getRecentChatsIQ;
+
+
+/**
+ * Sends Get Single Chat IQ Request to server
+ * @param {String} toUserJid
+ * @param {String} position
+ * @param {String} rowId
+ * @param {Number} limit
+ * @returns {Object} Success/Error Response
+ */
+const getSingleChatIQ = (toUserJid, position, rowId, limit, sendSeen) => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const singleChatIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_ACTIVITIES */],
+      position: position,
+      message_id: '',
+      row_id: rowId,
+      limit: limit,
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_54" /* SINGLE_CHAT */],
+      to_user: toUserJid,
+      send_seen: sendSeen ? '1' : '0'
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(singleChatIQ, response => {
+      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["m" /* handleSingleChatIQ */])(response, sendSeen);
+      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+      successRes.userJid = toUserJid;
+      successRes.data = item;
+      resolve(successRes);
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["o"] = getSingleChatIQ;
+
+
+/**
+ * Sends IQ Request to server to Get List of Media Files With/Without Pagination
+ * @param {String} toJid
+ * @param {String} msgId
+ * @returns {Object} Success/Error Response
+ */
+const getMediaMessagesIQ = (toJid, msgId) => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const status = __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["O" /* GROUP_CHAT_MEDIA */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_55" /* SINGLE_CHAT_MEDIA */];
+    const mediaIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_ACTIVITIES */],
+      status: status,
+      message_id: msgId,
+      to_user: toJid
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(mediaIQ, response => {
+      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["f" /* handleMediaIQ */])(response);
+      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+      successRes.data = item;
+      resolve(successRes);
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["k"] = getMediaMessagesIQ;
+
+
+// Change this function into new Function (Implementation Needed in Ejabberd)
+/**
+ * @param {String} msgId
+ * @param {String} chatType="chat"
+ * @returns {Object} Success/Error Response
+ */
+const getMessageByIdIQ = (msgId, chatType = 'chat') => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const msgIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_ACTIVITIES */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REPLY_MESSAGE */],
+      chat_type: chatType,
+      message_id: '', // Need to remove this from ejabberd
+      reply_id: msgId
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(msgIQ, response => {
+      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["g" /* handleMessageById */])(response);
+      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+      successRes.data = item;
+      resolve(successRes);
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* unused harmony export getMessageByIdIQ */
+
+
+/**
+ * @param {String} replyMsgId
+ * @param {String} chatType="chat"
+ * @returns {Object} Success/Error Response
+ */
+const getReplyMessageIQ = (replyMsgId, chatType = 'chat') => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const replyMsgIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_ACTIVITIES */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REPLY_MESSAGE */],
+      chat_type: chatType,
+      message_id: '', // Need to remove this from ejabberd
+      reply_id: replyMsgId
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(replyMsgIQ, response => {
+      Object(__WEBPACK_IMPORTED_MODULE_2__handler__["h" /* replyMessageHandler */])(response);
+      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["k" /* handleReplyMessage */])(response);
+      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+      successRes.data = item;
+      resolve(successRes);
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["n"] = getReplyMessageIQ;
+
+
+/**
+ * Using reply_message Stanza for Forward as well
+ * @param {String} msgId
+ * @param {String} chatType
+ * @returns {Object} Success/Error Response
+ */
+const getOriginalMsgDetails = async (msgId, chatType, callBack) => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const forwardIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_ACTIVITIES */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REPLY_MESSAGE */],
+      message_id: msgId,
+      reply_id: msgId,
+      chat_type: chatType
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(forwardIQ, forwardMessage => {
+      callBack(Object(__WEBPACK_IMPORTED_MODULE_4__utils__["b" /* handleForwardMessage */])(forwardMessage));
+      return true;
+    });
+  }
+};
+/* unused harmony export getOriginalMsgDetails */
+
+
+/**
+ * Sends IQ Request to server to Add/Remove Favourite Message
+ * @param {String} msgId
+ * @returns {Object} Success/Error Response
+ */
+const updateFavouriteStatusIQ = (toJid, msgId, isFavourite) => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const status = isFavourite ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_52" /* SET_FAVOURITE_MESSAGE */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_67" /* UPDATE_FAVOURITE_MESSAGE */];
+    const favMsgIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      to_user: toJid,
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_40" /* NS_USER_FAV */],
+      status: status,
+      message_id: msgId
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(favMsgIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["x"] = updateFavouriteStatusIQ;
+
+
+/**
+ * Sends IQ Request to server to Get All Favourited Message List
+ * @returns {Object} Success/Error Response
+ */
+const getFavouritedMsgListIQ = () => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const favMsgIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_40" /* NS_USER_FAV */],
+      chat_type: '',
+      to_user: '',
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["E" /* GET_FAVOURITE_MESSAGE */]
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(favMsgIQ, response => {
+      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["n" /* handleStarredMessage */])(response);
+      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+      successRes.data = item;
+      resolve(successRes);
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["e"] = getFavouritedMsgListIQ;
+
+
+/**
+ * Sends IQ Request to server to Remove All Favourited Messages
+ * @returns {Object} Success/Error Response
+ */
+const removeAllFavouritedMsgIQ = () => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const favMsgIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_40" /* NS_USER_FAV */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["r" /* CLEARALL_FAVOURITE_MESSAGE */]
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(favMsgIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["s"] = removeAllFavouritedMsgIQ;
+
+
+/**
+ * Sends IQ Request to server to Clear the Chat Messages
+ * @param {String} toJid
+ * @param {Number} deleteType - 0 - Clear Chat / 1 - Delete Chat
+ * @returns {Object} Success/Error Response
+ */
+const clearOrDeleteChatMsgIQ = (toJid, deleteType, favourites) => new Promise(async resolve => {
+  const chatType = __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["M" /* GROUPCHAT */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["q" /* CHAT */];
+  const favourite = favourites ? 0 : 1;
+
+  const clearChatIQ = $iq({
+    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
+    id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+  }).c('query', {
+    xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_ACTIVITIES */],
+    remove_user: Strophe.getNodeFromJid(toJid),
+    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_CHAT */],
+    favourite: favourite,
+    status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["t" /* CLEAR_MESSAGE */],
+    chat_type: chatType,
+    delete_type: deleteType
+  });
+  if (Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["b" /* getOnlineStatus */])()) {
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(clearChatIQ);
+    const successResp = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+    resolve(successResp);
+  } else {
+    Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["a" /* addStanza */])(clearChatIQ.toString(), toJid, 'clearChat');
+    const successResp = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+    resolve(successResp);
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["b"] = clearOrDeleteChatMsgIQ;
+
+
+/**
+ * Sends IQ Request to server to Clear All Messages
+ * @param {Number} deleteType - Delete Conversation (0) / Clear Conversation (1)
+ * @returns {Object} Success/Error Response
+ */
+const removeAllChatMsgIQ = deleteType => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const clearChatIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_ACTIVITIES */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_CHAT */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["s" /* CLEAR_ALL */],
+      delete_type: deleteType
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(clearChatIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["r"] = removeAllChatMsgIQ;
+
+
+/**
+ * Sends IQ Request to server to Delete One or More Messages (Delete For Me)
+ * @param {String} toJid
+ * @param {String} msgIds
+ * @returns {Object} Success/Error Response
+ */
+const deleteMessageIQ = (toJid, msgIds) => new Promise(async resolve => {
+  const chatType = __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_24" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["M" /* GROUPCHAT */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["q" /* CHAT */];
+  const deleteMsgIQ = $iq({
+    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
+    id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+  }).c('query', {
+    to_user: toJid,
+    chat_type: chatType,
+    message_ids: msgIds,
+    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_CHAT */],
+    status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["y" /* DELETE_MESSAGE */],
+    xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_ACTIVITIES */]
+  });
+  if (Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["b" /* getOnlineStatus */])()) {
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(deleteMsgIQ);
+    const successResp = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+    resolve(successResp);
+  } else {
+    Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["a" /* addStanza */])(deleteMsgIQ.toString(), toJid, 'deleteMsgIQ');
+    const successResp = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+    resolve(successResp);
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["d"] = deleteMessageIQ;
+
+
+/**
+ * Sends IQ Request to Server to Create a New Group - Which also Adds Participants, Sets Owner, Updates Group Profile Internally in Ejabberd
+ * @param {String} groupName
+ * @param {Array} participants
+ * @param {String} groupImage
+ * @returns {Object} Success/Error Response
+ */
+const createGroupIQ = (groupName, participants, groupImage = '') => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    try {
+      let profileResponse = {};
+      if (groupImage.type) {
+        profileResponse = await Object(__WEBPACK_IMPORTED_MODULE_5__modules_utils__["e" /* profileUpdate */])(groupImage);
+        if (profileResponse.statusCode !== 200) resolve(profileResponse);
+      }
+      const imageUrl = profileResponse.imageFileToken || groupImage;
+
+      const groupIQ = $iq({
+        type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
+        to: `${__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_23" /* MIX */]}.${Object(__WEBPACK_IMPORTED_MODULE_1__connection__["e" /* getServer */])()}`,
+        id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+      }).c('query', {
+        xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_GROUP_MIX */],
+        status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["x" /* CREATE_GROUP */],
+        group_id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'AB')
+      });
+
+      groupIQ.c('profile', {}).c('vCard', { xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_41" /* NS_VCARD */] }).c('nickName').t(groupName);
+      imageUrl && groupIQ.up().c('image').t(imageUrl);
+      groupIQ.up().up().up().c('participants', {});
+      participants.forEach(el => groupIQ.c('participant').t(el).up());
+
+      await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, () => {
+        Object(__WEBPACK_IMPORTED_MODULE_7__modules_groupchat__["f" /* getGroupsList */])();
+        Object(__WEBPACK_IMPORTED_MODULE_8__modules_chat__["s" /* getRecentChats */])();
+        resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])());
+      }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+    } catch (error) {
+      resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */]));
+    }
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["c"] = createGroupIQ;
+
+
+/**
+ * Sends IQ Request to Server to Add Participants to the Created Group
+ * @param {String} groupJid
+ * @param {String} groupName
+ * @param {Array} participants
+ * @returns {Object} Success/Error Response
+ */
+const addParticipantsIQ = (groupJid, groupName, participants) => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    try {
+      const addMembersIq = $iq({
+        type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
+        id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA'),
+        to: groupJid
+      }).c('query', {
+        status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["a" /* ADD_PARTICIPANTS */],
+        xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_GROUP_MIX */]
+      }).c('subscriptions', {}).c('subscribe', { node: 'urn:xmpp:mix:nodes:messages' }).up().c('subscribe', { node: 'urn:xmpp:mix:nodes:presence' }).up().c('subscribe', { node: 'urn:xmpp:mix:nodes:participants' }).up().c('subscribe', { node: 'urn:xmpp:mix:nodes:info' }).up().c('subscribe', { node: 'urn:xmpp:mix:nodes:config' }).up().up().c('participants', {});
+      participants.forEach(element => addMembersIq.c('participant').t(element).up());
+      addMembersIq.up().c('nick').t(groupName).up();
+
+      await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(addMembersIq, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+    } catch (error) {
+      resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */]));
+    }
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["a"] = addParticipantsIQ;
+
+
+/**
+ * Sends IQ Request to Server to Set the User Profile Details
+ * @param {String} groupJid
+ * @param {String} groupName
+ * @param {String} groupImage
+ * @returns {Object} Success/Error Response
+ */
+const setGroupProfileIQ = async (groupJid, groupName, groupImage) => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    let profileResponse = {};
+    if (groupImage.type) {
+      profileResponse = await Object(__WEBPACK_IMPORTED_MODULE_5__modules_utils__["e" /* profileUpdate */])(groupImage);
+      if (profileResponse.statusCode !== 200) resolve(profileResponse);
+    }
+    const imageUrl = profileResponse.imageFileToken || groupImage;
+
+    const groupProfileIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA'),
+      to: groupJid
+    }).c('query', {
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_53" /* SET_GROUP_INFO */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_GROUP_MIX */]
+    }).c('profile', {}).c('vCard', {
+      xmlns: 'vcard-temp'
+    }).c('nickName').t(groupName).up().c('image').t(imageUrl).up();
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupProfileIQ, () => {
+      const iqResponse = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+      iqResponse.fileToken = imageUrl;
+      resolve(iqResponse);
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["w"] = setGroupProfileIQ;
+
+
+/**
+ * Sends IQ Request to server to Get the Groups List
+ * @returns {Object} Success/Error Response
+ */
+const getGroupsListIQ = () => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const groupIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
+      to: `${__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["e" /* ANY */]}@${__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_23" /* MIX */]}.${Object(__WEBPACK_IMPORTED_MODULE_1__connection__["e" /* getServer */])()}`,
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["F" /* GET_GROUP_ID */]
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, response => {
+      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["e" /* handleGroupsListIQ */])(response);
+      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+      successRes.data = item;
+      resolve(successRes);
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["j"] = getGroupsListIQ;
+
+
+/**
+ * Sends IQ Request to Server to Get the Group Profile Details
+ * @param {String} groupJid
+ * @returns {Object} Success/Error Response
+ */
+const getGroupProfileIQ = groupJid => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const groupIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
+      to: groupJid,
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["G" /* GET_GROUP_PROFILE */],
+      group_id: Strophe.getNodeFromJid(groupJid)
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, response => {
+      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["e" /* handleGroupsListIQ */])(response);
+      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+      successRes.data = item[0] || {};
+      resolve(successRes);
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["i"] = getGroupProfileIQ;
+
+
+/**
+ * Sends IQ Request to Server to Get the Group Participants
+ * @param {String} groupJid
+ * @returns {Object} Success/Error Response
+ */
+const getGroupParticipantsIQ = groupJid => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const groupIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
+      to: groupJid,
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["H" /* GET_PARTICIPANTS */]
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, response => {
+      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleGroupParticipantsIQ */])(response);
+      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+      successRes.data = item;
+      resolve(successRes);
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["h"] = getGroupParticipantsIQ;
+
+
+/**
+ * Sends IQ Request to Server to Make a Participant as a Admin
+ * @param {String} groupJid
+ * @param {String} userJid
+ * @returns {Object} Success/Error Response
+ */
+const makeAsAdminIQ = (groupJid, userJid) => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const groupIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
+      to: groupJid,
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_9" /* MAKE_ADMIN */]
+    }).c('participant').t(userJid).up();
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["p"] = makeAsAdminIQ;
+
+
+/**
+ * Sends IQ Request to Server to Remove a Participant from the Group
+ * @param {String} groupJid
+ * @param {String} userJid
+ * @param {String} isAdmin
+ * @returns {Object} Success/Error Response
+ */
+const removeParticipantIQ = (groupJid, userJid, isAdmin, type) => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    let status;
+    if (type === 'exit') {
+      status = isAdmin ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["b" /* ADMIN_EXIT_GROUP */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_73" /* USER_EXIT_GROUP */];
+    } else {
+      status = isAdmin ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["c" /* ADMIN_REMOVE_ADMIN */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["d" /* ADMIN_REMOVE_PARTICIPANT */];
+    }
+
+    const groupIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
+      to: groupJid,
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_GROUP_MIX */],
+      status: status
+    }).c('participant').t(userJid).up();
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["t"] = removeParticipantIQ;
+
+
+/**
+ * Sends IQ Request to Server to Delete the Group for User
+ * @param {String} groupJid
+ * @returns {Object} Success/Error Response
+ */
+const userDeleteGroupIQ = groupJid => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const userJid = `${Object(__WEBPACK_IMPORTED_MODULE_6__helpers_common__["v" /* getloggedinUserJid */])()}@${Object(__WEBPACK_IMPORTED_MODULE_1__connection__["e" /* getServer */])()}`;
+    const groupIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
+      to: groupJid,
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_72" /* USER_DELETE_GROUP */]
+    }).c('participant').t(userJid).up();
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["A"] = userDeleteGroupIQ;
+
+
+/**
+ * Sends Get Group Chat IQ Request to Server
+ * @param {String} groupJid
+ * @param {String} position
+ * @param {String} rowId
+ * @param {Number} limit
+ * @returns {Object} Success/Error Response
+ */
+const getGroupChatIQ = (groupJid, position, rowId, limit, sendSeen) => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const groupChatIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_ACTIVITIES */],
+      position: position,
+      message_id: '',
+      row_id: rowId,
+      limit: limit,
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["N" /* GROUP_CHAT */],
+      to_user: groupJid,
+      send_seen: sendSeen ? '1' : '0'
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupChatIQ, response => {
+      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["c" /* handleGroupChatIQ */])(response, sendSeen);
+      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+      successRes.data = item;
+      successRes.groupJid = groupJid;
+      resolve(successRes);
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["f"] = getGroupChatIQ;
+
+
+/**
+ * Sends Typing Status IQ to server
+ * @param {String} toJid
+ * @returns {Object} Success/Error Response
+ */
+const sendTypingStatusGroupIQ = toJid => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const typingIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
+      to: toJid,
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["u" /* COMPOSING */]
+    }).c('no-store', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_35" /* NS_HINTS */]
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(typingIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["v"] = sendTypingStatusGroupIQ;
+
+
+/**
+ * Sends Typing Gone Status IQ to server
+ * @param {String} toJid
+ * @returns {Object} Success/Error Response
+ */
+const sendTypingGoneStatusGroupIQ = toJid => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const typingGoneIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
+      to: toJid,
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["J" /* GONE */]
+    }).c('no-store', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_35" /* NS_HINTS */]
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(typingGoneIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["u"] = sendTypingGoneStatusGroupIQ;
+
+
+/**
+ * Sends Typing Gone Status IQ to server
+ * @param {String} groupJid
+ * @param {String} msgId
+ * @returns {Object} Success/Error Response
+ */
+const getGroupMsgInfoIQ = (groupJid, msgId) => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const msgInfoIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
+      to: groupJid,
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["Q" /* GROUP_MESSAGE_STATUS */],
+      message_id: msgId
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(msgInfoIQ, response => {
+      Object(__WEBPACK_IMPORTED_MODULE_2__handler__["d" /* messageInfoHandler */])(response);
+      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["h" /* handleMessageInfoIQ */])(response);
+      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+      successRes.data = item;
+      resolve(successRes);
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["g"] = getGroupMsgInfoIQ;
+
+
+/**
+ * Sends IQ Request to server to Delete Message For Everyone
+ * @param {String} toJid
+ * @param {String} msgId
+ * @returns {Object} Success/Error Response
+ */
+const recallGroupMessageIQ = (toJid, msgIds) => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const recallIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA'),
+      to: toJid
+    }).c('query', {
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_GROUP_MIX */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_46" /* RECALL */],
+      chat_type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_27" /* NORMAL */],
+      msgid: msgIds
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(recallIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["q"] = recallGroupMessageIQ;
+
+
+/**
+ * Sends IQ Request to server to Update Chat Mute Notification
+ * @param {String} toJid
+ * @param {Boolean} isMuted
+ * @returns {Object} Success/Error Response
+ */
+const updateMuteStatusIQ = (toJid, isMuted) => new Promise(async resolve => {
+  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
+  } else {
+    const muteMsgIQ = $iq({
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
+      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
+    }).c('query', {
+      to_user: toJid,
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_ACTIVITIES */],
+      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_68" /* UPDATE_MUTE_NOTIFICATION */],
+      mute_status: isMuted ? '1' : '0'
+    });
+
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(muteMsgIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["y"] = updateMuteStatusIQ;
+
+
+/**
+ * Sends IQ Request to server to Update Unread Count on Recent Chat
+ * @param {String} toJid
+ * @returns {Object} Success/Error Response
+ */
+const updateRecentChatUnreadCountIQ = toJid => new Promise(async resolve => {
+  const iqId = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA');
+  const unreadIQ = $iq({
+    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
+    id: iqId
+  }).c('query', {
+    to_user: toJid,
+    xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_ACTIVITIES */],
+    status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_69" /* UPDATE_UNREAD_COUNT */]
+  });
+  if (Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["b" /* getOnlineStatus */])()) {
+    Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(unreadIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  } else {
+    Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["a" /* addStanza */])(unreadIQ.toString(), iqId, 'updateUnreadCount');
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])());
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["z"] = updateRecentChatUnreadCountIQ;
+
+
+/**
+ * Sends IQ Request to server to fetch recent chat profiles
+ * @returns {Promise<Object>} Success/Error Response
+ */
+const getRecentChatProfileIQ = () => new Promise(resolve => {
+  const iqId = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA');
+  const fetchProfileIQ = $iq({
+    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
+    id: iqId
+  }).c('query', {
+    xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_ACTIVITIES */],
+    status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["I" /* GET_RECENTCHAT_PROFILE */]
+  });
+  if (Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["b" /* getOnlineStatus */])()) {
+    Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(fetchProfileIQ, res => {
+      const response = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
+      response.iq = res;
+      resolve(response);
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
+  } else {
+    Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["a" /* addStanza */])(fetchProfileIQ.toString(), iqId, 'fetchRecentChatProfile');
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])());
+  }
+});
+/* harmony export (immutable) */ __webpack_exports__["l"] = getRecentChatProfileIQ;
+
+
+/***/ }),
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22710,7 +23631,7 @@ module.exports = MD5
 
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {
@@ -22784,7 +23705,7 @@ function config (name) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22876,7 +23797,7 @@ function eos(stream, opts, callback) {
 module.exports = eos;
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23046,7 +23967,7 @@ module.exports = RIPEMD160
 
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var exports = module.exports = function SHA (algorithm) {
@@ -23067,7 +23988,7 @@ exports.sha512 = __webpack_require__(123)
 
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23118,7 +24039,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23131,7 +24052,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 module.exports = Writable;
 
 /*<replacement>*/
-var processNextTick = __webpack_require__(79);
+var processNextTick = __webpack_require__(80);
 /*</replacement>*/
 
 /*<replacement>*/
@@ -23151,7 +24072,7 @@ util.inherits = __webpack_require__(0);
 
 /*<replacement>*/
 var internalUtil = {
-  deprecate: __webpack_require__(75)
+  deprecate: __webpack_require__(76)
 };
 /*</replacement>*/
 
@@ -23641,7 +24562,7 @@ function CorkedRequest(state) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(234).setImmediate))
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23827,7 +24748,7 @@ function done(stream, er) {
 }
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23976,7 +24897,7 @@ Cipher.prototype._finalDecrypt = function _finalDecrypt() {
 
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var ciphers = __webpack_require__(247)
@@ -23995,7 +24916,7 @@ exports.listCiphers = exports.getCiphers = getCiphers
 
 
 /***/ }),
-/* 84 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var modeModules = {
@@ -24019,7 +24940,7 @@ module.exports = modes
 
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var r;
@@ -24090,7 +25011,7 @@ if (typeof self === 'object') {
 
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
@@ -24161,7 +25082,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
 
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24253,7 +25174,7 @@ function eos(stream, opts, callback) {
 module.exports = eos;
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {var BN = __webpack_require__(272)
@@ -24295,7 +25216,7 @@ module.exports = crt
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3).Buffer))
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24305,9 +25226,9 @@ var elliptic = exports;
 
 elliptic.version = __webpack_require__(274).version;
 elliptic.utils = __webpack_require__(12);
-elliptic.rand = __webpack_require__(85);
+elliptic.rand = __webpack_require__(86);
 elliptic.curve = __webpack_require__(151);
-elliptic.curves = __webpack_require__(90);
+elliptic.curves = __webpack_require__(91);
 
 // Protocols
 elliptic.ec = __webpack_require__(285);
@@ -24315,7 +25236,7 @@ elliptic.eddsa = __webpack_require__(289);
 
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24323,7 +25244,7 @@ elliptic.eddsa = __webpack_require__(289);
 
 var curves = exports;
 
-var hash = __webpack_require__(91);
+var hash = __webpack_require__(92);
 var curve = __webpack_require__(151);
 var utils = __webpack_require__(12);
 
@@ -24528,12 +25449,12 @@ defineCurve('secp256k1', {
 
 
 /***/ }),
-/* 91 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var hash = exports;
 
-hash.utils = __webpack_require__(16);
+hash.utils = __webpack_require__(17);
 hash.common = __webpack_require__(50);
 hash.sha = __webpack_require__(278);
 hash.ripemd = __webpack_require__(282);
@@ -24549,7 +25470,7 @@ hash.ripemd160 = hash.ripemd.ripemd160;
 
 
 /***/ }),
-/* 92 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24634,13 +25555,13 @@ module.exports = safer
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ }),
-/* 93 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const Reporter = __webpack_require__(94).Reporter;
+const Reporter = __webpack_require__(95).Reporter;
 const EncoderBuffer = __webpack_require__(51).EncoderBuffer;
 const DecoderBuffer = __webpack_require__(51).DecoderBuffer;
 const assert = __webpack_require__(11);
@@ -25279,7 +26200,7 @@ Node.prototype._isPrintstr = function isPrintstr(str) {
 
 
 /***/ }),
-/* 94 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25409,7 +26330,7 @@ ReporterError.prototype.rethrow = function rethrow(msg) {
 
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25474,7 +26395,7 @@ exports.tagByName = reverse(exports.tag);
 
 
 /***/ }),
-/* 96 */
+/* 97 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25482,23 +26403,25 @@ exports.tagByName = reverse(exports.tag);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__strophe_handler__ = __webpack_require__(165);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__strophe__ = __webpack_require__(386);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_localDb__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__helpers_constants__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__api__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_call_initialize__ = __webpack_require__(39);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__feedback__ = __webpack_require__(98);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__feedback__ = __webpack_require__(99);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_react_native__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__db_controllers_statusTable__ = __webpack_require__(108);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__db_controllers_statusTable__ = __webpack_require__(109);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__react_native_async_storage_async_storage__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__react_native_async_storage_async_storage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_12__react_native_async_storage_async_storage__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__modules_app_reconnect__ = __webpack_require__(54);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__db_Utils__ = __webpack_require__(19);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__modules_call_config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__db_Utils__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__modules_call_config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__db_realmDB__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__db_controllers_ConfigCredentialsTable__ = __webpack_require__(199);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__strophe_chatiqstanza__ = __webpack_require__(74);
 // migration done (14-12-21)
+
 
 
 
@@ -25545,7 +26468,7 @@ const connectionHandler = async (connStatus, callback, connObj) => {
       if (!Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["y" /* isActiveConnectionId */])(connObj.options.connectionId)) return;
       callbacks.connectionListener({ status: 'AUTHENTICATIONFAILED' });
       Object(__WEBPACK_IMPORTED_MODULE_15__modules_call_config__["s" /* setIsUserOnline */])(false);
-      callback(Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["c" /* customResponse */])(422, __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["W" /* INVALID_CREDENTIALS */]));
+      callback(Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["c" /* customResponse */])(422, __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["X" /* INVALID_CREDENTIALS */]));
       break;
 
     case Strophe.Status.CONNFAIL:
@@ -25584,13 +26507,16 @@ const connectionHandler = async (connStatus, callback, connObj) => {
       connectionStatus.isConnected = true;
       // Add handlers in order to get callback listeners response
       connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["f" /* presenceHandler */], null, 'presence', null);
-      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["h" /* streamHandler */], null, 'failure', null);
-      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["e" /* pingHandler */], __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_36" /* NS_PING */], 'iq', __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_62" /* TYPE_GET */]);
-      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["i" /* userProfileHandler */], __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_40" /* NS_VCARD */], 'iq', __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_63" /* TYPE_RESULT */]);
-      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["a" /* blockUserHandler */], __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_29" /* NS_BLOCKING */], 'iq', __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_64" /* TYPE_SET */]);
+      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["i" /* streamHandler */], null, 'failure', null);
+      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["e" /* pingHandler */], __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_37" /* NS_PING */], 'iq', __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_63" /* TYPE_GET */]);
+      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["j" /* userProfileHandler */], __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_41" /* NS_VCARD */], 'iq', __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_64" /* TYPE_RESULT */]);
+      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["a" /* blockUserHandler */], __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_30" /* NS_BLOCKING */], 'iq', __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_65" /* TYPE_SET */]);
       connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["c" /* messageHandler */], null, 'message', null, null, null);
-      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["b" /* friendsListHandler */], Strophe.NS.ROSTER, 'iq', __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_63" /* TYPE_RESULT */]);
+      connObj.addHandler(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["b" /* friendsListHandler */], Strophe.NS.ROSTER, 'iq', __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_64" /* TYPE_RESULT */]);
       connObj.send($pres().c('priority').t('1'));
+      Object(__WEBPACK_IMPORTED_MODULE_18__strophe_chatiqstanza__["l" /* getRecentChatProfileIQ */])().then(res => {
+        Object(__WEBPACK_IMPORTED_MODULE_2__strophe_handler__["g" /* recentChatsProfileHandler */])(res.iq);
+      });
       Object(__WEBPACK_IMPORTED_MODULE_15__modules_call_config__["s" /* setIsUserOnline */])(true);
       Object(__WEBPACK_IMPORTED_MODULE_3__strophe__["a" /* carbonEnable */])();
       // await initializeDatabase();
@@ -25632,11 +26558,11 @@ const login = async (username, password, forceLogin) => new Promise((resolve, re
   const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
     key: 'username',
     value: username,
-    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_50" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_51" /* REQUIRED */]
   }, {
     key: 'password',
     value: password,
-    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_50" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_51" /* REQUIRED */]
   }]);
   if (response.statusCode === 200) {
     if (!forceLogin && Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["c" /* getConnectionObj */])() && Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["c" /* getConnectionObj */])().connected && Object(__WEBPACK_IMPORTED_MODULE_0__strophe_connection__["c" /* getConnectionObj */])().authenticated) {
@@ -25665,11 +26591,11 @@ const connect = async (username, password, forceLogin) => new Promise(async reso
   const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
     key: 'username',
     value: username,
-    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_50" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_51" /* REQUIRED */]
   }, {
     key: 'password',
     value: password,
-    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_50" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_51" /* REQUIRED */]
   }]);
   if (response.statusCode === 200) {
     const passwordJson = {
@@ -25688,7 +26614,7 @@ const connect = async (username, password, forceLogin) => new Promise(async reso
       password: cypherText,
       type: __WEBPACK_IMPORTED_MODULE_10_react_native__["Platform"].OS
     };
-    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_7__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_15" /* METHOD_POST */], apiEndPoints.login, inputData, '', '');
+    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_7__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_16" /* METHOD_POST */], apiEndPoints.login, inputData, '', '');
     if (apiResponse.status === 200) {
       Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["z" /* setUserToken */])(apiResponse.data.token);
       const configResponse = await Object(__WEBPACK_IMPORTED_MODULE_9__feedback__["a" /* fetchAndConfigureServerDetails */])(username);
@@ -25728,7 +26654,7 @@ const register = async (userIdentifier, fcmtoken, voipDeviceToken, mode) => new 
   const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
     key: 'userIdentifier',
     value: userIdentifier,
-    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_50" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_51" /* REQUIRED */]
   }]);
 
   if (response.statusCode === 200) {
@@ -25772,7 +26698,7 @@ const register = async (userIdentifier, fcmtoken, voipDeviceToken, mode) => new 
         registerData: cypherText
       };
     }
-    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_7__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_15" /* METHOD_POST */], API_URL, inputData, '', false, '');
+    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_7__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_16" /* METHOD_POST */], API_URL, inputData, '', false, '');
 
     if (apiResponse && apiResponse.status === 200) {
       await Object(__WEBPACK_IMPORTED_MODULE_14__db_Utils__["d" /* dbRegisterClear */])(userIdentifier);
@@ -25872,7 +26798,7 @@ const syncContacts = async userIdentifier => new Promise(async resolve => {
   const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])([{
     key: 'userIdentifier',
     value: userIdentifier,
-    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_50" /* REQUIRED */]
+    rules: __WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_51" /* REQUIRED */]
   }]);
 
   if (response.statusCode === 200) {
@@ -25885,7 +26811,7 @@ const syncContacts = async userIdentifier => new Promise(async resolve => {
       licenseKey
     };
 
-    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_7__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_15" /* METHOD_POST */], API_URL, inputData, '', false, '');
+    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_7__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_6__helpers_constants__["_16" /* METHOD_POST */], API_URL, inputData, '', false, '');
     if (apiResponse && apiResponse.status === 200) {
       return resolve(Object(__WEBPACK_IMPORTED_MODULE_5__helpers_utils__["B" /* successResponse */])());
     }
@@ -25938,14 +26864,14 @@ const logout = async () => {
 // };
 
 /***/ }),
-/* 97 */
+/* 98 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_constants__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__connection__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_utils__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_localDb__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__db_controllers_messageTable__ = __webpack_require__(38);
 // migration done (14-12-21)
 
@@ -25967,10 +26893,10 @@ const sendMessageIQ = (toUserJid, msgId, msgType, cypherText, mediaFileToken = '
   try {
     const messageIQ = $msg({
       to: toUserJid,
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_CHAT */],
       id: msgId
     }).c('chatcontent', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_32" /* NS_CONTENT */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_CONTENT */],
       message_type: msgType,
       broadcast_id: ''
     }).up().c('body', {
@@ -25988,7 +26914,7 @@ const sendMessageIQ = (toUserJid, msgId, msgType, cypherText, mediaFileToken = '
       resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])('Network Error'));
     }
   } catch (error) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */]));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["d"] = sendMessageIQ;
@@ -26006,10 +26932,10 @@ const sendDeliveredStatusIQ = (toUserJid, msgId, groupId = '') => new Promise(as
   try {
     const deliveryIQ = $msg({
       to: toUserJid,
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_CHAT */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, '#A')
     }).c('delivered', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_37" /* NS_RECEIPTS */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_RECEIPTS */],
       id: msgId,
       group_id: groupId
     });
@@ -26017,7 +26943,7 @@ const sendDeliveredStatusIQ = (toUserJid, msgId, groupId = '') => new Promise(as
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(deliveryIQ);
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])());
   } catch (error) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */]));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["b"] = sendDeliveredStatusIQ;
@@ -26034,11 +26960,11 @@ const sendSeenStatusIQ = (toUserJid, msgId, groupId = '') => new Promise(async r
 
   try {
     const seenIQ = $msg({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_CHAT */],
       to: toUserJid,
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, '!A')
     }).c('seen', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_37" /* NS_RECEIPTS */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_RECEIPTS */],
       id: msgId,
       group_id: groupId
     });
@@ -26046,7 +26972,7 @@ const sendSeenStatusIQ = (toUserJid, msgId, groupId = '') => new Promise(async r
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(seenIQ);
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])());
   } catch (error) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */]));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["e"] = sendSeenStatusIQ;
@@ -26062,12 +26988,12 @@ const recallMessageIQ = (toJid, msgIds) => new Promise(async resolve => {
   try {
     const recallMsg = $msg({
       to: toJid,
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_CHAT */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('recall', {
       id: msgIds,
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_37" /* NS_RECEIPTS */],
-      chat_type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_RECEIPTS */],
+      chat_type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_CHAT */]
     });
     if (Object(__WEBPACK_IMPORTED_MODULE_3__helpers_localDb__["b" /* getOnlineStatus */])()) {
       await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(recallMsg);
@@ -26079,7 +27005,7 @@ const recallMessageIQ = (toJid, msgIds) => new Promise(async resolve => {
       resolve(successResp);
     }
   } catch (error) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */]));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["a"] = recallMessageIQ;
@@ -26096,18 +27022,18 @@ const sendTypingStatusIQ = toUserJid => new Promise(async resolve => {
   try {
     const typingIQ = $msg({
       to: toUserJid,
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_CHAT */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('composing', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_CHATSTATES */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_32" /* NS_CHATSTATES */]
     }).c('no-store', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_HINTS */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_35" /* NS_HINTS */]
     });
 
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(typingIQ);
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])());
   } catch (error) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */]));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["g"] = sendTypingStatusIQ;
@@ -26124,18 +27050,18 @@ const sendTypingGoneStatusIQ = toUserJid => new Promise(async resolve => {
   try {
     const typingGoneIQ = $msg({
       to: toUserJid,
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_CHAT */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, 'BA')
     }).c('gone', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_31" /* NS_CHATSTATES */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_32" /* NS_CHATSTATES */]
     }).c('no-store', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_HINTS */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_35" /* NS_HINTS */]
     });
 
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(typingGoneIQ);
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])());
   } catch (error) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */]));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["f"] = sendTypingGoneStatusIQ;
@@ -26170,14 +27096,14 @@ const sendGroupMessageIQ = (groupJid, msgId, msgType, cypherText, mediaFileToken
       resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])('Network Error'));
     }
   } catch (error) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
+    resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */]));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["c"] = sendGroupMessageIQ;
 
 
 /***/ }),
-/* 98 */
+/* 99 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -26206,7 +27132,7 @@ const submitFeedback = async (title, description) => {
     };
     const apiEndPoints = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["d" /* getApiEndPoints */])();
     const token = await Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["v" /* getUserToken */])();
-    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_15" /* METHOD_POST */], apiEndPoints.feedbackSubmit, inputData, token);
+    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_16" /* METHOD_POST */], apiEndPoints.feedbackSubmit, inputData, token);
     if (apiResponse && apiResponse.status === 200) {
         return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
     }
@@ -26227,7 +27153,7 @@ const submitDeleteMyAccount = async (reason, feedback) => {
     };
     const apiEndPoints = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["d" /* getApiEndPoints */])();
     const token = await Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["v" /* getUserToken */])();
-    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_15" /* METHOD_POST */], apiEndPoints.deleteMyAccount, inputData, token);
+    const apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_16" /* METHOD_POST */], apiEndPoints.deleteMyAccount, inputData, token);
     if (apiResponse && apiResponse.status === 200) {
         return Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
     }
@@ -26241,7 +27167,7 @@ const fetchAndConfigureServerDetails = async username => {
     if (config.XMPP_SERVER_HOST === "") {
         const apiEndPoints = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["d" /* getApiEndPoints */])();
         const token = await Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["v" /* getUserToken */])();
-        const configApiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_14" /* METHOD_GET */], apiEndPoints.getConfig, undefined, token, false);
+        const configApiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_15" /* METHOD_GET */], apiEndPoints.getConfig, undefined, token, false);
         if (configApiResponse && configApiResponse.status === 200) {
             const decryptedConfig = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["e" /* decryptAPIData */])(configApiResponse.data, username + username + username);
 
@@ -26295,7 +27221,7 @@ const fetchAndConfigureServerDetails = async username => {
 const fetchUserList = async (searchText, page, limit) => {
     const apiEndpoints = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["d" /* getApiEndPoints */])();
     const token = await Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["v" /* getUserToken */])();
-    const userListApiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_14" /* METHOD_GET */], `${apiEndpoints.userList}?name=${searchText}&page=${page}&size=${limit}`, undefined, token, false);
+    const userListApiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_15" /* METHOD_GET */], `${apiEndpoints.userList}?name=${searchText}&page=${page}&size=${limit}`, undefined, token, false);
     if (userListApiResponse && userListApiResponse.status === 200) {
         const successResp = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
         let users = [];
@@ -26330,7 +27256,7 @@ const fetchVcard = async userId => {
         const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
         const apiEndPoints = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_common__["d" /* getApiEndPoints */])();
         const token = await Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["v" /* getUserToken */])();
-        const getvcardApiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_14" /* METHOD_GET */], apiEndPoints.getVcard + "?userId=" + userId, undefined, token, false);
+        const getvcardApiResponse = await Object(__WEBPACK_IMPORTED_MODULE_4__api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_1__helpers_constants__["_15" /* METHOD_GET */], apiEndPoints.getVcard + "?userId=" + userId, undefined, token, false);
         if (getvcardApiResponse && getvcardApiResponse.status === 200) {
             const item = _extends({}, getvcardApiResponse.data, {
                 email: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["g" /* decryptProfileDetails */])(getvcardApiResponse.data.email, userId),
@@ -26354,7 +27280,7 @@ const fetchVcard = async userId => {
 
 
 /***/ }),
-/* 99 */
+/* 100 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -26527,7 +27453,7 @@ __WEBPACK_IMPORTED_MODULE_0__utils_js__["a" /* default */].forEach(['delete', 'g
 
 
 /***/ }),
-/* 100 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -26948,13 +27874,13 @@ function error(msg) {
 
 
 /***/ }),
-/* 101 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // browser shim for xmlhttprequest module
 
 var hasCORS = __webpack_require__(351);
-var globalThis = __webpack_require__(102);
+var globalThis = __webpack_require__(103);
 
 module.exports = function (opts) {
   var xdomain = opts.xdomain;
@@ -26992,7 +27918,7 @@ module.exports = function (opts) {
 
 
 /***/ }),
-/* 102 */
+/* 103 */
 /***/ (function(module, exports) {
 
 module.exports = (function () {
@@ -27007,7 +27933,7 @@ module.exports = (function () {
 
 
 /***/ }),
-/* 103 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -27174,12 +28100,12 @@ Transport.prototype.onClose = function () {
 
 
 /***/ }),
-/* 104 */
+/* 105 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constants__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__functions__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__communication_callAdapter__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__call__ = __webpack_require__(40);
@@ -27310,6 +28236,7 @@ const roomCreatedCallback = async data => {
 
 
 const roomJoinedCallback = async data => {
+    console.log('roomjoinedcallback from SDK', data);
     if (!Object(__WEBPACK_IMPORTED_MODULE_2__functions__["p" /* isRoomMatch */])(data.room)) return undefined;
     Object(__WEBPACK_IMPORTED_MODULE_7__users__["a" /* addOrUpdateCallUser */])({
         userJid: data.jid,
@@ -27336,6 +28263,8 @@ const roomJoinCallback = async data => {
     const userJid = data.jid;
     const callInfo = Object(__WEBPACK_IMPORTED_MODULE_1__config__["e" /* getCallInfo */])();
     const localUserJid = Object(__WEBPACK_IMPORTED_MODULE_2__functions__["e" /* getCallLocalUserJid */])();
+    console.log('SDK ==>> userJid & localUserJid ', userJid, localUserJid);
+    console.log('SDK ==>> callInfo & joinCallRequest() ', callInfo, Object(__WEBPACK_IMPORTED_MODULE_1__config__["n" /* joinCallRequest */])());
     if (Object(__WEBPACK_IMPORTED_MODULE_1__config__["n" /* joinCallRequest */])()) {
         successOnJoinCallRequest(data, localUserJid);
     } else {
@@ -27343,13 +28272,17 @@ const roomJoinCallback = async data => {
         // At this time, this join will be called. But need to block the user from processing the further steps.
         // That's why, we check condition here, If received room & local room is same, then break the process.
 
+        console.log('SDK ==>> data.room === callInfo.roomId ', data.room === callInfo.roomId, data.room, callInfo.roomId);
         if (data.room === callInfo.roomId) {
 
             // Get current call users            
             // Compare it with the received peer            
             // If any user is not having data in peers array, then we need to trigger the call ended status
 
+            console.log('SDK ==>> getCallUsers() ', Object(__WEBPACK_IMPORTED_MODULE_7__users__["e" /* getCallUsers */])());
             const callUserDiffer = Object(__WEBPACK_IMPORTED_MODULE_7__users__["e" /* getCallUsers */])().filter(user => !data.peers.some(peer => user.userJid === peer.jid) && user.userJid !== localUserJid);
+
+            console.log('SDK ==>> callUserDiffer ', callUserDiffer);
 
             if (callUserDiffer.length > 0) {
                 callUserDiffer.forEach(obj => handleEndedMsg({
@@ -27361,7 +28294,7 @@ const roomJoinCallback = async data => {
                 }));
             }
             data && Array.isArray(data.peers) && data.peers.map(peer => {
-                if (userJid !== localUserJid) {
+                if (peer.jid !== localUserJid) {
                     Object(__WEBPACK_IMPORTED_MODULE_7__users__["a" /* addOrUpdateCallUser */])({
                         userJid: peer.jid,
                         audioMuted: peer.isAudioMute,
@@ -27922,13 +28855,13 @@ const handleCallInviteUsersMsg = data => {
 
 
 /***/ }),
-/* 105 */
+/* 106 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__roasterTable__ = __webpack_require__(52);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__react_native_async_storage_async_storage__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__react_native_async_storage_async_storage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__react_native_async_storage_async_storage__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__realmDB__ = __webpack_require__(13);
@@ -28152,7 +29085,7 @@ const updateRecentChatUnreadCountInDB = jid => {
 
 
 /***/ }),
-/* 106 */
+/* 107 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -28205,7 +29138,7 @@ const getMessageDetail = (mid, realm) => {
 
 
 /***/ }),
-/* 107 */
+/* 108 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -28213,7 +29146,7 @@ const getMessageDetail = (mid, realm) => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_constants__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__connection__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_localDb__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_localDb__ = __webpack_require__(18);
 // migration done (14-12-21)
 
 
@@ -28305,6 +29238,85 @@ const handleProfileIQ = profileIQ => {
 /* harmony export (immutable) */ __webpack_exports__["g"] = handleProfileIQ;
 
 
+/**
+ * Handles recent chat profile IQ result to get the profiles data
+ * 
+ * @example Example profilesIQ :
+ * <iq xmlns="jabber:client" xml:lang="en" to="919988776655@xmpp-uikit-qa.contus.us/Mobile-1706677223308" from="919988776655@xmpp-uikit-qa.contus.us" type="result" id="e111ef5a-5295-4fac-a99c-f7f9f7367096">
+ *    <query type="get_recentchat_profile" xmlns="jabber:iq:user_activities">
+ *       <vcard>
+ *          <vcarddetails username="917548830057">
+ *             <vCard xmlns="vcard-temp">
+ *                <thumbImage />
+ *                <image />
+ *                <nickName>46AJTZQ6G/BDt7zK1j2Ic5AFYpvjy6qlS0Lvazo6Rfw=</nickName>
+ *                <email>2/T1RwKIuyedN3ZznminxA==</email>
+ *                <status>Sleeping...</status>
+ *                <mobileNumber>JgfFmup/yK0J2Yy2WUHuKA==</mobileNumber>
+ *             </vCard>
+ *          </vcarddetails>
+ *          <vcarddetails username="9094237501">
+ *             <vCard xmlns="vcard-temp">
+ *                <thumbImage>thumb-90942375011706677650860facN0O9KhQhGKcGROK84.</thumbImage>
+ *                <image>thumb-90942375011706677650860facN0O9KhQhGKcGROK84.</image>
+ *                <nickName>59GYIjto6GkzKX5drGVtSV6dH7F8yrDs+t4J/d1Xi3s=</nickName>
+ *                <email>SnC/LDCSK2jrN6mW/rLyHynzXw8uDskVorcOj8M9G2o=</email>
+ *                <status />
+ *                <mobileNumber>ra8LeoSq+SoklFO+d0CZsA==</mobileNumber>
+ *             </vCard>
+ *          </vcarddetails>
+ *       </vcard>
+ *    </query>
+ * </iq>
+ * 
+ * 
+ * @param {*} profilesIQ 
+ * @returns {Array} array of user profiles
+ */
+const handleRecentChatsProfileIQ = profilesIQ => {
+  const profilesArray = [];
+  const _loggedinUserJid = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["v" /* getloggedinUserJid */])();
+  if (profilesIQ) {
+    const vcards = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["l" /* findXML */])(profilesIQ, "vcard");
+    if (vcards && vcards.childNodes && vcards.childNodes.length) {
+      const vcardsObj = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["E" /* xml2json */])(vcards);
+      if (vcardsObj && vcardsObj.vcarddetails && vcardsObj.vcarddetails.length) {
+        const vcardDetailsArr = vcardsObj.vcarddetails;
+        for (let i = 0; i < vcardDetailsArr.length; i++) {
+          const vCardDetailElement = vcards.childNodes[i];
+          const fromUser = vCardDetailElement.getAttribute('username');
+          const vCardObj = (vcardDetailsArr[i] ? vcardDetailsArr[i].vCard : {}) || {};
+          var _vCardObj$nickName = vCardObj.nickName;
+          const nickName = _vCardObj$nickName === undefined ? "" : _vCardObj$nickName;
+          var _vCardObj$status = vCardObj.status;
+          const status = _vCardObj$status === undefined ? "" : _vCardObj$status;
+          var _vCardObj$mobileNumbe = vCardObj.mobileNumber;
+          const mobileNumber = _vCardObj$mobileNumbe === undefined ? "" : _vCardObj$mobileNumbe;
+          var _vCardObj$image = vCardObj.image;
+          const image = _vCardObj$image === undefined ? "" : _vCardObj$image;
+          var _vCardObj$email = vCardObj.email;
+          const email = _vCardObj$email === undefined ? "" : _vCardObj$email;
+
+          let item = {
+            email: Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["g" /* decryptProfileDetails */])(email, fromUser),
+            image,
+            fromUser,
+            nickName: Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["g" /* decryptProfileDetails */])(nickName, fromUser),
+            mobileNumber: Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["g" /* decryptProfileDetails */])(mobileNumber, fromUser),
+            status,
+            userId: fromUser
+          };
+          fromUser === _loggedinUserJid && Object(__WEBPACK_IMPORTED_MODULE_4__helpers_localDb__["h" /* setUserProfile */])(item);
+          profilesArray.push(item);
+        }
+      }
+    }
+  }
+  return profilesArray;
+};
+/* harmony export (immutable) */ __webpack_exports__["h"] = handleRecentChatsProfileIQ;
+
+
 const handleLastActivityIQ = activityIQ => {
   const query = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["l" /* findXML */])(activityIQ, "query"),
         from = activityIQ.getAttribute("from");
@@ -28361,7 +29373,7 @@ const handleBlockedUser = (blockedUser, stanzaType = "") => {
   if (type === "block_user") {
     const item = {
       fromUserJid: `${blockedUserId}@${Object(__WEBPACK_IMPORTED_MODULE_3__connection__["e" /* getServer */])()}`,
-      status: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_65" /* UNAVAILABLE */]
+      status: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_66" /* UNAVAILABLE */]
     };
     Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["a" /* callbackListeners */])().presenceListener && Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["a" /* callbackListeners */])().presenceListener(item);
   }
@@ -28390,7 +29402,7 @@ const handleBlockUserIQ = stanza => {
 
 
 /***/ }),
-/* 108 */
+/* 109 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -28503,7 +29515,7 @@ const onChangeStatusTable = () => {
 
 
 /***/ }),
-/* 109 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var conventions = __webpack_require__(56);
@@ -30314,884 +31326,6 @@ try{
 	exports.NodeList = NodeList;
 	exports.XMLSerializer = XMLSerializer;
 //}
-
-
-/***/ }),
-/* 110 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_constants__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__connection__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__handler__ = __webpack_require__(165);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_utils__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils__ = __webpack_require__(198);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__modules_utils__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__helpers_common__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_groupchat__ = __webpack_require__(200);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_chat__ = __webpack_require__(31);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__helpers_localDb__ = __webpack_require__(17);
-// migration done (14-12-21)
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * Sends Get Recent Chats IQ Request to server
- * @returns {Object} Success/Error Response
- */
-const getRecentChatsIQ = () => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const recentChatsIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, '#A')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
-      limit: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_47" /* RECENT_LIST_COUNT */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_46" /* RECENT_CHAT */]
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(recentChatsIQ, response => {
-      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["j" /* handleRecentChatIQ */])(response);
-      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
-      successRes.data = item;
-      resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["l"] = getRecentChatsIQ;
-
-
-/**
- * Sends Get Single Chat IQ Request to server
- * @param {String} toUserJid
- * @param {String} position
- * @param {String} rowId
- * @param {Number} limit
- * @returns {Object} Success/Error Response
- */
-const getSingleChatIQ = (toUserJid, position, rowId, limit, sendSeen) => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const singleChatIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
-      position: position,
-      message_id: '',
-      row_id: rowId,
-      limit: limit,
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_53" /* SINGLE_CHAT */],
-      to_user: toUserJid,
-      send_seen: sendSeen ? '1' : '0'
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(singleChatIQ, response => {
-      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["m" /* handleSingleChatIQ */])(response, sendSeen);
-      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
-      successRes.userJid = toUserJid;
-      successRes.data = item;
-      resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["n"] = getSingleChatIQ;
-
-
-/**
- * Sends IQ Request to server to Get List of Media Files With/Without Pagination
- * @param {String} toJid
- * @param {String} msgId
- * @returns {Object} Success/Error Response
- */
-const getMediaMessagesIQ = (toJid, msgId) => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const status = __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["N" /* GROUP_CHAT_MEDIA */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_54" /* SINGLE_CHAT_MEDIA */];
-    const mediaIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
-      status: status,
-      message_id: msgId,
-      to_user: toJid
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(mediaIQ, response => {
-      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["f" /* handleMediaIQ */])(response);
-      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
-      successRes.data = item;
-      resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["k"] = getMediaMessagesIQ;
-
-
-// Change this function into new Function (Implementation Needed in Ejabberd)
-/**
- * @param {String} msgId
- * @param {String} chatType="chat"
- * @returns {Object} Success/Error Response
- */
-const getMessageByIdIQ = (msgId, chatType = 'chat') => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const msgIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_48" /* REPLY_MESSAGE */],
-      chat_type: chatType,
-      message_id: '', // Need to remove this from ejabberd
-      reply_id: msgId
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(msgIQ, response => {
-      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["g" /* handleMessageById */])(response);
-      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
-      successRes.data = item;
-      resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* unused harmony export getMessageByIdIQ */
-
-
-/**
- * @param {String} replyMsgId
- * @param {String} chatType="chat"
- * @returns {Object} Success/Error Response
- */
-const getReplyMessageIQ = (replyMsgId, chatType = 'chat') => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const replyMsgIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_48" /* REPLY_MESSAGE */],
-      chat_type: chatType,
-      message_id: '', // Need to remove this from ejabberd
-      reply_id: replyMsgId
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(replyMsgIQ, response => {
-      Object(__WEBPACK_IMPORTED_MODULE_2__handler__["g" /* replyMessageHandler */])(response);
-      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["k" /* handleReplyMessage */])(response);
-      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
-      successRes.data = item;
-      resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["m"] = getReplyMessageIQ;
-
-
-/**
- * Using reply_message Stanza for Forward as well
- * @param {String} msgId
- * @param {String} chatType
- * @returns {Object} Success/Error Response
- */
-const getOriginalMsgDetails = async (msgId, chatType, callBack) => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const forwardIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_48" /* REPLY_MESSAGE */],
-      message_id: msgId,
-      reply_id: msgId,
-      chat_type: chatType
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(forwardIQ, forwardMessage => {
-      callBack(Object(__WEBPACK_IMPORTED_MODULE_4__utils__["b" /* handleForwardMessage */])(forwardMessage));
-      return true;
-    });
-  }
-};
-/* unused harmony export getOriginalMsgDetails */
-
-
-/**
- * Sends IQ Request to server to Add/Remove Favourite Message
- * @param {String} msgId
- * @returns {Object} Success/Error Response
- */
-const updateFavouriteStatusIQ = (toJid, msgId, isFavourite) => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const status = isFavourite ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_51" /* SET_FAVOURITE_MESSAGE */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_66" /* UPDATE_FAVOURITE_MESSAGE */];
-    const favMsgIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      to_user: toJid,
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_FAV */],
-      status: status,
-      message_id: msgId
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(favMsgIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["w"] = updateFavouriteStatusIQ;
-
-
-/**
- * Sends IQ Request to server to Get All Favourited Message List
- * @returns {Object} Success/Error Response
- */
-const getFavouritedMsgListIQ = () => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const favMsgIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_FAV */],
-      chat_type: '',
-      to_user: '',
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["E" /* GET_FAVOURITE_MESSAGE */]
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(favMsgIQ, response => {
-      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["n" /* handleStarredMessage */])(response);
-      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
-      successRes.data = item;
-      resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["e"] = getFavouritedMsgListIQ;
-
-
-/**
- * Sends IQ Request to server to Remove All Favourited Messages
- * @returns {Object} Success/Error Response
- */
-const removeAllFavouritedMsgIQ = () => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const favMsgIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_FAV */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["r" /* CLEARALL_FAVOURITE_MESSAGE */]
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(favMsgIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["r"] = removeAllFavouritedMsgIQ;
-
-
-/**
- * Sends IQ Request to server to Clear the Chat Messages
- * @param {String} toJid
- * @param {Number} deleteType - 0 - Clear Chat / 1 - Delete Chat
- * @returns {Object} Success/Error Response
- */
-const clearOrDeleteChatMsgIQ = (toJid, deleteType, favourites) => new Promise(async resolve => {
-  const chatType = __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["L" /* GROUPCHAT */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["q" /* CHAT */];
-  const favourite = favourites ? 0 : 1;
-
-  const clearChatIQ = $iq({
-    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
-    id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-  }).c('query', {
-    xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
-    remove_user: Strophe.getNodeFromJid(toJid),
-    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
-    favourite: favourite,
-    status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["t" /* CLEAR_MESSAGE */],
-    chat_type: chatType,
-    delete_type: deleteType
-  });
-  if (Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["b" /* getOnlineStatus */])()) {
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(clearChatIQ);
-    const successResp = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
-    resolve(successResp);
-  } else {
-    Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["a" /* addStanza */])(clearChatIQ.toString(), toJid, 'clearChat');
-    const successResp = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
-    resolve(successResp);
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["b"] = clearOrDeleteChatMsgIQ;
-
-
-/**
- * Sends IQ Request to server to Clear All Messages
- * @param {Number} deleteType - Delete Conversation (0) / Clear Conversation (1)
- * @returns {Object} Success/Error Response
- */
-const removeAllChatMsgIQ = deleteType => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const clearChatIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["s" /* CLEAR_ALL */],
-      delete_type: deleteType
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(clearChatIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["q"] = removeAllChatMsgIQ;
-
-
-/**
- * Sends IQ Request to server to Delete One or More Messages (Delete For Me)
- * @param {String} toJid
- * @param {String} msgIds
- * @returns {Object} Success/Error Response
- */
-const deleteMessageIQ = (toJid, msgIds) => new Promise(async resolve => {
-  const chatType = __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_23" /* MIX_BARE_JID */].test(toJid) ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["L" /* GROUPCHAT */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["q" /* CHAT */];
-  const deleteMsgIQ = $iq({
-    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
-    id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-  }).c('query', {
-    to_user: toJid,
-    chat_type: chatType,
-    message_ids: msgIds,
-    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_61" /* TYPE_CHAT */],
-    status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["y" /* DELETE_MESSAGE */],
-    xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */]
-  });
-  if (Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["b" /* getOnlineStatus */])()) {
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(deleteMsgIQ);
-    const successResp = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
-    resolve(successResp);
-  } else {
-    Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["a" /* addStanza */])(deleteMsgIQ.toString(), toJid, 'deleteMsgIQ');
-    const successResp = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
-    resolve(successResp);
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["d"] = deleteMessageIQ;
-
-
-/**
- * Sends IQ Request to Server to Create a New Group - Which also Adds Participants, Sets Owner, Updates Group Profile Internally in Ejabberd
- * @param {String} groupName
- * @param {Array} participants
- * @param {String} groupImage
- * @returns {Object} Success/Error Response
- */
-const createGroupIQ = (groupName, participants, groupImage = '') => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    try {
-      let profileResponse = {};
-      if (groupImage.type) {
-        profileResponse = await Object(__WEBPACK_IMPORTED_MODULE_5__modules_utils__["e" /* profileUpdate */])(groupImage);
-        if (profileResponse.statusCode !== 200) resolve(profileResponse);
-      }
-      const imageUrl = profileResponse.imageFileToken || groupImage;
-
-      const groupIQ = $iq({
-        type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
-        to: `${__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_22" /* MIX */]}.${Object(__WEBPACK_IMPORTED_MODULE_1__connection__["e" /* getServer */])()}`,
-        id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-      }).c('query', {
-        xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
-        status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["x" /* CREATE_GROUP */],
-        group_id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'AB')
-      });
-
-      groupIQ.c('profile', {}).c('vCard', { xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_40" /* NS_VCARD */] }).c('nickName').t(groupName);
-      imageUrl && groupIQ.up().c('image').t(imageUrl);
-      groupIQ.up().up().up().c('participants', {});
-      participants.forEach(el => groupIQ.c('participant').t(el).up());
-
-      await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, () => {
-        Object(__WEBPACK_IMPORTED_MODULE_7__modules_groupchat__["f" /* getGroupsList */])();
-        Object(__WEBPACK_IMPORTED_MODULE_8__modules_chat__["s" /* getRecentChats */])();
-        resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])());
-      }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-    } catch (error) {
-      resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
-    }
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["c"] = createGroupIQ;
-
-
-/**
- * Sends IQ Request to Server to Add Participants to the Created Group
- * @param {String} groupJid
- * @param {String} groupName
- * @param {Array} participants
- * @returns {Object} Success/Error Response
- */
-const addParticipantsIQ = (groupJid, groupName, participants) => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    try {
-      const addMembersIq = $iq({
-        type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
-        id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA'),
-        to: groupJid
-      }).c('query', {
-        status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["a" /* ADD_PARTICIPANTS */],
-        xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */]
-      }).c('subscriptions', {}).c('subscribe', { node: 'urn:xmpp:mix:nodes:messages' }).up().c('subscribe', { node: 'urn:xmpp:mix:nodes:presence' }).up().c('subscribe', { node: 'urn:xmpp:mix:nodes:participants' }).up().c('subscribe', { node: 'urn:xmpp:mix:nodes:info' }).up().c('subscribe', { node: 'urn:xmpp:mix:nodes:config' }).up().up().c('participants', {});
-      participants.forEach(element => addMembersIq.c('participant').t(element).up());
-      addMembersIq.up().c('nick').t(groupName).up();
-
-      await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(addMembersIq, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-    } catch (error) {
-      resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */]));
-    }
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["a"] = addParticipantsIQ;
-
-
-/**
- * Sends IQ Request to Server to Set the User Profile Details
- * @param {String} groupJid
- * @param {String} groupName
- * @param {String} groupImage
- * @returns {Object} Success/Error Response
- */
-const setGroupProfileIQ = async (groupJid, groupName, groupImage) => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    let profileResponse = {};
-    if (groupImage.type) {
-      profileResponse = await Object(__WEBPACK_IMPORTED_MODULE_5__modules_utils__["e" /* profileUpdate */])(groupImage);
-      if (profileResponse.statusCode !== 200) resolve(profileResponse);
-    }
-    const imageUrl = profileResponse.imageFileToken || groupImage;
-
-    const groupProfileIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA'),
-      to: groupJid
-    }).c('query', {
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_52" /* SET_GROUP_INFO */],
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */]
-    }).c('profile', {}).c('vCard', {
-      xmlns: 'vcard-temp'
-    }).c('nickName').t(groupName).up().c('image').t(imageUrl).up();
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupProfileIQ, () => {
-      const iqResponse = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
-      iqResponse.fileToken = imageUrl;
-      resolve(iqResponse);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["v"] = setGroupProfileIQ;
-
-
-/**
- * Sends IQ Request to server to Get the Groups List
- * @returns {Object} Success/Error Response
- */
-const getGroupsListIQ = () => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const groupIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
-      to: `${__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["e" /* ANY */]}@${__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_22" /* MIX */]}.${Object(__WEBPACK_IMPORTED_MODULE_1__connection__["e" /* getServer */])()}`,
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["F" /* GET_GROUP_ID */]
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, response => {
-      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["e" /* handleGroupsListIQ */])(response);
-      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
-      successRes.data = item;
-      resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["j"] = getGroupsListIQ;
-
-
-/**
- * Sends IQ Request to Server to Get the Group Profile Details
- * @param {String} groupJid
- * @returns {Object} Success/Error Response
- */
-const getGroupProfileIQ = groupJid => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const groupIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
-      to: groupJid,
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["G" /* GET_GROUP_PROFILE */],
-      group_id: Strophe.getNodeFromJid(groupJid)
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, response => {
-      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["e" /* handleGroupsListIQ */])(response);
-      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
-      successRes.data = item[0] || {};
-      resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["i"] = getGroupProfileIQ;
-
-
-/**
- * Sends IQ Request to Server to Get the Group Participants
- * @param {String} groupJid
- * @returns {Object} Success/Error Response
- */
-const getGroupParticipantsIQ = groupJid => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const groupIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
-      to: groupJid,
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["H" /* GET_PARTICIPANTS */]
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, response => {
-      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["d" /* handleGroupParticipantsIQ */])(response);
-      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
-      successRes.data = item;
-      resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["h"] = getGroupParticipantsIQ;
-
-
-/**
- * Sends IQ Request to Server to Make a Participant as a Admin
- * @param {String} groupJid
- * @param {String} userJid
- * @returns {Object} Success/Error Response
- */
-const makeAsAdminIQ = (groupJid, userJid) => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const groupIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
-      to: groupJid,
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_8" /* MAKE_ADMIN */]
-    }).c('participant').t(userJid).up();
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["o"] = makeAsAdminIQ;
-
-
-/**
- * Sends IQ Request to Server to Remove a Participant from the Group
- * @param {String} groupJid
- * @param {String} userJid
- * @param {String} isAdmin
- * @returns {Object} Success/Error Response
- */
-const removeParticipantIQ = (groupJid, userJid, isAdmin, type) => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    let status;
-    if (type === 'exit') {
-      status = isAdmin ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["b" /* ADMIN_EXIT_GROUP */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_72" /* USER_EXIT_GROUP */];
-    } else {
-      status = isAdmin ? __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["c" /* ADMIN_REMOVE_ADMIN */] : __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["d" /* ADMIN_REMOVE_PARTICIPANT */];
-    }
-
-    const groupIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
-      to: groupJid,
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
-      status: status
-    }).c('participant').t(userJid).up();
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["s"] = removeParticipantIQ;
-
-
-/**
- * Sends IQ Request to Server to Delete the Group for User
- * @param {String} groupJid
- * @returns {Object} Success/Error Response
- */
-const userDeleteGroupIQ = groupJid => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const userJid = `${Object(__WEBPACK_IMPORTED_MODULE_6__helpers_common__["v" /* getloggedinUserJid */])()}@${Object(__WEBPACK_IMPORTED_MODULE_1__connection__["e" /* getServer */])()}`;
-    const groupIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
-      to: groupJid,
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_71" /* USER_DELETE_GROUP */]
-    }).c('participant').t(userJid).up();
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["z"] = userDeleteGroupIQ;
-
-
-/**
- * Sends Get Group Chat IQ Request to Server
- * @param {String} groupJid
- * @param {String} position
- * @param {String} rowId
- * @param {Number} limit
- * @returns {Object} Success/Error Response
- */
-const getGroupChatIQ = (groupJid, position, rowId, limit, sendSeen) => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const groupChatIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
-      position: position,
-      message_id: '',
-      row_id: rowId,
-      limit: limit,
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["M" /* GROUP_CHAT */],
-      to_user: groupJid,
-      send_seen: sendSeen ? '1' : '0'
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(groupChatIQ, response => {
-      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["c" /* handleGroupChatIQ */])(response, sendSeen);
-      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
-      successRes.data = item;
-      successRes.groupJid = groupJid;
-      resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["f"] = getGroupChatIQ;
-
-
-/**
- * Sends Typing Status IQ to server
- * @param {String} toJid
- * @returns {Object} Success/Error Response
- */
-const sendTypingStatusGroupIQ = toJid => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const typingIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
-      to: toJid,
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["u" /* COMPOSING */]
-    }).c('no-store', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_HINTS */]
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(typingIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["u"] = sendTypingStatusGroupIQ;
-
-
-/**
- * Sends Typing Gone Status IQ to server
- * @param {String} toJid
- * @returns {Object} Success/Error Response
- */
-const sendTypingGoneStatusGroupIQ = toJid => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const typingGoneIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
-      to: toJid,
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["I" /* GONE */]
-    }).c('no-store', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_34" /* NS_HINTS */]
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(typingGoneIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["t"] = sendTypingGoneStatusGroupIQ;
-
-
-/**
- * Sends Typing Gone Status IQ to server
- * @param {String} groupJid
- * @param {String} msgId
- * @returns {Object} Success/Error Response
- */
-const getGroupMsgInfoIQ = (groupJid, msgId) => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const msgInfoIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
-      to: groupJid,
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["P" /* GROUP_MESSAGE_STATUS */],
-      message_id: msgId
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(msgInfoIQ, response => {
-      Object(__WEBPACK_IMPORTED_MODULE_2__handler__["d" /* messageInfoHandler */])(response);
-      const item = Object(__WEBPACK_IMPORTED_MODULE_4__utils__["h" /* handleMessageInfoIQ */])(response);
-      const successRes = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
-      successRes.data = item;
-      resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["g"] = getGroupMsgInfoIQ;
-
-
-/**
- * Sends IQ Request to server to Delete Message For Everyone
- * @param {String} toJid
- * @param {String} msgId
- * @returns {Object} Success/Error Response
- */
-const recallGroupMessageIQ = (toJid, msgIds) => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const recallIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA'),
-      to: toJid
-    }).c('query', {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_33" /* NS_GROUP_MIX */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_45" /* RECALL */],
-      chat_type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_26" /* NORMAL */],
-      msgid: msgIds
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(recallIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["p"] = recallGroupMessageIQ;
-
-
-/**
- * Sends IQ Request to server to Update Chat Mute Notification
- * @param {String} toJid
- * @param {Boolean} isMuted
- * @returns {Object} Success/Error Response
- */
-const updateMuteStatusIQ = (toJid, isMuted) => new Promise(async resolve => {
-  if (Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])() && !Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().connected) {
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["b" /* connectionErrorResponse */])());
-  } else {
-    const muteMsgIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
-      id: Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA')
-    }).c('query', {
-      to_user: toJid,
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
-      status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_67" /* UPDATE_MUTE_NOTIFICATION */],
-      mute_status: isMuted ? '1' : '0'
-    });
-
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(muteMsgIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["x"] = updateMuteStatusIQ;
-
-
-/**
- * Sends IQ Request to server to Update Unread Count on Recent Chat
- * @param {String} toJid
- * @returns {Object} Success/Error Response
- */
-const updateRecentChatUnreadCountIQ = toJid => new Promise(async resolve => {
-  const iqId = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["x" /* randomString */])(16, 'BA');
-  const unreadIQ = $iq({
-    type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
-    id: iqId
-  }).c('query', {
-    to_user: toJid,
-    xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
-    status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_68" /* UPDATE_UNREAD_COUNT */]
-  });
-  if (Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["b" /* getOnlineStatus */])()) {
-    Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(unreadIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
-  } else {
-    Object(__WEBPACK_IMPORTED_MODULE_9__helpers_localDb__["a" /* addStanza */])(unreadIQ.toString(), iqId, 'updateUnreadCount');
-    resolve(Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])());
-  }
-});
-/* harmony export (immutable) */ __webpack_exports__["y"] = updateRecentChatUnreadCountIQ;
 
 
 /***/ }),
@@ -34495,7 +34629,7 @@ Writable.WritableState = WritableState;
 
 /*<replacement>*/
 var internalUtil = {
-  deprecate: __webpack_require__(75)
+  deprecate: __webpack_require__(76)
 };
 /*</replacement>*/
 
@@ -35694,7 +35828,7 @@ module.exports = Sha512
 module.exports = Readable;
 
 /*<replacement>*/
-var processNextTick = __webpack_require__(79);
+var processNextTick = __webpack_require__(80);
 /*</replacement>*/
 
 /*<replacement>*/
@@ -36584,7 +36718,7 @@ function indexOf(xs, x) {
 
 module.exports = PassThrough;
 
-var Transform = __webpack_require__(81);
+var Transform = __webpack_require__(82);
 
 /*<replacement>*/
 var util = __webpack_require__(48);
@@ -36621,9 +36755,9 @@ var Legacy = __webpack_require__(239)
 var Base = __webpack_require__(24)
 var Buffer = __webpack_require__(2).Buffer
 var md5 = __webpack_require__(128)
-var RIPEMD160 = __webpack_require__(77)
+var RIPEMD160 = __webpack_require__(78)
 
-var sha = __webpack_require__(78)
+var sha = __webpack_require__(79)
 
 var ZEROS = Buffer.alloc(128)
 
@@ -36683,7 +36817,7 @@ module.exports = function createHmac (alg, key) {
 /* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var MD5 = __webpack_require__(74)
+var MD5 = __webpack_require__(75)
 
 module.exports = function (buffer) {
   return new MD5().update(buffer).digest()
@@ -36753,8 +36887,8 @@ module.exports = defaultEncoding
 /***/ (function(module, exports, __webpack_require__) {
 
 var md5 = __webpack_require__(128)
-var RIPEMD160 = __webpack_require__(77)
-var sha = __webpack_require__(78)
+var RIPEMD160 = __webpack_require__(78)
+var sha = __webpack_require__(79)
 var Buffer = __webpack_require__(2).Buffer
 
 var checkParameters = __webpack_require__(131)
@@ -37152,7 +37286,7 @@ var assert = __webpack_require__(11);
 var inherits = __webpack_require__(0);
 
 var utils = __webpack_require__(135);
-var Cipher = __webpack_require__(82);
+var Cipher = __webpack_require__(83);
 
 function DESState() {
   this.tmp = new Array(2);
@@ -37633,7 +37767,7 @@ function findPrime(bits, gen) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var bn = __webpack_require__(9);
-var brorand = __webpack_require__(85);
+var brorand = __webpack_require__(86);
 
 function MillerRabin(rand) {
   this.rand = rand || new brorand.Rand();
@@ -38983,7 +39117,7 @@ Writable.WritableState = WritableState;
 
 /*<replacement>*/
 var internalUtil = {
-  deprecate: __webpack_require__(75)
+  deprecate: __webpack_require__(76)
 };
 /*</replacement>*/
 
@@ -39852,7 +39986,7 @@ curve.edwards = __webpack_require__(277);
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 var rotr32 = utils.rotr32;
 
 function ft_1(s, x, y, z) {
@@ -39908,7 +40042,7 @@ exports.g1_256 = g1_256;
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 var common = __webpack_require__(50);
 var shaCommon = __webpack_require__(152);
 var assert = __webpack_require__(11);
@@ -40020,7 +40154,7 @@ SHA256.prototype._digest = function digest(enc) {
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 var common = __webpack_require__(50);
 var assert = __webpack_require__(11);
 
@@ -43943,11 +44077,11 @@ encoders.pem = __webpack_require__(295);
 
 
 const inherits = __webpack_require__(0);
-const Buffer = __webpack_require__(92).Buffer;
-const Node = __webpack_require__(93);
+const Buffer = __webpack_require__(93).Buffer;
+const Node = __webpack_require__(94);
 
 // Import DER constants
-const der = __webpack_require__(95);
+const der = __webpack_require__(96);
 
 function DEREncoder(entity) {
   this.enc = 'der';
@@ -44261,10 +44395,10 @@ const inherits = __webpack_require__(0);
 
 const bignum = __webpack_require__(9);
 const DecoderBuffer = __webpack_require__(51).DecoderBuffer;
-const Node = __webpack_require__(93);
+const Node = __webpack_require__(94);
 
 // Import DER constants
-const der = __webpack_require__(95);
+const der = __webpack_require__(96);
 
 function DERDecoder(entity) {
   this.enc = 'der';
@@ -44660,7 +44794,7 @@ module.exports = withPublic
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__db_Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__db_Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__db_controllers_vcardTable__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_constants__ = __webpack_require__(6);
@@ -44668,7 +44802,7 @@ module.exports = withPublic
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__modules_call_communication_callAdapter__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_chat__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__connection__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__profileutils__ = __webpack_require__(107);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__profileutils__ = __webpack_require__(108);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__utils__ = __webpack_require__(198);
 // migration done (14-12-21)
 
@@ -44704,7 +44838,7 @@ const messageHandler = async message => {
     // Handling received msg stanzas
     if (received) {
       // Validating for carbon messages
-      if (received.getAttribute('xmlns') === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_30" /* NS_CARBON */]) {
+      if (received.getAttribute('xmlns') === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_31" /* NS_CARBON */]) {
         carbon = true;
         item = Object(__WEBPACK_IMPORTED_MODULE_9__utils__["a" /* handleCarbonMessage */])(received);
         // Incoming call carbon copy
@@ -44783,7 +44917,7 @@ const pingHandler = ping => {
  * @returns true to Indicate that this handler should be called repeatedly
  */
 const streamHandler = () => true;
-/* harmony export (immutable) */ __webpack_exports__["h"] = streamHandler;
+/* harmony export (immutable) */ __webpack_exports__["i"] = streamHandler;
 
 
 /**
@@ -44822,7 +44956,7 @@ const userProfileHandler = profileIQ => {
   Object(__WEBPACK_IMPORTED_MODULE_1__db_controllers_vcardTable__["c" /* updateVcardDetail */])(item);
   return true;
 };
-/* harmony export (immutable) */ __webpack_exports__["i"] = userProfileHandler;
+/* harmony export (immutable) */ __webpack_exports__["j"] = userProfileHandler;
 
 
 /**
@@ -44835,7 +44969,7 @@ const replyMessageHandler = message => {
   Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["a" /* callbackListeners */])().replyMessageListener && Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["a" /* callbackListeners */])().replyMessageListener(item);
   return true;
 };
-/* harmony export (immutable) */ __webpack_exports__["g"] = replyMessageHandler;
+/* harmony export (immutable) */ __webpack_exports__["h"] = replyMessageHandler;
 
 
 /**
@@ -44868,6 +45002,17 @@ const messageInfoHandler = chatIQ => {
   return true;
 };
 /* harmony export (immutable) */ __webpack_exports__["d"] = messageInfoHandler;
+
+
+/**
+ * Handles Recent Chat profiles IQ received from Server
+ * @param {any} profilesIQ
+ */
+const recentChatsProfileHandler = profilesIQ => {
+  const profilesArr = Object(__WEBPACK_IMPORTED_MODULE_8__profileutils__["h" /* handleRecentChatsProfileIQ */])(profilesIQ);
+  Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["a" /* callbackListeners */])().userProfileListener && Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["a" /* callbackListeners */])().userProfileListener(profilesArr);
+};
+/* harmony export (immutable) */ __webpack_exports__["g"] = recentChatsProfileHandler;
 
 
 /***/ }),
@@ -45790,7 +45935,7 @@ function isBuf(obj) {
 var eio = __webpack_require__(349);
 var Socket = __webpack_require__(189);
 var Emitter = __webpack_require__(43);
-var parser = __webpack_require__(100);
+var parser = __webpack_require__(101);
 var on = __webpack_require__(190);
 var bind = __webpack_require__(191);
 var debug = __webpack_require__(65)('socket.io-client:manager');
@@ -46369,7 +46514,7 @@ Manager.prototype.onreconnect = function () {
  * Module dependencies
  */
 
-var XMLHttpRequest = __webpack_require__(101);
+var XMLHttpRequest = __webpack_require__(102);
 var XHR = __webpack_require__(352);
 var JSONP = __webpack_require__(362);
 var websocket = __webpack_require__(363);
@@ -46428,7 +46573,7 @@ function polling (opts) {
  * Module dependencies.
  */
 
-var Transport = __webpack_require__(103);
+var Transport = __webpack_require__(104);
 var parseqs = __webpack_require__(66);
 var parser = __webpack_require__(44);
 var inherit = __webpack_require__(67);
@@ -46446,7 +46591,7 @@ module.exports = Polling;
  */
 
 var hasXHR2 = (function () {
-  var XMLHttpRequest = __webpack_require__(101);
+  var XMLHttpRequest = __webpack_require__(102);
   var xhr = new XMLHttpRequest({ xdomain: false });
   return null != xhr.responseType;
 })();
@@ -46841,7 +46986,7 @@ module.exports = function(arr, obj){
  * Module dependencies.
  */
 
-var parser = __webpack_require__(100);
+var parser = __webpack_require__(101);
 var Emitter = __webpack_require__(43);
 var toArray = __webpack_require__(365);
 var on = __webpack_require__(190);
@@ -47348,7 +47493,7 @@ module.exports = function(obj, fn){
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__functions__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__service_api__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__helpers_constants__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_react_native__);
 
 
@@ -47433,7 +47578,6 @@ const sendIq = (element, succCallback, errCallback, timeout) => new Promise(asyn
  */
 const _sendCalling = dataObj => {
   const callInitIq = getCallInitIq(dataObj);
-  Object(__WEBPACK_IMPORTED_MODULE_5__functions__["c" /* consoleLog */])('call data sending calling iq ', callInitIq);
   return sendIq(callInitIq);
 };
 /* harmony export (immutable) */ __webpack_exports__["b"] = _sendCalling;
@@ -47497,7 +47641,7 @@ const validateAndHandleCallMessage = async message => {
       roomId: room_id
     };
 
-    let apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_6__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_15" /* METHOD_POST */], `${apiEndpoints.validateCall}`, inputdata, token, false);
+    let apiResponse = await Object(__WEBPACK_IMPORTED_MODULE_6__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_16" /* METHOD_POST */], `${apiEndpoints.validateCall}`, inputdata, token, false);
 
     if (apiResponse.status === 200) {
       if (apiResponse.data.anotherResourceHandledThisCall === false) {
@@ -47598,11 +47742,11 @@ const handleIncomingCall = async message => {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constants__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__functions__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_utils__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__callHandleMessage__ = __webpack_require__(104);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__callHandleMessage__ = __webpack_require__(105);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__communication_callAdapter__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__users__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__janus_index__ = __webpack_require__(70);
@@ -48711,7 +48855,7 @@ const getContactMsg = (realm, mid) => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__db_controllers_mediaDetailTable__ = __webpack_require__(71);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_common__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_react_native__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__service_api__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__helpers_constants__ = __webpack_require__(6);
@@ -48746,7 +48890,7 @@ const downloadMedia = async (msgID, addInPending = true) => {
         const successReturn = Object(__WEBPACK_IMPORTED_MODULE_3__helpers_utils__["B" /* successResponse */])();
         const fileName = 'MFRN_' + Date.now() + '.' + ext;
         const destinationPath = __WEBPACK_IMPORTED_MODULE_1_react_native_fs___default.a.DocumentDirectoryPath + '/' + fileName;
-        const response = await Object(__WEBPACK_IMPORTED_MODULE_6__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_14" /* METHOD_GET */], imageUrl.data.fileUrl, undefined, imageUrl.data.token, '', msgID, '', 'download');
+        const response = await Object(__WEBPACK_IMPORTED_MODULE_6__service_api__["a" /* sendRequest */])(__WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_15" /* METHOD_GET */], imageUrl.data.fileUrl, undefined, imageUrl.data.token, '', msgID, '', 'download');
         console.log('SDK downloadMedia response ==>', response);
         if (response.status === 500) {
           const item = {
@@ -48755,10 +48899,10 @@ const downloadMedia = async (msgID, addInPending = true) => {
           };
           Object(__WEBPACK_IMPORTED_MODULE_4__helpers_common__["a" /* callbackListeners */])().mediaDownloadListener && Object(__WEBPACK_IMPORTED_MODULE_4__helpers_common__["a" /* callbackListeners */])().mediaDownloadListener(item);
         }
-        if (response.message === __WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_25" /* NETWORK_ERROR */]) {
+        if (response.message === __WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_26" /* NETWORK_ERROR */]) {
           Object(__WEBPACK_IMPORTED_MODULE_8__common__["b" /* addPendingDownloads */])(msgID);
         }
-        if (response.message === __WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_70" /* USER_CANCELLED */]) {
+        if (response.message === __WEBPACK_IMPORTED_MODULE_7__helpers_constants__["_71" /* USER_CANCELLED */]) {
           Object(__WEBPACK_IMPORTED_MODULE_8__common__["i" /* removePendingDownloads */])(msgID);
         }
         let image = btoa(new Uint8Array(response).reduce((data, byte) => data + String.fromCharCode(byte), ''));
@@ -48806,13 +48950,13 @@ const downloadMedia = async (msgID, addInPending = true) => {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_utils__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__msgstanza__ = __webpack_require__(97);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__msgstanza__ = __webpack_require__(98);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_constants__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__connection__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__profileutils__ = __webpack_require__(107);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__profileutils__ = __webpack_require__(108);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__db_controllers_messageTable__ = __webpack_require__(38);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__db_Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__db_Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modules_profile__ = __webpack_require__(73);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__db_controllers_vcardTable__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__db_controllers_roasterTable__ = __webpack_require__(52);
@@ -48845,7 +48989,7 @@ const handleIncomingMsg = async (message, msgBody, params) => {
     msgId = message.getAttribute('id');
     sendFrom = params.from;
   } else {
-    chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */];
+    chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */];
     const stanzaId = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["l" /* findXML */])(message, 'submission-id'),
           jid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["l" /* findXML */])(message, 'jid');
     msgId = Strophe.getText(stanzaId);
@@ -48859,7 +49003,7 @@ const handleIncomingMsg = async (message, msgBody, params) => {
   userID !== publisherId && Object(__WEBPACK_IMPORTED_MODULE_1__msgstanza__["b" /* sendDeliveredStatusIQ */])(sendFrom, msgId, groupId);
 
   // If it is Group Chat - Restrict Message from the Same User (Sent Message should not be Received)
-  if (chatType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] && userID === publisherId) return {};
+  if (chatType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */] && userID === publisherId) return {};
 
   try {
     msgbody = JSON.parse(Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["f" /* decryptMsg */])(msgbody, msgId));
@@ -48944,9 +49088,9 @@ const handleInfoMessages = (infoMsg, params) => {
   const msgItem = {
     msgId: '',
     msgBody: {},
-    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */],
+    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */],
     publisherId: Strophe.getNodeFromJid(publisherJid),
-    msgType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */],
+    msgType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["R" /* GROUP_PROFILE_UPDATE */],
     profileUpdatedStatus: 'profileUpdated',
     timestamp: Number(params.timeStamp),
     msgStatus: 0,
@@ -48983,9 +49127,9 @@ const handleGroupParticipantAdded = (participant, params) => {
   const msgItem = {
     msgId: '',
     msgBody: {},
-    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */],
+    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */],
     publisherId: Strophe.getNodeFromJid(params.publisher),
-    msgType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */],
+    msgType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["R" /* GROUP_PROFILE_UPDATE */],
     profileUpdatedStatus: 'userAdded',
     timestamp: Number(params.timeStamp),
     msgStatus: 0,
@@ -49021,9 +49165,9 @@ const handleParticipantRemoval = (itemsIQ, params) => {
   const msgItem = {
     msgId: '',
     msgBody: {},
-    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */],
+    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */],
     publisherId: Strophe.getNodeFromJid(params.publisher),
-    msgType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */],
+    msgType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["R" /* GROUP_PROFILE_UPDATE */],
     profileUpdatedStatus: msgType,
     timestamp: Number(params.timeStamp),
     msgStatus: 0,
@@ -49053,9 +49197,9 @@ const handleNewAdmin = (infoIQ, params) => {
   const msgItem = {
     msgId: '',
     msgBody: {},
-    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */],
+    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */],
     publisherId: Strophe.getNodeFromJid(publisherJid),
-    msgType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */],
+    msgType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["R" /* GROUP_PROFILE_UPDATE */],
     profileUpdatedStatus: 'madeAdmin',
     timestamp: Number(params.timeStamp),
     msgStatus: 0,
@@ -49076,7 +49220,7 @@ const handleFavouriteMessage = favourite => {
   const type = favourite.getAttribute('type'),
         msgId = favourite.getAttribute('message_id'),
         fromUserJid = favourite.getAttribute('to_user');
-  const favouriteStatus = type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_51" /* SET_FAVOURITE_MESSAGE */] ? 1 : 0;
+  const favouriteStatus = type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_52" /* SET_FAVOURITE_MESSAGE */] ? 1 : 0;
 
   if (type !== 'delete_favourite_message') {
     const item = {
@@ -49108,7 +49252,7 @@ const handleCarbonMessage = received => {
       messageId = receivedMsg.getAttribute('id');
       sendFrom = from;
     } else {
-      chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */];
+      chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */];
       const stanzaId = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["l" /* findXML */])(receivedMsg, 'submission-id'),
             jid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["l" /* findXML */])(receivedMsg, 'jid');
       messageId = Strophe.getText(stanzaId);
@@ -49121,7 +49265,7 @@ const handleCarbonMessage = received => {
           toUserJid = receivedMsg.getAttribute('to');
 
     // If it is Group Chat - Restrict Message from the Same User (Sent Message should not be Received)
-    if (chatType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] && userID === publisherId) return {};
+    if (chatType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */] && userID === publisherId) return {};
 
     try {
       msgBody = JSON.parse(Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["f" /* decryptMsg */])(msgBody, messageId));
@@ -49192,7 +49336,7 @@ const handleCarbonMessage = received => {
     let fromUserId, fromUserJid, publisherId, publisherJid;
     if (groupId) {
       fromUserId = groupId;
-      fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(groupId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */]);
+      fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(groupId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */]);
       publisherJid = Strophe.getBareJidFromJid(from);
       publisherId = Strophe.getNodeFromJid(from);
     } else {
@@ -49223,7 +49367,7 @@ const handleCarbonMessage = received => {
     let fromUserId, fromUserJid, publisherId, publisherJid;
     if (groupId) {
       fromUserId = groupId;
-      fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(groupId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */]);
+      fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(groupId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */]);
       publisherJid = Strophe.getBareJidFromJid(from);
       publisherId = Strophe.getNodeFromJid(from);
     } else {
@@ -49257,7 +49401,7 @@ const handleCarbonMessage = received => {
     let fromUserId = Strophe.getNodeFromJid(from);
     if (chatType === 'normal') {
       fromUserId = groupId;
-      chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */];
+      chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */];
     }
 
     return {
@@ -49283,7 +49427,7 @@ const handleCarbonMessage = received => {
       return {
         msgType,
         fromUserId,
-        chatType: chatType === 'normal' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] : chatType
+        chatType: chatType === 'normal' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */] : chatType
       };
     } else if (type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["s" /* CLEAR_ALL */]) {
       const deleteType = messageClear.getAttribute('delete_type');
@@ -49317,7 +49461,7 @@ const handleCarbonMessage = received => {
   const groupDelete = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["l" /* findXML */])(receivedMsg.childNodes, 'groupdelete');
   if (groupDelete) {
     return {
-      chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */],
+      chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */],
       msgType: 'carbonDeleteChat',
       fromUserId: groupDelete.getAttribute('group_id')
     };
@@ -49361,8 +49505,8 @@ const handleRecentChatIQ = chatIQ => {
       }
 
       if (msgfrom) {
-        const chatType = chattype === 'normal' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] : chattype,
-              msgType = Message_type === 'notification' || Message_type === '0' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */] : Message_type;
+        const chatType = chattype === 'normal' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */] : chattype,
+              msgType = Message_type === 'notification' || Message_type === '0' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["R" /* GROUP_PROFILE_UPDATE */] : Message_type;
 
         const item = {
           msgBody,
@@ -49380,7 +49524,7 @@ const handleRecentChatIQ = chatIQ => {
           deleteStatus: Number(recallstatus),
           timestamp: new Date(time).getTime()
         };
-        if (chatType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] && msgType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */]) {
+        if (chatType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */] && msgType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["R" /* GROUP_PROFILE_UPDATE */]) {
           item.msgBody = {};
           item.profileUpdatedStatus = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["p" /* getGroupMessageStatus */])(message, publisher, Notification_to);
         }
@@ -49506,14 +49650,14 @@ const handleSentMsg = sent => {
         timestamp: Number(sentTime),
         msgId: recall.getAttribute('id') || '',
         fromUserId: Strophe.getNodeFromJid(to),
-        chatType: chatType === 'normal' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] : chatType
+        chatType: chatType === 'normal' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */] : chatType
       };
     }
 
     // Handling Incoming Message
     const bodyMsg = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["l" /* findXML */])(message.childNodes, 'body');
     if (bodyMsg) {
-      sentChatType = to.includes('mix') ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] : 'chat';
+      sentChatType = to.includes('mix') ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */] : 'chat';
       msgBody = Strophe.getText(bodyMsg);
       try {
         msgBody = JSON.parse(Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["f" /* decryptMsg */])(msgBody, msgId));
@@ -49553,7 +49697,7 @@ const handleMediaIQ = mediaIQ => {
       let messageContent = {},
           msgBody;
       try {
-        const messageBody = chatMedia.childNodes[i].tagName === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] ? media.body : media.message;
+        const messageBody = chatMedia.childNodes[i].tagName === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */] ? media.body : media.message;
         const decryptedText = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["f" /* decryptMsg */])(messageBody, msgid);
         msgBody = JSON.parse(decryptedText);
       } catch (error) {}
@@ -49609,9 +49753,9 @@ const handleMessageById = message => {
           profileUpdatedStatus = '';
 
       if (chat_type === 'normal') {
-        chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */];
+        chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */];
         fromUserId = replyFromUser;
-        fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(fromUserId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */]);
+        fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(fromUserId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */]);
         publisherId = Strophe.getNodeFromJid(fromNotification);
         publisherJid = fromNotification;
         profileUpdatedStatus = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["p" /* getGroupMessageStatus */])(msgNotification, publisherId, toNotification);
@@ -49625,7 +49769,7 @@ const handleMessageById = message => {
         publisherId = replyFromUser;
         publisherJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(replyFromUser);
       }
-      msgType = msgNotification === '0' ? msgBodyContent.message_type : __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */];
+      msgType = msgNotification === '0' ? msgBodyContent.message_type : __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["R" /* GROUP_PROFILE_UPDATE */];
 
       const item = {
         msgId,
@@ -49683,7 +49827,7 @@ const handleReplyMessage = message => {
       let chatType, fromUserId, groupId;
 
       if (chat_type === 'normal') {
-        chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */];
+        chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */];
         fromUserId = Strophe.getNodeFromJid(fromNotification);
         groupId = replyFromUser;
       } else {
@@ -49769,9 +49913,9 @@ const handleStarredMessage = listIQ => {
       let chatType, fromUserId, fromUserJid, publisherId, publisherJid;
 
       if (chat_type === 'normal') {
-        chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */];
+        chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */];
         fromUserId = user;
-        fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(fromUserId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */]);
+        fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(fromUserId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */]);
         publisherId = Strophe.getNodeFromJid(from_notification);
         publisherJid = from_notification;
       } else {
@@ -49884,7 +50028,7 @@ const handleGroupParticipantsIQ = participantsIQ => {
 
 const handleGroupDelete = deleteIQ => {
   const item = {
-    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */],
+    chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */],
     msgType: 'deleteChat',
     fromUserId: deleteIQ.getAttribute('group_id')
   };
@@ -49923,7 +50067,7 @@ const handleGroupChatIQ = (chatIQ, sendSeen) => {
             favouritestatus = chatElements.favouritestatus;
 
 
-      let msgType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */];
+      let msgType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["R" /* GROUP_PROFILE_UPDATE */];
       if (msgtype !== '0') {
         try {
           msgType = msgtype;
@@ -49944,7 +50088,7 @@ const handleGroupChatIQ = (chatIQ, sendSeen) => {
       const publisherId = fromuser.split('@').length > 1 ? Strophe.getNodeFromJid(fromuser) : fromuser;
       const item = {
         rowId: row_id,
-        chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */],
+        chatType: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */],
         msgId: msgid,
         createdAt: time,
         fromUserId: user,
@@ -49959,7 +50103,7 @@ const handleGroupChatIQ = (chatIQ, sendSeen) => {
         msgType: msgType,
         favouriteStatus: Number(favouritestatus)
       };
-      if (msgType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["Q" /* GROUP_PROFILE_UPDATE */]) {
+      if (msgType === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["R" /* GROUP_PROFILE_UPDATE */]) {
         item.msgBody = {};
         item.profileUpdatedStatus = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["p" /* getGroupMessageStatus */])(message_notification, publisherId, to_notification);
       }
@@ -50018,7 +50162,7 @@ const handleDeleteMessages = async deleteIQ => {
     item = {
       msgType,
       fromUserId,
-      chatType: chatType === 'normal' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */] : chatType
+      chatType: chatType === 'normal' ? __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */] : chatType
     };
   } else if (type === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["s" /* CLEAR_ALL */]) {
     const deleteType = deleteIQ.getAttribute('delete_type');
@@ -50056,7 +50200,7 @@ const handleGroupActivities = (eventMsg, params) => {
   const infoMsg = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["l" /* findXML */])(eventMsg.childNodes, 'info');
   if (infoMsg) {
     const status = infoMsg.getAttribute('status');
-    if (status && status === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["R" /* GROUP_PROFILE_UPDATED */]) return handleInfoMessages(infoMsg, params);
+    if (status && status === __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["S" /* GROUP_PROFILE_UPDATED */]) return handleInfoMessages(infoMsg, params);
     return handleNewAdmin(infoMsg, params);
   }
 
@@ -50142,7 +50286,7 @@ const handleNonCarbonMessage = async message => {
     let fromUserId, fromUserJid, publisherId, publisherJid;
     if (groupId) {
       fromUserId = groupId;
-      fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(groupId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */]);
+      fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(groupId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */]);
       publisherJid = Strophe.getBareJidFromJid(params.from);
       publisherId = Strophe.getNodeFromJid(params.from);
     } else {
@@ -50175,7 +50319,7 @@ const handleNonCarbonMessage = async message => {
     let fromUserId, fromUserJid, publisherId, publisherJid;
     if (groupId) {
       fromUserId = groupId;
-      fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(groupId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */]);
+      fromUserJid = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_utils__["m" /* formatUserIdToJid */])(groupId, __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */]);
       publisherJid = Strophe.getBareJidFromJid(params.from);
       publisherId = Strophe.getNodeFromJid(params.from);
     } else {
@@ -50209,7 +50353,7 @@ const handleNonCarbonMessage = async message => {
     let fromUserId = Strophe.getNodeFromJid(params.from);
     if (chatType === 'normal') {
       fromUserId = groupId;
-      chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["L" /* GROUPCHAT */];
+      chatType = __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["M" /* GROUPCHAT */];
     }
     const recallObj = {
       msgType: 'recallMessage',
@@ -50310,7 +50454,7 @@ const getConfigCredentialsTable = async keyParam => {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["c"] = getGroupMsgInfo;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__ = __webpack_require__(110);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__ = __webpack_require__(74);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helpers_constants__ = __webpack_require__(6);
@@ -50334,7 +50478,7 @@ const createGroup = (groupName, participants, groupImage) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupName",
       value: groupName,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_51" /* REQUIRED */]
     }, {
       key: "participants",
       value: participants,
@@ -50368,11 +50512,11 @@ const addParticipants = (groupJid, groupName, participants) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_2" /* JID_GROUP_REQUIRED */]
     }, {
       key: "groupName",
       value: groupName,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_51" /* REQUIRED */]
     }, {
       key: "participants",
       value: participants,
@@ -50405,14 +50549,14 @@ const setGroupProfile = async (groupJid, groupName, groupImage = "") => {
     const response = await Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_2" /* JID_GROUP_REQUIRED */]
     }, {
       key: "groupName",
       value: groupName,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_51" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
-      return await Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["v" /* setGroupProfileIQ */])(groupJid, groupName, groupImage);
+      return await Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["w" /* setGroupProfileIQ */])(groupJid, groupName, groupImage);
     }
     return response;
   } catch (error) {
@@ -50448,7 +50592,7 @@ const getGroupProfile = groupJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_2" /* JID_GROUP_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["i" /* getGroupProfileIQ */])(groupJid);
@@ -50472,7 +50616,7 @@ const getGroupParticipants = groupJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_2" /* JID_GROUP_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["h" /* getGroupParticipantsIQ */])(groupJid);
@@ -50499,18 +50643,18 @@ const removeParticipant = (groupJid, userJid, isAdmin) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_2" /* JID_GROUP_REQUIRED */]
     }, {
       key: "userJid",
       value: userJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_0" /* JID_FORMAT_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_FORMAT_REQUIRED */]
     }, {
       key: "isAdmin",
       value: isAdmin,
       rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["o" /* BOOLEAN_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
-      return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["s" /* removeParticipantIQ */])(groupJid, userJid, isAdmin);
+      return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["t" /* removeParticipantIQ */])(groupJid, userJid, isAdmin);
     }
     return response;
   } catch (error) {
@@ -50532,14 +50676,14 @@ const makeAsAdmin = (groupJid, userJid) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_2" /* JID_GROUP_REQUIRED */]
     }, {
       key: "userJid",
       value: userJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_0" /* JID_FORMAT_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_FORMAT_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
-      return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["o" /* makeAsAdminIQ */])(groupJid, userJid);
+      return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["p" /* makeAsAdminIQ */])(groupJid, userJid);
     }
     return response;
   } catch (error) {
@@ -50562,11 +50706,11 @@ const userExitGroup = (groupJid, userJid, isAdmin) => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_2" /* JID_GROUP_REQUIRED */]
     }, {
       key: "userJid",
       value: userJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_0" /* JID_FORMAT_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_FORMAT_REQUIRED */]
     }, {
       key: "isAdmin",
       value: isAdmin,
@@ -50574,7 +50718,7 @@ const userExitGroup = (groupJid, userJid, isAdmin) => {
     }]);
     if (response.statusCode === 200) {
       // Using Method of Removeparticipant
-      return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["s" /* removeParticipantIQ */])(groupJid, userJid, isAdmin, "exit");
+      return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["t" /* removeParticipantIQ */])(groupJid, userJid, isAdmin, "exit");
     }
     return response;
   } catch (error) {
@@ -50595,10 +50739,10 @@ const userDeleteGroup = groupJid => {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_2" /* JID_GROUP_REQUIRED */]
     }]);
     if (response.statusCode === 200) {
-      return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["z" /* userDeleteGroupIQ */])(groupJid);
+      return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["A" /* userDeleteGroupIQ */])(groupJid);
     }
     return response;
   } catch (error) {
@@ -50620,11 +50764,11 @@ function getGroupMsgInfo(groupJid, msgId) {
     const response = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_common__["b" /* clientSideValidation */])([{
       key: "groupJid",
       value: groupJid,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_1" /* JID_GROUP_REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_2" /* JID_GROUP_REQUIRED */]
     }, {
       key: "msgId",
       value: msgId,
-      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_3__helpers_constants__["_51" /* REQUIRED */]
     }]);
     if (response.statusCode === 200) {
       return Object(__WEBPACK_IMPORTED_MODULE_0__strophe_chatiqstanza__["g" /* getGroupMsgInfoIQ */])(groupJid, msgId);
@@ -50658,10 +50802,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__initialize__ = __webpack_require__(388);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__modules_app_Utils__ = __webpack_require__(197);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modules_call_initialize__ = __webpack_require__(39);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__service_auth__ = __webpack_require__(96);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__service_auth__ = __webpack_require__(97);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_react_native_get_random_values__ = __webpack_require__(389);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_react_native_get_random_values___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_react_native_get_random_values__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__db_Utils__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__db_Utils__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__helpers_common__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__modules_app_appState__ = __webpack_require__(390);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__modules_app_common__ = __webpack_require__(45);
@@ -51143,7 +51287,7 @@ const polyfillers = () => {
 /* 205 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var dom = __webpack_require__(109)
+var dom = __webpack_require__(110)
 exports.DOMImplementation = dom.DOMImplementation
 exports.XMLSerializer = dom.XMLSerializer
 exports.DOMParser = __webpack_require__(206).DOMParser
@@ -51154,7 +51298,7 @@ exports.DOMParser = __webpack_require__(206).DOMParser
 /***/ (function(module, exports, __webpack_require__) {
 
 var conventions = __webpack_require__(56);
-var dom = __webpack_require__(109)
+var dom = __webpack_require__(110)
 var entities = __webpack_require__(207);
 var sax = __webpack_require__(208);
 
@@ -62345,7 +62489,7 @@ exports.Writable = __webpack_require__(120);
 exports.Duplex = __webpack_require__(34);
 exports.Transform = __webpack_require__(121);
 exports.PassThrough = __webpack_require__(226);
-exports.finished = __webpack_require__(76);
+exports.finished = __webpack_require__(77);
 exports.pipeline = __webpack_require__(227);
 
 
@@ -62632,7 +62776,7 @@ var _Object$setPrototypeO;
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return typeof key === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (typeof input !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (typeof res !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-var finished = __webpack_require__(76);
+var finished = __webpack_require__(77);
 var kLastResolve = Symbol('lastResolve');
 var kLastReject = Symbol('lastReject');
 var kError = Symbol('error');
@@ -62895,7 +63039,7 @@ function destroyer(stream, reading, writing, callback) {
   stream.on('close', function () {
     closed = true;
   });
-  if (eos === undefined) eos = __webpack_require__(76);
+  if (eos === undefined) eos = __webpack_require__(77);
   eos(stream, {
     readable: reading,
     writable: writing
@@ -63291,9 +63435,9 @@ var Stream = (function (){
 exports = module.exports = __webpack_require__(124);
 exports.Stream = Stream || exports;
 exports.Readable = exports;
-exports.Writable = __webpack_require__(80);
+exports.Writable = __webpack_require__(81);
 exports.Duplex = __webpack_require__(28);
-exports.Transform = __webpack_require__(81);
+exports.Transform = __webpack_require__(82);
 exports.PassThrough = __webpack_require__(125);
 
 
@@ -63570,14 +63714,14 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(80)
+module.exports = __webpack_require__(81)
 
 
 /***/ }),
 /* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(81)
+module.exports = __webpack_require__(82)
 
 
 /***/ }),
@@ -63780,8 +63924,8 @@ module.exports = function (password, salt, iterations, keylen, digest, callback)
 /***/ (function(module, exports, __webpack_require__) {
 
 var DES = __webpack_require__(243)
-var aes = __webpack_require__(83)
-var aesModes = __webpack_require__(84)
+var aes = __webpack_require__(84)
+var aesModes = __webpack_require__(85)
 var desModes = __webpack_require__(256)
 var ebtk = __webpack_require__(60)
 
@@ -63912,7 +64056,7 @@ DES.prototype._final = function () {
 
 
 exports.utils = __webpack_require__(135);
-exports.Cipher = __webpack_require__(82);
+exports.Cipher = __webpack_require__(83);
 exports.DES = __webpack_require__(136);
 exports.CBC = __webpack_require__(245);
 exports.EDE = __webpack_require__(246);
@@ -64000,7 +64144,7 @@ proto._update = function _update(inp, inOff, out, outOff) {
 var assert = __webpack_require__(11);
 var inherits = __webpack_require__(0);
 
-var Cipher = __webpack_require__(82);
+var Cipher = __webpack_require__(83);
 var DES = __webpack_require__(136);
 
 function EDEState(type, key) {
@@ -64055,7 +64199,7 @@ EDE.prototype._unpad = DES.prototype._unpad;
 /* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var MODES = __webpack_require__(84)
+var MODES = __webpack_require__(85)
 var AuthCipher = __webpack_require__(140)
 var Buffer = __webpack_require__(2).Buffer
 var StreamCipher = __webpack_require__(141)
@@ -64449,7 +64593,7 @@ module.exports = GHASH
 
 var AuthCipher = __webpack_require__(140)
 var Buffer = __webpack_require__(2).Buffer
-var MODES = __webpack_require__(84)
+var MODES = __webpack_require__(85)
 var StreamCipher = __webpack_require__(141)
 var Transform = __webpack_require__(24)
 var aes = __webpack_require__(59)
@@ -64848,7 +64992,7 @@ function formatReturnValue(bn, enc) {
 "use strict";
 
 
-var Buffer = __webpack_require__(86).Buffer;
+var Buffer = __webpack_require__(87).Buffer;
 var createHash = __webpack_require__(47);
 var stream = __webpack_require__(263);
 var inherits = __webpack_require__(0);
@@ -64951,7 +65095,7 @@ exports.Writable = __webpack_require__(148);
 exports.Duplex = __webpack_require__(37);
 exports.Transform = __webpack_require__(149);
 exports.PassThrough = __webpack_require__(269);
-exports.finished = __webpack_require__(87);
+exports.finished = __webpack_require__(88);
 exports.pipeline = __webpack_require__(270);
 
 
@@ -65167,7 +65311,7 @@ var _Object$setPrototypeO;
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return typeof key === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (typeof input !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (typeof res !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-var finished = __webpack_require__(87);
+var finished = __webpack_require__(88);
 var kLastResolve = Symbol('lastResolve');
 var kLastReject = Symbol('lastReject');
 var kError = Symbol('error');
@@ -65430,7 +65574,7 @@ function destroyer(stream, reading, writing, callback) {
   stream.on('close', function () {
     closed = true;
   });
-  if (eos === undefined) eos = __webpack_require__(87);
+  if (eos === undefined) eos = __webpack_require__(88);
   eos(stream, {
     readable: reading,
     writable: writing
@@ -65495,10 +65639,10 @@ module.exports = pipeline;
 
 
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
-var Buffer = __webpack_require__(86).Buffer;
+var Buffer = __webpack_require__(87).Buffer;
 var createHmac = __webpack_require__(127);
-var crt = __webpack_require__(88);
-var EC = __webpack_require__(89).ec;
+var crt = __webpack_require__(89);
+var EC = __webpack_require__(90).ec;
 var BN = __webpack_require__(155);
 var parseKeys = __webpack_require__(62);
 var curves = __webpack_require__(161);
@@ -70803,7 +70947,7 @@ exports.sha512 = __webpack_require__(154);
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 var common = __webpack_require__(50);
 var shaCommon = __webpack_require__(152);
 
@@ -70884,7 +71028,7 @@ SHA1.prototype._digest = function digest(enc) {
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 var SHA256 = __webpack_require__(153);
 
 function SHA224() {
@@ -70921,7 +71065,7 @@ SHA224.prototype._digest = function digest(enc) {
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 
 var SHA512 = __webpack_require__(154);
 
@@ -70963,7 +71107,7 @@ SHA384.prototype._digest = function digest(enc) {
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 var common = __webpack_require__(50);
 
 var rotl32 = utils.rotl32;
@@ -71116,7 +71260,7 @@ var sh = [
 "use strict";
 
 
-var utils = __webpack_require__(16);
+var utils = __webpack_require__(17);
 var assert = __webpack_require__(11);
 
 function Hmac(hash, key, enc) {
@@ -71959,8 +72103,8 @@ module.exports = {
 var BN = __webpack_require__(9);
 var HmacDRBG = __webpack_require__(286);
 var utils = __webpack_require__(12);
-var curves = __webpack_require__(90);
-var rand = __webpack_require__(85);
+var curves = __webpack_require__(91);
+var rand = __webpack_require__(86);
 var assert = utils.assert;
 
 var KeyPair = __webpack_require__(287);
@@ -72206,7 +72350,7 @@ EC.prototype.getKeyRecoveryParam = function(e, signature, Q, enc) {
 "use strict";
 
 
-var hash = __webpack_require__(91);
+var hash = __webpack_require__(92);
 var utils = __webpack_require__(150);
 var assert = __webpack_require__(11);
 
@@ -72627,8 +72771,8 @@ Signature.prototype.toDER = function toDER(enc) {
 "use strict";
 
 
-var hash = __webpack_require__(91);
-var curves = __webpack_require__(90);
+var hash = __webpack_require__(92);
+var curves = __webpack_require__(91);
 var utils = __webpack_require__(12);
 var assert = utils.assert;
 var parseBytes = utils.parseBytes;
@@ -73156,7 +73300,7 @@ PEMEncoder.prototype.encode = function encode(data, options) {
 
 
 const inherits = __webpack_require__(0);
-const Buffer = __webpack_require__(92).Buffer;
+const Buffer = __webpack_require__(93).Buffer;
 
 const DERDecoder = __webpack_require__(160);
 
@@ -73215,10 +73359,10 @@ PEMDecoder.prototype.decode = function decode(data, options) {
 
 const base = exports;
 
-base.Reporter = __webpack_require__(94).Reporter;
+base.Reporter = __webpack_require__(95).Reporter;
 base.DecoderBuffer = __webpack_require__(51).DecoderBuffer;
 base.EncoderBuffer = __webpack_require__(51).EncoderBuffer;
-base.Node = __webpack_require__(93);
+base.Node = __webpack_require__(94);
 
 
 /***/ }),
@@ -73246,7 +73390,7 @@ constants._reverse = function reverse(map) {
   return res;
 };
 
-constants.der = __webpack_require__(95);
+constants.der = __webpack_require__(96);
 
 
 /***/ }),
@@ -73360,7 +73504,7 @@ var findProc = /Proc-Type: 4,ENCRYPTED[\n\r]+DEK-Info: AES-((?:128)|(?:192)|(?:2
 var startRegex = /^-----BEGIN ((?:.*? KEY)|CERTIFICATE)-----/m
 var fullRegex = /^-----BEGIN ((?:.*? KEY)|CERTIFICATE)-----([0-9A-z\n\r+/=]+)-----END \1-----$/m
 var evp = __webpack_require__(60)
-var ciphers = __webpack_require__(83)
+var ciphers = __webpack_require__(84)
 var Buffer = __webpack_require__(2).Buffer
 module.exports = function (okey, password) {
   var key = okey.toString()
@@ -73396,9 +73540,9 @@ module.exports = function (okey, password) {
 
 
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
-var Buffer = __webpack_require__(86).Buffer;
+var Buffer = __webpack_require__(87).Buffer;
 var BN = __webpack_require__(155);
-var EC = __webpack_require__(89).ec;
+var EC = __webpack_require__(90).ec;
 var parseKeys = __webpack_require__(62);
 var curves = __webpack_require__(161);
 
@@ -73485,7 +73629,7 @@ module.exports = verify;
 /* 303 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(Buffer) {var elliptic = __webpack_require__(89)
+/* WEBPACK VAR INJECTION */(function(Buffer) {var elliptic = __webpack_require__(90)
 var BN = __webpack_require__(9)
 
 module.exports = function createECDH (curve) {
@@ -73639,7 +73783,7 @@ var mgf = __webpack_require__(162)
 var xor = __webpack_require__(163)
 var BN = __webpack_require__(9)
 var withPublic = __webpack_require__(164)
-var crt = __webpack_require__(88)
+var crt = __webpack_require__(89)
 var Buffer = __webpack_require__(2).Buffer
 
 module.exports = function publicEncrypt (publicKey, msg, reverse) {
@@ -73730,7 +73874,7 @@ var parseKeys = __webpack_require__(62)
 var mgf = __webpack_require__(162)
 var xor = __webpack_require__(163)
 var BN = __webpack_require__(9)
-var crt = __webpack_require__(88)
+var crt = __webpack_require__(89)
 var createHash = __webpack_require__(47)
 var withPublic = __webpack_require__(164)
 var Buffer = __webpack_require__(2).Buffer
@@ -75481,7 +75625,7 @@ const realmConfig = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constants__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__callAdapter__ = __webpack_require__(41);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__config__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__config__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__functions__ = __webpack_require__(14);
 
 
@@ -75581,7 +75725,7 @@ const _sendMessage = (message = {}) => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_bind_js__ = __webpack_require__(169);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__core_Axios_js__ = __webpack_require__(318);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__core_mergeConfig_js__ = __webpack_require__(178);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__defaults_index_js__ = __webpack_require__(99);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__defaults_index_js__ = __webpack_require__(100);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__helpers_formDataToJSON_js__ = __webpack_require__(174);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__cancel_CanceledError_js__ = __webpack_require__(64);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__cancel_CancelToken_js__ = __webpack_require__(337);
@@ -75988,7 +76132,7 @@ class InterceptorManager {
 /* harmony export (immutable) */ __webpack_exports__["a"] = dispatchRequest;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__transformData_js__ = __webpack_require__(321);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__cancel_isCancel_js__ = __webpack_require__(175);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__defaults_index_js__ = __webpack_require__(99);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__defaults_index_js__ = __webpack_require__(100);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__cancel_CanceledError_js__ = __webpack_require__(64);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__core_AxiosHeaders_js__ = __webpack_require__(42);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__adapters_adapters_js__ = __webpack_require__(176);
@@ -76082,7 +76226,7 @@ function dispatchRequest(config) {
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = transformData;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_js__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__defaults_index_js__ = __webpack_require__(99);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__defaults_index_js__ = __webpack_require__(100);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__core_AxiosHeaders_js__ = __webpack_require__(42);
 
 
@@ -77261,7 +77405,7 @@ Object.entries(HttpStatusCode).forEach(([key, value]) => {
  */
 
 var url = __webpack_require__(342);
-var parser = __webpack_require__(100);
+var parser = __webpack_require__(101);
 var Manager = __webpack_require__(183);
 var debug = __webpack_require__(65)('socket.io-client');
 
@@ -78733,7 +78877,7 @@ Socket.protocol = parser.protocol; // this is an int
  */
 
 Socket.Socket = Socket;
-Socket.Transport = __webpack_require__(103);
+Socket.Transport = __webpack_require__(104);
 Socket.transports = __webpack_require__(184);
 Socket.parser = __webpack_require__(44);
 
@@ -79370,12 +79514,12 @@ try {
  * Module requirements.
  */
 
-var XMLHttpRequest = __webpack_require__(101);
+var XMLHttpRequest = __webpack_require__(102);
 var Polling = __webpack_require__(185);
 var Emitter = __webpack_require__(43);
 var inherit = __webpack_require__(67);
 var debug = __webpack_require__(68)('engine.io-client:polling-xhr');
-var globalThis = __webpack_require__(102);
+var globalThis = __webpack_require__(103);
 
 /**
  * Module exports.
@@ -80675,7 +80819,7 @@ function plural(ms, n, name) {
 
 var Polling = __webpack_require__(185);
 var inherit = __webpack_require__(67);
-var globalThis = __webpack_require__(102);
+var globalThis = __webpack_require__(103);
 
 /**
  * Module exports.
@@ -80909,7 +81053,7 @@ JSONPPolling.prototype.doWrite = function (data, fn) {
  * Module dependencies.
  */
 
-var Transport = __webpack_require__(103);
+var Transport = __webpack_require__(104);
 var parser = __webpack_require__(44);
 var parseqs = __webpack_require__(66);
 var inherit = __webpack_require__(67);
@@ -81330,7 +81474,7 @@ Backoff.prototype.setJitter = function(jitter){
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_common_js__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_utils_js__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__call_config_js__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__call_config_js__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__call_functions__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__call_initialize_js__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__janus_js__ = __webpack_require__(368);
@@ -88699,7 +88843,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_384__;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__connection__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers_utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_utils__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__profileutils__ = __webpack_require__(107);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__profileutils__ = __webpack_require__(108);
 // migration done (14-12-21)
 
 
@@ -88717,7 +88861,7 @@ const getFriendsListIQ = () => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const friendsIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, "BA")
     }).c("query", {
       xmlns: Strophe.NS.ROSTER
@@ -88728,7 +88872,7 @@ const getFriendsListIQ = () => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["d"] = getFriendsListIQ;
@@ -88744,11 +88888,11 @@ const getUserProfileIQ = userJid => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const profileIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, "!A"),
       to: userJid
     }).c("vCard", {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_40" /* NS_VCARD */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_41" /* NS_VCARD */]
     });
 
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(profileIQ, response => {
@@ -88756,7 +88900,7 @@ const getUserProfileIQ = userJid => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
   }
 });
 /* unused harmony export getUserProfileIQ */
@@ -88772,11 +88916,11 @@ const getLastActivityIQ = toUserJid => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const lastActivityIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, "BA"),
       to: toUserJid
     }).c("query", {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_35" /* NS_LAST */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_36" /* NS_LAST */]
     });
 
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(lastActivityIQ, response => {
@@ -88784,7 +88928,7 @@ const getLastActivityIQ = toUserJid => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["e"] = getLastActivityIQ;
@@ -88800,15 +88944,15 @@ const blockUserIQ = toUserJid => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const blockuserIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, "BA")
     }).c("block", {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_29" /* NS_BLOCKING */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_30" /* NS_BLOCKING */]
     }).c("item", {
       jid: toUserJid
     }).up();
 
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(blockuserIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(blockuserIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["a"] = blockUserIQ;
@@ -88824,15 +88968,15 @@ const unblockUserIQ = toUserJid => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const unblockuserIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, "BA")
     }).c("unblock", {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_29" /* NS_BLOCKING */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_30" /* NS_BLOCKING */]
     }).c("item", {
       jid: toUserJid
     }).up();
 
-    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(unblockuserIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
+    await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(unblockuserIQ, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])()), () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["g"] = unblockUserIQ;
@@ -88847,10 +88991,10 @@ const blockedListIQ = () => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const blockListIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, "#A")
     }).c("blocklist", {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_29" /* NS_BLOCKING */]
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_30" /* NS_BLOCKING */]
     });
 
     await Object(__WEBPACK_IMPORTED_MODULE_1__connection__["b" /* getConnection */])().sendIQ(blockListIQ, response => {
@@ -88858,7 +89002,7 @@ const blockedListIQ = () => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["b"] = blockedListIQ;
@@ -88873,10 +89017,10 @@ const blockedUserListIQ = () => new Promise(async resolve => {
     resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["b" /* connectionErrorResponse */])());
   } else {
     const blockUserListIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_62" /* TYPE_GET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_63" /* TYPE_GET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, "!A")
     }).c("query", {
-      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_38" /* NS_USER_ACTIVITIES */],
+      xmlns: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_39" /* NS_USER_ACTIVITIES */],
       status: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["n" /* BLOCK_USER */]
     });
 
@@ -88885,7 +89029,7 @@ const blockedUserListIQ = () => new Promise(async resolve => {
       const successRes = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
       successRes.data = item;
       resolve(successRes);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["c"] = blockedUserListIQ;
@@ -88912,7 +89056,7 @@ const setUserProfileIQ = async (nickName, image, status, mobileNumber, email) =>
     const fileUrl = profileResponse.imageFileToken || image;
 
     const userProfileIQ = $iq({
-      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_64" /* TYPE_SET */],
+      type: __WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_65" /* TYPE_SET */],
       id: Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["x" /* randomString */])(16, "BA")
     }).c("vCard", {
       xmlns: "vcard-temp"
@@ -88922,7 +89066,7 @@ const setUserProfileIQ = async (nickName, image, status, mobileNumber, email) =>
       const iqSuccessResponse = Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["B" /* successResponse */])();
       iqSuccessResponse.fileToken = fileUrl;
       resolve(iqSuccessResponse);
-    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_49" /* REQUEST_FAILED */])));
+    }, () => resolve(Object(__WEBPACK_IMPORTED_MODULE_2__helpers_utils__["j" /* errorResponse */])(__WEBPACK_IMPORTED_MODULE_0__helpers_constants__["_50" /* REQUEST_FAILED */])));
   }
 });
 /* harmony export (immutable) */ __webpack_exports__["f"] = setUserProfileIQ;
@@ -88948,10 +89092,10 @@ const setUserProfileIQ = async (nickName, image, status, mobileNumber, email) =>
  */
 const carbonEnable = () => {
   const carbon = $iq({
-    type: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_64" /* TYPE_SET */],
+    type: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_65" /* TYPE_SET */],
     id: Object(__WEBPACK_IMPORTED_MODULE_1__helpers_utils__["x" /* randomString */])(16, "#A")
   }).c("enable", {
-    xmlns: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_30" /* NS_CARBON */]
+    xmlns: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_31" /* NS_CARBON */]
   });
 
   Object(__WEBPACK_IMPORTED_MODULE_0__connection__["b" /* getConnection */])().send(carbon);
@@ -89083,11 +89227,11 @@ const initializeSDK = async options => {
     const validateObj = [{
       key: 'apiBaseUrl',
       value: apiBaseUrl,
-      rules: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_51" /* REQUIRED */]
     }, {
       key: 'licenseKey',
       value: licenseKey,
-      rules: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_50" /* REQUIRED */]
+      rules: __WEBPACK_IMPORTED_MODULE_2__helpers_constants__["_51" /* REQUIRED */]
     }];
     const response = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_common__["b" /* clientSideValidation */])(validateObj);
 
@@ -89188,7 +89332,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_389__;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_native__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_native__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_native___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react_native__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__strophe_connection__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__reconnect__ = __webpack_require__(54);
@@ -89197,6 +89341,8 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_389__;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__react_native_community_netinfo___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__react_native_community_netinfo__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_native_background_timer__ = __webpack_require__(392);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_native_background_timer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_react_native_background_timer__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__call_config__ = __webpack_require__(16);
+
 
 
 
@@ -89208,7 +89354,8 @@ let previousStatus = null,
     previousState = '',
     isFirstTimeAppStateChange = true,
     isFirstTimeIntStateChange = true,
-    isCheckBackground;
+    isCheckBackground,
+    socketTimer;
 /**
  * Flag to keep track whether or not to keep the connection even when app goes to background
  * Because in some cases app will go to background state but still we need to keep the connection alive
@@ -89238,6 +89385,7 @@ const appStateHandler = () => {
       Object(__WEBPACK_IMPORTED_MODULE_3__common__["k" /* setAppState */])(nextAppState);
       if (!isFirstTimeAppStateChange) {
         if (nextAppState === 'active') {
+          __WEBPACK_IMPORTED_MODULE_5_react_native_background_timer___default.a.clearInterval(socketTimer);
           __WEBPACK_IMPORTED_MODULE_5_react_native_background_timer___default.a.clearTimeout(isCheckBackground);
           if (__WEBPACK_IMPORTED_MODULE_0_react_native__["Platform"].OS === 'ios') {
             Object(__WEBPACK_IMPORTED_MODULE_3__common__["g" /* processPendingDownloads */])();
@@ -89248,6 +89396,11 @@ const appStateHandler = () => {
           isCheckBackground = __WEBPACK_IMPORTED_MODULE_5_react_native_background_timer___default.a.setTimeout(() => {
             Object(__WEBPACK_IMPORTED_MODULE_1__strophe_connection__["a" /* disconnect */])();
           }, 1000);
+        } else if (nextAppState === 'background' && shouldKeepConnectionWhenAppGoesBackground) {
+          socketTimer = __WEBPACK_IMPORTED_MODULE_5_react_native_background_timer___default.a.setInterval(() => {
+            const socket = Object(__WEBPACK_IMPORTED_MODULE_6__call_config__["j" /* getSocket */])();
+            socket.emit('online');
+          }, 4500);
         }
       } else isFirstTimeAppStateChange = false;
     }

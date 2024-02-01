@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Platform } from 'react-native';
 
-import PipHandler from '../customModules/PipModule';
+import PipHandler from '../customModules/PipModule/PipHandler';
 
 /**
  * Hook that provides the current Pip mode state. Subscribe to this hook, to listen

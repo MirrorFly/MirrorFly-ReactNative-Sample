@@ -125,6 +125,7 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import { updateRosterData } from '../redux/Actions/rosterAction';
 
 let localStream = null,
    localVideoMuted = false,
@@ -761,8 +762,13 @@ export const callBacks = {
       store.dispatch(updateUserPresence(res));
    },
    userProfileListener: res => {
-      store.dispatch(updateProfileDetail(res));
-      updateUserProfileDetails(res);
+      // console.log('User Profile updated', JSON.stringify(res, null, 2));
+      if(Array.isArray(res)) {
+         Store.dispatch(updateRosterData(res));
+      } else {
+         store.dispatch(updateProfileDetail(res));
+         updateUserProfileDetails(res);
+      }
    },
    replyMessageListener: res => {
       console.log('replyMessageListener', res);

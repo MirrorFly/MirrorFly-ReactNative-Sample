@@ -230,7 +230,7 @@ const updateCallAgainScreenData = (userID, callType) => {
 export const endCall = async (isFromTimeout = false, userId, callType) => {
    const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
    const { callStatusText } = confrenceData;
-   if (callStatusText === CALL_STATUS_DISCONNECTED || callStatusText === undefined) {
+   if ((callStatusText === CALL_STATUS_DISCONNECTED || callStatusText === undefined) && !isFromTimeout) {
       return;
    }
    clearOutgoingTimer();
@@ -239,7 +239,6 @@ export const endCall = async (isFromTimeout = false, userId, callType) => {
    if (Platform.OS === 'android') {
       stopForegroundServiceNotification();
    }
-   // endCallAction();
    dispatchDisconnected();
    // callLogs.update(callConnectionDataEndCall.roomId, {
    //     "endTime": callLogs.initTime(),

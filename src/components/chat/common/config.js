@@ -22,5 +22,8 @@ const config = {
    API_URL: 'https://api-uikit-qa.contus.us/api/v1',
    lisenceKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
    // =====================================
+   // UAT Environment variables
+   // API_URL: 'https://api-uikit-uat.contus.us/api/v1',
+   // lisenceKey: 'lu3Om85JYSghcsB6vgVoSgTlSQArL5',
 };
 export default config;

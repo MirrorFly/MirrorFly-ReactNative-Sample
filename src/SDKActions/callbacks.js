@@ -761,7 +761,6 @@ export const callBacks = {
       store.dispatch(updateUserPresence(res));
    },
    userProfileListener: res => {
-      console.log('User Profile updated', JSON.stringify(res, null, 2));
       store.dispatch(updateProfileDetail(res));
       updateUserProfileDetails(res);
    },
@@ -802,8 +801,6 @@ export const callBacks = {
       console.log('adminBlockListener = (res) => { }', res);
    },
    incomingCallListener: function (res) {
-      addHeadphonesConnectedListenerForCall();
-      startIncomingCallRingtone();
       remoteStream = [];
       localStream = null;
       let callMode = 'onetoone';
@@ -827,6 +824,8 @@ export const callBacks = {
       let roomId = getCurrentCallRoomId();
 
       if (roomId === '' || roomId === null || roomId === undefined) {
+         addHeadphonesConnectedListenerForCall();
+         startIncomingCallRingtone();
          resetPinAndLargeVideoUser();
          if (res.callType === 'audio') {
             localVideoMuted = true;
@@ -853,16 +852,16 @@ export const callBacks = {
          // we should close the call again screen to prevent the user from seeing the Incoming call screen UI, because the incoming call screen UI is only for Android.
          // for iOS incoming call will only be shown in call kit
          const { showCallModal: isCallModalOpen, screenName: currentCallModalScreen } = Store.getState().callData || {};
-         if(Platform.OS === 'ios' && isCallModalOpen & currentCallModalScreen === CALL_AGAIN_SCREEN) {
+         if (Platform.OS === 'ios' && isCallModalOpen & (currentCallModalScreen === CALL_AGAIN_SCREEN)) {
             Store.dispatch(closeCallModal());
          }
          Store.dispatch(setCallModalScreen(INCOMING_CALL_SCREEN));
          updatingUserStatusInRemoteStream(res.usersStatus);
          startMissedCallNotificationTimer();
+         startCallingTimer();
       } else {
          SDK.callEngaged();
       }
-
       // callLogs.insert({
       //   callMode: res.callMode,
       //   callState: 0,
@@ -873,7 +872,6 @@ export const callBacks = {
       //   userList: res.userList,
       //   groupId: res.callMode === 'onetoone' ? '' : res.groupId,
       // });
-      startCallingTimer();
    },
    callStatusListener: function (res) {
       callStatus(res);

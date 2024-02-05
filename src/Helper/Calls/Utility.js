@@ -707,7 +707,7 @@ export const pushNotifyBackground = () => {
    RNVoipPushNotification.addEventListener('notification', async notification => {
       // this callback will be called only when the incoming call is received while the user is already on a call
       // so sending the notification payload to SDK to send busy status to the caller
-      let remoteMessage = {
+            let remoteMessage = {
          data: notification,
       };
       SDK.getCallNotification(remoteMessage);
@@ -724,7 +724,7 @@ export const listnerForNetworkStateChangeWhenIncomingCall = () => {
             if (Platform.OS === 'android') {
                stopForegroundServiceNotification();
             }
-            SDK.endCall();
+            SDK.endIncomingCallWhileOffline();
             // unsubscrobing the listener
             networkListnerWhenIncomingCallSubscriber();
             // ending the call and clearing the data

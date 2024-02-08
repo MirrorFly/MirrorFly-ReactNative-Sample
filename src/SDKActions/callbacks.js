@@ -344,7 +344,9 @@ const ended = async res => {
          // Store.dispatch(callConversion());
       }, DISCONNECTED_SCREEN_DURATION);
 
-      if (callConnectionData && !res.localUser) {
+      //Missed call Notification for missed incoming call
+      let screenName = Store.getState().callData.screenName;
+      if (callConnectionData && !res.localUser && screenName === INCOMING_CALL_SCREEN) {
          const callDetailObj = callConnectionData ? { ...callConnectionData } : {};
          callDetailObj['status'] = 'ended';
          let nickName = getNickName(callConnectionData);
@@ -512,20 +514,26 @@ const connecting = res => {
    // encryptAndStoreInLocalStorage('callingComponent', false);
    const showConfrenceData = showConfrenceStoreData();
    const { data } = showConfrenceData;
-   // If 'data.showStreamingComponent' property value is TRUE means, already call is connected &
-   // Streaming data has been shared between users. That's why we check condition here,
-   // If 'data.showStreamingComponent' is FALSE, then set the 'CONNECTING' state to display.
-   if (data && remoteStream.length === 0) {
-      remoteStream = [];
+   if (data) {
+      Store.dispatch(
+         showConfrence({
+            ...(data || {}),
+            callStatusText: res.status,
+            localStream,
+            remoteStream,
+            localVideoMuted,
+            localAudioMuted,
+         }),
+      );
       // encryptAndStoreInLocalStorage('connecting', true);
       // Store.dispatch(
       //    showConfrence({
       //       showComponent: true,
       //       showStreamingComponent: false,
-      //       showCallingComponent: false,
+      //       showCallinggComponent: false,
       //    }),
       // );
-      Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
+      // Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
       // callLogs.update(roomId, {
       //    sessionStatus: res.sessionStatus,
       //    // "startTime": callLogs.initTime()
@@ -610,7 +618,7 @@ const callStatus = res => {
    if (res.status === 'ringing') {
       ringing(res);
    } else if (res.status === 'connecting') {
-      // connecting(res);
+      connecting(res);
    } else if (res.status === 'connected') {
       connected(res);
    } else if (res.status === 'busy') {
@@ -763,7 +771,7 @@ export const callBacks = {
    },
    userProfileListener: res => {
       // console.log('User Profile updated', JSON.stringify(res, null, 2));
-      if(Array.isArray(res)) {
+      if (Array.isArray(res)) {
          Store.dispatch(updateRosterData(res));
       } else {
          store.dispatch(updateProfileDetail(res));

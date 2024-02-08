@@ -18,6 +18,7 @@ class PipHandler {
     *
     * @param width
     * @param height
+    * @param shouldOpenPermissionScreenIfPipNotAllowed - Should open PIP permission screen if PIP is disabled in the  premission settings
     * @example
     * ```js
     * import PipHandler, { usePipModeListener } from 'customModules/PipModule';
@@ -27,12 +28,16 @@ class PipHandler {
     * function enterPipMode() {
     *
     *   if (!isInPipMode)
-    *     PipHandler.enterPipMode(300, 214);
+    *     PipHandler.enterPipMode(300, 214, true);
     * }
     * ```
     */
-   enterPipMode(width, height) {
-      return NativeModules?.PipAndroid?.enterPipMode(width ? Math.floor(width) : 0, height ? Math.floor(height) : 0);
+   enterPipMode(width, height, shouldOpenPermissionScreenIfPipNotAllowed = false) {
+      return NativeModules?.PipAndroid?.enterPipMode(
+         width ? Math.floor(width) : 0,
+         height ? Math.floor(height) : 0,
+         shouldOpenPermissionScreenIfPipNotAllowed,
+      );
    }
 }
 

@@ -7,8 +7,10 @@ import useRosterData from '../../hooks/useRosterData';
 import { useNetworkStatus } from '../../hooks';
 import useFetchImage from '../../hooks/useFetchImage';
 import commonStyles from '../../common/commonStyles';
+import { getUsernameGraphemes } from '../../Helper';
+import { CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
 
-const PIPGridItem = ({ item, isLocalUser, isFullSize, isAudioMuted }) => {
+const PIPGridItem = ({ item, isLocalUser, isFullSize, isAudioMuted, userStatus }) => {
    const userId = getUserIdFromJid(item?.fromJid || '');
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
@@ -25,6 +27,17 @@ const PIPGridItem = ({ item, isLocalUser, isFullSize, isAudioMuted }) => {
 
    const handleImageError = () => {
       setIsImageLoadError(true);
+   };
+
+   const renderReconnectingOverlay = () => {
+      return userStatus?.toLowerCase?.() === CALL_STATUS_RECONNECT ? (
+         <View style={styles.reconnectingOverlay}>
+            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.reconnectingOverlayText}>
+               {' '}
+               Reconnecting{' '}
+            </Text>
+         </View>
+      ) : null;
    };
 
    return (
@@ -61,10 +74,11 @@ const PIPGridItem = ({ item, isLocalUser, isFullSize, isAudioMuted }) => {
                      },
                   }}
                   onError={handleImageError}
+                  resizeMode="cover"
                />
             ) : (
                <View style={commonStyles.marginTop_5}>
-                  <Avathar backgroundColor={userProfile.colorCode} data={nickName} fontSize={30} />
+                  <Text style={styles.userNameText}>{getUsernameGraphemes(nickName)}</Text>
                </View>
             )}
          </View>
@@ -72,13 +86,15 @@ const PIPGridItem = ({ item, isLocalUser, isFullSize, isAudioMuted }) => {
          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.gridItemUserName}>
             {isLocalUser ? 'You' : nickName}
          </Text>
+         {/* Reconnecting overlay based on user call status */}
+         {renderReconnectingOverlay()}
       </View>
    );
 };
 
-const PipGridLayoutAndroid = ({ remoteStream, localUserJid, remoteAudioMuted }) => {
+const PipGridLayoutAndroid = ({ remoteStream, localUserJid, remoteAudioMuted, callStatus }) => {
    // Sorting the remote stream with local user at the top (first)
-   const [calculatedColumnsForPipGrid, sortedRemoteStreamsForPip] = React.useMemo(() => {
+   const sortRemoteStreamAndCalculateColumns = () => {
       const _sortedData = [...(remoteStream || [])];
       const localStreamIndex = _sortedData.findIndex(s => s.fromJid === localUserJid);
       if (localStreamIndex > -1) {
@@ -87,7 +103,8 @@ const PipGridLayoutAndroid = ({ remoteStream, localUserJid, remoteAudioMuted }) 
       }
       const _calculatedColumns = _sortedData.length <= 2 ? 1 : 2;
       return [_calculatedColumns, _sortedData];
-   }, [remoteStream]);
+   }
+   const [calculatedColumnsForPipGrid, sortedRemoteStreamsForPip] = sortRemoteStreamAndCalculateColumns();
 
    const renderPipLayoutItem = item => {
       const isAudioMuted = remoteAudioMuted?.[item?.fromJid] || false;
@@ -98,6 +115,7 @@ const PipGridLayoutAndroid = ({ remoteStream, localUserJid, remoteAudioMuted }) 
             isLocalUser={item?.fromJid === localUserJid}
             isFullSize={calculatedColumnsForPipGrid === 1}
             isAudioMuted={isAudioMuted}
+            userStatus={item?.status}
          />
       );
    };
@@ -114,6 +132,8 @@ export default PipGridLayoutAndroid;
 const styles = StyleSheet.create({
    pipContainer: {
       flex: 1,
+      width: '100%',
+      height: '100%',
       position: 'relative',
    },
    gridItemVoiceLevelWrapper: {
@@ -155,5 +175,27 @@ const styles = StyleSheet.create({
       width: '100%',
       height: '100%',
       zIndex: -10,
+   },
+   userNameText: {
+      color: 'white',
+      fontWeight: '600',
+      fontSize: 18,
+      textTransform: 'uppercase',
+   },
+   reconnectingOverlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.6)',
+      justifyContent: 'center',
+      alignItems: 'center',
+   },
+   reconnectingOverlayText: {
+      textAlign: 'center',
+      width: '100%',
+      color: 'white',
+      fontSize: 12,
    },
 });

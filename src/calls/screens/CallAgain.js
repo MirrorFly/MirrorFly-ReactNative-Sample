@@ -12,7 +12,6 @@ import ApplicationColors from '../../config/appColors';
 import { useNetworkStatus } from '../../hooks';
 import useRosterData from '../../hooks/useRosterData';
 import { resetCallAgainData } from '../../redux/Actions/CallAgainAction';
-import CloseCallModalButton from '../components/CloseCallModalButton';
 
 const CallAgain = () => {
    const { data: { callType, userId } = {} } = useSelector(state => state.callAgainData) || {};
@@ -36,7 +35,6 @@ const CallAgain = () => {
          if (isNetworkConnected) {
             makeCalls(callType, [userId]);
          } else {
-            // closeScreen();
             showCallModalToast('Please check your internet connection', 2500);
          }
       }
@@ -45,8 +43,6 @@ const CallAgain = () => {
    return (
       <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>
          <View>
-            {/* down arrow to close the modal */}
-            {Platform.OS === 'android' && <CloseCallModalButton onPress={closeScreen} />}
             {/* call status */}
             <View style={styles.callStatusWrapper}>
                <Text style={styles.callStatusText}>{callStatus}</Text>

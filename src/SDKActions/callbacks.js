@@ -126,6 +126,7 @@ import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
 import { updateRosterData } from '../redux/Actions/rosterAction';
+import ActivityModule from '../customModules/ActivityModule';
 
 let localStream = null,
    localVideoMuted = false,
@@ -168,6 +169,8 @@ export const resetCallData = () => {
       endCallForIos();
    } else {
       RNInCallManager.setSpeakerphoneOn(false);
+      // updating the call connected status to android native code
+      ActivityModule.updateCallConnectedStatus(false);
    }
    stopOutgoingCallRingingTone();
    stopReconnectingTone();
@@ -344,7 +347,9 @@ const ended = async res => {
          // Store.dispatch(callConversion());
       }, DISCONNECTED_SCREEN_DURATION);
 
-      if (callConnectionData && !res.localUser) {
+      //Missed call Notification for missed incoming call
+      let screenName = Store.getState().callData.screenName;
+      if (callConnectionData && !res.localUser && screenName === INCOMING_CALL_SCREEN) {
          const callDetailObj = callConnectionData ? { ...callConnectionData } : {};
          callDetailObj['status'] = 'ended';
          let nickName = getNickName(callConnectionData);
@@ -500,6 +505,8 @@ const connected = async res => {
          );
          if (!res.localUser) {
             dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
+            // updating the call connected status to android native code
+            ActivityModule.updateCallConnectedStatus(true);
             startDurationTimer();
          }
       });
@@ -512,20 +519,26 @@ const connecting = res => {
    // encryptAndStoreInLocalStorage('callingComponent', false);
    const showConfrenceData = showConfrenceStoreData();
    const { data } = showConfrenceData;
-   // If 'data.showStreamingComponent' property value is TRUE means, already call is connected &
-   // Streaming data has been shared between users. That's why we check condition here,
-   // If 'data.showStreamingComponent' is FALSE, then set the 'CONNECTING' state to display.
-   if (data && remoteStream.length === 0) {
-      remoteStream = [];
+   if (data) {
+      Store.dispatch(
+         showConfrence({
+            ...(data || {}),
+            callStatusText: res.status,
+            localStream,
+            remoteStream,
+            localVideoMuted,
+            localAudioMuted,
+         }),
+      );
       // encryptAndStoreInLocalStorage('connecting', true);
       // Store.dispatch(
       //    showConfrence({
       //       showComponent: true,
       //       showStreamingComponent: false,
-      //       showCallingComponent: false,
+      //       showCallinggComponent: false,
       //    }),
       // );
-      Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
+      // Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
       // callLogs.update(roomId, {
       //    sessionStatus: res.sessionStatus,
       //    // "startTime": callLogs.initTime()
@@ -589,28 +602,33 @@ const reconnecting = res => {
    updatingUserStatusInRemoteStream(res.usersStatus);
    const showConfrenceData = Store.getState().showConfrenceData;
    const { data } = showConfrenceData;
-   Store.dispatch(
-      showConfrence({
-         showCallingComponent: false,
-         ...(data || {}),
-         localStream: localStream,
-         remoteStream: remoteStream,
-         fromJid: res.userJid,
-         status: 'REMOTESTREAM',
-         localVideoMuted: localVideoMuted,
-         localAudioMuted: localAudioMuted,
-         remoteVideoMuted: remoteVideoMuted,
-         remoteAudioMuted: remoteAudioMuted,
-         callStatusText: CALL_STATUS_RECONNECT,
-      }),
-   );
+   let vcardData = getLocalUserDetails();
+   let currentUserJid = formatUserIdToJid(vcardData?.fromUser);
+   const updatedConferenceData = {
+      showCallingComponent: false,
+      ...(data || {}),
+      localStream: localStream,
+      remoteStream: remoteStream,
+      fromJid: res.userJid,
+      status: 'REMOTESTREAM',
+      localVideoMuted: localVideoMuted,
+      localAudioMuted: localAudioMuted,
+      remoteVideoMuted: remoteVideoMuted,
+      remoteAudioMuted: remoteAudioMuted,
+      callStatusText: CALL_STATUS_RECONNECT,
+   };
+   // if (currentUserJid === res.userJid) {
+   //    updatedConferenceData.callStatusText = CALL_STATUS_RECONNECT;
+   // }
+   Store.dispatch(showConfrence(updatedConferenceData));
 };
 
 const callStatus = res => {
+   console.log('callStatus ', res.status);
    if (res.status === 'ringing') {
       ringing(res);
    } else if (res.status === 'connecting') {
-      // connecting(res);
+      connecting(res);
    } else if (res.status === 'connected') {
       connected(res);
    } else if (res.status === 'busy') {
@@ -763,7 +781,7 @@ export const callBacks = {
    },
    userProfileListener: res => {
       // console.log('User Profile updated', JSON.stringify(res, null, 2));
-      if(Array.isArray(res)) {
+      if (Array.isArray(res)) {
          Store.dispatch(updateRosterData(res));
       } else {
          store.dispatch(updateProfileDetail(res));

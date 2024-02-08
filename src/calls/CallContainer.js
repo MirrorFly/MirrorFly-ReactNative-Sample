@@ -85,7 +85,9 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
          {Platform.OS === 'ios' &&
             !showCallModal &&
             Object.keys(connectionState).length !== 0 &&
-            screenName !== INCOMING_CALL_SCREEN && <PipViewIos userId={_userId} />}
+            (screenName === ONGOING_CALL_SCREEN || screenName === OUTGOING_CALL_SCREEN) && (
+               <PipViewIos userId={_userId} />
+            )}
          <Modal
             visible={showCallModal}
             animationType={Platform.OS === 'ios' ? 'slide' : 'none'}

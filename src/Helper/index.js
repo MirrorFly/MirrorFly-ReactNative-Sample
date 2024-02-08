@@ -292,12 +292,11 @@ export const getUserProfile = userId => {
  * @param {number} height 
  * @returns {boolean} - whether PIP mode has enabled or not based on the call connected status condition
  */
-export const enablePipModeIfCallConnected = (width = 300, height = 600) => {
+export const enablePipModeIfCallConnected = (width = 300, height = 600, shouldOpenPermissionScreenIfPipNotAllowed = true) => {
    if (Platform.OS === 'android') {
       const remoteStream = Store.getState().showConfrenceData?.data?.remoteStream || [];
       const isCallConnected = remoteStream.filter(s => s.status?.toLowerCase() === CALL_STATUS_CONNECTED)?.length > 1;
-      isCallConnected && PipHandler.enterPipMode(width, height);
-      isCallConnected && console.log('PIP mode has enabled');
+      isCallConnected && PipHandler.enterPipMode(width, height, shouldOpenPermissionScreenIfPipNotAllowed);
       return isCallConnected;
    }
 };

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.util.Log;
 
 import com.facebook.react.bridge.Promise;
@@ -24,10 +25,17 @@ public class ActivityModule extends ReactContextBaseJavaModule {
 
     public ReactApplicationContext reactContext;
     public static ActivityModule instance = null;
+    public static final String CALL_SCREEN_ACTIVITY_STATE_CHANGE = "CALL_SCREEN_ACTIVITY_STATE_CHANGE";
+    private static DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = null;
 
     public ActivityModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
+    }
+    @Override
+    public void initialize() {
+        super.initialize();
+        eventEmitter = getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
     }
 
     private ActivityModule() {}
@@ -44,9 +52,17 @@ public class ActivityModule extends ReactContextBaseJavaModule {
         return "ActivityModule";
     }
 
+    public static synchronized void callScreenStateChanged(String state) {
+        Log.d("TAG", "callScreenStateChanged: emitting event callScreenStateChanged");
+        eventEmitter.emit(CALL_SCREEN_ACTIVITY_STATE_CHANGE, state);
+    }
     @ReactMethod
-    public void CloseActivity() {
+    public void closeActivity() {
         ActivityManager.getInstance().finishActivity(CallScreenActivity.class);
+    }
+    @ReactMethod
+    public void updateCallConnectedStatus(Boolean isConnected) {
+        CallScreenActivity.isCallConnected = isConnected;
     }
 
     @ReactMethod
@@ -109,6 +125,10 @@ public class ActivityModule extends ReactContextBaseJavaModule {
 
     private boolean isLockScreenDisabled() {
         KeyguardManager km = (KeyguardManager) this.reactContext.getSystemService(Context.KEYGUARD_SERVICE);
+      //   boolean isLocked = km.inKeyguardRestrictedInputMode();
+      //   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      //       Log.d("isLocked", "isLockScreenDisabled: isLocked " + isLocked + " ,, " + km.isKeyguardSecure() +" , "+ km.isDeviceSecure());
+      //   }
         if (km.isKeyguardLocked())
             return true;
         else
@@ -122,3 +142,24 @@ public class ActivityModule extends ReactContextBaseJavaModule {
         getReactApplicationContext().startActivity(intent);
     }
 }
+
+//     private void openCallScreenActivity() {
+//         Intent intent = new Intent(getReactApplicationContext(), CallScreenActivity.class);
+//         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//         getReactApplicationContext().startActivity(intent);
+//     }
+
+//     @ReactMethod
+//     public void openActivity() {
+//         try {
+//             if (!CallScreenActivity.isActive) {
+//                 openCallScreenActivity();
+//             }
+//         }
+//         catch (Exception ex) {
+//             Log.d("TAG", "openActivity: Exception while creating callscreen Activity"+ ex);
+// //            ActivityManager.getInstance().finishActivity(CallScreenActivity.class);
+// //            openCallScreenActivity();
+//         }
+//     }
+//}

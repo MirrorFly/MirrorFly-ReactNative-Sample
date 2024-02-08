@@ -11,6 +11,7 @@ import IconButton from '../common/IconButton';
 const LeftArrowComponent = () => LeftArrowIcon();
 
 function ScreenHeader(props) {
+  const { onCreateBtn } = props;
   const [position] = React.useState('auto');
   const [isSearching, setIsSearching] = React.useState(false);
   const [text, setText] = React.useState('');
@@ -100,6 +101,11 @@ function ScreenHeader(props) {
               <SearchIcon />
             </IconButton>
           )}
+          {props.title === 'Add Participats' && (
+            <IconButton onPress={onCreateBtn}>
+              <Text style={styles.subText}>CREATE</Text>
+            </IconButton>
+          )}
           {!isSearching && props?.menuItems && (
             <Menu
               w="160"
@@ -147,5 +153,11 @@ const styles = StyleSheet.create({
     flex: 1,
     color: 'black',
     fontSize: 16,
+  },
+  subText: {
+    fontSize: 14,
+    paddingHorizontal: 12,
+    color: ApplicationColors.black,
+    fontWeight: '600',
   },
 });

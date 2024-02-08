@@ -88,6 +88,9 @@ const commonStyles = StyleSheet.create({
   pressedBg: {
     backgroundColor: ApplicationColors.pressedBg,
   },
+  ml_4: {
+    marginLeft: 4,
+  },
   marginLeft_5: {
     marginLeft: 5,
   },
@@ -123,6 +126,9 @@ const commonStyles = StyleSheet.create({
   },
   mb_130: {
     marginBottom: 130,
+  },
+  mt_50: {
+    marginTop: 50,
   },
   p_1: {
     padding: 1,
@@ -191,11 +197,17 @@ const commonStyles = StyleSheet.create({
   paddingTop_0: {
     paddingTop: 0,
   },
+  pt_15: {
+    paddingTop: 15,
+  },
   paddingLeft_0: {
     paddingLeft: 0,
   },
   paddingLeft_4: {
     paddingLeft: 4,
+  },
+  pl_10: {
+    paddingLeft: 10,
   },
   paddingRight_0: {
     paddingRight: 0,
@@ -215,14 +227,23 @@ const commonStyles = StyleSheet.create({
   fontWeight_bold: {
     fontWeight: 'bold',
   },
+  fw_600: {
+    fontWeight: '600',
+  },
   colorWhite: {
     color: '#fff',
+  },
+  colorBlack: {
+    color: '#000',
   },
   fontSize_11: {
     fontSize: 11,
   },
   fontSize_12: {
     fontSize: 12,
+  },
+  bgBlack: {
+    backgroundColor: '#000',
   },
   bgBlack_04: {
     backgroundColor: 'rgba(0,0,0,0.4)',
@@ -254,8 +275,17 @@ const commonStyles = StyleSheet.create({
   resizeCover: {
     resizeMode: 'cover',
   },
+  b_0: {
+    bottom: 0,
+  },
+  r_0: {
+    right: 0,
+  },
   r_5: {
     right: 5,
+  },
+  txtCenter: {
+    textAlign: 'center',
   },
 });
 

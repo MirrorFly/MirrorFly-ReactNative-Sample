@@ -12,21 +12,51 @@ import {
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
 import Pressable from '../common/Pressable';
+import CheckBox from '@react-native-community/checkbox';
+import { useRoute } from '@react-navigation/native';
+import { NEW_GROUP } from '../constant';
 
-const RenderItem = ({ item, index, onhandlePress }) => {
+const RenderItem = ({ item, index, onhandlePress, selectedUsers }) => {
   let {
     nickName,
     image: imageToken,
     colorCode,
     status,
   } = useRosterData(item?.userId);
+  const { params: { prevScreen = '' } = {} } = useRoute();
+  const [isChecked, setIsChecked] = React.useState(false);
+  const isNewGrpSrn = prevScreen === NEW_GROUP;
   // updating default values
   nickName = nickName || item?.nickName || item?.userId || '';
   imageToken = imageToken || '';
   colorCode = colorCode || SDK.getRandomColorCode();
   status = status || item.status || '';
-
   const handlePress = () => onhandlePress(item);
+
+  React.useEffect(() => {
+    if (Boolean(selectedUsers[item?.userJid]) !== isChecked) {
+      setIsChecked(Boolean(selectedUsers[item?.userJid]));
+    }
+  }, [selectedUsers[item?.userJid]]);
+
+  const renderCheckBox = React.useMemo(() => {
+    return (
+      <CheckBox
+        onFillColor={ApplicationColors.mainColor}
+        onCheckColor={ApplicationColors.mainColor}
+        hideBox={true}
+        animationDuration={0.1}
+        onAnimationType={'stroke'}
+        tintColors={{
+          true: ApplicationColors.mainColor,
+          false: ApplicationColors.mainColor,
+        }}
+        onChange={Platform.OS !== 'ios' && handlePress}
+        value={isChecked}
+        style={styles.checkbox}
+      />
+    );
+  }, [isChecked]);
 
   return (
     <React.Fragment key={index}>
@@ -51,6 +81,7 @@ const RenderItem = ({ item, index, onhandlePress }) => {
               {status}
             </Text>
           </View>
+          {isNewGrpSrn && renderCheckBox}
         </View>
       </Pressable>
       <View style={styles.divider} />
@@ -59,8 +90,14 @@ const RenderItem = ({ item, index, onhandlePress }) => {
 };
 
 export default function FlatListView(props) {
+  const { selectedUsers, onhandlePress } = props;
   const renderItem = ({ item, index }) => (
-    <RenderItem item={item} index={index} onhandlePress={props.onhandlePress} />
+    <RenderItem
+      item={item}
+      index={index}
+      onhandlePress={onhandlePress}
+      selectedUsers={selectedUsers}
+    />
   );
 
   const renderLoaderIfFetching = () => {

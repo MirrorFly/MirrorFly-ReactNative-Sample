@@ -8,7 +8,12 @@ import {
   Text,
   View,
 } from 'react-native';
-import { CHATSCREEN, RECENTCHATSCREEN, SETTINGSCREEN } from '../constant';
+import {
+  CHATSCREEN,
+  NEW_GROUP,
+  RECENTCHATSCREEN,
+  SETTINGSCREEN,
+} from '../constant';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { useDispatch } from 'react-redux';
 import ScreenHeader from '../components/ScreenHeader';
@@ -19,6 +24,8 @@ import { debounce, fetchContactsFromSDK, showToast } from '../Helper/index';
 import no_contacts from '../assets/no_contacts.png';
 import { getImageSource } from '../common/utils';
 import commonStyles from '../common/commonStyles';
+import { useRoute } from '@react-navigation/native';
+import SDK from '../SDK/SDK';
 
 const contactPaginationRefInitialValue = {
   nextPage: 1,
@@ -27,11 +34,14 @@ const contactPaginationRefInitialValue = {
 
 function ContactScreen() {
   const dispatch = useDispatch();
+  const { params: { prevScreen = '', grpName = '' } = {} } = useRoute();
+  const isNewGrpSrn = prevScreen === NEW_GROUP;
   const isNetworkconneted = useNetworkStatus();
   const [isFetching, setIsFetching] = React.useState(true);
   const [searchText, setSearchText] = React.useState('');
   const [isSearching, setIsSearching] = React.useState(false);
   const [contactList, setContactList] = React.useState([]);
+  const [selectedUsers, setSelectedUsers] = React.useState({});
 
   const contactsPaginationRef = React.useRef({
     ...contactPaginationRefInitialValue,
@@ -53,6 +63,9 @@ function ContactScreen() {
   }, [isNetworkconneted]);
 
   const handleBackBtn = () => {
+    if (isNewGrpSrn) {
+      return RootNav.goBack();
+    }
     let x = { screen: RECENTCHATSCREEN };
     dispatch(navigate(x));
     RootNav.navigate(RECENTCHATSCREEN);
@@ -127,14 +140,25 @@ function ContactScreen() {
     },
   ];
   const handlePress = item => {
-    dispatch(
-      navigate({
-        screen: CHATSCREEN,
-        fromUserJID: item.userJid,
-        profileDetails: item,
-      }),
-    );
-    RootNav.navigate(CHATSCREEN);
+    if (isNewGrpSrn) {
+      setSelectedUsers(_data => {
+        if (_data[item.userJid]) {
+          delete _data[item.userJid];
+        } else {
+          _data[item.userJid] = item;
+        }
+        return { ..._data };
+      });
+    } else {
+      dispatch(
+        navigate({
+          screen: CHATSCREEN,
+          fromUserJID: item.userJid,
+          profileDetails: item,
+        }),
+      );
+      RootNav.navigate(CHATSCREEN);
+    }
   };
 
   const handleSearch = async text => {
@@ -152,6 +176,12 @@ function ContactScreen() {
   const handleClear = async () => {
     setSearchText('');
     setIsSearching(false);
+  };
+
+  const handleGrpPartcipant = async () => {
+   const createGRPRes = await SDK.createGroup(grpName, Object.keys(selectedUsers));
+   console.log('createGRPRes ==>', createGRPRes)
+    RootNav.navigate(RECENTCHATSCREEN);
   };
 
   const renderContactList = () => {
@@ -183,6 +213,7 @@ function ContactScreen() {
       <FlatListView
         onhandlePagination={handlePagination}
         onhandlePress={item => handlePress(item)}
+        selectedUsers={selectedUsers}
         isLoading={isFetching}
         data={contactList}
       />
@@ -194,11 +225,12 @@ function ContactScreen() {
       style={commonStyles.flex1}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScreenHeader
-        title="Contacts"
+        title={isNewGrpSrn ? 'Add Participats' : 'Contacts'}
         onhandleBack={handleBackBtn}
         menuItems={menuItems}
         onhandleSearch={handleSearch}
         handleClear={handleClear}
+        onCreateBtn={handleGrpPartcipant}
       />
       {renderContactList()}
     </KeyboardAvoidingView>

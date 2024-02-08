@@ -262,11 +262,9 @@ export default function RecentChat() {
   React.useEffect(() => {
     (async () => {
       const recentChats = await SDK.getRecentChats();
-      const recentChatsFilter = recentChats?.data.filter(
-        item => item.chatType === 'chat',
-      );
-      dispatch(addRecentChat(recentChatsFilter));
-      updateRosterDataForRecentChats(recentChatsFilter);
+      console.log('recentChats ==>', JSON.stringify(recentChats, null, 2));
+      dispatch(addRecentChat(recentChats?.data || []));
+      updateRosterDataForRecentChats(recentChats?.data || []);
     })();
   }, []);
 

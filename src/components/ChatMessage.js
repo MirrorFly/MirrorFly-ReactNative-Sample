@@ -39,7 +39,7 @@ const ChatMessage = props => {
     handleMsgSelect,
     showContactInviteModal,
   } = props;
-  let isSame = currentUserJID === message?.fromUserJid;
+  let isSame = currentUserJID === message?.publisherJid;
   let statusVisible = 'notSend';
   const {
     msgBody = {},

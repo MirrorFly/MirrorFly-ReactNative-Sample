@@ -167,15 +167,22 @@ export const formatChatDateTime = (date, type) => {
 };
 
 /**
- * convertUTCTOLocalTimeStamp() method to perform convert UTC to local time formate.
+ * convertUTCTOLocalTimeStamp() method to perform convert UTC to local time format.
  *
- * @param {date} date
+ * @param {string} dateString - Date string in the format "YYYY-MM-DD HH:mm:ss.sss"
+ * @returns {Date} - Local time date object
  */
-export const convertUTCTOLocalTimeStamp = date => {
-  date = new Date(date.replace(/-/g, '/'));
-  let newDate = new Date(date);
-  newDate.setMinutes(newDate.getMinutes() - newDate.getTimezoneOffset());
-  return newDate;
+export const convertUTCTOLocalTimeStamp = dateString => {
+  // Split the date string into parts: year, month, day, hour, minute, second, millisecond
+  const parts = dateString.split(/[- :.]/);
+  
+  // Create a new Date object using the parts (Note: month is 0-indexed in JavaScript)
+  const date = new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5], parts[6]);
+  
+  // Adjust for timezone offset
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+
+  return date;
 };
 
 /**

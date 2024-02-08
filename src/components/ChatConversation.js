@@ -229,10 +229,6 @@ const ChatConversation = React.memo(props => {
             },
           },
           {
-            label: 'Report',
-            formatter: () => {},
-          },
-          {
             label: 'Search',
             formatter: handleConversationSearchPress,
           },

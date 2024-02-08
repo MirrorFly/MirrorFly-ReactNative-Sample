@@ -321,7 +321,7 @@ export const getChatHistoryData = (data, stateData) => {
     data.data,
     Object.values(state),
     'msgId',
-    'timestamp',
+    'createdAt',
   );
   const lastMessage = sortedData[sortedData.length - 1];
   let newSortedData;

@@ -49,6 +49,12 @@ allprojects {
                 excludeGroup "com.facebook.react"
             }
         }
+        //** add this line
+        configurations.all {
+            resolutionStrategy {
+                force "com.google.android.gms:play-services-location:21.0.1"
+            }
+        }
         google()
         maven { url 'https://www.jitpack.io' }
     }

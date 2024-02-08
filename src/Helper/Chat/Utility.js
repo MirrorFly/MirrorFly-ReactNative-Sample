@@ -283,7 +283,9 @@ export const getMessageObjReceiver = (messgeObject, newChatTo) => {
       userId: messgeObject.userId,
       userJid: messgeObject.userJid,
       msgId:
-        messgeObject.msgId || messgeObject.timestamp.toString() || SDK.randomString(),
+        messgeObject.msgId ||
+        messgeObject.timestamp.toString() ||
+        SDK.randomString(),
     }),
   };
 };
@@ -306,6 +308,6 @@ export const millisToMinutesAndSeconds = millis => {
 
 export const getSenderIdFromMsgObj = msgObj => {
   if (!msgObj || typeof msgObj !== 'object') return '';
-  const { fromUserJid, publisherId } = msgObj;
-  return isSingleChat(msgObj.chatType) ? fromUserJid : publisherId;
+  const { publisherJid } = msgObj;
+  return publisherJid;
 };

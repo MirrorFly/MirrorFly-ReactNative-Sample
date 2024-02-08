@@ -61,7 +61,7 @@ import {
 } from './Constant';
 import { closePermissionModal } from '../../redux/Actions/PermissionAction';
 import RNVoipPushNotification from 'react-native-voip-push-notification';
-const { ActivityModule } = NativeModules;
+import ActivityModule from '../../customModules/ActivityModule';
 
 let preventMultipleClick = false;
 let callBackgroundNotification = true;
@@ -347,6 +347,8 @@ export const answerIncomingCall = async callId => {
                      // Store.dispatch(openCallModal());
                   }
                });
+               // updating the call connected status to android native code
+               ActivityModule.updateCallConnectedStatus(true);
                // TODO: update the Call logs when implementing
                // callLogs.update(callConnectionDate.data.roomId, {
                //   startTime: callLogs.initTime(),
@@ -503,7 +505,7 @@ export const closeCallModalActivity = () => {
    Store.dispatch(closeCallModal());
    if (Platform.OS === 'android') {
       // _BackgroundTimer.setTimeout(() => {
-      ActivityModule.CloseActivity();
+      ActivityModule.closeActivity();
       // }, 100);
    }
 };
@@ -512,7 +514,7 @@ export const resetCallModalActivity = () => {
    Store.dispatch(resetCallStateData());
    if (Platform.OS === 'android') {
       // _BackgroundTimer.setTimeout(() => {
-      ActivityModule.CloseActivity();
+      ActivityModule.closeActivity();
       // }, 100);
    }
 };
@@ -521,6 +523,7 @@ export const openCallModelActivity = async () => {
    Store.dispatch(openCallModal());
    if (Platform.OS === 'android') {
       let deviceLocked = await getDeviceLockState();
+      // console.log('device locked state', deviceLocked);
       if (!deviceLocked) {
          ActivityModule.openActivity();
       }
@@ -530,7 +533,7 @@ export const openCallModelActivity = async () => {
 export const appKeepAliveActivity = async () => {
    let appStateWhenGoesBackground = AppState.addEventListener('change', async nextAppState => {
       let activity = await ActivityModule.getActivity();
-      if (nextAppState === 'active' && activity.includes('CallScreenActivity')) {
+      if (nextAppState === 'active' && activity?.includes('CallScreenActivity')) {
          Store.dispatch(openCallModal());
          appStateWhenGoesBackground.remove();
       }

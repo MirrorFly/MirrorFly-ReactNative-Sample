@@ -64,7 +64,7 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
    //    // await stopForegroundServiceNotification();
    //    // if (userCallStatus !== CALL_STATUS_DISCONNECTED)
    //    // await callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'INCOMING_CALL', false);
-   //    ActivityModule.CloseActivity();
+   //    ActivityModule.closeActivity();
    // };
 
    const handleClosePress = () => {

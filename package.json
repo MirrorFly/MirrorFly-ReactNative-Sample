@@ -148,6 +148,7 @@
     "react-native-keep-awake": "^4.0.0",
     "react-native-keyevent": "^0.3.2",
     "react-native-maps": "^1.7.1",
+    "react-native-material-menu": "^2.0.0",
     "react-native-mov-to-mp4": "^0.2.2",
     "react-native-pager-view": "^6.2.0",
     "react-native-permissions": "^3.8.0",

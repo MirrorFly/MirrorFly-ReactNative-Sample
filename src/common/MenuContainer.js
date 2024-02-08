@@ -1,26 +1,51 @@
-import { Menu } from 'native-base';
 import React from 'react';
 import { MenuIconBtn } from './Button';
+import { Menu, MenuItem } from 'react-native-material-menu';
+import { Dimensions, StyleSheet, Text } from 'react-native';
+import ApplicationColors from '../config/appColors';
 
-function MenuContainer({ menuItems, color }) {
-   const [position] = React.useState('auto');
+function MenuContainer({ menuItems, color, menuStyle }) {
+   const [visible, setVisible] = React.useState(false);
+
+   const showMenu = () => {
+      setVisible(true);
+   };
+
+   const hideMenu = () => {
+      setVisible(false);
+   };
+
    return (
-      <>
-         <Menu
-            w="160"
-            shouldOverlapWithTrigger={true}
-            placement={position == 'auto' ? undefined : position}
-            trigger={triggerProps => MenuIconBtn(triggerProps, color)}>
-            {menuItems?.map(item =>
-               item.label ? (
-                  <Menu.Item key={item.label} onPress={item?.formatter}>
-                     {item.label}
-                  </Menu.Item>
-               ) : null,
-            )}
-         </Menu>
-      </>
+      <Menu
+         animationDuration={200}
+         anchor={MenuIconBtn({}, color, showMenu)}
+         style={menuStyle || styles.topRightMenu}
+         onRequestClose={hideMenu}
+         visible={visible}>
+         {menuItems?.map(item => {
+            const handleMenuItemPress = () => {
+               hideMenu();
+               item?.formatter?.();
+            };
+            return item.label ? (
+               <MenuItem key={item.label} onPress={handleMenuItemPress}>
+                  <Text style={styles.menuItem}>{item.label}</Text>
+               </MenuItem>
+            ) : null;
+         })}
+      </Menu>
    );
 }
+
+const styles = StyleSheet.create({
+   topRightMenu: {
+      position: 'absolute',
+      top: 10,
+      left: Dimensions.get('screen').width - 5,
+   },
+   menuItem: {
+      color: ApplicationColors.black
+   }
+})
 
 export default MenuContainer;

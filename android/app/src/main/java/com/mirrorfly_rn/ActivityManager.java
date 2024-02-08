@@ -36,4 +36,16 @@ public class ActivityManager {
             }
         }
     }
+
+    public boolean hasActivity(Class<?> clazz) {
+        boolean isActivityAvailable = false;
+        for (Activity activity : activities) {
+            if (activity.getClass().equals(clazz)) {
+                isActivityAvailable = true;
+                break;
+            }
+        }
+        return isActivityAvailable;
+    }
+
 }

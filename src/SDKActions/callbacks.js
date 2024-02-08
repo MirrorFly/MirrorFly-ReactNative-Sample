@@ -126,6 +126,7 @@ import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
 import { updateRosterData } from '../redux/Actions/rosterAction';
+import ActivityModule from '../customModules/ActivityModule';
 
 let localStream = null,
    localVideoMuted = false,
@@ -168,6 +169,8 @@ export const resetCallData = () => {
       endCallForIos();
    } else {
       RNInCallManager.setSpeakerphoneOn(false);
+      // updating the call connected status to android native code
+      ActivityModule.updateCallConnectedStatus(false);
    }
    stopOutgoingCallRingingTone();
    stopReconnectingTone();
@@ -500,6 +503,8 @@ const connected = async res => {
          );
          if (!res.localUser) {
             dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
+            // updating the call connected status to android native code
+            ActivityModule.updateCallConnectedStatus(true);
             startDurationTimer();
          }
       });
@@ -589,24 +594,29 @@ const reconnecting = res => {
    updatingUserStatusInRemoteStream(res.usersStatus);
    const showConfrenceData = Store.getState().showConfrenceData;
    const { data } = showConfrenceData;
-   Store.dispatch(
-      showConfrence({
-         showCallingComponent: false,
-         ...(data || {}),
-         localStream: localStream,
-         remoteStream: remoteStream,
-         fromJid: res.userJid,
-         status: 'REMOTESTREAM',
-         localVideoMuted: localVideoMuted,
-         localAudioMuted: localAudioMuted,
-         remoteVideoMuted: remoteVideoMuted,
-         remoteAudioMuted: remoteAudioMuted,
-         callStatusText: CALL_STATUS_RECONNECT,
-      }),
-   );
+   let vcardData = getLocalUserDetails();
+   let currentUserJid = formatUserIdToJid(vcardData?.fromUser);
+   const updatedConferenceData = {
+      showCallingComponent: false,
+      ...(data || {}),
+      localStream: localStream,
+      remoteStream: remoteStream,
+      fromJid: res.userJid,
+      status: 'REMOTESTREAM',
+      localVideoMuted: localVideoMuted,
+      localAudioMuted: localAudioMuted,
+      remoteVideoMuted: remoteVideoMuted,
+      remoteAudioMuted: remoteAudioMuted,
+      callStatusText: CALL_STATUS_RECONNECT,
+   };
+   // if (currentUserJid === res.userJid) {
+   //    updatedConferenceData.callStatusText = CALL_STATUS_RECONNECT;
+   // }
+   Store.dispatch(showConfrence(updatedConferenceData));
 };
 
 const callStatus = res => {
+   console.log('callStatus ', res.status);
    if (res.status === 'ringing') {
       ringing(res);
    } else if (res.status === 'connecting') {
@@ -763,7 +773,7 @@ export const callBacks = {
    },
    userProfileListener: res => {
       // console.log('User Profile updated', JSON.stringify(res, null, 2));
-      if(Array.isArray(res)) {
+      if (Array.isArray(res)) {
          Store.dispatch(updateRosterData(res));
       } else {
          store.dispatch(updateProfileDetail(res));
@@ -858,7 +868,7 @@ export const callBacks = {
          // we should close the call again screen to prevent the user from seeing the Incoming call screen UI, because the incoming call screen UI is only for Android.
          // for iOS incoming call will only be shown in call kit
          const { showCallModal: isCallModalOpen, screenName: currentCallModalScreen } = Store.getState().callData || {};
-         if(Platform.OS === 'ios' && isCallModalOpen & currentCallModalScreen === CALL_AGAIN_SCREEN) {
+         if (Platform.OS === 'ios' && isCallModalOpen & (currentCallModalScreen === CALL_AGAIN_SCREEN)) {
             Store.dispatch(closeCallModal());
          }
          Store.dispatch(setCallModalScreen(INCOMING_CALL_SCREEN));

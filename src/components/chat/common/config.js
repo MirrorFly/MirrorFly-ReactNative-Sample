@@ -14,13 +14,15 @@ const config = {
    reportMembers: 5,
    GOOGLE_LOCATION_API_KEY: 'AIzaSyBaKkrQnLT4nacpKblIE5d4QK6GpaX5luQ', // NOSONAR
    typingStatusGoneWaitTime: 500,
-   // Dev environment variables
+   // ================ Dev environment variables =====================
    // API_URL: 'https://api-uikit-dev.contus.us/api/v1',
    // lisenceKey: '2sdgNtr3sFBSM3bYRa7RKDPEiB38Xo',
    // =====================================
-   // QA Environment variables
+   // ================ QA Environment variables =====================
    API_URL: 'https://api-uikit-qa.contus.us/api/v1',
    lisenceKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
-   // =====================================
+   // ================ UAT/Staging Environment variables =====================
+   // API_URL: 'https://api-uikit-uat.contus.us/api/v1',
+   // lisenceKey: 'lu3Om85JYSghcsB6vgVoSgTlSQArL5',
 };
 export default config;

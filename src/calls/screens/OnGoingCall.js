@@ -150,7 +150,7 @@ const OnGoingCall = () => {
 
    let callStatus = React.useMemo(() => getCallStatus() || '', [showConfrenceData, vCardData]);
 
-   // the below useEffect to set a timeout for 30 seconds when call is in connecting status to end the call
+   // the below useEffect to set a timeout for 30 seconds to end the call when call is in connecting status for 30 seconds
    // because when the user goes offline or the call could not be connected for 30 seconds then we are ending the call in the timeout
    React.useEffect(() => {
       if(callStatus.toLowerCase() === CALL_STATUS_CONNECTING.toLowerCase()) {
@@ -334,6 +334,7 @@ const OnGoingCall = () => {
             remoteStream={remoteStream}
             localUserJid={localUserJid}
             remoteAudioMuted={remoteAudioMuted}
+            callStatus={callStatus}
          />
       );
    }

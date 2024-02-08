@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AppOpsManager;
 import android.app.PictureInPictureParams;
+import android.app.PictureInPictureUiState;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -31,14 +32,20 @@ import com.github.kevinejohn.keyevent.KeyEventModule;
 
 public class CallScreenActivity extends ReactActivity {
     public Boolean onCall = false;
+    public static Boolean isCallConnected = false;
+    public static Boolean isActive = false;
     SharedPreferences sharedPreferences = null;
     SharedPreferences.Editor editor = null;
 
     public Context context;
 
+    private String CallScreenStateActive = "active";
+    private String CallScreenStateBackground = "background";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("TAG", "onCreate: CallScreenActivityLL Creating");
         super.onCreate(null);
         this.context = this;
        getWindow().getDecorView().setBackgroundColor(Color.parseColor("#0D2852"));
@@ -50,10 +57,12 @@ public class CallScreenActivity extends ReactActivity {
         
         // Register the activity with the ActivityManager
         ActivityManager.getInstance().addActivity(this);
+        CallScreenActivity.isActive = true;
     }
 
     @Override
     protected void onResume() {
+        CallScreenActivity.isActive = true;
         Log.d("TAG", "CallScreenActivity== CallScreenActivityOnResume: ");
         super.onResume();
         Integer permission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
@@ -79,22 +88,27 @@ public class CallScreenActivity extends ReactActivity {
                 editor.commit();
             }
         }
+        ActivityModule.callScreenStateChanged(CallScreenStateActive);
     }
 
     @Override
     protected void onPause() {
+        CallScreenActivity.isActive = false;
         super.onPause();
-        Log.d("TAG", "CallScreenActivity== CallScreenActivityOnPause: ");
+        Log.d("TAG", "callScreenStateChanged: CallScreenActivity== CallScreenActivityOnPause: ");
     }
 
     @Override
     protected void onStop() {
+        CallScreenActivity.isActive = false;
         super.onStop();
         Log.d("TAG", "CallScreenActivity== CallScreenActivityOnStop: ");
     }
 
     @Override
     protected void onDestroy() {
+        CallScreenActivity.isActive = false;
+        Log.d("TAG", "onCreate: CallScreenActivityLL Destroying");
         // Unregister the activity from the ActivityManager
         ActivityManager.getInstance().removeActivity(this);
 
@@ -115,7 +129,7 @@ public class CallScreenActivity extends ReactActivity {
             if (isPipAllowedInSystem) {
                 try {
                     Log.d("TAG", "enterPipMode: before validation ");
-                    if (!this.isInPictureInPictureMode()) {
+                    if (!this.isInPictureInPictureMode() && CallScreenActivity.isCallConnected) {
 
 
                         Rational ratio
@@ -135,6 +149,7 @@ public class CallScreenActivity extends ReactActivity {
                 }
             }
         }
+//        ActivityModule.callScreenStateChanged(CallScreenStateBackground);
         super.onUserLeaveHint();
     }
 
@@ -207,6 +222,11 @@ public class CallScreenActivity extends ReactActivity {
     public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
         PipAndroidModule.pipModeChanged(isInPictureInPictureMode, getLifecycle().getCurrentState(), this);
     }
+
+   //  @Override
+   //  public void onPictureInPictureUiStateChanged(@NonNull PictureInPictureUiState pipState) {
+   //      super.onPictureInPictureUiStateChanged(pipState);
+   //  }
 
     public static class MainActivityDelegate extends ReactActivityDelegate {
         public MainActivityDelegate(ReactActivity activity, String mainComponentName) {

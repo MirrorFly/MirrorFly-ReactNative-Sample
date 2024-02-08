@@ -7,7 +7,7 @@ import ActivityModule from '../customModules/ActivityModule';
 
 /**
  * Custom hook to listen for state change listsner
- * @returns {('active'|'background'|'killed'|null)}
+ * @returns {('active'|'background'|null)}
  */
 const useCallScreenStateChange = () => {
    const [callScreenState, setCallScreenState] = React.useState(null);

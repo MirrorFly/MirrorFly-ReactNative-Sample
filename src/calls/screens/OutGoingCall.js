@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageBackground, Platform, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { endCall, startOutgoingcallTimer } from '../../Helper/Calls/Call';
 import { closeCallModalActivity } from '../../Helper/Calls/Utility';
@@ -16,7 +16,7 @@ import ProfilePictureWithPulse from '../components/ProfilePictureWithPulse';
 
 const OutGoingCall = () => {
    const { connectionState } = useSelector(state => state.callData) || {};
-   const { to: userJid = '', callType } = connectionState;
+   const { to = '', userJid = '', callType } = connectionState;
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const { callStatusText: callStatus = '' } = confrenceData;
 
@@ -27,7 +27,7 @@ const OutGoingCall = () => {
    });
 
    const dispatch = useDispatch();
-   let userID = getUserIdFromJid(userJid);
+   let userID = getUserIdFromJid(to || userJid);
    const userProfile = useRosterData(userID);
    const nickName = userProfile.nickName || userID;
 
@@ -102,7 +102,9 @@ const OutGoingCall = () => {
                   {nickName}
                </Text>
                <View style={[commonStyles.marginTop_30, commonStyles.positionRelative]}>
-                  <ProfilePictureWithPulse animateToValue={1.5} baseStyle={styles.avatharPulseAnimatedView} />
+                  {callStatus === 'Ringing' && (
+                     <ProfilePictureWithPulse animateToValue={1.5} baseStyle={styles.avatharPulseAnimatedView} />
+                  )}
                   <View style={[styles.avathar]}>
                      <Avathar
                         width={90}

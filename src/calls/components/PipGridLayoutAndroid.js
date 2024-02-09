@@ -19,6 +19,10 @@ const PIPGridItem = ({ item, isLocalUser, isFullSize, isAudioMuted, userStatus }
    const isNetworkConnected = useNetworkStatus();
    const { imageUrl, authToken } = useFetchImage(userProfile.image);
 
+   const isUserReconnecting = React.useMemo(() => {
+      return userStatus?.toLowerCase?.() === CALL_STATUS_RECONNECT;
+   }, [userStatus]);
+
    React.useEffect(() => {
       if (isNetworkConnected && isImageLoadError) {
          setIsImageLoadError(false);
@@ -30,7 +34,7 @@ const PIPGridItem = ({ item, isLocalUser, isFullSize, isAudioMuted, userStatus }
    };
 
    const renderReconnectingOverlay = () => {
-      return userStatus?.toLowerCase?.() === CALL_STATUS_RECONNECT ? (
+      return isUserReconnecting ? (
          <View style={styles.reconnectingOverlay}>
             <Text numberOfLines={1} ellipsizeMode="tail" style={styles.reconnectingOverlayText}>
                {' '}
@@ -53,7 +57,7 @@ const PIPGridItem = ({ item, isLocalUser, isFullSize, isAudioMuted, userStatus }
          {/* Speaking indicator */}
          {isAudioMuted ? (
             <View style={styles.emptyVoiceLevelIndicator} />
-         ) : (
+         ) : isUserReconnecting ? null : (
             <View style={styles.gridItemVoiceLevelWrapper}>
                <View style={styles.gridItemVoiceLevelIndicator} />
                <View style={styles.gridItemVoiceLevelIndicator} />
@@ -103,7 +107,8 @@ const PipGridLayoutAndroid = ({ remoteStream, localUserJid, remoteAudioMuted, ca
       }
       const _calculatedColumns = _sortedData.length <= 2 ? 1 : 2;
       return [_calculatedColumns, _sortedData];
-   }
+   };
+
    const [calculatedColumnsForPipGrid, sortedRemoteStreamsForPip] = sortRemoteStreamAndCalculateColumns();
 
    const renderPipLayoutItem = item => {
@@ -120,11 +125,7 @@ const PipGridLayoutAndroid = ({ remoteStream, localUserJid, remoteAudioMuted, ca
       );
    };
 
-   return (
-      <View style={styles.pipContainer}>
-         {sortedRemoteStreamsForPip.map(item => renderPipLayoutItem(item))}
-      </View>
-   );
+   return <View style={styles.pipContainer}>{sortedRemoteStreamsForPip.map(item => renderPipLayoutItem(item))}</View>;
 };
 
 export default PipGridLayoutAndroid;

@@ -10,8 +10,11 @@ import {
    RESET_STORE,
    SET_CALL_MODAL_SCREEN,
    UPDATE_CALLER_UUID,
+   UPDATE_CALL_LAYOUT,
 } from '../Actions/Constants';
 import { getObjectDeepClone } from '../reduxHelper';
+
+const defaultCallLayout = 'tile';
 
 const initialState = {
    id: null,
@@ -40,6 +43,8 @@ const initialState = {
    }, */
    pinUserData: {},
    callerUUID: '',
+   // selected Call Layout ('grid'|'tile'), by default it is 'tile'
+   callLayout: defaultCallLayout,
 };
 
 const initialStateClone = getObjectDeepClone(initialState);
@@ -100,6 +105,13 @@ const CallStateReducer = (state = initialStateClone, action = {}) => {
             id: Date.now(),
             connectionState: {},
             callerUUID: '',
+            callLayout: defaultCallLayout,
+         };
+      case UPDATE_CALL_LAYOUT:
+         return {
+            ...state,
+            id: Date.now(),
+            callLayout: action.payload,
          };
       case RESET_CALL_DATA:
       case RESET_STORE:

@@ -41,13 +41,13 @@ export const getConversationHistoryTime = UTCTime => {
 
 export const changeTimeFormat = time => {
   if (!time) {
-    return '';
+     return '';
   } else if (time.toString().length === 16) {
-    return moment((time / 1000000) * 1000)
-      .utc()
-      .format('YYYY-MM-DD HH:mm:ss');
+     return moment((time / 1000000) * 1000)
+        .utc()
+        .format('YYYY-MM-DD HH:mm:ss.SSS');
   } else {
-    return moment(time).utc().format('YYYY-MM-DD HH:mm:ss');
+     return moment(time).utc().format('YYYY-MM-DD HH:mm:ss.SSS');
   }
 };
 
@@ -167,20 +167,21 @@ export const formatChatDateTime = (date, type) => {
 };
 
 /**
- * convertUTCTOLocalTimeStamp() method to perform convert UTC to local time formate.
+ * convertUTCTOLocalTimeStamp() method to perform convert UTC to local time format.
  *
- * @param {date} date
+ * @param {string} dateString - Date string in the format "YYYY-MM-DD HH:mm:ss.sss"
+ * @returns {Date} - Local time date object
  */
-export const convertUTCTOLocalTimeStamp = date => {
-  date = new Date(date.replace(/-/g, '/'));
-  let newDate = new Date(date);
-  newDate.setMinutes(newDate.getMinutes() - newDate.getTimezoneOffset());
-  return newDate;
+export const convertUTCTOLocalTimeStamp = dateString => {
+  const parts = dateString.split(/[- :.]/);
+  const date = new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5], parts[6]);
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+  return date;
 };
 
 /**
  * getLastseen() method to perform convert seconds to user online or Last seen date format status.
- *
+ *changeTimeFormat
  * @param {secs} secs
  */
 export const getLastseen = secs => {

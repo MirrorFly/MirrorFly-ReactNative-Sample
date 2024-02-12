@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 import SDK from '../../SDK/SDK';
 import { clearIosCallListeners, muteLocalAudio, muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
-import { requestMicroPhonePermission } from '../../common/utils';
+import { checkMicroPhonePermission, requestMicroPhonePermission } from '../../common/utils';
 import {
    callDurationTimestamp,
    clearCallData,
@@ -483,6 +483,15 @@ export const displayIncomingCallForIos = callResponse => {
       );
    }
    handleIncoming_CallKeepListeners();
+   if(AppState.currentState !== 'active') {
+      checkMicroPhonePermission().then(micPermission => {
+         if (micPermission !== 'granted') {
+            declineIncomingCall();
+            endCallForIos();
+         }
+      });
+
+   }
 };
 
 export const displayIncomingCallForAndroid = async callResponse => {

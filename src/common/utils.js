@@ -254,6 +254,14 @@ export const mediaObjContructor = (_package, file) => {
       mediaObj.duration = file.duration * 1000 || 0;
       return mediaObj;
     case 'IMAGE_PICKER':
+      mediaObj.extension = getExtention(file.path);
+      mediaObj.uri = file.path;
+      mediaObj.type = file.mime;
+      mediaObj.fileSize = file.size;
+      mediaObj.filename = file.path.split('/').pop();
+      mediaObj.width = file.width;
+      mediaObj.height = file.height;
+      mediaObj.modificationTimestamp = file.modificationDate;
       return mediaObj;
     case 'RN_CAMERA':
       mediaObj.extension = getExtention(file.uri);

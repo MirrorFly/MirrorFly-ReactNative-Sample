@@ -34,9 +34,17 @@ const toastConfig = {
  * @param {Object} options
  * @example ('Toast Message', {id:'toast-id'})
  */
-export const showToast = (message, options, ignoreDuplicateToast = true) => {
+export const showToast = (
+  message,
+  options = {},
+  ignoreDuplicateToast = true,
+) => {
   const id = options?.id || Date.now();
-  if (options.id && ignoreDuplicateToast && toastLocalRef.current[options.id]) {
+  if (
+    options?.id &&
+    ignoreDuplicateToast &&
+    toastLocalRef.current[options.id]
+  ) {
     return;
   }
 

@@ -11,6 +11,7 @@ import {
   COUNTRYSCREEN,
   FORWARD_MESSSAGE_SCREEN,
   GROUPSCREEN,
+  IMAGEVIEW,
   MEDIA_POST_PRE_VIEW_SCREEN,
   NEW_GROUP,
   PROFILESCREEN,
@@ -26,6 +27,7 @@ import RNCamera from '../components/RNCamera';
 import ForwardMessage from '../screen/ForwardMessage';
 import PostPreViewPage from '../components/PostPreViewPage';
 import NewGroup from '../screen/NewGroup';
+import ImageView from '../screen/ImageView';
 
 const Stack = createNativeStackNavigator();
 
@@ -134,6 +136,9 @@ function StackNavigationPage(props) {
       </Stack.Screen>
       <Stack.Screen name={GROUPSCREEN}>
         {prop => <GroupScreenStackNavigation {...prop} />}
+      </Stack.Screen>
+      <Stack.Screen name={IMAGEVIEW}>
+        {prop => <ImageView {...prop} />}
       </Stack.Screen>
     </Stack.Navigator>
   );

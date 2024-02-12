@@ -13,6 +13,7 @@ import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import {
   CONTACTLIST,
+  GROUPSCREEN,
   PROFILESCREEN,
   RECENTCHATSCREEN,
   REGISTERSCREEN,
@@ -195,6 +196,12 @@ function RecentScreen() {
 
   const menuItems = React.useMemo(
     () => [
+      {
+        label: 'New Group',
+        formatter: () => {
+          RootNav.navigate(GROUPSCREEN);
+        },
+      },
       {
         label: 'Profile',
         formatter: () => {

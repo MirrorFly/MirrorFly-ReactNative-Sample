@@ -1,5 +1,11 @@
 import React, { useEffect } from 'react';
-import { BackHandler, Linking, Platform, TextInput } from 'react-native';
+import {
+  BackHandler,
+  Linking,
+  Platform,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { navigate } from '../redux/Actions/NavigationAction';
@@ -263,9 +269,12 @@ const RegisterScreen = ({ navigation }) => {
         </HStack>
         <Stack alignItems="center" mt="42">
           <PrimaryPillBtn title="Continue" onPress={handleSubmit} />
-          {/* <PrimaryPillBtn title="Push Remote" onPress={handleRemoteNotify} /> */}
           {/* <PrimaryPillBtn title="Push Local" onPress={handleNotify} /> */}
         </Stack>
+        <TouchableOpacity onPress={SDK.clearDBData}>
+          <Text>Clear DB</Text>
+        </TouchableOpacity>
+
         <Stack mt="22" justifyContent="center" alignItems="center">
           <Text color="#767676" fontSize="14" fontWeight="400">
             By clicking continue you agree to MirroFly

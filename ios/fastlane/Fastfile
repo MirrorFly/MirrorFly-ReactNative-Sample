@@ -29,7 +29,7 @@ lane :qa_firebase do
 	firebase_app_distribution(
 		app: "1:695832127329:ios:f8b6b0fab296a800",
 		groups: "reactnative",
-        release_notes: "React-Native ios build for bugfixes - CONTUIMSER-38482, CONTUIMSER-38797, CONTUIMSER-38798, CONTUIMSER-38816, CONTUIMSER-38817, CONTUIMSER-38746, CONTUIMSER-38765",
+        release_notes: "React-Native ios build for bugfixes - CONTUIMSER-38830,CONTUIMSER-38221,CONTUIMSER-38212,CONTUIMSER-38563,CONTUIMSER-38739, CONTUIMSER-38839,CONTUIMSER-38840, CONTUIMSER-38841, CONTUIMSER-38851, CONTUIMSER-38852",
 		firebase_cli_path: "/usr/local/bin/firebase",
 		firebase_cli_token: "1//0g53oUKW5j5bJCgYIARAAGBASNwF-L9Ir7Ei_6NzWEsyHOMMXytlesfgXShhLeJWRwbcf2MC3e7BaC5dwYlUZB-_osuQFsxy0Du0"
 	)

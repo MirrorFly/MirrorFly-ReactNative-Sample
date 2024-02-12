@@ -26,6 +26,7 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
       }
       if (remoteMessage?.data.type === 'mediacall') {
          await SDK.getCallNotification(remoteMessage);
+         return;
       }
       const notify = await SDK.getNotificationData(remoteMessage);
       if (notify?.statusCode === 200) {
@@ -44,21 +45,16 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
       console.log('messaging().setBackgroundMessageHandler', error);
    }
 });
+
 if (Platform.OS === 'android') {
    setNotificationForegroundService();
    AppRegistry.registerComponent('CallScreen', () => CallComponent);
 }
-/**
-// messaging().onMessage(async remoteMessage => {
-//   console.log(
-//     'Message handled in the forground!',
-//     JSON.stringify(remoteMessage, null, 2),
-//   );
-//   Alert.alert(
-//     'A new FCM message arrived!',
-//     JSON.stringify(remoteMessage, null, 2),
-//   );
-// });
- */
+
+messaging().onMessage(async remoteMessage => {
+   if (remoteMessage?.data.type === 'mediacall') {
+      await SDK.getCallNotification(remoteMessage);
+   }
+});
 
 AppRegistry.registerComponent(appName, () => App);

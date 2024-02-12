@@ -14,6 +14,7 @@ import {
    SET_CALL_MODAL_SCREEN,
    SET_NOTIFICATION_DATA,
    UPDATE_CALLER_UUID,
+   UPDATE_CALL_LAYOUT,
    UPDATE_CONFRENCE_POPUP_STATUS,
 } from './Constants';
 
@@ -256,3 +257,10 @@ export const resetNotificationData = () => {
       type: RESET_NOTIFICATION_DATA,
    };
 };
+
+export const updateCallLayout = data => {
+   return {
+      type: UPDATE_CALL_LAYOUT,
+      payload: data
+   }
+}

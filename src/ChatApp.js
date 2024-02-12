@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Box, NativeBaseProvider } from 'native-base';
 import PropTypes from 'prop-types';
 import React, { createRef } from 'react';
-import { Keyboard, Linking, LogBox, SafeAreaView, StatusBar, StyleSheet, useColorScheme } from 'react-native';
+import { AppState, Keyboard, Linking, LogBox, SafeAreaView, StatusBar, StyleSheet, useColorScheme } from 'react-native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { callConnectionStoreData } from './Helper/Calls/Call';
 import { openCallModelActivity } from './Helper/Calls/Utility';
@@ -29,6 +29,7 @@ import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
 import { getAppInitialized } from './uikitHelpers/uikitMethods';
 import { checkAndRequestPermission } from './common/utils';
+import _BackgroundTimer from 'react-native-background-timer';
 
 LogBox.ignoreAllLogs();
 
@@ -120,6 +121,16 @@ const RootNavigation = props => {
             let regex = new RegExp(regexStr, 'g'), //NOSONAR
                match;
             match = regex.exec(initialURL);
+            // if (
+            //    Platform.OS === 'android' &&
+            //    initialURL.includes('mirrorfly_rn://CALLSCREEN') &&
+            //    Object.keys(callConnectionStoreData()).length !== 0
+            // ) {
+            //    console.log('opening activity from chat app', AppState.currentState);
+            //    _BackgroundTimer.setTimeout(() => {
+            //       openCallModelActivity();
+            //    }, 500);
+            // }
             if (match && match?.length !== 0) {
                let x = {
                   screen: CHATSCREEN,

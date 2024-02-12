@@ -277,13 +277,7 @@ export const onNotificationAction = async ({ type, detail }) => {
          let activity = await ActivityModule.getActivity();
          console.log('while pressing the notification before validation', AppState.currentState, activity);
          if (AppState.currentState === 'active') {
-            console.log(
-               'while pressing the notification',
-               showCallModal && activity.includes('CallScreenActivity'),
-               showCallModal,
-               activity.includes('CallScreenActivity'),
-            );
-            if (showCallModal && activity.includes('CallScreenActivity')) {
+            if (showCallModal && activity?.includes('CallScreenActivity')) {
                return;
             } else {
                openCallModelActivity();

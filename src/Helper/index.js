@@ -19,6 +19,7 @@ import { addchatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAction
 import { updateConversationMessage, updateRecentChatMessage } from '../components/chat/common/createMessage';
 import { getUserIdFromJid } from './Chat/Utility';
 import { CALL_STATUS_CONNECTED } from './Calls/Constant';
+import { getIsUserOnCall } from '../SDKActions/callbacks';
 
 const toastLocalRef = React.createRef({});
 toastLocalRef.current = {};
@@ -145,9 +146,8 @@ export const updateUserProfileDetails = async data => {
    if (data?.userId === userIdentifier) {
       AsyncStorage.setItem('vCardProfile', JSON.stringify(data));
       Store.dispatch(profileDetail(data));
-   } else {
-      Store.dispatch(updateRosterData(data));
    }
+   Store.dispatch(updateRosterData(data));
 };
 
 const memoizedUsernameGraphemes = {};
@@ -288,16 +288,18 @@ export const getUserProfile = userId => {
 
 /**
  * Helper function to enable PIP mode for Android if the call is connected
- * @param {number} width 
- * @param {number} height 
+ * @param {number} width
+ * @param {number} height
  * @returns {boolean} - whether PIP mode has enabled or not based on the call connected status condition
  */
-export const enablePipModeIfCallConnected = (width = 300, height = 600) => {
+export const enablePipModeIfCallConnected = (
+   width = 300,
+   height = 600,
+   shouldOpenPermissionScreenIfPipNotAllowed = true,
+) => {
    if (Platform.OS === 'android') {
-      const remoteStream = Store.getState().showConfrenceData?.data?.remoteStream || [];
-      const isCallConnected = remoteStream.filter(s => s.status?.toLowerCase() === CALL_STATUS_CONNECTED)?.length > 1;
-      isCallConnected && PipHandler.enterPipMode(width, height);
-      isCallConnected && console.log('PIP mode has enabled');
+      const isCallConnected = getIsUserOnCall();
+      isCallConnected && PipHandler.enterPipMode(width, height, shouldOpenPermissionScreenIfPipNotAllowed);
       return isCallConnected;
    }
 };

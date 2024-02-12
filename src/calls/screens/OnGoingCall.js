@@ -2,7 +2,12 @@ import React from 'react';
 import { Animated, ImageBackground, Platform, Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { enablePipModeIfCallConnected, getUserProfile } from '../../Helper';
-import { CALL_RINGING_DURATION, CALL_STATUS_CONNECTING, CALL_STATUS_DISCONNECTED, CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
+import {
+   CALL_RINGING_DURATION,
+   CALL_STATUS_CONNECTING,
+   CALL_STATUS_DISCONNECTED,
+   CALL_STATUS_RECONNECT,
+} from '../../Helper/Calls/Constant';
 import { endOnGoingCall } from '../../Helper/Calls/Utility';
 import { formatUserIdToJid } from '../../Helper/Chat/ChatHelper';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
@@ -21,7 +26,7 @@ import GridLayout from '../components/GridLayout';
 import PipGridLayoutAndroid from '../components/PipGridLayoutAndroid';
 import SmallVideoTile from '../components/SmallVideoTile';
 import Timer from '../components/Timer';
-import { closeCallModal } from '../../redux/Actions/CallAction';
+import { closeCallModal, updateCallLayout } from '../../redux/Actions/CallAction';
 import _BackgroundTimer from 'react-native-background-timer';
 
 /**
@@ -41,8 +46,11 @@ let hideControlsTimeout,
 
 const OnGoingCall = () => {
    const localUserJid = useSelector(state => state.auth.currentUserJID);
-   const { largeVideoUser: largeVideoUserData = {}, connectionState: callConnectionState = {} } =
-      useSelector(state => state.callData) || {};
+   const {
+      largeVideoUser: largeVideoUserData = {},
+      connectionState: callConnectionState = {},
+      callLayout: layout = 'tile',
+   } = useSelector(state => state.callData) || {};
    const { data: showConfrenceData = {}, data: { remoteStream = [] } = {} } =
       useSelector(state => state.showConfrenceData) || {};
    const remoteAudioMuted = showConfrenceData?.remoteAudioMuted || [];
@@ -51,8 +59,8 @@ const OnGoingCall = () => {
 
    const isPipMode = usePipModeListener();
 
+   const [topViewControlsHeight, setTopViewControlsHeight] = React.useState(0);
    const showControlsRef = React.useRef(true);
-   const topViewControlsHeightRef = React.useRef(0);
    const bottomControlsViewHeightRef = React.useRef(0);
 
    // animated value variables for toggling the controls and timer
@@ -64,13 +72,6 @@ const OnGoingCall = () => {
 
    const dispatch = useDispatch();
 
-   /**
-    * @type {[
-    *    layout: LayoutType,
-    *    setLayout: (layout: LayoutType) => void
-    * ]}
-    */
-   const [layout, setLayout] = React.useState(initialLayout);
    const [showMenuPopup, setShowMenuPopup] = React.useState(false);
 
    React.useEffect(() => {
@@ -90,7 +91,7 @@ const OnGoingCall = () => {
 
    const toggleLayout = () => {
       animateLayout(0);
-      setTimeout(() => setLayout(val => (val === 'tile' ? 'grid' : 'tile')), layoutAnimationDuration);
+      setTimeout(() => setLayout(layout === 'tile' ? 'grid' : 'tile'), layoutAnimationDuration);
    };
 
    const menuItems = React.useMemo(
@@ -150,23 +151,27 @@ const OnGoingCall = () => {
 
    let callStatus = React.useMemo(() => getCallStatus() || '', [showConfrenceData, vCardData]);
 
-   // the below useEffect to set a timeout for 30 seconds when call is in connecting status to end the call
+   // the below useEffect to set a timeout for 30 seconds to end the call when call is in connecting status for 30 seconds
    // because when the user goes offline or the call could not be connected for 30 seconds then we are ending the call in the timeout
    React.useEffect(() => {
-      if(callStatus.toLowerCase() === CALL_STATUS_CONNECTING.toLowerCase()) {
+      if (callStatus.toLowerCase() === CALL_STATUS_CONNECTING.toLowerCase()) {
          _BackgroundTimer.clearTimeout(connectingCallStatusTimeout);
          connectingCallStatusTimeout = _BackgroundTimer.setTimeout(() => {
             const _currentCallStatus = (getCallStatus() || '').toLowerCase();
-            if(_currentCallStatus === CALL_STATUS_CONNECTING.toLowerCase()) {
+            if (_currentCallStatus === CALL_STATUS_CONNECTING.toLowerCase()) {
                endOnGoingCall();
             }
          }, CALL_RINGING_DURATION);
       }
    }, [callStatus]);
 
+   const setLayout = val => {
+      dispatch(updateCallLayout(val));
+   };
+
    const animateControls = (toOpacity, toOffset) => {
       showControlsRef.current = Boolean(toOpacity);
-      const _offsetTop = ((toOffset * topViewControlsHeightRef.current) / 100) * -1;
+      const _offsetTop = ((toOffset * topViewControlsHeight) / 100) * -1;
       const _offsetBottom = (toOffset * bottomControlsViewHeightRef.current) / 100;
       Animated.parallel([
          Animated.timing(controlsOpacity, {
@@ -287,7 +292,7 @@ const OnGoingCall = () => {
                   remoteStreams={remoteStream}
                   localUserJid={localUserJid}
                   onPressAnywhere={toggleControls}
-                  offsetTop={topViewControlsHeightRef.current || 0}
+                  offsetTop={topViewControlsHeight}
                   animatedOffsetTop={controlsOffsetTop}
                   remoteAudioMuted={remoteAudioMuted}
                />
@@ -319,7 +324,7 @@ const OnGoingCall = () => {
 
    const handleTopControlsUILayout = ({ nativeEvent }) => {
       const { height } = nativeEvent.layout;
-      topViewControlsHeightRef.current = height;
+      setTopViewControlsHeight(height);
    };
 
    const handleBottomControlsUILayout = ({ nativeEvent }) => {
@@ -334,6 +339,7 @@ const OnGoingCall = () => {
             remoteStream={remoteStream}
             localUserJid={localUserJid}
             remoteAudioMuted={remoteAudioMuted}
+            callStatus={callStatus}
          />
       );
    }

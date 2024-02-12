@@ -27,6 +27,7 @@ function PipViewIos(props = {}) {
                backgroundColor={userProfile.colorCode}
                data={nickName}
                profileImage={userProfile.image}
+               transparentBackgroundForImage={false}
             />
          </Pressable>
       </View>

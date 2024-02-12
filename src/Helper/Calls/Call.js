@@ -6,7 +6,7 @@ import { subscribe as vibrationEventListener } from 'react-native-silentmode-det
 import Sound from 'react-native-sound';
 import { batch } from 'react-redux';
 import SDK from '../../SDK/SDK';
-import { clearIosCallListeners, removeRemoteStream, resetCallData } from '../../SDKActions/callbacks';
+import { clearIosCallListeners, removeRemoteStream, resetCallData, setDisconnectedScreenTimeoutTimer } from '../../SDKActions/callbacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
 import {
    pinUser,
@@ -253,7 +253,7 @@ export const endCall = async (isFromTimeout = false, userId, callType) => {
    } else {
       clearIosCallListeners();
       endCallForIos();
-      BackgroundTimer.setTimeout(() => {
+      const timeout = BackgroundTimer.setTimeout(() => {
          resetCallData();
          closeCallModalActivity();
          // Store.dispatch(closeCallModal());
@@ -267,6 +267,7 @@ export const endCall = async (isFromTimeout = false, userId, callType) => {
          //     }))
          // })
       }, DISCONNECTED_SCREEN_DURATION);
+      setDisconnectedScreenTimeoutTimer(timeout);
    }
 };
 
@@ -304,11 +305,12 @@ export const endIncomingCall = () => {
    //     "endTime": callLogs.initTime(),
    //     "sessionStatus": CALL_SESSION_STATUS_CLOSED
    // });
-   BackgroundTimer.setTimeout(() => {
+   const timeout = BackgroundTimer.setTimeout(() => {
       resetCallData();
       resetCallModalActivity();
       // Store.dispatch(resetCallStateData());
    }, DISCONNECTED_SCREEN_DURATION);
+   setDisconnectedScreenTimeoutTimer(timeout)
 };
 
 export const startIncomingCallTimer = () => {

@@ -126,15 +126,29 @@ import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
 import { updateRosterData } from '../redux/Actions/rosterAction';
+import ActivityModule from '../customModules/ActivityModule';
 
 let localStream = null,
    localVideoMuted = false,
    localAudioMuted = false,
    onCall = false,
-   onReconnect = false;
+   onReconnect = false,
+   disconnectedScreenTimeoutTimer;
 let remoteVideoMuted = [],
    remoteStream = [],
    remoteAudioMuted = [];
+
+export const getDisconnectedScreenTimeoutTimer = () => disconnectedScreenTimeoutTimer;
+
+export const setDisconnectedScreenTimeoutTimer = _timer => (disconnectedScreenTimeoutTimer = _timer);
+
+const clearDisconnectedScreenTimeout = () => {
+   BackgroundTimer.clearTimeout(disconnectedScreenTimeoutTimer);
+}
+
+export const getIsUserOnCall = () => {
+   return onCall;
+};
 
 export const clearIosCallListeners = () => {
    if (Platform.OS === 'ios') {
@@ -168,6 +182,8 @@ export const resetCallData = () => {
       endCallForIos();
    } else {
       RNInCallManager.setSpeakerphoneOn(false);
+      // updating the call connected status to android native code
+      ActivityModule.updateCallConnectedStatus(false);
    }
    stopOutgoingCallRingingTone();
    stopReconnectingTone();
@@ -339,10 +355,11 @@ const ended = async res => {
       };
       Store.dispatch(updateCallConnectionState(callDetailsObj));
       // SetTimeout not working in background and killed state
-      BackgroundTimer.setTimeout(() => {
+      const timeout = BackgroundTimer.setTimeout(() => {
          resetCloseModel();
          // Store.dispatch(callConversion());
       }, DISCONNECTED_SCREEN_DURATION);
+      setDisconnectedScreenTimeoutTimer(timeout);
 
       //Missed call Notification for missed incoming call
       let screenName = Store.getState().callData.screenName;
@@ -397,9 +414,10 @@ const handleEngagedOrBusyStatus = res => {
       dispatchDisconnected(callStatusMsg);
       showCallModalToast(callStatusMsg, 2500);
       // UI and toast show without delay
-      setTimeout(() => {
+      const timeout = BackgroundTimer.setTimeout(() => {
          dispatchCommon();
       }, DISCONNECTED_SCREEN_DURATION);
+      setDisconnectedScreenTimeoutTimer(timeout);
    } else {
       if (remoteStream && Array.isArray(remoteStream) && remoteStream.length < 1) {
          return;
@@ -502,6 +520,8 @@ const connected = async res => {
          );
          if (!res.localUser) {
             dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
+            // updating the call connected status to android native code
+            ActivityModule.updateCallConnectedStatus(true);
             startDurationTimer();
          }
       });
@@ -597,24 +617,29 @@ const reconnecting = res => {
    updatingUserStatusInRemoteStream(res.usersStatus);
    const showConfrenceData = Store.getState().showConfrenceData;
    const { data } = showConfrenceData;
-   Store.dispatch(
-      showConfrence({
-         showCallingComponent: false,
-         ...(data || {}),
-         localStream: localStream,
-         remoteStream: remoteStream,
-         fromJid: res.userJid,
-         status: 'REMOTESTREAM',
-         localVideoMuted: localVideoMuted,
-         localAudioMuted: localAudioMuted,
-         remoteVideoMuted: remoteVideoMuted,
-         remoteAudioMuted: remoteAudioMuted,
-         callStatusText: CALL_STATUS_RECONNECT,
-      }),
-   );
+   let vcardData = getLocalUserDetails();
+   let currentUserJid = formatUserIdToJid(vcardData?.fromUser);
+   const updatedConferenceData = {
+      showCallingComponent: false,
+      ...(data || {}),
+      localStream: localStream,
+      remoteStream: remoteStream,
+      fromJid: res.userJid,
+      status: 'REMOTESTREAM',
+      localVideoMuted: localVideoMuted,
+      localAudioMuted: localAudioMuted,
+      remoteVideoMuted: remoteVideoMuted,
+      remoteAudioMuted: remoteAudioMuted,
+      callStatusText: CALL_STATUS_RECONNECT,
+   };
+   // if (currentUserJid === res.userJid) {
+   //    updatedConferenceData.callStatusText = CALL_STATUS_RECONNECT;
+   // }
+   Store.dispatch(showConfrence(updatedConferenceData));
 };
 
 const callStatus = res => {
+   console.log('callStatus ', res.status);
    if (res.status === 'ringing') {
       ringing(res);
    } else if (res.status === 'connecting') {
@@ -815,6 +840,10 @@ export const callBacks = {
       console.log('adminBlockListener = (res) => { }', res);
    },
    incomingCallListener: function (res) {
+      if(onCall) {
+         SDK.callEngaged();
+         return;
+      }
       remoteStream = [];
       localStream = null;
       let callMode = 'onetoone';
@@ -854,6 +883,7 @@ export const callBacks = {
          });
          // Adding network state change listener
          listnerForNetworkStateChangeWhenIncomingCall();
+         clearDisconnectedScreenTimeout();
          if (Platform.OS === 'android') {
             const callUUID = uuidv4();
             Store.dispatch(updateCallerUUID(callUUID));

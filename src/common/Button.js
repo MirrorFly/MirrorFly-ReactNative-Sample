@@ -81,12 +81,13 @@ export const FloatingBtn = props => {
   );
 };
 
-export const MenuIconBtn = (triggerProps, color) => {
+export const MenuIconBtn = (triggerProps, color, onPress) => {
   return (
     <IconButton
       {...triggerProps}
       borderRadius="full"
       _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+      onPress={onPress}
       icon={<Icon px="3" as={<MenuIcon color={color} />} name="emoji-happy" />}
     />
   );

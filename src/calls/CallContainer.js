@@ -23,7 +23,7 @@ import PipViewIos from './screens/PipViewIos';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 
 const CallContainer = ({ hasNativeBaseProvider }) => {
-   const { showCallModal, connectionState = {}, screenName = '' } = useSelector(state => state.callData) || {};
+   const { showCallModal, connectionState = {}, screenName = '', largeVideoUser = {}, } = useSelector(state => state.callData) || {};
    const _userId = getUserIdFromJid(connectionState.to || connectionState.userJid);
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const insets = initialWindowMetrics.insets;
@@ -36,6 +36,10 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
          closeCallModalActivity();
       }
    }, []);
+
+   const largeUserId = React.useMemo(() => {
+      return getUserIdFromJid(largeVideoUser?.userJid);
+   }, [largeVideoUser?.userJid])
 
    const getIncomingCallStatus = () => {
       return confrenceData?.callStatusText;
@@ -86,7 +90,7 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
             !showCallModal &&
             Object.keys(connectionState).length !== 0 &&
             (screenName === ONGOING_CALL_SCREEN || screenName === OUTGOING_CALL_SCREEN) && (
-               <PipViewIos userId={_userId} />
+               <PipViewIos userId={largeUserId || _userId} />
             )}
          <Modal
             visible={showCallModal}

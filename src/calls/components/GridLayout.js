@@ -13,17 +13,17 @@ const GridItem = ({ wrapperStyle, item, isLocalUser, isFullSize, onPress, isAudi
    return (
       <Pressable style={[wrapperStyle]} onPress={onPress}>
          <View style={styles.gridItem}>
-         {isAudioMuted ? (
-            <View style={styles.gridItemUserMuteIcon}>
-               <AudioMuteIcon width={10} height={16} color={'#fff'} />
-            </View>
-         ) : (
-            <View style={styles.gridItemVoiceLevelWrapper}>
-               <View style={styles.gridItemVoiceLevelIndicator} />
-               <View style={styles.gridItemVoiceLevelIndicator} />
-               <View style={styles.gridItemVoiceLevelIndicator} />
-            </View>
-         )}
+            {isAudioMuted ? (
+               <View style={styles.gridItemUserMuteIcon}>
+                  <AudioMuteIcon width={10} height={16} color={'#fff'} />
+               </View>
+            ) : (
+               <View style={styles.gridItemVoiceLevelWrapper}>
+                  <View style={styles.gridItemVoiceLevelIndicator} />
+                  <View style={styles.gridItemVoiceLevelIndicator} />
+                  <View style={styles.gridItemVoiceLevelIndicator} />
+               </View>
+            )}
             <View style={styles.gridItemUserAvathar}>
                <Avathar
                   width={isFullSize ? 100 : 60}
@@ -43,7 +43,14 @@ const GridItem = ({ wrapperStyle, item, isLocalUser, isFullSize, onPress, isAudi
    );
 };
 
-export const GridLayout = ({ remoteStreams, localUserJid, onPressAnywhere, offsetTop, animatedOffsetTop, remoteAudioMuted }) => {
+export const GridLayout = ({
+   remoteStreams,
+   localUserJid,
+   onPressAnywhere,
+   offsetTop,
+   animatedOffsetTop,
+   remoteAudioMuted,
+}) => {
    const [scrollViewDimension, setScrollViewDimension] = React.useState({
       width: null,
       height: null,

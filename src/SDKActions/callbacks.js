@@ -132,10 +132,23 @@ let localStream = null,
    localVideoMuted = false,
    localAudioMuted = false,
    onCall = false,
-   onReconnect = false;
+   onReconnect = false,
+   disconnectedScreenTimeoutTimer;
 let remoteVideoMuted = [],
    remoteStream = [],
    remoteAudioMuted = [];
+
+export const getDisconnectedScreenTimeoutTimer = () => disconnectedScreenTimeoutTimer;
+
+export const setDisconnectedScreenTimeoutTimer = _timer => (disconnectedScreenTimeoutTimer = _timer);
+
+const clearDisconnectedScreenTimeout = () => {
+   BackgroundTimer.clearTimeout(disconnectedScreenTimeoutTimer);
+}
+
+export const getIsUserOnCall = () => {
+   return onCall;
+};
 
 export const clearIosCallListeners = () => {
    if (Platform.OS === 'ios') {
@@ -342,10 +355,11 @@ const ended = async res => {
       };
       Store.dispatch(updateCallConnectionState(callDetailsObj));
       // SetTimeout not working in background and killed state
-      BackgroundTimer.setTimeout(() => {
+      const timeout = BackgroundTimer.setTimeout(() => {
          resetCloseModel();
          // Store.dispatch(callConversion());
       }, DISCONNECTED_SCREEN_DURATION);
+      setDisconnectedScreenTimeoutTimer(timeout);
 
       //Missed call Notification for missed incoming call
       let screenName = Store.getState().callData.screenName;
@@ -400,9 +414,10 @@ const handleEngagedOrBusyStatus = res => {
       dispatchDisconnected(callStatusMsg);
       showCallModalToast(callStatusMsg, 2500);
       // UI and toast show without delay
-      setTimeout(() => {
+      const timeout = BackgroundTimer.setTimeout(() => {
          dispatchCommon();
       }, DISCONNECTED_SCREEN_DURATION);
+      setDisconnectedScreenTimeoutTimer(timeout);
    } else {
       if (remoteStream && Array.isArray(remoteStream) && remoteStream.length < 1) {
          return;
@@ -825,6 +840,10 @@ export const callBacks = {
       console.log('adminBlockListener = (res) => { }', res);
    },
    incomingCallListener: function (res) {
+      if(onCall) {
+         SDK.callEngaged();
+         return;
+      }
       remoteStream = [];
       localStream = null;
       let callMode = 'onetoone';
@@ -864,6 +883,7 @@ export const callBacks = {
          });
          // Adding network state change listener
          listnerForNetworkStateChangeWhenIncomingCall();
+         clearDisconnectedScreenTimeout();
          if (Platform.OS === 'android') {
             const callUUID = uuidv4();
             Store.dispatch(updateCallerUUID(callUUID));

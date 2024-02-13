@@ -61,6 +61,7 @@ const Gallery = (props = {}) => {
 
   const handleBackBtn = () => {
     setLocalNav('CHATCONVERSATION');
+    return true;
   };
 
   const renderItem = ({ item }) => {

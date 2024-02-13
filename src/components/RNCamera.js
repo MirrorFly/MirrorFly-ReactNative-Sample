@@ -65,6 +65,7 @@ const Camera = props => {
 
   const handleBackBtn = () => {
     setLocalNav(CHATCONVERSATION);
+    return true;
   };
 
   React.useEffect(() => {

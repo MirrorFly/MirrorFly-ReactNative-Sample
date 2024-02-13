@@ -19,6 +19,10 @@ import { getMessageObjSender, getRecentChatMsgObj, getUserIdFromJid } from './Ut
 import { updateRosterData } from '../../redux/Actions/rosterAction';
 import { DELETE_MESSAGE_FOR_EVERYONE, DELETE_MESSAGE_FOR_ME } from '../../redux/Actions/Constants';
 import { isActiveChatScreenRef } from '../../components/ChatConversation';
+import { openSettings } from 'react-native-permissions';
+import { mediaObjContructor, requestCameraPermission, requestStoragePermission } from '../../common/utils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ImagePicker from 'react-native-image-crop-picker';
 
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
@@ -27,10 +31,8 @@ export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {
    const currentUserJid = store.getState().auth?.currentUserJID || '';
    if (chatType === CHAT_TYPE_SINGLE) {
       return userId?.includes('@') ? userId : `${userId}@${currentUserJid?.split('@')[1] || ''}`;
-   }
-   const jidResponse = SDK.getJid(userId);
-   if (jidResponse.statusCode === 200) {
-      return jidResponse.groupJid;
+   } else {
+      return userId?.includes('@') ? userId : `${userId}@mix.${currentUserJid?.split('@')[1] || ''}`;
    }
 };
 
@@ -278,7 +280,7 @@ export const getChatHistoryData = (data, stateData) => {
    // Eg: userId: {} or groupId: {} or msgId: {}
    const chatId = getUserIdFromJid(data.userJid || data.groupJid);
    const state = Object.keys(stateData).length > 0 ? stateData[chatId]?.messages || {} : {};
-   const sortedData = concatMessageArray(data.data, Object.values(state), 'msgId', 'timestamp');
+   const sortedData = concatMessageArray(data.data, Object.values(state), 'msgId', 'createAt');
    const lastMessage = sortedData[sortedData.length - 1];
    let newSortedData;
    const localUserJid = data.userJid;
@@ -589,4 +591,60 @@ export const updateUserProfileStore = async data => {
 export const updateRosterDataForRecentChats = singleRecentChatList => {
    const userProfileDetails = singleRecentChatList.map(chat => chat.profileDetails);
    store.dispatch(updateRosterData(userProfileDetails));
+};
+
+export const handleImagePickerOpenCamera = async () => {
+   let cameraPermission = await requestCameraPermission();
+   let imageReadPermission = await requestStoragePermission();
+   const camera_permission = await AsyncStorage.getItem('camera_permission');
+   AsyncStorage.setItem('camera_permission', 'true');
+   if (
+      (cameraPermission === 'granted' || cameraPermission === 'limited') &&
+      (imageReadPermission === 'granted' || imageReadPermission === 'limited')
+   ) {
+      return ImagePicker.openCamera({
+         mediaType: 'photo',
+         width: 450,
+         height: 450,
+         cropping: true,
+         cropperCircleOverlay: true,
+         compressImageQuality: 0.8,
+      })
+         .then(async image => {
+            const converted = mediaObjContructor('IMAGE_PICKER', image);
+            return converted;
+         })
+         .catch(error => {
+            console.log('user cancel', error.message);
+            return {};
+         });
+   } else if (camera_permission) {
+      openSettings();
+   }
+};
+
+export const handleImagePickerOpenGallery = async () => {
+   const storage_permission = await AsyncStorage.getItem('storage_permission');
+   AsyncStorage.setItem('storage_permission', 'true');
+   const imageReadPermission = await requestStoragePermission();
+   if (imageReadPermission === 'granted' || imageReadPermission === 'limited') {
+      return ImagePicker.openPicker({
+         mediaType: 'photo',
+         width: 450,
+         height: 450,
+         cropping: true,
+         cropperCircleOverlay: true,
+         compressImageQuality: 0.8,
+      })
+         .then(async image => {
+            const converted = mediaObjContructor('IMAGE_PICKER', image);
+            return converted;
+         })
+         .catch(error => {
+            console.log('User cancel', error.message);
+            return {};
+         });
+   } else if (storage_permission) {
+      openSettings();
+   }
 };

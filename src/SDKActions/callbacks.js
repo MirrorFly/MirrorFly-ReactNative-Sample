@@ -71,18 +71,18 @@ export const callBacks = {
    },
    messageListener: async res => {
       await nextFrame();
-      if (res.chatType === 'chat') {
-         switch (res.msgType) {
-            case 'sentMessage':
-            case 'carbonSentMessage':
-            case 'receiveMessage':
-            case 'carbonReceiveMessage':
-               updateRecentChatMessage(res, store.getState());
-               updateConversationMessage(res, store.getState());
-               pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.publisherJid);
-               break;
-         }
+      // if (res.chatType === 'chat') {
+      switch (res.msgType) {
+         case 'sentMessage':
+         case 'carbonSentMessage':
+         case 'receiveMessage':
+         case 'carbonReceiveMessage':
+            updateRecentChatMessage(res, store.getState());
+            updateConversationMessage(res, store.getState());
+            pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.publisherJid);
+            break;
       }
+      // }
       switch (res.msgType) {
          case 'carbonDelivered':
          case 'delivered':

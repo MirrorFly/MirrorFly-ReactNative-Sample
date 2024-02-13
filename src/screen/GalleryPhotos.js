@@ -30,6 +30,7 @@ const GalleryPhotos = (props = {}) => {
       setPhotos([]);
       setGrpView('');
     }
+    return true;
   };
 
   React.useEffect(() => {

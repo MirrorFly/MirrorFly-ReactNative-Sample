@@ -1,12 +1,10 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import Graphemer from 'graphemer';
 import React from 'react';
 import { BackHandler, Image, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
-import ImagePicker from 'react-native-image-crop-picker';
-import { openSettings } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
 import { showToast } from '../Helper';
+import { handleImagePickerOpenCamera, handleImagePickerOpenGallery } from '../Helper/Chat/ChatHelper';
 import { CHAT_TYPE_GROUP } from '../Helper/Chat/Constant';
 import CameraIcon from '../assets/camera.png';
 import Avathar from '../common/Avathar';
@@ -15,7 +13,7 @@ import { KeyboardIcon, LeftArrowIcon, SmileIcon } from '../common/Icons';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import commonStyles, { modelStyles } from '../common/commonStyles';
-import { getImageSource, mediaObjContructor, requestCameraPermission, requestStoragePermission } from '../common/utils';
+import { getImageSource } from '../common/utils';
 import EmojiOverlay from '../components/EmojiPicker';
 import ApplicationColors from '../config/appColors';
 import { CONTACTLIST, IMAGEVIEW, NEW_GROUP } from '../constant';
@@ -107,58 +105,14 @@ function NewGroup() {
 
    const handleOpenCamera = async () => {
       toggleModel();
-      let cameraPermission = await requestCameraPermission();
-      let imageReadPermission = await requestStoragePermission();
-      const camera_permission = await AsyncStorage.getItem('camera_permission');
-      AsyncStorage.setItem('camera_permission', 'true');
-      if (
-         (cameraPermission === 'granted' || cameraPermission === 'limited') &&
-         (imageReadPermission === 'granted' || imageReadPermission === 'limited')
-      ) {
-         ImagePicker.openCamera({
-            mediaType: 'photo',
-            width: 450,
-            height: 450,
-            cropping: true,
-            cropperCircleOverlay: true,
-            compressImageQuality: 0.8,
-         })
-            .then(async image => {
-               const converted = mediaObjContructor('IMAGE_PICKER', image);
-               setProfileImage(converted);
-            })
-            .catch(error => {
-               console.log('user cancel', error.message);
-            });
-      } else if (camera_permission) {
-         openSettings();
-      }
+      const image = await handleImagePickerOpenCamera();
+      setProfileImage(image);
    };
 
    const handleOpenGallery = async () => {
       toggleModel();
-      const storage_permission = await AsyncStorage.getItem('storage_permission');
-      AsyncStorage.setItem('storage_permission', 'true');
-      const imageReadPermission = await requestStoragePermission();
-      if (imageReadPermission === 'granted' || imageReadPermission === 'limited') {
-         ImagePicker.openPicker({
-            mediaType: 'photo',
-            width: 450,
-            height: 450,
-            cropping: true,
-            cropperCircleOverlay: true,
-            compressImageQuality: 0.8,
-         })
-            .then(async image => {
-               const converted = mediaObjContructor('IMAGE_PICKER', image);
-               setProfileImage(converted);
-            })
-            .catch(error => {
-               console.log('User cancel', error.message);
-            });
-      } else if (storage_permission) {
-         openSettings();
-      }
+      const image = await handleImagePickerOpenGallery();
+      setProfileImage(image);
    };
 
    const handleNext = () => {

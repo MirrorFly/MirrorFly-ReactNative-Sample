@@ -33,17 +33,8 @@ const LastSeen = props => {
    const { fromUserJid, status } = presenseData;
    const userJid = props.jid;
 
-   const getGrpParticipants = async () => {
-      console.log('userJid ==>', userJid);
-      if (MIX_BARE_JID.test(userJid)) {
-         const grpList = await SDK.getGroupParticipants(userJid);
-         console.log('getGroupParticipants ==>', JSON.stringify(grpList, null, 2));
-      }
-   };
-
    React.useEffect(() => {
       if (userJid) {
-         getGrpParticipants();
          updateLastSeen(userJid);
       }
       return () => clearTimeout(timer);

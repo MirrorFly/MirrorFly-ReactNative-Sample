@@ -30,6 +30,7 @@ const EditStatusPage = props => {
   };
   const handleBackBtn = () => {
     props.setNav('statusPage');
+    return true;
   };
 
   const count = () => allowedMaxLimit - splitter.countGraphemes(statusContent);

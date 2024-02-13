@@ -8,13 +8,14 @@ import ApplicationColors from '../config/appColors';
 import Pressable from '../common/Pressable';
 import CheckBox from '@react-native-community/checkbox';
 import { useRoute } from '@react-navigation/native';
-import { NEW_GROUP } from '../constant';
+import { GROUP_INFO, NEW_GROUP } from '../constant';
 
 const RenderItem = ({ item, index, onhandlePress, selectedUsers }) => {
    let { nickName, image: imageToken, colorCode, status } = useRosterData(item?.userId);
    const { params: { prevScreen = '' } = {} } = useRoute();
    const [isChecked, setIsChecked] = React.useState(false);
    const isNewGrpSrn = prevScreen === NEW_GROUP;
+   const isGroupInfoSrn = prevScreen === GROUP_INFO;
    // updating default values
    nickName = nickName || item?.nickName || item?.userId || '';
    imageToken = imageToken || '';
@@ -59,7 +60,7 @@ const RenderItem = ({ item, index, onhandlePress, selectedUsers }) => {
                      {status}
                   </Text>
                </View>
-               {isNewGrpSrn && renderCheckBox}
+               {isNewGrpSrn || isGroupInfoSrn && renderCheckBox}
             </View>
          </Pressable>
          <View style={styles.divider} />

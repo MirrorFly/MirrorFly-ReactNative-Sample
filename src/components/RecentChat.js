@@ -10,13 +10,13 @@ import SDK from '../SDK/SDK';
 import no_messages from '../assets/no_messages.png';
 import Avathar from '../common/Avathar';
 import {
-  AudioMusicIcon,
-  ContactChatIcon,
-  DocumentChatIcon,
-  imageIcon as ImageIcon,
-  LocationMarkerIcon,
-  SandTimer,
-  VideoSmallIcon,
+   AudioMusicIcon,
+   ContactChatIcon,
+   DocumentChatIcon,
+   imageIcon as ImageIcon,
+   LocationMarkerIcon,
+   SandTimer,
+   VideoSmallIcon,
 } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import { convertUTCTOLocalTimeStamp, formatChatDateTime } from '../common/TimeStamp';
@@ -163,7 +163,7 @@ const RecentChatItem = ({
                   item.msgBody.message_type ? commonStyles.alignItemsCenter : commonStyles.alignItemsFlexStart,
                ]}>
                <View style={commonStyles.positionRelative}>
-                  <Avathar data={nickName} backgroundColor={colorCode} profileImage={image} />
+                  <Avathar type={item.chatType} data={nickName} backgroundColor={colorCode} profileImage={image} />
                   {item.unreadCount > 0 && (
                      <View style={styles.unreadCountWrapper}>
                         <Text style={styles.unreadCountText}>{item.unreadCount > 99 ? '99+' : item.unreadCount}</Text>
@@ -246,12 +246,9 @@ export default function RecentChat() {
       } else {
          const _item = { ...item };
          if (!_item.userJid) {
-            _item.userJid = formatUserIdToJid(_item?.fromUserId); /** Need to add chat type here while working in Group
-        formatUserIdToJid(
-         item?.fromUserId,
-         item?.chatType,
-       )
-       */
+            _item.userJid = formatUserIdToJid(item?.fromUserId, item?.chatType);
+            /** Need to add chat type here while working in Group
+             */
          }
          dispatch(updateRecentChatSelectedItems(_item));
       }
@@ -261,12 +258,9 @@ export default function RecentChat() {
       if (selectedItems.length) {
          handleRecentItemSelect(item);
       } else {
-         let jid = formatUserIdToJid(item?.fromUserId); /** Need to add chat type here while working in Group
-      formatUserIdToJid(
-       item?.fromUserId,
-       item?.chatType,
-     )
-     */
+         let jid = formatUserIdToJid(item?.fromUserId, item?.chatType);
+         /** Need to add chat type here while working in Group
+          */
          let x = {
             screen: CHATSCREEN,
             fromUserJID: item?.userJid || jid,
@@ -279,13 +273,9 @@ export default function RecentChat() {
 
    const renderItem = (item, index) => {
       const isSame = currentUserJID?.split('@')[0] === item?.publisherId;
-      const jid =
-         item?.userJid || formatUserIdToJid(item?.fromUserId); /** Need to add chat type here while working in Group
-    formatUserIdToJid(
-     item?.fromUserId,
-     item?.chatType,
-   )
-   */
+      const jid = item?.userJid || formatUserIdToJid(item?.fromUserId, item?.chatType);
+      /** Need to add chat type here while working in Group
+       */
       const isSelected = selectedItemsObj[jid];
       let statusVisible;
       switch (item?.msgStatus) {

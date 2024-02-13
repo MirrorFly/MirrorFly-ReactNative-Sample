@@ -20,6 +20,8 @@ export const CHATCONVERSATION = 'CHATCONVERSATION';
 export const CAMERA = 'CAMERA';
 export const GROUPSCREEN = 'GROUPSCREEN';
 export const NEW_GROUP = 'NEW_GROUP'
+export const GROUP_INFO = 'GROUP_INFO'
+export const USER_INFO = 'USER_INFO'
 export const IMAGEVIEW = 'IMAGEVIEW';
 
 // Redux Loading

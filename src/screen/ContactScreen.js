@@ -9,7 +9,7 @@ import {
    Text,
    View,
 } from 'react-native';
-import { CHATSCREEN, NEW_GROUP, RECENTCHATSCREEN, SETTINGSCREEN } from '../constant';
+import { CHATSCREEN, GROUP_INFO, NEW_GROUP, RECENTCHATSCREEN, SETTINGSCREEN } from '../constant';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { useDispatch } from 'react-redux';
 import ScreenHeader from '../components/ScreenHeader';
@@ -32,8 +32,14 @@ const contactPaginationRefInitialValue = {
 
 function ContactScreen() {
    const dispatch = useDispatch();
-   const { params: { prevScreen = '', grpDetails: { grpName = '', profileImage = '' } = {} } = {} } = useRoute();
+   const {
+      params: {
+         prevScreen = '',
+         grpDetails: { grpJid = '', grpName = '', profileImage = '', participants = [] } = {},
+      } = {},
+   } = useRoute();
    const isNewGrpSrn = prevScreen === NEW_GROUP;
+   const isGroupInfoSrn = prevScreen === GROUP_INFO;
    const isNetworkconneted = useNetworkStatus();
    const [isFetching, setIsFetching] = React.useState(true);
    const [searchText, setSearchText] = React.useState('');
@@ -63,7 +69,7 @@ function ContactScreen() {
    }, [isNetworkconneted]);
 
    const handleBackBtn = () => {
-      if (isNewGrpSrn) {
+      if (isNewGrpSrn || isGroupInfoSrn) {
          RootNav.goBack();
          return true;
       }
@@ -88,14 +94,23 @@ function ContactScreen() {
       }
    };
 
+   const getUsersExceptRecentChatsUsers = _users => {
+      const participantsObj = {};
+      for (let _participant of participants) {
+         participantsObj[_participant.userId] = true;
+      }
+      return _users.filter(u => !participantsObj[u.userId]);
+   };
+
    const fetchContactListFromSDK = async _searchText => {
       let { nextPage = 1, hasNextPage = true } = contactsPaginationRef.current || {};
       if (hasNextPage && _searchText === searchTextValueRef.current) {
          nextPage = _searchText ? 1 : nextPage;
          const { statusCode, users, totalPages } = await fetchContactsFromSDK(_searchText, nextPage, 23);
          if (statusCode === 200) {
+            const filteredUsers = getUsersExceptRecentChatsUsers(users);
             updateContactPaginationRefData(totalPages, _searchText);
-            setContactList(nextPage === 1 ? users : val => [...val, ...users]);
+            setContactList(nextPage === 1 ? filteredUsers : val => [...val, ...filteredUsers]);
          } else if (isNetworkconneted && statusCode !== 200) {
             const toastOptions = {
                id: 'contact-server-error',
@@ -133,7 +148,7 @@ function ContactScreen() {
       },
    ];
    const handlePress = item => {
-      if (isNewGrpSrn) {
+      if (isNewGrpSrn || isGroupInfoSrn) {
          setSelectedUsers(_data => {
             if (_data[item.userJid]) {
                delete _data[item.userJid];
@@ -177,16 +192,40 @@ function ContactScreen() {
             id: 'internet-connection-toast',
          });
       }
-      if (Object.keys(selectedUsers).length < 2) {
+      if (Object.keys(selectedUsers).length < 2 && !isGroupInfoSrn) {
          return showToast('Add at least two Contacts', { id: 'Add_at_least_two_Contacts' });
+      }
+      if (isGroupInfoSrn && !Object.keys(selectedUsers).length) {
+         return showToast('Select any contacts', { id: 'select_any_contacts' });
       }
       if (isNetworkconneted) {
          toggleModel();
-         const createGRPRes = await SDK.createGroup(grpName, Object.keys(selectedUsers), profileImage);
-         if (createGRPRes?.statusCode === 200) {
-            showToast('Group created successfully', { id: 'Group_created_successfully' });
-            RootNav.navigate(RECENTCHATSCREEN);
+         try {
+            if (isGroupInfoSrn) {
+               const { statusCode, message } = await SDK.addParticipants(grpJid, grpName, Object.keys(selectedUsers));
+               if (statusCode === 200) {
+                  RootNav.goBack();
+                  return true;
+               } else {
+                  showToast(message, { id: 'ADD_PARTICIPANTS_ERROR' });
+               }
+            }
+         } catch (error) {
+            showToast('Failed to add participants', { id: 'ADD_PARTICIPANTS_CATCH_ERROR' });
          }
+         try {
+            const { statusCode, message } = await SDK.createGroup(grpName, Object.keys(selectedUsers), profileImage);
+            if (statusCode === 200) {
+               showToast('Group created successfully', { id: 'Group_created_successfully' });
+               RootNav.navigate(RECENTCHATSCREEN);
+               return true;
+            } else {
+               showToast(message, { id: 'CREATE_GROUP_ERROR' });
+            }
+         } catch (error) {
+            showToast('Failed to create group', { id: 'CREATE_GROUP_CATCH_ERROR' });
+         }
+         toggleModel();
       }
    };
 
@@ -225,12 +264,13 @@ function ContactScreen() {
    return (
       <KeyboardAvoidingView style={commonStyles.flex1} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
          <ScreenHeader
-            title={isNewGrpSrn ? 'Add Participats' : 'Contacts'}
+            title={isNewGrpSrn || isGroupInfoSrn ? 'Add Participats' : 'Contacts'}
             onhandleBack={handleBackBtn}
             menuItems={menuItems}
             onhandleSearch={handleSearch}
             handleClear={handleClear}
             onCreateBtn={handleGrpPartcipant}
+            isGroupInfoSrn={isGroupInfoSrn}
          />
          {renderContactList()}
          <Modal visible={modelOpen} onRequestClose={toggleModel}>

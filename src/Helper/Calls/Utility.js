@@ -647,7 +647,12 @@ export const endOngoingCallLogout = () => {
 };
 
 export const updateMissedCallNotification = async callData => {
+   let userEnded = callData.userEnded || false;
+   let userCallData = Store.getState().callData.connectionState;
    if (!callData.localUser) {
+      if (userEnded && Object.keys(userCallData).length === 0) {
+         resetCallData();
+      }
       let userID = getUserIdFromJid(callData.userJid);
       const userProfile = await getUserProfileFromSDK(userID);
       const nickName = userProfile?.data?.nickName || userID;

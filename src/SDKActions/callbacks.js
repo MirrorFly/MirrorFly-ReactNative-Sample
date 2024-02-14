@@ -638,7 +638,6 @@ const reconnecting = res => {
 };
 
 const callStatus = res => {
-   console.log('callStatus ', res.status);
    if (res.status === 'ringing') {
       ringing(res);
    } else if (res.status === 'connecting') {
@@ -930,6 +929,7 @@ export const callBacks = {
             mediaStream = new MediaStream();
             mediaStream.addTrack(res.track);
          }
+         console.log(mediaStream,"mediaStream");
          localStream[res.trackType] = mediaStream;
          const { getState, dispatch } = Store;
          const showConfrenceData = getState().showConfrenceData;

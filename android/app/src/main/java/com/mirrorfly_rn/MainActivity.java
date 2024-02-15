@@ -4,10 +4,12 @@ import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
+/** Add this */
+import android.os.Bundle;
 
 public class MainActivity extends ReactActivity {
   /**
-   * for fixing crash issue https://stackoverflow.com/a/57712204
+   *  Add this  for fixing crash issue https://stackoverflow.com/a/57712204
    */
   @Override
     protected void onCreate(Bundle savedInstanceState) {

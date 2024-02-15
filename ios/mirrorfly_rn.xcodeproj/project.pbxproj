@@ -20,7 +20,7 @@
 		CE56DAC02AC447C100A2BB3A /* NotificationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CE56DAB82AC447C100A2BB3A /* NotificationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CE7BED472AC6E6F6001F131C /* sendDeliveredApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7BED462AC6E6F6001F131C /* sendDeliveredApiCall.swift */; };
 		CE7BED4D2AC6F648001F131C /* Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7BED4C2AC6F648001F131C /* Async.swift */; };
-		CEABB5582B4E74BC00CCB8EB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CEABB5572B4E74BC00CCB8EB /* GoogleService-Info.plist */; };
+		CE7FD68A2B7DFAC000C5488B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE7FD6892B7DFAC000C5488B /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,8 +80,8 @@
 		CE7BED462AC6E6F6001F131C /* sendDeliveredApiCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sendDeliveredApiCall.swift; sourceTree = "<group>"; };
 		CE7BED4C2AC6F648001F131C /* Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Async.swift; sourceTree = "<group>"; };
 		CE7BED4E2AC6F66F001F131C /* mirrorfly_rn-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "mirrorfly_rn-Bridging-Header.h"; sourceTree = "<group>"; };
+		CE7FD6892B7DFAC000C5488B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../qa-google-services/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CE8113C52EFF9C3C70A45047 /* Pods-mirrorfly_rn-mirrorfly_rnTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mirrorfly_rn-mirrorfly_rnTests.debug.xcconfig"; path = "Target Support Files/Pods-mirrorfly_rn-mirrorfly_rnTests/Pods-mirrorfly_rn-mirrorfly_rnTests.debug.xcconfig"; sourceTree = "<group>"; };
-		CEABB5572B4E74BC00CCB8EB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FA1486D50E25034D688CBFB1 /* Pods-mirrorfly_rn.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mirrorfly_rn.release.xcconfig"; path = "Target Support Files/Pods-mirrorfly_rn/Pods-mirrorfly_rn.release.xcconfig"; sourceTree = "<group>"; };
 		FAEE072E6838F86959A5F365 /* Pods_mirrorfly_rn_mirrorfly_rnTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mirrorfly_rn_mirrorfly_rnTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -134,7 +134,7 @@
 		13B07FAE1A68108700A75B9A /* mirrorfly_rn */ = {
 			isa = PBXGroup;
 			children = (
-				CEABB5572B4E74BC00CCB8EB /* GoogleService-Info.plist */,
+				CE7FD6892B7DFAC000C5488B /* GoogleService-Info.plist */,
 				CE57D1A62ABD800F0086E3A9 /* mirrorfly_rn.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
@@ -229,6 +229,7 @@
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
 				079FFADFCB07B5765B34B05C /* [CP] Copy Pods Resources */,
+				3AC53B6205C04CB01FB6DE16 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -253,6 +254,7 @@
 				CECA516A2AC1660200CD9B3B /* Embed Foundation Extensions */,
 				E68682FE134E2895F60A1567 /* [CP] Copy Pods Resources */,
 				6F6312F31ED0D9DD8E5BB36B /* [CP-User] [RNFB] Core Configuration */,
+				68F3A8DB72C66BA069A12D54 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -337,7 +339,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				CEABB5582B4E74BC00CCB8EB /* GoogleService-Info.plist in Resources */,
+				CE7FD68A2B7DFAC000C5488B /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -382,6 +384,40 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-mirrorfly_rn-mirrorfly_rnTests/Pods-mirrorfly_rn-mirrorfly_rnTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3AC53B6205C04CB01FB6DE16 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-mirrorfly_rn-mirrorfly_rnTests/Pods-mirrorfly_rn-mirrorfly_rnTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-mirrorfly_rn-mirrorfly_rnTests/Pods-mirrorfly_rn-mirrorfly_rnTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-mirrorfly_rn-mirrorfly_rnTests/Pods-mirrorfly_rn-mirrorfly_rnTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		68F3A8DB72C66BA069A12D54 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-mirrorfly_rn/Pods-mirrorfly_rn-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-mirrorfly_rn/Pods-mirrorfly_rn-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-mirrorfly_rn/Pods-mirrorfly_rn-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		6F6312F31ED0D9DD8E5BB36B /* [CP-User] [RNFB] Core Configuration */ = {
@@ -697,7 +733,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -705,6 +741,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
+					_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -713,6 +750,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
@@ -725,11 +770,16 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
 				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
@@ -769,15 +819,27 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION,
+				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
@@ -789,11 +851,16 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
 				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;

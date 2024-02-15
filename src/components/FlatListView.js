@@ -2,7 +2,7 @@ import React from 'react';
 import Avathar from '../common/Avathar';
 import useRosterData from '../hooks/useRosterData';
 import SDK from '../SDK/SDK';
-import { ActivityIndicator, StyleSheet, Text, View, FlatList } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View, FlatList, Platform } from 'react-native';
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
 import Pressable from '../common/Pressable';
@@ -60,7 +60,7 @@ const RenderItem = ({ item, index, onhandlePress, selectedUsers }) => {
                      {status}
                   </Text>
                </View>
-               {isNewGrpSrn || isGroupInfoSrn && renderCheckBox}
+               {(isNewGrpSrn || isGroupInfoSrn) && renderCheckBox}
             </View>
          </Pressable>
          <View style={styles.divider} />

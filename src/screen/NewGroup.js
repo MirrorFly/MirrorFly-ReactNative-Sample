@@ -117,10 +117,10 @@ function NewGroup() {
 
    const handleNext = () => {
       if (!content) {
-         return showToast('Please provide group name');
+         return showToast('Please provide group name', { id: 'Please provide group name' });
       }
       if (!content.trim()) {
-         return showToast('Please provide group subject');
+         return showToast('Please provide group subject', { id: 'Please provide group name' });
       }
 
       navigation.navigate(CONTACTLIST, {
@@ -152,12 +152,7 @@ function NewGroup() {
          </View>
          <View style={[commonStyles.bg_white, commonStyles.flex1]}>
             <View style={[commonStyles.alignItemsCenter, commonStyles.mt_50]}>
-               <View
-                  style={{
-                     height: 157,
-                     width: 157,
-                     position: 'relative',
-                  }}>
+               <View style={{ height: 157, width: 157, position: 'relative' }}>
                   <Pressable
                      style={[commonStyles.borderRadius_50, commonStyles.overflowHidden]}
                      pressedStyle={{}}
@@ -200,7 +195,7 @@ function NewGroup() {
                   ref={inputRef}
                   placeholder="Type group name here"
                   style={styles.nameTextInput}
-                  multiline={true}
+                  multiline={false}
                   value={content}
                   onChangeText={handleInput}
                   placeholderTextColor={ApplicationColors.placeholderTextColor}

@@ -228,6 +228,42 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:235373697524:android:8b3becf8d8ff9be3a0c1a1",
+        "android_client_info": {
+          "package_name": "com.mirrorfly_rn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "235373697524-3tl5e1eoqvqmv51qcqhgmcg2nkndfgu7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfIqmrHFXEvJgE29tWr3Ps1bFJ-sOd2Go"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "235373697524-3tl5e1eoqvqmv51qcqhgmcg2nkndfgu7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "235373697524-2na45jkmpo3vu58u26m96huimhjkrrgi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mirrorfly.uikit.qa"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

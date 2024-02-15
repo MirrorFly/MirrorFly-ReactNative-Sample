@@ -11,36 +11,36 @@ import { callBacks } from './src/SDKActions/callbacks';
 import { MIX_BARE_JID } from './src/Helper/Chat/Constant';
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
-	try {
-		if (MIX_BARE_JID.test(remoteMessage?.data?.user_jid) || remoteMessage?.data?.group_id) {
-			return;
-		}
-		await SDK.initializeSDK({
-			apiBaseUrl: 'https://api-uikit-qa.contus.us/api/v1',
-			licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
-			callbackListeners: callBacks,
-			isSandbox: false,
-		});
-		if (remoteMessage.data.type === 'recall') {
-			updateNotification(remoteMessage.data.message_id);
-			return;
-		}
-		const notify = await SDK.getNotificationData(remoteMessage);
-		if (notify?.statusCode === 200) {
-			if (notify?.data?.type === 'receiveMessage') {
-				updateRecentAndConversationStore(notify?.data);
-				await handleSetPendingSeenStatus(notify?.data);
-				pushNotify(
-					notify?.data?.msgId,
-					getNotifyNickName(notify?.data),
-					getNotifyMessage(notify?.data),
-					notify?.data?.fromUserJid,
-				);
-			}
-		}
-	} catch (error) {
-		console.log('messaging().setBackgroundMessageHandler', error);
-	}
+   try {
+      if (MIX_BARE_JID.test(remoteMessage?.data?.user_jid) || remoteMessage?.data?.group_id) {
+         return;
+      }
+      await SDK.initializeSDK({
+         apiBaseUrl: 'https://api-uikit-qa.contus.us/api/v1',
+         licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
+         callbackListeners: callBacks,
+         isSandbox: false,
+      });
+      if (remoteMessage.data.type === 'recall') {
+         updateNotification(remoteMessage.data.message_id);
+         return;
+      }
+      const notify = await SDK.getNotificationData(remoteMessage);
+      if (notify?.statusCode === 200) {
+         if (notify?.data?.type === 'receiveMessage') {
+            updateRecentAndConversationStore(notify?.data);
+            await handleSetPendingSeenStatus(notify?.data);
+            pushNotify(
+               notify?.data?.msgId,
+               getNotifyNickName(notify?.data),
+               getNotifyMessage(notify?.data),
+               notify?.data?.fromUserJid,
+            );
+         }
+      }
+   } catch (error) {
+      console.log('messaging().setBackgroundMessageHandler', error);
+   }
 });
 /**
 // messaging().onMessage(async remoteMessage => {

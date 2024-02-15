@@ -1,7 +1,7 @@
+import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { NativeBaseProvider } from 'native-base';
 import React from 'react';
 import { Modal, Platform, View } from 'react-native';
-import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import { enablePipModeIfCallConnected } from '../Helper';
 import {

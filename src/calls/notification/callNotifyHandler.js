@@ -289,9 +289,11 @@ export const onNotificationAction = async ({ type, detail }) => {
                openCallModelActivity();
                // });
             } else {
-               const push_url = 'mirrorfly_rn://CALLSCREEN';
+               const push_url = 'mirrorfly_rn://';
                Linking.openURL(push_url).then(() => {
-                  openCallModelActivity();
+                  _BackgroundTimer.setTimeout(() => {
+                     openCallModelActivity();
+                  }, 200);
                });
             }
          }

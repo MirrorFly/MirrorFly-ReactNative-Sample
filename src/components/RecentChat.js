@@ -261,7 +261,7 @@ export default function RecentChat() {
 
   React.useEffect(() => {
     (async () => {
-      const recentChats = await SDK.getRecentChatsDB();
+      const recentChats = await SDK.getRecentChats();
       const recentChatsFilter = recentChats?.data.filter(
         item => item.chatType === 'chat',
       );

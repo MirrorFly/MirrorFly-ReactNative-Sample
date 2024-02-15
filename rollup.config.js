@@ -87,6 +87,7 @@ export default {
       '@notifee/react-native',
       'react-native-callkeep',
       'react-native-voip-push-notification',
+      'mirrorfly-reactnative-sdk',
    ],
    plugins: [
       replace({

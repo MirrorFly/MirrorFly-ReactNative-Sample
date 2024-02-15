@@ -18,35 +18,35 @@ import {
 } from './src/Helper';
 import { callBacks } from './src/SDKActions/callbacks';
 
-// messaging().setBackgroundMessageHandler(async remoteMessage => {
-//   try {
-//     await SDK.initializeSDK({
-//       apiBaseUrl: 'https://api-uikit-qa.contus.us/api/v1',
-//       licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
-//       callbackListeners: callBacks,
-//       isSandbox: false,
-//     });
-//     if (remoteMessage.data.type === 'recall') {
-//       updateNotification(remoteMessage.data.message_id);
-//       return;
-//     }
-//     const notify = await SDK.getNotificationData(remoteMessage);
-//     if (notify?.statusCode === 200) {
-//       if (notify?.data?.type === 'receiveMessage') {
-//         updateRecentAndConversationStore(notify?.data);
-//         await handleSetPendingSeenStatus(notify?.data);
-//         pushNotify(
-//           notify?.data?.msgId,
-//           getNotifyNickName(notify?.data),
-//           getNotifyMessage(notify?.data),
-//           notify?.data?.fromUserJid,
-//         );
-//       }
-//     }
-//   } catch (error) {
-//     console.log('messaging().setBackgroundMessageHandler', error);
-//   }
-// });
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  try {
+    await SDK.initializeSDK({
+      apiBaseUrl: 'https://api-uikit-qa.contus.us/api/v1',
+      licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
+      callbackListeners: callBacks,
+      isSandbox: false,
+    });
+    if (remoteMessage.data.type === 'recall') {
+      updateNotification(remoteMessage.data.message_id);
+      return;
+    }
+    const notify = await SDK.getNotificationData(remoteMessage);
+    if (notify?.statusCode === 200) {
+      if (notify?.data?.type === 'receiveMessage') {
+        updateRecentAndConversationStore(notify?.data);
+        await handleSetPendingSeenStatus(notify?.data);
+        pushNotify(
+          notify?.data?.msgId,
+          getNotifyNickName(notify?.data),
+          getNotifyMessage(notify?.data),
+          notify?.data?.fromUserJid,
+        );
+      }
+    }
+  } catch (error) {
+    console.log('messaging().setBackgroundMessageHandler', error);
+  }
+});
 /**
 // messaging().onMessage(async remoteMessage => {
 //   console.log(

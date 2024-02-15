@@ -35,7 +35,7 @@ Follow the below steps to get your license key:
 
 ```jsx
 "dependencies": {
- "mirrorfly-uikit-react-native": "^1.0.4",
+ "mirrorfly-uikit-react-native": "^1.0.6",
  "react": "^16.0.0",
  }
 ```

@@ -42,6 +42,12 @@ class ActivityModule {
          return nativeActivityModule?.isLocked?.();
       }
    };
+
+   getCallActivity = () =>{
+      if (Platform.OS === 'android') {
+         return nativeActivityModule?.getCallActivity?.();
+      }
+   }
 }
 
 export default new ActivityModule();

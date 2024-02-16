@@ -35,6 +35,7 @@ import {
 import { removeAllDeliveredNotification } from '../../Service/remoteNotifyHandle';
 import { callDurationTimestamp, resetNotificationData, setNotificationData } from '../../redux/Actions/CallAction';
 import { navigate } from '../../redux/Actions/NavigationAction';
+import { getApplicationUrl } from '../../uikitHelpers/uikitMethods';
 const { ActivityModule } = NativeModules;
 
 let interval;
@@ -65,7 +66,8 @@ export const getIncomingCallNotification = async (
    callStatusType,
    isFullScreenIntent,
 ) => {
-   let launchActivityState = AppState.currentState === 'active' ? 'com.mirrorfly_rn.FullScreenActivity' : 'default';
+   const launchCallActivity = await ActivityModule.getCallActivity();
+   let launchActivityState = AppState.currentState === 'active' ? launchCallActivity : 'default';
    let importanceState = AppState.currentState === 'active' ? AndroidImportance.DEFAULT : AndroidImportance.HIGH;
    const channelIds = AppState.currentState === 'active' ? 'IncomingCallLow' : 'IncomingCallHigh';
    let channelId = await notifee.createChannel({
@@ -111,7 +113,7 @@ export const getIncomingCallNotification = async (
       notification.android.fullScreenAction = {
          id: 'default',
          launchActivityFlags: [AndroidLaunchActivityFlag.NEW_TASK],
-         launchActivity: 'com.mirrorfly_rn.CallScreenActivity',
+         launchActivity: launchCallActivity,
       };
    }
    /** Display a notification */
@@ -182,6 +184,7 @@ export const getOnGoingCallNotification = async (roomId, data, userJid, nickName
 };
 
 export const getMissedCallNotification = async (roomId, callDetailObj = {}, userJid, nickName, callStatusType) => {
+   const launchActivityName = await ActivityModule.getMainActivity();
    let title = `You missed ${callDetailObj.callType === 'audio' ? 'an' : 'a'} ${callDetailObj.callType} call`;
    let displayedNotificationId = await notifee.getDisplayedNotifications();
    let notificationExist = displayedNotificationId.find(
@@ -212,6 +215,11 @@ export const getMissedCallNotification = async (roomId, callDetailObj = {}, user
          showTimestamp: true,
          visibility: AndroidVisibility.PUBLIC,
          sound: 'default',
+         pressAction: {
+            id: 'MissedCallNotification',
+            launchActivityFlags: [AndroidLaunchActivityFlag.NEW_TASK],
+            launchActivity: launchActivityName,
+         },
       },
       ios: {
          foregroundPresentationOptions: {
@@ -271,11 +279,10 @@ export const onNotificationAction = async ({ type, detail }) => {
    }
 
    if (type === EventType.PRESS) {
-      let checkChannelID = detail?.notification?.android?.channelId;
-      if (checkChannelID !== MISSED_CALL) {
+      let checkChannelID = detail?.notification?.android?.channelId || '';
+      if (checkChannelID && checkChannelID !== MISSED_CALL) {
          let showCallModal = Store.getState()?.callData?.showCallModal;
          let activity = await ActivityModule.getActivity();
-         console.log('while pressing the notification before validation', AppState.currentState, activity);
          if (AppState.currentState === 'active') {
             if (showCallModal && activity?.includes('CallScreenActivity')) {
                return;
@@ -289,16 +296,17 @@ export const onNotificationAction = async ({ type, detail }) => {
                openCallModelActivity();
                // });
             } else {
-               const push_url = 'mirrorfly_rn://';
-               Linking.openURL(push_url).then(() => {
-                  _BackgroundTimer.setTimeout(() => {
-                     openCallModelActivity();
-                  }, 200);
-               });
+               const push_url = getApplicationUrl();
+               if (push_url) {
+                  Linking.openURL(push_url).then(() => {
+                     _BackgroundTimer.setTimeout(() => {
+                        openCallModelActivity();
+                     }, 200);
+                  });
+               }
             }
          }
       }
-      // stopForegroundServiceNotification(cancelIDS);
    }
 
    if (detail.pressAction?.id === 'accept') {
@@ -323,7 +331,6 @@ export const setNotificationForegroundService = async () => {
             let callStartTime = Store.getState()?.callData?.callDuration;
             if (!callStartTime) {
                callStartTime = Date.now();
-               console.log('callStartTime from foreground service', callStartTime);
                Store.dispatch(callDurationTimestamp(callStartTime));
             }
             interval = _BackgroundTimer.setInterval(() => {

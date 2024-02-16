@@ -278,7 +278,7 @@ const CollapsingToolbar = ({
               </Text>
             </HStack>
           </View>
-          <Pressable
+          {/* <Pressable
             onPress={handleTapDetails}
             borderBottomColor={'#f2f2f2'}
             borderBottomWidth={1}>
@@ -295,8 +295,8 @@ const CollapsingToolbar = ({
               </HStack>
               <FrontArrowIcon />
             </HStack>
-          </Pressable>
-          <Pressable onPress={handleModel}>
+          </Pressable> */}
+          {/* <Pressable onPress={handleModel}>
             <HStack
               my="3"
               alignItems={'center'}
@@ -308,7 +308,7 @@ const CollapsingToolbar = ({
                 </Text>
               </HStack>
             </HStack>
-          </Pressable>
+          </Pressable> */}
         </View>
       </Animated.ScrollView>
       <Center maxH={'40'} width={'60'}>

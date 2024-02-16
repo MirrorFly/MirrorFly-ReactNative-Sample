@@ -1,4 +1,3 @@
-import { PermissionsAndroid } from 'react-native';
 import RNCallKeep from 'react-native-callkeep';
 
 export const setupCallKit = async () => {

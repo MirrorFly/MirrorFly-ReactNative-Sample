@@ -173,10 +173,10 @@ const ChatConversation = React.memo(props => {
     switch (true) {
       case foundMsg.length > 0:
         setMenuItems([
-          {
-            label: 'Report',
-            formatter: () => {},
-          },
+          // {
+          //   label: 'Report',
+          //   formatter: () => {},
+          // },
           {
             label:
               selectedMsgs[0]?.msgBody.message_type === 'text' ||
@@ -228,10 +228,10 @@ const ChatConversation = React.memo(props => {
               handleClearChat();
             },
           },
-          {
-            label: 'Report',
-            formatter: () => {},
-          },
+          // {
+          //   label: 'Report',
+          //   formatter: () => {},
+          // },
           {
             label: 'Search',
             formatter: handleConversationSearchPress,

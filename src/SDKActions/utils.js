@@ -4,7 +4,7 @@ import { callBacks } from "./callbacks";
 
 export const getInitializeObj = () => ({
     apiBaseUrl: config.API_URL,
-    licenseKey: config.lisenceKey,
+    licenseKey: config.licenseKey,
     callbackListeners: callBacks,
 });
 

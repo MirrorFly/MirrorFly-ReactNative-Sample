@@ -396,19 +396,20 @@ const ChatInput = props => {
                 numberOfLines={1}
                 multiline={true}
               />
-
+              <View style={{marginRight:6}}>
               <IconButton
                 onPress={handleAttachmentconPressed}
                 style={styles.attachmentIcon}>
                 <AttachmentIcon />
               </IconButton>
+              </View>
 
-              <IconButton
+              {/* <IconButton
                 containerStyle={styles.audioRecordIconWrapper}
                 onPress={startRecording}
                 style={styles.audioRecordIcon}>
                 <MicIcon style={isRecording && micStyle} />
-              </IconButton>
+              </IconButton> */}
             </>
           </View>
           {Boolean(message) && (

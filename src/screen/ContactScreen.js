@@ -264,7 +264,7 @@ function ContactScreen() {
    return (
       <KeyboardAvoidingView style={commonStyles.flex1} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
          <ScreenHeader
-            title={isNewGrpSrn || isGroupInfoSrn ? 'Add Participats' : 'Contacts'}
+            title={isNewGrpSrn || isGroupInfoSrn ? 'Add Participants' : 'Contacts'}
             onhandleBack={handleBackBtn}
             menuItems={menuItems}
             onhandleSearch={handleSearch}

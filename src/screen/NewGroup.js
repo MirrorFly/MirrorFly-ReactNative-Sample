@@ -1,7 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
-import Graphemer from 'graphemer';
 import React from 'react';
-import { BackHandler, Image, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
+import { BackHandler, Image, Keyboard, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { showToast } from '../Helper';
 import { handleImagePickerOpenCamera, handleImagePickerOpenGallery } from '../Helper/Chat/ChatHelper';
@@ -9,12 +8,12 @@ import { CHAT_TYPE_GROUP } from '../Helper/Chat/Constant';
 import CameraIcon from '../assets/camera.png';
 import Avathar from '../common/Avathar';
 import IconButton from '../common/IconButton';
-import { KeyboardIcon, LeftArrowIcon, SmileIcon } from '../common/Icons';
+import { LeftArrowIcon } from '../common/Icons';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import commonStyles, { modelStyles } from '../common/commonStyles';
 import { getImageSource } from '../common/utils';
-import EmojiOverlay from '../components/EmojiPicker';
+import EmojiInput from '../components/EmojiInput';
 import ApplicationColors from '../config/appColors';
 import { CONTACTLIST, IMAGEVIEW, NEW_GROUP } from '../constant';
 import { useNetworkStatus } from '../hooks';
@@ -23,15 +22,11 @@ const LeftArrowComponent = () => LeftArrowIcon();
 
 function NewGroup() {
    const isConnected = useNetworkStatus();
-   const inputRef = React.useRef();
    const navigation = useNavigation();
-   const allowedMaxLimit = 25;
-   const splitter = new Graphemer();
    const headerBg = useSelector(state => state.safeArea.color);
-   const [content, setContent] = React.useState('');
+   const [value, setValue] = React.useState('');
    const [profileImage, setProfileImage] = React.useState('');
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
-   const [pressedKey, setPressedKey] = React.useState('');
    const [modelOpen, setModelOpen] = React.useState(false);
 
    const toggleModel = () => {
@@ -47,35 +42,8 @@ function NewGroup() {
       return true;
    };
 
-   const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
-
-   React.useEffect(() => {
-      return () => {
-         backHandler.remove();
-      };
-   }, []);
-
    const handlingBackBtn = () => {
       navigation.goBack();
-   };
-
-   const count = () => allowedMaxLimit - splitter.countGraphemes(content);
-
-   const handleEmojiSelect = (...emojis) => {
-      if (count() > 0) {
-         setContent(prev => prev + emojis);
-      }
-   };
-
-   const handleInput = text => {
-      if (count() > 0 || pressedKey === 'Backspace') {
-         setContent(text);
-      }
-   };
-
-   const handleOnKeyPress = ({ nativeEvent }) => {
-      const { key } = nativeEvent;
-      setPressedKey(key);
    };
 
    const handleRemovePhoto = () => {
@@ -116,18 +84,26 @@ function NewGroup() {
    };
 
    const handleNext = () => {
-      if (!content) {
+      if (!value) {
          return showToast('Please provide group name', { id: 'Please provide group name' });
       }
-      if (!content.trim()) {
+      if (!value.trim()) {
          return showToast('Please provide group subject', { id: 'Please provide group name' });
       }
 
       navigation.navigate(CONTACTLIST, {
          prevScreen: NEW_GROUP,
-         grpDetails: { grpName: content, profileImage },
+         grpDetails: { grpName: value, profileImage },
       });
    };
+
+   const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+
+   React.useEffect(() => {
+      return () => {
+         backHandler.remove();
+      };
+   }, []);
 
    return (
       <>
@@ -189,41 +165,11 @@ function NewGroup() {
                   </Pressable>
                </View>
             </View>
-            <View style={[commonStyles.hstack, commonStyles.alignItemsCenter, styles.nameTextView, commonStyles.mt_20]}>
-               <TextInput
-                  cursorColor={ApplicationColors.mainColor}
-                  ref={inputRef}
-                  placeholder="Type group name here"
-                  style={styles.nameTextInput}
-                  multiline={false}
-                  value={content}
-                  onChangeText={handleInput}
-                  placeholderTextColor={ApplicationColors.placeholderTextColor}
-                  keyboardType="default"
-                  onKeyPress={handleOnKeyPress}
-               />
-               <Text style={styles.subText}>{count()}</Text>
-               <View style={commonStyles.marginRight_12}>
-                  <IconButton
-                     onPress={() => {
-                        if (isEmojiPickerShowing) inputRef.current.focus();
-                        setIsEmojiPickerShowing(!isEmojiPickerShowing);
-                     }}>
-                     {!isEmojiPickerShowing ? <SmileIcon /> : <KeyboardIcon />}
-                  </IconButton>
-               </View>
-            </View>
+            <EmojiInput setValue={setValue} />
             <Text style={[commonStyles.pt_15, commonStyles.fw_600, commonStyles.colorBlack, commonStyles.txtCenter]}>
                Provide a Group Name and Icon
             </Text>
          </View>
-         <EmojiOverlay
-            state={content}
-            setState={setContent}
-            visible={isEmojiPickerShowing}
-            onClose={() => setIsEmojiPickerShowing(false)}
-            onSelect={handleEmojiSelect}
-         />
          <Modal visible={modelOpen} onRequestClose={toggleModel}>
             <ModalCenteredContent onPressOutside={toggleModel}>
                <View style={modelStyles.inviteFriendModalContentContainer}>
@@ -270,6 +216,9 @@ const styles = StyleSheet.create({
    nameTextView: {
       borderBottomWidth: 1,
       borderBottomColor: '#f2f2f2',
+   },
+   iconWidth: {
+      width: 40,
    },
    nameTextInput: {
       flex: 1,

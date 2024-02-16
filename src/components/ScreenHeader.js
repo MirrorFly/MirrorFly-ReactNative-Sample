@@ -88,7 +88,7 @@ function ScreenHeader(props) {
                      <SearchIcon />
                   </IconButton>
                )}
-               {props.title === 'Add Participats' && (
+               {props.title === 'Add Participants' && (
                   <IconButton onPress={onCreateBtn}>
                      <Text style={styles.subText}>{isGroupInfoSrn ? 'NEXT' : 'CREATE'}</Text>
                   </IconButton>

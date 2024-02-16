@@ -2565,7 +2565,7 @@ export const AddUserIcon = () => {
                      stroke="#f5f6fa"
                      stroke-linecap="round"
                      stroke-linejoin="round"
-                     stroke-width="0.3"
+                     stroke-width="0"
                   />
                </G>
             </G>
@@ -2579,7 +2579,7 @@ export const AddUserIcon = () => {
                      fill="#181818"
                      stroke="#f5f6fa"
                      stroke-linecap="round"
-                     stroke-width="0.3"
+                     stroke-width="0"
                   />
                </G>
             </G>

@@ -2,30 +2,22 @@ import { useNavigation } from '@react-navigation/native';
 import { HStack, Icon, IconButton, Switch, Text, View } from 'native-base';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Animated, BackHandler, Dimensions, FlatList, Image, PixelRatio, StyleSheet } from 'react-native';
+import { Animated, BackHandler, Dimensions, Image, StyleSheet } from 'react-native';
 import { showToast } from '../Helper';
 import { isLocalUser } from '../Helper/Chat/ChatHelper';
 import { SDK } from '../SDK';
 import grpImage from '../assets/ic_grp_bg.png';
 import Avathar from '../common/Avathar';
-import {
-   AddUserIcon,
-   ExitIcon,
-   ImageEditIcon,
-   LeftArrowIcon,
-   ReportGroupIcon,
-   ReportIcon,
-   TextEditIcon,
-} from '../common/Icons';
+import { AddUserIcon, ExitIcon, ImageEditIcon, LeftArrowIcon, ReportGroupIcon, TextEditIcon } from '../common/Icons';
 import Modal, { ModalCenteredContent } from '../common/Modal';
+import Pressable from '../common/Pressable';
 import commonStyles, { modelStyles } from '../common/commonStyles';
 import { getImageSource } from '../common/utils';
 import ApplicationColors from '../config/appColors';
-import { CONTACTLIST, GROUP_INFO } from '../constant';
+import { CONTACTLIST, EDITNAME, GROUP_INFO, IMAGEVIEW } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import useFetchImage from '../hooks/useFetchImage';
 import useRosterData from '../hooks/useRosterData';
-import Pressable from '../common/Pressable';
 
 const propTypes = {
    chatUser: PropTypes.string,
@@ -85,7 +77,7 @@ const GrpCollapsibleToolbar = ({
    handleBackBtn,
    participants,
 }) => {
-   const naviagation = useNavigation();
+   const navigation = useNavigation();
    const isNetworkconneted = useNetworkStatus();
    const scrollY = React.useRef(new Animated.Value(0)).current;
    const [animatedTitleColor, setAnimatedTitleColor] = React.useState(250);
@@ -147,7 +139,7 @@ const GrpCollapsibleToolbar = ({
    };
 
    const handleAddParticipants = () => {
-      naviagation.navigate(CONTACTLIST, {
+      navigation.navigate(CONTACTLIST, {
          prevScreen: GROUP_INFO,
          grpDetails: { grpJid: chatUser, grpName: title, participants },
       });
@@ -160,6 +152,14 @@ const GrpCollapsibleToolbar = ({
          });
       }
       // SDK.setGroupProfile(chatUser, title, '');
+   };
+
+   const handleViewImage = () => {
+      navigation.navigate(IMAGEVIEW, { imageUrl, authToken, title });
+   };
+
+   const handleEditText = () => {
+      navigation.navigate(EDITNAME, { imageUrl, authToken, title });
    };
 
    const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
@@ -176,6 +176,7 @@ const GrpCollapsibleToolbar = ({
             style={[
                styles.header,
                {
+                  zIndex: 9,
                   backgroundColor: '#f2f2f2',
                   height: toolbarMaxHeight,
                   transform: [{ translateY: headerTranslate }],
@@ -187,7 +188,7 @@ const GrpCollapsibleToolbar = ({
             ]}>
             <Animated.View
                style={[
-                  styles.header,
+                  // styles.header,
                   {
                      justifyContent: 'center',
                      alignItems: 'center',
@@ -197,17 +198,19 @@ const GrpCollapsibleToolbar = ({
                   },
                ]}>
                {imageUrl ? (
-                  <Image
-                     style={styles.profileImage}
-                     source={{
-                        uri: imageUrl,
-                        method: 'GET',
-                        cache: 'force-cache',
-                        headers: {
-                           Authorization: authToken,
-                        },
-                     }}
-                  />
+                  <Pressable onPress={handleViewImage} style={styles.profileImage}>
+                     <Image
+                        style={styles.profileImage}
+                        source={{
+                           uri: imageUrl,
+                           method: 'GET',
+                           cache: 'force-cache',
+                           headers: {
+                              Authorization: authToken,
+                           },
+                        }}
+                     />
+                  </Pressable>
                ) : (
                   <Image style={styles.profileImage} source={getImageSource(grpImage)} />
                )}
@@ -233,9 +236,12 @@ const GrpCollapsibleToolbar = ({
                   {title}
                </Animated.Text>
                {animatedTitleColor < 260 && (
-                  <View style={[commonStyles.alignItemsCenter, commonStyles.justifyContentCenter]}>
+                  <Pressable
+                     onPress={handleEditText}
+                     style={[commonStyles.alignItemsCenter, commonStyles.justifyContentCenter]}
+                     contentContainerStyle={commonStyles.p_4}>
                      <TextEditIcon color="#fff" width="20" height="20" />
-                  </View>
+                  </Pressable>
                )}
             </Animated.View>
          </Animated.View>
@@ -326,7 +332,7 @@ const GrpCollapsibleToolbar = ({
                   <Pressable>
                      <Text style={modelStyles.modalOption}>View Info</Text>
                   </Pressable>
-                  {localUser?.userType == 'o' && (
+                  {localUser?.userType === 'o' && (
                      <>
                         <Pressable>
                            <Text style={modelStyles.modalOption}>Remove form Group</Text>

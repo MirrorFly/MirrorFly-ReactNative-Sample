@@ -19,7 +19,7 @@ import {
    handleDocumentPickSingle,
    mediaObjContructor,
    requestAudioStoragePermission,
-   requestCameraPermission,
+   requestCameraMicPermission,
    requestContactPermission,
    requestFileStoragePermission,
    requestLocationPermission,
@@ -231,7 +231,7 @@ function ChatScreen() {
          name: 'Camera',
          icon: CameraIcon,
          formatter: async () => {
-            let cameraPermission = await requestCameraPermission();
+            let cameraPermission = await requestCameraMicPermission();
             let imageReadPermission = await requestStoragePermission();
             const camera_permission = await AsyncStorage.getItem('camera_permission');
             AsyncStorage.setItem('camera_permission', 'true');

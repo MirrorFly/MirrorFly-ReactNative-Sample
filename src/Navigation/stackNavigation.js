@@ -1,14 +1,14 @@
-import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import RegisterScreen from '../screen/RegisterScreen';
-import ProfileScreen from '../screen/ProfileScreen';
-import RecentScreen from '../screen/RecentScreen';
+import React from 'react';
+import PostPreViewPage from '../components/PostPreViewPage';
+import RNCamera from '../components/RNCamera';
 import {
    CAMERA,
    CHATSCREEN,
    CONTACTLIST,
    CONVERSATION_SCREEN,
    COUNTRYSCREEN,
+   EDITNAME,
    FORWARD_MESSSAGE_SCREEN,
    GROUPSCREEN,
    GROUP_INFO,
@@ -22,15 +22,17 @@ import {
    USER_INFO,
 } from '../constant';
 import ChatScreen from '../screen/ChatScreen';
-import CountryList from '../screen/CountryList';
 import ContactScreen from '../screen/ContactScreen';
-import SettingScreen from '../screen/SettingScreen';
-import RNCamera from '../components/RNCamera';
+import CountryList from '../screen/CountryList';
+import EditName from '../screen/EditName';
 import ForwardMessage from '../screen/ForwardMessage';
-import PostPreViewPage from '../components/PostPreViewPage';
-import NewGroup from '../screen/NewGroup';
-import ImageView from '../screen/ImageView';
 import GroupInfo from '../screen/GroupInfo';
+import ImageView from '../screen/ImageView';
+import NewGroup from '../screen/NewGroup';
+import ProfileScreen from '../screen/ProfileScreen';
+import RecentScreen from '../screen/RecentScreen';
+import RegisterScreen from '../screen/RegisterScreen';
+import SettingScreen from '../screen/SettingScreen';
 import UserInfo from '../screen/UserInfo';
 
 const Stack = createNativeStackNavigator();
@@ -84,6 +86,7 @@ function StackNavigationPage(props) {
          <Stack.Screen name={CAMERA}>{prop => <RNCamera {...prop} />}</Stack.Screen>
          <Stack.Screen name={GROUPSCREEN}>{prop => <GroupScreenStackNavigation {...prop} />}</Stack.Screen>
          <Stack.Screen name={IMAGEVIEW}>{prop => <ImageView {...prop} />}</Stack.Screen>
+         <Stack.Screen name={EDITNAME}>{prop => <EditName {...prop} />}</Stack.Screen>
       </Stack.Navigator>
    );
 }

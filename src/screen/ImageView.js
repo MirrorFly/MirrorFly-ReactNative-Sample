@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import IconButton from '../common/IconButton';
 import { LeftArrowIcon } from '../common/Icons';
@@ -9,9 +9,9 @@ import ApplicationColors from '../config/appColors';
 
 const LeftArrowComponent = () => LeftArrowIcon();
 
-const ImageView = props => {
+const ImageView = () => {
    const {
-      params: { profileImage = {} },
+      params: { profileImage = {}, title = '', imageUrl = '', authToken = '' },
    } = useRoute();
    const navigation = useNavigation();
    const headerBg = useSelector(state => state.safeArea.color);
@@ -33,6 +33,7 @@ const ImageView = props => {
                <IconButton onPress={handleBackBtn}>
                   <LeftArrowComponent />
                </IconButton>
+               <Text style={styles.titleText}>{title}</Text>
             </View>
          </View>
          <View
@@ -42,7 +43,21 @@ const ImageView = props => {
                commonStyles.justifyContentCenter,
                commonStyles.bgBlack,
             ]}>
-            <Image resizeMode="contain" source={{ uri: profileImage?.uri }} style={{ height: 400, width: 410 }} />
+            {imageUrl ? (
+               <Image
+                  style={{ height: 400, width: 410 }}
+                  source={{
+                     uri: imageUrl,
+                     method: 'GET',
+                     cache: 'force-cache',
+                     headers: {
+                        Authorization: authToken,
+                     },
+                  }}
+               />
+            ) : (
+               <Image resizeMode="contain" source={{ uri: profileImage?.uri }} style={{ height: 400, width: 410 }} />
+            )}
          </View>
       </>
    );

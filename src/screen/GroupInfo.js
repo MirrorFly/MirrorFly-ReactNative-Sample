@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import GrpCollapsibleToolbar from '../components/GrpCollapsibleToolbar';
 import useRosterData from '../hooks/useRosterData';
+import SDK from '../SDK/SDK';
 
 const GroupInfo = () => {
    const {
@@ -32,9 +33,10 @@ const GroupInfo = () => {
 
    const getGrpParticipants = async () => {
       const grpList = await SDK.getGroupParticipants(chatUser);
+      console.log('grpList ==>', JSON.stringify(grpList, null, 2));
       setParticipantsList(
          grpList.participants?.sort((a, b) =>
-            a.userJid == currentUserJid ? 1 : b.userJid == currentUserJid ? -1 : 0,
+            a.userJid === currentUserJid ? 1 : b.userJid === currentUserJid ? -1 : 0,
          ) || [],
       );
    };
@@ -71,6 +73,7 @@ const GroupInfo = () => {
             email={email}
             handleBackBtn={handleBackBtn}
             participants={participantsList}
+            getGrpParticipants={getGrpParticipants}
          />
       </View>
    );

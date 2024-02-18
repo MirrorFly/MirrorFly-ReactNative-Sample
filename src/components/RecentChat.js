@@ -188,7 +188,7 @@ export default function RecentChat() {
    const dispatch = useDispatch();
    const [filteredData, setFilteredData] = React.useState([]);
    const [filteredMessages, setFilteredMessages] = React.useState([]);
-   const [recentData, setrecentData] = React.useState([]);
+   const [recentData, setRecentData] = React.useState([]);
    const recentChatList = useSelector(state => state.recentChatData.data);
    const { isSearching, selectedItems, searchText, selectedItemsObj } =
       useSelector(state => state.recentChatSearchData) || {};
@@ -206,7 +206,7 @@ export default function RecentChat() {
 
    React.useEffect(() => {
       let recentChatItems = constructRecentChatItems(recentChatList);
-      setrecentData(recentChatItems);
+      setRecentData(recentChatItems);
    }, [recentChatList]);
 
    React.useEffect(() => {
@@ -263,7 +263,7 @@ export default function RecentChat() {
           */
          let x = {
             screen: CHATSCREEN,
-            fromUserJID: item?.userJid || jid,
+            fromUserJID: jid || item?.userJid,
             profileDetails: item?.profileDetails,
          };
          dispatch(navigate(x));

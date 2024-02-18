@@ -76,11 +76,13 @@ const GrpCollapsibleToolbar = ({
    toolbarMinHeight,
    handleBackBtn,
    participants,
+   getGrpParticipants,
 }) => {
    const navigation = useNavigation();
    const isNetworkconneted = useNetworkStatus();
    const scrollY = React.useRef(new Animated.Value(0)).current;
    const [animatedTitleColor, setAnimatedTitleColor] = React.useState(250);
+   const [userDetails, setUserDetails] = React.useState({});
    const scrollDistance = toolbarMaxHeight - toolbarMinHeight;
    const { height: screenHeight } = Dimensions.get('window');
 
@@ -119,7 +121,10 @@ const GrpCollapsibleToolbar = ({
    });
 
    const onhandlePress = item => {
-      if (!isLocalUser(item.userId)) toggleModel();
+      setUserDetails(item);
+      if (!isLocalUser(item.userId)) {
+         toggleModel();
+      }
    };
 
    const renderParticipant = ({ item, index }) => {
@@ -160,6 +165,21 @@ const GrpCollapsibleToolbar = ({
 
    const handleEditText = () => {
       navigation.navigate(EDITNAME, { imageUrl, authToken, title });
+   };
+
+   const handleLeaveGroup = async () => {
+      const { statusCode } = await SDK.userExitGroup(chatUser, localUser?.userType === 'o');
+      if (statusCode === 200) {
+         getGrpParticipants();
+      }
+   };
+
+   const handleRemoveUser = async () => {
+      const { statusCode } = await SDK.removeParticipant(chatUser, userDetails.userJid, userDetails.userType === 'o');
+      if (statusCode === 200) {
+         getGrpParticipants();
+      }
+      toggleModel();
    };
 
    const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
@@ -301,24 +321,20 @@ const GrpCollapsibleToolbar = ({
                {renderParticipants()}
                <View mt="5" />
                <Pressable>
-                  <HStack m="3" alignItems={'center'} justifyContent={'space-between'}>
-                     <HStack py="1" alignItems={'center'}>
-                        <ReportGroupIcon width="20" height="20" />
-                        <Text ml="5" fontSize={14} color="#FF0000">
-                           Report Group
-                        </Text>
-                     </HStack>
-                  </HStack>
+                  <View style={[commonStyles.hstack, commonStyles.m_12, commonStyles.p_4]}>
+                     <ReportGroupIcon width="20" height="20" />
+                     <Text ml="5" fontSize={14} color="#FF0000">
+                        Report Group
+                     </Text>
+                  </View>
                </Pressable>
-               <Pressable>
-                  <HStack m="3" alignItems={'center'} justifyContent={'space-between'}>
-                     <HStack py="1" alignItems={'center'}>
-                        <ExitIcon color="#ff3939" />
-                        <Text ml="5" fontSize={14} color="#FF0000">
-                           Leave Group
-                        </Text>
-                     </HStack>
-                  </HStack>
+               <Pressable onPress={handleLeaveGroup}>
+                  <View style={[commonStyles.hstack, commonStyles.m_12, commonStyles.p_4]}>
+                     <ExitIcon color="#ff3939" />
+                     <Text ml="5" fontSize={14} color="#FF0000">
+                        Leave Group
+                     </Text>
+                  </View>
                </Pressable>
                <View mb="5" />
             </View>
@@ -334,7 +350,7 @@ const GrpCollapsibleToolbar = ({
                   </Pressable>
                   {localUser?.userType === 'o' && (
                      <>
-                        <Pressable>
+                        <Pressable onPress={handleRemoveUser}>
                            <Text style={modelStyles.modalOption}>Remove form Group</Text>
                         </Pressable>
                         <Pressable>

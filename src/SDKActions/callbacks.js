@@ -1,6 +1,5 @@
 import nextFrame from 'next-frame';
 import {
-   GROUP_USER_ADDED,
    MSG_CLEAR_CHAT,
    MSG_CLEAR_CHAT_CARBON,
    MSG_DELETE_CHAT_CARBON,
@@ -20,7 +19,6 @@ import { REGISTERSCREEN } from '../constant';
 import {
    ClearChatHistoryAction,
    DeleteChatHistoryAction,
-   addChatConversationHistory,
    deleteMessageForEveryone,
    deleteMessageForMe,
    updateChatConversationHistory,
@@ -30,7 +28,6 @@ import { updateMediaUploadData } from '../redux/Actions/MediaUploadAction';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { updateProfileDetail } from '../redux/Actions/ProfileAction';
 import {
-   addRecentChat,
    clearLastMessageinRecentChat,
    deleteActiveChatAction,
    recentRecallUpdate,
@@ -48,7 +45,6 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import store from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
-import { updateRosterDataForRecentChats } from '../Helper/Chat/ChatHelper';
 
 export const callBacks = {
    connectionListener: response => {
@@ -77,9 +73,13 @@ export const callBacks = {
          case 'carbonSentMessage':
          case 'receiveMessage':
          case 'carbonReceiveMessage':
+         case 'groupProfileUpdated':
+            console.log('messageListener res ==>', JSON.stringify(res, null, 2));
             updateRecentChatMessage(res, store.getState());
             updateConversationMessage(res, store.getState());
-            pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.publisherJid);
+            if (res.msgType === 'receiveMessage' || res.msgType === 'carbonReceiveMessage') {
+               pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.publisherJid);
+            }
             break;
       }
       // }
@@ -192,17 +192,6 @@ export const callBacks = {
    },
    groupProfileListener: res => {
       console.log('groupProfileListener = (res) => { }', JSON.stringify(res, null, 2));
-      setTimeout(async () => {
-         if (res.msgType === GROUP_USER_ADDED) {
-            const recentChats = await SDK.getRecentChats();
-            store.dispatch(addRecentChat(recentChats?.data || []));
-            updateRosterDataForRecentChats(recentChats?.data || []);
-            let chatMessage = await SDK.getChatMessages(res?.groupJid);
-            if (chatMessage?.statusCode === 200) {
-               store.dispatch(addChatConversationHistory(chatMessage));
-            }
-         }
-      }, 1000); /** time delay added for db action done */
    },
    groupMsgInfoListener: res => {
       console.log('groupMsgInfoListener = (res) => { }', res);

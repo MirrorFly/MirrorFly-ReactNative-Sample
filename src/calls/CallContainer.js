@@ -21,6 +21,7 @@ import OnGoingCall from './screens/OnGoingCall';
 import OutGoingCall from './screens/OutGoingCall';
 import PipViewIos from './screens/PipViewIos';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import { openCallModal } from '../redux/Actions/CallAction';
 
 const CallContainer = ({ hasNativeBaseProvider }) => {
    const { showCallModal, connectionState = {}, screenName = '', largeVideoUser = {}, } = useSelector(state => state.callData) || {};
@@ -32,6 +33,7 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
    const isPipMode = usePipModeListener();
 
    React.useLayoutEffect(() => {
+      dispatch(openCallModal());
       if (Object.keys(connectionState).length === 0) {
          closeCallModalActivity();
       }

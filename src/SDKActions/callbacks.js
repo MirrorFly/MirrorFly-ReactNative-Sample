@@ -317,7 +317,7 @@ const updateCallConnectionStatus = usersStatus => {
 
 const resetCloseModel = () => {
    resetCallData();
-   closeCallModalActivity();
+   closeCallModalActivity(true);
    // Store.dispatch(closeCallModal());
 };
 
@@ -392,7 +392,7 @@ const ended = async res => {
 
 const dispatchCommon = () => {
    // Store.dispatch(callConversion());
-   closeCallModalActivity();
+   closeCallModalActivity(true);
    // Store.dispatch(closeCallModal());
    resetCallData();
 };

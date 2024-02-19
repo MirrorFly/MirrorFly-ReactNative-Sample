@@ -31,10 +31,6 @@ public class PipAndroidModule extends ReactContextBaseJavaModule {
 
     public static void pipModeChanged(Boolean isInPictureInPictureMode, Lifecycle.State currentState, CallScreenActivity callScreenActivity) {
         eventEmitter.emit(PIP_MODE_CHANGE, isInPictureInPictureMode);
-        if(!isInPictureInPictureMode && currentState.equals(Lifecycle.State.CREATED)) {
-            // PIP is closed, so finishing the CallScreen activity
-            ActivityManager.getInstance().finishActivity(CallScreenActivity.class);
-        }
     }
 
     public PipAndroidModule(ReactApplicationContext reactContext) {
@@ -74,29 +70,30 @@ public class PipAndroidModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void enterPipMode(int width, int height, boolean shouldOpenPermissionScreenIfPipNotAllowed) {
         try {
-            Log.d("TAG", "enterPipMode: shouldOpenPermissionScreenIfPipNotAllowed"+ shouldOpenPermissionScreenIfPipNotAllowed);
+            Log.d("TAG", "enterPipMode: shouldOpenPermissionScreenIfPipNotAllowed "+ shouldOpenPermissionScreenIfPipNotAllowed);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && getCurrentActivity() != null) {
                 AppOpsManager appOpsManager;
                 appOpsManager = (AppOpsManager) getCurrentActivity().getSystemService(Context.APP_OPS_SERVICE);
                 Boolean isPipAllowedInSystem = AppOpsManager.MODE_ALLOWED == appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE, Process.myUid(), getCurrentActivity().getPackageName());
                 Log.d("TAG", "isPipAllowed: before validation " + isPipAllowedInSystem);
                 if (isPipAllowedInSystem) {
-                            Log.d("TAG", "enterPipMode: before validation "+ getCurrentActivity().toString().toLowerCase() + " ___ " + getCurrentActivity().isInPictureInPictureMode());
-                            if (getCurrentActivity().toString().toLowerCase().contains("callscreenactivity") && !getCurrentActivity().isInPictureInPictureMode() && CallScreenActivity.isCallConnected) {
-                                int ratWidth = width > 0 ? width : 380;
-                                int ratHeight = height > 0 ? height : 214;
+                    Log.d("TAG", "enterPipMode: before validation " + getCurrentActivity().toString().toLowerCase() + " ___ " + getCurrentActivity().isInPictureInPictureMode());
+                    Log.d("TAG", "enterPipMode: final validation => " + getCurrentActivity().toString().toLowerCase().contains("callscreenactivity") + " __ " + !getCurrentActivity().isInPictureInPictureMode() + " __ " + CallScreenActivity.isCallConnected);
+                    if (getCurrentActivity().toString().toLowerCase().contains("callscreenactivity") && !getCurrentActivity().isInPictureInPictureMode() && CallScreenActivity.isCallConnected) {
+                        int ratWidth = width > 0 ? width : 380;
+                        int ratHeight = height > 0 ? height : 214;
 
-                                Rational ratio
-                                        = new Rational(ratWidth, ratHeight);
-                                PictureInPictureParams.Builder
-                                        pip_Builder
-                                        = null;
+                        Rational ratio
+                                = new Rational(ratWidth, ratHeight);
+                        PictureInPictureParams.Builder
+                                pip_Builder
+                                = null;
 
-                                pip_Builder = new PictureInPictureParams
-                                        .Builder();
-                                pip_Builder.setAspectRatio(ratio).build();
-                                reactApplicationContext.getCurrentActivity().enterPictureInPictureMode(pip_Builder.build());
-                            }
+                        pip_Builder = new PictureInPictureParams
+                                .Builder();
+                        pip_Builder.setAspectRatio(ratio).build();
+                        reactApplicationContext.getCurrentActivity().enterPictureInPictureMode(pip_Builder.build());
+                    }
                 } else if (shouldOpenPermissionScreenIfPipNotAllowed == true) {
                     openPipSettings(reactApplicationContext);
                 }

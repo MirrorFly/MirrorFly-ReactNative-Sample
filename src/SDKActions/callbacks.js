@@ -77,7 +77,7 @@ export const callBacks = {
             updateRecentChatMessage(res, store.getState());
             updateConversationMessage(res, store.getState());
             if (res.msgType === 'receiveMessage' || res.msgType === 'carbonReceiveMessage') {
-               pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.publisherJid);
+               pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.fromUserJid);
             }
             break;
       }

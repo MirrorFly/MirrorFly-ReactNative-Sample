@@ -33,7 +33,6 @@ const GroupInfo = () => {
 
    const getGrpParticipants = async () => {
       const grpList = await SDK.getGroupParticipants(chatUser);
-      console.log('grpList ==>', JSON.stringify(grpList, null, 2));
       setParticipantsList(
          grpList.participants?.sort((a, b) =>
             a.userJid === currentUserJid ? 1 : b.userJid === currentUserJid ? -1 : 0,

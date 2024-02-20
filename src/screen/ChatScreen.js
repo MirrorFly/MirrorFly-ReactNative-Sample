@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import SDK from '../SDK/SDK';
+import { useFocusEffect } from '@react-navigation/native';
 import React, { createRef } from 'react';
 import { Alert, BackHandler, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
@@ -7,13 +7,14 @@ import RNFS from 'react-native-fs';
 import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
 import { batch, useDispatch, useSelector } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
 import { getVideoThumbImage, showCheckYourInternetToast, showToast } from '../Helper';
 import { isSingleChat } from '../Helper/Chat/ChatHelper';
 import { CHAT_TYPE_GROUP, DOCUMENT_FORMATS, MIX_BARE_JID } from '../Helper/Chat/Constant';
 import { getMessageObjSender, getRecentChatMsgObj, getUserIdFromJid } from '../Helper/Chat/Utility';
 import * as RootNav from '../Navigation/rootNavigation';
+import SDK from '../SDK/SDK';
 import { CameraIcon, ContactIcon, DocumentIcon, GalleryIcon, HeadSetIcon, LocationIcon } from '../common/Icons';
+import Modal, { ModalCenteredContent } from '../common/Modal';
 import {
    handleAudioPickerSingle,
    handleDocumentPickSingle,
@@ -27,7 +28,10 @@ import {
 } from '../common/utils';
 import CameraPickView from '../components/CameraPickView';
 import ChatConversation from '../components/ChatConversation';
+import { chatInputMessageRef } from '../components/ChatInput';
 import GalleryPickView from '../components/GalleryPickView';
+import ContactList from '../components/Media/ContactList';
+import Location from '../components/Media/Location';
 import MessageInfo from '../components/MessageInfo';
 import PostPreViewPage from '../components/PostPreViewPage';
 import Camera from '../components/RNCamera';
@@ -35,20 +39,15 @@ import UserInfo from '../components/UserInfo';
 import UsersTapBarInfo from '../components/UsersTapBarInfo';
 import { getType, isValidFileType, validateFileSize, validation } from '../components/chat/common/fileUploadValidation';
 import { RECENTCHATSCREEN } from '../constant';
+import { useNetworkStatus } from '../hooks';
+import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
 import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
+import { navigate } from '../redux/Actions/NavigationAction';
 import { updateRecentChat } from '../redux/Actions/RecentChatAction';
+import { deleteRecoverMessage, recoverMessage } from '../redux/Actions/RecoverMessageAction';
+import { clearConversationSearchData } from '../redux/Actions/conversationSearchAction';
 import store from '../redux/store';
 import SavePicture from './Gallery';
-import ContactList from '../components/Media/ContactList';
-import { navigate } from '../redux/Actions/NavigationAction';
-import { clearConversationSearchData } from '../redux/Actions/conversationSearchAction';
-import { deleteRecoverMessage, recoverMessage } from '../redux/Actions/RecoverMessageAction';
-import { useFocusEffect } from '@react-navigation/native';
-import { chatInputMessageRef } from '../components/ChatInput';
-import Location from '../components/Media/Location';
-import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
-import Modal, { ModalCenteredContent } from '../common/Modal';
-import { useNetworkStatus } from '../hooks';
 
 export const selectedMediaIdRef = createRef();
 selectedMediaIdRef.current = {};
@@ -360,7 +359,7 @@ function ChatScreen() {
          let mediaData = {};
          for (let i = 0; i < files.length; i++) {
             const file = files[i],
-               msgId = uuidv4();
+               msgId = SDK.randomString(8, 'BA');
 
             const {
                caption = '',
@@ -493,7 +492,7 @@ function ChatScreen() {
          dispatch(deleteRecoverMessage(toUserJid));
       }
 
-      const msgId = uuidv4();
+      const msgId = SDK.randomString(8, 'BA');
       const replyTo = replyMsg?.msgId || '';
       switch (messageType) {
          case 'media':
@@ -519,7 +518,7 @@ function ChatScreen() {
          case 'contact':
             const updatedContacts = message.contacts.map(c => ({
                ...c,
-               msgId: uuidv4(),
+               msgId: SDK.randomString(8, 'BA'),
             }));
             for (const contact of updatedContacts) {
                const dataObj = {

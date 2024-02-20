@@ -1,3 +1,4 @@
+import SDK from '../../SDK/SDK';
 import { changeTimeFormat } from '../../common/TimeStamp';
 import { formatUserIdToJid, isGroupChat, isSingleChat } from './ChatHelper';
 import {
@@ -13,7 +14,6 @@ import {
   MSG_PROCESSING_STATUS,
   MSG_SENT_STATUS_CARBON,
 } from './Constant';
-import { v4 as uuidv4 } from 'uuid';
 
 export const getUserIdFromJid = userJid => {
   return userJid && userJid.includes('@') ? userJid.split('@')[0] : userJid;
@@ -283,7 +283,7 @@ export const getMessageObjReceiver = (messgeObject, newChatTo) => {
       userId: messgeObject.userId,
       userJid: messgeObject.userJid,
       msgId:
-        messgeObject.msgId || messgeObject.timestamp.toString() || uuidv4(),
+        messgeObject.msgId || messgeObject.timestamp.toString() || SDK.randomString(8, 'BA'),
     }),
   };
 };

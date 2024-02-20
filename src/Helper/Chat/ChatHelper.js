@@ -1,10 +1,16 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ImagePicker from 'react-native-image-crop-picker';
+import { openSettings } from 'react-native-permissions';
+import { batch } from 'react-redux';
+import { getThumbImage, getVideoThumbImage } from '..';
 import SDK from '../../SDK/SDK';
 import { changeTimeFormat } from '../../common/TimeStamp';
-import { updateRecentChat } from '../../redux/Actions/RecentChatAction';
-import { batch } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
-import { getThumbImage, getVideoThumbImage } from '..';
+import { mediaObjContructor, requestCameraPermission, requestStoragePermission } from '../../common/utils';
+import { isActiveChatScreenRef } from '../../components/ChatConversation';
+import { DELETE_MESSAGE_FOR_EVERYONE, DELETE_MESSAGE_FOR_ME } from '../../redux/Actions/Constants';
 import { addChatConversationHistory, updateUploadStatus } from '../../redux/Actions/ConversationAction';
+import { updateRecentChat } from '../../redux/Actions/RecentChatAction';
+import { updateRosterData } from '../../redux/Actions/rosterAction';
 import store from '../../redux/store';
 import {
    CHAT_TYPE_GROUP,
@@ -16,13 +22,6 @@ import {
    MSG_SENT_ACKNOWLEDGE_STATUS_ID,
 } from './Constant';
 import { getMessageObjSender, getRecentChatMsgObj, getUserIdFromJid } from './Utility';
-import { updateRosterData } from '../../redux/Actions/rosterAction';
-import { DELETE_MESSAGE_FOR_EVERYONE, DELETE_MESSAGE_FOR_ME } from '../../redux/Actions/Constants';
-import { isActiveChatScreenRef } from '../../components/ChatConversation';
-import { openSettings } from 'react-native-permissions';
-import { mediaObjContructor, requestCameraPermission, requestStoragePermission } from '../../common/utils';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import ImagePicker from 'react-native-image-crop-picker';
 
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
@@ -414,7 +413,7 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
       let mediaData = {};
       for (let i = 0; i < files.length; i++) {
          const file = files[i],
-            msgId = uuidv4();
+            msgId = SDK.randomString(8, 'BA');
 
          const {
             caption = '',
@@ -480,7 +479,7 @@ export const sendMessageToUserOrGroup = async (message, fromUserJid, userProfile
 
    if (message.content !== '') {
       let jid = toUserJid;
-      let msgId = uuidv4();
+      let msgId = SDK.randomString(8, 'BA');
       const dataObj = {
          jid: jid,
          msgType: 'text',

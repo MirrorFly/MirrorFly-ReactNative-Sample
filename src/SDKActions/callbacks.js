@@ -149,7 +149,7 @@ export const callBacks = {
             // }
             // store.dispatch(addMessageInfoUpdate(
             //     {
-            //         id: uuidv4(),
+            //         id: SDK.randomString(8, 'BA'),
             //         activeUserId: res.publisherId,
             //         time: res.timestamp,
             //         messageStatus:
@@ -176,7 +176,7 @@ export const callBacks = {
       }
    },
    presenceListener: res => {
-      console.log('presenceListener res ==>', JSON.stringify(res, null, 2));
+      console.log('presenceListener =>', JSON.stringify(res, null, 2));
       store.dispatch(updateUserPresence(res));
    },
    userProfileListener: res => {
@@ -184,16 +184,16 @@ export const callBacks = {
       updateUserProfileDetails(res);
    },
    replyMessageListener: res => {
-      console.log('replyMessageListener', res);
+      console.log('replyMessageListener =>', res);
    },
    favouriteMessageListener: res => {
-      console.log('favouriteMessageListener', res);
+      console.log('favouriteMessageListener =>', res);
    },
    groupProfileListener: res => {
-      console.log('groupProfileListener = (res) => { }', JSON.stringify(res, null, 2));
+      console.log('groupProfileListener =>', JSON.stringify(res, null, 2));
    },
    groupMsgInfoListener: res => {
-      console.log('groupMsgInfoListener = (res) => { }', res);
+      console.log('groupMsgInfoListener =>', res);
    },
    mediaUploadListener: res => {
       store.dispatch(updateMediaUploadData(res));
@@ -202,21 +202,21 @@ export const callBacks = {
       store.dispatch(updateDownloadData(res));
    },
    blockUserListener: res => {
-      console.log('blockUserListener = (res) => { }', res);
+      console.log('blockUserListener =>', res);
    },
    singleMessageDataListener: res => {
       store.dispatch(updateMsgByLastMsgId(res));
    },
    muteChatListener: res => {
-      console.log('muteChatListener = (res) => { }', res);
+      console.log('muteChatListener =>', res);
    },
    archiveChatListener: res => {
-      console.log('archiveChatListener = (res) => { }', res);
+      console.log('archiveChatListener =>', res);
    },
    userDeletedListener: res => {
-      console.log('userDeletedListener = (res) => { }', res);
+      console.log('userDeletedListener =>', res);
    },
    adminBlockListener: res => {
-      console.log('adminBlockListener = (res) => { }', res);
+      console.log('adminBlockListener =>', res);
    },
 };

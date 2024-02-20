@@ -1,5 +1,5 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
 import CheckBox from '@react-native-community/checkbox';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -12,7 +12,6 @@ import {
   View,
 } from 'react-native';
 import { batch, useDispatch, useSelector } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
 import { CHATSCREEN, CONVERSATION_SCREEN } from '../../src/constant';
 import {
   formatUserIdToJid,
@@ -29,12 +28,14 @@ import {
 } from '../Helper/index';
 import SDK from '../SDK/SDK';
 import Avathar from '../common/Avathar';
+import IconButton from '../common/IconButton';
 import {
   BackArrowIcon,
   CloseIcon,
   SearchIcon,
   SendBlueIcon,
 } from '../common/Icons';
+import Pressable from '../common/Pressable';
 import commonStyles from '../common/commonStyles';
 import { HighlightedText } from '../components/RecentChat';
 import ApplicationColors from '../config/appColors';
@@ -46,8 +47,6 @@ import {
 } from '../redux/Actions/ConversationAction';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { updateRecentChat } from '../redux/Actions/RecentChatAction';
-import Pressable from '../common/Pressable';
-import IconButton from '../common/IconButton';
 
 const showMaxUsersLimitToast = () => {
   const options = {
@@ -489,7 +488,7 @@ const ForwardMessage = () => {
       }
     });
     for (let i = 0; i < totalLength; i++) {
-      newMsgIds.push(uuidv4());
+      newMsgIds.push(SDK.randomString(8, 'BA'));
     }
     const newMsgIdsCopy = [...newMsgIds];
     for (let i = 0; i < forwardMessages.length; i++) {

@@ -61,12 +61,14 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
          constructNewMessage.unreadCount = existingUnReadCount + 1;
          constructNewMessage.isUnread = 1;
       }
+      console.log('constructNewMessage ==>', JSON.stringify(constructNewMessage, null, 2));
       store.dispatch(updateRecentChat(constructNewMessage));
    } else {
       /**
        * New chat that is not alreay exist in recent chat
        */
       const newMessage = {
+         ...messgeObject,
          archiveStatus: 0,
          chatType: chatType,
          msgBody: msgBody,
@@ -78,7 +80,7 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
          unreadCount: 1,
          isUnread: 1,
          fromUserId: newChatTo,
-         timestamp: parseInt(UTCseconds),
+         timestamp: parseInt(UTCseconds, 10),
          publisher: newChatFrom,
          publisherId: newChatFrom,
          toUserId: toUserId,
@@ -88,6 +90,7 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
             ...profileDetails,
          },
       };
+      console.log('newMessage ==>', JSON.stringify(newMessage, null, 2));
       store.dispatch(updateRecentChat(newMessage));
    }
 };

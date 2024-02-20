@@ -74,7 +74,6 @@ export const callBacks = {
          case 'receiveMessage':
          case 'carbonReceiveMessage':
          case 'groupProfileUpdated':
-            console.log('messageListener res ==>', JSON.stringify(res, null, 2));
             updateRecentChatMessage(res, store.getState());
             updateConversationMessage(res, store.getState());
             if (res.msgType === 'receiveMessage' || res.msgType === 'carbonReceiveMessage') {

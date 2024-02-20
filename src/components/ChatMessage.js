@@ -1,5 +1,5 @@
 import React from 'react';
-import { Keyboard, StyleSheet, View, Pressable } from 'react-native';
+import { Keyboard, StyleSheet, View, Pressable, Text } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import FileViewer from 'react-native-file-viewer';
 import { SandTimer } from '../common/Icons';
@@ -12,7 +12,7 @@ import ContactCard from './ContactCard';
 import TextCard from './TextCard';
 import { getConversationHistoryTime } from '../common/TimeStamp';
 import { uploadFileToSDK } from '../Helper/Chat/ChatHelper';
-import { getThumbBase64URL } from '../Helper/Chat/Utility';
+import { getThumbBase64URL, getUserIdFromJid } from '../Helper/Chat/Utility';
 import { singleChatSelectedMediaImage } from '../redux/Actions/SingleChatImageAction';
 import { openLocationExternally, showCheckYourInternetToast, showToast } from '../Helper';
 import { isKeyboardVisibleRef } from '../ChatApp';
@@ -23,6 +23,9 @@ import { isMessageSelectingRef } from './ChatConversation';
 import { useNetworkStatus } from '../hooks';
 import { useNavigation } from '@react-navigation/native';
 import { MEDIA_POST_PRE_VIEW_SCREEN } from '../constant';
+import useRosterData from '../hooks/useRosterData';
+
+let previousId = '';
 
 const ChatMessage = props => {
    const currentUserJID = useSelector(state => state.auth.currentUserJID);
@@ -39,9 +42,12 @@ const ChatMessage = props => {
    let statusVisible = 'notSend';
    const {
       msgBody = {},
+      publisherId,
       msgBody: { media: { file = {}, is_uploading, thumb_image = '', local_path = '' } = {}, message_type } = {},
       msgId,
    } = message;
+   const { nickName, colorCode } = useRosterData(getUserIdFromJid(publisherId));
+   previousId = publisherId;
    const navigation = useNavigation();
    const imageUrl = local_path || file?.fileDetails?.uri;
    const thumbURL = thumb_image ? getThumbBase64URL(thumb_image) : '';
@@ -271,7 +277,8 @@ const ChatMessage = props => {
             );
       }
    };
-
+   // console.log('messages ==>')
+   console.log('message ==>', JSON.stringify(message, null, 2));
    return (
       <Pressable
          style={
@@ -300,6 +307,9 @@ const ChatMessage = props => {
                      delayLongPress={300}
                      onPress={handleContentPress}
                      onLongPress={handleContentLongPress}>
+                     {!isSame && publisherId !== previousId && (
+                        <Text style={{ color: colorCode, padding: 5, paddingBottom: 0 }}>{nickName}</Text>
+                     )}
                      {renderMessageBasedOnType()}
                   </MessagePressable>
                </View>

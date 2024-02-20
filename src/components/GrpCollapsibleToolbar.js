@@ -76,7 +76,7 @@ const GrpCollapsibleToolbar = ({
    toolbarMinHeight,
    handleBackBtn,
    participants,
-   getGrpParticipants,
+   getGroupParticipants,
 }) => {
    const navigation = useNavigation();
    const isNetworkconneted = useNetworkStatus();
@@ -122,7 +122,7 @@ const GrpCollapsibleToolbar = ({
 
    const onhandlePress = item => {
       setUserDetails(item);
-      if (!isLocalUser(item.userId)) {
+      if (!isLocalUser(item.userId) && localUser?.userType === 'o') {
          toggleModel();
       }
    };
@@ -170,16 +170,24 @@ const GrpCollapsibleToolbar = ({
    const handleLeaveGroup = async () => {
       const { statusCode } = await SDK.userExitGroup(chatUser, localUser?.userType === 'o');
       if (statusCode === 200) {
-         getGrpParticipants();
+         getGroupParticipants();
       }
    };
 
    const handleRemoveUser = async () => {
+      toggleModel();
       const { statusCode } = await SDK.removeParticipant(chatUser, userDetails.userJid, userDetails.userType === 'o');
       if (statusCode === 200) {
-         getGrpParticipants();
+         getGroupParticipants();
       }
+   };
+
+   const handleMakeAdmin = async () => {
       toggleModel();
+      const { statusCode } = await SDK.makeAsAdmin(chatUser, userDetails.userJid);
+      if (statusCode === 200) {
+         getGroupParticipants(false, 1000);
+      }
    };
 
    const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
@@ -342,20 +350,22 @@ const GrpCollapsibleToolbar = ({
          <Modal visible={modelOpen} onRequestClose={toggleModel}>
             <ModalCenteredContent onPressOutside={toggleModel}>
                <View style={modelStyles.inviteFriendModalContentContainer}>
-                  <Pressable>
+                  {/* <Pressable>
                      <Text style={modelStyles.modalOption}>Start Chat</Text>
                   </Pressable>
                   <Pressable>
                      <Text style={modelStyles.modalOption}>View Info</Text>
-                  </Pressable>
+                  </Pressable> */}
                   {localUser?.userType === 'o' && (
                      <>
                         <Pressable onPress={handleRemoveUser}>
                            <Text style={modelStyles.modalOption}>Remove form Group</Text>
                         </Pressable>
-                        <Pressable>
-                           <Text style={modelStyles.modalOption}>Make Admin</Text>
-                        </Pressable>
+                        {userDetails.userType !== 'o' && (
+                           <Pressable onPress={handleMakeAdmin}>
+                              <Text style={modelStyles.modalOption}>Make Admin</Text>
+                           </Pressable>
+                        )}
                      </>
                   )}
                </View>

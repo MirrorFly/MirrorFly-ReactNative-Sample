@@ -10,7 +10,7 @@ import { batch, useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { getVideoThumbImage, showCheckYourInternetToast, showToast } from '../Helper';
 import { isSingleChat } from '../Helper/Chat/ChatHelper';
-import { DOCUMENT_FORMATS } from '../Helper/Chat/Constant';
+import { CHAT_TYPE_GROUP, DOCUMENT_FORMATS, MIX_BARE_JID } from '../Helper/Chat/Constant';
 import { getMessageObjSender, getRecentChatMsgObj, getUserIdFromJid } from '../Helper/Chat/Utility';
 import * as RootNav from '../Navigation/rootNavigation';
 import { CameraIcon, ContactIcon, DocumentIcon, GalleryIcon, HeadSetIcon, LocationIcon } from '../common/Icons';
@@ -506,7 +506,7 @@ function ChatScreen() {
                   jid: toUserJid,
                   msgType: messageType,
                   userProfile: vCardData,
-                  chatType: 'chat',
+                  chatType: MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat',
                   msgId,
                   location: { latitude, longitude },
                   fromUserJid: currentUserJID,
@@ -526,7 +526,7 @@ function ChatScreen() {
                   jid: toUserJid,
                   msgType: messageType,
                   userProfile: vCardData,
-                  chatType: 'chat',
+                  chatType: MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat',
                   msgId: contact.msgId,
                   contact: { ...contact },
                   fromUserJid: currentUserJID,
@@ -543,7 +543,7 @@ function ChatScreen() {
                   msgType: 'text',
                   message: message.content,
                   userProfile: vCardData,
-                  chatType: 'chat',
+                  chatType: MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat',
                   msgId,
                   fromUserJid: currentUserJID,
                   replyTo: message.replyTo,

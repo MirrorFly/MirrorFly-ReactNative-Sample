@@ -306,7 +306,18 @@ const ChatMessage = props => {
                      onPress={handleContentPress}
                      onLongPress={handleContentLongPress}>
                      {showNickName && !isSame && (
-                        <Text style={{ color: colorCode, padding: 5, paddingBottom: 0 }}>{nickName}</Text>
+                        <Text
+                           style={{
+                              color: colorCode,
+                              marginLeft: 3,
+                              marginTop: 5,
+                              padding: 5,
+                              paddingBottom: 0,
+                              fontWeight: '500',
+                              fontSize: 13,
+                           }}>
+                           {nickName}
+                        </Text>
                      )}
                      {renderMessageBasedOnType()}
                   </MessagePressable>

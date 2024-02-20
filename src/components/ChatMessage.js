@@ -25,8 +25,6 @@ import { useNavigation } from '@react-navigation/native';
 import { MEDIA_POST_PRE_VIEW_SCREEN } from '../constant';
 import useRosterData from '../hooks/useRosterData';
 
-let previousId = '';
-
 const ChatMessage = props => {
    const currentUserJID = useSelector(state => state.auth.currentUserJID);
    const fromUserJId = useSelector(state => state.navigation.fromUserJid);
@@ -37,6 +35,7 @@ const ChatMessage = props => {
       shouldSelectMessage,
       handleMsgSelect,
       showContactInviteModal,
+      showNickName,
    } = props;
    let isSame = currentUserJID === message?.publisherJid;
    let statusVisible = 'notSend';
@@ -47,7 +46,7 @@ const ChatMessage = props => {
       msgId,
    } = message;
    const { nickName, colorCode } = useRosterData(getUserIdFromJid(publisherId));
-   previousId = publisherId;
+
    const navigation = useNavigation();
    const imageUrl = local_path || file?.fileDetails?.uri;
    const thumbURL = thumb_image ? getThumbBase64URL(thumb_image) : '';
@@ -277,8 +276,7 @@ const ChatMessage = props => {
             );
       }
    };
-   // console.log('messages ==>')
-   console.log('message ==>', JSON.stringify(message, null, 2));
+
    return (
       <Pressable
          style={
@@ -307,7 +305,7 @@ const ChatMessage = props => {
                      delayLongPress={300}
                      onPress={handleContentPress}
                      onLongPress={handleContentLongPress}>
-                     {!isSame && publisherId !== previousId && (
+                     {showNickName && !isSame && (
                         <Text style={{ color: colorCode, padding: 5, paddingBottom: 0 }}>{nickName}</Text>
                      )}
                      {renderMessageBasedOnType()}

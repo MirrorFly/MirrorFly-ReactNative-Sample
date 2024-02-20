@@ -61,7 +61,6 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
          constructNewMessage.unreadCount = existingUnReadCount + 1;
          constructNewMessage.isUnread = 1;
       }
-      console.log('constructNewMessage ==>', JSON.stringify(constructNewMessage, null, 2));
       store.dispatch(updateRecentChat(constructNewMessage));
    } else {
       /**
@@ -90,7 +89,6 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
             ...profileDetails,
          },
       };
-      console.log('newMessage ==>', JSON.stringify(newMessage, null, 2));
       store.dispatch(updateRecentChat(newMessage));
    }
 };

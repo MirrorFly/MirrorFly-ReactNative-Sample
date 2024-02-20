@@ -19,6 +19,7 @@ import Pressable from '../common/Pressable';
 import { DoubleDownArrow } from '../common/Icons';
 import { resetUnreadCountForChat } from '../redux/Actions/RecentChatAction';
 import NotificationMessage from './NotificationMessage';
+import { CHAT_TYPE_GROUP } from '../Helper/Chat/Constant';
 
 const listBottomYaxisLimit = 60;
 
@@ -225,7 +226,11 @@ const ChatConversationList = ({
    };
 
    const chatMessageRender = React.useCallback(
-      ({ item }) => {
+      ({ item, index }) => {
+         const nextMessageUserId = messageList[index + 1]?.publisherId;
+         const currentMessageUserId = item?.publisherId;
+         const showNickName = item.chatType === CHAT_TYPE_GROUP && nextMessageUserId !== currentMessageUserId;
+
          const { deleteStatus = 0, msgId, msgBody: { message_type = '' } = {} } = item;
          if (deleteStatus === 2) {
             return null;
@@ -244,6 +249,7 @@ const ChatConversationList = ({
                shouldSelectMessage={selectedMsgsIdRef?.current?.[msgId]}
                showContactInviteModal={handleShowContactInviteModal}
                message={item}
+               showNickName={showNickName}
             />
          ) : (
             <DeletedMessage

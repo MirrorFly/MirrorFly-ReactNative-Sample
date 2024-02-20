@@ -36,6 +36,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import SDK from '../SDK/SDK';
 import config from './chat/common/config';
+import { MIX_BARE_JID } from '../Helper/Chat/Constant';
 
 export const chatInputMessageRef = createRef();
 chatInputMessageRef.current = '';
@@ -351,7 +352,7 @@ const ChatInput = props => {
       <>
          {!showRecorderUi ? (
             <View style={[styles.container, Boolean(message) && commonStyles.paddingRight_0]}>
-               {!userType ? (
+               {MIX_BARE_JID.test(fromUserJId) && !userType ? (
                   <Text style={[commonStyles.px_4, styles.cantMessaegs, ,]}>
                      You can't send messages to this group because you're no longer a participant
                   </Text>

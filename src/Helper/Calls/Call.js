@@ -260,7 +260,7 @@ export const endCall = async (isFromTimeout = false, userId, callType) => {
       endCallForIos();
       const timeout = BackgroundTimer.setTimeout(() => {
          resetCallData();
-         closeCallModalActivity();
+         closeCallModalActivity(true);
          // Store.dispatch(closeCallModal());
          // batch(()=>{
          //     Store.dispatch(showConfrence({

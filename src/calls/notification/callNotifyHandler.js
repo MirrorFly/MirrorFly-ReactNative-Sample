@@ -106,6 +106,11 @@ export const getIncomingCallNotification = async (
          ],
          timestamp: Date.now(),
          showTimestamp: true,
+         pressAction: {
+            id: 'incomingcallnotification',
+            launchActivityFlags: [AndroidLaunchActivityFlag.NEW_TASK],
+            launchActivity: launchCallActivity,
+         },
       },
    };
 
@@ -121,6 +126,7 @@ export const getIncomingCallNotification = async (
 };
 
 export const getOutGoingCallNotification = async (roomId, data, userJid, nickName, callStatusType) => {
+   const launchCallActivity = await ActivityModule.getCallActivity();
    let channelId = await notifee.createChannel({
       id: 'OutGoing Call',
       name: 'OutGoing Call',
@@ -146,6 +152,11 @@ export const getOutGoingCallNotification = async (roomId, data, userJid, nickNam
          actions: [{ title: 'Hang up', pressAction: { id: 'hangup' } }],
          timestamp: Date.now(),
          showTimestamp: true,
+         pressAction: {
+            id: 'outgoingcallnotification',
+            launchActivityFlags: [AndroidLaunchActivityFlag.NEW_TASK],
+            launchActivity: launchCallActivity,
+         },
       },
    };
    /** Display a notification */
@@ -153,6 +164,7 @@ export const getOutGoingCallNotification = async (roomId, data, userJid, nickNam
 };
 
 export const getOnGoingCallNotification = async (roomId, data, userJid, nickName, callStatusType) => {
+   const launchCallActivity = await ActivityModule.getCallActivity();
    let channelId = await notifee.createChannel({
       id: 'OnGoing Call',
       name: 'OnGoing Call',
@@ -177,6 +189,11 @@ export const getOnGoingCallNotification = async (roomId, data, userJid, nickName
          actions: [{ title: 'Hang up', pressAction: { id: 'endCall' } }],
          timestamp: Date.now(),
          showTimestamp: true,
+         pressAction: {
+            id: 'ongoingcallnotification',
+            launchActivityFlags: [AndroidLaunchActivityFlag.NEW_TASK],
+            launchActivity: launchCallActivity,
+         },
       },
    };
    /** Display a notification */
@@ -278,7 +295,7 @@ export const onNotificationAction = async ({ type, detail }) => {
       }
    }
 
-   if (type === EventType.PRESS) {
+   /** if (type === EventType.PRESS) {
       let checkChannelID = detail?.notification?.android?.channelId || '';
       if (checkChannelID && checkChannelID !== MISSED_CALL) {
          let showCallModal = Store.getState()?.callData?.showCallModal;
@@ -290,6 +307,11 @@ export const onNotificationAction = async ({ type, detail }) => {
                openCallModelActivity();
             }
          } else {
+            const push_url = getApplicationUrl();
+
+            if (push_url) {
+               Linking.openURL(push_url);
+            }
             if (activity !== 'undefined') {
                // const push_url = 'mirrorfly_rn://';
                // Linking.openURL(push_url).then(() => {
@@ -307,7 +329,7 @@ export const onNotificationAction = async ({ type, detail }) => {
             }
          }
       }
-   }
+   } */
 
    if (detail.pressAction?.id === 'accept') {
       answerIncomingCall(activeCallUUID);

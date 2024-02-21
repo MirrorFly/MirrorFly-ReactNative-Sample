@@ -21,9 +21,9 @@ PODS:
     - GoogleUtilities/Logger (~> 7.8)
   - FirebaseCoreExtension (10.12.0):
     - FirebaseCore (~> 10.0)
-  - FirebaseCoreInternal (10.20.0):
+  - FirebaseCoreInternal (10.18.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
-  - FirebaseInstallations (10.20.0):
+  - FirebaseInstallations (10.18.0):
     - FirebaseCore (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/UserDefaults (~> 7.8)
@@ -42,7 +42,7 @@ PODS:
     - GCDWebServer/Core (= 3.5.4)
   - GCDWebServer/Core (3.5.4)
   - glog (0.3.5)
-  - GoogleDataTransport (9.3.0):
+  - GoogleDataTransport (9.2.5):
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30910.0, >= 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
@@ -300,7 +300,7 @@ PODS:
     - React-Core
   - react-native-create-thumbnail (1.6.4):
     - React-Core
-  - react-native-document-picker (9.1.1):
+  - react-native-document-picker (9.1.0):
     - React-Core
   - react-native-geocoder (0.5.0):
     - React
@@ -314,7 +314,7 @@ PODS:
     - React
   - react-native-keyevent (0.3.2):
     - React
-  - react-native-maps (1.10.2):
+  - react-native-maps (1.10.0):
     - React-Core
   - react-native-mov-to-mp4 (0.2.2):
     - React
@@ -417,7 +417,7 @@ PODS:
     - React-Core
   - RNCallKeep (4.3.12):
     - React
-  - RNCAsyncStorage (1.22.0):
+  - RNCAsyncStorage (1.21.0):
     - React-Core
   - RNCCheckbox (0.5.17):
     - BEMCheckBox (~> 1.4)
@@ -732,13 +732,13 @@ SPEC CHECKSUMS:
   Firebase: 07150e75d142fb9399f6777fa56a187b17f833a0
   FirebaseCore: f86a1394906b97ac445ae49c92552a9425831bed
   FirebaseCoreExtension: 0ce5ac36042001cfa233ce7bfa28e5c313cf80f4
-  FirebaseCoreInternal: efeeb171ac02d623bdaefe121539939821e10811
-  FirebaseInstallations: 558b1da7d65afeb996fd5c814332f013234ece4e
+  FirebaseCoreInternal: 8eb002e564b533bdcf1ba011f33f2b5c10e2ed4a
+  FirebaseInstallations: e842042ec6ac1fd2e37d7706363ebe7f662afea4
   FirebaseMessaging: bb2c4f6422a753038fe137d90ae7c1af57251316
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   glog: 3d02b25ca00c2d456734d0bcff864cbc62f6ae1a
-  GoogleDataTransport: 57c22343ab29bc686febbf7cbb13bad167c2d8fe
+  GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
   JitsiWebRTC: 80f62908fcf2a1160e0d14b584323fb6e6be630b
   Mute: 20135a96076f140cc82bfc8b810e2d6150d8ec7e
@@ -765,14 +765,14 @@ SPEC CHECKSUMS:
   react-native-compressor: ebcf8bc36f8e44581a8f831583caee8a27e55a01
   react-native-contacts: cb4f3b823550adbce0802901b9e63bf1526ec0af
   react-native-create-thumbnail: e022bcdcba8a0b4529a50d3fa1a832ec921be39d
-  react-native-document-picker: 3599b238843369026201d2ef466df53f77ae0452
+  react-native-document-picker: b4f4a23b73f864ce17965b284c0757648993805b
   react-native-geocoder: 757427682892bb256f3b3745858cc90eba148a8e
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   react-native-get-random-values: 384787fd76976f5aec9465aff6fa9e9129af1e74
   react-native-headphone-detection: 4192cc8cfd94068a1f32cb41cc7c4cd5aa0f8b3b
   react-native-keep-awake: afad8a51dfef9fe9655a6344771be32c8596d774
   react-native-keyevent: 0babd7e275086da5386d831211e3283b624dc0b5
-  react-native-maps: 31b0a1b766e15293d349ed7b0b133653432e2098
+  react-native-maps: b4c3b092b1c71240d8d4792bae3738828942f14a
   react-native-mov-to-mp4: a04f17590618523487ab5d71c9310c6c4a7aaf99
   react-native-netinfo: 1a6035d3b9780221d407c277ebfb5722ace00658
   react-native-pager-view: c29d484f19c49ff19525a94105e4ab2c4d4ae273
@@ -797,7 +797,7 @@ SPEC CHECKSUMS:
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNAudioRecorderPlayer: 4690a7cd9e4fd8e58d9671936a7bc3b686e59051
   RNCallKeep: aa9b1f9286f8f60d7b7d41ee5de47de564356aac
-  RNCAsyncStorage: c43e6d71e13bb4748503797784839e0fbbf89d56
+  RNCAsyncStorage: 618d03a5f52fbccb3d7010076bc54712844c18ef
   RNCCheckbox: a3ca9978cb0846b981d28da4e9914bd437403d77
   RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
   RNConvertPhAsset: 9b366b8a1abc194b76572712c6f7dd89c9e4e37f

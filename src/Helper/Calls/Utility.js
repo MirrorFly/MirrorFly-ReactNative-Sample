@@ -397,7 +397,7 @@ export const declineIncomingCall = async () => {
       dispatchDisconnected();
       setTimeout(() => {
          batch(() => {
-            closeCallModalActivity();
+            closeCallModalActivity(true);
             resetCallData();
             // Store.dispatch(closeCallModal());
             Store.dispatch(clearCallData());
@@ -512,9 +512,12 @@ export const displayIncomingCallForAndroid = async callResponse => {
    KeepAwake.deactivate();
 };
 
-export const closeCallModalActivity = () => {
-   Store.dispatch(closeCallModal());
+export const closeCallModalActivity = (forceCloseModal = false) => {
+   if (Platform.OS === 'ios') {
+      Store.dispatch(closeCallModal());
+   }
    if (Platform.OS === 'android') {
+      forceCloseModal && Store.dispatch(closeCallModal());
       // _BackgroundTimer.setTimeout(() => {
       ActivityModule.closeActivity();
       // }, 100);
@@ -753,7 +756,7 @@ export const listnerForNetworkStateChangeWhenIncomingCall = () => {
             clearMissedCallNotificationTimer();
             resetCallData();
             batch(() => {
-               closeCallModalActivity();
+               closeCallModalActivity(true);
                resetCallModalActivity();
                // Store.dispatch(closeCallModal());
                // Store.dispatch(resetCallStateData());

@@ -38,6 +38,7 @@ import {
    CALL_STATUS_ENDED,
    CALL_STATUS_INCOMING,
    CALL_STATUS_RECONNECT,
+   CALL_STATUS_RINGING,
    CALL_TYPE_AUDIO,
    CALL_TYPE_VIDEO,
    DISCONNECTED_SCREEN_DURATION,
@@ -317,7 +318,7 @@ const updateCallConnectionStatus = usersStatus => {
 
 const resetCloseModel = () => {
    resetCallData();
-   closeCallModalActivity();
+   closeCallModalActivity(true);
    // Store.dispatch(closeCallModal());
 };
 
@@ -392,7 +393,7 @@ const ended = async res => {
 
 const dispatchCommon = () => {
    // Store.dispatch(callConversion());
-   closeCallModalActivity();
+   closeCallModalActivity(true);
    // Store.dispatch(closeCallModal());
    resetCallData();
 };
@@ -522,6 +523,15 @@ const connected = async res => {
             // updating the call connected status to android native code
             ActivityModule.updateCallConnectedStatus(true);
             startDurationTimer();
+         } else if (store.getState().callData?.screenName === OUTGOING_CALL_SCREEN){
+            // SDK will give 'connected' callback with {... localUser: true} when local user goes offline and come back online 
+            // So in that case we will show reconnecting text in UI, so we are updating the callStatusText to 'ringing' when user came back online on outgoing call screen 
+            // before receiver accept or decline the call
+            store.dispatch(
+               updateConference({
+                  callStatusText: CALL_STATUS_RINGING,
+               }),
+            );
          }
       });
    }

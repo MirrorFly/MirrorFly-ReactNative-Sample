@@ -8,15 +8,13 @@ import { Icon, IconButton, Text } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 
 const PostPreViewPage = () => {
-  const chatSelectedMediaImage = useSelector(
-    state => state.chatSelectedMedia.data,
-  );
-  const navigation = useNavigation()
-  const { msgBody } = chatSelectedMediaImage;
-  const currentUserJID = useSelector(state => state.auth.currentUserJID);
-  const isSender = currentUserJID === chatSelectedMediaImage?.fromUserJid;
+   const chatSelectedMediaImage = useSelector(state => state.chatSelectedMedia.data);
+   const navigation = useNavigation();
+   const { msgBody } = chatSelectedMediaImage;
+   const currentUserJID = useSelector(state => state.auth.currentUserJID);
+   const isSender = currentUserJID === chatSelectedMediaImage?.publisherJid;
 
-  /** const openBottomSheet = async () => {
+   /** const openBottomSheet = async () => {
     try {
       const base64Image = SingleSelectedImage.thumb_image;
       const shareOptions = {
@@ -30,69 +28,62 @@ const PostPreViewPage = () => {
     }
   }; */
 
-  const handleBackBtn = () => {
-    navigation.goBack()
-    return true;
-  };
+   const handleBackBtn = () => {
+      navigation.goBack();
+      return true;
+   };
 
-  React.useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      handleBackBtn,
-    );
+   React.useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
 
-    return () => {
-      backHandler.remove();
-    };
-  }, []);
+      return () => {
+         backHandler.remove();
+      };
+   }, []);
 
-  return (
-    <View style={{ flex: 1 }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          padding: 12,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          backgroundColor: '#F2F2F2',
-          width: '100%',
-          borderBottomColor: '#0000001A',
-          borderBottomWidth: 1,
-          zIndex: 10,
-        }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <IconButton
-            onPress={handleBackBtn}
-            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-            borderRadius="full"
-            icon={<Icon as={BackArrowIcon} name="emoji-happy" />}
-          />
-          <Text
+   return (
+      <View style={{ flex: 1 }}>
+         <View
             style={{
-              color: '#000',
-              fontSize: 20,
-              fontWeight: '500',
-              marginLeft: 20,
+               flexDirection: 'row',
+               padding: 12,
+               alignItems: 'center',
+               justifyContent: 'space-between',
+               backgroundColor: '#F2F2F2',
+               width: '100%',
+               borderBottomColor: '#0000001A',
+               borderBottomWidth: 1,
+               zIndex: 10,
             }}>
-            {isSender ? 'Sent' : 'Received'} Media
-          </Text>
-        </View>
-        {/* <Pressable onPress={openBottomSheet}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+               <IconButton
+                  onPress={handleBackBtn}
+                  _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+                  borderRadius="full"
+                  icon={<Icon as={BackArrowIcon} name="emoji-happy" />}
+               />
+               <Text
+                  style={{
+                     color: '#000',
+                     fontSize: 20,
+                     fontWeight: '500',
+                     marginLeft: 20,
+                  }}>
+                  {isSender ? 'Sent' : 'Received'} Media
+               </Text>
+            </View>
+            {/* <Pressable onPress={openBottomSheet}>
                     <ShareIcon width="24" height="24" color={"#000"} />
                 </Pressable> */}
+         </View>
+         {
+            {
+               image: <ImageInfo selectedMedia={msgBody} handleBackBtn={handleBackBtn} />,
+               video: <VideoInfo selectedMedia={msgBody} handleBackBtn={handleBackBtn} />,
+            }[[msgBody.message_type]]
+         }
       </View>
-      {
-        {
-          image: (
-            <ImageInfo selectedMedia={msgBody} handleBackBtn={handleBackBtn} />
-          ),
-          video: (
-            <VideoInfo selectedMedia={msgBody} handleBackBtn={handleBackBtn} />
-          ),
-        }[[msgBody.message_type]]
-      }
-    </View>
-  );
+   );
 };
 
 export default PostPreViewPage;

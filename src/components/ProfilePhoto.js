@@ -7,6 +7,7 @@ import AuthProfileImage from '../common/AuthProfileImage';
 const ProfilePhoto = (props) => {
   const handleBackBtn = () => {
     props.setNav("ProfileScreen");
+    return true;
   }
 
   return (

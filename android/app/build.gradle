@@ -78,11 +78,11 @@ android {
 
     namespace "com.mirrorfly_rn"
     defaultConfig {
-        applicationId "com.mirrorfly.uikit.qa"
+        applicationId "com.mirrorfly_rn"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "2.2.8"
+        versionName "2.3.16.MRN.505"
 
         /** Add this for react-native-camera */
         missingDimensionStrategy 'react-native-camera', 'general'

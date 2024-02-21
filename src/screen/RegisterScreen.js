@@ -1,37 +1,32 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import messaging from '@react-native-firebase/messaging';
+import {
+   Box,
+   Center,
+   HStack,
+   Icon,
+   KeyboardAvoidingView,
+   Modal,
+   Pressable,
+   Spinner,
+   Stack,
+   Text,
+   VStack,
+   View,
+   useToast,
+} from 'native-base';
 import React, { useEffect } from 'react';
 import { BackHandler, Linking, Platform, TextInput } from 'react-native';
-import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch, useSelector } from 'react-redux';
-import { navigate } from '../redux/Actions/NavigationAction';
-import {
-   COUNTRYSCREEN,
-   numRegx,
-   PROFILESCREEN,
-   REGISTERSCREEN,
-} from '../constant';
-import { getCurrentUserJid } from '../redux/Actions/AuthAction';
-import { DownArrowIcon, RegiterPageIcon } from '../common/Icons';
-import {
-   Icon,
-   Modal,
-   Text,
-   Center,
-   Box,
-   useToast,
-   Spinner,
-   HStack,
-   Stack,
-   VStack,
-   Pressable,
-   KeyboardAvoidingView,
-   View,
-} from 'native-base';
-import { useNetworkStatus } from '../hooks';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import SDK from '../SDK/SDK';
-import messaging from '@react-native-firebase/messaging';
+import { PrimaryPillBtn } from '../common/Button';
+import { DownArrowIcon, RegiterPageIcon } from '../common/Icons';
+import { COUNTRYSCREEN, PROFILESCREEN, REGISTERSCREEN, numRegx } from '../constant';
+import { useNetworkStatus } from '../hooks';
+import { getCurrentUserJid } from '../redux/Actions/AuthAction';
+import { navigate } from '../redux/Actions/NavigationAction';
 
-const RegisterScreen = ({ navigation }) => {
+const RegisterScreen = ({navigation}) => {
    const dispatch = useDispatch();
    const toast = useToast();
    const selectcountry = useSelector(state => state.navigation.selectContryCode);
@@ -49,18 +44,15 @@ const RegisterScreen = ({ navigation }) => {
    };
 
    useEffect(() => {
-      const backHandler = BackHandler.addEventListener(
-         'hardwareBackPress',
-         () => {
-            BackHandler.exitApp();
-            return true;
-         },
-      );
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+         BackHandler.exitApp();
+         return true;
+      });
       return () => backHandler.remove();
    }, []);
 
    const selectCountryHandler = () => {
-      let x = { screen: COUNTRYSCREEN };
+      let x = {screen: COUNTRYSCREEN};
       dispatch(navigate(x));
       navigation.navigate(COUNTRYSCREEN);
    };
@@ -130,11 +122,7 @@ const RegisterScreen = ({ navigation }) => {
             },
          });
       }
-      if (
-         isNetworkConnected &&
-         !isToastShowing &&
-         /^\d{10}$/i.test(mobileNumber)
-      ) {
+      if (isNetworkConnected && !isToastShowing && /^\d{10}$/i.test(mobileNumber)) {
          setIsLoading(true);
          handleRegister();
       }
@@ -152,16 +140,10 @@ const RegisterScreen = ({ navigation }) => {
       setIsToastShowing(false);
       const fcmToken = await fcmTokenCheck();
 
-      const register = await SDK.register(
-         selectcountry?.dial_code + mobileNumber,
-         fcmToken,
-      );
+      const register = await SDK.register(selectcountry?.dial_code + mobileNumber, fcmToken);
       if (register.statusCode === 200) {
          await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
-         await AsyncStorage.setItem(
-            'userIdentifier',
-            JSON.stringify(selectcountry?.dial_code + mobileNumber),
-         );
+         await AsyncStorage.setItem('userIdentifier', JSON.stringify(selectcountry?.dial_code + mobileNumber));
          await AsyncStorage.setItem('credential', JSON.stringify(register.data));
          handleConnect(register.data);
       } else {
@@ -173,7 +155,7 @@ const RegisterScreen = ({ navigation }) => {
       switch (connect?.statusCode) {
          case 200:
          case 409:
-            let nav = { screen: PROFILESCREEN, prevScreen: REGISTERSCREEN };
+            let nav = {screen: PROFILESCREEN, prevScreen: REGISTERSCREEN};
             let jid = await SDK.getCurrentUserJid();
             let userJID = jid.userJid.split('/')[0];
             AsyncStorage.setItem('currentUserJID', JSON.stringify(userJID));
@@ -194,9 +176,7 @@ const RegisterScreen = ({ navigation }) => {
       }
    }, [isNetworkConnected]);
    return (
-      <KeyboardAvoidingView
-         style={{ flex: 1 }}
-         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView style={{flex: 1}} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
          <VStack h="full" justifyContent={'center'}>
             <VStack alignItems={'center'}>
                <Icon as={RegiterPageIcon} />
@@ -205,14 +185,8 @@ const RegisterScreen = ({ navigation }) => {
                <Text mt="19" fontWeight="600" fontSize="23">
                   Register Your Number
                </Text>
-               <Text
-                  px="5"
-                  color="#767676"
-                  fontSize="13"
-                  fontWeight="400"
-                  textAlign="center">
-                  Please choose your country code and enter your mobile number to get
-                  the verification code.
+               <Text px="5" color="#767676" fontSize="13" fontWeight="400" textAlign="center">
+                  Please choose your country code and enter your mobile number to get the verification code.
                </Text>
             </VStack>
             <Pressable px="5" mt="5" onPress={selectCountryHandler}>
@@ -233,13 +207,7 @@ const RegisterScreen = ({ navigation }) => {
                   <Text fontSize="16" color="black" fontWeight="600" mr="1">
                      +{selectcountry?.dial_code}
                   </Text>
-                  <Stack
-                     height="8"
-                     ml="1"
-                     mt="2"
-                     borderLeftWidth="1"
-                     borderColor="#f2f2f2"
-                  />
+                  <Stack height="8" ml="1" mt="2" borderLeftWidth="1" borderColor="#f2f2f2" />
                   <TextInput
                      style={{
                         flex: 1,
@@ -272,19 +240,12 @@ const RegisterScreen = ({ navigation }) => {
                   By clicking continue you agree to MirroFly
                </Text>
                <HStack>
-                  <Pressable
-                     mx="1"
-                     borderBottomWidth="1"
-                     borderBottomColor="#3276E2"
-                     onPress={termsHandler}>
+                  <Pressable mx="1" borderBottomWidth="1" borderBottomColor="#3276E2" onPress={termsHandler}>
                      <Text color="#3276E2" mr="1" fontSize="14">
                         Terms and Conditions,
                      </Text>
                   </Pressable>
-                  <Pressable
-                     borderBottomWidth="1"
-                     borderBottomColor="#3276E2"
-                     onPress={PolicyHandler}>
+                  <Pressable borderBottomWidth="1" borderBottomColor="#3276E2" onPress={PolicyHandler}>
                      <Text color="#3276E2" fontSize="14">
                         Privacy Policy.
                      </Text>

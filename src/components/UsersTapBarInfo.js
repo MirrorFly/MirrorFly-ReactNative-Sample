@@ -11,6 +11,7 @@ const UsersTapBarInfo = (props) => {
   ]);
   const handleBackBtn = () => {
     props.setLocalNav("UserInfo");
+    return true;
   }
   const renderScene = ({ route }) => {
     switch (route.key) {

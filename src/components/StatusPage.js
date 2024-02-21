@@ -42,6 +42,7 @@ const StatusPage = props => {
 
   const handleBackBtn = () => {
     props.setNav('ProfileScreen');
+    return true;
   };
 
   const handleDeleteItem = val => {

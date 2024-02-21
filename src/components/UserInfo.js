@@ -22,6 +22,7 @@ const UserInfo = ({ setLocalNav, toUserId }) => {
 
   const handleBackBtn = () => {
     setLocalNav('CHATCONVERSATION');
+    return true;
   };
 
   const backHandler = BackHandler.addEventListener(

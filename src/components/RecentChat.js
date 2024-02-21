@@ -28,6 +28,7 @@ import useRosterData from '../hooks/useRosterData';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { addRecentChat } from '../redux/Actions/RecentChatAction';
 import { updateRecentChatSelectedItems } from '../redux/Actions/recentChatSearchAction';
+import { fetchGroupParticipants } from '../Helper/Chat/Groups';
 
 const VideoSmallIconComponent = () => VideoSmallIcon('#767676');
 
@@ -259,6 +260,7 @@ export default function RecentChat() {
          handleRecentItemSelect(item);
       } else {
          let jid = formatUserIdToJid(item?.fromUserId, item?.chatType);
+         fetchGroupParticipants(jid || item?.userJid);
          /** Need to add chat type here while working in Group
           */
          let x = {

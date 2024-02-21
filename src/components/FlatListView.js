@@ -138,4 +138,11 @@ const styles = StyleSheet.create({
       top: 90,
       zIndex: 100,
    },
+   checkbox: {
+      borderWidth: 2,
+      borderRadius: 5,
+      borderColor: '#3276E2',
+      width: 20,
+      height: 20,
+   },
 });

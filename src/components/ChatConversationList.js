@@ -311,10 +311,10 @@ const ChatConversationList = ({
             renderItem={chatMessageRender}
             keyExtractor={item => item.msgId.toString()}
             initialNumToRender={20}
-            maxToRenderPerBatch={40}
+            maxToRenderPerBatch={20}
             onScrollToIndexFailed={doNothing}
             onScroll={handleConversationScoll}
-            scrollEventThrottle={500}
+            scrollEventThrottle={1000}
             windowSize={15}
          />
          {showScrollToBottomIcon && (

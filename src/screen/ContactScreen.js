@@ -24,6 +24,7 @@ import { useRoute } from '@react-navigation/native';
 import SDK from '../SDK/SDK';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import ApplicationColors from '../config/appColors';
+import { fetchGroupParticipants } from '../Helper/Chat/Groups';
 
 const contactPaginationRefInitialValue = {
    nextPage: 1,
@@ -204,6 +205,7 @@ function ContactScreen() {
             if (isGroupInfoSrn) {
                const { statusCode, message } = await SDK.addParticipants(grpJid, grpName, Object.keys(selectedUsers));
                if (statusCode === 200) {
+                  fetchGroupParticipants(grpJid);
                   RootNav.goBack();
                   return true;
                } else {

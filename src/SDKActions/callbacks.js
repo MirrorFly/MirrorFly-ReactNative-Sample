@@ -45,6 +45,7 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import store from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import { fetchGroupParticipants } from '../Helper/Chat/Groups';
 
 export const callBacks = {
    connectionListener: response => {
@@ -190,6 +191,9 @@ export const callBacks = {
       console.log('favouriteMessageListener =>', res);
    },
    groupProfileListener: res => {
+      if (res.msgType === 'userAdded') {
+         fetchGroupParticipants(res.groupJid);
+      }
       console.log('groupProfileListener =>', JSON.stringify(res, null, 2));
    },
    groupMsgInfoListener: res => {

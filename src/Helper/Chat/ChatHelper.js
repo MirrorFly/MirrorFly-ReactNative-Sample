@@ -93,7 +93,6 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
   //   );
   // }
    */
-      console.log(response, 'uploadfile response');
       let updateObj = {
          msgId,
          statusCode: response.statusCode,

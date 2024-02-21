@@ -477,7 +477,7 @@ function ChatScreen() {
       const recentChatObj = getRecentChatMsgObj(dataObj);
       const dispatchData = {
          data: [conversationChatObj],
-         ...(isSingleChat('chat') ? { userJid: dataObj.jid } : { groupJid: dataObj.jid }), // check this when group works
+         ...(isSingleChat(dataObj.chatType) ? { userJid: dataObj.jid } : { groupJid: dataObj.jid }), // check this when group works
       };
       batch(() => {
          store.dispatch(addChatConversationHistory(dispatchData));
@@ -496,7 +496,7 @@ function ChatScreen() {
       const replyTo = replyMsg?.msgId || '';
       switch (messageType) {
          case 'media':
-            parseAndSendMessage(message, 'chat', messageType);
+            parseAndSendMessage(message, MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat', messageType);
             break;
          case 'location':
             const { latitude, longitude } = message.location || {};
@@ -560,12 +560,14 @@ function ChatScreen() {
       setValidate('');
    };
 
-   React.useEffect(() => {
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
-      return () => {
-         backHandler.remove();
-      };
-   }, []);
+   useFocusEffect(
+      React.useCallback(() => {
+         const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+         return () => {
+            backHandler.remove();
+         };
+      }, [localNav]),
+   );
 
    return (
       <>

@@ -1,14 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
-import { HStack, Icon, IconButton, Switch, Text, View } from 'native-base';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Animated, BackHandler, Dimensions, Image, StyleSheet } from 'react-native';
+import { Animated, BackHandler, Dimensions, Image, StyleSheet, Text, View } from 'react-native';
 import { showToast } from '../Helper';
 import { isLocalUser } from '../Helper/Chat/ChatHelper';
 import { SDK } from '../SDK';
 import grpImage from '../assets/ic_grp_bg.png';
 import Avathar from '../common/Avathar';
-import { AddUserIcon, ExitIcon, ImageEditIcon, LeftArrowIcon, ReportGroupIcon, TextEditIcon } from '../common/Icons';
+import IconButton from '../common/IconButton';
+import { AddUserIcon, ExitIcon, ImageEditIcon, LeftArrowIcon, TextEditIcon } from '../common/Icons';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import commonStyles, { modelStyles } from '../common/commonStyles';
@@ -170,7 +170,7 @@ const GrpCollapsibleToolbar = ({
    const handleLeaveGroup = async () => {
       const { statusCode } = await SDK.userExitGroup(chatUser, localUser?.userType === 'o');
       if (statusCode === 200) {
-         getGroupParticipants();
+         getGroupParticipants(1000);
       }
    };
 
@@ -178,7 +178,7 @@ const GrpCollapsibleToolbar = ({
       toggleModel();
       const { statusCode } = await SDK.removeParticipant(chatUser, userDetails.userJid, userDetails.userType === 'o');
       if (statusCode === 200) {
-         getGroupParticipants();
+         getGroupParticipants(1000);
       }
    };
 
@@ -186,7 +186,7 @@ const GrpCollapsibleToolbar = ({
       toggleModel();
       const { statusCode } = await SDK.makeAsAdmin(chatUser, userDetails.userJid);
       if (statusCode === 200) {
-         getGroupParticipants(false, 1000);
+         getGroupParticipants(1000);
       }
    };
 
@@ -208,10 +208,6 @@ const GrpCollapsibleToolbar = ({
                   backgroundColor: '#f2f2f2',
                   height: toolbarMaxHeight,
                   transform: [{ translateY: headerTranslate }],
-                  elevation: 5,
-                  shadowColor: '#181818',
-                  shadowOffset: { width: 0, height: 6 },
-                  shadowOpacity: 0.1,
                },
             ]}>
             <Animated.View
@@ -223,6 +219,10 @@ const GrpCollapsibleToolbar = ({
                      backgroundColor: '#f2f2f2',
                      height: toolbarMaxHeight,
                      opacity: imageOpacity,
+                     shadowColor: '#181818',
+                     shadowOffset: { width: 0, height: 6 },
+                     shadowOpacity: 0.1,
+                     shadowRadius: 6,
                   },
                ]}>
                {imageUrl ? (
@@ -275,16 +275,9 @@ const GrpCollapsibleToolbar = ({
          </Animated.View>
          <Animated.View style={styles.bar}>
             <View style={styles.left}>
-               <IconButton
-                  onPress={handleBackBtn}
-                  _pressed={{
-                     bg: animatedTitleColor < 280 ? 'rgba(0,0,0, 0.2)' : 'rgba(50,118,226, 0.1)',
-                  }}
-                  icon={
-                     <Icon as={() => LeftArrowIcon(animatedTitleColor < 280 ? '#fff' : '#000')} name="emoji-happy" />
-                  }
-                  borderRadius="full"
-               />
+               <IconButton onPress={handleBackBtn}>
+                  {LeftArrowIcon(animatedTitleColor < 280 ? '#fff' : '#000')}
+               </IconButton>
             </View>
             <Pressable onPress={handelGrpProfileUpdate} style={styles.right}>
                <ImageEditIcon width="25" height="25" color={animatedTitleColor < 280 ? '#fff' : '#000'} />
@@ -301,47 +294,47 @@ const GrpCollapsibleToolbar = ({
                   setAnimatedTitleColor(y);
                },
             })}>
-            <View mx="3" mt={toolbarMaxHeight} minHeight={adaptiveMinHeight}>
-               <HStack mb="7" justifyContent={'space-between'}>
-                  <Text fontSize={14} fontWeight={500} color={'#181818'}>
+            <View style={{ marginHorizontal: 12, marginTop: toolbarMaxHeight, minHeight: adaptiveMinHeight }}>
+               <View style={[commonStyles.hstack]} mb="7" justifyContent={'space-between'}>
+                  {/* <Text fontSize={14} fontWeight={500} color={'#181818'}>
                      Mute Notification
-                  </Text>
-                  <Switch
+                  </Text> */}
+                  {/* <Switch
                      size="md"
                      offTrackColor="indigo.100"
                      onTrackColor="indigo.200"
                      onThumbColor="blue.500"
                      offThumbColor="indigo.50"
-                  />
-               </HStack>
-               {localUser?.userType == 'o' && (
+                  /> */}
+               </View>
+               {localUser?.userType === 'o' && (
                   <Pressable onPress={handleAddParticipants}>
-                     <HStack my="3" alignItems={'center'} justifyContent={'space-between'}>
-                        <HStack alignItems={'center'}>
+                     <View
+                        style={[
+                           commonStyles.hstack,
+                           commonStyles.alignItemsCenter,
+                           commonStyles.justifyContentSpaceBetween,
+                           { marginVertical: 12, marginLeft: 20 },
+                        ]}>
+                        <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
                            <AddUserIcon />
-                           <Text ml="3" fontSize={14} color={'#181818'} fontWeight={500}>
-                              Add Participants
-                           </Text>
-                        </HStack>
-                     </HStack>
+                           <Text style={{ marginLeft: 12, fontSize: 14, color: '#181818' }}>Add Participants</Text>
+                        </View>
+                     </View>
                   </Pressable>
                )}
                {renderParticipants()}
                <View mt="5" />
-               <Pressable>
+               {/* <Pressable>
                   <View style={[commonStyles.hstack, commonStyles.m_12, commonStyles.p_4]}>
                      <ReportGroupIcon width="20" height="20" />
-                     <Text ml="5" fontSize={14} color="#FF0000">
-                        Report Group
-                     </Text>
+                     <Text style={{ marginLeft: 20, fontSize: 14, color: '#FF0000' }}>Report Group</Text>
                   </View>
-               </Pressable>
+               </Pressable> */}
                <Pressable onPress={handleLeaveGroup}>
                   <View style={[commonStyles.hstack, commonStyles.m_12, commonStyles.p_4]}>
                      <ExitIcon color="#ff3939" />
-                     <Text ml="5" fontSize={14} color="#FF0000">
-                        Leave Group
-                     </Text>
+                     <Text style={{ marginLeft: 20, fontSize: 14, color: '#FF0000' }}>Leave Group</Text>
                   </View>
                </Pressable>
                <View mb="5" />
@@ -390,8 +383,13 @@ const styles = StyleSheet.create({
       top: 0,
       left: 0,
       right: 0,
-      overflow: 'hidden',
+      /** overflow: 'hidden', commented to display shadow in iOS */
       position: 'absolute',
+      elevation: 5,
+      shadowColor: ApplicationColors.shadowColor,
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.1,
+      shadowRadius: 6,
    },
    action: {
       left: 20,

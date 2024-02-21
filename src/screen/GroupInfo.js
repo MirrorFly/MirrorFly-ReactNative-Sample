@@ -2,13 +2,13 @@ import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/nativ
 import React from 'react';
 import { ActivityIndicator, BackHandler, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import { fetchGroupParticipants } from '../Helper/Chat/Groups';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
-import GrpCollapsibleToolbar from '../components/GrpCollapsibleToolbar';
-import useRosterData from '../hooks/useRosterData';
-import SDK from '../SDK/SDK';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import commonStyles from '../common/commonStyles';
+import GrpCollapsibleToolbar from '../components/GrpCollapsibleToolbar';
 import ApplicationColors from '../config/appColors';
+import useRosterData from '../hooks/useRosterData';
 
 const GroupInfo = () => {
    const {
@@ -38,40 +38,35 @@ const GroupInfo = () => {
    mobileNumber = mobileNumber || '';
    email = email || '';
    image = image || '';
-   const currentUserJid = useSelector(state => state.auth?.currentUserJID);
-   const [participantsList, setParticipantsList] = React.useState([]);
+   const groupParticipants = useSelector(
+      state => state?.groupsMemberParticipantsListData?.groupParticipants[chatUser] || [],
+   );
 
-   const getGroupParticipants = async (iq = false, time = 0) => {
+   const getGroupParticipants = time => {
       toggleModel();
-      setTimeout(async () => {
-         const grpList = await SDK.getGroupParticipants(chatUser, iq);
-         setParticipantsList(
-            grpList.participants?.sort((a, b) =>
-               a.userJid === currentUserJid ? 1 : b.userJid === currentUserJid ? -1 : 0,
-            ) || [],
-         );
+      setTimeout(() => {
+         fetchGroupParticipants(chatUser);
          toggleModel();
       }, time);
    };
 
-   const handleBackBtn = () => {
-      naviagation.goBack();
-      return true;
-   };
-
    useFocusEffect(
       React.useCallback(() => {
-         getGroupParticipants();
-      }, []),
+         fetchGroupParticipants(chatUser);
+      }, [chatUser]),
    );
 
-   const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+   const handleBackBtn = React.useCallback(() => {
+      naviagation.goBack();
+      return true;
+   }, [naviagation]);
 
    React.useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
       return () => {
          backHandler.remove();
       };
-   }, []);
+   }, [handleBackBtn]);
 
    return (
       <>
@@ -93,7 +88,7 @@ const GroupInfo = () => {
                imageToken={image}
                email={email}
                handleBackBtn={handleBackBtn}
-               participants={participantsList}
+               participants={groupParticipants}
                getGroupParticipants={getGroupParticipants}
             />
          </View>

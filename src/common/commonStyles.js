@@ -6,7 +6,7 @@ export const toastStyles = StyleSheet.create({
       backgroundColor: ApplicationColors.invertedBg,
       paddingHorizontal: 8,
       paddingVertical: 4,
-      borderRadius: 5,
+      borderRadius: 2,
    },
    toastContent: {
       color: ApplicationColors.mainbg,
@@ -119,6 +119,15 @@ const commonStyles = StyleSheet.create({
    },
    ml_4: {
       marginLeft: 4,
+   },
+   marginTop_5: {
+      marginTop: 5,
+   },
+   marginTop_15: {
+      marginTop: 15,
+   },
+   marginTop_30: {
+      marginTop: 30,
    },
    marginLeft_5: {
       marginLeft: 5,
@@ -261,6 +270,9 @@ const commonStyles = StyleSheet.create({
    },
    alignSelfFlexEnd: {
       alignSelf: 'flex-end',
+   },
+   alignSelfCenter: {
+      alignSelf: 'center',
    },
    bg_transparent: {
       backgroundColor: 'transparent',

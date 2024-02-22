@@ -11,7 +11,7 @@ import MapView, { Marker } from 'react-native-maps';
 import { ArrowForwardIcon } from 'native-base';
 import Geocoder from 'react-native-geocoder';
 import Geolocation from 'react-native-geolocation-service';
-import ScreenHeader from '../../components/ScreenHeader';
+import ScreenHeader from '../ScreenHeader';
 import { showToast } from '../../Helper/index';
 import ApplicationColors from '../../config/appColors';
 import config from '../chat/common/config';

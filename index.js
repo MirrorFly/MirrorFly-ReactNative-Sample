@@ -1,47 +1,57 @@
-import { AppRegistry } from 'react-native';
+import { AppRegistry, Platform } from 'react-native';
+import 'react-native-get-random-values';
 import App from './App';
 import { name as appName } from './app.json';
-import 'react-native-get-random-values';
 import messaging from '@react-native-firebase/messaging';
-import SDK from './src/SDK/SDK';
-import { pushNotify, updateNotification } from './src/Service/remoteNotifyHandle';
-import { getNotifyMessage, getNotifyNickName } from './src/components/RNCamera/Helper';
 import { handleSetPendingSeenStatus, updateRecentAndConversationStore } from './src/Helper';
+import SDK from './src/SDK/SDK';
 import { callBacks } from './src/SDKActions/callbacks';
-import { MIX_BARE_JID } from './src/Helper/Chat/Constant';
+import { pushNotify, updateNotification } from './src/Service/remoteNotifyHandle';
+import { setNotificationForegroundService } from './src/calls/notification/callNotifyHandler';
+import { getNotifyMessage, getNotifyNickName } from './src/components/RNCamera/Helper';
+import config from './src/components/chat/common/config';
+import { CallComponent } from './src/calls/CallComponent';
 
-messaging().setBackgroundMessageHandler(async remoteMessage => {
-   try {
-      if (MIX_BARE_JID.test(remoteMessage?.data?.user_jid) || remoteMessage?.data?.group_id) {
-         return;
-      }
-      await SDK.initializeSDK({
-         apiBaseUrl: 'https://api-uikit-qa.contus.us/api/v1',
-         licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
-         callbackListeners: callBacks,
-         isSandbox: false,
-      });
-      if (remoteMessage.data.type === 'recall') {
-         updateNotification(remoteMessage.data.message_id);
-         return;
-      }
-      const notify = await SDK.getNotificationData(remoteMessage);
-      if (notify?.statusCode === 200) {
-         if (notify?.data?.type === 'receiveMessage') {
-            updateRecentAndConversationStore(notify?.data);
-            await handleSetPendingSeenStatus(notify?.data);
-            pushNotify(
-               notify?.data?.msgId,
-               getNotifyNickName(notify?.data),
-               getNotifyMessage(notify?.data),
-               notify?.data?.fromUserJid,
-            );
+try {
+   messaging().setBackgroundMessageHandler(async remoteMessage => {
+      try {
+         await SDK.initializeSDK({
+            apiBaseUrl: config.API_URL,
+            licenseKey: config.lisenceKey,
+            callbackListeners: callBacks,
+            isSandbox: false,
+         });
+         if (remoteMessage.data.type === 'recall') {
+            updateNotification(remoteMessage.data.message_id);
+            return;
          }
+         if (remoteMessage?.data.type === 'mediacall') {
+            await SDK.getCallNotification(remoteMessage);
+         }
+         const notify = await SDK.getNotificationData(remoteMessage);
+         if (notify?.statusCode === 200) {
+            if (notify?.data?.type === 'receiveMessage') {
+               updateRecentAndConversationStore(notify?.data);
+               await handleSetPendingSeenStatus(notify?.data);
+               pushNotify(
+                  notify?.data?.msgId,
+                  getNotifyNickName(notify?.data),
+                  getNotifyMessage(notify?.data),
+                  notify?.data?.fromUserJid,
+               );
+            }
+         }
+      } catch (error) {
+         console.log('messaging().setBackgroundMessageHandler', error);
       }
-   } catch (error) {
-      console.log('messaging().setBackgroundMessageHandler', error);
-   }
-});
+   });
+} catch (error) {
+   console.log('Failed to handle messsaging', error);
+}
+if (Platform.OS === 'android') {
+   setNotificationForegroundService();
+   AppRegistry.registerComponent('CallScreen', () => CallComponent);
+}
 /**
 // messaging().onMessage(async remoteMessage => {
 //   console.log(

@@ -1,7 +1,8 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import PostPreViewPage from '../components/PostPreViewPage';
-import RNCamera from '../components/RNCamera';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import RegisterScreen from '../screen/RegisterScreen';
+import ProfileScreen from '../screen/ProfileScreen';
+import RecentScreen from '../screen/RecentScreen';
 import {
    CAMERA,
    CHATSCREEN,
@@ -22,18 +23,17 @@ import {
    USER_INFO,
 } from '../constant';
 import ChatScreen from '../screen/ChatScreen';
-import ContactScreen from '../screen/ContactScreen';
 import CountryList from '../screen/CountryList';
-import EditName from '../screen/EditName';
+import ContactScreen from '../screen/ContactScreen';
+import SettingScreen from '../screen/SettingScreen';
+import RNCamera from '../components/RNCamera';
 import ForwardMessage from '../screen/ForwardMessage';
+import PostPreViewPage from '../components/PostPreViewPage';
+import UserInfo from '../screen/UserInfo';
+import NewGroup from '../screen/NewGroup';
 import GroupInfo from '../screen/GroupInfo';
 import ImageView from '../screen/ImageView';
-import NewGroup from '../screen/NewGroup';
-import ProfileScreen from '../screen/ProfileScreen';
-import RecentScreen from '../screen/RecentScreen';
-import RegisterScreen from '../screen/RegisterScreen';
-import SettingScreen from '../screen/SettingScreen';
-import UserInfo from '../screen/UserInfo';
+import EditName from '../screen/EditName';
 
 const Stack = createNativeStackNavigator();
 
@@ -52,6 +52,26 @@ const ChatScreenStackNavigation = () => {
       </Stack.Navigator>
    );
 };
+
+export function RecentStackNavigation(props) {
+   return (
+      <Stack.Navigator
+         screenOptions={{
+            headerShown: false,
+            orientation: 'portrait',
+            gestureEnabled: false,
+         }}
+         initialRouteName={RECENTCHATSCREEN}>
+         <Stack.Screen name={PROFILESCREEN}>{prop => <ProfileScreen {...prop} />}</Stack.Screen>
+         <Stack.Screen name={RECENTCHATSCREEN}>{prop => <RecentScreen {...prop} />}</Stack.Screen>
+         <Stack.Screen name={CHATSCREEN}>{prop => <ChatScreenStackNavigation {...prop} />}</Stack.Screen>
+         <Stack.Screen name={COUNTRYSCREEN}>{prop => <CountryList {...prop} />}</Stack.Screen>
+         <Stack.Screen name={CONTACTLIST}>{prop => <ContactScreen {...prop} />}</Stack.Screen>
+         <Stack.Screen name={SETTINGSCREEN}>{prop => <SettingScreen {...prop} />}</Stack.Screen>
+         <Stack.Screen name={CAMERA}>{prop => <RNCamera {...prop} />}</Stack.Screen>
+      </Stack.Navigator>
+   );
+}
 
 const GroupScreenStackNavigation = () => {
    return (
@@ -92,24 +112,3 @@ function StackNavigationPage(props) {
 }
 
 export default StackNavigationPage;
-
-export function RecentStackNavigation(props) {
-   return (
-      <Stack.Navigator
-         screenOptions={{
-            headerShown: false,
-            orientation: 'portrait',
-            gestureEnabled: false,
-         }}
-         initialRouteName={RECENTCHATSCREEN}>
-         <Stack.Screen name={PROFILESCREEN}>{prop => <ProfileScreen {...prop} />}</Stack.Screen>
-         <Stack.Screen name={RECENTCHATSCREEN}>{prop => <RecentScreen {...prop} />}</Stack.Screen>
-         <Stack.Screen name={CHATSCREEN}>{prop => <ChatScreenStackNavigation {...prop} />}</Stack.Screen>
-         <Stack.Screen name={COUNTRYSCREEN}>{prop => <CountryList {...prop} />}</Stack.Screen>
-         <Stack.Screen name={CONTACTLIST}>{prop => <ContactScreen {...prop} />}</Stack.Screen>
-         <Stack.Screen name={SETTINGSCREEN}>{prop => <SettingScreen {...prop} />}</Stack.Screen>
-         <Stack.Screen name={CAMERA}>{prop => <RNCamera {...prop} />}</Stack.Screen>
-         <Stack.Screen name={GROUPSCREEN}>{prop => <GroupScreenStackNavigation {...prop} />}</Stack.Screen>
-      </Stack.Navigator>
-   );
-}

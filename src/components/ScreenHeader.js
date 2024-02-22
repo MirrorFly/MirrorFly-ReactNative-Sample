@@ -1,12 +1,11 @@
 import React from 'react';
-import { Menu } from 'native-base';
 import { LeftArrowIcon, SearchIcon, CloseIcon } from '../common/Icons';
 import { Image, StyleSheet, Text, TextInput, View } from 'react-native';
-import { MenuIconBtn } from '../common/Button';
 import { getImageSource } from '../common/utils';
 import ApplicationColors from '../config/appColors';
 import commonStyles from '../common/commonStyles';
 import IconButton from '../common/IconButton';
+import MenuContainer from '../common/MenuContainer';
 
 const LeftArrowComponent = () => LeftArrowIcon();
 
@@ -93,19 +92,7 @@ function ScreenHeader(props) {
                      <Text style={styles.subText}>{isGroupInfoSrn ? 'NEXT' : 'CREATE'}</Text>
                   </IconButton>
                )}
-               {!isSearching && props?.menuItems && (
-                  <Menu
-                     w="160"
-                     shouldOverlapWithTrigger={true}
-                     placement={position === 'auto' ? undefined : position}
-                     trigger={triggerProps => MenuIconBtn(triggerProps)}>
-                     {props?.menuItems.map(item => (
-                        <Menu.Item key={item.label} onPress={item?.formatter}>
-                           {item.label}
-                        </Menu.Item>
-                     ))}
-                  </Menu>
-               )}
+               {!isSearching && props?.menuItems && <MenuContainer menuItems={props?.menuItems} />}
             </View>
          </View>
       </>

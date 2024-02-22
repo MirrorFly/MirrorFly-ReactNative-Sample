@@ -52,6 +52,7 @@ const CollapsingToolbar = ({
    toolbarMinHeight,
    mobileNo,
    email,
+   setLocalNav,
    handleBackBtn,
 }) => {
    const [visible, setVisible] = React.useState(false);
@@ -88,8 +89,9 @@ const CollapsingToolbar = ({
       setVisible(true);
    };
 
-   const handleTapDetails = () => {};
-   
+   const handleTapDetails = () => {
+      setLocalNav('UsersTapBarInfo');
+   };
    const HandleClose = () => {
       setVisible(false);
    };

@@ -2,7 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import { useSelector } from 'react-redux';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
-import { MIX_BARE_JID, USER_PRESENCE_STATUS_OFFLINE, USER_PRESENCE_STATUS_ONLINE } from '../Helper/Chat/Constant';
+import { USER_PRESENCE_STATUS_OFFLINE, USER_PRESENCE_STATUS_ONLINE } from '../Helper/Chat/Constant';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import SDK from '../SDK/SDK';
 import MarqueeText from '../common/MarqueeText';

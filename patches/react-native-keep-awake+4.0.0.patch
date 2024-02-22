@@ -1,0 +1,82 @@
+diff --git a/node_modules/react-native-keep-awake/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/react-native-keep-awake/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
+new file mode 100644
+index 0000000..320030c
+Binary files /dev/null and b/node_modules/react-native-keep-awake/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
+diff --git a/node_modules/react-native-keep-awake/android/src/main/java/com/corbt/keepawake/KCKeepAwake.java b/node_modules/react-native-keep-awake/android/src/main/java/com/corbt/keepawake/KCKeepAwake.java
+index 63eea90..0dca47f 100644
+--- a/node_modules/react-native-keep-awake/android/src/main/java/com/corbt/keepawake/KCKeepAwake.java
++++ b/node_modules/react-native-keep-awake/android/src/main/java/com/corbt/keepawake/KCKeepAwake.java
+@@ -5,12 +5,17 @@ package com.corbt.keepawake;
+ 
+ import android.app.Activity;
+ import android.view.WindowManager;
++import com.facebook.react.bridge.ReactContext;
++import android.annotation.SuppressLint;
++import android.content.Context;
++import android.os.PowerManager;
+ 
+ import com.facebook.react.bridge.ReactApplicationContext;
+ import com.facebook.react.bridge.ReactContextBaseJavaModule;
+ import com.facebook.react.bridge.ReactMethod;
+ 
+ public class KCKeepAwake extends ReactContextBaseJavaModule {
++    public PowerManager.WakeLock wakeLock;
+ 
+     public KCKeepAwake(ReactApplicationContext reactContext) {
+         super(reactContext);
+@@ -21,31 +26,38 @@ public class KCKeepAwake extends ReactContextBaseJavaModule {
+         return "KCKeepAwake";
+     }
+ 
++    @SuppressLint("InvalidWakeLockTag")
+     @ReactMethod
+     public void activate() {
+-        final Activity activity = getCurrentActivity();
+-
++       final ReactContext activity = getReactApplicationContext();
+         if (activity != null) {
+-            activity.runOnUiThread(new Runnable() {
+-                @Override
+-                public void run() {
+-                    activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+-                }
+-            });
++            PowerManager powerManager = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
++            wakeLock = powerManager.newWakeLock(
++                    PowerManager.FULL_WAKE_LOCK |
++                            PowerManager.ACQUIRE_CAUSES_WAKEUP |
++                            PowerManager.ON_AFTER_RELEASE,
++                    "MyWakeLockTag");
++
++            if (!wakeLock.isHeld()) {
++                wakeLock.acquire();
++            }
+         }
+     }
+ 
+     @ReactMethod
+     public void deactivate() {
+-        final Activity activity = getCurrentActivity();
+-
++       final ReactContext activity = getReactApplicationContext();
+         if (activity != null) {
+-            activity.runOnUiThread(new Runnable() {
+-                @Override
+-                public void run() {
+-                    activity.getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+-                }
+-            });
++            if (wakeLock.isHeld()) {
++                wakeLock.release();
++            }
+         }
++        //     activity.runOnUiThread(new Runnable() {
++        //         @Override
++        //         public void run() {
++        //             activity.getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
++        //         }
++        //     });
++        // }
+     }
+ }
+\ No newline at end of file

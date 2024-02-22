@@ -21,6 +21,8 @@
 		CE7BED472AC6E6F6001F131C /* sendDeliveredApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7BED462AC6E6F6001F131C /* sendDeliveredApiCall.swift */; };
 		CE7BED4D2AC6F648001F131C /* Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7BED4C2AC6F648001F131C /* Async.swift */; };
 		CE7FD68A2B7DFAC000C5488B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE7FD6892B7DFAC000C5488B /* GoogleService-Info.plist */; };
+		CE9EEDFD2B8635410004DCF7 /* incallmanager_ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CE9EEDFB2B8635410004DCF7 /* incallmanager_ringback.mp3 */; };
+		CE9EEDFE2B8635410004DCF7 /* fly_reconnecting_tone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CE9EEDFC2B8635410004DCF7 /* fly_reconnecting_tone.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +84,8 @@
 		CE7BED4E2AC6F66F001F131C /* mirrorfly_rn-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "mirrorfly_rn-Bridging-Header.h"; sourceTree = "<group>"; };
 		CE7FD6892B7DFAC000C5488B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../qa-google-services/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CE8113C52EFF9C3C70A45047 /* Pods-mirrorfly_rn-mirrorfly_rnTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mirrorfly_rn-mirrorfly_rnTests.debug.xcconfig"; path = "Target Support Files/Pods-mirrorfly_rn-mirrorfly_rnTests/Pods-mirrorfly_rn-mirrorfly_rnTests.debug.xcconfig"; sourceTree = "<group>"; };
+		CE9EEDFB2B8635410004DCF7 /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringback.mp3; path = ../../../../../../Downloads/iOSAssets/incallmanager_ringback.mp3; sourceTree = "<group>"; };
+		CE9EEDFC2B8635410004DCF7 /* fly_reconnecting_tone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = fly_reconnecting_tone.mp3; path = ../../../../../../Downloads/iOSAssets/fly_reconnecting_tone.mp3; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FA1486D50E25034D688CBFB1 /* Pods-mirrorfly_rn.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mirrorfly_rn.release.xcconfig"; path = "Target Support Files/Pods-mirrorfly_rn/Pods-mirrorfly_rn.release.xcconfig"; sourceTree = "<group>"; };
 		FAEE072E6838F86959A5F365 /* Pods_mirrorfly_rn_mirrorfly_rnTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mirrorfly_rn_mirrorfly_rnTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -134,6 +138,8 @@
 		13B07FAE1A68108700A75B9A /* mirrorfly_rn */ = {
 			isa = PBXGroup;
 			children = (
+				CE9EEDFC2B8635410004DCF7 /* fly_reconnecting_tone.mp3 */,
+				CE9EEDFB2B8635410004DCF7 /* incallmanager_ringback.mp3 */,
 				CE7FD6892B7DFAC000C5488B /* GoogleService-Info.plist */,
 				CE57D1A62ABD800F0086E3A9 /* mirrorfly_rn.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -339,6 +345,8 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				CE9EEDFD2B8635410004DCF7 /* incallmanager_ringback.mp3 in Resources */,
+				CE9EEDFE2B8635410004DCF7 /* fly_reconnecting_tone.mp3 in Resources */,
 				CE7FD68A2B7DFAC000C5488B /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -777,10 +785,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 			};
@@ -858,10 +863,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;

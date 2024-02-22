@@ -1,32 +1,46 @@
+// import messaging from '@react-native-firebase/messaging';`
+import { NativeBaseProvider } from 'native-base';
 import React from 'react';
-import {ChatApp} from './src/ChatApp';
-import {requestNotificationPermission} from './src/common/utils';
-import {removeAllDeliveredNotification} from './src/Service/remoteNotifyHandle';
-import messaging from '@react-native-firebase/messaging';
-import {callBacks} from './src/SDKActions/callbacks';
-import {setAppInitialized} from './src/uikitHelpers/uikitMethods';
+import { ChatApp } from './src/ChatApp';
 import SDK from './src/SDK/SDK';
+import { callBacks } from './src/SDKActions/callbacks';
+import { removeAllDeliveredNotification } from './src/Service/remoteNotifyHandle';
+import { CallComponent } from './src/calls/CallComponent';
+import { requestNotificationPermission } from './src/common/utils';
+import { setAppInitialized } from './src/uikitHelpers/uikitMethods';
+import config from './src/components/chat/common/config';
+import { Platform } from 'react-native';
 
 function App() {
-   const API_URL = 'https://api-uikit-qa.contus.us/api/v1';
-   const QALisenceKey = 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp';
-
    React.useEffect(() => {
       (async () => {
          await SDK.initializeSDK({
-            apiBaseUrl: API_URL,
-            licenseKey: QALisenceKey,
+            apiBaseUrl: config.API_URL,
+            licenseKey: config.lisenceKey,
             callbackListeners: callBacks,
             isSandbox: false,
          });
          setAppInitialized(true);
-         await messaging().requestPermission();
-         requestNotificationPermission();
+
+         if (Platform.OS == 'ios') {
+            // await messaging().requestPermission();
+         } else {
+            requestNotificationPermission();
+         }
          removeAllDeliveredNotification();
       })();
-   });
+   }, []);
 
-   return <ChatApp />;
+   const renderCallComponent = () => {
+      return Platform.OS === 'ios' ? <CallComponent hasNativeBaseProvider={true} /> : null;
+   };
+
+   return (
+      <NativeBaseProvider>
+         <ChatApp hasNativeBaseProvider={true} />
+         {renderCallComponent()}
+      </NativeBaseProvider>
+   );
 }
 
 export default App;

@@ -1,7 +1,7 @@
 import { Pressable, TextInput } from 'react-native';
 import React from 'react';
 import { Text, HStack, Stack, useToast, Box } from 'native-base';
-import ScreenHeader from '../components/ScreenHeader';
+import ScreenHeader from './ScreenHeader';
 import { KeyboardIcon, SmileIcon } from '../common/Icons';
 import { useNetworkStatus } from '../hooks';
 import EmojiOverlay from './EmojiPicker';
@@ -28,7 +28,6 @@ const EditStatusPage = props => {
    };
    const handleBackBtn = () => {
       props.setNav('statusPage');
-      return true;
    };
 
    const count = () => allowedMaxLimit - splitter.countGraphemes(statusContent);

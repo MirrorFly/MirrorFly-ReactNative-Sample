@@ -109,7 +109,7 @@ export const getIncomingCallNotification = async (
          pressAction: {
             id: 'incomingcallnotification',
             launchActivityFlags: [AndroidLaunchActivityFlag.NEW_TASK],
-            launchActivity: 'com.mirrorfly_rn.CallScreenActivity',
+            launchActivity: launchCallActivity,
          },
       },
    };
@@ -126,6 +126,7 @@ export const getIncomingCallNotification = async (
 };
 
 export const getOutGoingCallNotification = async (roomId, data, userJid, nickName, callStatusType) => {
+   const launchCallActivity = await ActivityModule.getCallActivity();
    let channelId = await notifee.createChannel({
       id: 'OutGoing Call',
       name: 'OutGoing Call',
@@ -154,7 +155,7 @@ export const getOutGoingCallNotification = async (roomId, data, userJid, nickNam
          pressAction: {
             id: 'outgoingcallnotification',
             launchActivityFlags: [AndroidLaunchActivityFlag.NEW_TASK],
-            launchActivity: 'com.mirrorfly_rn.CallScreenActivity',
+            launchActivity: launchCallActivity,
          },
       },
    };
@@ -163,6 +164,7 @@ export const getOutGoingCallNotification = async (roomId, data, userJid, nickNam
 };
 
 export const getOnGoingCallNotification = async (roomId, data, userJid, nickName, callStatusType) => {
+   const launchCallActivity = await ActivityModule.getCallActivity();
    let channelId = await notifee.createChannel({
       id: 'OnGoing Call',
       name: 'OnGoing Call',
@@ -190,7 +192,7 @@ export const getOnGoingCallNotification = async (roomId, data, userJid, nickName
          pressAction: {
             id: 'ongoingcallnotification',
             launchActivityFlags: [AndroidLaunchActivityFlag.NEW_TASK],
-            launchActivity: 'com.mirrorfly_rn.CallScreenActivity',
+            launchActivity: launchCallActivity,
          },
       },
    };
@@ -199,7 +201,7 @@ export const getOnGoingCallNotification = async (roomId, data, userJid, nickName
 };
 
 export const getMissedCallNotification = async (roomId, callDetailObj = {}, userJid, nickName, callStatusType) => {
-   const launchActivityName = await ActivityModule.getMainActivity();
+   const launchActivityName = Platform.OS === 'android' ? await ActivityModule.getMainActivity() : '';
    let title = `You missed ${callDetailObj.callType === 'audio' ? 'an' : 'a'} ${callDetailObj.callType} call`;
    let displayedNotificationId = await notifee.getDisplayedNotifications();
    let notificationExist = displayedNotificationId.find(

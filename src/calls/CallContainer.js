@@ -24,7 +24,12 @@ import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { openCallModal } from '../redux/Actions/CallAction';
 
 const CallContainer = ({ hasNativeBaseProvider }) => {
-   const { showCallModal, connectionState = {}, screenName = '', largeVideoUser = {}, } = useSelector(state => state.callData) || {};
+   const {
+      showCallModal,
+      connectionState = {},
+      screenName = '',
+      largeVideoUser = {},
+   } = useSelector(state => state.callData) || {};
    const _userId = getUserIdFromJid(connectionState.to || connectionState.userJid);
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
    const insets = initialWindowMetrics.insets;
@@ -33,7 +38,7 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
    const isPipMode = usePipModeListener();
 
    React.useLayoutEffect(() => {
-      dispatch(openCallModal());
+      Platform.OS === 'android' && dispatch(openCallModal());
       if (Object.keys(connectionState).length === 0) {
          closeCallModalActivity();
       }
@@ -41,7 +46,7 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
 
    const largeUserId = React.useMemo(() => {
       return getUserIdFromJid(largeVideoUser?.userJid);
-   }, [largeVideoUser?.userJid])
+   }, [largeVideoUser?.userJid]);
 
    const getIncomingCallStatus = () => {
       return confrenceData?.callStatusText;

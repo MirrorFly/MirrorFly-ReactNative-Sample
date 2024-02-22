@@ -47,12 +47,12 @@ function ScreenHeader(props) {
       <>
          <View style={styles.container}>
             <View style={[commonStyles.hstack, commonStyles.alignItemsCenter, commonStyles.flex1]}>
-               {props?.onhandleBack && (
+               {Boolean(props?.onhandleBack) && (
                   <IconButton onPress={handlingBackBtn}>
                      <LeftArrowComponent />
                   </IconButton>
                )}
-               {props?.isSearching && (
+               {Boolean(props?.isSearching) && (
                   <IconButton style={commonStyles.marginRight_12} onPress={handlingBackBtn}>
                      <LeftArrowComponent />
                   </IconButton>
@@ -71,28 +71,28 @@ function ScreenHeader(props) {
                      autoFocus={true}
                   />
                )}
-               {props?.logo && !isSearching && (
+               {Boolean(props?.logo) && !isSearching && (
                   <Image style={styles.logoImage} source={getImageSource(props?.logo)} alt="ic_logo.png" />
                )}
-               {props?.title && !isSearching && <Text style={styles.titleText}>{props?.title}</Text>}
+               {Boolean(props?.title) && !isSearching && <Text style={styles.titleText}>{props?.title}</Text>}
             </View>
             <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-               {text && (
+               {Boolean(text) && (
                   <IconButton onPress={handleClearBtn}>
                      <CloseIcon />
                   </IconButton>
                )}
-               {props?.onhandleSearch && !isSearching && (
+               {Boolean(props?.onhandleSearch) && !isSearching && (
                   <IconButton onPress={handleSearchPress}>
                      <SearchIcon />
                   </IconButton>
                )}
-               {props.title === 'Add Participants' && (
+               {Boolean(props.title === 'Add Participants') && (
                   <IconButton onPress={onCreateBtn}>
                      <Text style={styles.subText}>{isGroupInfoSrn ? 'NEXT' : 'CREATE'}</Text>
                   </IconButton>
                )}
-               {!isSearching && props?.menuItems && <MenuContainer menuItems={props?.menuItems} />}
+               {!isSearching && props?.menuItems?.length > 0 && <MenuContainer menuItems={props?.menuItems} />}
             </View>
          </View>
       </>

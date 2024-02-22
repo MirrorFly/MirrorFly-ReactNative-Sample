@@ -147,8 +147,8 @@ const EditStatusPage = props => {
                alignItems={'center'}
                justifyContent={'space-evenly'}
                borderTopColor={'#BFBFBF'}
-               borderTopWidth={statusContent.trim() ? '1' : '0'}>
-               {statusContent.trim() && (
+               borderTopWidth={Boolean(statusContent.trim()) ? '1' : '0'}>
+               {Boolean(statusContent.trim()) && (
                   <>
                      <Pressable onPress={handleBackBtn}>
                         <Text color={'black'} fontSize="15" fontWeight={'400'} px="4">

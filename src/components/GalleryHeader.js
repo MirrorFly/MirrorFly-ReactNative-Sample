@@ -23,7 +23,7 @@ function GalleryHeader(props) {
       justifyContent="space-between"
       alignItems="center">
       <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-        {props?.onhandleBack && (
+        {Boolean(props?.onhandleBack) && (
           <Pressable
             contentContainerStyle={commonStyles.p_10}
             pressedStyle={[

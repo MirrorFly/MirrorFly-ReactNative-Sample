@@ -36,7 +36,7 @@ const AuthenticatedImage = props => {
         <Spinner />
       ) : (
         <>
-          {imageSource && (
+          {Boolean(imageSource) && (
             <Image
               {...props}
               source={{ uri: imageSource }}

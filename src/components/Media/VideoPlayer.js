@@ -134,7 +134,7 @@ const VideoPlayer = props => {
   return (
     <View style={{ flex: 1 }} onLayout={handleLayout}>
       <View style={{ flex: 1, justifyContent: 'center' }}>
-        {videoUri && (
+        {Boolean(videoUri) && (
           <Video
             ignoreSilentSwitch={'ignore'}
             onEnd={onEnd}

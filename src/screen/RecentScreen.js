@@ -103,7 +103,7 @@ function RecentScreen() {
    const renderTabBar = React.useCallback(
       props => {
          return (
-            !isSearching && (
+            !Boolean(isSearching) && (
                <TabBar
                   {...props}
                   style={styles.tabbar}

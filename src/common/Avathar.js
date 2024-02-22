@@ -48,7 +48,7 @@ const Avathar = ({ profileImage, imageStyle, transparentBackgroundForImage = tru
       );
    }
 
-   return profileImage && !isImageLoadError && imageUrl ? (
+   return Boolean(profileImage) && !isImageLoadError && Boolean(imageUrl) ? (
       <View style={commonStyles.positionRelative}>
          <Image
             {...imageProps}

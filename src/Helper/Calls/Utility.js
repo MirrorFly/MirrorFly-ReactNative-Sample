@@ -485,14 +485,13 @@ export const displayIncomingCallForIos = callResponse => {
       );
    }
    handleIncoming_CallKeepListeners();
-   if(AppState.currentState !== 'active' || isCallFromVoip) {
+   if (AppState.currentState !== 'active' || isCallFromVoip) {
       checkMicroPhonePermission().then(micPermission => {
          if (micPermission !== 'granted') {
             endCallForIos();
             declineIncomingCall();
          }
       });
-
    }
 };
 
@@ -730,7 +729,7 @@ export const pushNotifyBackground = () => {
    RNVoipPushNotification.addEventListener('notification', async notification => {
       // this callback will be called only when the incoming call is received while the user is already on a call
       // so sending the notification payload to SDK to send busy status to the caller
-            let remoteMessage = {
+      let remoteMessage = {
          data: notification,
       };
       SDK.getCallNotification(remoteMessage);

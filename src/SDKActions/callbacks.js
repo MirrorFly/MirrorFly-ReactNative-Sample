@@ -129,6 +129,8 @@ import { updateRosterData } from '../redux/Actions/rosterAction';
 import ActivityModule from '../customModules/ActivityModule';
 import useRosterData from '../hooks/useRosterData';
 import { fetchGroupParticipants } from '../Helper/Chat/Groups';
+import { updateRosterData } from '../redux/Actions/rosterAction';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 
 let localStream = null,
    localVideoMuted = false,
@@ -698,7 +700,7 @@ export const callBacks = {
          case 'groupProfileUpdated':
             updateRecentChatMessage(res, store.getState());
             updateConversationMessage(res, store.getState());
-            if (res.msgType === 'receiveMessage' || res.msgType === 'carbonReceiveMessage') {
+            if (!res.notification && (res.msgType === 'receiveMessage' || res.msgType === 'carbonReceiveMessage')) {
                pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.fromUserJid);
             }
             break;
@@ -819,7 +821,15 @@ export const callBacks = {
       if (res.msgType === 'userAdded') {
          fetchGroupParticipants(res.groupJid);
       }
-      console.log('groupProfileListener = (res) => { }', res);
+      if (res.msgType === 'profileUpdated') {
+         const obj = {
+            userId: getUserIdFromJid(res.groupJid),
+            userJid: res.groupJid,
+            ...res.groupProfile,
+         };
+         store.dispatch(updateRosterData(obj));
+      }
+      console.log('groupProfileListener =>', JSON.stringify(res, null, 2));
    },
    groupMsgInfoListener: res => {
       console.log('groupMsgInfoListener = (res) => { }', res);

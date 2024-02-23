@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList, Pressable, useWindowDimensions, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Pressable, useWindowDimensions, Keyboard, Animated } from 'react-native';
 import emoji from 'emoji-datasource';
 import { groupBy, orderBy } from 'lodash-es/collection';
 import { mapValues } from 'lodash-es/object';
@@ -91,38 +91,64 @@ const EmojiOverlay = ({ state, setState, onClose, visible, onSelect }) => {
          title: tab.tabLabel,
       })),
    );
-
-   const renderScene = React.useCallback(({ route }) => {
-      if (route.key === routes[index].key) {
-         const { category } = emojiCategoriesTabs.find(tab => tab.category === route.key);
-         return <EmojiCategory category={category} onSelect={onSelect} />;
+   const translateY = React.useRef(new Animated.Value(layout.height)).current;
+   React.useEffect(() => {
+      if (visible) {
+         // Animate in if visible
+         Animated.timing(translateY, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+         }).start();
+      } else {
+         // Animate out if not visible
+         Animated.timing(translateY, {
+            toValue: layout.height,
+            duration: 300,
+            useNativeDriver: true,
+         }).start();
       }
-      return null;
-   });
+   }, [visible, translateY, layout.height]);
+
+   const renderScene = React.useCallback(
+      ({ route }) => {
+         if (route.key === routes[index].key) {
+            const { category } = emojiCategoriesTabs.find(tab => tab.category === route.key);
+            return <EmojiCategory category={category} onSelect={onSelect} />;
+         }
+         return null;
+      },
+      [index, onSelect, routes],
+   );
 
    React.useEffect(() => {
       Keyboard.addListener('keyboardDidShow', onClose);
-   }, []);
+   }, [onClose]);
+
+   if (!visible) {
+      return <></>;
+   }
 
    return (
-      <>
-         {visible ? (
-            <View style={{ backgroundColor: '#f2f2f2', flex: 1 }}>
-               <TabView
-                  keyExtractor={(item, index) => index.toString()}
-                  renderTabBar={e => <TabBarCustom setIndex={setIndex} setState={setState} state={state} {...e} />}
-                  navigationState={{ index, routes }}
-                  onIndexChange={setIndex}
-                  renderScene={renderScene}
-                  initialLayout={{ width: layout.width }}
-               />
-            </View>
-         ) : null}
-      </>
+      <Animated.View style={[styles.emojiContainer, { transform: [{ translateY }] }]}>
+         <TabView
+            keyExtractor={(item, _index) => _index.toString()}
+            renderTabBar={e => <TabBarCustom setIndex={setIndex} setState={setState} state={state} {...e} />}
+            navigationState={{ index, routes }}
+            onIndexChange={setIndex}
+            renderScene={renderScene}
+            initialLayout={{ width: layout.width }}
+         />
+      </Animated.View>
    );
 };
 
 const styles = StyleSheet.create({
+   emojiContainer: {
+      backgroundColor: '#f2f2f2',
+      flex: 1,
+      justifyContent: 'flex-end',
+   },
    tabcontainer: {
       height: 50,
       flexDirection: 'row',

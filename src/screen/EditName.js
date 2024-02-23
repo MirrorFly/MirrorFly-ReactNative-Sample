@@ -10,20 +10,20 @@ import ApplicationColors from '../config/appColors';
 import Pressable from '../common/Pressable';
 import { showToast } from '../Helper';
 import { useNetworkStatus } from '../hooks';
+import { SDK } from '../SDK';
 
 const LeftArrowComponent = () => LeftArrowIcon();
 
 const EditName = () => {
    const {
-      params: { title = '' },
+      params: { chatUser = '', title = '', imageToken = '' },
    } = useRoute();
    const navigation = useNavigation();
    const isConnected = useNetworkStatus();
    const headerBg = useSelector(state => state.safeArea.color);
-   const [emojiWindow, setEmojiWindow] = React.useState(false);
-   const [value, setValue] = React.useState('');
+   const [value, setValue] = React.useState(title);
 
-   const hanldeOkBtn = () => {
+   const hanldeOkBtn = async () => {
       if (!isConnected) {
          showToast('Please check your internet connection', {
             id: 'internet-connection-toast',
@@ -35,7 +35,12 @@ const EditName = () => {
          return;
       }
       if (isConnected && value.trim()) {
-         navigation.goBack();
+         const { statusCode, message } = await SDK.setGroupProfile(chatUser, value, imageToken);
+         if (statusCode === 200) {
+            navigation.goBack();
+         } else {
+            showToast(message, { id: message });
+         }
       }
    };
 
@@ -60,30 +65,25 @@ const EditName = () => {
                <Text style={styles.titleText}>Enter New Name</Text>
             </View>
          </View>
-         <EmojiInput defaultContent={title} setEmojiWindow={setEmojiWindow} setValue={setValue} />
-         <View style={commonStyles.flex1}>
-            <View
-               style={[
-                  commonStyles.hstack,
-                  commonStyles.positionAbsolute,
-                  commonStyles.alignItemsCenter,
-                  {
-                     left: 0,
-                     bottom: emojiWindow ? '60%' : 0,
-                     right: 0,
-                     borderTopColor: '#BFBFBF',
-                     borderTopWidth: 1,
-                  },
-               ]}>
-               <Pressable onPress={handleBackBtn}>
-                  <Text style={{ paddingHorizontal: '19%', paddingVertical: '5%' }}>CANCEL</Text>
-               </Pressable>
-               <View style={[{ borderLeftWidth: 1, borderColor: '#BFBFBF', height: 48 }]} />
-               <Pressable onPress={hanldeOkBtn}>
-                  <Text style={{ paddingHorizontal: '22%', paddingVertical: '5%' }}>OK</Text>
-               </Pressable>
+         <EmojiInput defaultContent={title} setValue={setValue}>
+            <View style={commonStyles.flex1}>
+               <View
+                  style={[
+                     commonStyles.hstack,
+                     commonStyles.positionAbsolute,
+                     commonStyles.alignItemsCenter,
+                     styles.cancelContainer,
+                  ]}>
+                  <Pressable onPress={handleBackBtn}>
+                     <Text style={styles.cancelBtn}>CANCEL</Text>
+                  </Pressable>
+                  <View style={styles.okContainer} />
+                  <Pressable onPress={hanldeOkBtn}>
+                     <Text style={styles.okBtn}>OK</Text>
+                  </Pressable>
+               </View>
             </View>
-         </View>
+         </EmojiInput>
       </View>
    );
 };
@@ -121,4 +121,14 @@ const styles = StyleSheet.create({
       marginTop: 5,
       paddingLeft: 40,
    },
+   cancelContainer: {
+      left: 0,
+      bottom: 0,
+      right: 0,
+      borderTopColor: '#BFBFBF',
+      borderTopWidth: 1,
+   },
+   cancelBtn: { paddingHorizontal: '19%', paddingVertical: '5%' },
+   okContainer: { borderLeftWidth: 1, borderColor: '#BFBFBF', height: 48 },
+   okBtn: { paddingHorizontal: '22%', paddingVertical: '5%' },
 });

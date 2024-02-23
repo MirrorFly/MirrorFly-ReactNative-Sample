@@ -9,6 +9,9 @@ import commonStyles from '../common/commonStyles';
 import GrpCollapsibleToolbar from '../components/GrpCollapsibleToolbar';
 import ApplicationColors from '../config/appColors';
 import useRosterData from '../hooks/useRosterData';
+import { handleImagePickerOpenCamera, handleImagePickerOpenGallery } from '../Helper/Chat/ChatHelper';
+import SDK from '../SDK/SDK';
+import { showToast } from '../Helper';
 
 const GroupInfo = () => {
    const {
@@ -48,6 +51,39 @@ const GroupInfo = () => {
          fetchGroupParticipants(chatUser);
          toggleModel();
       }, time);
+   };
+
+   const handleFromGallery = async () => {
+      const _image = await handleImagePickerOpenGallery();
+      toggleModel();
+      setTimeout(async () => {
+         const { statusCode, message } = await SDK.setGroupProfile(chatUser, nickName, _image);
+         if (!statusCode == 200) {
+            showToast(message, { id: message });
+         }
+         toggleModel();
+      }, 1000);
+   };
+
+   const handleTakePhoto = async () => {
+      const _image = await handleImagePickerOpenCamera();
+      toggleModel();
+      setTimeout(async () => {
+         const { statusCode, message } = await SDK.setGroupProfile(chatUser, nickName, _image);
+         if (!statusCode == 200) {
+            showToast(message, { id: message });
+         }
+         toggleModel();
+      }, 1000);
+   };
+
+   const handleRemovePhoto = async () => {
+      const { statusCode, message } = await SDK.setGroupProfile(chatUser, nickName);
+      if (!statusCode == 200) {
+         showToast(message, { id: message });
+      } else {
+         showToast('');
+      }
    };
 
    useFocusEffect(
@@ -90,6 +126,9 @@ const GroupInfo = () => {
                handleBackBtn={handleBackBtn}
                participants={groupParticipants}
                getGroupParticipants={getGroupParticipants}
+               handleFromGallery={handleFromGallery}
+               handleRemovePhoto={handleRemovePhoto}
+               handleTakePhoto={handleTakePhoto}
             />
          </View>
       </>

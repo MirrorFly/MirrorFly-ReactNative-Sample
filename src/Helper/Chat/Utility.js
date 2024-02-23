@@ -290,8 +290,6 @@ export const getSenderIdFromMsgObj = msgObj => {
 };
 
 export function capitalizeFirstLetter(string) {
-   if (!string) {
-      return null;
-   }
+   if (!string) return null;
    return string.charAt(0).toUpperCase() + string.slice(1);
 }

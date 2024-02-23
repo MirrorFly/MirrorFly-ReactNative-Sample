@@ -11,6 +11,7 @@ import {
    SET_CALL_MODAL_SCREEN,
    UPDATE_CALLER_UUID,
    UPDATE_CALL_LAYOUT,
+   UPDATE_IS_CALL_FROM_VOIP,
 } from '../Actions/Constants';
 import { getObjectDeepClone } from '../reduxHelper';
 
@@ -45,6 +46,7 @@ const initialState = {
    callerUUID: '',
    // selected Call Layout ('grid'|'tile'), by default it is 'tile'
    callLayout: defaultCallLayout,
+   isCallFromVoip: false,
 };
 
 const initialStateClone = getObjectDeepClone(initialState);
@@ -106,12 +108,19 @@ const CallStateReducer = (state = initialStateClone, action = {}) => {
             connectionState: {},
             callerUUID: '',
             callLayout: defaultCallLayout,
+            isCallFromVoip: false,
          };
       case UPDATE_CALL_LAYOUT:
          return {
             ...state,
             id: Date.now(),
             callLayout: action.payload,
+         };
+      case UPDATE_IS_CALL_FROM_VOIP:
+         return {
+            ...state,
+            id: Date.now(),
+            isCallFromVoip: action.payload,
          };
       case RESET_CALL_DATA:
       case RESET_STORE:

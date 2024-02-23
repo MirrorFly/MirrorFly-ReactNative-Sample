@@ -6,7 +6,12 @@ import { subscribe as vibrationEventListener } from 'react-native-silentmode-det
 import Sound from 'react-native-sound';
 import { batch } from 'react-redux';
 import SDK from '../../SDK/SDK';
-import { clearIosCallListeners, removeRemoteStream, resetCallData, setDisconnectedScreenTimeoutTimer } from '../../SDKActions/callbacks';
+import {
+   clearIosCallListeners,
+   removeRemoteStream,
+   resetCallData,
+   setDisconnectedScreenTimeoutTimer,
+} from '../../SDKActions/callbacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
 import {
    pinUser,
@@ -255,7 +260,7 @@ export const endCall = async (isFromTimeout = false, userId, callType) => {
       endCallForIos();
       const timeout = BackgroundTimer.setTimeout(() => {
          resetCallData();
-         closeCallModalActivity();
+         closeCallModalActivity(true);
          // Store.dispatch(closeCallModal());
          // batch(()=>{
          //     Store.dispatch(showConfrence({
@@ -310,7 +315,7 @@ export const endIncomingCall = () => {
       resetCallModalActivity();
       // Store.dispatch(resetCallStateData());
    }, DISCONNECTED_SCREEN_DURATION);
-   setDisconnectedScreenTimeoutTimer(timeout)
+   setDisconnectedScreenTimeoutTimer(timeout);
 };
 
 export const startIncomingCallTimer = () => {
@@ -374,7 +379,7 @@ export const closeCallModalWithDelay = () => {
 
 export const startVibration = async () => {
    const currentMode = await getRingerMode();
-   if (Platform.OS === 'android' && currentMode !== RINGER_MODE.silent) {
+   if (Platform.OS === 'android' && currentMode === RINGER_MODE.vibrate) {
       let timerSec = AppState.currentState === 'active' ? 0 : 200;
       BackgroundTimer.setTimeout(() => {
          Vibration.vibrate([800, 1000], true);
@@ -387,9 +392,9 @@ export const startVibrationBasedOnEvent = () => {
       silentEvent = true;
       unsubscribeVibrationEvent = vibrationEventListener(async () => {
          const currentMode = await getRingerMode();
-         if (currentMode === RINGER_MODE.silent) {
+         if (currentMode !== RINGER_MODE.vibrate) {
             stopVibration();
-         } else if (currentMode !== RINGER_MODE.silent) {
+         } else if (currentMode === RINGER_MODE.vibrate) {
             startVibration();
          }
       });

@@ -9,7 +9,6 @@ import KeepAwake from 'react-native-keep-awake';
 import KeyEvent from 'react-native-keyevent';
 import { MediaStream } from 'react-native-webrtc';
 import { batch } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
 import {
    callConnectionStoreData,
    clearIncomingCallTimer,
@@ -38,6 +37,7 @@ import {
    CALL_STATUS_ENDED,
    CALL_STATUS_INCOMING,
    CALL_STATUS_RECONNECT,
+   CALL_STATUS_RINGING,
    CALL_TYPE_AUDIO,
    CALL_TYPE_VIDEO,
    DISCONNECTED_SCREEN_DURATION,
@@ -72,8 +72,9 @@ import {
    MSG_SEEN_STATUS,
    MSG_SENT_SEEN_STATUS_CARBON,
 } from '../Helper/Chat/Constant';
+import { fetchGroupParticipants } from '../Helper/Chat/Groups';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
-import { showToast, updateUserProfileDetails } from '../Helper/index';
+import { getUserProfileFromSDK, showToast, updateUserProfileDetails } from '../Helper/index';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import { pushNotify, updateNotification } from '../Service/remoteNotifyHandle';
@@ -81,6 +82,7 @@ import { callNotifyHandler, stopForegroundServiceNotification } from '../calls/n
 import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
 import { updateConversationMessage, updateRecentChatMessage } from '../components/chat/common/createMessage';
 import { REGISTERSCREEN } from '../constant';
+import ActivityModule from '../customModules/ActivityModule';
 import {
    callDurationTimestamp,
    clearCallData,
@@ -122,15 +124,10 @@ import {
 } from '../redux/Actions/TypingAction';
 import { deleteChatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAction';
 import { setXmppStatus } from '../redux/Actions/connectionAction';
+import { updateRosterData } from '../redux/Actions/rosterAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
-import { updateRosterData } from '../redux/Actions/rosterAction';
-import ActivityModule from '../customModules/ActivityModule';
-import useRosterData from '../hooks/useRosterData';
-import { fetchGroupParticipants } from '../Helper/Chat/Groups';
-import { updateRosterData } from '../redux/Actions/rosterAction';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
 
 let localStream = null,
    localVideoMuted = false,
@@ -321,7 +318,7 @@ const updateCallConnectionStatus = usersStatus => {
 
 const resetCloseModel = () => {
    resetCallData();
-   closeCallModalActivity();
+   closeCallModalActivity(true);
    // Store.dispatch(closeCallModal());
 };
 
@@ -396,12 +393,12 @@ const ended = async res => {
 
 const dispatchCommon = () => {
    // Store.dispatch(callConversion());
-   closeCallModalActivity();
+   closeCallModalActivity(true);
    // Store.dispatch(closeCallModal());
    resetCallData();
 };
 
-const handleEngagedOrBusyStatus = res => {
+const handleEngagedOrBusyStatus = async res => {
    stopOutgoingCallRingingTone();
    //  let roomId = getFromLocalStorageAndDecrypt('roomName');
    updatingUserStatusInRemoteStream(res.usersStatus);
@@ -452,8 +449,7 @@ const handleEngagedOrBusyStatus = res => {
          //  );
          store.dispatch(updateCallConnectionState(callConnectionData));
       }
-      let userDetails = useRosterData(getUserIdFromJid(res.userJid));
-      console.log(userDetails, 'userDetails');
+      let userDetails = await getUserProfileFromSDK(getUserIdFromJid(res.userJid));
       let toastMessage =
          res.status === 'engaged'
             ? `${userDetails.displayName} is on another call`
@@ -527,6 +523,15 @@ const connected = async res => {
             // updating the call connected status to android native code
             ActivityModule.updateCallConnectedStatus(true);
             startDurationTimer();
+         } else if (store.getState().callData?.screenName === OUTGOING_CALL_SCREEN) {
+            // SDK will give 'connected' callback with {... localUser: true} when local user goes offline and come back online
+            // So in that case we will show reconnecting text in UI, so we are updating the callStatusText to 'ringing' when user came back online on outgoing call screen
+            // before receiver accept or decline the call
+            store.dispatch(
+               updateConference({
+                  callStatusText: CALL_STATUS_RINGING,
+               }),
+            );
          }
       });
    }
@@ -643,7 +648,6 @@ const reconnecting = res => {
 };
 
 const callStatus = res => {
-   console.log('callStatus ', res.status);
    if (res.status === 'ringing') {
       ringing(res);
    } else if (res.status === 'connecting') {
@@ -904,7 +908,7 @@ export const callBacks = {
          listnerForNetworkStateChangeWhenIncomingCall();
          clearDisconnectedScreenTimeout();
          if (Platform.OS === 'android') {
-            const callUUID = uuidv4();
+            const callUUID = SDK.randomString(8, 'BA');
             Store.dispatch(updateCallerUUID(callUUID));
             KeepAwake.activate();
             displayIncomingCallForAndroid(res);
@@ -950,6 +954,7 @@ export const callBacks = {
             mediaStream = new MediaStream();
             mediaStream.addTrack(res.track);
          }
+         console.log(mediaStream, 'mediaStream');
          localStream[res.trackType] = mediaStream;
          const { getState, dispatch } = Store;
          const showConfrenceData = getState().showConfrenceData;

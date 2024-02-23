@@ -1,18 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
-import { AppState, NativeModules, Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
 import HeadphoneDetection from 'react-native-headphone-detection';
 import RNInCallManager from 'react-native-incall-manager';
 import KeepAwake from 'react-native-keep-awake';
 import KeyEvent from 'react-native-keyevent';
 import { openSettings } from 'react-native-permissions';
+import RNVoipPushNotification from 'react-native-voip-push-notification';
 import { batch } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
 import SDK from '../../SDK/SDK';
 import { clearIosCallListeners, muteLocalAudio, muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
 import { checkMicroPhonePermission, requestMicroPhonePermission } from '../../common/utils';
+import ActivityModule from '../../customModules/ActivityModule';
 import {
    callDurationTimestamp,
    clearCallData,
@@ -25,6 +26,7 @@ import {
    updateCallConnectionState,
    updateCallerUUID,
    updateConference,
+   updateIsCallFromVoip,
 } from '../../redux/Actions/CallAction';
 import {
    updateCallAudioMutedAction,
@@ -32,6 +34,7 @@ import {
    updateCallWiredHeadsetConnected,
 } from '../../redux/Actions/CallControlsAction';
 import { showCallModalToastAction } from '../../redux/Actions/CallModalToasAction';
+import { closePermissionModal } from '../../redux/Actions/PermissionAction';
 import Store from '../../redux/store';
 import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
 import { getUserIdFromJid } from '../Chat/Utility';
@@ -59,9 +62,6 @@ import {
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
-import { closePermissionModal } from '../../redux/Actions/PermissionAction';
-// import RNVoipPushNotification from 'react-native-voip-push-notification';
-import ActivityModule from '../../customModules/ActivityModule';
 
 let preventMultipleClick = false;
 let callBackgroundNotification = true;
@@ -201,7 +201,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
       if (Platform.OS === 'ios') {
          const callerName = usersList.map(ele => ele.name).join(',');
          const hasVideo = callType === 'video';
-         let uuid = uuidv4();
+         let uuid = SDK.randomString(8, 'BA');
          let callerId = users.join(',')?.split?.('@')?.[0];
          Store.dispatch(updateCallerUUID(uuid));
          startCall(uuid, callerId, callerName, hasVideo);
@@ -396,12 +396,12 @@ export const declineIncomingCall = async () => {
       dispatchDisconnected();
       setTimeout(() => {
          batch(() => {
-            closeCallModalActivity();
+            closeCallModalActivity(true);
+            resetCallData();
             // Store.dispatch(closeCallModal());
             Store.dispatch(clearCallData());
             Store.dispatch(resetConferencePopup());
          });
-         resetCallData();
       }, DISCONNECTED_SCREEN_DURATION);
    } else {
       console.log('Error occured while rejecting the incoming call', declineCallResponse.errorMessage);
@@ -468,8 +468,9 @@ export const displayIncomingCallForIos = callResponse => {
       u => u.userJid === callResponse.userJid && u.localUser === false,
    );
    const activeCallUUID = Store.getState().callData?.callerUUID || '';
+   const isCallFromVoip = Store.getState().callData?.isCallFromVoip;
    if (!activeCallUUID && callingUserData) {
-      const callUUID = uuidv4();
+      const callUUID = SDK.randomString(8, 'BA');
       Store.dispatch(updateCallerUUID(callUUID));
       const contactNumber = getUserIdFromJid(callResponse.userJid);
       const contactName =
@@ -483,14 +484,13 @@ export const displayIncomingCallForIos = callResponse => {
       );
    }
    handleIncoming_CallKeepListeners();
-   if(AppState.currentState !== 'active') {
+   if (AppState.currentState !== 'active' || isCallFromVoip) {
       checkMicroPhonePermission().then(micPermission => {
          if (micPermission !== 'granted') {
-            declineIncomingCall();
             endCallForIos();
+            declineIncomingCall();
          }
       });
-
    }
 };
 
@@ -510,9 +510,12 @@ export const displayIncomingCallForAndroid = async callResponse => {
    KeepAwake.deactivate();
 };
 
-export const closeCallModalActivity = () => {
-   Store.dispatch(closeCallModal());
+export const closeCallModalActivity = (forceCloseModal = false) => {
+   if (Platform.OS === 'ios') {
+      Store.dispatch(closeCallModal());
+   }
    if (Platform.OS === 'android') {
+      forceCloseModal && Store.dispatch(closeCallModal());
       // _BackgroundTimer.setTimeout(() => {
       ActivityModule.closeActivity();
       // }, 100);
@@ -647,7 +650,12 @@ export const endOngoingCallLogout = () => {
 };
 
 export const updateMissedCallNotification = async callData => {
+   let userEnded = callData.userEnded || false;
+   let userCallData = Store.getState().callData.connectionState;
    if (!callData.localUser) {
+      if (userEnded && Object.keys(userCallData).length === 0) {
+         resetCallData();
+      }
       let userID = getUserIdFromJid(callData.userJid);
       const userProfile = await getUserProfileFromSDK(userID);
       const nickName = userProfile?.data?.nickName || userID;
@@ -669,6 +677,7 @@ const onVoipPushNotificationReceived = async data => {
    } else {
       const decryptName = await SDK.decryptProfileDetails(caller_name, getUserIdFromJid(caller_id));
       RNCallKeep.updateDisplay(callUUID, decryptName, getUserIdFromJid(caller_id));
+      Store.dispatch(updateIsCallFromVoip(true));
       Store.dispatch(updateCallerUUID(callUUID));
    }
    let remoteMessage = {
@@ -716,14 +725,14 @@ export const pushNotifyBackground = () => {
    //    }
    // });
 
-   // RNVoipPushNotification.addEventListener('notification', async notification => {
-   //    // this callback will be called only when the incoming call is received while the user is already on a call
-   //    // so sending the notification payload to SDK to send busy status to the caller
-   //          let remoteMessage = {
-   //       data: notification,
-   //    };
-   //    SDK.getCallNotification(remoteMessage);
-   // });
+   RNVoipPushNotification.addEventListener('notification', async notification => {
+      // this callback will be called only when the incoming call is received while the user is already on a call
+      // so sending the notification payload to SDK to send busy status to the caller
+      let remoteMessage = {
+         data: notification,
+      };
+      SDK.getCallNotification(remoteMessage);
+   });
 };
 
 let networkListnerWhenIncomingCallSubscriber;
@@ -745,7 +754,7 @@ export const listnerForNetworkStateChangeWhenIncomingCall = () => {
             clearMissedCallNotificationTimer();
             resetCallData();
             batch(() => {
-               closeCallModalActivity();
+               closeCallModalActivity(true);
                resetCallModalActivity();
                // Store.dispatch(closeCallModal());
                // Store.dispatch(resetCallStateData());

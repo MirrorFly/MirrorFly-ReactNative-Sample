@@ -31,7 +31,7 @@ import Avathar from '../common/Avathar';
 import { PROFILESCREEN, RECENTCHATSCREEN, REGISTERSCREEN } from '../constant';
 import { navigate } from '../redux/Actions/NavigationAction';
 import ScreenHeader from './ScreenHeader';
-import { getImageSource, requestStoragePermission } from '../common/utils';
+import { getImageSource, mediaObjContructor, requestStoragePermission } from '../common/utils';
 import { useNetworkStatus } from '../hooks';
 import { PrimaryPillBtn } from '../common/Button';
 import AuthProfileImage from '../common/AuthProfileImage';
@@ -187,7 +187,7 @@ const ProfilePage = props => {
         setImageUploading(true);
         let sdkRes;
         if (image) {
-          sdkRes = await SDK.profileUpdate(image);
+          sdkRes = await SDK.profileUpdate(mediaObjContructor('IMAGE_PICKER',image));
         }
         console.log('sdkRes', sdkRes);
         if (sdkRes?.statusCode === 200) {
@@ -248,7 +248,7 @@ const ProfilePage = props => {
           setImageUploading(true);
           let sdkRes;
           if (image) {
-            sdkRes = await SDK.profileUpdate(image);
+            sdkRes = await SDK.profileUpdate(mediaObjContructor('IMAGE_PICKER',image));
           }
           if (sdkRes?.statusCode === 200) {
             setImageFileToken(sdkRes.imageFileToken);

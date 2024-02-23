@@ -1,6 +1,6 @@
 {
    "name": "mirrorfly-uikit-react-native",
-   "version": "1.1.0",
+   "version": "1.1.1",
    "private": true,
    "description": "React-Native based UI kit for Mirrorfly",
    "main": "dist/index.js",

@@ -16,13 +16,13 @@ const config = {
    typingStatusGoneWaitTime: 500,
    // ================ Dev environment variables =====================
    // API_URL: 'https://api-uikit-dev.contus.us/api/v1',
-   // lisenceKey: '2sdgNtr3sFBSM3bYRa7RKDPEiB38Xo',
+   // licenseKey: '2sdgNtr3sFBSM3bYRa7RKDPEiB38Xo',
    // =====================================
    // ================ QA Environment variables =====================
    API_URL: 'https://api-uikit-qa.contus.us/api/v1',
-   lisenceKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
+   licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
    // ================ UAT/Staging Environment variables =====================
    // API_URL: 'https://api-uikit-uat.contus.us/api/v1',
-   // lisenceKey: 'lu3Om85JYSghcsB6vgVoSgTlSQArL5',
+   // licenseKey: 'lu3Om85JYSghcsB6vgVoSgTlSQArL5',
 };
 export default config;

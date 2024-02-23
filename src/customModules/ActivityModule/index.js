@@ -33,13 +33,19 @@ class ActivityModule {
 
    getActivity = () => {
       if (Platform.OS === 'android') {
-         nativeActivityModule?.getActivity?.();
+         return nativeActivityModule?.getActivity?.();
       }
    };
 
    isLocked = () => {
       if (Platform.OS === 'android') {
-         nativeActivityModule?.isLocked?.();
+         return nativeActivityModule?.isLocked?.();
+      }
+   };
+
+   getCallActivity = () => {
+      if (Platform.OS === 'android') {
+         return nativeActivityModule?.getCallActivity?.();
       }
    };
 }

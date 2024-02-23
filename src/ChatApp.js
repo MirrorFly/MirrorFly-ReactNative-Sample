@@ -59,8 +59,8 @@ const linking = {
       },
    },
 };
-export const ChatApp = React.memo(({ hasNativeBaseProvider = false, ...props }) => {
-   const { jid = '' } = props;
+export const ChatApp = React.memo((props = {}) => {
+   const { hasNativeBaseProvider = false, jid = '' } = props;
    const isMfInit = getAppInitialized();
    React.useEffect(() => {
       return () => {

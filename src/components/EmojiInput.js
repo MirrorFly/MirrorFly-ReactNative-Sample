@@ -8,14 +8,19 @@ import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
 import EmojiOverlay from './EmojiPicker';
 
-function EmojiInput(props) {
-   const { defaultContent = '', setEmojiWindow = () => {}, setValue = () => {} } = props;
+function EmojiInput({
+   children,
+   allowedMaxLimit = '25',
+   defaultContent = '',
+   setEmojiWindow = () => {},
+   setValue = () => {},
+}) {
    const navigation = useNavigation();
    const inputRef = React.useRef();
    const [content, setContent] = React.useState(defaultContent);
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
    const [pressedKey, setPressedKey] = React.useState('');
-   const allowedMaxLimit = 25;
+
    const splitter = new Graphemer();
 
    const count = () => allowedMaxLimit - splitter.countGraphemes(content);
@@ -52,17 +57,16 @@ function EmojiInput(props) {
       }
    };
 
-   const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
-
    React.useEffect(() => {
       setValue(content);
    }, [content]);
 
    React.useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
       return () => {
          backHandler.remove();
       };
-   }, []);
+   }, [isEmojiPickerShowing]);
 
    return (
       <>
@@ -92,22 +96,14 @@ function EmojiInput(props) {
                </IconButton>
             </View>
          </View>
-         <View
-            style={{
-               position: 'absolute',
-               bottom: 0,
-               right: 0,
-               left: 0,
-               top: '50%',
-            }}>
-            <EmojiOverlay
-               state={content}
-               setState={setContent}
-               visible={isEmojiPickerShowing}
-               onClose={() => setIsEmojiPickerShowing(false)}
-               onSelect={handleEmojiSelect}
-            />
-         </View>
+         {children}
+         <EmojiOverlay
+            state={content}
+            setState={setContent}
+            visible={isEmojiPickerShowing}
+            onClose={() => setIsEmojiPickerShowing(false)}
+            onSelect={handleEmojiSelect}
+         />
       </>
    );
 }

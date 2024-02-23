@@ -46,6 +46,8 @@ import { updateUserPresence } from '../redux/Actions/userAction';
 import store from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
 import { fetchGroupParticipants } from '../Helper/Chat/Groups';
+import { updateRosterData } from '../redux/Actions/rosterAction';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 
 export const callBacks = {
    connectionListener: response => {
@@ -74,10 +76,11 @@ export const callBacks = {
          case 'carbonSentMessage':
          case 'receiveMessage':
          case 'carbonReceiveMessage':
+         case 'groupCreated':
          case 'groupProfileUpdated':
             updateRecentChatMessage(res, store.getState());
             updateConversationMessage(res, store.getState());
-            if (res.msgType === 'receiveMessage' || res.msgType === 'carbonReceiveMessage') {
+            if (!res.notification && (res.msgType === 'receiveMessage' || res.msgType === 'carbonReceiveMessage')) {
                pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.fromUserJid);
             }
             break;
@@ -193,6 +196,14 @@ export const callBacks = {
    groupProfileListener: res => {
       if (res.msgType === 'userAdded') {
          fetchGroupParticipants(res.groupJid);
+      }
+      if (res.msgType === 'profileUpdated') {
+         const obj = {
+            userId: getUserIdFromJid(res.groupJid),
+            userJid: res.groupJid,
+            ...res.groupProfile,
+         };
+         store.dispatch(updateRosterData(obj));
       }
       console.log('groupProfileListener =>', JSON.stringify(res, null, 2));
    },

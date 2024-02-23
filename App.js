@@ -1,10 +1,10 @@
 import React from 'react';
-import {ChatApp} from './src/ChatApp';
-import {requestNotificationPermission} from './src/common/utils';
-import {removeAllDeliveredNotification} from './src/Service/remoteNotifyHandle';
+import { ChatApp } from './src/ChatApp';
+import { requestNotificationPermission } from './src/common/utils';
+import { removeAllDeliveredNotification } from './src/Service/remoteNotifyHandle';
 import messaging from '@react-native-firebase/messaging';
-import {callBacks} from './src/SDKActions/callbacks';
-import {setAppInitialized} from './src/uikitHelpers/uikitMethods';
+import { callBacks } from './src/SDKActions/callbacks';
+import { setAppInitialized } from './src/uikitHelpers/uikitMethods';
 import SDK from './src/SDK/SDK';
 
 function App() {

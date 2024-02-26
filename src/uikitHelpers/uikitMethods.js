@@ -127,7 +127,6 @@ export const mirrorflyNotificationHandler = async messageData => {
       if (remoteMessage.data.type === 'recall') {
          return;
       }
-      console.log('notify ==>', JSON.stringify(notify, null, 2));
       if (notify?.statusCode === 200) {
          if (notify?.data?.type === 'receiveMessage') {
             updateRecentAndConversationStore(notify?.data);

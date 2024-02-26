@@ -10,7 +10,7 @@ import EmojiOverlay from './EmojiPicker';
 
 function EmojiInput({
    children,
-   allowedMaxLimit = '25',
+   allowedMaxLimit = 5,
    defaultContent = '',
    setEmojiWindow = () => {},
    setValue = () => {},
@@ -18,6 +18,7 @@ function EmojiInput({
    const navigation = useNavigation();
    const inputRef = React.useRef();
    const [content, setContent] = React.useState(defaultContent);
+   const [maxTextLength, setMaxTextLength] = React.useState(allowedMaxLimit);
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
    const [pressedKey, setPressedKey] = React.useState('');
 
@@ -32,6 +33,14 @@ function EmojiInput({
    };
 
    const handleInput = text => {
+      console.log('text ==>', splitter.countGraphemes(text));
+      const lastChar = text.charAt(text.length - 1);
+
+      // Calculate the size of the last character
+      const lastCharSize = lastChar.length;
+
+      console.log('Last entered character size:', lastCharSize);
+      setMaxTextLength();
       if (count() > 0 || pressedKey === 'Backspace') {
          setContent(text);
       }
@@ -82,6 +91,7 @@ function EmojiInput({
                placeholderTextColor={ApplicationColors.placeholderTextColor}
                keyboardType="default"
                onKeyPress={handleOnKeyPress}
+               maxLength={maxTextLength}
             />
             <Text style={styles.subText}>{count()}</Text>
             <View style={[commonStyles.marginRight_12, commonStyles.alignItemsCenter, styles.iconWidth]}>

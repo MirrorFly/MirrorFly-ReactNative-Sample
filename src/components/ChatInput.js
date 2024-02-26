@@ -246,13 +246,6 @@ const ChatInput = props => {
 
    useEffect(() => {
       chatInputMessageRef.current = message;
-      if (isConnected) {
-         if (message) {
-            updateTypingStatus(fromUserJId);
-         } else {
-            updateTypingGoneStatus(fromUserJId);
-         }
-      }
    }, [message]);
 
    const sendMessage = () => {
@@ -267,6 +260,9 @@ const ChatInput = props => {
 
    const onChangeMessage = text => {
       setMessage(text);
+      if (text) {
+         updateTypingStatus(fromUserJId);
+      }
       if (typingTimeoutRef.current) {
          clearTimeout(typingTimeoutRef.current);
       }

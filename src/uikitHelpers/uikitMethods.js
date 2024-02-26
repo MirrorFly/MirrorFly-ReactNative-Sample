@@ -109,6 +109,7 @@ export const mirrorflyProfileUpdate = async args => {
 export const mirrorflyNotificationHandler = async messageData => {
    try {
       const { remoteMessage = {}, apiBaseUrl = '', licenseKey = '' } = messageData;
+      console.log('messageData ==>', JSON.stringify(messageData, null, 2));
       if (remoteMessage?.data?.push_from !== 'MirrorFly') {
          return;
       }
@@ -118,16 +119,15 @@ export const mirrorflyNotificationHandler = async messageData => {
          callbackListeners: sdkCallBacks,
          isSandbox: false,
       });
-      if (remoteMessage.data.type === 'recall') {
-         updateNotification(remoteMessage.data.message_id);
-         return;
-      }
       if (remoteMessage?.data.type === 'mediacall') {
-         const callRes = await SDK.getCallNotification(remoteMessage);
-         console.log('callRes ==>', JSON.stringify(callRes, null, 2));
+         await SDK.getCallNotification(remoteMessage);
          return;
       }
       const notify = await SDK.getNotificationData(remoteMessage);
+      if (remoteMessage.data.type === 'recall') {
+         return;
+      }
+      console.log('notify ==>', JSON.stringify(notify, null, 2));
       if (notify?.statusCode === 200) {
          if (notify?.data?.type === 'receiveMessage') {
             updateRecentAndConversationStore(notify?.data);

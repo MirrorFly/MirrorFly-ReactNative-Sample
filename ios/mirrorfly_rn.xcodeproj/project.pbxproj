@@ -21,8 +21,6 @@
 		CE7BED472AC6E6F6001F131C /* sendDeliveredApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7BED462AC6E6F6001F131C /* sendDeliveredApiCall.swift */; };
 		CE7BED4D2AC6F648001F131C /* Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7BED4C2AC6F648001F131C /* Async.swift */; };
 		CE7FD68A2B7DFAC000C5488B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE7FD6892B7DFAC000C5488B /* GoogleService-Info.plist */; };
-		CE9EEDFD2B8635410004DCF7 /* incallmanager_ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CE9EEDFB2B8635410004DCF7 /* incallmanager_ringback.mp3 */; };
-		CE9EEDFE2B8635410004DCF7 /* fly_reconnecting_tone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CE9EEDFC2B8635410004DCF7 /* fly_reconnecting_tone.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -140,8 +138,6 @@
 		13B07FAE1A68108700A75B9A /* mirrorfly_rn */ = {
 			isa = PBXGroup;
 			children = (
-				CE9EEDFC2B8635410004DCF7 /* fly_reconnecting_tone.mp3 */,
-				CE9EEDFB2B8635410004DCF7 /* incallmanager_ringback.mp3 */,
 				CE7FD6892B7DFAC000C5488B /* GoogleService-Info.plist */,
 				CE57D1A62ABD800F0086E3A9 /* mirrorfly_rn.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -349,8 +345,6 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				CE9EEDFD2B8635410004DCF7 /* incallmanager_ringback.mp3 in Resources */,
-				CE9EEDFE2B8635410004DCF7 /* fly_reconnecting_tone.mp3 in Resources */,
 				CE7FD68A2B7DFAC000C5488B /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

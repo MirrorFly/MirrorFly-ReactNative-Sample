@@ -28,7 +28,6 @@ import useRosterData from '../hooks/useRosterData';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { addRecentChat } from '../redux/Actions/RecentChatAction';
 import { updateRecentChatSelectedItems } from '../redux/Actions/recentChatSearchAction';
-import { fetchGroupParticipants } from '../Helper/Chat/Groups';
 
 const VideoSmallIconComponent = () => VideoSmallIcon('#767676');
 

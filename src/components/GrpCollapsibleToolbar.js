@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Animated, BackHandler, Dimensions, Image, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { useSelector } from 'react-redux';
 import { showToast } from '../Helper';
 import { isLocalUser } from '../Helper/Chat/ChatHelper';
 import { SDK } from '../SDK';
@@ -18,7 +19,6 @@ import { CONTACTLIST, EDITNAME, GROUP_INFO, IMAGEVIEW } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import useFetchImage from '../hooks/useFetchImage';
 import useRosterData from '../hooks/useRosterData';
-import { useSelector } from 'react-redux';
 
 const propTypes = {
    chatUser: PropTypes.string,

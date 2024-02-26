@@ -29,7 +29,9 @@ function MenuContainer({ menuItems, color, menuStyle }) {
          {menuItems?.map(item => {
             const handleMenuItemPress = () => {
                hideMenu();
-               item?.formatter?.();
+               setTimeout(() => {
+                  item?.formatter?.();
+               }, 300);
             };
             return item.label ? (
                <MenuItem key={item.label} onPress={handleMenuItemPress}>

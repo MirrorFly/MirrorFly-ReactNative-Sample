@@ -60,7 +60,7 @@
             <data android:scheme="mirrorfly_rn" />
         </intent-filter>
       </activity>
-         <!-- after MainActivity tag paste the below activity code -->
+      <!-- Add this after MainActivity tag paste the below activity code -->
       <activity
         android:name=".CallScreenActivity"
         android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden|uiMode"

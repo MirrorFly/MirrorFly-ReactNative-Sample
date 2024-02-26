@@ -24,7 +24,7 @@
       "i": "npm i -f && npm run ios:install",
       "android:clean": "cd android && ./gradlew clean && rm -rf build && cd ..",
       "ios:clean": "rm -rf ios/Pods/ ios/Podfile.lock ios/build && rm -rf ~/Library/Developer/Xcode/DerivedData",
-      "file:clean": "rm -rf package-lock.json node_modules",
+      "file:clean": "rm -rf package-lock.json node_modules && npm run ios:clean",
       "rn:clean": "npm run android:clean && watchman watch-del-all && npm run ios:clean && npm run file:clean",
       "patch:zip": "zip -r patches.zip ./patches"
    },

@@ -431,6 +431,7 @@ function ChatScreen() {
             id: 'media-size-error-toast',
          });
       }
+      selectedMediaIdRef.current[item?.image?.uri] = true;
       const transformedArray = {
          caption: '',
          fileDetails: mediaObjContructor('CAMERA_ROLL', item),

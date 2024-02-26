@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
-import { BackHandler, Dimensions, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, BackHandler, Dimensions, StyleSheet, Text, View } from 'react-native';
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { endOngoingCallLogout } from '../Helper/Calls/Utility';
@@ -29,6 +29,7 @@ import {
    toggleRecentChatSearch,
    updateRecentChatSearchText,
 } from '../redux/Actions/recentChatSearchAction';
+import { showToast } from '../Helper';
 
 const scenesMap = SceneMap({
    chats: () => <RecentChat />,
@@ -157,13 +158,16 @@ function RecentScreen() {
    };
 
    const handleLogout = async () => {
-      SDK.logout();
+      const { statsCode, message } = await SDK.logout();
+      if (!statsCode == 200) {
+         return showToast(message, { id: message });
+      }
       const getPrevUserIdentifier = await AsyncStorage.getItem('userIdentifier');
-      AsyncStorage.setItem('prevUserIdentifier', getPrevUserIdentifier || '');
-      AsyncStorage.setItem('credential', '');
-      AsyncStorage.setItem('userIdentifier', '');
-      AsyncStorage.setItem('screenObj', '');
-      AsyncStorage.setItem('vCardProfile', '');
+      await AsyncStorage.setItem('prevUserIdentifier', getPrevUserIdentifier || '');
+      await AsyncStorage.setItem('credential', '');
+      await AsyncStorage.setItem('userIdentifier', '');
+      await AsyncStorage.setItem('screenObj', '');
+      await AsyncStorage.setItem('vCardProfile', '');
       endOngoingCallLogout();
       batch(() => {
          dispatch(profileDetail({}));

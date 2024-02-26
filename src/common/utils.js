@@ -152,6 +152,14 @@ export const requestMicroPhonePermission = async () => {
    return request(Platform.OS === 'android' ? PERMISSIONS.ANDROID.RECORD_AUDIO : PERMISSIONS.IOS.MICROPHONE);
 };
 
+export const requestBluetoothConnectPermission =() => {
+   if (Platform.OS === 'android') {
+      return request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
+   } else {
+      return Promise.resolve(false);
+   }
+}
+
 export const checkMicroPhonePermission = async () => {
   return check(
     Platform.OS === 'android'

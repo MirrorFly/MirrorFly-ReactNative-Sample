@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImagePicker from 'react-native-image-crop-picker';
 import { openSettings } from 'react-native-permissions';
 import { batch } from 'react-redux';
-import { getThumbImage, getVideoThumbImage } from '..';
+import { getThumbImage, getVideoThumbImage, showToast } from '..';
 import SDK from '../../SDK/SDK';
 import { changeTimeFormat } from '../../common/TimeStamp';
 import { mediaObjContructor, requestCameraPermission, requestStoragePermission } from '../../common/utils';
@@ -636,6 +636,10 @@ export const handleImagePickerOpenGallery = async () => {
       })
          .then(async image => {
             const converted = mediaObjContructor('IMAGE_PICKER', image);
+            if (converted.fileSize > '10485760') {
+               showToast('Image size too large', { id: 'Image size too large' });
+               return {};
+            }
             return converted;
          })
          .catch(error => {

@@ -1,42 +1,42 @@
-import React, { createRef, useState, useEffect, useCallback, useRef } from 'react';
+import React, { createRef, useCallback, useEffect, useRef, useState } from 'react';
 import {
-   TextInput,
+   Animated,
+   AppState,
+   Easing,
    Keyboard,
    StyleSheet,
-   View,
    Text,
-   Animated,
-   Easing,
+   TextInput,
    TouchableOpacity,
-   AppState,
+   View,
 } from 'react-native';
 import { SendBtn } from '../common/Button';
-import { AttachmentIcon, MicIcon, EmojiIcon, KeyboardIcon, DeleteRedBinIcon, SideArrowIcon } from '../common/Icons';
+import { AttachmentIcon, DeleteRedBinIcon, EmojiIcon, KeyboardIcon, MicIcon, SideArrowIcon } from '../common/Icons';
 
-import EmojiOverlay from './EmojiPicker';
-import { soundRef } from './Media/AudioPlayer';
-import { useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import ApplicationColors from '../config/appColors';
-import Modal, { ModalBottomContent } from '../common/Modal';
-import IconButton from '../common/IconButton';
-import commonStyles from '../common/commonStyles';
-import RNFS from 'react-native-fs';
 import AudioRecorderPlayer, {
    AudioEncoderAndroidType,
    OutputFormatAndroidType,
 } from 'react-native-audio-recorder-player';
-import { getExtention, requestMicroPhonePermission } from '../common/utils';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNFS from 'react-native-fs';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
-import { debounce, showToast } from '../Helper/index';
-import { useNetworkStatus } from '../hooks';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import SDK from '../SDK/SDK';
-import config from './chat/common/config';
+import { useSelector } from 'react-redux';
 import { MIX_BARE_JID } from '../Helper/Chat/Constant';
+import { showToast } from '../Helper/index';
+import SDK from '../SDK/SDK';
+import IconButton from '../common/IconButton';
+import Modal, { ModalBottomContent } from '../common/Modal';
+import commonStyles from '../common/commonStyles';
+import { getExtention, requestMicroPhonePermission } from '../common/utils';
+import ApplicationColors from '../config/appColors';
+import { useNetworkStatus } from '../hooks';
+import EmojiOverlay from './EmojiPicker';
+import { soundRef } from './Media/AudioPlayer';
+import config from './chat/common/config';
 
 export const chatInputMessageRef = createRef();
 chatInputMessageRef.current = '';
@@ -52,8 +52,9 @@ const updateTypingGoneStatus = jid => {
 
 const ChatInput = props => {
    const { onSendMessage, attachmentMenuIcons, chatInputRef, fromUserJId, handleSendMsg } = props;
-
+   const typingTimeoutRef = useRef(null);
    const [message, setMessage] = useState('');
+   const [typingStatus, setTypingStatus] = useState(false);
    const [isOpen, setIsOpen] = useState(false);
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = useState(false);
    const recentChatList = useSelector(state => state.recentChatData.data);
@@ -101,16 +102,11 @@ const ChatInput = props => {
       });
    };
 
-   const updateTypingGoneStatusWithDelay = debounce(jid => {
-      updateTypingGoneStatus(jid);
-   }, config.typingStatusGoneWaitTime);
-
    const updateTypingStatus = jid => {
       if (!typingStatusSent) {
          SDK.sendTypingStatus(jid);
          typingStatusSent = true;
       }
-      updateTypingGoneStatusWithDelay(jid);
    };
 
    const rightSwipeActions = () => {
@@ -271,6 +267,14 @@ const ChatInput = props => {
 
    const onChangeMessage = text => {
       setMessage(text);
+      if (typingTimeoutRef.current) {
+         clearTimeout(typingTimeoutRef.current);
+      }
+
+      // Set timeout to update typing status after 1000ms (adjust as needed)
+      typingTimeoutRef.current = setTimeout(() => {
+         updateTypingGoneStatus(fromUserJId);
+      }, config.typingStatusGoneWaitTime);
    };
 
    const sendAudioRecorderMessage = () => {

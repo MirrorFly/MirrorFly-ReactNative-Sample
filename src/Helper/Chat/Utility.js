@@ -288,3 +288,8 @@ export const getSenderIdFromMsgObj = msgObj => {
    const { publisherJid } = msgObj;
    return publisherJid;
 };
+
+export function capitalizeFirstLetter(string) {
+   if (!string) return null;
+   return string.charAt(0).toUpperCase() + string.slice(1);
+}

@@ -1,12 +1,20 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import SDK from '../SDK/SDK';
 import { Checkbox } from 'native-base';
 import React, { useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { openSettings } from 'react-native-permissions';
+import { useDispatch, useSelector } from 'react-redux';
+import { ALREADY_ON_CALL } from '../Helper/Calls/Constant';
+import { isRoomExist, makeCalls } from '../Helper/Calls/Utility';
+import { CHAT_TYPE_GROUP, CHAT_TYPE_SINGLE, MIX_BARE_JID } from '../Helper/Chat/Constant';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import { showToast } from '../Helper/index';
+import SDK from '../SDK/SDK';
 import Avathar from '../common/Avathar';
+import IconButton from '../common/IconButton';
 import {
+   AudioCall,
    CloseIcon,
    DeleteIcon,
    DownArrowIcon,
@@ -17,22 +25,22 @@ import {
    UpArrowIcon,
 } from '../common/Icons';
 import MenuContainer from '../common/MenuContainer';
-import LastSeen from './LastSeen';
-import {
-   setConversationSearchText,
-   clearConversationSearchData,
-   updateConversationSearchMessageIndex,
-} from '../redux/Actions/conversationSearchAction';
-import { showToast } from '../Helper/index';
-import { FORWARD_MESSSAGE_SCREEN, GROUPSCREEN, GROUP_INFO, USER_INFO } from '../constant';
-import useRosterData from '../hooks/useRosterData';
-import ApplicationColors from '../config/appColors';
-import ChatSearchInput from './ChatSearchInput';
-import commonStyles from '../common/commonStyles';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
-import IconButton from '../common/IconButton';
-import { CHAT_TYPE_GROUP, CHAT_TYPE_SINGLE, MIX_BARE_JID } from '../Helper/Chat/Constant';
+import commonStyles from '../common/commonStyles';
+import { requestMicroPhonePermission } from '../common/utils';
+import ApplicationColors from '../config/appColors';
+import { FORWARD_MESSSAGE_SCREEN, GROUPSCREEN, GROUP_INFO, USER_INFO } from '../constant';
+import { useNetworkStatus } from '../hooks';
+import useRosterData from '../hooks/useRosterData';
+import { closePermissionModal, showPermissionModal } from '../redux/Actions/PermissionAction';
+import {
+   clearConversationSearchData,
+   setConversationSearchText,
+   updateConversationSearchMessageIndex,
+} from '../redux/Actions/conversationSearchAction';
+import ChatSearchInput from './ChatSearchInput';
+import LastSeen from './LastSeen';
 
 function ChatHeader({
    fromUserJId,
@@ -50,18 +58,20 @@ function ChatHeader({
 }) {
    const navigation = useNavigation();
    const chatType = MIX_BARE_JID.test(fromUserJId) ? CHAT_TYPE_GROUP : CHAT_TYPE_SINGLE;
+   const isNetworkConnected = useNetworkStatus();
    const [remove, setRemove] = React.useState(false);
    const [deleteEveryOne, setDeleteEveryOne] = React.useState(false);
    const profileDetails = useSelector(state => state.navigation.profileDetails);
    const vCardProfile = useSelector(state => state.profile.profileDetails);
+   const permissionData = useSelector(state => state.permissionData.permissionStatus);
    const [isSelected, setSelection] = React.useState(false);
+   const [showRoomExist, setShowRoomExist] = React.useState(false);
    const {
       searchText: conversationSearchText,
       messageIndex: conversationSearchMessageIndex,
       totalSearchResults: conversationSearchTotalSearchResults,
    } = useSelector(state => state?.conversationSearchData) || {};
    const dispatch = useDispatch();
-
    const searchInputRef = useRef();
    const isMediaFileInSelectedMessageForDelete = useRef(false);
 
@@ -238,6 +248,92 @@ function ChatHeader({
       );
    }
 
+   const makeOne2OneAudioCall = () => {
+      if (!isRoomExist() && isNetworkConnected) {
+         makeOne2OneCall('audio');
+      } else if (!isNetworkConnected) {
+         showToast('Please check your internet connection', {
+            id: 'Network_error',
+         });
+      } else {
+         setShowRoomExist(true);
+      }
+   };
+
+   const makeOne2OneCall = async callType => {
+      const isPermissionChecked = await AsyncStorage.getItem('microPhone_Permission');
+      AsyncStorage.setItem('microPhone_Permission', 'true');
+      // updating the SDK flag to keep the connection Alive when app goes background because of microphone permission popup
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
+      try {
+         const result = await requestMicroPhonePermission();
+         // updating the SDK flag back to false to behave as usual
+         SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+         if (result === 'granted' || result === 'limited') {
+            // Checking If Room exist when user granted permission
+            if (!isRoomExist()) {
+               makeCalls(callType, [fromUserId]);
+            } else {
+               setShowRoomExist(true);
+            }
+         } else if (isPermissionChecked) {
+            dispatch(showPermissionModal());
+         }
+      } catch (error) {
+         // updating the SDK flag back to false to behave as usual
+         SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+         console.log('makeOne2OneCall', error);
+      }
+   };
+
+   const closeIsRoomExist = () => {
+      setShowRoomExist(false);
+   };
+
+   const renderRoomExistModal = () => {
+      return (
+         <>
+            {/* display modal already in the call */}
+            <Modal visible={showRoomExist} onRequestClose={closeIsRoomExist}>
+               <ModalCenteredContent onPressOutside={closeIsRoomExist}>
+                  <View style={styles.callModalContentContainer}>
+                     <Text style={styles.callModalContentText} numberOfLines={1}>
+                        {ALREADY_ON_CALL}
+                     </Text>
+                     <View style={styles.callModalHorizontalActionButtonsContainer}>
+                        <Pressable
+                           contentContainerStyle={styles.deleteModalHorizontalActionButton}
+                           onPress={() => closeIsRoomExist()}>
+                           <Text style={styles.deleteModalActionButtonText}>OK</Text>
+                        </Pressable>
+                     </View>
+                  </View>
+               </ModalCenteredContent>
+            </Modal>
+            {/* display permission Model */}
+            <Modal visible={permissionData}>
+               <ModalCenteredContent>
+                  <View style={styles.callModalContentContainer}>
+                     <Text style={styles.callModalContentText}>
+                        {'Audio Permissions are needed for calling. Please enable it in Settings'}
+                     </Text>
+                     <View style={styles.callModalHorizontalActionButtonsContainer}>
+                        <Pressable
+                           contentContainerStyle={styles.deleteModalHorizontalActionButton}
+                           onPress={() => {
+                              openSettings();
+                              dispatch(closePermissionModal());
+                           }}>
+                           <Text style={styles.deleteModalActionButtonText}>OK</Text>
+                        </Pressable>
+                     </View>
+                  </View>
+               </ModalCenteredContent>
+            </Modal>
+         </>
+      );
+   };
+
    return (
       <>
          {selectedMsgs?.length <= 0 ? (
@@ -260,6 +356,13 @@ function ChatHeader({
                      <LastSeen jid={fromUserJId} />
                   </View>
                </Pressable>
+               {chatType !== CHAT_TYPE_GROUP && (
+                  <View style={styles.audioCallButton}>
+                     <IconButton onPress={makeOne2OneAudioCall}>
+                        <AudioCall />
+                     </IconButton>
+                  </View>
+               )}
                <View style={styles.menuIconContainer}>
                   {selectedMsgs?.length < 2 && menuItems.length > 0 && <MenuContainer menuItems={menuItems} />}
                </View>
@@ -291,6 +394,7 @@ function ChatHeader({
                </View>
             </View>
          )}
+         {renderRoomExistModal()}
          <Modal visible={remove} onRequestClose={onClose}>
             <ModalCenteredContent onPressOutside={onClose}>
                <View style={styles.deleteModalContentContainer}>
@@ -495,5 +599,26 @@ const styles = StyleSheet.create({
    deleteModalHorizontalActionButton: {
       paddingVertical: 4,
       paddingHorizontal: 8,
+   },
+   audioCallButton: {
+      padding: 4,
+   },
+   callModalContentText: {
+      fontSize: 16,
+      fontWeight: '400',
+      marginBottom: 10,
+      color: ApplicationColors.black,
+   },
+   callModalContentContainer: {
+      width: '88%',
+      paddingHorizontal: 24,
+      paddingTop: 18,
+      fontWeight: '300',
+      backgroundColor: ApplicationColors.mainbg,
+   },
+   callModalHorizontalActionButtonsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      paddingVertical: 14,
    },
 });

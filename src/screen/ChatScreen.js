@@ -110,7 +110,9 @@ function ChatScreen() {
    const handleAudioSelect = async () => {
       const storage_permission = await AsyncStorage.getItem('storage_permission');
       AsyncStorage.setItem('storage_permission', 'true');
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       let MediaPermission = await requestAudioStoragePermission();
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
       if (MediaPermission === 'granted' || MediaPermission === 'limited') {
          SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
          let response = await handleAudioPickerSingle();
@@ -429,6 +431,7 @@ function ChatScreen() {
             id: 'media-size-error-toast',
          });
       }
+      selectedMediaIdRef.current[item?.image?.uri] = true;
       const transformedArray = {
          caption: '',
          fileDetails: mediaObjContructor('CAMERA_ROLL', item),

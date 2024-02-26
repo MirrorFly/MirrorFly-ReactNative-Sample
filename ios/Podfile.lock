@@ -63,7 +63,9 @@ PODS:
   - hermes-engine (0.72.10):
     - hermes-engine/Pre-built (= 0.72.10)
   - hermes-engine/Pre-built (0.72.10)
+  - JitsiWebRTC (111.0.2)
   - libevent (2.1.12)
+  - Mute (0.6.1)
   - nanopb (2.30909.1):
     - nanopb/decode (= 2.30909.1)
     - nanopb/encode (= 2.30909.1)
@@ -371,6 +373,8 @@ PODS:
   - React-jsinspector (0.72.10)
   - React-logger (0.72.10):
     - glog
+  - react-native-background-timer (2.4.1):
+    - React-Core
   - react-native-camera (4.2.1):
     - React-Core
     - react-native-camera/RCT (= 4.2.1)
@@ -396,6 +400,12 @@ PODS:
     - React
   - react-native-get-random-values (1.10.0):
     - React-Core
+  - react-native-headphone-detection (1.3.0):
+    - React
+  - react-native-keep-awake (4.0.0):
+    - React
+  - react-native-keyevent (0.3.2):
+    - React
   - react-native-maps (1.10.3):
     - React-Core
   - react-native-mov-to-mp4 (0.2.2):
@@ -407,10 +417,21 @@ PODS:
     - React-Core
   - react-native-safe-area-context (4.9.0):
     - React-Core
+  - react-native-silentmode-detector (0.1.2):
+    - Mute
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - ReactCommon/turbomodule/core
   - react-native-video (5.2.1):
     - React-Core
     - react-native-video/Video (= 5.2.1)
   - react-native-video/Video (5.2.1):
+    - React-Core
+  - react-native-webrtc (111.0.3):
+    - JitsiWebRTC (~> 111.0.0)
     - React-Core
   - React-NativeModulesApple (0.72.10):
     - hermes-engine
@@ -522,12 +543,16 @@ PODS:
     - React-jsi (= 0.72.10)
     - React-logger (= 0.72.10)
     - React-perflogger (= 0.72.10)
+  - ReactNativeIncallManager (4.2.0):
+    - React-Core
   - RealmJS (11.10.2):
     - React
   - rn-fetch-blob (0.12.0):
     - React-Core
   - RNAudioRecorderPlayer (3.6.0):
     - React-Core
+  - RNCallKeep (4.3.12):
+    - React
   - RNCAsyncStorage (1.22.1):
     - React-Core
   - RNCCheckbox (0.5.17):
@@ -579,6 +604,8 @@ PODS:
     - React-Core
   - RNSVG (13.14.0):
     - React-Core
+  - RNVoipPushNotification (3.3.2):
+    - React-Core
   - SocketRocket (0.6.1)
   - TOCropViewController (2.6.1)
   - Yoga (1.14.0)
@@ -607,6 +634,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
+  - react-native-background-timer (from `../node_modules/react-native-background-timer`)
   - react-native-camera (from `../node_modules/react-native-camera`)
   - "react-native-cameraroll (from `../node_modules/@react-native-camera-roll/camera-roll`)"
   - react-native-compressor (from `../node_modules/react-native-compressor`)
@@ -616,12 +644,17 @@ DEPENDENCIES:
   - react-native-geocoder (from `../node_modules/react-native-geocoder`)
   - react-native-geolocation-service (from `../node_modules/react-native-geolocation-service`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
+  - react-native-headphone-detection (from `../node_modules/react-native-headphone-detection`)
+  - react-native-keep-awake (from `../node_modules/react-native-keep-awake`)
+  - react-native-keyevent (from `../node_modules/react-native-keyevent`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-mov-to-mp4 (from `../node_modules/react-native-mov-to-mp4`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-silentmode-detector (from `../node_modules/react-native-silentmode-detector`)
   - react-native-video (from `../node_modules/react-native-video`)
+  - react-native-webrtc (from `../node_modules/react-native-webrtc`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -639,9 +672,11 @@ DEPENDENCIES:
   - React-runtimescheduler (from `../node_modules/react-native/ReactCommon/react/renderer/runtimescheduler`)
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - ReactNativeIncallManager (from `../node_modules/react-native-incall-manager`)
   - RealmJS (from `../node_modules/realm`)
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - RNAudioRecorderPlayer (from `../node_modules/react-native-audio-recorder-player`)
+  - RNCallKeep (from `../node_modules/react-native-callkeep`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCCheckbox (from `../node_modules/@react-native-community/checkbox`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
@@ -658,6 +693,7 @@ DEPENDENCIES:
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSound (from `../node_modules/react-native-sound`)
   - RNSVG (from `../node_modules/react-native-svg`)
+  - RNVoipPushNotification (from `../node_modules/react-native-voip-push-notification`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -672,7 +708,9 @@ SPEC REPOS:
     - fmt
     - GoogleDataTransport
     - GoogleUtilities
+    - JitsiWebRTC
     - libevent
+    - Mute
     - nanopb
     - NextLevelSessionExporter
     - PromisesObjC
@@ -722,6 +760,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
+  react-native-background-timer:
+    :path: "../node_modules/react-native-background-timer"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
   react-native-cameraroll:
@@ -740,6 +780,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-geolocation-service"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
+  react-native-headphone-detection:
+    :path: "../node_modules/react-native-headphone-detection"
+  react-native-keep-awake:
+    :path: "../node_modules/react-native-keep-awake"
+  react-native-keyevent:
+    :path: "../node_modules/react-native-keyevent"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   react-native-mov-to-mp4:
@@ -750,8 +796,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-pager-view"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-silentmode-detector:
+    :path: "../node_modules/react-native-silentmode-detector"
   react-native-video:
     :path: "../node_modules/react-native-video"
+  react-native-webrtc:
+    :path: "../node_modules/react-native-webrtc"
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-perflogger:
@@ -786,12 +836,16 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/utils"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  ReactNativeIncallManager:
+    :path: "../node_modules/react-native-incall-manager"
   RealmJS:
     :path: "../node_modules/realm"
   rn-fetch-blob:
     :path: "../node_modules/rn-fetch-blob"
   RNAudioRecorderPlayer:
     :path: "../node_modules/react-native-audio-recorder-player"
+  RNCallKeep:
+    :path: "../node_modules/react-native-callkeep"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCCheckbox:
@@ -824,6 +878,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-sound"
   RNSVG:
     :path: "../node_modules/react-native-svg"
+  RNVoipPushNotification:
+    :path: "../node_modules/react-native-voip-push-notification"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -844,7 +900,9 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 57c22343ab29bc686febbf7cbb13bad167c2d8fe
   GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
   hermes-engine: 90e4033deb00bee33330a9f15eff0f874bd82f6d
+  JitsiWebRTC: 80f62908fcf2a1160e0d14b584323fb6e6be630b
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  Mute: 20135a96076f140cc82bfc8b810e2d6150d8ec7e
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   NextLevelSessionExporter: 4d8aa5e617f1c709724f2453efe5d4628480f65a
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
@@ -863,6 +921,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 45ef2ec6dcde31b90469175ec76ddac77b91dfc3
   React-jsinspector: de0198127395fec3058140a20c045167f761bb16
   React-logger: dc3a2b174d79c2da635059212747d8d929b54e06
+  react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: 2a5be165d8799664f658569496f1e08178dc3eab
   react-native-compressor: ebcf8bc36f8e44581a8f831583caee8a27e55a01
@@ -872,12 +931,17 @@ SPEC CHECKSUMS:
   react-native-geocoder: 757427682892bb256f3b3745858cc90eba148a8e
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   react-native-get-random-values: 384787fd76976f5aec9465aff6fa9e9129af1e74
+  react-native-headphone-detection: 4192cc8cfd94068a1f32cb41cc7c4cd5aa0f8b3b
+  react-native-keep-awake: afad8a51dfef9fe9655a6344771be32c8596d774
+  react-native-keyevent: 0babd7e275086da5386d831211e3283b624dc0b5
   react-native-maps: 72a8a903f8a1b53e2c777ba79102078ab502e0bf
   react-native-mov-to-mp4: a04f17590618523487ab5d71c9310c6c4a7aaf99
   react-native-netinfo: 1a6035d3b9780221d407c277ebfb5722ace00658
   react-native-pager-view: cf96a223846458cc7e932017636b5c6d8cc2c549
   react-native-safe-area-context: b97eb6f9e3b7f437806c2ce5983f479f8eb5de4b
+  react-native-silentmode-detector: 43b0e08afddd87836dc11784de104512e8036cfd
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
+  react-native-webrtc: 4d1669c2ed29767fe70b0169428b4466589ecf8b
   React-NativeModulesApple: 10093349d4cfd7cc1aabeadba47549920d19bc2d
   React-perflogger: 43287389ea08993c300897a46f95cfac04bb6c1a
   React-RCTActionSheet: 923afe77f9bb89da7c1f98e2730bfc9dde0eed6d
@@ -895,9 +959,11 @@ SPEC CHECKSUMS:
   React-runtimescheduler: 68353a05c25b32d442610ef19af377f2b198f3fe
   React-utils: a715392dfaaa383668566e400f40493093c08d7e
   ReactCommon: a655a8b61cc80c7cabd8db83f69e6f498d4d0894
+  ReactNativeIncallManager: bfc9c67358cd524882a7c4116dcb311ac2293d4b
   RealmJS: 73a36da3cbbe85e1bdcbf55683172b51f35070d3
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNAudioRecorderPlayer: 4690a7cd9e4fd8e58d9671936a7bc3b686e59051
+  RNCallKeep: aa9b1f9286f8f60d7b7d41ee5de47de564356aac
   RNCAsyncStorage: 7deab901e27d1f989a83e8be6ce91b673772c848
   RNCCheckbox: a3ca9978cb0846b981d28da4e9914bd437403d77
   RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
@@ -914,6 +980,7 @@ SPEC CHECKSUMS:
   RNScreens: 1c2444658fbb696a094272d946708167b1f63409
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: d00c8f91c3cbf6d476451313a18f04d220d4f396
+  RNVoipPushNotification: 543e18f83089134a35e7f1d2eba4c8b1f7776b08
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   Yoga: d0003f849d2b5224c072cef6568b540d8bb15cd3

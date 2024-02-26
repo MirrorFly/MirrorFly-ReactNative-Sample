@@ -27,7 +27,7 @@ const AudioCard = props => {
 
   return (
     <View style={[styles.container, replyTo ? commonStyles.p_4 : undefined]}>
-      {replyTo && (
+      {Boolean(replyTo) && (
         <ReplyMessage
           handleReplyPress={handleReplyPress}
           message={messageObject}

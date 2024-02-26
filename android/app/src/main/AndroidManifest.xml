@@ -11,12 +11,22 @@
   <uses-feature android:name="android.hardware.camera" android:required="false" />
   <uses-feature android:name="android.hardware.camera.front" android:required="false" />
   <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-  <!-- android 13 permission-->
+  <!-- Add this android 13 permission-->
   <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
   <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
   <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-  <!-- Contact permission-->
+  <!-- Add this Contact permission-->
   <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+  <!-- Add this Calls permission starts here-->
+  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+  <uses-permission android:name="android.permission.VIBRATE" />
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
+  <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <!-- Calls permission ends here-->
 
     <application
       android:name=".MainApplication"
@@ -42,7 +52,7 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
-        <!-- Below intent-filter section is for deeplinking -->
+        <!-- Add this Below intent-filter section is for deeplinking -->
         <intent-filter>
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
@@ -50,11 +60,26 @@
             <data android:scheme="mirrorfly_rn" />
         </intent-filter>
       </activity>
-    </application>
+      <!-- Add this after MainActivity tag paste the below activity code -->
+      <activity
+        android:name=".CallScreenActivity"
+        android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden|uiMode"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:launchMode="singleTask"
+        android:lockTaskMode="if_whitelisted"
+        android:resizeableActivity="false"
+        android:screenOrientation="portrait"
+        android:showOnLockScreen="true"
+        android:showWhenLocked="true"
+        android:supportsPictureInPicture="true"
+        android:turnScreenOn="true"
+        android:windowSoftInputMode="stateHidden" />
+      </application>
     <queries>
       <intent>
         <action android:name="android.intent.action.VIEW" />
-        <!-- settig "mimeType" to "*/*" to accept all mimetypes . -->
+        <!-- Add this settig "mimeType" to "*/*" to accept all mimetypes . -->
         <data android:mimeType="*/*" />
       </intent>
     </queries>

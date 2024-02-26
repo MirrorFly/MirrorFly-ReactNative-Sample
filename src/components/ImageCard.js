@@ -68,7 +68,7 @@ const ImageCard = props => {
 
   return (
     <View style={commonStyles.paddingHorizontal_4}>
-      {replyTo && (
+      {Boolean(replyTo) && (
         <ReplyMessage
           handleReplyPress={handleReplyPress}
           message={messageObject}
@@ -102,7 +102,7 @@ const ImageCard = props => {
             fileSize={fileSize}
           />
         </View>
-        {!media?.caption && (
+        {!Boolean(media?.caption) && (
           <View style={styles.messgeStatusAndTimestampWithoutCaption}>
             <ImageBackground source={ic_baloon} style={styles.imageBg}>
               {props.status}
@@ -111,7 +111,7 @@ const ImageCard = props => {
           </View>
         )}
       </View>
-      {media?.caption && (
+      {Boolean(media?.caption) && (
         <View style={styles.captionContainer}>
           <Text style={styles.captionText}>{media.caption}</Text>
           <View style={styles.messgeStatusAndTimestampWithCaption}>

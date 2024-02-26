@@ -1,11 +1,22 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { version } from '../../package.json';
+import messaging from '@react-native-firebase/messaging';
 import SDK from '../SDK/SDK';
 import { callBacks as sdkCallBacks } from '../SDKActions/callbacks';
-import { Platform } from 'react-native';
-import { version } from '../../package.json';
+import { requestNotificationPermission } from '../common/utils';
+import { pushNotify, removeAllDeliveredNotification, updateNotification } from '../Service/remoteNotifyHandle';
+import { setNotificationForegroundService } from '../calls/notification/callNotifyHandler';
+import { handleSetPendingSeenStatus, updateRecentAndConversationStore } from '../Helper';
+import config from '../components/chat/common/config';
+import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
+import { AppRegistry, Platform } from 'react-native';
+import { CallComponent } from '../calls/CallComponent';
+import { setupCallKit } from '../calls/ios';
+import { pushNotifyBackground } from '../Helper/Calls/Utility';
 
 let uiKitCallbackListenersVal = {},
-   appInitialized = false;
+   appInitialized = false,
+   schemaUrl = '';
 
 export const mflog = (...args) => {
    console.log('RN-UIKIT ', Platform.OS, version, ...args);
@@ -38,6 +49,13 @@ export const handleRegister = async (userIdentifier, fcmToken) => {
    } else {
       return registerRes;
    }
+};
+
+const initializeSetup = async () => {
+   await messaging().requestPermission();
+   requestNotificationPermission();
+   removeAllDeliveredNotification();
+   setNotificationForegroundService();
 };
 
 export const mirrorflyInitialize = async args => {
@@ -85,5 +103,73 @@ export const mirrorflyProfileUpdate = async args => {
       return SDK.setUserProfile(nickName, image, status, JSON.parse(mobileNumber), email);
    } catch (error) {
       return error;
+   }
+};
+
+export const mirrorflyNotificationHandler = async messageData => {
+   try {
+      const { remoteMessage = {}, apiBaseUrl = '', licenseKey = '' } = messageData;
+      console.log('messageData ==>', JSON.stringify(messageData, null, 2));
+      if (remoteMessage?.data?.push_from !== 'MirrorFly') {
+         return;
+      }
+      await SDK.initializeSDK({
+         apiBaseUrl: apiBaseUrl,
+         licenseKey: licenseKey,
+         callbackListeners: sdkCallBacks,
+         isSandbox: false,
+      });
+      if (remoteMessage?.data.type === 'mediacall') {
+         await SDK.getCallNotification(remoteMessage);
+         return;
+      }
+      const notify = await SDK.getNotificationData(remoteMessage);
+      if (remoteMessage.data.type === 'recall') {
+         return;
+      }
+      console.log('notify ==>', JSON.stringify(notify, null, 2));
+      if (notify?.statusCode === 200) {
+         if (notify?.data?.type === 'receiveMessage') {
+            updateRecentAndConversationStore(notify?.data);
+            await handleSetPendingSeenStatus(notify?.data);
+            pushNotify(
+               notify?.data?.msgId,
+               getNotifyNickName(notify?.data),
+               getNotifyMessage(notify?.data),
+               notify?.data?.fromUserJid,
+            );
+         }
+      }
+   } catch (error) {
+      console.log('messaging().setBackgroundMessageHandler', error);
+   }
+};
+
+export const constructMessageData = remoteMessage => {
+   let remoteMessageData = {
+      remoteMessage,
+      apiBaseUrl: config.API_URL,
+      licenseKey: config.licenseKey,
+   };
+   mirrorflyNotificationHandler(remoteMessageData);
+};
+
+const setApplicationUrl = url => {
+   schemaUrl = url;
+};
+
+export const getApplicationUrl = () => schemaUrl;
+
+export const setupCallScreen = (url = '') => {
+   setApplicationUrl(url);
+   //Permissions
+   initializeSetup();
+   if (Platform.OS === 'android') {
+      AppRegistry.registerComponent('CallScreen', () => CallComponent);
+   }
+   if (Platform.OS === 'ios') {
+      // Setup ios callkit
+      setupCallKit();
+      pushNotifyBackground();
    }
 };

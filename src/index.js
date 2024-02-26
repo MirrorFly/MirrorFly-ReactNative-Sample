@@ -1,10 +1,13 @@
+export { MirrorflyComponent } from '../App';
 export { ChatApp } from './ChatApp';
+export { CallComponent } from './calls/CallComponent';
+export { setNotificationForegroundService } from './calls/notification/callNotifyHandler';
 export {
-  mirrorflyInitialize,
-  mirrorflyRegister,
-  mirrorflyProfileUpdate,
+   setupCallScreen,
+   mirrorflyInitialize,
+   mirrorflyNotificationHandler,
+   mirrorflyProfileUpdate,
+   mirrorflyRegister,
 } from './uikitHelpers/uikitMethods';
-import * as SDK from './SDK/index';
-import * as crypt from './SDK/crypt';
-import * as utils from './SDK/utils';
-export { SDK, crypt, utils };
+import SDK from './SDK/SDK';
+export { SDK };

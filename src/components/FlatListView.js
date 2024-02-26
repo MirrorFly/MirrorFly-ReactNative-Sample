@@ -21,6 +21,7 @@ const RenderItem = ({ item, index, onhandlePress, selectedUsers }) => {
    imageToken = imageToken || '';
    colorCode = colorCode || SDK.getRandomColorCode();
    status = status || item.status || '';
+
    const handlePress = () => onhandlePress(item);
    React.useEffect(() => {
       if (Boolean(selectedUsers[item?.userJid]) !== isChecked) {

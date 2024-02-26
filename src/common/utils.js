@@ -1,10 +1,19 @@
 import React from 'react';
 import DocumentPicker from 'react-native-document-picker';
 import { Box, Text } from 'native-base';
-import { request, PERMISSIONS, requestMultiple } from 'react-native-permissions';
-import { Platform } from 'react-native';
+import { request, PERMISSIONS, requestMultiple, check } from 'react-native-permissions';
+import { Alert, Linking, NativeModules, Platform } from 'react-native';
 import SDK from '../SDK/SDK';
 import messaging from '@react-native-firebase/messaging';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+   BRAND_REDMI,
+   BRAND_XIAOMI,
+   PACKAGE_XIAOMI,
+   PACKAGE_XIAOMI_WINDOW_COMPONENT,
+   alertPermissionMessage,
+} from '../Helper/Calls/Constant';
+const { ActivityModule } = NativeModules;
 
 const toastConfig = {
    duration: 2500,
@@ -149,6 +158,10 @@ export const requestMicroPhonePermission = async () => {
    return request(Platform.OS === 'android' ? PERMISSIONS.ANDROID.RECORD_AUDIO : PERMISSIONS.IOS.MICROPHONE);
 };
 
+export const checkMicroPhonePermission = async () => {
+   return check(Platform.OS === 'android' ? PERMISSIONS.ANDROID.RECORD_AUDIO : PERMISSIONS.IOS.MICROPHONE);
+};
+
 export const requestNotificationPermission = async () => {
    return request(Platform.OS === 'android' && PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
 };
@@ -258,4 +271,46 @@ export const getImageSource = image => {
       uri: image,
    };
    return isBase64 ? uriBase : image;
+};
+
+export const permissioncheckRedmi = async () => {
+   let isPackageExist = await ActivityModule.getInstalledPackages(PACKAGE_XIAOMI);
+   const packageName = await ActivityModule.getPackageName();
+   if (isPackageExist) {
+      AsyncStorage.setItem('additional_permission', 'true');
+      Alert.alert('', alertPermissionMessage, [
+         {
+            text: 'NOT NOW',
+            style: 'cancel',
+         },
+         {
+            text: 'TURN ON',
+            onPress: () => {
+               if (Platform.Version >= 23 && 'xiaomi' === Platform.constants.Manufacturer.toLowerCase())
+                  Linking.sendIntent('miui.intent.action.APP_PERM_EDITOR', [
+                     { key: 'packageName', value: PACKAGE_XIAOMI },
+                     { key: 'className', value: PACKAGE_XIAOMI_WINDOW_COMPONENT },
+                     { key: 'extra_pkgname', value: packageName },
+                  ]);
+            },
+         },
+      ]);
+   }
+};
+
+export const checkAndRequestPermission = async () => {
+   const checkAdditionalPermission = await AsyncStorage.getItem('additional_permission');
+   const buildInfo = (Platform.OS === 'android' && Platform.constants.Brand.toLowerCase()) || '';
+   if (!checkAdditionalPermission) {
+      switch (buildInfo) {
+         case BRAND_XIAOMI:
+            permissioncheckRedmi();
+            break;
+         case BRAND_REDMI:
+            permissioncheckRedmi();
+            break;
+         default:
+            break;
+      }
+   }
 };

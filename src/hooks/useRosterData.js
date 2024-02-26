@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import SDK from '../SDK/SDK';
-import { updateUserProfileStore } from '../Helper/Chat/ChatHelper';
+import { getUserProfileFromSDK } from '../Helper';
 
 /**
  * @typedef {Object} userProfileDetails
@@ -22,28 +21,20 @@ import { updateUserProfileStore } from '../Helper/Chat/ChatHelper';
  * @returns {userProfileDetails}
  */
 const useRosterData = userId => {
-  const data = useSelector(state => state.rosterData.data);
-  const [userProfileData, setUserProfileData] = React.useState({});
+   const data = useSelector(state => state.rosterData.data);
+   const [userProfileData, setUserProfileData] = React.useState({});
 
-  React.useLayoutEffect(() => {
-    const userData = data[userId];
-    if (!userData) {
-      setUserProfileData({});
-      getUserProfile(userId);
-    } else {
-      setUserProfileData(userData);
-    }
-  }, [data[userId]]);
+   React.useLayoutEffect(() => {
+      const userData = data[userId];
+      if (!userData) {
+         setUserProfileData({});
+         getUserProfileFromSDK(userId);
+      } else {
+         setUserProfileData(userData);
+      }
+   }, [data[userId]]);
 
-  return userProfileData;
+   return userProfileData;
 };
 
 export default useRosterData;
-
-const getUserProfile = userId => {
-  SDK.getUserProfile(userId).then(res => {
-    if (res?.statusCode === 200) {
-      updateUserProfileStore(res.data);
-    }
-  });
-};

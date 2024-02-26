@@ -1,0 +1,29 @@
+diff --git a/node_modules/react-native-headphone-detection/ios/RNHeadphoneDetection.m b/node_modules/react-native-headphone-detection/ios/RNHeadphoneDetection.m
+index b02301e..9ba899e 100644
+--- a/node_modules/react-native-headphone-detection/ios/RNHeadphoneDetection.m
++++ b/node_modules/react-native-headphone-detection/ios/RNHeadphoneDetection.m
+@@ -82,17 +82,20 @@ + (NSDictionary *) isAudioDeviceConnected
+                                 mutableCopy
+                                 ];
+ 
+-    AVAudioSessionRouteDescription* route = [[AVAudioSession sharedInstance] currentRoute];
++    NSArray<AVAudioSessionPortDescription *>* outputs = [[AVAudioSession sharedInstance] availableInputs];
++    NSLog(@"[Headphones::] isAudioDeviceConnected method called %@", outputs);
+ 
+-    for (AVAudioSessionPortDescription* desc in [route outputs]) {
+-        if ([[desc portType] isEqualToString:AVAudioSessionPortHeadphones]) {
++    for (AVAudioSessionPortDescription* desc in outputs) {
++        NSLog(@"[Headphones::]Description port type %@", [desc portType]);
++        if (desc.portType == AVAudioSessionPortHeadphones ||  desc.portType == AVAudioSessionPortHeadsetMic || [desc.portType  isEqual: @"MicrophoneWired"]) {
+             res[@"audioJack"] = @YES;
+         }
+ 
+         if (
+             [[desc portType] isEqualToString:AVAudioSessionPortBluetoothA2DP] ||
+             [[desc portType] isEqualToString:AVAudioSessionPortBluetoothHFP] ||
+-            [[desc portType] isEqualToString:AVAudioSessionPortBluetoothLE]
++            [[desc portType] isEqualToString:AVAudioSessionPortBluetoothLE] ||
++            [[desc portType] isEqualToString:AVAudioSessionPortCarAudio]
+             ) {
+             res[@"bluetooth"] = @YES;
+         }

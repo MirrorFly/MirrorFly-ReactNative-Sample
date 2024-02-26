@@ -28,7 +28,6 @@ import useRosterData from '../hooks/useRosterData';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { addRecentChat } from '../redux/Actions/RecentChatAction';
 import { updateRecentChatSelectedItems } from '../redux/Actions/recentChatSearchAction';
-import { fetchGroupParticipants } from '../Helper/Chat/Groups';
 
 const VideoSmallIconComponent = () => VideoSmallIcon('#767676');
 
@@ -247,9 +246,12 @@ export default function RecentChat() {
       } else {
          const _item = { ...item };
          if (!_item.userJid) {
-            _item.userJid = formatUserIdToJid(item?.fromUserId, item?.chatType);
-            /** Need to add chat type here while working in Group
-             */
+            _item.userJid = formatUserIdToJid(_item?.fromUserId); /** Need to add chat type here while working in Group
+        formatUserIdToJid(
+         item?.fromUserId,
+         item?.chatType,
+       )
+       */
          }
          dispatch(updateRecentChatSelectedItems(_item));
       }
@@ -259,13 +261,15 @@ export default function RecentChat() {
       if (selectedItems.length) {
          handleRecentItemSelect(item);
       } else {
-         let jid = formatUserIdToJid(item?.fromUserId, item?.chatType);
-         fetchGroupParticipants(jid || item?.userJid);
-         /** Need to add chat type here while working in Group
-          */
+         let jid = formatUserIdToJid(item?.fromUserId); /** Need to add chat type here while working in Group
+      formatUserIdToJid(
+       item?.fromUserId,
+       item?.chatType,
+     )
+     */
          let x = {
             screen: CHATSCREEN,
-            fromUserJID: jid || item?.userJid,
+            fromUserJID: item?.userJid || jid,
             profileDetails: item?.profileDetails,
          };
          dispatch(navigate(x));
@@ -275,9 +279,13 @@ export default function RecentChat() {
 
    const renderItem = (item, index) => {
       const isSame = currentUserJID?.split('@')[0] === item?.publisherId;
-      const jid = item?.userJid || formatUserIdToJid(item?.fromUserId, item?.chatType);
-      /** Need to add chat type here while working in Group
-       */
+      const jid =
+         item?.userJid || formatUserIdToJid(item?.fromUserId); /** Need to add chat type here while working in Group
+    formatUserIdToJid(
+     item?.fromUserId,
+     item?.chatType,
+   )
+   */
       const isSelected = selectedItemsObj[jid];
       let statusVisible;
       switch (item?.msgStatus) {
@@ -325,20 +333,22 @@ export default function RecentChat() {
 
    return (
       <ScrollView style={styles.scrollView}>
-         {searchText && filteredData.length > 0 && (
+         {Boolean(searchText) && filteredData.length > 0 && (
             <View style={styles.chatsSearchSubHeader}>
                <Text style={styles.chatsSearchSubHeaderText}>Chats</Text>
                <Text style={styles.chatsSearchSubHeaderCountText}>({filteredData.length})</Text>
             </View>
          )}
          {filteredData.length > 0 && filteredData.map((item, index) => renderItem(item, index))}
-         {searchText && filteredMessages.length > 0 && (
+         {Boolean(searchText) && filteredMessages.length > 0 && (
             <View style={styles.chatsSearchSubHeader}>
                <Text style={styles.chatsSearchSubHeaderText}>Messages</Text>
                <Text style={styles.chatsSearchSubHeaderCountText}>({filteredMessages.length})</Text>
             </View>
          )}
-         {searchText && filteredMessages.length > 0 && filteredMessages.map((item, index) => renderItem(item, index))}
+         {Boolean(searchText) &&
+            filteredMessages.length > 0 &&
+            filteredMessages.map((item, index) => renderItem(item, index))}
       </ScrollView>
    );
 }

@@ -165,10 +165,11 @@ function NewGroup() {
                   </Pressable>
                </View>
             </View>
-            <EmojiInput setValue={setValue} />
-            <Text style={[commonStyles.pt_15, commonStyles.fw_600, commonStyles.colorBlack, commonStyles.txtCenter]}>
-               Provide a Group Name and Icon
-            </Text>
+            <EmojiInput setValue={setValue}>
+               <Text style={[commonStyles.pt_15, commonStyles.fw_600, commonStyles.colorBlack, commonStyles.txtCenter]}>
+                  Provide a Group Name and Icon
+               </Text>
+            </EmojiInput>
          </View>
          <Modal visible={modelOpen} onRequestClose={toggleModel}>
             <ModalCenteredContent onPressOutside={toggleModel}>

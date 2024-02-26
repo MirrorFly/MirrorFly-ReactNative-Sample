@@ -7,6 +7,7 @@ import ApplicationColors from '../config/appColors';
 import { CHAT_TYPE_GROUP } from '../Helper/Chat/Constant';
 import { getImageSource } from './utils';
 import grpImage from '../assets/ic_grp_bg.png';
+import commonStyles from './commonStyles';
 
 const defaultImageDimension = 48;
 
@@ -47,8 +48,8 @@ const Avathar = ({ profileImage, imageStyle, transparentBackgroundForImage = tru
       );
    }
 
-   return profileImage && !isImageLoadError && imageUrl ? (
-      <View style={{ position: 'relative' }}>
+   return Boolean(profileImage) && !isImageLoadError && Boolean(imageUrl) ? (
+      <View style={commonStyles.positionRelative}>
          <Image
             {...imageProps}
             style={imageStyle || styles.imageDiv(props, true, transparentBackgroundForImage)}
@@ -62,18 +63,10 @@ const Avathar = ({ profileImage, imageStyle, transparentBackgroundForImage = tru
             }}
             onLoadStart={handleImageLoadingStart}
             onLoadEnd={handleImageLoadingEnd}
-            onLoad={handleImageLoadingEnd}
             onError={handleImageError}
          />
          {isImageLoading && (
-            <View
-               style={[
-                  styles.imageDiv(props, true, transparentBackgroundForImage),
-                  {
-                     position: 'absolute',
-                     backgroundColor: 'rgba(0,0,0,.2)',
-                  },
-               ]}>
+            <View style={[styles.imageDiv(props, true, transparentBackgroundForImage), styles.imageLoaderWrapper]}>
                <ActivityIndicator color={ApplicationColors.mainColor} />
             </View>
          )}
@@ -109,4 +102,8 @@ const styles = StyleSheet.create({
       fontSize: props.fontSize || 18,
       textTransform: 'uppercase',
    }),
+   imageLoaderWrapper: {
+      position: 'absolute',
+      backgroundColor: 'rgba(0,0,0,.2)',
+   },
 });

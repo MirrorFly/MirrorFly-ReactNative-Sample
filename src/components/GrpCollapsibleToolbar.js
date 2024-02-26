@@ -1,7 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Animated, BackHandler, Dimensions, Image, StyleSheet, Text, View } from 'react-native';
+import { Animated, BackHandler, Dimensions, Image, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { useSelector } from 'react-redux';
 import { showToast } from '../Helper';
 import { isLocalUser } from '../Helper/Chat/ChatHelper';
 import { SDK } from '../SDK';
@@ -9,7 +10,7 @@ import grpImage from '../assets/ic_grp_bg.png';
 import Avathar from '../common/Avathar';
 import IconButton from '../common/IconButton';
 import { AddUserIcon, ExitIcon, ImageEditIcon, LeftArrowIcon, TextEditIcon } from '../common/Icons';
-import Modal, { ModalCenteredContent } from '../common/Modal';
+import Modal, { ModalBottomContent, ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import commonStyles, { modelStyles } from '../common/commonStyles';
 import { getImageSource } from '../common/utils';
@@ -27,10 +28,14 @@ const propTypes = {
    participants: PropTypes.array,
    imageToken: PropTypes.string,
    handleBackBtn: PropTypes.func,
+   handleTakePhoto: PropTypes.func,
+   handleFromGallery: PropTypes.func,
+   handleRemovePhoto: PropTypes.func,
+   getGroupParticipants: PropTypes.func,
 };
 
 const defaultProps = {
-   title: 'Ashik',
+   title: '',
    toolbarMaxHeight: 400,
    toolbarMinHeight: 60,
    participants: [],
@@ -77,6 +82,9 @@ const GrpCollapsibleToolbar = ({
    handleBackBtn,
    participants,
    getGroupParticipants,
+   handleTakePhoto,
+   handleFromGallery,
+   handleRemovePhoto,
 }) => {
    const navigation = useNavigation();
    const isNetworkconneted = useNetworkStatus();
@@ -85,6 +93,9 @@ const GrpCollapsibleToolbar = ({
    const [userDetails, setUserDetails] = React.useState({});
    const scrollDistance = toolbarMaxHeight - toolbarMinHeight;
    const { height: screenHeight } = Dimensions.get('window');
+   const recentChatList = useSelector(state => state.recentChatData.data || []);
+   const userType = recentChatList.find(r => r.fromUserJid === chatUser)?.userType || '';
+   const layout = useWindowDimensions();
 
    const adaptiveMinHeight = screenHeight * 0.92;
    /**
@@ -93,6 +104,37 @@ const GrpCollapsibleToolbar = ({
       const baseFontSize = 45;
     * const scaledFontSize = ((baseFontSize * screenWidth) / 375) * pixelRatio;
     * */
+
+   const [optionModelOpen, setOptionModelOpen] = React.useState(false);
+
+   const toggleOptionModel = () => {
+      setOptionModelOpen(val => !val);
+   };
+
+   const translateY = React.useRef(new Animated.Value(layout.height)).current;
+   React.useEffect(() => {
+      if (optionModelOpen) {
+         // Animate in if visible
+         Animated.timing(translateY, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+         }).start();
+      } else {
+         // Animate out if not visible
+         Animated.timing(translateY, {
+            toValue: layout.height,
+            duration: 300,
+            useNativeDriver: true,
+         }).start();
+      }
+   }, [optionModelOpen, translateY, layout.height]);
+
+   const [confirmRemoveModel, setConfirmRemoveModel] = React.useState(false);
+
+   const toggleConfirmRemoveModel = () => {
+      setConfirmRemoveModel(val => !val);
+   };
 
    const [modelOpen, setModelOpen] = React.useState(false);
 
@@ -150,13 +192,13 @@ const GrpCollapsibleToolbar = ({
       });
    };
 
-   const handelGrpProfileUpdate = () => {
+   const handelGroupProfileUpdate = () => {
       if (!isNetworkconneted) {
          return showToast('Please check your internet connection', {
             id: 'internet-connection-toast',
          });
       }
-      // SDK.setGroupProfile(chatUser, title, '');
+      toggleOptionModel();
    };
 
    const handleViewImage = () => {
@@ -164,7 +206,7 @@ const GrpCollapsibleToolbar = ({
    };
 
    const handleEditText = () => {
-      navigation.navigate(EDITNAME, { imageUrl, authToken, title });
+      navigation.navigate(EDITNAME, { imageToken, authToken, chatUser, title });
    };
 
    const handleLeaveGroup = async () => {
@@ -176,17 +218,25 @@ const GrpCollapsibleToolbar = ({
 
    const handleRemoveUser = async () => {
       toggleModel();
-      const { statusCode } = await SDK.removeParticipant(chatUser, userDetails.userJid, userDetails.userType === 'o');
+      const { statusCode, message } = await SDK.removeParticipant(
+         chatUser,
+         userDetails.userJid,
+         userDetails.userType === 'o',
+      );
       if (statusCode === 200) {
          getGroupParticipants(1000);
+      } else {
+         showToast(message, { id: message });
       }
    };
 
    const handleMakeAdmin = async () => {
       toggleModel();
-      const { statusCode } = await SDK.makeAsAdmin(chatUser, userDetails.userJid);
+      const { statusCode, message } = await SDK.makeAsAdmin(chatUser, userDetails.userJid);
       if (statusCode === 200) {
          getGroupParticipants(1000);
+      } else {
+         showToast(message, { id: message });
       }
    };
 
@@ -212,7 +262,6 @@ const GrpCollapsibleToolbar = ({
             ]}>
             <Animated.View
                style={[
-                  // styles.header,
                   {
                      justifyContent: 'center',
                      alignItems: 'center',
@@ -225,7 +274,7 @@ const GrpCollapsibleToolbar = ({
                      shadowRadius: 6,
                   },
                ]}>
-               {imageUrl ? (
+               {Boolean(imageUrl) ? (
                   <Pressable onPress={handleViewImage} style={styles.profileImage}>
                      <Image
                         style={styles.profileImage}
@@ -263,7 +312,7 @@ const GrpCollapsibleToolbar = ({
                   ]}>
                   {title}
                </Animated.Text>
-               {animatedTitleColor < 260 && (
+               {Boolean(userType) && animatedTitleColor < 260 && (
                   <Pressable
                      onPress={handleEditText}
                      style={[commonStyles.alignItemsCenter, commonStyles.justifyContentCenter]}
@@ -279,9 +328,11 @@ const GrpCollapsibleToolbar = ({
                   {LeftArrowIcon(animatedTitleColor < 280 ? '#fff' : '#000')}
                </IconButton>
             </View>
-            <Pressable onPress={handelGrpProfileUpdate} style={styles.right}>
-               <ImageEditIcon width="25" height="25" color={animatedTitleColor < 280 ? '#fff' : '#000'} />
-            </Pressable>
+            {Boolean(userType) && (
+               <Pressable onPress={handelGroupProfileUpdate} style={styles.right}>
+                  <ImageEditIcon width="25" height="25" color={animatedTitleColor < 280 ? '#fff' : '#000'} />
+               </Pressable>
+            )}
          </Animated.View>
          <Animated.ScrollView
             bounces={false}
@@ -361,6 +412,55 @@ const GrpCollapsibleToolbar = ({
                         )}
                      </>
                   )}
+               </View>
+            </ModalCenteredContent>
+         </Modal>
+         <Modal visible={optionModelOpen} onRequestClose={toggleOptionModel}>
+            <ModalBottomContent onPressOutside={toggleOptionModel}>
+               <Animated.View style={[styles.optionModelContainer, { transform: [{ translateY }] }]}>
+                  <Text style={styles.optionTitleText}>Options</Text>
+                  <Pressable
+                     onPress={() => {
+                        toggleOptionModel();
+                        handleTakePhoto();
+                     }}>
+                     <Text style={styles.pressableText}>Take Photo</Text>
+                  </Pressable>
+                  <Pressable
+                     onPress={() => {
+                        toggleOptionModel();
+                        handleFromGallery();
+                     }}>
+                     <Text style={styles.pressableText}>Choose from Gallery</Text>
+                  </Pressable>
+                  {Boolean(imageUrl) && (
+                     <Pressable
+                        onPress={() => {
+                           toggleOptionModel();
+                           toggleConfirmRemoveModel();
+                        }}>
+                        <Text style={styles.pressableText}>Remove Photo</Text>
+                     </Pressable>
+                  )}
+               </Animated.View>
+            </ModalBottomContent>
+         </Modal>
+         <Modal visible={confirmRemoveModel} onRequestClose={toggleConfirmRemoveModel}>
+            <ModalCenteredContent onPressOutside={toggleConfirmRemoveModel}>
+               <View style={modelStyles.inviteFriendModalContentContainer}>
+                  <Text style={styles.optionTitleText}>Are you sure you want to remove the group photo?</Text>
+                  <View style={styles.buttonContainer}>
+                     <Pressable onPress={toggleConfirmRemoveModel}>
+                        <Text style={[styles.pressableText, commonStyles.typingText]}>Cancel</Text>
+                     </Pressable>
+                     <Pressable
+                        onPress={() => {
+                           toggleConfirmRemoveModel();
+                           handleRemovePhoto();
+                        }}>
+                        <Text style={[styles.pressableText, commonStyles.typingText]}>Remove</Text>
+                     </Pressable>
+                  </View>
                </View>
             </ModalCenteredContent>
          </Modal>
@@ -456,5 +556,24 @@ const styles = StyleSheet.create({
       height: 1,
       alignSelf: 'flex-end',
       backgroundColor: ApplicationColors.dividerBg,
+   },
+   optionTitleText: { fontSize: 14, color: '#000', marginVertical: 5, marginHorizontal: 20 },
+   optionModelContainer: {
+      maxWidth: 500,
+      width: '98%',
+      backgroundColor: '#fff',
+      paddingVertical: 12,
+      borderTopLeftRadius: 30,
+      borderTopRightRadius: 30,
+      borderBottomWidth: 3,
+   },
+   pressableText: {
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      fontWeight: '600',
+   },
+   buttonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
    },
 });

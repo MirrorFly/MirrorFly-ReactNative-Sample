@@ -29,7 +29,7 @@ lane :qa_firebase do
 	firebase_app_distribution(
 		app: "1:695832127329:ios:f8b6b0fab296a800",
 		groups: "reactnative",
-		release_notes: "React-Native ios build for MRN-458 - crash issue fix on selection",
+        release_notes: "React-Native ios build for bugfixes - CONTUIMSER-38921,CONTUIMSER-38877,CONTUIMSER-38874,CONTUIMSER-38771,CONTUIMSER-38286",
 		firebase_cli_path: "/usr/local/bin/firebase",
 		firebase_cli_token: "1//0g53oUKW5j5bJCgYIARAAGBASNwF-L9Ir7Ei_6NzWEsyHOMMXytlesfgXShhLeJWRwbcf2MC3e7BaC5dwYlUZB-_osuQFsxy0Du0"
 	)

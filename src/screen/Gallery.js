@@ -57,7 +57,7 @@ const Gallery = (props = {}) => {
                   handleSelectImage(item.node);
                }}>
                <Image alt="" style={{ width: itemWidth, aspectRatio: 1 }} source={{ uri: item?.node?.image.uri }} />
-               {isImageSelected && (
+               {Boolean(isImageSelected) && (
                   <View
                      style={[
                         commonStyles.positionAbsolute,

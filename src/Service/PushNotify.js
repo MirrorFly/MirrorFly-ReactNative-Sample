@@ -1,11 +1,12 @@
 import notifee, { AndroidVisibility, EventType } from '@notifee/react-native';
 import { Linking } from 'react-native';
 import Store from '../redux/store';
-import * as RootNav from '../../src/Navigation/rootNavigation';
+import * as RootNav from '../Navigation/rootNavigation';
 import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN } from '../constant';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
 import { removeAllDeliveredNotification } from './remoteNotifyHandle';
+import { onNotificationAction } from '../calls/notification/callNotifyHandler';
 
 export const displayRemoteNotification = async (id, date, title, body, jid, importance) => {
    const channelId = await notifee.createChannel({
@@ -37,33 +38,35 @@ export const displayRemoteNotification = async (id, date, title, body, jid, impo
          },
       },
    });
-   notifee.onForegroundEvent(async ({ type, detail }) => {
-      if (type === EventType.PRESS) {
-         const {
-            notification: { data: { fromUserJID } = '' },
-         } = detail;
-         let x = { screen: CHATSCREEN, fromUserJID };
-         Store.dispatch(navigate(x));
-         if (RootNav.getCurrentScreen() === CHATSCREEN) {
-            Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
-            return RootNav.navigate(CONVERSATION_SCREEN);
-         }
-         RootNav.navigate(CHATSCREEN);
-         Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
-      }
-   });
-   notifee.onBackgroundEvent(async ({ type, detail }) => {
-      if (type === EventType.PRESS) {
-         const {
-            notification: { data: { fromUserJID } = '' },
-         } = detail;
-         let x = { screen: CHATSCREEN, fromUserJID };
-         const push_url = 'mirrorfly_rn://CHATSCREEN?fromUserJID=' + fromUserJID;
-         Store.dispatch(navigate(x));
-         Linking.openURL(push_url);
-         removeAllDeliveredNotification();
-      }
-   });
+   notifee.onForegroundEvent(onNotificationAction);
+   notifee.onBackgroundEvent(onNotificationAction);
+   // notifee.onForegroundEvent(async ({ type, detail }) => {
+   //   if (type === EventType.PRESS) {
+   //     const {
+   //       notification: { data: { fromUserJID } = '' },
+   //     } = detail;
+   //     let x = { screen: CHATSCREEN, fromUserJID };
+   //     Store.dispatch(navigate(x));
+   //     if (RootNav.getCurrentScreen() === CHATSCREEN) {
+   //       Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
+   //       return RootNav.navigate(CONVERSATION_SCREEN);
+   //     }
+   //     RootNav.navigate(CHATSCREEN);
+   //     Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
+   //   }
+   // });
+   // notifee.onBackgroundEvent(async ({ type, detail }) => {
+   //   if (type === EventType.PRESS) {
+   //     const {
+   //       notification: { data: { fromUserJID } = '' },
+   //     } = detail;
+   //     let x = { screen: CHATSCREEN, fromUserJID };
+   //     const push_url = 'mirrorfly_rn://CHATSCREEN?fromUserJID=' + fromUserJID;
+   //     Store.dispatch(navigate(x));
+   //     Linking.openURL(push_url);
+   //     removeAllDeliveredNotification();
+   //   }
+   // });
 };
 
 export const handleNotifeeNotify = async () => {

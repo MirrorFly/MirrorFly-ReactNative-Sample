@@ -1,32 +1,33 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import messaging from '@react-native-firebase/messaging';
-import {
-   Box,
-   Center,
-   HStack,
-   Icon,
-   KeyboardAvoidingView,
-   Modal,
-   Pressable,
-   Spinner,
-   Stack,
-   Text,
-   VStack,
-   View,
-   useToast,
-} from 'native-base';
 import React, { useEffect } from 'react';
 import { BackHandler, Linking, Platform, TextInput } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import SDK from '../SDK/SDK';
 import { PrimaryPillBtn } from '../common/Button';
-import { DownArrowIcon, RegiterPageIcon } from '../common/Icons';
-import { COUNTRYSCREEN, PROFILESCREEN, REGISTERSCREEN, numRegx } from '../constant';
-import { useNetworkStatus } from '../hooks';
-import { getCurrentUserJid } from '../redux/Actions/AuthAction';
+import { useDispatch, useSelector } from 'react-redux';
 import { navigate } from '../redux/Actions/NavigationAction';
+import { COUNTRYSCREEN, numRegx, PROFILESCREEN, REGISTERSCREEN } from '../constant';
+import { getCurrentUserJid } from '../redux/Actions/AuthAction';
+import { DownArrowIcon, RegiterPageIcon } from '../common/Icons';
+import {
+   Icon,
+   Modal,
+   Text,
+   Center,
+   Box,
+   useToast,
+   Spinner,
+   HStack,
+   Stack,
+   VStack,
+   Pressable,
+   KeyboardAvoidingView,
+   View,
+} from 'native-base';
+import { useNetworkStatus } from '../hooks';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import SDK from '../SDK/SDK';
+import messaging from '@react-native-firebase/messaging';
+import RNVoipPushNotification from 'react-native-voip-push-notification';
 
-const RegisterScreen = ({navigation}) => {
+const RegisterScreen = ({ navigation }) => {
    const dispatch = useDispatch();
    const toast = useToast();
    const selectcountry = useSelector(state => state.navigation.selectContryCode);
@@ -34,6 +35,7 @@ const RegisterScreen = ({navigation}) => {
    const [mobileNumber, setMobileNumber] = React.useState('');
    const [isToastShowing, setIsToastShowing] = React.useState(false);
    const isNetworkConnected = useNetworkStatus();
+   const [voipToken, setVoipToken] = React.useState('');
 
    const termsHandler = () => {
       Linking.openURL('https://www.mirrorfly.com/terms-and-conditions.php');
@@ -43,16 +45,32 @@ const RegisterScreen = ({navigation}) => {
       Linking.openURL('https://www.mirrorfly.com/privacy-policy.php');
    };
 
+   const registerVoipToken = () => {
+      RNVoipPushNotification.addEventListener('register', token => {
+         // --- send token to your apn provider server
+         setVoipToken(token);
+      });
+      // =====  register =====
+      RNVoipPushNotification.registerVoipToken();
+   };
+
    useEffect(() => {
+      if (Platform.OS === 'ios') {
+         registerVoipToken();
+      }
+
       const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
          BackHandler.exitApp();
          return true;
       });
-      return () => backHandler.remove();
+      return () => {
+         backHandler.remove();
+         RNVoipPushNotification.removeEventListener('register');
+      };
    }, []);
 
    const selectCountryHandler = () => {
-      let x = {screen: COUNTRYSCREEN};
+      let x = { screen: COUNTRYSCREEN };
       dispatch(navigate(x));
       navigation.navigate(COUNTRYSCREEN);
    };
@@ -139,8 +157,7 @@ const RegisterScreen = ({navigation}) => {
    const handleRegister = async () => {
       setIsToastShowing(false);
       const fcmToken = await fcmTokenCheck();
-
-      const register = await SDK.register(selectcountry?.dial_code + mobileNumber, fcmToken);
+      const register = await SDK.register(selectcountry?.dial_code + mobileNumber, fcmToken, voipToken, process.env?.NODE_ENV === "production");
       if (register.statusCode === 200) {
          await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
          await AsyncStorage.setItem('userIdentifier', JSON.stringify(selectcountry?.dial_code + mobileNumber));
@@ -155,7 +172,7 @@ const RegisterScreen = ({navigation}) => {
       switch (connect?.statusCode) {
          case 200:
          case 409:
-            let nav = {screen: PROFILESCREEN, prevScreen: REGISTERSCREEN};
+            let nav = { screen: PROFILESCREEN, prevScreen: REGISTERSCREEN };
             let jid = await SDK.getCurrentUserJid();
             let userJID = jid.userJid.split('/')[0];
             AsyncStorage.setItem('currentUserJID', JSON.stringify(userJID));
@@ -176,7 +193,7 @@ const RegisterScreen = ({navigation}) => {
       }
    }, [isNetworkConnected]);
    return (
-      <KeyboardAvoidingView style={{flex: 1}} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
          <VStack h="full" justifyContent={'center'}>
             <VStack alignItems={'center'}>
                <Icon as={RegiterPageIcon} />

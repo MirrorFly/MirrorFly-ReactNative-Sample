@@ -179,7 +179,7 @@ export const convertUTCTOLocalTimeStamp = dateString => {
 
 /**
  * getLastseen() method to perform convert seconds to user online or Last seen date format status.
- *
+ *changeTimeFormat
  * @param {secs} secs
  */
 export const getLastseen = secs => {

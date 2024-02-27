@@ -131,7 +131,7 @@ const RecentChatItem = ({
             </View>
          );
       }
-      return item.deleteStatus === 1 ? (
+      return item?.recallStatus === 1 ? (
          <View style={styles.lastSentDeletedMessageContainer}>
             <Text style={styles.deletedMessageText}>
                {isSame ? YOU_DELETED_THIS_MESSAGE : THIS_MESSAGE_WAS_DELETED}
@@ -278,7 +278,7 @@ export default function RecentChat() {
    };
 
    const renderItem = (item, index) => {
-      const isSame = currentUserJID?.split('@')[0] === item?.publisherId;
+      const isSame = currentUserJID === item?.publisherJid;
       const jid =
          item?.userJid || formatUserIdToJid(item?.fromUserId); /** Need to add chat type here while working in Group
     formatUserIdToJid(

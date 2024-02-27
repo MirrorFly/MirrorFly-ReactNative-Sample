@@ -1,56 +1,46 @@
-import { IconButton, Text, View } from 'native-base';
 import React from 'react';
 import { CloseIcon, DeleteIcon } from '../common/Icons';
+import { Text, View } from 'react-native';
+import IconButton from '../common/IconButton';
+import commonStyles from '../common/commonStyles';
+import { MIX_BARE_JID } from '../Helper/Chat/Constant';
 
 const RecentHeader = ({ recentItem, handleRemove, handleDeleteChat }) => {
-  const handleDelete = () => {
-    handleDeleteChat();
-  };
+   const handleDelete = () => {
+      handleDeleteChat();
+   };
 
-  const handleRemoveClose = () => {
-    handleRemove();
-  };
+   const handleRemoveClose = () => {
+      handleRemove();
+   };
 
-  return (
-    <>
+   const isUserLeft = recentItem.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
+
+   const renderDeleteIcon = () => {
+      return isUserLeft ? (
+         <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+            <IconButton onPress={handleDelete}>
+               <DeleteIcon />
+            </IconButton>
+         </View>
+      ) : null;
+   };
+
+   return (
       <View
-        flexDirection={'row'}
-        backgroundColor={'#F2F2F4'}
-        alignItems={'center'}
-        p="13"
-        justifyContent={'space-between'}>
-        <View
-          flexDirection={'row'}
-          justifyContent={'space-between'}
-          alignItems={'center'}>
-          <IconButton
-            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-            onPress={handleRemoveClose}>
-            <CloseIcon />
-          </IconButton>
-          <Text
-            px="3"
-            color={'#000000'}
-            textAlign={'center'}
-            fontSize={'18'}
-            fontWeight={'400'}>
-            {recentItem?.length}
-          </Text>
-        </View>
-        <View
-          flexDirection={'row'}
-          justifyContent={'space-between'}
-          alignItems={'center'}>
-          <IconButton
-            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-            px="4"
-            onPress={handleDelete}>
-            <DeleteIcon />
-          </IconButton>
-        </View>
+         style={[commonStyles.hstack, commonStyles.alignItemsCenter, commonStyles.p_15]}
+         justifyContent={'space-between'}>
+         <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+            <IconButton onPress={handleRemoveClose}>
+               <CloseIcon />
+            </IconButton>
+            <Text style={[commonStyles.txtCenter, commonStyles.fontSize_18, commonStyles.colorBlack]}>
+               {recentItem?.length}
+            </Text>
+         </View>
+         {renderDeleteIcon()}
       </View>
-    </>
-  );
+   );
 };
 
 export default RecentHeader;

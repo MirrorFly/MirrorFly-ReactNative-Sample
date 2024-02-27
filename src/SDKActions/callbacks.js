@@ -62,7 +62,6 @@ import {
 } from '../Helper/Calls/Utility';
 import { formatUserIdToJid, getLocalUserDetails } from '../Helper/Chat/ChatHelper';
 import {
-   CHAT_TYPE_GROUP,
    CONNECTION_STATE_CONNECTING,
    MSG_CLEAR_CHAT,
    MSG_CLEAR_CHAT_CARBON,
@@ -129,7 +128,6 @@ import { updateRosterData } from '../redux/Actions/rosterAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
-import config from '../components/chat/common/config';
 
 let localStream = null,
    localVideoMuted = false,
@@ -695,6 +693,7 @@ export const callBacks = {
       console.log('dbListener', JSON.stringify(res));
    },
    messageListener: async res => {
+      console.log('messageListener res ==>', JSON.stringify(res, null, 2));
       await nextFrame();
       switch (res.msgType) {
          case 'sentMessage':
@@ -833,7 +832,6 @@ export const callBacks = {
          };
          store.dispatch(updateRosterData(obj));
       }
-      console.log('groupProfileListener =>', JSON.stringify(res, null, 2));
    },
    groupMsgInfoListener: res => {
       console.log('groupMsgInfoListener = (res) => { }', res);

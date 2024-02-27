@@ -192,6 +192,12 @@ const commonStyles = StyleSheet.create({
    p_10: {
       padding: 10,
    },
+   p_13: {
+      padding: 13,
+   },
+   p_15: {
+      padding: 15,
+   },
    minWidth_250: {
       minWidth: 250,
    },
@@ -283,6 +289,9 @@ const commonStyles = StyleSheet.create({
    fontWeight_bold: {
       fontWeight: 'bold',
    },
+   fw_400: {
+      fontWeight: '400',
+   },
    fw_600: {
       fontWeight: '600',
    },
@@ -297,6 +306,9 @@ const commonStyles = StyleSheet.create({
    },
    fontSize_12: {
       fontSize: 12,
+   },
+   fontSize_18: {
+      fontSize: 18,
    },
    bgBlack: {
       backgroundColor: '#000',

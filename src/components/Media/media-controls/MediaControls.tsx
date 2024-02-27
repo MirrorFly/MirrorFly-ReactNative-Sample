@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Animated, TouchableWithoutFeedback, GestureResponderEvent, ViewStyle } from 'react-native';
-import styles from './MediaControls.style';
-import { PLAYER_STATES } from './constants/playerStates';
+import { Animated, GestureResponderEvent, Keyboard, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
 import { Controls } from './Controls';
-import { Slider, CustomSliderStyle } from './Slider';
+import styles from './MediaControls.style';
+import { CustomSliderStyle, Slider } from './Slider';
 import { Toolbar } from './Toolbar';
+import { PLAYER_STATES } from './constants/playerStates';
 
 export type Props = {
    children: React.ReactNode;
@@ -124,6 +124,7 @@ const MediaControls = (props: Props) => {
    const toggleControls = () => {
       // value is the last value of the animation when stop animation was called.
       // As this is an opacity effect, I (Charlie) used the value (0 or 1) as a boolean
+      Keyboard.dismiss();
       opacity.stopAnimation((value: number) => {
          setIsVisible(!!value);
          return value ? fadeOutControls() : fadeInControls();

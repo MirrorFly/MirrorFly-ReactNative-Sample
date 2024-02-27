@@ -10,7 +10,7 @@ import EmojiOverlay from './EmojiPicker';
 
 function EmojiInput({
    children,
-   allowedMaxLimit = 5,
+   allowedMaxLimit = 25,
    defaultContent = '',
    setEmojiWindow = () => {},
    setValue = () => {},

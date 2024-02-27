@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import {
    ActivityIndicator,
@@ -9,22 +10,21 @@ import {
    Text,
    View,
 } from 'react-native';
-import { CHATSCREEN, GROUP_INFO, NEW_GROUP, RECENTCHATSCREEN, SETTINGSCREEN } from '../constant';
-import { navigate } from '../redux/Actions/NavigationAction';
 import { useDispatch } from 'react-redux';
-import ScreenHeader from '../components/ScreenHeader';
-import FlatListView from '../components/FlatListView';
-import { useNetworkStatus } from '../hooks';
-import * as RootNav from '../Navigation/rootNavigation';
-import { debounce, fetchContactsFromSDK, showToast } from '../Helper/index';
-import no_contacts from '../assets/no_contacts.png';
-import { getImageSource } from '../common/utils';
-import commonStyles from '../common/commonStyles';
-import { useRoute } from '@react-navigation/native';
-import SDK from '../SDK/SDK';
-import Modal, { ModalCenteredContent } from '../common/Modal';
-import ApplicationColors from '../config/appColors';
 import { fetchGroupParticipants } from '../Helper/Chat/Groups';
+import { debounce, fetchContactsFromSDK, showToast } from '../Helper/index';
+import * as RootNav from '../Navigation/rootNavigation';
+import SDK from '../SDK/SDK';
+import no_contacts from '../assets/no_contacts.png';
+import Modal, { ModalCenteredContent } from '../common/Modal';
+import commonStyles from '../common/commonStyles';
+import { getImageSource } from '../common/utils';
+import FlatListView from '../components/FlatListView';
+import ScreenHeader from '../components/ScreenHeader';
+import ApplicationColors from '../config/appColors';
+import { CHATSCREEN, GROUP_INFO, NEW_GROUP, RECENTCHATSCREEN } from '../constant';
+import { useNetworkStatus } from '../hooks';
+import { navigate } from '../redux/Actions/NavigationAction';
 
 const contactPaginationRefInitialValue = {
    nextPage: 1,
@@ -139,15 +139,6 @@ function ContactScreen() {
       }, 0);
    };
 
-   const menuItems = [
-      {
-         label: 'Settings',
-         formatter: () => {
-            dispatch(navigate({ screen: SETTINGSCREEN }));
-            RootNav.navigate(SETTINGSCREEN);
-         },
-      },
-   ];
    const handlePress = item => {
       if (isNewGrpSrn || isGroupInfoSrn) {
          setSelectedUsers(_data => {
@@ -268,7 +259,7 @@ function ContactScreen() {
          <ScreenHeader
             title={isNewGrpSrn || isGroupInfoSrn ? 'Add Participants' : 'Contacts'}
             onhandleBack={handleBackBtn}
-            menuItems={menuItems}
+            menuItems={[]}
             onhandleSearch={handleSearch}
             handleClear={handleClear}
             onCreateBtn={handleGrpPartcipant}

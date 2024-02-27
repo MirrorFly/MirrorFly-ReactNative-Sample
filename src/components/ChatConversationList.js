@@ -231,8 +231,8 @@ const ChatConversationList = ({
          const currentMessageUserId = item?.publisherId;
          const showNickName = item.chatType === CHAT_TYPE_GROUP && nextMessageUserId !== currentMessageUserId;
 
-         const { deleteStatus = 0, msgId, msgBody: { message_type = '' } = {} } = item;
-         if (deleteStatus === 2) {
+         const { deleteStatus = 0, recallStatus = 0, msgId, msgBody: { message_type = '' } = {} } = item;
+         if (deleteStatus === 1) {
             return null;
          }
 
@@ -240,7 +240,7 @@ const ChatConversationList = ({
             return <NotificationMessage messageObject={item} />;
          }
 
-         return deleteStatus === 0 ? (
+         return recallStatus === 0 ? (
             <ChatMessage
                shouldHighlightMessage={highlightMessageId === msgId}
                handleReplyPress={handleReplyPress}

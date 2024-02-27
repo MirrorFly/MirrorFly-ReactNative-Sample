@@ -46,9 +46,11 @@ export const updateNotification = msgId => {
 };
 
 export const removeAllDeliveredNotification = () => {
-  try {
-    notifee.cancelAllNotifications(Object.values(ids));
-  } catch (error) {
-    console.log('removeAllDeliveredNotificatoin', error);
-  }
+   try {
+      if (Object.values(ids)) {
+         notifee.cancelAllNotifications();
+      }
+   } catch (error) {
+      console.log('removeAllDeliveredNotificatoin', error);
+   }
 };

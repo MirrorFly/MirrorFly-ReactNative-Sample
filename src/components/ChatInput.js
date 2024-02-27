@@ -54,7 +54,6 @@ const ChatInput = props => {
    const { onSendMessage, attachmentMenuIcons, chatInputRef, fromUserJId, handleSendMsg } = props;
    const typingTimeoutRef = useRef(null);
    const [message, setMessage] = useState('');
-   const [typingStatus, setTypingStatus] = useState(false);
    const [isOpen, setIsOpen] = useState(false);
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = useState(false);
    const recentChatList = useSelector(state => state.recentChatData.data);

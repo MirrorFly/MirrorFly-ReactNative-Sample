@@ -24,5 +24,10 @@ const config = {
    // ================ UAT/Staging Environment variables =====================
    // API_URL: 'https://api-uikit-uat.contus.us/api/v1',
    // licenseKey: 'lu3Om85JYSghcsB6vgVoSgTlSQArL5',
+   // ================test kooratech Environment variables =====================
+   // API_URL: 'https://testkooratech-api.mirrorfly.com/api/v1',
+   // licenseKey: 'Gk0mPI8sq8FY0FEuYQHExG9PkZ1ZXa',
+   // API_URL: 'https://kooratech-api.mirrorfly.com/api/v1'
+   // licenseKey: 'e7x7JGFk9aR60JGUY9kYXZf1d9vRYN'
 };
 export default config;

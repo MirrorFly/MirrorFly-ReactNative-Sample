@@ -16,6 +16,7 @@ import {
    UPDATE_CALLER_UUID,
    UPDATE_CALL_LAYOUT,
    UPDATE_CONFRENCE_POPUP_STATUS,
+   UPDATE_IS_CALL_FROM_VOIP,
 } from './Constants';
 
 let volumeLevelsInDBBasedOnUserJid = [];
@@ -68,6 +69,13 @@ export const resetConferencePopup = () => {
 export const updateCallerUUID = data => {
    return {
       type: UPDATE_CALLER_UUID,
+      payload: data,
+   };
+};
+
+export const updateIsCallFromVoip = data => {
+   return {
+      type: UPDATE_IS_CALL_FROM_VOIP,
       payload: data,
    };
 };

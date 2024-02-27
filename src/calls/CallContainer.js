@@ -42,8 +42,8 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
       // requesting for Bluetooth connect permission for android
       if (Platform.OS) {
          requestBluetoothConnectPermission();
+         dispatch(openCallModal());
       }
-      dispatch(openCallModal());
       if (Object.keys(connectionState).length === 0) {
          closeCallModalActivity();
       }

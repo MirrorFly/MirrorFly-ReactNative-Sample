@@ -25,6 +25,7 @@ import {
    updateCallConnectionState,
    updateCallerUUID,
    updateConference,
+   updateIsCallFromVoip,
 } from '../../redux/Actions/CallAction';
 import {
    updateCallAudioMutedAction,
@@ -486,11 +487,11 @@ export const declineIncomingCall = async () => {
       setTimeout(() => {
          batch(() => {
             closeCallModalActivity(true);
+            resetCallData();
             // Store.dispatch(closeCallModal());
             Store.dispatch(clearCallData());
             Store.dispatch(resetConferencePopup());
          });
-         resetCallData();
       }, DISCONNECTED_SCREEN_DURATION);
    } else {
       console.log('Error occured while rejecting the incoming call', declineCallResponse.errorMessage);
@@ -557,6 +558,7 @@ export const displayIncomingCallForIos = callResponse => {
       u => u.userJid === callResponse.userJid && u.localUser === false,
    );
    const activeCallUUID = Store.getState().callData?.callerUUID || '';
+   const isCallFromVoip = Store.getState().callData?.isCallFromVoip;
    if (!activeCallUUID && callingUserData) {
       const callUUID = uuidv4();
       Store.dispatch(updateCallerUUID(callUUID));
@@ -572,11 +574,11 @@ export const displayIncomingCallForIos = callResponse => {
       );
    }
    handleIncoming_CallKeepListeners();
-   if (AppState.currentState !== 'active') {
+   if (AppState.currentState !== 'active' || isCallFromVoip) {
       checkMicroPhonePermission().then(micPermission => {
          if (micPermission !== 'granted') {
-            declineIncomingCall();
             endCallForIos();
+            declineIncomingCall();
          }
       });
    }
@@ -765,6 +767,7 @@ const onVoipPushNotificationReceived = async data => {
    } else {
       const decryptName = await SDK.decryptProfileDetails(caller_name, getUserIdFromJid(caller_id));
       RNCallKeep.updateDisplay(callUUID, decryptName, getUserIdFromJid(caller_id));
+      Store.dispatch(updateIsCallFromVoip(true));
       Store.dispatch(updateCallerUUID(callUUID));
    }
    let remoteMessage = {

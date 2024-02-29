@@ -25,6 +25,7 @@ import ApplicationColors from '../config/appColors';
 import { CHATSCREEN, GROUP_INFO, NEW_GROUP, RECENTCHATSCREEN } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import { navigate } from '../redux/Actions/NavigationAction';
+import config from '../components/chat/common/config';
 
 const contactPaginationRefInitialValue = {
    nextPage: 1,
@@ -66,7 +67,9 @@ function ContactScreen() {
    }, []);
 
    React.useEffect(() => {
-      isNetworkconneted && fetchContactList(searchText);
+      if (isNetworkconneted) {
+         fetchContactList(searchText);
+      }
    }, [isNetworkconneted]);
 
    const handleBackBtn = () => {
@@ -145,6 +148,12 @@ function ContactScreen() {
             if (_data[item.userJid]) {
                delete _data[item.userJid];
             } else {
+               if (Object.keys(selectedUsers).length > config.maxAllowdGroupMembers - 2) {
+                  showToast('Maximum allowed group members ' + config.maxAllowdGroupMembers, {
+                     id: 'Maximum_allowed_group_members',
+                  });
+                  return { ..._data };
+               }
                _data[item.userJid] = item;
             }
             return { ..._data };
@@ -162,7 +171,7 @@ function ContactScreen() {
    };
 
    const handleSearch = async text => {
-      if (isNetworkconneted) {
+      if (isNetworkconneted && text.trim()) {
          setIsSearching(true);
          setSearchText(text);
          fetchContactList(text);
@@ -184,8 +193,13 @@ function ContactScreen() {
             id: 'internet-connection-toast',
          });
       }
-      if (Object.keys(selectedUsers).length < 2 && !isGroupInfoSrn) {
+      if (Object.keys(selectedUsers).length < config.minAllowdGroupMembers && isNewGrpSrn) {
          return showToast('Add at least two Contacts', { id: 'Add_at_least_two_Contacts' });
+      }
+      if (Object.keys(selectedUsers).length > config.maxAllowdGroupMembers && isNewGrpSrn) {
+         return showToast('Maximum allowed group members ' + config.maxAllowdGroupMembers, {
+            id: 'Maximum_allowed_group_members',
+         });
       }
       if (isGroupInfoSrn && !Object.keys(selectedUsers).length) {
          return showToast('Select any contacts', { id: 'select_any_contacts' });

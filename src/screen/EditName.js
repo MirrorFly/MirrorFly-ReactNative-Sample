@@ -20,6 +20,7 @@ const EditName = () => {
    } = useRoute();
    const navigation = useNavigation();
    const isConnected = useNetworkStatus();
+   const [toggleEmojiWindow, setToggleEmojiWindow] = React.useState(false);
    const headerBg = useSelector(state => state.safeArea.color);
    const [value, setValue] = React.useState(title);
 
@@ -65,7 +66,7 @@ const EditName = () => {
                <Text style={styles.titleText}>Enter New Name</Text>
             </View>
          </View>
-         <EmojiInput defaultContent={title} setValue={setValue}>
+         <EmojiInput defaultContent={title} setValue={setValue} onEmojiWindowToggle={setToggleEmojiWindow}>
             <View style={commonStyles.flex1}>
                <View
                   style={[
@@ -73,6 +74,7 @@ const EditName = () => {
                      commonStyles.positionAbsolute,
                      commonStyles.alignItemsCenter,
                      styles.cancelContainer,
+                     { bottom: toggleEmojiWindow ? '50%' : 0 },
                   ]}>
                   <Pressable onPress={handleBackBtn}>
                      <Text style={styles.cancelBtn}>CANCEL</Text>
@@ -123,7 +125,6 @@ const styles = StyleSheet.create({
    },
    cancelContainer: {
       left: 0,
-      bottom: 0,
       right: 0,
       borderTopColor: '#BFBFBF',
       borderTopWidth: 1,

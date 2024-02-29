@@ -60,26 +60,30 @@ const GroupInfo = () => {
 
    const handleFromGallery = async () => {
       const _image = await handleImagePickerOpenGallery();
-      toggleModel();
-      setTimeout(async () => {
-         const { statusCode, message } = await SDK.setGroupProfile(chatUser, nickName, _image);
-         if (!statusCode === 200) {
-            showToast(message, { id: message });
-         }
+      if (Object.keys(_image).length) {
          toggleModel();
-      }, 1000);
+         setTimeout(async () => {
+            const { statusCode, message } = await SDK.setGroupProfile(chatUser, nickName, _image);
+            if (!statusCode === 200) {
+               showToast(message, { id: message });
+            }
+            toggleModel();
+         }, 1000);
+      }
    };
 
    const handleTakePhoto = async () => {
       const _image = await handleImagePickerOpenCamera();
-      toggleModel();
-      setTimeout(async () => {
-         const { statusCode, message } = await SDK.setGroupProfile(chatUser, nickName, _image);
-         if (!statusCode === 200) {
-            showToast(message, { id: message });
-         }
+      if (Object.keys(_image).length) {
          toggleModel();
-      }, 1000);
+         setTimeout(async () => {
+            const { statusCode, message } = await SDK.setGroupProfile(chatUser, nickName, _image);
+            if (!statusCode === 200) {
+               showToast(message, { id: message });
+            }
+            toggleModel();
+         }, 1000);
+      }
    };
 
    const handleRemovePhoto = async () => {

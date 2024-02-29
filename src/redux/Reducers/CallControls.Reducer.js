@@ -5,6 +5,7 @@ import {
    UPDATE_CALL_SPEAKER_ENABLED,
    UPDATE_CALL_VIDEO_MUTED,
    UPDATE_CALL_WIRED_HEADSET_CONNECTED,
+   UPDATE_SWITCH_CAMERA,
 } from '../Actions/Constants';
 import { getObjectDeepClone } from '../reduxHelper';
 
@@ -14,6 +15,7 @@ const initialState = {
    isVideoMuted: true,
    isSpeakerEnabled: false,
    isWiredHeadsetConnected: false,
+   isFrontCameraEnabled: true,
 };
 
 const initialStateClone = getObjectDeepClone(initialState);
@@ -43,6 +45,12 @@ const callControlsReducer = (state = initialStateClone, action) => {
             id: Date.now(),
             ...state,
             isWiredHeadsetConnected: action.payload,
+         };
+      case UPDATE_SWITCH_CAMERA:
+         return {
+            id: Date.now(),
+            ...state,
+            isFrontCameraEnabled: action.payload,
          };
       case RESET_CALL_CONTROLS_DATA:
       case RESET_STORE:

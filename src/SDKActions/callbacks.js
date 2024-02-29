@@ -36,7 +36,6 @@ import {
    CALL_STATUS_CONNECTED,
    CALL_STATUS_DISCONNECTED,
    CALL_STATUS_ENDED,
-   CALL_STATUS_INCOMING,
    CALL_STATUS_RECONNECT,
    CALL_STATUS_RINGING,
    CALL_TYPE_AUDIO,
@@ -49,6 +48,7 @@ import {
 import {
    addHeadphonesConnectedListenerForCall,
    closeCallModalActivity,
+   constructMuteStatus,
    displayIncomingCallForAndroid,
    displayIncomingCallForIos,
    endCallForIos,
@@ -96,7 +96,7 @@ import {
    updateCallerUUID,
    updateConference,
 } from '../redux/Actions/CallAction';
-import { resetCallControlsStateAction } from '../redux/Actions/CallControlsAction';
+import { resetCallControlsStateAction, updateCallVideoMutedAction } from '../redux/Actions/CallControlsAction';
 import { resetCallModalToastDataAction } from '../redux/Actions/CallModalToasAction';
 import {
    ClearChatHistoryAction,
@@ -135,7 +135,7 @@ let localStream = null,
    onCall = false,
    onReconnect = false,
    disconnectedScreenTimeoutTimer;
-let remoteVideoMuted = [],
+let remoteVideoMuted = {},
    remoteStream = [],
    remoteAudioMuted = [];
 
@@ -145,7 +145,7 @@ export const setDisconnectedScreenTimeoutTimer = _timer => (disconnectedScreenTi
 
 const clearDisconnectedScreenTimeout = () => {
    BackgroundTimer.clearTimeout(disconnectedScreenTimeoutTimer);
-}
+};
 
 export const getIsUserOnCall = () => {
    return onCall;
@@ -166,7 +166,7 @@ export const resetCallData = () => {
    onReconnect = false;
    remoteStream = [];
    localStream = null;
-   remoteVideoMuted = [];
+   remoteVideoMuted = {};
    remoteAudioMuted = [];
    localVideoMuted = false;
    localAudioMuted = false;
@@ -206,7 +206,13 @@ export const muteLocalVideo = isMuted => {
    let vcardData = getLocalUserDetails();
    let currentUser = vcardData?.fromUser;
    currentUser = formatUserIdToJid(currentUser);
-   remoteVideoMuted[currentUser] = isMuted;
+   remoteVideoMuted = constructMuteStatus(remoteVideoMuted, currentUser, isMuted);
+   Store.dispatch(
+      updateConference({
+         localVideoMuted: localVideoMuted,
+         remoteVideoMuted: remoteVideoMuted,
+      }),
+   );
 };
 
 export const muteLocalAudio = isMuted => {
@@ -233,7 +239,7 @@ const updatingUserStatusInRemoteStream = usersStatus => {
             ...remoteStream[index],
             status: user.status,
          };
-         remoteVideoMuted[user.userJid] = user.videoMuted;
+         remoteVideoMuted = constructMuteStatus(remoteVideoMuted, user.userJid, user.videoMuted);
          remoteAudioMuted[user.userJid] = user.audioMuted;
       } else {
          let streamObject = {
@@ -242,7 +248,7 @@ const updatingUserStatusInRemoteStream = usersStatus => {
             status: user.status || CONNECTION_STATE_CONNECTING,
          };
          remoteStream.push(streamObject);
-         remoteVideoMuted[user.userJid] = user.videoMuted;
+         remoteVideoMuted = constructMuteStatus(remoteVideoMuted, user.userJid, user.videoMuted);
          remoteAudioMuted[user.userJid] = user.audioMuted;
       }
    });
@@ -351,7 +357,7 @@ const ended = async res => {
          clearMissedCallNotificationTimer();
       }
       let callDetailsObj = {
-         ...callConnectionData,
+         ...callConnectionStoreData(),
          ...res,
       };
       Store.dispatch(updateCallConnectionState(callDetailsObj));
@@ -523,9 +529,9 @@ const connected = async res => {
             // updating the call connected status to android native code
             ActivityModule.updateCallConnectedStatus(true);
             startDurationTimer();
-         } else if (store.getState().callData?.screenName === OUTGOING_CALL_SCREEN){
-            // SDK will give 'connected' callback with {... localUser: true} when local user goes offline and come back online 
-            // So in that case we will show reconnecting text in UI, so we are updating the callStatusText to 'ringing' when user came back online on outgoing call screen 
+         } else if (store.getState().callData?.screenName === OUTGOING_CALL_SCREEN) {
+            // SDK will give 'connected' callback with {... localUser: true} when local user goes offline and come back online
+            // So in that case we will show reconnecting text in UI, so we are updating the callStatusText to 'ringing' when user came back online on outgoing call screen
             // before receiver accept or decline the call
             store.dispatch(
                updateConference({
@@ -848,7 +854,7 @@ export const callBacks = {
       console.log('adminBlockListener = (res) => { }', res);
    },
    incomingCallListener: function (res) {
-      if(onCall) {
+      if (onCall) {
          SDK.callEngaged();
          return;
       }
@@ -860,6 +866,8 @@ export const callBacks = {
          res.to = res.userJid;
          if (res.callType === 'audio') {
             localVideoMuted = true;
+         } else {
+            Store.dispatch(updateCallVideoMutedAction(false));
          }
       } else {
          callMode = 'onetomany';
@@ -868,6 +876,8 @@ export const callBacks = {
          res.userList = res.allUsers.join(',');
          if (res.callType === 'audio') {
             localVideoMuted = true;
+         } else {
+            Store.dispatch(updateCallVideoMutedAction(false));
          }
       }
       res.callMode = callMode;
@@ -880,12 +890,15 @@ export const callBacks = {
          resetPinAndLargeVideoUser();
          if (res.callType === 'audio') {
             localVideoMuted = true;
+         } else {
+            Store.dispatch(updateCallVideoMutedAction(false));
          }
+         let callStatusText = `Incoming ${res.callType} call`;
          batch(() => {
             Store.dispatch(updateCallConnectionState(res));
             Store.dispatch(
                updateConference({
-                  callStatusText: CALL_STATUS_INCOMING,
+                  callStatusText: callStatusText,
                }),
             );
          });
@@ -939,7 +952,6 @@ export const callBacks = {
             mediaStream = new MediaStream();
             mediaStream.addTrack(res.track);
          }
-         console.log(mediaStream,"mediaStream");
          localStream[res.trackType] = mediaStream;
          const { getState, dispatch } = Store;
          const showConfrenceData = getState().showConfrenceData;
@@ -952,7 +964,7 @@ export const callBacks = {
                   ...remoteStream[index],
                   status: user.status,
                };
-               remoteVideoMuted[user.userJid] = user.videoMuted;
+               remoteVideoMuted = constructMuteStatus(remoteVideoMuted, user.userJid, user.videoMuted);
                remoteAudioMuted[user.userJid] = user.audioMuted;
             } else {
                let streamObject = {
@@ -961,7 +973,7 @@ export const callBacks = {
                   status: user.status,
                };
                remoteStream.push(streamObject);
-               remoteVideoMuted[user.userJid] = user.videoMuted;
+               remoteVideoMuted = constructMuteStatus(remoteVideoMuted, user.userJid, user.videoMuted);
                remoteAudioMuted[user.userJid] = user.audioMuted;
             }
          });
@@ -1113,7 +1125,7 @@ export const callBacks = {
             }
          }
          if (res.trackType === CALL_TYPE_VIDEO) {
-            remoteVideoMuted[res.userJid] = res.isMuted;
+            remoteVideoMuted = constructMuteStatus(remoteVideoMuted, res.userJid, res.isMuted);
          }
       }
 

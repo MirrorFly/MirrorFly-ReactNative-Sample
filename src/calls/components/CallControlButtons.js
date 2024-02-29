@@ -1,21 +1,33 @@
 import React, { useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import RNCallKeep from 'react-native-callkeep';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import { useSelector } from 'react-redux';
+import {
+   AUDIO_ROUTE_HEADSET,
+   AUDIO_ROUTE_SPEAKER,
+   CALL_STATUS_DISCONNECTED,
+   CALL_TYPE_VIDEO,
+} from '../../Helper/Calls/Constant';
+import {
+   switchCamera,
+   updateCallAudioMute,
+   updateCallSpeakerEnabled,
+   updateCallVideoMute,
+} from '../../Helper/Calls/Utility';
 import {
    AudioMuteIcon,
    AudioUnMuteIcon,
    CallHeadsetIcon,
+   CameraDisabledIcon,
+   CameraEnabledIcon,
    EndCallIcon,
    SpeakerEnableIcon,
    VideoMuteIcon,
    VideoUnMuteIcon,
 } from '../../common/Icons';
-import { useSelector } from 'react-redux';
-import { updateCallAudioMute, updateCallSpeakerEnabled } from '../../Helper/Calls/Utility';
-import RNCallKeep from 'react-native-callkeep';
 import Pressable from '../../common/Pressable';
-import { AUDIO_ROUTE_HEADSET, AUDIO_ROUTE_SPEAKER, CALL_STATUS_DISCONNECTED } from '../../Helper/Calls/Constant';
 
 const sortAudioRoutes = (a, b) => {
    const nameA = a.name.toLowerCase();
@@ -28,13 +40,13 @@ const sortAudioRoutes = (a, b) => {
    return 0;
 };
 
-const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute }) => {
+const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callType }) => {
    let endActionButtonRef = useRef(false);
    const RBSheetRef = useRef(null);
 
    const [audioRoutes, setAudioRoutes] = React.useState([]);
 
-   const { isAudioMuted, isVideoMuted, isSpeakerEnabled, isWiredHeadsetConnected } = useSelector(
+   const { isAudioMuted, isVideoMuted, isSpeakerEnabled, isWiredHeadsetConnected, isFrontCameraEnabled } = useSelector(
       state => state.callControlsData,
    );
 
@@ -49,6 +61,14 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute }) => {
          return <SpeakerEnableIcon color={'#fff'} />;
       }
    }, [isSpeakerEnabled, isWiredHeadsetConnected]);
+
+   const toggleCamera = () => {
+      if (callStatus?.toLowerCase() === CALL_STATUS_DISCONNECTED) {
+         return;
+      }
+      let cameraSwitch = !isFrontCameraEnabled;
+      switchCamera(cameraSwitch);
+   };
 
    const toggleSpeaker = () => {
       if (callStatus?.toLowerCase() === CALL_STATUS_DISCONNECTED) {
@@ -94,6 +114,14 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute }) => {
       updateCallAudioMute(_audioMuted, callerUUID);
    };
 
+   const handleVideoMutePress = async () => {
+      if (callStatus?.toLowerCase() === CALL_STATUS_DISCONNECTED) {
+         return;
+      }
+      const _videoMuted = !isVideoMuted;
+      updateCallVideoMute(_videoMuted, callerUUID);
+   };
+
    const handleSelectAudioRoute = _audioRoute => () => {
       RBSheetRef.current?.close?.();
       updateCallSpeakerEnabled(_audioRoute.type === AUDIO_ROUTE_SPEAKER, _audioRoute.name, callerUUID);
@@ -108,8 +136,19 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute }) => {
                   style={[[styles.actionButton, isAudioMuted && styles.activeButton]]}>
                   {isAudioMuted ? <AudioMuteIcon /> : <AudioUnMuteIcon />}
                </RectButton>
-               <RectButton onPress={handleVideoMute} style={[styles.actionButton, isVideoMuted && styles.activeButton]}>
-                  {isVideoMuted ? <VideoMuteIcon /> : <VideoUnMuteIcon color={'#000'} />}
+
+               {callType === CALL_TYPE_VIDEO && !isVideoMuted && (
+                  <RectButton
+                     onPress={toggleCamera}
+                     style={[styles.actionButton, !isFrontCameraEnabled && styles.activeButton]}>
+                     {isFrontCameraEnabled ? <CameraEnabledIcon /> : <CameraDisabledIcon />}
+                  </RectButton>
+               )}
+
+               <RectButton
+                  onPress={handleVideoMutePress}
+                  style={[styles.actionButton, isVideoMuted && styles.activeButton]}>
+                  {isVideoMuted ? <VideoMuteIcon /> : <VideoUnMuteIcon color={'#f2f2f2'} />}
                </RectButton>
                <RectButton
                   onPress={toggleSpeaker}

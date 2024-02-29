@@ -1,18 +1,20 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
-import { AppState, NativeModules, Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
 import HeadphoneDetection from 'react-native-headphone-detection';
 import RNInCallManager from 'react-native-incall-manager';
 import KeepAwake from 'react-native-keep-awake';
 import KeyEvent from 'react-native-keyevent';
 import { openSettings } from 'react-native-permissions';
+import RNVoipPushNotification from 'react-native-voip-push-notification';
 import { batch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import SDK from '../../SDK/SDK';
 import { clearIosCallListeners, muteLocalAudio, muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
-import { checkMicroPhonePermission, requestMicroPhonePermission } from '../../common/utils';
+import { checkMicroPhonePermission, requestCameraPermission, requestMicroPhonePermission } from '../../common/utils';
+import ActivityModule from '../../customModules/ActivityModule';
 import {
    callDurationTimestamp,
    clearCallData,
@@ -30,14 +32,18 @@ import {
 import {
    updateCallAudioMutedAction,
    updateCallSpeakerEnabledAction,
+   updateCallVideoMutedAction,
    updateCallWiredHeadsetConnected,
+   updateSwitchCamera,
 } from '../../redux/Actions/CallControlsAction';
 import { showCallModalToastAction } from '../../redux/Actions/CallModalToasAction';
+import { closePermissionModal } from '../../redux/Actions/PermissionAction';
 import Store from '../../redux/store';
 import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
 import { getUserIdFromJid } from '../Chat/Utility';
 import { getUserProfile, getUserProfileFromSDK, showToast } from '../index';
 import {
+   callConnectionStoreData,
    clearIncomingCallTimer,
    clearMissedCallNotificationTimer,
    disconnectCallConnection,
@@ -53,6 +59,7 @@ import {
 import {
    AUDIO_ROUTE_SPEAKER,
    CALL_STATUS_DISCONNECTED,
+   CALL_TYPE_AUDIO,
    COMMON_ERROR_MESSAGE,
    DISCONNECTED_SCREEN_DURATION,
    INCOMING_CALL_SCREEN,
@@ -60,9 +67,7 @@ import {
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
-import { closePermissionModal } from '../../redux/Actions/PermissionAction';
-import RNVoipPushNotification from 'react-native-voip-push-notification';
-import ActivityModule from '../../customModules/ActivityModule';
+import _BackgroundTimer from 'react-native-background-timer';
 
 let preventMultipleClick = false;
 let callBackgroundNotification = true;
@@ -230,6 +235,8 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
             call = await SDK.makeVoiceCall(users, groupId);
          } else if (callType === 'video') {
             muteLocalVideo(false);
+            Store.dispatch(updateCallVideoMutedAction(false));
+            updateCallSpeakerEnabled(true, '', ''); // only 1st param will be used in Android so passing empty data for remaining params
             call = await SDK.makeVideoCall(users, groupId);
          }
          if (call.statusCode !== 200 && call.message === PERMISSION_DENIED) {
@@ -311,22 +318,30 @@ export const answerIncomingCall = async callId => {
    if (Platform.OS === 'android') {
       await stopForegroundServiceNotification();
    }
+   const callData = Store.getState().callData || {};
+   const callConnectionStateData = callData?.connectionState || {};
+   let callType = callConnectionStateData?.callType;
+
    // updating the SDK flag to keep the connection Alive when app goes background because of document picker
    SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
    try {
-      const isPermissionChecked = await AsyncStorage.getItem('microPhone_Permission');
-      AsyncStorage.setItem('microPhone_Permission', 'true');
+      let isPermissionChecked = false;
+      if (callType === CALL_TYPE_AUDIO) {
+         isPermissionChecked = await AsyncStorage.getItem('microPhone_Permission');
+         AsyncStorage.setItem('microPhone_Permission', 'true');
+      } else {
+         isPermissionChecked = await AsyncStorage.getItem('camera_microPhone_Permission');
+         AsyncStorage.setItem('camera_microPhone_Permission', 'true');
+      }
       callBackgroundNotification = false;
       setTimeout(() => {
          Store.dispatch(closePermissionModal());
       }, 0);
-      const result = await requestMicroPhonePermission();
-      // updating the SDK flag back to false to behave as usual
+      const result =
+         callType === CALL_TYPE_AUDIO ? await requestMicroPhonePermission() : await requestCameraPermission(); // updating the SDK flag back to false to behave as usual
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
       callBackgroundNotification = true;
       if (result === 'granted' || result === 'limited') {
-         const callData = Store.getState().callData || {};
-         const callConnectionStateData = callData?.connectionState || {};
          const activeCallerUUID = callData?.callerUUID;
          // validating call connectionState data because sometimes when permission popup is opened
          // and call ended and then user accept the permission
@@ -781,7 +796,12 @@ export const showOngoingNotification = callResponse => {
    const contactNumber = getUserIdFromJid(callResponse.userJid);
    const nickName =
       callingUserData?.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
-   callNotifyHandler(contactNumber, callResponse, callResponse.userJid, nickName, 'ONGOING_CALL');
+   let callConnectionData = callConnectionStoreData();
+   const callDetailObj = {
+      ...callResponse,
+      ...callConnectionData,
+   };
+   callNotifyHandler(contactNumber, callDetailObj, callResponse.userJid, nickName, 'ONGOING_CALL');
 };
 
 export const getNickName = callResponse => {
@@ -813,6 +833,23 @@ export const updateCallAudioMute = async (audioMuted, callUUID, isFromCallKeep =
       }
    } catch (error) {
       console.log('Error when muting/unmuting local user audio', error);
+   }
+};
+
+export const updateCallVideoMute = async (videoMuted, callUUID, isFromCallKeep = false) => {
+   try {
+      const videoMuteResult = await SDK.muteVideo(videoMuted);
+      if (videoMuteResult.statusCode === 200) {
+         // if (Platform.OS === 'ios' && !isFromCallKeep && callUUID) {
+         //    RNCallKeep.setMutedCall(callUUID, audioMuted);
+         // }
+         batch(() => {
+            muteLocalVideo(videoMuted);
+            Store.dispatch(updateCallVideoMutedAction(videoMuted));
+         });
+      }
+   } catch (error) {
+      console.log('Error when muting/unmuting local user video', error);
    }
 };
 
@@ -871,4 +908,17 @@ export const startDurationTimer = () => {
          !callConnectionData.showCallModal &&
          Store.dispatch(callDurationTimestamp(Date.now()));
    }
+};
+
+export const switchCamera = async cameraSwitch => {
+   const response = await SDK.toggleSwitchCamera();
+   if (response.statusCode === 200) {
+      _BackgroundTimer.setTimeout(() => {
+         Store.dispatch(updateSwitchCamera(cameraSwitch));
+      }, 300);
+   }
+};
+
+export const constructMuteStatus = (streamMute, jid, muteStatus) => {
+   return { ...streamMute, [jid]: muteStatus };
 };

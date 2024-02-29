@@ -1,12 +1,7 @@
 import React from 'react';
 import DocumentPicker from 'react-native-document-picker';
 import { Box, Text } from 'native-base';
-import {
-  request,
-  PERMISSIONS,
-  requestMultiple,
-  check,
-} from 'react-native-permissions';
+import { request, PERMISSIONS, requestMultiple, check } from 'react-native-permissions';
 import { Alert, Linking, NativeModules, Platform } from 'react-native';
 import SDK from '../SDK/SDK';
 import messaging from '@react-native-firebase/messaging';
@@ -97,10 +92,10 @@ export const requestCameraPermission = async () => {
    switch (true) {
       case Platform.OS === 'ios':
          const ios_permit = await requestMultiple([PERMISSIONS.IOS.CAMERA, PERMISSIONS.IOS.MICROPHONE]);
-         return ios_permit['ios.permission.CAMERA'] || ios_permit['ios.permission.MICROPHONE'];
+         return ios_permit['ios.permission.CAMERA'] && ios_permit['ios.permission.MICROPHONE'];
       case Platform.OS === 'android':
          const permited = await requestMultiple([PERMISSIONS.ANDROID.CAMERA, PERMISSIONS.ANDROID.RECORD_AUDIO]);
-         return permited['android.permission.CAMERA'] || permited['android.permission.RECORD_AUDIO'];
+         return permited['android.permission.CAMERA'] && permited['android.permission.RECORD_AUDIO'];
    }
 };
 
@@ -153,11 +148,7 @@ export const requestMicroPhonePermission = async () => {
 };
 
 export const checkMicroPhonePermission = async () => {
-  return check(
-    Platform.OS === 'android'
-      ? PERMISSIONS.ANDROID.RECORD_AUDIO
-      : PERMISSIONS.IOS.MICROPHONE,
-  );
+   return check(Platform.OS === 'android' ? PERMISSIONS.ANDROID.RECORD_AUDIO : PERMISSIONS.IOS.MICROPHONE);
 };
 
 export const requestNotificationPermission = async () => {

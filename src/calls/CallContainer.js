@@ -40,7 +40,7 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
 
    React.useLayoutEffect(() => {
       // requesting for Bluetooth connect permission for android
-      if (Platform.OS) {
+      if (Platform.OS === 'android') {
          requestBluetoothConnectPermission();
          dispatch(openCallModal());
       }

@@ -13,7 +13,7 @@ import {
    VideoUnMuteIcon,
 } from '../../common/Icons';
 import { useSelector } from 'react-redux';
-import { updateCallAudioMute, updateAudioRouteTo } from '../../Helper/Calls/Utility';
+import { updateCallAudioMute, updateAudioRouteTo, audioRouteNameMap } from '../../Helper/Calls/Utility';
 import RNCallKeep from 'react-native-callkeep';
 import Pressable from '../../common/Pressable';
 import { AUDIO_ROUTE_BLUETOOTH, AUDIO_ROUTE_HEADSET, AUDIO_ROUTE_PHONE, AUDIO_ROUTE_SPEAKER, CALL_STATUS_DISCONNECTED } from '../../Helper/Calls/Constant';
@@ -144,7 +144,7 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute }) => {
                {audioRoutes.map(route => (
                   <Pressable
                      key={route.name}
-                     contentContainerStyle={[styles.audioRouteItem, route.selected && styles.selectedAudioRouteItem]}
+                     contentContainerStyle={[styles.audioRouteItem, selectedAudioRoute === audioRouteNameMap[route.type] && styles.selectedAudioRouteItem]}
                      onPress={handleSelectAudioRoute(route)}>
                      <Text style={styles.audioRouteItemText}>{route.type}</Text>
                   </Pressable>

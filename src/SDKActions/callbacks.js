@@ -58,7 +58,7 @@ import {
    showOngoingNotification,
    startDurationTimer,
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
-   updateCallSpeakerEnabled,
+   updateAudioRouteTo,
    updateMissedCallNotification,
 } from '../Helper/Calls/Utility';
 import { formatUserIdToJid, getLocalUserDetails } from '../Helper/Chat/ChatHelper';
@@ -128,6 +128,7 @@ import { updateRosterData } from '../redux/Actions/rosterAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import BluetoothHeadsetDetectionModule from '../customModules/BluetoothHeadsetDetectionModule';
 
 let localStream = null,
    localVideoMuted = false,
@@ -177,6 +178,7 @@ export const resetCallData = () => {
    // }
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall();
    HeadphoneDetection.remove?.();
+   BluetoothHeadsetDetectionModule.removeAllListeners();
    KeyEvent.removeKeyUpListener();
    if (Platform.OS === 'ios') {
       clearIosCallListeners();
@@ -495,9 +497,9 @@ const connected = async res => {
          if (Platform.OS === 'android') {
             // once the call is connected, already selected audio route is not automatically working
             // so manually rerouting the audio to the selected one if it is changed
-            const isSpeakerEnabledInUI = Store.getState().callControlsData?.isSpeakerEnabled || false;
-            if (isSpeakerEnabledInUI) {
-               updateCallSpeakerEnabled(true, '', ''); // only 1st param will be used in Android so passing empty data for remaining params
+            const selectedAudioRoute = Store.getState().callControlsData?.selectedAudioRoute || '';
+            if (selectedAudioRoute) {
+               updateAudioRouteTo(selectedAudioRoute, selectedAudioRoute); // only first 2 params will be used in Android so passing empty data for remaining params
             }
             if (!onReconnect) {
                await stopForegroundServiceNotification();
@@ -538,6 +540,7 @@ const connected = async res => {
 };
 
 const connecting = res => {
+   stopOutgoingCallRingingTone();
    updatingUserStatusInRemoteStream(res.usersStatus);
    // let roomId = getFromLocalStorageAndDecrypt('roomName');
    // encryptAndStoreInLocalStorage('callingComponent', false);

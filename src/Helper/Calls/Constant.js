@@ -58,6 +58,7 @@ export const MISSED_CALL = 'MISSED_CALL';
 export const AUDIO_ROUTE_SPEAKER = 'Speaker';
 export const AUDIO_ROUTE_PHONE = 'Phone';
 export const AUDIO_ROUTE_HEADSET = 'Headset';
+export const AUDIO_ROUTE_BLUETOOTH = 'Bluetooth';
 
 // Device Types and Package Names
 export const BRAND_XIAOMI = 'xiaomi';

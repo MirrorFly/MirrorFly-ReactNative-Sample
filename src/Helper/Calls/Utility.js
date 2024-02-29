@@ -71,12 +71,13 @@ import ActivityModule from '../../customModules/ActivityModule';
 import BluetoothHeadsetDetectionModule from '../../customModules/BluetoothHeadsetDetectionModule';
 import AudioRoutingModule from '../../customModules/AudioRoutingModule';
 import { debounce } from 'lodash-es';
+import RingtoneSilentKeyEventModule from '../../customModules/RingtoneSilentKeyEventModule';
 
 let preventMultipleClick = false;
 let callBackgroundNotification = true;
 let preventEndCallFromHeadsetButton = false;
 
-const audioRouteNameMap = {
+export const audioRouteNameMap = {
    Speaker: AUDIO_ROUTE_SPEAKER,
    Headset: AUDIO_ROUTE_HEADSET,
    Headphones: AUDIO_ROUTE_HEADSET, // iOS
@@ -134,6 +135,15 @@ const routeAndroidAudioTo = _route => {
    }
 };
 
+/**
+ * @typedef HeadphonesData
+ * @property {boolean} audioJack
+ * @property {boolean} bluetooth
+ */
+
+/**
+ * @param {HeadphonesData} data 
+ */
 const handleHeadphoneDetection = async data => {
    const callControlsData = Store.getState().callControlsData;
    const isSpeakerEnabledInUI = callControlsData?.isSpeakerEnabled || false;
@@ -178,6 +188,12 @@ export const addHeadphonesConnectedListenerForCall = (shouldUpdateInitialValue =
    // ending/declining the call in iOS will be taken care by the callKeep
    // so adding a keyup listener for android to end/decline the call when headset play/pause button pressed
    KeyEvent.onKeyUpListener(keyEvent => {
+      // console.log('keyEvent from listener', keyEvent.keyCode);
+      if(Platform.OS === 'android') {
+         if(keyEvent.keyCode === 25 || keyEvent.keyCode === 24) {
+            stopIncomingCallRingtone();
+         }
+      }
       if (Platform.OS === 'android' && keyEvent.keyCode === 79) {
          // keyCode 79 is KEYCODE_HEADSETHOOK which is the play/pause button on headset
          const { screenName, connectionState, callerUUID } = Store.getState().callData;
@@ -190,6 +206,10 @@ export const addHeadphonesConnectedListenerForCall = (shouldUpdateInitialValue =
          }
       }
    });
+   RingtoneSilentKeyEventModule.addEventListener(() => {
+      console.log('Ringtone silented');
+      stopIncomingCallRingtone();
+   })
 };
 
 //Making OutGoing Call
@@ -500,6 +520,7 @@ export const declineIncomingCall = async () => {
 
 const handleAudioRouteChangeListenerForIos = () => {
    RNCallKeep.addEventListener('didChangeAudioRoute', ({ output, reason }) => {
+      console.log('LOGG::==>> didChangeAudioRoute from callkit', output, reason);
       const currentCallUUID = Store.getState().callData?.callerUUID;
       updateAudioRouteTo(output, output, currentCallUUID, true, reason);
    });
@@ -914,7 +935,7 @@ export const updateAudioRouteTo = async (
 ) => {
    try {
       const speakerEnabled = audioRouteName === AUDIO_ROUTE_SPEAKER;
-      const { isSpeakerEnabled: isSpeakerEnabledInUI } = Store.getState().callControlsData || {};
+      const { isSpeakerEnabled: isSpeakerEnabledInUI, isBluetoothHeadsetConnected = false } = Store.getState().callControlsData || {};
       Store.dispatch(updateCallSelectedAudioRoute(audioRouteNameMap[audioRouteType]));
       if (Platform.OS === 'android') {
          const _routeName = audioRouteNameMap[audioRouteType];
@@ -930,7 +951,8 @@ export const updateAudioRouteTo = async (
             // iOS audio route change reasons
             case 3: // Category change
                // change the category based on the call type and already selected audio route
-               if (isSpeakerEnabledInUI && audioRouteName?.toLowerCase?.() !== 'speaker') {
+               if (isSpeakerEnabledInUI && audioRouteName?.toLowerCase?.() !== 'speaker' && !isBluetoothHeadsetConnected) {
+                  console.log('LOGG::==>> updateAudioRouteTo manually in case 3 ', isBluetoothHeadsetConnected);
                   updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, callUUID);
                   return;
                }

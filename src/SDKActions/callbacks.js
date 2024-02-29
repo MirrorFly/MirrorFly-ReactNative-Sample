@@ -28,6 +28,9 @@ import {
    stopReconnectingTone,
 } from '../Helper/Calls/Call';
 import {
+   AUDIO_ROUTE_BLUETOOTH,
+   AUDIO_ROUTE_PHONE,
+   AUDIO_ROUTE_SPEAKER,
    CALL_AGAIN_SCREEN,
    CALL_BUSY_STATUS_MESSAGE,
    CALL_CONVERSION_STATUS_CANCEL,
@@ -48,6 +51,7 @@ import {
 } from '../Helper/Calls/Constant';
 import {
    addHeadphonesConnectedListenerForCall,
+   audioRouteNameMap,
    closeCallModalActivity,
    displayIncomingCallForAndroid,
    displayIncomingCallForIos,
@@ -129,6 +133,7 @@ import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
 import BluetoothHeadsetDetectionModule from '../customModules/BluetoothHeadsetDetectionModule';
+import RingtoneSilentKeyEventModule from '../customModules/RingtoneSilentKeyEventModule';
 
 let localStream = null,
    localVideoMuted = false,
@@ -146,7 +151,7 @@ export const setDisconnectedScreenTimeoutTimer = _timer => (disconnectedScreenTi
 
 const clearDisconnectedScreenTimeout = () => {
    BackgroundTimer.clearTimeout(disconnectedScreenTimeoutTimer);
-}
+};
 
 export const getIsUserOnCall = () => {
    return onCall;
@@ -179,6 +184,7 @@ export const resetCallData = () => {
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall();
    HeadphoneDetection.remove?.();
    BluetoothHeadsetDetectionModule.removeAllListeners();
+   RingtoneSilentKeyEventModule.removeAllListeners();
    KeyEvent.removeKeyUpListener();
    if (Platform.OS === 'ios') {
       clearIosCallListeners();
@@ -505,6 +511,23 @@ const connected = async res => {
                await stopForegroundServiceNotification();
                showOngoingNotification(res);
             }
+         } else {
+            const { isBluetoothHeadsetConnected = false } = Store.getState().callControlsData || {};
+            if (isBluetoothHeadsetConnected) {
+               const callData = Store.getState().callData || {};
+               const callControlsData = Store.getState().callControlsData || {};
+               const activeCallerUUID = callData?.callerUUID;
+               const selectedAudioRoute = callControlsData?.selectedAudioRoute;
+               if (selectedAudioRoute === AUDIO_ROUTE_SPEAKER) {
+                  await updateAudioRouteTo(AUDIO_ROUTE_PHONE, AUDIO_ROUTE_PHONE, activeCallerUUID, false);
+               }
+               const _routes = await RNCallKeep.getAudioRoutes();
+               _routes.forEach(r => {
+                  if (audioRouteNameMap[r.type] === AUDIO_ROUTE_BLUETOOTH) {
+                     updateAudioRouteTo(r.name, r.type, activeCallerUUID, false);
+                  }
+               });
+            }
          }
          onReconnect = false;
       }
@@ -525,9 +548,9 @@ const connected = async res => {
             // updating the call connected status to android native code
             ActivityModule.updateCallConnectedStatus(true);
             startDurationTimer();
-         } else if (store.getState().callData?.screenName === OUTGOING_CALL_SCREEN){
-            // SDK will give 'connected' callback with {... localUser: true} when local user goes offline and come back online 
-            // So in that case we will show reconnecting text in UI, so we are updating the callStatusText to 'ringing' when user came back online on outgoing call screen 
+         } else if (store.getState().callData?.screenName === OUTGOING_CALL_SCREEN) {
+            // SDK will give 'connected' callback with {... localUser: true} when local user goes offline and come back online
+            // So in that case we will show reconnecting text in UI, so we are updating the callStatusText to 'ringing' when user came back online on outgoing call screen
             // before receiver accept or decline the call
             store.dispatch(
                updateConference({
@@ -851,7 +874,7 @@ export const callBacks = {
       console.log('adminBlockListener = (res) => { }', res);
    },
    incomingCallListener: function (res) {
-      if(onCall) {
+      if (onCall) {
          SDK.callEngaged();
          return;
       }

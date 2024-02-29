@@ -97,7 +97,7 @@ const OnGoingCall = () => {
    const menuItems = React.useMemo(
       () => [
          {
-            label: `${layout === 'tile' ? 'Grid' : 'Tile'} view`,
+            label: ` ${layout === 'tile' ? 'Grid' : 'Tile'} view `,
             icon: <LayoutIcon width={12} height={12} />,
             formatter: toggleLayout,
          },

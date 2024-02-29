@@ -34,7 +34,7 @@ const RecentHeader = ({ recentItem, handleRemove, handleDeleteChat }) => {
             <IconButton onPress={handleRemoveClose}>
                <CloseIcon />
             </IconButton>
-            <Text style={[commonStyles.txtCenter, commonStyles.fontSize_18, commonStyles.colorBlack]}>
+            <Text style={[commonStyles.textCenter, commonStyles.fontSize_18, commonStyles.colorBlack]}>
                {recentItem?.length}
             </Text>
          </View>

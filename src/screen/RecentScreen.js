@@ -1,9 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
-import { ActivityIndicator, BackHandler, Dimensions, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, Dimensions, StyleSheet, Text, View } from 'react-native';
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import { batch, useDispatch, useSelector } from 'react-redux';
+import { showToast } from '../Helper';
 import { endOngoingCallLogout } from '../Helper/Calls/Utility';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import * as RootNav from '../Navigation/rootNavigation';
@@ -29,7 +30,6 @@ import {
    toggleRecentChatSearch,
    updateRecentChatSearchText,
 } from '../redux/Actions/recentChatSearchAction';
-import { showToast } from '../Helper';
 
 const scenesMap = SceneMap({
    chats: () => <RecentChat />,

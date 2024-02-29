@@ -63,6 +63,10 @@ import {
 import { formatUserIdToJid, getLocalUserDetails } from '../Helper/Chat/ChatHelper';
 import {
    CONNECTION_STATE_CONNECTING,
+   GROUP_USER_ADDED,
+   GROUP_USER_LEFT,
+   GROUP_USER_MADE_ADMIN,
+   GROUP_USER_REMOVED,
    MSG_CLEAR_CHAT,
    MSG_CLEAR_CHAT_CARBON,
    MSG_DELETE_CHAT_CARBON,
@@ -693,7 +697,6 @@ export const callBacks = {
       console.log('dbListener', JSON.stringify(res));
    },
    messageListener: async res => {
-      console.log('messageListener res ==>', JSON.stringify(res, null, 2));
       await nextFrame();
       switch (res.msgType) {
          case 'sentMessage':
@@ -821,8 +824,15 @@ export const callBacks = {
       console.log('favouriteMessageListener', res);
    },
    groupProfileListener: res => {
-      if (res.msgType === 'userAdded') {
-         fetchGroupParticipants(res.groupJid);
+      if (
+         res.msgType === GROUP_USER_ADDED ||
+         res.msgType === GROUP_USER_REMOVED ||
+         res.msgType === GROUP_USER_MADE_ADMIN ||
+         res.msgType === GROUP_USER_LEFT
+      ) {
+         setTimeout(() => {
+            fetchGroupParticipants(res.groupJid);
+         }, 2000);
       }
       if (res.msgType === 'profileUpdated') {
          const obj = {

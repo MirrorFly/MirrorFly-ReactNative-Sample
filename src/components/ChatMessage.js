@@ -117,6 +117,7 @@ const ChatMessage = props => {
    const handleMessageObj = () => {
       if (
          ['image', 'video'].includes(message?.msgBody?.message_type) &&
+         (message?.msgBody?.media?.is_downloaded === 2 || message?.msgBody?.media?.is_uploading === 2) &&
          (message?.msgBody?.media?.local_path || message?.msgBody?.media?.file?.fileDetails?.uri)
       ) {
          if (isKeyboardVisibleRef.current) {

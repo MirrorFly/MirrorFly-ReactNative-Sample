@@ -219,3 +219,8 @@ export const getLastseen = secs => {
       console.log(error, 'getLastseen error');
    }
 };
+
+export const timeFormat = time => {
+   let offset = moment().utcOffset();
+   return moment.utc(time).utcOffset(offset).format('MM/DD/YYYY [at] h:mm:ss A');
+};

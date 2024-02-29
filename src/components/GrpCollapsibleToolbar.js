@@ -23,6 +23,7 @@ import { DeleteChatHistoryAction } from '../redux/Actions/ConversationAction';
 import { deleteActiveChatAction } from '../redux/Actions/RecentChatAction';
 import AlertModal from './AlertModal';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import config from './chat/common/config';
 
 const propTypes = {
    chatUser: PropTypes.string,
@@ -190,6 +191,11 @@ const GrpCollapsibleToolbar = ({
    };
 
    const handleAddParticipants = () => {
+      if (participants.length === config.maxAllowdGroupMembers) {
+         return showToast('Maximum allowed group members ' + config.maxAllowdGroupMembers, {
+            id: 'Maximum_allowed_group_members',
+         });
+      }
       navigation.navigate(CONTACTLIST, {
          prevScreen: GROUP_INFO,
          grpDetails: { grpJid: chatUser, grpName: title, participants },
@@ -217,7 +223,7 @@ const GrpCollapsibleToolbar = ({
       }
       const { statusCode } = await SDK.userExitGroup(chatUser, localUser?.userType === 'o');
       if (statusCode === 200) {
-         getGroupParticipants(1000);
+         getGroupParticipants(2500);
       }
    };
    const handleDeleteGroup = async () => {
@@ -240,14 +246,13 @@ const GrpCollapsibleToolbar = ({
       if (!isNetworkconneted) {
          return showInternetconnectionToast();
       }
-      toggleModel();
       const { statusCode, message } = await SDK.removeParticipant(
          chatUser,
          userDetails.userJid,
          userDetails.userType === 'o',
       );
       if (statusCode === 200) {
-         getGroupParticipants(1000);
+         getGroupParticipants(2500);
       } else {
          showToast(message, { id: message });
       }
@@ -259,7 +264,7 @@ const GrpCollapsibleToolbar = ({
       }
       const { statusCode, message } = await SDK.makeAsAdmin(chatUser, userDetails.userJid);
       if (statusCode === 200) {
-         getGroupParticipants(1000);
+         getGroupParticipants(2500);
       } else {
          showToast(message, { id: message });
       }
@@ -486,7 +491,7 @@ const GrpCollapsibleToolbar = ({
             </View>
          </Animated.ScrollView>
          <Modal visible={modelOpen} onRequestClose={toggleModel}>
-            <ModalCenteredContent onPressOutside={toggleModel}>
+            <ModalCenteredContent>
                <View style={modelStyles.inviteFriendModalContentContainer}>
                   {/* <Pressable>
                      <Text style={modelStyles.modalOption}>Start Chat</Text>
@@ -501,7 +506,7 @@ const GrpCollapsibleToolbar = ({
                               toggleModel();
                               toggleConfirmUserRemoveModal();
                            }}>
-                           <Text style={modelStyles.modalOption}>Remove form Group</Text>
+                           <Text style={modelStyles.modalOption}>Remove from Group</Text>
                         </Pressable>
                         {userDetails.userType !== 'o' && (
                            <Pressable
@@ -608,6 +613,7 @@ const styles = StyleSheet.create({
       fontSize: 25,
       padding: 2,
       alignItems: 'center',
+      maxWidth: 350,
    },
    titleStatus: {
       fontSize: 14,

@@ -143,14 +143,11 @@ const ChatConversation = React.memo(props => {
    };
 
    React.useEffect(() => {
-      let foundMsg = selectedMsgs.filter(obj => obj.fromUserJid !== currentUserJID);
+      let foundMsg = selectedMsgs.filter(obj => obj.publisherJid !== currentUserJID);
+
       switch (true) {
          case foundMsg.length > 0:
             setMenuItems([
-               {
-                  label: 'Report',
-                  formatter: () => {},
-               },
                {
                   label:
                      selectedMsgs[0]?.msgBody.message_type === 'text' || selectedMsgs[0]?.msgBody?.media?.caption

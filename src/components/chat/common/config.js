@@ -14,6 +14,8 @@ const config = {
    reportMembers: 5,
    GOOGLE_LOCATION_API_KEY: 'AIzaSyBaKkrQnLT4nacpKblIE5d4QK6GpaX5luQ', // NOSONAR
    typingStatusGoneWaitTime: 500,
+   minAllowdGroupMembers: 2,
+   maxAllowdGroupMembers: 238,
    // ================ Dev environment variables =====================
    // API_URL: 'https://api-uikit-dev.contus.us/api/v1',
    // licenseKey: '2sdgNtr3sFBSM3bYRa7RKDPEiB38Xo',

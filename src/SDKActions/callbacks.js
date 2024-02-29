@@ -9,7 +9,6 @@ import KeepAwake from 'react-native-keep-awake';
 import KeyEvent from 'react-native-keyevent';
 import { MediaStream } from 'react-native-webrtc';
 import { batch } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
 import {
    callConnectionStoreData,
    clearIncomingCallTimer,
@@ -28,6 +27,9 @@ import {
    stopReconnectingTone,
 } from '../Helper/Calls/Call';
 import {
+   AUDIO_ROUTE_BLUETOOTH,
+   AUDIO_ROUTE_PHONE,
+   AUDIO_ROUTE_SPEAKER,
    CALL_AGAIN_SCREEN,
    CALL_BUSY_STATUS_MESSAGE,
    CALL_CONVERSION_STATUS_CANCEL,
@@ -47,6 +49,7 @@ import {
 } from '../Helper/Calls/Constant';
 import {
    addHeadphonesConnectedListenerForCall,
+   audioRouteNameMap,
    closeCallModalActivity,
    constructMuteStatus,
    displayIncomingCallForAndroid,
@@ -58,7 +61,7 @@ import {
    showOngoingNotification,
    startDurationTimer,
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
-   updateCallSpeakerEnabled,
+   updateAudioRouteTo,
    updateMissedCallNotification,
 } from '../Helper/Calls/Utility';
 import { formatUserIdToJid, getLocalUserDetails } from '../Helper/Chat/ChatHelper';
@@ -83,6 +86,8 @@ import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Help
 import { updateConversationMessage, updateRecentChatMessage } from '../components/chat/common/createMessage';
 import { REGISTERSCREEN } from '../constant';
 import ActivityModule from '../customModules/ActivityModule';
+import BluetoothHeadsetDetectionModule from '../customModules/BluetoothHeadsetDetectionModule';
+import RingtoneSilentKeyEventModule from '../customModules/RingtoneSilentKeyEventModule';
 import {
    callDurationTimestamp,
    clearCallData,
@@ -177,6 +182,8 @@ export const resetCallData = () => {
    // }
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall();
    HeadphoneDetection.remove?.();
+   BluetoothHeadsetDetectionModule.removeAllListeners();
+   RingtoneSilentKeyEventModule.removeAllListeners();
    KeyEvent.removeKeyUpListener();
    if (Platform.OS === 'ios') {
       clearIosCallListeners();
@@ -501,13 +508,30 @@ const connected = async res => {
          if (Platform.OS === 'android') {
             // once the call is connected, already selected audio route is not automatically working
             // so manually rerouting the audio to the selected one if it is changed
-            const isSpeakerEnabledInUI = Store.getState().callControlsData?.isSpeakerEnabled || false;
-            if (isSpeakerEnabledInUI) {
-               updateCallSpeakerEnabled(true, '', ''); // only 1st param will be used in Android so passing empty data for remaining params
+            const selectedAudioRoute = Store.getState().callControlsData?.selectedAudioRoute || '';
+            if (selectedAudioRoute) {
+               updateAudioRouteTo(selectedAudioRoute, selectedAudioRoute); // only first 2 params will be used in Android so passing empty data for remaining params
             }
             if (!onReconnect) {
                await stopForegroundServiceNotification();
                showOngoingNotification(res);
+            }
+         } else {
+            const { isBluetoothHeadsetConnected = false } = Store.getState().callControlsData || {};
+            if (isBluetoothHeadsetConnected) {
+               const callData = Store.getState().callData || {};
+               const callControlsData = Store.getState().callControlsData || {};
+               const activeCallerUUID = callData?.callerUUID;
+               const selectedAudioRoute = callControlsData?.selectedAudioRoute;
+               if (selectedAudioRoute === AUDIO_ROUTE_SPEAKER) {
+                  await updateAudioRouteTo(AUDIO_ROUTE_PHONE, AUDIO_ROUTE_PHONE, activeCallerUUID, false);
+               }
+               const _routes = await RNCallKeep.getAudioRoutes();
+               _routes.forEach(r => {
+                  if (audioRouteNameMap[r.type] === AUDIO_ROUTE_BLUETOOTH) {
+                     updateAudioRouteTo(r.name, r.type, activeCallerUUID, false);
+                  }
+               });
             }
          }
          onReconnect = false;
@@ -544,6 +568,7 @@ const connected = async res => {
 };
 
 const connecting = res => {
+   stopOutgoingCallRingingTone();
    updatingUserStatusInRemoteStream(res.usersStatus);
    // let roomId = getFromLocalStorageAndDecrypt('roomName');
    // encryptAndStoreInLocalStorage('callingComponent', false);
@@ -906,7 +931,7 @@ export const callBacks = {
          listnerForNetworkStateChangeWhenIncomingCall();
          clearDisconnectedScreenTimeout();
          if (Platform.OS === 'android') {
-            const callUUID = uuidv4();
+            let callUUID = SDK.randomString(16, 'BA');
             Store.dispatch(updateCallerUUID(callUUID));
             KeepAwake.activate();
             displayIncomingCallForAndroid(res);

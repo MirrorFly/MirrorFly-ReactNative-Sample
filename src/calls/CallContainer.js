@@ -22,6 +22,7 @@ import OutGoingCall from './screens/OutGoingCall';
 import PipViewIos from './screens/PipViewIos';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { openCallModal } from '../redux/Actions/CallAction';
+import { requestBluetoothConnectPermission } from '../common/utils';
 
 const CallContainer = ({ hasNativeBaseProvider }) => {
    const {
@@ -38,7 +39,11 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
    const isPipMode = usePipModeListener();
 
    React.useLayoutEffect(() => {
-      Platform.OS === 'android' && dispatch(openCallModal());
+      // requesting for Bluetooth connect permission for android
+      if (Platform.OS === 'android') {
+         requestBluetoothConnectPermission();
+         dispatch(openCallModal());
+      }
       if (Object.keys(connectionState).length === 0) {
          closeCallModalActivity();
       }

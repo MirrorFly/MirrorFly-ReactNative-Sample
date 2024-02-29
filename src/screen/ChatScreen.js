@@ -48,6 +48,7 @@ import { deleteRecoverMessage, recoverMessage } from '../redux/Actions/RecoverMe
 import { clearConversationSearchData } from '../redux/Actions/conversationSearchAction';
 import store from '../redux/store';
 import SavePicture from './Gallery';
+import { fetchGroupParticipants } from '../Helper/Chat/Groups';
 
 export const selectedMediaIdRef = createRef();
 selectedMediaIdRef.current = {};
@@ -73,6 +74,10 @@ function ChatScreen() {
    useFocusEffect(
       React.useCallback(() => {
          setReplyMsg(data[toUserJid]?.replyMessage || '');
+
+         if (MIX_BARE_JID.test(toUserJid)) {
+            fetchGroupParticipants(toUserJid);
+         }
       }, [toUserJid]),
    );
 
@@ -597,6 +602,7 @@ function ChatScreen() {
                      setLocalNav={setLocalNav}
                      setIsMessageInfo={setIsMessageInfo}
                      isMessageInfo={isMessageInfo}
+                     chatUser={toUserJid}
                   />
                ),
                GalleryPickView: (

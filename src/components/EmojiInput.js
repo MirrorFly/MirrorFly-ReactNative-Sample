@@ -8,17 +8,14 @@ import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
 import EmojiOverlay from './EmojiPicker';
 
-function EmojiInput({
-   children,
-   allowedMaxLimit = 25,
-   defaultContent = '',
-   setEmojiWindow = () => {},
-   setValue = () => {},
-}) {
+function EmojiInput(
+   { children, allowedMaxLimit = 0, defaultContent = '', onEmojiWindowToggle = () => {}, setValue = () => {} },
+   props,
+) {
    const navigation = useNavigation();
    const inputRef = React.useRef();
    const [content, setContent] = React.useState(defaultContent);
-   const [maxTextLength, setMaxTextLength] = React.useState(allowedMaxLimit);
+   const [maxTextLength, setMaxTextLength] = React.useState();
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
    const [pressedKey, setPressedKey] = React.useState('');
 
@@ -27,20 +24,19 @@ function EmojiInput({
    const count = () => allowedMaxLimit - splitter.countGraphemes(content);
 
    const handleEmojiSelect = (...emojis) => {
+      if (!allowedMaxLimit) {
+         setContent(prev => prev + emojis);
+      }
       if (count() > 0) {
          setContent(prev => prev + emojis);
       }
    };
 
    const handleInput = text => {
-      console.log('text ==>', splitter.countGraphemes(text));
-      const lastChar = text.charAt(text.length - 1);
-
-      // Calculate the size of the last character
-      const lastCharSize = lastChar.length;
-
-      console.log('Last entered character size:', lastCharSize);
       setMaxTextLength();
+      if (!allowedMaxLimit) {
+         setContent(text);
+      }
       if (count() > 0 || pressedKey === 'Backspace') {
          setContent(text);
       }
@@ -53,7 +49,7 @@ function EmojiInput({
 
    const toggleEmojiWindow = () => {
       setIsEmojiPickerShowing(!isEmojiPickerShowing);
-      setEmojiWindow?.(!isEmojiPickerShowing);
+      onEmojiWindowToggle?.(!isEmojiPickerShowing);
    };
 
    const handleBackBtn = () => {
@@ -93,7 +89,7 @@ function EmojiInput({
                onKeyPress={handleOnKeyPress}
                maxLength={maxTextLength}
             />
-            <Text style={styles.subText}>{count()}</Text>
+            {Boolean(allowedMaxLimit) && <Text style={styles.subText}>{count()}</Text>}
             <View style={[commonStyles.marginRight_12, commonStyles.alignItemsCenter, styles.iconWidth]}>
                <IconButton
                   onPress={() => {

@@ -17,6 +17,7 @@ const ApplicationColors = {
    shadowColor: '#181818',
    groupNotificationBgColour: '#DADADA',
    groupNotificationTextColour: '#565656',
+   placeholderTextColor: '#d3d3d3',
 };
 
 export default ApplicationColors;

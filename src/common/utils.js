@@ -92,10 +92,10 @@ export const requestCameraPermission = async () => {
    switch (true) {
       case Platform.OS === 'ios':
          const ios_permit = await requestMultiple([PERMISSIONS.IOS.CAMERA]);
-         return ios_permit['ios.permission.CAMERA'] || ios_permit['ios.permission.MICROPHONE'];
+         return ios_permit['ios.permission.CAMERA'];
       case Platform.OS === 'android':
          const permited = await requestMultiple([PERMISSIONS.ANDROID.CAMERA]);
-         return permited['android.permission.CAMERA'] || permited['android.permission.RECORD_AUDIO'];
+         return permited['android.permission.CAMERA'];
    }
 };
 
@@ -103,10 +103,10 @@ export const requestCameraMicPermission = async () => {
    switch (true) {
       case Platform.OS === 'ios':
          const ios_permit = await requestMultiple([PERMISSIONS.IOS.CAMERA, PERMISSIONS.IOS.MICROPHONE]);
-         return ios_permit['ios.permission.CAMERA'] || ios_permit['ios.permission.MICROPHONE'];
+         return ios_permit['ios.permission.CAMERA'] && ios_permit['ios.permission.MICROPHONE'];
       case Platform.OS === 'android':
          const permited = await requestMultiple([PERMISSIONS.ANDROID.CAMERA, PERMISSIONS.ANDROID.RECORD_AUDIO]);
-         return permited['android.permission.CAMERA'] || permited['android.permission.RECORD_AUDIO'];
+         return permited['android.permission.CAMERA'] && permited['android.permission.RECORD_AUDIO'];
    }
 };
 

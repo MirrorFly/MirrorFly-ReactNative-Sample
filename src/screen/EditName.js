@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import IconButton from '../common/IconButton';
 import { LeftArrowIcon } from '../common/Icons';
@@ -58,7 +58,9 @@ const EditName = () => {
    };
 
    return (
-      <View style={[commonStyles.bg_white, commonStyles.flex1]}>
+      <KeyboardAvoidingView
+         style={[commonStyles.bg_white, commonStyles.flex1]}
+         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
          <View style={[styles.container, commonStyles.hstack, { backgroundColor: headerBg }]}>
             <View
                style={[
@@ -97,7 +99,7 @@ const EditName = () => {
                </View>
             </View>
          </EmojiInput>
-      </View>
+      </KeyboardAvoidingView>
    );
 };
 

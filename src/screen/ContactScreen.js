@@ -185,6 +185,7 @@ function ContactScreen() {
    const handleClear = async () => {
       setSearchText('');
       setIsSearching(false);
+      fetchContactList('');
    };
 
    const handleGrpPartcipant = async () => {

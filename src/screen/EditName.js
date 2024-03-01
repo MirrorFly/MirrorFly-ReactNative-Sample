@@ -23,6 +23,11 @@ const EditName = () => {
    const [toggleEmojiWindow, setToggleEmojiWindow] = React.useState(false);
    const headerBg = useSelector(state => state.safeArea.color);
    const [value, setValue] = React.useState(title);
+   const [okClicked, setOkClicked] = React.useState(false);
+
+   const togglOkCLick = () => {
+      setOkClicked(!okClicked);
+   };
 
    const hanldeOkBtn = async () => {
       if (!isConnected) {
@@ -35,6 +40,7 @@ const EditName = () => {
          showToast('Group name cannot be empty', { id: 'Group name cannot be empty' });
          return;
       }
+      togglOkCLick();
       if (isConnected && value.trim()) {
          const { statusCode, message } = await SDK.setGroupProfile(chatUser, value, imageToken);
          if (statusCode === 200) {
@@ -43,6 +49,7 @@ const EditName = () => {
             showToast(message, { id: message });
          }
       }
+      togglOkCLick();
    };
 
    const handleBackBtn = () => {
@@ -66,7 +73,11 @@ const EditName = () => {
                <Text style={styles.titleText}>Enter New Name</Text>
             </View>
          </View>
-         <EmojiInput defaultContent={title} setValue={setValue} onEmojiWindowToggle={setToggleEmojiWindow}>
+         <EmojiInput
+            allowedMaxLimit={25}
+            defaultContent={title}
+            setValue={setValue}
+            onEmojiWindowToggle={setToggleEmojiWindow}>
             <View style={commonStyles.flex1}>
                <View
                   style={[
@@ -80,7 +91,7 @@ const EditName = () => {
                      <Text style={styles.cancelBtn}>CANCEL</Text>
                   </Pressable>
                   <View style={styles.okContainer} />
-                  <Pressable onPress={hanldeOkBtn}>
+                  <Pressable disabled={okClicked} onPress={hanldeOkBtn}>
                      <Text style={styles.okBtn}>OK</Text>
                   </Pressable>
                </View>

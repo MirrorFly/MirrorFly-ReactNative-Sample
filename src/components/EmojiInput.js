@@ -7,11 +7,23 @@ import { KeyboardIcon, SmileIcon } from '../common/Icons';
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
 import EmojiOverlay from './EmojiPicker';
+import PropTypes from 'prop-types';
 
-function EmojiInput(
-   { children, allowedMaxLimit = 0, defaultContent = '', onEmojiWindowToggle = () => {}, setValue = () => {} },
-   props,
-) {
+const propTypes = {
+   children: PropTypes.node,
+   allowedMaxLimit: PropTypes.number,
+   defaultContent: PropTypes.string,
+   onEmojiWindowToggle: PropTypes.func,
+   setValue: PropTypes.func,
+};
+
+function EmojiInput({
+   children,
+   allowedMaxLimit = 0,
+   defaultContent = '',
+   onEmojiWindowToggle = () => {},
+   setValue = () => {},
+}) {
    const navigation = useNavigation();
    const inputRef = React.useRef();
    const [content, setContent] = React.useState(defaultContent);
@@ -113,6 +125,8 @@ function EmojiInput(
       </>
    );
 }
+
+EmojiInput.propTypes = propTypes;
 
 export default EmojiInput;
 

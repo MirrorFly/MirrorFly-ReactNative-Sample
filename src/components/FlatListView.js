@@ -2,7 +2,7 @@ import React from 'react';
 import Avathar from '../common/Avathar';
 import useRosterData from '../hooks/useRosterData';
 import SDK from '../SDK/SDK';
-import { ActivityIndicator, StyleSheet, Text, View, FlatList, Platform } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View, FlatList, Platform, Keyboard } from 'react-native';
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
 import Pressable from '../common/Pressable';
@@ -22,7 +22,9 @@ const RenderItem = ({ item, index, onhandlePress, selectedUsers }) => {
    colorCode = colorCode || SDK.getRandomColorCode();
    status = status || item.status || '';
 
-   const handlePress = () => onhandlePress(item);
+   const handlePress = () => {
+      onhandlePress(item);
+   };
    React.useEffect(() => {
       if (Boolean(selectedUsers[item?.userJid]) !== isChecked) {
          setIsChecked(Boolean(selectedUsers[item?.userJid]));
@@ -92,6 +94,7 @@ export default function FlatListView(props) {
          {renderLoaderIfFetching()}
          <View style={styles.listContainer}>
             <FlatList
+               keyboardShouldPersistTaps={'always'}
                keyExtractor={item => item?.userId.toString()}
                onEndReached={props?.onhandlePagination}
                showsVerticalScrollIndicator={false}

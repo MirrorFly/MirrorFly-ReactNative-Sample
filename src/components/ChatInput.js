@@ -304,7 +304,7 @@ const ChatInput = props => {
    const toggleEmojiPicker = () => {
       setIsEmojiPickerShowing(!isEmojiPickerShowing);
       if (isEmojiPickerShowing) {
-         chatInputRef.current.focus();
+         chatInputRef?.current?.focus();
       } else {
          Keyboard.dismiss();
       }

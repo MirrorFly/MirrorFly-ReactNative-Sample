@@ -66,6 +66,7 @@ function ScreenHeader(props) {
                   }}
                   placeholder=" Search..."
                   cursorColor={ApplicationColors.mainColor}
+                  returnKeyType="done"
                   autoFocus={true}
                />
             )}

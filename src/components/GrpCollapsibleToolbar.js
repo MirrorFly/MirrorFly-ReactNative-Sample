@@ -50,10 +50,11 @@ const defaultProps = {
 
 const RenderItem = ({ item, index, onhandlePress }) => {
    let { nickName, image: imageToken, colorCode, status } = useRosterData(item?.userId);
+   console.log('item ==>', JSON.stringify(item, null, 2));
    // updating default values
-   nickName = nickName || item?.nickName || item?.userId || '';
-   imageToken = imageToken || '';
-   colorCode = colorCode || SDK.getRandomColorCode();
+   nickName = nickName || item?.userProfile?.nickName || item?.userId || '';
+   imageToken = imageToken || item?.userProfile?.image || '';
+   colorCode = colorCode || item?.userProfile?.colorCode || SDK.getRandomColorCode();
    status = status || item.status || '';
    const handlePress = () => onhandlePress(item);
 
@@ -491,7 +492,7 @@ const GrpCollapsibleToolbar = ({
             </View>
          </Animated.ScrollView>
          <Modal visible={modelOpen} onRequestClose={toggleModel}>
-            <ModalCenteredContent>
+            <ModalCenteredContent onPressOutside={toggleModel}>
                <View style={modelStyles.inviteFriendModalContentContainer}>
                   {/* <Pressable>
                      <Text style={modelStyles.modalOption}>Start Chat</Text>
@@ -499,7 +500,7 @@ const GrpCollapsibleToolbar = ({
                   <Pressable>
                      <Text style={modelStyles.modalOption}>View Info</Text>
                   </Pressable> */}
-                  {localUser?.userType === 'o' && (
+                  {Boolean(localUser?.userType) && localUser?.userType === 'o' && (
                      <>
                         <Pressable
                            onPress={() => {

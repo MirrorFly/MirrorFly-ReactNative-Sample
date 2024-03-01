@@ -63,6 +63,8 @@ import {
 import { formatUserIdToJid, getLocalUserDetails } from '../Helper/Chat/ChatHelper';
 import {
    CONNECTION_STATE_CONNECTING,
+   GROUP_CREATED,
+   GROUP_PROFILE_INFO_UPDATED,
    GROUP_USER_ADDED,
    GROUP_USER_LEFT,
    GROUP_USER_MADE_ADMIN,
@@ -825,6 +827,18 @@ export const callBacks = {
    },
    groupProfileListener: res => {
       if (
+         res.msgType === GROUP_CREATED ||
+         res.msgType === GROUP_USER_ADDED ||
+         res.msgType === GROUP_PROFILE_INFO_UPDATED
+      ) {
+         const obj = {
+            userId: getUserIdFromJid(res.groupJid),
+            userJid: res.groupJid,
+            ...res.groupProfile,
+         };
+         store.dispatch(updateRosterData(obj));
+      }
+      if (
          res.msgType === GROUP_USER_ADDED ||
          res.msgType === GROUP_USER_REMOVED ||
          res.msgType === GROUP_USER_MADE_ADMIN ||
@@ -833,14 +847,6 @@ export const callBacks = {
          setTimeout(() => {
             fetchGroupParticipants(res.groupJid);
          }, 2000);
-      }
-      if (res.msgType === 'profileUpdated') {
-         const obj = {
-            userId: getUserIdFromJid(res.groupJid),
-            userJid: res.groupJid,
-            ...res.groupProfile,
-         };
-         store.dispatch(updateRosterData(obj));
       }
    },
    groupMsgInfoListener: res => {

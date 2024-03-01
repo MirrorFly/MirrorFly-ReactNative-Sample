@@ -26,6 +26,7 @@ import { addChatConversationHistory, deleteChatConversationById } from '../redux
 import { navigate } from '../redux/Actions/NavigationAction';
 import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import { CHAT_TYPE_GROUP, CHAT_TYPE_SINGLE, MIX_BARE_JID } from '../Helper/Chat/Constant';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 
 const showMaxUsersLimitToast = () => {
    const options = {
@@ -98,6 +99,7 @@ const ContactItem = ({
 }) => {
    const [isChecked, setIsChecked] = React.useState(false);
    let { nickName, status: profileStatus, image: imageToken, colorCode } = useRosterData(userId);
+   const recentChatData = useSelector(state => state.recentChatData.data);
    // updating default values
    nickName = nickName || name || userId;
    colorCode = colorCode || '';
@@ -113,6 +115,10 @@ const ContactItem = ({
       if (!isChecked && !isCheckboxAllowed) {
          showMaxUsersLimitToast();
          return;
+      }
+      const userType = recentChatData.find(r => getUserIdFromJid(r.userJid) === userId)?.userType || '';
+      if (!userType && MIX_BARE_JID.test(userJid)) {
+         return showToast("You're no longer a participant in this group", { id: "You're no longer a participant" });
       }
       setIsChecked(val => !val);
       handleItemSelect(userId, {
@@ -365,19 +371,14 @@ const ForwardMessage = () => {
             i.profileDetails?.nickName?.toLowerCase?.()?.includes(searchText.trim().toLowerCase()),
          );
          setFilteredRecentChatList(filteredData);
+
+         // filtering the groups and updating the state
+         const gorupsFilteredData = groupChatList.filter(i =>
+            i.profileDetails?.nickName?.toLowerCase?.()?.includes(searchText.trim().toLowerCase()),
+         );
+         setFilteredGroupChatList(gorupsFilteredData);
       } else {
          setFilteredRecentChatList(recentChatList);
-      }
-   }, [searchText]);
-
-   React.useEffect(() => {
-      if (searchText) {
-         //    // filtering the recent chat and updating the state
-         //    const filteredData = recentChatList.filter(i =>
-         //       i.profileDetails?.nickName?.toLowerCase?.()?.includes(searchText.trim().toLowerCase()),
-         //    );
-         //    setFilteredRecentChatList(filteredData);
-      } else {
          setFilteredGroupChatList(groupChatList);
       }
    }, [searchText]);
@@ -621,7 +622,7 @@ const ForwardMessage = () => {
       <>
          <View style={styles.container}>
             {renderHeader}
-            {!filteredRecentChatList.length && !filteredContactList.length && (
+            {!filteredRecentChatList.length && !filteredContactList.length && !filteredGroupChatList.length && (
                <View
                   style={[
                      commonStyles.alignItemsCenter,

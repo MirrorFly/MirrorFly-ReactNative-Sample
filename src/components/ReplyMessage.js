@@ -35,16 +35,17 @@ function ReplyMessage(props) {
       msgBody = {},
       msgBody: { message_type = '', message = '', media = {} } = {},
       deleteStatus = 0,
-      fromUserJid = '',
+      publisherJid = '',
    } = repliedMsg;
 
    const fromUserId = React.useMemo(() => getUserIdFromJid(fromUserJId), [fromUserJId]);
+   const publisherId = getUserIdFromJid(publisherJid);
 
-   const isSameUser = fromUserJid === currentUserJID;
+   const isSameUser = publisherJid === currentUserJID;
 
-   let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
+   let { nickName } = useRosterData(isSameUser ? '' : publisherId);
    // updating default values
-   nickName = nickName || profileDetails?.nickName || fromUserId || '';
+   nickName = nickName || profileDetails?.nickName || publisherId || '';
 
    const replyMessageUserNickName = !isSameUser ? nickName : 'You';
 

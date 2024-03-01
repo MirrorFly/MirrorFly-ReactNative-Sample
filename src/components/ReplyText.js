@@ -4,19 +4,21 @@ import { HStack, Text, View } from 'native-base';
 import { ClearTextIcon } from '../common/Icons';
 import { useSelector } from 'react-redux';
 import useRosterData from '../hooks/useRosterData';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 
 const ReplyText = props => {
    const { replyMsgItems, handleRemove, selectedMsgIndex } = props;
    const scrollViewRef = React.useRef(null);
-   const { fromUserJid = '', fromUserId = '' } = replyMsgItems;
+   const { publisherJid = '', fromUserId = '' } = replyMsgItems;
    const profileDetails = useSelector(state => state.navigation.profileDetails);
    const currentUserJID = useSelector(state => state.auth.currentUserJID);
-   const isSameUser = fromUserJid === currentUserJID;
+   const isSameUser = publisherJid === currentUserJID;
    const averageMessageHeight = 60;
+   const publisherId = getUserIdFromJid(publisherJid);
 
-   let { nickName } = useRosterData(isSameUser ? '' : fromUserId);
+   let { nickName } = useRosterData(isSameUser ? '' : publisherId);
    // updating default values
-   nickName = nickName || profileDetails?.nickName || fromUserId || '';
+   nickName = nickName || profileDetails?.nickName || publisherId || '';
 
    React.useEffect(() => {
       if (scrollViewRef.current && selectedMsgIndex !== undefined) {

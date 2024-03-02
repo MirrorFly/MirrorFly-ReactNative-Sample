@@ -2,16 +2,21 @@ import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/nativ
 import React from 'react';
 import { ActivityIndicator, BackHandler, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import { showToast } from '../Helper';
+import {
+   handleImagePickerOpenCamera,
+   handleImagePickerOpenGallery,
+   showInternetconnectionToast,
+} from '../Helper/Chat/ChatHelper';
 import { fetchGroupParticipants } from '../Helper/Chat/Groups';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import SDK from '../SDK/SDK';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import commonStyles from '../common/commonStyles';
 import GrpCollapsibleToolbar from '../components/GrpCollapsibleToolbar';
 import ApplicationColors from '../config/appColors';
+import { useNetworkStatus } from '../hooks';
 import useRosterData from '../hooks/useRosterData';
-import { handleImagePickerOpenCamera, handleImagePickerOpenGallery } from '../Helper/Chat/ChatHelper';
-import SDK from '../SDK/SDK';
-import { showToast } from '../Helper';
 
 const GroupInfo = () => {
    const {
@@ -19,7 +24,7 @@ const GroupInfo = () => {
    } = useRoute();
    const naviagation = useNavigation();
    const chatUserId = getUserIdFromJid(chatUser);
-
+   const isNetworkconneted = useNetworkStatus();
    const [modelOpen, setModelOpen] = React.useState(false);
 
    const toggleModel = () => {
@@ -55,31 +60,38 @@ const GroupInfo = () => {
 
    const handleFromGallery = async () => {
       const _image = await handleImagePickerOpenGallery();
-      toggleModel();
-      setTimeout(async () => {
-         const { statusCode, message } = await SDK.setGroupProfile(chatUser, nickName, _image);
-         if (!statusCode == 200) {
-            showToast(message, { id: message });
-         }
+      if (Object.keys(_image).length) {
          toggleModel();
-      }, 1000);
+         setTimeout(async () => {
+            const { statusCode, message } = await SDK.setGroupProfile(chatUser, nickName, _image);
+            if (!statusCode === 200) {
+               showToast(message, { id: message });
+            }
+            toggleModel();
+         }, 1000);
+      }
    };
 
    const handleTakePhoto = async () => {
       const _image = await handleImagePickerOpenCamera();
-      toggleModel();
-      setTimeout(async () => {
-         const { statusCode, message } = await SDK.setGroupProfile(chatUser, nickName, _image);
-         if (!statusCode == 200) {
-            showToast(message, { id: message });
-         }
+      if (Object.keys(_image).length) {
          toggleModel();
-      }, 1000);
+         setTimeout(async () => {
+            const { statusCode, message } = await SDK.setGroupProfile(chatUser, nickName, _image);
+            if (!statusCode === 200) {
+               showToast(message, { id: message });
+            }
+            toggleModel();
+         }, 1000);
+      }
    };
 
    const handleRemovePhoto = async () => {
+      if (!isNetworkconneted) {
+         return showInternetconnectionToast();
+      }
       const { statusCode, message } = await SDK.setGroupProfile(chatUser, nickName);
-      if (!statusCode == 200) {
+      if (!statusCode === 200) {
          showToast(message, { id: message });
       } else {
          showToast('');
@@ -106,8 +118,8 @@ const GroupInfo = () => {
 
    return (
       <>
-         <Modal visible={modelOpen} onRequestClose={toggleModel}>
-            <ModalCenteredContent onPressOutside={toggleModel}>
+         <Modal visible={modelOpen}>
+            <ModalCenteredContent>
                <View style={[commonStyles.bg_white, commonStyles.borderRadius_5]}>
                   <ActivityIndicator size={'large'} color={ApplicationColors.mainColor} />
                </View>

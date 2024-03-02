@@ -1,6 +1,6 @@
 import { Box, Text, useToast } from 'native-base';
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import SDK from '../SDK/SDK';
 import commonStyles from '../common/commonStyles';
 import ScreenHeader from '../components/ScreenHeader';
@@ -13,6 +13,7 @@ const EditStatusPage = props => {
    const allowedMaxLimit = 139;
    const [isToastShowing, setIsToastShowing] = React.useState(false);
    const [statusContent, setStatusContent] = React.useState(props.profileInfo.status);
+   const [toggleEmojiWindow, setToggleEmojiWindow] = React.useState(false);
 
    const toastConfig = {
       duration: 100,
@@ -80,35 +81,46 @@ const EditStatusPage = props => {
    };
 
    return (
-      <>
+      <View style={[commonStyles.bg_white, commonStyles.flex1]}>
          <ScreenHeader title="Add New Status" onhandleBack={handleBackBtn} />
-         <EmojiInput allowedMaxLimit={allowedMaxLimit} defaultContent={statusContent} setValue={setStatusContent}>
+         <EmojiInput
+            allowedMaxLimit={allowedMaxLimit}
+            defaultContent={statusContent}
+            setValue={setStatusContent}
+            onEmojiWindowToggle={setToggleEmojiWindow}>
             <View style={commonStyles.flex1}>
                <View
                   style={[
                      commonStyles.hstack,
                      commonStyles.positionAbsolute,
                      commonStyles.alignItemsCenter,
-                     {
-                        left: 0,
-                        bottom: 0,
-                        right: 0,
-                        borderTopColor: '#BFBFBF',
-                        borderTopWidth: 1,
-                     },
+                     styles.cancelContainer,
+                     { bottom: toggleEmojiWindow ? '50%' : 0 },
                   ]}>
                   <Pressable onPress={handleBackBtn}>
-                     <Text style={{ paddingHorizontal: '19%', paddingVertical: '5%' }}>CANCEL</Text>
+                     <Text style={styles.cancelBtn}>CANCEL</Text>
                   </Pressable>
-                  <View style={[{ borderLeftWidth: 1, borderColor: '#BFBFBF', height: 48 }]} />
+                  <View style={styles.okContainer} />
                   <Pressable onPress={handleStatus}>
-                     <Text style={{ paddingHorizontal: '22%', paddingVertical: '5%' }}>OK</Text>
+                     <Text style={styles.okBtn}>OK</Text>
                   </Pressable>
                </View>
             </View>
          </EmojiInput>
-      </>
+      </View>
    );
 };
 
 export default EditStatusPage;
+
+const styles = StyleSheet.create({
+   cancelContainer: {
+      left: 0,
+      right: 0,
+      borderTopColor: '#BFBFBF',
+      borderTopWidth: 1,
+   },
+   cancelBtn: { paddingHorizontal: '19%', paddingVertical: '5%' },
+   okContainer: { borderLeftWidth: 1, borderColor: '#BFBFBF', height: 48 },
+   okBtn: { paddingHorizontal: '22%', paddingVertical: '5%' },
+});

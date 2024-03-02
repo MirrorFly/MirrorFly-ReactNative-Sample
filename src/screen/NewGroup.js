@@ -25,7 +25,7 @@ function NewGroup() {
    const navigation = useNavigation();
    const headerBg = useSelector(state => state.safeArea.color);
    const [value, setValue] = React.useState('');
-   const [profileImage, setProfileImage] = React.useState('');
+   const [profileImage, setProfileImage] = React.useState({});
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
    const [modelOpen, setModelOpen] = React.useState(false);
 
@@ -84,13 +84,9 @@ function NewGroup() {
    };
 
    const handleNext = () => {
-      if (!value) {
+      if (!value.trim()) {
          return showToast('Please provide group name', { id: 'Please provide group name' });
       }
-      if (!value.trim()) {
-         return showToast('Please provide group subject', { id: 'Please provide group name' });
-      }
-
       navigation.navigate(CONTACTLIST, {
          prevScreen: NEW_GROUP,
          grpDetails: { grpName: value, profileImage },
@@ -165,8 +161,9 @@ function NewGroup() {
                   </Pressable>
                </View>
             </View>
-            <EmojiInput setValue={setValue}>
-               <Text style={[commonStyles.pt_15, commonStyles.fw_600, commonStyles.colorBlack, commonStyles.txtCenter]}>
+            <EmojiInput setValue={setValue} allowedMaxLimit={25}>
+               <Text
+                  style={[commonStyles.pt_15, commonStyles.fw_600, commonStyles.colorBlack, commonStyles.textCenter]}>
                   Provide a Group Name and Icon
                </Text>
             </EmojiInput>
@@ -180,7 +177,7 @@ function NewGroup() {
                   <Pressable onPress={handleOpenCamera}>
                      <Text style={modelStyles.modalOption}>Take Photo</Text>
                   </Pressable>
-                  {profileImage.uri && (
+                  {profileImage?.uri && (
                      <Pressable onPress={handleRemovePhoto}>
                         <Text style={modelStyles.modalOption}>Remove Photo</Text>
                      </Pressable>

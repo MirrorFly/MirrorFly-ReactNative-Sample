@@ -58,6 +58,8 @@ function ChatHeader({
 }) {
    const navigation = useNavigation();
    const chatType = MIX_BARE_JID.test(fromUserJId) ? CHAT_TYPE_GROUP : CHAT_TYPE_SINGLE;
+   const recentChatList = useSelector(state => state.recentChatData.data || []);
+   const userType = recentChatList.find(r => r.fromUserJid === fromUserJId)?.userType || '';
    const isNetworkConnected = useNetworkStatus();
    const [remove, setRemove] = React.useState(false);
    const [deleteEveryOne, setDeleteEveryOne] = React.useState(false);
@@ -352,7 +354,9 @@ function ChatHeader({
                      profileImage={profileImage}
                   />
                   <View style={styles.userNameAndLastSeenContainer}>
-                     <Text style={styles.userNameText}>{nickName}</Text>
+                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.userNameText}>
+                        {nickName}
+                     </Text>
                      <LastSeen jid={fromUserJId} />
                   </View>
                </Pressable>
@@ -376,7 +380,7 @@ function ChatHeader({
                   <Text style={styles.selectedMsgsText}>{selectedMsgs?.length}</Text>
                </View>
                <View style={styles.selectedMsgsActionsContainer}>
-                  {selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 && !selectedMsgs[0]?.recall && (
+                  {userType && selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 && !selectedMsgs[0]?.recall && (
                      <IconButton style={[commonStyles.padding_10_15]} onPress={handleReplyMessage}>
                         {selectedMsgs?.length === 1 && selectedMsgs[0]?.msgStatus !== 3 && <ReplyIcon />}
                      </IconButton>
@@ -538,6 +542,7 @@ const styles = StyleSheet.create({
       color: '#181818',
       fontWeight: '700',
       fontSize: 14,
+      maxWidth: 200,
    },
    menuIconContainer: {
       paddingRight: 12,

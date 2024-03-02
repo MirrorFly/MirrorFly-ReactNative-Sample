@@ -162,14 +162,14 @@ export const updateDeletedMessageInHistory = (actionType, data, stateData) => {
       if (actionType === DELETE_MESSAGE_FOR_ME) {
          for (const msgId of data.msgIds) {
             if (currentChatData.messages[msgId]) {
-               currentChatData.messages[msgId].deleteStatus = 2;
+               currentChatData.messages[msgId].deleteStatus = 1;
             }
          }
       } else if (actionType === DELETE_MESSAGE_FOR_EVERYONE) {
          const messageIds = data.msgId.split(',');
          for (const msgId of messageIds) {
             if (currentChatData.messages[msgId]) {
-               currentChatData.messages[msgId].deleteStatus = 1;
+               currentChatData.messages[msgId].recallStatus = 1;
             }
          }
       }
@@ -649,4 +649,10 @@ export const handleImagePickerOpenGallery = async () => {
    } else if (storage_permission) {
       openSettings();
    }
+};
+
+export const showInternetconnectionToast = () => {
+   showToast('Please check your internet connection', {
+      id: 'internet-connection-toast',
+   });
 };

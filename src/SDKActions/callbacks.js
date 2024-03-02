@@ -62,8 +62,13 @@ import {
 } from '../Helper/Calls/Utility';
 import { formatUserIdToJid, getLocalUserDetails } from '../Helper/Chat/ChatHelper';
 import {
-   CHAT_TYPE_GROUP,
    CONNECTION_STATE_CONNECTING,
+   GROUP_CREATED,
+   GROUP_PROFILE_INFO_UPDATED,
+   GROUP_USER_ADDED,
+   GROUP_USER_LEFT,
+   GROUP_USER_MADE_ADMIN,
+   GROUP_USER_REMOVED,
    MSG_CLEAR_CHAT,
    MSG_CLEAR_CHAT_CARBON,
    MSG_DELETE_CHAT_CARBON,
@@ -129,7 +134,6 @@ import { updateRosterData } from '../redux/Actions/rosterAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
-import config from '../components/chat/common/config';
 
 let localStream = null,
    localVideoMuted = false,
@@ -822,10 +826,11 @@ export const callBacks = {
       console.log('favouriteMessageListener', res);
    },
    groupProfileListener: res => {
-      if (res.msgType === 'userAdded') {
-         fetchGroupParticipants(res.groupJid);
-      }
-      if (res.msgType === 'profileUpdated') {
+      if (
+         res.msgType === GROUP_CREATED ||
+         res.msgType === GROUP_USER_ADDED ||
+         res.msgType === GROUP_PROFILE_INFO_UPDATED
+      ) {
          const obj = {
             userId: getUserIdFromJid(res.groupJid),
             userJid: res.groupJid,
@@ -833,7 +838,16 @@ export const callBacks = {
          };
          store.dispatch(updateRosterData(obj));
       }
-      console.log('groupProfileListener =>', JSON.stringify(res, null, 2));
+      if (
+         res.msgType === GROUP_USER_ADDED ||
+         res.msgType === GROUP_USER_REMOVED ||
+         res.msgType === GROUP_USER_MADE_ADMIN ||
+         res.msgType === GROUP_USER_LEFT
+      ) {
+         setTimeout(() => {
+            fetchGroupParticipants(res.groupJid);
+         }, 2000);
+      }
    },
    groupMsgInfoListener: res => {
       console.log('groupMsgInfoListener = (res) => { }', res);

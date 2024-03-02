@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import IconButton from '../common/IconButton';
 import { LeftArrowIcon } from '../common/Icons';
@@ -20,8 +20,14 @@ const EditName = () => {
    } = useRoute();
    const navigation = useNavigation();
    const isConnected = useNetworkStatus();
+   const [toggleEmojiWindow, setToggleEmojiWindow] = React.useState(false);
    const headerBg = useSelector(state => state.safeArea.color);
    const [value, setValue] = React.useState(title);
+   const [okClicked, setOkClicked] = React.useState(false);
+
+   const togglOkCLick = () => {
+      setOkClicked(!okClicked);
+   };
 
    const hanldeOkBtn = async () => {
       if (!isConnected) {
@@ -34,6 +40,7 @@ const EditName = () => {
          showToast('Group name cannot be empty', { id: 'Group name cannot be empty' });
          return;
       }
+      togglOkCLick();
       if (isConnected && value.trim()) {
          const { statusCode, message } = await SDK.setGroupProfile(chatUser, value, imageToken);
          if (statusCode === 200) {
@@ -42,6 +49,7 @@ const EditName = () => {
             showToast(message, { id: message });
          }
       }
+      togglOkCLick();
    };
 
    const handleBackBtn = () => {
@@ -50,7 +58,9 @@ const EditName = () => {
    };
 
    return (
-      <View style={[commonStyles.bg_white, commonStyles.flex1]}>
+      <KeyboardAvoidingView
+         style={[commonStyles.bg_white, commonStyles.flex1]}
+         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
          <View style={[styles.container, commonStyles.hstack, { backgroundColor: headerBg }]}>
             <View
                style={[
@@ -65,7 +75,11 @@ const EditName = () => {
                <Text style={styles.titleText}>Enter New Name</Text>
             </View>
          </View>
-         <EmojiInput defaultContent={title} setValue={setValue}>
+         <EmojiInput
+            allowedMaxLimit={25}
+            defaultContent={title}
+            setValue={setValue}
+            onEmojiWindowToggle={setToggleEmojiWindow}>
             <View style={commonStyles.flex1}>
                <View
                   style={[
@@ -73,18 +87,19 @@ const EditName = () => {
                      commonStyles.positionAbsolute,
                      commonStyles.alignItemsCenter,
                      styles.cancelContainer,
+                     { bottom: toggleEmojiWindow ? '50%' : 0 },
                   ]}>
                   <Pressable onPress={handleBackBtn}>
                      <Text style={styles.cancelBtn}>CANCEL</Text>
                   </Pressable>
                   <View style={styles.okContainer} />
-                  <Pressable onPress={hanldeOkBtn}>
+                  <Pressable disabled={okClicked} onPress={hanldeOkBtn}>
                      <Text style={styles.okBtn}>OK</Text>
                   </Pressable>
                </View>
             </View>
          </EmojiInput>
-      </View>
+      </KeyboardAvoidingView>
    );
 };
 
@@ -123,7 +138,6 @@ const styles = StyleSheet.create({
    },
    cancelContainer: {
       left: 0,
-      bottom: 0,
       right: 0,
       borderTopColor: '#BFBFBF',
       borderTopWidth: 1,

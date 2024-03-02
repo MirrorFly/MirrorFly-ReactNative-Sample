@@ -66,7 +66,7 @@ const EmojiCategory = ({ category, onSelect }) => {
 
    const renderEmoji = ({ item }) => {
       return (
-         <Pressable onPress={() => onSelect(item)}>
+         <Pressable style={{ width: '11.2%' }} onPress={() => onSelect(item)}>
             <Text style={style}>{item}</Text>
          </Pressable>
       );
@@ -146,8 +146,11 @@ const EmojiOverlay = ({ state, setState, onClose, visible, onSelect }) => {
 const styles = StyleSheet.create({
    emojiContainer: {
       backgroundColor: '#f2f2f2',
-      flex: 1,
-      justifyContent: 'flex-end',
+      height: 350,
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
    },
    tabcontainer: {
       height: 50,

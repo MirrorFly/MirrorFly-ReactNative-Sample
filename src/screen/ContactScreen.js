@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import {
    ActivityIndicator,
@@ -9,22 +10,22 @@ import {
    Text,
    View,
 } from 'react-native';
-import { CHATSCREEN, GROUP_INFO, NEW_GROUP, RECENTCHATSCREEN, SETTINGSCREEN } from '../constant';
-import { navigate } from '../redux/Actions/NavigationAction';
 import { useDispatch } from 'react-redux';
-import ScreenHeader from '../components/ScreenHeader';
-import FlatListView from '../components/FlatListView';
-import { useNetworkStatus } from '../hooks';
-import * as RootNav from '../Navigation/rootNavigation';
-import { debounce, fetchContactsFromSDK, showToast } from '../Helper/index';
-import no_contacts from '../assets/no_contacts.png';
-import { getImageSource } from '../common/utils';
-import commonStyles from '../common/commonStyles';
-import { useRoute } from '@react-navigation/native';
-import SDK from '../SDK/SDK';
-import Modal, { ModalCenteredContent } from '../common/Modal';
-import ApplicationColors from '../config/appColors';
 import { fetchGroupParticipants } from '../Helper/Chat/Groups';
+import { debounce, fetchContactsFromSDK, showToast } from '../Helper/index';
+import * as RootNav from '../Navigation/rootNavigation';
+import SDK from '../SDK/SDK';
+import no_contacts from '../assets/no_contacts.png';
+import Modal, { ModalCenteredContent } from '../common/Modal';
+import commonStyles from '../common/commonStyles';
+import { getImageSource } from '../common/utils';
+import FlatListView from '../components/FlatListView';
+import ScreenHeader from '../components/ScreenHeader';
+import ApplicationColors from '../config/appColors';
+import { CHATSCREEN, GROUP_INFO, NEW_GROUP, RECENTCHATSCREEN } from '../constant';
+import { useNetworkStatus } from '../hooks';
+import { navigate } from '../redux/Actions/NavigationAction';
+import config from '../components/chat/common/config';
 
 const contactPaginationRefInitialValue = {
    nextPage: 1,
@@ -66,7 +67,9 @@ function ContactScreen() {
    }, []);
 
    React.useEffect(() => {
-      isNetworkconneted && fetchContactList(searchText);
+      if (isNetworkconneted) {
+         fetchContactList(searchText);
+      }
    }, [isNetworkconneted]);
 
    const handleBackBtn = () => {
@@ -139,21 +142,18 @@ function ContactScreen() {
       }, 0);
    };
 
-   const menuItems = [
-      {
-         label: 'Settings',
-         formatter: () => {
-            dispatch(navigate({ screen: SETTINGSCREEN }));
-            RootNav.navigate(SETTINGSCREEN);
-         },
-      },
-   ];
    const handlePress = item => {
       if (isNewGrpSrn || isGroupInfoSrn) {
          setSelectedUsers(_data => {
             if (_data[item.userJid]) {
                delete _data[item.userJid];
             } else {
+               if (Object.keys(selectedUsers).length > config.maxAllowdGroupMembers - 2) {
+                  showToast('Maximum allowed group members ' + config.maxAllowdGroupMembers, {
+                     id: 'Maximum_allowed_group_members',
+                  });
+                  return { ..._data };
+               }
                _data[item.userJid] = item;
             }
             return { ..._data };
@@ -171,7 +171,7 @@ function ContactScreen() {
    };
 
    const handleSearch = async text => {
-      if (isNetworkconneted) {
+      if (isNetworkconneted && text.trim()) {
          setIsSearching(true);
          setSearchText(text);
          fetchContactList(text);
@@ -185,6 +185,7 @@ function ContactScreen() {
    const handleClear = async () => {
       setSearchText('');
       setIsSearching(false);
+      fetchContactList('');
    };
 
    const handleGrpPartcipant = async () => {
@@ -193,8 +194,13 @@ function ContactScreen() {
             id: 'internet-connection-toast',
          });
       }
-      if (Object.keys(selectedUsers).length < 2 && !isGroupInfoSrn) {
+      if (Object.keys(selectedUsers).length < config.minAllowdGroupMembers && isNewGrpSrn) {
          return showToast('Add at least two Contacts', { id: 'Add_at_least_two_Contacts' });
+      }
+      if (Object.keys(selectedUsers).length > config.maxAllowdGroupMembers && isNewGrpSrn) {
+         return showToast('Maximum allowed group members ' + config.maxAllowdGroupMembers, {
+            id: 'Maximum_allowed_group_members',
+         });
       }
       if (isGroupInfoSrn && !Object.keys(selectedUsers).length) {
          return showToast('Select any contacts', { id: 'select_any_contacts' });
@@ -268,7 +274,7 @@ function ContactScreen() {
          <ScreenHeader
             title={isNewGrpSrn || isGroupInfoSrn ? 'Add Participants' : 'Contacts'}
             onhandleBack={handleBackBtn}
-            menuItems={menuItems}
+            menuItems={[]}
             onhandleSearch={handleSearch}
             handleClear={handleClear}
             onCreateBtn={handleGrpPartcipant}

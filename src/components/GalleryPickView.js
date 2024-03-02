@@ -1,15 +1,25 @@
+import { Divider, HStack, Icon, IconButton, Spacer, Text } from 'native-base';
 import React from 'react';
-import { BackHandler, FlatList, Image, Keyboard, Platform, Pressable, StyleSheet, TextInput } from 'react-native';
-import { Divider, HStack, Icon, IconButton, KeyboardAvoidingView, Spacer, Text, View } from 'native-base';
-import { useSelector } from 'react-redux';
-import { DeleteBinIcon, LeftArrowIcon, PreViewAddIcon, RightArrowIcon, SendBlueIcon } from '../common/Icons';
-import Avathar from '../common/Avathar';
+import {
+   BackHandler,
+   FlatList,
+   Image,
+   Keyboard,
+   KeyboardAvoidingView,
+   Platform,
+   Pressable,
+   StyleSheet,
+   TextInput,
+} from 'react-native';
 import { SceneMap, TabView } from 'react-native-tab-view';
-import { getType } from './chat/common/fileUploadValidation';
-import VideoPlayer from './Media/VideoPlayer';
-import useRosterData from '../hooks/useRosterData';
+import { useSelector } from 'react-redux';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import Avathar from '../common/Avathar';
+import { DeleteBinIcon, LeftArrowIcon, PreViewAddIcon, RightArrowIcon, SendBlueIcon } from '../common/Icons';
+import useRosterData from '../hooks/useRosterData';
 import { selectedMediaIdRef } from '../screen/ChatScreen';
+import VideoPlayer from './Media/VideoPlayer';
+import { getType } from './chat/common/fileUploadValidation';
 
 function GalleryPickView(props) {
    const { handleSendMsg, setLocalNav, selectedSingle, setSelectedImages, selectedImages } = props;

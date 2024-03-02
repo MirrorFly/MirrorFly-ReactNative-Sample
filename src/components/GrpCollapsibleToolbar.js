@@ -2,9 +2,9 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Animated, BackHandler, Dimensions, Image, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import { useSelector } from 'react-redux';
+import { batch, useDispatch, useSelector } from 'react-redux';
 import { showToast } from '../Helper';
-import { isLocalUser } from '../Helper/Chat/ChatHelper';
+import { isLocalUser, showInternetconnectionToast } from '../Helper/Chat/ChatHelper';
 import { SDK } from '../SDK';
 import grpImage from '../assets/ic_grp_bg.png';
 import Avathar from '../common/Avathar';
@@ -15,10 +15,15 @@ import Pressable from '../common/Pressable';
 import commonStyles, { modelStyles } from '../common/commonStyles';
 import { getImageSource } from '../common/utils';
 import ApplicationColors from '../config/appColors';
-import { CONTACTLIST, EDITNAME, GROUP_INFO, IMAGEVIEW } from '../constant';
+import { CONTACTLIST, EDITNAME, GROUP_INFO, IMAGEVIEW, RECENTCHATSCREEN } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import useFetchImage from '../hooks/useFetchImage';
 import useRosterData from '../hooks/useRosterData';
+import { DeleteChatHistoryAction } from '../redux/Actions/ConversationAction';
+import { deleteActiveChatAction } from '../redux/Actions/RecentChatAction';
+import AlertModal from './AlertModal';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import config from './chat/common/config';
 
 const propTypes = {
    chatUser: PropTypes.string,
@@ -45,10 +50,11 @@ const defaultProps = {
 
 const RenderItem = ({ item, index, onhandlePress }) => {
    let { nickName, image: imageToken, colorCode, status } = useRosterData(item?.userId);
+   console.log('item ==>', JSON.stringify(item, null, 2));
    // updating default values
-   nickName = nickName || item?.nickName || item?.userId || '';
-   imageToken = imageToken || '';
-   colorCode = colorCode || SDK.getRandomColorCode();
+   nickName = nickName || item?.userProfile?.nickName || item?.userId || '';
+   imageToken = imageToken || item?.userProfile?.image || '';
+   colorCode = colorCode || item?.userProfile?.colorCode || SDK.getRandomColorCode();
    status = status || item.status || '';
    const handlePress = () => onhandlePress(item);
 
@@ -87,6 +93,7 @@ const GrpCollapsibleToolbar = ({
    handleRemovePhoto,
 }) => {
    const navigation = useNavigation();
+   const dispatch = useDispatch();
    const isNetworkconneted = useNetworkStatus();
    const scrollY = React.useRef(new Animated.Value(0)).current;
    const [animatedTitleColor, setAnimatedTitleColor] = React.useState(250);
@@ -96,6 +103,7 @@ const GrpCollapsibleToolbar = ({
    const recentChatList = useSelector(state => state.recentChatData.data || []);
    const userType = recentChatList.find(r => r.fromUserJid === chatUser)?.userType || '';
    const layout = useWindowDimensions();
+   const [modalContent, setModalContent] = React.useState(null);
 
    const adaptiveMinHeight = screenHeight * 0.92;
    /**
@@ -130,10 +138,8 @@ const GrpCollapsibleToolbar = ({
       }
    }, [optionModelOpen, translateY, layout.height]);
 
-   const [confirmRemoveModel, setConfirmRemoveModel] = React.useState(false);
-
-   const toggleConfirmRemoveModel = () => {
-      setConfirmRemoveModel(val => !val);
+   const toggleModalContent = () => {
+      setModalContent(null);
    };
 
    const [modelOpen, setModelOpen] = React.useState(false);
@@ -186,6 +192,11 @@ const GrpCollapsibleToolbar = ({
    };
 
    const handleAddParticipants = () => {
+      if (participants.length === config.maxAllowdGroupMembers) {
+         return showToast('Maximum allowed group members ' + config.maxAllowdGroupMembers, {
+            id: 'Maximum_allowed_group_members',
+         });
+      }
       navigation.navigate(CONTACTLIST, {
          prevScreen: GROUP_INFO,
          grpDetails: { grpJid: chatUser, grpName: title, participants },
@@ -194,9 +205,7 @@ const GrpCollapsibleToolbar = ({
 
    const handelGroupProfileUpdate = () => {
       if (!isNetworkconneted) {
-         return showToast('Please check your internet connection', {
-            id: 'internet-connection-toast',
-         });
+         return showInternetconnectionToast();
       }
       toggleOptionModel();
    };
@@ -210,34 +219,115 @@ const GrpCollapsibleToolbar = ({
    };
 
    const handleLeaveGroup = async () => {
+      if (!isNetworkconneted) {
+         return showInternetconnectionToast();
+      }
       const { statusCode } = await SDK.userExitGroup(chatUser, localUser?.userType === 'o');
       if (statusCode === 200) {
-         getGroupParticipants(1000);
+         getGroupParticipants(2500);
+      }
+   };
+   const handleDeleteGroup = async () => {
+      if (!isNetworkconneted) {
+         return showInternetconnectionToast();
+      }
+      if (isNetworkconneted) {
+         const { statusCode } = await SDK.userDeleteGroup(chatUser);
+         if (statusCode === 200) {
+            navigation.navigate(RECENTCHATSCREEN);
+            batch(() => {
+               dispatch(deleteActiveChatAction({ fromUserId: getUserIdFromJid(chatUser) }));
+               dispatch(DeleteChatHistoryAction({ fromUserId: getUserIdFromJid(chatUser) }));
+            });
+         }
       }
    };
 
    const handleRemoveUser = async () => {
-      toggleModel();
+      if (!isNetworkconneted) {
+         return showInternetconnectionToast();
+      }
       const { statusCode, message } = await SDK.removeParticipant(
          chatUser,
          userDetails.userJid,
          userDetails.userType === 'o',
       );
       if (statusCode === 200) {
-         getGroupParticipants(1000);
+         getGroupParticipants(2500);
       } else {
          showToast(message, { id: message });
       }
    };
 
    const handleMakeAdmin = async () => {
-      toggleModel();
+      if (!isNetworkconneted) {
+         return showInternetconnectionToast();
+      }
       const { statusCode, message } = await SDK.makeAsAdmin(chatUser, userDetails.userJid);
       if (statusCode === 200) {
-         getGroupParticipants(1000);
+         getGroupParticipants(2500);
       } else {
          showToast(message, { id: message });
       }
+   };
+
+   const toggleConfirmUserRemoveModal = () => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: `Are you sure you want to remove \n${
+            userDetails?.userProfile?.nickName || userDetails?.userProfile?.mobileNumber || userDetails?.userId || ''
+         }?`,
+         noButton: 'No',
+         yesButton: 'Yes',
+         yesAction: handleRemoveUser,
+      });
+   };
+
+   const toggleConfirmRemovePhotoModal = () => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: 'Are you sure you want to remove the photo?',
+         noButton: 'No',
+         yesButton: 'Yes',
+         yesAction: handleRemovePhoto,
+      });
+   };
+
+   const toggleConfirmAdminModal = () => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: `Are you sure you want to make ${
+            userDetails?.userProfile?.nickName || userDetails?.userProfile?.mobileNumber || userDetails?.userId || ''
+         } the admin?`,
+         noButton: 'No',
+         yesButton: 'Yes',
+         yesAction: handleMakeAdmin,
+      });
+   };
+
+   const toggleLeaveGroup = () => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: 'Are you sure you want to leave from group?',
+         noButton: 'CANCEL',
+         yesButton: 'LEAVE',
+         yesAction: handleLeaveGroup,
+      });
+   };
+
+   const toggleDeleteGroup = () => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: 'Are you sure you want to leave from group?',
+         noButton: 'CANCEL',
+         yesButton: 'DELETE',
+         yesAction: handleDeleteGroup,
+      });
    };
 
    const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
@@ -382,12 +472,22 @@ const GrpCollapsibleToolbar = ({
                      <Text style={{ marginLeft: 20, fontSize: 14, color: '#FF0000' }}>Report Group</Text>
                   </View>
                </Pressable> */}
-               <Pressable onPress={handleLeaveGroup}>
-                  <View style={[commonStyles.hstack, commonStyles.m_12, commonStyles.p_4]}>
-                     <ExitIcon color="#ff3939" />
-                     <Text style={{ marginLeft: 20, fontSize: 14, color: '#FF0000' }}>Leave Group</Text>
-                  </View>
-               </Pressable>
+               {Boolean(userType) && (
+                  <Pressable onPress={toggleLeaveGroup}>
+                     <View style={[commonStyles.hstack, commonStyles.m_12, commonStyles.p_4]}>
+                        <ExitIcon color="#ff3939" />
+                        <Text style={styles.groupActionButton}>Leave Group</Text>
+                     </View>
+                  </Pressable>
+               )}
+               {!userType && (
+                  <Pressable onPress={toggleDeleteGroup}>
+                     <View style={[commonStyles.hstack, commonStyles.m_12, commonStyles.p_4]}>
+                        <ExitIcon color="#ff3939" />
+                        <Text style={styles.groupActionButton}>Delete Group</Text>
+                     </View>
+                  </Pressable>
+               )}
                <View mb="5" />
             </View>
          </Animated.ScrollView>
@@ -400,13 +500,21 @@ const GrpCollapsibleToolbar = ({
                   <Pressable>
                      <Text style={modelStyles.modalOption}>View Info</Text>
                   </Pressable> */}
-                  {localUser?.userType === 'o' && (
+                  {Boolean(localUser?.userType) && localUser?.userType === 'o' && (
                      <>
-                        <Pressable onPress={handleRemoveUser}>
-                           <Text style={modelStyles.modalOption}>Remove form Group</Text>
+                        <Pressable
+                           onPress={() => {
+                              toggleModel();
+                              toggleConfirmUserRemoveModal();
+                           }}>
+                           <Text style={modelStyles.modalOption}>Remove from Group</Text>
                         </Pressable>
                         {userDetails.userType !== 'o' && (
-                           <Pressable onPress={handleMakeAdmin}>
+                           <Pressable
+                              onPress={() => {
+                                 toggleModel();
+                                 toggleConfirmAdminModal();
+                              }}>
                               <Text style={modelStyles.modalOption}>Make Admin</Text>
                            </Pressable>
                         )}
@@ -437,7 +545,7 @@ const GrpCollapsibleToolbar = ({
                      <Pressable
                         onPress={() => {
                            toggleOptionModel();
-                           toggleConfirmRemoveModel();
+                           toggleConfirmRemovePhotoModal();
                         }}>
                         <Text style={styles.pressableText}>Remove Photo</Text>
                      </Pressable>
@@ -445,25 +553,7 @@ const GrpCollapsibleToolbar = ({
                </Animated.View>
             </ModalBottomContent>
          </Modal>
-         <Modal visible={confirmRemoveModel} onRequestClose={toggleConfirmRemoveModel}>
-            <ModalCenteredContent onPressOutside={toggleConfirmRemoveModel}>
-               <View style={modelStyles.inviteFriendModalContentContainer}>
-                  <Text style={styles.optionTitleText}>Are you sure you want to remove the group photo?</Text>
-                  <View style={styles.buttonContainer}>
-                     <Pressable onPress={toggleConfirmRemoveModel}>
-                        <Text style={[styles.pressableText, commonStyles.typingText]}>Cancel</Text>
-                     </Pressable>
-                     <Pressable
-                        onPress={() => {
-                           toggleConfirmRemoveModel();
-                           handleRemovePhoto();
-                        }}>
-                        <Text style={[styles.pressableText, commonStyles.typingText]}>Remove</Text>
-                     </Pressable>
-                  </View>
-               </View>
-            </ModalCenteredContent>
-         </Modal>
+         {modalContent && <AlertModal {...modalContent} />}
       </View>
    );
 };
@@ -524,6 +614,7 @@ const styles = StyleSheet.create({
       fontSize: 25,
       padding: 2,
       alignItems: 'center',
+      maxWidth: 350,
    },
    titleStatus: {
       fontSize: 14,
@@ -557,7 +648,7 @@ const styles = StyleSheet.create({
       alignSelf: 'flex-end',
       backgroundColor: ApplicationColors.dividerBg,
    },
-   optionTitleText: { fontSize: 14, color: '#000', marginVertical: 5, marginHorizontal: 20 },
+   optionTitleText: { fontSize: 16, color: '#000', marginVertical: 5, marginHorizontal: 20, lineHeight: 25 },
    optionModelContainer: {
       maxWidth: 500,
       width: '98%',
@@ -576,4 +667,5 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       justifyContent: 'flex-end',
    },
+   groupActionButton: { marginLeft: 20, fontSize: 14, color: '#FF0000' },
 });

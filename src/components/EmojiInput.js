@@ -7,17 +7,27 @@ import { KeyboardIcon, SmileIcon } from '../common/Icons';
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
 import EmojiOverlay from './EmojiPicker';
+import PropTypes from 'prop-types';
+
+const propTypes = {
+   children: PropTypes.node,
+   allowedMaxLimit: PropTypes.number,
+   defaultContent: PropTypes.string,
+   onEmojiWindowToggle: PropTypes.func,
+   setValue: PropTypes.func,
+};
 
 function EmojiInput({
    children,
-   allowedMaxLimit = '25',
+   allowedMaxLimit = 0,
    defaultContent = '',
-   setEmojiWindow = () => {},
+   onEmojiWindowToggle = () => {},
    setValue = () => {},
 }) {
    const navigation = useNavigation();
    const inputRef = React.useRef();
    const [content, setContent] = React.useState(defaultContent);
+   const [maxTextLength, setMaxTextLength] = React.useState();
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
    const [pressedKey, setPressedKey] = React.useState('');
 
@@ -26,12 +36,19 @@ function EmojiInput({
    const count = () => allowedMaxLimit - splitter.countGraphemes(content);
 
    const handleEmojiSelect = (...emojis) => {
+      if (!allowedMaxLimit) {
+         setContent(prev => prev + emojis);
+      }
       if (count() > 0) {
          setContent(prev => prev + emojis);
       }
    };
 
    const handleInput = text => {
+      setMaxTextLength();
+      if (!allowedMaxLimit) {
+         setContent(text);
+      }
       if (count() > 0 || pressedKey === 'Backspace') {
          setContent(text);
       }
@@ -44,7 +61,7 @@ function EmojiInput({
 
    const toggleEmojiWindow = () => {
       setIsEmojiPickerShowing(!isEmojiPickerShowing);
-      setEmojiWindow?.(!isEmojiPickerShowing);
+      onEmojiWindowToggle?.(!isEmojiPickerShowing);
    };
 
    const handleBackBtn = () => {
@@ -82,8 +99,9 @@ function EmojiInput({
                placeholderTextColor={ApplicationColors.placeholderTextColor}
                keyboardType="default"
                onKeyPress={handleOnKeyPress}
+               maxLength={maxTextLength}
             />
-            <Text style={styles.subText}>{count()}</Text>
+            {Boolean(allowedMaxLimit) && <Text style={styles.subText}>{count()}</Text>}
             <View style={[commonStyles.marginRight_12, commonStyles.alignItemsCenter, styles.iconWidth]}>
                <IconButton
                   onPress={() => {
@@ -107,6 +125,8 @@ function EmojiInput({
       </>
    );
 }
+
+EmojiInput.propTypes = propTypes;
 
 export default EmojiInput;
 

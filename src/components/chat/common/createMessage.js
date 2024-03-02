@@ -53,6 +53,8 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
          fromUserId: newChatTo,
          chatType: chatType,
          createdAt: updateTime,
+         recallStatus: 0,
+         deleteStatus: 0,
          timestamp: parseInt(UTCseconds, 10),
       };
       // if the message received chat is not opened, then incrementing the unread count
@@ -75,6 +77,7 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
          msgStatus: 0,
          muteStatus: 0,
          msgType: msgBody.message_type ? msgBody.message_type : msgType,
+         recallStatus: 0,
          deleteStatus: 0,
          unreadCount: 1,
          isUnread: 1,

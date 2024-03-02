@@ -13,6 +13,7 @@ import { AppRegistry, Platform } from 'react-native';
 import { CallComponent } from '../calls/CallComponent';
 import { setupCallKit } from '../calls/ios';
 import { pushNotifyBackground } from '../Helper/Calls/Utility';
+import { MIX_BARE_JID } from '../Helper/Chat/Constant';
 
 let uiKitCallbackListenersVal = {},
    appInitialized = false,
@@ -113,6 +114,9 @@ export const mirrorflyNotificationHandler = async messageData => {
       if (remoteMessage?.data?.push_from !== 'MirrorFly') {
          return;
       }
+      if (MIX_BARE_JID.test(remoteMessage?.data?.user_jid)) {
+         return;
+      }
       await SDK.initializeSDK({
          apiBaseUrl: apiBaseUrl,
          licenseKey: licenseKey,
@@ -125,9 +129,9 @@ export const mirrorflyNotificationHandler = async messageData => {
       }
       const notify = await SDK.getNotificationData(remoteMessage);
       if (remoteMessage.data.type === 'recall') {
+         updateNotification(remoteMessage?.data?.message_id);
          return;
       }
-      console.log('notify ==>', JSON.stringify(notify, null, 2));
       if (notify?.statusCode === 200) {
          if (notify?.data?.type === 'receiveMessage') {
             updateRecentAndConversationStore(notify?.data);

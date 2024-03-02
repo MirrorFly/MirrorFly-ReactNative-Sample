@@ -54,7 +54,6 @@ const ChatInput = props => {
    const { onSendMessage, attachmentMenuIcons, chatInputRef, fromUserJId, handleSendMsg } = props;
    const typingTimeoutRef = useRef(null);
    const [message, setMessage] = useState('');
-   const [typingStatus, setTypingStatus] = useState(false);
    const [isOpen, setIsOpen] = useState(false);
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = useState(false);
    const recentChatList = useSelector(state => state.recentChatData.data);
@@ -246,13 +245,6 @@ const ChatInput = props => {
 
    useEffect(() => {
       chatInputMessageRef.current = message;
-      if (isConnected) {
-         if (message) {
-            updateTypingStatus(fromUserJId);
-         } else {
-            updateTypingGoneStatus(fromUserJId);
-         }
-      }
    }, [message]);
 
    const sendMessage = () => {
@@ -267,6 +259,9 @@ const ChatInput = props => {
 
    const onChangeMessage = text => {
       setMessage(text);
+      if (text) {
+         updateTypingStatus(fromUserJId);
+      }
       if (typingTimeoutRef.current) {
          clearTimeout(typingTimeoutRef.current);
       }
@@ -309,7 +304,7 @@ const ChatInput = props => {
    const toggleEmojiPicker = () => {
       setIsEmojiPickerShowing(!isEmojiPickerShowing);
       if (isEmojiPickerShowing) {
-         chatInputRef.current.focus();
+         chatInputRef?.current?.focus();
       } else {
          Keyboard.dismiss();
       }

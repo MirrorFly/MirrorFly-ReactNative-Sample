@@ -192,11 +192,26 @@ const commonStyles = StyleSheet.create({
    p_10: {
       padding: 10,
    },
+   p_13: {
+      padding: 13,
+   },
+   p_15: {
+      padding: 15,
+   },
+   p_20: {
+      padding: 20,
+   },
    minWidth_250: {
       minWidth: 250,
    },
    minWidth_200: {
       minWidth: 200,
+   },
+   minWidth_30per: {
+      minWidth: '30%',
+   },
+   maxWidth_90per: {
+      maxWidth: '90%',
    },
    paddingHorizontal_4: {
       paddingHorizontal: 4,
@@ -283,6 +298,9 @@ const commonStyles = StyleSheet.create({
    fontWeight_bold: {
       fontWeight: 'bold',
    },
+   fw_400: {
+      fontWeight: '400',
+   },
    fw_600: {
       fontWeight: '600',
    },
@@ -297,6 +315,9 @@ const commonStyles = StyleSheet.create({
    },
    fontSize_12: {
       fontSize: 12,
+   },
+   fontSize_18: {
+      fontSize: 18,
    },
    bgBlack: {
       backgroundColor: '#000',
@@ -343,8 +364,13 @@ const commonStyles = StyleSheet.create({
    r_5: {
       right: 5,
    },
-   txtCenter: {
+   textCenter: {
       textAlign: 'center',
+   },
+   dividerLine: {
+      borderBottomWidth: 1,
+      borderBottomColor: '#e3e3e3',
+      opacity: 0.5,
    },
 });
 

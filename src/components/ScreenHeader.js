@@ -1,17 +1,16 @@
 import React from 'react';
-import { LeftArrowIcon, SearchIcon, CloseIcon } from '../common/Icons';
 import { Image, StyleSheet, Text, TextInput, View } from 'react-native';
+import IconButton from '../common/IconButton';
+import { CloseIcon, LeftArrowIcon, SearchIcon } from '../common/Icons';
+import MenuContainer from '../common/MenuContainer';
+import commonStyles from '../common/commonStyles';
 import { getImageSource } from '../common/utils';
 import ApplicationColors from '../config/appColors';
-import commonStyles from '../common/commonStyles';
-import IconButton from '../common/IconButton';
-import MenuContainer from '../common/MenuContainer';
 
 const LeftArrowComponent = () => LeftArrowIcon();
 
 function ScreenHeader(props) {
    const { onCreateBtn, isGroupInfoSrn } = props;
-   const [position] = React.useState('auto');
    const [isSearching, setIsSearching] = React.useState(false);
    const [text, setText] = React.useState('');
 
@@ -44,58 +43,57 @@ function ScreenHeader(props) {
    };
 
    return (
-      <>
-         <View style={styles.container}>
-            <View style={[commonStyles.hstack, commonStyles.alignItemsCenter, commonStyles.flex1]}>
-               {Boolean(props?.onhandleBack) && (
-                  <IconButton onPress={handlingBackBtn}>
-                     <LeftArrowComponent />
-                  </IconButton>
-               )}
-               {Boolean(props?.isSearching) && (
-                  <IconButton style={commonStyles.marginRight_12} onPress={handlingBackBtn}>
-                     <LeftArrowComponent />
-                  </IconButton>
-               )}
-               {isSearching && (
-                  <TextInput
-                     placeholderTextColor="#d3d3d3"
-                     value={text}
-                     style={styles.textInput}
-                     onChangeText={e => {
-                        setText(e);
-                        props?.onhandleSearch(e);
-                     }}
-                     placeholder=" Search..."
-                     cursorColor={ApplicationColors.mainColor}
-                     autoFocus={true}
-                  />
-               )}
-               {Boolean(props?.logo) && !isSearching && (
-                  <Image style={styles.logoImage} source={getImageSource(props?.logo)} alt="ic_logo.png" />
-               )}
-               {Boolean(props?.title) && !isSearching && <Text style={styles.titleText}>{props?.title}</Text>}
-            </View>
-            <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-               {Boolean(text) && (
-                  <IconButton onPress={handleClearBtn}>
-                     <CloseIcon />
-                  </IconButton>
-               )}
-               {Boolean(props?.onhandleSearch) && !isSearching && (
-                  <IconButton onPress={handleSearchPress}>
-                     <SearchIcon />
-                  </IconButton>
-               )}
-               {Boolean(props.title === 'Add Participants') && (
-                  <IconButton onPress={onCreateBtn}>
-                     <Text style={styles.subText}>{isGroupInfoSrn ? 'NEXT' : 'CREATE'}</Text>
-                  </IconButton>
-               )}
-               {!isSearching && props?.menuItems?.length > 0 && <MenuContainer menuItems={props?.menuItems} />}
-            </View>
+      <View style={styles.container}>
+         <View style={[commonStyles.hstack, commonStyles.alignItemsCenter, commonStyles.flex1]}>
+            {Boolean(props?.onhandleBack) && (
+               <IconButton onPress={handlingBackBtn}>
+                  <LeftArrowComponent />
+               </IconButton>
+            )}
+            {Boolean(props?.isSearching) && (
+               <IconButton style={commonStyles.marginRight_12} onPress={handlingBackBtn}>
+                  <LeftArrowComponent />
+               </IconButton>
+            )}
+            {isSearching && (
+               <TextInput
+                  placeholderTextColor="#d3d3d3"
+                  value={text}
+                  style={styles.textInput}
+                  onChangeText={e => {
+                     setText(e);
+                     props?.onhandleSearch(e);
+                  }}
+                  placeholder=" Search..."
+                  cursorColor={ApplicationColors.mainColor}
+                  returnKeyType="done"
+                  autoFocus={true}
+               />
+            )}
+            {Boolean(props?.logo) && !isSearching && (
+               <Image style={styles.logoImage} source={getImageSource(props?.logo)} alt="ic_logo.png" />
+            )}
+            {Boolean(props?.title) && !isSearching && <Text style={styles.titleText}>{props?.title}</Text>}
          </View>
-      </>
+         <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+            {Boolean(text) && (
+               <IconButton onPress={handleClearBtn}>
+                  <CloseIcon />
+               </IconButton>
+            )}
+            {Boolean(props?.onhandleSearch) && !isSearching && (
+               <IconButton onPress={handleSearchPress}>
+                  <SearchIcon />
+               </IconButton>
+            )}
+            {Boolean(props.title === 'Add Participants') && (
+               <IconButton onPress={onCreateBtn}>
+                  <Text style={styles.subText}>{isGroupInfoSrn ? 'NEXT' : 'CREATE'}</Text>
+               </IconButton>
+            )}
+            {!isSearching && props?.menuItems?.length > 0 && <MenuContainer menuItems={props?.menuItems} />}
+         </View>
+      </View>
    );
 }
 

@@ -29,9 +29,9 @@ export const EDITNAME = 'EDITNAME';
 export const RECENTCHATLOADING = 'RECENTCHATLOADING';
 
 // Connection
-export const NOTCONNECTED = 'notConnected';
-export const CONNECTED = 'connected';
-export const DISCONNECTED = 'disconnected';
+export const NOTCONNECTED = 'NOTCONNECTED';
+export const CONNECTED = 'CONNECTED';
+export const DISCONNECTED = 'DISCONNECTED';
 
 // Regex format
 export const urlRegex = /(https?:\/\/[^\s]+)/g;

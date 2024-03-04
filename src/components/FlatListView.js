@@ -9,6 +9,8 @@ import Pressable from '../common/Pressable';
 import CheckBox from '@react-native-community/checkbox';
 import { useRoute } from '@react-navigation/native';
 import { GROUP_INFO, NEW_GROUP } from '../constant';
+import { showToast } from '../Helper';
+import config from './chat/common/config';
 
 const RenderItem = ({ item, index, onhandlePress, selectedUsers }) => {
    let { nickName, image: imageToken, colorCode, status } = useRosterData(item?.userId);
@@ -23,6 +25,12 @@ const RenderItem = ({ item, index, onhandlePress, selectedUsers }) => {
    status = status || item.status || '';
 
    const handlePress = () => {
+      Keyboard.dismiss();
+      if (Object.keys(selectedUsers).length > config.maxAllowdGroupMembers - 2) {
+         return showToast('Maximum allowed group members ' + config.maxAllowdGroupMembers, {
+            id: 'Maximum_allowed_group_members',
+         });
+      }
       onhandlePress(item);
    };
    React.useEffect(() => {

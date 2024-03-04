@@ -50,7 +50,6 @@ const defaultProps = {
 
 const RenderItem = ({ item, index, onhandlePress }) => {
    let { nickName, image: imageToken, colorCode, status } = useRosterData(item?.userId);
-   console.log('item ==>', JSON.stringify(item, null, 2));
    // updating default values
    nickName = nickName || item?.userProfile?.nickName || item?.userId || '';
    imageToken = imageToken || item?.userProfile?.image || '';
@@ -222,9 +221,11 @@ const GrpCollapsibleToolbar = ({
       if (!isNetworkconneted) {
          return showInternetconnectionToast();
       }
-      const { statusCode } = await SDK.userExitGroup(chatUser, localUser?.userType === 'o');
+      const { statusCode, message } = await SDK.userExitGroup(chatUser, localUser?.userType === 'o');
       if (statusCode === 200) {
          getGroupParticipants(2500);
+      } else {
+         showToast(message, { id: message });
       }
    };
    const handleDeleteGroup = async () => {
@@ -232,13 +233,15 @@ const GrpCollapsibleToolbar = ({
          return showInternetconnectionToast();
       }
       if (isNetworkconneted) {
-         const { statusCode } = await SDK.userDeleteGroup(chatUser);
+         const { statusCode, message } = await SDK.userDeleteGroup(chatUser);
          if (statusCode === 200) {
             navigation.navigate(RECENTCHATSCREEN);
             batch(() => {
                dispatch(deleteActiveChatAction({ fromUserId: getUserIdFromJid(chatUser) }));
                dispatch(DeleteChatHistoryAction({ fromUserId: getUserIdFromJid(chatUser) }));
             });
+         } else {
+            showToast(message, { id: message });
          }
       }
    };
@@ -391,17 +394,27 @@ const GrpCollapsibleToolbar = ({
                      transform: [{ scale: titleScale }],
                   },
                ]}>
-               <Animated.Text
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  style={[
-                     styles.title,
-                     {
-                        color: animatedTitleColor < 280 ? '#fff' : '#000',
-                     },
-                  ]}>
-                  {title}
-               </Animated.Text>
+               <View>
+                  <Animated.Text
+                     numberOfLines={1}
+                     ellipsizeMode="tail"
+                     style={[
+                        styles.title,
+                        {
+                           color: animatedTitleColor < 280 ? '#fff' : '#000',
+                        },
+                     ]}>
+                     {title}
+                  </Animated.Text>
+                  {animatedTitleColor < 280 && (
+                     <Animated.Text
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        style={[styles.stautsText, commonStyles.colorWhite]}>
+                        {participants.length} members
+                     </Animated.Text>
+                  )}
+               </View>
                {Boolean(userType) && animatedTitleColor < 260 && (
                   <Pressable
                      onPress={handleEditText}
@@ -577,7 +590,7 @@ const styles = StyleSheet.create({
       position: 'absolute',
       elevation: 5,
       shadowColor: ApplicationColors.shadowColor,
-      shadowOffset: { width: 0, height: 6 },
+      shadowOffset: { width: 0, height: 3 },
       shadowOpacity: 0.1,
       shadowRadius: 6,
    },
@@ -639,7 +652,6 @@ const styles = StyleSheet.create({
       marginVertical: 2,
    },
    stautsText: {
-      color: '#4b5563',
       marginVertical: 2,
    },
    divider: {

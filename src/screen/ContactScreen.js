@@ -148,12 +148,6 @@ function ContactScreen() {
             if (_data[item.userJid]) {
                delete _data[item.userJid];
             } else {
-               if (Object.keys(selectedUsers).length > config.maxAllowdGroupMembers - 2) {
-                  showToast('Maximum allowed group members ' + config.maxAllowdGroupMembers, {
-                     id: 'Maximum_allowed_group_members',
-                  });
-                  return { ..._data };
-               }
                _data[item.userJid] = item;
             }
             return { ..._data };

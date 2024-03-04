@@ -17,6 +17,7 @@ import EmojiInput from '../components/EmojiInput';
 import ApplicationColors from '../config/appColors';
 import { CONTACTLIST, IMAGEVIEW, NEW_GROUP } from '../constant';
 import { useNetworkStatus } from '../hooks';
+import LoadingModal from '../common/LoadingModal';
 
 const LeftArrowComponent = () => LeftArrowIcon();
 
@@ -25,12 +26,17 @@ function NewGroup() {
    const navigation = useNavigation();
    const headerBg = useSelector(state => state.safeArea.color);
    const [value, setValue] = React.useState('');
+   const [loading, setLoading] = React.useState(false);
    const [profileImage, setProfileImage] = React.useState({});
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
    const [modelOpen, setModelOpen] = React.useState(false);
 
    const toggleModel = () => {
       setModelOpen(val => !val);
+   };
+
+   const toggleLoading = () => {
+      setLoading(val => !val);
    };
 
    const handleBackBtn = () => {
@@ -71,16 +77,34 @@ function NewGroup() {
       }
    };
 
-   const handleOpenCamera = async () => {
+   const handleOpenCamera = () => {
+      toggleLoading();
       toggleModel();
-      const image = await handleImagePickerOpenCamera();
-      setProfileImage(image);
+      setTimeout(() => {
+         handleImagePickerOpenCamera()
+            .then(image => {
+               setProfileImage(image);
+               toggleLoading();
+            })
+            .catch(error => {
+               showToast(error, { id: error });
+            });
+      }, 800);
    };
 
-   const handleOpenGallery = async () => {
+   const handleOpenGallery = () => {
+      toggleLoading();
       toggleModel();
-      const image = await handleImagePickerOpenGallery();
-      setProfileImage(image);
+      setTimeout(() => {
+         handleImagePickerOpenGallery()
+            .then(image => {
+               setProfileImage(image);
+               toggleLoading();
+            })
+            .catch(error => {
+               showToast(error, { id: error });
+            });
+      }, 800);
    };
 
    const handleNext = () => {
@@ -168,6 +192,7 @@ function NewGroup() {
                </Text>
             </EmojiInput>
          </View>
+         <LoadingModal visible={loading} />
          <Modal visible={modelOpen} onRequestClose={toggleModel}>
             <ModalCenteredContent onPressOutside={toggleModel}>
                <View style={modelStyles.inviteFriendModalContentContainer}>

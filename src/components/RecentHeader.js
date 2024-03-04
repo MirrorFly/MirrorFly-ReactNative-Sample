@@ -4,8 +4,10 @@ import { Text, View } from 'react-native';
 import IconButton from '../common/IconButton';
 import commonStyles from '../common/commonStyles';
 import { MIX_BARE_JID } from '../Helper/Chat/Constant';
+import { useSelector } from 'react-redux';
 
 const RecentHeader = ({ recentItem, handleRemove, handleDeleteChat }) => {
+   const recentChatList = useSelector(state => state.recentChatData.data || []);
    const handleDelete = () => {
       handleDeleteChat();
    };
@@ -14,7 +16,11 @@ const RecentHeader = ({ recentItem, handleRemove, handleDeleteChat }) => {
       handleRemove();
    };
 
-   const isUserLeft = recentItem.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
+   const isUserLeft = recentItem.every(res =>
+      MIX_BARE_JID.test(res.userJid)
+         ? recentChatList.find(r => r.userJid === res.userJid)?.userType === '' && res.userType === ''
+         : true,
+   );
 
    const renderDeleteIcon = () => {
       return isUserLeft ? (

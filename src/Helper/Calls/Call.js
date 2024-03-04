@@ -220,12 +220,14 @@ export const clearOutgoingTimer = () => {
 };
 
 //Call Again Screen
-const updateCallAgainScreenData = (userID, callType) => {
+const updateCallAgainScreenData = (userID, callType, localVideoStream, localVideoMuted) => {
    batch(() => {
       Store.dispatch(
          updateCallAgainData({
             callType,
             userId: userID,
+            localVideoStream,
+            localVideoMuted,
          }),
       );
       Store.dispatch(setCallModalScreen(CALL_AGAIN_SCREEN));
@@ -251,10 +253,11 @@ export const endCall = async (isFromTimeout = false, userId, callType) => {
    // });
 
    if (isFromTimeout) {
+      let localVideoStream = Store.getState().showConfrenceData.data;
       resetCallData();
       const _userID = userId;
       const _callType = callType;
-      updateCallAgainScreenData(_userID, _callType);
+      updateCallAgainScreenData(_userID, _callType, localVideoStream.localStream, localVideoStream.localVideoMuted);
    } else {
       clearIosCallListeners();
       endCallForIos();

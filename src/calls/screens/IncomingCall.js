@@ -22,10 +22,13 @@ import CloseCallModalButton from '../components/CloseCallModalButton';
 import GestureAnimationScreen from './GestureAnimationScreen';
 
 const IncomingCall = ({ userId, userJid, callStatus }) => {
-   const { connectionState, showCallModal } = useSelector(state => state.callData) || {};
+   const {
+      connectionState: { callType },
+      showCallModal,
+      callerUUID: activeCallUUID = '',
+   } = useSelector(state => state.callData) || {};
    const { data: notificationData = {} } = useSelector(state => state.notificationData) || {};
    const userProfile = useRosterData(userId);
-   const { callerUUID: activeCallUUID = '' } = useSelector(state => state.callData) || {};
    const nickName = userProfile.nickName || userProfile.userId;
    const acceptButtonRef = useRef(false);
    const declineButtonRef = useRef(false);
@@ -115,9 +118,9 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
             </View>
          </View>
          {/* call action buttons (Accept & Reject) */}
-         {callStatus === CALL_STATUS_INCOMING && (
+         {callStatus?.includes('Incoming') && (
             <GestureHandlerRootView style={styles.actionButtonWrapper}>
-               <GestureAnimationScreen acceptCall={acceptCall} declineCall={declineCall} />
+               <GestureAnimationScreen acceptCall={acceptCall} declineCall={declineCall} callType={callType} />
                {/* <RectButton onPress={declineCall} style={[styles.actionButton, styles.redButton]}>
                   <Text style={styles.actionButtonText}> Reject </Text>
                </RectButton>

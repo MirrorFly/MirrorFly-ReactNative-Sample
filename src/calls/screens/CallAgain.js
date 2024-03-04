@@ -1,11 +1,12 @@
 import React from 'react';
-import { ImageBackground, Platform, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import { batch, useDispatch, useSelector } from 'react-redux';
+import { CALL_TYPE_AUDIO } from '../../Helper/Calls/Constant';
 import { makeCalls, resetCallModalActivity, showCallModalToast } from '../../Helper/Calls/Utility';
 import CallsBg from '../../assets/calls-bg.png';
 import Avathar from '../../common/Avathar';
-import { CloseIcon, PhoneIcon } from '../../common/Icons';
+import { CloseIcon, PhoneIcon, PhoneVideoIcon } from '../../common/Icons';
 import commonStyles from '../../common/commonStyles';
 import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
@@ -14,7 +15,8 @@ import useRosterData from '../../hooks/useRosterData';
 import { resetCallAgainData } from '../../redux/Actions/CallAgainAction';
 
 const CallAgain = () => {
-   const { data: { callType, userId } = {} } = useSelector(state => state.callAgainData) || {};
+   const { data: { callType, userId, localVideoStream: localStream, localVideoMuted } = {} } =
+      useSelector(state => state.callAgainData) || {};
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userProfile.userId;
    const callStatus = 'Unavailable, Try again later';
@@ -42,6 +44,7 @@ const CallAgain = () => {
 
    return (
       <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>
+         {/* {localStream && localStream.video && <VideoComponent stream={localStream} />} */}
          <View>
             {/* call status */}
             <View style={styles.callStatusWrapper}>
@@ -73,7 +76,11 @@ const CallAgain = () => {
             </View>
             <View style={commonStyles.alignItemsCenter}>
                <RectButton onPress={handleCallAgain} style={[styles.actionButton, styles.greenButton]}>
-                  <PhoneIcon width={18} height={18} color={ApplicationColors.white} />
+                  {callType === CALL_TYPE_AUDIO ? (
+                     <PhoneIcon width={18} height={18} color={ApplicationColors.white} />
+                  ) : (
+                     <PhoneVideoIcon color={ApplicationColors.white} />
+                  )}
                </RectButton>
                <Text style={styles.actionButtonText}> Call Again </Text>
             </View>

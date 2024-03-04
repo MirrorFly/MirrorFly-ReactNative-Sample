@@ -1,22 +1,37 @@
 import React, { useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import RNCallKeep from 'react-native-callkeep';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import { useSelector } from 'react-redux';
+import {
+   AUDIO_ROUTE_BLUETOOTH,
+   AUDIO_ROUTE_HEADSET,
+   AUDIO_ROUTE_PHONE,
+   AUDIO_ROUTE_SPEAKER,
+   CALL_STATUS_DISCONNECTED,
+   CALL_TYPE_VIDEO,
+} from '../../Helper/Calls/Constant';
+import {
+   audioRouteNameMap,
+   switchCamera,
+   updateAudioRouteTo,
+   updateCallAudioMute,
+   updateCallVideoMute,
+} from '../../Helper/Calls/Utility';
 import {
    AudioMuteIcon,
    AudioUnMuteIcon,
    BluetoothIcon,
    CallHeadsetIcon,
+   CameraDisabledIcon,
+   CameraEnabledIcon,
    EndCallIcon,
    SpeakerEnableIcon,
    VideoMuteIcon,
    VideoUnMuteIcon,
 } from '../../common/Icons';
-import { useSelector } from 'react-redux';
-import { updateCallAudioMute, updateAudioRouteTo, audioRouteNameMap } from '../../Helper/Calls/Utility';
-import RNCallKeep from 'react-native-callkeep';
 import Pressable from '../../common/Pressable';
-import { AUDIO_ROUTE_BLUETOOTH, AUDIO_ROUTE_HEADSET, AUDIO_ROUTE_PHONE, AUDIO_ROUTE_SPEAKER, CALL_STATUS_DISCONNECTED } from '../../Helper/Calls/Constant';
 
 const sortAudioRoutes = (a, b) => {
    const nameA = a.name.toLowerCase();
@@ -29,20 +44,20 @@ const sortAudioRoutes = (a, b) => {
    return 0;
 };
 
-const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute }) => {
+const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callType }) => {
    let endActionButtonRef = useRef(false);
    const RBSheetRef = useRef(null);
 
    const [audioRoutes, setAudioRoutes] = React.useState([]);
 
-   const { isAudioMuted, isVideoMuted, selectedAudioRoute } = useSelector(
+   const { isAudioMuted, isVideoMuted, selectedAudioRoute, isFrontCameraEnabled } = useSelector(
       state => state.callControlsData,
    );
 
    const { callerUUID } = useSelector(state => state.callData) || {};
 
    const audioRouteIcon = React.useMemo(() => {
-      switch(selectedAudioRoute) {
+      switch (selectedAudioRoute) {
          case '': // receiver
             return <SpeakerEnableIcon color={'#fff'} />;
          case AUDIO_ROUTE_SPEAKER:
@@ -55,6 +70,14 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute }) => {
             return <SpeakerEnableIcon />;
       }
    }, [selectedAudioRoute]);
+
+   const toggleCamera = () => {
+      if (callStatus?.toLowerCase() === CALL_STATUS_DISCONNECTED) {
+         return;
+      }
+      let cameraSwitch = !isFrontCameraEnabled;
+      switchCamera(cameraSwitch);
+   };
 
    const toggleSpeaker = () => {
       if (callStatus?.toLowerCase() === CALL_STATUS_DISCONNECTED) {
@@ -71,8 +94,7 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute }) => {
             if (_routes.length === 2) {
                setAudioRoutes(_routes.sort(sortAudioRoutes));
             } else if (_routes.length > 2) {
-               const filteredRoutes = _routes
-                  .filter(r => r.type !== AUDIO_ROUTE_PHONE)
+               const filteredRoutes = _routes.filter(r => r.type !== AUDIO_ROUTE_PHONE);
                setAudioRoutes(filteredRoutes.sort(sortAudioRoutes));
             }
             RBSheetRef.current?.open?.();
@@ -96,6 +118,14 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute }) => {
       updateCallAudioMute(_audioMuted, callerUUID);
    };
 
+   const handleVideoMutePress = async () => {
+      if (callStatus?.toLowerCase() === CALL_STATUS_DISCONNECTED) {
+         return;
+      }
+      const _videoMuted = !isVideoMuted;
+      updateCallVideoMute(_videoMuted, callerUUID);
+   };
+
    const handleSelectAudioRoute = _audioRoute => () => {
       RBSheetRef.current?.close?.();
       updateAudioRouteTo(_audioRoute.name, _audioRoute.type, callerUUID);
@@ -110,8 +140,19 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute }) => {
                   style={[[styles.actionButton, isAudioMuted && styles.activeButton]]}>
                   {isAudioMuted ? <AudioMuteIcon /> : <AudioUnMuteIcon />}
                </RectButton>
-               <RectButton onPress={handleVideoMute} style={[styles.actionButton, isVideoMuted && styles.activeButton]}>
-                  {isVideoMuted ? <VideoMuteIcon /> : <VideoUnMuteIcon color={'#000'} />}
+
+               {callType === CALL_TYPE_VIDEO && !isVideoMuted && (
+                  <RectButton
+                     onPress={toggleCamera}
+                     style={[styles.actionButton, !isFrontCameraEnabled && styles.activeButton]}>
+                     {isFrontCameraEnabled ? <CameraEnabledIcon /> : <CameraDisabledIcon />}
+                  </RectButton>
+               )}
+
+               <RectButton
+                  onPress={handleVideoMutePress}
+                  style={[styles.actionButton, isVideoMuted && styles.activeButton]}>
+                  {isVideoMuted ? <VideoMuteIcon /> : <VideoUnMuteIcon color={'#f2f2f2'} />}
                </RectButton>
                <RectButton
                   onPress={toggleSpeaker}
@@ -144,7 +185,10 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute }) => {
                {audioRoutes.map(route => (
                   <Pressable
                      key={route.name}
-                     contentContainerStyle={[styles.audioRouteItem, selectedAudioRoute === audioRouteNameMap[route.type] && styles.selectedAudioRouteItem]}
+                     contentContainerStyle={[
+                        styles.audioRouteItem,
+                        selectedAudioRoute === audioRouteNameMap[route.type] && styles.selectedAudioRouteItem,
+                     ]}
                      onPress={handleSelectAudioRoute(route)}>
                      <Text style={styles.audioRouteItemText}>{route.type}</Text>
                   </Pressable>

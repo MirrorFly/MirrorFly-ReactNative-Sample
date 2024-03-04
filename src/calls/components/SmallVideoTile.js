@@ -15,7 +15,7 @@ const SmallVideoTile = ({ user, isLocalUser, isAudioMuted, isVideoMuted, stream,
 
    return (
       <View style={styles.smallVideoWrapper}>
-         {!isVideoMuted && stream && stream.video && (
+         {!isVideoMuted && stream && stream?.video && (
             <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={1} />
          )}
          <View
@@ -37,7 +37,7 @@ const SmallVideoTile = ({ user, isLocalUser, isAudioMuted, isVideoMuted, stream,
                   <View style={styles.smallVideoVoiceLevelIndicator} />
                </View>
             )}
-            {(isVideoMuted || !stream.video) && (
+            {(isVideoMuted || (stream && !stream?.video)) && (
                <>
                   <View style={styles.smallVideoUserAvathar}>
                      <Avathar

@@ -68,6 +68,7 @@ import {
    AUDIO_ROUTE_SPEAKER,
    CALL_STATUS_DISCONNECTED,
    CALL_TYPE_AUDIO,
+   CALL_TYPE_VIDEO,
    COMMON_ERROR_MESSAGE,
    DISCONNECTED_SCREEN_DURATION,
    INCOMING_CALL_SCREEN,
@@ -98,7 +99,7 @@ const calculateAudioRoute = (
    { audioJack = false, bluetooth = false } = {},
    { previousAudioJack = false, previousBluetooth = false } = {},
 ) => {
-   const speakerPriority = isSpeakerEnabled ? AUDIO_ROUTE_SPEAKER : '';
+   const speakerPriority = isSpeakerEnabled || getCallType() === CALL_TYPE_VIDEO ? AUDIO_ROUTE_SPEAKER : '';
    const wiredHeadsetPriority = audioJack ? AUDIO_ROUTE_HEADSET : speakerPriority;
    const bluetoothPriority = bluetooth ? AUDIO_ROUTE_BLUETOOTH : wiredHeadsetPriority;
 
@@ -148,6 +149,10 @@ const routeAndroidAudioTo = _route => {
  * @param {HeadphonesData} data
  */
 const handleHeadphoneDetection = async data => {
+   const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
+   if (Object.keys(confrenceData).length === 0) {
+      return;
+   }
    const callControlsData = Store.getState().callControlsData;
    const isSpeakerEnabledInUI = callControlsData?.isSpeakerEnabled || false;
    const isWiredHeadsetConnected = callControlsData?.isWiredHeadsetConnected || false;
@@ -343,7 +348,6 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          } else if (callType === 'video') {
             muteLocalVideo(false);
             Store.dispatch(updateCallVideoMutedAction(false));
-            updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, uuid);
             call = await SDK.makeVideoCall(users, groupId);
          }
          if (call.statusCode !== 200 && call.message === PERMISSION_DENIED) {
@@ -351,6 +355,9 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
             deleteAndDispatchAction();
          } else {
             roomId = call.roomId;
+            if (callType === 'video') {
+               enableSpeaker(uuid);
+            }
             // callLogsObj.insert({
             //     "callMode": callConnectionStatus.callMode,
             //     "callState": 1,
@@ -391,8 +398,8 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
 
 //Report outgoing call to callkit for ios
 const startCall = (uuid, callerId, callerName, hasVideo) => {
-   RNCallKeep.startCall(uuid, callerId, callerName, 'generic', hasVideo);
    handleOutGoing_CallKeepListeners();
+   RNCallKeep.startCall(uuid, callerId, callerName, 'generic', hasVideo);
 };
 
 //PermissionError while answering the call
@@ -410,6 +417,15 @@ const answerCallPermissionError = answerCallResonse => {
       // Store.dispatch(resetCallStateData());
       Store.dispatch(resetConferencePopup());
    });
+};
+
+const enableSpeaker = async (activeCallerUUID = '') => {
+   const callControlsData = Store.getState().callControlsData;
+   const isWiredHeadsetConnected = callControlsData?.isWiredHeadsetConnected || false;
+   const isBluetoothHeadsetConnected = callControlsData?.isBluetoothHeadsetConnected || false;
+   !isWiredHeadsetConnected &&
+      !isBluetoothHeadsetConnected &&
+      (await updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, activeCallerUUID));
 };
 
 //Answering the incoming call
@@ -440,7 +456,6 @@ export const answerIncomingCall = async callId => {
       } else {
          isPermissionChecked = await AsyncStorage.getItem('camera_microPhone_Permission');
          AsyncStorage.setItem('camera_microPhone_Permission', 'true');
-         updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, activeCallerUUID);
       }
       callBackgroundNotification = false;
       setTimeout(() => {
@@ -471,8 +486,11 @@ export const answerIncomingCall = async callId => {
                      // Store.dispatch(openCallModal());
                   }
                });
+               if (callType === CALL_TYPE_VIDEO) {
+                  enableSpeaker(activeCallerUUID);
+               }
                // updating the call connected status to android native code
-               ActivityModule.updateCallConnectedStatus(true);
+               Platform.OS === 'android' && ActivityModule.updateCallConnectedStatus(true);
                // TODO: update the Call logs when implementing
                // callLogs.update(callConnectionDate.data.roomId, {
                //   startTime: callLogs.initTime(),
@@ -532,11 +550,16 @@ export const declineIncomingCall = async () => {
    }
 };
 
+const debounceAudioRouteChangeListenerForIos = debounce(
+   (currentCallUUID, output, reason) => updateAudioRouteTo(output, output, currentCallUUID, true, reason),
+   10,
+);
+
 const handleAudioRouteChangeListenerForIos = () => {
    RNCallKeep.addEventListener('didChangeAudioRoute', ({ output, reason }) => {
       console.log('LOGG::==>> didChangeAudioRoute from callkit', output, reason);
       const currentCallUUID = Store.getState().callData?.callerUUID;
-      updateAudioRouteTo(output, output, currentCallUUID, true, reason);
+      debounceAudioRouteChangeListenerForIos(currentCallUUID, output, reason);
    });
 };
 
@@ -594,6 +617,7 @@ export const displayIncomingCallForIos = callResponse => {
    );
    const activeCallUUID = Store.getState().callData?.callerUUID || '';
    const isCallFromVoip = Store.getState().callData?.isCallFromVoip;
+   handleIncoming_CallKeepListeners();
    if (!activeCallUUID && callingUserData) {
       let callUUID = SDK.randomString(16, 'BA');
       Store.dispatch(updateCallerUUID(callUUID));
@@ -608,7 +632,6 @@ export const displayIncomingCallForIos = callResponse => {
          callResponse.callType === 'video',
       );
    }
-   handleIncoming_CallKeepListeners();
    if (AppState.currentState !== 'active' || isCallFromVoip) {
       checkMicroPhonePermission().then(micPermission => {
          if (micPermission !== 'granted') {
@@ -963,7 +986,7 @@ export const updateCallVideoMute = async (videoMuted, callUUID, isFromCallKeep =
 };
 
 export const updateAudioRouteTo = async (
-   audioRouteName, // for iOS
+   audioRouteName = '', // for iOS
    audioRouteType, // for Android
    callUUID,
    isFromCallKeep = false,
@@ -1039,4 +1062,8 @@ export const switchCamera = async cameraSwitch => {
 
 export const constructMuteStatus = (streamMute, jid, muteStatus) => {
    return { ...streamMute, [jid]: muteStatus };
+};
+
+export const getCallType = () => {
+   return Store.getState()?.callData?.connectionState?.callType;
 };

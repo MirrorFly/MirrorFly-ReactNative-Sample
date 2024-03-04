@@ -1,12 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Avathar from '../../common/Avathar';
+import { AudioMuteIcon } from '../../common/Icons';
+import Pressable from '../../common/Pressable';
 import useRosterData from '../../hooks/useRosterData';
 import PulseAnimatedView from './PulseAnimatedView';
-import { AudioMuteIcon } from '../../common/Icons';
-import { CALL_STATUS_CONNECTED, CALL_STATUS_CONNECTING, CALL_STATUS_HOLD } from '../../Helper/Calls/Constant';
 import VideoComponent from './VideoComponent';
-import Pressable from '../../common/Pressable';
 
 const BigVideoTile = ({
    userId,
@@ -22,7 +21,7 @@ const BigVideoTile = ({
 
    return (
       <>
-         {!videoMuted && stream && stream.video && (
+         {!videoMuted && stream && stream?.video && (
             <>
                <Pressable
                   onPress={onPressAnywhere}
@@ -33,7 +32,6 @@ const BigVideoTile = ({
                      right: 0,
                      left: 0,
                      bottom: 0,
-                     backgroundColor: '#fff',
                   }}
                   contentContainerStyle={{ flex: 1 }}>
                   <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={0} />

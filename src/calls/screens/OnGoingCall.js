@@ -266,7 +266,7 @@ const OnGoingCall = () => {
                   isAudioMuted={remoteAudioMuted[largeVideoUserJid] || false}
                   videoMuted={remoteVideoMuted[largeVideoUserJid] ? remoteVideoMuted[largeVideoUserJid] : false}
                   callStatus={callStatusText}
-                  stream={largeVideoUserJid === localUserJid ? localStream : stream}
+                  stream={{}}
                   onPressAnywhere={toggleControls}
                   isFrontCameraEnabled={largeVideoUserJid === localUserJid ? isFrontCameraEnabled : false}
                />
@@ -405,7 +405,13 @@ const OnGoingCall = () => {
          callStatus.toLowerCase() === CALL_STATUS_CONNECTING
             ? callConnectionState.to || callConnectionState.userJid
             : largeVideoUser?.userJid || '';
-      return callType === 'video' && !remoteVideoMuted[largeVideoUserJid] && stream && stream.video ? 'video' : 'audio';
+      return callType === 'video' &&
+         !remoteVideoMuted[largeVideoUserJid] &&
+         stream &&
+         stream.video &&
+         callStatus.toLowerCase() !== CALL_STATUS_CONNECTING
+         ? 'video'
+         : 'audio';
    })();
 
    React.useEffect(() => {

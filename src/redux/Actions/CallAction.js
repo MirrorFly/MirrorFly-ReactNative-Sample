@@ -97,9 +97,12 @@ export const pinUser = userJid => {
 
 export const selectLargeVideoUser = (userJid, volumelevel) => {
    return (dispatch, getState) => {
-      // if (largeUserJid === null) {
-      largeUserJid = userJid;
-      // }
+      if (largeUserJid === userJid) {
+         return;
+      }
+      if (largeUserJid !== userJid) {
+         largeUserJid = userJid;
+      }
       const state = getState();
       const showConfrenceData = state.showConfrenceData;
       const { data: { remoteStream = [] } = {} } = showConfrenceData || {};

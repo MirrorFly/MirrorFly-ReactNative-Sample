@@ -17,7 +17,7 @@ import {
    switchCamera,
    updateAudioRouteTo,
    updateCallAudioMute,
-   updateCallVideoMute
+   updateCallVideoMute,
 } from '../../Helper/Calls/Utility';
 import {
    AudioMuteIcon,

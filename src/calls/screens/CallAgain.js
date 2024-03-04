@@ -72,7 +72,7 @@ const CallAgain = () => {
                <RectButton onPress={closeScreen} style={[styles.actionButton]}>
                   <CloseIcon />
                </RectButton>
-               <Text style={styles.actionButtonText}>Cancel</Text>
+               <Text style={styles.actionButtonText}> Cancel </Text>
             </View>
             <View style={commonStyles.alignItemsCenter}>
                <RectButton onPress={handleCallAgain} style={[styles.actionButton, styles.greenButton]}>
@@ -82,7 +82,7 @@ const CallAgain = () => {
                      <PhoneVideoIcon color={ApplicationColors.white} />
                   )}
                </RectButton>
-               <Text style={styles.actionButtonText}>Call Again</Text>
+               <Text style={styles.actionButtonText}> Call Again </Text>
             </View>
          </GestureHandlerRootView>
       </ImageBackground>

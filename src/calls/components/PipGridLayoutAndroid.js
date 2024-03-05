@@ -9,8 +9,18 @@ import useFetchImage from '../../hooks/useFetchImage';
 import commonStyles from '../../common/commonStyles';
 import { getUsernameGraphemes } from '../../Helper';
 import { CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
+import VideoComponent from './VideoComponent';
 
-const PIPGridItem = ({ item, isLocalUser, isFullSize, isAudioMuted, userStatus }) => {
+const PIPGridItem = ({
+   item,
+   isLocalUser,
+   isFullSize,
+   isAudioMuted,
+   userStatus,
+   stream,
+   isVideoMuted,
+   isFrontCameraEnable,
+}) => {
    const userId = getUserIdFromJid(item?.fromJid || '');
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
@@ -50,53 +60,65 @@ const PIPGridItem = ({ item, isLocalUser, isFullSize, isAudioMuted, userStatus }
             width: isFullSize ? '100%' : '50%',
             backgroundColor: userProfile.colorCode,
             flex: 1,
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: 5,
          }}>
-         {/* Speaking indicator */}
-         {isAudioMuted ? (
-            <View style={styles.emptyVoiceLevelIndicator} />
-         ) : isUserReconnecting ? null : (
-            <View style={styles.gridItemVoiceLevelWrapper}>
-               <View style={styles.gridItemVoiceLevelIndicator} />
-               <View style={styles.gridItemVoiceLevelIndicator} />
-               <View style={styles.gridItemVoiceLevelIndicator} />
-            </View>
+         {!isVideoMuted && stream && stream?.video && (
+            <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnable} zIndex={0} />
          )}
-         {/* if image loading error then showing the initials */}
-         <View style={styles.avatharWrapper}>
-            {userProfile.image && !isImageLoadError && imageUrl ? (
-               <Image
-                  style={styles.profileImage}
-                  source={{
-                     uri: imageUrl,
-                     method: 'GET',
-                     cache: 'force-cache',
-                     headers: {
-                        Authorization: authToken,
-                     },
-                  }}
-                  onError={handleImageError}
-                  resizeMode="cover"
-               />
-            ) : (
-               <View style={commonStyles.marginTop_5}>
-                  <Text style={styles.userNameText}>{getUsernameGraphemes(nickName)}</Text>
+         <View style={{ padding: 5, justifyContent: 'space-between', alignItems: 'center', flex: 1 }}>
+            {/* Speaking indicator */}
+            {isAudioMuted ? (
+               <View style={styles.emptyVoiceLevelIndicator} />
+            ) : isUserReconnecting ? null : (
+               <View style={styles.gridItemVoiceLevelWrapper}>
+                  <View style={styles.gridItemVoiceLevelIndicator} />
+                  <View style={styles.gridItemVoiceLevelIndicator} />
+                  <View style={styles.gridItemVoiceLevelIndicator} />
                </View>
             )}
+            {/* if image loading error then showing the initials */}
+            {(isVideoMuted || (stream && !stream.video)) && (
+               <View style={styles.avatharWrapper}>
+                  {userProfile.image && !isImageLoadError && imageUrl ? (
+                     <Image
+                        style={styles.profileImage}
+                        source={{
+                           uri: imageUrl,
+                           method: 'GET',
+                           cache: 'force-cache',
+                           headers: {
+                              Authorization: authToken,
+                           },
+                        }}
+                        onError={handleImageError}
+                        resizeMode="cover"
+                     />
+                  ) : (
+                     <View style={commonStyles.marginTop_5}>
+                        <Text style={styles.userNameText}>{getUsernameGraphemes(nickName)}</Text>
+                     </View>
+                  )}
+               </View>
+            )}
+            {/* user name or 'You' */}
+            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.gridItemUserName}>
+               {isLocalUser ? 'You' : nickName}
+            </Text>
+            {/* Reconnecting overlay based on user call status */}
+            {renderReconnectingOverlay()}
          </View>
-         {/* user name or 'You' */}
-         <Text numberOfLines={1} ellipsizeMode="tail" style={styles.gridItemUserName}>
-            {isLocalUser ? 'You' : nickName}
-         </Text>
-         {/* Reconnecting overlay based on user call status */}
-         {renderReconnectingOverlay()}
       </View>
    );
 };
 
-const PipGridLayoutAndroid = ({ remoteStream, localUserJid, remoteAudioMuted, callStatus }) => {
+const PipGridLayoutAndroid = ({
+   remoteStream,
+   localUserJid,
+   remoteAudioMuted,
+   callStatus,
+   localStream,
+   remoteVideoMuted,
+   isFrontCameraEnabled,
+}) => {
    // Sorting the remote stream with local user at the top (first)
    const sortRemoteStreamAndCalculateColumns = () => {
       const _sortedData = [...(remoteStream || [])];
@@ -113,6 +135,9 @@ const PipGridLayoutAndroid = ({ remoteStream, localUserJid, remoteAudioMuted, ca
 
    const renderPipLayoutItem = item => {
       const isAudioMuted = remoteAudioMuted?.[item?.fromJid] || false;
+      const isVideoMuted = remoteVideoMuted?.[item?.fromJid] || false;
+      const isFrontCameraEnable = item?.fromJid === localUserJid ? isFrontCameraEnabled : false;
+
       return (
          <PIPGridItem
             key={item?.fromJid}
@@ -121,6 +146,9 @@ const PipGridLayoutAndroid = ({ remoteStream, localUserJid, remoteAudioMuted, ca
             isFullSize={calculatedColumnsForPipGrid === 1}
             isAudioMuted={isAudioMuted}
             userStatus={item?.status}
+            stream={item.fromJid === localUserJid ? localStream : item.stream}
+            isVideoMuted={isVideoMuted}
+            isFrontCameraEnable={isFrontCameraEnable}
          />
       );
    };

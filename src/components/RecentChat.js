@@ -280,7 +280,8 @@ export default function RecentChat() {
    const renderItem = (item, index) => {
       const isSame = currentUserJID === item?.publisherJid;
       const jid =
-         item?.userJid || formatUserIdToJid(item?.fromUserId); /** Need to add chat type here while working in Group
+         item?.userJid ||
+         formatUserIdToJid(item?.fromUserId, item?.chatType); /** Need to add chat type here while working in Group
     formatUserIdToJid(
      item?.fromUserId,
      item?.chatType,

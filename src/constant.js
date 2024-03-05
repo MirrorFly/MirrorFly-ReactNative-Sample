@@ -24,7 +24,7 @@ export const GROUP_INFO = 'GROUP_INFO';
 export const USER_INFO = 'USER_INFO';
 export const IMAGEVIEW = 'IMAGEVIEW';
 export const EDITNAME = 'EDITNAME';
-
+export const VIEWALLMEDIA = 'VIEWALLMEDIA';
 // Redux Loading
 export const RECENTCHATLOADING = 'RECENTCHATLOADING';
 

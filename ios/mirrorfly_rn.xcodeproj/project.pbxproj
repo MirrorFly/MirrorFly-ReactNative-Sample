@@ -86,8 +86,6 @@
 		CE7BED4C2AC6F648001F131C /* Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Async.swift; sourceTree = "<group>"; };
 		CE7BED4E2AC6F66F001F131C /* mirrorfly_rn-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "mirrorfly_rn-Bridging-Header.h"; sourceTree = "<group>"; };
 		CE7FD6892B7DFAC000C5488B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../qa-google-services/GoogleService-Info.plist"; sourceTree = "<group>"; };
-		CE9EEDFB2B8635410004DCF7 /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringback.mp3; path = ../../../../../../Downloads/iOSAssets/incallmanager_ringback.mp3; sourceTree = "<group>"; };
-		CE9EEDFC2B8635410004DCF7 /* fly_reconnecting_tone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = fly_reconnecting_tone.mp3; path = ../../../../../../Downloads/iOSAssets/fly_reconnecting_tone.mp3; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 

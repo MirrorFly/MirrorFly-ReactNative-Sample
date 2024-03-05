@@ -1,16 +1,16 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import { showToast } from '../Helper';
+import { SDK } from '../SDK';
 import IconButton from '../common/IconButton';
 import { LeftArrowIcon } from '../common/Icons';
+import Pressable from '../common/Pressable';
 import commonStyles from '../common/commonStyles';
 import EmojiInput from '../components/EmojiInput';
 import ApplicationColors from '../config/appColors';
-import Pressable from '../common/Pressable';
-import { showToast } from '../Helper';
 import { useNetworkStatus } from '../hooks';
-import { SDK } from '../SDK';
 
 const LeftArrowComponent = () => LeftArrowIcon();
 

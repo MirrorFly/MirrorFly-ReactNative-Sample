@@ -301,6 +301,9 @@ const commonStyles = StyleSheet.create({
    fw_400: {
       fontWeight: '400',
    },
+   fw_500: {
+      fontWeight: '500',
+   },
    fw_600: {
       fontWeight: '600',
    },
@@ -315,6 +318,9 @@ const commonStyles = StyleSheet.create({
    },
    fontSize_12: {
       fontSize: 12,
+   },
+   fontSize_14: {
+      fontSize: 14,
    },
    fontSize_18: {
       fontSize: 18,

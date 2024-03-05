@@ -9,13 +9,21 @@ import { SDK } from '../SDK';
 import grpImage from '../assets/ic_grp_bg.png';
 import Avathar from '../common/Avathar';
 import IconButton from '../common/IconButton';
-import { AddUserIcon, ExitIcon, ImageEditIcon, LeftArrowIcon, TextEditIcon } from '../common/Icons';
+import {
+   AddUserIcon,
+   ExitIcon,
+   FrontArrowIcon,
+   GalleryAllIcon,
+   ImageEditIcon,
+   LeftArrowIcon,
+   TextEditIcon,
+} from '../common/Icons';
 import Modal, { ModalBottomContent, ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import commonStyles, { modelStyles } from '../common/commonStyles';
 import { getImageSource } from '../common/utils';
 import ApplicationColors from '../config/appColors';
-import { CONTACTLIST, EDITNAME, GROUP_INFO, IMAGEVIEW, RECENTCHATSCREEN } from '../constant';
+import { CONTACTLIST, EDITNAME, GROUP_INFO, IMAGEVIEW, RECENTCHATSCREEN, VIEWALLMEDIA } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import useFetchImage from '../hooks/useFetchImage';
 import useRosterData from '../hooks/useRosterData';
@@ -50,7 +58,6 @@ const defaultProps = {
 
 const RenderItem = ({ item, index, onhandlePress }) => {
    let { nickName, image: imageToken, colorCode, status } = useRosterData(item?.userId);
-   console.log('item ==>', JSON.stringify(item, null, 2));
    // updating default values
    nickName = nickName || item?.userProfile?.nickName || item?.userId || '';
    imageToken = imageToken || item?.userProfile?.image || '';
@@ -74,7 +81,7 @@ const RenderItem = ({ item, index, onhandlePress }) => {
                {item.userType === 'o' && <Text style={{ color: ApplicationColors.mainColor }}>Admin</Text>}
             </View>
          </Pressable>
-         <View style={styles.divider} />
+         <View style={commonStyles.dividerLine} />
       </React.Fragment>
    );
 };
@@ -106,6 +113,15 @@ const GrpCollapsibleToolbar = ({
    const [modalContent, setModalContent] = React.useState(null);
 
    const adaptiveMinHeight = screenHeight * 0.92;
+
+   const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+
+   React.useEffect(() => {
+      return () => {
+         backHandler.remove();
+      };
+   }, []);
+
    /**
     * const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
     * const pixelRatio = PixelRatio.get();
@@ -179,7 +195,7 @@ const GrpCollapsibleToolbar = ({
       return <RenderItem item={item} index={index} onhandlePress={onhandlePress} />;
    };
 
-   const localUser = React.useMemo(() => participants.find(item => isLocalUser(item?.userId)));
+   const localUser = React.useMemo(() => participants.find(item => isLocalUser(item?.userId), [participants]));
 
    const renderParticipants = () => {
       return (
@@ -330,13 +346,9 @@ const GrpCollapsibleToolbar = ({
       });
    };
 
-   const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
-
-   React.useEffect(() => {
-      return () => {
-         backHandler.remove();
-      };
-   }, []);
+   const handleViewAllMedia = () => {
+      navigation.navigate(VIEWALLMEDIA, { chatUser, title });
+   };
 
    return (
       <View style={styles.fill}>
@@ -459,13 +471,45 @@ const GrpCollapsibleToolbar = ({
                         ]}>
                         <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
                            <AddUserIcon />
-                           <Text style={{ marginLeft: 12, fontSize: 14, color: '#181818' }}>Add Participants</Text>
+                           <Text
+                              style={[
+                                 commonStyles.marginLeft_8,
+                                 commonStyles.fontSize_14,
+                                 commonStyles.colorBlack,
+                                 commonStyles.fw_500,
+                              ]}>
+                              Add Participants
+                           </Text>
                         </View>
                      </View>
                   </Pressable>
                )}
                {renderParticipants()}
                <View mt="5" />
+               <Pressable
+                  onPress={handleViewAllMedia}
+                  contentContainerStyle={{ paddingVertical: 20, paddingHorizontal: 10 }}>
+                  <View
+                     style={[
+                        commonStyles.hstack,
+                        commonStyles.justifyContentSpaceBetween,
+                        commonStyles.alignItemsCenter,
+                     ]}>
+                     <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+                        <GalleryAllIcon />
+                        <Text
+                           style={[
+                              commonStyles.marginLeft_8,
+                              commonStyles.fontSize_14,
+                              commonStyles.colorBlack,
+                              commonStyles.fw_500,
+                           ]}>
+                           View All Media
+                        </Text>
+                     </View>
+                     <FrontArrowIcon />
+                  </View>
+               </Pressable>
                {/* <Pressable>
                   <View style={[commonStyles.hstack, commonStyles.m_12, commonStyles.p_4]}>
                      <ReportGroupIcon width="20" height="20" />

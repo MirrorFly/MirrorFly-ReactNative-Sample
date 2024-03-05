@@ -517,6 +517,7 @@ function ChatScreen() {
                   msgId,
                   location: { latitude, longitude },
                   fromUserJid: currentUserJID,
+                  publisherJid: currentUserJID,
                   replyTo: replyTo,
                };
                constructAndDispatchConversationAndRecentChatData(dataObj);
@@ -537,6 +538,7 @@ function ChatScreen() {
                   msgId: contact.msgId,
                   contact: { ...contact },
                   fromUserJid: currentUserJID,
+                  publisherJid: currentUserJID,
                   replyTo: replyTo,
                };
                constructAndDispatchConversationAndRecentChatData(dataObj);
@@ -553,6 +555,7 @@ function ChatScreen() {
                   chatType: MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat',
                   msgId,
                   fromUserJid: currentUserJID,
+                  publisherJid: currentUserJID,
                   replyTo: message.replyTo,
                };
                constructAndDispatchConversationAndRecentChatData(dataObj);
@@ -642,7 +645,6 @@ function ChatScreen() {
                      handleSendMsg={handleSendMsg}
                   />
                ),
-               PostPreView: <PostPreViewPage setLocalNav={setLocalNav} setSelectedImages={setSelectedImages} />,
 
                LocationInfo: <Location setLocalNav={setLocalNav} handleSendMsg={handleSendMsg} />,
             }[localNav]

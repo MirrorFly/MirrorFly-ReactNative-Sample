@@ -156,7 +156,7 @@ export const getMessageObjSender = (dataObj, idx) => {
       timestamp: timestamp,
       msgType: MSG_PROCESSING_STATUS,
       publisherId: senderId,
-      publisherJid: fromUserJid,
+      publisherJid: formatUserIdToJid(senderId),
       ...(isGroupChat(chatType) && {
          fromUserId: getUserIdFromJid(jid),
          fromUserJid: jid,
@@ -236,6 +236,7 @@ export const getRecentChatMsgObj = dataObj => {
       msgType: msgType,
       notificationTo: '',
       publisherId: senderId,
+      publisherJid: formatUserIdToJid(senderId),
       timestamp: timestamp,
       toUserId: fromUserId,
       unreadCount: 0,

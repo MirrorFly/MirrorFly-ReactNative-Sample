@@ -122,14 +122,12 @@ const ChatMessage = props => {
       ) {
          if (isKeyboardVisibleRef.current) {
             let hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-               dispatch(singleChatSelectedMediaImage(message));
-               navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN);
+               navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { chatUser: fromUserJId });
                hideSubscription.remove();
             });
             Keyboard.dismiss();
          } else {
-            dispatch(singleChatSelectedMediaImage(message));
-            navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN);
+            navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { chatUser: fromUserJId });
          }
       } else if (
          message?.msgBody?.message_type === 'file' &&

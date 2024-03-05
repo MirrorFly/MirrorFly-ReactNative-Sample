@@ -490,6 +490,9 @@ const OnGoingCall = () => {
             localUserJid={localUserJid}
             remoteAudioMuted={remoteAudioMuted}
             callStatus={callStatus}
+            localStream={localStream}
+            remoteVideoMuted={remoteVideoMuted}
+            isFrontCameraEnabled={isFrontCameraEnabled}
          />
       );
    }

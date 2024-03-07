@@ -369,7 +369,9 @@ function ChatHeader({
                      profileImage={profileImage}
                   />
                   <View style={styles.userNameAndLastSeenContainer}>
-                     <Text style={styles.userNameText}>{nickName}</Text>
+                     <Text style={styles.userNameText} ellipsizeMode="tail" numberOfLines={1}>
+                        {nickName}
+                     </Text>
                      <LastSeen jid={fromUserJId} />
                   </View>
                </Pressable>
@@ -556,6 +558,7 @@ const styles = StyleSheet.create({
       color: '#181818',
       fontWeight: '700',
       fontSize: 14,
+      maxWidth: 170,
    },
    menuIconContainer: {
       paddingRight: 12,

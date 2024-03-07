@@ -1,7 +1,7 @@
 import React from 'react';
 import DocumentPicker from 'react-native-document-picker';
 import { Box, Text } from 'native-base';
-import { request, PERMISSIONS, requestMultiple, check } from 'react-native-permissions';
+import { request, PERMISSIONS, requestMultiple, check, checkMultiple } from 'react-native-permissions';
 import { Alert, Linking, NativeModules, Platform } from 'react-native';
 import SDK from '../SDK/SDK';
 import messaging from '@react-native-firebase/messaging';
@@ -92,10 +92,18 @@ export const requestCameraPermission = async () => {
    switch (true) {
       case Platform.OS === 'ios':
          const ios_permit = await requestMultiple([PERMISSIONS.IOS.CAMERA, PERMISSIONS.IOS.MICROPHONE]);
-         return ios_permit['ios.permission.CAMERA'] && ios_permit['ios.permission.MICROPHONE'];
+         return (ios_permit['ios.permission.CAMERA'] === 'granted' ||
+            ios_permit['ios.permission.CAMERA'] === 'limited') &&
+            (ios_permit['ios.permission.MICROPHONE'] === 'granted' ||
+               ios_permit['ios.permission.MICROPHONE'] === 'limited')
+            ? 'granted'
+            : 'denied';
       case Platform.OS === 'android':
          const permited = await requestMultiple([PERMISSIONS.ANDROID.CAMERA, PERMISSIONS.ANDROID.RECORD_AUDIO]);
-         return permited['android.permission.CAMERA'] && permited['android.permission.RECORD_AUDIO'];
+         return permited['android.permission.CAMERA'] === 'granted' &&
+            permited['android.permission.RECORD_AUDIO'] === 'granted'
+            ? 'granted'
+            : 'denied';
    }
 };
 
@@ -147,16 +155,36 @@ export const requestMicroPhonePermission = async () => {
    return request(Platform.OS === 'android' ? PERMISSIONS.ANDROID.RECORD_AUDIO : PERMISSIONS.IOS.MICROPHONE);
 };
 
-export const requestBluetoothConnectPermission =() => {
+export const requestBluetoothConnectPermission = () => {
    if (Platform.OS === 'android') {
       return request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
    } else {
       return Promise.resolve(false);
    }
-}
+};
 
 export const checkMicroPhonePermission = async () => {
    return check(Platform.OS === 'android' ? PERMISSIONS.ANDROID.RECORD_AUDIO : PERMISSIONS.IOS.MICROPHONE);
+};
+
+export const checkCameraPermission = async () => {
+   const permissionsToCheck =
+      Platform.OS === 'android'
+         ? [PERMISSIONS.ANDROID.RECORD_AUDIO, PERMISSIONS.ANDROID.CAMERA]
+         : [PERMISSIONS.IOS.CAMERA, PERMISSIONS.IOS.MICROPHONE];
+
+   const results = await checkMultiple(permissionsToCheck);
+   if (Platform.OS === 'android') {
+      return results[PERMISSIONS.ANDROID.CAMERA] === 'granted' &&
+         results[PERMISSIONS.ANDROID.RECORD_AUDIO] === 'granted'
+         ? 'granted'
+         : 'denied';
+   } else {
+      return (results[PERMISSIONS.IOS.CAMERA] === 'granted' || results[PERMISSIONS.IOS.CAMERA] === 'limited') &&
+         (results[PERMISSIONS.IOS.MICROPHONE] === 'granted' || results[PERMISSIONS.IOS.MICROPHONE] === 'limited')
+         ? 'granted'
+         : 'denied';
+   }
 };
 
 export const requestNotificationPermission = async () => {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
 import Avathar from '../../common/Avathar';
 import { AudioMuteIcon } from '../../common/Icons';
 import Pressable from '../../common/Pressable';
@@ -15,13 +16,14 @@ const BigVideoTile = ({
    stream,
    onPressAnywhere,
    isFrontCameraEnabled,
+   localUserJid,
 }) => {
+   let reconnectStatus = callStatus.toLowerCase() === CALL_STATUS_RECONNECT && userId !== localUserJid ? true : false;
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
-
    return (
       <>
-         {!videoMuted && stream && stream?.video && (
+         {!videoMuted && stream && stream?.video && !reconnectStatus && (
             <>
                <Pressable
                   onPress={onPressAnywhere}
@@ -56,7 +58,7 @@ const BigVideoTile = ({
                </Pressable>
             </>
          )}
-         {(videoMuted || !stream || !stream.video) && (
+         {(videoMuted || reconnectStatus || !stream || !stream.video) && (
             <View style={styles.avatharWrapper}>
                {/* Pulse animation view here */}
                <PulseAnimatedView animateToValue={1.3} baseStyle={styles.avatharPulseAnimatedView} />

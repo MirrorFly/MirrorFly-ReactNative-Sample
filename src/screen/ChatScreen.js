@@ -80,6 +80,7 @@ import Location from '../components/Media/Location';
 import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import { useNetworkStatus } from '../hooks';
+import { isRoomExist } from '../Helper/Calls/Utility';
 
 export const selectedMediaIdRef = createRef();
 selectedMediaIdRef.current = {};
@@ -277,6 +278,12 @@ function ChatScreen() {
       name: 'Camera',
       icon: CameraIcon,
       formatter: async () => {
+        if (isRoomExist()) {
+           showToast('Camera cannot be accessed while in call', {
+              id: 'alreadyInCall',
+           });
+           return;
+        }
         let cameraPermission = await requestCameraPermission();
         let imageReadPermission = await requestStoragePermission();
         const camera_permission = await AsyncStorage.getItem(

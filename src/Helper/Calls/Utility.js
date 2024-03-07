@@ -14,7 +14,12 @@ import { batch } from 'react-redux';
 import SDK from '../../SDK/SDK';
 import { clearIosCallListeners, muteLocalAudio, muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
-import { checkMicroPhonePermission, requestCameraPermission, requestMicroPhonePermission } from '../../common/utils';
+import {
+   checkCameraPermission,
+   checkMicroPhonePermission,
+   requestCameraPermission,
+   requestMicroPhonePermission,
+} from '../../common/utils';
 import ActivityModule from '../../customModules/ActivityModule';
 import AudioRoutingModule from '../../customModules/AudioRoutingModule';
 import BluetoothHeadsetDetectionModule from '../../customModules/BluetoothHeadsetDetectionModule';
@@ -612,6 +617,7 @@ const handleOutGoing_CallKeepListeners = () => {
 };
 
 export const displayIncomingCallForIos = callResponse => {
+   let { callType = '' } = callResponse;
    const callingUserData = callResponse.usersStatus?.find(
       u => u.userJid === callResponse.userJid && u.localUser === false,
    );
@@ -633,13 +639,25 @@ export const displayIncomingCallForIos = callResponse => {
       );
    }
    if (AppState.currentState !== 'active' || isCallFromVoip) {
-      checkMicroPhonePermission().then(micPermission => {
-         if (micPermission !== 'granted') {
-            endCallForIos();
-            declineIncomingCall();
-         }
-      });
+      if (callType === 'audio') {
+         checkMicroPhonePermission().then(micPermission => {
+            if (micPermission !== 'granted') {
+               permissionDeniedEndCall();
+            }
+         });
+      } else if (callType === 'video') {
+         checkCameraPermission().then(cameraPermission => {
+            if (cameraPermission !== 'granted') {
+               permissionDeniedEndCall();
+            }
+         });
+      }
    }
+};
+
+const permissionDeniedEndCall = () => {
+   endCallForIos();
+   declineIncomingCall();
 };
 
 export const displayIncomingCallForAndroid = async callResponse => {

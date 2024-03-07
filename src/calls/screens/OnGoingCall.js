@@ -269,6 +269,7 @@ const OnGoingCall = () => {
                   stream={{}}
                   onPressAnywhere={toggleControls}
                   isFrontCameraEnabled={largeVideoUserJid === localUserJid ? isFrontCameraEnabled : false}
+                  localUserJid={localUserJid}
                />
             );
          } else {
@@ -282,6 +283,7 @@ const OnGoingCall = () => {
                   stream={largeVideoUserJid === localUserJid ? localStream : stream}
                   onPressAnywhere={toggleControls}
                   isFrontCameraEnabled={largeVideoUserJid === localUserJid ? isFrontCameraEnabled : false}
+                  localUserJid={getUserIdFromJid(localUserJid)}
                />
             );
          }
@@ -315,6 +317,7 @@ const OnGoingCall = () => {
                            isVideoMuted={remoteVideoMuted[_user?.fromJid] || false}
                            stream={_user.fromJid === localUserJid ? localStream : _user.stream}
                            isFrontCameraEnabled={_user.fromJid === localUserJid ? isFrontCameraEnabled : false}
+                           callStatus={callStatus}
                         />
                      </Pressable>
                   );
@@ -342,6 +345,7 @@ const OnGoingCall = () => {
                   localStream={localStream}
                   remoteVideoMuted={remoteVideoMuted}
                   isFrontCameraEnabled={isFrontCameraEnabled}
+                  callStatus={callStatus}
                />
             </Animated.View>
          );
@@ -391,6 +395,10 @@ const OnGoingCall = () => {
    const callViewType = (() => {
       let stream = null;
       let remoteStreams = null;
+      const largeVideoUserJid =
+         callStatus.toLowerCase() === CALL_STATUS_CONNECTING
+            ? callConnectionState.to || callConnectionState.userJid
+            : largeVideoUser?.userJid || '';
       if (callMode === 'onetoone') {
          remoteStreamDatas.forEach(rs => {
             let id = rs.fromJid;
@@ -399,16 +407,16 @@ const OnGoingCall = () => {
                remoteStreams = rs;
             }
          });
-         stream = remoteStreams?.stream;
+         stream = largeVideoUserJid === localUserJid ? localStream : remoteStreams?.stream;
       }
-      const largeVideoUserJid =
-         callStatus.toLowerCase() === CALL_STATUS_CONNECTING
-            ? callConnectionState.to || callConnectionState.userJid
-            : largeVideoUser?.userJid || '';
+      //Check remote User is reconnecting state
+      let reconnectStatus =
+         callStatus.toLowerCase() === CALL_STATUS_RECONNECT && largeVideoUserJid !== localUserJid ? true : false;
       return callType === 'video' &&
          !remoteVideoMuted[largeVideoUserJid] &&
          stream &&
          stream.video &&
+         !reconnectStatus &&
          callStatus.toLowerCase() !== CALL_STATUS_CONNECTING
          ? 'video'
          : 'audio';

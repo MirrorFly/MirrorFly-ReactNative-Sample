@@ -43,6 +43,7 @@ const UserInfo = () => {
    return (
       <View style={styles.container}>
          <CollapsingToolbar
+            chatUser={chatUser}
             bgColor={colorCode}
             title={nickName}
             titleColor={colorCode}

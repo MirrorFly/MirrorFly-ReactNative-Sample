@@ -1,29 +1,28 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Keyboard, StyleSheet, View, Pressable, Text } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
 import FileViewer from 'react-native-file-viewer';
-import { SandTimer } from '../common/Icons';
-import ImageCard from './ImageCard';
-import VideoCard from './VideoCard';
-import DocumentMessageCard from './DocumentMessageCard';
-import AudioCard from './AudioCard';
-import MapCard from './MapCard';
-import ContactCard from './ContactCard';
-import TextCard from './TextCard';
-import { getConversationHistoryTime } from '../common/TimeStamp';
+import { useDispatch, useSelector } from 'react-redux';
+import { isKeyboardVisibleRef } from '../ChatApp';
+import { openLocationExternally, showCheckYourInternetToast, showToast } from '../Helper';
 import { uploadFileToSDK } from '../Helper/Chat/ChatHelper';
 import { getThumbBase64URL, getUserIdFromJid } from '../Helper/Chat/Utility';
-import { singleChatSelectedMediaImage } from '../redux/Actions/SingleChatImageAction';
-import { openLocationExternally, showCheckYourInternetToast, showToast } from '../Helper';
-import { isKeyboardVisibleRef } from '../ChatApp';
+import { SandTimer } from '../common/Icons';
+import MessagePressable from '../common/MessagePressable';
+import { getConversationHistoryTime } from '../common/TimeStamp';
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
-import MessagePressable from '../common/MessagePressable';
-import { isMessageSelectingRef } from './ChatConversation';
-import { useNetworkStatus } from '../hooks';
-import { useNavigation } from '@react-navigation/native';
 import { MEDIA_POST_PRE_VIEW_SCREEN } from '../constant';
+import { useNetworkStatus } from '../hooks';
 import useRosterData from '../hooks/useRosterData';
+import AudioCard from './AudioCard';
+import { isMessageSelectingRef } from './ChatConversation';
+import ContactCard from './ContactCard';
+import DocumentMessageCard from './DocumentMessageCard';
+import ImageCard from './ImageCard';
+import MapCard from './MapCard';
+import TextCard from './TextCard';
+import VideoCard from './VideoCard';
 
 const ChatMessage = props => {
    const currentUserJID = useSelector(state => state.auth.currentUserJID);
@@ -122,12 +121,12 @@ const ChatMessage = props => {
       ) {
          if (isKeyboardVisibleRef.current) {
             let hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-               navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { chatUser: fromUserJId });
+               navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { chatUser: fromUserJId, msgId: message.msgId });
                hideSubscription.remove();
             });
             Keyboard.dismiss();
          } else {
-            navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { chatUser: fromUserJId });
+            navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { chatUser: fromUserJId, msgId: message.msgId });
          }
       } else if (
          message?.msgBody?.message_type === 'file' &&

@@ -28,16 +28,27 @@ const MediaProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel, msgI
                      onPress={onCancel}>
                      <DownloadCancel />
                   </Pressable>
-                  <Bar
-                     useNativeDriver={true}
-                     indeterminate={!mediaDownloadData[msgId]?.progress || !mediaUploadData[msgId]?.progress}
-                     progress={mediaDownloadData[msgId]?.progress / 100 || mediaUploadData[msgId]?.progress / 100}
-                     width={80}
-                     height={2}
-                     color="#fff"
-                     borderWidth={0}
-                     unfilledColor={'rgba(0, 0, 0, 0.5)'}
-                  />
+                  {mediaDownloadData[msgId]?.progress || mediaUploadData[msgId]?.progress ? (
+                     <Bar
+                        useNativeDriver={true}
+                        progress={mediaDownloadData[msgId]?.progress / 100 || mediaUploadData[msgId]?.progress / 100}
+                        width={80}
+                        height={2}
+                        color="#fff"
+                        borderWidth={0}
+                        unfilledColor={'rgba(0, 0, 0, 0.5)'}
+                     />
+                  ) : (
+                     <Bar
+                        useNativeDriver={true}
+                        indeterminate
+                        width={80}
+                        height={2}
+                        color="#fff"
+                        borderWidth={0}
+                        unfilledColor={'rgba(0, 0, 0, 0.5)'}
+                     />
+                  )}
                </View>
             );
          case mediaStatusConstants.NOT_DOWNLOADED:

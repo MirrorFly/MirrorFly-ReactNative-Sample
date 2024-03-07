@@ -13,6 +13,10 @@ const PLAY_STATE_PAUSED = 'paused';
 const PLAY_STATE_PLAYING = 'playing';
 const PLAY_STATE_LOADING = 'loading';
 export const soundRef = React.createRef();
+export const pauseAudio = () => {
+   soundRef?.current?.pause?.();
+   soundRef?.current?.updateState?.();
+};
 
 const AudioPlayer = props => {
    const { media, msgId, uri, mediaStatus } = props;

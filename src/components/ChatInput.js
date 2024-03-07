@@ -347,6 +347,14 @@ const ChatInput = props => {
       direction === 'right' && swipeFromRightOpen();
    };
 
+   const renderSendButton = () => {
+      const isAllowSendMessage = MIX_BARE_JID.test(fromUserJId)
+         ? Boolean(userType) && Boolean(message.trim())
+         : Boolean(message.trim());
+
+      return isAllowSendMessage ? <SendBtn style={styles.sendButton} onPress={sendMessage} /> : null;
+   };
+
    return (
       <>
          {!showRecorderUi ? (
@@ -389,7 +397,7 @@ const ChatInput = props => {
                      </>
                   </View>
                )}
-               {Boolean(message) && <SendBtn style={styles.sendButton} onPress={sendMessage} />}
+               {renderSendButton()}
             </View>
          ) : (
             <View style={[styles.container, Boolean(message) && commonStyles.paddingRight_0]}>

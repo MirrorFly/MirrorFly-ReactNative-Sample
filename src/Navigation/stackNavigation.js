@@ -50,11 +50,11 @@ const ChatScreenStackNavigation = () => {
          <Stack.Screen name={CONVERSATION_SCREEN}>{prop => <ChatScreen {...prop} />}</Stack.Screen>
          <Stack.Screen name={USER_INFO}>{prop => <UserInfo {...prop} />}</Stack.Screen>
          <Stack.Screen name={FORWARD_MESSSAGE_SCREEN}>{prop => <ForwardMessage {...prop} />}</Stack.Screen>
-         <Stack.Screen name={GROUPSCREEN}>{prop => <GroupScreenStackNavigation {...prop} />}</Stack.Screen>
          <Stack.Screen name={VIEWALLMEDIA}>{prop => <ViewAllMedia {...prop} />}</Stack.Screen>
          <Stack.Screen name={MEDIA_POST_PRE_VIEW_SCREEN}>{prop => <PostPreViewPage {...prop} />}</Stack.Screen>
          <Stack.Screen name={IMAGEVIEW}>{prop => <ImageView {...prop} />}</Stack.Screen>
          <Stack.Screen name={EDITNAME}>{prop => <EditName {...prop} />}</Stack.Screen>
+         <Stack.Screen name={GROUP_INFO}>{prop => <GroupInfo {...prop} />}</Stack.Screen>
       </Stack.Navigator>
    );
 };
@@ -75,6 +75,7 @@ export function RecentStackNavigation(props) {
          <Stack.Screen name={CONTACTLIST}>{prop => <ContactScreen {...prop} />}</Stack.Screen>
          <Stack.Screen name={SETTINGSCREEN}>{prop => <SettingScreen {...prop} />}</Stack.Screen>
          <Stack.Screen name={CAMERA}>{prop => <RNCamera {...prop} />}</Stack.Screen>
+         <Stack.Screen name={GROUPSCREEN}>{prop => <GroupScreenStackNavigation {...prop} />}</Stack.Screen>
       </Stack.Navigator>
    );
 }
@@ -88,7 +89,6 @@ const GroupScreenStackNavigation = () => {
          }}
          initialRouteName={NEW_GROUP}>
          <Stack.Screen name={NEW_GROUP}>{prop => <NewGroup {...prop} />}</Stack.Screen>
-         <Stack.Screen name={GROUP_INFO}>{prop => <GroupInfo {...prop} />}</Stack.Screen>
       </Stack.Navigator>
    );
 };
@@ -110,6 +110,7 @@ function StackNavigationPage(props) {
          <Stack.Screen name={CONTACTLIST}>{prop => <ContactScreen {...prop} />}</Stack.Screen>
          <Stack.Screen name={SETTINGSCREEN}>{prop => <SettingScreen {...prop} />}</Stack.Screen>
          <Stack.Screen name={CAMERA}>{prop => <RNCamera {...prop} />}</Stack.Screen>
+         <Stack.Screen name={GROUPSCREEN}>{prop => <GroupScreenStackNavigation {...prop} />}</Stack.Screen>
       </Stack.Navigator>
    );
 }

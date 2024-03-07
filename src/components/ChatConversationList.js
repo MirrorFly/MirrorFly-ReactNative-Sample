@@ -1,25 +1,25 @@
-import { showToast } from '../Helper/index';
-import SDK from '../SDK/SDK';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { useFocusEffect } from '@react-navigation/native';
 import React, { useRef } from 'react';
 import { AppState, FlatList, Linking, Platform, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import Clipboard from '@react-native-clipboard/clipboard';
+import { CHAT_TYPE_GROUP } from '../Helper/Chat/Constant';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
-import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
-import ChatMessage from './ChatMessage';
-import DeletedMessage from './DeletedMessage';
-import { updateMsgSeenStatus } from './chat/common/createMessage';
-import { updateConversationTotalSearchResults } from '../redux/Actions/conversationSearchAction';
-import { useFocusEffect } from '@react-navigation/native';
-import { isActiveChatScreenRef } from './ChatConversation';
+import { showToast } from '../Helper/index';
+import SDK from '../SDK/SDK';
+import { DoubleDownArrow } from '../common/Icons';
 import Modal, { ModalCenteredContent } from '../common/Modal';
+import Pressable from '../common/Pressable';
 import ApplicationColors from '../config/appColors';
 import { INVITE_APP_URL, INVITE_SMS_CONTENT } from '../constant';
-import Pressable from '../common/Pressable';
-import { DoubleDownArrow } from '../common/Icons';
+import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
 import { resetUnreadCountForChat } from '../redux/Actions/RecentChatAction';
+import { updateConversationTotalSearchResults } from '../redux/Actions/conversationSearchAction';
+import { isActiveChatScreenRef } from './ChatConversation';
+import ChatMessage from './ChatMessage';
+import DeletedMessage from './DeletedMessage';
 import NotificationMessage from './NotificationMessage';
-import { CHAT_TYPE_GROUP } from '../Helper/Chat/Constant';
+import { updateMsgSeenStatus } from './chat/common/createMessage';
 
 const listBottomYaxisLimit = 60;
 
@@ -167,7 +167,6 @@ const ChatConversationList = ({
       if (forceGetFromSDK || !messages[getUserIdFromJid(fromUserJId)]) {
          let chatMessage = await SDK.getChatMessages(fromUserJId);
          if (chatMessage?.statusCode === 200) {
-            console.log('chatMessage ==>', JSON.stringify(chatMessage, null, 2));
             dispatch(addChatConversationHistory(chatMessage));
          }
       }

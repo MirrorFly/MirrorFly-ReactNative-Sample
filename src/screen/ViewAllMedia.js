@@ -5,12 +5,27 @@ import { TabBar, TabView } from 'react-native-tab-view';
 import { getThumbBase64URL, getUserIdFromJid } from '../Helper/Chat/Utility';
 import SDK from '../SDK/SDK';
 import IconButton from '../common/IconButton';
-import { AudioWhileIcon, LeftArrowIcon } from '../common/Icons';
+import {
+   AudioWhileIcon,
+   CSVIcon,
+   DocIcon,
+   LeftArrowIcon,
+   PPTIcon,
+   PdfIcon,
+   PlayIcon,
+   TXTIcon,
+   XLSIcon,
+   ZipIcon,
+} from '../common/Icons';
 import Pressable from '../common/Pressable';
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
 import { MEDIA_POST_PRE_VIEW_SCREEN } from '../constant';
 import useRosterData from '../hooks/useRosterData';
+import { convertBytesToKB, showToast } from '../Helper';
+import { getExtension } from '../components/chat/common/fileUploadValidation';
+import { docTimeFormat } from '../common/TimeStamp';
+import { handleFileOpen } from '../Helper/Chat/ChatHelper';
 
 const LeftArrowComponent = () => LeftArrowIcon();
 const AudioWhileIconComponent = () => AudioWhileIcon();
@@ -35,7 +50,7 @@ const ViewAllMedia = () => {
       toggleLoading();
       setTimeout(() => {
          handleGetMedia();
-      }, 1000);
+      }, 2000);
    }, []);
 
    const toggleLoading = () => {
@@ -48,18 +63,22 @@ const ViewAllMedia = () => {
    };
 
    const handleGetMedia = async () => {
-      const mediaMessageList = await SDK.getMediaMessages(chatUser);
-      const imageCount = mediaMessageList.filter(res => ['image'].includes(res.msgBody.message_type));
-      setCountBasedOnType({
-         ...countBasedOnType,
-         imageCount: imageCount.length,
-      });
-      const filtedMediaMessages = mediaMessageList.filter(res =>
-         ['image', 'video', 'audio'].includes(res?.msgBody?.message_type),
-      );
-      const filtedDocsMessages = mediaMessageList.filter(res => ['file'].includes(res?.msgBody?.message_type));
-      setDocsMessages(filtedDocsMessages || []);
-      setMediaMessages(filtedMediaMessages || []);
+      const { statusCode, message, data: mediaMessageList } = await SDK.getMediaMessages(chatUser);
+      if (statusCode === 200) {
+         const imageCount = mediaMessageList?.reverse()?.filter(res => ['image'].includes(res.msgBody.message_type));
+         setCountBasedOnType({
+            ...countBasedOnType,
+            imageCount: imageCount.length,
+         });
+         const filtedMediaMessages = mediaMessageList.filter(res =>
+            ['image', 'video', 'audio'].includes(res?.msgBody?.message_type),
+         );
+         const filtedDocsMessages = mediaMessageList.filter(res => ['file'].includes(res?.msgBody?.message_type));
+         setDocsMessages(filtedDocsMessages || []);
+         setMediaMessages(filtedMediaMessages || []);
+      } else {
+         showToast(message, { id: message });
+      }
       toggleLoading();
    };
 
@@ -72,10 +91,10 @@ const ViewAllMedia = () => {
       navigation.goBack();
    };
 
-   const renderFooter = () => {
+   const renderMediaFooter = () => {
       if (!loading && mediaMessages.length) {
          return (
-            <Text style={commonStyles.textCenter}>
+            <Text style={[commonStyles.textCenter, commonStyles.colorBlack]}>
                {getMessageTypeCount(mediaMessages, 'image')} Photos, {getMessageTypeCount(mediaMessages, 'video')}{' '}
                Videos, {getMessageTypeCount(mediaMessages, 'audio')} Audios
             </Text>
@@ -84,7 +103,7 @@ const ViewAllMedia = () => {
       return (
          <>
             {mediaMessages.length > 0 && (
-               <Text style={commonStyles.textCenter}>
+               <Text style={[commonStyles.textCenter, commonStyles.colorBlack]}>
                   {getMessageTypeCount(mediaMessages, 'image')} Photos, {getMessageTypeCount(mediaMessages, 'video')}{' '}
                   Videos, {getMessageTypeCount(mediaMessages, 'audio')} Audios
                </Text>
@@ -96,9 +115,31 @@ const ViewAllMedia = () => {
       );
    };
 
+   const renderDocFooter = () => {
+      if (!loading && mediaMessages.length) {
+         return (
+            <Text style={[commonStyles.textCenter, commonStyles.colorBlack]}>
+               {getMessageTypeCount(docsMessages, 'file')} Documents
+            </Text>
+         );
+      }
+      return (
+         <>
+            {docsMessages.length > 0 && (
+               <Text style={[commonStyles.textCenter, commonStyles.colorBlack]}>
+                  {getMessageTypeCount(docsMessages, 'file')} Documents
+               </Text>
+            )}
+            <View style={[commonStyles.mb_130, commonStyles.marginTop_5]}>
+               <ActivityIndicator size="large" color={'#3276E2'} />
+            </View>
+         </>
+      );
+   };
+
    const renderTileBasedOnMessageType = item => {
-      const { msgBody: { media: { thumb_image } = {}, message_type = '' } = {} } = item;
-      const thumbURL = thumb_image ? getThumbBase64URL(thumb_image) : '';
+      const { msgBody: { media: { thumb_image = '', local_path = '' } = {}, message_type = '' } = {} } = item;
+      const thumbURL = local_path || getThumbBase64URL(thumb_image);
       if (['image', 'video'].includes(message_type)) {
          return (
             <View
@@ -109,7 +150,16 @@ const ViewAllMedia = () => {
                   },
                   styles.mediaTile,
                ]}>
-               <Image source={{ uri: thumbURL }} style={styles.imageView} />
+               <Image
+                  source={{ uri: message_type === 'video' ? getThumbBase64URL(thumb_image) : thumbURL }}
+                  style={styles.imageView}
+               />
+
+               {message_type === 'video' && (
+                  <View style={styles.playIconWrapper}>
+                     <PlayIcon width={10} height={10} />
+                  </View>
+               )}
             </View>
          );
       }
@@ -135,6 +185,62 @@ const ViewAllMedia = () => {
       return <Pressable onPress={handleMediaPress}>{renderTileBasedOnMessageType(item)}</Pressable>;
    };
 
+   const renderFileIcon = fileExtension => {
+      switch (fileExtension) {
+         case 'pdf':
+            return <PdfIcon />;
+         case 'ppt':
+         case 'pptx':
+            return <PPTIcon />;
+         case 'csv':
+            return <CSVIcon />;
+         case 'xls':
+         case 'xlsx':
+            return <XLSIcon />;
+         case 'doc':
+         case 'docx':
+            return <DocIcon />;
+         case 'zip':
+         case 'rar':
+            return <ZipIcon width={30} height={25} />;
+         case 'txt':
+         case 'text':
+            return <TXTIcon />;
+         default:
+            return null;
+      }
+   };
+
+   const renderDocTile = ({ item }) => {
+      const { createdAt, msgBody: { media: { fileName, file_size } } = {} } = item;
+      const fileExtension = getExtension(fileName, false);
+      const onPress = () => {
+         handleFileOpen(item);
+      };
+      return (
+         <>
+            <Pressable
+               onPress={onPress}
+               contentContainerStyle={[
+                  commonStyles.hstack,
+                  commonStyles.alignItemsCenter,
+                  commonStyles.paddingHorizontal_4,
+                  commonStyles.paddingVertical_18,
+               ]}>
+               <View style={[commonStyles.paddingVertical_8]}>{renderFileIcon(fileExtension)}</View>
+               <View style={[commonStyles.flex1, commonStyles.p_4, commonStyles.px_18]}>
+                  <Text style={styles.fileNameText}>{fileName}</Text>
+                  <Text style={styles.fileSizeText}>{convertBytesToKB(file_size)}</Text>
+               </View>
+               <View style={[commonStyles.justifyContentFlexEnd]}>
+                  <Text style={styles.fileSizeText}>{docTimeFormat(createdAt)}</Text>
+               </View>
+            </Pressable>
+            <View style={[commonStyles.dividerLine]} />
+         </>
+      );
+   };
+
    const renderScene = ({ route }) => {
       switch (route.key) {
          case '1':
@@ -142,7 +248,11 @@ const ViewAllMedia = () => {
                <View>
                   {!loading && mediaMessages.length === 0 ? (
                      <View
-                        style={[commonStyles.justifyContentCenter, commonStyles.alignItemsCenter, commonStyles.flex1]}>
+                        style={[
+                           commonStyles.justifyContentCenter,
+                           commonStyles.alignItemsCenter,
+                           commonStyles.height_100_per,
+                        ]}>
                         <Text>No Media Found ...!!!</Text>
                      </View>
                   ) : (
@@ -151,7 +261,7 @@ const ViewAllMedia = () => {
                            numColumns={4}
                            data={mediaMessages}
                            bounces={false}
-                           ListFooterComponent={renderFooter}
+                           ListFooterComponent={renderMediaFooter}
                            renderItem={renderMediaTile}
                            initialNumToRender={20}
                            maxToRenderPerBatch={20}
@@ -166,15 +276,20 @@ const ViewAllMedia = () => {
                <View>
                   {!loading && docsMessages.length === 0 ? (
                      <View
-                        style={[commonStyles.justifyContentCenter, commonStyles.alignItemsCenter, commonStyles.flex1]}>
+                        style={[
+                           commonStyles.justifyContentCenter,
+                           commonStyles.alignItemsCenter,
+                           commonStyles.height_100_per,
+                        ]}>
                         <Text>No Docs Found...!!!</Text>
                      </View>
                   ) : (
-                     <View style={commonStyles.marginTop_5}>
+                     <View style={[commonStyles.marginTop_5, commonStyles.padding_8]}>
                         <FlatList
                            data={docsMessages}
                            bounces={false}
-                           renderItem={renderMediaTile}
+                           renderItem={renderDocTile}
+                           ListFooterComponent={renderDocFooter}
                            initialNumToRender={20}
                            maxToRenderPerBatch={20}
                            windowSize={15}
@@ -280,6 +395,7 @@ const styles = StyleSheet.create({
       marginTop: 2,
       backgroundColor: '#97A5C7',
       padding: 2,
+      marginHorizontal: 2,
    },
    mediaTile: {
       backgroundColor: '#f2f2f2',
@@ -293,5 +409,28 @@ const styles = StyleSheet.create({
       right: 0,
       backgroundColor: 'rgba(255, 255, 255, 0.8)',
       paddingVertical: 10,
+   },
+   fileNameText: {
+      fontSize: 13,
+      color: '#000',
+   },
+   fileSizeText: {
+      fontSize: 11,
+      color: '#000',
+   },
+   playIconWrapper: {
+      backgroundColor: ApplicationColors.mainbg,
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      // transforming X and Y for actual width of the icon plus the padding divided by 2 to make it perfectly centered ( 15(width) + 12(padding) / 2 = 13.5 )
+      transform: [{ translateX: -13.5 }, { translateY: -13.5 }],
+      elevation: 5,
+      shadowColor: ApplicationColors.shadowColor,
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.1,
+      shadowRadius: 6,
+      padding: 6,
+      borderRadius: 50,
    },
 });

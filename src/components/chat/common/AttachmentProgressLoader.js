@@ -19,17 +19,30 @@ const AttachmentProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel,
                <Pressable style={styles.downloadIcon} onPress={onCancel}>
                   <DownloadCancel color="#7285B5" />
                </Pressable>
-               <Bar
-                  useNativeDriver={true}
-                  style={[commonStyles.positionAbsolute, commonStyles.bottom_0]}
-                  indeterminate={!mediaDownloadData[msgId]?.progress || !mediaUploadData[msgId]?.progress}
-                  progress={mediaDownloadData[msgId]?.progress / 100 || mediaUploadData[msgId]?.progress / 100}
-                  width={36}
-                  height={3.5}
-                  color="#7285B5"
-                  borderWidth={0}
-                  unfilledColor={'#AFB8D0'}
-               />
+               {mediaDownloadData[msgId]?.progress || mediaUploadData[msgId]?.progress ? (
+                  <Bar
+                     useNativeDriver={true}
+                     style={[commonStyles.positionAbsolute, commonStyles.bottom_0]}
+                     progress={mediaDownloadData[msgId]?.progress / 100 || mediaUploadData[msgId]?.progress / 100}
+                     width={36}
+                     height={3.5}
+                     color="#7285B5"
+                     borderWidth={0}
+                     unfilledColor={'#AFB8D0'}
+                  />
+               ) : (
+                  <Bar
+                     useNativeDriver={true}
+                     style={[commonStyles.positionAbsolute, commonStyles.bottom_0]}
+                     indeterminate
+                     progress={mediaDownloadData[msgId]?.progress / 100 || mediaUploadData[msgId]?.progress / 100}
+                     width={36}
+                     height={3.5}
+                     color="#7285B5"
+                     borderWidth={0}
+                     unfilledColor={'#AFB8D0'}
+                  />
+               )}
             </View>
          );
       case mediaStatusConstants.NOT_DOWNLOADED:

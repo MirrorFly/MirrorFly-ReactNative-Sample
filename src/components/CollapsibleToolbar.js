@@ -1,5 +1,9 @@
-import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { AlertDialog, Center, HStack, Icon, IconButton, Pressable, Switch, Text, View } from 'native-base';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { Animated, BackHandler, Dimensions, Image, PixelRatio, StyleSheet } from 'react-native';
+import { getUsernameGraphemes } from '../Helper/index';
 import {
    CallIcon,
    FrontArrowIcon,
@@ -9,11 +13,10 @@ import {
    ReportIcon,
    StatusIcon,
 } from '../common/Icons';
-import { Animated, StyleSheet, Dimensions, PixelRatio, BackHandler, Image } from 'react-native';
-import { AlertDialog, Center, Text, HStack, Switch, View, Pressable, IconButton, Icon } from 'native-base';
+import { VIEWALLMEDIA } from '../constant';
 import useFetchImage from '../hooks/useFetchImage';
-import { getUsernameGraphemes } from '../Helper/index';
 const propTypes = {
+   chatUser: PropTypes.string,
    src: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
    title: PropTypes.string,
    titleStatus: PropTypes.string,
@@ -28,6 +31,7 @@ const propTypes = {
 };
 
 const defaultProps = {
+   chatUser: '',
    leftItem: null,
    leftItemPress: null,
    rightItem: null,
@@ -44,6 +48,7 @@ const defaultProps = {
 };
 
 const CollapsingToolbar = ({
+   chatUser,
    bgColor,
    title,
    imageToken,
@@ -55,6 +60,7 @@ const CollapsingToolbar = ({
    setLocalNav,
    handleBackBtn,
 }) => {
+   const navigation = useNavigation();
    const [visible, setVisible] = React.useState(false);
    const scrollY = React.useRef(new Animated.Value(0)).current;
    const [animatedTitleColor, setAnimatedTitleColor] = React.useState(250);
@@ -90,7 +96,7 @@ const CollapsingToolbar = ({
    };
 
    const handleTapDetails = () => {
-      setLocalNav('UsersTapBarInfo');
+      navigation.navigate(VIEWALLMEDIA, { chatUser, title });
    };
    const HandleClose = () => {
       setVisible(false);

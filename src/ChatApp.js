@@ -3,12 +3,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Box, NativeBaseProvider } from 'native-base';
 import PropTypes from 'prop-types';
 import React, { createRef } from 'react';
-import { AppState, Keyboard, Linking, LogBox, SafeAreaView, StatusBar, StyleSheet, useColorScheme } from 'react-native';
+import { Keyboard, Linking, LogBox, SafeAreaView, StatusBar, StyleSheet, Text, useColorScheme } from 'react-native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import { callConnectionStoreData } from './Helper/Calls/Call';
-import { openCallModelActivity } from './Helper/Calls/Utility';
 import { navigationRef } from './Navigation/rootNavigation';
 import StackNavigationPage, { RecentStackNavigation } from './Navigation/stackNavigation';
+import commonStyles from './common/commonStyles';
+import { checkAndRequestPermission } from './common/utils';
 import ApplicationTheme from './config/appTheme';
 import {
    CAMERA,
@@ -28,8 +28,6 @@ import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction'
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
 import { getAppInitialized } from './uikitHelpers/uikitMethods';
-import { checkAndRequestPermission } from './common/utils';
-import _BackgroundTimer from 'react-native-background-timer';
 
 LogBox.ignoreAllLogs();
 
@@ -70,16 +68,17 @@ export const ChatApp = React.memo((props = {}) => {
    }, []);
 
    const renderChatAppContent = () => {
-      const _content = isMfInit ? <RootNavigation jid={jid} /> : <Text>Mirrorfly Not Initialized</Text>;
+      const _content = isMfInit ? (
+         <RootNavigation jid={jid} />
+      ) : (
+         <Text style={[commonStyles.flex1, commonStyles.justifyContentCenter, commonStyles.alignItemsCenter]}>
+            Mirrorfly Not Initialized
+         </Text>
+      );
       return hasNativeBaseProvider ? _content : <NativeBaseProvider>{_content}</NativeBaseProvider>;
    };
 
-   return (
-      <Provider store={store}>
-         {renderChatAppContent()}
-         {/* <CallJanus /> */}
-      </Provider>
-   );
+   return <Provider store={store}>{renderChatAppContent()}</Provider>;
 });
 
 ChatApp.propTypes = {

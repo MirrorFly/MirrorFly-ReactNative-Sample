@@ -1,6 +1,6 @@
 import React from 'react';
-import { Dimensions, View } from 'react-native';
-import ImageViewer from 'react-native-image-zoom-viewer';
+import { Dimensions, Image, View } from 'react-native';
+// import ImageViewer from 'react-native-image-zoom-viewer';
 
 const ImageInfo = props => {
    const { selectedMedia } = props;
@@ -59,7 +59,25 @@ const ImageInfo = props => {
    return (
       <View style={{ flex: 1 }}>
          <View style={{ flex: 1, backgroundColor: '#fff' }}>
-            <ImageViewer
+            <Image
+               style={{ flex: 1, width: '100%', height: '100%' }}
+               source={{ uri: ImageBase64 }}
+               resizeMode="cover"
+            />
+            {/* <ImageZoom
+               uri={ImageBase64}
+               minScale={0.5}
+               maxScale={3}
+               onInteractionStart={() => console.log('Interaction started')}
+               onInteractionEnd={() => console.log('Interaction ended')}
+               onPinchStart={() => console.log('Pinch gesture started')}
+               onPinchEnd={() => console.log('Pinch gesture ended')}
+               onPanStart={() => console.log('Pan gesture started')}
+               onPanEnd={() => console.log('Pan gesture ended')}
+               onResetAnimationEnd={() => console.log('Reset animation ended')}
+               // resizeMode="cover"
+            /> */}
+            {/* <ImageViewer
                imageUrls={images}
                style={initialImageSize}
                renderIndicator={() => null}
@@ -69,7 +87,7 @@ const ImageInfo = props => {
                useNativeDriver={true}
                maxOverflow={3}
                // enableSwipeDown={true}
-            />
+            /> */}
          </View>
       </View>
    );

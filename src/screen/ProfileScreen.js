@@ -32,7 +32,7 @@ const ProfileScreen = ({ navigation }) => {
    const getProfileDetail = async () => {
       if (Object.keys(selectProfileInfo).length === 0) {
          const userIdentifier = await AsyncStorage.getItem('userIdentifier');
-         let profileDetails = await SDK.getUserProfile(JSON.parse(userIdentifier));
+         let profileDetails = await SDK.getUserProfile(JSON.parse(userIdentifier), true);
          if (profileDetails.statusCode === 200) {
             AsyncStorage.setItem('vCardProfile', JSON.stringify(profileDetails.data));
             dispatch(profileDetail(profileDetails.data));

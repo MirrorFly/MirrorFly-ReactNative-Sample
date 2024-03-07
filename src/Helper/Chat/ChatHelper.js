@@ -22,7 +22,7 @@ import {
    MSG_SENT_ACKNOWLEDGE_STATUS_ID,
 } from './Constant';
 import { getMessageObjSender, getRecentChatMsgObj, getUserIdFromJid } from './Utility';
-
+import FileViewer from 'react-native-file-viewer';
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
 
@@ -100,6 +100,7 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
       };
       if (response?.statusCode === 200) {
          updateObj.uploadStatus = 2;
+         updateObj.is_downloaded = 2;
          updateObj.fileToken = response.fileToken;
          updateObj.thumbImage = response.thumbImage;
       } else {
@@ -655,4 +656,19 @@ export const showInternetconnectionToast = () => {
    showToast('Please check your internet connection', {
       id: 'internet-connection-toast',
    });
+};
+
+export const handleFileOpen = message => {
+   FileViewer.open(message?.msgBody?.media?.local_path || message?.msgBody?.media?.file?.fileDetails?.uri, {
+      showOpenWithDialog: true,
+   })
+      .then(res => {
+         console.log('Document opened externally', res);
+      })
+      .catch(err => {
+         console.log('Error while opening Document', err);
+         showToast('No apps available to open this file', {
+            id: 'no-supported-app-to-open-file',
+         });
+      });
 };

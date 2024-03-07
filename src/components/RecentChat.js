@@ -10,6 +10,7 @@ import SDK from '../SDK/SDK';
 import no_messages from '../assets/no_messages.png';
 import Avathar from '../common/Avathar';
 import {
+   AudioMicIcon,
    AudioMusicIcon,
    ContactChatIcon,
    DocumentChatIcon,
@@ -54,6 +55,7 @@ const RecentChatItem = ({
    colorCode = colorCode || profileDetails?.colorCode;
 
    const renderLastSentMessageBasedOnType = () => {
+      const audioType = item?.msgBody?.media?.audioType;
       switch (item?.msgBody?.message_type) {
          case 'text':
             return <HighlightedMessage text={item?.msgBody?.message} searchValue={searchValue} index={index} />;
@@ -87,7 +89,12 @@ const RecentChatItem = ({
          case 'audio':
             return (
                <View style={[styles.lastSentMessageWrapper, commonStyles.paddingLeft_4]}>
-                  <AudioMusicIcon width="14" height="14" color={'#767676'} />
+                  {Boolean(audioType) ? (
+                     <AudioMicIcon width="14" height="14" fill={'#767676'} />
+                  ) : (
+                     <AudioMusicIcon width="14" height="14" color={'#767676'} />
+                  )}
+
                   <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
                      Audio
                   </Text>

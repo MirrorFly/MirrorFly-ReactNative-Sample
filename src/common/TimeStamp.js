@@ -224,3 +224,8 @@ export const timeFormat = time => {
    let offset = moment().utcOffset();
    return moment.utc(time).utcOffset(offset).format('MM/DD/YYYY [at] h:mm:ss A');
 };
+
+export const docTimeFormat = time => {
+   let offset = moment().utcOffset();
+   return moment.utc(time).utcOffset(offset).format('D/MM/YYYY');
+};

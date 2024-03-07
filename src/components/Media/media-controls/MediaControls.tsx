@@ -10,16 +10,17 @@ export type Props = {
    children: React.ReactNode;
    containerStyle: ViewStyle;
    duration: number;
+   fadeOutDisable?: boolean;
    fadeOutDelay?: number;
    isFullScreen: boolean;
    isLoading: boolean;
    mainColor: string;
    onFullScreen?: (event: GestureResponderEvent) => void;
-   onPaused: (playerState: PLAYER_STATES) => void;
+   onPaused: (playerState: typeof PLAYER_STATES.ENDED) => void;
    onReplay: () => void;
    onSeek: (value: number) => void;
    onSeeking: (value: number) => void;
-   playerState: PLAYER_STATES;
+   playerState: typeof PLAYER_STATES.ENDED;
    progress: number;
    showOnStart?: boolean;
    sliderStyle?: CustomSliderStyle;
@@ -31,6 +32,7 @@ const MediaControls = (props: Props) => {
       children,
       containerStyle: customContainerStyle = {},
       duration,
+      fadeOutDisable = false,
       fadeOutDelay = 5000,
       isLoading = false,
       mainColor = 'rgba(12, 83, 175, 0.9)',
@@ -62,22 +64,26 @@ const MediaControls = (props: Props) => {
    const [isVisible, setIsVisible] = React.useState(initialIsVisible);
 
    React.useEffect(() => {
-      fadeOutControls(fadeOutDelay);
-   }, []);
+      if (playerState === PLAYER_STATES.PLAYING) {
+         fadeOutControls(fadeOutDelay);
+      }
+   }, [playerState]);
 
    const fadeOutControls = (delay = 0) => {
-      Animated.timing(opacity, {
-         toValue: 0,
-         duration: 300,
-         delay,
-         useNativeDriver: false,
-      }).start(result => {
-         /* I noticed that the callback is called twice, when it is invoked and when it completely finished
+      if (!fadeOutDisable) {
+         Animated.timing(opacity, {
+            toValue: 0,
+            duration: 300,
+            delay,
+            useNativeDriver: true,
+         }).start(result => {
+            /* I noticed that the callback is called twice, when it is invoked and when it completely finished
       This prevents some flickering */
-         if (result.finished) {
-            setIsVisible(false);
-         }
-      });
+            if (result.finished) {
+               setIsVisible(false);
+            }
+         });
+      }
    };
 
    const fadeInControls = (loop = true) => {
@@ -86,7 +92,7 @@ const MediaControls = (props: Props) => {
          toValue: 1,
          duration: 300,
          delay: 0,
-         useNativeDriver: false,
+         useNativeDriver: true,
       }).start(() => {
          if (loop) {
             fadeOutControls(fadeOutDelay);

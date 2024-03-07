@@ -150,7 +150,7 @@ function ChatHeader({
 
    const handleUserInfo = () => {
       if (MIX_BARE_JID.test(fromUserJId)) {
-         navigation.navigate(GROUPSCREEN, { screen: GROUP_INFO, params: { chatUser: fromUserJId } });
+         navigation.navigate(GROUP_INFO, { chatUser: fromUserJId });
       } else {
          navigation.navigate(USER_INFO, { chatUser: fromUserJId });
       }
@@ -188,6 +188,17 @@ function ChatHeader({
       return isMediaDownloadedOrUploaded && isAllowForward ? (
          <IconButton style={[commonStyles.padding_10_15]} onPress={handleForwardMessage}>
             <ForwardIcon />
+         </IconButton>
+      ) : null;
+   };
+
+   const renderReplyIcon = () => {
+      const isAllowReply = MIX_BARE_JID.test(fromUserJId)
+         ? userType && selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 && !selectedMsgs[0]?.recall
+         : selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 && !selectedMsgs[0]?.recall;
+      return isAllowReply ? (
+         <IconButton style={[commonStyles.padding_10_15]} onPress={handleReplyMessage}>
+            {selectedMsgs?.length === 1 && selectedMsgs[0]?.msgStatus !== 3 && <ReplyIcon />}
          </IconButton>
       ) : null;
    };
@@ -380,11 +391,7 @@ function ChatHeader({
                   <Text style={styles.selectedMsgsText}>{selectedMsgs?.length}</Text>
                </View>
                <View style={styles.selectedMsgsActionsContainer}>
-                  {userType && selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 && !selectedMsgs[0]?.recall && (
-                     <IconButton style={[commonStyles.padding_10_15]} onPress={handleReplyMessage}>
-                        {selectedMsgs?.length === 1 && selectedMsgs[0]?.msgStatus !== 3 && <ReplyIcon />}
-                     </IconButton>
-                  )}
+                  {renderReplyIcon()}
                   {renderForwardIcon()}
                   {!selectedMsgs[0]?.recall && (
                      <IconButton style={[commonStyles.padding_10_15]} onPress={handleFavourite}>

@@ -339,7 +339,7 @@ const GrpCollapsibleToolbar = ({
       setModalContent({
          visible: true,
          onRequestClose: toggleModalContent,
-         title: 'Are you sure you want to leave from group?',
+         title: 'Are you sure you want to delete group?',
          noButton: 'CANCEL',
          yesButton: 'DELETE',
          yesAction: handleDeleteGroup,
@@ -403,17 +403,22 @@ const GrpCollapsibleToolbar = ({
                      transform: [{ scale: titleScale }],
                   },
                ]}>
-               <Animated.Text
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  style={[
-                     styles.title,
-                     {
-                        color: animatedTitleColor < 280 ? '#fff' : '#000',
-                     },
-                  ]}>
-                  {title}
-               </Animated.Text>
+               <View>
+                  <Animated.Text
+                     numberOfLines={1}
+                     ellipsizeMode="tail"
+                     style={[
+                        styles.title,
+                        {
+                           color: animatedTitleColor < 280 ? '#fff' : '#000',
+                        },
+                     ]}>
+                     {title}
+                  </Animated.Text>
+                  {animatedTitleColor < 280 && (
+                     <Text style={[styles.stautsText, commonStyles.colorWhite]}>{participants.length} members</Text>
+                  )}
+               </View>
                {Boolean(userType) && animatedTitleColor < 260 && (
                   <Pressable
                      onPress={handleEditText}

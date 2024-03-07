@@ -1,11 +1,11 @@
 import React from 'react';
-import { AudioMusicIcon } from '../common/Icons';
-import AudioPlayer from './Media/AudioPlayer';
 import { StyleSheet, Text, View } from 'react-native';
-import AttachmentProgressLoader from './chat/common/AttachmentProgressLoader';
-import useMediaProgress from '../hooks/useMediaProgress';
-import ReplyMessage from './ReplyMessage';
+import { AudioMicIcon, AudioMusicIcon } from '../common/Icons';
 import commonStyles from '../common/commonStyles';
+import useMediaProgress from '../hooks/useMediaProgress';
+import AudioPlayer from './Media/AudioPlayer';
+import ReplyMessage from './ReplyMessage';
+import AttachmentProgressLoader from './chat/common/AttachmentProgressLoader';
 
 const AudioCard = props => {
    const { messageObject, isSender, handleReplyPress } = props;
@@ -15,6 +15,7 @@ const AudioCard = props => {
       msgBody: { replyTo = '', media },
    } = messageObject;
    const uri = media.local_path || media?.file?.fileDetails?.uri;
+   const audioType = media.audioType;
 
    const { mediaStatus, downloadMedia, retryUploadMedia, cancelUploadMedia } = useMediaProgress({
       isSender,
@@ -31,7 +32,7 @@ const AudioCard = props => {
          )}
          <View style={styles.audioControlsContainer(isSender ? '#D0D8EB' : '#EFEFEF')}>
             <View style={styles.audioIconContainer}>
-               <AudioMusicIcon width="14" height="14" />
+               {audioType ? <AudioMicIcon width="14" height="14" /> : <AudioMusicIcon width="14" height="14" />}
             </View>
             <View style={[commonStyles.marginLeft_8, commonStyles.marginRight_4]}>
                <AttachmentProgressLoader

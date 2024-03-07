@@ -1,13 +1,12 @@
-import Video from 'react-native-video';
 import React from 'react';
-import { Keyboard, Platform, StyleSheet } from 'react-native';
-import MediaControls, { PLAYER_STATES } from './media-controls';
-import { View } from 'native-base';
+import { Platform, StyleSheet, View } from 'react-native';
 import RNConvertPhAsset from 'react-native-convert-ph-asset';
+import Video from 'react-native-video';
 import { useAppState } from '../../hooks';
+import MediaControls, { PLAYER_STATES } from './media-controls';
 
 const VideoPlayer = props => {
-   const { item: { fileDetails = {} } = {} } = props;
+   const { forcePause = {}, audioOnly = false, item: { fileDetails = {} } = {} } = props;
    const { uri } = fileDetails;
    const videoPlayer = React.useRef(null);
    const [videoUri, setVideoUri] = React.useState('');
@@ -17,11 +16,14 @@ const VideoPlayer = props => {
    const [paused, setPaused] = React.useState(true);
    const [playerState, setPlayerState] = React.useState(PLAYER_STATES.PAUSED);
    const [onEnded, setOnEnded] = React.useState(false);
-
    const appState = useAppState();
 
    React.useEffect(() => {
-      if (appState) {
+      if (forcePause.mediaForcePause) {
+         videoPlayer?.current?.seek?.(0);
+         setCurrentTime(0);
+      }
+      if (appState || forcePause.mediaForcePause) {
          if (!onEnded) {
             setPlayerState(PLAYER_STATES.PAUSED);
             setPaused(true);
@@ -29,7 +31,7 @@ const VideoPlayer = props => {
             setPaused(true);
          }
       }
-   }, [appState]);
+   }, [appState, forcePause.mediaForcePause]);
 
    /**  const calculate = () => {
         let data = Math.max(width, height) / Math.min(width, height);
@@ -48,6 +50,7 @@ const VideoPlayer = props => {
    const onPaused = state => {
       setPaused(!paused);
       setPlayerState(state);
+      forcePause?.setMediaForcePause?.(false);
    };
 
    const onReplay = () => {
@@ -60,15 +63,17 @@ const VideoPlayer = props => {
          setTimeout(() => {
             setPlayerState(PLAYER_STATES.PLAYING);
             setPaused(false);
+            forcePause?.setMediaForcePause?.(false);
          });
       } else {
          setPlayerState(PLAYER_STATES.PLAYING);
          setPaused(false);
+         forcePause?.setMediaForcePause?.(false);
       }
    };
 
    const onProgress = data => {
-      if (!isLoading && playerState !== PLAYER_STATES.ENDED) {
+      if (!isLoading && playerState === PLAYER_STATES.PLAYING) {
          setCurrentTime(data.currentTime);
       }
    };
@@ -136,6 +141,7 @@ const VideoPlayer = props => {
          <View style={{ flex: 1, justifyContent: 'center' }}>
             {Boolean(videoUri) && (
                <Video
+                  audioOnly={audioOnly}
                   ignoreSilentSwitch={'ignore'}
                   onEnd={onEnd}
                   onLoad={onLoad}
@@ -167,6 +173,7 @@ const VideoPlayer = props => {
             //   right={0}
             //   justifyContent={'center'}>
             <MediaControls
+               fadeOutDisable={playerState === PLAYER_STATES.PAUSED || audioOnly}
                duration={duration}
                isLoading={isLoading}
                mainColor="#333"

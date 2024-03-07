@@ -27,6 +27,8 @@ import { getImageSource } from '../common/utils';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import commonStyles from '../common/commonStyles';
+import { useFocusEffect } from '@react-navigation/native';
+import { pauseAudio } from './Media/AudioPlayer';
 
 // below ref is used to check whether selecting is happening or not in other components without passing the selected Messages state as props
 export const isMessageSelectingRef = React.createRef();
@@ -56,6 +58,10 @@ const ChatConversation = React.memo(props => {
    const isNetworkConnected = useNetworkStatus();
 
    const selectedMessagesIdRef = useRef({});
+
+   useFocusEffect(() => {
+      return () => pauseAudio();
+   });
 
    React.useEffect(() => {
       isMessageSelectingRef.current = Boolean(selectedMsgs?.length);

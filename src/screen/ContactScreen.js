@@ -283,7 +283,13 @@ function ContactScreen() {
          {renderContactList()}
          <Modal visible={modelOpen} onRequestClose={toggleModel}>
             <ModalCenteredContent onPressOutside={toggleModel}>
-               <View style={[commonStyles.bg_white, commonStyles.borderRadius_5]}>
+               <View
+                  style={[
+                     commonStyles.bg_white,
+                     commonStyles.borderRadius_5,
+                     commonStyles.justifyContentCenter,
+                     commonStyles.alignItemsCenter,
+                  ]}>
                   <ActivityIndicator size={'large'} color={ApplicationColors.mainColor} />
                </View>
             </ModalCenteredContent>

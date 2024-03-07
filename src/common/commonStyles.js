@@ -168,6 +168,7 @@ const commonStyles = StyleSheet.create({
    marginBottom_55: {
       marginBottom: 55,
    },
+   my_15: { marginVertical: 15 },
    mb_130: {
       marginBottom: 130,
    },
@@ -188,6 +189,12 @@ const commonStyles = StyleSheet.create({
    },
    px_8: {
       paddingHorizontal: 8,
+   },
+   px_10: {
+      paddingHorizontal: 8,
+   },
+   px_18: {
+      paddingHorizontal: 18,
    },
    p_10: {
       padding: 10,
@@ -227,6 +234,9 @@ const commonStyles = StyleSheet.create({
    },
    paddingVertical_12: {
       paddingVertical: 12,
+   },
+   paddingVertical_18: {
+      paddingVertical: 18,
    },
    paddingHorizontal_16: {
       paddingHorizontal: 16,

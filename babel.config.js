@@ -1,6 +1,6 @@
 module.exports = api => {
    const babelEnv = api.env();
-   const plugins = ['react-native-reanimated/plugin'];
+   const plugins = [];
    if (babelEnv !== 'development') {
       plugins.push(['transform-remove-console']);
    }

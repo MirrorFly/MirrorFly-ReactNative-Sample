@@ -30,7 +30,7 @@ import Pressable from '../common/Pressable';
 import commonStyles from '../common/commonStyles';
 import { requestMicroPhonePermission } from '../common/utils';
 import ApplicationColors from '../config/appColors';
-import { FORWARD_MESSSAGE_SCREEN, GROUPSCREEN, GROUP_INFO, USER_INFO } from '../constant';
+import { FORWARD_MESSSAGE_SCREEN, GROUP_INFO, USER_INFO } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import useRosterData from '../hooks/useRosterData';
 import { closePermissionModal, showPermissionModal } from '../redux/Actions/PermissionAction';
@@ -43,6 +43,7 @@ import ChatSearchInput from './ChatSearchInput';
 import LastSeen from './LastSeen';
 
 function ChatHeader({
+   handleRecoverMessage,
    fromUserJId,
    selectedMsgs,
    setSelectedMsgs,
@@ -106,12 +107,12 @@ function ChatHeader({
 
    const handleDelete = () => {
       isMediaFileInSelectedMessageForDelete.current = selectedMsgs.some(msg => {
-         const { deleteStatus, msgBody: { media: { file = {}, local_path = '' } = {} } = {} } = msg;
-         return Boolean((local_path || file?.fileDetails?.uri) && deleteStatus === 0);
+         const { recallStatus, msgBody: { media: { file = {}, local_path = '' } = {} } = {} } = msg;
+         return Boolean((local_path || file?.fileDetails?.uri) && recallStatus === 0);
       });
       const now = new Date().getTime();
       const msgSentLessThan30SecondsAgo = selectedMsgs.every(
-         msg => parseInt(msg.timestamp / 1000, 10) + 30 * 1000 > now,
+         msg => msg.recallStatus === 0 && parseInt(msg.timestamp / 1000, 10) + 30 * 1000 > now,
       );
       const isSender = selectedMsgs.every(msg => msg.publisherId === vCardProfile.userId && msg.deleteStatus === 0);
       setDeleteEveryOne(msgSentLessThan30SecondsAgo && isSender);
@@ -149,6 +150,7 @@ function ChatHeader({
    };
 
    const handleUserInfo = () => {
+      handleRecoverMessage();
       if (MIX_BARE_JID.test(fromUserJId)) {
          navigation.navigate(GROUP_INFO, { chatUser: fromUserJId });
       } else {

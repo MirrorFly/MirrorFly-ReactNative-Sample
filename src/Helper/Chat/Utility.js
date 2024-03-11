@@ -254,6 +254,7 @@ export const getMessageObjReceiver = (messgeObject, newChatTo) => {
       chatType: chatType,
       createdAt: changeTimeFormat(timestamp),
       deleteStatus: 0,
+      recallStatus: 0,
       favouriteBy: '0',
       favouriteStatus: 0,
       fromUserId: newChatTo,

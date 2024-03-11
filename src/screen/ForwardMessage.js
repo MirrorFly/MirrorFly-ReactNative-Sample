@@ -346,7 +346,6 @@ const ForwardMessage = () => {
       if (Array.isArray(data) && data.length) {
          data = data.filter(obj => obj.chatType === CHAT_TYPE_GROUP);
          data = data.filter(obj => !recentChatList.find(_obj => _obj.userJid === obj.userJid));
-         console.log('data ==>', JSON.stringify(data, null, 2));
          return data;
       } else {
          return [];

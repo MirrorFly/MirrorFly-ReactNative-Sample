@@ -28,6 +28,7 @@ const ChatMessage = props => {
    const currentUserJID = useSelector(state => state.auth.currentUserJID);
    const fromUserJId = useSelector(state => state.navigation.fromUserJid);
    const {
+      handleRecoverMessage,
       message,
       handleReplyPress,
       shouldHighlightMessage,
@@ -41,9 +42,13 @@ const ChatMessage = props => {
    const {
       msgBody = {},
       publisherId,
-      msgBody: { media: { file = {}, is_uploading, thumb_image = '', local_path = '' } = {}, message_type } = {},
+      msgBody: {
+         media: { file = {}, is_uploading, thumb_image = '', local_path = '', androidWidth = 0 } = {},
+         message_type,
+      } = {},
       msgId,
    } = message;
+   const messageWidth = androidWidth || '80%';
    const { nickName, colorCode } = useRosterData(getUserIdFromJid(publisherId));
 
    const navigation = useNavigation();
@@ -51,7 +56,6 @@ const ChatMessage = props => {
    const thumbURL = thumb_image ? getThumbBase64URL(thumb_image) : '';
 
    const [imgSrc, saveImage] = React.useState(thumbURL);
-   const dispatch = useDispatch();
    const imageSize = message?.msgBody?.media?.file_size || '';
    const fileSize = imageSize;
    const [isSubscribed, setIsSubscribed] = React.useState(true);
@@ -119,6 +123,7 @@ const ChatMessage = props => {
          (message?.msgBody?.media?.is_downloaded === 2 || message?.msgBody?.media?.is_uploading === 2) &&
          (message?.msgBody?.media?.local_path || message?.msgBody?.media?.file?.fileDetails?.uri)
       ) {
+         handleRecoverMessage();
          if (isKeyboardVisibleRef.current) {
             let hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
                navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { chatUser: fromUserJId, msgId: message.msgId });
@@ -295,7 +300,7 @@ const ChatMessage = props => {
                   ]}>
                   <MessagePressable
                      forcePress={pressed}
-                     style={styles.messageContentPressable}
+                     style={[styles.messageContentPressable, { maxWidth: messageWidth }]}
                      contentContainerStyle={[
                         styles.messageCommonStyle,
                         isSame ? styles.sentMessage : styles.receivedMessage,
@@ -355,7 +360,6 @@ const styles = StyleSheet.create({
    },
    messageContentPressable: {
       minWidth: '30%',
-      maxWidth: '80%',
    },
    messageCommonStyle: {
       borderRadius: 10,

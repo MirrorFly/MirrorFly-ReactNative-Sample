@@ -1,5 +1,5 @@
 import React from 'react';
-import { BackHandler, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import useRosterData from '../hooks/useRosterData';
 import CollapsingToolbar from '../components/CollapsibleToolbar';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -29,16 +29,7 @@ const UserInfo = () => {
 
    const handleBackBtn = () => {
       naviagation.goBack();
-      return true;
    };
-
-   const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
-
-   React.useEffect(() => {
-      return () => {
-         backHandler.remove();
-      };
-   }, []);
 
    return (
       <View style={styles.container}>

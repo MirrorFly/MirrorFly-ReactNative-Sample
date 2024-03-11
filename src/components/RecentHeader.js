@@ -1,13 +1,11 @@
 import React from 'react';
-import { CloseIcon, DeleteIcon } from '../common/Icons';
 import { Text, View } from 'react-native';
-import IconButton from '../common/IconButton';
-import commonStyles from '../common/commonStyles';
 import { MIX_BARE_JID } from '../Helper/Chat/Constant';
-import { useSelector } from 'react-redux';
+import IconButton from '../common/IconButton';
+import { CloseIcon, DeleteIcon } from '../common/Icons';
+import commonStyles from '../common/commonStyles';
 
 const RecentHeader = ({ recentItem, handleRemove, handleDeleteChat }) => {
-   const recentChatList = useSelector(state => state.recentChatData.data || []);
    const handleDelete = () => {
       handleDeleteChat();
    };
@@ -16,11 +14,11 @@ const RecentHeader = ({ recentItem, handleRemove, handleDeleteChat }) => {
       handleRemove();
    };
 
-   const isUserLeft = recentItem.every(res =>
-      MIX_BARE_JID.test(res.userJid)
-         ? recentChatList.find(r => r.userJid === res.userJid)?.userType === '' && res.userType === ''
-         : true,
-   );
+   console.log('recentItem ==>', JSON.stringify(recentItem, null, 2));
+
+   const isUserLeft = recentItem.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
+
+   console.log('isUserLeft ==>', JSON.stringify(isUserLeft, null, 2));
 
    const renderDeleteIcon = () => {
       return isUserLeft ? (
@@ -34,7 +32,12 @@ const RecentHeader = ({ recentItem, handleRemove, handleDeleteChat }) => {
 
    return (
       <View
-         style={[commonStyles.hstack, commonStyles.alignItemsCenter, commonStyles.p_15]}
+         style={[
+            commonStyles.hstack,
+            commonStyles.alignItemsCenter,
+            commonStyles.p_15,
+            commonStyles.screenHeaderHeight,
+         ]}
          justifyContent={'space-between'}>
          <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
             <IconButton onPress={handleRemoveClose}>

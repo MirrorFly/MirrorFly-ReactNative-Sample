@@ -50,6 +50,7 @@ export const pressableStyles = StyleSheet.create({
 });
 
 const commonStyles = StyleSheet.create({
+   screenHeaderHeight: { height: 65 },
    flex1: { flex: 1 },
    flex1_centeredContent: {
       flex: 1,

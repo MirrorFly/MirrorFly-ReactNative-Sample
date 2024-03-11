@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AlertDialog, Center, HStack, Icon, IconButton, Pressable, Switch, Text, View } from 'native-base';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Animated, BackHandler, Dimensions, Image, PixelRatio, StyleSheet } from 'react-native';
+import { Animated, Dimensions, Image, PixelRatio, StyleSheet } from 'react-native';
 import { getUsernameGraphemes } from '../Helper/index';
 import {
    CallIcon,
@@ -57,7 +57,6 @@ const CollapsingToolbar = ({
    toolbarMinHeight,
    mobileNo,
    email,
-   setLocalNav,
    handleBackBtn,
 }) => {
    const navigation = useNavigation();
@@ -105,14 +104,6 @@ const CollapsingToolbar = ({
    const onClose = () => {
       setVisible(false);
    };
-
-   const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
-
-   React.useEffect(() => {
-      return () => {
-         backHandler.remove();
-      };
-   }, []);
 
    return (
       <View style={styles.fill}>

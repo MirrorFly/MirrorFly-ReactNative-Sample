@@ -1,7 +1,7 @@
 import { Divider } from 'native-base';
 import React from 'react';
 import ScreenHeader from './ScreenHeader';
-import { BackHandler, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { change16TimeWithDateFormat, getConversationHistoryTime } from '../common/TimeStamp';
 import { useSelector } from 'react-redux';
 import SDK from '../SDK/SDK';
@@ -11,29 +11,50 @@ import MapCard from './MapCard';
 import ContactCard from './ContactCard';
 import { CHAT_TYPE_GROUP } from '../Helper/Chat/Constant';
 import GroupChatMessageInfo from './GroupChatMessageInfo';
+import ImageCard from './ImageCard';
+import { getThumbBase64URL, getUserIdFromJid } from '../Helper/Chat/Utility';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import VideoCard from './VideoCard';
 
-function MessageInfo(props) {
+function MessageInfo() {
+   const {
+      params: { chatUser = '', msgId = '' },
+   } = useRoute();
+   const navigation = useNavigation();
    const messages = useSelector(state => state.chatConversationData.data);
+   const messageObject = messages[getUserIdFromJid(chatUser)]?.messages[msgId];
+   const {
+      chatType,
+      createdAt,
+      msgBody,
+      msgStatus,
+      msgBody: {
+         replyTo = '',
+         message_type = '',
+         message,
+         media: {
+            file: { fileDetails = {} } = {},
+            file_url = '',
+            androidHeight,
+            androidWidth,
+            local_path = '',
+            fileName,
+            thumb_image = '',
+         } = {},
+      } = {},
+   } = messageObject;
+   const messageWidth = androidWidth || '80%';
    const [dbValue, setDbValue] = React.useState([]);
    const [deliveredReport, setDeliveredReport] = React.useState();
    const [seenReport, setSeenReport] = React.useState();
 
    const handleBackBtn = () => {
-      props.setLocalNav('CHATCONVERSATION');
-      return true;
+      navigation.goBack();
    };
-
-   const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
-
-   React.useEffect(() => {
-      return () => {
-         backHandler.remove();
-      };
-   }, []);
 
    React.useEffect(() => {
       (async () => {
-         const _dbValue = await SDK.getMessageInfo(props.isMessageInfo.msgId);
+         const _dbValue = await SDK.getMessageInfo(msgId);
          setDeliveredReport(_dbValue[0].receivedTime);
          setSeenReport(_dbValue[0].seenTime);
          setDbValue(_dbValue);
@@ -41,7 +62,7 @@ function MessageInfo(props) {
    }, [messages]);
 
    let statusVisible;
-   switch (props?.isMessageInfo?.msgStatus) {
+   switch (msgStatus) {
       case 3:
          statusVisible = styles.notSent;
          break;
@@ -69,7 +90,7 @@ function MessageInfo(props) {
             <Text style={[styles.textMessage, { fontStyle: isMedia ? 'italic' : 'normal' }]}>{_data}</Text>
             <View style={[commonStyles.hstack, commonStyles.alignItemsCenter, commonStyles.alignSelfFlexEnd]}>
                <View style={[styles?.msgStatus, statusVisible]} />
-               <Text style={styles.timeStampText}>{getConversationHistoryTime(props?.isMessageInfo?.createdAt)}</Text>
+               <Text style={styles.timeStampText}>{getConversationHistoryTime(createdAt)}</Text>
             </View>
          </View>
       );
@@ -89,7 +110,7 @@ function MessageInfo(props) {
    };
 
    const renderMapCard = () => {
-      const _message = props?.isMessageInfo;
+      const _message = messageObject;
       return (
          <MapCard
             message={_message}
@@ -103,7 +124,7 @@ function MessageInfo(props) {
    };
 
    const renderContactCard = () => {
-      const _message = props?.isMessageInfo;
+      const _message = messageObject;
       return (
          <ContactCard
             message={_message}
@@ -116,14 +137,30 @@ function MessageInfo(props) {
    };
 
    const renderMessageBasedOnType = () => {
-      switch (props?.isMessageInfo?.msgBody?.message_type) {
+      switch (message_type) {
          case 'text':
-            return renderDefaultMessageWithData(props?.isMessageInfo?.msgBody?.message);
+            return renderDefaultMessageWithData(message);
          case 'image':
+            return (
+               <ImageCard
+                  messageObject={messageObject}
+                  imgSrc={getThumbBase64URL(thumb_image)}
+                  status={getMessageStatus(msgStatus)}
+                  timeStamp={getConversationHistoryTime(createdAt)}
+               />
+            );
          case 'video':
+            return (
+               <VideoCard
+                  messageObject={messageObject}
+                  imgSrc={getThumbBase64URL(thumb_image)}
+                  status={getMessageStatus(msgStatus)}
+                  timeStamp={getConversationHistoryTime(createdAt)}
+               />
+            );
          case 'audio':
          case 'file':
-            return renderDefaultMessageWithData(props?.isMessageInfo?.msgBody?.message_type, true);
+            return renderDefaultMessageWithData(message_type, true);
          case 'location':
             return renderMapCard();
          case 'contact':
@@ -132,9 +169,9 @@ function MessageInfo(props) {
    };
 
    const renderMessageBasedOnChatType = () => {
-      const chatType = props?.isMessageInfo?.chatType;
-      if (chatType === CHAT_TYPE_GROUP) {
-         return <GroupChatMessageInfo chatUser={props.chatUser} dbValue={dbValue} />;
+      const _chatType = chatType;
+      if (_chatType === CHAT_TYPE_GROUP) {
+         return <GroupChatMessageInfo chatUser={chatUser} dbValue={dbValue} />;
       } else {
          return (
             <View style={[commonStyles.paddingHorizontal_16]}>
@@ -172,13 +209,15 @@ function MessageInfo(props) {
    return (
       <View style={[commonStyles.bg_white, commonStyles.flex1]}>
          <ScreenHeader onhandleBack={handleBackBtn} title="Message Info" />
-         <View style={[commonStyles.paddingHorizontal_12, commonStyles.alignSelfFlexEnd, commonStyles.mt_20]}>
-            <View style={styles.messageContentWrapper}>
-               <View style={[styles.messageContent]}>{renderMessageBasedOnType()}</View>
+         <ScrollView>
+            <View style={[commonStyles.paddingHorizontal_12, commonStyles.alignSelfFlexEnd, commonStyles.mt_20]}>
+               <View style={[styles.messageContentWrapper, { maxWidth: messageWidth }]}>
+                  <View style={[styles.messageContent]}>{renderMessageBasedOnType()}</View>
+               </View>
             </View>
-         </View>
-         <Divider my="5" />
-         {renderMessageBasedOnChatType()}
+            <Divider my="5" />
+            {renderMessageBasedOnChatType()}
+         </ScrollView>
       </View>
    );
 }
@@ -212,7 +251,6 @@ const styles = StyleSheet.create({
    },
    messageContentWrapper: {
       minWidth: '30%',
-      maxWidth: '80%',
    },
    messageContent: {
       borderRadius: 10,

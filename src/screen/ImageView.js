@@ -17,7 +17,6 @@ const ImageView = () => {
    const headerBg = useSelector(state => state.safeArea.color);
    const handleBackBtn = () => {
       navigation.goBack();
-      return true;
    };
 
    return (

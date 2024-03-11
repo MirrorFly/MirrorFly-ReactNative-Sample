@@ -69,6 +69,7 @@ import {
    GROUP_USER_LEFT,
    GROUP_USER_MADE_ADMIN,
    GROUP_USER_REMOVED,
+   MIX_BARE_JID,
    MSG_CLEAR_CHAT,
    MSG_CLEAR_CHAT_CARBON,
    MSG_DELETE_CHAT_CARBON,
@@ -699,6 +700,7 @@ export const callBacks = {
       console.log('dbListener', JSON.stringify(res));
    },
    messageListener: async res => {
+      console.log('messageListener res ==>', JSON.stringify(res, null, 2));
       await nextFrame();
       switch (res.msgType) {
          case 'sentMessage':
@@ -709,7 +711,11 @@ export const callBacks = {
          case 'groupProfileUpdated':
             updateRecentChatMessage(res, store.getState());
             updateConversationMessage(res, store.getState());
-            if (!res.notification && (res.msgType === 'receiveMessage' || res.msgType === 'carbonReceiveMessage')) {
+            if (
+               !MIX_BARE_JID.test(res?.fromUserJid) &&
+               !res.notification &&
+               (res.msgType === 'receiveMessage' || res.msgType === 'carbonReceiveMessage')
+            ) {
                pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.fromUserJid);
             }
             break;

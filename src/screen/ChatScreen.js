@@ -11,7 +11,7 @@ import { getVideoThumbImage, showCheckYourInternetToast, showToast } from '../He
 import { isSingleChat } from '../Helper/Chat/ChatHelper';
 import { CHAT_TYPE_GROUP, DOCUMENT_FORMATS, MIX_BARE_JID } from '../Helper/Chat/Constant';
 import { fetchGroupParticipants } from '../Helper/Chat/Groups';
-import { getMessageObjSender, getRecentChatMsgObj, getUserIdFromJid } from '../Helper/Chat/Utility';
+import { getMessageObjSender, getRecentChatMsgObj } from '../Helper/Chat/Utility';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import { CameraIcon, ContactIcon, DocumentIcon, GalleryIcon, HeadSetIcon, LocationIcon } from '../common/Icons';
@@ -33,10 +33,7 @@ import { chatInputMessageRef } from '../components/ChatInput';
 import GalleryPickView from '../components/GalleryPickView';
 import ContactList from '../components/Media/ContactList';
 import Location from '../components/Media/Location';
-import MessageInfo from '../components/MessageInfo';
 import Camera from '../components/RNCamera';
-import UserInfo from '../components/UserInfo';
-import UsersTapBarInfo from '../components/UsersTapBarInfo';
 import { getType, isValidFileType, validateFileSize, validation } from '../components/chat/common/fileUploadValidation';
 import { RECENTCHATSCREEN } from '../constant';
 import { useNetworkStatus } from '../hooks';
@@ -60,7 +57,6 @@ function ChatScreen() {
    const toUserJid = useSelector(state => state.navigation.fromUserJid);
    const currentUserJID = useSelector(state => state.auth.currentUserJID);
    const localNav = useSelector(state => state.chatConversationLocalNav.chatConversationLocalNav);
-   const [isMessageInfo, setIsMessageInfo] = React.useState({});
    const dispatch = useDispatch();
    const [selectedImages, setSelectedImages] = React.useState([]);
    const [selectedSingle, setselectedSingle] = React.useState(false);
@@ -91,8 +87,6 @@ function ChatScreen() {
    const handleIsSearchingClose = () => {
       setIsSearching(false);
    };
-
-   const toUserId = React.useMemo(() => getUserIdFromJid(toUserJid), [toUserJid]);
 
    const getReplyMessage = message => {
       setReplyMsg(message);
@@ -585,26 +579,18 @@ function ChatScreen() {
             {
                CHATCONVERSATION: (
                   <ChatConversation
+                     handleRecoverMessage={handleRecoverMessage}
                      replyMsg={replyMsg}
                      chatInputRef={chatInputRef}
                      onReplyMessage={getReplyMessage}
                      handleBackBtn={handleBackBtn}
                      setLocalNav={setLocalNav}
-                     setIsMessageInfo={setIsMessageInfo}
                      attachmentMenuIcons={attachmentMenuIcons}
                      selectedImages={selectedImages}
                      handleSendMsg={handleSendMsg}
                      handleIsSearching={handleIsSearching}
                      handleIsSearchingClose={handleIsSearchingClose}
                      IsSearching={isSearching}
-                  />
-               ),
-               MESSAGEINFO: (
-                  <MessageInfo
-                     setLocalNav={setLocalNav}
-                     setIsMessageInfo={setIsMessageInfo}
-                     isMessageInfo={isMessageInfo}
-                     chatUser={toUserJid}
                   />
                ),
                GalleryPickView: (
@@ -616,8 +602,6 @@ function ChatScreen() {
                      handleSendMsg={handleSendMsg}
                   />
                ),
-               UserInfo: <UserInfo setLocalNav={setLocalNav} toUserId={toUserId} />,
-               UsersTapBarInfo: <UsersTapBarInfo setLocalNav={setLocalNav} />,
                ContactList: <ContactList setLocalNav={setLocalNav} handleSendMsg={handleSendMsg} />,
                Gallery: (
                   <SavePicture
@@ -637,6 +621,7 @@ function ChatScreen() {
                ),
                CameraPickView: (
                   <CameraPickView
+                     chatUser={toUserJid}
                      setSelectedImages={setSelectedImages}
                      selectedSingle={selectedSingle}
                      selectedImages={selectedImages}

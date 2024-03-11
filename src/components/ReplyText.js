@@ -32,7 +32,7 @@ const ReplyText = props => {
    };
 
    return (
-      <ScrollView ref={scrollViewRef}>
+      <ScrollView keyboardShouldPersistTaps={'always'} ref={scrollViewRef}>
          <View>
             <HStack justifyContent={'space-between'} alignItems={'center'}>
                {isSameUser ? (

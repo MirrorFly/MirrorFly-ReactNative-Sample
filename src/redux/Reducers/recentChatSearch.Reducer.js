@@ -5,6 +5,7 @@ import {
    TOGGLE_RECENT_CHAT_SEARCH,
    UPDATE_RECENT_CHAT_SEARCH_TEXT,
    UPDATE_RECENT_CHAT_SELECTED_ITEMS,
+   UPDATE_RECENT_CHAT_SELECTED_ITEMS_OBJECT,
 } from '../Actions/Constants';
 
 const initialState = {
@@ -38,6 +39,19 @@ const recentChatSearchReducer = (state = initialStateClone, { type, payload } = 
             _state.selectedItems.push(payload);
          }
          return _state;
+      case UPDATE_RECENT_CHAT_SELECTED_ITEMS_OBJECT:
+         const updatedState = { ...state };
+         if (payload.userJid in updatedState.selectedItemsObj) {
+            updatedState.selectedItemsObj[payload.userJid] = {
+               ...updatedState.selectedItemsObj[payload.userJid],
+               ...payload,
+            };
+            const index = updatedState.selectedItems.findIndex(item => item.userJid === payload.userJid);
+            if (index !== -1) {
+               updatedState.selectedItems[index] = { ...payload };
+            }
+         }
+         return updatedState;
       case CLEAR_RECENT_CHAT_SELECTED_ITEMS:
          return {
             ...state,

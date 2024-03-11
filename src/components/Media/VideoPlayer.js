@@ -1,12 +1,14 @@
 import React from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Image, Platform, StyleSheet, View } from 'react-native';
 import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import Video from 'react-native-video';
 import { useAppState } from '../../hooks';
 import MediaControls, { PLAYER_STATES } from './media-controls';
+import { getThumbBase64URL } from '../../Helper/Chat/Utility';
+import commonStyles from '../../common/commonStyles';
 
 const VideoPlayer = props => {
-   const { forcePause = {}, audioOnly = false, item: { fileDetails = {} } = {} } = props;
+   const { forcePause = {}, audioOnly = false, item: { thumbImage = '', fileDetails = {} } = {} } = props;
    const { uri } = fileDetails;
    const videoPlayer = React.useRef(null);
    const [videoUri, setVideoUri] = React.useState('');
@@ -20,18 +22,26 @@ const VideoPlayer = props => {
 
    React.useEffect(() => {
       if (forcePause.mediaForcePause) {
-         videoPlayer?.current?.seek?.(0);
-         setCurrentTime(0);
+         handleForcePause();
       }
       if (appState || forcePause.mediaForcePause) {
          if (!onEnded) {
-            setPlayerState(PLAYER_STATES.PAUSED);
-            setPaused(true);
+            handlePause();
          } else {
             setPaused(true);
          }
       }
    }, [appState, forcePause.mediaForcePause]);
+
+   const handleForcePause = () => {
+      videoPlayer?.current?.seek?.(0);
+      setCurrentTime(0);
+   };
+
+   const handlePause = () => {
+      setPlayerState(PLAYER_STATES.PAUSED);
+      setPaused(true);
+   };
 
    /**  const calculate = () => {
         let data = Math.max(width, height) / Math.min(width, height);
@@ -139,41 +149,34 @@ const VideoPlayer = props => {
    return (
       <View style={{ flex: 1 }} onLayout={handleLayout}>
          <View style={{ flex: 1, justifyContent: 'center' }}>
-            {Boolean(videoUri) && (
+            {Boolean(videoUri) && playerState === PLAYER_STATES.PLAYING ? (
                <Video
                   audioOnly={audioOnly}
                   ignoreSilentSwitch={'ignore'}
                   onEnd={onEnd}
                   onLoad={onLoad}
-                  // onLoadStart={onLoadStart}
                   onProgress={onProgress}
                   paused={paused}
                   controls={false}
-                  poster={uri}
+                  poster={getThumbBase64URL(thumbImage)}
                   posterResizeMode={'contain'}
                   ref={videoPlayer}
                   resizeMode={'contain'}
                   source={{ uri: videoUri }}
-                  style={{
-                     width: '100%',
-                     height: '100%',
-                     justifyContent: 'center',
-                  }}
+                  style={styles.videoContainer}
                   volume={100}
                   muted={false}
+               />
+            ) : (
+               <Image
+                  style={[commonStyles.flex1, commonStyles.resizeCover]}
+                  source={{ uri: getThumbBase64URL(thumbImage) }}
                />
             )}
          </View>
          {!isLoading && (
-            // <View
-            //   position={'absolute'}
-            //   top={mediaControlTop}
-            //   bottom={0}
-            //   left={0}
-            //   right={0}
-            //   justifyContent={'center'}>
             <MediaControls
-               fadeOutDisable={playerState === PLAYER_STATES.PAUSED || audioOnly}
+               fadeOutDisable={audioOnly || playerState === PLAYER_STATES.PAUSED || playerState === PLAYER_STATES.ENDED}
                duration={duration}
                isLoading={isLoading}
                mainColor="#333"
@@ -186,7 +189,6 @@ const VideoPlayer = props => {
                progress={currentTime}
                containerStyle={styles.mediaControlStyle}
             />
-            // </View>
          )}
       </View>
    );
@@ -202,5 +204,10 @@ const styles = StyleSheet.create({
       left: 0,
       right: 0,
       backgroundColor: 'rgba(0,0,0,0.1)',
+   },
+   videoContainer: {
+      width: '100%',
+      height: '100%',
+      justifyContent: 'center',
    },
 });

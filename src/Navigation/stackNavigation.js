@@ -14,6 +14,7 @@ import {
    GROUP_INFO,
    IMAGEVIEW,
    MEDIA_POST_PRE_VIEW_SCREEN,
+   MESSAGE_INFO_SCREEN,
    NEW_GROUP,
    PROFILESCREEN,
    RECENTCHATSCREEN,
@@ -34,8 +35,9 @@ import ProfileScreen from '../screen/ProfileScreen';
 import RecentScreen from '../screen/RecentScreen';
 import RegisterScreen from '../screen/RegisterScreen';
 import SettingScreen from '../screen/SettingScreen';
-import UserInfo from '../screen/UserInfo';
 import ViewAllMedia from '../screen/ViewAllMedia';
+import MessageInfo from '../components/MessageInfo';
+import UserInfo from '../screen/UserInfo';
 
 const Stack = createNativeStackNavigator();
 
@@ -55,6 +57,7 @@ const ChatScreenStackNavigation = () => {
          <Stack.Screen name={IMAGEVIEW}>{prop => <ImageView {...prop} />}</Stack.Screen>
          <Stack.Screen name={EDITNAME}>{prop => <EditName {...prop} />}</Stack.Screen>
          <Stack.Screen name={GROUP_INFO}>{prop => <GroupInfo {...prop} />}</Stack.Screen>
+         <Stack.Screen name={MESSAGE_INFO_SCREEN}>{prop => <MessageInfo {...prop} />}</Stack.Screen>
       </Stack.Navigator>
    );
 };

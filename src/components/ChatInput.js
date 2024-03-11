@@ -1,4 +1,4 @@
-import React, { createRef, useCallback, useEffect, useRef, useState } from 'react';
+import React, { createRef, useEffect, useRef, useState } from 'react';
 import {
    Animated,
    AppState,
@@ -14,7 +14,6 @@ import { SendBtn } from '../common/Button';
 import { AttachmentIcon, DeleteRedBinIcon, EmojiIcon, KeyboardIcon, MicIcon, SideArrowIcon } from '../common/Icons';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
 import AudioRecorderPlayer, {
    AudioEncoderAndroidType,
    OutputFormatAndroidType,
@@ -25,7 +24,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
 import { useSelector } from 'react-redux';
-import { MIX_BARE_JID } from '../Helper/Chat/Constant';
+import { CHAT_INPUT, MIX_BARE_JID } from '../Helper/Chat/Constant';
 import { showToast } from '../Helper/index';
 import SDK from '../SDK/SDK';
 import IconButton from '../common/IconButton';
@@ -53,12 +52,12 @@ const updateTypingGoneStatus = jid => {
 const ChatInput = props => {
    const { onSendMessage, attachmentMenuIcons, chatInputRef, fromUserJId, handleSendMsg } = props;
    const typingTimeoutRef = useRef(null);
-   const [message, setMessage] = useState('');
+   const { data = {} } = useSelector(state => state.recoverMessage);
+   const [message, setMessage] = useState(data[fromUserJId]?.textMessage || '');
    const [isOpen, setIsOpen] = useState(false);
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = useState(false);
    const recentChatList = useSelector(state => state.recentChatData.data);
    const userType = recentChatList.find(r => r.fromUserJid === fromUserJId)?.userType;
-   const { data = {} } = useSelector(state => state.recoverMessage);
    const [showRecorderUi, setShowRecorderUi] = useState(false);
    const [isRecording, setIsRecording] = useState(false);
    const [recordingDuration, setRecordingDuration] = useState('00:00');
@@ -291,12 +290,6 @@ const ChatInput = props => {
       }
    };
 
-   useFocusEffect(
-      useCallback(() => {
-         setMessage(data[fromUserJId]?.textMessage || '');
-      }, [fromUserJId]),
-   );
-
    const handleEmojiSelect = (...emojis) => {
       setMessage(prev => prev + emojis);
    };
@@ -360,7 +353,7 @@ const ChatInput = props => {
          {!showRecorderUi ? (
             <View style={[styles.container, Boolean(message) && commonStyles.paddingRight_0]}>
                {MIX_BARE_JID.test(fromUserJId) && !userType ? (
-                  <Text style={[commonStyles.px_4, styles.cantMessaegs, ,]}>
+                  <Text style={[commonStyles.px_4, styles.cantMessaegs]}>
                      You can't send messages to this group because you're no longer a participant
                   </Text>
                ) : (
@@ -382,18 +375,22 @@ const ChatInput = props => {
                            placeholderTextColor="#767676"
                            numberOfLines={1}
                            multiline={true}
+                           cursorColor={ApplicationColors.mainColor}
                         />
 
-                        <IconButton onPress={handleAttachmentconPressed} style={styles.attachmentIcon}>
-                           <AttachmentIcon />
-                        </IconButton>
+                        <View style={commonStyles.marginHorizontal_10}>
+                           {/* Remove this view tag while adding mic icon */}
+                           <IconButton onPress={handleAttachmentconPressed} style={styles.attachmentIcon}>
+                              <AttachmentIcon />
+                           </IconButton>
+                        </View>
 
-                        <IconButton
+                        {/* <IconButton
                            containerStyle={styles.audioRecordIconWrapper}
                            onPress={startRecording}
                            style={styles.audioRecordIcon}>
                            <MicIcon style={isRecording && micStyle} />
-                        </IconButton>
+                        </IconButton> */}
                      </>
                   </View>
                )}
@@ -460,6 +457,7 @@ const ChatInput = props => {
          )}
 
          <EmojiOverlay
+            place={CHAT_INPUT}
             state={message}
             setState={setMessage}
             visible={isEmojiPickerShowing}

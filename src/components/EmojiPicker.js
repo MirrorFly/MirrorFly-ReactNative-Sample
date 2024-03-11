@@ -6,6 +6,8 @@ import { mapValues } from 'lodash-es/object';
 import { TabView } from 'react-native-tab-view';
 import Graphemer from 'graphemer';
 import { BackSpaceIcon } from '../common/Icons';
+import { CHAT_INPUT } from '../Helper/Chat/Constant';
+import commonStyles from '../common/commonStyles';
 
 const charFromUtf16 = utf16 => String.fromCodePoint(...utf16.split('-').map(u => '0x' + u));
 const charFromEmojiObj = obj => charFromUtf16(obj.unified);
@@ -82,7 +84,7 @@ const EmojiCategory = ({ category, onSelect }) => {
    );
 };
 
-const EmojiOverlay = ({ state, setState, onClose, visible, onSelect }) => {
+const EmojiOverlay = ({ state, setState, onClose, visible, onSelect, place = '' }) => {
    const layout = useWindowDimensions();
    const [index, setIndex] = React.useState(0);
    const [routes] = React.useState(
@@ -129,8 +131,18 @@ const EmojiOverlay = ({ state, setState, onClose, visible, onSelect }) => {
       return <></>;
    }
 
+   const animationContainerStyle = [
+      styles.emojiContainer,
+      { transform: [{ translateY }] },
+      commonStyles.positionAbsolute,
+   ];
+
+   if (place === CHAT_INPUT) {
+      animationContainerStyle.pop();
+   }
+
    return (
-      <Animated.View style={[styles.emojiContainer, { transform: [{ translateY }] }]}>
+      <Animated.View style={animationContainerStyle}>
          <TabView
             keyExtractor={(item, _index) => _index.toString()}
             renderTabBar={e => <TabBarCustom setIndex={setIndex} setState={setState} state={state} {...e} />}
@@ -147,7 +159,6 @@ const styles = StyleSheet.create({
    emojiContainer: {
       backgroundColor: '#f2f2f2',
       height: 350,
-      position: 'absolute',
       bottom: 0,
       left: 0,
       right: 0,

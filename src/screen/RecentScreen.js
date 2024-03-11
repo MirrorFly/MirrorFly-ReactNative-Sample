@@ -6,7 +6,7 @@ import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { showToast } from '../Helper';
 import { endOngoingCallLogout } from '../Helper/Calls/Utility';
-import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
+import { formatUserIdToJid, getRecentChatDataList } from '../Helper/Chat/ChatHelper';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import logo from '../assets/mirrorfly-logo.png';
@@ -30,6 +30,7 @@ import {
    toggleRecentChatSearch,
    updateRecentChatSearchText,
 } from '../redux/Actions/recentChatSearchAction';
+import { MIX_BARE_JID } from '../Helper/Chat/Constant';
 
 const scenesMap = SceneMap({
    chats: () => <RecentChat />,
@@ -139,14 +140,19 @@ function RecentScreen() {
    };
 
    const deleteChat = () => {
+      const isUserLeft = selectedItems.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
+      if (!isUserLeft && selectedItems.length > 1) {
+         toggleDeleteModal();
+         return showToast('You are a member of a certain group', { id: 'You are a member of a certain group' });
+      }
+
+      if (!isUserLeft) {
+         toggleDeleteModal();
+         return showToast('You are a participant in this group', { id: 'You are a participant in this group' });
+      }
+
       selectedItems.forEach(item => {
-         let userJid =
-            item?.userJid || formatUserIdToJid(item?.fromUserId); /** Need to add chat type here while working in Group
-         formatUserIdToJid(
-          item?.fromUserId,
-          item?.chatType,
-        )
-        */
+         let userJid = item?.userJid || formatUserIdToJid(item?.fromUserId, item?.chatType);
          SDK.deleteChat(userJid);
          batch(() => {
             dispatch(deleteActiveChatAction({ fromUserId: item?.fromUserId }));
@@ -154,7 +160,6 @@ function RecentScreen() {
          });
       });
       dispatch(clearRecentChatSelectedItems());
-      toggleDeleteModal();
    };
 
    const handleLogout = async () => {

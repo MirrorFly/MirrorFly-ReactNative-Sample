@@ -27,8 +27,9 @@ import { getImageSource } from '../common/utils';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import commonStyles from '../common/commonStyles';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { pauseAudio } from './Media/AudioPlayer';
+import { MESSAGE_INFO_SCREEN } from '../constant';
 
 // below ref is used to check whether selecting is happening or not in other components without passing the selected Messages state as props
 export const isMessageSelectingRef = React.createRef();
@@ -38,6 +39,7 @@ isMessageSelectingRef.current = false;
 
 const ChatConversation = React.memo(props => {
    const {
+      handleRecoverMessage,
       handleSendMsg,
       onReplyMessage,
       replyMsg,
@@ -47,6 +49,7 @@ const ChatConversation = React.memo(props => {
       chatInputRef,
    } = props;
    const dispatch = useDispatch();
+   const navigation = useNavigation();
    const vCardProfile = useSelector(state => state.profile.profileDetails);
    const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
    const fromUserJId = useSelector(state => state.navigation.fromUserJid);
@@ -148,6 +151,10 @@ const ChatConversation = React.memo(props => {
       setIsOpenAlert(true);
    };
 
+   const handleGoMessageInfoScreen = () => {
+      navigation.navigate(MESSAGE_INFO_SCREEN, { chatUser: fromUserJId, msgId: selectedMsgs[0].msgId });
+   };
+
    React.useEffect(() => {
       let foundMsg = selectedMsgs.filter(obj => obj.publisherJid !== currentUserJID);
 
@@ -174,10 +181,7 @@ const ChatConversation = React.memo(props => {
                },
                {
                   label: 'Message Info',
-                  formatter: () => {
-                     props.setIsMessageInfo(selectedMsgs[0]);
-                     props.setLocalNav('MESSAGEINFO');
-                  },
+                  formatter: handleGoMessageInfoScreen,
                },
             ]);
             break;
@@ -252,11 +256,12 @@ const ChatConversation = React.memo(props => {
       const {
          msgBody,
          deleteStatus = 0,
+         recallStatus = 0,
          msgBody: { message_type },
       } = replyMsgs;
-
+      console.log('recallStatus ==>', recallStatus);
       switch (true) {
-         case Object.keys(msgBody).length === 0 || deleteStatus !== 0:
+         case Object.keys(msgBody).length === 0 || deleteStatus !== 0 || recallStatus !== 0:
             return <ReplyDeleted replyMsgItems={replyMsgs} handleRemove={handleRemove} />;
          case message_type === 'text':
             return <ReplyText replyMsgItems={replyMsgs} handleRemove={handleRemove} />;
@@ -283,6 +288,7 @@ const ChatConversation = React.memo(props => {
          style={styles.container}
          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
          <ChatHeader
+            handleRecoverMessage={handleRecoverMessage}
             chatUserProfile={chatUserProfile}
             fromUserJId={fromUserJId}
             selectedMsgs={selectedMsgs}
@@ -298,6 +304,7 @@ const ChatConversation = React.memo(props => {
          />
          <ImageBackground source={getImageSource(chatBackgroud)} style={styles.imageBackground}>
             <ChatConversationList
+               handleRecoverMessage={handleRecoverMessage}
                handleMessageListUpdated={handleMessageListUpdated}
                setLocalNav={props.setLocalNav}
                fromUserJId={fromUserJId}

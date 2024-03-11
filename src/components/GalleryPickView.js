@@ -20,6 +20,7 @@ import useRosterData from '../hooks/useRosterData';
 import { selectedMediaIdRef } from '../screen/ChatScreen';
 import VideoPlayer from './Media/VideoPlayer';
 import { getType } from './chat/common/fileUploadValidation';
+import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../Helper/Chat/Constant';
 
 function GalleryPickView(props) {
    const { handleSendMsg, setLocalNav, selectedSingle, setSelectedImages, selectedImages } = props;
@@ -28,6 +29,7 @@ function GalleryPickView(props) {
    const [index, setIndex] = React.useState(0);
    const [componentSelectedImages, setComponentSelectedImages] = React.useState(selectedImages);
    let { nickName, image: imageToken, colorCode } = useRosterData(getUserIdFromJid(fromUserJid));
+   const chatType = MIX_BARE_JID.test(fromUserJid) ? CHAT_TYPE_GROUP : '';
    // updating the default values
    nickName = nickName || getUserIdFromJid(fromUserJid) || '';
    imageToken = imageToken || '';
@@ -102,6 +104,7 @@ function GalleryPickView(props) {
                   borderRadius="full"
                />
                <Avathar
+                  type={chatType}
                   width={30}
                   height={30}
                   fontsize={14}
@@ -174,6 +177,7 @@ function GalleryPickView(props) {
                      fontSize: 14,
                      minHeight: 20,
                      maxHeight: 100,
+                     maxWidth: '75%',
                   }}
                   defaultValue={componentSelectedImages[index]?.caption || ''}
                   numberOfLines={1}
@@ -192,6 +196,7 @@ function GalleryPickView(props) {
                <Text color="#7f7f7f">{nickName}</Text>
             </HStack>
             <FlatList
+               keyboardShouldPersistTaps={'always'}
                ref={scrollRef}
                data={componentSelectedImages}
                style={styles.miniPreViewScroll}

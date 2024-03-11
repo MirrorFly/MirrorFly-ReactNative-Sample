@@ -35,6 +35,7 @@ function ReplyMessage(props) {
       msgBody = {},
       msgBody: { message_type = '', message = '', media = {} } = {},
       deleteStatus = 0,
+      recallStatus = 0,
       publisherJid = '',
    } = repliedMsg;
 
@@ -228,7 +229,7 @@ function ReplyMessage(props) {
 
    return (
       <Pressable onPress={passReplyTo} onLongPress={handleLongPress}>
-         {deleteStatus !== 0 || Object.keys(msgBody).length === 0 ? (
+         {recallStatus !== 0 || deleteStatus !== 0 || Object.keys(msgBody).length === 0 ? (
             <View style={[styles.replyContainer, props.isSame ? styles.senderBg : styles.receiverBg]}>
                <Text numberOfLines={1} ellipsizeMode="tail" style={commonStyles.fontWeight_bold}>
                   {!isSameUser ? nickName || getUserIdFromJid(fromUserJId) : 'You'}

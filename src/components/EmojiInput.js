@@ -75,7 +75,7 @@ function EmojiInput({
    };
 
    React.useEffect(() => {
-      setValue(content);
+      setValue(content.trim());
    }, [content]);
 
    React.useEffect(() => {

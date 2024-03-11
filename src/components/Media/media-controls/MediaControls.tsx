@@ -67,6 +67,9 @@ const MediaControls = (props: Props) => {
       if (playerState === PLAYER_STATES.PLAYING) {
          fadeOutControls(fadeOutDelay);
       }
+      if (playerState !== PLAYER_STATES.PLAYING) {
+         fadeInControls();
+      }
    }, [playerState]);
 
    const fadeOutControls = (delay = 0) => {

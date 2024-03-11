@@ -28,7 +28,10 @@ import { CHATSCREEN } from '../constant';
 import useRosterData from '../hooks/useRosterData';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { addRecentChat } from '../redux/Actions/RecentChatAction';
-import { updateRecentChatSelectedItems } from '../redux/Actions/recentChatSearchAction';
+import {
+   updateRecentChatSelectedItems,
+   updateRecentChatSelectedItemsObj,
+} from '../redux/Actions/recentChatSearchAction';
 
 const VideoSmallIconComponent = () => VideoSmallIcon('#767676');
 
@@ -196,6 +199,7 @@ export default function RecentChat() {
    const [filteredData, setFilteredData] = React.useState([]);
    const [filteredMessages, setFilteredMessages] = React.useState([]);
    const [recentData, setRecentData] = React.useState([]);
+   const recentChatData = useSelector(state => state.recentChatData);
    const recentChatList = useSelector(state => state.recentChatData.data);
    const { isSearching, selectedItems, searchText, selectedItemsObj } =
       useSelector(state => state.recentChatSearchData) || {};
@@ -214,6 +218,7 @@ export default function RecentChat() {
    React.useEffect(() => {
       let recentChatItems = constructRecentChatItems(recentChatList);
       setRecentData(recentChatItems);
+      onSelectedMessageUpdate();
    }, [recentChatList]);
 
    React.useEffect(() => {
@@ -231,6 +236,18 @@ export default function RecentChat() {
       });
 
       return recent.filter(eachmessage => eachmessage);
+   };
+
+   const onSelectedMessageUpdate = () => {
+      if (selectedItems.length !== 0) {
+         selectedItems.map(chat => {
+            const _chat = recentChatList.find(r => r.userJid === chat.userJid);
+            if (_chat) {
+               const updateChat = { ...chat, ..._chat };
+               dispatch(updateRecentChatSelectedItemsObj(updateChat));
+            }
+         });
+      }
    };
 
    const searchFilter = text => {
@@ -253,13 +270,9 @@ export default function RecentChat() {
       } else {
          const _item = { ...item };
          if (!_item.userJid) {
-            _item.userJid = formatUserIdToJid(_item?.fromUserId); /** Need to add chat type here while working in Group
-        formatUserIdToJid(
-         item?.fromUserId,
-         item?.chatType,
-       )
-       */
+            _item.userJid = formatUserIdToJid(_item?.fromUserId, _item?.chatType);
          }
+         console.log('_item ==>', JSON.stringify(_item, null, 2));
          dispatch(updateRecentChatSelectedItems(_item));
       }
    };

@@ -110,7 +110,6 @@ export const mirrorflyProfileUpdate = async args => {
 export const mirrorflyNotificationHandler = async messageData => {
    try {
       const { remoteMessage = {}, apiBaseUrl = '', licenseKey = '' } = messageData;
-      console.log('messageData ==>', JSON.stringify(messageData, null, 2));
       if (remoteMessage?.data?.push_from !== 'MirrorFly') {
          return;
       }

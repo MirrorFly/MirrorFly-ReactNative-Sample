@@ -9,9 +9,10 @@ import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
 import MediaProgressLoader from './chat/common/MediaProgressLoader';
 import useMediaProgress from '../hooks/useMediaProgress';
+import CaptionContainer from './CaptionContainer';
 
 const ImageCard = props => {
-   const { imgSrc, isSender, fileSize, messageObject = {}, handleReplyPress } = props;
+   const { imgSrc = '', isSender = true, fileSize = '', messageObject = {}, handleReplyPress = () => {} } = props;
 
    const {
       msgId = '',
@@ -91,13 +92,7 @@ const ImageCard = props => {
             )}
          </View>
          {Boolean(media?.caption) && (
-            <View style={styles.captionContainer}>
-               <Text style={styles.captionText}>{media.caption}</Text>
-               <View style={styles.messgeStatusAndTimestampWithCaption}>
-                  {props.status}
-                  <Text style={styles.timestampText}>{props.timeStamp}</Text>
-               </View>
-            </View>
+            <CaptionContainer caption={media.caption} status={props.status} timeStamp={props.timeStamp} />
          )}
       </View>
    );

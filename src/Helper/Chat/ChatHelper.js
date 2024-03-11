@@ -23,6 +23,7 @@ import {
 } from './Constant';
 import { getMessageObjSender, getRecentChatMsgObj, getUserIdFromJid } from './Utility';
 import FileViewer from 'react-native-file-viewer';
+import Store from '../../redux/store';
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
 
@@ -671,4 +672,9 @@ export const handleFileOpen = message => {
             id: 'no-supported-app-to-open-file',
          });
       });
+};
+
+export const getRecentChatDataList = () => {
+   const { recentChatData } = Store.getState();
+   return recentChatData.data;
 };

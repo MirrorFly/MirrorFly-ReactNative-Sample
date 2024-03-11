@@ -343,7 +343,7 @@ const GrpCollapsibleToolbar = ({
       setModalContent({
          visible: true,
          onRequestClose: toggleModalContent,
-         title: 'Are you sure you want to delete group?',
+         title: 'Are you sure you want to delete this group?',
          noButton: 'CANCEL',
          yesButton: 'DELETE',
          yesAction: handleDeleteGroup,

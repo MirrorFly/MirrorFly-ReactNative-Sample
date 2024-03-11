@@ -3,6 +3,7 @@ import {
    TOGGLE_RECENT_CHAT_SEARCH,
    UPDATE_RECENT_CHAT_SEARCH_TEXT,
    UPDATE_RECENT_CHAT_SELECTED_ITEMS,
+   UPDATE_RECENT_CHAT_SELECTED_ITEMS_OBJECT,
 } from './Constants';
 
 export const toggleRecentChatSearch = data => {
@@ -22,6 +23,13 @@ export const updateRecentChatSearchText = data => {
 export const updateRecentChatSelectedItems = data => {
    return {
       type: UPDATE_RECENT_CHAT_SELECTED_ITEMS,
+      payload: data,
+   };
+};
+
+export const updateRecentChatSelectedItemsObj = data => {
+   return {
+      type: UPDATE_RECENT_CHAT_SELECTED_ITEMS_OBJECT,
       payload: data,
    };
 };

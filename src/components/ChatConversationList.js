@@ -24,6 +24,7 @@ import { updateMsgSeenStatus } from './chat/common/createMessage';
 const listBottomYaxisLimit = 60;
 
 const ChatConversationList = ({
+   handleRecoverMessage,
    handleMessageListUpdated,
    setLocalNav,
    fromUserJId,
@@ -173,7 +174,9 @@ const ChatConversationList = ({
    };
    const findMsgIndex = React.useCallback(
       msgId => {
-         const index = messageList.findIndex(item => item.msgId === msgId && item.deleteStatus === 0);
+         const index = messageList.findIndex(
+            item => item.msgId === msgId && item.deleteStatus === 0 && item.recallStatus === 0,
+         );
          if (index === -1) {
             return showToast('This message no longer availabe', {
                id: 'no_Longer',
@@ -242,6 +245,7 @@ const ChatConversationList = ({
 
          return recallStatus === 0 ? (
             <ChatMessage
+               handleRecoverMessage={handleRecoverMessage}
                shouldHighlightMessage={highlightMessageId === msgId}
                handleReplyPress={handleReplyPress}
                setLocalNav={setLocalNav}
@@ -304,7 +308,7 @@ const ChatConversationList = ({
    return (
       <>
          <FlatList
-            keyboardShouldPersistTaps={'handled'}
+            keyboardShouldPersistTaps={'always'}
             ref={flatListRef}
             data={messageList}
             inverted

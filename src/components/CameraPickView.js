@@ -1,22 +1,25 @@
+import { HStack, Icon, IconButton, KeyboardAvoidingView, Spacer, Text, View } from 'native-base';
 import React from 'react';
 import { BackHandler, Image, Platform, StyleSheet, TextInput } from 'react-native';
-import { HStack, Icon, IconButton, KeyboardAvoidingView, Spacer, Text, View } from 'native-base';
-import { useDispatch, useSelector } from 'react-redux';
-import { LeftArrowIcon, RightArrowIcon, SendBlueIcon } from '../common/Icons';
+import { useDispatch } from 'react-redux';
+import { CHAT_TYPE_GROUP, CHAT_TYPE_SINGLE, MIX_BARE_JID } from '../Helper/Chat/Constant';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import Avathar from '../common/Avathar';
-import { getType } from './chat/common/fileUploadValidation';
-import VideoPlayer from './Media/VideoPlayer';
+import { LeftArrowIcon, RightArrowIcon, SendBlueIcon } from '../common/Icons';
 import { CHATCONVERSATION } from '../constant';
-import { resetSafeArea, safeAreaBgColor } from '../redux/Actions/SafeAreaAction';
 import useRosterData from '../hooks/useRosterData';
+import { resetSafeArea, safeAreaBgColor } from '../redux/Actions/SafeAreaAction';
+import VideoPlayer from './Media/VideoPlayer';
+import { getType } from './chat/common/fileUploadValidation';
 
 const CameraPickView = props => {
-   const { handleSendMsg, setLocalNav, setSelectedImages, selectedImages } = props;
-   const profileDetails = useSelector(state => state.navigation.profileDetails);
-
-   let { nickName, image: imageToken } = useRosterData(profileDetails?.userId);
+   const { chatUser, handleSendMsg, setLocalNav, setSelectedImages, selectedImages } = props;
+   const type = MIX_BARE_JID.test(chatUser) ? CHAT_TYPE_GROUP : CHAT_TYPE_SINGLE;
+   const chatUserId = getUserIdFromJid(chatUser);
+   console.log('chatUserId ==>', JSON.stringify(chatUserId, null, 2));
+   let { nickName, image: imageToken, colorCode } = useRosterData(chatUserId);
    // updating the default values
-   nickName = nickName || profileDetails?.nickName || profileDetails?.userId || '';
+   nickName = nickName || chatUserId || '';
    imageToken = imageToken || '';
 
    const dispatch = useDispatch();
@@ -58,10 +61,11 @@ const CameraPickView = props => {
                   borderRadius="full"
                />
                <Avathar
+                  type={type}
                   width={30}
                   height={30}
                   fontsize={14}
-                  backgroundColor={profileDetails?.colorCode}
+                  backgroundColor={colorCode}
                   data={nickName}
                   profileImage={imageToken}
                />
@@ -110,7 +114,7 @@ const CameraPickView = props => {
             </HStack>
             <HStack alignItems={'center'} ml={3} mb={5}>
                <IconButton icon={<Icon as={() => RightArrowIcon('#fff')} name="emoji-happy" />} />
-               <Text color="#7f7f7f">{profileDetails?.nickName}</Text>
+               <Text color="#7f7f7f">{nickName}</Text>
             </HStack>
          </View>
       </KeyboardAvoidingView>

@@ -15,10 +15,12 @@ const VideoInfo = props => {
             height: SingleSelectedImage.originalHeight,
             width: SingleSelectedImage.originalWidth,
          },
+         thumbImage: SingleSelectedImage.thumb_image,
       };
    } else {
       item = {
          ...SingleSelectedImage.file,
+         thumbImage: SingleSelectedImage.thumb_image,
       };
    }
 
@@ -29,7 +31,7 @@ const VideoInfo = props => {
             <AudioMusicIcon width={200} height={200} />
          </View>
          {/* VideoPlayer */}
-         <View style={[commonStyles.positionAbsolute, { width: '100%', height: '100%', zIndex: 1 }]}>
+         <View style={[commonStyles.positionAbsolute, styles.videoPlayerContainer]}>
             <VideoPlayer forcePause={forcePause} audioOnly={audioOnly} item={item} />
          </View>
       </View>
@@ -42,6 +44,7 @@ const styles = StyleSheet.create({
    audioOnly: {
       backgroundColor: '#97A5C7',
    },
+   videoPlayerContainer: { width: '100%', height: '100%', zIndex: 1 },
 });
 
 export default VideoInfo;

@@ -172,3 +172,4 @@ export const TYPE_DELAY_TIME = 5000;
 export const CHAT_HISTORY_LIMIT = 20;
 export const NO_CONVERSATION = 'There is no conversation.';
 export const NO_INTERNET = 'Please check your internet connectivity';
+export const CHAT_INPUT = 'CHAT_INPUT';

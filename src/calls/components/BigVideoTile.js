@@ -12,13 +12,14 @@ const BigVideoTile = ({
    userId,
    isAudioMuted,
    videoMuted,
-   callStatus,
+   callStatus = '',
    stream,
    onPressAnywhere,
    isFrontCameraEnabled,
    localUserJid,
 }) => {
-   let reconnectStatus = callStatus.toLowerCase() === CALL_STATUS_RECONNECT && userId !== localUserJid ? true : false;
+   let reconnectStatus =
+      callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && userId !== localUserJid ? true : false;
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
    return (

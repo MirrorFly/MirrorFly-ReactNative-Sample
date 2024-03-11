@@ -652,6 +652,7 @@ const disconnected = res => {
 };
 
 const reconnecting = res => {
+   stopOutgoingCallRingingTone();
    onReconnect = true;
    startReconnectingTone();
    updatingUserStatusInRemoteStream(res.usersStatus);

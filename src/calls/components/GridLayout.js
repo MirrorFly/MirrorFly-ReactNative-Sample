@@ -24,7 +24,8 @@ const GridItem = ({
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
    let stream = isLocalUser ? localStream : item?.stream;
-   let reconnectStatus = callStatus.toLowerCase() === CALL_STATUS_RECONNECT && !isLocalUser ? true : false;
+   let reconnectStatus =
+      callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && !isLocalUser ? true : false;
 
    return (
       <Pressable style={[wrapperStyle]} onPress={onPress}>

@@ -17,6 +17,7 @@ import { callNotifyHandler, stopForegroundServiceNotification } from '../../call
 import {
    checkCameraPermission,
    checkMicroPhonePermission,
+   requestBluetoothConnectPermission,
    requestCameraPermission,
    requestMicroPhonePermission,
 } from '../../common/utils';
@@ -468,6 +469,7 @@ export const answerIncomingCall = async callId => {
       }, 0);
       const result =
          callType === CALL_TYPE_AUDIO ? await requestMicroPhonePermission() : await requestCameraPermission(); // updating the SDK flag back to false to behave as usual
+      await requestBluetoothConnectPermission();
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
       callBackgroundNotification = true;
       if (result === 'granted' || result === 'limited') {
@@ -1070,7 +1072,7 @@ export const startDurationTimer = () => {
 };
 
 export const switchCamera = async cameraSwitch => {
-   const response = await SDK.toggleSwitchCamera();
+   const response = await SDK.toggleSwitchCamera(cameraSwitch);
    if (response.statusCode === 200) {
       _BackgroundTimer.setTimeout(() => {
          Store.dispatch(updateSwitchCamera(cameraSwitch));

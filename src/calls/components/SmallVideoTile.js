@@ -16,12 +16,13 @@ const SmallVideoTile = ({
    isVideoMuted,
    stream,
    isFrontCameraEnabled,
-   callStatus,
+   callStatus = '',
 }) => {
    const userId = getUserIdFromJid(user.fromJid);
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
-   let reconnectStatus = callStatus.toLowerCase() === CALL_STATUS_RECONNECT && !isLocalUser ? true : false;
+   let reconnectStatus =
+      callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && !isLocalUser ? true : false;
    return (
       <View style={styles.smallVideoWrapper}>
          {!isVideoMuted && stream && stream?.video && !reconnectStatus && (

@@ -1,11 +1,9 @@
 package com.mirrorfly_rn;
 
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.PowerManager;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -14,8 +12,9 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 public class RingtoneSilentKeyEventModule extends ReactContextBaseJavaModule {
-    private BroadcastReceiver receiver;
-    private String ACTION_VOLUME_CHANGED = "android.media.VOLUME_CHANGED_ACTION";
+    private final BroadcastReceiver receiver;
+    private final String ACTION_VOLUME_CHANGED = "android.media.VOLUME_CHANGED_ACTION";
+    private Boolean isRegistered = false;
 
     public RingtoneSilentKeyEventModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -38,12 +37,16 @@ public class RingtoneSilentKeyEventModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void startListening() {
+        isRegistered = true;
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
         getReactApplicationContext().registerReceiver(receiver, filter);
     }
 
     @ReactMethod
     public void stopListening() {
-        getReactApplicationContext().unregisterReceiver(receiver);
+        if (Boolean.TRUE.equals(isRegistered)) {
+            getReactApplicationContext().unregisterReceiver(receiver);
+            isRegistered = false;
+        }
     }
 }

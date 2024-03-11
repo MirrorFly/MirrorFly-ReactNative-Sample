@@ -257,7 +257,7 @@ const OnGoingCall = () => {
       }
 
       if (layout === 'tile') {
-         if (callStatus.toLowerCase() === CALL_STATUS_CONNECTING) {
+         if (callStatus?.toLowerCase() === CALL_STATUS_CONNECTING) {
             // fetching the other user JID from connection state instead of 'largeVideoUser' data for 'connecting' call state
             const largeVideoUserJid = callConnectionState.to || callConnectionState.userJid;
             return (
@@ -292,7 +292,7 @@ const OnGoingCall = () => {
 
    const renderSmallVideoTile = () => {
       // not rendering the small video tile for 'connecting' call status
-      if (layout === 'tile' && callStatus.toLowerCase() !== CALL_STATUS_CONNECTING) {
+      if (layout === 'tile' && callStatus?.toLowerCase() !== CALL_STATUS_CONNECTING) {
          const smallVideoUsers = remoteStream.filter(u => u.fromJid !== largeVideoUser?.userJid) || [];
          return (
             <Animated.ScrollView
@@ -396,7 +396,7 @@ const OnGoingCall = () => {
       let stream = null;
       let remoteStreams = null;
       const largeVideoUserJid =
-         callStatus.toLowerCase() === CALL_STATUS_CONNECTING
+         callStatus?.toLowerCase() === CALL_STATUS_CONNECTING
             ? callConnectionState.to || callConnectionState.userJid
             : largeVideoUser?.userJid || '';
       if (callMode === 'onetoone') {
@@ -411,7 +411,7 @@ const OnGoingCall = () => {
       }
       //Check remote User is reconnecting state
       let reconnectStatus =
-         callStatus.toLowerCase() === CALL_STATUS_RECONNECT && largeVideoUserJid !== localUserJid ? true : false;
+         callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && largeVideoUserJid !== localUserJid ? true : false;
       return callType === 'video' &&
          !remoteVideoMuted[largeVideoUserJid] &&
          stream &&

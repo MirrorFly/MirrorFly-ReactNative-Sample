@@ -28,7 +28,13 @@ import MenuContainer from '../common/MenuContainer';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import commonStyles from '../common/commonStyles';
-import { requestCameraPermission, requestMicroPhonePermission } from '../common/utils';
+import {
+   checkMicroPhonePermission,
+   checkVideoPermission,
+   requestBluetoothConnectPermission,
+   requestCameraPermission,
+   requestMicroPhonePermission,
+} from '../common/utils';
 import ApplicationColors from '../config/appColors';
 import { FORWARD_MESSSAGE_SCREEN } from '../constant';
 import { useNetworkStatus } from '../hooks';
@@ -283,6 +289,7 @@ function ChatHeader({
          const result =
             callType === CALL_TYPE_AUDIO ? await requestMicroPhonePermission() : await requestCameraPermission();
          // updating the SDK flag back to false to behave as usual
+         await requestBluetoothConnectPermission();
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
          if (result === 'granted' || result === 'limited') {
             // Checking If Room exist when user granted permission
@@ -292,9 +299,17 @@ function ChatHeader({
                setShowRoomExist(true);
             }
          } else if (isPermissionChecked) {
+            let cameraAndMic =
+               (await checkVideoPermission()) !== 'granted' && (await checkMicroPhonePermission()) !== 'granted'
+                  ? 'Audio and Video Permissions'
+                  : (await checkVideoPermission()) !== 'granted'
+                  ? 'Video Permission'
+                  : (await checkMicroPhonePermission()) !== 'granted'
+                  ? 'Audio Permission'
+                  : '';
             let permissionStatus =
                callType === 'video'
-                  ? 'Audio and Video Permissions are needed for calling. Please enable it in Settings'
+                  ? `${cameraAndMic}${' are needed for calling. Please enable it in Settings'}`
                   : 'Audio Permissions are needed for calling. Please enable it in Settings';
             setPermissionText(permissionStatus);
             dispatch(showPermissionModal());

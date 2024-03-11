@@ -107,6 +107,10 @@ export const requestCameraPermission = async () => {
    }
 };
 
+export const checkVideoPermission = async () => {
+   return check(Platform.OS === 'android' ? PERMISSIONS.ANDROID.CAMERA : PERMISSIONS.IOS.CAMERA);
+};
+
 export const requestStoragePermission = async () => {
    console.log(Platform.Version, 'Platform.Version UI');
    switch (true) {

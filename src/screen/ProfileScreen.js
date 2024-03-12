@@ -15,6 +15,7 @@ import { Platform, StyleSheet } from 'react-native';
 const ProfileScreen = ({ navigation }) => {
    const dispatch = useDispatch();
    const isNetworkConnected = useNetworkStatus();
+   const xmppConnection = useSelector(state => state.connection.xmppStatus);
    const [nav, setNav] = React.useState('ProfileScreen');
    const [statusList, setStatusList] = React.useState([]);
    const selectProfileInfo = useSelector(state => state.profile.profileDetails);
@@ -60,10 +61,10 @@ const ProfileScreen = ({ navigation }) => {
    }, [selectProfileInfo]);
 
    React.useEffect(() => {
-      if (isNetworkConnected) {
+      if (isNetworkConnected && xmppConnection === CONNECTED) {
          getProfileDetail();
       }
-   }, [isNetworkConnected]);
+   }, [isNetworkConnected, xmppConnection]);
 
    React.useEffect(() => {
       const fetchData = async () => {

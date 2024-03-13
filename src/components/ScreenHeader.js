@@ -73,7 +73,11 @@ function ScreenHeader(props) {
             {Boolean(props?.logo) && !isSearching && (
                <Image style={styles.logoImage} source={getImageSource(props?.logo)} alt="ic_logo.png" />
             )}
-            {Boolean(props?.title) && !isSearching && <Text style={styles.titleText}>{props?.title}</Text>}
+            {Boolean(props?.title) && !isSearching && (
+               <Text numberOfLines={1} ellipsizeMode="tail" style={styles.titleText}>
+                  {props?.title}
+               </Text>
+            )}
          </View>
          <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
             {Boolean(text) && (

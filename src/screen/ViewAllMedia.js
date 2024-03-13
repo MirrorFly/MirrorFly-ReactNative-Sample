@@ -2,8 +2,10 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import { ActivityIndicator, Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-native';
 import { TabBar, TabView } from 'react-native-tab-view';
+import { useSelector } from 'react-redux';
+import { convertBytesToKB } from '../Helper';
+import { handleFileOpen } from '../Helper/Chat/ChatHelper';
 import { getThumbBase64URL, getUserIdFromJid } from '../Helper/Chat/Utility';
-import SDK from '../SDK/SDK';
 import IconButton from '../common/IconButton';
 import {
    AudioWhileIcon,
@@ -18,23 +20,24 @@ import {
    ZipIcon,
 } from '../common/Icons';
 import Pressable from '../common/Pressable';
+import { docTimeFormat } from '../common/TimeStamp';
 import commonStyles from '../common/commonStyles';
+import { getExtension } from '../components/chat/common/fileUploadValidation';
 import ApplicationColors from '../config/appColors';
 import { MEDIA_POST_PRE_VIEW_SCREEN } from '../constant';
 import useRosterData from '../hooks/useRosterData';
-import { convertBytesToKB, showToast } from '../Helper';
-import { getExtension } from '../components/chat/common/fileUploadValidation';
-import { docTimeFormat } from '../common/TimeStamp';
-import { handleFileOpen } from '../Helper/Chat/ChatHelper';
 
 const LeftArrowComponent = () => LeftArrowIcon();
 const AudioWhileIconComponent = () => AudioWhileIcon();
 
 const ViewAllMedia = () => {
+   let messageListCount = 0;
    const navigation = useNavigation();
    const {
       params: { chatUser = '', title = '' },
    } = useRoute();
+   const chatUserId = getUserIdFromJid(chatUser);
+   const { messages } = useSelector(state => state.chatConversationData?.data[chatUserId] || []);
    const [index, setIndex] = React.useState(0);
    const [loading, setLoading] = React.useState(false);
    const [countBasedOnType, setCountBasedOnType] = React.useState({});
@@ -46,12 +49,37 @@ const ViewAllMedia = () => {
    const { width } = Dimensions.get('window');
    const tileSize = width / numColumns;
 
+   const messageList = React.useMemo(() => {
+      const id = getUserIdFromJid(chatUser);
+      if (id) {
+         const data = Object.values(messages) || [];
+         console.log('data ==>', JSON.stringify(data, null, 2));
+         const filteredMessages = data.filter(message => {
+            const { deleteStatus, recallStatus } = message;
+            const { media, message_type } = message.msgBody;
+            return (
+               ['image', 'video', 'audio'].includes(message_type) &&
+               media &&
+               media.is_downloaded === 2 &&
+               media.is_uploading === 2 &&
+               deleteStatus === 0 &&
+               recallStatus === 0
+            );
+         });
+         return filteredMessages;
+      }
+      return [];
+   }, [messages, chatUser]);
+
+   console.log('messageList length ==>', messageList.length);
+
    React.useEffect(() => {
       toggleLoading();
-      setTimeout(() => {
+      if (messageListCount < messageList.length) {
+         messageListCount = messageList.length;
          handleGetMedia();
-      }, 2000);
-   }, []);
+      }
+   }, [messageList]);
 
    const toggleLoading = () => {
       setLoading(val => !val);
@@ -63,22 +91,17 @@ const ViewAllMedia = () => {
    };
 
    const handleGetMedia = async () => {
-      const { statusCode, message, data: mediaMessageList } = await SDK.getMediaMessages(chatUser);
-      if (statusCode === 200) {
-         const imageCount = mediaMessageList?.reverse()?.filter(res => ['image'].includes(res.msgBody.message_type));
-         setCountBasedOnType({
-            ...countBasedOnType,
-            imageCount: imageCount.length,
-         });
-         const filtedMediaMessages = mediaMessageList.filter(res =>
-            ['image', 'video', 'audio'].includes(res?.msgBody?.message_type),
-         );
-         const filtedDocsMessages = mediaMessageList.filter(res => ['file'].includes(res?.msgBody?.message_type));
-         setDocsMessages(filtedDocsMessages || []);
-         setMediaMessages(filtedMediaMessages || []);
-      } else {
-         showToast(message, { id: message });
-      }
+      const imageCount = messageList?.reverse()?.filter(res => ['image'].includes(res.msgBody.message_type));
+      setCountBasedOnType({
+         ...countBasedOnType,
+         imageCount: imageCount.length,
+      });
+      const filtedMediaMessages = messageList.filter(res =>
+         ['image', 'video', 'audio'].includes(res?.msgBody?.message_type),
+      );
+      const filtedDocsMessages = messageList.filter(res => ['file'].includes(res?.msgBody?.message_type));
+      setDocsMessages(filtedDocsMessages || []);
+      setMediaMessages(filtedMediaMessages || []);
       toggleLoading();
    };
 
@@ -91,48 +114,58 @@ const ViewAllMedia = () => {
       navigation.goBack();
    };
 
+   const renderImageCountLabel = () => {
+      return getMessageTypeCount(mediaMessages, 'image') > 1
+         ? getMessageTypeCount(mediaMessages, 'image') + ' Photos'
+         : getMessageTypeCount(mediaMessages, 'image') + ' Photo';
+   };
+
+   const renderVideoCountLabel = () => {
+      return getMessageTypeCount(mediaMessages, 'video') > 1
+         ? getMessageTypeCount(mediaMessages, 'video') + ' Videos'
+         : getMessageTypeCount(mediaMessages, 'video') + ' Video';
+   };
+
+   const renderAudioCountLabel = () => {
+      return getMessageTypeCount(mediaMessages, 'audio') > 1
+         ? getMessageTypeCount(mediaMessages, 'audio') + ' Audios'
+         : getMessageTypeCount(mediaMessages, 'audio') + ' Audio';
+   };
+
+   const renderDocCountLabel = () => {
+      return getMessageTypeCount(docsMessages, 'file') > 1
+         ? getMessageTypeCount(docsMessages, 'file') + ' Documents'
+         : getMessageTypeCount(docsMessages, 'file') + ' Document';
+   };
+
    const renderMediaFooter = () => {
-      if (!loading && mediaMessages.length) {
-         return (
-            <Text style={[commonStyles.textCenter, commonStyles.colorBlack]}>
-               {getMessageTypeCount(mediaMessages, 'image')} Photos, {getMessageTypeCount(mediaMessages, 'video')}{' '}
-               Videos, {getMessageTypeCount(mediaMessages, 'audio')} Audios
-            </Text>
-         );
-      }
       return (
          <>
             {mediaMessages.length > 0 && (
                <Text style={[commonStyles.textCenter, commonStyles.colorBlack]}>
-                  {getMessageTypeCount(mediaMessages, 'image')} Photos, {getMessageTypeCount(mediaMessages, 'video')}{' '}
-                  Videos, {getMessageTypeCount(mediaMessages, 'audio')} Audios
+                  {renderImageCountLabel()}, {renderVideoCountLabel()}, {renderAudioCountLabel()}
                </Text>
             )}
-            <View style={[commonStyles.mb_130, commonStyles.marginTop_5]}>
-               <ActivityIndicator size="large" color={'#3276E2'} />
-            </View>
+            {loading && (
+               <View style={[commonStyles.mb_130, commonStyles.marginTop_5]}>
+                  <ActivityIndicator size="large" color={'#3276E2'} />
+               </View>
+            )}
          </>
       );
    };
 
    const renderDocFooter = () => {
-      if (!loading && mediaMessages.length) {
-         return (
-            <Text style={[commonStyles.textCenter, commonStyles.colorBlack]}>
-               {getMessageTypeCount(docsMessages, 'file')} Documents
-            </Text>
-         );
-      }
       return (
          <>
             {docsMessages.length > 0 && (
-               <Text style={[commonStyles.textCenter, commonStyles.colorBlack]}>
-                  {getMessageTypeCount(docsMessages, 'file')} Documents
-               </Text>
+               <Text style={[commonStyles.textCenter, commonStyles.colorBlack]}>{renderDocCountLabel()}</Text>
             )}
-            <View style={[commonStyles.mb_130, commonStyles.marginTop_5]}>
-               <ActivityIndicator size="large" color={'#3276E2'} />
-            </View>
+            {loading && (
+               <View style={[commonStyles.mb_130, commonStyles.marginTop_5]}>
+                  <ActivityIndicator size="large" color={'#3276E2'} />
+               </View>
+            )}
          </>
       );
    };
@@ -224,7 +257,7 @@ const ViewAllMedia = () => {
                contentContainerStyle={[
                   commonStyles.hstack,
                   commonStyles.alignItemsCenter,
-                  commonStyles.paddingHorizontal_4,
+                  commonStyles.paddingHorizontal_8,
                   commonStyles.paddingVertical_18,
                ]}>
                <View style={[commonStyles.paddingVertical_8]}>{renderFileIcon(fileExtension)}</View>
@@ -259,6 +292,7 @@ const ViewAllMedia = () => {
                      <View style={commonStyles.marginTop_5}>
                         <FlatList
                            numColumns={4}
+                           keyExtractor={item => item.msgId}
                            data={mediaMessages}
                            bounces={false}
                            ListFooterComponent={renderMediaFooter}
@@ -286,7 +320,9 @@ const ViewAllMedia = () => {
                   ) : (
                      <View style={[commonStyles.marginTop_5, commonStyles.padding_8]}>
                         <FlatList
+                           showsVerticalScrollIndicator={false}
                            data={docsMessages}
+                           keyExtractor={item => item.msgId}
                            bounces={false}
                            renderItem={renderDocTile}
                            ListFooterComponent={renderDocFooter}
@@ -345,7 +381,9 @@ const ViewAllMedia = () => {
                <IconButton onPress={handleBackBtn}>
                   <LeftArrowComponent />
                </IconButton>
-               <Text style={styles.titleText}>{nickName}</Text>
+               <Text ellipsizeMode="tail" numberOfLines={1} style={styles.titleText}>
+                  {nickName}
+               </Text>
             </View>
          </View>
 

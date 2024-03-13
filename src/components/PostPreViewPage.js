@@ -14,7 +14,9 @@ const PostPreViewPage = () => {
    const { params: { chatUser = '', msgId = '' } = {} } = useRoute();
    const navigation = useNavigation();
    const currentUserJID = useSelector(state => state.auth.currentUserJID);
-   const { data: messages } = useSelector(state => state.chatConversationData);
+   const chatUserId = getUserIdFromJid(chatUser);
+   const { messages } = useSelector(state => state.chatConversationData?.data?.[chatUserId] || []);
+
    const [title, setTitle] = React.useState('');
    const [mediaForcePause, setMediaForcePause] = React.useState();
    const [currentIndex, setCurrentIndex] = React.useState(0);
@@ -33,24 +35,20 @@ const PostPreViewPage = () => {
    };
 
    const messageList = React.useMemo(() => {
-      const id = getUserIdFromJid(chatUser);
-      if (id) {
-         const data = messages[id]?.messages ? Object.values(messages[id]?.messages) : [];
-         const filteredMessages = data.filter(message => {
-            const { deleteStatus, recallStatus } = message;
-            const { media, message_type } = message.msgBody;
-            return (
-               ['image', 'video', 'audio'].includes(message_type) &&
-               media &&
-               media.is_downloaded === 2 &&
-               media.is_uploading === 2 &&
-               deleteStatus === 0 &&
-               recallStatus === 0
-            );
-         });
-         return filteredMessages;
-      }
-      return [];
+      const data = Object.values(messages) || [];
+      const filteredMessages = data.filter(message => {
+         const { deleteStatus, recallStatus } = message;
+         const { media, message_type } = message.msgBody;
+         return (
+            ['image', 'video', 'audio'].includes(message_type) &&
+            media &&
+            media.is_downloaded === 2 &&
+            media.is_uploading === 2 &&
+            deleteStatus === 0 &&
+            recallStatus === 0
+         );
+      });
+      return filteredMessages;
    }, [messages, chatUser]);
 
    const initialPage = React.useMemo(() => {

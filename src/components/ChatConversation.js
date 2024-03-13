@@ -1,3 +1,4 @@
+import React, { useRef } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { NO_CONVERSATION } from '../Helper/Chat/Constant';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
@@ -5,10 +6,8 @@ import { showToast } from '../Helper/index';
 import SDK from '../SDK/SDK';
 import { ClearChatHistoryAction } from '../redux/Actions/ConversationAction';
 import { clearLastMessageinRecentChat } from '../redux/Actions/RecentChatAction';
-import React, { useRef } from 'react';
 import { ImageBackground, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNetworkStatus } from '../../src/hooks';
 import { formatUserIdToJid, getActiveConversationChatId, getChatMessageHistoryById } from '../Helper/Chat/ChatHelper';
 import ChatHeader from '../components/ChatHeader';
 import ChatInput from '../components/ChatInput';
@@ -50,16 +49,14 @@ const ChatConversation = React.memo(props => {
    } = props;
    const dispatch = useDispatch();
    const navigation = useNavigation();
+   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
    const vCardProfile = useSelector(state => state.profile.profileDetails);
    const currentUserJID = formatUserIdToJid(vCardProfile?.userId);
-   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
    const chatUserProfile = useSelector(state => state.navigation.profileDetails);
    const [selectedMsgs, setSelectedMsgs] = React.useState([]);
    const [replyMsgs, setReplyMsgs] = React.useState();
    const [menuItems, setMenuItems] = React.useState([]);
    const [isOpenAlert, setIsOpenAlert] = React.useState(false);
-   const isNetworkConnected = useNetworkStatus();
-
    const selectedMessagesIdRef = useRef({});
 
    useFocusEffect(() => {
@@ -67,8 +64,11 @@ const ChatConversation = React.memo(props => {
    });
 
    React.useEffect(() => {
-      isMessageSelectingRef.current = Boolean(selectedMsgs?.length);
-   }, [selectedMsgs]);
+      dispatch(resetGalleryData());
+      if (selectedMsgs.length) {
+         isMessageSelectingRef.current = Boolean(selectedMsgs?.length);
+      }
+   }, []);
 
    const isSearchClose = () => {
       handleIsSearchingClose();
@@ -79,7 +79,9 @@ const ChatConversation = React.memo(props => {
    };
 
    React.useEffect(() => {
-      setReplyMsgs(replyMsg);
+      if (replyMsg) {
+         setReplyMsgs(replyMsg);
+      }
    }, [replyMsg]);
 
    const handleMessageListUpdated = messages => {
@@ -105,8 +107,10 @@ const ChatConversation = React.memo(props => {
    };
 
    const handleRemove = () => {
-      setReplyMsgs('');
-      onReplyMessage();
+      if (replyMsgs) {
+         setReplyMsgs('');
+         onReplyMessage();
+      }
    };
 
    const handleMessageSend = messageContent => {
@@ -156,6 +160,9 @@ const ChatConversation = React.memo(props => {
    };
 
    React.useEffect(() => {
+      if (!selectedMsgs.length) {
+         return;
+      }
       let foundMsg = selectedMsgs.filter(obj => obj.publisherJid !== currentUserJID);
 
       switch (true) {
@@ -218,11 +225,7 @@ const ChatConversation = React.memo(props => {
             setMenuItems([]);
             break;
       }
-   }, [selectedMsgs, isNetworkConnected]);
-
-   React.useEffect(() => {
-      dispatch(resetGalleryData());
-   }, []);
+   }, [selectedMsgs]);
 
    const onSelectedMessageUpdate = item => {
       if (Object.keys(item || {}).length !== 0 && selectedMsgs.length !== 0) {
@@ -259,7 +262,6 @@ const ChatConversation = React.memo(props => {
          recallStatus = 0,
          msgBody: { message_type },
       } = replyMsgs;
-      console.log('recallStatus ==>', recallStatus);
       switch (true) {
          case Object.keys(msgBody).length === 0 || deleteStatus !== 0 || recallStatus !== 0:
             return <ReplyDeleted replyMsgItems={replyMsgs} handleRemove={handleRemove} />;
@@ -299,7 +301,6 @@ const ChatConversation = React.memo(props => {
             handleReply={handleReply}
             isSearchClose={isSearchClose}
             IsSearching={IsSearching}
-            setLocalNav={props.setLocalNav}
             chatInputRef={chatInputRef}
          />
          <ImageBackground source={getImageSource(chatBackgroud)} style={styles.imageBackground}>

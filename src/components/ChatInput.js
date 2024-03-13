@@ -247,8 +247,8 @@ const ChatInput = props => {
    }, [message]);
 
    const sendMessage = () => {
+      setMessage('');
       if (message) {
-         setMessage('');
          updateTypingGoneStatus(fromUserJId);
          setTimeout(() => {
             onSendMessage(message.trim());
@@ -348,6 +348,10 @@ const ChatInput = props => {
       return isAllowSendMessage ? <SendBtn style={styles.sendButton} onPress={sendMessage} /> : null;
    };
 
+   const handleCLoseEmojiWindow = () => {
+      setIsEmojiPickerShowing(false);
+   };
+
    return (
       <>
          {!showRecorderUi ? (
@@ -376,6 +380,7 @@ const ChatInput = props => {
                            numberOfLines={1}
                            multiline={true}
                            cursorColor={ApplicationColors.mainColor}
+                           onFocus={handleCLoseEmojiWindow}
                         />
 
                         <View style={commonStyles.marginHorizontal_10}>
@@ -461,7 +466,7 @@ const ChatInput = props => {
             state={message}
             setState={setMessage}
             visible={isEmojiPickerShowing}
-            onClose={() => setIsEmojiPickerShowing(false)}
+            onClose={handleCLoseEmojiWindow}
             onSelect={handleEmojiSelect}
          />
          <Modal visible={isOpen} onRequestClose={closeModal}>

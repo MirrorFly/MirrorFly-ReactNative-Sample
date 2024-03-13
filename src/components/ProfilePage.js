@@ -29,6 +29,7 @@ import { PROFILESCREEN, RECENTCHATSCREEN, REGISTERSCREEN } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import { navigate } from '../redux/Actions/NavigationAction';
 import ScreenHeader from './ScreenHeader';
+import ApplicationColors from '../config/appColors';
 
 const ProfilePage = props => {
    const { selectProfileInfo, profileInfo } = props;
@@ -382,6 +383,7 @@ const ProfilePage = props => {
                      maxLength={31}
                      placeholderTextColor="#959595"
                      keyboardType="default"
+                     cursorColor={ApplicationColors.mainColor}
                   />
                </VStack>
                <Stack mt="7" px="3" borderBottomColor="#F2F2F2" borderBottomWidth="1">

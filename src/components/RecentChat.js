@@ -199,7 +199,6 @@ export default function RecentChat() {
    const [filteredData, setFilteredData] = React.useState([]);
    const [filteredMessages, setFilteredMessages] = React.useState([]);
    const [recentData, setRecentData] = React.useState([]);
-   const recentChatData = useSelector(state => state.recentChatData);
    const recentChatList = useSelector(state => state.recentChatData.data);
    const { isSearching, selectedItems, searchText, selectedItemsObj } =
       useSelector(state => state.recentChatSearchData) || {};
@@ -208,11 +207,7 @@ export default function RecentChat() {
    const currentUserJID = useSelector(state => state.auth.currentUserJID);
 
    React.useEffect(() => {
-      (async () => {
-         const recentChats = await SDK.getRecentChats();
-         dispatch(addRecentChat(recentChats?.data || []));
-         updateRosterDataForRecentChats(recentChats?.data || []);
-      })();
+      getRecentChatsFromSDK();
    }, []);
 
    React.useEffect(() => {
@@ -228,6 +223,12 @@ export default function RecentChat() {
          searchFilter(searchText);
       }
    }, [recentData, searchText]);
+
+   const getRecentChatsFromSDK = async () => {
+      const recentChats = await SDK.getRecentChats();
+      dispatch(addRecentChat(recentChats?.data || []));
+      updateRosterDataForRecentChats(recentChats?.data || []);
+   };
 
    const constructRecentChatItems = recentChatArrayConstruct => {
       let recent = [];

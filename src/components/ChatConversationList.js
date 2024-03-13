@@ -11,7 +11,7 @@ import { DoubleDownArrow } from '../common/Icons';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import ApplicationColors from '../config/appColors';
-import { INVITE_APP_URL, INVITE_SMS_CONTENT } from '../constant';
+import { INVITE_APP_URL, INVITE_SMS_CONTENT, NOTIFICATION } from '../constant';
 import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
 import { resetUnreadCountForChat } from '../redux/Actions/RecentChatAction';
 import { updateConversationTotalSearchResults } from '../redux/Actions/conversationSearchAction';
@@ -230,16 +230,20 @@ const ChatConversationList = ({
 
    const chatMessageRender = React.useCallback(
       ({ item, index }) => {
+         const { deleteStatus = 0, recallStatus = 0, msgId, msgBody: { message_type = '' } = {} } = item;
+
+         const notifiactionCheck = messageList[index + 1]?.msgBody.message_type;
          const nextMessageUserId = messageList[index + 1]?.publisherId;
          const currentMessageUserId = item?.publisherId;
-         const showNickName = item.chatType === CHAT_TYPE_GROUP && nextMessageUserId !== currentMessageUserId;
-
-         const { deleteStatus = 0, recallStatus = 0, msgId, msgBody: { message_type = '' } = {} } = item;
+         const showNickName =
+            notifiactionCheck === NOTIFICATION
+               ? true
+               : item.chatType === CHAT_TYPE_GROUP && nextMessageUserId !== currentMessageUserId;
          if (deleteStatus === 1) {
             return null;
          }
 
-         if (message_type === 'notification') {
+         if (message_type === NOTIFICATION) {
             return <NotificationMessage messageObject={item} />;
          }
 

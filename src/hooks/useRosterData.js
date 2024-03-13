@@ -22,19 +22,15 @@ import { getUserProfileFromSDK } from '../Helper';
  */
 const useRosterData = userId => {
    const data = useSelector(state => state.rosterData.data);
-   const [userProfileData, setUserProfileData] = React.useState({});
+   const userData = data[userId] || {};
 
    React.useLayoutEffect(() => {
-      const userData = data[userId];
       if (!userData) {
-         setUserProfileData({});
          getUserProfileFromSDK(userId);
-      } else {
-         setUserProfileData(userData);
       }
-   }, [data[userId]]);
+   }, [userId, userData]);
 
-   return userProfileData;
+   return userData;
 };
 
 export default useRosterData;

@@ -158,7 +158,7 @@ const EmojiOverlay = ({ state, setState, onClose, visible, onSelect, place = '' 
 const styles = StyleSheet.create({
    emojiContainer: {
       backgroundColor: '#f2f2f2',
-      height: 350,
+      height: '40%',
       bottom: 0,
       left: 0,
       right: 0,

@@ -57,6 +57,7 @@ import {
    endCallForIos,
    getNickName,
    listnerForNetworkStateChangeWhenIncomingCall,
+   setPreviousHeadsetStatus,
    showCallModalToast,
    showOngoingNotification,
    startDurationTimer,
@@ -184,6 +185,7 @@ export const resetCallData = () => {
    HeadphoneDetection.remove?.();
    BluetoothHeadsetDetectionModule.removeAllListeners();
    RingtoneSilentKeyEventModule.removeAllListeners();
+   setPreviousHeadsetStatus(false);
    KeyEvent.removeKeyUpListener();
    if (Platform.OS === 'ios') {
       clearIosCallListeners();

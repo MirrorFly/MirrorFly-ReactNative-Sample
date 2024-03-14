@@ -314,7 +314,7 @@ PODS:
     - React
   - react-native-keyevent (0.3.2):
     - React
-  - react-native-maps (1.11.2):
+  - react-native-maps (1.11.3):
     - React-Core
   - react-native-mov-to-mp4 (0.2.2):
     - React
@@ -772,7 +772,7 @@ SPEC CHECKSUMS:
   react-native-headphone-detection: 4192cc8cfd94068a1f32cb41cc7c4cd5aa0f8b3b
   react-native-keep-awake: afad8a51dfef9fe9655a6344771be32c8596d774
   react-native-keyevent: 0babd7e275086da5386d831211e3283b624dc0b5
-  react-native-maps: e5b51c1f33076903df691ba682aefab7e9c3ea03
+  react-native-maps: 79610ffcd0ec2ca8e0cefb48aa8ae7c62a75d7cc
   react-native-mov-to-mp4: a04f17590618523487ab5d71c9310c6c4a7aaf99
   react-native-netinfo: 1a6035d3b9780221d407c277ebfb5722ace00658
   react-native-pager-view: c29d484f19c49ff19525a94105e4ab2c4d4ae273

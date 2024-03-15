@@ -20,6 +20,7 @@ const PIPGridItem = ({
    stream,
    isVideoMuted,
    isFrontCameraEnable,
+   callStatus,
 }) => {
    const userId = getUserIdFromJid(item?.fromJid || '');
    const userProfile = useRosterData(userId);
@@ -61,7 +62,7 @@ const PIPGridItem = ({
             backgroundColor: userProfile.colorCode,
             flex: 1,
          }}>
-         {!isVideoMuted && stream && stream?.video && (
+         {!isVideoMuted && stream && stream?.video && callStatus.toLowerCase() !== CALL_STATUS_RECONNECT && (
             <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnable} zIndex={0} />
          )}
          <View style={{ padding: 5, justifyContent: 'space-between', alignItems: 'center', flex: 1 }}>
@@ -76,7 +77,7 @@ const PIPGridItem = ({
                </View>
             )}
             {/* if image loading error then showing the initials */}
-            {(isVideoMuted || (stream && !stream.video)) && (
+            {(isVideoMuted || callStatus.toLowerCase() === CALL_STATUS_RECONNECT || (stream && !stream.video)) && (
                <View style={styles.avatharWrapper}>
                   {userProfile.image && !isImageLoadError && imageUrl ? (
                      <Image
@@ -149,6 +150,7 @@ const PipGridLayoutAndroid = ({
             stream={item.fromJid === localUserJid ? localStream : item.stream}
             isVideoMuted={isVideoMuted}
             isFrontCameraEnable={isFrontCameraEnable}
+            callStatus={callStatus}
          />
       );
    };

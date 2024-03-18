@@ -12,6 +12,8 @@ import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import Pressable from '../common/Pressable';
 import commonStyles from '../common/commonStyles';
 import { selectedMediaIdRef } from './ChatScreen';
+import { mflog } from '../uikitHelpers/uikitMethods';
+import ApplicationColors from '../config/appColors';
 
 const Gallery = (props = {}) => {
    const PAGE_SIZE = 20;
@@ -34,9 +36,29 @@ const Gallery = (props = {}) => {
    itemWidth = itemWidth - (itemWidth / 100) * 0.45;
 
    const handleBackBtn = () => {
-      setLocalNav('CHATCONVERSATION');
+      if (!checkBox && selectedImages.length) {
+         selectedMediaIdRef.current = {};
+         setSelectedImages([]);
+      } else if (checkBox) {
+         setCheckbox(false);
+      } else if (grpView) {
+         setPhotos([]);
+         setGrpView('');
+      } else {
+         setLocalNav('CHATCONVERSATION');
+      }
       return true;
    };
+
+   React.useEffect(() => {
+      fetchGallery();
+
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+
+      return () => {
+         backHandler.remove();
+      };
+   }, [selectedImages, checkBox, photos, grpView]);
 
    const renderItem = ({ item }) => {
       const isImageSelected = selectedMediaIdRef.current[item?.node?.image.uri];
@@ -137,7 +159,7 @@ const Gallery = (props = {}) => {
          store.dispatch(addGalleryAlbum(filtertedData));
          setGalleryData(filtertedData);
       } catch (error) {
-         console.log('Photo_Error', error);
+         mflog('Photo_Error', error);
       } finally {
          setLoading(false);
       }
@@ -178,7 +200,7 @@ const Gallery = (props = {}) => {
          });
          /**
         const data = await CameraRoll.getPhotos(params);
-        console.log(data,"datadata");
+        mflog(data,"datadata");
       * */
          const { has_next_page, end_cursor } = data.page_info;
          setEndCursor(end_cursor);
@@ -199,7 +221,7 @@ const Gallery = (props = {}) => {
          setPhotos(updatedPhotos);
          store.dispatch(addGalleryPhotos(updatedPhotos));
       } catch (error) {
-         console.log('fetchPhotos', error);
+         mflog('fetchPhotos', error);
       } finally {
          setLoading(false);
       }
@@ -217,19 +239,10 @@ const Gallery = (props = {}) => {
       }
       return (
          <View style={commonStyles.mb_130}>
-            <ActivityIndicator size="large" color={'#3276E2'} />
+            <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
          </View>
       );
    };
-
-   React.useEffect(() => {
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
-
-      fetchGallery();
-      return () => {
-         backHandler.remove();
-      };
-   }, []);
 
    const albumRender = ({ item }) => {
       return (

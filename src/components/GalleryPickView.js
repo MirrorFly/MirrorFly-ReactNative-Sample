@@ -1,4 +1,3 @@
-import { Divider, HStack, Icon, IconButton, Spacer, Text } from 'native-base';
 import React from 'react';
 import {
    BackHandler,
@@ -10,29 +9,37 @@ import {
    Pressable,
    StyleSheet,
    TextInput,
+   View,
 } from 'react-native';
-import { SceneMap, TabView } from 'react-native-tab-view';
+import PagerView from 'react-native-pager-view';
 import { useSelector } from 'react-redux';
+import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../Helper/Chat/Constant';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import Avathar from '../common/Avathar';
+import IconButton from '../common/IconButton';
 import { DeleteBinIcon, LeftArrowIcon, PreViewAddIcon, RightArrowIcon, SendBlueIcon } from '../common/Icons';
+import commonStyles from '../common/commonStyles';
+import ApplicationColors from '../config/appColors';
 import useRosterData from '../hooks/useRosterData';
 import { selectedMediaIdRef } from '../screen/ChatScreen';
 import VideoPlayer from './Media/VideoPlayer';
 import { getType } from './chat/common/fileUploadValidation';
-import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../Helper/Chat/Constant';
+import NickName from './NickName';
 
 function GalleryPickView(props) {
    const { handleSendMsg, setLocalNav, selectedSingle, setSelectedImages, selectedImages } = props;
    const scrollRef = React.useRef();
+   const pagerRef = React.useRef(null);
    const fromUserJid = useSelector(state => state.navigation.fromUserJid);
-   const [index, setIndex] = React.useState(0);
+   const [mediaForcePause, setMediaForcePause] = React.useState(false);
+   const [activeIndex, setActiveIndex] = React.useState(0);
    const [componentSelectedImages, setComponentSelectedImages] = React.useState(selectedImages);
    let { nickName, image: imageToken, colorCode } = useRosterData(getUserIdFromJid(fromUserJid));
    const chatType = MIX_BARE_JID.test(fromUserJid) ? CHAT_TYPE_GROUP : '';
    // updating the default values
    nickName = nickName || getUserIdFromJid(fromUserJid) || '';
    imageToken = imageToken || '';
+
    const handleBackBtn = () => {
       if (selectedSingle) {
          selectedMediaIdRef.current = {};
@@ -47,19 +54,21 @@ function GalleryPickView(props) {
       return () => {
          backHandler.remove();
       };
-   }, [selectedSingle]);
+   }, [setSelectedImages, selectedSingle]);
 
-   const handleIndexChange = ind => {
-      setIndex(ind);
+   const handleIndexChange = i => {
+      pagerRef.current.setPage(i);
+   };
+
+   const handleOnPageSelected = event => {
+      setMediaForcePause(true);
+      const _index = event.nativeEvent.position;
+      setActiveIndex(_index); // Update active index when an item is swiped
       scrollRef?.current.scrollToIndex({
-         index: ind,
+         index: _index,
          animated: true,
          viewPosition: 0.5,
       });
-   };
-
-   const renderTabBar = () => {
-      return <></>;
    };
 
    const handleSendMedia = () => {
@@ -70,105 +79,91 @@ function GalleryPickView(props) {
       handleSendMsg(message);
    };
 
-   const renderScene = React.useMemo(
-      () =>
-         SceneMap(
-            componentSelectedImages?.reduce((scenes, item, itemIndex) => {
+   const renderMediaPages = React.useMemo(() => {
+      return (
+         <PagerView
+            style={commonStyles.flex1}
+            initialPage={activeIndex}
+            ref={pagerRef}
+            onPageScroll={handleOnPageSelected}>
+            {componentSelectedImages.map((item, i) => {
                const type = getType(item?.fileDetails?.type);
-               scenes[`tab${itemIndex + 1}`] = () => (
-                  <>
-                     {type === 'image' && (
-                        <Image
-                           resizeMode="contain"
-                           source={{ uri: item?.fileDetails?.uri }}
-                           style={styles.tabContainer}
-                        />
-                     )}
-                     {type === 'video' && <VideoPlayer item={item} />}
-                  </>
+               return (
+                  <View key={`tab${i + 1}`}>
+                     {
+                        {
+                           image: (
+                              <Image
+                                 resizeMode="contain"
+                                 source={{ uri: item?.fileDetails?.uri }}
+                                 style={styles.tabContainer}
+                              />
+                           ),
+                           video: <VideoPlayer forcePause={{ mediaForcePause, setMediaForcePause }} item={item} />,
+                        }[type]
+                     }
+                  </View>
                );
-               return scenes;
-            }, {}),
-         ),
-      [componentSelectedImages],
-   );
+            })}
+         </PagerView>
+      );
+   }, [componentSelectedImages, mediaForcePause]);
 
    return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
          <Pressable onPress={Keyboard.dismiss} style={styles.container}>
-            <HStack mb={'2'} mt="5" alignItems={'center'}>
-               <IconButton
-                  _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-                  onPress={handleBackBtn}
-                  icon={<Icon as={() => LeftArrowIcon('#fff')} name="emoji-happy" />}
-                  borderRadius="full"
-               />
-               <Avathar
-                  type={chatType}
-                  width={30}
-                  height={30}
-                  fontsize={14}
-                  backgroundColor={colorCode}
-                  data={nickName}
-                  profileImage={imageToken}
-               />
-               <Spacer />
+            <View
+               style={[
+                  commonStyles.hstack,
+                  commonStyles.justifyContentSpaceBetween,
+                  commonStyles.paddingVertical_12,
+                  commonStyles.paddingHorizontal_6,
+               ]}>
+               <View style={[commonStyles.hstack]}>
+                  <IconButton onPress={handleBackBtn} borderRadius="full">
+                     {LeftArrowIcon('#fff')}
+                  </IconButton>
+                  <Avathar
+                     type={chatType}
+                     width={30}
+                     height={30}
+                     fontsize={14}
+                     backgroundColor={colorCode}
+                     data={nickName}
+                     profileImage={imageToken}
+                  />
+               </View>
                {componentSelectedImages.length > 1 && (
                   <IconButton
-                     mr={'2'}
                      onPress={() => {
                         let filtered = componentSelectedImages?.filter((item, i) => {
-                           if (i === index) {
+                           if (i === activeIndex) {
                               delete selectedMediaIdRef.current[item?.fileDetails?.uri];
                            }
-                           return i !== index;
+                           return i !== activeIndex;
                         });
                         setComponentSelectedImages(filtered);
-                     }}
-                     _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-                     icon={<Icon as={<DeleteBinIcon color="#fff" />} name="emoji-happy" />}
-                     borderRadius="full"
-                  />
+                     }}>
+                     <DeleteBinIcon color="#fff" />
+                  </IconButton>
                )}
-            </HStack>
-            <TabView
-               navigationState={{
-                  index,
-                  routes: componentSelectedImages?.map((_, i) => ({
-                     key: `tab${i + 1}`,
-                  })),
-               }}
-               renderTabBar={renderTabBar}
-               renderScene={renderScene}
-               onIndexChange={handleIndexChange}
-            />
-            <IconButton
-               p="0"
-               right="3"
-               bottom="-15"
-               alignSelf={'flex-end'}
-               onPress={() => {
-                  handleSendMedia();
-                  setLocalNav('CHATCONVERSATION');
-               }}
-               _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-               icon={<Icon as={<SendBlueIcon color="#fff" />} name="emoji-happy" />}
-               borderRadius="full"
-            />
-            <HStack ml="2" mb="1" alignItems={'center'}>
+            </View>
+            {renderMediaPages}
+
+            <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
                {componentSelectedImages.length < 10 && (
                   <IconButton
-                     _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
                      onPress={async () => {
                         setSelectedImages(componentSelectedImages);
                         setLocalNav('Gallery');
-                     }}
-                     icon={<Icon as={PreViewAddIcon} name="emoji-happy" />}
-                     borderRadius="full"
-                  />
+                     }}>
+                     {PreViewAddIcon()}
+                  </IconButton>
                )}
                {componentSelectedImages.length < 10 && (
-                  <Divider h="7" bg="#7f7f7f" thickness="1" mx="2" orientation="vertical" />
+                  <View
+                     style={[commonStyles.verticalDividerLine, commonStyles.height_25, commonStyles.marginHorizontal_4]}
+                  />
                )}
                <TextInput
                   style={{
@@ -177,24 +172,31 @@ function GalleryPickView(props) {
                      fontSize: 14,
                      minHeight: 20,
                      maxHeight: 100,
-                     maxWidth: '75%',
                   }}
-                  defaultValue={componentSelectedImages[index]?.caption || ''}
+                  defaultValue={componentSelectedImages[activeIndex]?.caption || ''}
                   numberOfLines={1}
                   multiline={true}
                   onChangeText={text => {
-                     componentSelectedImages[index].caption = text;
+                     componentSelectedImages[activeIndex].caption = text;
                   }}
                   placeholderTextColor="#7f7f7f"
                   selectionColor={'#3276E2'}
                   placeholder="Add a caption..."
+                  cursorColor={ApplicationColors.mainColor}
                />
-            </HStack>
-
-            <HStack alignItems={'center'} ml={3} mb={5}>
-               <IconButton icon={<Icon as={() => RightArrowIcon('#fff')} name="emoji-happy" />} />
-               <Text color="#7f7f7f">{nickName}</Text>
-            </HStack>
+               <IconButton
+                  onPress={() => {
+                     handleSendMedia();
+                     setLocalNav('CHATCONVERSATION');
+                  }}
+                  style={[commonStyles.alignItemsFlexEnd, commonStyles.r_5, { bottom: -5 }]}>
+                  <SendBlueIcon color="#fff" />
+               </IconButton>
+            </View>
+            <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+               <IconButton>{RightArrowIcon('#fff')}</IconButton>
+               <NickName userId={getUserIdFromJid(fromUserJid)} />
+            </View>
             <FlatList
                keyboardShouldPersistTaps={'always'}
                ref={scrollRef}
@@ -212,7 +214,7 @@ function GalleryPickView(props) {
                      onPress={() => handleIndexChange(i)}>
                      <Image
                         source={{ uri: item?.fileDetails?.uri }}
-                        style={[styles.tabImage, index === i && styles.selectedTabImage]}
+                        style={[styles.tabImage, activeIndex === i && styles.selectedTabImage]}
                      />
                   </Pressable>
                )}

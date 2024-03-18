@@ -59,7 +59,7 @@ const RenderItem = ({ item, index, onhandlePress, selectedUsers }) => {
    }, [isChecked]);
 
    return (
-      <React.Fragment key={index}>
+      <React.Fragment>
          <Pressable onPress={handlePress}>
             <View style={styles.wrapper}>
                <Avathar data={nickName} profileImage={imageToken} backgroundColor={colorCode} />

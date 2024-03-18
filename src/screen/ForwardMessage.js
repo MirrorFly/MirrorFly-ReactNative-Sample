@@ -110,13 +110,13 @@ const ContactItem = ({
          setIsChecked(Boolean(isSelected));
       }
    }, []);
-
+   const userType = recentChatData.find(r => getUserIdFromJid(r.userJid) === userId)?.userType || '';
    const handleChatItemSelect = () => {
       if (!isChecked && !isCheckboxAllowed) {
          showMaxUsersLimitToast();
          return;
       }
-      const userType = recentChatData.find(r => getUserIdFromJid(r.userJid) === userId)?.userType || '';
+
       if (!userType && MIX_BARE_JID.test(userJid)) {
          return showToast("You're no longer a participant in this group", { id: "You're no longer a participant" });
       }
@@ -143,7 +143,7 @@ const ContactItem = ({
                false: ApplicationColors.mainColor,
             }}
             value={isChecked}
-            isDisabled={!isChecked && !isCheckboxAllowed}
+            disabled={Platform.OS === 'ios'}
             style={styles.checkbox}
             onChange={Platform.OS !== 'ios' && handleChatItemSelect}
          />
@@ -199,7 +199,7 @@ const RecentChatSectionList = ({ data, handleChatSelect, selectedUsers, searchTe
                   status={item.profileDetails?.status}
                   handleItemSelect={handleChatSelect}
                   isSelected={selectedUsers[item.fromUserId]}
-                  isCheckboxAllowed={Object.keys(selectedUsers).length <= 4} // allow max 5 contacts
+                  isCheckboxAllowed={Object.keys(selectedUsers).length <= 4 || !userType} // allow max 5 contacts
                   searchText={searchText}
                />
             ))}
@@ -263,7 +263,7 @@ const ContactsSectionList = ({ data, handleChatSelect, selectedUsers, searchText
             ))}
          </View>
          {showLoadMoreLoader ? (
-            <ActivityIndicator size={'large'} color={'#3276E2'} style={styles.loadMoreLoader} />
+            <ActivityIndicator size={'large'} color={ApplicationColors.mainColor} style={styles.loadMoreLoader} />
          ) : (
             <View style={styles.loadMoreLoaderPlaceholder} />
          )}

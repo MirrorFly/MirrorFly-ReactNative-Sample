@@ -62,19 +62,19 @@ const ImageInfo = props => {
             <Image
                style={{ flex: 1, width: '100%', height: '100%' }}
                source={{ uri: ImageBase64 }}
-               resizeMode="cover"
+               resizeMode="contain"
             />
             {/* <ImageZoom
                uri={ImageBase64}
                minScale={0.5}
                maxScale={3}
-               onInteractionStart={() => console.log('Interaction started')}
-               onInteractionEnd={() => console.log('Interaction ended')}
-               onPinchStart={() => console.log('Pinch gesture started')}
-               onPinchEnd={() => console.log('Pinch gesture ended')}
-               onPanStart={() => console.log('Pan gesture started')}
-               onPanEnd={() => console.log('Pan gesture ended')}
-               onResetAnimationEnd={() => console.log('Reset animation ended')}
+               onInteractionStart={() => mflog('Interaction started')}
+               onInteractionEnd={() => mflog('Interaction ended')}
+               onPinchStart={() => mflog('Pinch gesture started')}
+               onPinchEnd={() => mflog('Pinch gesture ended')}
+               onPanStart={() => mflog('Pan gesture started')}
+               onPanEnd={() => mflog('Pan gesture ended')}
+               onResetAnimationEnd={() => mflog('Reset animation ended')}
                // resizeMode="cover"
             /> */}
             {/* <ImageViewer

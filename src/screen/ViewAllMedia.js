@@ -31,59 +31,48 @@ const LeftArrowComponent = () => LeftArrowIcon();
 const AudioWhileIconComponent = () => AudioWhileIcon();
 
 const ViewAllMedia = () => {
-   let messageListCount = 0;
    const navigation = useNavigation();
    const {
-      params: { chatUser = '', title = '' },
+      params: { jid = '', title = '' },
    } = useRoute();
-   const chatUserId = getUserIdFromJid(chatUser);
-   const { messages } = useSelector(state => state.chatConversationData?.data[chatUserId] || []);
+   const chatUserId = getUserIdFromJid(jid);
+   const { messages } = useSelector(state => state.chatConversationData?.data[chatUserId] || {});
    const [index, setIndex] = React.useState(0);
    const [loading, setLoading] = React.useState(false);
    const [countBasedOnType, setCountBasedOnType] = React.useState({});
    const [mediaMessages, setMediaMessages] = React.useState([]);
    const [docsMessages, setDocsMessages] = React.useState([]);
 
-   const { nickName = title } = useRosterData(getUserIdFromJid(chatUser));
+   const { nickName = title } = useRosterData(getUserIdFromJid(jid));
    let numColumns = 4;
    const { width } = Dimensions.get('window');
    const tileSize = width / numColumns;
 
-   const messageList = React.useMemo(() => {
-      const id = getUserIdFromJid(chatUser);
-      if (id) {
-         const data = Object.values(messages) || [];
-         console.log('data ==>', JSON.stringify(data, null, 2));
-         const filteredMessages = data.filter(message => {
-            const { deleteStatus, recallStatus } = message;
-            const { media, message_type } = message.msgBody;
-            return (
-               ['image', 'video', 'audio'].includes(message_type) &&
-               media &&
-               media.is_downloaded === 2 &&
-               media.is_uploading === 2 &&
-               deleteStatus === 0 &&
-               recallStatus === 0
-            );
-         });
-         return filteredMessages;
-      }
-      return [];
-   }, [messages, chatUser]);
-
-   console.log('messageList length ==>', messageList.length);
-
    React.useEffect(() => {
       toggleLoading();
-      if (messageListCount < messageList.length) {
-         messageListCount = messageList.length;
-         handleGetMedia();
-      }
+      handleGetMedia();
    }, [messageList]);
 
    const toggleLoading = () => {
       setLoading(val => !val);
    };
+
+   const messageList = React.useMemo(() => {
+      const data = Object.values(messages) || [];
+      const filteredMessages = data.filter(message => {
+         const { deleteStatus, recallStatus } = message;
+         const { media, message_type } = message.msgBody;
+         return (
+            ['image', 'video', 'audio'].includes(message_type) &&
+            media &&
+            media.is_downloaded === 2 &&
+            media.is_uploading === 2 &&
+            deleteStatus === 0 &&
+            recallStatus === 0
+         );
+      });
+      return filteredMessages;
+   }, [messages, jid]);
 
    // Function to fetch count based on message_type
    const getMessageTypeCount = (messages, messageType) => {
@@ -148,7 +137,7 @@ const ViewAllMedia = () => {
             )}
             {loading && (
                <View style={[commonStyles.mb_130, commonStyles.marginTop_5]}>
-                  <ActivityIndicator size="large" color={'#3276E2'} />
+                  <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
                </View>
             )}
          </>
@@ -163,7 +152,7 @@ const ViewAllMedia = () => {
             )}
             {loading && (
                <View style={[commonStyles.mb_130, commonStyles.marginTop_5]}>
-                  <ActivityIndicator size="large" color={'#3276E2'} />
+                  <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
                </View>
             )}
          </>
@@ -213,7 +202,7 @@ const ViewAllMedia = () => {
 
    const renderMediaTile = ({ item }) => {
       const handleMediaPress = () => {
-         navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { chatUser, msgId: item.msgId });
+         navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid, msgId: item.msgId });
       };
       return <Pressable onPress={handleMediaPress}>{renderTileBasedOnMessageType(item)}</Pressable>;
    };
@@ -364,6 +353,7 @@ const ViewAllMedia = () => {
                renderLabel={renderLabel}
                activeColor={ApplicationColors.mainColor}
                inactiveColor={ApplicationColors.black}
+               pressColor="transparent"
             />
          </View>
       </>

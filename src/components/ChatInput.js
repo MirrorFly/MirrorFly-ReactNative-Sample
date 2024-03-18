@@ -304,6 +304,7 @@ const ChatInput = props => {
    };
 
    const handleAttachmentconPressed = () => {
+      setIsEmojiPickerShowing(false);
       Keyboard.dismiss();
       soundRef?.current?.pause();
       soundRef?.current?.updateState?.();

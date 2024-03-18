@@ -16,7 +16,7 @@ const CameraPickView = props => {
    const { chatUser, handleSendMsg, setLocalNav, setSelectedImages, selectedImages } = props;
    const type = MIX_BARE_JID.test(chatUser) ? CHAT_TYPE_GROUP : CHAT_TYPE_SINGLE;
    const chatUserId = getUserIdFromJid(chatUser);
-   console.log('chatUserId ==>', JSON.stringify(chatUserId, null, 2));
+
    let { nickName, image: imageToken, colorCode } = useRosterData(chatUserId);
    // updating the default values
    nickName = nickName || chatUserId || '';

@@ -13,6 +13,7 @@ import {
    PACKAGE_XIAOMI_WINDOW_COMPONENT,
    alertPermissionMessage,
 } from '../Helper/Calls/Constant';
+import { mflog } from '../uikitHelpers/uikitMethods';
 const { ActivityModule } = NativeModules;
 
 const toastConfig = {
@@ -52,7 +53,7 @@ export const handleGalleryPickerSingle = async () => {
          return res;
       }
    } catch (error) {
-      console.log(error);
+      mflog('Failed to pick single image using document picker', error);
    }
 };
 
@@ -69,7 +70,7 @@ export const handleAudioPickerSingle = async () => {
       }
    } catch (error) {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-      console.log(error);
+      mflog('Failed to pick single audio using document picker', error);
    }
 };
 
@@ -84,7 +85,7 @@ export const handleDocumentPickSingle = async () => {
    } catch (error) {
       // updating the SDK flag back to false to behave as usual
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-      console.log('Error in document picker pick single ', error);
+      mflog('Error in document picker pick single ', error);
    }
 };
 
@@ -111,7 +112,6 @@ export const requestCameraMicPermission = async () => {
 };
 
 export const requestStoragePermission = async () => {
-   console.log(Platform.Version, 'Platform.Version UI');
    switch (true) {
       case Platform.OS === 'ios':
          return await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
@@ -200,9 +200,9 @@ export const handleGalleryPickerMulti = async toast => {
       }
    } catch (err) {
       if (DocumentPicker.isCancel(err)) {
-         console.log('Image picker canceled.');
+         mflog('Image picker canceled.');
       } else {
-         console.log('Error picking images:', err);
+         mflog('Error picking images:', err);
       }
    }
 };

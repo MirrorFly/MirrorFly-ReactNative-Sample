@@ -50,6 +50,7 @@ export const pressableStyles = StyleSheet.create({
 });
 
 const commonStyles = StyleSheet.create({
+   height_25: { height: 25 },
    screenHeaderHeight: { height: 65 },
    flex1: { flex: 1 },
    flex1_centeredContent: {
@@ -108,6 +109,9 @@ const commonStyles = StyleSheet.create({
    },
    bottom_1: {
       bottom: 1,
+   },
+   bottom_minus_15: {
+      bottom: -15,
    },
    pressedBg: {
       backgroundColor: ApplicationColors.pressedBg,
@@ -372,6 +376,9 @@ const commonStyles = StyleSheet.create({
    resizeCover: {
       resizeMode: 'cover',
    },
+   resizeContain: {
+      resizeMode: 'contain',
+   },
    b_0: {
       bottom: 0,
    },
@@ -388,6 +395,10 @@ const commonStyles = StyleSheet.create({
       borderBottomWidth: 1,
       borderBottomColor: '#e3e3e3',
       opacity: 0.5,
+   },
+   verticalDividerLine: {
+      width: 1,
+      backgroundColor: '#e3e3e3',
    },
 });
 

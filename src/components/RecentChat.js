@@ -273,7 +273,6 @@ export default function RecentChat() {
          if (!_item.userJid) {
             _item.userJid = formatUserIdToJid(_item?.fromUserId, _item?.chatType);
          }
-         console.log('_item ==>', JSON.stringify(_item, null, 2));
          dispatch(updateRecentChatSelectedItems(_item));
       }
    };

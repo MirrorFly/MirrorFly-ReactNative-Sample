@@ -309,6 +309,27 @@ const ChatConversationList = ({
       });
    };
 
+   const renderChatFooter = () => {
+      /**  uncomment and check for pagiantion
+      return chatLoading ? <ActivityIndicator color={ApplicationColors.mainColor} size={'large'} /> : null;
+      */
+   };
+
+   const handleLoadMore = async () => {
+      /** uncomment and check for pagiantion
+      // if (chatLoading || !getHasNextPage(getUserIdFromJid(fromUserJId))) {
+      //    return;
+      // }
+      // try {
+      //    toggleChatLoading();
+      //    // fetchMessagesFromSDK(fromUserJId, true)
+      //    console.error('Error fetching chat messages:', error);
+      // } finally {
+      //    toggleChatLoading();
+      // }
+       */
+   };
+
    return (
       <>
          <FlatList
@@ -324,6 +345,9 @@ const ChatConversationList = ({
             onScroll={handleConversationScoll}
             scrollEventThrottle={1000}
             windowSize={15}
+            onEndReached={handleLoadMore}
+            ListFooterComponent={renderChatFooter}
+            onEndReachedThreshold={1}
          />
          {showScrollToBottomIcon && (
             <Pressable

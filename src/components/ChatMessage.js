@@ -120,18 +120,19 @@ const ChatMessage = props => {
    const handleMessageObj = () => {
       if (
          ['image', 'video'].includes(message?.msgBody?.message_type) &&
-         (message?.msgBody?.media?.is_downloaded === 2 || message?.msgBody?.media?.is_uploading === 2) &&
+         message?.msgBody?.media?.is_downloaded === 2 &&
+         message?.msgBody?.media?.is_uploading === 2 &&
          (message?.msgBody?.media?.local_path || message?.msgBody?.media?.file?.fileDetails?.uri)
       ) {
          handleRecoverMessage();
          if (isKeyboardVisibleRef.current) {
             let hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-               navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { chatUser: fromUserJId, msgId: message.msgId });
+               navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid: fromUserJId, msgId: message.msgId });
                hideSubscription.remove();
             });
             Keyboard.dismiss();
          } else {
-            navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { chatUser: fromUserJId, msgId: message.msgId });
+            navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid: fromUserJId, msgId: message.msgId });
          }
       } else if (
          message?.msgBody?.message_type === 'file' &&

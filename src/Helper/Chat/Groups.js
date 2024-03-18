@@ -1,6 +1,6 @@
 import SDK from '../../SDK/SDK';
 import { GroupsMemberListAction, GroupsMemberParticipantsListAction } from '../../redux/Actions/GroupsAction';
-// import { getUserIdFromJid } from '../Utility';
+import { updateRosterData } from '../../redux/Actions/rosterAction';
 import Store from '../../redux/store';
 import { mflog } from '../../uikitHelpers/uikitMethods';
 import { isLocalUser } from './ChatHelper';
@@ -17,6 +17,10 @@ export const fetchGroupParticipants = async (groupId, iq = false) => {
                isLocalUser(getUserIdFromJid(a.userJid)) ? 1 : isLocalUser(getUserIdFromJid(b.userJid)) ? -1 : 0,
             ) || [],
          );
+         grpList.participants?.forEach(element => {
+            const { userId, userJid, userProfile } = element;
+            Store.dispatch(updateRosterData({ userId, userJid, ...userProfile }));
+         });
       }
    } catch (error) {
       mflog('Failed to fetch group participants from SDK', error);

@@ -95,7 +95,7 @@ const CollapsingToolbar = ({
    };
 
    const handleTapDetails = () => {
-      navigation.navigate(VIEWALLMEDIA, { chatUser, title });
+      navigation.navigate(VIEWALLMEDIA, { jid: chatUser, title });
    };
    const HandleClose = () => {
       setVisible(false);
@@ -203,8 +203,7 @@ const CollapsingToolbar = ({
             <View mx="3" mt={toolbarMaxHeight} minHeight={adaptiveMinHeight}>
                <HStack my="7" justifyContent={'space-between'}>
                   <Text fontSize={14} fontWeight={500} color={'#181818'}>
-                     {' '}
-                     Mute Notification{' '}
+                     Mute Notification
                   </Text>
                   <Switch
                      size="md"

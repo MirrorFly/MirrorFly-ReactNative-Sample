@@ -843,6 +843,18 @@ export const callBacks = {
             ...res.groupProfile,
          };
          store.dispatch(updateRosterData(obj));
+         const userObj = {
+            userId: getUserIdFromJid(res.newUserJid),
+            userJid: res.newUserJid,
+            ...res.userProfile,
+         };
+         store.dispatch(updateRosterData(userObj));
+         const publisherObj = {
+            userId: getUserIdFromJid(res.publisherJid),
+            userJid: res.publisherJid,
+            ...res.publisherProfile,
+         };
+         store.dispatch(updateRosterData(publisherObj));
       }
       if (
          res.msgType === GROUP_USER_ADDED ||

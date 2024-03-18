@@ -20,7 +20,7 @@ let uiKitCallbackListenersVal = {},
    schemaUrl = '';
 
 export const mflog = (...args) => {
-   console.log('RN-UIKIT ', Platform.OS, version, ...args);
+   console.log('RN-UIKIT', Platform.OS, version, ...args);
 };
 
 export const uikitCallbackListeners = () => uiKitCallbackListenersVal || {};

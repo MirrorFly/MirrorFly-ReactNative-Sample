@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
-import { BackHandler, Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { showToast } from '../Helper';
 import { endOngoingCallLogout } from '../Helper/Calls/Utility';
-import { formatUserIdToJid, getRecentChatDataList } from '../Helper/Chat/ChatHelper';
+import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
+import { MIX_BARE_JID } from '../Helper/Chat/Constant';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import logo from '../assets/mirrorfly-logo.png';
@@ -30,7 +30,6 @@ import {
    toggleRecentChatSearch,
    updateRecentChatSearchText,
 } from '../redux/Actions/recentChatSearchAction';
-import { MIX_BARE_JID } from '../Helper/Chat/Constant';
 
 const scenesMap = SceneMap({
    chats: () => <RecentChat />,
@@ -56,13 +55,6 @@ function RecentScreen() {
          calls: callsBadge,
       };
    }, [chatsBadge, callsBadge]);
-
-   useFocusEffect(() => {
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
-      return () => {
-         backHandler.remove();
-      };
-   });
 
    React.useEffect(() => {
       if (recentChatData.length) {
@@ -114,6 +106,7 @@ function RecentScreen() {
                   renderLabel={renderLabel}
                   activeColor={ApplicationColors.mainColor}
                   inactiveColor={ApplicationColors.black}
+                  pressColor="transparent"
                />
             )
          );

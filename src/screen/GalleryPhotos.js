@@ -1,45 +1,21 @@
 import React from 'react';
-import GalleryHeader from '../components/GalleryHeader';
-import { BackHandler, FlatList, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import commonStyles from '../common/commonStyles';
-import { selectedMediaIdRef } from './ChatScreen';
+import GalleryHeader from '../components/GalleryHeader';
 
 const GalleryPhotos = (props = {}) => {
    const {
       setCheckbox,
       checkBox,
       selectedImages,
-      setPhotos,
       setLocalNav,
       renderItem,
       handleLoadMore,
       photos,
       renderFooter,
-      setGrpView,
       grpView,
-      setSelectedImages,
+      handleBackBtn,
    } = props;
-
-   const handleBackBtn = () => {
-      if (!checkBox && selectedImages.length) {
-         setSelectedImages([]);
-         selectedMediaIdRef.current = {};
-      } else if (checkBox) {
-         setCheckbox(false);
-      } else if (grpView) {
-         setPhotos([]);
-         setGrpView('');
-      }
-      return true;
-   };
-
-   React.useEffect(() => {
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
-
-      return () => {
-         backHandler.remove();
-      };
-   }, []);
 
    const getTitle = () => {
       if (selectedImages.length) {

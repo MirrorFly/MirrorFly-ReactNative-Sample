@@ -1,6 +1,6 @@
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { ActivityIndicator, BackHandler, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { showToast } from '../Helper';
 import {
@@ -16,14 +16,16 @@ import commonStyles from '../common/commonStyles';
 import GrpCollapsibleToolbar from '../components/GrpCollapsibleToolbar';
 import ApplicationColors from '../config/appColors';
 import { useNetworkStatus } from '../hooks';
-import useRosterData from '../hooks/useRosterData';
+import { getUserName } from '../hooks/useRosterData';
+import { mflog } from '../uikitHelpers/uikitMethods';
 
 const GroupInfo = () => {
+   mflog('GroupInfo Rendering');
    const {
       params: { chatUser = '' },
    } = useRoute();
-   const naviagation = useNavigation();
    const chatUserId = getUserIdFromJid(chatUser);
+   const navigation = useNavigation();
    const isNetworkconneted = useNetworkStatus();
    const [modelOpen, setModelOpen] = React.useState(false);
 
@@ -31,21 +33,6 @@ const GroupInfo = () => {
       setModelOpen(val => !val);
    };
 
-   let {
-      nickName = '',
-      colorCode = '',
-      status = '',
-      mobileNumber = '',
-      email = '',
-      image = '',
-   } = useRosterData(chatUserId);
-   // updating default values
-   nickName = nickName || chatUserId || '';
-   colorCode = colorCode || '';
-   status = status || '';
-   mobileNumber = mobileNumber || '';
-   email = email || '';
-   image = image || '';
    const groupParticipants = useSelector(
       state => state?.groupsMemberParticipantsListData?.groupParticipants[chatUser] || [],
    );
@@ -59,38 +46,42 @@ const GroupInfo = () => {
    };
 
    const handleFromGallery = async () => {
-      const _image = await handleImagePickerOpenGallery();
-      if (Object.keys(_image).length) {
-         toggleModel();
+      toggleModel();
+      setTimeout(async () => {
+         const _image = await handleImagePickerOpenGallery();
          setTimeout(async () => {
-            const { statusCode, message } = await SDK.setGroupProfile(chatUser, nickName, _image);
-            if (!statusCode === 200) {
-               showToast(message, { id: message });
+            if (Object.keys(_image).length) {
+               const { statusCode, message } = await SDK.setGroupProfile(chatUser, getUserName(chatUserId), _image);
+               if (statusCode !== 200) {
+                  showToast(message, { id: message });
+               }
             }
             toggleModel();
          }, 1000);
-      }
+      }, 1000);
    };
 
    const handleTakePhoto = async () => {
-      const _image = await handleImagePickerOpenCamera();
-      if (Object.keys(_image).length) {
-         toggleModel();
+      toggleModel();
+      setTimeout(async () => {
+         const _image = await handleImagePickerOpenCamera();
          setTimeout(async () => {
-            const { statusCode, message } = await SDK.setGroupProfile(chatUser, nickName, _image);
-            if (!statusCode === 200) {
-               showToast(message, { id: message });
+            if (Object.keys(_image).length) {
+               const { statusCode, message } = await SDK.setGroupProfile(chatUser, getUserName(chatUserId), _image);
+               if (statusCode !== 200) {
+                  showToast(message, { id: message });
+               }
             }
             toggleModel();
          }, 1000);
-      }
+      }, 1000);
    };
 
    const handleRemovePhoto = async () => {
       if (!isNetworkconneted) {
          return showInternetconnectionToast();
       }
-      const { statusCode, message } = await SDK.setGroupProfile(chatUser, nickName);
+      const { statusCode, message } = await SDK.setGroupProfile(chatUser, getUserName(chatUserId));
       if (!statusCode === 200) {
          showToast(message, { id: message });
       } else {
@@ -98,23 +89,9 @@ const GroupInfo = () => {
       }
    };
 
-   useFocusEffect(
-      React.useCallback(() => {
-         fetchGroupParticipants(chatUser);
-      }, [chatUser]),
-   );
-
-   const handleBackBtn = React.useCallback(() => {
-      naviagation.goBack();
-      return true;
-   }, [naviagation]);
-
-   React.useEffect(() => {
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
-      return () => {
-         backHandler.remove();
-      };
-   }, [handleBackBtn]);
+   const handleBackBtn = () => {
+      navigation.goBack();
+   };
 
    return (
       <>
@@ -128,13 +105,6 @@ const GroupInfo = () => {
          <View style={styles.container}>
             <GrpCollapsibleToolbar
                chatUser={chatUser}
-               bgColor={colorCode}
-               title={nickName}
-               titleColor={colorCode}
-               titleStatus={status}
-               mobileNo={mobileNumber || chatUserId}
-               imageToken={image}
-               email={email}
                handleBackBtn={handleBackBtn}
                participants={groupParticipants}
                getGroupParticipants={getGroupParticipants}

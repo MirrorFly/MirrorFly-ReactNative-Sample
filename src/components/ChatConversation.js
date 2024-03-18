@@ -55,7 +55,22 @@ const ChatConversation = React.memo(props => {
    const chatUserProfile = useSelector(state => state.navigation.profileDetails);
    const [selectedMsgs, setSelectedMsgs] = React.useState([]);
    const [replyMsgs, setReplyMsgs] = React.useState();
-   const [menuItems, setMenuItems] = React.useState([]);
+   const [menuItems, setMenuItems] = React.useState([
+      {
+         label: 'Clear Chat',
+         formatter: () => {
+            handleClearChat();
+         },
+      },
+      {
+         label: 'Report',
+         formatter: () => {},
+      },
+      {
+         label: 'Search',
+         formatter: handleConversationSearchPress,
+      },
+   ]);
    const [isOpenAlert, setIsOpenAlert] = React.useState(false);
    const selectedMessagesIdRef = useRef({});
 
@@ -65,10 +80,11 @@ const ChatConversation = React.memo(props => {
 
    React.useEffect(() => {
       dispatch(resetGalleryData());
-      if (selectedMsgs.length) {
-         isMessageSelectingRef.current = Boolean(selectedMsgs?.length);
-      }
    }, []);
+
+   React.useEffect(() => {
+      isMessageSelectingRef.current = Boolean(selectedMsgs?.length);
+   }, [selectedMsgs]);
 
    const isSearchClose = () => {
       handleIsSearchingClose();
@@ -163,14 +179,14 @@ const ChatConversation = React.memo(props => {
       if (!selectedMsgs.length) {
          return;
       }
-      let foundMsg = selectedMsgs.filter(obj => obj.publisherJid !== currentUserJID);
+      let foundMsg = selectedMsgs?.filter(obj => obj?.publisherJid !== currentUserJID);
 
       switch (true) {
          case foundMsg.length > 0:
             setMenuItems([
                {
                   label:
-                     selectedMsgs[0]?.msgBody.message_type === 'text' || selectedMsgs[0]?.msgBody?.media?.caption
+                     selectedMsgs[0]?.msgBody?.message_type === 'text' || selectedMsgs[0]?.msgBody?.media?.caption
                         ? 'Copy'
                         : null,
                   formatter: copyToClipboard,
@@ -181,7 +197,7 @@ const ChatConversation = React.memo(props => {
             setMenuItems([
                {
                   label:
-                     selectedMsgs[0]?.msgBody.message_type === 'text' || selectedMsgs[0]?.msgBody?.media?.caption
+                     selectedMsgs[0]?.msgBody?.message_type === 'text' || selectedMsgs[0]?.msgBody?.media?.caption
                         ? 'Copy'
                         : null,
                   formatter: copyToClipboard,
@@ -195,7 +211,7 @@ const ChatConversation = React.memo(props => {
          case foundMsg.length === 0 &&
             selectedMsgs.length > 0 &&
             selectedMsgs[0]?.msgStatus === 3 &&
-            (selectedMsgs[0]?.msgBody.message_type === 'text' || selectedMsgs[0]?.msgBody?.media?.caption):
+            (selectedMsgs[0]?.msgBody?.message_type === 'text' || selectedMsgs[0]?.msgBody?.media?.caption):
             setMenuItems([
                {
                   label: 'Copy',
@@ -203,7 +219,7 @@ const ChatConversation = React.memo(props => {
                },
             ]);
             break;
-         case selectedMsgs.length === 0:
+         default:
             setMenuItems([
                {
                   label: 'Clear Chat',
@@ -220,9 +236,6 @@ const ChatConversation = React.memo(props => {
                   formatter: handleConversationSearchPress,
                },
             ]);
-            break;
-         default:
-            setMenuItems([]);
             break;
       }
    }, [selectedMsgs]);

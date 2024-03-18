@@ -59,6 +59,11 @@ function EmojiInput({
       setPressedKey(key);
    };
 
+   const hideEmojiWindow = () => {
+      setIsEmojiPickerShowing(false);
+      onEmojiWindowToggle?.(false);
+   };
+
    const toggleEmojiWindow = () => {
       setIsEmojiPickerShowing(!isEmojiPickerShowing);
       onEmojiWindowToggle?.(!isEmojiPickerShowing);
@@ -67,11 +72,10 @@ function EmojiInput({
    const handleBackBtn = () => {
       if (isEmojiPickerShowing) {
          toggleEmojiWindow();
-         return true;
       } else {
          navigation.goBack();
-         return true;
       }
+      return true;
    };
 
    React.useEffect(() => {
@@ -100,6 +104,7 @@ function EmojiInput({
                keyboardType="default"
                onKeyPress={handleOnKeyPress}
                maxLength={maxTextLength}
+               onFocus={hideEmojiWindow}
             />
             {Boolean(allowedMaxLimit) && <Text style={styles.subText}>{count()}</Text>}
             <View style={[commonStyles.marginRight_12, commonStyles.alignItemsCenter, styles.iconWidth]}>

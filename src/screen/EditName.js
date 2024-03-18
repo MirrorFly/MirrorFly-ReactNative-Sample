@@ -11,13 +11,18 @@ import commonStyles from '../common/commonStyles';
 import EmojiInput from '../components/EmojiInput';
 import ApplicationColors from '../config/appColors';
 import { useNetworkStatus } from '../hooks';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import { getUserImage, getUserName } from '../hooks/useRosterData';
 
 const LeftArrowComponent = () => LeftArrowIcon();
 
 const EditName = () => {
    const {
-      params: { chatUser = '', title = '', imageToken = '' },
+      params: { jid = '' },
    } = useRoute();
+   const chatUserId = getUserIdFromJid(jid);
+   const title = getUserName(chatUserId);
+   const imageToken = getUserImage(chatUserId);
    const navigation = useNavigation();
    const isConnected = useNetworkStatus();
    const [toggleEmojiWindow, setToggleEmojiWindow] = React.useState(false);
@@ -42,7 +47,7 @@ const EditName = () => {
       }
       togglOkCLick();
       if (isConnected && value.trim()) {
-         const { statusCode, message } = await SDK.setGroupProfile(chatUser, value, imageToken);
+         const { statusCode, message } = await SDK.setGroupProfile(jid, value, imageToken);
          if (statusCode === 200) {
             navigation.goBack();
          } else {

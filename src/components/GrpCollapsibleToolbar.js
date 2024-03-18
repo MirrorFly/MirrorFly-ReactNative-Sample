@@ -1,13 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Animated, BackHandler, Dimensions, Image, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Dimensions, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { showToast } from '../Helper';
 import { isLocalUser, showInternetconnectionToast } from '../Helper/Chat/ChatHelper';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { SDK } from '../SDK';
-import grpImage from '../assets/ic_grp_bg.png';
-import Avathar from '../common/Avathar';
 import IconButton from '../common/IconButton';
 import {
    AddUserIcon,
@@ -21,16 +20,17 @@ import {
 import Modal, { ModalBottomContent, ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import commonStyles, { modelStyles } from '../common/commonStyles';
-import { getImageSource } from '../common/utils';
 import ApplicationColors from '../config/appColors';
 import { CONTACTLIST, EDITNAME, GROUP_INFO, IMAGEVIEW, RECENTCHATSCREEN, VIEWALLMEDIA } from '../constant';
 import { useNetworkStatus } from '../hooks';
-import useFetchImage from '../hooks/useFetchImage';
-import useRosterData from '../hooks/useRosterData';
+import { getUserImage } from '../hooks/useRosterData';
 import { DeleteChatHistoryAction } from '../redux/Actions/ConversationAction';
 import { deleteActiveChatAction } from '../redux/Actions/RecentChatAction';
 import AlertModal from './AlertModal';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import InfoImageView from './InfoImageView';
+import NickName from './NickName';
+import UserAvathar from './UserAvathar';
+import UserStatus from './UserStatus';
 import config from './chat/common/config';
 
 const propTypes = {
@@ -57,26 +57,17 @@ const defaultProps = {
 };
 
 const RenderItem = ({ item, index, onhandlePress }) => {
-   let { nickName, image: imageToken, colorCode, status } = useRosterData(item?.userId);
    // updating default values
-   nickName = nickName || item?.userProfile?.nickName || item?.userId || '';
-   imageToken = imageToken || item?.userProfile?.image || '';
-   colorCode = colorCode || item?.userProfile?.colorCode || SDK.getRandomColorCode();
-   status = status || item.status || '';
    const handlePress = () => onhandlePress(item);
 
    return (
       <React.Fragment key={index}>
          <Pressable onPress={handlePress}>
             <View style={styles.wrapper}>
-               <Avathar data={nickName} profileImage={imageToken} backgroundColor={colorCode} />
+               <UserAvathar userId={item?.userId} userProfile={item.userProfile} />
                <View style={[commonStyles.marginLeft_15, commonStyles.flex1]}>
-                  <Text style={styles.nickNameText} numberOfLines={1} ellipsizeMode="tail">
-                     {isLocalUser(item?.userId) ? 'You' : nickName}
-                  </Text>
-                  <Text style={styles.stautsText} numberOfLines={1} ellipsizeMode="tail">
-                     {status}
-                  </Text>
+                  <NickName userId={item?.userId} style={styles.nickNameText} numberOfLines={1} ellipsizeMode="tail" />
+                  <UserStatus userId={item?.userId} style={styles.stautsText} numberOfLines={1} ellipsizeMode="tail" />
                </View>
                {item.userType === 'o' && <Text style={{ color: ApplicationColors.mainColor }}>Admin</Text>}
             </View>
@@ -88,8 +79,6 @@ const RenderItem = ({ item, index, onhandlePress }) => {
 
 const GrpCollapsibleToolbar = ({
    chatUser,
-   title,
-   imageToken,
    toolbarMaxHeight,
    toolbarMinHeight,
    handleBackBtn,
@@ -108,19 +97,12 @@ const GrpCollapsibleToolbar = ({
    const scrollDistance = toolbarMaxHeight - toolbarMinHeight;
    const { height: screenHeight } = Dimensions.get('window');
    const recentChatList = useSelector(state => state.recentChatData.data || []);
+   const chatUserId = getUserIdFromJid(chatUser);
    const userType = recentChatList.find(r => r.fromUserJid === chatUser)?.userType || '';
    const layout = useWindowDimensions();
    const [modalContent, setModalContent] = React.useState(null);
 
    const adaptiveMinHeight = screenHeight * 0.92;
-
-   const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
-
-   React.useEffect(() => {
-      return () => {
-         backHandler.remove();
-      };
-   }, []);
 
    /**
     * const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
@@ -163,8 +145,6 @@ const GrpCollapsibleToolbar = ({
    const toggleModel = () => {
       setModelOpen(val => !val);
    };
-
-   const { imageUrl, authToken } = useFetchImage(imageToken);
 
    const headerTranslate = scrollY.interpolate({
       inputRange: [0, scrollDistance],
@@ -215,7 +195,7 @@ const GrpCollapsibleToolbar = ({
       }
       navigation.navigate(CONTACTLIST, {
          prevScreen: GROUP_INFO,
-         grpDetails: { grpJid: chatUser, grpName: title, participants },
+         grpDetails: { jid: chatUser, participants },
       });
    };
 
@@ -227,11 +207,15 @@ const GrpCollapsibleToolbar = ({
    };
 
    const handleViewImage = () => {
-      navigation.navigate(IMAGEVIEW, { imageUrl, authToken, title });
+      const image = getUserImage(chatUserId);
+      if (!image) {
+         return;
+      }
+      navigation.navigate(IMAGEVIEW, { jid: chatUser });
    };
 
    const handleEditText = () => {
-      navigation.navigate(EDITNAME, { imageToken, authToken, chatUser, title });
+      navigation.navigate(EDITNAME, { jid: chatUser });
    };
 
    const handleLeaveGroup = async () => {
@@ -351,7 +335,22 @@ const GrpCollapsibleToolbar = ({
    };
 
    const handleViewAllMedia = () => {
-      navigation.navigate(VIEWALLMEDIA, { chatUser, title });
+      navigation.navigate(VIEWALLMEDIA, { jid: chatUser });
+   };
+
+   const handleOptionTakePhoto = () => {
+      toggleOptionModel();
+      handleTakePhoto();
+   };
+
+   const handleOptionGallery = () => {
+      toggleOptionModel();
+      handleFromGallery();
+   };
+
+   const handleOptionRemove = () => {
+      toggleOptionModel();
+      toggleConfirmRemovePhotoModal();
    };
 
    return (
@@ -380,23 +379,9 @@ const GrpCollapsibleToolbar = ({
                      shadowRadius: 6,
                   },
                ]}>
-               {Boolean(imageUrl) ? (
-                  <Pressable onPress={handleViewImage} style={styles.profileImage}>
-                     <Image
-                        style={styles.profileImage}
-                        source={{
-                           uri: imageUrl,
-                           method: 'GET',
-                           cache: 'force-cache',
-                           headers: {
-                              Authorization: authToken,
-                           },
-                        }}
-                     />
-                  </Pressable>
-               ) : (
-                  <Image style={styles.profileImage} source={getImageSource(grpImage)} />
-               )}
+               <Pressable onPress={handleViewImage} style={styles.profileImage}>
+                  <InfoImageView userId={chatUserId} style={styles.profileImage} />
+               </Pressable>
             </Animated.View>
             <Animated.View
                style={[
@@ -408,7 +393,8 @@ const GrpCollapsibleToolbar = ({
                   },
                ]}>
                <View>
-                  <Animated.Text
+                  <NickName
+                     userId={chatUserId}
                      numberOfLines={1}
                      ellipsizeMode="tail"
                      style={[
@@ -416,9 +402,8 @@ const GrpCollapsibleToolbar = ({
                         {
                            color: animatedTitleColor < 280 ? '#fff' : '#000',
                         },
-                     ]}>
-                     {title}
-                  </Animated.Text>
+                     ]}
+                  />
                   {animatedTitleColor < 280 && (
                      <Animated.Text
                         numberOfLines={1}
@@ -585,26 +570,14 @@ const GrpCollapsibleToolbar = ({
             <ModalBottomContent onPressOutside={toggleOptionModel}>
                <Animated.View style={[styles.optionModelContainer, { transform: [{ translateY }] }]}>
                   <Text style={styles.optionTitleText}>Options</Text>
-                  <Pressable
-                     onPress={() => {
-                        toggleOptionModel();
-                        handleTakePhoto();
-                     }}>
+                  <Pressable onPress={handleOptionTakePhoto}>
                      <Text style={styles.pressableText}>Take Photo</Text>
                   </Pressable>
-                  <Pressable
-                     onPress={() => {
-                        toggleOptionModel();
-                        handleFromGallery();
-                     }}>
+                  <Pressable onPress={handleOptionGallery}>
                      <Text style={styles.pressableText}>Choose from Gallery</Text>
                   </Pressable>
-                  {Boolean(imageUrl) && (
-                     <Pressable
-                        onPress={() => {
-                           toggleOptionModel();
-                           toggleConfirmRemovePhotoModal();
-                        }}>
+                  {Boolean(getUserImage(chatUserId)) && (
+                     <Pressable onPress={handleOptionRemove}>
                         <Text style={styles.pressableText}>Remove Photo</Text>
                      </Pressable>
                   )}

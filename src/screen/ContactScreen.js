@@ -26,6 +26,8 @@ import { CHATSCREEN, GROUP_INFO, NEW_GROUP, RECENTCHATSCREEN } from '../constant
 import { useNetworkStatus } from '../hooks';
 import { navigate } from '../redux/Actions/NavigationAction';
 import config from '../components/chat/common/config';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import { getUserName } from '../hooks/useRosterData';
 
 const contactPaginationRefInitialValue = {
    nextPage: 1,
@@ -34,12 +36,13 @@ const contactPaginationRefInitialValue = {
 
 function ContactScreen() {
    const dispatch = useDispatch();
-   const {
+   let {
       params: {
          prevScreen = '',
-         grpDetails: { grpJid = '', grpName = '', profileImage = '', participants = [] } = {},
+         grpDetails: { jid = '', grpName = '', profileImage = '', participants = [] } = {},
       } = {},
    } = useRoute();
+   grpName = getUserName(getUserIdFromJid(jid)) || grpName;
    const isNewGrpSrn = prevScreen === NEW_GROUP;
    const isGroupInfoSrn = prevScreen === GROUP_INFO;
    const isNetworkconneted = useNetworkStatus();
@@ -106,6 +109,12 @@ function ContactScreen() {
       return _users.filter(u => !participantsObj[u.userId]);
    };
 
+   const removeDuplicateObjects = array => {
+      const uniqueObjects = new Set(array.map(obj => JSON.stringify(obj)));
+
+      return Array.from(uniqueObjects).map(str => JSON.parse(str));
+   };
+
    const fetchContactListFromSDK = async _searchText => {
       let { nextPage = 1, hasNextPage = true } = contactsPaginationRef.current || {};
       if (hasNextPage && _searchText === searchTextValueRef.current) {
@@ -113,8 +122,9 @@ function ContactScreen() {
          const { statusCode, users, totalPages } = await fetchContactsFromSDK(_searchText, nextPage, 23);
          if (statusCode === 200) {
             const filteredUsers = getUsersExceptRecentChatsUsers(users);
+            const uniqueObjects = removeDuplicateObjects(filteredUsers);
             updateContactPaginationRefData(totalPages, _searchText);
-            setContactList(nextPage === 1 ? filteredUsers : val => [...val, ...filteredUsers]);
+            setContactList(nextPage === 1 ? uniqueObjects : val => [...val, ...uniqueObjects]);
          } else if (isNetworkconneted && statusCode !== 200) {
             const toastOptions = {
                id: 'contact-server-error',
@@ -165,7 +175,7 @@ function ContactScreen() {
    };
 
    const handleSearch = async text => {
-      if (isNetworkconneted && text.trim()) {
+      if (isNetworkconneted) {
          setIsSearching(true);
          setSearchText(text);
          fetchContactList(text);
@@ -203,9 +213,9 @@ function ContactScreen() {
          toggleModel();
          try {
             if (isGroupInfoSrn) {
-               const { statusCode, message } = await SDK.addParticipants(grpJid, grpName, Object.keys(selectedUsers));
+               const { statusCode, message } = await SDK.addParticipants(jid, grpName, Object.keys(selectedUsers));
                if (statusCode === 200) {
-                  fetchGroupParticipants(grpJid);
+                  fetchGroupParticipants(jid);
                   RootNav.goBack();
                   return true;
                } else {

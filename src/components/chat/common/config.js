@@ -16,6 +16,7 @@ const config = {
    typingStatusGoneWaitTime: 500,
    minAllowdGroupMembers: 2,
    maxAllowdGroupMembers: 238,
+   chatMessagesSizePerPage: 20,
    // ================ Dev environment variables =====================
    // API_URL: 'https://api-uikit-dev.contus.us/api/v1',
    // licenseKey: '2sdgNtr3sFBSM3bYRa7RKDPEiB38Xo',

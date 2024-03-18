@@ -1,38 +1,39 @@
-import {
-   View,
-   Text,
-   FlatList,
-   StyleSheet,
-   BackHandler,
-   TextInput,
-   Dimensions,
-   Platform,
-   KeyboardAvoidingView,
-   ActivityIndicator,
-} from 'react-native';
-import Contacts from 'react-native-contacts';
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import {
+   ActivityIndicator,
+   Dimensions,
+   FlatList,
+   KeyboardAvoidingView,
+   Platform,
+   StyleSheet,
+   Text,
+   TextInput,
+   View,
+} from 'react-native';
+import Contacts from 'react-native-contacts';
+import { showToast } from '../../Helper/index';
+import IconButton from '../../common/IconButton';
+import {
    BackArrowIcon,
+   ClearTextIcon,
    CloseIcon,
    ContactInfoIcon,
-   TickIcon,
-   SearchIcon,
    ContactSendIcon,
-   ClearTextIcon,
+   SearchIcon,
+   TickIcon,
 } from '../../common/Icons';
-import { showToast } from '../../Helper/index';
-import ContactPreviewScreen from './ContactPreviewScreen';
-import commonStyles from '../../common/commonStyles';
 import Pressable from '../../common/Pressable';
-import IconButton from '../../common/IconButton';
+import commonStyles from '../../common/commonStyles';
 import ApplicationColors from '../../config/appColors';
+import ContactPreviewScreen from './ContactPreviewScreen';
 
 const screenWidth = Dimensions.get('screen').width;
 
 const maxScreenWidth = Math.min(screenWidth, 500);
 
-const ContactList = ({ handleSendMsg, setLocalNav }) => {
+const ContactList = () => {
+   const navigation = useNavigation();
    const [contacts, setContacts] = React.useState([]);
    const [fliterArray, setFliterArray] = React.useState([]);
    const [searchText, setSearchText] = React.useState('');
@@ -62,11 +63,6 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
    React.useEffect(() => {
       fetchContacts();
    }, []);
-
-   React.useEffect(() => {
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', goBackToPreviousScreen);
-      return () => backHandler.remove();
-   }, [showSelectedContactsPreview]);
 
    const fetchContacts = async () => {
       try {
@@ -100,7 +96,7 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
       if (showSelectedContactsPreview) {
          setShowSelectedContactsPreview(false);
       } else {
-         setLocalNav('CHATCONVERSATION');
+         navigation.goBack();
       }
    };
 
@@ -185,14 +181,7 @@ const ContactList = ({ handleSendMsg, setLocalNav }) => {
    };
 
    if (showSelectedContactsPreview) {
-      return (
-         <ContactPreviewScreen
-            handleClose={goBackToPreviousScreen}
-            contactItems={selectedContacts}
-            handleSendMsg={handleSendMsg}
-            setLocalNav={setLocalNav}
-         />
-      );
+      return <ContactPreviewScreen handleClose={goBackToPreviousScreen} contactItems={selectedContacts} />;
    }
 
    const renderHeader = () => {

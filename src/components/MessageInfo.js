@@ -1,19 +1,19 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Divider } from 'native-base';
 import React from 'react';
-import ScreenHeader from './ScreenHeader';
-import { BackHandler, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { change16TimeWithDateFormat, getConversationHistoryTime } from '../common/TimeStamp';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import { CHAT_TYPE_GROUP } from '../Helper/Chat/Constant';
+import { getThumbBase64URL, getUserIdFromJid } from '../Helper/Chat/Utility';
 import SDK from '../SDK/SDK';
 import { SandTimer } from '../common/Icons';
+import { change16TimeWithDateFormat, getConversationHistoryTime } from '../common/TimeStamp';
 import commonStyles from '../common/commonStyles';
-import MapCard from './MapCard';
 import ContactCard from './ContactCard';
-import { CHAT_TYPE_GROUP } from '../Helper/Chat/Constant';
 import GroupChatMessageInfo from './GroupChatMessageInfo';
 import ImageCard from './ImageCard';
-import { getThumbBase64URL, getUserIdFromJid } from '../Helper/Chat/Utility';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import MapCard from './MapCard';
+import ScreenHeader from './ScreenHeader';
 import VideoCard from './VideoCard';
 
 function MessageInfo() {

@@ -11,10 +11,10 @@ import ImageInfo from './ImageInfo';
 import VideoInfo from './VideoInfo';
 
 const PostPreViewPage = () => {
-   const { params: { chatUser = '', msgId = '' } = {} } = useRoute();
+   const { params: { jid = '', msgId = '' } = {} } = useRoute();
    const navigation = useNavigation();
    const currentUserJID = useSelector(state => state.auth.currentUserJID);
-   const chatUserId = getUserIdFromJid(chatUser);
+   const chatUserId = getUserIdFromJid(jid);
    const { messages } = useSelector(state => state.chatConversationData?.data?.[chatUserId] || []);
 
    const [title, setTitle] = React.useState('');
@@ -49,7 +49,7 @@ const PostPreViewPage = () => {
          );
       });
       return filteredMessages;
-   }, [messages, chatUser]);
+   }, [messages, jid]);
 
    const initialPage = React.useMemo(() => {
       const selectedMsgIndex = messageList.findIndex(message => message.msgId === msgId);

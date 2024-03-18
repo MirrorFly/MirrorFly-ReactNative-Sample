@@ -16,6 +16,7 @@ import {
    CHAT_TYPE_GROUP,
    CHAT_TYPE_SINGLE,
    DOCUMENT_FORMATS,
+   MIX_BARE_JID,
    MSG_DELIVERED_STATUS_ID,
    MSG_PROCESSING_STATUS_ID,
    MSG_SEEN_STATUS_ID,
@@ -24,8 +25,42 @@ import {
 import { getMessageObjSender, getRecentChatMsgObj, getUserIdFromJid } from './Utility';
 import FileViewer from 'react-native-file-viewer';
 import Store from '../../redux/store';
+import { deleteRecoverMessage } from '../../redux/Actions/RecoverMessageAction';
+import config from '../../components/chat/common/config';
+import { mflog } from '../../uikitHelpers/uikitMethods';
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
+
+let chatPage = {},
+   hasNextPage = {};
+
+export const setHasNextPage = (userId, val) => {
+   hasNextPage[userId] = val;
+};
+
+export const getHasNextPage = userId => hasNextPage[userId];
+
+export const setChatPage = (userId, page) => {
+   chatPage[userId] = page;
+};
+
+export const getChatPage = userId => chatPage[userId] || 1;
+
+export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false) => {
+   const { id: messagesReducerId, data: messages } = Store.getState().chatConversationData;
+   const userId = getUserIdFromJid(fromUserJId);
+   if (forceGetFromSDK || !messages[userId]) {
+      const page = getChatPage(userId);
+      let chatMessage = await SDK.getChatMessages(fromUserJId, page, config.chatMessagesSizePerPage);
+      if (chatMessage?.statusCode === 200) {
+         if (chatMessage.data.length) {
+            setChatPage(userId, page + 1);
+         }
+         setHasNextPage(userId, Boolean(chatMessage.data.length));
+         Store.dispatch(addChatConversationHistory(chatMessage));
+      }
+   }
+};
 
 export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {
    const currentUserJid = store.getState().auth?.currentUserJID || '';
@@ -195,7 +230,9 @@ export const getUpdatedHistoryDataUpload = (data, stateData) => {
       const currentMessage = currentChatData.messages[data.msgId];
 
       if (currentMessage) {
-         currentMessage.msgBody.media.is_uploading = data.uploadStatus;
+         if (data.uploadStatus) {
+            currentMessage.msgBody.media.is_uploading = data.uploadStatus;
+         }
          if (data.statusCode === 200) {
             currentMessage.msgBody.media.file_url = data.fileToken || '';
             currentMessage.msgBody.media.thumb_image = data.thumbImage || '';
@@ -280,7 +317,7 @@ export const getChatHistoryData = (data, stateData) => {
    // Eg: userId: {} or groupId: {} or msgId: {}
    const chatId = getUserIdFromJid(data.userJid || data.groupJid);
    const state = Object.keys(stateData).length > 0 ? stateData[chatId]?.messages || {} : {};
-   const sortedData = concatMessageArray(data.data, Object.values(state), 'msgId', 'createAt');
+   const sortedData = concatMessageArray(data.data, Object.values(state), 'msgId', 'timestamp');
    const lastMessage = sortedData[sortedData.length - 1];
    let newSortedData;
    const localUserJid = data.userJid;
@@ -677,4 +714,97 @@ export const handleFileOpen = message => {
 export const getRecentChatDataList = () => {
    const { recentChatData } = Store.getState();
    return recentChatData.data;
+};
+
+export const getChatConversationData = () => Store.getState().chatConversationData;
+
+export const getToUserId = () => Store.getState().navigation.fromUserJid;
+
+const constructAndDispatchConversationAndRecentChatData = dataObj => {
+   const conversationChatObj = getMessageObjSender(dataObj);
+   const recentChatObj = getRecentChatMsgObj(dataObj);
+   const dispatchData = {
+      data: [conversationChatObj],
+      ...(isSingleChat(dataObj.chatType) ? { userJid: dataObj.jid } : { groupJid: dataObj.jid }), // check this when group works
+   };
+   batch(() => {
+      store.dispatch(addChatConversationHistory(dispatchData));
+      store.dispatch(updateRecentChat(recentChatObj));
+   });
+};
+
+export const handleSendMsg = async message => {
+   const toUserJid = getToUserId();
+   const messageType = message.type;
+   const { data = {} } = Store.getState().recoverMessage;
+   const vCardData = Store.getState()?.profile?.profileDetails;
+   const currentUserJID = Store.getState()?.auth?.currentUserJID;
+   if (toUserJid in data) {
+      Store.dispatch(deleteRecoverMessage(toUserJid));
+   }
+
+   const msgId = SDK.randomString(8, 'BA');
+   const replyTo = '';
+   switch (messageType) {
+      case 'media':
+         parseAndSendMessage(message, MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat', messageType);
+         break;
+      case 'location':
+         const { latitude, longitude } = message.location || {};
+         if (latitude && longitude) {
+            const dataObj = {
+               jid: toUserJid,
+               msgType: messageType,
+               userProfile: vCardData,
+               chatType: MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat',
+               msgId,
+               location: { latitude, longitude },
+               fromUserJid: currentUserJID,
+               publisherJid: currentUserJID,
+               replyTo: replyTo,
+            };
+            constructAndDispatchConversationAndRecentChatData(dataObj);
+            SDK.sendLocationMessage(toUserJid, latitude, longitude, msgId, replyTo);
+         }
+         break;
+      case 'contact':
+         const updatedContacts = message.contacts.map(c => ({
+            ...c,
+            msgId: SDK.randomString(8, 'BA'),
+         }));
+         for (const contact of updatedContacts) {
+            const dataObj = {
+               jid: toUserJid,
+               msgType: messageType,
+               userProfile: vCardData,
+               chatType: MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat',
+               msgId: contact.msgId,
+               contact: { ...contact },
+               fromUserJid: currentUserJID,
+               publisherJid: currentUserJID,
+               replyTo: replyTo,
+            };
+            constructAndDispatchConversationAndRecentChatData(dataObj);
+         }
+         SDK.sendContactMessage(toUserJid, updatedContacts, replyTo);
+         break;
+      default: // default to text message
+         if (message.content !== '') {
+            const dataObj = {
+               jid: toUserJid,
+               msgType: 'text',
+               message: message.content,
+               userProfile: vCardData,
+               chatType: MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat',
+               msgId,
+               fromUserJid: currentUserJID,
+               publisherJid: currentUserJID,
+               replyTo: message.replyTo,
+            };
+            constructAndDispatchConversationAndRecentChatData(dataObj);
+            SDK.sendTextMessage(toUserJid, message.content, msgId, message.replyTo);
+         }
+         break;
+   }
+   // setReplyMsg('');
 };

@@ -14,11 +14,7 @@ const RecentHeader = ({ recentItem, handleRemove, handleDeleteChat }) => {
       handleRemove();
    };
 
-   console.log('recentItem ==>', JSON.stringify(recentItem, null, 2));
-
    const isUserLeft = recentItem.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
-
-   console.log('isUserLeft ==>', JSON.stringify(isUserLeft, null, 2));
 
    const renderDeleteIcon = () => {
       return isUserLeft ? (

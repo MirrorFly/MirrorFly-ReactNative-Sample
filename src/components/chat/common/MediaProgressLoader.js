@@ -1,19 +1,14 @@
 import React from 'react';
-import { mediaStatusConstants } from '../../../constant';
 import { StyleSheet, Text, View } from 'react-native';
-import { DownloadCancel, DownloadIcon, uploadIcon as UploadIcon } from '../../../common/Icons';
-import { Bar } from 'react-native-progress';
-import commonStyles from '../../../common/commonStyles';
-import { useSelector } from 'react-redux';
 import { convertBytesToKB } from '../../../Helper';
-import ApplicationColors from '../../../config/appColors';
+import { DownloadCancel, DownloadIcon, uploadIcon as UploadIcon } from '../../../common/Icons';
 import Pressable from '../../../common/Pressable';
+import commonStyles from '../../../common/commonStyles';
+import ApplicationColors from '../../../config/appColors';
+import { mediaStatusConstants } from '../../../constant';
+import MediaBar from './MediaBar';
 
 const MediaProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel, msgId, fileSize }) => {
-   const { data: mediaDownloadData = {} } = useSelector(state => state.mediaDownloadData);
-
-   const { data: mediaUploadData = {} } = useSelector(state => state.mediaUploadData);
-
    const fileSizeInKB = convertBytesToKB(fileSize);
 
    const renderMediaStatus = () => {
@@ -28,27 +23,7 @@ const MediaProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel, msgI
                      onPress={onCancel}>
                      <DownloadCancel />
                   </Pressable>
-                  {mediaDownloadData[msgId]?.progress || mediaUploadData[msgId]?.progress ? (
-                     <Bar
-                        useNativeDriver={true}
-                        progress={mediaDownloadData[msgId]?.progress / 100 || mediaUploadData[msgId]?.progress / 100}
-                        width={80}
-                        height={2}
-                        color="#fff"
-                        borderWidth={0}
-                        unfilledColor={'rgba(0, 0, 0, 0.5)'}
-                     />
-                  ) : (
-                     <Bar
-                        useNativeDriver={true}
-                        indeterminate
-                        width={80}
-                        height={2}
-                        color="#fff"
-                        borderWidth={0}
-                        unfilledColor={'rgba(0, 0, 0, 0.5)'}
-                     />
-                  )}
+                  <MediaBar msgId={msgId} />
                </View>
             );
          case mediaStatusConstants.NOT_DOWNLOADED:

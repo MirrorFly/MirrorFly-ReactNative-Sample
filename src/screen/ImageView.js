@@ -2,17 +2,23 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import IconButton from '../common/IconButton';
 import { LeftArrowIcon } from '../common/Icons';
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
+import useRosterData from '../hooks/useRosterData';
+import useFetchImage from '../hooks/useFetchImage';
 
 const LeftArrowComponent = () => LeftArrowIcon();
 
 const ImageView = () => {
    const {
-      params: { profileImage = {}, title = '', imageUrl = '', authToken = '' },
+      params: { jid = '', profileImage = {} },
    } = useRoute();
+   let { nickName: title, image } = useRosterData(getUserIdFromJid(jid));
+   const { imageUrl, authToken } = useFetchImage(image);
+
    const navigation = useNavigation();
    const headerBg = useSelector(state => state.safeArea.color);
    const handleBackBtn = () => {

@@ -2,10 +2,11 @@ import React from 'react';
 import { Image, Platform, StyleSheet, View } from 'react-native';
 import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import Video from 'react-native-video';
+import { getThumbBase64URL } from '../../Helper/Chat/Utility';
 import { useAppState } from '../../hooks';
 import MediaControls, { PLAYER_STATES } from './media-controls';
-import { getThumbBase64URL } from '../../Helper/Chat/Utility';
 import commonStyles from '../../common/commonStyles';
+import { mflog } from '../../uikitHelpers/uikitMethods';
 
 const VideoPlayer = props => {
    const { forcePause = {}, audioOnly = false, item: { thumbImage = '', fileDetails = {} } = {} } = props;
@@ -24,18 +25,22 @@ const VideoPlayer = props => {
       if (forcePause.mediaForcePause) {
          handleForcePause();
       }
-      if (appState || forcePause.mediaForcePause) {
+   }, [forcePause.mediaForcePause]);
+
+   React.useEffect(() => {
+      if (appState) {
          if (!onEnded) {
             handlePause();
          } else {
             setPaused(true);
          }
       }
-   }, [appState, forcePause.mediaForcePause]);
+   }, [appState]);
 
    const handleForcePause = () => {
       videoPlayer?.current?.seek?.(0);
       setCurrentTime(0);
+      handlePause();
    };
 
    const handlePause = () => {
@@ -136,7 +141,7 @@ const VideoPlayer = props => {
                   setVideoUri(response.path);
                })
                .catch(err => {
-                  console.log(err);
+                  mflog(err);
                });
          } else {
             setVideoUri(uri);
@@ -144,35 +149,39 @@ const VideoPlayer = props => {
       } else {
          setVideoUri(uri);
       }
+      return () => {
+         handleForcePause();
+      };
    }, []);
 
    return (
       <View style={{ flex: 1 }} onLayout={handleLayout}>
          <View style={{ flex: 1, justifyContent: 'center' }}>
-            {Boolean(videoUri) && playerState === PLAYER_STATES.PLAYING ? (
-               <Video
-                  audioOnly={audioOnly}
-                  ignoreSilentSwitch={'ignore'}
-                  onEnd={onEnd}
-                  onLoad={onLoad}
-                  onProgress={onProgress}
-                  paused={paused}
-                  controls={false}
-                  poster={getThumbBase64URL(thumbImage)}
-                  posterResizeMode={'contain'}
-                  ref={videoPlayer}
-                  resizeMode={'contain'}
-                  source={{ uri: videoUri }}
-                  style={styles.videoContainer}
-                  volume={100}
-                  muted={false}
-               />
-            ) : (
-               <Image
-                  style={[commonStyles.flex1, commonStyles.resizeCover]}
-                  source={{ uri: getThumbBase64URL(thumbImage) }}
-               />
-            )}
+            <Video
+               audioOnly={audioOnly}
+               ignoreSilentSwitch={'ignore'}
+               onEnd={onEnd}
+               onLoad={onLoad}
+               onProgress={onProgress}
+               paused={paused}
+               controls={false}
+               poster={getThumbBase64URL(thumbImage)}
+               posterResizeMode={'contain'}
+               ref={videoPlayer}
+               resizeMode={'contain'}
+               source={{ uri: videoUri }}
+               style={[styles.videoContainer, { display: forcePause.mediaForcePause ? 'none' : 'flex' }]}
+               volume={100}
+               muted={false}
+            />
+            <Image
+               style={[
+                  commonStyles.flex1,
+                  commonStyles.resizeContain,
+                  { display: forcePause.mediaForcePause ? 'flex' : 'none' },
+               ]}
+               source={{ uri: getThumbBase64URL(thumbImage) }}
+            />
          </View>
          {!isLoading && (
             <MediaControls

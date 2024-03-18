@@ -30,6 +30,7 @@ import {
    toggleRecentChatSearch,
    updateRecentChatSearchText,
 } from '../redux/Actions/recentChatSearchAction';
+import { getUserName } from '../hooks/useRosterData';
 
 const scenesMap = SceneMap({
    chats: () => <RecentChat />,
@@ -248,11 +249,7 @@ function RecentScreen() {
                <View style={styles.deleteChatModalContentContainer}>
                   <Text style={styles.deleteChatModalTitle}>
                      {selectedItems.length === 1
-                        ? `${
-                             'Delete chat with "' +
-                             `${selectedItems[0]?.profileDetails?.nickName || selectedItems[0]?.fromUserId}"` +
-                             '?'
-                          }`
+                        ? `${'Delete chat with "' + `${getUserName(selectedItems[0]?.fromUserId)}"` + '?'}`
                         : `Delete ${selectedItems.length} selected chats?`}
                   </Text>
                   <View style={styles.modalActionButtonContainer}>

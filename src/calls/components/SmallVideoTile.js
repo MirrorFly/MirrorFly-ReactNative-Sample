@@ -25,7 +25,7 @@ const SmallVideoTile = ({
       callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && !isLocalUser ? true : false;
    return (
       <View style={styles.smallVideoWrapper}>
-         {!isVideoMuted && stream && stream?.video && !reconnectStatus && (
+         {!isVideoMuted && stream && stream?.video && !stream?.video.getVideoTracks()[0].muted && !reconnectStatus && (
             <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={1} />
          )}
          <View
@@ -47,7 +47,10 @@ const SmallVideoTile = ({
                   <View style={styles.smallVideoVoiceLevelIndicator} />
                </View>
             )}
-            {(isVideoMuted || reconnectStatus || (stream && !stream?.video)) && (
+            {(isVideoMuted ||
+               stream?.video.getVideoTracks()[0].muted ||
+               reconnectStatus ||
+               (stream && !stream?.video)) && (
                <>
                   <View style={styles.smallVideoUserAvathar}>
                      <Avathar

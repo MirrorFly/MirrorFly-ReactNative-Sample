@@ -23,46 +23,49 @@ const BigVideoTile = ({
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
 
-   const renderVideoStream = React.useMemo(() => {
+   const renderAudioMuted = React.useMemo(() => {
       return (
-         <Pressable
-            onPress={onPressAnywhere}
-            pressedStyle={{}}
-            style={{
-               flex: 1,
-               position: 'absolute',
-               top: 0,
-               right: 0,
-               left: 0,
-               bottom: 0,
-            }}
-            contentContainerStyle={{ flex: 1 }}>
-            <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={0} />
-            {isAudioMuted && !reconnectStatus && (
-               <View
-                  style={[
-                     {
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        position: 'absolute',
-                        top: 0,
-                        right: 0,
-                        left: 0,
-                        bottom: 0,
-                     },
-                  ]}>
-                  <View style={styles.audioMuteIconWrapper}>
-                     <AudioMuteIcon width={16} height={22} color={'#fff'} />
-                  </View>
+         isAudioMuted &&
+         !reconnectStatus && (
+            <View
+               style={[
+                  {
+                     justifyContent: 'center',
+                     alignItems: 'center',
+                     position: 'absolute',
+                     top: 0,
+                     right: 0,
+                     left: 0,
+                     bottom: 0,
+                  },
+               ]}>
+               <View style={styles.audioMuteIconWrapper}>
+                  <AudioMuteIcon width={16} height={22} color={'#fff'} />
                </View>
-            )}
-         </Pressable>
+            </View>
+         )
       );
-   }, [isAudioMuted, stream, isFrontCameraEnabled]);
+   }, [isAudioMuted]);
 
    return (
       <>
-         {!videoMuted && stream && stream?.video && !reconnectStatus && renderVideoStream}
+         {!videoMuted && stream && stream?.video && !reconnectStatus && (
+            <Pressable
+               onPress={onPressAnywhere}
+               pressedStyle={{}}
+               style={{
+                  flex: 1,
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  left: 0,
+                  bottom: 0,
+               }}
+               contentContainerStyle={{ flex: 1 }}>
+               <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={0} />
+               {renderAudioMuted}
+            </Pressable>
+         )}
          {(videoMuted || reconnectStatus || !stream || !stream.video) && (
             <View style={styles.avatharWrapper}>
                {/* Pulse animation view here */}

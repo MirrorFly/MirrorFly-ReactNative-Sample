@@ -170,7 +170,7 @@ const handleHeadphoneDetection = async data => {
          const calculatedRoute = calculateAudioRoute(
             isSpeakerEnabledInUI,
             selectedAudioRoute,
-            { audioJack: data.audioJack, bluetooth: data.bluetooth },
+            { audioJack: data.audioJack, bluetooth: false },
             {
                previousAudioJack: isWiredHeadsetConnected,
                previousBluetooth: isBluetoothHeadsetConnected,
@@ -182,7 +182,7 @@ const handleHeadphoneDetection = async data => {
       data.audioJack !== isWiredHeadsetConnected && setPreviousHeadsetStatus(isWiredHeadsetConnected);
       data.audioJack !== isWiredHeadsetConnected && Store.dispatch(updateCallWiredHeadsetConnected(data.audioJack));
       data.bluetooth !== isBluetoothHeadsetConnected &&
-         Store.dispatch(updateCallBluetoothHeadsetConnected(data.bluetooth));
+         Store.dispatch(updateCallBluetoothHeadsetConnected(false));
    });
 };
 

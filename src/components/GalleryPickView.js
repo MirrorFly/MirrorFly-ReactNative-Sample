@@ -85,7 +85,7 @@ function GalleryPickView(props) {
             style={commonStyles.flex1}
             initialPage={activeIndex}
             ref={pagerRef}
-            onPageScroll={handleOnPageSelected}>
+            onPageSelected={handleOnPageSelected}>
             {componentSelectedImages.map((item, i) => {
                const type = getType(item?.fileDetails?.type);
                return (
@@ -195,7 +195,7 @@ function GalleryPickView(props) {
             </View>
             <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
                <IconButton>{RightArrowIcon('#fff')}</IconButton>
-               <NickName userId={getUserIdFromJid(fromUserJid)} />
+               <NickName style={styles.nickNameColor} userId={getUserIdFromJid(fromUserJid)} />
             </View>
             <FlatList
                keyboardShouldPersistTaps={'always'}
@@ -259,4 +259,7 @@ const styles = StyleSheet.create({
       borderWidth: 2,
    },
    miniPreviewList: { flexGrow: 0 },
+   nickNameColor: {
+      color: '#7f7f7f',
+   },
 });

@@ -3,13 +3,17 @@ import { Image, Platform, StyleSheet, View } from 'react-native';
 import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import Video from 'react-native-video';
 import { getThumbBase64URL } from '../../Helper/Chat/Utility';
-import { useAppState } from '../../hooks';
-import MediaControls, { PLAYER_STATES } from './media-controls';
 import commonStyles from '../../common/commonStyles';
+import { useAppState } from '../../hooks';
 import { mflog } from '../../uikitHelpers/uikitMethods';
+import MediaControls, { PLAYER_STATES } from './media-controls';
 
 const VideoPlayer = props => {
-   const { forcePause = {}, audioOnly = false, item: { thumbImage = '', fileDetails = {} } = {} } = props;
+   const {
+      forcePause: { mediaForcePause = false, setMediaForcePause = () => {} } = {},
+      audioOnly = false,
+      item: { thumbImage = '', fileDetails = {} } = {},
+   } = props;
    const { uri } = fileDetails;
    const videoPlayer = React.useRef(null);
    const [videoUri, setVideoUri] = React.useState('');
@@ -22,10 +26,10 @@ const VideoPlayer = props => {
    const appState = useAppState();
 
    React.useEffect(() => {
-      if (forcePause.mediaForcePause) {
+      if (mediaForcePause) {
          handleForcePause();
       }
-   }, [forcePause.mediaForcePause]);
+   }, [mediaForcePause]);
 
    React.useEffect(() => {
       if (appState) {
@@ -65,7 +69,7 @@ const VideoPlayer = props => {
    const onPaused = state => {
       setPaused(!paused);
       setPlayerState(state);
-      forcePause?.setMediaForcePause?.(false);
+      setMediaForcePause?.(false);
    };
 
    const onReplay = () => {
@@ -78,12 +82,12 @@ const VideoPlayer = props => {
          setTimeout(() => {
             setPlayerState(PLAYER_STATES.PLAYING);
             setPaused(false);
-            forcePause?.setMediaForcePause?.(false);
+            setMediaForcePause?.(false);
          });
       } else {
          setPlayerState(PLAYER_STATES.PLAYING);
          setPaused(false);
-         forcePause?.setMediaForcePause?.(false);
+         setMediaForcePause?.(false);
       }
    };
 
@@ -170,16 +174,12 @@ const VideoPlayer = props => {
                ref={videoPlayer}
                resizeMode={'contain'}
                source={{ uri: videoUri }}
-               style={[styles.videoContainer, { display: forcePause.mediaForcePause ? 'none' : 'flex' }]}
+               style={[styles.videoContainer, { display: mediaForcePause ? 'none' : 'flex' }]}
                volume={100}
                muted={false}
             />
             <Image
-               style={[
-                  commonStyles.flex1,
-                  commonStyles.resizeContain,
-                  { display: forcePause.mediaForcePause ? 'flex' : 'none' },
-               ]}
+               style={[commonStyles.flex1, commonStyles.resizeContain, { display: mediaForcePause ? 'flex' : 'none' }]}
                source={{ uri: getThumbBase64URL(thumbImage) }}
             />
          </View>

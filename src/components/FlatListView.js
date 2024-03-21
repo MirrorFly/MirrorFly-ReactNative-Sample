@@ -80,15 +80,27 @@ const RenderItem = ({ item, index, onhandlePress, selectedUsers }) => {
 };
 
 export default function FlatListView(props) {
-   const { selectedUsers, onhandlePress } = props;
+   const { selectedUsers, onhandlePress, isLoading, footerLoader } = props;
    const renderItem = ({ item, index }) => (
       <RenderItem item={item} index={index} onhandlePress={onhandlePress} selectedUsers={selectedUsers} />
    );
 
    const renderLoaderIfFetching = () => {
-      if (props.isLoading) {
+      if (isLoading) {
          return (
             <View style={styles.loaderWrapper}>
+               <View style={commonStyles.alignItemsCenter}>
+                  <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
+               </View>
+            </View>
+         );
+      }
+   };
+
+   const renderFooterLoaderIfFetching = () => {
+      if (footerLoader) {
+         return (
+            <View style={commonStyles.mb_130}>
                <View style={commonStyles.alignItemsCenter}>
                   <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
                </View>
@@ -108,6 +120,7 @@ export default function FlatListView(props) {
                showsVerticalScrollIndicator={false}
                data={props.data || []}
                renderItem={renderItem}
+               ListFooterComponent={renderFooterLoaderIfFetching}
             />
          </View>
       </>

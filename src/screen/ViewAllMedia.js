@@ -36,7 +36,7 @@ const ViewAllMedia = () => {
       params: { jid = '', title = '' },
    } = useRoute();
    const chatUserId = getUserIdFromJid(jid);
-   const { messages } = useSelector(state => state.chatConversationData?.data[chatUserId] || {});
+   const { data: messages } = useSelector(state => state.chatConversationData);
    const [index, setIndex] = React.useState(0);
    const [loading, setLoading] = React.useState(false);
    const [countBasedOnType, setCountBasedOnType] = React.useState({});
@@ -51,14 +51,14 @@ const ViewAllMedia = () => {
    React.useEffect(() => {
       toggleLoading();
       handleGetMedia();
-   }, [messageList]);
+   }, [messages]);
 
    const toggleLoading = () => {
       setLoading(val => !val);
    };
 
    const messageList = React.useMemo(() => {
-      const data = Object.values(messages) || [];
+      const data = messages[chatUserId]?.messages ? Object.values(messages[chatUserId]?.messages) : [];
       const filteredMessages = data.filter(message => {
          const { deleteStatus, recallStatus } = message;
          const { media, message_type } = message.msgBody;

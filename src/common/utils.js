@@ -1,7 +1,7 @@
 import React from 'react';
 import DocumentPicker from 'react-native-document-picker';
 import { Box, Text } from 'native-base';
-import { request, PERMISSIONS, requestMultiple, check } from 'react-native-permissions';
+import { request, PERMISSIONS, requestMultiple, check, RESULTS } from 'react-native-permissions';
 import { Alert, Linking, NativeModules, Platform } from 'react-native';
 import SDK from '../SDK/SDK';
 import messaging from '@react-native-firebase/messaging';
@@ -103,11 +103,36 @@ export const requestCameraPermission = async () => {
 export const requestCameraMicPermission = async () => {
    switch (true) {
       case Platform.OS === 'ios':
-         const ios_permit = await requestMultiple([PERMISSIONS.IOS.CAMERA, PERMISSIONS.IOS.MICROPHONE]);
-         return ios_permit['ios.permission.CAMERA'] && ios_permit['ios.permission.MICROPHONE'];
+         const { 'ios.permission.CAMERA': camera, 'ios.permission.MICROPHONE': mic } = await requestMultiple([
+            PERMISSIONS.IOS.CAMERA,
+            PERMISSIONS.IOS.MICROPHONE,
+         ]);
+         if (
+            (camera === RESULTS.GRANTED || camera === RESULTS.LIMITED) &&
+            (mic === RESULTS.GRANTED || mic === RESULTS.LIMITED)
+         ) {
+            return 'granted';
+         } else if (camera === RESULTS.BLOCKED || mic === RESULTS.BLOCKED) {
+            return 'blocked';
+         } else {
+            return 'denied';
+         }
       case Platform.OS === 'android':
-         const permited = await requestMultiple([PERMISSIONS.ANDROID.CAMERA, PERMISSIONS.ANDROID.RECORD_AUDIO]);
-         return permited['android.permission.CAMERA'] && permited['android.permission.RECORD_AUDIO'];
+         const permissionStatus = await requestMultiple([PERMISSIONS.ANDROID.CAMERA, PERMISSIONS.ANDROID.RECORD_AUDIO]);
+
+         if (
+            permissionStatus[PERMISSIONS.ANDROID.CAMERA] === RESULTS.GRANTED &&
+            permissionStatus[PERMISSIONS.ANDROID.RECORD_AUDIO] === RESULTS.GRANTED
+         ) {
+            return RESULTS.GRANTED;
+         } else if (
+            permissionStatus[PERMISSIONS.ANDROID.CAMERA] === RESULTS.BLOCKED ||
+            permissionStatus[PERMISSIONS.ANDROID.RECORD_AUDIO] === RESULTS.BLOCKED
+         ) {
+            return RESULTS.BLOCKED;
+         } else {
+            return RESULTS.DENIED;
+         }
    }
 };
 
@@ -115,14 +140,26 @@ export const requestStoragePermission = async () => {
    switch (true) {
       case Platform.OS === 'ios':
          return await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
-      case Platform.OS === 'android' && Platform.Version <= 32: // Android Vresion 32 and below
+      case Platform.OS === 'android' && Platform.Version <= 32: // Android Version 32 and below
          return await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
       default:
-         const permited = await requestMultiple([
+         const androidPermissions = await requestMultiple([
             PERMISSIONS.ANDROID.READ_MEDIA_IMAGES,
             PERMISSIONS.ANDROID.READ_MEDIA_VIDEO,
-         ]); // Android Vresion 33 and above
-         return permited['android.permission.READ_MEDIA_IMAGES'] || permited['android.permission.READ_MEDIA_VIDEO'];
+         ]); // Android Version 33 and above
+         if (
+            androidPermissions[PERMISSIONS.ANDROID.READ_MEDIA_IMAGES] === RESULTS.GRANTED ||
+            androidPermissions[PERMISSIONS.ANDROID.READ_MEDIA_VIDEO] === RESULTS.GRANTED
+         ) {
+            return RESULTS.GRANTED;
+         } else if (
+            androidPermissions[PERMISSIONS.ANDROID.READ_MEDIA_IMAGES] === RESULTS.BLOCKED ||
+            androidPermissions[PERMISSIONS.ANDROID.READ_MEDIA_VIDEO] === RESULTS.BLOCKED
+         ) {
+            return RESULTS.BLOCKED;
+         } else {
+            return RESULTS.DENIED;
+         }
    }
 };
 

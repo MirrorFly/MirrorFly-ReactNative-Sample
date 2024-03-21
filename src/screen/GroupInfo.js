@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, BackHandler, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { showToast } from '../Helper';
 import {
@@ -17,10 +17,9 @@ import GrpCollapsibleToolbar from '../components/GrpCollapsibleToolbar';
 import ApplicationColors from '../config/appColors';
 import { useNetworkStatus } from '../hooks';
 import { getUserName } from '../hooks/useRosterData';
-import { mflog } from '../uikitHelpers/uikitMethods';
+import { CONVERSATION_SCREEN } from '../constant';
 
 const GroupInfo = () => {
-   mflog('GroupInfo Rendering');
    const {
       params: { chatUser = '' },
    } = useRoute();
@@ -28,6 +27,16 @@ const GroupInfo = () => {
    const navigation = useNavigation();
    const isNetworkconneted = useNetworkStatus();
    const [modelOpen, setModelOpen] = React.useState(false);
+
+   React.useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+      return () => backHandler.remove();
+   }, []);
+
+   const handleBackBtn = () => {
+      navigation.navigate(CONVERSATION_SCREEN);
+      return true;
+   };
 
    const toggleModel = () => {
       setModelOpen(val => !val);
@@ -87,10 +96,6 @@ const GroupInfo = () => {
       } else {
          showToast('');
       }
-   };
-
-   const handleBackBtn = () => {
-      navigation.goBack();
    };
 
    return (

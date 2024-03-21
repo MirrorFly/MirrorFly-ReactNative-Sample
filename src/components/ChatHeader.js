@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { Checkbox } from 'native-base';
 import React, { useRef } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Keyboard, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { ALREADY_ON_CALL } from '../Helper/Calls/Constant';
@@ -106,6 +106,7 @@ function ChatHeader({
    };
 
    const handleDelete = () => {
+      Keyboard.dismiss();
       isMediaFileInSelectedMessageForDelete.current = selectedMsgs.some(msg => {
          const { recallStatus, msgBody: { media: { file = {}, local_path = '' } = {} } = {} } = msg;
          return Boolean((local_path || file?.fileDetails?.uri) && recallStatus === 0);
@@ -141,6 +142,7 @@ function ChatHeader({
    };
 
    const handleFavourite = () => {
+      Keyboard.dismiss();
       console.log('Fav item');
    };
 
@@ -163,6 +165,7 @@ function ChatHeader({
       dispatch(clearConversationSearchData());
    };
    const handleForwardMessage = () => {
+      Keyboard.dismiss();
       navigation.navigate(FORWARD_MESSSAGE_SCREEN, {
          forwardMessages: selectedMsgs,
          onMessageForwaded: handleRemove,

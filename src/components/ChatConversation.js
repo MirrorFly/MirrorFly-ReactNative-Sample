@@ -1,34 +1,34 @@
-import React, { useRef } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { useRef } from 'react';
+import { ImageBackground, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { formatUserIdToJid, getActiveConversationChatId, getChatMessageHistoryById } from '../Helper/Chat/ChatHelper';
 import { NO_CONVERSATION } from '../Helper/Chat/Constant';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { showToast } from '../Helper/index';
 import SDK from '../SDK/SDK';
-import { ClearChatHistoryAction } from '../redux/Actions/ConversationAction';
-import { clearLastMessageinRecentChat } from '../redux/Actions/RecentChatAction';
-import { ImageBackground, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { formatUserIdToJid, getActiveConversationChatId, getChatMessageHistoryById } from '../Helper/Chat/ChatHelper';
+import chatBackgroud from '../assets/chatBackgroud.png';
+import Modal, { ModalCenteredContent } from '../common/Modal';
+import Pressable from '../common/Pressable';
+import commonStyles from '../common/commonStyles';
+import { getImageSource } from '../common/utils';
 import ChatHeader from '../components/ChatHeader';
 import ChatInput from '../components/ChatInput';
+import { MESSAGE_INFO_SCREEN } from '../constant';
+import { ClearChatHistoryAction } from '../redux/Actions/ConversationAction';
 import { resetGalleryData } from '../redux/Actions/GalleryAction';
+import { clearLastMessageinRecentChat } from '../redux/Actions/RecentChatAction';
 import ChatConversationList from './ChatConversationList';
+import { pauseAudio } from './Media/AudioPlayer';
 import ReplyAudio from './ReplyAudio';
 import ReplyContact from './ReplyContact';
+import ReplyDeleted from './ReplyDeleted';
 import ReplyDocument from './ReplyDocument';
 import ReplyImage from './ReplyImage';
 import ReplyLocation from './ReplyLocation';
 import ReplyText from './ReplyText';
 import ReplyVideo from './ReplyVideo';
-import ReplyDeleted from './ReplyDeleted';
-import chatBackgroud from '../assets/chatBackgroud.png';
-import { getImageSource } from '../common/utils';
-import Modal, { ModalCenteredContent } from '../common/Modal';
-import Pressable from '../common/Pressable';
-import commonStyles from '../common/commonStyles';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { pauseAudio } from './Media/AudioPlayer';
-import { MESSAGE_INFO_SCREEN } from '../constant';
 
 // below ref is used to check whether selecting is happening or not in other components without passing the selected Messages state as props
 export const isMessageSelectingRef = React.createRef();
@@ -172,6 +172,8 @@ const ChatConversation = React.memo(props => {
    };
 
    const handleGoMessageInfoScreen = () => {
+      setSelectedMsgs([]);
+      selectedMessagesIdRef.current = {};
       navigation.navigate(MESSAGE_INFO_SCREEN, { chatUser: fromUserJId, msgId: selectedMsgs[0].msgId });
    };
 

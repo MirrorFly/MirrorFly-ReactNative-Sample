@@ -51,6 +51,9 @@ const ProfileScreen = ({ navigation }) => {
    const updateProfileDetail = async () => {
       if (selectProfileInfo !== profileInfo) {
          const userIdentifier = await AsyncStorage.getItem('userIdentifier');
+         if (selectProfileInfo.status === '') {
+            selectProfileInfo.status = 'I am in Mirror Fly';
+         }
          setProfileInfo({ ...selectProfileInfo, mobileNumber: JSON.parse(userIdentifier) });
       }
    };
@@ -130,7 +133,10 @@ const ProfileScreen = ({ navigation }) => {
    }, [nav, profileInfo, statusList]);
 
    return (
-      <KeyboardAvoidingView style={styles.keyBoardStyle} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView
+         style={styles.keyBoardStyle}
+         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+         keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}>
          {renderedComponent}
       </KeyboardAvoidingView>
    );

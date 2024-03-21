@@ -526,6 +526,7 @@ const styles = StyleSheet.create({
    highlightedText: {
       color: '#1f2937',
       fontWeight: 'bold',
+      maxWidth: '90%',
    },
    highlightedMessageText: {
       color: '#767676',

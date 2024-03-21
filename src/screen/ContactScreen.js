@@ -47,6 +47,7 @@ function ContactScreen() {
    const isGroupInfoSrn = prevScreen === GROUP_INFO;
    const isNetworkconneted = useNetworkStatus();
    const [isFetching, setIsFetching] = React.useState(true);
+   const [footerLoader, setFooterLoader] = React.useState(false);
    const [searchText, setSearchText] = React.useState('');
    const [isSearching, setIsSearching] = React.useState(false);
    const [contactList, setContactList] = React.useState([]);
@@ -67,7 +68,7 @@ function ContactScreen() {
       return () => {
          backHandler.remove();
       };
-   }, []);
+   }, [isNewGrpSrn, isGroupInfoSrn]);
 
    React.useEffect(() => {
       if (isNetworkconneted) {
@@ -132,20 +133,16 @@ function ContactScreen() {
             showToast('Could not get contacts from server', toastOptions);
          }
          setIsFetching(false);
+         setFooterLoader(false);
       }
    };
 
-   const fetchContactListFromSDKWithDebounce = debounce(fetchContactListFromSDK, 300);
-
    const fetchContactList = text => {
-      setIsFetching(true);
       setTimeout(() => {
          const _searchText = text?.trim?.();
          searchTextValueRef.current = _searchText;
-         if (isNetworkconneted) {
+         if (isNetworkconneted && _searchText) {
             if (_searchText) {
-               fetchContactListFromSDKWithDebounce(_searchText);
-            } else {
                fetchContactListFromSDK(_searchText);
             }
          }
@@ -268,7 +265,9 @@ function ContactScreen() {
             onhandlePress={item => handlePress(item)}
             selectedUsers={selectedUsers}
             isLoading={isFetching}
+            footerLoader={footerLoader}
             data={contactList}
+            onEndReachedThreshold={16}
          />
       );
    };

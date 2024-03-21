@@ -4,7 +4,7 @@ import React, { createRef } from 'react';
 import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import RNFS from 'react-native-fs';
-import { openSettings } from 'react-native-permissions';
+import { RESULTS, openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { getVideoThumbImage, showCheckYourInternetToast, showToast } from '../Helper';
@@ -43,7 +43,6 @@ import { deleteRecoverMessage, recoverMessage } from '../redux/Actions/RecoverMe
 import { clearConversationSearchData } from '../redux/Actions/conversationSearchAction';
 import store from '../redux/store';
 import SavePicture from './Gallery';
-import { mflog } from '../uikitHelpers/uikitMethods';
 
 export const selectedMediaIdRef = createRef();
 selectedMediaIdRef.current = {};
@@ -106,12 +105,11 @@ function ChatScreen() {
    };
 
    const handleAudioSelect = async () => {
-      const storage_permission = await AsyncStorage.getItem('storage_permission');
-      AsyncStorage.setItem('storage_permission', 'true');
+      const audio_permission = await AsyncStorage.getItem('audio_permission');
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
-      let MediaPermission = await requestAudioStoragePermission();
+      const audioPermission = await requestAudioStoragePermission();
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-      if (MediaPermission === 'granted' || MediaPermission === 'limited') {
+      if (audioPermission === 'granted' || audioPermission === 'limited') {
          SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
          let response = await handleAudioPickerSingle();
          let _validate = validation(response.type);
@@ -138,14 +136,15 @@ function ChatScreen() {
             };
             handleSendMsg(message);
          }
-      } else if (storage_permission) {
+      } else if (audio_permission) {
          openSettings();
+      } else if (audioPermission === RESULTS.BLOCKED) {
+         AsyncStorage.setItem('audio_permission', 'true');
       }
    };
 
    const openDocumentPicker = async () => {
       const storage_permission = await AsyncStorage.getItem('storage_permission');
-      AsyncStorage.setItem('storage_permission', 'true');
       const permissionResult = await requestFileStoragePermission();
       if (permissionResult === 'granted' || permissionResult === 'limited') {
          // updating the SDK flag to keep the connection Alive when app goes background because of document picker
@@ -153,7 +152,6 @@ function ChatScreen() {
          const file = await handleDocumentPickSingle();
          // updating the SDK flag back to false to behave as usual
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-
          // Validating the file type and size
          if (!isValidFileType(file.type)) {
             Alert.alert(
@@ -184,18 +182,21 @@ function ChatScreen() {
          handleSendMsg(messageData);
       } else if (storage_permission) {
          openSettings();
+      } else if (permissionResult === RESULTS.BLOCKED) {
+         AsyncStorage.setItem('storage_permission', 'true');
       }
    };
 
    const handleContactSelect = async () => {
       try {
          const isNotFirstTimeContactPermissionCheck = await AsyncStorage.getItem('contact_permission');
-         AsyncStorage.setItem('contact_permission', 'true');
          const result = await requestContactPermission();
          if (result === 'granted') {
             navigation.navigate(MOBILE_CONTACT_LIST_SCREEN);
          } else if (isNotFirstTimeContactPermissionCheck) {
             openSettings();
+         } else if (result === RESULTS.BLOCKED) {
+            AsyncStorage.setItem('contact_permission', 'true');
          }
       } catch (error) {
          console.error('Error requesting contacts permission:', error);
@@ -204,7 +205,6 @@ function ChatScreen() {
    const handleLocationSelect = async () => {
       try {
          const isNotFirstTimeLocationPermissionCheck = await AsyncStorage.getItem('location_permission');
-         AsyncStorage.setItem('location_permission', 'true');
          const result = await requestLocationPermission();
          if (result === 'granted' || result === 'limited') {
             if (isNetworkAvailable) {
@@ -214,6 +214,8 @@ function ChatScreen() {
             }
          } else if (isNotFirstTimeLocationPermissionCheck) {
             openSettings();
+         } else if (result === RESULTS.BLOCKED) {
+            AsyncStorage.setItem('location_permission', 'true');
          }
       } catch (error) {
          console.error('Failed to request location permission:', error);
@@ -233,14 +235,14 @@ function ChatScreen() {
             let cameraPermission = await requestCameraMicPermission();
             let imageReadPermission = await requestStoragePermission();
             const camera_permission = await AsyncStorage.getItem('camera_permission');
-            AsyncStorage.setItem('camera_permission', 'true');
-            if (
-               (cameraPermission === 'granted' || cameraPermission === 'limited') &&
-               (imageReadPermission === 'granted' || imageReadPermission === 'limited')
-            ) {
+            if (cameraPermission === 'granted' && imageReadPermission === 'granted') {
                setLocalNav('CAMERAVIEW');
             } else if (camera_permission) {
                openSettings();
+            } else if (cameraPermission === RESULTS.BLOCKED) {
+               AsyncStorage.setItem('camera_permission', 'true');
+            } else if (imageReadPermission === RESULTS.BLOCKED) {
+               AsyncStorage.setItem('storage_permission', 'true');
             }
          },
       },
@@ -249,12 +251,13 @@ function ChatScreen() {
          icon: GalleryIcon,
          formatter: async () => {
             const storage_permission = await AsyncStorage.getItem('storage_permission');
-            AsyncStorage.setItem('storage_permission', 'true');
             let imageReadPermission = await requestStoragePermission();
             if (imageReadPermission === 'granted' || imageReadPermission === 'limited') {
                setLocalNav('Gallery');
             } else if (storage_permission) {
                openSettings();
+            } else if (imageReadPermission === RESULTS.BLOCKED) {
+               AsyncStorage.setItem('storage_permission', 'true');
             }
          },
       },

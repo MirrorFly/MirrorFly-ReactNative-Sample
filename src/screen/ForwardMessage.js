@@ -1,7 +1,17 @@
 import CheckBox from '@react-native-community/checkbox';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { ActivityIndicator, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+   ActivityIndicator,
+   BackHandler,
+   Modal,
+   Platform,
+   ScrollView,
+   StyleSheet,
+   Text,
+   TextInput,
+   View,
+} from 'react-native';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { CHATSCREEN, CONVERSATION_SCREEN } from '../../src/constant';
 import {
@@ -310,6 +320,16 @@ const ForwardMessage = () => {
    const [filteredContactList, setFilteredContactList] = React.useState([]);
    const recentChatData = useSelector(state => state.recentChatData.data);
    const activeChatUserJid = useSelector(state => state.navigation.fromUserJid);
+
+   React.useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+      return () => backHandler.remove();
+   }, []);
+
+   const handleBackBtn = () => {
+      navigation.navigate(CONVERSATION_SCREEN);
+      return true;
+   };
 
    const searchTextValueRef = React.useRef();
 

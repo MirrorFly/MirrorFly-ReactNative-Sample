@@ -1,4 +1,4 @@
-import { HStack, Icon, IconButton, KeyboardAvoidingView, Spacer, Text, View } from 'native-base';
+import { HStack, Icon, IconButton, KeyboardAvoidingView, Spacer, View } from 'native-base';
 import React from 'react';
 import { BackHandler, Image, Platform, StyleSheet, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -10,6 +10,7 @@ import { CHATCONVERSATION } from '../constant';
 import useRosterData from '../hooks/useRosterData';
 import { resetSafeArea, safeAreaBgColor } from '../redux/Actions/SafeAreaAction';
 import VideoPlayer from './Media/VideoPlayer';
+import NickName from './NickName';
 import { getType } from './chat/common/fileUploadValidation';
 
 const CameraPickView = props => {
@@ -114,7 +115,7 @@ const CameraPickView = props => {
             </HStack>
             <HStack alignItems={'center'} ml={3} mb={5}>
                <IconButton icon={<Icon as={() => RightArrowIcon('#fff')} name="emoji-happy" />} />
-               <Text color="#7f7f7f">{nickName}</Text>
+               <NickName style={styles.nickNameColor} userId={getUserIdFromJid(chatUser)} />
             </HStack>
          </View>
       </KeyboardAvoidingView>
@@ -151,5 +152,8 @@ const styles = StyleSheet.create({
       height: 45,
       borderColor: '#3276E2',
       borderWidth: 2,
+   },
+   nickNameColor: {
+      color: '#7f7f7f',
    },
 });

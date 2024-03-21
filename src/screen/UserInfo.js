@@ -1,15 +1,16 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { BackHandler, StyleSheet, View } from 'react-native';
 import useRosterData from '../hooks/useRosterData';
 import CollapsingToolbar from '../components/CollapsibleToolbar';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import { CONVERSATION_SCREEN } from '../constant';
 
 const UserInfo = () => {
    const {
       params: { chatUser = '' },
    } = useRoute();
-   const naviagation = useNavigation();
+   const navigation = useNavigation();
    const chatUserId = getUserIdFromJid(chatUser);
    let {
       nickName = '',
@@ -27,10 +28,15 @@ const UserInfo = () => {
    email = email || '';
    image = image || '';
 
-   const handleBackBtn = () => {
-      naviagation.goBack();
-   };
+   React.useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+      return () => backHandler.remove();
+   }, []);
 
+   const handleBackBtn = () => {
+      navigation.navigate(CONVERSATION_SCREEN);
+      return true;
+   };
    return (
       <View style={styles.container}>
          <CollapsingToolbar

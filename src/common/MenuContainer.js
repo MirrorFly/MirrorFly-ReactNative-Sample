@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, Platform, StyleSheet, Text } from 'react-native';
+import { Dimensions, Keyboard, Platform, StyleSheet, Text } from 'react-native';
 import { Menu, MenuItem } from 'react-native-material-menu';
 import ApplicationColors from '../config/appColors';
 import { MenuIconBtn } from './Button';
@@ -8,6 +8,7 @@ function MenuContainer({ menuItems, color, menuStyle }) {
    const [visible, setVisible] = React.useState(false);
 
    const showMenu = () => {
+      Keyboard.dismiss();
       setVisible(true);
    };
 

@@ -65,7 +65,8 @@ const EditName = () => {
    return (
       <KeyboardAvoidingView
          style={[commonStyles.bg_white, commonStyles.flex1]}
-         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+         keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}>
          <View style={[styles.container, commonStyles.hstack, { backgroundColor: headerBg }]}>
             <View
                style={[
@@ -92,7 +93,7 @@ const EditName = () => {
                      commonStyles.positionAbsolute,
                      commonStyles.alignItemsCenter,
                      styles.cancelContainer,
-                     { bottom: toggleEmojiWindow ? '50%' : 0 },
+                     { bottom: toggleEmojiWindow ? '47%' : 0 },
                   ]}>
                   <Pressable onPress={handleBackBtn}>
                      <Text style={styles.cancelBtn}>CANCEL</Text>

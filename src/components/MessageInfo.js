@@ -1,7 +1,7 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Divider } from 'native-base';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { CHAT_TYPE_GROUP } from '../Helper/Chat/Constant';
 import { getThumbBase64URL, getUserIdFromJid } from '../Helper/Chat/Utility';
@@ -15,6 +15,7 @@ import ImageCard from './ImageCard';
 import MapCard from './MapCard';
 import ScreenHeader from './ScreenHeader';
 import VideoCard from './VideoCard';
+import { CONVERSATION_SCREEN } from '../constant';
 
 function MessageInfo() {
    const {
@@ -48,9 +49,10 @@ function MessageInfo() {
    const [deliveredReport, setDeliveredReport] = React.useState();
    const [seenReport, setSeenReport] = React.useState();
 
-   const handleBackBtn = () => {
-      navigation.goBack();
-   };
+   React.useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+      return () => backHandler.remove();
+   }, []);
 
    React.useEffect(() => {
       (async () => {
@@ -60,6 +62,11 @@ function MessageInfo() {
          setDbValue(_dbValue);
       })();
    }, [messages]);
+
+   const handleBackBtn = () => {
+      navigation.navigate(CONVERSATION_SCREEN);
+      return true;
+   };
 
    let statusVisible;
    switch (msgStatus) {

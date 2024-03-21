@@ -6,8 +6,11 @@ import { isLocalUser } from '../Helper/Chat/ChatHelper';
 function NickName({ userId, ...props }) {
    let { nickName } = useRosterData(userId);
    const localUser = isLocalUser(userId);
-
-   return <Text {...props}>{localUser ? 'You' : nickName || userId}</Text>;
+   return (
+      <Text numberOfLines={1} {...props}>
+         {localUser ? 'You' : nickName || userId}
+      </Text>
+   );
 }
 
 export default NickName;

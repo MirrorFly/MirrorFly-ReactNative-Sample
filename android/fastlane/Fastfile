@@ -55,7 +55,7 @@ platform :android do
       firebase_app_distribution(
         app: "1:235373697524:android:8b3becf8d8ff9be3a0c1a1",
         groups: "reactnative",
-        release_notes: "React-Native android build for bug-fixes: MRN-656,MRN-653,MRN-650,MRN-649,MRN-648,MRN-644,MRN-641,MRN-640,MRN-639,MRN-626,MRN-625,MRN-623,MRN-620,MRN-619,MRN-614,MRN-594,MRN-581,MRN-568,MRN-543,MRN-561,MRN-556,MRN-554,MRN-535",
+        release_notes: "React-Native android build for bug-fixes: MRN-660,MRN-656,MRN-655,MRN-651,MRN-647,MRN-644,MRN-643,MRN-628,MRN-627,MRN-624,MRN-618,MRN-617,MRN-614,MRN-613,MRN-607,MRN-601,MRN-600,MRN-599,MRN-564",
         apk_path: "../android/app/build/outputs/apk/release/app-release.apk",
         
         firebase_cli_token: "1//0gfTJ_oWJ0mHNCgYIARAAGBASNwF-L9IrYZM4cUIV5EB8gVnSvtMC6Q7aAtgrgG8R1ybhSY1Np_5r5UuZu28N144_weOQDyONcW4",

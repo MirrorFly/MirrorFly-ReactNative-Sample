@@ -1,5 +1,3 @@
-// import { AppState, Platform } from 'react-native';
-// import { isActiveConversationUserOrGroup } from '../Helper/Chat/ChatHelper';
 import notifee, {
    AndroidCategory,
    AndroidFlags,
@@ -8,14 +6,7 @@ import notifee, {
    AndroidVisibility,
    EventType,
 } from '@notifee/react-native';
-import { AppState, Linking, Platform } from 'react-native';
-import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN } from '../../constant';
-import { updateChatConversationLocalNav } from '../../redux/Actions/ChatConversationLocalNavAction';
-import Store from '../../redux/store';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { getCurrentUserJid } from '../redux/Actions/AuthAction';
-// import Store from '../redux/store';
-import { NativeModules } from 'react-native';
+import { AppState, Linking, NativeModules, Platform } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
 import * as RootNav from '../../../src/Navigation/rootNavigation';
 import { endCall, getCallDuration } from '../../Helper/Calls/Call';
@@ -29,8 +20,11 @@ import {
 } from '../../Helper/Calls/Constant';
 import { answerIncomingCall, declineIncomingCall, endOnGoingCall } from '../../Helper/Calls/Utility';
 import { removeAllDeliveredNotification } from '../../Service/remoteNotifyHandle';
+import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN } from '../../constant';
 import { callDurationTimestamp, resetNotificationData, setNotificationData } from '../../redux/Actions/CallAction';
+import { updateChatConversationLocalNav } from '../../redux/Actions/ChatConversationLocalNavAction';
 import { navigate } from '../../redux/Actions/NavigationAction';
+import Store from '../../redux/store';
 const { ActivityModule } = NativeModules;
 
 let interval;

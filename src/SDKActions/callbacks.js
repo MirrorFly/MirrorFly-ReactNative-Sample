@@ -661,8 +661,6 @@ const reconnecting = res => {
    updatingUserStatusInRemoteStream(res.usersStatus);
    const showConfrenceData = Store.getState().showConfrenceData;
    const { data } = showConfrenceData;
-   let vcardData = getLocalUserDetails();
-   let currentUserJid = formatUserIdToJid(vcardData?.fromUser);
    const updatedConferenceData = {
       showCallingComponent: false,
       ...(data || {}),
@@ -676,9 +674,12 @@ const reconnecting = res => {
       remoteAudioMuted: remoteAudioMuted,
       callStatusText: CALL_STATUS_RECONNECT,
    };
-   // if (currentUserJid === res.userJid) {
-   //    updatedConferenceData.callStatusText = CALL_STATUS_RECONNECT;
-   // }
+   /** 
+    *  let vcardData = getLocalUserDetails();
+    * let currentUserJid = formatUserIdToJid(vcardData?.fromUser)
+   if (currentUserJid === res.userJid) {
+      updatedConferenceData.callStatusText = CALL_STATUS_RECONNECT;
+   }*/
    Store.dispatch(showConfrence(updatedConferenceData));
 };
 

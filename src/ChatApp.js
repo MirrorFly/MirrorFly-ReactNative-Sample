@@ -3,12 +3,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Box, NativeBaseProvider } from 'native-base';
 import PropTypes from 'prop-types';
 import React, { createRef } from 'react';
-import { AppState, Keyboard, Linking, LogBox, SafeAreaView, StatusBar, StyleSheet, useColorScheme } from 'react-native';
+import { Keyboard, Linking, LogBox, SafeAreaView, StatusBar, StyleSheet, useColorScheme } from 'react-native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import { callConnectionStoreData } from './Helper/Calls/Call';
-import { openCallModelActivity } from './Helper/Calls/Utility';
 import { navigationRef } from './Navigation/rootNavigation';
 import StackNavigationPage, { RecentStackNavigation } from './Navigation/stackNavigation';
+import { checkAndRequestPermission } from './common/utils';
 import ApplicationTheme from './config/appTheme';
 import {
    CAMERA,
@@ -28,8 +27,6 @@ import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction'
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
 import { getAppInitialized } from './uikitHelpers/uikitMethods';
-import { checkAndRequestPermission } from './common/utils';
-import _BackgroundTimer from 'react-native-background-timer';
 
 LogBox.ignoreAllLogs();
 

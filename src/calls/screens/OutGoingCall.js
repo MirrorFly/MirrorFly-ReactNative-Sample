@@ -1,6 +1,6 @@
 import React from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { endCall, startOutgoingcallTimer } from '../../Helper/Calls/Call';
 import { CALL_STATUS_DISCONNECTED } from '../../Helper/Calls/Constant';
 import { closeCallModalActivity } from '../../Helper/Calls/Utility';
@@ -28,7 +28,6 @@ const OutGoingCall = () => {
       callingUiStatus: 'Trying to connect',
    });
 
-   const dispatch = useDispatch();
    let userID = getUserIdFromJid(to || userJid);
    const userProfile = useRosterData(userID);
    const nickName = userProfile.nickName || userID;
@@ -85,7 +84,6 @@ const OutGoingCall = () => {
       // callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'OUTGOING_CALL');
    };
 
-   let localVideoMuted = confrenceData.localVideoMuted;
 
    return (
       <ImageBackground style={styles.container} source={getImageSource(OutgoingCallBg)}>

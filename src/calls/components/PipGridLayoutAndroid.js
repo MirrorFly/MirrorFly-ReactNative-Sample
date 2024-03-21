@@ -1,14 +1,13 @@
 import React from 'react';
-import { Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
-import ApplicationColors from '../../config/appColors';
-import Avathar from '../../common/Avathar';
-import { getUserIdFromJid } from '../../Helper/Chat/Utility';
-import useRosterData from '../../hooks/useRosterData';
-import { useNetworkStatus } from '../../hooks';
-import useFetchImage from '../../hooks/useFetchImage';
-import commonStyles from '../../common/commonStyles';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { getUsernameGraphemes } from '../../Helper';
 import { CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
+import { getUserIdFromJid } from '../../Helper/Chat/Utility';
+import commonStyles from '../../common/commonStyles';
+import ApplicationColors from '../../config/appColors';
+import { useNetworkStatus } from '../../hooks';
+import useFetchImage from '../../hooks/useFetchImage';
+import useRosterData from '../../hooks/useRosterData';
 import VideoComponent from './VideoComponent';
 
 const PIPGridItem = ({

@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { fetchGroupParticipants } from '../Helper/Chat/Groups';
-import { debounce, fetchContactsFromSDK, showToast } from '../Helper/index';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import { fetchContactsFromSDK, showToast } from '../Helper/index';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import no_contacts from '../assets/no_contacts.png';
@@ -21,13 +22,12 @@ import commonStyles from '../common/commonStyles';
 import { getImageSource } from '../common/utils';
 import FlatListView from '../components/FlatListView';
 import ScreenHeader from '../components/ScreenHeader';
+import config from '../components/chat/common/config';
 import ApplicationColors from '../config/appColors';
 import { CHATSCREEN, GROUP_INFO, NEW_GROUP, RECENTCHATSCREEN } from '../constant';
 import { useNetworkStatus } from '../hooks';
-import { navigate } from '../redux/Actions/NavigationAction';
-import config from '../components/chat/common/config';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { getUserName } from '../hooks/useRosterData';
+import { navigate } from '../redux/Actions/NavigationAction';
 
 const contactPaginationRefInitialValue = {
    nextPage: 1,
@@ -110,22 +110,25 @@ function ContactScreen() {
       return _users.filter(u => !participantsObj[u.userId]);
    };
 
-   const removeDuplicateObjects = array => {
-      const uniqueObjects = new Set(array.map(obj => JSON.stringify(obj)));
-
-      return Array.from(uniqueObjects).map(str => JSON.parse(str));
-   };
-
    const fetchContactListFromSDK = async _searchText => {
       let { nextPage = 1, hasNextPage = true } = contactsPaginationRef.current || {};
       if (hasNextPage && _searchText === searchTextValueRef.current) {
          nextPage = _searchText ? 1 : nextPage;
+         if (nextPage > 1) {
+            setFooterLoader(true);
+         } else {
+            setIsFetching(true);
+         }
          const { statusCode, users, totalPages } = await fetchContactsFromSDK(_searchText, nextPage, 23);
          if (statusCode === 200) {
             const filteredUsers = getUsersExceptRecentChatsUsers(users);
-            const uniqueObjects = removeDuplicateObjects(filteredUsers);
             updateContactPaginationRefData(totalPages, _searchText);
-            setContactList(nextPage === 1 ? uniqueObjects : val => [...val, ...uniqueObjects]);
+            if (nextPage === 1) {
+               setContactList(filteredUsers);
+            } else {
+               const arr = [...contactList, ...filteredUsers];
+               setContactList(arr);
+            }
          } else if (isNetworkconneted && statusCode !== 200) {
             const toastOptions = {
                id: 'contact-server-error',
@@ -141,10 +144,8 @@ function ContactScreen() {
       setTimeout(() => {
          const _searchText = text?.trim?.();
          searchTextValueRef.current = _searchText;
-         if (isNetworkconneted && _searchText) {
-            if (_searchText) {
-               fetchContactListFromSDK(_searchText);
-            }
+         if (isNetworkconneted) {
+            fetchContactListFromSDK(_searchText);
          }
       }, 0);
    };
@@ -267,7 +268,6 @@ function ContactScreen() {
             isLoading={isFetching}
             footerLoader={footerLoader}
             data={contactList}
-            onEndReachedThreshold={16}
          />
       );
    };

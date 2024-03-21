@@ -14,7 +14,6 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { handleImagePickerOpenCamera, handleImagePickerOpenGallery } from '../Helper/Chat/ChatHelper';
 import { showToast } from '../Helper/index';
-import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import CamerIcon from '../assets/camera.png';
 import ProfileImage from '../assets/profile.png';
@@ -30,10 +29,12 @@ import { useNetworkStatus } from '../hooks';
 import { navigate } from '../redux/Actions/NavigationAction';
 import ScreenHeader from './ScreenHeader';
 import ApplicationColors from '../config/appColors';
+import { useNavigation } from '@react-navigation/native';
 
 const ProfilePage = props => {
-   const { selectProfileInfo, profileInfo } = props;
+   const { selectProfileInfo, profileInfo, handleBackBtn } = props;
    const toast = useToast();
+   const RootNav = useNavigation();
    const dispatch = useDispatch();
    const prevPageInfo = useSelector(state => state.navigation.prevScreen);
    const isFetchingProfile = useSelector(state => state.profile.status === 'loading');
@@ -61,15 +62,6 @@ const ProfilePage = props => {
    React.useEffect(() => {
       setNickName(userName);
    }, [selectProfileInfo?.nickName]);
-
-   const handleBackBtn = () => {
-      let x = { prevScreen: PROFILESCREEN, screen: RECENTCHATSCREEN };
-      if (prevPageInfo !== REGISTERSCREEN) {
-         dispatch(navigate(x));
-         RootNav.navigate(RECENTCHATSCREEN);
-      }
-      return true;
-   };
 
    const OnStatusHandler = () => {
       props.onChangeEvent();
@@ -139,7 +131,10 @@ const ProfilePage = props => {
          if (UserInfo.statusCode === 200) {
             let x = { screen: RECENTCHATSCREEN, prevScreen: PROFILESCREEN };
             prevPageInfo === REGISTERSCREEN && dispatch(navigate(x));
-            RootNav.reset(RECENTCHATSCREEN);
+            RootNav.reset({
+               index: 0,
+               routes: [{ name: RECENTCHATSCREEN }],
+            });
             return showToast('Profile Updated successfully', toastConfig);
          } else {
             return showToast(UserInfo.message, toastConfig);
@@ -255,14 +250,6 @@ const ProfilePage = props => {
          [name]: value,
       });
    };
-
-   const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
-
-   React.useEffect(() => {
-      return () => {
-         backHandler.remove();
-      };
-   }, []);
 
    const handleRenderAuthImage = React.useMemo(() => {
       return (

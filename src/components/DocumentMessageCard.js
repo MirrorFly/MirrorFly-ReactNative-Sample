@@ -85,7 +85,7 @@ export default React.memo(DocumentMessageCard);
 
 const styles = StyleSheet.create({
    container: {
-      width: 265,
+      width: 245,
       position: 'relative',
       paddingTop: 2,
       paddingBottom: 25,

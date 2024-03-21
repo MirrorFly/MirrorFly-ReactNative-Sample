@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { BackHandler, StyleSheet, Text, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import { useSelector } from 'react-redux';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
@@ -20,8 +20,17 @@ const PostPreViewPage = () => {
    const [title, setTitle] = React.useState('');
    const [mediaForcePause, setMediaForcePause] = React.useState();
    const [currentIndex, setCurrentIndex] = React.useState(0);
+
+   React.useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+      return () => {
+         backHandler.remove();
+      };
+   }, []);
+
    const handleBackBtn = () => {
       navigation.goBack();
+      return true;
    };
 
    React.useEffect(() => {

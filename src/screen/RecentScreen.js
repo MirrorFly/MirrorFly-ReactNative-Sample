@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, Dimensions, StyleSheet, Text, View } from 'react-native';
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { showToast } from '../Helper';
@@ -49,6 +49,11 @@ function RecentScreen() {
    const [showDeleteChatModal, setShowDeleteChatModal] = React.useState(false);
    const [chatsBadge, setChatsBadge] = React.useState('');
    const [callsBadge] = React.useState('');
+
+   React.useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+      return () => backHandler.remove();
+   }, [selectedItems, isSearching]);
 
    const tabBarSceneBadgeMap = React.useMemo(() => {
       return {
@@ -118,15 +123,17 @@ function RecentScreen() {
    const handleBackBtn = () => {
       if (selectedItems.length) {
          dispatch(clearRecentChatSelectedItems());
-         return true;
       }
       if (isSearching) {
          batch(() => {
             dispatch(toggleRecentChatSearch(false));
             dispatch(updateRecentChatSearchText(''));
          });
-         return true;
       }
+      if (!selectedItems.length && !isSearching && RootNav.getCurrentScreen() === RECENTCHATSCREEN) {
+         BackHandler.exitApp();
+      }
+      return true;
    };
 
    const handleRemove = () => {

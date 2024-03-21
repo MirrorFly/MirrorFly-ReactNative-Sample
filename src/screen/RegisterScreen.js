@@ -16,7 +16,7 @@ import {
    useToast,
 } from 'native-base';
 import React, { useEffect } from 'react';
-import { Linking, Platform, TextInput } from 'react-native';
+import { BackHandler, Linking, Platform, TextInput } from 'react-native';
 import RNVoipPushNotification from 'react-native-voip-push-notification';
 import { useDispatch, useSelector } from 'react-redux';
 import { showToast } from '../Helper';
@@ -27,6 +27,7 @@ import { COUNTRYSCREEN, PROFILESCREEN, REGISTERSCREEN, numRegx } from '../consta
 import { useNetworkStatus } from '../hooks';
 import { getCurrentUserJid } from '../redux/Actions/AuthAction';
 import { navigate } from '../redux/Actions/NavigationAction';
+import { getCurrentScreen } from '../Navigation/rootNavigation';
 
 const RegisterScreen = ({ navigation }) => {
    const dispatch = useDispatch();
@@ -59,11 +60,19 @@ const RegisterScreen = ({ navigation }) => {
       if (Platform.OS === 'ios') {
          registerVoipToken();
       }
-
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
       return () => {
+         backHandler.remove();
          RNVoipPushNotification.removeEventListener('register');
       };
    }, []);
+
+   const handleBackBtn = () => {
+      if (getCurrentScreen() === REGISTERSCREEN) {
+         BackHandler.exitApp();
+      }
+      return true;
+   };
 
    const selectCountryHandler = () => {
       let x = { screen: COUNTRYSCREEN };

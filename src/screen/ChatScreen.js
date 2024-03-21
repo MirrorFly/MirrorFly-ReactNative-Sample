@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React, { createRef } from 'react';
-import { Alert, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, BackHandler, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import RNFS from 'react-native-fs';
 import { RESULTS, openSettings } from 'react-native-permissions';
@@ -62,6 +62,11 @@ function ChatScreen() {
    const [alert, setAlert] = React.useState(false);
    const [validate, setValidate] = React.useState('');
    const [isSearching, setIsSearching] = React.useState(false);
+
+   React.useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+      return () => backHandler.remove();
+   }, []);
 
    const isNetworkAvailable = useNetworkStatus();
 

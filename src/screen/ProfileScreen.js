@@ -5,21 +5,42 @@ import StatusPage from '../components/StatusPage';
 import ProfilePhoto from '../components/ProfilePhoto';
 import { useDispatch, useSelector } from 'react-redux';
 import SDK from '../SDK/SDK';
-import { CONNECTED, statusListConstant } from '../constant';
+import { CONNECTED, PROFILESCREEN, RECENTCHATSCREEN, REGISTERSCREEN, statusListConstant } from '../constant';
 import { profileDetail } from '../redux/Actions/ProfileAction';
 import { useNetworkStatus } from '../hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { KeyboardAvoidingView } from 'native-base';
-import { Platform, StyleSheet } from 'react-native';
+import { BackHandler, Platform, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { navigate } from '../redux/Actions/NavigationAction';
 
-const ProfileScreen = ({ navigation }) => {
+const ProfileScreen = () => {
    const dispatch = useDispatch();
+   const navigation = useNavigation();
+   const prevPageInfo = useSelector(state => state.navigation.prevScreen);
    const isNetworkConnected = useNetworkStatus();
    const xmppConnection = useSelector(state => state.connection.xmppStatus);
    const [nav, setNav] = React.useState('ProfileScreen');
    const [statusList, setStatusList] = React.useState([]);
    const selectProfileInfo = useSelector(state => state.profile.profileDetails);
    const [profileInfo, setProfileInfo] = React.useState({});
+
+   React.useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+      return () => backHandler.remove();
+   }, [prevPageInfo]);
+
+   const handleBackBtn = () => {
+      let x = { prevScreen: PROFILESCREEN, screen: RECENTCHATSCREEN };
+      if (prevPageInfo !== REGISTERSCREEN) {
+         dispatch(navigate(x));
+         navigation.goBack();
+      }
+      if (prevPageInfo === REGISTERSCREEN) {
+         BackHandler.exitApp();
+      }
+      return true;
+   };
 
    const handleDelete = value => {
       setStatusList(statusList.filter(item => item !== value));
@@ -101,6 +122,7 @@ const ProfileScreen = ({ navigation }) => {
                   profileInfo={profileInfo}
                   setProfileInfo={setProfileInfo}
                   onChangeEvent={hasProfileInfoChanged}
+                  handleBackBtn={handleBackBtn}
                />
             );
          case 'statusPage':
@@ -113,10 +135,18 @@ const ProfileScreen = ({ navigation }) => {
                   setProfileInfo={setProfileInfo}
                   removeItem={handleDelete}
                   onChangeEvent={hasProfileInfoChanged}
+                  handleBackBtn={handleBackBtn}
                />
             );
          case 'ProfileImage':
-            return <ProfilePhoto setNav={setNav} profileInfo={profileInfo} setProfileInfo={setProfileInfo} />;
+            return (
+               <ProfilePhoto
+                  setNav={setNav}
+                  profileInfo={profileInfo}
+                  setProfileInfo={setProfileInfo}
+                  handleBackBtn={handleBackBtn}
+               />
+            );
          case 'ProfileScreen':
          default:
             return (
@@ -127,6 +157,7 @@ const ProfileScreen = ({ navigation }) => {
                   profileInfo={profileInfo}
                   setProfileInfo={setProfileInfo}
                   onChangeEvent={hasProfileInfoChanged}
+                  handleBackBtn={handleBackBtn}
                />
             );
       }

@@ -12,7 +12,7 @@ import { GROUP_INFO, NEW_GROUP } from '../constant';
 import { showToast } from '../Helper';
 import config from './chat/common/config';
 
-const RenderItem = ({ item, index, onhandlePress, selectedUsers }) => {
+const RenderItem = ({ item, onhandlePress, selectedUsers }) => {
    let { nickName, image: imageToken, colorCode, status } = useRosterData(item?.userId);
    const { params: { prevScreen = '' } = {} } = useRoute();
    const [isChecked, setIsChecked] = React.useState(false);
@@ -80,7 +80,7 @@ const RenderItem = ({ item, index, onhandlePress, selectedUsers }) => {
 };
 
 export default function FlatListView(props) {
-   const { selectedUsers, onhandlePress, isLoading, footerLoader } = props;
+   const { selectedUsers, onhandlePress, isLoading, footerLoader, data } = props;
    const renderItem = ({ item, index }) => (
       <RenderItem item={item} index={index} onhandlePress={onhandlePress} selectedUsers={selectedUsers} />
    );
@@ -115,12 +115,15 @@ export default function FlatListView(props) {
          <View style={styles.listContainer}>
             <FlatList
                keyboardShouldPersistTaps={'always'}
-               keyExtractor={item => item?.userId.toString()}
+               keyExtractor={item => item?.userId}
                onEndReached={props?.onhandlePagination}
-               showsVerticalScrollIndicator={false}
-               data={props.data || []}
+               showsVerticalScrollIndicator={true}
+               data={data || []}
                renderItem={renderItem}
                ListFooterComponent={renderFooterLoaderIfFetching}
+               initialNumToRender={23}
+               maxToRenderPerBatch={23}
+               windowSize={15}
             />
          </View>
       </>

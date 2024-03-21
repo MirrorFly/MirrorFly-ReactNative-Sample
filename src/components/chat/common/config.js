@@ -32,5 +32,8 @@ const config = {
    // licenseKey: 'Gk0mPI8sq8FY0FEuYQHExG9PkZ1ZXa',
    // API_URL: 'https://kooratech-api.mirrorfly.com/api/v1'
    // licenseKey: 'e7x7JGFk9aR60JGUY9kYXZf1d9vRYN'
+   // ================sekron Environment variables =====================
+   // API_URL: 'https://sekerontechnolo-api.mirrorfly.com/api/v1',
+   // licenseKey: 'Q7njxET7AGU9oCfYbM4CD3UFbdMI9B',
 };
 export default config;

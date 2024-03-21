@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { ActivityIndicator, Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, BackHandler, Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-native';
 import { TabBar, TabView } from 'react-native-tab-view';
 import { useSelector } from 'react-redux';
 import { convertBytesToKB } from '../Helper';
@@ -47,6 +47,13 @@ const ViewAllMedia = () => {
    let numColumns = 4;
    const { width } = Dimensions.get('window');
    const tileSize = width / numColumns;
+
+   React.useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+      return () => {
+         backHandler.remove();
+      };
+   }, []);
 
    React.useEffect(() => {
       toggleLoading();
@@ -101,6 +108,7 @@ const ViewAllMedia = () => {
    ]);
    const handleBackBtn = () => {
       navigation.goBack();
+      return true;
    };
 
    const renderImageCountLabel = () => {

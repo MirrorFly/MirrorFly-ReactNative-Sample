@@ -134,6 +134,7 @@ import { updateRosterData } from '../redux/Actions/rosterAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import { handleLogOut } from '../common/utils';
 
 let localStream = null,
    localVideoMuted = false,
@@ -719,8 +720,7 @@ export const callBacks = {
          console.log('Disconnected');
       } else if (response.status === 'LOGOUT') {
          console.log('LOGOUT');
-         store.dispatch(navigate({ screen: REGISTERSCREEN }));
-         RootNav.reset(REGISTERSCREEN);
+         handleLogOut();
       }
    },
    dbListener: res => {

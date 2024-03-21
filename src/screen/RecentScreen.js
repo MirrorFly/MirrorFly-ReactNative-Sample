@@ -1,10 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
 import { BackHandler, Dimensions, StyleSheet, Text, View } from 'react-native';
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 import { batch, useDispatch, useSelector } from 'react-redux';
-import { endOngoingCallLogout } from '../Helper/Calls/Utility';
 import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
@@ -13,17 +11,16 @@ import { FloatingBtn } from '../common/Button';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import commonStyles from '../common/commonStyles';
+import { handleLogOut } from '../common/utils';
 import RecentCalls from '../components/RecentCalls';
 import RecentChat from '../components/RecentChat';
 import RecentHeader from '../components/RecentHeader';
 import ScreenHeader from '../components/ScreenHeader';
 import ApplicationColors from '../config/appColors';
-import { CONTACTLIST, PROFILESCREEN, RECENTCHATSCREEN, REGISTERSCREEN } from '../constant';
+import { CONTACTLIST, PROFILESCREEN, RECENTCHATSCREEN } from '../constant';
 import { DeleteChatHistoryAction } from '../redux/Actions/ConversationAction';
 import { navigate } from '../redux/Actions/NavigationAction';
-import { profileDetail } from '../redux/Actions/ProfileAction';
 import { deleteActiveChatAction } from '../redux/Actions/RecentChatAction';
-import { ResetStore } from '../redux/Actions/ResetAction';
 import {
    clearRecentChatSelectedItems,
    toggleRecentChatSearch,
@@ -157,20 +154,7 @@ function RecentScreen() {
    };
 
    const handleLogout = async () => {
-      SDK.logout();
-      const getPrevUserIdentifier = await AsyncStorage.getItem('userIdentifier');
-      AsyncStorage.setItem('prevUserIdentifier', getPrevUserIdentifier || '');
-      AsyncStorage.setItem('credential', '');
-      AsyncStorage.setItem('userIdentifier', '');
-      AsyncStorage.setItem('screenObj', '');
-      AsyncStorage.setItem('vCardProfile', '');
-      endOngoingCallLogout();
-      batch(() => {
-         dispatch(profileDetail({}));
-         dispatch(navigate({ screen: REGISTERSCREEN }));
-         dispatch(ResetStore());
-      });
-      RootNav.reset(REGISTERSCREEN);
+      handleLogOut();
    };
 
    const toggleDeleteModal = () => {

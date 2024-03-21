@@ -13,6 +13,15 @@ import {
    PACKAGE_XIAOMI_WINDOW_COMPONENT,
    alertPermissionMessage,
 } from '../Helper/Calls/Constant';
+import { showToast } from '../Helper';
+import { REGISTERSCREEN } from '../constant';
+import { endOngoingCallLogout } from '../Helper/Calls/Utility';
+import { batch } from 'react-redux';
+import Store from '../redux/store';
+import { profileDetail } from '../redux/Actions/ProfileAction';
+import { navigate } from '../redux/Actions/NavigationAction';
+import { ResetStore } from '../redux/Actions/ResetAction';
+import * as RootNav from '../Navigation/rootNavigation';
 const { ActivityModule } = NativeModules;
 
 const toastConfig = {
@@ -341,5 +350,26 @@ export const checkAndRequestPermission = async () => {
          default:
             break;
       }
+   }
+};
+
+export const handleLogOut = async () => {
+   let { statusCode = '', message = '' } = await SDK.logout();
+   if (statusCode === 200) {
+      const getPrevUserIdentifier = await AsyncStorage.getItem('userIdentifier');
+      AsyncStorage.setItem('prevUserIdentifier', getPrevUserIdentifier || '');
+      AsyncStorage.setItem('credential', '');
+      AsyncStorage.setItem('userIdentifier', '');
+      AsyncStorage.setItem('screenObj', '');
+      AsyncStorage.setItem('vCardProfile', '');
+      endOngoingCallLogout();
+      batch(() => {
+         Store.dispatch(profileDetail({}));
+         Store.dispatch(navigate({ screen: REGISTERSCREEN }));
+         Store.dispatch(ResetStore());
+      });
+      RootNav.reset(REGISTERSCREEN);
+   } else {
+      showToast(message, { id: message });
    }
 };

@@ -44,3 +44,22 @@ export const getNotifyMessage = res => {
       return contactEmoji + ' Contact';
   }
 };
+
+export const getCallNotifyMessage = res => {
+  switch (res.msgBody.message_type) {
+    case 'text':
+      return res?.msgBody?.message;
+    case 'image':
+      return imageEmoji + ' Image';
+    case 'video':
+      return videoEmoji + ' Video';
+    case 'audio':
+      return audioEmoji + ' Audio';
+    case 'file':
+      return fileEmoji + ' File';
+    case 'location':
+      return locationEmoji + ' Location';
+    case 'contact':
+      return contactEmoji + ' Contact';
+  }
+};

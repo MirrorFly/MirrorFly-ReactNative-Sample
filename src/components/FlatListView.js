@@ -1,18 +1,17 @@
-import {
-  Box,
-  Divider,
-  HStack,
-  Pressable,
-  Slide,
-  Spinner,
-  Text,
-  VStack,
-} from 'native-base';
 import React from 'react';
 import Avathar from '../common/Avathar';
-import { SwipeListView } from 'react-native-swipe-list-view';
 import useRosterData from '../hooks/useRosterData';
 import SDK from '../SDK/SDK';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+} from 'react-native';
+import commonStyles from '../common/commonStyles';
+import ApplicationColors from '../config/appColors';
+import Pressable from '../common/Pressable';
 
 const RenderItem = ({ item, index, onhandlePress }) => {
   let {
@@ -30,53 +29,36 @@ const RenderItem = ({ item, index, onhandlePress }) => {
   const handlePress = () => onhandlePress(item);
 
   return (
-    <Box key={index}>
-      <Pressable
-        android_ripple={{ color: 'rgba(0, 0, 0, 0.1)' }}
-        onPress={handlePress}
-        _dark={{ bg: 'coolGray.800' }}
-        _light={{ bg: 'white' }}>
-        <Box pl="4" pr="5" py="2">
-          <HStack alignItems="center" space={3}>
-            <Avathar
-              data={nickName}
-              profileImage={imageToken}
-              backgroundColor={colorCode}
-            />
-            <VStack>
-              <Text color="coolGray.800" _dark={{ color: 'warmGray.50' }} bold>
-                {nickName}
-              </Text>
-              <HStack alignItems={'center'}>
-                <Text
-                  width={'90%'}
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  color="coolGray.600"
-                  _dark={{ color: 'warmGray.200' }}>
-                  {status}
-                </Text>
-              </HStack>
-            </VStack>
-          </HStack>
-        </Box>
+    <React.Fragment key={index}>
+      <Pressable onPress={handlePress}>
+        <View style={styles.wrapper}>
+          <Avathar
+            data={nickName}
+            profileImage={imageToken}
+            backgroundColor={colorCode}
+          />
+          <View style={[commonStyles.marginLeft_15, commonStyles.flex1]}>
+            <Text
+              style={styles.nickNameText}
+              numberOfLines={1}
+              ellipsizeMode="tail">
+              {nickName}
+            </Text>
+            <Text
+              style={styles.stautsText}
+              numberOfLines={1}
+              ellipsizeMode="tail">
+              {status}
+            </Text>
+          </View>
+        </View>
       </Pressable>
-      <Divider
-        w={'83%'}
-        alignSelf="flex-end"
-        my="2"
-        _light={{ bg: '#f2f2f2' }}
-        _dark={{ bg: 'muted.50' }}
-      />
-    </Box>
+      <View style={styles.divider} />
+    </React.Fragment>
   );
 };
 
 export default function FlatListView(props) {
-  const onRowDidOpen = rowKey => {
-    console.log('This row opened', rowKey);
-  };
-
   const renderItem = ({ item, index }) => (
     <RenderItem item={item} index={index} onhandlePress={props.onhandlePress} />
   );
@@ -84,11 +66,14 @@ export default function FlatListView(props) {
   const renderLoaderIfFetching = () => {
     if (props.isLoading) {
       return (
-        <Slide mt="20" in={props.isLoading} placement="top">
-          <HStack space={8} justifyContent="center" alignItems="center">
-            <Spinner size="lg" color={'#3276E2'} />
-          </HStack>
-        </Slide>
+        <View style={styles.loaderWrapper}>
+          <View style={commonStyles.alignItemsCenter}>
+            <ActivityIndicator
+              size="large"
+              color={ApplicationColors.mainColor}
+            />
+          </View>
+        </View>
       );
     }
   };
@@ -96,19 +81,52 @@ export default function FlatListView(props) {
   return (
     <>
       {renderLoaderIfFetching()}
-      <Box bg="white" flex="1">
-        <SwipeListView
+      <View style={styles.listContainer}>
+        <FlatList
           onEndReached={props?.onhandlePagination}
           showsVerticalScrollIndicator={false}
           data={props.data || []}
           renderItem={renderItem}
-          rightOpenValue={-130}
-          previewRowKey={'0'}
-          previewOpenValue={-40}
-          previewOpenDelay={3000}
-          onRowDidOpen={onRowDidOpen}
         />
-      </Box>
+      </View>
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  listContainer: {
+    backgroundColor: ApplicationColors.white,
+    flex: 1,
+  },
+  wrapper: {
+    width: '100%',
+    marginVertical: 12,
+    paddingLeft: 16,
+    paddingRight: 20,
+    paddingVertical: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  nickNameText: {
+    flexWrap: 'wrap',
+    color: '#1f2937',
+    fontWeight: 'bold',
+    marginVertical: 2,
+  },
+  stautsText: {
+    color: '#4b5563',
+    marginVertical: 2,
+  },
+  divider: {
+    width: '83%',
+    height: 1,
+    alignSelf: 'flex-end',
+    backgroundColor: ApplicationColors.dividerBg,
+  },
+  loaderWrapper: {
+    position: 'absolute',
+    width: '100%',
+    top: 90,
+    zIndex: 100,
+  },
+});

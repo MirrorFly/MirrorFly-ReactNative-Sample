@@ -9,6 +9,9 @@ import {
 import MarqueeText from '../common/MarqueeText';
 import { useNetworkStatus } from '../hooks';
 import SDK from '../SDK/SDK';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import { Text } from 'react-native';
+import commonStyles from '../common/commonStyles';
 
 const LastSeen = props => {
   const isNetworkConnected = useNetworkStatus();
@@ -26,8 +29,11 @@ const LastSeen = props => {
     delay: 0,
     consecutive: false,
   });
+  const [isTyping, setIsTyping] = React.useState(false);
   const marqueeRef = React.useRef(null);
   const presenseData = useSelector(state => state.user.userPresence);
+  const typingStatusData =
+    useSelector(state => state.typingStatusData?.data) || {};
   const { fromUserJid, status } = presenseData;
   const userJid = props.jid;
 
@@ -59,6 +65,11 @@ const LastSeen = props => {
       }
     }
   }, [presenseData]);
+
+  React.useEffect(() => {
+    const _isTyping = Boolean(typingStatusData[getUserIdFromJid(userJid)]);
+    isTyping !== _isTyping && setIsTyping(_isTyping);
+  }, [typingStatusData]);
 
   const getLastSeenSeconds = async user_Jid => {
     if (!user_Jid) return -1;
@@ -92,6 +103,14 @@ const LastSeen = props => {
       userPresenceStatus,
     });
   };
+
+  if (isTyping) {
+    return (
+      <Text style={[commonStyles.typingText, commonStyles.fontSize_11]}>
+        typing...
+      </Text>
+    );
+  }
 
   return (
     <>

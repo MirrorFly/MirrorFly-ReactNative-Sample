@@ -1,15 +1,28 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Checkbox } from 'native-base';
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { handleSendMsg } from '../../Helper/Chat/ChatHelper';
 import { ContactInfoIcon, PhoneIcon, SendBlueIcon } from '../../common/Icons';
 import commonStyles from '../../common/commonStyles';
 import ScreenHeader from '../ScreenHeader';
 
-const ContactPreviewScreen = ({ handleClose, contactItems }) => {
+const ContactPreviewScreen = () => {
+   const { params: { selectedContacts: contactItems } = {} } = useRoute();
    const navigation = useNavigation();
    const [selectedContacts, setSelectedContacts] = React.useState([]);
+
+   React.useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+      return () => {
+         backHandler.remove();
+      };
+   }, []);
+
+   const handleBackBtn = () => {
+      navigation.goBack();
+      return true;
+   };
 
    React.useEffect(() => {
       const processedContactsWithCheckbox = contactItems.map(item => {
@@ -105,6 +118,10 @@ const ContactPreviewScreen = ({ handleClose, contactItems }) => {
             </React.Fragment>
          );
       });
+   };
+
+   const handleClose = () => {
+      navigation.goBack();
    };
 
    return (

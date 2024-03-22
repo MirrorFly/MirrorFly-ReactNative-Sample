@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, BackHandler, Pressable, StyleSheet, Text, View } from 'react-native';
 import Geocoder from 'react-native-geocoder';
 import Geolocation from 'react-native-geolocation-service';
 import MapView, { Marker } from 'react-native-maps';
@@ -40,6 +40,18 @@ const Location = () => {
    });
 
    const isInternetReachable = useNetworkStatus();
+
+   React.useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+      return () => {
+         backHandler.remove();
+      };
+   }, []);
+
+   const handleBackBtn = () => {
+      navigation.goBack();
+      return true;
+   };
 
    useEffect(() => {
       // fetching current location

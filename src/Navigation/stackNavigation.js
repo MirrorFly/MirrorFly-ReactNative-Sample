@@ -21,6 +21,7 @@ import {
    MESSAGE_INFO_SCREEN,
    MOBILE_CONTACT_LIST_SCREEN,
    NEW_GROUP,
+   PREVIEW_MOBILE_CONTACT_LIST_SCREEN,
    PROFILESCREEN,
    RECENTCHATSCREEN,
    REGISTERSCREEN,
@@ -42,6 +43,7 @@ import RegisterScreen from '../screen/RegisterScreen';
 import SettingScreen from '../screen/SettingScreen';
 import UserInfo from '../screen/UserInfo';
 import ViewAllMedia from '../screen/ViewAllMedia';
+import ContactPreviewScreen from '../components/Media/ContactPreviewScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -63,6 +65,9 @@ const ChatScreenStackNavigation = () => {
          <Stack.Screen name={GROUP_INFO}>{prop => <GroupInfo {...prop} />}</Stack.Screen>
          <Stack.Screen name={MESSAGE_INFO_SCREEN}>{prop => <MessageInfo {...prop} />}</Stack.Screen>
          <Stack.Screen name={MOBILE_CONTACT_LIST_SCREEN}>{prop => <ContactList {...prop} />}</Stack.Screen>
+         <Stack.Screen name={PREVIEW_MOBILE_CONTACT_LIST_SCREEN}>
+            {prop => <ContactPreviewScreen {...prop} />}
+         </Stack.Screen>
          <Stack.Screen name={LOCATION_SCREEN}>{prop => <Location {...prop} />}</Stack.Screen>
       </Stack.Navigator>
    );

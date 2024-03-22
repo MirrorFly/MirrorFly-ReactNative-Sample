@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import {
    ActivityIndicator,
+   BackHandler,
    Dimensions,
    FlatList,
    KeyboardAvoidingView,
@@ -26,7 +27,7 @@ import {
 import Pressable from '../../common/Pressable';
 import commonStyles from '../../common/commonStyles';
 import ApplicationColors from '../../config/appColors';
-import ContactPreviewScreen from './ContactPreviewScreen';
+import { PREVIEW_MOBILE_CONTACT_LIST_SCREEN } from '../../constant';
 
 const screenWidth = Dimensions.get('screen').width;
 
@@ -39,16 +40,8 @@ const ContactList = () => {
    const [searchText, setSearchText] = React.useState('');
    const [isSearching, setIsSearching] = React.useState(false);
    const [isLoading, setIsLoading] = React.useState(true);
-   const [showSelectedContactsPreview, setShowSelectedContactsPreview] = React.useState(false);
    const [selectedContacts, setSelectedContacts] = React.useState([]);
    const selectedContactsRef = React.useRef({});
-
-   React.useEffect(() => {
-      setSearchText('');
-      setIsSearching(false);
-      setSelectedContacts([]);
-      selectedContactsRef.current = {};
-   }, [showSelectedContactsPreview]);
 
    React.useEffect(() => {
       if (searchText === '') {
@@ -59,6 +52,13 @@ const ContactList = () => {
       }
       isLoading && setIsLoading(false);
    }, [searchText, contacts]);
+
+   React.useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', goBackToPreviousScreen);
+      return () => {
+         backHandler.remove();
+      };
+   }, [selectedContacts]);
 
    React.useEffect(() => {
       fetchContacts();
@@ -92,12 +92,18 @@ const ContactList = () => {
       }
    };
 
+   const resetSelected = () => {
+      selectedContactsRef.current = {};
+      setSelectedContacts([]);
+   };
+
    const goBackToPreviousScreen = () => {
-      if (showSelectedContactsPreview) {
-         setShowSelectedContactsPreview(false);
+      if (selectedContacts.length) {
+         resetSelected();
       } else {
          navigation.goBack();
       }
+      return true;
    };
 
    const toggleSearch = () => {
@@ -106,7 +112,7 @@ const ContactList = () => {
    };
 
    const handleContactNav = () => {
-      setShowSelectedContactsPreview(true);
+      navigation.navigate(PREVIEW_MOBILE_CONTACT_LIST_SCREEN, { selectedContacts });
    };
 
    const handleSearch = text => {
@@ -180,10 +186,6 @@ const ContactList = () => {
       );
    };
 
-   if (showSelectedContactsPreview) {
-      return <ContactPreviewScreen handleClose={goBackToPreviousScreen} contactItems={selectedContacts} />;
-   }
-
    const renderHeader = () => {
       return (
          <View style={styles.HeaderContainer}>
@@ -210,7 +212,7 @@ const ContactList = () => {
                      value={searchText}
                      style={styles.inputstyle}
                      onChangeText={handleSearch}
-                     placeholder=" Search..."
+                     placeholder="Search..."
                      autoFocus={true}
                      autoCorrect={false}
                      cursorColor={ApplicationColors.mainColor}

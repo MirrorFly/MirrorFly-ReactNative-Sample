@@ -696,9 +696,6 @@ export const callBacks = {
          RootNav.reset(REGISTERSCREEN);
       }
    },
-   dbListener: res => {
-      console.log('dbListener', JSON.stringify(res));
-   },
    messageListener: async res => {
       console.log('messageListener res ==>', JSON.stringify(res, null, 2));
       await nextFrame();

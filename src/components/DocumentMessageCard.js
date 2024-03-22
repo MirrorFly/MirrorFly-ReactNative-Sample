@@ -33,13 +33,15 @@ const DocumentMessageCard = ({
   const fileSizeInKB = convertBytesToKB(fileSize);
   const mediaData = message.msgBody.media;
   const fileExtension = getExtension(mediaData?.fileName, false);
-  const { mediaStatus, downloadMedia, retryUploadMedia } = useMediaProgress({
-    isSender,
-    mediaUrl: mediaUrl,
-    uploadStatus: message?.msgBody?.media?.is_uploading || 0,
-    media: message?.msgBody?.media,
-    msgId: message?.msgId,
-  });
+  const { mediaStatus, downloadMedia, retryUploadMedia, cancelUploadMedia } =
+    useMediaProgress({
+      isSender,
+      mediaUrl: mediaUrl,
+      uploadStatus: message?.msgBody?.media?.is_uploading || 0,
+      downloadStatus: message?.msgBody?.media?.is_downloaded || 0,
+      media: message?.msgBody?.media,
+      msgId: message?.msgId,
+    });
 
   const conversationSearchText = useSelector(
     state => state.conversationSearchData?.searchText,
@@ -96,6 +98,8 @@ const DocumentMessageCard = ({
           mediaStatus={mediaStatus}
           onDownload={downloadMedia}
           onUpload={retryUploadMedia}
+          onCancel={cancelUploadMedia}
+          msgId={message?.msgId}
         />
       </View>
       <View style={styles.statusAndTimestampWithFileSizeContainer}>

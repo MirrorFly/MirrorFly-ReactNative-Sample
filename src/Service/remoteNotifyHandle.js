@@ -3,6 +3,9 @@ import { AppState, Platform } from 'react-native';
 import { isActiveConversationUserOrGroup } from '../Helper/Chat/ChatHelper';
 import { displayRemoteNotification } from './PushNotify';
 import notifee, { AndroidImportance } from '@notifee/react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getCurrentUserJid } from '../redux/Actions/AuthAction';
+import Store from '../redux/store';
 
 let notifyObj = {};
 let ids = [];
@@ -24,9 +27,14 @@ export const pushNotify = async (
       ...notifyObj,
       [msgId]: { id, date, title, sent_from, onForGround },
     };
+    const currentUserJID = await AsyncStorage.getItem('currentUserJID');
+    const _currentUserJID = JSON.parse(currentUserJID);
+    Store.dispatch(getCurrentUserJid(_currentUserJID));
     if (
       Platform.OS === 'android' ||
-      (Platform.OS === 'ios' && AppState.currentState === 'active')
+      (Platform.OS === 'ios' &&
+        AppState.currentState === 'active' &&
+        sent_from !== _currentUserJID)
     ) {
       displayRemoteNotification(
         id,
@@ -64,7 +72,7 @@ export const updateNotification = msgId => {
 
 export const removeAllDeliveredNotification = () => {
   try {
-    notifee.cancelAllNotifications();
+    notifee.cancelAllNotifications(Object.values(ids));
   } catch (error) {
     console.log('removeAllDeliveredNotificatoin', error);
   }

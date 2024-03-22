@@ -7,6 +7,7 @@ import {
   RECENT_REMOVE_MESSAGE_UPDATE,
   UPDATE_MSG_BY_LAST_MSGID,
   RECENT_RECALL_UPDATE,
+  RESET_UNREAD_COUNT,
 } from './Constants';
 
 export const updateRecentChat = data => {
@@ -62,5 +63,12 @@ export const recentRecallUpdate = data => {
   return {
     type: RECENT_RECALL_UPDATE,
     payload: data,
+  };
+};
+
+export const resetUnreadCountForChat = chatId => {
+  return {
+    type: RESET_UNREAD_COUNT,
+    payload: chatId,
   };
 };

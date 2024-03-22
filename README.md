@@ -35,7 +35,8 @@ Follow the below steps to get your license key:
 
 ```jsx
 "dependencies": {
- "mirrorfly-uikit-react-native": "^1.0.0",
+ "mirrorfly-uikit-react-native": "^1.2.0",
+ "mirrorfly-reactnative-sdk": “^0.3.0”,
  "react": "^16.0.0",
  }
 ```
@@ -43,17 +44,34 @@ Follow the below steps to get your license key:
 **Step 3:** Import ChatApp component from the mirrorfly-uikit-react-native package in node modules.
 
 ```jsx
-import { ChatApp } from 'mirrorfly-uikit-react-native/dist';
-function App() {
-  return (
-    <>
-      <ChatApp
-        licenseKey="********************"
-        apiUrl="*******************"
-        isSandBox={true} // if you are a sandbox user it is true
-      />
-    </>
-  );
+import { mirrorflyInitialize } from "mirrorfly-uikit-react-native"
+import { MirrorflyComponent } from "mirrorfly-uikit-react-native"
+
+function YourComponent() {
+  return <MirrorflyComponent />;
 }
-export default App;
+
+   function App() {
+
+      React.useEffect(() => {
+         (async () => {
+            const initializeResponse = await mirrorflyInitialize({
+              licenseKey:"********************",
+              apiUrl:"*******************",
+              isSandbox: true,
+              callBack: res => {
+                console.log(res);
+              },
+            });
+         })();
+      }, []);
+    
+    return(
+      <>
+        <YourComponent/>
+      </>
+    )
+   }
+
+  export default App;
 ```

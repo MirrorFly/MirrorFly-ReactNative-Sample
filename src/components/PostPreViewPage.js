@@ -29,6 +29,7 @@ const PostPreViewPage = () => {
    }, []);
 
    const handleBackBtn = () => {
+      setMediaForcePause(true);
       navigation.goBack();
       return true;
    };

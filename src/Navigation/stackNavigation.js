@@ -53,6 +53,7 @@ const ChatScreenStackNavigation = () => {
          screenOptions={{
             headerShown: false,
             orientation: 'portrait',
+            gestureEnabled: false,
          }}
          initialRouteName={CONVERSATION_SCREEN}>
          <Stack.Screen name={CONVERSATION_SCREEN}>{prop => <ChatScreen {...prop} />}</Stack.Screen>

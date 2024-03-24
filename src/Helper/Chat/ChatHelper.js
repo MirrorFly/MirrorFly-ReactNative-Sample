@@ -141,6 +141,7 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
          updateObj.thumbImage = response.thumbImage;
       } else {
          updateObj.uploadStatus = 3;
+         showToast('Failed to upload' + msgType, { id: 'Failed to upload' + msgType });
       }
       store.dispatch(updateUploadStatus(updateObj));
    } catch (error) {

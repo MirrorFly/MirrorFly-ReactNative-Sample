@@ -14,16 +14,44 @@ const VideoPlayer = props => {
       audioOnly = false,
       item: { thumbImage = '', fileDetails = {} } = {},
    } = props;
+
    const { uri } = fileDetails;
    const videoPlayer = React.useRef(null);
+   const [volume, setVolume] = React.useState(100);
    const [videoUri, setVideoUri] = React.useState('');
-   const [currentTime, setCurrentTime] = React.useState(0);
+   const [currentTime, setCurrentTime] = React.useState(fileDetails.duration || 0);
    const [duration, setDuration] = React.useState(0);
    const [isLoading, setIsLoading] = React.useState(true);
    const [paused, setPaused] = React.useState(true);
    const [playerState, setPlayerState] = React.useState(PLAYER_STATES.PAUSED);
    const [onEnded, setOnEnded] = React.useState(false);
    const appState = useAppState();
+
+   React.useEffect(() => {
+      return () => handleForcePause();
+   }, []);
+
+   React.useLayoutEffect(() => {
+      if (Platform.OS === 'ios') {
+         if (uri.includes('ph://')) {
+            RNConvertPhAsset.convertVideoFromUrl({
+               url: uri,
+               convertTo: 'mov',
+               quality: 'original',
+            })
+               .then(response => {
+                  setVideoUri(response.path);
+               })
+               .catch(err => {
+                  mflog(err);
+               });
+         } else {
+            setVideoUri(uri);
+         }
+      } else {
+         setVideoUri(uri);
+      }
+   }, []);
 
    React.useEffect(() => {
       if (mediaForcePause) {
@@ -45,6 +73,7 @@ const VideoPlayer = props => {
       videoPlayer?.current?.seek?.(0);
       setCurrentTime(0);
       handlePause();
+      setVolume(0);
    };
 
    const handlePause = () => {
@@ -62,6 +91,10 @@ const VideoPlayer = props => {
     }, [width, height]) */
 
    const onSeek = seek => {
+      if (playerState === PLAYER_STATES.PLAYING) {
+         setPaused(true); // Pause the video player before seeking
+         setPlayerState(PLAYER_STATES.PAUSED);
+      }
       videoPlayer.current.seek(seek);
       setOnEnded(false);
    };
@@ -70,12 +103,14 @@ const VideoPlayer = props => {
       setPaused(!paused);
       setPlayerState(state);
       setMediaForcePause?.(false);
+      setVolume(100);
    };
 
    const onReplay = () => {
       videoPlayer?.current.seek(0);
       setCurrentTime(0);
       setOnEnded(false);
+      setVolume(100);
       if (Platform.OS === 'android') {
          setPlayerState(PLAYER_STATES.PAUSED);
          setPaused(true);
@@ -99,6 +134,7 @@ const VideoPlayer = props => {
 
    const onLoad = data => {
       setDuration(data.duration);
+      setIsLoading(false);
    };
 
    /**   const onLoadStart = data => setIsLoading(true);
@@ -129,37 +165,8 @@ const VideoPlayer = props => {
       }
    };
 
-   const handleLayout = e => {
-      setIsLoading(false);
-   };
-
-   React.useLayoutEffect(() => {
-      if (Platform.OS === 'ios') {
-         if (uri.includes('ph://')) {
-            RNConvertPhAsset.convertVideoFromUrl({
-               url: uri,
-               convertTo: 'mov',
-               quality: 'original',
-            })
-               .then(response => {
-                  setVideoUri(response.path);
-               })
-               .catch(err => {
-                  mflog(err);
-               });
-         } else {
-            setVideoUri(uri);
-         }
-      } else {
-         setVideoUri(uri);
-      }
-      return () => {
-         handleForcePause();
-      };
-   }, []);
-
    return (
-      <View style={{ flex: 1 }} onLayout={handleLayout}>
+      <View style={{ flex: 1 }}>
          <View style={{ flex: 1, justifyContent: 'center' }}>
             <Video
                audioOnly={audioOnly}
@@ -169,13 +176,13 @@ const VideoPlayer = props => {
                onProgress={onProgress}
                paused={paused}
                controls={false}
-               poster={getThumbBase64URL(thumbImage)}
+               poster={uri}
                posterResizeMode={'contain'}
                ref={videoPlayer}
                resizeMode={'contain'}
                source={{ uri: videoUri }}
                style={[styles.videoContainer, { display: mediaForcePause ? 'none' : 'flex' }]}
-               volume={100}
+               volume={volume}
                muted={false}
             />
             <Image
@@ -183,22 +190,20 @@ const VideoPlayer = props => {
                source={{ uri: getThumbBase64URL(thumbImage) }}
             />
          </View>
-         {!isLoading && (
-            <MediaControls
-               fadeOutDisable={audioOnly || playerState === PLAYER_STATES.PAUSED || playerState === PLAYER_STATES.ENDED}
-               duration={duration}
-               isLoading={isLoading}
-               mainColor="#333"
-               onPaused={onPaused}
-               onReplay={onReplay}
-               onSeek={onSeek}
-               onSeeking={onSeeking}
-               fadeOutDelay={1100}
-               playerState={playerState}
-               progress={currentTime}
-               containerStyle={styles.mediaControlStyle}
-            />
-         )}
+         <MediaControls
+            fadeOutDisable={audioOnly || playerState === PLAYER_STATES.PAUSED || playerState === PLAYER_STATES.ENDED}
+            duration={duration}
+            isLoading={isLoading}
+            mainColor="#333"
+            onPaused={onPaused}
+            onReplay={onReplay}
+            onSeek={onSeek}
+            onSeeking={onSeeking}
+            fadeOutDelay={1100}
+            playerState={playerState}
+            progress={currentTime}
+            containerStyle={styles.mediaControlStyle}
+         />
       </View>
    );
 };

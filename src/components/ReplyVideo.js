@@ -44,21 +44,13 @@ const ReplyVideo = props => {
                bottom: 0,
                right: -10,
             }}>
-            {replyMsgItems?.msgBody?.media?.local_path ? (
-               <Image
-                  resizeMode="cover"
-                  style={{ width: 60, height: 69 }}
-                  source={{ uri: replyMsgItems?.msgBody?.media?.local_path }}
-               />
-            ) : (
-               <Image
-                  resizeMode="cover"
-                  style={{ width: 60, height: 69 }}
-                  source={{
-                     uri: `data:image/png;base64,${replyMsgItems?.msgBody?.media?.thumb_image}`,
-                  }}
-               />
-            )}
+            <Image
+               resizeMode="cover"
+               style={{ width: 60, height: 69 }}
+               source={{
+                  uri: `data:image/png;base64,${replyMsgItems?.msgBody?.media?.thumb_image}`,
+               }}
+            />
             <Pressable
                style={{
                   padding: 5,

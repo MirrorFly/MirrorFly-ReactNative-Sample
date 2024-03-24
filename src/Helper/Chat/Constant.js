@@ -98,10 +98,11 @@ export const AUDIO_FORMATS = [
    'audio/mp3',
    'audio/wav',
    // 'audio/vnd.wave',
-   // 'audio/x-wav',
+   'audio/x-wav',
    'audio/mpeg',
    'audio/aac',
    'audio/vnd.dlna.adts',
+   'audio/aac-adts',
 ];
 export const VIDEO_FORMATS = ['video/mp4'];
 export const DOCUMENT_FORMATS = [
@@ -115,6 +116,7 @@ export const DOCUMENT_FORMATS = [
    'application/zip',
    'application/x-zip-compressed',
    'application/rar',
+   'application/x-rar',
    'application/vnd.rar',
    'application/excel',
    'application/x-excel',

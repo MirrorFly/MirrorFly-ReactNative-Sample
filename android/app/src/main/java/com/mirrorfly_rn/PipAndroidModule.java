@@ -27,6 +27,11 @@ public class PipAndroidModule extends ReactContextBaseJavaModule {
 
     ReactApplicationContext reactApplicationContext;
 
+    @Override
+    public boolean canOverrideExistingModule() {
+        return true;
+    }
+
     public PipAndroidModule(ReactApplicationContext reactContext) {
         super(reactContext);
         Log.d("PIP", "Got the context");

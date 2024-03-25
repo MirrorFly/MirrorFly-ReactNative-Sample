@@ -57,6 +57,7 @@ import {
    endCallForIos,
    getNickName,
    listnerForNetworkStateChangeWhenIncomingCall,
+   setPreviousHeadsetStatus,
    showCallModalToast,
    showOngoingNotification,
    startDurationTimer,
@@ -133,6 +134,7 @@ import { updateRosterData } from '../redux/Actions/rosterAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import { handleLogOut } from '../common/utils';
 
 let localStream = null,
    localVideoMuted = false,
@@ -184,6 +186,7 @@ export const resetCallData = () => {
    HeadphoneDetection.remove?.();
    BluetoothHeadsetDetectionModule.removeAllListeners();
    RingtoneSilentKeyEventModule.removeAllListeners();
+   setPreviousHeadsetStatus(false);
    KeyEvent.removeKeyUpListener();
    if (Platform.OS === 'ios') {
       clearIosCallListeners();
@@ -652,13 +655,12 @@ const disconnected = res => {
 };
 
 const reconnecting = res => {
+   stopOutgoingCallRingingTone();
    onReconnect = true;
    startReconnectingTone();
    updatingUserStatusInRemoteStream(res.usersStatus);
    const showConfrenceData = Store.getState().showConfrenceData;
    const { data } = showConfrenceData;
-   let vcardData = getLocalUserDetails();
-   let currentUserJid = formatUserIdToJid(vcardData?.fromUser);
    const updatedConferenceData = {
       showCallingComponent: false,
       ...(data || {}),
@@ -672,9 +674,12 @@ const reconnecting = res => {
       remoteAudioMuted: remoteAudioMuted,
       callStatusText: CALL_STATUS_RECONNECT,
    };
-   // if (currentUserJid === res.userJid) {
-   //    updatedConferenceData.callStatusText = CALL_STATUS_RECONNECT;
-   // }
+   /** 
+    *  let vcardData = getLocalUserDetails();
+    * let currentUserJid = formatUserIdToJid(vcardData?.fromUser)
+   if (currentUserJid === res.userJid) {
+      updatedConferenceData.callStatusText = CALL_STATUS_RECONNECT;
+   }*/
    Store.dispatch(showConfrence(updatedConferenceData));
 };
 
@@ -716,8 +721,7 @@ export const callBacks = {
          console.log('Disconnected');
       } else if (response.status === 'LOGOUT') {
          console.log('LOGOUT');
-         store.dispatch(navigate({ screen: REGISTERSCREEN }));
-         RootNav.reset(REGISTERSCREEN);
+         handleLogOut();
       }
    },
    dbListener: res => {

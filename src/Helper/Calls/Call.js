@@ -24,7 +24,6 @@ import { updateCallAgainData } from '../../redux/Actions/CallAgainAction';
 import Store from '../../redux/store';
 import {
    CALL_AGAIN_SCREEN,
-   CALL_BUSY_STATUS_MESSAGE,
    CALL_RINGING_DURATION,
    CALL_STATUS_CALLING,
    CALL_STATUS_DISCONNECTED,
@@ -131,26 +130,18 @@ export const disconnectCallConnection = (remoteStreams = [], callStatusMessage =
    clearIosCallListeners();
    endCallForIos();
 
-   // dispatchDisconnected(CALL_STATUS_DISCONNECTED, remoteStreams);
    dispatchDisconnected(callStatusMessage, remoteStreams);
    // TODO: update the callLogs when implementing the feature
-   // callLogs.update(callConnectionData.roomId, {
-   // 		"endTime": callLogs.initTime(),
-   // 		"sessionStatus": CALL_SESSION_STATUS_CLOSED
-   // });
+   /** callLogs.update(callConnectionData.roomId, {
+   		"endTime": callLogs.initTime(),
+   		"sessionStatus": CALL_SESSION_STATUS_CLOSED
+   });*/
    // TODO: getFromLocalStorageAndDecrypt("isNewCallExist") verify
    const _isNewCallExist = /* getFromLocalStorageAndDecrypt("isNewCallExist") */ false;
    let timeOut = _isNewCallExist === true ? 0 : DISCONNECTED_SCREEN_DURATION;
    setTimeout(() => {
       resetCallData();
       cb?.();
-      // TODO: commenting the below line as this reducer has been resetted form the above method. Verify once
-      // Store.dispatch(showConfrence({
-      // 		showComponent: false,
-      // 		showCalleComponent: false,
-      // 		callStatusText: null,
-      // 		showStreamingComponent: false
-      // }))
    }, timeOut);
 };
 

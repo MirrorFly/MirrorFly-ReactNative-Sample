@@ -154,8 +154,7 @@ const setApplicationUrl = url => {
 
 export const getApplicationUrl = () => schemaUrl;
 
-export const setupCallScreen = (url = '') => {
-   setApplicationUrl(url);
+export const setupCallScreen = () => {
    //Permissions
    initializeSetup();
    if (Platform.OS === 'android') {

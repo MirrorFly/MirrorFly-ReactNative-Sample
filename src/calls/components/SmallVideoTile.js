@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import Avathar from '../../common/Avathar';
 import { AudioMuteIcon } from '../../common/Icons';
@@ -8,14 +9,23 @@ import ApplicationColors from '../../config/appColors';
 import useRosterData from '../../hooks/useRosterData';
 import VideoComponent from './VideoComponent';
 
-const SmallVideoTile = ({ user, isLocalUser, isAudioMuted, isVideoMuted, stream, isFrontCameraEnabled }) => {
+const SmallVideoTile = ({
+   user,
+   isLocalUser,
+   isAudioMuted,
+   isVideoMuted,
+   stream,
+   isFrontCameraEnabled,
+   callStatus = '',
+}) => {
    const userId = getUserIdFromJid(user.fromJid);
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
-
+   let reconnectStatus =
+      callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && !isLocalUser ? true : false;
    return (
       <View style={styles.smallVideoWrapper}>
-         {!isVideoMuted && stream && stream?.video && (
+         {!isVideoMuted && stream && stream?.video && !reconnectStatus && (
             <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={1} />
          )}
          <View
@@ -37,7 +47,7 @@ const SmallVideoTile = ({ user, isLocalUser, isAudioMuted, isVideoMuted, stream,
                   <View style={styles.smallVideoVoiceLevelIndicator} />
                </View>
             )}
-            {(isVideoMuted || (stream && !stream?.video)) && (
+            {(isVideoMuted || reconnectStatus || (stream && !stream?.video)) && (
                <>
                   <View style={styles.smallVideoUserAvathar}>
                      <Avathar

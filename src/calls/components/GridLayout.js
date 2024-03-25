@@ -6,6 +6,7 @@ import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import ApplicationColors from '../../config/appColors';
 import { AudioMuteIcon } from '../../common/Icons';
 import VideoComponent from './VideoComponent';
+import { CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
 
 const GridItem = ({
    wrapperStyle,
@@ -17,16 +18,19 @@ const GridItem = ({
    isVideoMuted,
    localStream,
    isFrontCameraEnabled,
+   callStatus,
 }) => {
    const userId = getUserIdFromJid(item?.fromJid || '');
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
    let stream = isLocalUser ? localStream : item?.stream;
+   let reconnectStatus =
+      callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && !isLocalUser ? true : false;
 
    return (
       <Pressable style={[wrapperStyle]} onPress={onPress}>
          <View style={styles.gridItem}>
-            {!isVideoMuted && stream && stream.video && (
+            {!isVideoMuted && stream && stream.video && !reconnectStatus && (
                <VideoComponent
                   stream={stream}
                   isFrontCameraEnabled={isLocalUser ? isFrontCameraEnabled : false}
@@ -45,7 +49,7 @@ const GridItem = ({
                      <View style={styles.gridItemVoiceLevelIndicator} />
                   </View>
                )}
-               {(isVideoMuted || !stream.video) && (
+               {(isVideoMuted || reconnectStatus || !stream.video) && (
                   <View style={styles.gridItemUserAvathar}>
                      <Avathar
                         width={isFullSize ? 100 : 60}
@@ -77,6 +81,7 @@ export const GridLayout = ({
    localStream,
    remoteVideoMuted,
    isFrontCameraEnabled,
+   callStatus,
 }) => {
    const [scrollViewDimension, setScrollViewDimension] = React.useState({
       width: null,
@@ -138,6 +143,7 @@ export const GridLayout = ({
             isVideoMuted={isVideoMuted}
             localStream={localStream}
             isFrontCameraEnabled={isFrontCameraEnabled}
+            callStatus={callStatus}
          />
       );
    };

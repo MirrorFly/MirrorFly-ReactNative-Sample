@@ -1,53 +1,48 @@
 import React, {
   createRef,
-  useState,
-  useEffect,
   useCallback,
+  useEffect,
   useRef,
+  useState,
 } from 'react';
 import {
-  TextInput,
+  Animated,
+  AppState,
+  Easing,
   Keyboard,
   StyleSheet,
-  View,
   Text,
-  Animated,
-  Easing,
+  TextInput,
   TouchableOpacity,
-  AppState,
+  View,
 } from 'react-native';
 import { SendBtn } from '../common/Button';
 import {
   AttachmentIcon,
-  MicIcon,
+  DeleteRedBinIcon,
   EmojiIcon,
   KeyboardIcon,
-  DeleteRedBinIcon,
+  MicIcon,
   SideArrowIcon,
 } from '../common/Icons';
 
+import { useFocusEffect } from '@react-navigation/native';
+import AudioRecorderPlayer from 'react-native-audio-recorder-player';
+import RNFS from 'react-native-fs';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Sound from 'react-native-sound';
+import { useSelector } from 'react-redux';
+import { debounce, showToast } from '../Helper/index';
+import SDK from '../SDK/SDK';
+import IconButton from '../common/IconButton';
+import Modal, { ModalBottomContent } from '../common/Modal';
+import commonStyles from '../common/commonStyles';
+import { getExtention } from '../common/utils';
+import ApplicationColors from '../config/appColors';
+import { useNetworkStatus } from '../hooks';
 import EmojiOverlay from './EmojiPicker';
 import { soundRef } from './Media/AudioPlayer';
-import { useSelector } from 'react-redux';
-import { useFocusEffect } from '@react-navigation/native';
-import ApplicationColors from '../config/appColors';
-import Modal, { ModalBottomContent } from '../common/Modal';
-import IconButton from '../common/IconButton';
-import commonStyles from '../common/commonStyles';
-import RNFS from 'react-native-fs';
-import AudioRecorderPlayer, {
-  AudioEncoderAndroidType,
-  OutputFormatAndroidType,
-} from 'react-native-audio-recorder-player';
-import { getExtention, requestMicroPhonePermission } from '../common/utils';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { openSettings } from 'react-native-permissions';
-import Sound from 'react-native-sound';
-import { debounce, showToast } from '../Helper/index';
-import { useNetworkStatus } from '../hooks';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import SDK from '../SDK/SDK';
 import config from './chat/common/config';
 
 export const chatInputMessageRef = createRef();
@@ -197,7 +192,7 @@ const ChatInput = props => {
     }
   }, [isRecording, recordingDuration]);
 
-  const startRecording = async () => {
+  /** const startRecording = async () => {
     if (!isRecording) {
       try {
         const isNotFirstTimeLocationPermissionCheck =
@@ -230,7 +225,7 @@ const ChatInput = props => {
         console.error('Failed to start recording', error);
       }
     }
-  };
+  };*/
 
   const stopRecording = async () => {
     if (isRecording) {

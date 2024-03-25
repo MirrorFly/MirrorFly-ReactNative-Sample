@@ -3,7 +3,6 @@ import { MenuIconBtn } from './Button';
 import { Menu, MenuItem } from 'react-native-material-menu';
 import { Dimensions, Platform, StyleSheet, Text } from 'react-native';
 import ApplicationColors from '../config/appColors';
-import { initialWindowMetrics } from 'react-native-safe-area-context';
 
 function MenuContainer({ menuItems, color, menuStyle }) {
    const [visible, setVisible] = React.useState(false);

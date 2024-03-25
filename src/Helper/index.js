@@ -18,7 +18,6 @@ import config from '../components/chat/common/config';
 import { addchatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAction';
 import { updateConversationMessage, updateRecentChatMessage } from '../components/chat/common/createMessage';
 import { getUserIdFromJid } from './Chat/Utility';
-import { CALL_STATUS_CONNECTED } from './Calls/Constant';
 import { getIsUserOnCall } from '../SDKActions/callbacks';
 
 const toastLocalRef = React.createRef({});

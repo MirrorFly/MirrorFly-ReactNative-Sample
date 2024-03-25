@@ -1,14 +1,12 @@
 import React, { useRef } from 'react';
 import { ImageBackground, Platform, StyleSheet, Text, View } from 'react-native';
-import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
-import { useDispatch, useSelector } from 'react-redux';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useSelector } from 'react-redux';
 import { startIncomingCallTimer } from '../../Helper/Calls/Call';
-import { CALL_STATUS_INCOMING } from '../../Helper/Calls/Constant';
 import {
    answerIncomingCall,
    closeCallModalActivity,
-   declineIncomingCall,
-   getcallBackgroundNotification,
+   declineIncomingCall
 } from '../../Helper/Calls/Utility';
 import { capitalizeFirstLetter } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
@@ -16,7 +14,6 @@ import Avathar from '../../common/Avathar';
 import commonStyles from '../../common/commonStyles';
 import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
-import { useAppState } from '../../hooks';
 import useRosterData from '../../hooks/useRosterData';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 import GestureAnimationScreen from './GestureAnimationScreen';
@@ -24,18 +21,12 @@ import GestureAnimationScreen from './GestureAnimationScreen';
 const IncomingCall = ({ userId, userJid, callStatus }) => {
    const {
       connectionState: { callType },
-      showCallModal,
       callerUUID: activeCallUUID = '',
    } = useSelector(state => state.callData) || {};
-   const { data: notificationData = {} } = useSelector(state => state.notificationData) || {};
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userProfile.userId;
    const acceptButtonRef = useRef(false);
    const declineButtonRef = useRef(false);
-   const dispatch = useDispatch();
-   const appState = useAppState();
-   let isActive = getcallBackgroundNotification();
-
    let userCallStatus = React.useMemo(() => {
       return capitalizeFirstLetter(callStatus) || '';
    }, [callStatus]);

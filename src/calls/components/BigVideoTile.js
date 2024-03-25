@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
 import Avathar from '../../common/Avathar';
 import { AudioMuteIcon } from '../../common/Icons';
 import Pressable from '../../common/Pressable';
@@ -11,52 +12,61 @@ const BigVideoTile = ({
    userId,
    isAudioMuted,
    videoMuted,
-   callStatus,
+   callStatus = '',
    stream,
    onPressAnywhere,
    isFrontCameraEnabled,
+   localUserJid,
 }) => {
+   let reconnectStatus =
+      callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && userId !== localUserJid ? true : false;
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
 
-   return (
-      <>
-         {!videoMuted && stream && stream?.video && (
-            <>
-               <Pressable
-                  onPress={onPressAnywhere}
-                  style={{
-                     flex: 1,
+   const renderAudioMuted = React.useMemo(() => {
+      return (
+         isAudioMuted &&
+         !reconnectStatus && (
+            <View
+               style={[
+                  {
+                     justifyContent: 'center',
+                     alignItems: 'center',
                      position: 'absolute',
                      top: 0,
                      right: 0,
                      left: 0,
                      bottom: 0,
-                  }}
-                  contentContainerStyle={{ flex: 1 }}>
-                  <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={0} />
-                  {isAudioMuted && (
-                     <View
-                        style={[
-                           {
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              position: 'absolute',
-                              top: 0,
-                              right: 0,
-                              left: 0,
-                              bottom: 0,
-                           },
-                        ]}>
-                        <View style={styles.audioMuteIconWrapper}>
-                           <AudioMuteIcon width={16} height={22} color={'#fff'} />
-                        </View>
-                     </View>
-                  )}
-               </Pressable>
-            </>
+                  },
+               ]}>
+               <View style={styles.audioMuteIconWrapper}>
+                  <AudioMuteIcon width={16} height={22} color={'#fff'} />
+               </View>
+            </View>
+         )
+      );
+   }, [isAudioMuted]);
+
+   return (
+      <>
+         {!videoMuted && stream && stream?.video && !reconnectStatus && (
+            <Pressable
+               onPress={onPressAnywhere}
+               pressedStyle={{}}
+               style={{
+                  flex: 1,
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  left: 0,
+                  bottom: 0,
+               }}
+               contentContainerStyle={{ flex: 1 }}>
+               <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={0} />
+               {renderAudioMuted}
+            </Pressable>
          )}
-         {(videoMuted || !stream || !stream.video) && (
+         {(videoMuted || reconnectStatus || !stream || !stream.video) && (
             <View style={styles.avatharWrapper}>
                {/* Pulse animation view here */}
                <PulseAnimatedView animateToValue={1.3} baseStyle={styles.avatharPulseAnimatedView} />

@@ -1,11 +1,4 @@
-import notifee, { AndroidVisibility, EventType } from '@notifee/react-native';
-import { Linking } from 'react-native';
-import Store from '../redux/store';
-import * as RootNav from '../../src/Navigation/rootNavigation';
-import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN } from '../constant';
-import { navigate } from '../redux/Actions/NavigationAction';
-import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
-import { removeAllDeliveredNotification } from './remoteNotifyHandle';
+import notifee, { AndroidVisibility } from '@notifee/react-native';
 import { onNotificationAction } from '../calls/notification/callNotifyHandler';
 
 export const displayRemoteNotification = async (id, date, title, body, jid, importance) => {

@@ -141,7 +141,6 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
          updateObj.thumbImage = response.thumbImage;
       } else {
          updateObj.uploadStatus = 3;
-         showToast('Failed to upload' + msgType, { id: 'Failed to upload' + msgType });
       }
       store.dispatch(updateUploadStatus(updateObj));
    } catch (error) {
@@ -235,9 +234,9 @@ export const getUpdatedHistoryDataUpload = (data, stateData) => {
             currentMessage.msgBody.media.is_uploading = data.uploadStatus;
          }
          if (data.statusCode === 200) {
-            currentMessage.msgBody.media.file_url = data.fileToken || '';
-            currentMessage.msgBody.media.thumb_image = data.thumbImage || '';
-            currentMessage.msgBody.media.file_key = data.fileKey || '';
+            currentMessage.msgBody.media.file_url = data.fileToken || currentMessage.msgBody.media.file_url;
+            currentMessage.msgBody.media.thumb_image = data.thumbImage || currentMessage.msgBody.media.thumb_image;
+            currentMessage.msgBody.media.file_key = data.fileKey || currentMessage.msgBody.media.file_key;
             currentMessage.msgBody.media.is_downloaded = data.is_downloaded || '';
          }
          if (data.local_path) {

@@ -111,6 +111,7 @@ import {
    deleteMessageForEveryone,
    deleteMessageForMe,
    updateChatConversationHistory,
+   updateUploadStatus,
 } from '../redux/Actions/ConversationAction';
 import { updateDownloadData } from '../redux/Actions/MediaDownloadAction';
 import { updateMediaUploadData } from '../redux/Actions/MediaUploadAction';
@@ -873,6 +874,17 @@ export const callBacks = {
    },
    mediaDownloadListener: res => {
       store.dispatch(updateDownloadData(res));
+      if (res.progress === 100) {
+         let updateObj = {
+            statusCode: 200,
+            msgId: res.msgId,
+            is_downloaded: 2,
+            uploadStatus: 2,
+            local_path: res.local_path,
+            fromUserId: getUserIdFromJid(res.fromUserJid),
+         };
+         store.dispatch(updateUploadStatus(updateObj));
+      }
    },
    blockUserListener: res => {
       console.log('blockUserListener = (res) => { }', res);

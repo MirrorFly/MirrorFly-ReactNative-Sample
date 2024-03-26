@@ -37,7 +37,6 @@
       android:theme="@style/AppTheme"
       android:requestLegacyExternalStorage="true"
       android:usesCleartextTraffic="true"
-      android:hardwareAccelerated="false"
       android:largeHeap="true"
       >
       <meta-data android:name="ic_notification" android:resource="@mipmap/ic_notification" />

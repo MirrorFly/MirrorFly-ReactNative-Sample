@@ -13,9 +13,9 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		6484BB4380098A0A2FB9D1A2 /* Pods_mirrorfly_rn_mirrorfly_rnTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F3BCE6A19EDDD2D7E77B34 /* Pods_mirrorfly_rn_mirrorfly_rnTests.framework */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		A7DAC5762BB2AF3C005DD787 /* incallmanager_ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A7DAC5742BB2AF3C005DD787 /* incallmanager_ringback.mp3 */; };
+		A7DAC5772BB2AF3C005DD787 /* fly_reconnecting_tone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A7DAC5752BB2AF3C005DD787 /* fly_reconnecting_tone.mp3 */; };
 		A7E1A3AC2BB1854C00F4D084 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A7E1A3AB2BB1854C00F4D084 /* GoogleService-Info.plist */; };
-		A7E1A3B92BB189AC00F4D084 /* fly_reconnecting_tone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A7E1A3B62BB189AC00F4D084 /* fly_reconnecting_tone.mp3 */; };
-		A7E1A3BA2BB189AC00F4D084 /* incallmanager_ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A7E1A3B72BB189AC00F4D084 /* incallmanager_ringback.mp3 */; };
 		CE2DD47D2AC589FD009815BD /* MyClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2DD47C2AC589FD009815BD /* MyClass.swift */; };
 		CE2DD47F2AC58EC9009815BD /* FlyEncryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2DD47E2AC58EC9009815BD /* FlyEncryption.swift */; };
 		CE56DABC2AC447C100A2BB3A /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE56DABB2AC447C100A2BB3A /* NotificationService.m */; };
@@ -71,9 +71,9 @@
 		3DD5EC20D1997CBF925E0ED2 /* Pods-mirrorfly_rn.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mirrorfly_rn.debug.xcconfig"; path = "Target Support Files/Pods-mirrorfly_rn/Pods-mirrorfly_rn.debug.xcconfig"; sourceTree = "<group>"; };
 		6D63F065CB988155E86C8D77 /* Pods-mirrorfly_rn-mirrorfly_rnTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mirrorfly_rn-mirrorfly_rnTests.release.xcconfig"; path = "Target Support Files/Pods-mirrorfly_rn-mirrorfly_rnTests/Pods-mirrorfly_rn-mirrorfly_rnTests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = mirrorfly_rn/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		A7DAC5742BB2AF3C005DD787 /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringback.mp3; path = custom_rigntones/incallmanager_ringback.mp3; sourceTree = "<group>"; };
+		A7DAC5752BB2AF3C005DD787 /* fly_reconnecting_tone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = fly_reconnecting_tone.mp3; path = custom_rigntones/fly_reconnecting_tone.mp3; sourceTree = "<group>"; };
 		A7E1A3AB2BB1854C00F4D084 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		A7E1A3B62BB189AC00F4D084 /* fly_reconnecting_tone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = fly_reconnecting_tone.mp3; sourceTree = "<group>"; };
-		A7E1A3B72BB189AC00F4D084 /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = incallmanager_ringback.mp3; sourceTree = "<group>"; };
 		CE2DD47B2AC589FC009815BD /* NotificationExtension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NotificationExtension-Bridging-Header.h"; sourceTree = "<group>"; };
 		CE2DD47C2AC589FD009815BD /* MyClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyClass.swift; sourceTree = "<group>"; };
 		CE2DD47E2AC58EC9009815BD /* FlyEncryption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlyEncryption.swift; sourceTree = "<group>"; };
@@ -172,7 +172,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				A7E1A3B82BB189AC00F4D084 /* custom_rigntones */,
+				A7DAC5752BB2AF3C005DD787 /* fly_reconnecting_tone.mp3 */,
+				A7DAC5742BB2AF3C005DD787 /* incallmanager_ringback.mp3 */,
 				13B07FAE1A68108700A75B9A /* mirrorfly_rn */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* mirrorfly_rnTests */,
@@ -194,15 +195,6 @@
 				CE56DAB82AC447C100A2BB3A /* NotificationExtension.appex */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		A7E1A3B82BB189AC00F4D084 /* custom_rigntones */ = {
-			isa = PBXGroup;
-			children = (
-				A7E1A3B62BB189AC00F4D084 /* fly_reconnecting_tone.mp3 */,
-				A7E1A3B72BB189AC00F4D084 /* incallmanager_ringback.mp3 */,
-			);
-			path = custom_rigntones;
 			sourceTree = "<group>";
 		};
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
@@ -352,10 +344,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
-				A7E1A3B92BB189AC00F4D084 /* fly_reconnecting_tone.mp3 in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				A7DAC5762BB2AF3C005DD787 /* incallmanager_ringback.mp3 in Resources */,
+				A7DAC5772BB2AF3C005DD787 /* fly_reconnecting_tone.mp3 in Resources */,
 				A7E1A3AC2BB1854C00F4D084 /* GoogleService-Info.plist in Resources */,
-				A7E1A3BA2BB189AC00F4D084 /* incallmanager_ringback.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

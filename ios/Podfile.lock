@@ -602,7 +602,7 @@ PODS:
     - React-Core
   - RNPermissions (3.10.1):
     - React-Core
-  - RNScreens (3.29.0):
+  - RNScreens (3.30.1):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - RNSound (0.11.2):
@@ -985,7 +985,7 @@ SPEC CHECKSUMS:
   RNImageCropPicker: e7ab6fb43d2fc3e84651e786ef4a080d63b0ed3d
   RNNotifee: 8e2d3df3f0e9ce8f5d1fe4c967431138190b6175
   RNPermissions: 6aa8b0c4b55c3113d1b5a4bf328dc05415031b16
-  RNScreens: 1c2444658fbb696a094272d946708167b1f63409
+  RNScreens: f3591fdf4b0da62d23be5bbe76791f39c54a1893
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: d00c8f91c3cbf6d476451313a18f04d220d4f396
   RNVoipPushNotification: 543e18f83089134a35e7f1d2eba4c8b1f7776b08

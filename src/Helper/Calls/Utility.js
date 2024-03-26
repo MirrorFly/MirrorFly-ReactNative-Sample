@@ -853,7 +853,6 @@ export const pushNotifyBackground = () => {
       }
       for (let voipPushEvent of events) {
          let { name, data } = voipPushEvent;
-         console.log("RNCallKeepDidDisplayIncomingCall");
          if (name === 'RNCallKeepDidDisplayIncomingCall' && Number(data.fromPushKit) === 1) {
             onVoipPushNotificationReceived(data);
          }

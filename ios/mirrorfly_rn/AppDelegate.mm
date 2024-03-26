@@ -70,9 +70,6 @@
   if(count < 1) {
     
   //  Check the Mic permission and if the permission is not provided then end the call
-
-    AVAuthorizationStatus micPermissionStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
-    
     [RNCallKeep reportNewIncomingCall: uuid
                                handle: callerId
                            handleType: @"generic"
@@ -86,12 +83,8 @@
                               payload: [payload dictionaryPayload]
                 withCompletionHandler: completion];
     
-    if (micPermissionStatus != AVAuthorizationStatusAuthorized) {
+    if (hasvideo ? !self.checkVideoPermission : !self.checkAudioPermission) {
       [RNCallKeep endCallWithUUID:uuid reason:1]; // ending the call with reason Failed
-
-        if (micPermissionStatus == AVAuthorizationStatusNotDetermined) {
-          [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {}];
-      }
       
       // Showing local notification for the ended incoming call
       UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
@@ -119,6 +112,34 @@
   completion();
 }
 // VoIP configuration section ends here
+
+- (BOOL)checkAudioPermission{
+  AVAuthorizationStatus micPermissionStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
+  if(micPermissionStatus != AVAuthorizationStatusAuthorized) {
+    if (micPermissionStatus == AVAuthorizationStatusNotDetermined) {
+        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {}];
+    }
+    return NO;
+  }else{
+    return YES;
+  }
+}
+
+- (BOOL)checkVideoPermission{
+  AVAuthorizationStatus micPermissionStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
+  AVAuthorizationStatus videoPermissionStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+  if(videoPermissionStatus != AVAuthorizationStatusAuthorized || micPermissionStatus != AVAuthorizationStatusAuthorized) {
+    if (videoPermissionStatus == AVAuthorizationStatusNotDetermined) {
+        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {}];
+    }
+    if (micPermissionStatus == AVAuthorizationStatusNotDetermined) {
+        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {}];
+    }
+    return NO;
+  }else{
+    return YES;
+  }
+}
 
 /*!
  * react-native-keyevent support

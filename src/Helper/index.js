@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Graphemer from 'graphemer';
 import { Toast } from 'native-base';
 import React from 'react';
-import { Alert, AppState, Linking, Platform, Text, View } from 'react-native';
+import { Alert, AppState, Keyboard, Linking, Platform, Text, View } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import { createThumbnail } from 'react-native-create-thumbnail';
 import RNFS from 'react-native-fs';
@@ -301,6 +301,7 @@ export const enablePipModeIfCallConnected = (
    shouldOpenPermissionScreenIfPipNotAllowed = true,
 ) => {
    if (Platform.OS === 'android') {
+      Keyboard.dismiss();
       const isCallConnected = getIsUserOnCall();
       isCallConnected && PipHandler.enterPipMode(width, height, shouldOpenPermissionScreenIfPipNotAllowed);
       return isCallConnected;

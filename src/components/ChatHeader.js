@@ -5,7 +5,7 @@ import React, { useRef } from 'react';
 import { Keyboard, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import { useDispatch, useSelector } from 'react-redux';
-import { ALREADY_ON_CALL } from '../Helper/Calls/Constant';
+import { ALREADY_ON_CALL, CALL_TYPE_AUDIO, CALL_TYPE_VIDEO } from '../Helper/Calls/Constant';
 import { isRoomExist, makeCalls } from '../Helper/Calls/Utility';
 import { CHAT_TYPE_GROUP, CHAT_TYPE_SINGLE, MIX_BARE_JID } from '../Helper/Chat/Constant';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
@@ -23,12 +23,19 @@ import {
    LeftArrowIcon,
    ReplyIcon,
    UpArrowIcon,
+   VideoCallIcon,
 } from '../common/Icons';
 import MenuContainer from '../common/MenuContainer';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import commonStyles from '../common/commonStyles';
-import { requestMicroPhonePermission } from '../common/utils';
+import {
+   checkMicroPhonePermission,
+   checkVideoPermission,
+   requestBluetoothConnectPermission,
+   requestCameraMicPermission,
+   requestMicroPhonePermission
+} from '../common/utils';
 import ApplicationColors from '../config/appColors';
 import { FORWARD_MESSSAGE_SCREEN, GROUP_INFO, USER_INFO } from '../constant';
 import { useNetworkStatus } from '../hooks';
@@ -69,6 +76,7 @@ function ChatHeader({
    const permissionData = useSelector(state => state.permissionData.permissionStatus);
    const [isSelected, setSelection] = React.useState(false);
    const [showRoomExist, setShowRoomExist] = React.useState(false);
+   const [permissionText, setPermissionText] = React.useState('');
    const {
       searchText: conversationSearchText,
       messageIndex: conversationSearchMessageIndex,
@@ -266,9 +274,21 @@ function ChatHeader({
       );
    }
 
+   const makeOne2OneVideoCall = () => {
+      if (!isRoomExist() && isNetworkConnected) {
+         makeOne2OneCall(CALL_TYPE_VIDEO);
+      } else if (!isNetworkConnected) {
+         showToast('Please check your internet connection', {
+            id: 'Network_error',
+         });
+      } else {
+         setShowRoomExist(true);
+      }
+   };
+
    const makeOne2OneAudioCall = () => {
       if (!isRoomExist() && isNetworkConnected) {
-         makeOne2OneCall('audio');
+         makeOne2OneCall(CALL_TYPE_AUDIO);
       } else if (!isNetworkConnected) {
          showToast('Please check your internet connection', {
             id: 'Network_error',
@@ -279,13 +299,21 @@ function ChatHeader({
    };
 
    const makeOne2OneCall = async callType => {
-      const isPermissionChecked = await AsyncStorage.getItem('microPhone_Permission');
-      AsyncStorage.setItem('microPhone_Permission', 'true');
+      let isPermissionChecked = false;
+      if (callType === CALL_TYPE_AUDIO) {
+         isPermissionChecked = await AsyncStorage.getItem('microPhone_Permission');
+         AsyncStorage.setItem('microPhone_Permission', 'true');
+      } else {
+         isPermissionChecked = await AsyncStorage.getItem('camera_microPhone_Permission');
+         AsyncStorage.setItem('camera_microPhone_Permission', 'true');
+      }
       // updating the SDK flag to keep the connection Alive when app goes background because of microphone permission popup
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       try {
-         const result = await requestMicroPhonePermission();
+         const result =
+            callType === CALL_TYPE_AUDIO ? await requestMicroPhonePermission() : await requestCameraMicPermission();
          // updating the SDK flag back to false to behave as usual
+         await requestBluetoothConnectPermission();
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
          if (result === 'granted' || result === 'limited') {
             // Checking If Room exist when user granted permission
@@ -295,6 +323,19 @@ function ChatHeader({
                setShowRoomExist(true);
             }
          } else if (isPermissionChecked) {
+            let cameraAndMic =
+               (await checkVideoPermission()) !== 'granted' && (await checkMicroPhonePermission()) !== 'granted'
+                  ? 'Audio and Video Permissions'
+                  : (await checkVideoPermission()) !== 'granted'
+                  ? 'Video Permission'
+                  : (await checkMicroPhonePermission()) !== 'granted'
+                  ? 'Audio Permission'
+                  : '';
+            let permissionStatus =
+               callType === 'video'
+                  ? `${cameraAndMic}${' are needed for calling. Please enable it in Settings'}`
+                  : 'Audio Permissions are needed for calling. Please enable it in Settings';
+            setPermissionText(permissionStatus);
             dispatch(showPermissionModal());
          }
       } catch (error) {
@@ -332,9 +373,7 @@ function ChatHeader({
             <Modal visible={permissionData}>
                <ModalCenteredContent>
                   <View style={styles.callModalContentContainer}>
-                     <Text style={styles.callModalContentText}>
-                        {'Audio Permissions are needed for calling. Please enable it in Settings'}
-                     </Text>
+                     <Text style={styles.callModalContentText}>{permissionText}</Text>
                      <View style={styles.callModalHorizontalActionButtonsContainer}>
                         <Pressable
                            contentContainerStyle={styles.deleteModalHorizontalActionButton}
@@ -370,7 +409,7 @@ function ChatHeader({
                      profileImage={profileImage}
                   />
                   <View style={styles.userNameAndLastSeenContainer}>
-                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.userNameText}>
+                     <Text style={styles.userNameText} ellipsizeMode="tail" numberOfLines={1}>
                         {nickName}
                      </Text>
                      <LastSeen jid={fromUserJId} />
@@ -378,6 +417,9 @@ function ChatHeader({
                </Pressable>
                {chatType !== CHAT_TYPE_GROUP && (
                   <View style={styles.audioCallButton}>
+                     <IconButton onPress={makeOne2OneVideoCall} containerStyle={{ marginRight: 6 }}>
+                        <VideoCallIcon />
+                     </IconButton>
                      <IconButton onPress={makeOne2OneAudioCall}>
                         <AudioCall />
                      </IconButton>
@@ -554,7 +596,7 @@ const styles = StyleSheet.create({
       color: '#181818',
       fontWeight: '700',
       fontSize: 14,
-      maxWidth: 200,
+      maxWidth: 170,
    },
    menuIconContainer: {
       paddingRight: 12,
@@ -619,6 +661,9 @@ const styles = StyleSheet.create({
    },
    audioCallButton: {
       padding: 4,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
    },
    callModalContentText: {
       fontSize: 16,

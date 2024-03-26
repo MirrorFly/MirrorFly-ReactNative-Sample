@@ -97,7 +97,10 @@ export const pinUser = userJid => {
 
 export const selectLargeVideoUser = (userJid, volumelevel) => {
    return (dispatch, getState) => {
-      if (largeUserJid === null) {
+      if (largeUserJid === userJid) {
+         return;
+      }
+      if (largeUserJid !== userJid) {
          largeUserJid = userJid;
       }
       const state = getState();
@@ -269,6 +272,6 @@ export const resetNotificationData = () => {
 export const updateCallLayout = data => {
    return {
       type: UPDATE_CALL_LAYOUT,
-      payload: data
-   }
-}
+      payload: data,
+   };
+};

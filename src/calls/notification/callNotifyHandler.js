@@ -1,5 +1,3 @@
-// import { AppState, Platform } from 'react-native';
-// import { isActiveConversationUserOrGroup } from '../Helper/Chat/ChatHelper';
 import notifee, {
    AndroidCategory,
    AndroidFlags,
@@ -8,34 +6,25 @@ import notifee, {
    AndroidVisibility,
    EventType,
 } from '@notifee/react-native';
-import { AppState, Linking, Platform } from 'react-native';
-import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN } from '../../constant';
-import { updateChatConversationLocalNav } from '../../redux/Actions/ChatConversationLocalNavAction';
-import Store from '../../redux/store';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { getCurrentUserJid } from '../redux/Actions/AuthAction';
-// import Store from '../redux/store';
-import { NativeModules } from 'react-native';
+import { AppState, Linking, NativeModules, Platform } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
 import * as RootNav from '../../../src/Navigation/rootNavigation';
 import { endCall, getCallDuration } from '../../Helper/Calls/Call';
 import {
    CALL_STATUS_CONNECTED,
+   CALL_TYPE_AUDIO,
    INCOMING_CALL,
    MISSED_CALL,
    ONGOING_CALL,
    OUTGOING_CALL,
 } from '../../Helper/Calls/Constant';
-import {
-   answerIncomingCall,
-   declineIncomingCall,
-   endOnGoingCall,
-   openCallModelActivity,
-} from '../../Helper/Calls/Utility';
+import { answerIncomingCall, declineIncomingCall, endOnGoingCall } from '../../Helper/Calls/Utility';
 import { removeAllDeliveredNotification } from '../../Service/remoteNotifyHandle';
+import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN } from '../../constant';
 import { callDurationTimestamp, resetNotificationData, setNotificationData } from '../../redux/Actions/CallAction';
+import { updateChatConversationLocalNav } from '../../redux/Actions/ChatConversationLocalNavAction';
 import { navigate } from '../../redux/Actions/NavigationAction';
-import { getApplicationUrl } from '../../uikitHelpers/uikitMethods';
+import Store from '../../redux/store';
 const { ActivityModule } = NativeModules;
 
 let interval;
@@ -60,13 +49,14 @@ export const callNotifyHandler = async (
 
 export const getIncomingCallNotification = async (
    roomId,
-   data,
+   callDetailObj,
    userJid,
    nickName,
    callStatusType,
    isFullScreenIntent,
 ) => {
    const launchCallActivity = await ActivityModule.getCallActivity();
+   let callType = callDetailObj?.callType;
    let launchActivityState = AppState.currentState === 'active' ? launchCallActivity : 'default';
    let importanceState = AppState.currentState === 'active' ? AndroidImportance.DEFAULT : AndroidImportance.HIGH;
    const channelIds = AppState.currentState === 'active' ? 'IncomingCallLow' : 'IncomingCallHigh';
@@ -77,9 +67,9 @@ export const getIncomingCallNotification = async (
       visibility: AndroidVisibility.PUBLIC,
       vibration: false,
    });
-
+   let title = `Incoming ${callDetailObj.callType} call`;
    const notification = {
-      title: 'Incoming audio call',
+      title: title,
       body: nickName,
       data: { roomId: roomId } || null,
       android: {
@@ -92,7 +82,7 @@ export const getIncomingCallNotification = async (
          importance: AndroidImportance.HIGH,
          sound: '',
          autoCancel: false,
-         smallIcon: 'ic_call_notification',
+         smallIcon: callType === CALL_TYPE_AUDIO ? 'ic_call_notification' : 'ic_video_call',
          asForegroundService: true,
          actions: [
             { title: 'Decline', pressAction: { id: 'decline' } },
@@ -125,17 +115,19 @@ export const getIncomingCallNotification = async (
    await notifee.displayNotification(notification);
 };
 
-export const getOutGoingCallNotification = async (roomId, data, userJid, nickName, callStatusType) => {
+export const getOutGoingCallNotification = async (roomId, callDetailObj, userJid, nickName, callStatusType) => {
+   let title = `Outgoing ${callDetailObj.callType} call`;
+   let callType = callDetailObj?.callType;
    const launchCallActivity = await ActivityModule.getCallActivity();
    let channelId = await notifee.createChannel({
-      id: 'OutGoing Call',
-      name: 'OutGoing Call',
+      id: 'Outgoing Call',
+      name: 'Outgoing Call',
       importance: AndroidImportance.DEFAULT,
       visibility: AndroidVisibility.PUBLIC,
       vibration: false,
    });
    const notification = {
-      title: 'Outgoing audio call',
+      title: title,
       body: nickName,
       data: { roomId: roomId } || null,
       android: {
@@ -147,7 +139,7 @@ export const getOutGoingCallNotification = async (roomId, data, userJid, nickNam
          sound: '',
          autoCancel: false,
          category: AndroidCategory.CALL,
-         smallIcon: 'ic_call_notification',
+         smallIcon: callType === CALL_TYPE_AUDIO ? 'ic_call_notification' : 'ic_video_call',
          asForegroundService: true,
          actions: [{ title: 'Hang up', pressAction: { id: 'hangup' } }],
          timestamp: Date.now(),
@@ -163,7 +155,9 @@ export const getOutGoingCallNotification = async (roomId, data, userJid, nickNam
    await notifee.displayNotification(notification);
 };
 
-export const getOnGoingCallNotification = async (roomId, data, userJid, nickName, callStatusType) => {
+export const getOnGoingCallNotification = async (roomId, callDetailObj, userJid, nickName, callStatusType) => {
+   let title = `Ongoing ${callDetailObj.callType} call`;
+   let callType = callDetailObj?.callType;
    const launchCallActivity = await ActivityModule.getCallActivity();
    let channelId = await notifee.createChannel({
       id: 'OnGoing Call',
@@ -173,7 +167,7 @@ export const getOnGoingCallNotification = async (roomId, data, userJid, nickName
       vibration: false,
    });
    const notification = {
-      title: 'Ongoing audio call',
+      title: title,
       body: `Call duration: ${'00:00'}`,
       data: { roomId: roomId } || null,
       android: {
@@ -184,7 +178,7 @@ export const getOnGoingCallNotification = async (roomId, data, userJid, nickName
          ongoing: true,
          importance: AndroidImportance.DEFAULT,
          sound: '',
-         smallIcon: 'ic_call_notification',
+         smallIcon: callType === CALL_TYPE_AUDIO ? 'ic_call_notification' : 'ic_video_call',
          asForegroundService: true,
          actions: [{ title: 'Hang up', pressAction: { id: 'endCall' } }],
          timestamp: Date.now(),

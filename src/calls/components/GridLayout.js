@@ -5,38 +5,66 @@ import useRosterData from '../../hooks/useRosterData';
 import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import ApplicationColors from '../../config/appColors';
 import { AudioMuteIcon } from '../../common/Icons';
+import VideoComponent from './VideoComponent';
+import { CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
 
-const GridItem = ({ wrapperStyle, item, isLocalUser, isFullSize, onPress, isAudioMuted }) => {
+const GridItem = ({
+   wrapperStyle,
+   item,
+   isLocalUser,
+   isFullSize,
+   onPress,
+   isAudioMuted,
+   isVideoMuted,
+   localStream,
+   isFrontCameraEnabled,
+   callStatus,
+}) => {
    const userId = getUserIdFromJid(item?.fromJid || '');
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userId || '';
+   let stream = isLocalUser ? localStream : item?.stream;
+   let reconnectStatus =
+      callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && !isLocalUser ? true : false;
+
    return (
       <Pressable style={[wrapperStyle]} onPress={onPress}>
          <View style={styles.gridItem}>
-            {isAudioMuted ? (
-               <View style={styles.gridItemUserMuteIcon}>
-                  <AudioMuteIcon width={10} height={16} color={'#fff'} />
-               </View>
-            ) : (
-               <View style={styles.gridItemVoiceLevelWrapper}>
-                  <View style={styles.gridItemVoiceLevelIndicator} />
-                  <View style={styles.gridItemVoiceLevelIndicator} />
-                  <View style={styles.gridItemVoiceLevelIndicator} />
-               </View>
-            )}
-            <View style={styles.gridItemUserAvathar}>
-               <Avathar
-                  width={isFullSize ? 100 : 60}
-                  height={isFullSize ? 100 : 60}
-                  backgroundColor={userProfile.colorCode}
-                  data={nickName}
-                  profileImage={userProfile.image}
+            {!isVideoMuted && stream && stream.video && !reconnectStatus && (
+               <VideoComponent
+                  stream={stream}
+                  isFrontCameraEnabled={isLocalUser ? isFrontCameraEnabled : false}
+                  zIndex={0}
                />
-            </View>
-            <View>
-               <Text numberOfLines={1} ellipsizeMode="tail" style={styles.gridItemUserName}>
-                  {isLocalUser ? 'You' : nickName}
-               </Text>
+            )}
+            <View style={styles.gridItemInnerView}>
+               {isAudioMuted ? (
+                  <View style={styles.gridItemUserMuteIcon}>
+                     <AudioMuteIcon width={10} height={16} color={'#fff'} />
+                  </View>
+               ) : (
+                  <View style={styles.gridItemVoiceLevelWrapper}>
+                     <View style={styles.gridItemVoiceLevelIndicator} />
+                     <View style={styles.gridItemVoiceLevelIndicator} />
+                     <View style={styles.gridItemVoiceLevelIndicator} />
+                  </View>
+               )}
+               {(isVideoMuted || reconnectStatus || !stream.video) && (
+                  <View style={styles.gridItemUserAvathar}>
+                     <Avathar
+                        width={isFullSize ? 100 : 60}
+                        height={isFullSize ? 100 : 60}
+                        backgroundColor={userProfile.colorCode}
+                        data={nickName}
+                        profileImage={userProfile.image}
+                     />
+                  </View>
+               )}
+               <View>
+                  <Text numberOfLines={1} ellipsizeMode="tail" style={styles.gridItemUserName}>
+                     {isLocalUser ? 'You' : nickName}
+                  </Text>
+               </View>
             </View>
          </View>
       </Pressable>
@@ -50,6 +78,10 @@ export const GridLayout = ({
    offsetTop,
    animatedOffsetTop,
    remoteAudioMuted,
+   localStream,
+   remoteVideoMuted,
+   isFrontCameraEnabled,
+   callStatus,
 }) => {
    const [scrollViewDimension, setScrollViewDimension] = React.useState({
       width: null,
@@ -99,6 +131,7 @@ export const GridLayout = ({
 
    const renderGridItem = ({ item }) => {
       const isAudioMuted = remoteAudioMuted?.[item?.fromJid] || false;
+      const isVideoMuted = remoteVideoMuted?.[item?.fromJid] || false;
       return (
          <GridItem
             wrapperStyle={calculatedGridItemStyle}
@@ -107,6 +140,10 @@ export const GridLayout = ({
             isFullSize={calculatedColumns === 1}
             onPress={onPressAnywhere}
             isAudioMuted={isAudioMuted}
+            isVideoMuted={isVideoMuted}
+            localStream={localStream}
+            isFrontCameraEnabled={isFrontCameraEnabled}
+            callStatus={callStatus}
          />
       );
    };
@@ -164,9 +201,8 @@ const styles = StyleSheet.create({
    },
    gridItem: {
       flex: 1,
-      justifyContent: 'space-between',
-      padding: 10,
       borderRadius: 10,
+      overflow: 'hidden',
       backgroundColor: '#151F32',
    },
    gridItemUserMuteIcon: {
@@ -201,5 +237,10 @@ const styles = StyleSheet.create({
    },
    gridItemUserName: {
       color: ApplicationColors.white,
+   },
+   gridItemInnerView: {
+      flex: 1,
+      justifyContent: 'space-between',
+      padding: 10,
    },
 });

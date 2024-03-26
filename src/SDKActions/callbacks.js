@@ -27,6 +27,9 @@ import {
    stopReconnectingTone,
 } from '../Helper/Calls/Call';
 import {
+   AUDIO_ROUTE_BLUETOOTH,
+   AUDIO_ROUTE_PHONE,
+   AUDIO_ROUTE_SPEAKER,
    CALL_AGAIN_SCREEN,
    CALL_BUSY_STATUS_MESSAGE,
    CALL_CONVERSION_STATUS_CANCEL,
@@ -35,7 +38,6 @@ import {
    CALL_STATUS_CONNECTED,
    CALL_STATUS_DISCONNECTED,
    CALL_STATUS_ENDED,
-   CALL_STATUS_INCOMING,
    CALL_STATUS_RECONNECT,
    CALL_STATUS_RINGING,
    CALL_TYPE_AUDIO,
@@ -47,17 +49,20 @@ import {
 } from '../Helper/Calls/Constant';
 import {
    addHeadphonesConnectedListenerForCall,
+   audioRouteNameMap,
    closeCallModalActivity,
+   constructMuteStatus,
    displayIncomingCallForAndroid,
    displayIncomingCallForIos,
    endCallForIos,
    getNickName,
    listnerForNetworkStateChangeWhenIncomingCall,
+   setPreviousHeadsetStatus,
    showCallModalToast,
    showOngoingNotification,
    startDurationTimer,
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
-   updateCallSpeakerEnabled,
+   updateAudioRouteTo,
    updateMissedCallNotification,
 } from '../Helper/Calls/Utility';
 import { formatUserIdToJid, getLocalUserDetails } from '../Helper/Chat/ChatHelper';
@@ -90,6 +95,8 @@ import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Help
 import { updateConversationMessage, updateRecentChatMessage } from '../components/chat/common/createMessage';
 import { REGISTERSCREEN } from '../constant';
 import ActivityModule from '../customModules/ActivityModule';
+import BluetoothHeadsetDetectionModule from '../customModules/BluetoothHeadsetDetectionModule';
+import RingtoneSilentKeyEventModule from '../customModules/RingtoneSilentKeyEventModule';
 import {
    callDurationTimestamp,
    clearCallData,
@@ -103,7 +110,7 @@ import {
    updateCallerUUID,
    updateConference,
 } from '../redux/Actions/CallAction';
-import { resetCallControlsStateAction } from '../redux/Actions/CallControlsAction';
+import { resetCallControlsStateAction, updateCallVideoMutedAction } from '../redux/Actions/CallControlsAction';
 import { resetCallModalToastDataAction } from '../redux/Actions/CallModalToasAction';
 import {
    ClearChatHistoryAction,
@@ -135,6 +142,7 @@ import { updateRosterData } from '../redux/Actions/rosterAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import { handleLogOut } from '../common/utils';
 
 let localStream = null,
    localVideoMuted = false,
@@ -142,7 +150,7 @@ let localStream = null,
    onCall = false,
    onReconnect = false,
    disconnectedScreenTimeoutTimer;
-let remoteVideoMuted = [],
+let remoteVideoMuted = {},
    remoteStream = [],
    remoteAudioMuted = [];
 
@@ -173,7 +181,7 @@ export const resetCallData = () => {
    onReconnect = false;
    remoteStream = [];
    localStream = null;
-   remoteVideoMuted = [];
+   remoteVideoMuted = {};
    remoteAudioMuted = [];
    localVideoMuted = false;
    localAudioMuted = false;
@@ -184,6 +192,9 @@ export const resetCallData = () => {
    // }
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall();
    HeadphoneDetection.remove?.();
+   BluetoothHeadsetDetectionModule.removeAllListeners();
+   RingtoneSilentKeyEventModule.removeAllListeners();
+   setPreviousHeadsetStatus(false);
    KeyEvent.removeKeyUpListener();
    if (Platform.OS === 'ios') {
       clearIosCallListeners();
@@ -213,7 +224,13 @@ export const muteLocalVideo = isMuted => {
    let vcardData = getLocalUserDetails();
    let currentUser = vcardData?.fromUser;
    currentUser = formatUserIdToJid(currentUser);
-   remoteVideoMuted[currentUser] = isMuted;
+   remoteVideoMuted = constructMuteStatus(remoteVideoMuted, currentUser, isMuted);
+   Store.dispatch(
+      updateConference({
+         localVideoMuted: localVideoMuted,
+         remoteVideoMuted: remoteVideoMuted,
+      }),
+   );
 };
 
 export const muteLocalAudio = isMuted => {
@@ -240,7 +257,7 @@ const updatingUserStatusInRemoteStream = usersStatus => {
             ...remoteStream[index],
             status: user.status,
          };
-         remoteVideoMuted[user.userJid] = user.videoMuted;
+         remoteVideoMuted = constructMuteStatus(remoteVideoMuted, user.userJid, user.videoMuted);
          remoteAudioMuted[user.userJid] = user.audioMuted;
       } else {
          let streamObject = {
@@ -249,7 +266,7 @@ const updatingUserStatusInRemoteStream = usersStatus => {
             status: user.status || CONNECTION_STATE_CONNECTING,
          };
          remoteStream.push(streamObject);
-         remoteVideoMuted[user.userJid] = user.videoMuted;
+         remoteVideoMuted = constructMuteStatus(remoteVideoMuted, user.userJid, user.videoMuted);
          remoteAudioMuted[user.userJid] = user.audioMuted;
       }
    });
@@ -358,7 +375,7 @@ const ended = async res => {
          clearMissedCallNotificationTimer();
       }
       let callDetailsObj = {
-         ...callConnectionData,
+         ...callConnectionStoreData(),
          ...res,
       };
       Store.dispatch(updateCallConnectionState(callDetailsObj));
@@ -502,13 +519,30 @@ const connected = async res => {
          if (Platform.OS === 'android') {
             // once the call is connected, already selected audio route is not automatically working
             // so manually rerouting the audio to the selected one if it is changed
-            const isSpeakerEnabledInUI = Store.getState().callControlsData?.isSpeakerEnabled || false;
-            if (isSpeakerEnabledInUI) {
-               updateCallSpeakerEnabled(true, '', ''); // only 1st param will be used in Android so passing empty data for remaining params
+            const selectedAudioRoute = Store.getState().callControlsData?.selectedAudioRoute || '';
+            if (selectedAudioRoute) {
+               updateAudioRouteTo(selectedAudioRoute, selectedAudioRoute); // only first 2 params will be used in Android so passing empty data for remaining params
             }
             if (!onReconnect) {
                await stopForegroundServiceNotification();
                showOngoingNotification(res);
+            }
+         } else {
+            const { isBluetoothHeadsetConnected = false } = Store.getState().callControlsData || {};
+            if (isBluetoothHeadsetConnected) {
+               const callData = Store.getState().callData || {};
+               const callControlsData = Store.getState().callControlsData || {};
+               const activeCallerUUID = callData?.callerUUID;
+               const selectedAudioRoute = callControlsData?.selectedAudioRoute;
+               if (selectedAudioRoute === AUDIO_ROUTE_SPEAKER) {
+                  await updateAudioRouteTo(AUDIO_ROUTE_PHONE, AUDIO_ROUTE_PHONE, activeCallerUUID, false);
+               }
+               const _routes = await RNCallKeep.getAudioRoutes();
+               _routes.forEach(r => {
+                  if (audioRouteNameMap[r.type] === AUDIO_ROUTE_BLUETOOTH) {
+                     updateAudioRouteTo(r.name, r.type, activeCallerUUID, false);
+                  }
+               });
             }
          }
          onReconnect = false;
@@ -545,6 +579,7 @@ const connected = async res => {
 };
 
 const connecting = res => {
+   stopOutgoingCallRingingTone();
    updatingUserStatusInRemoteStream(res.usersStatus);
    // let roomId = getFromLocalStorageAndDecrypt('roomName');
    // encryptAndStoreInLocalStorage('callingComponent', false);
@@ -628,13 +663,12 @@ const disconnected = res => {
 };
 
 const reconnecting = res => {
+   stopOutgoingCallRingingTone();
    onReconnect = true;
    startReconnectingTone();
    updatingUserStatusInRemoteStream(res.usersStatus);
    const showConfrenceData = Store.getState().showConfrenceData;
    const { data } = showConfrenceData;
-   let vcardData = getLocalUserDetails();
-   let currentUserJid = formatUserIdToJid(vcardData?.fromUser);
    const updatedConferenceData = {
       showCallingComponent: false,
       ...(data || {}),
@@ -648,9 +682,12 @@ const reconnecting = res => {
       remoteAudioMuted: remoteAudioMuted,
       callStatusText: CALL_STATUS_RECONNECT,
    };
-   // if (currentUserJid === res.userJid) {
-   //    updatedConferenceData.callStatusText = CALL_STATUS_RECONNECT;
-   // }
+   /** 
+    *  let vcardData = getLocalUserDetails();
+    * let currentUserJid = formatUserIdToJid(vcardData?.fromUser)
+   if (currentUserJid === res.userJid) {
+      updatedConferenceData.callStatusText = CALL_STATUS_RECONNECT;
+   }*/
    Store.dispatch(showConfrence(updatedConferenceData));
 };
 
@@ -692,8 +729,7 @@ export const callBacks = {
          console.log('Disconnected');
       } else if (response.status === 'LOGOUT') {
          console.log('LOGOUT');
-         store.dispatch(navigate({ screen: REGISTERSCREEN }));
-         RootNav.reset(REGISTERSCREEN);
+         handleLogOut();
       }
    },
    messageListener: async res => {
@@ -905,6 +941,8 @@ export const callBacks = {
          res.to = res.userJid;
          if (res.callType === 'audio') {
             localVideoMuted = true;
+         } else {
+            Store.dispatch(updateCallVideoMutedAction(false));
          }
       } else {
          callMode = 'onetomany';
@@ -913,6 +951,8 @@ export const callBacks = {
          res.userList = res.allUsers.join(',');
          if (res.callType === 'audio') {
             localVideoMuted = true;
+         } else {
+            Store.dispatch(updateCallVideoMutedAction(false));
          }
       }
       res.callMode = callMode;
@@ -925,12 +965,15 @@ export const callBacks = {
          resetPinAndLargeVideoUser();
          if (res.callType === 'audio') {
             localVideoMuted = true;
+         } else {
+            Store.dispatch(updateCallVideoMutedAction(false));
          }
+         let callStatusText = `Incoming ${res.callType} call`;
          batch(() => {
             Store.dispatch(updateCallConnectionState(res));
             Store.dispatch(
                updateConference({
-                  callStatusText: CALL_STATUS_INCOMING,
+                  callStatusText: callStatusText,
                }),
             );
          });
@@ -938,7 +981,7 @@ export const callBacks = {
          listnerForNetworkStateChangeWhenIncomingCall();
          clearDisconnectedScreenTimeout();
          if (Platform.OS === 'android') {
-            const callUUID = SDK.randomString(8, 'BA');
+            let callUUID = SDK.randomString(16, 'BA');
             Store.dispatch(updateCallerUUID(callUUID));
             KeepAwake.activate();
             displayIncomingCallForAndroid(res);
@@ -984,7 +1027,6 @@ export const callBacks = {
             mediaStream = new MediaStream();
             mediaStream.addTrack(res.track);
          }
-         console.log(mediaStream, 'mediaStream');
          localStream[res.trackType] = mediaStream;
          const { getState, dispatch } = Store;
          const showConfrenceData = getState().showConfrenceData;
@@ -997,7 +1039,7 @@ export const callBacks = {
                   ...remoteStream[index],
                   status: user.status,
                };
-               remoteVideoMuted[user.userJid] = user.videoMuted;
+               remoteVideoMuted = constructMuteStatus(remoteVideoMuted, user.userJid, user.videoMuted);
                remoteAudioMuted[user.userJid] = user.audioMuted;
             } else {
                let streamObject = {
@@ -1006,7 +1048,7 @@ export const callBacks = {
                   status: user.status,
                };
                remoteStream.push(streamObject);
-               remoteVideoMuted[user.userJid] = user.videoMuted;
+               remoteVideoMuted = constructMuteStatus(remoteVideoMuted, user.userJid, user.videoMuted);
                remoteAudioMuted[user.userJid] = user.audioMuted;
             }
          });
@@ -1158,7 +1200,7 @@ export const callBacks = {
             }
          }
          if (res.trackType === CALL_TYPE_VIDEO) {
-            remoteVideoMuted[res.userJid] = res.isMuted;
+            remoteVideoMuted = constructMuteStatus(remoteVideoMuted, res.userJid, res.isMuted);
          }
       }
 

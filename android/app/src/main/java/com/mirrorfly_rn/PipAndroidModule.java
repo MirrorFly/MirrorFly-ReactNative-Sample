@@ -1,6 +1,5 @@
 package com.mirrorfly_rn;
 
-import android.app.Activity;
 import android.app.AppOpsManager;
 import android.app.PictureInPictureParams;
 import android.content.Context;
@@ -8,7 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Process;
-import android.provider.Settings;
 import android.util.Log;
 import android.util.Rational;
 
@@ -29,14 +27,35 @@ public class PipAndroidModule extends ReactContextBaseJavaModule {
 
     ReactApplicationContext reactApplicationContext;
 
-    public static void pipModeChanged(Boolean isInPictureInPictureMode, Lifecycle.State currentState, CallScreenActivity callScreenActivity) {
-        eventEmitter.emit(PIP_MODE_CHANGE, isInPictureInPictureMode);
+    @Override
+    public boolean canOverrideExistingModule() {
+        return true;
     }
 
     public PipAndroidModule(ReactApplicationContext reactContext) {
         super(reactContext);
         Log.d("PIP", "Got the context");
         this.reactApplicationContext = reactContext;
+    }
+
+    public static void pipModeChanged(Boolean isInPictureInPictureMode, Lifecycle.State currentState,
+                                      CallScreenActivity callScreenActivity) {
+        eventEmitter.emit(PIP_MODE_CHANGE, isInPictureInPictureMode);
+    }
+
+    public static void openPipSettings(Context context) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Intent intent;
+                Log.d("TAG", "openPipSettings: true opening settings");
+                intent = new Intent("android.settings.PICTURE_IN_PICTURE_SETTINGS",
+                        Uri.parse("package:" + context.getPackageName()));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+            }
+        } catch (Exception ex) {
+            Log.d("TAG", "openPipSettings: Error opening PIP settings" + ex);
+        }
     }
 
     @Override
@@ -52,56 +71,33 @@ public class PipAndroidModule extends ReactContextBaseJavaModule {
         eventEmitter = getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
     }
 
-    public static void openPipSettings(Context context) {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Intent intent;
-                Log.d("TAG", "openPipSettings: true opening settings");
-                intent = new Intent("android.settings.PICTURE_IN_PICTURE_SETTINGS",
-                        Uri.parse("package:" + context.getPackageName()));
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-            }
-        }catch (Exception ex) {
-            Log.d("TAG", "openPipSettings: Error opening PIP settings"+ex);
-        }
-    }
-
     @ReactMethod
     public void enterPipMode(int width, int height, boolean shouldOpenPermissionScreenIfPipNotAllowed) {
         try {
-            Log.d("TAG", "enterPipMode: shouldOpenPermissionScreenIfPipNotAllowed "+ shouldOpenPermissionScreenIfPipNotAllowed);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && getCurrentActivity() != null) {
                 AppOpsManager appOpsManager;
                 appOpsManager = (AppOpsManager) getCurrentActivity().getSystemService(Context.APP_OPS_SERVICE);
-                Boolean isPipAllowedInSystem = AppOpsManager.MODE_ALLOWED == appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE, Process.myUid(), getCurrentActivity().getPackageName());
-                Log.d("TAG", "isPipAllowed: before validation " + isPipAllowedInSystem);
+                Boolean isPipAllowedInSystem = AppOpsManager.MODE_ALLOWED == appOpsManager.checkOpNoThrow(
+                        AppOpsManager.OPSTR_PICTURE_IN_PICTURE, Process.myUid(), getCurrentActivity().getPackageName());
                 if (isPipAllowedInSystem) {
-                    Log.d("TAG", "enterPipMode: before validation " + getCurrentActivity().toString().toLowerCase() + " ___ " + getCurrentActivity().isInPictureInPictureMode());
-                    Log.d("TAG", "enterPipMode: final validation => " + getCurrentActivity().toString().toLowerCase().contains("callscreenactivity") + " __ " + !getCurrentActivity().isInPictureInPictureMode() + " __ " + CallScreenActivity.isCallConnected);
-                    if (getCurrentActivity().toString().toLowerCase().contains("callscreenactivity") && !getCurrentActivity().isInPictureInPictureMode() && CallScreenActivity.isCallConnected) {
+                    if (getCurrentActivity().toString().toLowerCase().contains("callscreenactivity")
+                            && !getCurrentActivity().isInPictureInPictureMode() && CallScreenActivity.isCallConnected) {
                         int ratWidth = width > 0 ? width : 380;
                         int ratHeight = height > 0 ? height : 214;
 
-                        Rational ratio
-                                = new Rational(ratWidth, ratHeight);
-                        PictureInPictureParams.Builder
-                                pip_Builder
-                                = null;
+                        Rational ratio = new Rational(ratWidth, ratHeight);
+                        PictureInPictureParams.Builder pipBuilder = null;
 
-                        pip_Builder = new PictureInPictureParams
-                                .Builder();
-                        pip_Builder.setAspectRatio(ratio).build();
-                        reactApplicationContext.getCurrentActivity().enterPictureInPictureMode(pip_Builder.build());
+                        pipBuilder = new PictureInPictureParams.Builder();
+                        pipBuilder.setAspectRatio(ratio).build();
+                        reactApplicationContext.getCurrentActivity().enterPictureInPictureMode(pipBuilder.build());
                     }
-                } else if (shouldOpenPermissionScreenIfPipNotAllowed == true) {
+                } else if (shouldOpenPermissionScreenIfPipNotAllowed) {
                     openPipSettings(reactApplicationContext);
                 }
             }
         } catch (Exception e) {
-            Log.d("TAG", "Error in CallScreenActivity enterPipMode method: "+ e);
+            Log.d("TAG", "Error in CallScreenActivity enterPipMode method: " + e);
         }
     }
 }
-
-

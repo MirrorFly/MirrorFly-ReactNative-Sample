@@ -26,7 +26,7 @@ const Timer = (props = {}) => {
    const [timerTime, setTimerTime] = React.useState(0);
 
    React.useEffect(() => {
-      if (callStatus && callStatus.toLowerCase() === CALL_STATUS_CONNECTED) {
+      if (callStatus && callStatus?.toLowerCase() === CALL_STATUS_CONNECTED) {
          startTimer();
       }
    }, []);

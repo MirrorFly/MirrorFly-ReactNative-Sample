@@ -33,6 +33,8 @@ import UserAvathar from './UserAvathar';
 import UserStatus from './UserStatus';
 import config from './chat/common/config';
 
+const LeftArrowComponent = () => LeftArrowIcon();
+
 const propTypes = {
    chatUser: PropTypes.string,
    title: PropTypes.string,

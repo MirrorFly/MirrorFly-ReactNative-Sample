@@ -22,9 +22,9 @@ import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
 import useRosterData from '../hooks/useRosterData';
 import { selectedMediaIdRef } from '../screen/ChatScreen';
-import VideoPlayer from './Media/VideoPlayer';
-import { getType } from './chat/common/fileUploadValidation';
 import NickName from './NickName';
+import VideoInfo from './VideoInfo';
+import { getType } from './chat/common/fileUploadValidation';
 
 function GalleryPickView(props) {
    const { handleSendMsg, setLocalNav, selectedSingle, setSelectedImages, selectedImages } = props;
@@ -99,7 +99,7 @@ function GalleryPickView(props) {
                                  style={styles.tabContainer}
                               />
                            ),
-                           video: <VideoPlayer forcePause={{ mediaForcePause, setMediaForcePause }} item={item} />,
+                           video: <VideoInfo forcePause={{ mediaForcePause, setMediaForcePause }} item={item} />,
                         }[type]
                      }
                   </View>

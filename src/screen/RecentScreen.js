@@ -157,6 +157,7 @@ function RecentScreen() {
             dispatch(DeleteChatHistoryAction({ fromUserId: item?.fromUserId }));
          });
       });
+      toggleDeleteModal();
       dispatch(clearRecentChatSelectedItems());
    };
 

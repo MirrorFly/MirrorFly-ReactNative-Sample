@@ -1,22 +1,26 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { Image, Platform, StyleSheet, View } from 'react-native';
+import { BackHandler, Platform, StyleSheet, View } from 'react-native';
 import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import Video from 'react-native-video';
-import { getThumbBase64URL } from '../../Helper/Chat/Utility';
+import IconButton from '../../common/IconButton';
+import { BackArrowIcon } from '../../common/Icons';
 import commonStyles from '../../common/commonStyles';
 import { useAppState } from '../../hooks';
 import { mflog } from '../../uikitHelpers/uikitMethods';
 import MediaControls, { PLAYER_STATES } from './media-controls';
 
-const VideoPlayer = props => {
+const VideoPlayer = () => {
    const {
-      forcePause: { mediaForcePause = false, setMediaForcePause = () => {} } = {},
-      audioOnly = false,
-      item: { thumbImage = '', fileDetails = {} } = {},
-   } = props;
+      params: {
+         item: { fileDetails = {} },
+         audioOnly = false,
+      },
+   } = useRoute();
+   const navigation = useNavigation();
    const { uri } = fileDetails;
    const videoPlayer = React.useRef(null);
-   const [videoUri, setVideoUri] = React.useState('');
+   const [videoUri, setVideoUri] = React.useState(uri);
    const [currentTime, setCurrentTime] = React.useState(0);
    const [duration, setDuration] = React.useState(0);
    const [isLoading, setIsLoading] = React.useState(true);
@@ -26,10 +30,39 @@ const VideoPlayer = props => {
    const appState = useAppState();
 
    React.useEffect(() => {
-      if (mediaForcePause) {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+      return () => {
+         backHandler.remove();
          handleForcePause();
+      };
+   }, []);
+
+   const handleBackBtn = () => {
+      navigation.goBack();
+      return true;
+   };
+
+   React.useLayoutEffect(() => {
+      if (Platform.OS === 'ios') {
+         if (uri.includes('ph://')) {
+            RNConvertPhAsset.convertVideoFromUrl({
+               url: uri,
+               convertTo: 'mov',
+               quality: 'original',
+            })
+               .then(response => {
+                  setVideoUri(response.path);
+               })
+               .catch(err => {
+                  mflog(err);
+               });
+         } else {
+            setVideoUri(uri);
+         }
+      } else {
+         setVideoUri(uri);
       }
-   }, [mediaForcePause]);
+   }, []);
 
    React.useEffect(() => {
       if (appState) {
@@ -44,7 +77,7 @@ const VideoPlayer = props => {
    const handleForcePause = () => {
       videoPlayer?.current?.seek?.(0);
       setCurrentTime(0);
-      handlePause();
+      setPaused(!paused);
    };
 
    const handlePause = () => {
@@ -62,6 +95,10 @@ const VideoPlayer = props => {
     }, [width, height]) */
 
    const onSeek = seek => {
+      if (playerState === PLAYER_STATES.PLAYING) {
+         setPaused(true); // Pause the video player before seeking
+         setPlayerState(PLAYER_STATES.PAUSED);
+      }
       videoPlayer.current.seek(seek);
       setOnEnded(false);
    };
@@ -69,7 +106,6 @@ const VideoPlayer = props => {
    const onPaused = state => {
       setPaused(!paused);
       setPlayerState(state);
-      setMediaForcePause?.(false);
    };
 
    const onReplay = () => {
@@ -82,12 +118,10 @@ const VideoPlayer = props => {
          setTimeout(() => {
             setPlayerState(PLAYER_STATES.PLAYING);
             setPaused(false);
-            setMediaForcePause?.(false);
          });
       } else {
          setPlayerState(PLAYER_STATES.PLAYING);
          setPaused(false);
-         setMediaForcePause?.(false);
       }
    };
 
@@ -99,6 +133,7 @@ const VideoPlayer = props => {
 
    const onLoad = data => {
       setDuration(data.duration);
+      setIsLoading(false);
    };
 
    /**   const onLoadStart = data => setIsLoading(true);
@@ -123,43 +158,18 @@ const VideoPlayer = props => {
 
    const onSeeking = time => {
       setCurrentTime(time);
-      if (onEnded) {
-         setPlayerState(PLAYER_STATES.PAUSED);
-         setPaused(true);
-      }
+      setPlayerState(PLAYER_STATES.PAUSED);
+      setPaused(true);
    };
-
-   const handleLayout = e => {
-      setIsLoading(false);
-   };
-
-   React.useLayoutEffect(() => {
-      if (Platform.OS === 'ios') {
-         if (uri.includes('ph://')) {
-            RNConvertPhAsset.convertVideoFromUrl({
-               url: uri,
-               convertTo: 'mov',
-               quality: 'original',
-            })
-               .then(response => {
-                  setVideoUri(response.path);
-               })
-               .catch(err => {
-                  mflog(err);
-               });
-         } else {
-            setVideoUri(uri);
-         }
-      } else {
-         setVideoUri(uri);
-      }
-      return () => {
-         handleForcePause();
-      };
-   }, []);
 
    return (
-      <View style={{ flex: 1 }} onLayout={handleLayout}>
+      <View style={{ flex: 1, backgroundColor: '#000' }}>
+         <IconButton
+            onPress={handleBackBtn}
+            pressedStyle={commonStyles.pressedBg_2}
+            containerStyle={[{ position: 'absolute', top: 10, zIndex: 1, left: 5 }]}>
+            <BackArrowIcon color={'#fff'} />
+         </IconButton>
          <View style={{ flex: 1, justifyContent: 'center' }}>
             <Video
                audioOnly={audioOnly}
@@ -169,36 +179,30 @@ const VideoPlayer = props => {
                onProgress={onProgress}
                paused={paused}
                controls={false}
-               poster={getThumbBase64URL(thumbImage)}
+               poster={videoUri}
                posterResizeMode={'contain'}
                ref={videoPlayer}
                resizeMode={'contain'}
                source={{ uri: videoUri }}
-               style={[styles.videoContainer, { display: mediaForcePause ? 'none' : 'flex' }]}
+               style={[styles.videoContainer]}
                volume={100}
                muted={false}
             />
-            <Image
-               style={[commonStyles.flex1, commonStyles.resizeContain, { display: mediaForcePause ? 'flex' : 'none' }]}
-               source={{ uri: getThumbBase64URL(thumbImage) }}
-            />
          </View>
-         {!isLoading && (
-            <MediaControls
-               fadeOutDisable={audioOnly || playerState === PLAYER_STATES.PAUSED || playerState === PLAYER_STATES.ENDED}
-               duration={duration}
-               isLoading={isLoading}
-               mainColor="#333"
-               onPaused={onPaused}
-               onReplay={onReplay}
-               onSeek={onSeek}
-               onSeeking={onSeeking}
-               fadeOutDelay={1100}
-               playerState={playerState}
-               progress={currentTime}
-               containerStyle={styles.mediaControlStyle}
-            />
-         )}
+         <MediaControls
+            fadeOutDisable={audioOnly || playerState === PLAYER_STATES.PAUSED || playerState === PLAYER_STATES.ENDED}
+            duration={duration}
+            isLoading={isLoading}
+            mainColor="#333"
+            onPaused={onPaused}
+            onReplay={onReplay}
+            onSeek={onSeek}
+            onSeeking={onSeeking}
+            fadeOutDelay={1100}
+            playerState={playerState}
+            progress={currentTime}
+            containerStyle={styles.mediaControlStyle}
+         />
       </View>
    );
 };

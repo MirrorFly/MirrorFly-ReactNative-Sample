@@ -32,7 +32,13 @@ import ChatConversation from '../components/ChatConversation';
 import { chatInputMessageRef } from '../components/ChatInput';
 import GalleryPickView from '../components/GalleryPickView';
 import Camera from '../components/RNCamera';
-import { getType, isValidFileType, validateFileSize, validation } from '../components/chat/common/fileUploadValidation';
+import {
+   getExtension,
+   getType,
+   isValidFileType,
+   validateFileSize,
+   validation,
+} from '../components/chat/common/fileUploadValidation';
 import { LOCATION_SCREEN, MOBILE_CONTACT_LIST_SCREEN, RECENTCHATSCREEN } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
@@ -43,6 +49,7 @@ import { deleteRecoverMessage, recoverMessage } from '../redux/Actions/RecoverMe
 import { clearConversationSearchData } from '../redux/Actions/conversationSearchAction';
 import store from '../redux/store';
 import SavePicture from './Gallery';
+import { mflog } from '../uikitHelpers/uikitMethods';
 
 export const selectedMediaIdRef = createRef();
 selectedMediaIdRef.current = {};
@@ -117,6 +124,7 @@ function ChatScreen() {
       if (audioPermission === 'granted' || audioPermission === 'limited') {
          SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
          let response = await handleAudioPickerSingle();
+         mflog(response);
          let _validate = validation(response.type);
          const sizeError = validateFileSize(response.size, getType(response.type));
          if (_validate && !sizeError) {

@@ -87,13 +87,12 @@ import {
 import { fetchGroupParticipants } from '../Helper/Chat/Groups';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { getUserProfileFromSDK, showToast, updateUserProfileDetails } from '../Helper/index';
-import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import { pushNotify, updateNotification } from '../Service/remoteNotifyHandle';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../calls/notification/callNotifyHandler';
+import { handleLogOut } from '../common/utils';
 import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
 import { updateConversationMessage, updateRecentChatMessage } from '../components/chat/common/createMessage';
-import { REGISTERSCREEN } from '../constant';
 import ActivityModule from '../customModules/ActivityModule';
 import BluetoothHeadsetDetectionModule from '../customModules/BluetoothHeadsetDetectionModule';
 import RingtoneSilentKeyEventModule from '../customModules/RingtoneSilentKeyEventModule';
@@ -118,10 +117,10 @@ import {
    deleteMessageForEveryone,
    deleteMessageForMe,
    updateChatConversationHistory,
+   updateUploadStatus,
 } from '../redux/Actions/ConversationAction';
 import { updateDownloadData } from '../redux/Actions/MediaDownloadAction';
 import { updateMediaUploadData } from '../redux/Actions/MediaUploadAction';
-import { navigate } from '../redux/Actions/NavigationAction';
 import { updateProfileDetail } from '../redux/Actions/ProfileAction';
 import {
    clearLastMessageinRecentChat,
@@ -142,7 +141,6 @@ import { updateRosterData } from '../redux/Actions/rosterAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
-import { handleLogOut } from '../common/utils';
 
 let localStream = null,
    localVideoMuted = false,
@@ -898,7 +896,7 @@ export const callBacks = {
       ) {
          setTimeout(() => {
             fetchGroupParticipants(res.groupJid);
-         }, 2000);
+         }, 1000);
       }
    },
    groupMsgInfoListener: res => {
@@ -909,6 +907,17 @@ export const callBacks = {
    },
    mediaDownloadListener: res => {
       store.dispatch(updateDownloadData(res));
+      if (res.progress === 100) {
+         let updateObj = {
+            statusCode: 200,
+            msgId: res.msgId,
+            is_downloaded: 2,
+            uploadStatus: 2,
+            local_path: res.local_path,
+            fromUserId: getUserIdFromJid(res.fromUserJid),
+         };
+         store.dispatch(updateUploadStatus(updateObj));
+      }
    },
    blockUserListener: res => {
       console.log('blockUserListener = (res) => { }', res);

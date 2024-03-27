@@ -120,7 +120,7 @@ const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus
          } else {
             const cancelObj = {
                msgId,
-               fromUserId: fromUserJId,
+               fromUserId: getUserIdFromJid(fromUserJId),
                uploadStatus: 7,
                downloadStatus: 7,
             };

@@ -64,6 +64,7 @@ const ImageInfo = props => {
                source={{ uri: ImageBase64 }}
                resizeMode="contain"
             />
+
             {/* <ImageZoom
                uri={ImageBase64}
                minScale={0.5}

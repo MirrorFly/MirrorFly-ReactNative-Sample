@@ -183,8 +183,7 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
             }}>
             <View style={styles.audioRoutesBottomSheetContainer}>
                {audioRoutes.map(route => (
-                  <>
-                  {route.type !== 'Bluetooth' &&<Pressable
+                  <Pressable
                      key={route.name}
                      contentContainerStyle={[
                         styles.audioRouteItem,
@@ -192,8 +191,7 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
                      ]}
                      onPress={handleSelectAudioRoute(route)}>
                      <Text style={styles.audioRouteItemText}>{route.type}</Text>
-                  </Pressable>}
-                  </>
+                  </Pressable>
                ))}
             </View>
          </RBSheet>

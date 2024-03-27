@@ -170,7 +170,7 @@ const handleHeadphoneDetection = async data => {
          const calculatedRoute = calculateAudioRoute(
             isSpeakerEnabledInUI,
             selectedAudioRoute,
-            { audioJack: data.audioJack, bluetooth: false },
+            { audioJack: data.audioJack, bluetooth: data.bluetooth },
             {
                previousAudioJack: isWiredHeadsetConnected,
                previousBluetooth: isBluetoothHeadsetConnected,
@@ -181,7 +181,8 @@ const handleHeadphoneDetection = async data => {
       }
       data.audioJack !== isWiredHeadsetConnected && setPreviousHeadsetStatus(isWiredHeadsetConnected);
       data.audioJack !== isWiredHeadsetConnected && Store.dispatch(updateCallWiredHeadsetConnected(data.audioJack));
-      data.bluetooth !== isBluetoothHeadsetConnected && Store.dispatch(updateCallBluetoothHeadsetConnected(false));
+      data.bluetooth !== isBluetoothHeadsetConnected &&
+         Store.dispatch(updateCallBluetoothHeadsetConnected(data.bluetooth));
    });
 };
 
@@ -318,6 +319,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          callConnectionStatus.to = groupId;
          callConnectionStatus.groupId = groupId;
       }
+      const isBluetoothHeadsetConnectedData = await HeadphoneDetection.isAudioDeviceConnected();
       // AsyncStorage.setItem('call_connection_status', JSON.stringify(callConnectionStatus))
       let uuid = SDK.randomString(16, 'BA');
       if (Platform.OS === 'ios') {
@@ -344,6 +346,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          // Store.dispatch(openCallModal());
          Store.dispatch(setCallModalScreen(OUTGOING_CALL_SCREEN));
       });
+      startOutgoingCallRingingTone(callType);
       try {
          if (callType === 'audio') {
             muteLocalVideo(true);
@@ -352,7 +355,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
             muteLocalVideo(false);
             Store.dispatch(updateCallVideoMutedAction(false));
             call = await SDK.makeVideoCall(users, groupId);
-            enableSpeaker(uuid);
+            enableSpeaker(uuid, isBluetoothHeadsetConnectedData.bluetooth);
          }
          if (call.statusCode !== 200 && call.message === PERMISSION_DENIED) {
             stopOutgoingCallRingingTone();
@@ -383,7 +386,6 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
             }
             Store.dispatch(updateCallConnectionState(callConnectionStatusNew));
             startCallingTimer();
-            startOutgoingCallRingingTone(callType);
          }
       } catch (error) {
          console.log('Error in making call', error);
@@ -420,12 +422,13 @@ const answerCallPermissionError = answerCallResonse => {
    });
 };
 
-const enableSpeaker = async (activeCallerUUID = '') => {
+const enableSpeaker = async (activeCallerUUID = '', isBluetoothHeadsetConnectedData = false) => {
    const callControlsData = Store.getState().callControlsData;
    const isWiredHeadsetConnected = callControlsData?.isWiredHeadsetConnected || false;
    const isBluetoothHeadsetConnected = callControlsData?.isBluetoothHeadsetConnected || false;
-   !isWiredHeadsetConnected &&
-      !isBluetoothHeadsetConnected &&
+   !isBluetoothHeadsetConnected &&
+      !isBluetoothHeadsetConnectedData &&
+      !isWiredHeadsetConnected &&
       (await updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, activeCallerUUID));
 };
 
@@ -558,7 +561,7 @@ const debounceAudioRouteChangeListenerForIos = debounce(
 
 const handleAudioRouteChangeListenerForIos = () => {
    RNCallKeep.addEventListener('didChangeAudioRoute', ({ output, reason }) => {
-      console.log('LOGG::==>> didChangeAudioRoute from callkit', output, reason);
+      // console.log('LOGG::==>> didChangeAudioRoute from callkit', output, reason);
       const currentCallUUID = Store.getState().callData?.callerUUID;
       debounceAudioRouteChangeListenerForIos(currentCallUUID, output, reason);
    });
@@ -1008,6 +1011,7 @@ export const updateAudioRouteTo = async (
          isSpeakerEnabled: isSpeakerEnabledInUI,
          isWiredHeadsetConnected,
          isBluetoothHeadsetConnected = false,
+         selectedAudioRoute,
       } = Store.getState().callControlsData || {};
       Store.dispatch(updateCallSelectedAudioRoute(audioRouteNameMap[audioRouteType]));
       if (Platform.OS === 'android') {
@@ -1021,6 +1025,7 @@ export const updateAudioRouteTo = async (
          RNInCallManager.setSpeakerphoneOn(speakerEnabled);
          RNInCallManager.setForceSpeakerphoneOn(speakerEnabled);
       } else {
+         const { selectedAudioRoute: currentSelectedAudioRouting } = Store.getState().callControlsData || {};
          let prevIsWiredHeadsetConnected = getPreviousHeadsetStatus();
          const isSpeakerEnabledUI =
             getCallType() === 'audio' ? isSpeakerEnabledInUI : isSpeakerEnabledInUI || prevIsWiredHeadsetConnected;
@@ -1029,12 +1034,20 @@ export const updateAudioRouteTo = async (
             case 3: // Category change
                // change the category based on the call type and already selected audio route
                if (
+                  audioRouteName?.toLowerCase?.() === 'receiver' &&
+                  selectedAudioRoute === 'Bluetooth' &&
+                  !currentSelectedAudioRouting
+               ) {
+                  updateAudioRouteTo(AUDIO_ROUTE_BLUETOOTH, AUDIO_ROUTE_BLUETOOTH, callUUID);
+                  return;
+               }
+               if (
                   isSpeakerEnabledUI &&
                   audioRouteName?.toLowerCase?.() !== 'speaker' &&
                   !isBluetoothHeadsetConnected &&
                   !isWiredHeadsetConnected
                ) {
-                  console.log('LOGG::==>> updateAudioRouteTo manually in case 3 ', isBluetoothHeadsetConnected);
+                  // console.log('LOGG::==>> updateAudioRouteTo manually in case 3 ', isBluetoothHeadsetConnected);
                   updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, callUUID);
                   return;
                }

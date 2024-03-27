@@ -14,7 +14,7 @@ export default StyleSheet.create({
       justifyContent: 'space-between',
       left: 0,
       paddingHorizontal: 20,
-      paddingVertical: 13,
+      paddingVertical: 20,
       position: 'absolute',
       right: 0,
       top: 0,
@@ -93,6 +93,6 @@ export default StyleSheet.create({
    },
    track: {
       borderRadius: 1,
-      height: 5,
+      height: 2,
    },
 });

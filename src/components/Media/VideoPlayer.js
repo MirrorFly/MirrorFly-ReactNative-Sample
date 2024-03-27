@@ -9,6 +9,7 @@ import commonStyles from '../../common/commonStyles';
 import { useAppState } from '../../hooks';
 import { mflog } from '../../uikitHelpers/uikitMethods';
 import MediaControls, { PLAYER_STATES } from './media-controls';
+import IconButton from '../../common/IconButton';
 
 const VideoPlayer = () => {
    const {
@@ -167,12 +168,13 @@ const VideoPlayer = () => {
    };
 
    return (
-      <View style={{ flex: 1 }}>
-         <Pressable
+      <View style={{ flex: 1, backgroundColor: '#000' }}>
+         <IconButton
             onPress={handleBackBtn}
-            style={[commonStyles.bgBlack, { position: 'absolute', top: 20, zIndex: 1, left: 10 }]}>
+            pressedStyle={commonStyles.pressedBg_2}
+            containerStyle={[{ position: 'absolute', top: 10, zIndex: 1, left: 5 }]}>
             <BackArrowIcon color={'#fff'} />
-         </Pressable>
+         </IconButton>
          <View style={{ flex: 1, justifyContent: 'center' }}>
             <Video
                audioOnly={audioOnly}

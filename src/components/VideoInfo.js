@@ -60,7 +60,7 @@ const VideoInfo = props => {
 };
 
 const styles = StyleSheet.create({
-   player: { flex: 1, justifyContent: 'center', backgroundColor: '#fff' },
+   player: { flex: 1, justifyContent: 'center', backgroundColor: '#000' },
    video: {},
    audioOnly: {
       backgroundColor: '#97A5C7',

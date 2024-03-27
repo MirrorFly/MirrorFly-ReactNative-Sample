@@ -191,7 +191,7 @@ function MessageInfo() {
                   ]}>
                   Delivered
                </Text>
-               <Text style={[{ color: '#959595' }, commonStyles.marginBottom_8]}>
+               <Text style={[styles.stautsText, commonStyles.marginBottom_8]}>
                   {deliveredReport ? change16TimeWithDateFormat(deliveredReport) : 'Message sent, not delivered yet'}
                </Text>
                <View style={commonStyles.dividerLine} />
@@ -200,11 +200,12 @@ function MessageInfo() {
                      commonStyles.fw_600,
                      commonStyles.fontSize_18,
                      commonStyles.colorBlack,
+                     commonStyles.marginTop_5,
                      commonStyles.marginBottom_8,
                   ]}>
                   Read
                </Text>
-               <Text style={[{ color: '#959595' }, commonStyles.marginBottom_8]}>
+               <Text style={[styles.stautsText, commonStyles.marginBottom_8]}>
                   {seenReport ? change16TimeWithDateFormat(seenReport) : 'Your message is not read'}
                </Text>
                <View style={commonStyles.dividerLine} />
@@ -282,4 +283,8 @@ const styles = StyleSheet.create({
    },
    textMessage: { fontSize: 14, color: '#313131' },
    timeStampText: { paddingLeft: 4, color: '#959595', fontSize: 11 },
+   stautsText: {
+      color: '#4b5563',
+      marginVertical: 2,
+   },
 });

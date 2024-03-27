@@ -3,13 +3,12 @@ import React from 'react';
 import { BackHandler, Platform, StyleSheet, View } from 'react-native';
 import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import Video from 'react-native-video';
+import IconButton from '../../common/IconButton';
 import { BackArrowIcon } from '../../common/Icons';
-import Pressable from '../../common/Pressable';
 import commonStyles from '../../common/commonStyles';
 import { useAppState } from '../../hooks';
 import { mflog } from '../../uikitHelpers/uikitMethods';
 import MediaControls, { PLAYER_STATES } from './media-controls';
-import IconButton from '../../common/IconButton';
 
 const VideoPlayer = () => {
    const {
@@ -21,8 +20,7 @@ const VideoPlayer = () => {
    const navigation = useNavigation();
    const { uri } = fileDetails;
    const videoPlayer = React.useRef(null);
-   const [volume, setVolume] = React.useState(100);
-   const [videoUri, setVideoUri] = React.useState('');
+   const [videoUri, setVideoUri] = React.useState(uri);
    const [currentTime, setCurrentTime] = React.useState(0);
    const [duration, setDuration] = React.useState(0);
    const [isLoading, setIsLoading] = React.useState(true);
@@ -79,8 +77,7 @@ const VideoPlayer = () => {
    const handleForcePause = () => {
       videoPlayer?.current?.seek?.(0);
       setCurrentTime(0);
-      handlePause();
-      setVolume(0);
+      setPaused(!paused);
    };
 
    const handlePause = () => {
@@ -109,14 +106,12 @@ const VideoPlayer = () => {
    const onPaused = state => {
       setPaused(!paused);
       setPlayerState(state);
-      setVolume(100);
    };
 
    const onReplay = () => {
       videoPlayer?.current.seek(0);
       setCurrentTime(0);
       setOnEnded(false);
-      setVolume(100);
       if (Platform.OS === 'android') {
          setPlayerState(PLAYER_STATES.PAUSED);
          setPaused(true);
@@ -184,13 +179,13 @@ const VideoPlayer = () => {
                onProgress={onProgress}
                paused={paused}
                controls={false}
-               poster={uri}
+               poster={videoUri}
                posterResizeMode={'contain'}
                ref={videoPlayer}
                resizeMode={'contain'}
                source={{ uri: videoUri }}
                style={[styles.videoContainer]}
-               volume={volume}
+               volume={100}
                muted={false}
             />
          </View>
@@ -218,7 +213,7 @@ const styles = StyleSheet.create({
    mediaControlStyle: {
       position: 'absolute',
       top: 0,
-      bottom: 20,
+      bottom: 0,
       left: 0,
       right: 0,
       backgroundColor: 'rgba(0,0,0,0.1)',

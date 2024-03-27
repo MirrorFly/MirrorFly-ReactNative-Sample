@@ -4,12 +4,13 @@ import callDownArrow from '../../assets/callDownArrow.png';
 import callDownArrow1 from '../../assets/callDownArrow1.png';
 import callUpArrow from '../../assets/callUpArrow.png';
 import callUpArrow1 from '../../assets/callUpArrow1.png';
-import { IncomingCallAccept, IncomingCallEnd, IncomingCallIcon } from '../../common/Icons';
+import { IncomingCallAccept, IncomingCallEnd, IncomingCallIcon, IncomingVideoIcon } from '../../common/Icons';
 import { getImageSource } from '../../common/utils';
 import PulseAnimationComponent from '../components/PulseAnimationComponent';
+import { CALL_TYPE_AUDIO } from '../../Helper/Calls/Constant';
 
 const GestureAnimationScreen = (props = {}) => {
-   const { acceptCall, declineCall } = props;
+   const { acceptCall, declineCall, callType } = props;
    const panY = React.useRef(new Animated.Value(0)).current;
    const answerY = React.useRef(0);
    const oldMove = React.useRef(0);
@@ -148,7 +149,12 @@ const GestureAnimationScreen = (props = {}) => {
                      alignItems: 'center',
                      borderRadius: 60,
                   }}>
-                  {swipeColor === '#F2F2F2' && <IncomingCallIcon width={20} height={20} />}
+                  {swipeColor === '#F2F2F2' &&
+                     (callType === CALL_TYPE_AUDIO ? (
+                        <IncomingCallIcon width={20} height={20} />
+                     ) : (
+                        <IncomingVideoIcon />
+                     ))}
                </View>
             </Animated.View>
          </View>

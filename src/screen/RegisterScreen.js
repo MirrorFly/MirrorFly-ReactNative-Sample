@@ -260,7 +260,7 @@ const RegisterScreen = ({ navigation }) => {
                </HStack>
             </HStack>
             <Stack alignItems="center" mt="42">
-               <PrimaryPillBtn title="Continue" onPress={handleSubmit} />
+               <PrimaryPillBtn title=" Continue " onPress={handleSubmit} />
                {/* <PrimaryPillBtn title="Push Remote" onPress={handleRemoteNotify} /> */}
                {/* <PrimaryPillBtn title="Push Local" onPress={handleNotify} /> */}
             </Stack>

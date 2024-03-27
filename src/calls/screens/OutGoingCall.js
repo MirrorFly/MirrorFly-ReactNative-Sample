@@ -1,7 +1,8 @@
 import React from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { endCall, startOutgoingcallTimer } from '../../Helper/Calls/Call';
+import { CALL_STATUS_DISCONNECTED } from '../../Helper/Calls/Constant';
 import { closeCallModalActivity } from '../../Helper/Calls/Utility';
 import { capitalizeFirstLetter, getUserIdFromJid } from '../../Helper/Chat/Utility';
 import OutgoingCallBg from '../../assets/OutgoingCallBg.png';
@@ -13,20 +14,20 @@ import useRosterData from '../../hooks/useRosterData';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 import ProfilePictureWithPulse from '../components/ProfilePictureWithPulse';
+import VideoComponent from '../components/VideoComponent';
 
 const OutGoingCall = () => {
    const { connectionState } = useSelector(state => state.callData) || {};
    const { to = '', userJid = '', callType } = connectionState;
    const { data: confrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
-   const { callStatusText: callStatus = '' } = confrenceData;
-
+   const { callStatusText: callStatus = '', localStream } = confrenceData;
+   const { isVideoMuted, isFrontCameraEnabled } = useSelector(state => state.callControlsData);
    const [outGoingCalls, setOutGoingCalls] = React.useState({
       callConnectionData: '',
       showMemberNames: false,
       callingUiStatus: 'Trying to connect',
    });
 
-   const dispatch = useDispatch();
    let userID = getUserIdFromJid(to || userJid);
    const userProfile = useRosterData(userID);
    const nickName = userProfile.nickName || userID;
@@ -83,12 +84,15 @@ const OutGoingCall = () => {
       // callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'OUTGOING_CALL');
    };
 
-   const handleAudioMute = () => {};
-
-   let localVideoMuted = confrenceData.localVideoMuted;
 
    return (
       <ImageBackground style={styles.container} source={getImageSource(OutgoingCallBg)}>
+         {localStream &&
+            localStream.video &&
+            !isVideoMuted &&
+            callStatus.toLowerCase() !== CALL_STATUS_DISCONNECTED && (
+               <VideoComponent stream={localStream} isFrontCameraEnabled={isFrontCameraEnabled} />
+            )}
          <View>
             {/* down arrow to close the modal */}
             <CloseCallModalButton onPress={handleClosePress} />
@@ -120,10 +124,11 @@ const OutGoingCall = () => {
          <View>
             {/* Call Control buttons (Mute & End & speaker) */}
             <CallControlButtons
+               callStatus={callStatus}
                handleEndCall={endCall}
-               handleAudioMute={handleAudioMute}
+               callType={callType}
                // handleVideoMute={handleVideoMute}
-               videoMute={!!localVideoMuted}
+               // videoMute={!!localVideoMuted}
                // audioMute={true}
                // audioControl={audioControl}
                // videoControl={videoControl}

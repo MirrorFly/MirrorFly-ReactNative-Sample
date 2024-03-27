@@ -27,6 +27,7 @@ import {
    REGISTERSCREEN,
    SETTINGSCREEN,
    USER_INFO,
+   VIDEO_PLAYER_SCREEN,
    VIEWALLMEDIA,
 } from '../constant';
 import ChatScreen from '../screen/ChatScreen';
@@ -44,6 +45,7 @@ import SettingScreen from '../screen/SettingScreen';
 import UserInfo from '../screen/UserInfo';
 import ViewAllMedia from '../screen/ViewAllMedia';
 import ContactPreviewScreen from '../components/Media/ContactPreviewScreen';
+import VideoPlayer from '../components/Media/VideoPlayer';
 
 const Stack = createNativeStackNavigator();
 
@@ -70,6 +72,7 @@ const ChatScreenStackNavigation = () => {
             {prop => <ContactPreviewScreen {...prop} />}
          </Stack.Screen>
          <Stack.Screen name={LOCATION_SCREEN}>{prop => <Location {...prop} />}</Stack.Screen>
+         <Stack.Screen name={VIDEO_PLAYER_SCREEN}>{prop => <VideoPlayer {...prop} />}</Stack.Screen>
       </Stack.Navigator>
    );
 };

@@ -1,25 +1,28 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { Image, Platform, StyleSheet, View } from 'react-native';
+import { BackHandler, Platform, StyleSheet, View } from 'react-native';
 import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import Video from 'react-native-video';
-import { getThumbBase64URL } from '../../Helper/Chat/Utility';
+import { BackArrowIcon } from '../../common/Icons';
+import Pressable from '../../common/Pressable';
 import commonStyles from '../../common/commonStyles';
 import { useAppState } from '../../hooks';
 import { mflog } from '../../uikitHelpers/uikitMethods';
 import MediaControls, { PLAYER_STATES } from './media-controls';
 
-const VideoPlayer = props => {
+const VideoPlayer = () => {
    const {
-      forcePause: { mediaForcePause = false, setMediaForcePause = () => {} } = {},
-      audioOnly = false,
-      item: { thumbImage = '', fileDetails = {} } = {},
-   } = props;
-
+      params: {
+         item: { fileDetails = {} },
+         audioOnly = false,
+      },
+   } = useRoute();
+   const navigation = useNavigation();
    const { uri } = fileDetails;
    const videoPlayer = React.useRef(null);
    const [volume, setVolume] = React.useState(100);
    const [videoUri, setVideoUri] = React.useState('');
-   const [currentTime, setCurrentTime] = React.useState(fileDetails.duration || 0);
+   const [currentTime, setCurrentTime] = React.useState(0);
    const [duration, setDuration] = React.useState(0);
    const [isLoading, setIsLoading] = React.useState(true);
    const [paused, setPaused] = React.useState(true);
@@ -28,8 +31,17 @@ const VideoPlayer = props => {
    const appState = useAppState();
 
    React.useEffect(() => {
-      return () => handleForcePause();
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+      return () => {
+         backHandler.remove();
+         handleForcePause();
+      };
    }, []);
+
+   const handleBackBtn = () => {
+      navigation.goBack();
+      return true;
+   };
 
    React.useLayoutEffect(() => {
       if (Platform.OS === 'ios') {
@@ -52,12 +64,6 @@ const VideoPlayer = props => {
          setVideoUri(uri);
       }
    }, []);
-
-   React.useEffect(() => {
-      if (mediaForcePause) {
-         handleForcePause();
-      }
-   }, [mediaForcePause]);
 
    React.useEffect(() => {
       if (appState) {
@@ -102,7 +108,6 @@ const VideoPlayer = props => {
    const onPaused = state => {
       setPaused(!paused);
       setPlayerState(state);
-      setMediaForcePause?.(false);
       setVolume(100);
    };
 
@@ -117,12 +122,10 @@ const VideoPlayer = props => {
          setTimeout(() => {
             setPlayerState(PLAYER_STATES.PLAYING);
             setPaused(false);
-            setMediaForcePause?.(false);
          });
       } else {
          setPlayerState(PLAYER_STATES.PLAYING);
          setPaused(false);
-         setMediaForcePause?.(false);
       }
    };
 
@@ -159,14 +162,17 @@ const VideoPlayer = props => {
 
    const onSeeking = time => {
       setCurrentTime(time);
-      if (onEnded) {
-         setPlayerState(PLAYER_STATES.PAUSED);
-         setPaused(true);
-      }
+      setPlayerState(PLAYER_STATES.PAUSED);
+      setPaused(true);
    };
 
    return (
       <View style={{ flex: 1 }}>
+         <Pressable
+            onPress={handleBackBtn}
+            style={[commonStyles.bgBlack, { position: 'absolute', top: 20, zIndex: 1, left: 10 }]}>
+            <BackArrowIcon color={'#fff'} />
+         </Pressable>
          <View style={{ flex: 1, justifyContent: 'center' }}>
             <Video
                audioOnly={audioOnly}
@@ -181,13 +187,9 @@ const VideoPlayer = props => {
                ref={videoPlayer}
                resizeMode={'contain'}
                source={{ uri: videoUri }}
-               style={[styles.videoContainer, { display: mediaForcePause ? 'none' : 'flex' }]}
+               style={[styles.videoContainer]}
                volume={volume}
                muted={false}
-            />
-            <Image
-               style={[commonStyles.flex1, commonStyles.resizeContain, { display: mediaForcePause ? 'flex' : 'none' }]}
-               source={{ uri: getThumbBase64URL(thumbImage) }}
             />
          </View>
          <MediaControls
@@ -214,7 +216,7 @@ const styles = StyleSheet.create({
    mediaControlStyle: {
       position: 'absolute',
       top: 0,
-      bottom: 0,
+      bottom: 20,
       left: 0,
       right: 0,
       backgroundColor: 'rgba(0,0,0,0.1)',

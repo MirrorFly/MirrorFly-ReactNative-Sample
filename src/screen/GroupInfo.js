@@ -42,9 +42,9 @@ const GroupInfo = () => {
       setModelOpen(val => !val);
    };
 
-   const groupParticipants = useSelector(
-      state => state?.groupsMemberParticipantsListData?.groupParticipants[chatUser] || [],
-   );
+   const groupAllParticipants = useSelector(state => state?.groupsMemberParticipantsListData?.groupParticipants || {});
+
+   const groupParticipants = React.useMemo(() => groupAllParticipants[chatUser], [groupAllParticipants]);
 
    const getGroupParticipants = time => {
       toggleModel();

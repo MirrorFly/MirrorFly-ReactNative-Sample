@@ -19,6 +19,7 @@ buildscript {
         classpath("com.facebook.react:react-native-gradle-plugin")
         /** Add this Firebase intialize */
         classpath('com.google.gms:google-services:4.4.0')
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0")
     }
 }
 

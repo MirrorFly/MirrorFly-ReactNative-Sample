@@ -15,6 +15,9 @@ public class MFModule implements ReactPackage {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new ActivityModule(reactContext));
         modules.add(new PipAndroidModule(reactContext));
+        modules.add(new AudioRoutingModule(reactContext));
+        modules.add(new BluetoothHeadsetDetectModule(reactContext));
+        modules.add(new RingtoneSilentKeyEventModule(reactContext));
         return modules;
     }
 

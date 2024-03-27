@@ -1,11 +1,12 @@
-import React from 'react';
-import DocumentPicker from 'react-native-document-picker';
-import { Box, Text } from 'native-base';
-import { request, PERMISSIONS, requestMultiple, check, RESULTS } from 'react-native-permissions';
-import { Alert, Linking, NativeModules, Platform } from 'react-native';
-import SDK from '../SDK/SDK';
-import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import messaging from '@react-native-firebase/messaging';
+import { Box, Text } from 'native-base';
+import React from 'react';
+import { Alert, Linking, NativeModules, Platform } from 'react-native';
+import DocumentPicker from 'react-native-document-picker';
+import { PERMISSIONS, RESULTS, check, checkMultiple, request, requestMultiple } from 'react-native-permissions';
+import { batch } from 'react-redux';
+import { showToast } from '../Helper';
 import {
    BRAND_REDMI,
    BRAND_XIAOMI,
@@ -13,6 +14,14 @@ import {
    PACKAGE_XIAOMI_WINDOW_COMPONENT,
    alertPermissionMessage,
 } from '../Helper/Calls/Constant';
+import { endOngoingCallLogout } from '../Helper/Calls/Utility';
+import * as RootNav from '../Navigation/rootNavigation';
+import SDK from '../SDK/SDK';
+import { REGISTERSCREEN } from '../constant';
+import { navigate } from '../redux/Actions/NavigationAction';
+import { profileDetail } from '../redux/Actions/ProfileAction';
+import { ResetStore } from '../redux/Actions/ResetAction';
+import Store from '../redux/store';
 import { mflog } from '../uikitHelpers/uikitMethods';
 const { ActivityModule } = NativeModules;
 
@@ -137,6 +146,10 @@ export const requestCameraMicPermission = async () => {
    }
 };
 
+export const checkVideoPermission = async () => {
+   return check(Platform.OS === 'android' ? PERMISSIONS.ANDROID.CAMERA : PERMISSIONS.IOS.CAMERA);
+};
+
 export const requestStoragePermission = async () => {
    switch (true) {
       case Platform.OS === 'ios':
@@ -196,8 +209,36 @@ export const requestMicroPhonePermission = async () => {
    return request(Platform.OS === 'android' ? PERMISSIONS.ANDROID.RECORD_AUDIO : PERMISSIONS.IOS.MICROPHONE);
 };
 
+export const requestBluetoothConnectPermission = () => {
+   if (Platform.OS === 'android') {
+      return request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
+   } else {
+      return Promise.resolve(false);
+   }
+};
+
 export const checkMicroPhonePermission = async () => {
    return check(Platform.OS === 'android' ? PERMISSIONS.ANDROID.RECORD_AUDIO : PERMISSIONS.IOS.MICROPHONE);
+};
+
+export const checkCameraPermission = async () => {
+   const permissionsToCheck =
+      Platform.OS === 'android'
+         ? [PERMISSIONS.ANDROID.RECORD_AUDIO, PERMISSIONS.ANDROID.CAMERA]
+         : [PERMISSIONS.IOS.CAMERA, PERMISSIONS.IOS.MICROPHONE];
+
+   const results = await checkMultiple(permissionsToCheck);
+   if (Platform.OS === 'android') {
+      return results[PERMISSIONS.ANDROID.CAMERA] === 'granted' &&
+         results[PERMISSIONS.ANDROID.RECORD_AUDIO] === 'granted'
+         ? 'granted'
+         : 'denied';
+   } else {
+      return (results[PERMISSIONS.IOS.CAMERA] === 'granted' || results[PERMISSIONS.IOS.CAMERA] === 'limited') &&
+         (results[PERMISSIONS.IOS.MICROPHONE] === 'granted' || results[PERMISSIONS.IOS.MICROPHONE] === 'limited')
+         ? 'granted'
+         : 'denied';
+   }
 };
 
 export const requestNotificationPermission = async () => {
@@ -350,5 +391,26 @@ export const checkAndRequestPermission = async () => {
          default:
             break;
       }
+   }
+};
+
+export const handleLogOut = async () => {
+   let { statusCode = '', message = '' } = await SDK.logout();
+   if (statusCode === 200) {
+      const getPrevUserIdentifier = await AsyncStorage.getItem('userIdentifier');
+      AsyncStorage.setItem('prevUserIdentifier', getPrevUserIdentifier || '');
+      AsyncStorage.setItem('credential', '');
+      AsyncStorage.setItem('userIdentifier', '');
+      AsyncStorage.setItem('screenObj', '');
+      AsyncStorage.setItem('vCardProfile', '');
+      endOngoingCallLogout();
+      batch(() => {
+         Store.dispatch(profileDetail({}));
+         Store.dispatch(navigate({ screen: REGISTERSCREEN }));
+         Store.dispatch(ResetStore());
+      });
+      RootNav.reset(REGISTERSCREEN);
+   } else {
+      showToast(message, { id: message });
    }
 };

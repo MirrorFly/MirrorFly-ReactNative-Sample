@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import { debounce } from 'lodash-es';
 import { AppState, Platform } from 'react-native';
+import _BackgroundTimer from 'react-native-background-timer';
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
 import HeadphoneDetection from 'react-native-headphone-detection';
 import RNInCallManager from 'react-native-incall-manager';
@@ -12,8 +14,17 @@ import { batch } from 'react-redux';
 import SDK from '../../SDK/SDK';
 import { clearIosCallListeners, muteLocalAudio, muteLocalVideo, resetCallData } from '../../SDKActions/callbacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
-import { checkMicroPhonePermission, requestMicroPhonePermission } from '../../common/utils';
+import {
+   checkCameraPermission,
+   checkMicroPhonePermission,
+   requestBluetoothConnectPermission,
+   requestCameraMicPermission,
+   requestMicroPhonePermission,
+} from '../../common/utils';
 import ActivityModule from '../../customModules/ActivityModule';
+import AudioRoutingModule from '../../customModules/AudioRoutingModule';
+import BluetoothHeadsetDetectionModule from '../../customModules/BluetoothHeadsetDetectionModule';
+import RingtoneSilentKeyEventModule from '../../customModules/RingtoneSilentKeyEventModule';
 import {
    callDurationTimestamp,
    clearCallData,
@@ -30,8 +41,12 @@ import {
 } from '../../redux/Actions/CallAction';
 import {
    updateCallAudioMutedAction,
+   updateCallBluetoothHeadsetConnected,
+   updateCallSelectedAudioRoute,
    updateCallSpeakerEnabledAction,
+   updateCallVideoMutedAction,
    updateCallWiredHeadsetConnected,
+   updateSwitchCamera,
 } from '../../redux/Actions/CallControlsAction';
 import { showCallModalToastAction } from '../../redux/Actions/CallModalToasAction';
 import { closePermissionModal } from '../../redux/Actions/PermissionAction';
@@ -40,6 +55,7 @@ import { formatUserIdToJid, getLocalUserDetails } from '../Chat/ChatHelper';
 import { getUserIdFromJid } from '../Chat/Utility';
 import { getUserProfile, getUserProfileFromSDK, showToast } from '../index';
 import {
+   callConnectionStoreData,
    clearIncomingCallTimer,
    clearMissedCallNotificationTimer,
    disconnectCallConnection,
@@ -53,8 +69,12 @@ import {
    stopReconnectingTone,
 } from './Call';
 import {
+   AUDIO_ROUTE_BLUETOOTH,
+   AUDIO_ROUTE_HEADSET,
    AUDIO_ROUTE_SPEAKER,
    CALL_STATUS_DISCONNECTED,
+   CALL_TYPE_AUDIO,
+   CALL_TYPE_VIDEO,
    COMMON_ERROR_MESSAGE,
    DISCONNECTED_SCREEN_DURATION,
    INCOMING_CALL_SCREEN,
@@ -66,28 +86,127 @@ import {
 let preventMultipleClick = false;
 let callBackgroundNotification = true;
 let preventEndCallFromHeadsetButton = false;
+let previousHeadsetStatus = false;
+
+export const audioRouteNameMap = {
+   Speaker: AUDIO_ROUTE_SPEAKER,
+   Headset: AUDIO_ROUTE_HEADSET,
+   Headphones: AUDIO_ROUTE_HEADSET, // iOS
+   // 'Headset Microphone': AUDIO_ROUTE_HEADSET, // iOS
+   Bluetooth: AUDIO_ROUTE_BLUETOOTH,
+   BluetoothHFP: AUDIO_ROUTE_BLUETOOTH, // iOS
+   '': '', // receiver
+   Phone: '',
+   Receiver: '',
+};
+
+const calculateAudioRoute = (
+   isSpeakerEnabled,
+   previousAudioRoute,
+   { audioJack = false, bluetooth = false } = {},
+   { previousAudioJack = false, previousBluetooth = false } = {},
+) => {
+   const speakerPriority = isSpeakerEnabled || getCallType() === CALL_TYPE_VIDEO ? AUDIO_ROUTE_SPEAKER : '';
+   const wiredHeadsetPriority = audioJack ? AUDIO_ROUTE_HEADSET : speakerPriority;
+   const bluetoothPriority = bluetooth ? AUDIO_ROUTE_BLUETOOTH : wiredHeadsetPriority;
+
+   if (bluetooth && !previousBluetooth) {
+      return AUDIO_ROUTE_BLUETOOTH;
+   } else if (audioJack && !previousAudioJack) {
+      return bluetoothPriority;
+   } else if (previousBluetooth && !bluetooth) {
+      // if speaker enabled when bluetooth disconnected, then speaker should be routed
+      return speakerPriority || wiredHeadsetPriority;
+   } else if (previousAudioJack && !audioJack) {
+      // if speaker enabled when headset disconnected, then speaker should be routed
+      return speakerPriority || bluetoothPriority;
+   } else {
+      return previousAudioRoute;
+   }
+};
+
+const toggleSpeaker = speakerEnabled => {
+   RNInCallManager.setSpeakerphoneOn(speakerEnabled);
+};
+
+const routeAndroidAudioTo = _route => {
+   switch (_route) {
+      case '': // Receiver
+         toggleSpeaker(false);
+         break;
+      case AUDIO_ROUTE_SPEAKER:
+         toggleSpeaker(true);
+         break;
+      case AUDIO_ROUTE_HEADSET:
+         AudioRoutingModule.routeAudioTo('Headset');
+         break;
+      case AUDIO_ROUTE_BLUETOOTH:
+         AudioRoutingModule.routeAudioTo('Bluetooth');
+         break;
+   }
+};
+
+/**
+ * @typedef HeadphonesData
+ * @property {boolean} audioJack
+ * @property {boolean} bluetooth
+ */
+
+/**
+ * @param {HeadphonesData} data
+ */
+const handleHeadphoneDetection = async data => {
+   const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
+   if (Object.keys(confrenceData).length === 0) {
+      return;
+   }
+   const callControlsData = Store.getState().callControlsData;
+   const isSpeakerEnabledInUI = callControlsData?.isSpeakerEnabled || false;
+   const isWiredHeadsetConnected = callControlsData?.isWiredHeadsetConnected || false;
+   const isBluetoothHeadsetConnected = callControlsData?.isBluetoothHeadsetConnected || false;
+   const selectedAudioRoute = callControlsData?.selectedAudioRoute || '';
+   batch(() => {
+      if (Platform.OS === 'android') {
+         const calculatedRoute = calculateAudioRoute(
+            isSpeakerEnabledInUI,
+            selectedAudioRoute,
+            { audioJack: data.audioJack, bluetooth: false },
+            {
+               previousAudioJack: isWiredHeadsetConnected,
+               previousBluetooth: isBluetoothHeadsetConnected,
+            },
+         );
+         routeAndroidAudioTo(calculatedRoute);
+         Store.dispatch(updateCallSelectedAudioRoute(calculatedRoute));
+      }
+      data.audioJack !== isWiredHeadsetConnected && setPreviousHeadsetStatus(isWiredHeadsetConnected);
+      data.audioJack !== isWiredHeadsetConnected && Store.dispatch(updateCallWiredHeadsetConnected(data.audioJack));
+      data.bluetooth !== isBluetoothHeadsetConnected && Store.dispatch(updateCallBluetoothHeadsetConnected(false));
+   });
+};
+
+const debouncedHandleHeadphoneDetection = debounce(handleHeadphoneDetection, 280);
 
 export const addHeadphonesConnectedListenerForCall = (shouldUpdateInitialValue = true) => {
-   HeadphoneDetection.addListener(data => {
-      const callControlsData = Store.getState().callControlsData;
-      const isWiredHeadsetConnected = callControlsData?.isWiredHeadsetConnected || false;
-      data.audioJack !== isWiredHeadsetConnected && Store.dispatch(updateCallWiredHeadsetConnected(data.audioJack));
-      const isSpeakerEnabledInUI = callControlsData?.isSpeakerEnabled || false;
-      if (Platform.OS === 'android' && isSpeakerEnabledInUI) {
-         const shouldEnableSpeaker = data.audioJack ? false : isSpeakerEnabledInUI;
-         updateCallSpeakerEnabled(shouldEnableSpeaker, '', ''); // only 1st param will be used in Android so passing empty data for remaining params
-      }
-   });
-   if (shouldUpdateInitialValue) {
-      HeadphoneDetection.isAudioDeviceConnected().then(data => {
-         Store.dispatch(updateCallWiredHeadsetConnected(data.audioJack));
+   HeadphoneDetection.addListener(debouncedHandleHeadphoneDetection);
+   if (Platform.OS === 'android') {
+      BluetoothHeadsetDetectionModule.addBluetoothHeadsetListener(device => {
+         !device && HeadphoneDetection.isAudioDeviceConnected().then(debouncedHandleHeadphoneDetection);
       });
+   }
+   if (shouldUpdateInitialValue) {
+      HeadphoneDetection.isAudioDeviceConnected().then(debouncedHandleHeadphoneDetection);
    }
 
    preventEndCallFromHeadsetButton = false;
    // ending/declining the call in iOS will be taken care by the callKeep
    // so adding a keyup listener for android to end/decline the call when headset play/pause button pressed
    KeyEvent.onKeyUpListener(keyEvent => {
+      if (Platform.OS === 'android') {
+         if (keyEvent.keyCode === 25 || keyEvent.keyCode === 24) {
+            stopIncomingCallRingtone();
+         }
+      }
       if (Platform.OS === 'android' && keyEvent.keyCode === 79) {
          // keyCode 79 is KEYCODE_HEADSETHOOK which is the play/pause button on headset
          const { screenName, connectionState, callerUUID } = Store.getState().callData;
@@ -99,6 +218,10 @@ export const addHeadphonesConnectedListenerForCall = (shouldUpdateInitialValue =
             }
          }
       }
+   });
+   RingtoneSilentKeyEventModule.addEventListener(() => {
+      console.log('Ringtone silented');
+      stopIncomingCallRingtone();
    });
 };
 
@@ -165,7 +288,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          image = '';
       const vcardData = getLocalUserDetails();
       let fromuser = formatUserIdToJid(vcardData.fromUser);
-
+      addHeadphonesConnectedListenerForCall();
       if (callMode === 'onetoone') {
          users = groupCallMemberDetails;
       } else if (callMode === 'onetomany') {
@@ -188,7 +311,6 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          from: fromuser,
          userList: users.join(','),
       };
-
       if (callMode === 'onetoone') {
          callConnectionStatus.to = users.join(',');
          callConnectionStatus.userAvatar = image;
@@ -197,11 +319,10 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          callConnectionStatus.groupId = groupId;
       }
       // AsyncStorage.setItem('call_connection_status', JSON.stringify(callConnectionStatus))
-      addHeadphonesConnectedListenerForCall();
+      let uuid = SDK.randomString(16, 'BA');
       if (Platform.OS === 'ios') {
          const callerName = usersList.map(ele => ele.name).join(',');
          const hasVideo = callType === 'video';
-         let uuid = SDK.randomString(8, 'BA');
          let callerId = users.join(',')?.split?.('@')?.[0];
          Store.dispatch(updateCallerUUID(uuid));
          startCall(uuid, callerId, callerName, hasVideo);
@@ -229,7 +350,9 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
             call = await SDK.makeVoiceCall(users, groupId);
          } else if (callType === 'video') {
             muteLocalVideo(false);
+            Store.dispatch(updateCallVideoMutedAction(false));
             call = await SDK.makeVideoCall(users, groupId);
+            enableSpeaker(uuid);
          }
          if (call.statusCode !== 200 && call.message === PERMISSION_DENIED) {
             stopOutgoingCallRingingTone();
@@ -276,8 +399,8 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
 
 //Report outgoing call to callkit for ios
 const startCall = (uuid, callerId, callerName, hasVideo) => {
-   RNCallKeep.startCall(uuid, callerId, callerName, 'generic', hasVideo);
    handleOutGoing_CallKeepListeners();
+   RNCallKeep.startCall(uuid, callerId, callerName, 'generic', hasVideo);
 };
 
 //PermissionError while answering the call
@@ -297,6 +420,15 @@ const answerCallPermissionError = answerCallResonse => {
    });
 };
 
+const enableSpeaker = async (activeCallerUUID = '') => {
+   const callControlsData = Store.getState().callControlsData;
+   const isWiredHeadsetConnected = callControlsData?.isWiredHeadsetConnected || false;
+   const isBluetoothHeadsetConnected = callControlsData?.isBluetoothHeadsetConnected || false;
+   !isWiredHeadsetConnected &&
+      !isBluetoothHeadsetConnected &&
+      (await updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, activeCallerUUID));
+};
+
 //Answering the incoming call
 export const answerIncomingCall = async callId => {
    stopIncomingCallRingtone();
@@ -310,23 +442,32 @@ export const answerIncomingCall = async callId => {
    if (Platform.OS === 'android') {
       await stopForegroundServiceNotification();
    }
+   const callData = Store.getState().callData || {};
+   const callConnectionStateData = callData?.connectionState || {};
+   let callType = callConnectionStateData?.callType;
+
    // updating the SDK flag to keep the connection Alive when app goes background because of document picker
    SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
+   const activeCallerUUID = callData?.callerUUID;
    try {
-      const isPermissionChecked = await AsyncStorage.getItem('microPhone_Permission');
-      AsyncStorage.setItem('microPhone_Permission', 'true');
+      let isPermissionChecked = false;
+      if (callType === CALL_TYPE_AUDIO) {
+         isPermissionChecked = await AsyncStorage.getItem('microPhone_Permission');
+         AsyncStorage.setItem('microPhone_Permission', 'true');
+      } else {
+         isPermissionChecked = await AsyncStorage.getItem('camera_microPhone_Permission');
+         AsyncStorage.setItem('camera_microPhone_Permission', 'true');
+      }
       callBackgroundNotification = false;
       setTimeout(() => {
          Store.dispatch(closePermissionModal());
       }, 0);
-      const result = await requestMicroPhonePermission();
-      // updating the SDK flag back to false to behave as usual
+      const result =
+         callType === CALL_TYPE_AUDIO ? await requestMicroPhonePermission() : await requestCameraMicPermission(); // updating the SDK flag back to false to behave as usual
+      await requestBluetoothConnectPermission();
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
       callBackgroundNotification = true;
       if (result === 'granted' || result === 'limited') {
-         const callData = Store.getState().callData || {};
-         const callConnectionStateData = callData?.connectionState || {};
-         const activeCallerUUID = callData?.callerUUID;
          // validating call connectionState data because sometimes when permission popup is opened
          // and call ended and then user accept the permission
          // So validating the call is active when user permission has been given and not ended before the permission has been given
@@ -347,8 +488,11 @@ export const answerIncomingCall = async callId => {
                      // Store.dispatch(openCallModal());
                   }
                });
+               if (callType === CALL_TYPE_VIDEO) {
+                  enableSpeaker(activeCallerUUID);
+               }
                // updating the call connected status to android native code
-               ActivityModule.updateCallConnectedStatus(true);
+               Platform.OS === 'android' && ActivityModule.updateCallConnectedStatus(true);
                // TODO: update the Call logs when implementing
                // callLogs.update(callConnectionDate.data.roomId, {
                //   startTime: callLogs.initTime(),
@@ -383,7 +527,6 @@ export const declineIncomingCall = async () => {
    stopIncomingCallRingtone();
    clearMissedCallNotificationTimer();
    let declineCallResponse = await SDK.declineCall();
-   console.log('declineCallResponse', declineCallResponse);
    if (Platform.OS === 'android') {
       await stopForegroundServiceNotification();
    }
@@ -408,10 +551,16 @@ export const declineIncomingCall = async () => {
    }
 };
 
+const debounceAudioRouteChangeListenerForIos = debounce(
+   (currentCallUUID, output, reason) => updateAudioRouteTo(output, output, currentCallUUID, true, reason),
+   500,
+);
+
 const handleAudioRouteChangeListenerForIos = () => {
    RNCallKeep.addEventListener('didChangeAudioRoute', ({ output, reason }) => {
+      console.log('LOGG::==>> didChangeAudioRoute from callkit', output, reason);
       const currentCallUUID = Store.getState().callData?.callerUUID;
-      updateCallSpeakerEnabled(output === AUDIO_ROUTE_SPEAKER, output, currentCallUUID, true, reason);
+      debounceAudioRouteChangeListenerForIos(currentCallUUID, output, reason);
    });
 };
 
@@ -464,13 +613,15 @@ const handleOutGoing_CallKeepListeners = () => {
 };
 
 export const displayIncomingCallForIos = callResponse => {
+   let { callType = '' } = callResponse;
    const callingUserData = callResponse.usersStatus?.find(
       u => u.userJid === callResponse.userJid && u.localUser === false,
    );
    const activeCallUUID = Store.getState().callData?.callerUUID || '';
    const isCallFromVoip = Store.getState().callData?.isCallFromVoip;
+   handleIncoming_CallKeepListeners();
    if (!activeCallUUID && callingUserData) {
-      const callUUID = SDK.randomString(8, 'BA');
+      let callUUID = SDK.randomString(16, 'BA');
       Store.dispatch(updateCallerUUID(callUUID));
       const contactNumber = getUserIdFromJid(callResponse.userJid);
       const contactName =
@@ -483,15 +634,26 @@ export const displayIncomingCallForIos = callResponse => {
          callResponse.callType === 'video',
       );
    }
-   handleIncoming_CallKeepListeners();
    if (AppState.currentState !== 'active' || isCallFromVoip) {
-      checkMicroPhonePermission().then(micPermission => {
-         if (micPermission !== 'granted') {
-            endCallForIos();
-            declineIncomingCall();
-         }
-      });
+      if (callType === 'audio') {
+         checkMicroPhonePermission().then(micPermission => {
+            if (micPermission !== 'granted') {
+               permissionDeniedEndCall();
+            }
+         });
+      } else if (callType === 'video') {
+         checkCameraPermission().then(cameraPermission => {
+            if (cameraPermission !== 'granted') {
+               permissionDeniedEndCall();
+            }
+         });
+      }
    }
+};
+
+const permissionDeniedEndCall = () => {
+   endCallForIos();
+   declineIncomingCall();
 };
 
 export const displayIncomingCallForAndroid = async callResponse => {
@@ -516,18 +678,14 @@ export const closeCallModalActivity = (forceCloseModal = false) => {
    }
    if (Platform.OS === 'android') {
       forceCloseModal && Store.dispatch(closeCallModal());
-      // _BackgroundTimer.setTimeout(() => {
       ActivityModule.closeActivity();
-      // }, 100);
    }
 };
 
 export const resetCallModalActivity = () => {
    Store.dispatch(resetCallStateData());
    if (Platform.OS === 'android') {
-      // _BackgroundTimer.setTimeout(() => {
       ActivityModule.closeActivity();
-      // }, 100);
    }
 };
 
@@ -780,7 +938,12 @@ export const showOngoingNotification = callResponse => {
    const contactNumber = getUserIdFromJid(callResponse.userJid);
    const nickName =
       callingUserData?.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
-   callNotifyHandler(contactNumber, callResponse, callResponse.userJid, nickName, 'ONGOING_CALL');
+   let callConnectionData = callConnectionStoreData();
+   const callDetailObj = {
+      ...callResponse,
+      ...callConnectionData,
+   };
+   callNotifyHandler(contactNumber, callDetailObj, callResponse.userJid, nickName, 'ONGOING_CALL');
 };
 
 export const getNickName = callResponse => {
@@ -815,35 +978,96 @@ export const updateCallAudioMute = async (audioMuted, callUUID, isFromCallKeep =
    }
 };
 
-export const updateCallSpeakerEnabled = async (
-   speakerEnabled,
-   audioRouteName,
-   callUUID,
+export const updateCallVideoMute = async (videoMuted, callUUID, isFromCallKeep = false) => {
+   try {
+      const videoMuteResult = await SDK.muteVideo(videoMuted);
+      if (videoMuteResult.statusCode === 200) {
+         // if (Platform.OS === 'ios' && !isFromCallKeep && callUUID) {
+         //    RNCallKeep.setMutedCall(callUUID, audioMuted);
+         // }
+         batch(() => {
+            muteLocalVideo(videoMuted);
+            Store.dispatch(updateCallVideoMutedAction(videoMuted));
+         });
+      }
+   } catch (error) {
+      console.log('Error when muting/unmuting local user video', error);
+   }
+};
+
+export const updateAudioRouteTo = async (
+   audioRouteName = '', // for iOS
+   audioRouteType = '', // for Android
+   callUUID = '',
    isFromCallKeep = false,
    audioRouteChangeReason = '',
 ) => {
    try {
-      const isSpeakerEnabledInUI = Store.getState().callControlsData?.isSpeakerEnabled;
+      const speakerEnabled = audioRouteName === AUDIO_ROUTE_SPEAKER;
+      const {
+         isSpeakerEnabled: isSpeakerEnabledInUI,
+         isWiredHeadsetConnected,
+         isBluetoothHeadsetConnected = false,
+      } = Store.getState().callControlsData || {};
+      Store.dispatch(updateCallSelectedAudioRoute(audioRouteNameMap[audioRouteType]));
       if (Platform.OS === 'android') {
-         RNInCallManager.setSpeakerphoneOn(speakerEnabled);
+         const _routeName = audioRouteNameMap[audioRouteType];
+         routeAndroidAudioTo(_routeName);
       } else if (!isFromCallKeep) {
+         setPreviousHeadsetStatus(isWiredHeadsetConnected);
          RNCallKeep.setAudioRoute(callUUID, audioRouteName);
          // if the user is on outgoing call screen and the call is in ringing state, then routing the audio to speaker will not route the ringing tone to speaker
          // because we are routing only the stream and not the ringing tone. So manually enabling/disabling the speaker
          RNInCallManager.setSpeakerphoneOn(speakerEnabled);
          RNInCallManager.setForceSpeakerphoneOn(speakerEnabled);
       } else {
+         let prevIsWiredHeadsetConnected = getPreviousHeadsetStatus();
+         const isSpeakerEnabledUI =
+            getCallType() === 'audio' ? isSpeakerEnabledInUI : isSpeakerEnabledInUI || prevIsWiredHeadsetConnected;
          switch (audioRouteChangeReason) {
             // iOS audio route change reasons
             case 3: // Category change
                // change the category based on the call type and already selected audio route
-               if (isSpeakerEnabledInUI && audioRouteName?.toLowerCase?.() !== 'speaker') {
-                  updateCallSpeakerEnabled(true, 'Speaker', callUUID);
+               if (
+                  isSpeakerEnabledUI &&
+                  audioRouteName?.toLowerCase?.() !== 'speaker' &&
+                  !isBluetoothHeadsetConnected &&
+                  !isWiredHeadsetConnected
+               ) {
+                  console.log('LOGG::==>> updateAudioRouteTo manually in case 3 ', isBluetoothHeadsetConnected);
+                  updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, callUUID);
                   return;
                }
                break;
             case 4: // override
                // already the audio route has been overriden by the callKeep, so ignoring this case
+               break;
+            case 8: // Configuration Change
+               if (
+                  getCallType() === 'video' &&
+                  (isSpeakerEnabledInUI || prevIsWiredHeadsetConnected) &&
+                  audioRouteName?.toLowerCase?.() === 'receiver' &&
+                  !isWiredHeadsetConnected &&
+                  !isBluetoothHeadsetConnected
+               ) {
+                  updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, callUUID);
+                  return;
+               }
+               break;
+            case 2: // Old device unavailable
+               // The old device became unavailable(eg:headphones have been unpluged)
+               if (
+                  getCallType() === 'video' &&
+                  !isSpeakerEnabledInUI &&
+                  !isWiredHeadsetConnected &&
+                  !isBluetoothHeadsetConnected
+               ) {
+                  // Handle the case where a new audio device is connected (e.g., headset)
+                  // Update the audio route if needed (e.g., set it to the speaker)
+                  // Ensure that the speaker is enabled in the UI
+                  updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, callUUID);
+                  return;
+               }
                break;
          }
       }
@@ -870,4 +1094,29 @@ export const startDurationTimer = () => {
          !callConnectionData.showCallModal &&
          Store.dispatch(callDurationTimestamp(Date.now()));
    }
+};
+
+export const switchCamera = async cameraSwitch => {
+   const response = await SDK.toggleSwitchCamera(cameraSwitch);
+   if (response.statusCode === 200) {
+      _BackgroundTimer.setTimeout(() => {
+         Store.dispatch(updateSwitchCamera(cameraSwitch));
+      }, 300);
+   }
+};
+
+export const constructMuteStatus = (streamMute, jid, muteStatus) => {
+   return { ...streamMute, [jid]: muteStatus };
+};
+
+export const getCallType = () => {
+   return Store.getState()?.callData?.connectionState?.callType;
+};
+
+export const setPreviousHeadsetStatus = headsetStatus => {
+   previousHeadsetStatus = headsetStatus;
+};
+
+export const getPreviousHeadsetStatus = () => {
+   return previousHeadsetStatus;
 };

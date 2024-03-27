@@ -1,5 +1,6 @@
 import React from 'react';
 import { Animated, ImageBackground, Platform, Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
+import _BackgroundTimer from 'react-native-background-timer';
 import { useDispatch, useSelector } from 'react-redux';
 import { enablePipModeIfCallConnected, getUserProfile } from '../../Helper';
 import {
@@ -19,6 +20,7 @@ import commonStyles from '../../common/commonStyles';
 import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
 import { usePipModeListener } from '../../customModules/PipModule';
+import { closeCallModal, selectLargeVideoUser, updateCallLayout } from '../../redux/Actions/CallAction';
 import BigVideoTile from '../components/BigVideoTile';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
@@ -26,8 +28,6 @@ import GridLayout from '../components/GridLayout';
 import PipGridLayoutAndroid from '../components/PipGridLayoutAndroid';
 import SmallVideoTile from '../components/SmallVideoTile';
 import Timer from '../components/Timer';
-import { closeCallModal, updateCallLayout } from '../../redux/Actions/CallAction';
-import _BackgroundTimer from 'react-native-background-timer';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType
@@ -38,12 +38,13 @@ import _BackgroundTimer from 'react-native-background-timer';
  */
 const initialLayout = 'tile';
 
-let hideControlsTimeout,
+let hideControlsTimeout = null,
    hideControlsTimeoutMilliSeconds = 6000,
    controlsAnimationDuration = 400,
    layoutAnimationDuration = 200,
    connectingCallStatusTimeout;
 
+let remoteStreamDatas = [];
 const OnGoingCall = () => {
    const localUserJid = useSelector(state => state.auth.currentUserJID);
    const {
@@ -51,11 +52,14 @@ const OnGoingCall = () => {
       connectionState: callConnectionState = {},
       callLayout: layout = 'tile',
    } = useSelector(state => state.callData) || {};
-   const { data: showConfrenceData = {}, data: { remoteStream = [] } = {} } =
+   const { callType, callMode } = callConnectionState;
+   const { data: showConfrenceData = {}, data: { remoteStream = [], localStream } = {} } =
       useSelector(state => state.showConfrenceData) || {};
    const remoteAudioMuted = showConfrenceData?.remoteAudioMuted || [];
+   const remoteVideoMuted = showConfrenceData?.remoteVideoMuted || [];
    const vCardData = useSelector(state => state.profile?.profileDetails);
    const rosterData = useSelector(state => state.rosterData.data);
+   const { isFrontCameraEnabled } = useSelector(state => state.callControlsData);
 
    const isPipMode = usePipModeListener();
 
@@ -80,6 +84,10 @@ const OnGoingCall = () => {
          hideControlsTimeout = setTimeout(() => {
             animateControls(0, 100);
          }, hideControlsTimeoutMilliSeconds);
+      } else if (callViewType === 'video') {
+         hideControlsTimeout = setTimeout(() => {
+            animateControls(0, 100);
+         }, hideControlsTimeoutMilliSeconds);
       } else {
          clearTimeout(hideControlsTimeout);
          animateControls(1, 0);
@@ -97,7 +105,7 @@ const OnGoingCall = () => {
    const menuItems = React.useMemo(
       () => [
          {
-            label: `${layout === 'tile' ? 'Grid' : 'Tile'} view`,
+            label: ` ${layout === 'tile' ? 'Grid' : 'Tile'} view `,
             icon: <LayoutIcon width={12} height={12} />,
             formatter: toggleLayout,
          },
@@ -233,14 +241,35 @@ const OnGoingCall = () => {
    };
 
    const renderLargeVideoTile = () => {
+      let stream = null;
+      let remoteStreams = null;
+      let callStatusText = null;
+      if (callMode === 'onetoone') {
+         remoteStream.forEach(rs => {
+            let id = rs.fromJid;
+            id = id.includes('@') ? id.split('@')[0] : id;
+            if (id !== vCardData.fromUser) {
+               remoteStreams = rs;
+            }
+         });
+         callStatusText = getCallStatus(remoteStreams.fromJid);
+         stream = remoteStreams.stream;
+      }
+
       if (layout === 'tile') {
-         if (callStatus.toLowerCase() === CALL_STATUS_CONNECTING) {
+         if (callStatus?.toLowerCase() === CALL_STATUS_CONNECTING) {
             // fetching the other user JID from connection state instead of 'largeVideoUser' data for 'connecting' call state
             const largeVideoUserJid = callConnectionState.to || callConnectionState.userJid;
             return (
                <BigVideoTile
                   userId={getUserIdFromJid(largeVideoUserJid)}
                   isAudioMuted={remoteAudioMuted[largeVideoUserJid] || false}
+                  videoMuted={remoteVideoMuted[largeVideoUserJid] ? remoteVideoMuted[largeVideoUserJid] : false}
+                  callStatus={callStatusText}
+                  stream={{}}
+                  onPressAnywhere={handleTogglePress}
+                  isFrontCameraEnabled={largeVideoUserJid === localUserJid ? isFrontCameraEnabled : false}
+                  localUserJid={localUserJid}
                />
             );
          } else {
@@ -249,6 +278,12 @@ const OnGoingCall = () => {
                <BigVideoTile
                   userId={getUserIdFromJid(largeVideoUserJid)}
                   isAudioMuted={remoteAudioMuted[largeVideoUserJid] || false}
+                  videoMuted={remoteVideoMuted[largeVideoUserJid] ? remoteVideoMuted[largeVideoUserJid] : false}
+                  callStatus={callStatusText}
+                  stream={largeVideoUserJid === localUserJid ? localStream : stream}
+                  onPressAnywhere={handleTogglePress}
+                  isFrontCameraEnabled={largeVideoUserJid === localUserJid ? isFrontCameraEnabled : false}
+                  localUserJid={getUserIdFromJid(localUserJid)}
                />
             );
          }
@@ -257,24 +292,36 @@ const OnGoingCall = () => {
 
    const renderSmallVideoTile = () => {
       // not rendering the small video tile for 'connecting' call status
-      if (layout === 'tile' && callStatus.toLowerCase() !== CALL_STATUS_CONNECTING) {
+      if (layout === 'tile' && callStatus?.toLowerCase() !== CALL_STATUS_CONNECTING) {
          const smallVideoUsers = remoteStream.filter(u => u.fromJid !== largeVideoUser?.userJid) || [];
          return (
             <Animated.ScrollView
                style={{
                   opacity: layoutOpacity,
+                  transform: [{ translateY: controlsOffsetBottom }],
                }}
                horizontal
                showsHorizontalScrollIndicator={false}
                contentContainerStyle={styles.smallVideoTileContainer}>
-               {smallVideoUsers.map(_user => (
-                  <SmallVideoTile
-                     key={_user.fromJid}
-                     user={_user}
-                     isLocalUser={_user.fromJid === localUserJid}
-                     isAudioMuted={remoteAudioMuted[_user?.fromJid] || false}
-                  />
-               ))}
+               {smallVideoUsers.map(_user => {
+                  const changeLargeVideoUser = () => {
+                     dispatch(selectLargeVideoUser(_user.fromJid));
+                  };
+                  return (
+                     <Pressable onPress={changeLargeVideoUser} key={_user.fromJid} pressedStyle={{}}>
+                        <SmallVideoTile
+                           key={_user.fromJid}
+                           user={_user}
+                           isLocalUser={_user.fromJid === localUserJid}
+                           isAudioMuted={remoteAudioMuted[_user?.fromJid] || false}
+                           isVideoMuted={remoteVideoMuted[_user?.fromJid] || false}
+                           stream={_user.fromJid === localUserJid ? localStream : _user.stream}
+                           isFrontCameraEnabled={_user.fromJid === localUserJid ? isFrontCameraEnabled : false}
+                           callStatus={callStatus}
+                        />
+                     </Pressable>
+                  );
+               })}
             </Animated.ScrollView>
          );
       }
@@ -295,6 +342,10 @@ const OnGoingCall = () => {
                   offsetTop={topViewControlsHeight}
                   animatedOffsetTop={controlsOffsetTop}
                   remoteAudioMuted={remoteAudioMuted}
+                  localStream={localStream}
+                  remoteVideoMuted={remoteVideoMuted}
+                  isFrontCameraEnabled={isFrontCameraEnabled}
+                  callStatus={callStatus}
                />
             </Animated.View>
          );
@@ -332,23 +383,68 @@ const OnGoingCall = () => {
       bottomControlsViewHeightRef.current = height;
    };
 
-   // if in PIP mode then returning PIP layout
-   if (isPipMode) {
-      return (
-         <PipGridLayoutAndroid
-            remoteStream={remoteStream}
-            localUserJid={localUserJid}
-            remoteAudioMuted={remoteAudioMuted}
-            callStatus={callStatus}
-         />
-      );
-   }
+   const renderStream = () => {
+      if (localStream) {
+         // remoteStreamDatas = [...remoteStream];
+         return renderLargeVideoTile();
+      } else {
+         return <></>;
+      }
+   };
 
-   return (
-      <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>
-         {/* Menu pop up element */}
-         {menuPopupUI}
-         <View>
+   const callViewType = (() => {
+      let stream = null;
+      let remoteStreams = null;
+      const largeVideoUserJid =
+         callStatus?.toLowerCase() === CALL_STATUS_CONNECTING
+            ? callConnectionState.to || callConnectionState.userJid
+            : largeVideoUser?.userJid || '';
+      if (callMode === 'onetoone') {
+         remoteStream.forEach(rs => {
+            let id = rs.fromJid;
+            id = id.includes('@') ? id.split('@')[0] : id;
+            if (id !== vCardData.fromUser) {
+               remoteStreams = rs;
+            }
+         });
+         stream = largeVideoUserJid === localUserJid ? localStream : remoteStreams?.stream;
+      }
+      //Check remote User is reconnecting state
+      let reconnectStatus =
+         callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && largeVideoUserJid !== localUserJid ? true : false;
+      return callType === 'video' &&
+         !remoteVideoMuted[largeVideoUserJid] &&
+         stream &&
+         stream.video &&
+         !reconnectStatus &&
+         callStatus.toLowerCase() !== CALL_STATUS_CONNECTING
+         ? 'video'
+         : 'audio';
+   })();
+
+   React.useEffect(() => {
+      if (callViewType === 'video' && hideControlsTimeout == null) {
+         hideControlsTimeout = setTimeout(() => {
+            animateControls(0, 100);
+         }, hideControlsTimeoutMilliSeconds);
+      } else if (callViewType === 'audio') {
+         clearTimeout(hideControlsTimeout);
+         hideControlsTimeout = null;
+         animateControls(1, 0);
+      }
+   }, [callViewType]);
+
+   const handleTogglePress = () => {
+      if (callViewType === 'audio') {
+         return;
+      }
+      toggleControls();
+   };
+
+   const renderStreamComponent = () => {
+      return (
+         <>
+            {callViewType === 'video' && renderStream()}
             {/* Top view to hide when toggling controls */}
             <Animated.View
                onLayout={handleTopControlsUILayout}
@@ -380,21 +476,49 @@ const OnGoingCall = () => {
             </Animated.View>
 
             {/* large user profile details */}
-            <Animated.View
-               style={[
-                  styles.userDetailsContainer,
-                  {
-                     opacity: layoutOpacity,
-                  },
-               ]}>
-               {renderLargeVideoTile()}
-            </Animated.View>
-         </View>
+            {callViewType === 'audio' && (
+               <Animated.View
+                  style={[
+                     styles.userDetailsContainer,
+                     {
+                        opacity: layoutOpacity,
+                     },
+                  ]}>
+                  {renderStream()}
+               </Animated.View>
+            )}
+         </>
+      );
+   };
+
+   // if in PIP mode then returning PIP layout
+   if (isPipMode) {
+      return (
+         <PipGridLayoutAndroid
+            remoteStream={remoteStream}
+            localUserJid={localUserJid}
+            remoteAudioMuted={remoteAudioMuted}
+            callStatus={callStatus}
+            localStream={localStream}
+            remoteVideoMuted={remoteVideoMuted}
+            isFrontCameraEnabled={isFrontCameraEnabled}
+         />
+      );
+   }
+
+   return (
+      <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>
+         {/* Menu pop up element */}
+         {menuPopupUI}
+
+         {callViewType === 'video' ? renderStreamComponent() : <View>{renderStreamComponent()}</View>}
 
          {renderGridLayout()}
 
          <View>
-            {renderSmallVideoTile()}
+            <Pressable onPress={handleTogglePress} pressedStyle={{}}>
+               {renderSmallVideoTile()}
+            </Pressable>
             {/* Call Control buttons (Mute & End & speaker) */}
             <Animated.View
                onLayout={handleBottomControlsUILayout}
@@ -408,6 +532,7 @@ const OnGoingCall = () => {
                <CallControlButtons
                   handleEndCall={handleHangUp}
                   callStatus={callStatus}
+                  callType={callType}
                   // handleVideoMute={handleVideoMute}
                   // videoMute={!!localVideoMuted}
                   // audioMute={true}
@@ -426,6 +551,7 @@ const styles = StyleSheet.create({
    container: {
       flex: 1,
       justifyContent: 'space-between',
+      position: 'relative',
    },
    topControlsWrapper: {},
    callUsersWrapper: {

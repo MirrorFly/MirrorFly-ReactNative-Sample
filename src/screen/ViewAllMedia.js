@@ -359,8 +359,6 @@ const ViewAllMedia = () => {
          renderLabel={renderLabel}
          activeColor={ApplicationColors.mainColor}
          inactiveColor={ApplicationColors.black}
-         pressColor="transparent"
-         pressOpacity={0}
       />
    );
    return (

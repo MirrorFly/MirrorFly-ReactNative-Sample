@@ -162,37 +162,39 @@ function ChatScreen() {
       if (permissionResult === 'granted' || permissionResult === 'limited') {
          // updating the SDK flag to keep the connection Alive when app goes background because of document picker
          SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
-         const file = await handleDocumentPickSingle();
-         // updating the SDK flag back to false to behave as usual
-         SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-         // Validating the file type and size
-         if (!isValidFileType(file.type)) {
-            Alert.alert(
-               'Mirrorfly',
-               'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
-            );
-            return;
-         }
-         const error = validateFileSize(file.size, 'file');
-         if (error) {
-            const toastOptions = {
-               id: 'document-too-large-toast',
-               duration: 2500,
-               avoidKeyboard: true,
-            };
-            showToast(error, toastOptions);
-            return;
-         }
+         setTimeout(async () => {
+            const file = await handleDocumentPickSingle();
+            // updating the SDK flag back to false to behave as usual
+            SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+            // Validating the file type and size
+            if (!isValidFileType(file.type)) {
+               Alert.alert(
+                  'Mirrorfly',
+                  'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
+               );
+               return;
+            }
+            const error = validateFileSize(file.size, 'file');
+            if (error) {
+               const toastOptions = {
+                  id: 'document-too-large-toast',
+                  duration: 2500,
+                  avoidKeyboard: true,
+               };
+               showToast(error, toastOptions);
+               return;
+            }
 
-         // preparing the object and passing it to the sendMessage function
-         const updatedFile = {
-            fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
-         };
-         const messageData = {
-            type: 'media',
-            content: [updatedFile],
-         };
-         handleSendMsg(messageData);
+            // preparing the object and passing it to the sendMessage function
+            const updatedFile = {
+               fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
+            };
+            const messageData = {
+               type: 'media',
+               content: [updatedFile],
+            };
+            handleSendMsg(messageData);
+         }, 200);
       } else if (storage_permission) {
          openSettings();
       } else if (permissionResult === RESULTS.BLOCKED) {

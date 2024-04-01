@@ -37,6 +37,8 @@ import { useNetworkStatus } from '../hooks';
 import EmojiOverlay from './EmojiPicker';
 import { soundRef } from './Media/AudioPlayer';
 import config from './chat/common/config';
+import MenuContainer from '../common/MenuContainer';
+import AttachmentMenu from '../common/AttachmentMenu';
 
 export const chatInputMessageRef = createRef();
 chatInputMessageRef.current = '';
@@ -309,7 +311,9 @@ const ChatInput = props => {
       Keyboard.dismiss();
       soundRef?.current?.pause();
       soundRef?.current?.updateState?.();
-      setIsOpen(true);
+      setTimeout(() => {
+         setIsOpen(true);
+      }, 50);
    };
 
    const closeModal = () => {
@@ -462,6 +466,12 @@ const ChatInput = props => {
                </View>
             </View>
          )}
+         <AttachmentMenu
+            visible={isOpen}
+            onRequestClose={closeModal}
+            attachmentMenuIcons={attachmentMenuIcons}
+            handleAttachmentIconPressed={handleAttachmentIconPressed}
+         />
 
          <EmojiOverlay
             place={CHAT_INPUT}
@@ -471,7 +481,7 @@ const ChatInput = props => {
             onClose={handleCLoseEmojiWindow}
             onSelect={handleEmojiSelect}
          />
-         <Modal visible={isOpen} onRequestClose={closeModal}>
+         {/* <Modal visible={isOpen} onRequestClose={closeModal}>
             <ModalBottomContent onPressOutside={closeModal}>
                <View style={styles.modalContent}>
                   {attachmentMenuIcons.map(item => {
@@ -487,7 +497,7 @@ const ChatInput = props => {
                   })}
                </View>
             </ModalBottomContent>
-         </Modal>
+         </Modal> */}
       </>
    );
 };

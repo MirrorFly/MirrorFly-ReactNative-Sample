@@ -43,22 +43,18 @@ const VideoPlayer = () => {
    };
 
    React.useLayoutEffect(() => {
-      if (Platform.OS === 'ios') {
-         if (uri.includes('ph://')) {
-            RNConvertPhAsset.convertVideoFromUrl({
-               url: uri,
-               convertTo: 'mov',
-               quality: 'original',
+      if (Platform.OS === 'ios' && uri.includes('ph://')) {
+         RNConvertPhAsset.convertVideoFromUrl({
+            url: uri,
+            convertTo: 'mov',
+            quality: 'original',
+         })
+            .then(response => {
+               setVideoUri(response.path);
             })
-               .then(response => {
-                  setVideoUri(response.path);
-               })
-               .catch(err => {
-                  mflog(err);
-               });
-         } else {
-            setVideoUri(uri);
-         }
+            .catch(err => {
+               mflog(err);
+            });
       } else {
          setVideoUri(uri);
       }
@@ -219,8 +215,7 @@ const styles = StyleSheet.create({
       backgroundColor: 'rgba(0,0,0,0.1)',
    },
    videoContainer: {
-      width: '100%',
-      height: '100%',
+      flex: 1,
       justifyContent: 'center',
    },
 });

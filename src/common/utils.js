@@ -153,7 +153,10 @@ export const checkVideoPermission = async () => {
 export const requestStoragePermission = async () => {
    switch (true) {
       case Platform.OS === 'ios':
-         return await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+         const iosPermission = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+         if (iosPermission === RESULTS.GRANTED || iosPermission === RESULTS.LIMITED) {
+            return RESULTS.GRANTED;
+         }
       case Platform.OS === 'android' && Platform.Version <= 32: // Android Version 32 and below
          return await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
       default:

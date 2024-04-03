@@ -3,6 +3,7 @@ export { ChatApp } from './ChatApp';
 export { CallComponent } from './calls/CallComponent';
 export { setNotificationForegroundService } from './calls/notification/callNotifyHandler';
 export {
+   setAppConfig,
    setupCallScreen,
    mirrorflyInitialize,
    mirrorflyNotificationHandler,

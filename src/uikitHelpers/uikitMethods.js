@@ -1,23 +1,32 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { version } from '../../package.json';
 import messaging from '@react-native-firebase/messaging';
-import SDK from '../SDK/SDK';
-import { callBacks as sdkCallBacks } from '../SDKActions/callbacks';
-import { requestNotificationPermission } from '../common/utils';
-import { pushNotify, removeAllDeliveredNotification, updateNotification } from '../Service/remoteNotifyHandle';
-import { setNotificationForegroundService } from '../calls/notification/callNotifyHandler';
-import { handleSetPendingSeenStatus, updateRecentAndConversationStore } from '../Helper';
-import config from '../components/chat/common/config';
-import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
 import { AppRegistry, Platform } from 'react-native';
-import { CallComponent } from '../calls/CallComponent';
-import { setupCallKit } from '../calls/ios';
+import { version } from '../../package.json';
+import { handleSetPendingSeenStatus, updateRecentAndConversationStore } from '../Helper';
 import { pushNotifyBackground } from '../Helper/Calls/Utility';
 import { MIX_BARE_JID } from '../Helper/Chat/Constant';
+import SDK from '../SDK/SDK';
+import { callBacks as sdkCallBacks } from '../SDKActions/callbacks';
+import { pushNotify, removeAllDeliveredNotification, updateNotification } from '../Service/remoteNotifyHandle';
+import { CallComponent } from '../calls/CallComponent';
+import { setupCallKit } from '../calls/ios';
+import { setNotificationForegroundService } from '../calls/notification/callNotifyHandler';
+import { requestNotificationPermission } from '../common/utils';
+import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
+import config from '../components/chat/common/config';
 
 let uiKitCallbackListenersVal = {},
    appInitialized = false,
-   schemaUrl = '';
+   schemaUrl = '',
+   appSchema = '';
+
+export const getAppSchema = () => appSchema;
+
+export const setAppConfig = params => {
+   const { appSchema: _appSchema = '', stackURL = '' } = params;
+   appSchema = _appSchema || appSchema;
+   schemaUrl = stackURL || _appSchema || appSchema;
+};
 
 export const mflog = (...args) => {
    console.log('RN-UIKIT', Platform.OS, version, ...args);
@@ -109,7 +118,8 @@ export const mirrorflyProfileUpdate = async args => {
 
 export const mirrorflyNotificationHandler = async messageData => {
    try {
-      const { remoteMessage = {}, apiBaseUrl = '', licenseKey = '' } = messageData;
+      const { remoteMessage = {}, apiBaseUrl = '', licenseKey = '', deepLink = '' } = messageData;
+      setApplicationUrl(deepLink);
       if (remoteMessage?.data?.push_from !== 'MirrorFly') {
          return;
       }

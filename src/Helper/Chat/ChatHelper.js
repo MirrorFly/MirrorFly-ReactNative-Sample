@@ -804,5 +804,4 @@ export const handleSendMsg = async message => {
          }
          break;
    }
-   // setReplyMsg('');
 };

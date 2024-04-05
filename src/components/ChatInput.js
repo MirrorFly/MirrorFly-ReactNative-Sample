@@ -475,23 +475,6 @@ const ChatInput = props => {
             onClose={handleCLoseEmojiWindow}
             onSelect={handleEmojiSelect}
          />
-         {/* <Modal visible={isOpen} onRequestClose={closeModal}>
-            <ModalBottomContent onPressOutside={closeModal}>
-               <View style={styles.modalContent}>
-                  {attachmentMenuIcons.map(item => {
-                     const { name, icon: MenuIcon } = item;
-                     return (
-                        <View key={name} style={styles.attachmentMenuIcon}>
-                           <IconButton onPress={handleAttachmentIconPressed(item)}>
-                              <MenuIcon />
-                           </IconButton>
-                           <Text style={styles.attachmentNameText}>{name}</Text>
-                        </View>
-                     );
-                  })}
-               </View>
-            </ModalBottomContent>
-         </Modal> */}
       </>
    );
 };

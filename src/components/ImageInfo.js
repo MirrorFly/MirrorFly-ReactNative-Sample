@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dimensions, Image, View } from 'react-native';
-// import ImageViewer from 'react-native-image-zoom-viewer';
+/** import ImageViewer from 'react-native-image-zoom-viewer'; */
 
 const ImageInfo = props => {
    const { selectedMedia } = props;
@@ -30,12 +30,12 @@ const ImageInfo = props => {
       const windowHeight = Dimensions.get('window').height;
 
       const imageAspectRatio = SingleSelectedImage.androidWidth / SingleSelectedImage.androidHeight;
-      let initialWidth = windowWidth;
+      /**let initialWidth = windowWidth;*/
       let initialHeight = windowWidth / imageAspectRatio;
 
       if (initialHeight > windowHeight) {
          initialHeight = windowHeight;
-         initialWidth = windowHeight * imageAspectRatio;
+         /**initialWidth = windowHeight * imageAspectRatio;*/
       }
 
       /**setInitialImageSize({ width: initialWidth, height: initialHeight });*/

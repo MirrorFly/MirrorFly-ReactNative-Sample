@@ -1227,5 +1227,4 @@ export const callBacks = {
       );
       // updateCallTypeAfterCallSwitch();
    },
-   adminBlockListener: function (res) {},
 };

@@ -91,7 +91,7 @@ const GroupInfo = () => {
          return showInternetconnectionToast();
       }
       const { statusCode, message } = await SDK.setGroupProfile(chatUser, getUserName(chatUserId));
-      if (!statusCode === 200) {
+      if (statusCode !== 200) {
          showToast(message, { id: message });
       } else {
          showToast('');

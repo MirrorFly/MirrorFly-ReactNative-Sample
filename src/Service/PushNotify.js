@@ -33,6 +33,7 @@ export const displayRemoteNotification = async (id, date, title, body, jid, impo
    });
    notifee.onForegroundEvent(onNotificationAction);
    notifee.onBackgroundEvent(onNotificationAction);
+   /**
    // notifee.onForegroundEvent(async ({ type, detail }) => {
    //   if (type === EventType.PRESS) {
    //     const {
@@ -60,6 +61,7 @@ export const displayRemoteNotification = async (id, date, title, body, jid, impo
    //     removeAllDeliveredNotification();
    //   }
    // });
+    */
 };
 
 export const handleNotifeeNotify = async () => {

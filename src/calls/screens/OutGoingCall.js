@@ -33,14 +33,15 @@ const OutGoingCall = () => {
    const nickName = userProfile.nickName || userID;
 
    React.useEffect(() => {
-      // startRingingCallTone();
-      if (connectionState && connectionState) {
+      if (Object.keys(connectionState).length) {
          setOutGoingCalls({
             ...outGoingCalls,
             callConnectionData: connectionState,
          });
       }
       startOutgoingcallTimer(userID, callType);
+      /**
+      // startRingingCallTone();
       // uiChangetimer = _BackgroundTimer.setTimeout(() => {
       //    dispatch(
       //       updateConference({
@@ -55,7 +56,10 @@ const OutGoingCall = () => {
       // timer = setTimeout(() => {
       //    endCall(true);
       // }, 30000);
+       */
    }, []);
+
+   /**
 
    // React.useEffect(() => {
    //    const backGroundNotificationRemove = async () => {
@@ -77,13 +81,14 @@ const OutGoingCall = () => {
    //    };
    //    showCallModal && backGroundNotificationRemove();
    // }, [appState, notificationData]);
-
+   */
    const handleClosePress = () => {
       closeCallModalActivity();
+      /**
       // dispatch(closeCallModal());
       // callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'OUTGOING_CALL');
+       */
    };
-
 
    return (
       <ImageBackground style={styles.container} source={getImageSource(OutgoingCallBg)}>

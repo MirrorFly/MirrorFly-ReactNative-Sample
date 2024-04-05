@@ -183,11 +183,13 @@ export const resetCallData = () => {
    remoteAudioMuted = [];
    localVideoMuted = false;
    localAudioMuted = false;
+   /**
    // if (getFromLocalStorageAndDecrypt('isNewCallExist') === true) {
    //   deleteItemFromLocalStorage('isNewCallExist');
    // } else {
    //   Store.dispatch(resetCallIntermediateScreen());
    // }
+   */
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall();
    HeadphoneDetection.remove?.();
    BluetoothHeadsetDetectionModule.removeAllListeners();
@@ -212,9 +214,11 @@ export const resetCallData = () => {
       Store.dispatch(resetCallModalToastDataAction());
    });
    resetData();
+   /**
    // setTimeout(() => {
    //   Store.dispatch(isMuteAudioAction(false));
    // }, 1000);
+    */
 };
 
 export const muteLocalVideo = isMuted => {
@@ -335,13 +339,11 @@ const updateCallConnectionStatus = usersStatus => {
             : 'onetoone',
    };
    Store.dispatch(updateCallConnectionState(callDetailsObj));
-   // encryptAndStoreInLocalStorage("call_connection_status", JSON.stringify(callDetailsObj));
 };
 
 const resetCloseModel = () => {
    resetCallData();
    closeCallModalActivity(true);
-   // Store.dispatch(closeCallModal());
 };
 
 const ended = async res => {
@@ -352,7 +354,6 @@ const ended = async res => {
    clearIosCallListeners();
    endCallForIos();
 
-   // let roomId = getFromLocalStorageAndDecrypt('roomName');
    if (res.sessionStatus === 'closed') {
       if (Platform.OS === 'android') {
          await stopForegroundServiceNotification();
@@ -365,10 +366,12 @@ const ended = async res => {
          callConnectionData = callConnectionStoreData();
       }
       dispatchDisconnected(CALL_STATUS_DISCONNECTED);
+      /**
       // callLogs.update(roomId, {
       //     "endTime": callLogs.initTime(),
       //     "sessionStatus": res.sessionStatus
       // });
+       */
       if (callConnectionData) {
          clearMissedCallNotificationTimer();
       }
@@ -380,7 +383,7 @@ const ended = async res => {
       // SetTimeout not working in background and killed state
       const timeout = BackgroundTimer.setTimeout(() => {
          resetCloseModel();
-         // Store.dispatch(callConversion());
+         /** Store.dispatch(callConversion()); */
       }, DISCONNECTED_SCREEN_DURATION);
       setDisconnectedScreenTimeoutTimer(timeout);
 
@@ -390,7 +393,7 @@ const ended = async res => {
          const callDetailObj = callConnectionData ? { ...callConnectionData } : {};
          callDetailObj['status'] = 'ended';
          let nickName = getNickName(callConnectionData);
-         // TODO: notify that call disconnected if needed
+         /** TODO: notify that call disconnected if needed */
          callNotifyHandler(callDetailObj.roomId, callDetailObj, callDetailObj.userJid, nickName, 'MISSED_CALL');
       }
    } else {
@@ -398,7 +401,7 @@ const ended = async res => {
          return;
       }
       removingRemoteStream(res);
-      // resetPinAndLargeVideoUser(res.userJid);
+      /** resetPinAndLargeVideoUser(res.userJid); */
       updateCallConnectionStatus(res.usersStatus);
       const showConfrenceData = showConfrenceStoreData();
       const { data } = showConfrenceData;
@@ -414,25 +417,27 @@ const ended = async res => {
 };
 
 const dispatchCommon = () => {
-   // Store.dispatch(callConversion());
+   /**Store.dispatch(callConversion());
+    * Store.dispatch(closeCallModal());
+    */
    closeCallModalActivity(true);
-   // Store.dispatch(closeCallModal());
    resetCallData();
 };
 
 const handleEngagedOrBusyStatus = async res => {
    stopOutgoingCallRingingTone();
-   //  let roomId = getFromLocalStorageAndDecrypt('roomName');
    updatingUserStatusInRemoteStream(res.usersStatus);
    if (res.sessionStatus === 'closed') {
       clearOutgoingTimer();
       if (Platform.OS === 'android') {
          stopForegroundServiceNotification();
       }
+      /**
       // callLogs.update(roomId, {
       //    endTime: callLogs.initTime(),
       //    sessionStatus: res.sessionStatus,
       // });
+       */
       const callStatusMsg = res.status === 'engaged' ? CALL_ENGAGED_STATUS_MESSAGE : CALL_BUSY_STATUS_MESSAGE;
       dispatchDisconnected(callStatusMsg);
       showCallModalToast(callStatusMsg, 2500);
@@ -465,10 +470,6 @@ const handleEngagedOrBusyStatus = async res => {
                callConnectionData.to = updatedUserList[0];
             }
          }
-         //  encryptAndStoreInLocalStorage(
-         //     'call_connection_status',
-         //     JSON.stringify(callConnectionData),
-         //  );
          store.dispatch(updateCallConnectionState(callConnectionData));
       }
       let userDetails = await getUserProfileFromSDK(getUserIdFromJid(res.userJid));
@@ -480,9 +481,6 @@ const handleEngagedOrBusyStatus = async res => {
          id: 'Engaged_Toast',
       });
       removingRemoteStream(res);
-      // if (data.showStreamingComponent) {
-      //    resetPinAndLargeVideoUser(res.userJid);
-      // }
       Store.dispatch(
          showConfrence({
             ...(data || {}),
@@ -503,13 +501,6 @@ const connected = async res => {
       const { getState, dispatch } = Store;
       const showConfrenceData = getState().showConfrenceData;
       const { data } = showConfrenceData;
-      // let showComponent = !!data.showComponent;
-      // let showStreamingComponent = !!data.showStreamingComponent;
-      // if (!showStreamingComponent) {
-      //    deleteItemFromLocalStorage('connecting');
-      //    showComponent = false;
-      //    showStreamingComponent = true;
-      // }
       if (!res.localUser) {
          stopOutgoingCallRingingTone();
          stopReconnectingTone();
@@ -579,11 +570,9 @@ const connected = async res => {
 const connecting = res => {
    stopOutgoingCallRingingTone();
    updatingUserStatusInRemoteStream(res.usersStatus);
-   // let roomId = getFromLocalStorageAndDecrypt('roomName');
-   // encryptAndStoreInLocalStorage('callingComponent', false);
    const showConfrenceData = showConfrenceStoreData();
    const { data } = showConfrenceData;
-   if (data) {
+   if (Object.keys(data).length) {
       Store.dispatch(
          showConfrence({
             ...(data || {}),
@@ -594,19 +583,13 @@ const connecting = res => {
             localAudioMuted,
          }),
       );
-      // encryptAndStoreInLocalStorage('connecting', true);
-      // Store.dispatch(
-      //    showConfrence({
-      //       showComponent: true,
-      //       showStreamingComponent: false,
-      //       showCallinggComponent: false,
-      //    }),
-      // );
+      /**
       // Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
       // callLogs.update(roomId, {
       //    sessionStatus: res.sessionStatus,
       //    // "startTime": callLogs.initTime()
       // });
+       */
    }
 };
 
@@ -614,7 +597,6 @@ const disconnected = res => {
    stopOutgoingCallRingingTone();
    stopReconnectingTone();
    console.log(res, 'disconnected');
-   // let roomId = getFromLocalStorageAndDecrypt('roomName');
    let vcardData = getLocalUserDetails();
    let currentUser = vcardData?.fromUser;
    currentUser = formatUserIdToJid(currentUser);
@@ -622,22 +604,14 @@ const disconnected = res => {
    let disconnectedUser = res.userJid;
    disconnectedUser = disconnectedUser.includes('@') ? disconnectedUser.split('@')[0] : disconnectedUser;
    if (remoteStream.length < 1 || disconnectedUser === currentUser) {
-      // deleteItemFromLocalStorage('roomName');
-      // deleteItemFromLocalStorage('callType');
-      // deleteItemFromLocalStorage('call_connection_status');
+      /**
       // callLogs.update(roomId, {
       //    endTime: callLogs.initTime(),
       //    sessionStatus: res.sessionStatus,
       // });
-      // Store.dispatch(
-      //    showConfrence({
-      //       showComponent: false,
-      //       showStreamingComponent: false,
-      //       showCalleComponent: false,
-      //    }),
-      // );
       // resetPinAndLargeVideoUser();
       // Store.dispatch(hideModal());
+       */
       resetCallData();
    } else {
       Store.dispatch(
@@ -709,7 +683,7 @@ const callStatus = res => {
    } else if (res.status === 'userstatus') {
       userStatus(res);
    } else if (res.status === 'hold') {
-      // hold(res);
+      /**hold(res); */
    }
 };
 
@@ -849,7 +823,6 @@ export const callBacks = {
       store.dispatch(updateUserPresence(res));
    },
    userProfileListener: res => {
-      // console.log('User Profile updated', JSON.stringify(res, null, 2));
       if (Array.isArray(res)) {
          Store.dispatch(updateRosterData(res));
       } else {
@@ -1001,7 +974,7 @@ export const callBacks = {
          // we should close the call again screen to prevent the user from seeing the Incoming call screen UI, because the incoming call screen UI is only for Android.
          // for iOS incoming call will only be shown in call kit
          const { showCallModal: isCallModalOpen, screenName: currentCallModalScreen } = Store.getState().callData || {};
-         if (Platform.OS === 'ios' && isCallModalOpen & (currentCallModalScreen === CALL_AGAIN_SCREEN)) {
+         if (Platform.OS === 'ios' && isCallModalOpen && currentCallModalScreen === CALL_AGAIN_SCREEN) {
             Store.dispatch(closeCallModal());
          }
          Store.dispatch(setCallModalScreen(INCOMING_CALL_SCREEN));
@@ -1011,6 +984,7 @@ export const callBacks = {
       } else {
          SDK.callEngaged();
       }
+      /**
       // callLogs.insert({
       //   callMode: res.callMode,
       //   callState: 0,
@@ -1021,6 +995,7 @@ export const callBacks = {
       //   userList: res.userList,
       //   groupId: res.callMode === 'onetoone' ? '' : res.groupId,
       // });
+       */
    },
    callStatusListener: function (res) {
       callStatus(res);
@@ -1061,12 +1036,14 @@ export const callBacks = {
                remoteAudioMuted[user.userJid] = user.audioMuted;
             }
          });
+         /**
          // const roomName = getFromLocalStorageAndDecrypt('roomName');
          // if (roomName === '' || roomName == null || roomName == undefined) {
          //   const { roomId = '' } = SDK.getCallInfo();
          //   console.log('localStorage roomId :>> ', roomId);
          //   encryptAndStoreInLocalStorage('roomName', roomId);
          // }
+          */
 
          dispatch(
             showConfrence({
@@ -1080,7 +1057,7 @@ export const callBacks = {
          );
       } else {
          onCall = true;
-         // encryptAndStoreInLocalStorage('callingComponent', false);
+         /**encryptAndStoreInLocalStorage('callingComponent', false); */
          const streamType = res.trackType;
          let mediaStream = null;
          if (res.track) {
@@ -1146,7 +1123,7 @@ export const callBacks = {
                        status: CALL_CONVERSION_STATUS_CANCEL,
                     }
                   : undefined;
-            // Store.dispatch(callConversion(status));
+            /** Store.dispatch(callConversion(status)); */
             status && SDK.callConversion(CALL_CONVERSION_STATUS_CANCEL);
          }
       }
@@ -1155,7 +1132,7 @@ export const callBacks = {
       console.log(res, 'userProfileListener');
    },
    callSpeakingListener: res => {
-      // console.log('Speaking listener', res);
+      /**console.log('Speaking listener', res); */
    },
    callUsersUpdateListener: res => {
       console.log(res, 'userProfileListener');
@@ -1225,6 +1202,6 @@ export const callBacks = {
             remoteAudioMuted: remoteAudioMuted,
          }),
       );
-      // updateCallTypeAfterCallSwitch();
+      /** updateCallTypeAfterCallSwitch(); */
    },
 };

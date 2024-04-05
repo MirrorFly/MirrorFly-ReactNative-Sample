@@ -34,8 +34,10 @@ const ImageInfo = props => {
       let initialHeight = windowWidth / imageAspectRatio;
 
       if (initialHeight > windowHeight) {
-         initialHeight = windowHeight;
-         /**initialWidth = windowHeight * imageAspectRatio;*/
+         /**
+            initialHeight = windowHeight;
+          * initialWidth = windowHeight * imageAspectRatio;
+          * */
       }
 
       /**setInitialImageSize({ width: initialWidth, height: initialHeight });*/

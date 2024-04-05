@@ -27,22 +27,8 @@ function MessageInfo() {
    const {
       chatType,
       createdAt,
-      msgBody,
       msgStatus,
-      msgBody: {
-         replyTo = '',
-         message_type = '',
-         message,
-         media: {
-            file: { fileDetails = {} } = {},
-            file_url = '',
-            androidHeight,
-            androidWidth,
-            local_path = '',
-            fileName,
-            thumb_image = '',
-         } = {},
-      } = {},
+      msgBody: { message_type = '', message, media: { androidWidth, thumb_image = '' } = {} } = {},
    } = messageObject;
    const messageWidth = androidWidth || '80%';
    const [dbValue, setDbValue] = React.useState([]);

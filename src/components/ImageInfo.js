@@ -20,10 +20,10 @@ const ImageInfo = props => {
     */
 
    const ImageBase64 = SingleSelectedImage.local_path || SingleSelectedImage?.file?.fileDetails?.uri;
-   const [initialImageSize, setInitialImageSize] = React.useState({
+   /**const [initialImageSize, setInitialImageSize] = React.useState({
       width: 100,
       height: 100,
-   });
+   });*/
 
    const calculateInitialImageSize = () => {
       const windowWidth = Dimensions.get('window').width;
@@ -38,24 +38,25 @@ const ImageInfo = props => {
          initialWidth = windowHeight * imageAspectRatio;
       }
 
-      setInitialImageSize({ width: initialWidth, height: initialHeight });
+      /**setInitialImageSize({ width: initialWidth, height: initialHeight });*/
    };
    React.useEffect(() => {
       calculateInitialImageSize();
    }, []);
 
+   /**
    const images = [
       {
          url: ImageBase64,
       },
    ];
 
-   /**
     const handleBackBtn = () => {
     props.handleBackBtn();
-  }; */
+  }; 
 
-   const initialIndex = 0;
+  const initialIndex = 0;
+  */
    return (
       <View style={{ flex: 1 }}>
          <View style={{ flex: 1, backgroundColor: '#fff' }}>

@@ -10,12 +10,7 @@ import { VIDEO_PLAYER_SCREEN } from '../constant';
 
 const VideoInfo = props => {
    const navigation = useNavigation();
-   const {
-      item: galleryItem = {},
-      selectedMedia = {},
-      audioOnly = false,
-      forcePause: { mediaForcePause } = {},
-   } = props;
+   const { item: galleryItem = {}, selectedMedia = {}, audioOnly = false } = props;
    const SingleSelectedImage = selectedMedia.media;
    let item = galleryItem;
    if (SingleSelectedImage?.local_path) {

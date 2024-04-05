@@ -13,32 +13,25 @@ import {
 import { SendBtn } from '../common/Button';
 import { AttachmentIcon, DeleteRedBinIcon, EmojiIcon, KeyboardIcon, MicIcon, SideArrowIcon } from '../common/Icons';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import AudioRecorderPlayer, {
-   AudioEncoderAndroidType,
-   OutputFormatAndroidType,
-} from 'react-native-audio-recorder-player';
+import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import RNFS from 'react-native-fs';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
 import { useSelector } from 'react-redux';
 import { CHAT_INPUT, MIX_BARE_JID } from '../Helper/Chat/Constant';
 import { showToast } from '../Helper/index';
 
 import SDK from '../SDK/SDK';
+import AttachmentMenu from '../common/AttachmentMenu';
 import IconButton from '../common/IconButton';
-import Modal, { ModalBottomContent } from '../common/Modal';
 import commonStyles from '../common/commonStyles';
-import { getExtention, requestMicroPhonePermission } from '../common/utils';
+import { getExtention } from '../common/utils';
 import ApplicationColors from '../config/appColors';
 import { useNetworkStatus } from '../hooks';
 import EmojiOverlay from './EmojiPicker';
 import { soundRef } from './Media/AudioPlayer';
 import config from './chat/common/config';
-import MenuContainer from '../common/MenuContainer';
-import AttachmentMenu from '../common/AttachmentMenu';
 
 export const chatInputMessageRef = createRef();
 chatInputMessageRef.current = '';
@@ -176,6 +169,7 @@ const ChatInput = props => {
       }
    }, [isRecording, recordingDuration]);
 
+   /**
    const startRecording = async () => {
       if (!isRecording) {
          try {
@@ -208,7 +202,7 @@ const ChatInput = props => {
          }
       }
    };
-
+   */
    const stopRecording = async () => {
       if (isRecording) {
          try {

@@ -79,11 +79,11 @@ function ContactScreen() {
    const handleBackBtn = () => {
       if (isNewGrpSrn || isGroupInfoSrn) {
          RootNav.goBack();
-         return true;
+      } else {
+         let x = { screen: RECENTCHATSCREEN };
+         dispatch(navigate(x));
+         RootNav.navigate(RECENTCHATSCREEN);
       }
-      let x = { screen: RECENTCHATSCREEN };
-      dispatch(navigate(x));
-      RootNav.navigate(RECENTCHATSCREEN);
       return true;
    };
 

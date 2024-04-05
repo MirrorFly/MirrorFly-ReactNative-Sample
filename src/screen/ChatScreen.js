@@ -32,13 +32,7 @@ import ChatConversation from '../components/ChatConversation';
 import { chatInputMessageRef } from '../components/ChatInput';
 import GalleryPickView from '../components/GalleryPickView';
 import Camera from '../components/RNCamera';
-import {
-   getExtension,
-   getType,
-   isValidFileType,
-   validateFileSize,
-   validation,
-} from '../components/chat/common/fileUploadValidation';
+import { getType, isValidFileType, validateFileSize, validation } from '../components/chat/common/fileUploadValidation';
 import { LOCATION_SCREEN, MOBILE_CONTACT_LIST_SCREEN, RECENTCHATSCREEN } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
@@ -48,8 +42,8 @@ import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import { deleteRecoverMessage, recoverMessage } from '../redux/Actions/RecoverMessageAction';
 import { clearConversationSearchData } from '../redux/Actions/conversationSearchAction';
 import store from '../redux/store';
-import SavePicture from './Gallery';
 import { mflog } from '../uikitHelpers/uikitMethods';
+import SavePicture from './Gallery';
 
 export const selectedMediaIdRef = createRef();
 selectedMediaIdRef.current = {};
@@ -512,27 +506,24 @@ function ChatScreen() {
       }
 
       const msgId = SDK.randomString(8, 'BA');
-      switch (messageType) {
-         case 'media':
-            parseAndSendMessage(message, MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat', messageType);
-            break;
-         default: // default to text message
-            if (message.content !== '') {
-               const dataObj = {
-                  jid: toUserJid,
-                  msgType: 'text',
-                  message: message.content,
-                  userProfile: vCardData,
-                  chatType: MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat',
-                  msgId,
-                  fromUserJid: currentUserJID,
-                  publisherJid: currentUserJID,
-                  replyTo: message.replyTo,
-               };
-               constructAndDispatchConversationAndRecentChatData(dataObj);
-               SDK.sendTextMessage(toUserJid, message.content, msgId, message.replyTo);
-            }
-            break;
+      if (messageType === 'media') {
+         parseAndSendMessage(message, MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat', messageType);
+      } else {
+         if (message.content !== '') {
+            const dataObj = {
+               jid: toUserJid,
+               msgType: 'text',
+               message: message.content,
+               userProfile: vCardData,
+               chatType: MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat',
+               msgId,
+               fromUserJid: currentUserJID,
+               publisherJid: currentUserJID,
+               replyTo: message.replyTo,
+            };
+            constructAndDispatchConversationAndRecentChatData(dataObj);
+            SDK.sendTextMessage(toUserJid, message.content, msgId, message.replyTo);
+         }
       }
       setReplyMsg('');
    };

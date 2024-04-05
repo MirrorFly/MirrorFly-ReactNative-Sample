@@ -1,6 +1,4 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
-import { getUserProfileFromSDK } from '../Helper';
 import Store from '../redux/store';
 
 /**

@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
 import FileViewer from 'react-native-file-viewer';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { isKeyboardVisibleRef } from '../ChatApp';
 import { openLocationExternally, showCheckYourInternetToast, showToast } from '../Helper';
 import { uploadFileToSDK } from '../Helper/Chat/ChatHelper';

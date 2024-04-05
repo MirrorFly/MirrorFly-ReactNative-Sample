@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import FileViewer from 'react-native-file-viewer';
 import ImagePicker from 'react-native-image-crop-picker';
 import { openSettings } from 'react-native-permissions';
 import { batch } from 'react-redux';
@@ -7,11 +8,13 @@ import SDK from '../../SDK/SDK';
 import { changeTimeFormat } from '../../common/TimeStamp';
 import { mediaObjContructor, requestCameraPermission, requestStoragePermission } from '../../common/utils';
 import { isActiveChatScreenRef } from '../../components/ChatConversation';
+import config from '../../components/chat/common/config';
 import { DELETE_MESSAGE_FOR_EVERYONE, DELETE_MESSAGE_FOR_ME } from '../../redux/Actions/Constants';
 import { addChatConversationHistory, updateUploadStatus } from '../../redux/Actions/ConversationAction';
 import { updateRecentChat } from '../../redux/Actions/RecentChatAction';
+import { deleteRecoverMessage } from '../../redux/Actions/RecoverMessageAction';
 import { updateRosterData } from '../../redux/Actions/rosterAction';
-import store from '../../redux/store';
+import { default as Store, default as store } from '../../redux/store';
 import {
    CHAT_TYPE_GROUP,
    CHAT_TYPE_SINGLE,
@@ -23,11 +26,6 @@ import {
    MSG_SENT_ACKNOWLEDGE_STATUS_ID,
 } from './Constant';
 import { getMessageObjSender, getRecentChatMsgObj, getUserIdFromJid } from './Utility';
-import FileViewer from 'react-native-file-viewer';
-import Store from '../../redux/store';
-import { deleteRecoverMessage } from '../../redux/Actions/RecoverMessageAction';
-import config from '../../components/chat/common/config';
-import { mflog } from '../../uikitHelpers/uikitMethods';
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
 
@@ -47,7 +45,7 @@ export const setChatPage = (userId, page) => {
 export const getChatPage = userId => chatPage[userId] || 1;
 
 export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false) => {
-   const { id: messagesReducerId, data: messages } = Store.getState().chatConversationData;
+   const { data: messages } = Store.getState().chatConversationData;
    const userId = getUserIdFromJid(fromUserJId);
    if (forceGetFromSDK || !messages[userId]) {
       const page = getChatPage(userId);

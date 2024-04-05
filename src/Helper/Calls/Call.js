@@ -125,7 +125,7 @@ export const clearOldCallingTimer = () => {
 };
 
 export const disconnectCallConnection = (remoteStreams = [], callStatusMessage = '', cb) => {
-   const callConnectionData = callConnectionStoreData();
+   /**const callConnectionData = callConnectionStoreData();*/
    SDK.endCall();
    clearIosCallListeners();
    endCallForIos();

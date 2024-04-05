@@ -1,7 +1,7 @@
+import { useNavigation } from '@react-navigation/native';
 import { Box, Center, HStack, Pressable, Modal as RBModal, Spinner, Stack, Text, VStack, useToast } from 'native-base';
 import React from 'react';
 import {
-   BackHandler,
    Image,
    Keyboard,
    KeyboardAvoidingView,
@@ -9,7 +9,7 @@ import {
    StyleSheet,
    TextInput,
    TouchableOpacity,
-   View,
+   View
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { handleImagePickerOpenCamera, handleImagePickerOpenGallery } from '../Helper/Chat/ChatHelper';
@@ -24,12 +24,11 @@ import { CallIcon, MailIcon, StatusIcon } from '../common/Icons';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import commonStyles, { modelStyles } from '../common/commonStyles';
 import { getImageSource } from '../common/utils';
+import ApplicationColors from '../config/appColors';
 import { PROFILESCREEN, RECENTCHATSCREEN, REGISTERSCREEN } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import { navigate } from '../redux/Actions/NavigationAction';
 import ScreenHeader from './ScreenHeader';
-import ApplicationColors from '../config/appColors';
-import { useNavigation } from '@react-navigation/native';
 
 const ProfilePage = props => {
    const { selectProfileInfo, profileInfo, handleBackBtn } = props;

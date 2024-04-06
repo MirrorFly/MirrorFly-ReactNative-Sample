@@ -124,7 +124,7 @@ export const clearOldCallingTimer = () => {
    }
 };
 
-export const disconnectCallConnection = (remoteStreams = [], callStatusMessage = '', cb) => {
+export const disconnectCallConnection = (remoteStreams = [], callStatusMessage = '', cb = () => {}) => {
    /**const callConnectionData = callConnectionStoreData();*/
    SDK.endCall();
    clearIosCallListeners();
@@ -226,7 +226,7 @@ const updateCallAgainScreenData = (userID, callType, localVideoStream, localVide
    });
 };
 
-export const endCall = async (isFromTimeout = false, userId, callType) => {
+export const endCall = async (isFromTimeout = false, userId = '', callType = '') => {
    const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
    const { callStatusText } = confrenceData;
    if ((callStatusText === CALL_STATUS_DISCONNECTED || callStatusText === undefined) && !isFromTimeout) {

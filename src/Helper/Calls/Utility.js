@@ -269,11 +269,7 @@ const makeOne2OneCall = async (callType, usersList) => {
          users.push(formatUserIdToJid(user));
       });
    }
-   if (users.length === 1) {
-      makeCall(callMode, callType, users, usersList, '');
-   } else if (users.length > 1) {
-      makeCall(callMode, callType, users, usersList, '');
-   }
+   makeCall(callMode, callType, users, usersList, '');
    /**
    else {
       // if(toast.error.length > 1) {

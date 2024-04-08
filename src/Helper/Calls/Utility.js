@@ -567,7 +567,6 @@ const debounceAudioRouteChangeListenerForIos = debounce(
 
 const handleAudioRouteChangeListenerForIos = () => {
    RNCallKeep.addEventListener('didChangeAudioRoute', ({ output, reason }) => {
-      // console.log('LOGG::==>> didChangeAudioRoute from callkit', output, reason);
       const currentCallUUID = Store.getState().callData?.callerUUID;
       debounceAudioRouteChangeListenerForIos(currentCallUUID, output, reason);
    });
@@ -1057,7 +1056,6 @@ export const updateAudioRouteTo = async (
                   !isBluetoothHeadsetConnected &&
                   !isWiredHeadsetConnected
                ) {
-                  // console.log('LOGG::==>> updateAudioRouteTo manually in case 3 ', isBluetoothHeadsetConnected);
                   updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, callUUID);
                   return;
                }

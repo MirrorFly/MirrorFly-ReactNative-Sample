@@ -195,7 +195,13 @@ export const getOnGoingCallNotification = async (roomId, callDetailObj, userJid,
    await notifee.displayNotification(notification);
 };
 
-export const getMissedCallNotification = async (roomId, callDetailObj = {}, userJid, nickName, callStatusType) => {
+export const getMissedCallNotification = async (
+   roomId = '',
+   callDetailObj = {},
+   userJid = '',
+   nickName = '',
+   callStatusType = '',
+) => {
    const launchActivityName = Platform.OS === 'android' ? await ActivityModule.getMainActivity() : '';
    let title = `You missed ${callDetailObj.callType === 'audio' ? 'an' : 'a'} ${callDetailObj.callType} call`;
    let displayedNotificationId = await notifee.getDisplayedNotifications();

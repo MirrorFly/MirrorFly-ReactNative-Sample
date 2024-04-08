@@ -94,12 +94,12 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
          ]; */
          if (Array.isArray(_routes)) {
             if (_routes.length === 2) {
-               const _sorted = _routes.sort(sortAudioRoutes);
-               setAudioRoutes(_sorted);
+               _routes.sort(sortAudioRoutes);
+               setAudioRoutes(_routes);
             } else if (_routes.length > 2) {
                const filteredRoutes = _routes.filter(r => r.type !== AUDIO_ROUTE_PHONE);
-               const _sorted = filteredRoutes.sort(sortAudioRoutes);
-               setAudioRoutes(_sorted);
+               filteredRoutes.sort(sortAudioRoutes);
+               setAudioRoutes(filteredRoutes);
             }
             RBSheetRef.current?.open?.();
          }
@@ -141,10 +141,12 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
             ]; */
             if (Array.isArray(_routes)) {
                if (_routes.length === 2) {
-                  setAudioRoutes(_routes.sort(sortAudioRoutes));
+                  _routes.sort(sortAudioRoutes);
+                  setAudioRoutes(_routes);
                } else if (_routes.length > 2) {
                   const filteredRoutes = _routes.filter(r => r.type !== AUDIO_ROUTE_PHONE);
-                  setAudioRoutes(filteredRoutes.sort(sortAudioRoutes));
+                  filteredRoutes.sort(sortAudioRoutes);
+                  setAudioRoutes(filteredRoutes);
                }
             }
          });

@@ -80,11 +80,7 @@ const OnGoingCall = () => {
 
    React.useEffect(() => {
       animateLayout(1);
-      if (layout === 'grid') {
-         hideControlsTimeout = setTimeout(() => {
-            animateControls(0, 100);
-         }, hideControlsTimeoutMilliSeconds);
-      } else if (callViewType === 'video') {
+      if (layout === 'grid' || callViewType === 'video') {
          hideControlsTimeout = setTimeout(() => {
             animateControls(0, 100);
          }, hideControlsTimeoutMilliSeconds);

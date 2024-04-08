@@ -1,5 +1,7 @@
 import { useSelector } from 'react-redux';
 import Store from '../redux/store';
+import { getUserProfileFromSDK } from '../Helper';
+import React from 'react';
 
 /**
  * @typedef {Object} userProfileDetails
@@ -21,8 +23,19 @@ import Store from '../redux/store';
  */
 const useRosterData = userId => {
    const data = useSelector(state => state.rosterData.data);
+   const [userProfileData, setUserProfileData] = React.useState({});
 
-   return data[userId] || {};
+   React.useLayoutEffect(() => {
+      const userData = data[userId];
+      if (!userData) {
+         setUserProfileData({});
+         getUserProfileFromSDK(userId);
+      } else {
+         setUserProfileData(userData);
+      }
+   }, [data[userId]]);
+
+   return userProfileData;
 };
 export default useRosterData;
 

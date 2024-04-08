@@ -921,6 +921,7 @@ export const callBacks = {
       if (res.toUsers.length === 1 && res.groupId === null) {
          res.from = res.toUsers[0];
          res.to = res.userJid;
+         getUserProfileFromSDK(getUserIdFromJid(res.userJid));
          if (res.callType === 'audio') {
             localVideoMuted = true;
          } else {

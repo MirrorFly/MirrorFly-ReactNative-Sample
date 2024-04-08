@@ -22,7 +22,7 @@ let interval = '';
 const Timer = (props = {}) => {
    const { callStatus } = props;
    const callDuration = useSelector(state => state.callData.callDuration);
-   // const [timerOn, setTimerOn] = React.useState(false);
+   /** const [timerOn, setTimerOn] = React.useState(false);*/
    const [timerTime, setTimerTime] = React.useState(0);
 
    React.useEffect(() => {
@@ -41,7 +41,7 @@ const Timer = (props = {}) => {
    }, [callStatus]);
 
    const startTimer = () => {
-      // setTimerOn(true);
+      /**setTimerOn(true); */
       let timerStart = callDuration || Date.now();
       Store.dispatch(callDurationTimestamp(timerStart));
       clearInterval(interval);

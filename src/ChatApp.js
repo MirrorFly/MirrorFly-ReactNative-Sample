@@ -15,7 +15,6 @@ import {
    CHATSCREEN,
    CONTACTLIST,
    COUNTRYSCREEN,
-   MIRRORFLY_RN,
    PROFILESCREEN,
    RECENTCHATSCREEN,
    REGISTERSCREEN,
@@ -27,7 +26,7 @@ import { profileDetail } from './redux/Actions/ProfileAction';
 import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction';
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
-import { getAppInitialized } from './uikitHelpers/uikitMethods';
+import { getAppInitialized, getAppSchema } from './uikitHelpers/uikitMethods';
 
 LogBox.ignoreAllLogs();
 
@@ -43,7 +42,7 @@ const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
 });
 
 const linking = {
-   prefixes: [MIRRORFLY_RN], //NOSONAR
+   prefixes: [getAppSchema()],
    config: {
       screens: {
          [REGISTERSCREEN]: REGISTERSCREEN,

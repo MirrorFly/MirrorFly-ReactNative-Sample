@@ -6,6 +6,7 @@ import { handleSendMsg } from '../../Helper/Chat/ChatHelper';
 import { ContactInfoIcon, PhoneIcon, SendBlueIcon } from '../../common/Icons';
 import commonStyles from '../../common/commonStyles';
 import ScreenHeader from '../ScreenHeader';
+import { CONVERSATION_SCREEN } from '../../constant';
 
 const ContactPreviewScreen = () => {
    const { params: { selectedContacts: contactItems } = {} } = useRoute();
@@ -56,7 +57,7 @@ const ContactPreviewScreen = () => {
          contacts: _selectedContacts,
       };
       handleSendMsg(contactObj);
-      navigation.goBack();
+      navigation.navigate(CONVERSATION_SCREEN);
    };
 
    const toggleNumberSelection = (contactIndex, numberIndex) => () => {

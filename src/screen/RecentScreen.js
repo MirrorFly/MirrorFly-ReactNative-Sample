@@ -157,6 +157,7 @@ function RecentScreen() {
             dispatch(DeleteChatHistoryAction({ fromUserId: item?.fromUserId }));
          });
       });
+      toggleDeleteModal();
       dispatch(clearRecentChatSelectedItems());
    };
 
@@ -200,6 +201,11 @@ function RecentScreen() {
       dispatch(updateRecentChatSearchText(text));
    };
 
+   const userName = getUserName(selectedItems[0]?.fromUserId);
+
+   const deleteMessage =
+      selectedItems.length === 1 ? `Delete chat with "${userName}"?` : `Delete ${selectedItems.length} selected chats?`;
+
    return (
       <>
          {!selectedItems.length ? (
@@ -235,11 +241,7 @@ function RecentScreen() {
          <Modal visible={showDeleteChatModal} onRequestClose={toggleDeleteModal}>
             <ModalCenteredContent onPressOutside={toggleDeleteModal}>
                <View style={styles.deleteChatModalContentContainer}>
-                  <Text style={styles.deleteChatModalTitle}>
-                     {selectedItems.length === 1
-                        ? `${'Delete chat with "' + `${getUserName(selectedItems[0]?.fromUserId)}"` + '?'}`
-                        : `Delete ${selectedItems.length} selected chats?`}
-                  </Text>
+                  <Text style={styles.deleteChatModalTitle}>{deleteMessage}</Text>
                   <View style={styles.modalActionButtonContainer}>
                      <Pressable style={commonStyles.marginRight_8} onPress={toggleDeleteModal}>
                         <Text style={styles.modalActionButtonText}>NO</Text>

@@ -25,6 +25,7 @@ import { callDurationTimestamp, resetNotificationData, setNotificationData } fro
 import { updateChatConversationLocalNav } from '../../redux/Actions/ChatConversationLocalNavAction';
 import { navigate } from '../../redux/Actions/NavigationAction';
 import Store from '../../redux/store';
+import { getApplicationUrl } from '../../uikitHelpers/uikitMethods';
 const { ActivityModule } = NativeModules;
 
 let interval;
@@ -270,7 +271,7 @@ const onChatNotificationBackGround = async ({ type, detail }) => {
          notification: { data: { fromUserJID } = '' },
       } = detail;
       let x = { screen: CHATSCREEN, fromUserJID };
-      const push_url = 'mirrorfly_rn://CHATSCREEN?fromUserJID=' + fromUserJID;
+      const push_url = getApplicationUrl() + 'CHATSCREEN?fromUserJID=' + fromUserJID;
       Store.dispatch(navigate(x));
       Linking.openURL(push_url);
       removeAllDeliveredNotification();

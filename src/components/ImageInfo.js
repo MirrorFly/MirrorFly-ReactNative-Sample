@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dimensions, Image, View } from 'react-native';
-// import ImageViewer from 'react-native-image-zoom-viewer';
+/** import ImageViewer from 'react-native-image-zoom-viewer'; */
 
 const ImageInfo = props => {
    const { selectedMedia } = props;
@@ -20,42 +20,45 @@ const ImageInfo = props => {
     */
 
    const ImageBase64 = SingleSelectedImage.local_path || SingleSelectedImage?.file?.fileDetails?.uri;
-   const [initialImageSize, setInitialImageSize] = React.useState({
+   /**const [initialImageSize, setInitialImageSize] = React.useState({
       width: 100,
       height: 100,
-   });
+   });*/
 
    const calculateInitialImageSize = () => {
       const windowWidth = Dimensions.get('window').width;
       const windowHeight = Dimensions.get('window').height;
 
       const imageAspectRatio = SingleSelectedImage.androidWidth / SingleSelectedImage.androidHeight;
-      let initialWidth = windowWidth;
+      /**let initialWidth = windowWidth;*/
       let initialHeight = windowWidth / imageAspectRatio;
 
       if (initialHeight > windowHeight) {
-         initialHeight = windowHeight;
-         initialWidth = windowHeight * imageAspectRatio;
+         /**
+            initialHeight = windowHeight;
+          * initialWidth = windowHeight * imageAspectRatio;
+          * */
       }
 
-      setInitialImageSize({ width: initialWidth, height: initialHeight });
+      /**setInitialImageSize({ width: initialWidth, height: initialHeight });*/
    };
    React.useEffect(() => {
       calculateInitialImageSize();
    }, []);
 
+   /**
    const images = [
       {
          url: ImageBase64,
       },
    ];
 
-   /**
     const handleBackBtn = () => {
     props.handleBackBtn();
-  }; */
+  }; 
 
-   const initialIndex = 0;
+  const initialIndex = 0;
+  */
    return (
       <View style={{ flex: 1 }}>
          <View style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -64,6 +67,7 @@ const ImageInfo = props => {
                source={{ uri: ImageBase64 }}
                resizeMode="contain"
             />
+
             {/* <ImageZoom
                uri={ImageBase64}
                minScale={0.5}

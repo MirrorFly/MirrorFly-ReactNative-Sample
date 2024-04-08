@@ -79,11 +79,11 @@ function ContactScreen() {
    const handleBackBtn = () => {
       if (isNewGrpSrn || isGroupInfoSrn) {
          RootNav.goBack();
-         return true;
+      } else {
+         let x = { screen: RECENTCHATSCREEN };
+         dispatch(navigate(x));
+         RootNav.navigate(RECENTCHATSCREEN);
       }
-      let x = { screen: RECENTCHATSCREEN };
-      dispatch(navigate(x));
-      RootNav.navigate(RECENTCHATSCREEN);
       return true;
    };
 
@@ -227,7 +227,7 @@ function ContactScreen() {
             const { statusCode, message } = await SDK.createGroup(grpName, Object.keys(selectedUsers), profileImage);
             if (statusCode === 200) {
                showToast('Group created successfully', { id: 'Group_created_successfully' });
-               RootNav.navigate(RECENTCHATSCREEN);
+               RootNav.reset(RECENTCHATSCREEN);
                return true;
             } else {
                showToast(message, { id: 'CREATE_GROUP_ERROR' });

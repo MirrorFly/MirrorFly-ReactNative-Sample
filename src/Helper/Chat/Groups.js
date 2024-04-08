@@ -11,12 +11,20 @@ export const fetchGroupParticipants = async (groupId, iq = false) => {
    try {
       if (MIX_BARE_JID.test(groupId)) {
          const grpList = await SDK.getGroupParticipants(groupId, iq);
-         setGroupParticipantsByGroupId(
-            groupId,
-            grpList.participants?.sort((a, b) =>
-               isLocalUser(getUserIdFromJid(a.userJid)) ? 1 : isLocalUser(getUserIdFromJid(b.userJid)) ? -1 : 0,
-            ) || [],
-         );
+         const sortedParticipants =
+            grpList.participants?.sort((a, b) => {
+               const isAUserLocal = isLocalUser(getUserIdFromJid(a.userJid));
+               const isBUserLocal = isLocalUser(getUserIdFromJid(b.userJid));
+
+               if (isAUserLocal) {
+                  return 1;
+               } else if (isBUserLocal) {
+                  return -1;
+               } else {
+                  return 0;
+               }
+            }) || [];
+         setGroupParticipantsByGroupId(groupId, sortedParticipants);
          grpList.participants?.forEach(element => {
             const { userId, userJid, userProfile } = element;
             Store.dispatch(updateRosterData({ userId, userJid, ...userProfile }));

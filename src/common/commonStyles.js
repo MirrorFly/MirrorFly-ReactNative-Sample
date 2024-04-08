@@ -116,6 +116,9 @@ const commonStyles = StyleSheet.create({
    pressedBg: {
       backgroundColor: ApplicationColors.pressedBg,
    },
+   pressedBg_2: {
+      backgroundColor: ApplicationColors.secondaryPressedBg,
+   },
    m_12: {
       margin: 12,
    },
@@ -394,7 +397,7 @@ const commonStyles = StyleSheet.create({
    dividerLine: {
       borderBottomWidth: 1,
       borderBottomColor: '#e3e3e3',
-      opacity: 0.5,
+      opacity: 0.8,
    },
    verticalDividerLine: {
       width: 1,

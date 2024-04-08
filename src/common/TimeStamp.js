@@ -76,12 +76,10 @@ const formatAMPM = date => {
 export const change16TimeWithDateFormat = time => {
    if (!time) {
       return '';
-   } else if (time.toString().length === 16) {
+   } else {
       let convertedDate = moment(time / 1000).format('DD-MMM-YYYY');
       let convertedTime = moment(time / 1000).format('hh:mm A');
       return `${convertedDate} at ${convertedTime}`;
-   } else {
-      return moment(time).format('hh:mm A');
    }
 };
 

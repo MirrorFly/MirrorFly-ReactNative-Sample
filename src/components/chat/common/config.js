@@ -35,6 +35,7 @@ const config = {
    // ================sekron Environment variables =====================
    // API_URL: 'https://sekerontechnolo-api.mirrorfly.com/api/v1',
    // licenseKey: 'Q7njxET7AGU9oCfYbM4CD3UFbdMI9B',
+   // ================ beta Environment variables =====================
    // API_URL: 'https://api-beta.mirrorfly.com/api/v1',
    // licenseKey: 'lu3Om85JYSghcsB6vgVoSgTlSQArL5',
 };

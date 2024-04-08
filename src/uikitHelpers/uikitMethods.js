@@ -1,23 +1,36 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { version } from '../../package.json';
 import messaging from '@react-native-firebase/messaging';
-import SDK from '../SDK/SDK';
-import { callBacks as sdkCallBacks } from '../SDKActions/callbacks';
-import { requestNotificationPermission } from '../common/utils';
-import { pushNotify, removeAllDeliveredNotification, updateNotification } from '../Service/remoteNotifyHandle';
-import { setNotificationForegroundService } from '../calls/notification/callNotifyHandler';
-import { handleSetPendingSeenStatus, updateRecentAndConversationStore } from '../Helper';
-import config from '../components/chat/common/config';
-import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
 import { AppRegistry, Platform } from 'react-native';
-import { CallComponent } from '../calls/CallComponent';
-import { setupCallKit } from '../calls/ios';
+import { version } from '../../package.json';
+import { handleSetPendingSeenStatus, updateRecentAndConversationStore } from '../Helper';
 import { pushNotifyBackground } from '../Helper/Calls/Utility';
 import { MIX_BARE_JID } from '../Helper/Chat/Constant';
+import SDK from '../SDK/SDK';
+import { callBacks as sdkCallBacks } from '../SDKActions/callbacks';
+import { pushNotify, removeAllDeliveredNotification, updateNotification } from '../Service/remoteNotifyHandle';
+import { CallComponent } from '../calls/CallComponent';
+import { setupCallKit } from '../calls/ios';
+import { setNotificationForegroundService } from '../calls/notification/callNotifyHandler';
+import { requestNotificationPermission } from '../common/utils';
+import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
+import config from '../components/chat/common/config';
+import RNVoipPushNotification from 'react-native-voip-push-notification';
 
 let uiKitCallbackListenersVal = {},
    appInitialized = false,
-   schemaUrl = '';
+   schemaUrl = '',
+   appSchema = '',
+   voipToken = '';
+
+export const getVoipToken = () => voipToken;
+
+export const getAppSchema = () => appSchema;
+
+export const setAppConfig = params => {
+   const { appSchema: _appSchema = '', stackURL = '' } = params;
+   appSchema = _appSchema || appSchema;
+   schemaUrl = stackURL || _appSchema || appSchema;
+};
 
 export const mflog = (...args) => {
    console.log('RN-UIKIT', Platform.OS, version, ...args);
@@ -30,7 +43,7 @@ export const setAppInitialized = state => (appInitialized = state);
 export const getAppInitialized = async () => appInitialized;
 
 export const handleRegister = async (userIdentifier, fcmToken) => {
-   const registerRes = await SDK.register(userIdentifier, fcmToken);
+   const registerRes = await SDK.register(userIdentifier, fcmToken, voipToken, process.env?.NODE_ENV === 'production');
    if (registerRes.statusCode === 200) {
       const { data } = registerRes;
       await AsyncStorage.setItem('credential', JSON.stringify(data));
@@ -55,18 +68,19 @@ export const handleRegister = async (userIdentifier, fcmToken) => {
 const initializeSetup = async () => {
    await messaging().requestPermission();
    requestNotificationPermission();
-   removeAllDeliveredNotification();
    setNotificationForegroundService();
 };
 
 export const mirrorflyInitialize = async args => {
    try {
-      const { apiBaseUrl, licenseKey, isSandbox, callBack } = args;
+      removeAllDeliveredNotification();
+      const { apiBaseUrl, licenseKey, isSandbox, callBack, chatHistroy = false } = args;
       const mfInit = await SDK.initializeSDK({
          apiBaseUrl: apiBaseUrl,
          licenseKey: licenseKey,
          callbackListeners: sdkCallBacks,
          isSandbox: isSandbox,
+         chatHistroy,
       });
       uiKitCallbackListenersVal = { callBack };
       if (mfInit.statusCode === 200) {
@@ -109,7 +123,8 @@ export const mirrorflyProfileUpdate = async args => {
 
 export const mirrorflyNotificationHandler = async messageData => {
    try {
-      const { remoteMessage = {}, apiBaseUrl = '', licenseKey = '' } = messageData;
+      const { remoteMessage = {}, apiBaseUrl = '', licenseKey = '', deepLink = '' } = messageData;
+      setApplicationUrl(deepLink);
       if (remoteMessage?.data?.push_from !== 'MirrorFly') {
          return;
       }
@@ -163,15 +178,27 @@ const setApplicationUrl = url => {
 
 export const getApplicationUrl = () => schemaUrl;
 
-export const setupCallScreen = () => {
+export const setupCallScreen = async () => {
    //Permissions
-   initializeSetup();
+   await initializeSetup();
    if (Platform.OS === 'android') {
       AppRegistry.registerComponent('CallScreen', () => CallComponent);
    }
    if (Platform.OS === 'ios') {
       // Setup ios callkit
+      registerVoipToken();
       setupCallKit();
       pushNotifyBackground();
    }
+};
+
+export const registerVoipToken = () => {
+   RNVoipPushNotification.addEventListener('register', token => {
+      // --- send token to your apn provider server
+      voipToken = token;
+      // unsubscrobing the listener
+      RNVoipPushNotification.removeEventListener('register');
+   });
+   // =====  register =====
+   RNVoipPushNotification.registerVoipToken();
 };

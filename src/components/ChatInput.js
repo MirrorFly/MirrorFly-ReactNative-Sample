@@ -13,25 +13,20 @@ import {
 import { SendBtn } from '../common/Button';
 import { AttachmentIcon, DeleteRedBinIcon, EmojiIcon, KeyboardIcon, MicIcon, SideArrowIcon } from '../common/Icons';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import AudioRecorderPlayer, {
-   AudioEncoderAndroidType,
-   OutputFormatAndroidType,
-} from 'react-native-audio-recorder-player';
+import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import RNFS from 'react-native-fs';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { openSettings } from 'react-native-permissions';
 import Sound from 'react-native-sound';
 import { useSelector } from 'react-redux';
 import { CHAT_INPUT, MIX_BARE_JID } from '../Helper/Chat/Constant';
 import { showToast } from '../Helper/index';
 
 import SDK from '../SDK/SDK';
+import AttachmentMenu from '../common/AttachmentMenu';
 import IconButton from '../common/IconButton';
-import Modal, { ModalBottomContent } from '../common/Modal';
 import commonStyles from '../common/commonStyles';
-import { getExtention, requestMicroPhonePermission } from '../common/utils';
+import { getExtention } from '../common/utils';
 import ApplicationColors from '../config/appColors';
 import { useNetworkStatus } from '../hooks';
 import EmojiOverlay from './EmojiPicker';
@@ -174,6 +169,7 @@ const ChatInput = props => {
       }
    }, [isRecording, recordingDuration]);
 
+   /**
    const startRecording = async () => {
       if (!isRecording) {
          try {
@@ -206,7 +202,7 @@ const ChatInput = props => {
          }
       }
    };
-
+   */
    const stopRecording = async () => {
       if (isRecording) {
          try {
@@ -309,7 +305,9 @@ const ChatInput = props => {
       Keyboard.dismiss();
       soundRef?.current?.pause();
       soundRef?.current?.updateState?.();
-      setIsOpen(true);
+      setTimeout(() => {
+         setIsOpen(true);
+      }, 50);
    };
 
    const closeModal = () => {
@@ -462,6 +460,12 @@ const ChatInput = props => {
                </View>
             </View>
          )}
+         <AttachmentMenu
+            visible={isOpen}
+            onRequestClose={closeModal}
+            attachmentMenuIcons={attachmentMenuIcons}
+            handleAttachmentIconPressed={handleAttachmentIconPressed}
+         />
 
          <EmojiOverlay
             place={CHAT_INPUT}
@@ -471,23 +475,6 @@ const ChatInput = props => {
             onClose={handleCLoseEmojiWindow}
             onSelect={handleEmojiSelect}
          />
-         <Modal visible={isOpen} onRequestClose={closeModal}>
-            <ModalBottomContent onPressOutside={closeModal}>
-               <View style={styles.modalContent}>
-                  {attachmentMenuIcons.map(item => {
-                     const { name, icon: MenuIcon } = item;
-                     return (
-                        <View key={name} style={styles.attachmentMenuIcon}>
-                           <IconButton onPress={handleAttachmentIconPressed(item)}>
-                              <MenuIcon />
-                           </IconButton>
-                           <Text style={styles.attachmentNameText}>{name}</Text>
-                        </View>
-                     );
-                  })}
-               </View>
-            </ModalBottomContent>
-         </Modal>
       </>
    );
 };

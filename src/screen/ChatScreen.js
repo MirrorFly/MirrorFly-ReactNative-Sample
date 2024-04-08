@@ -42,6 +42,7 @@ import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import { deleteRecoverMessage, recoverMessage } from '../redux/Actions/RecoverMessageAction';
 import { clearConversationSearchData } from '../redux/Actions/conversationSearchAction';
 import store from '../redux/store';
+import { mflog } from '../uikitHelpers/uikitMethods';
 import SavePicture from './Gallery';
 
 export const selectedMediaIdRef = createRef();
@@ -117,6 +118,7 @@ function ChatScreen() {
       if (audioPermission === 'granted' || audioPermission === 'limited') {
          SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
          let response = await handleAudioPickerSingle();
+         mflog(response);
          let _validate = validation(response.type);
          const sizeError = validateFileSize(response.size, getType(response.type));
          if (_validate && !sizeError) {
@@ -154,37 +156,39 @@ function ChatScreen() {
       if (permissionResult === 'granted' || permissionResult === 'limited') {
          // updating the SDK flag to keep the connection Alive when app goes background because of document picker
          SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
-         const file = await handleDocumentPickSingle();
-         // updating the SDK flag back to false to behave as usual
-         SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-         // Validating the file type and size
-         if (!isValidFileType(file.type)) {
-            Alert.alert(
-               'Mirrorfly',
-               'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
-            );
-            return;
-         }
-         const error = validateFileSize(file.size, 'file');
-         if (error) {
-            const toastOptions = {
-               id: 'document-too-large-toast',
-               duration: 2500,
-               avoidKeyboard: true,
-            };
-            showToast(error, toastOptions);
-            return;
-         }
+         setTimeout(async () => {
+            const file = await handleDocumentPickSingle();
+            // updating the SDK flag back to false to behave as usual
+            SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+            // Validating the file type and size
+            if (!isValidFileType(file.type)) {
+               Alert.alert(
+                  'Mirrorfly',
+                  'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
+               );
+               return;
+            }
+            const error = validateFileSize(file.size, 'file');
+            if (error) {
+               const toastOptions = {
+                  id: 'document-too-large-toast',
+                  duration: 2500,
+                  avoidKeyboard: true,
+               };
+               showToast(error, toastOptions);
+               return;
+            }
 
-         // preparing the object and passing it to the sendMessage function
-         const updatedFile = {
-            fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
-         };
-         const messageData = {
-            type: 'media',
-            content: [updatedFile],
-         };
-         handleSendMsg(messageData);
+            // preparing the object and passing it to the sendMessage function
+            const updatedFile = {
+               fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
+            };
+            const messageData = {
+               type: 'media',
+               content: [updatedFile],
+            };
+            handleSendMsg(messageData);
+         }, 200);
       } else if (storage_permission) {
          openSettings();
       } else if (permissionResult === RESULTS.BLOCKED) {
@@ -502,27 +506,24 @@ function ChatScreen() {
       }
 
       const msgId = SDK.randomString(8, 'BA');
-      switch (messageType) {
-         case 'media':
-            parseAndSendMessage(message, MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat', messageType);
-            break;
-         default: // default to text message
-            if (message.content !== '') {
-               const dataObj = {
-                  jid: toUserJid,
-                  msgType: 'text',
-                  message: message.content,
-                  userProfile: vCardData,
-                  chatType: MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat',
-                  msgId,
-                  fromUserJid: currentUserJID,
-                  publisherJid: currentUserJID,
-                  replyTo: message.replyTo,
-               };
-               constructAndDispatchConversationAndRecentChatData(dataObj);
-               SDK.sendTextMessage(toUserJid, message.content, msgId, message.replyTo);
-            }
-            break;
+      if (messageType === 'media') {
+         parseAndSendMessage(message, MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat', messageType);
+      } else {
+         if (message.content !== '') {
+            const dataObj = {
+               jid: toUserJid,
+               msgType: 'text',
+               message: message.content,
+               userProfile: vCardData,
+               chatType: MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat',
+               msgId,
+               fromUserJid: currentUserJID,
+               publisherJid: currentUserJID,
+               replyTo: message.replyTo,
+            };
+            constructAndDispatchConversationAndRecentChatData(dataObj);
+            SDK.sendTextMessage(toUserJid, message.content, msgId, message.replyTo);
+         }
       }
       setReplyMsg('');
    };

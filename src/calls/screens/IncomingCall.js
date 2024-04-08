@@ -3,11 +3,7 @@ import { ImageBackground, Platform, StyleSheet, Text, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { startIncomingCallTimer } from '../../Helper/Calls/Call';
-import {
-   answerIncomingCall,
-   closeCallModalActivity,
-   declineIncomingCall
-} from '../../Helper/Calls/Utility';
+import { answerIncomingCall, closeCallModalActivity, declineIncomingCall } from '../../Helper/Calls/Utility';
 import { capitalizeFirstLetter } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
 import Avathar from '../../common/Avathar';
@@ -35,6 +31,7 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
       startIncomingCallTimer();
    }, []);
 
+   /**
    // React.useEffect(() => {
    //    const backGroundNotificationRemove = async () => {
    //       if (appState === false && isActive && userCallStatus !== "Disconnected") {
@@ -60,10 +57,11 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
    //    // await callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'INCOMING_CALL', false);
    //    ActivityModule.closeActivity();
    // };
+   */
 
    const handleClosePress = () => {
       if (Platform.OS === 'android') {
-         // dispatch(closeCallModal());
+         /**  dispatch(closeCallModal());*/
          closeCallModalActivity();
       }
    };

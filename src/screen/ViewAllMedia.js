@@ -351,20 +351,15 @@ const ViewAllMedia = () => {
    }, []);
 
    const renderTabBar = props => (
-      <>
-         <View>
-            <TabBar
-               {...props}
-               style={styles.tabbar}
-               indicatorStyle={styles.tabbarIndicator}
-               labelStyle={styles.tabarLabel}
-               renderLabel={renderLabel}
-               activeColor={ApplicationColors.mainColor}
-               inactiveColor={ApplicationColors.black}
-               pressColor="transparent"
-            />
-         </View>
-      </>
+      <TabBar
+         {...props}
+         style={styles.tabbar}
+         indicatorStyle={styles.tabbarIndicator}
+         labelStyle={styles.tabarLabel}
+         renderLabel={renderLabel}
+         activeColor={ApplicationColors.mainColor}
+         inactiveColor={ApplicationColors.black}
+      />
    );
    return (
       <View style={styles.tabContainer}>

@@ -2,7 +2,9 @@ import React from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { getMessageFromHistoryById } from '../Helper/Chat/ChatHelper';
+import { ORIGINAL_MESSAGE_DELETED } from '../Helper/Chat/Constant';
 import { getUserIdFromJid, millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
+import mapStaticBlurImage from '../assets/google-maps-blur.png';
 import {
    AudioMusicIcon,
    CameraSmallIcon,
@@ -16,12 +18,10 @@ import {
    XLSIcon,
    ZipIcon,
 } from '../common/Icons';
+import commonStyles from '../common/commonStyles';
+import { getImageSource } from '../common/utils';
 import useRosterData from '../hooks/useRosterData';
 import { getExtension } from './chat/common/fileUploadValidation';
-import { ORIGINAL_MESSAGE_DELETED } from '../Helper/Chat/Constant';
-import mapStaticBlurImage from '../assets/google-maps-blur.png';
-import { getImageSource } from '../common/utils';
-import commonStyles from '../common/commonStyles';
 
 function ReplyMessage(props) {
    const { handleReplyPress } = props;
@@ -39,7 +39,7 @@ function ReplyMessage(props) {
       publisherJid = '',
    } = repliedMsg;
 
-   const fromUserId = React.useMemo(() => getUserIdFromJid(fromUserJId), [fromUserJId]);
+   /**const fromUserId = React.useMemo(() => getUserIdFromJid(fromUserJId), [fromUserJId]);*/
    const publisherId = getUserIdFromJid(publisherJid);
 
    const isSameUser = publisherJid === currentUserJID;

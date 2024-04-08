@@ -15,8 +15,7 @@ import useRosterData from '../../hooks/useRosterData';
 import { resetCallAgainData } from '../../redux/Actions/CallAgainAction';
 
 const CallAgain = () => {
-   const { data: { callType, userId } = {} } =
-      useSelector(state => state.callAgainData) || {};
+   const { data: { callType, userId } = {} } = useSelector(state => state.callAgainData) || {};
    const userProfile = useRosterData(userId);
    const nickName = userProfile.nickName || userProfile.userId;
    const callStatus = 'Unavailable, Try again later';
@@ -27,7 +26,7 @@ const CallAgain = () => {
    const closeScreen = () => {
       batch(() => {
          resetCallModalActivity();
-         // dispatch(resetCallStateData());
+         /** dispatch(resetCallStateData()); */
          dispatch(resetCallAgainData());
       });
    };

@@ -32,6 +32,7 @@ import {
    VideoUnMuteIcon,
 } from '../../common/Icons';
 import Pressable from '../../common/Pressable';
+import { debounce } from 'lodash-es';
 
 const sortAudioRoutes = (a, b) => {
    const nameA = a.name.toLowerCase();
@@ -49,6 +50,7 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
    const RBSheetRef = useRef(null);
 
    const [audioRoutes, setAudioRoutes] = React.useState([]);
+   const audioRouteUpdateNeeded = React.useRef(true);
 
    const { isAudioMuted, isVideoMuted, selectedAudioRoute, isFrontCameraEnabled } = useSelector(
       state => state.callControlsData,
@@ -126,7 +128,36 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
       updateCallVideoMute(_videoMuted, callerUUID);
    };
 
+   const handleSelectedRoutes = () => {
+      if (audioRouteUpdateNeeded.current) {
+         RNCallKeep.getAudioRoutes().then(_routes => {
+            /** sample data from 'getAudioRoutes' method
+             * const sampleAudioRoutes = [
+               { "name": "Speaker", "type": "Speaker" },
+               { "name": "iPhone Microphone", "type": "Phone" },
+               { "name": "Headset Microphone", "selected": true, "type": "Headset" }
+            ]; */
+            if (Array.isArray(_routes)) {
+               if (_routes.length === 2) {
+                  setAudioRoutes(_routes.sort(sortAudioRoutes));
+               } else if (_routes.length > 2) {
+                  const filteredRoutes = _routes.filter(r => r.type !== AUDIO_ROUTE_PHONE);
+                  setAudioRoutes(filteredRoutes.sort(sortAudioRoutes));
+               }
+            }
+         });
+      }
+      audioRouteUpdateNeeded.current = true;
+   };
+
+   React.useEffect(() => {
+      //for changing the popup route values when headset and blutooth value changes automatically
+      const debouncedHandleSelectedPopupRoutes = debounce(handleSelectedRoutes, 150);
+      debouncedHandleSelectedPopupRoutes();
+   }, [selectedAudioRoute]);
+
    const handleSelectAudioRoute = _audioRoute => () => {
+      audioRouteUpdateNeeded.current = false;
       RBSheetRef.current?.close?.();
       updateAudioRouteTo(_audioRoute.name, _audioRoute.type, callerUUID);
    };
@@ -169,11 +200,13 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
          </GestureHandlerRootView>
          <RBSheet
             animationType="slide"
-            height={audioRoutes.length * 50 + 50}
             ref={RBSheetRef}
             closeOnDragDown={true}
             closeOnPressMask={true}
             customStyles={{
+               container: {
+                  height: audioRoutes.length * 50 + 50,
+               },
                wrapper: {
                   backgroundColor: 'transparent',
                },
@@ -199,7 +232,7 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
    );
 };
 
-export default CallControlButtons;
+export default React.memo(CallControlButtons);
 
 const styles = StyleSheet.create({
    container: {

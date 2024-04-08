@@ -31,7 +31,13 @@ import {
    CALL_STATUS_TRYING,
    DISCONNECTED_SCREEN_DURATION,
 } from './Constant';
-import { closeCallModalActivity, endCallForIos, getNickName, resetCallModalActivity } from './Utility';
+import {
+   closeCallModalActivity,
+   endCallForIos,
+   getNickName,
+   resetCallModalActivity,
+   setpreventMultipleClick,
+} from './Utility';
 
 let missedCallNotificationTimer = null;
 let callingRemoteStreamRemovalTimer = null;
@@ -226,6 +232,7 @@ const updateCallAgainScreenData = (userID, callType, localVideoStream, localVide
 };
 
 export const endCall = async (isFromTimeout = false, userId, callType) => {
+   setpreventMultipleClick(false);
    const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
    const { callStatusText } = confrenceData;
    if ((callStatusText === CALL_STATUS_DISCONNECTED || callStatusText === undefined) && !isFromTimeout) {

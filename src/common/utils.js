@@ -210,9 +210,17 @@ export const requestMicroPhonePermission = async () => {
 
 export const requestBluetoothConnectPermission = () => {
    if (Platform.OS === 'android') {
-      return request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
+      return (Platform.Version < 31 && 'granted') || request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
    } else {
-      return Promise.resolve(false);
+      return Promise.resolve('granted');
+   }
+};
+
+export const checkBluetoothConnectPermission = () => {
+   if (Platform.OS === 'android') {
+      return (Platform.Version < 31 && 'granted') || check(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
+   } else {
+      return Promise.resolve('granted');
    }
 };
 

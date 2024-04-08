@@ -186,7 +186,8 @@ const handleHeadphoneDetection = async data => {
    });
 };
 
-const debouncedHandleHeadphoneDetection = debounce(handleHeadphoneDetection, 280);
+const debouncedHandleHeadphoneDetection = debounce(handleHeadphoneDetection, 250);
+const debouncedRingTone = debounce(startOutgoingCallRingingTone, 1200);
 
 export const addHeadphonesConnectedListenerForCall = (shouldUpdateInitialValue = true) => {
    HeadphoneDetection.addListener(debouncedHandleHeadphoneDetection);
@@ -235,6 +236,7 @@ export const makeCalls = async (callType, userId) => {
    let connectionStatus = await AsyncStorage.getItem('connection_status');
    if (connectionStatus === 'CONNECTED') {
       preventMultipleClick = true;
+      addHeadphonesConnectedListenerForCall();
       let userListData = await getCallData(userId);
       userList = [...userListData];
       makeOne2OneCall(callType, userList);
@@ -289,7 +291,6 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          image = '';
       const vcardData = getLocalUserDetails();
       let fromuser = formatUserIdToJid(vcardData.fromUser);
-      addHeadphonesConnectedListenerForCall();
       if (callMode === 'onetoone') {
          users = groupCallMemberDetails;
       } else if (callMode === 'onetomany') {
@@ -329,6 +330,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          Store.dispatch(updateCallerUUID(uuid));
          startCall(uuid, callerId, callerName, hasVideo);
       }
+      debouncedRingTone(callType);
 
       const showConfrenceData = Store.getState().showConfrenceData;
       const { data: confrenceData } = showConfrenceData;
@@ -346,7 +348,6 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          // Store.dispatch(openCallModal());
          Store.dispatch(setCallModalScreen(OUTGOING_CALL_SCREEN));
       });
-      startOutgoingCallRingingTone(callType);
       try {
          if (callType === 'audio') {
             muteLocalVideo(true);
@@ -467,10 +468,10 @@ export const answerIncomingCall = async callId => {
       }, 0);
       const result =
          callType === CALL_TYPE_AUDIO ? await requestMicroPhonePermission() : await requestCameraMicPermission(); // updating the SDK flag back to false to behave as usual
-      await requestBluetoothConnectPermission();
+      const bluetoothPermission = await requestBluetoothConnectPermission();
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
       callBackgroundNotification = true;
-      if (result === 'granted' || result === 'limited') {
+      if ((result === 'granted' || result === 'limited') && bluetoothPermission === 'granted') {
          // validating call connectionState data because sometimes when permission popup is opened
          // and call ended and then user accept the permission
          // So validating the call is active when user permission has been given and not ended before the permission has been given
@@ -1132,4 +1133,8 @@ export const setPreviousHeadsetStatus = headsetStatus => {
 
 export const getPreviousHeadsetStatus = () => {
    return previousHeadsetStatus;
+};
+
+export const setpreventMultipleClick = preventClick => {
+   preventMultipleClick = preventClick;
 };

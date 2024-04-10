@@ -584,7 +584,7 @@ const handleIncoming_CallKeepListeners = () => {
       clearIosCallListeners();
       const { screenName } = Store.getState().callData;
       if (screenName === INCOMING_CALL_SCREEN) declineIncomingCall();
-      else endCall();
+      else endOnGoingCall();
    });
    RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
       updateCallAudioMute(muted, callUUID, true);
@@ -612,7 +612,9 @@ export const endOnGoingCall = async () => {
 //CallKit action buttons listeners for ongoing call
 const handleOutGoing_CallKeepListeners = () => {
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
-      endOnGoingCall();
+      const { screenName } = Store.getState().callData;
+      if (screenName === OUTGOING_CALL_SCREEN) endCall();
+      else endOnGoingCall();
    });
    RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
       updateCallAudioMute(muted, callUUID, true);

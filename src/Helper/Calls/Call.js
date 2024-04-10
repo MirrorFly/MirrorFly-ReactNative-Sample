@@ -218,14 +218,12 @@ export const clearOutgoingTimer = () => {
 };
 
 //Call Again Screen
-const updateCallAgainScreenData = (userID, callType, localVideoStream, localVideoMuted) => {
+const updateCallAgainScreenData = (userID, callType) => {
    batch(() => {
       Store.dispatch(
          updateCallAgainData({
             callType,
             userId: userID,
-            localVideoStream,
-            localVideoMuted,
          }),
       );
       Store.dispatch(setCallModalScreen(CALL_AGAIN_SCREEN));
@@ -253,29 +251,16 @@ export const endCall = async (isFromTimeout = false, userId = '', callType = '')
     */
 
    if (isFromTimeout) {
-      let localVideoStream = Store.getState().showConfrenceData.data;
       resetCallData();
       const _userID = userId;
       const _callType = callType;
-      updateCallAgainScreenData(_userID, _callType, localVideoStream.localStream, localVideoStream.localVideoMuted);
+      updateCallAgainScreenData(_userID, _callType);
    } else {
       clearIosCallListeners();
       endCallForIos();
       const timeout = BackgroundTimer.setTimeout(() => {
          resetCallData();
          closeCallModalActivity(true);
-         /**
-         // Store.dispatch(closeCallModal());
-         // batch(()=>{
-         //     Store.dispatch(showConfrence({
-         //         showComponent: false,
-         //         screenName:'',
-         //         showCalleComponent:false,
-         //         stopSound: true,
-         //         callStatusText: null
-         //     }))
-         // })
-          */
       }, DISCONNECTED_SCREEN_DURATION);
       setDisconnectedScreenTimeoutTimer(timeout);
    }

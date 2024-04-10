@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { debounce } from 'lodash-es';
-import { AppState, Platform } from 'react-native';
+import { AppState, DeviceEventEmitter, NativeModules, Platform } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
 import HeadphoneDetection from 'react-native-headphone-detection';
@@ -306,7 +306,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
             users = [''];
          }
       }
-
+      
       let callConnectionStatus = {
          callMode: callMode,
          callStatus: 'CALLING',
@@ -325,10 +325,12 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
       // AsyncStorage.setItem('call_connection_status', JSON.stringify(callConnectionStatus))
       let uuid = SDK.randomString(16, 'BA');
       if (Platform.OS === 'ios') {
+         NativeModules.InCallManager.addListener('Proximity');
          const callerName = usersList.map(ele => ele.name).join(',');
          const hasVideo = callType === 'video';
          let callerId = users.join(',')?.split?.('@')?.[0];
          Store.dispatch(updateCallerUUID(uuid));
+         RNInCallManager.startProximitySensor();
          startCall(uuid, callerId, callerName, hasVideo);
       }
       debouncedRingTone(callType);
@@ -618,6 +620,10 @@ const handleOutGoing_CallKeepListeners = () => {
    });
    RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
       updateCallAudioMute(muted, callUUID, true);
+   });
+   DeviceEventEmitter.addListener('Proximity', function (data) {
+      // --- do something with events
+      SDK.socketEmit(data.isNear);
    });
    handleAudioRouteChangeListenerForIos();
 };

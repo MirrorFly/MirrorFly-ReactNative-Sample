@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import nextFrame from 'next-frame';
-import { Platform } from 'react-native';
+import { DeviceEventEmitter, NativeModules, Platform } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import RNCallKeep from 'react-native-callkeep';
 import HeadphoneDetection from 'react-native-headphone-detection';
@@ -199,6 +199,9 @@ export const resetCallData = () => {
    if (Platform.OS === 'ios') {
       clearIosCallListeners();
       endCallForIos();
+      RNInCallManager.stopProximitySensor();
+      NativeModules.InCallManager.removeListeners('Proximity');
+      DeviceEventEmitter.removeAllListeners('Proximity');
    } else {
       RNInCallManager.setSpeakerphoneOn(false);
       // updating the call connected status to android native code

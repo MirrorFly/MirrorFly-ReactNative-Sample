@@ -438,7 +438,7 @@ PODS:
     - react-native-video/Video (= 5.2.1)
   - react-native-video/Video (5.2.1):
     - React-Core
-  - react-native-webrtc (118.0.2):
+  - react-native-webrtc (118.0.5):
     - JitsiWebRTC (~> 118.0.0)
     - React-Core
   - React-NativeModulesApple (0.72.10):
@@ -949,7 +949,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: b97eb6f9e3b7f437806c2ce5983f479f8eb5de4b
   react-native-silentmode-detector: 43b0e08afddd87836dc11784de104512e8036cfd
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
-  react-native-webrtc: a0a8a1730b6cc5a5bda8a6e2166a74c9b78029e2
+  react-native-webrtc: 88fb4b2994b06b4d6ad67aee7f8ce7e7aa7012bd
   React-NativeModulesApple: 10093349d4cfd7cc1aabeadba47549920d19bc2d
   React-perflogger: 43287389ea08993c300897a46f95cfac04bb6c1a
   React-RCTActionSheet: 923afe77f9bb89da7c1f98e2730bfc9dde0eed6d

@@ -306,7 +306,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
             users = [''];
          }
       }
-      
+
       let callConnectionStatus = {
          callMode: callMode,
          callStatus: 'CALLING',
@@ -325,12 +325,11 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
       // AsyncStorage.setItem('call_connection_status', JSON.stringify(callConnectionStatus))
       let uuid = SDK.randomString(16, 'BA');
       if (Platform.OS === 'ios') {
-         NativeModules.InCallManager.addListener('Proximity');
+         startProximitySensor();
          const callerName = usersList.map(ele => ele.name).join(',');
          const hasVideo = callType === 'video';
          let callerId = users.join(',')?.split?.('@')?.[0];
          Store.dispatch(updateCallerUUID(uuid));
-         RNInCallManager.startProximitySensor();
          startCall(uuid, callerId, callerName, hasVideo);
       }
       debouncedRingTone(callType);
@@ -499,6 +498,9 @@ export const answerIncomingCall = async callId => {
                if (callType === CALL_TYPE_VIDEO) {
                   enableSpeaker(activeCallerUUID);
                }
+               if (Platform.OS === 'ios') {
+                  startProximitySensor();
+               }
                // updating the call connected status to android native code
                Platform.OS === 'android' && ActivityModule.updateCallConnectedStatus(true);
                /**
@@ -576,6 +578,7 @@ const handleAudioRouteChangeListenerForIos = () => {
 
 //CallKit action buttons listeners for incoming call
 const handleIncoming_CallKeepListeners = () => {
+   handleAudioRouteChangeListenerForIos();
    RNCallKeep.addEventListener('answerCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep answer call event', callUUID);
       answerIncomingCall(callUUID);
@@ -591,7 +594,10 @@ const handleIncoming_CallKeepListeners = () => {
    RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
       updateCallAudioMute(muted, callUUID, true);
    });
-   handleAudioRouteChangeListenerForIos();
+   DeviceEventEmitter.addListener('Proximity', function (data) {
+      // --- do something with events
+      SDK.socketEmitEvent(data.isNear);
+   });
 };
 
 //Endcall action for ongoing call
@@ -613,19 +619,19 @@ export const endOnGoingCall = async () => {
 
 //CallKit action buttons listeners for ongoing call
 const handleOutGoing_CallKeepListeners = () => {
+   handleAudioRouteChangeListenerForIos();
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
       const { screenName } = Store.getState().callData;
       if (screenName === OUTGOING_CALL_SCREEN) endCall();
       else endOnGoingCall();
    });
+   DeviceEventEmitter.addListener('Proximity', function (data) {
+      // --- do something with events
+      SDK.socketEmitEvent(data.isNear);
+   });
    RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
       updateCallAudioMute(muted, callUUID, true);
    });
-   DeviceEventEmitter.addListener('Proximity', function (data) {
-      // --- do something with events
-      SDK.socketEmit(data.isNear);
-   });
-   handleAudioRouteChangeListenerForIos();
 };
 
 export const displayIncomingCallForIos = callResponse => {
@@ -1152,4 +1158,15 @@ export const getPreviousHeadsetStatus = () => {
 
 export const setpreventMultipleClick = preventClick => {
    preventMultipleClick = preventClick;
+};
+
+export const startProximitySensor = () => {
+   NativeModules.InCallManager.addListener('Proximity');
+   RNInCallManager.startProximitySensor();
+};
+
+export const stopProximityListeners = () => {
+   RNInCallManager.stopProximitySensor();
+   NativeModules.InCallManager.removeListeners(1);
+   DeviceEventEmitter.removeAllListeners('Proximity');
 };

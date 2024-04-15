@@ -5,7 +5,6 @@ import { escapeRegExpReservedChars } from '../Helper';
 import { formatUserIdToJid, updateRosterDataForRecentChats } from '../Helper/Chat/ChatHelper';
 import { THIS_MESSAGE_WAS_DELETED, YOU_DELETED_THIS_MESSAGE } from '../Helper/Chat/Constant';
 import { sortBydate } from '../Helper/Chat/RecentChat';
-import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import no_messages from '../assets/no_messages.png';
 import Avathar from '../common/Avathar';
@@ -32,6 +31,7 @@ import {
    updateRecentChatSelectedItems,
    updateRecentChatSelectedItemsObj,
 } from '../redux/Actions/recentChatSearchAction';
+import { useNavigation } from '@react-navigation/native';
 
 const VideoSmallIconComponent = () => VideoSmallIcon('#767676');
 
@@ -195,6 +195,7 @@ const RecentChatItem = ({
 };
 
 export default function RecentChat() {
+   const RootNav = useNavigation();
    const dispatch = useDispatch();
    const [filteredData, setFilteredData] = React.useState([]);
    const [filteredMessages, setFilteredMessages] = React.useState([]);

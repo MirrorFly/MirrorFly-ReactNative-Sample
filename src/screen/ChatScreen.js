@@ -36,7 +36,7 @@ import { getType, isValidFileType, validateFileSize, validation } from '../compo
 import { LOCATION_SCREEN, MOBILE_CONTACT_LIST_SCREEN, RECENTCHATSCREEN } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import { updateChatConversationLocalNav } from '../redux/Actions/ChatConversationLocalNavAction';
-import { addChatConversationHistory } from '../redux/Actions/ConversationAction';
+import { addChatConversationHistory, addChatMessage } from '../redux/Actions/ConversationAction';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { updateRecentChat } from '../redux/Actions/RecentChatAction';
 import { deleteRecoverMessage, recoverMessage } from '../redux/Actions/RecoverMessageAction';
@@ -494,6 +494,7 @@ function ChatScreen() {
       };
       batch(() => {
          store.dispatch(addChatConversationHistory(dispatchData));
+         store.dispatch(addChatMessage(dispatchData.data));
          store.dispatch(updateRecentChat(recentChatObj));
       });
    };
@@ -535,7 +536,21 @@ function ChatScreen() {
 
    return (
       <>
-         {
+         <ChatConversation
+            handleRecoverMessage={handleRecoverMessage}
+            replyMsg={replyMsg}
+            chatInputRef={chatInputRef}
+            onReplyMessage={getReplyMessage}
+            handleBackBtn={handleBackBtn}
+            setLocalNav={setLocalNav}
+            attachmentMenuIcons={attachmentMenuIcons}
+            selectedImages={selectedImages}
+            handleSendMsg={handleSendMsg}
+            handleIsSearching={handleIsSearching}
+            handleIsSearchingClose={handleIsSearchingClose}
+            IsSearching={isSearching}
+         />
+         {/* {
             {
                CHATCONVERSATION: (
                   <ChatConversation
@@ -589,7 +604,7 @@ function ChatScreen() {
                   />
                ),
             }[localNav]
-         }
+         } */}
          <Modal visible={alert}>
             <ModalCenteredContent>
                <View style={styles.modalContentContainer}>

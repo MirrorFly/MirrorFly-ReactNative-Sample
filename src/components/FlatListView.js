@@ -10,7 +10,7 @@ import CheckBox from '@react-native-community/checkbox';
 import { useRoute } from '@react-navigation/native';
 import { GROUP_INFO, NEW_GROUP } from '../constant';
 import { showToast } from '../Helper';
-import config from './chat/common/config';
+import config from '../config';
 
 const RenderItem = ({ item, onhandlePress, selectedUsers }) => {
    let { nickName, image: imageToken, colorCode, status } = useRosterData(item?.userId);

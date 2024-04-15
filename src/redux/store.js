@@ -35,6 +35,7 @@ import stateDataReducer from './Reducers/statusReducer';
 import streamDataReducer from './Reducers/streamReducer';
 import userReducer from './Reducers/user.Reducer';
 import permissionReducer from './Reducers/PermissionReducer';
+import chatMessageReducer from './Reducers/ChatMessage.Reducer';
 
 const rootReducer = combineReducers({
    navigation: navigationReducer,
@@ -42,6 +43,7 @@ const rootReducer = combineReducers({
    recentChatSearchData: recentChatSearchReducer,
    auth: authReducer,
    chatConversationData: conversationReducer,
+   chatMessageData: chatMessageReducer,
    profile: profileReducer,
    chatSeenPendingMsgData: chatSeenPendingMsgReducer,
    chat: chatReducer,

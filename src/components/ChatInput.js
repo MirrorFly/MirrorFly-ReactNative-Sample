@@ -31,7 +31,8 @@ import ApplicationColors from '../config/appColors';
 import { useNetworkStatus } from '../hooks';
 import EmojiOverlay from './EmojiPicker';
 import { soundRef } from './Media/AudioPlayer';
-import config from './chat/common/config';
+import config from '../config';
+import { handleMessageTextSend, handleSendMsg } from '../Helper/Chat/ChatHelper';
 
 export const chatInputMessageRef = createRef();
 chatInputMessageRef.current = '';
@@ -46,7 +47,7 @@ const updateTypingGoneStatus = jid => {
 };
 
 const ChatInput = props => {
-   const { onSendMessage, attachmentMenuIcons, chatInputRef, fromUserJId, handleSendMsg } = props;
+   const { onSendMessage, attachmentMenuIcons, chatInputRef, fromUserJId } = props;
    const typingTimeoutRef = useRef(null);
    const { data = {} } = useSelector(state => state.recoverMessage);
    const [message, setMessage] = useState(data[fromUserJId]?.textMessage || '');
@@ -245,10 +246,10 @@ const ChatInput = props => {
 
    const sendMessage = () => {
       setMessage('');
-      if (message) {
+      if (message.trim()) {
          updateTypingGoneStatus(fromUserJId);
          setTimeout(() => {
-            onSendMessage(message.trim());
+            handleMessageTextSend(message.trim());
          }, 0);
       }
    };

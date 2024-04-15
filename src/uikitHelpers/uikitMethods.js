@@ -13,7 +13,7 @@ import { setupCallKit } from '../calls/ios';
 import { setNotificationForegroundService } from '../calls/notification/callNotifyHandler';
 import { requestNotificationPermission } from '../common/utils';
 import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
-import config from '../components/chat/common/config';
+import config from '../config';
 import RNVoipPushNotification from 'react-native-voip-push-notification';
 
 let uiKitCallbackListenersVal = {},

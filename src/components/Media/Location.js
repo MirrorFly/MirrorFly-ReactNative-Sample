@@ -10,7 +10,7 @@ import { SendBlueIcon } from '../../common/Icons';
 import ApplicationColors from '../../config/appColors';
 import { useNetworkStatus } from '../../hooks';
 import ScreenHeader from '../ScreenHeader';
-import config from '../chat/common/config';
+import config from '../../config';
 
 Geocoder.fallbackToGoogle(config.GOOGLE_LOCATION_API_KEY);
 

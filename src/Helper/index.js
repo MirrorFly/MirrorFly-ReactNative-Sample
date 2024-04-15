@@ -9,7 +9,7 @@ import RNFS from 'react-native-fs';
 import SDK from '../SDK/SDK';
 import { getIsUserOnCall } from '../SDKActions/callbacks';
 import { toastStyles } from '../common/commonStyles';
-import config from '../components/chat/common/config';
+import config from '../config';
 import { updateConversationMessage, updateRecentChatMessage } from '../components/chat/common/createMessage';
 import { MAP_THHUMBNAIL_URL } from '../constant';
 import PipHandler from '../customModules/PipModule';

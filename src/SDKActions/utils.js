@@ -1,4 +1,4 @@
-import config from '../components/chat/common/config';
+import config from '../config';
 import { callBacks } from './callbacks';
 
 export const getInitializeObj = () => ({

@@ -6,7 +6,7 @@ import { updateDownloadData } from '../redux/Actions/MediaDownloadAction';
 import { CancelMediaUpload, RetryMediaUpload, updateUploadStatus } from '../redux/Actions/ConversationAction';
 import { mediaStatusConstants } from '../constant';
 import { useNetworkStatus } from '../hooks';
-import config from '../components/chat/common/config';
+import config from '../config';
 import { Box, Text, Toast } from 'native-base';
 import { showToast } from '../Helper';
 

@@ -8,7 +8,8 @@ import SDK from '../../SDK/SDK';
 import { changeTimeFormat } from '../../common/TimeStamp';
 import { mediaObjContructor, requestCameraPermission, requestStoragePermission } from '../../common/utils';
 import { isActiveChatScreenRef } from '../../components/ChatConversation';
-import config from '../../components/chat/common/config';
+import config from '../../config';
+import { addChatMessage } from '../../redux/Actions/ChatMessageAction';
 import { DELETE_MESSAGE_FOR_EVERYONE, DELETE_MESSAGE_FOR_ME } from '../../redux/Actions/Constants';
 import { addChatConversationHistory, updateUploadStatus } from '../../redux/Actions/ConversationAction';
 import { updateRecentChat } from '../../redux/Actions/RecentChatAction';
@@ -26,6 +27,7 @@ import {
    MSG_SENT_ACKNOWLEDGE_STATUS_ID,
 } from './Constant';
 import { getMessageObjSender, getRecentChatMsgObj, getUserIdFromJid } from './Utility';
+import { conversationFlatListRef } from '../../hooks/useConversation';
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
 
@@ -55,7 +57,10 @@ export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false)
             setChatPage(userId, page + 1);
          }
          setHasNextPage(userId, Boolean(chatMessage.data.length));
-         Store.dispatch(addChatConversationHistory(chatMessage));
+         batch(() => {
+            Store.dispatch(addChatConversationHistory(chatMessage));
+            Store.dispatch(addChatMessage(chatMessage.data));
+         });
       }
    }
 };
@@ -316,22 +321,16 @@ export const getChatHistoryData = (data, stateData) => {
    const chatId = getUserIdFromJid(data.userJid || data.groupJid);
    const state = Object.keys(stateData).length > 0 ? stateData[chatId]?.messages || {} : {};
    const sortedData = concatMessageArray(data.data, Object.values(state), 'msgId', 'timestamp');
-   const lastMessage = sortedData[sortedData.length - 1];
-   let newSortedData;
-   const localUserJid = data.userJid;
-   const userId = localUserJid ? getUserIdFromJid(localUserJid) : '';
-   if (userId === lastMessage?.publisherId) {
-      newSortedData = sortedData.map(msg => {
-         if (msg.msgStatus !== 3) {
-            msg.msgStatus = getMsgStatusInOrder(msg.msgStatus, lastMessage?.msgStatus);
-         }
-         return msg;
-      });
-   } else {
-      newSortedData = sortedData;
-   }
 
-   const finalData = { messages: arrayToObject(newSortedData, 'msgId') };
+   const messages = sortedData.map(message => {
+      const { msgId, timestamp } = message;
+      return {
+         msgId,
+         timestamp,
+      };
+   });
+
+   const finalData = { messages: arrayToObject(messages, 'msgId') };
 
    return {
       ...stateData,
@@ -533,6 +532,7 @@ export const sendMessageToUserOrGroup = async (message, fromUserJid, userProfile
       };
       batch(() => {
          store.dispatch(addChatConversationHistory(dispatchData));
+         store.dispatch(addChatMessage([dispatchData]));
          store.dispatch(updateRecentChat(recentChatObj));
       });
       await SDK.sendTextMessage(jid, message.content, msgId, message.replyTo);
@@ -727,11 +727,34 @@ const constructAndDispatchConversationAndRecentChatData = dataObj => {
    };
    batch(() => {
       store.dispatch(addChatConversationHistory(dispatchData));
+      store.dispatch(addChatMessage(dispatchData.data));
       store.dispatch(updateRecentChat(recentChatObj));
    });
 };
 
+export const handleMessageSelect = msgId => () => {};
+
+export const handleMessageLongPress = msgId => () => {};
+
+export const handleContactInvitePress = msgId => () => {};
+
+export const handleMessageTextSend = messageContent => {
+   let _message = {
+      type: 'text',
+      content: messageContent,
+   };
+   handleSendMsg(_message);
+};
+
+export const handleConversationScollToBottomPress = () => {
+   conversationFlatListRef.current.scrollToOffset({
+      indexoffset: 0,
+      animated: true,
+   });
+};
+
 export const handleSendMsg = async message => {
+   handleConversationScollToBottomPress();
    const toUserJid = getToUserId();
    const messageType = message.type;
    const { data = {} } = Store.getState().recoverMessage;

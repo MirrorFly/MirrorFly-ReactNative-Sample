@@ -1,5 +1,5 @@
 import { ALLOWED_AUDIO_FORMATS, AUDIO_FORMATS, DOCUMENT_FORMATS } from '../../../Helper/Chat/Constant';
-import config from './config';
+import config from '../../../config';
 
 const { fileSize, imageFileSize, videoFileSize, audioFileSize, documentFileSize } = config;
 

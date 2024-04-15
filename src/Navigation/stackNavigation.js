@@ -46,6 +46,7 @@ import UserInfo from '../screen/UserInfo';
 import ViewAllMedia from '../screen/ViewAllMedia';
 import ContactPreviewScreen from '../components/Media/ContactPreviewScreen';
 import VideoPlayer from '../components/Media/VideoPlayer';
+import ConversationScreen from '../screen/ConversationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -58,7 +59,8 @@ const ChatScreenStackNavigation = () => {
             gestureEnabled: false,
          }}
          initialRouteName={CONVERSATION_SCREEN}>
-         <Stack.Screen name={CONVERSATION_SCREEN}>{prop => <ChatScreen {...prop} />}</Stack.Screen>
+         <Stack.Screen name={CONVERSATION_SCREEN}>{prop => <ConversationScreen {...prop} />}</Stack.Screen>
+         {/* <Stack.Screen name={CONVERSATION_SCREEN}>{prop => <ChatScreen {...prop} />}</Stack.Screen> */}
          <Stack.Screen name={USER_INFO}>{prop => <UserInfo {...prop} />}</Stack.Screen>
          <Stack.Screen name={FORWARD_MESSSAGE_SCREEN}>{prop => <ForwardMessage {...prop} />}</Stack.Screen>
          <Stack.Screen name={VIEWALLMEDIA}>{prop => <ViewAllMedia {...prop} />}</Stack.Screen>

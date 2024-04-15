@@ -34,7 +34,7 @@ import {
    checkVideoPermission,
    requestBluetoothConnectPermission,
    requestCameraMicPermission,
-   requestMicroPhonePermission
+   requestMicroPhonePermission,
 } from '../common/utils';
 import ApplicationColors from '../config/appColors';
 import { FORWARD_MESSSAGE_SCREEN, GROUP_INFO, USER_INFO } from '../constant';
@@ -48,6 +48,8 @@ import {
 } from '../redux/Actions/conversationSearchAction';
 import ChatSearchInput from './ChatSearchInput';
 import LastSeen from './LastSeen';
+import NickName from './NickName';
+import { useSelectedChatMessage } from '../hooks/useChatMessage';
 
 function ChatHeader({
    handleRecoverMessage,
@@ -65,6 +67,7 @@ function ChatHeader({
    chatUserProfile,
 }) {
    const navigation = useNavigation();
+   const { selectedMessagesArray, resetSelectedChatMessage } = useSelectedChatMessage();
    const chatType = MIX_BARE_JID.test(fromUserJId) ? CHAT_TYPE_GROUP : CHAT_TYPE_SINGLE;
    const recentChatList = useSelector(state => state.recentChatData.data || []);
    const userType = recentChatList.find(r => r.fromUserJid === fromUserJId)?.userType || '';
@@ -144,11 +147,6 @@ function ChatHeader({
       setRemove(false);
    };
 
-   const handleRemove = () => {
-      selectedMsgsIdRef.current = {};
-      setSelectedMsgs([]);
-   };
-
    const handleFavourite = () => {
       Keyboard.dismiss();
       console.log('Fav item');
@@ -176,7 +174,7 @@ function ChatHeader({
       Keyboard.dismiss();
       navigation.navigate(FORWARD_MESSSAGE_SCREEN, {
          forwardMessages: selectedMsgs,
-         onMessageForwaded: handleRemove,
+         onMessageForwaded: resetSelectedChatMessage,
       });
    };
    const handleSearchTextChange = text => {
@@ -393,7 +391,53 @@ function ChatHeader({
 
    return (
       <>
-         {selectedMsgs?.length <= 0 ? (
+         {selectedMessagesArray.length === 0 ? (
+            <View style={styles.headerContainer}>
+               <IconButton onPress={handleBackBtn}>{LeftArrowIcon()}</IconButton>
+               <Pressable style={commonStyles.flex1} contentContainerStyle={styles.userAvatharAndInfoContainer}>
+                  <Avathar
+                     type={chatType}
+                     width={36}
+                     height={36}
+                     backgroundColor={colorCode}
+                     data={nickName}
+                     profileImage={profileImage}
+                  />
+                  <View style={styles.userNameAndLastSeenContainer}>
+                     <NickName
+                        style={styles.userNameText}
+                        ellipsizeMode="tail"
+                        numberOfLines={1}
+                        userId={getUserIdFromJid(fromUserJId)}
+                     />
+                     <LastSeen jid={fromUserJId} />
+                  </View>
+               </Pressable>
+            </View>
+         ) : (
+            <View style={styles.subContainer}>
+               <View style={styles.selectedMsgsTextContainer}>
+                  <IconButton onPress={resetSelectedChatMessage}>
+                     <CloseIcon />
+                  </IconButton>
+                  <Text style={styles.selectedMsgsText}>{selectedMessagesArray?.length}</Text>
+               </View>
+               {/* <View style={styles.selectedMsgsActionsContainer}>
+                  {renderReplyIcon()}
+                  {renderForwardIcon()}
+                  {!selectedMsgs[0]?.recall && (
+                     <IconButton style={[commonStyles.padding_10_15]} onPress={handleFavourite}>
+                        <FavouriteIcon />
+                     </IconButton>
+                  )}
+                  {renderDeleteIcon()}
+                  {Object.keys(selectedChatMessages).length === 1 &&
+                     menuItems.length > 0 &&
+                     !selectedMsgs[0]?.recall && <MenuContainer menuItems={menuItems} />}
+               </View> */}
+            </View>
+         )}
+         {/* {selectedMsgs?.length <= 0 ? (
             <View style={styles.headerContainer}>
                <IconButton onPress={handleBackBtn}>{LeftArrowIcon()}</IconButton>
                <Pressable
@@ -514,7 +558,7 @@ function ChatHeader({
                   )}
                </View>
             </ModalCenteredContent>
-         </Modal>
+         </Modal> */}
       </>
    );
 }

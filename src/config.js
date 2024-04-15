@@ -17,6 +17,7 @@ const config = {
    minAllowdGroupMembers: 2,
    maxAllowdGroupMembers: 238,
    chatMessagesSizePerPage: 20,
+   conversationListBottomYaxisLimit: 60,
    // ================ Dev environment variables =====================
    // API_URL: 'https://api-uikit-dev.contus.us/api/v1',
    // licenseKey: '2sdgNtr3sFBSM3bYRa7RKDPEiB38Xo',

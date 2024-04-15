@@ -17,7 +17,7 @@ import {
    RESET_STORE,
    RETRY_MEDIA_UPLOAD,
    UPDATE_CHAT_CONVERSATION_HISTORY,
-   UPDATE_UPLOAD_STATUS,
+   UPDATE_UPLOAD_STATUS
 } from '../Actions/Constants';
 import { StateToObj, getObjectDeepClone } from '../reduxHelper';
 

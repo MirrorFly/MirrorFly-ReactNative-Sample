@@ -31,7 +31,7 @@ import InfoImageView from './InfoImageView';
 import NickName from './NickName';
 import UserAvathar from './UserAvathar';
 import UserStatus from './UserStatus';
-import config from './chat/common/config';
+import config from '../config';
 
 const LeftArrowComponent = () => LeftArrowIcon();
 

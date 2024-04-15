@@ -141,6 +141,7 @@ import { updateRosterData } from '../redux/Actions/rosterAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import { updateChatMessage } from '../redux/Actions/ChatMessageAction';
 
 let localStream = null,
    localVideoMuted = false,
@@ -730,8 +731,11 @@ export const callBacks = {
          case 'delivered':
          case 'seen':
          case 'carbonSeen':
-            store.dispatch(updateRecentChatMessageStatus(res));
-            store.dispatch(updateChatConversationHistory(res));
+            batch(() => {
+               store.dispatch(updateRecentChatMessageStatus(res));
+               store.dispatch(updateChatMessage(res));
+            });
+            // store.dispatch(updateChatConversationHistory(res));
             break;
          case 'composing':
          case 'carbonComposing':
@@ -815,7 +819,8 @@ export const callBacks = {
 
       if (res.msgType === 'acknowledge' && res.type === 'acknowledge') {
          store.dispatch(updateRecentChatMessageStatus(res));
-         store.dispatch(updateChatConversationHistory(res));
+         store.dispatch(updateChatMessage(res));
+         // store.dispatch(updateChatConversationHistory(res));
       }
    },
    presenceListener: res => {

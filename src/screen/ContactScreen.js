@@ -22,7 +22,7 @@ import commonStyles from '../common/commonStyles';
 import { getImageSource } from '../common/utils';
 import FlatListView from '../components/FlatListView';
 import ScreenHeader from '../components/ScreenHeader';
-import config from '../components/chat/common/config';
+import config from '../config';
 import ApplicationColors from '../config/appColors';
 import { CHATSCREEN, GROUP_INFO, NEW_GROUP, RECENTCHATSCREEN } from '../constant';
 import { useNetworkStatus } from '../hooks';

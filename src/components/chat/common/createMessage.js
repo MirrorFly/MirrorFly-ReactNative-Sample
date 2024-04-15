@@ -1,3 +1,4 @@
+import { batch } from 'react-redux';
 import {
    formatUserIdToJid,
    getChatHistoryMessagesData,
@@ -14,6 +15,7 @@ import { addChatConversationHistory } from '../../../redux/Actions/ConversationA
 import { updateRecentChat } from '../../../redux/Actions/RecentChatAction';
 import { addchatSeenPendingMsg } from '../../../redux/Actions/chatSeenPendingMsgAction';
 import store from '../../../redux/store';
+import { addChatMessage } from '../../../redux/Actions/ChatMessageAction';
 
 export const updateRecentChatMessage = (messgeObject, stateObject) => {
    const { recentChatData, navigation } = stateObject;
@@ -137,6 +139,9 @@ export const updateConversationMessage = (messgeObject, currentState) => {
          data: [conversationChatObj],
          ...{ userJid: formatUserIdToJid(newChatTo) },
       };
-      store.dispatch(addChatConversationHistory(dispatchData));
+      batch(() => {
+         store.dispatch(addChatConversationHistory(dispatchData));
+         store.dispatch(addChatMessage(dispatchData.data));
+      });
    }
 };

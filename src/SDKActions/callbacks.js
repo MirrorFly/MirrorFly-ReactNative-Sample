@@ -61,6 +61,7 @@ import {
    showCallModalToast,
    showOngoingNotification,
    startDurationTimer,
+   stopProximityListeners,
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
    updateAudioRouteTo,
    updateMissedCallNotification,
@@ -199,6 +200,7 @@ export const resetCallData = () => {
    if (Platform.OS === 'ios') {
       clearIosCallListeners();
       endCallForIos();
+      stopProximityListeners();
    } else {
       RNInCallManager.setSpeakerphoneOn(false);
       // updating the call connected status to android native code

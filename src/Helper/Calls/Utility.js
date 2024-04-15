@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { debounce } from 'lodash-es';
-import { AppState, Platform } from 'react-native';
+import { AppState, DeviceEventEmitter, NativeModules, Platform } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
 import HeadphoneDetection from 'react-native-headphone-detection';
@@ -322,6 +322,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
       // AsyncStorage.setItem('call_connection_status', JSON.stringify(callConnectionStatus))
       let uuid = SDK.randomString(16, 'BA');
       if (Platform.OS === 'ios') {
+         startProximitySensor();
          const callerName = usersList.map(ele => ele.name).join(',');
          const hasVideo = callType === 'video';
          let callerId = users.join(',')?.split?.('@')?.[0];
@@ -493,6 +494,9 @@ export const answerIncomingCall = async callId => {
                if (callType === CALL_TYPE_VIDEO) {
                   enableSpeaker(activeCallerUUID);
                }
+               if (Platform.OS === 'ios') {
+                  startProximitySensor();
+               }
                // updating the call connected status to android native code
                Platform.OS === 'android' && ActivityModule.updateCallConnectedStatus(true);
                /**
@@ -586,6 +590,10 @@ const handleIncoming_CallKeepListeners = () => {
    RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
       updateCallAudioMute(muted, callUUID, true);
    });
+   DeviceEventEmitter.addListener('Proximity', function (data) {
+      // --- do something with events
+      SDK.socketEmitEvent(data.isNear);
+   });
    handleAudioRouteChangeListenerForIos();
 };
 
@@ -610,6 +618,10 @@ export const endOnGoingCall = async () => {
 const handleOutGoing_CallKeepListeners = () => {
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
       endOnGoingCall();
+   });
+   DeviceEventEmitter.addListener('Proximity', function (data) {
+      // --- do something with events
+      SDK.socketEmitEvent(data.isNear);
    });
    RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
       updateCallAudioMute(muted, callUUID, true);
@@ -1128,4 +1140,15 @@ export const setPreviousHeadsetStatus = headsetStatus => {
 
 export const getPreviousHeadsetStatus = () => {
    return previousHeadsetStatus;
+};
+
+export const startProximitySensor = () => {
+   NativeModules.InCallManager.addListener('Proximity');
+   RNInCallManager.startProximitySensor();
+};
+
+export const stopProximityListeners = () => {
+   RNInCallManager.stopProximitySensor();
+   NativeModules.InCallManager.removeListeners(1);
+   DeviceEventEmitter.removeAllListeners('Proximity');
 };

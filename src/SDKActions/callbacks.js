@@ -16,7 +16,9 @@ import {
    clearOutgoingTimer,
    dispatchDisconnected,
    getCurrentCallRoomId,
+   getSelectedAudioRoute,
    resetPinAndLargeVideoUser,
+   setSelectedAudioRoute,
    showConfrenceStoreData,
    startCallingTimer,
    startIncomingCallRingtone,
@@ -197,6 +199,7 @@ export const resetCallData = () => {
    RingtoneSilentKeyEventModule.removeAllListeners();
    setPreviousHeadsetStatus(false);
    KeyEvent.removeKeyUpListener();
+   setSelectedAudioRoute('');
    if (Platform.OS === 'ios') {
       clearIosCallListeners();
       endCallForIos();
@@ -525,12 +528,16 @@ const connected = async res => {
                const callControlsData = Store.getState().callControlsData || {};
                const activeCallerUUID = callData?.callerUUID;
                const selectedAudioRoute = callControlsData?.selectedAudioRoute;
+               let forceSelectedAudioRoute = getSelectedAudioRoute();
                if (selectedAudioRoute === AUDIO_ROUTE_SPEAKER) {
                   await updateAudioRouteTo(AUDIO_ROUTE_PHONE, AUDIO_ROUTE_PHONE, activeCallerUUID, false);
                }
                const _routes = await RNCallKeep.getAudioRoutes();
                _routes.forEach(r => {
-                  if (audioRouteNameMap[r.type] === AUDIO_ROUTE_BLUETOOTH) {
+                  if (
+                     audioRouteNameMap[r.type] === AUDIO_ROUTE_BLUETOOTH &&
+                     (selectedAudioRoute === AUDIO_ROUTE_BLUETOOTH || forceSelectedAudioRoute === '')
+                  ) {
                      updateAudioRouteTo(r.name, r.type, activeCallerUUID, false);
                   }
                });

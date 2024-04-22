@@ -1,9 +1,11 @@
+import { debounce } from 'lodash-es';
 import React, { useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import RNCallKeep from 'react-native-callkeep';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { useSelector } from 'react-redux';
+import { setSelectedAudioRoute } from '../../Helper/Calls/Call';
 import {
    AUDIO_ROUTE_BLUETOOTH,
    AUDIO_ROUTE_HEADSET,
@@ -32,7 +34,6 @@ import {
    VideoUnMuteIcon,
 } from '../../common/Icons';
 import Pressable from '../../common/Pressable';
-import { debounce } from 'lodash-es';
 
 const sortAudioRoutes = (a, b) => {
    const nameA = a.name.toLowerCase();
@@ -131,7 +132,7 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
    };
 
    const handleSelectedRoutes = () => {
-      if (audioRouteUpdateNeeded.current) {
+      if (audioRouteUpdateNeeded.current && RBSheetRef.current && RBSheetRef.current.state.modalVisible) {
          RNCallKeep.getAudioRoutes().then(_routes => {
             /** sample data from 'getAudioRoutes' method
              * const sampleAudioRoutes = [
@@ -156,13 +157,14 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
 
    React.useEffect(() => {
       //for changing the popup route values when headset and blutooth value changes automatically
-      const debouncedHandleSelectedPopupRoutes = debounce(handleSelectedRoutes, 150);
+      const debouncedHandleSelectedPopupRoutes = debounce(handleSelectedRoutes, 180);
       debouncedHandleSelectedPopupRoutes();
    }, [selectedAudioRoute]);
 
    const handleSelectAudioRoute = _audioRoute => () => {
       audioRouteUpdateNeeded.current = false;
       RBSheetRef.current?.close?.();
+      setSelectedAudioRoute(_audioRoute.name);
       updateAudioRouteTo(_audioRoute.name, _audioRoute.type, callerUUID);
    };
 

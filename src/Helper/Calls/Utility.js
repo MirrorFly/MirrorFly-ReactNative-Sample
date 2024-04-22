@@ -58,6 +58,7 @@ import {
    callConnectionStoreData,
    clearIncomingCallTimer,
    clearMissedCallNotificationTimer,
+   debounceFunction,
    disconnectCallConnection,
    dispatchDisconnected,
    endCall,
@@ -87,6 +88,7 @@ let preventMultipleClick = false;
 let callBackgroundNotification = true;
 let preventEndCallFromHeadsetButton = false;
 let previousHeadsetStatus = false;
+let listenerCount = 0;
 
 export const audioRouteNameMap = {
    Speaker: AUDIO_ROUTE_SPEAKER,
@@ -186,8 +188,8 @@ const handleHeadphoneDetection = async data => {
    });
 };
 
-const debouncedHandleHeadphoneDetection = debounce(handleHeadphoneDetection, 250);
-const debouncedRingTone = debounce(startOutgoingCallRingingTone, 1200);
+const debouncedHandleHeadphoneDetection = debounce(handleHeadphoneDetection, 140);
+const debouncedRingTone = debounceFunction(startOutgoingCallRingingTone, 900);
 
 export const addHeadphonesConnectedListenerForCall = (shouldUpdateInitialValue = true) => {
    HeadphoneDetection.addListener(debouncedHandleHeadphoneDetection);
@@ -321,7 +323,6 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          callConnectionStatus.to = groupId;
          callConnectionStatus.groupId = groupId;
       }
-      const isBluetoothHeadsetConnectedData = await HeadphoneDetection.isAudioDeviceConnected();
       // AsyncStorage.setItem('call_connection_status', JSON.stringify(callConnectionStatus))
       let uuid = SDK.randomString(16, 'BA');
       if (Platform.OS === 'ios') {
@@ -358,7 +359,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
             muteLocalVideo(false);
             Store.dispatch(updateCallVideoMutedAction(false));
             call = await SDK.makeVideoCall(users, groupId);
-            enableSpeaker(uuid, isBluetoothHeadsetConnectedData.bluetooth);
+            enableSpeaker(uuid);
          }
          if (call.statusCode !== 200 && call.message === PERMISSION_DENIED) {
             stopOutgoingCallRingingTone();
@@ -426,12 +427,11 @@ const answerCallPermissionError = answerCallResonse => {
    });
 };
 
-const enableSpeaker = async (activeCallerUUID = '', isBluetoothHeadsetConnectedData = false) => {
+const enableSpeaker = async (activeCallerUUID = '') => {
    const callControlsData = Store.getState().callControlsData;
    const isWiredHeadsetConnected = callControlsData?.isWiredHeadsetConnected || false;
    const isBluetoothHeadsetConnected = callControlsData?.isBluetoothHeadsetConnected || false;
    !isBluetoothHeadsetConnected &&
-      !isBluetoothHeadsetConnectedData &&
       !isWiredHeadsetConnected &&
       (await updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, activeCallerUUID));
 };
@@ -485,6 +485,9 @@ export const answerIncomingCall = async callId => {
             callId?.toLowerCase?.() === activeCallerUUID?.toLowerCase?.()
          ) {
             const answerCallResonse = await SDK.answerCall();
+            if (callType === CALL_TYPE_VIDEO) {
+               enableSpeaker(activeCallerUUID);
+            }
             if (answerCallResonse.statusCode !== 200) {
                answerCallPermissionError(answerCallResonse);
             } else {
@@ -495,9 +498,6 @@ export const answerIncomingCall = async callId => {
                      /** Store.dispatch(openCallModal()); */
                   }
                });
-               if (callType === CALL_TYPE_VIDEO) {
-                  enableSpeaker(activeCallerUUID);
-               }
                if (Platform.OS === 'ios') {
                   startProximitySensor();
                }
@@ -571,6 +571,7 @@ const debounceAudioRouteChangeListenerForIos = debounce(
 
 const handleAudioRouteChangeListenerForIos = () => {
    RNCallKeep.addEventListener('didChangeAudioRoute', ({ output, reason }) => {
+      // console.log('didChangeAudioRoute', output, reason);
       const currentCallUUID = Store.getState().callData?.callerUUID;
       debounceAudioRouteChangeListenerForIos(currentCallUUID, output, reason);
    });
@@ -578,10 +579,10 @@ const handleAudioRouteChangeListenerForIos = () => {
 
 //CallKit action buttons listeners for incoming call
 const handleIncoming_CallKeepListeners = () => {
-   handleAudioRouteChangeListenerForIos();
    RNCallKeep.addEventListener('answerCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep answer call event', callUUID);
       answerIncomingCall(callUUID);
+      handleAudioRouteChangeListenerForIos();
    });
    RNCallKeep.addEventListener('endCall', async ({ callUUID }) => {
       console.log('callUUID from Call Keep end call event', callUUID);
@@ -625,12 +626,12 @@ const handleOutGoing_CallKeepListeners = () => {
       if (screenName === OUTGOING_CALL_SCREEN) endCall();
       else endOnGoingCall();
    });
+   RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
+      updateCallAudioMute(muted, callUUID, true);
+   });
    DeviceEventEmitter.addListener('Proximity', function (data) {
       // --- do something with events
       SDK.socketEmitEvent(data.isNear);
-   });
-   RNCallKeep.addEventListener('didPerformSetMutedCallAction', ({ muted, callUUID }) => {
-      updateCallAudioMute(muted, callUUID, true);
    });
 };
 
@@ -1028,6 +1029,7 @@ export const updateAudioRouteTo = async (
    isFromCallKeep = false,
    audioRouteChangeReason = '',
 ) => {
+   // console.log(audioRouteName, audioRouteType, audioRouteChangeReason, isFromCallKeep, 'audioRouteType');
    try {
       const speakerEnabled = audioRouteName === AUDIO_ROUTE_SPEAKER;
       const {
@@ -1088,6 +1090,14 @@ export const updateAudioRouteTo = async (
                   updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, callUUID);
                   return;
                }
+               if (
+                  audioRouteName?.toLowerCase?.() === 'receiver' &&
+                  isBluetoothHeadsetConnected &&
+                  selectedAudioRoute === AUDIO_ROUTE_BLUETOOTH
+               ) {
+                  updateAudioRouteTo(AUDIO_ROUTE_BLUETOOTH, AUDIO_ROUTE_BLUETOOTH, callUUID);
+                  return;
+               }
                break;
             case 2: // Old device unavailable
                // The old device became unavailable(eg:headphones have been unpluged)
@@ -1104,6 +1114,16 @@ export const updateAudioRouteTo = async (
                   return;
                }
                break;
+            case 1: //New Device available
+               //When speaker is enabled and heatset will connect that time we route manually
+               if (
+                  (isSpeakerEnabledInUI,
+                  isWiredHeadsetConnected,
+                  audioRouteNameMap[audioRouteType]?.toLowerCase() === 'headset')
+               ) {
+                  updateAudioRouteTo(audioRouteName, audioRouteName, callUUID);
+                  return;
+               }
          }
       }
 
@@ -1163,10 +1183,12 @@ export const setpreventMultipleClick = preventClick => {
 export const startProximitySensor = () => {
    NativeModules.InCallManager.addListener('Proximity');
    RNInCallManager.startProximitySensor();
+   listenerCount++;
 };
 
 export const stopProximityListeners = () => {
    RNInCallManager.stopProximitySensor();
-   NativeModules.InCallManager.removeListeners(1);
+   listenerCount > 0 && NativeModules.InCallManager.removeListeners(listenerCount);
    DeviceEventEmitter.removeAllListeners('Proximity');
+   listenerCount = 0;
 };

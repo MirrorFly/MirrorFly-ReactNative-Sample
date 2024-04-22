@@ -38,6 +38,7 @@ import {
    resetCallModalActivity,
    setpreventMultipleClick,
 } from './Utility';
+import _BackgroundTimer from 'react-native-background-timer';
 
 let missedCallNotificationTimer = null;
 let callingRemoteStreamRemovalTimer = null;
@@ -48,6 +49,7 @@ let isPlayingRingintTone = false;
 let reconnectingSound = null;
 let unsubscribeVibrationEvent;
 let silentEvent = false;
+let audioRouted = '';
 
 export const getMaxUsersInCall = () => 8;
 
@@ -443,4 +445,22 @@ export function getCallDuration(timerTime) {
 
 export const getMissedCallMessage = callType => {
    return `You missed an ${callType} call`;
+};
+
+export const debounceFunction = (func, delay) => {
+   let timeout;
+   return (...args) => {
+      _BackgroundTimer.clearTimeout(timeout);
+      timeout = _BackgroundTimer.setTimeout(() => {
+         func(...args);
+      }, delay);
+   };
+};
+
+export const setSelectedAudioRoute = selectedAudioRoute => {
+   audioRouted = selectedAudioRoute;
+};
+
+export const getSelectedAudioRoute = () => {
+   return audioRouted;
 };

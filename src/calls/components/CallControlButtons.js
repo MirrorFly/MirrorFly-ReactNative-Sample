@@ -53,9 +53,8 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
    const [audioRoutes, setAudioRoutes] = React.useState([]);
    const audioRouteUpdateNeeded = React.useRef(true);
 
-   const { isAudioMuted, isVideoMuted, selectedAudioRoute, isFrontCameraEnabled } = useSelector(
-      state => state.callControlsData,
-   );
+   const { isAudioMuted, isVideoMuted, selectedAudioRoute, isFrontCameraEnabled, currentDeviceAudioRouteState } =
+      useSelector(state => state.callControlsData);
 
    const { callerUUID } = useSelector(state => state.callData) || {};
 
@@ -159,7 +158,7 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
       //for changing the popup route values when headset and blutooth value changes automatically
       const debouncedHandleSelectedPopupRoutes = debounce(handleSelectedRoutes, 180);
       debouncedHandleSelectedPopupRoutes();
-   }, [selectedAudioRoute]);
+   }, [selectedAudioRoute, currentDeviceAudioRouteState]);
 
    const handleSelectAudioRoute = _audioRoute => () => {
       audioRouteUpdateNeeded.current = false;

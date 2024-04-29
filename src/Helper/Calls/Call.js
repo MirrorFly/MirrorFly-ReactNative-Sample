@@ -38,7 +38,6 @@ import {
    resetCallModalActivity,
    setpreventMultipleClick,
 } from './Utility';
-import _BackgroundTimer from 'react-native-background-timer';
 
 let missedCallNotificationTimer = null;
 let callingRemoteStreamRemovalTimer = null;
@@ -450,8 +449,8 @@ export const getMissedCallMessage = callType => {
 export const debounceFunction = (func, delay) => {
    let timeout;
    return (...args) => {
-      _BackgroundTimer.clearTimeout(timeout);
-      timeout = _BackgroundTimer.setTimeout(() => {
+      BackgroundTimer.clearTimeout(timeout);
+      timeout = BackgroundTimer.setTimeout(() => {
          func(...args);
       }, delay);
    };

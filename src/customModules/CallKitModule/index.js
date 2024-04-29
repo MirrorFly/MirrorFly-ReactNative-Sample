@@ -127,8 +127,6 @@ class RNCallKeep {
       if (!isIOS) {
          return this._hasDefaultPhoneAccount(options);
       }
-
-      return;
    };
 
    displayIncomingCall = (

@@ -172,7 +172,7 @@ public class AudioRoutingModule extends ReactContextBaseJavaModule {
         return "Phone";
     }
 
-    private String getAudioRouteType(int type) {
+    public static String getAudioRouteType(int type) {
         switch (type) {
             case (AudioDeviceInfo.TYPE_BLUETOOTH_A2DP):
             case (AudioDeviceInfo.TYPE_BLUETOOTH_SCO):

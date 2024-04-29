@@ -46,6 +46,7 @@ import {
    updateCallSpeakerEnabledAction,
    updateCallVideoMutedAction,
    updateCallWiredHeadsetConnected,
+   updateCurrentDeviceAudioState,
    updateSwitchCamera,
 } from '../../redux/Actions/CallControlsAction';
 import { showCallModalToastAction } from '../../redux/Actions/CallModalToasAction';
@@ -108,14 +109,15 @@ const calculateAudioRoute = (
    { audioJack = false, bluetooth = false } = {},
    { previousAudioJack = false, previousBluetooth = false } = {},
 ) => {
-   const speakerPriority = isSpeakerEnabled || getCallType() === CALL_TYPE_VIDEO ? AUDIO_ROUTE_SPEAKER : '';
+   const isVideoCall = getCallType() === CALL_TYPE_VIDEO ? AUDIO_ROUTE_SPEAKER : '';
+   const speakerPriority = isSpeakerEnabled ? AUDIO_ROUTE_SPEAKER : isVideoCall;
    const wiredHeadsetPriority = audioJack ? AUDIO_ROUTE_HEADSET : speakerPriority;
    const bluetoothPriority = bluetooth ? AUDIO_ROUTE_BLUETOOTH : wiredHeadsetPriority;
-
+  
    if (bluetooth && !previousBluetooth) {
       return AUDIO_ROUTE_BLUETOOTH;
    } else if (audioJack && !previousAudioJack) {
-      return bluetoothPriority;
+      return wiredHeadsetPriority || bluetoothPriority;
    } else if (previousBluetooth && !bluetooth) {
       // if speaker enabled when bluetooth disconnected, then speaker should be routed
       return speakerPriority || wiredHeadsetPriority;
@@ -181,6 +183,7 @@ const handleHeadphoneDetection = async data => {
          routeAndroidAudioTo(calculatedRoute);
          Store.dispatch(updateCallSelectedAudioRoute(calculatedRoute));
       }
+      Store.dispatch(updateCurrentDeviceAudioState({ headset: data.audioJack, bluetooth: data.bluetooth }));
       data.audioJack !== isWiredHeadsetConnected && setPreviousHeadsetStatus(isWiredHeadsetConnected);
       data.audioJack !== isWiredHeadsetConnected && Store.dispatch(updateCallWiredHeadsetConnected(data.audioJack));
       data.bluetooth !== isBluetoothHeadsetConnected &&
@@ -571,7 +574,6 @@ const debounceAudioRouteChangeListenerForIos = debounce(
 
 const handleAudioRouteChangeListenerForIos = () => {
    RNCallKeep.addEventListener('didChangeAudioRoute', ({ output, reason }) => {
-      // console.log('didChangeAudioRoute', output, reason);
       const currentCallUUID = Store.getState().callData?.callerUUID;
       debounceAudioRouteChangeListenerForIos(currentCallUUID, output, reason);
    });
@@ -1029,7 +1031,6 @@ export const updateAudioRouteTo = async (
    isFromCallKeep = false,
    audioRouteChangeReason = '',
 ) => {
-   // console.log(audioRouteName, audioRouteType, audioRouteChangeReason, isFromCallKeep, 'audioRouteType');
    try {
       const speakerEnabled = audioRouteName === AUDIO_ROUTE_SPEAKER;
       const {

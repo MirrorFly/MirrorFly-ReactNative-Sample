@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import nextFrame from 'next-frame';
 import { Platform } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
-import RNCallKeep from 'react-native-callkeep';
+import RNCallKeep from '../customModules/CallKitModule';
 import HeadphoneDetection from 'react-native-headphone-detection';
 import RNInCallManager from 'react-native-incall-manager';
 import KeepAwake from 'react-native-keep-awake';
@@ -30,6 +30,7 @@ import {
 } from '../Helper/Calls/Call';
 import {
    AUDIO_ROUTE_BLUETOOTH,
+   AUDIO_ROUTE_HEADSET,
    AUDIO_ROUTE_PHONE,
    AUDIO_ROUTE_SPEAKER,
    CALL_AGAIN_SCREEN,
@@ -533,9 +534,13 @@ const connected = async res => {
                   await updateAudioRouteTo(AUDIO_ROUTE_PHONE, AUDIO_ROUTE_PHONE, activeCallerUUID, false);
                }
                const _routes = await RNCallKeep.getAudioRoutes();
+               const headSetPlugin = Boolean(
+                  _routes.find(res => audioRouteNameMap[res.type] === AUDIO_ROUTE_HEADSET && res.selected),
+               );
                _routes.forEach(r => {
                   if (
                      audioRouteNameMap[r.type] === AUDIO_ROUTE_BLUETOOTH &&
+                     !headSetPlugin &&
                      (selectedAudioRoute === AUDIO_ROUTE_BLUETOOTH || forceSelectedAudioRoute === '')
                   ) {
                      updateAudioRouteTo(r.name, r.type, activeCallerUUID, false);

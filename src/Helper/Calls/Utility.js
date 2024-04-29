@@ -3,7 +3,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { debounce } from 'lodash-es';
 import { AppState, DeviceEventEmitter, NativeModules, Platform } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
-import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from 'react-native-callkeep';
+import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from '../../customModules/CallKitModule';
 import HeadphoneDetection from 'react-native-headphone-detection';
 import RNInCallManager from 'react-native-incall-manager';
 import KeepAwake from 'react-native-keep-awake';
@@ -1067,6 +1067,7 @@ export const updateAudioRouteTo = async (
                   return;
                }
                if (
+                  getCallType() === 'video' &&
                   isSpeakerEnabledUI &&
                   audioRouteName?.toLowerCase?.() !== 'speaker' &&
                   !isBluetoothHeadsetConnected &&

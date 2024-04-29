@@ -1,7 +1,7 @@
 import { debounce } from 'lodash-es';
 import React, { useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import RNCallKeep from 'react-native-callkeep';
+import RNCallKeep from '../../customModules/CallKitModule';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { useSelector } from 'react-redux';
@@ -205,7 +205,7 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
             </RectButton>
          </GestureHandlerRootView>
          <RBSheet
-            animationType="slide"
+            animationType="none"
             ref={RBSheetRef}
             closeOnDragDown={true}
             closeOnPressMask={true}

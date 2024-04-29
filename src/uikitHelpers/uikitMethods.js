@@ -15,6 +15,7 @@ import { requestNotificationPermission } from '../common/utils';
 import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
 import config from '../components/chat/common/config';
 import RNVoipPushNotification from 'react-native-voip-push-notification';
+import notifee from '@notifee/react-native';
 
 let uiKitCallbackListenersVal = {},
    appInitialized = false,
@@ -66,7 +67,7 @@ export const handleRegister = async (userIdentifier, fcmToken) => {
 };
 
 const initializeSetup = async () => {
-   await messaging().requestPermission();
+   await notifee.requestPermission();
    requestNotificationPermission();
    setNotificationForegroundService();
 };

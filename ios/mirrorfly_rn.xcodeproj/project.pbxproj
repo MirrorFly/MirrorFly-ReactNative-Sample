@@ -16,6 +16,7 @@
 		A7DAC5762BB2AF3C005DD787 /* incallmanager_ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A7DAC5742BB2AF3C005DD787 /* incallmanager_ringback.mp3 */; };
 		A7DAC5772BB2AF3C005DD787 /* fly_reconnecting_tone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A7DAC5752BB2AF3C005DD787 /* fly_reconnecting_tone.mp3 */; };
 		A7E1A3AC2BB1854C00F4D084 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A7E1A3AB2BB1854C00F4D084 /* GoogleService-Info.plist */; };
+		A7F049482BDA882700A0C4E8 /* RNCallKeep.m in Sources */ = {isa = PBXBuildFile; fileRef = A7F049472BDA882700A0C4E8 /* RNCallKeep.m */; };
 		CE2DD47D2AC589FD009815BD /* MyClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2DD47C2AC589FD009815BD /* MyClass.swift */; };
 		CE2DD47F2AC58EC9009815BD /* FlyEncryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2DD47E2AC58EC9009815BD /* FlyEncryption.swift */; };
 		CE56DABC2AC447C100A2BB3A /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE56DABB2AC447C100A2BB3A /* NotificationService.m */; };
@@ -74,6 +75,8 @@
 		A7DAC5742BB2AF3C005DD787 /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = incallmanager_ringback.mp3; path = custom_rigntones/incallmanager_ringback.mp3; sourceTree = "<group>"; };
 		A7DAC5752BB2AF3C005DD787 /* fly_reconnecting_tone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = fly_reconnecting_tone.mp3; path = custom_rigntones/fly_reconnecting_tone.mp3; sourceTree = "<group>"; };
 		A7E1A3AB2BB1854C00F4D084 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		A7F049462BDA882700A0C4E8 /* RNCallKeep.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNCallKeep.h; path = mirrorfly_rn/RNCallKeep.h; sourceTree = "<group>"; };
+		A7F049472BDA882700A0C4E8 /* RNCallKeep.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNCallKeep.m; path = mirrorfly_rn/RNCallKeep.m; sourceTree = "<group>"; };
 		CE2DD47B2AC589FC009815BD /* NotificationExtension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NotificationExtension-Bridging-Header.h"; sourceTree = "<group>"; };
 		CE2DD47C2AC589FD009815BD /* MyClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyClass.swift; sourceTree = "<group>"; };
 		CE2DD47E2AC58EC9009815BD /* FlyEncryption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlyEncryption.swift; sourceTree = "<group>"; };
@@ -85,7 +88,6 @@
 		CE7BED412AC6A37D001F131C /* NotificationExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotificationExtension.entitlements; sourceTree = "<group>"; };
 		CE7BED462AC6E6F6001F131C /* sendDeliveredApiCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sendDeliveredApiCall.swift; sourceTree = "<group>"; };
 		CE7BED4C2AC6F648001F131C /* Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Async.swift; sourceTree = "<group>"; };
-		CE7BED4E2AC6F66F001F131C /* mirrorfly_rn-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "mirrorfly_rn-Bridging-Header.h"; sourceTree = "<group>"; };
 		D1DF30F3A4C06A8BCA675224 /* Pods_mirrorfly_rn.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mirrorfly_rn.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F4F3BCE6A19EDDD2D7E77B34 /* Pods_mirrorfly_rn_mirrorfly_rnTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mirrorfly_rn_mirrorfly_rnTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -147,7 +149,8 @@
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				CE7BED4C2AC6F648001F131C /* Async.swift */,
-				CE7BED4E2AC6F66F001F131C /* mirrorfly_rn-Bridging-Header.h */,
+				A7F049462BDA882700A0C4E8 /* RNCallKeep.h */,
+				A7F049472BDA882700A0C4E8 /* RNCallKeep.m */,
 			);
 			name = mirrorfly_rn;
 			sourceTree = "<group>";
@@ -536,6 +539,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A7F049482BDA882700A0C4E8 /* RNCallKeep.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				CE7BED4D2AC6F648001F131C /* Async.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
@@ -654,7 +658,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.4.6;
+				MARKETING_VERSION = 2.4.7;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -690,7 +694,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.4.6;
+				MARKETING_VERSION = 2.4.7;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

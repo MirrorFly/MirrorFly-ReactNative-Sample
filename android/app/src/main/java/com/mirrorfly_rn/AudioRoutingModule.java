@@ -6,18 +6,25 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
+
+import java.util.ArrayList;
 
 @ReactModule(name = AudioRoutingModule.NAME)
 public class AudioRoutingModule extends ReactContextBaseJavaModule {
@@ -32,6 +39,11 @@ public class AudioRoutingModule extends ReactContextBaseJavaModule {
     public AudioRoutingModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactApplicationContext = reactContext;
+    }
+
+    public static void stopBluetoothDevice() {
+        audioManager.stopBluetoothSco();
+        audioManager.setBluetoothScoOn(false);
     }
 
     @Override
@@ -120,9 +132,61 @@ public class AudioRoutingModule extends ReactContextBaseJavaModule {
         }
     }
 
-    public static void stopBluetoothDevice() {
-        audioManager.stopBluetoothSco();
-        audioManager.setBluetoothScoOn(false);
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @ReactMethod
+    public void getAudioRoutes(Promise promise) {
+        try {
+            WritableArray devices = Arguments.createArray();
+            ArrayList<String> typeChecker = new ArrayList<>();
+            AudioDeviceInfo[] audioDeviceInfo = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS + AudioManager.GET_DEVICES_OUTPUTS);
+            String selectedAudioRoute = getSelectedAudioRoute(audioManager);
+            for (AudioDeviceInfo device : audioDeviceInfo) {
+                String type = getAudioRouteType(device.getType());
+                if (type != null && !typeChecker.contains(type)) {
+                    WritableMap deviceInfo = Arguments.createMap();
+                    deviceInfo.putString("name", type);
+                    deviceInfo.putString("type", type);
+                    if (type.equals(selectedAudioRoute)) {
+                        deviceInfo.putBoolean("selected", true);
+                    }
+                    typeChecker.add(type);
+                    devices.pushMap(deviceInfo);
+                }
+            }
+            promise.resolve(devices);
+        } catch (Exception e) {
+            promise.reject("GetAudioRoutes Error", e.getMessage());
+        }
+    }
+
+    private String getSelectedAudioRoute(AudioManager audioManager) {
+        if (audioManager.isBluetoothScoOn()) {
+            return "Bluetooth";
+        }
+        if (audioManager.isSpeakerphoneOn()) {
+            return "Speaker";
+        }
+        if (audioManager.isWiredHeadsetOn()) {
+            return "Headset";
+        }
+        return "Phone";
+    }
+
+    private String getAudioRouteType(int type) {
+        switch (type) {
+            case (AudioDeviceInfo.TYPE_BLUETOOTH_A2DP):
+            case (AudioDeviceInfo.TYPE_BLUETOOTH_SCO):
+                return "Bluetooth";
+            case (AudioDeviceInfo.TYPE_WIRED_HEADPHONES):
+            case (AudioDeviceInfo.TYPE_WIRED_HEADSET):
+                return "Headset";
+            case (AudioDeviceInfo.TYPE_BUILTIN_MIC):
+                return "Phone";
+            case (AudioDeviceInfo.TYPE_BUILTIN_SPEAKER):
+                return "Speaker";
+            default:
+                return null;
+        }
     }
 }
 

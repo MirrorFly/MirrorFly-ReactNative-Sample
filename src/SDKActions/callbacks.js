@@ -65,7 +65,13 @@ import {
    updateAudioRouteTo,
    updateMissedCallNotification,
 } from '../Helper/Calls/Utility';
-import { formatUserIdToJid, getLocalUserDetails } from '../Helper/Chat/ChatHelper';
+import {
+   formatUserIdToJid,
+   getLocalUserDetails,
+   handleChangeIntoDownloadingState,
+   handleChangeIntoUploadingState,
+   handleUploadNextImage,
+} from '../Helper/Chat/ChatHelper';
 import {
    CONNECTION_STATE_CONNECTING,
    GROUP_CREATED,
@@ -141,7 +147,7 @@ import { updateRosterData } from '../redux/Actions/rosterAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
-import { updateChatMessage } from '../redux/Actions/ChatMessageAction';
+import { updateChatMessage, updateSentSeenStatus } from '../redux/Actions/ChatMessageAction';
 
 let localStream = null,
    localVideoMuted = false,
@@ -709,6 +715,11 @@ export const callBacks = {
       console.log('messageListener res ==>', JSON.stringify(res, null, 2));
       await nextFrame();
       switch (res.msgType) {
+         case 'acknowledge':
+            if (res?.type === 'seen') {
+               store.dispatch(updateSentSeenStatus(res));
+            }
+            break;
          case 'sentMessage':
          case 'carbonSentMessage':
          case 'receiveMessage':
@@ -717,6 +728,7 @@ export const callBacks = {
          case 'groupProfileUpdated':
             updateRecentChatMessage(res, store.getState());
             updateConversationMessage(res, store.getState());
+            store.dispatch(updateRosterData(res.profileDetails));
             if (
                !MIX_BARE_JID.test(res?.fromUserJid) &&
                !res.notification &&
@@ -735,7 +747,6 @@ export const callBacks = {
                store.dispatch(updateRecentChatMessageStatus(res));
                store.dispatch(updateChatMessage(res));
             });
-            // store.dispatch(updateChatConversationHistory(res));
             break;
          case 'composing':
          case 'carbonComposing':
@@ -818,9 +829,10 @@ export const callBacks = {
       }
 
       if (res.msgType === 'acknowledge' && res.type === 'acknowledge') {
-         store.dispatch(updateRecentChatMessageStatus(res));
-         store.dispatch(updateChatMessage(res));
-         // store.dispatch(updateChatConversationHistory(res));
+         batch(() => {
+            store.dispatch(updateRecentChatMessageStatus(res));
+            store.dispatch(updateChatMessage(res));
+         });
       }
    },
    presenceListener: res => {
@@ -882,9 +894,25 @@ export const callBacks = {
    },
    mediaUploadListener: res => {
       store.dispatch(updateMediaUploadData(res));
+      handleChangeIntoUploadingState(res.msgId);
+      if (res.progress === 100) {
+         let updateObj = {
+            statusCode: 200,
+            msgId: res.msgId,
+            is_downloaded: 2,
+            uploadStatus: 2,
+            local_path: res.local_path,
+            fromUserId: getUserIdFromJid(res.fromUserJid),
+         };
+         store.dispatch(updateUploadStatus(updateObj));
+         BackgroundTimer.setTimeout(() => {
+            handleUploadNextImage(updateObj);
+         }, 200);
+      }
    },
    mediaDownloadListener: res => {
       store.dispatch(updateDownloadData(res));
+      handleChangeIntoDownloadingState(res.msgId);
       if (res.progress === 100) {
          let updateObj = {
             statusCode: 200,

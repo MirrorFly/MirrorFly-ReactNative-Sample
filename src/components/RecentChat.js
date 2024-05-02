@@ -1,8 +1,8 @@
 import React from 'react';
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { escapeRegExpReservedChars } from '../Helper';
-import { formatUserIdToJid, updateRosterDataForRecentChats } from '../Helper/Chat/ChatHelper';
+import { formatUserIdToJid, isActiveChatScreenRef, updateRosterDataForRecentChats } from '../Helper/Chat/ChatHelper';
 import { THIS_MESSAGE_WAS_DELETED, YOU_DELETED_THIS_MESSAGE } from '../Helper/Chat/Constant';
 import { sortBydate } from '../Helper/Chat/RecentChat';
 import SDK from '../SDK/SDK';
@@ -201,6 +201,7 @@ export default function RecentChat() {
    const [filteredMessages, setFilteredMessages] = React.useState([]);
    const [recentData, setRecentData] = React.useState([]);
    const recentChatList = useSelector(state => state.recentChatData.data);
+   const [recentChatLoading, setRecentChatLoading] = React.useState(true);
    const { isSearching, selectedItems, searchText, selectedItemsObj } =
       useSelector(state => state.recentChatSearchData) || {};
    const typingStatusData = useSelector(state => state.typingStatusData?.data) || {};
@@ -229,6 +230,7 @@ export default function RecentChat() {
       const recentChats = await SDK.getRecentChats();
       dispatch(addRecentChat(recentChats?.data || []));
       updateRosterDataForRecentChats(recentChats?.data || []);
+      setRecentChatLoading(false);
    };
 
    const constructRecentChatItems = recentChatArrayConstruct => {
@@ -282,19 +284,22 @@ export default function RecentChat() {
       if (selectedItems.length) {
          handleRecentItemSelect(item);
       } else {
-         let jid = formatUserIdToJid(item?.fromUserId); /** Need to add chat type here while working in Group
+         let jid = formatUserIdToJid(
+            item?.fromUserId,
+            item?.chatType,
+         ); /** Need to add chat type here while working in Group
       formatUserIdToJid(
        item?.fromUserId,
        item?.chatType,
      )
      */
          let x = {
-            screen: CHATSCREEN,
             fromUserJID: item?.userJid || jid,
             profileDetails: item?.profileDetails,
          };
          dispatch(navigate(x));
          RootNav.navigate(CHATSCREEN);
+         isActiveChatScreenRef.current = true;
       }
    };
 
@@ -337,7 +342,8 @@ export default function RecentChat() {
          />
       );
    };
-   if (!filteredData.length && !filteredMessages.length) {
+
+   if (!recentChatLoading && !filteredData.length && !filteredMessages.length) {
       return (
          <View style={styles.emptyChatView}>
             <Image style={styles.image} resizeMode="cover" source={getImageSource(no_messages)} />
@@ -371,6 +377,12 @@ export default function RecentChat() {
          {Boolean(searchText) &&
             filteredMessages.length > 0 &&
             filteredMessages.map((item, index) => renderItem(item, index))}
+         {/* ActivityIndicator as the footer */}
+         {recentChatLoading && (
+            <View style={commonStyles.mt_20}>
+               <ActivityIndicator color={ApplicationColors.mainColor} size="large" />
+            </View>
+         )}
       </ScrollView>
    );
 }

@@ -48,6 +48,9 @@ const ProfileScreen = () => {
    };
 
    const hasProfileInfoChanged = () => {
+      if (Object.keys(profileInfo).length === 0) {
+         return false;
+      }
       return profileInfo?.nickName !== selectProfileInfo?.nickName || profileInfo?.email !== selectProfileInfo?.email;
    };
 

@@ -78,7 +78,7 @@ export default {
       '@react-native-camera-roll/camera-roll',
       '@react-native-community/checkbox',
       //Calls
-      "react-native-incall-manager",
+      'react-native-incall-manager',
       'react-native-webrtc',
       'react-native-keep-awake',
       'react-native-raw-bottom-sheet',
@@ -89,9 +89,9 @@ export default {
       'react-native-callkeep',
       'react-native-voip-push-notification',
       'mirrorfly-reactnative-sdk',
-      "react-native-material-menu",
-      "react-native-keyevent",
-      "react-native-ringer-mode",
+      'react-native-material-menu',
+      'react-native-keyevent',
+      'react-native-ringer-mode',
    ],
    plugins: [
       replace({

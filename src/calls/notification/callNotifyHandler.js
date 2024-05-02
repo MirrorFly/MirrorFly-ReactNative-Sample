@@ -6,7 +6,7 @@ import notifee, {
    AndroidVisibility,
    EventType,
 } from '@notifee/react-native';
-import { AppState, Linking, NativeModules, Platform } from 'react-native';
+import { Alert, AppState, Linking, NativeModules, Platform } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
 import * as RootNav from '../../../src/Navigation/rootNavigation';
 import { endCall, getCallDuration } from '../../Helper/Calls/Call';
@@ -252,9 +252,9 @@ export const getMissedCallNotification = async (roomId, callDetailObj = {}, user
 const onChatNotificationForeGround = async ({ type, detail }) => {
    if (type === EventType.PRESS) {
       const {
-         notification: { data: { fromUserJID } = '' },
+         notification: { data: { fromUserJID = '', from_user = '' } = '' },
       } = detail;
-      let x = { screen: CHATSCREEN, fromUserJID };
+      let x = { screen: CHATSCREEN, fromUserJID: fromUserJID || from_user };
       Store.dispatch(navigate(x));
       if (RootNav.getCurrentScreen() === CHATSCREEN) {
          Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));

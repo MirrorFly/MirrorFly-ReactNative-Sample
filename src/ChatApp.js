@@ -105,13 +105,7 @@ const RootNavigation = props => {
          const currentUserJID = await AsyncStorage.getItem('currentUserJID');
          const screenObj = await AsyncStorage.getItem('screenObj');
          const parsedScreenOj = JSON.parse(screenObj);
-         const storedVal = await AsyncStorage.getItem('pendingSeenStatus');
-         const parsedStoreVal = JSON.parse(storedVal);
-         if (parsedStoreVal?.data.length) {
-            parsedStoreVal?.data.forEach(element => {
-               dispatch(addchatSeenPendingMsg(element));
-            });
-         }
+
          dispatch(getCurrentUserJid(JSON.parse(currentUserJID)));
          const initialURL = await Linking.getInitialURL();
          if (initialURL) {

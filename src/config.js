@@ -1,3 +1,13 @@
+import { CameraIcon, ContactIcon, DocumentIcon, GalleryIcon, HeadSetIcon, LocationIcon } from './common/Icons';
+import {
+   handleAudioSelect,
+   handleContactSelect,
+   handleLocationSelect,
+   openCamera,
+   openDocumentPicker,
+   openGallery,
+} from './Helper/Chat/ChatHelper';
+
 const config = {
    attachement: true,
    videoDuaration: 40,
@@ -39,5 +49,42 @@ const config = {
    // ================ beta Environment variables =====================
    // API_URL: 'https://api-beta.mirrorfly.com/api/v1',
    // licenseKey: 'lu3Om85JYSghcsB6vgVoSgTlSQArL5',
+   // ================ ace Environment variables =====================
+   // API_URL: 'https://dev-api.ace.online/api/v1',
+   // licenseKey: 'fq7zLEnyR48iq8O6zu0TEkWiQ701zI',
 };
+
 export default config;
+
+export const attachmentMenuIcons = [
+   {
+      name: 'Document',
+      icon: DocumentIcon,
+      formatter: openDocumentPicker,
+   },
+   {
+      name: 'Camera',
+      icon: CameraIcon,
+      formatter: openCamera,
+   },
+   {
+      name: 'Gallery',
+      icon: GalleryIcon,
+      formatter: openGallery,
+   },
+   {
+      name: 'Audio',
+      icon: HeadSetIcon,
+      formatter: handleAudioSelect,
+   },
+   {
+      name: 'Contact',
+      icon: ContactIcon,
+      formatter: handleContactSelect,
+   },
+   {
+      name: 'Location',
+      icon: LocationIcon,
+      formatter: handleLocationSelect,
+   },
+];

@@ -1,121 +1,62 @@
 import React from 'react';
-import { BackHandler, Dimensions, StyleSheet, Text, View } from 'react-native';
-import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
-import { batch, useDispatch, useSelector } from 'react-redux';
-import { showToast } from '../Helper';
-import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
-import { MIX_BARE_JID } from '../Helper/Chat/Constant';
-import * as RootNav from '../Navigation/rootNavigation';
-import SDK from '../SDK/SDK';
-import logo from '../assets/mirrorfly-logo.png';
+import { Animated, BackHandler, Dimensions, StyleSheet, Text, View } from 'react-native';
+import PagerView from 'react-native-pager-view'; // Import PagerView components
 import { FloatingBtn } from '../common/Button';
-import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
-import commonStyles from '../common/commonStyles';
-import { handleLogOut } from '../common/utils';
 import RecentCalls from '../components/RecentCalls';
 import RecentChat from '../components/RecentChat';
-import RecentHeader from '../components/RecentHeader';
-import ScreenHeader from '../components/ScreenHeader';
-import ApplicationColors from '../config/appColors';
 import { CONTACTLIST, GROUPSCREEN, PROFILESCREEN, RECENTCHATSCREEN } from '../constant';
-import { getUserName } from '../hooks/useRosterData';
-import { DeleteChatHistoryAction } from '../redux/Actions/ConversationAction';
-import { navigate } from '../redux/Actions/NavigationAction';
-import { deleteActiveChatAction } from '../redux/Actions/RecentChatAction';
+import ApplicationColors from '../config/appColors';
+import { useNavigation } from '@react-navigation/native';
+import ScreenHeader from '../components/ScreenHeader';
+import { batch, useDispatch, useSelector } from 'react-redux';
+import logo from '../assets/mirrorfly-logo.png';
+import RecentHeader from '../components/RecentHeader';
+import { handleLogOut } from '../common/utils';
 import {
    clearRecentChatSelectedItems,
    toggleRecentChatSearch,
    updateRecentChatSearchText,
 } from '../redux/Actions/recentChatSearchAction';
+import * as RootNav from '../Navigation/rootNavigation';
+import Modal, { ModalCenteredContent } from '../common/Modal';
+import commonStyles from '../common/commonStyles';
+import { showToast } from '../Helper';
+import { MIX_BARE_JID } from '../Helper/Chat/Constant';
+import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
+import SDK from '../SDK/SDK';
+import { deleteActiveChatAction } from '../redux/Actions/RecentChatAction';
+import { DeleteChatHistoryAction } from '../redux/Actions/ConversationAction';
+import { getUserName } from '../hooks/useRosterData';
+import { navigate } from '../redux/Actions/NavigationAction';
 
-const scenesMap = SceneMap({
-   chats: () => <RecentChat />,
-   calls: RecentCalls,
-});
+const { width: screenWidth } = Dimensions.get('window');
 
-function RecentScreen() {
+const RecentScreen = () => {
+   const navigaiton = useNavigation();
    const dispatch = useDispatch();
+   const pagerRef = React.useRef();
    const { isSearching, selectedItems } = useSelector(state => state.recentChatSearchData) || {};
-   const [index, setIndex] = React.useState(0);
    const recentChatData = useSelector(state => state.recentChatData.data);
-   const [routes] = React.useState([
-      { key: 'chats', title: 'Chats' },
-      { key: 'calls', title: 'Calls' },
-   ]);
+   const [index, setIndex] = React.useState(0); // State to track the active tab index
+   const [indicatorWidth] = React.useState(screenWidth / 2); // State to track the width of the active tab indicator
+   const [indicatorPosition] = React.useState(new Animated.Value(0)); // State to track the position of the active tab indicator
    const [showDeleteChatModal, setShowDeleteChatModal] = React.useState(false);
-   const [chatsBadge, setChatsBadge] = React.useState('');
-   const [callsBadge] = React.useState('');
+   const [chatsBadge, setChatsBadge] = React.useState(0);
 
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
       return () => backHandler.remove();
    }, [selectedItems, isSearching]);
 
-   const tabBarSceneBadgeMap = React.useMemo(() => {
-      return {
-         chats: chatsBadge,
-         calls: callsBadge,
-      };
-   }, [chatsBadge, callsBadge]);
-
    React.useEffect(() => {
       if (recentChatData.length) {
          const unreadChatCount = recentChatData.filter(d => d.unreadCount > 0).length;
-         setChatsBadge(unreadChatCount > 99 ? '99+' : String(unreadChatCount || ''));
+         setChatsBadge(unreadChatCount > 99 ? '99+' : String(unreadChatCount || 0));
       } else {
-         setChatsBadge('');
+         setChatsBadge(0);
       }
    }, [recentChatData]);
-
-   const closeSearch = () => {
-      dispatch(toggleRecentChatSearch(false));
-      dispatch(updateRecentChatSearchText(''));
-   };
-
-   const handleClearSearch = () => {
-      dispatch(updateRecentChatSearchText(''));
-   };
-   const renderTabBadge = scene => {
-      const badgeValue = tabBarSceneBadgeMap[scene.route?.key] || '';
-      return badgeValue ? (
-         <View style={styles.tabBadgeWrapper}>
-            <Text style={styles.tabBadgeText}>{badgeValue}</Text>
-         </View>
-      ) : null;
-   };
-
-   const renderLabel = React.useCallback(
-      scene => {
-         return (
-            <View style={commonStyles.hstack}>
-               <Text style={[styles.tabarLabel, { color: scene.color }]}>{scene.route.title.toUpperCase()}</Text>
-               {renderTabBadge(scene)}
-            </View>
-         );
-      },
-      [chatsBadge, callsBadge],
-   );
-
-   const renderTabBar = React.useCallback(
-      props => {
-         return (
-            !Boolean(isSearching) && (
-               <TabBar
-                  {...props}
-                  style={styles.tabbar}
-                  indicatorStyle={styles.tabbarIndicator}
-                  labelStyle={styles.tabarLabel}
-                  renderLabel={renderLabel}
-                  activeColor={ApplicationColors.mainColor}
-                  inactiveColor={ApplicationColors.black}
-                  pressColor="transparent"
-               />
-            )
-         );
-      },
-      [isSearching, chatsBadge, callsBadge],
-   );
 
    const handleBackBtn = () => {
       if (selectedItems.length) {
@@ -131,6 +72,47 @@ function RecentScreen() {
          BackHandler.exitApp();
       }
       return true;
+   };
+
+   // Function to handle tab press
+   const handleTabPress = tabIndex => () => {
+      pagerRef.current.setPage(tabIndex);
+   };
+
+   // Function to animate the movement of the active tab indicator
+   const animateIndicator = toValue => {
+      Animated.timing(indicatorPosition, {
+         toValue,
+         duration: 200, // Adjust the duration of the animation as needed
+         useNativeDriver: false,
+      }).start();
+   };
+
+   React.useEffect(() => {
+      const tabWidth = screenWidth / 2; // Adjust the width of each tab as needed
+      const toValue = index * tabWidth;
+      animateIndicator(toValue);
+   }, [index]);
+
+   const handleLogout = async () => {
+      handleLogOut();
+   };
+
+   const toggleSearching = val => {
+      dispatch(toggleRecentChatSearch(val));
+   };
+
+   const handleSearch = text => {
+      dispatch(updateRecentChatSearchText(text));
+   };
+
+   const closeSearch = () => {
+      dispatch(toggleRecentChatSearch(false));
+      dispatch(updateRecentChatSearchText(''));
+   };
+
+   const handleClearSearch = () => {
+      dispatch(updateRecentChatSearchText(''));
    };
 
    const handleRemove = () => {
@@ -161,10 +143,6 @@ function RecentScreen() {
       dispatch(clearRecentChatSelectedItems());
    };
 
-   const handleLogout = async () => {
-      handleLogOut();
-   };
-
    const toggleDeleteModal = () => {
       setShowDeleteChatModal(val => !val);
    };
@@ -174,15 +152,14 @@ function RecentScreen() {
          {
             label: 'New Group',
             formatter: () => {
-               RootNav.navigate(GROUPSCREEN);
+               navigaiton.navigate(GROUPSCREEN);
             },
          },
          {
             label: 'Profile',
             formatter: () => {
-               let x = { prevScreen: RECENTCHATSCREEN, screen: PROFILESCREEN };
-               dispatch(navigate(x));
-               RootNav.navigate(PROFILESCREEN);
+               dispatch(navigate({ prevScreen: RECENTCHATSCREEN }));
+               navigaiton.navigate(PROFILESCREEN);
             },
          },
          {
@@ -193,21 +170,58 @@ function RecentScreen() {
       [],
    );
 
-   const toggleSearching = val => {
-      dispatch(toggleRecentChatSearch(val));
-   };
-
-   const handleSearch = text => {
-      dispatch(updateRecentChatSearchText(text));
-   };
-
    const userName = getUserName(selectedItems[0]?.fromUserId);
 
    const deleteMessage =
       selectedItems.length === 1 ? `Delete chat with "${userName}"?` : `Delete ${selectedItems.length} selected chats?`;
 
+   const tabBar = React.useMemo(
+      () => (
+         <View style={styles.tabBar}>
+            <Pressable pressedStyle={{}} style={[styles.tabItem, { width: '50%' }]} onPress={handleTabPress(0)}>
+               <View style={commonStyles.hstack}>
+                  <Text style={[styles.tabText, index === 0 ? styles.activeTabText : styles.inactiveTabText]}>
+                     CHATS
+                  </Text>
+                  {chatsBadge > 0 && (
+                     <View style={styles.tabBadgeWrapper}>
+                        <Text style={styles.tabBadgeText}>{chatsBadge}</Text>
+                     </View>
+                  )}
+               </View>
+            </Pressable>
+            <Pressable pressedStyle={{}} style={[styles.tabItem, { width: '50%' }]} onPress={handleTabPress(1)}>
+               <Text style={[styles.tabText, index === 1 ? styles.activeTabText : styles.inactiveTabText]}>CALLS</Text>
+            </Pressable>
+            {/* Animated active tab indicator */}
+            <Animated.View
+               style={[styles.indicator, { transform: [{ translateX: indicatorPosition }], width: indicatorWidth }]}
+            />
+         </View>
+      ),
+      [index, chatsBadge],
+   );
+
+   const renderPagerView = React.useMemo(
+      () => (
+         <PagerView
+            ref={pagerRef}
+            style={styles.pagerView}
+            initialPage={index}
+            onPageSelected={e => setIndex(e.nativeEvent.position)}>
+            <View key="1">
+               <RecentChat />
+            </View>
+            <View key="2">
+               <RecentCalls />
+            </View>
+         </PagerView>
+      ),
+      [],
+   );
+
    return (
-      <>
+      <View style={styles.container}>
          {!selectedItems.length ? (
             <ScreenHeader
                setIsSearching={toggleSearching}
@@ -222,20 +236,13 @@ function RecentScreen() {
          ) : (
             <RecentHeader handleRemove={handleRemove} recentItem={selectedItems} handleDeleteChat={toggleDeleteModal} />
          )}
-         <TabView
-            navigationState={{ index, routes }}
-            renderScene={scenesMap}
-            onIndexChange={setIndex}
-            initialLayout={{ width: Dimensions.get('window').width }}
-            renderTabBar={renderTabBar}
-            tabStyle={styles.tabView}
-            activeTabStyle={styles.activeTab}
-            lazy
-         />
+         {/* Custom Tab Navigation */}
+         {tabBar}
+         {/* PagerView for Tab Content */}
+         {renderPagerView}
          <FloatingBtn
             onPress={() => {
-               RootNav.navigate(CONTACTLIST);
-               dispatch(navigate({ screen: CONTACTLIST }));
+               navigaiton.navigate(CONTACTLIST);
             }}
          />
          <Modal visible={showDeleteChatModal} onRequestClose={toggleDeleteModal}>
@@ -253,15 +260,45 @@ function RecentScreen() {
                </View>
             </ModalCenteredContent>
          </Modal>
-      </>
+      </View>
    );
-}
-
-export default RecentScreen;
+};
 
 const styles = StyleSheet.create({
-   tabView: { borderColor: 'black', borderWidth: 1 },
-   activeTab: { backgroundColor: 'black' },
+   container: {
+      flex: 1,
+   },
+   tabBar: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      alignItems: 'center',
+      backgroundColor: ApplicationColors.headerBg,
+   },
+   tabItem: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: 50,
+   },
+   tabText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+   },
+   activeTabText: {
+      color: ApplicationColors.mainColor, // Color of the active tab text
+   },
+   inactiveTabText: {
+      color: 'black', // Color of the inactive tab text
+   },
+   indicator: {
+      position: 'absolute',
+      bottom: 0,
+      height: 3,
+      backgroundColor: ApplicationColors.mainColor, // Color of the active tab indicator
+   },
+   pagerView: {
+      flex: 1,
+   },
    deleteChatModalContentContainer: {
       backgroundColor: ApplicationColors.white,
       width: '88%',
@@ -289,19 +326,6 @@ const styles = StyleSheet.create({
       paddingVertical: 2,
       paddingHorizontal: 10,
    },
-   tabbar: {
-      backgroundColor: '#F2F2F2',
-      color: 'black',
-   },
-   tabbarIndicator: {
-      backgroundColor: '#3276E2',
-      borderColor: '#3276E2',
-      borderWidth: 1.3,
-   },
-   tabarLabel: {
-      color: 'black',
-      fontWeight: 'bold',
-   },
    tabBadgeWrapper: {
       minWidth: 20,
       paddingVertical: 1,
@@ -317,3 +341,5 @@ const styles = StyleSheet.create({
       fontSize: 13,
    },
 });
+
+export default RecentScreen;

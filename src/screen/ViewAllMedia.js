@@ -1,52 +1,39 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { ActivityIndicator, BackHandler, Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-native';
-import { TabBar, TabView } from 'react-native-tab-view';
+import { ActivityIndicator, Animated, BackHandler, Dimensions, FlatList, StyleSheet, Text, View } from 'react-native';
+import PagerView from 'react-native-pager-view';
 import { useSelector } from 'react-redux';
-import { convertBytesToKB } from '../Helper';
-import { handleFileOpen } from '../Helper/Chat/ChatHelper';
-import { getThumbBase64URL, getUserIdFromJid } from '../Helper/Chat/Utility';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import IconButton from '../common/IconButton';
-import {
-   AudioWhileIcon,
-   CSVIcon,
-   DocIcon,
-   LeftArrowIcon,
-   PPTIcon,
-   PdfIcon,
-   PlayIcon,
-   TXTIcon,
-   XLSIcon,
-   ZipIcon,
-} from '../common/Icons';
+import { LeftArrowIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
-import { docTimeFormat } from '../common/TimeStamp';
 import commonStyles from '../common/commonStyles';
-import { getExtension } from '../components/chat/common/fileUploadValidation';
+import DocTile from '../components/DocTile';
+import MediaTile from '../components/MediaTile';
+import NickName from '../components/NickName';
 import ApplicationColors from '../config/appColors';
 import { MEDIA_POST_PRE_VIEW_SCREEN } from '../constant';
-import useRosterData from '../hooks/useRosterData';
 
 const LeftArrowComponent = () => LeftArrowIcon();
-const AudioWhileIconComponent = () => AudioWhileIcon();
+
+const { width: screenWidth } = Dimensions.get('window');
 
 const ViewAllMedia = () => {
    const navigation = useNavigation();
    const {
-      params: { jid = '', title = '' },
+      params: { jid = '' },
    } = useRoute();
+   const pagerRef = React.useRef();
    const chatUserId = getUserIdFromJid(jid);
-   const { data: messages } = useSelector(state => state.chatConversationData);
+   const messages = useSelector(state => state.chatConversationData.data[chatUserId]);
+   const messagesArr = Object.values(messages.messages);
    const [index, setIndex] = React.useState(0);
    const [loading, setLoading] = React.useState(false);
    const [countBasedOnType, setCountBasedOnType] = React.useState({});
    const [mediaMessages, setMediaMessages] = React.useState([]);
    const [docsMessages, setDocsMessages] = React.useState([]);
-
-   const { nickName = title } = useRosterData(getUserIdFromJid(jid));
-   let numColumns = 4;
-   const { width } = Dimensions.get('window');
-   const tileSize = width / numColumns;
+   const [indicatorPosition] = React.useState(new Animated.Value(0)); // State to track the position of the active tab indicator
+   const [indicatorWidth] = React.useState(screenWidth / 3); // State to track the width of the active tab indicator
 
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
@@ -65,50 +52,54 @@ const ViewAllMedia = () => {
    };
 
    const messageList = React.useMemo(() => {
-      const data = messages[chatUserId]?.messages ? Object.values(messages[chatUserId]?.messages) : [];
-      const filteredMessages = data.filter(message => {
-         const { deleteStatus, recallStatus } = message;
-         const { media, message_type } = message.msgBody;
-         return (
-            ['image', 'video', 'audio'].includes(message_type) &&
-            media &&
-            media.is_downloaded === 2 &&
-            media.is_uploading === 2 &&
-            deleteStatus === 0 &&
-            recallStatus === 0
-         );
+      const filteredMessages = messagesArr.filter(message => {
+         const { message_type = '' } = message || {};
+         return ['image', 'video', 'audio', 'file'].includes(message_type);
       });
       return filteredMessages;
    }, [messages, jid]);
 
    // Function to fetch count based on message_type
-   const getMessageTypeCount = (messages, messageType) => {
-      return messages.filter(message => message.msgBody.message_type === messageType).length;
+   const getMessageTypeCount = (_messages, messageType) => {
+      return _messages.filter(message => message.message_type === messageType).length;
    };
 
    const handleGetMedia = async () => {
-      const imageCount = messageList?.reverse()?.filter(res => ['image'].includes(res.msgBody.message_type));
+      const imageCount = messageList?.reverse()?.filter(res => ['image'].includes(res.message_type));
       setCountBasedOnType({
          ...countBasedOnType,
          imageCount: imageCount.length,
       });
-      const filtedMediaMessages = messageList.filter(res =>
-         ['image', 'video', 'audio'].includes(res?.msgBody?.message_type),
-      );
-      const filtedDocsMessages = messageList.filter(res => ['file'].includes(res?.msgBody?.message_type));
+      const filtedMediaMessages = messageList.filter(res => ['image', 'video', 'audio'].includes(res?.message_type));
+      const filtedDocsMessages = messageList.filter(res => ['file'].includes(res?.message_type));
       setDocsMessages(filtedDocsMessages || []);
       setMediaMessages(filtedMediaMessages || []);
       toggleLoading();
    };
 
-   const [routes] = React.useState([
-      { key: '1', title: 'Media' },
-      { key: '2', title: 'Docs' },
-      { key: '3', title: 'Links' },
-   ]);
    const handleBackBtn = () => {
       navigation.goBack();
       return true;
+   };
+
+   const handleMediaDeleteMessageId = msgId => {
+      // Filter out the deleted message from the mediaMessages state
+      const updatedMediaMessages = mediaMessages.filter(message => message.msgId !== msgId);
+
+      // Update the mediaMessages state with the filtered messages
+      setMediaMessages(updatedMediaMessages);
+   };
+
+   const handleDocDeleteMessageId = msgId => {
+      // Filter out the deleted message from the mediaMessages state
+      const updatedDocMessages = docsMessages.filter(message => message.msgId !== msgId);
+
+      // Update the mediaMessages state with the filtered messages
+      setDocsMessages(updatedDocMessages);
+   };
+
+   const handleTabPress = tabIndex => () => {
+      pagerRef.current.setPage(tabIndex);
    };
 
    const renderImageCountLabel = () => {
@@ -168,44 +159,7 @@ const ViewAllMedia = () => {
    };
 
    const renderTileBasedOnMessageType = item => {
-      const { msgBody: { media: { thumb_image = '', local_path = '' } = {}, message_type = '' } = {} } = item;
-      const thumbURL = local_path || getThumbBase64URL(thumb_image);
-      if (['image', 'video'].includes(message_type)) {
-         return (
-            <View
-               style={[
-                  {
-                     width: tileSize,
-                     height: tileSize,
-                  },
-                  styles.mediaTile,
-               ]}>
-               <Image
-                  source={{ uri: message_type === 'video' ? getThumbBase64URL(thumb_image) : thumbURL }}
-                  style={styles.imageView}
-               />
-
-               {message_type === 'video' && (
-                  <View style={styles.playIconWrapper}>
-                     <PlayIcon width={10} height={10} />
-                  </View>
-               )}
-            </View>
-         );
-      }
-      if (['audio'].includes(message_type)) {
-         return (
-            <View
-               style={[
-                  commonStyles.justifyContentCenter,
-                  commonStyles.alignItemsCenter,
-                  styles.aduioTile,
-                  { width: tileSize - 4, height: tileSize - 4 },
-               ]}>
-               {<AudioWhileIconComponent />}
-            </View>
-         );
-      }
+      return <MediaTile item={item} onDelete={handleMediaDeleteMessageId} />;
    };
 
    const renderMediaTile = ({ item }) => {
@@ -215,66 +169,58 @@ const ViewAllMedia = () => {
       return <Pressable onPress={handleMediaPress}>{renderTileBasedOnMessageType(item)}</Pressable>;
    };
 
-   const renderFileIcon = fileExtension => {
-      switch (fileExtension) {
-         case 'pdf':
-            return <PdfIcon />;
-         case 'ppt':
-         case 'pptx':
-            return <PPTIcon />;
-         case 'csv':
-            return <CSVIcon />;
-         case 'xls':
-         case 'xlsx':
-            return <XLSIcon />;
-         case 'doc':
-         case 'docx':
-            return <DocIcon />;
-         case 'zip':
-         case 'rar':
-            return <ZipIcon width={30} height={25} />;
-         case 'txt':
-         case 'text':
-            return <TXTIcon />;
-         default:
-            return null;
-      }
+   const renderDocTile = ({ item }) => {
+      return <DocTile item={item} onDelete={handleDocDeleteMessageId} />;
    };
 
-   const renderDocTile = ({ item }) => {
-      const { createdAt, msgBody: { media: { fileName, file_size } } = {} } = item;
-      const fileExtension = getExtension(fileName, false);
-      const onPress = () => {
-         handleFileOpen(item);
-      };
-      return (
-         <>
-            <Pressable
-               onPress={onPress}
-               contentContainerStyle={[
-                  commonStyles.hstack,
-                  commonStyles.alignItemsCenter,
-                  commonStyles.paddingHorizontal_8,
-                  commonStyles.paddingVertical_18,
-               ]}>
-               <View style={[commonStyles.paddingVertical_8]}>{renderFileIcon(fileExtension)}</View>
-               <View style={[commonStyles.flex1, commonStyles.p_4, commonStyles.px_18]}>
-                  <Text style={styles.fileNameText}>{fileName}</Text>
-                  <Text style={styles.fileSizeText}>{convertBytesToKB(file_size)}</Text>
-               </View>
-               <View style={[commonStyles.justifyContentFlexEnd]}>
-                  <Text style={styles.fileSizeText}>{docTimeFormat(createdAt)}</Text>
+   // Function to animate the movement of the active tab indicator
+   const animateIndicator = toValue => {
+      Animated.timing(indicatorPosition, {
+         toValue,
+         duration: 200, // Adjust the duration of the animation as needed
+         useNativeDriver: false,
+      }).start();
+   };
+
+   React.useEffect(() => {
+      const tabWidth = screenWidth / 3; // Adjust the width of each tab as needed
+      const toValue = index * tabWidth;
+      animateIndicator(toValue);
+   }, [index]);
+
+   const tabBar = React.useMemo(
+      () => (
+         <View style={styles.tabBar}>
+            <Pressable pressedStyle={{}} style={[styles.tabItem, { width: '33.33%' }]} onPress={handleTabPress(0)}>
+               <View style={commonStyles.hstack}>
+                  <Text style={[styles.tabText, index === 0 ? styles.activeTabText : styles.inactiveTabText]}>
+                     Media
+                  </Text>
                </View>
             </Pressable>
-            <View style={[commonStyles.dividerLine]} />
-         </>
-      );
-   };
+            <Pressable pressedStyle={{}} style={[styles.tabItem, { width: '33.33%' }]} onPress={handleTabPress(1)}>
+               <Text style={[styles.tabText, index === 1 ? styles.activeTabText : styles.inactiveTabText]}>Docs</Text>
+            </Pressable>
+            <Pressable pressedStyle={{}} style={[styles.tabItem, { width: '33.33%' }]} onPress={handleTabPress(2)}>
+               <Text style={[styles.tabText, index === 2 ? styles.activeTabText : styles.inactiveTabText]}>Links</Text>
+            </Pressable>
+            {/* Animated active tab indicator */}
+            <Animated.View
+               style={[styles.indicator, { transform: [{ translateX: indicatorPosition }], width: indicatorWidth }]}
+            />
+         </View>
+      ),
+      [index],
+   );
 
-   const renderScene = ({ route }) => {
-      switch (route.key) {
-         case '1':
-            return (
+   const renderPagerView = React.useMemo(
+      () => (
+         <PagerView
+            ref={pagerRef}
+            style={styles.pagerView}
+            initialPage={index}
+            onPageSelected={e => setIndex(e.nativeEvent.position)}>
+            <View key="1">
                <View>
                   {!loading && mediaMessages.length === 0 ? (
                      <View
@@ -301,9 +247,8 @@ const ViewAllMedia = () => {
                      </View>
                   )}
                </View>
-            );
-         case '2':
-            return (
+            </View>
+            <View key="2">
                <View>
                   {!loading && docsMessages.length === 0 ? (
                      <View
@@ -330,40 +275,20 @@ const ViewAllMedia = () => {
                      </View>
                   )}
                </View>
-            );
-         case '3':
-            return (
+            </View>
+            <View key="3">
                <View style={[commonStyles.justifyContentCenter, commonStyles.alignItemsCenter, commonStyles.flex1]}>
                   <Text> No Links Found...!!!</Text>
                </View>
-            );
-         default:
-            return null;
-      }
-   };
-
-   const renderLabel = React.useCallback(scene => {
-      return (
-         <View style={commonStyles.hstack}>
-            <Text style={[styles.tabarLabel, { color: scene.color }]}>{scene.route.title.toUpperCase()}</Text>
-         </View>
-      );
-   }, []);
-
-   const renderTabBar = props => (
-      <TabBar
-         {...props}
-         style={styles.tabbar}
-         indicatorStyle={styles.tabbarIndicator}
-         labelStyle={styles.tabarLabel}
-         renderLabel={renderLabel}
-         activeColor={ApplicationColors.mainColor}
-         inactiveColor={ApplicationColors.black}
-      />
+            </View>
+         </PagerView>
+      ),
+      [mediaMessages, docsMessages],
    );
+
    return (
       <View style={styles.tabContainer}>
-         <View style={[styles.container, commonStyles.hstack]}>
+         <View style={[styles.headerContainer, commonStyles.hstack]}>
             <View
                style={[
                   commonStyles.hstack,
@@ -374,28 +299,52 @@ const ViewAllMedia = () => {
                <IconButton onPress={handleBackBtn}>
                   <LeftArrowComponent />
                </IconButton>
-               <Text ellipsizeMode="tail" numberOfLines={1} style={styles.titleText}>
-                  {nickName}
-               </Text>
+               <NickName ellipsizeMode="tail" numberOfLines={1} style={styles.titleText} userId={chatUserId} />
             </View>
          </View>
-
-         <TabView
-            navigationState={{ index, routes }}
-            renderScene={renderScene}
-            renderTabBar={renderTabBar}
-            onIndexChange={setIndex}
-         />
+         {tabBar}
+         {renderPagerView}
       </View>
    );
 };
 export default ViewAllMedia;
 const styles = StyleSheet.create({
+   tabBar: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      alignItems: 'center',
+      backgroundColor: ApplicationColors.headerBg,
+   },
+   tabItem: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: 50,
+   },
+   tabText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+   },
+   activeTabText: {
+      color: ApplicationColors.mainColor, // Color of the active tab text
+   },
+   inactiveTabText: {
+      color: 'black', // Color of the inactive tab text
+   },
+   indicator: {
+      position: 'absolute',
+      bottom: 0,
+      height: 3,
+      backgroundColor: ApplicationColors.mainColor, // Color of the active tab indicator
+   },
+   pagerView: {
+      flex: 1,
+   },
    parentContainer: {
       flex: 1,
       backgroundColor: '#fff',
    },
-   container: {
+   headerContainer: {
       height: 60,
       backgroundColor: ApplicationColors.headerBg,
    },
@@ -422,17 +371,6 @@ const styles = StyleSheet.create({
       color: 'black',
       fontWeight: 'bold',
    },
-   aduioTile: {
-      marginTop: 2,
-      backgroundColor: '#97A5C7',
-      padding: 2,
-      marginHorizontal: 2,
-   },
-   mediaTile: {
-      backgroundColor: '#f2f2f2',
-      padding: 2,
-   },
-   imageView: { flex: 1, resizeMode: 'cover' },
    bottomCountContainer: {
       position: 'absolute',
       bottom: 0,
@@ -440,28 +378,5 @@ const styles = StyleSheet.create({
       right: 0,
       backgroundColor: 'rgba(255, 255, 255, 0.8)',
       paddingVertical: 10,
-   },
-   fileNameText: {
-      fontSize: 13,
-      color: '#000',
-   },
-   fileSizeText: {
-      fontSize: 11,
-      color: '#000',
-   },
-   playIconWrapper: {
-      backgroundColor: ApplicationColors.mainbg,
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      // transforming X and Y for actual width of the icon plus the padding divided by 2 to make it perfectly centered ( 15(width) + 12(padding) / 2 = 13.5 )
-      transform: [{ translateX: -13.5 }, { translateY: -13.5 }],
-      elevation: 5,
-      shadowColor: ApplicationColors.shadowColor,
-      shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.1,
-      shadowRadius: 6,
-      padding: 6,
-      borderRadius: 50,
    },
 });

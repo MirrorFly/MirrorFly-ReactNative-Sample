@@ -4,7 +4,7 @@ import { BackHandler, Platform, StyleSheet, View } from 'react-native';
 import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import Video from 'react-native-video';
 import IconButton from '../../common/IconButton';
-import { BackArrowIcon } from '../../common/Icons';
+import { AudioMusicIcon, BackArrowIcon } from '../../common/Icons';
 import commonStyles from '../../common/commonStyles';
 import { useAppState } from '../../hooks';
 import { mflog } from '../../uikitHelpers/uikitMethods';
@@ -30,6 +30,7 @@ const VideoPlayer = () => {
    const appState = useAppState();
 
    React.useEffect(() => {
+      onPlay();
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
       return () => {
          backHandler.remove();
@@ -121,6 +122,11 @@ const VideoPlayer = () => {
       }
    };
 
+   const onPlay = () => {
+      setPlayerState(PLAYER_STATES.PLAYING);
+      setPaused(false);
+   };
+
    const onProgress = data => {
       if (!isLoading && playerState === PLAYER_STATES.PLAYING) {
          setCurrentTime(data.currentTime);
@@ -159,14 +165,19 @@ const VideoPlayer = () => {
    };
 
    return (
-      <View style={{ flex: 1, backgroundColor: '#000' }}>
+      <View style={{ flex: 1, backgroundColor: audioOnly ? '#97A5C7' : '#000' }}>
          <IconButton
             onPress={handleBackBtn}
             pressedStyle={commonStyles.pressedBg_2}
             containerStyle={[{ position: 'absolute', top: 10, zIndex: 1, left: 5 }]}>
             <BackArrowIcon color={'#fff'} />
          </IconButton>
-         <View style={{ flex: 1, justifyContent: 'center' }}>
+         <View style={[commonStyles.flex1, commonStyles.justifyContentCenter]}>
+            {audioOnly && (
+               <View style={[commonStyles.flex1, commonStyles.justifyContentCenter, commonStyles.alignItemsCenter]}>
+                  <AudioMusicIcon width={200} height={200} />
+               </View>
+            )}
             <Video
                audioOnly={audioOnly}
                ignoreSilentSwitch={'ignore'}
@@ -180,7 +191,7 @@ const VideoPlayer = () => {
                ref={videoPlayer}
                resizeMode={'contain'}
                source={{ uri: videoUri }}
-               style={[styles.videoContainer]}
+               style={[styles.videoContainer, audioOnly ? styles.audioOnly : {}]}
                volume={100}
                muted={false}
             />
@@ -217,5 +228,8 @@ const styles = StyleSheet.create({
    videoContainer: {
       flex: 1,
       justifyContent: 'center',
+   },
+   audioOnly: {
+      display: 'none',
    },
 });

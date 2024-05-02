@@ -20,7 +20,9 @@ import {
    getRecentChatMsgObjForward,
    isSingleChat,
 } from '../Helper/Chat/ChatHelper';
+import { CHAT_TYPE_GROUP, CHAT_TYPE_SINGLE, MIX_BARE_JID } from '../Helper/Chat/Constant';
 import { sortBydate } from '../Helper/Chat/RecentChat';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { debounce, fetchContactsFromSDK, showCheckYourInternetToast, showToast } from '../Helper/index';
 import SDK from '../SDK/SDK';
 import Avathar from '../common/Avathar';
@@ -32,11 +34,10 @@ import { HighlightedText } from '../components/RecentChat';
 import ApplicationColors from '../config/appColors';
 import { useNetworkStatus } from '../hooks';
 import useRosterData from '../hooks/useRosterData';
+import { addChatMessage } from '../redux/Actions/ChatMessageAction';
 import { addChatConversationHistory, deleteChatConversationById } from '../redux/Actions/ConversationAction';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { updateRecentChat } from '../redux/Actions/RecentChatAction';
-import { CHAT_TYPE_GROUP, CHAT_TYPE_SINGLE, MIX_BARE_JID } from '../Helper/Chat/Constant';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
 
 const showMaxUsersLimitToast = () => {
    const options = {
@@ -527,7 +528,10 @@ const ForwardMessage = () => {
                      ...(isSingleChat(chatType) ? { userJid: toUserJid } : { groupJid: toUserJid }), // check this when working for group chat
                   };
                   // adding conversation history
-                  dispatch(addChatConversationHistory(dispatchData));
+                  batch(() => {
+                     dispatch(addChatConversationHistory(dispatchData));
+                     dispatch(addChatMessage(dispatchData.data));
+                  });
                } else {
                   // deleting conversation history data if available to avoid unwanted UI issue or complexity
                   dispatch(deleteChatConversationById(userId));

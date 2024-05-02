@@ -1,23 +1,30 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import ContactList from '../components/Media/ContactList';
+import ContactPreviewScreen from '../components/Media/ContactPreviewScreen';
 import Location from '../components/Media/Location';
+import VideoPlayer from '../components/Media/VideoPlayer';
+import MediaPreView from '../components/MediaPreView';
 import MessageInfo from '../components/MessageInfo';
 import PostPreViewPage from '../components/PostPreViewPage';
-import RNCamera from '../components/RNCamera';
+import { default as Camera, default as RNCamera } from '../components/RNCamera';
 import {
    CAMERA,
+   CAMERA_SCREEN,
    CHATSCREEN,
    CONTACTLIST,
    CONVERSATION_SCREEN,
    COUNTRYSCREEN,
    EDITNAME,
    FORWARD_MESSSAGE_SCREEN,
+   GALLERY_FOLDER_SCREEN,
+   GALLERY_PHOTOS_SCREEN,
    GROUPSCREEN,
    GROUP_INFO,
    IMAGEVIEW,
    LOCATION_SCREEN,
    MEDIA_POST_PRE_VIEW_SCREEN,
+   MEDIA_PRE_VIEW_SCREEN,
    MESSAGE_INFO_SCREEN,
    MOBILE_CONTACT_LIST_SCREEN,
    NEW_GROUP,
@@ -30,11 +37,13 @@ import {
    VIDEO_PLAYER_SCREEN,
    VIEWALLMEDIA,
 } from '../constant';
-import ChatScreen from '../screen/ChatScreen';
 import ContactScreen from '../screen/ContactScreen';
+import ConversationScreen from '../screen/ConversationScreen';
 import CountryList from '../screen/CountryList';
 import EditName from '../screen/EditName';
 import ForwardMessage from '../screen/ForwardMessage';
+import Gallery from '../screen/Gallery';
+import GalleryPhotos from '../screen/GalleryPhotos';
 import GroupInfo from '../screen/GroupInfo';
 import ImageView from '../screen/ImageView';
 import NewGroup from '../screen/NewGroup';
@@ -44,9 +53,6 @@ import RegisterScreen from '../screen/RegisterScreen';
 import SettingScreen from '../screen/SettingScreen';
 import UserInfo from '../screen/UserInfo';
 import ViewAllMedia from '../screen/ViewAllMedia';
-import ContactPreviewScreen from '../components/Media/ContactPreviewScreen';
-import VideoPlayer from '../components/Media/VideoPlayer';
-import ConversationScreen from '../screen/ConversationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -64,6 +70,7 @@ const ChatScreenStackNavigation = () => {
          <Stack.Screen name={USER_INFO}>{prop => <UserInfo {...prop} />}</Stack.Screen>
          <Stack.Screen name={FORWARD_MESSSAGE_SCREEN}>{prop => <ForwardMessage {...prop} />}</Stack.Screen>
          <Stack.Screen name={VIEWALLMEDIA}>{prop => <ViewAllMedia {...prop} />}</Stack.Screen>
+         <Stack.Screen name={MEDIA_PRE_VIEW_SCREEN}>{prop => <MediaPreView {...prop} />}</Stack.Screen>
          <Stack.Screen name={MEDIA_POST_PRE_VIEW_SCREEN}>{prop => <PostPreViewPage {...prop} />}</Stack.Screen>
          <Stack.Screen name={IMAGEVIEW}>{prop => <ImageView {...prop} />}</Stack.Screen>
          <Stack.Screen name={EDITNAME}>{prop => <EditName {...prop} />}</Stack.Screen>
@@ -75,6 +82,9 @@ const ChatScreenStackNavigation = () => {
          </Stack.Screen>
          <Stack.Screen name={LOCATION_SCREEN}>{prop => <Location {...prop} />}</Stack.Screen>
          <Stack.Screen name={VIDEO_PLAYER_SCREEN}>{prop => <VideoPlayer {...prop} />}</Stack.Screen>
+         <Stack.Screen name={CAMERA_SCREEN}>{prop => <Camera {...prop} />}</Stack.Screen>
+         <Stack.Screen name={GALLERY_FOLDER_SCREEN}>{prop => <Gallery {...prop} />}</Stack.Screen>
+         <Stack.Screen name={GALLERY_PHOTOS_SCREEN}>{prop => <GalleryPhotos {...prop} />}</Stack.Screen>
       </Stack.Navigator>
    );
 };
@@ -114,6 +124,7 @@ const GroupScreenStackNavigation = () => {
 };
 
 function StackNavigationPage(props) {
+   console.log('props.InitialValue ==>', props.InitialValue);
    return (
       <Stack.Navigator
          screenOptions={{

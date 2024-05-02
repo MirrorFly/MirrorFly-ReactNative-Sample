@@ -1,4 +1,4 @@
-import { createNavigationContainerRef } from '@react-navigation/native';
+import { StackActions, createNavigationContainerRef } from '@react-navigation/native';
 
 export const navigationRef = createNavigationContainerRef();
 
@@ -27,4 +27,8 @@ export const getCurrentScreen = () => {
    if (navigationRef.isReady()) {
       return navigationRef.getState().routes[navigationRef.getState().routes.length - 1].name;
    }
+};
+
+export const popToTop = () => {
+   navigationRef.dispatch(StackActions.popToTop());
 };

@@ -1,55 +1,28 @@
+import { Box, Text, Toast } from 'native-base';
 import React from 'react';
-import SDK from '../SDK/SDK';
+import { useDispatch, useSelector } from 'react-redux';
+import { showToast } from '../Helper';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
-import { batch, useDispatch, useSelector } from 'react-redux';
-import { updateDownloadData } from '../redux/Actions/MediaDownloadAction';
-import { CancelMediaUpload, RetryMediaUpload, updateUploadStatus } from '../redux/Actions/ConversationAction';
+import SDK from '../SDK/SDK';
+import config from '../config';
 import { mediaStatusConstants } from '../constant';
 import { useNetworkStatus } from '../hooks';
-import config from '../config';
-import { Box, Text, Toast } from 'native-base';
-import { showToast } from '../Helper';
+import { CancelMediaUpload, RetryMediaUpload, updateUploadStatus } from '../redux/Actions/ConversationAction';
+import Store from '../redux/store';
 
 const toastId = 'network-error-upload-download';
 const toastRef = React.createRef(false);
 
-const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus = 0, msgId, media }) => {
+const getMediaProgressSource = msgId =>
+   Store.getState().mediaDownloadData?.data?.[msgId] || Store.getState().mediaUploadData?.data?.[msgId];
+
+const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus = 0, msgId, media, msgStatus }) => {
    const dispatch = useDispatch();
    const networkState = useNetworkStatus();
    /** 'NOT_DOWNLOADED' | 'NOT_UPLOADED' | 'DOWNLOADING' | 'UPLOADING' | 'DOWNLOADED' | 'UPLOADED'  */
    const [mediaStatus, setMediaStatus] = React.useState('');
 
    const fromUserJId = useSelector(state => state.navigation.fromUserJid);
-
-   const { data: mediaDownloadData = {} } = useSelector(state => state.mediaDownloadData);
-
-   const { data: mediaUploadData = {} } = useSelector(state => state.mediaUploadData);
-
-   React.useEffect(() => {
-      if (mediaDownloadData[msgId]?.progress > 0 && mediaDownloadData[msgId]?.progress < 100) {
-         setMediaStatus(mediaStatusConstants.DOWNLOADING);
-      }
-      if (mediaDownloadData[msgId]?.progress === 100) {
-         setMediaStatus(mediaStatusConstants.DOWNLOADED);
-      }
-      if (mediaDownloadData[msgId]?.message) {
-         setMediaStatus(mediaStatusConstants.NOT_DOWNLOADED);
-         handleCancelUpload();
-      }
-   }, [mediaDownloadData[msgId]]);
-
-   React.useEffect(() => {
-      if (mediaUploadData[msgId]?.progress > 0 && mediaUploadData[msgId]?.progress < 100) {
-         setMediaStatus(mediaStatusConstants.UPLOADING);
-      }
-      if (mediaUploadData[msgId]?.progress === 100) {
-         setMediaStatus(mediaStatusConstants.UPLOADED);
-      }
-      if (mediaUploadData[msgId]?.message) {
-         setMediaStatus(mediaStatusConstants.NOT_UPLOADED);
-         handleCancelUpload();
-      }
-   }, [mediaUploadData[msgId]]);
 
    const toastConfig = {
       duration: 2500,
@@ -70,7 +43,7 @@ const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus
             downloadStatus === 1 ? mediaStatusConstants.DOWNLOADING : mediaStatusConstants.NOT_DOWNLOADED;
          setMediaStatus(mediaUrl ? mediaStatusConstants.DOWNLOADED : isDonwloadingStatus);
       }
-   }, [isSender, mediaUrl, uploadStatus, msgId, media]);
+   }, [msgStatus, isSender, mediaUrl, uploadStatus, msgId, media, downloadStatus]);
 
    const { file_url = '', thumb_image = '' } = media;
 
@@ -102,22 +75,7 @@ const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus
          };
          dispatch(updateUploadStatus(downloadData));
          const response = await SDK.downloadMedia(msgId);
-         if (response.statusCode === 200) {
-            let updateObj = {
-               msgId,
-               statusCode: response.statusCode,
-               fromUserId: getUserIdFromJid(fromUserJId),
-               local_path: response.data.local_path,
-               is_downloaded: 2,
-               fileToken: file_url,
-               thumbImage: thumb_image,
-            };
-            batch(() => {
-               dispatch(updateDownloadData(response.data));
-               dispatch(updateUploadStatus(updateObj));
-            });
-            toastRef.current = false;
-         } else {
+         if (response.statusCode !== 200) {
             const cancelObj = {
                msgId,
                fromUserId: getUserIdFromJid(fromUserJId),
@@ -142,6 +100,9 @@ const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus
    };
 
    const handleCancelUpload = () => {
+      if (getMediaProgressSource(msgId)?.source) {
+         getMediaProgressSource(msgId).source?.cancel?.('User Cancelled!');
+      }
       const cancelObj = {
          msgId,
          fromUserId: fromUserJId,
@@ -151,12 +112,6 @@ const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus
       dispatch(CancelMediaUpload(cancelObj));
       if (uploadStatus === 8) {
          return true;
-      }
-      if (mediaDownloadData[msgId]?.source) {
-         mediaDownloadData[msgId].source?.cancel?.('User Cancelled!');
-      }
-      if (mediaUploadData[msgId]) {
-         mediaUploadData[msgId].source?.cancel?.('User Cancelled!');
       }
    };
 

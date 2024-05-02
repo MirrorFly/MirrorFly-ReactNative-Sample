@@ -1,29 +1,31 @@
+import { useNavigation } from '@react-navigation/native';
 import { HStack, Icon, IconButton, Pressable, Spinner, Text } from 'native-base';
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, BackHandler, Image } from 'react-native';
+import { BackHandler, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { RNCamera } from 'react-native-camera';
-import { LeftArrowIcon } from '../common/Icons';
-import { CHATCONVERSATION } from '../constant';
-import { millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
 import RNFS from 'react-native-fs';
-import { getImageSource, mediaObjContructor } from '../common/utils';
 import Video from 'react-native-video';
-import flashOnIcon from '../assets/ic_flash_on.png';
-import flashOffIcon from '../assets/ic_flash_off.png';
-import flashAutoIcon from '../assets/ic_flash_auto.png';
-import flipCameraIcon from '../assets/ic_flip_camera_android.png';
-import { validateFileSize, getType } from './chat/common/fileUploadValidation';
-import { showToast } from '../Helper/index';
 import { useDispatch } from 'react-redux';
+import { millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
+import { showToast } from '../Helper/index';
+import flashAutoIcon from '../assets/ic_flash_auto.png';
+import flashOffIcon from '../assets/ic_flash_off.png';
+import flashOnIcon from '../assets/ic_flash_on.png';
+import flipCameraIcon from '../assets/ic_flip_camera_android.png';
+import { LeftArrowIcon } from '../common/Icons';
+import { getImageSource, mediaObjContructor } from '../common/utils';
 import { resetSafeArea, safeAreaBgColor } from '../redux/Actions/SafeAreaAction';
 import CameraService from './RNCamera/CameraService';
+import { orientationCheck } from './RNCamera/Helper';
 import useCallbackRef from './RNCamera/camHooks';
 import useCamera from './RNCamera/useCam';
-import { orientationCheck } from './RNCamera/Helper';
+import { getType, validateFileSize } from './chat/common/fileUploadValidation';
+import { CAMERA_SCREEN, MEDIA_PRE_VIEW_SCREEN } from '../constant';
 
 const cameraService = new CameraService();
 
-const Camera = props => {
+const Camera = () => {
+   const navigation = useNavigation();
    const [flashMode, setFlashMode] = React.useState(RNCamera.Constants.FlashMode.off);
    const [cameraType, setCameraType] = React.useState(RNCamera.Constants.Type.back);
    const { ref, callbackRef } = useCallbackRef();
@@ -33,7 +35,7 @@ const Camera = props => {
       setCameraType(cameraService.getNewCameraType(cameraType));
    };
 
-   const { setLocalNav = () => {}, setSelectedImages } = props;
+   // const { setLocalNav = () => {}, setSelectedImages = () => {} } = {};
    const recordingIntervalRef = React.useRef(null);
    const dispatch = useDispatch();
    const [data, setData] = React.useState();
@@ -43,7 +45,7 @@ const Camera = props => {
    const [isCapturing, setIsCapturing] = React.useState(false);
 
    const handleBackBtn = () => {
-      setLocalNav(CHATCONVERSATION);
+      navigation.goBack();
       return true;
    };
 
@@ -150,8 +152,7 @@ const Camera = props => {
 
    React.useEffect(() => {
       if (data) {
-         setSelectedImages([data]);
-         setLocalNav('CameraPickView');
+         navigation.navigate(MEDIA_PRE_VIEW_SCREEN, { preScreen: CAMERA_SCREEN, selectedImages: [data] });
       }
    }, [data]);
 

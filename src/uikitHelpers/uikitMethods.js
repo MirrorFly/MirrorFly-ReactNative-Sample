@@ -136,6 +136,7 @@ export const mirrorflyNotificationHandler = async messageData => {
          licenseKey: licenseKey,
          callbackListeners: sdkCallBacks,
          isSandbox: false,
+         chatHistroy: false,
       });
       if (remoteMessage?.data.type === 'mediacall') {
          await SDK.getCallNotification(remoteMessage);

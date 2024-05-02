@@ -112,7 +112,7 @@ export const updateMsgSeenStatus = async () => {
             if (
                !(GROUP_UPDATE_ACTIONS.indexOf(message?.profileUpdatedStatus) >= 0) //NOSONAR Changed from -1 to 0 due to sonar issue
             ) {
-               SDK.sendSeenStatus(formatUserIdToJid(fromUserId), message.msgId, groupId);
+               // SDK.sendSeenStatus(formatUserIdToJid(fromUserId), message.msgId, groupId);
             }
          }
       });
@@ -126,7 +126,7 @@ export const updateConversationMessage = (messgeObject, currentState) => {
       const publisherId = singleChat ? newChatTo : messgeObject.publisherId;
       if ([MSG_RECEIVE_STATUS, MSG_RECEIVE_STATUS_CARBON].indexOf(messgeObject.msgType) > -1) {
          const groupId = singleChat ? '' : newChatTo;
-         SDK.sendSeenStatus(formatUserIdToJid(publisherId), messgeObject.msgId, groupId);
+         // SDK.sendSeenStatus(formatUserIdToJid(publisherId), messgeObject.msgId, groupId);
       }
    } else if (!isLocalUser(messgeObject.publisherId)) {
       // If the Chat is Already Opened but if it is Not Currently Active, Store the Messages for Sending Seen Status

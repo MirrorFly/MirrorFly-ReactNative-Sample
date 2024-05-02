@@ -5,7 +5,6 @@ import SDK from '../SDK/SDK';
 
 function UserAvathar({ userId, userProfile, ...props }) {
    let { nickName, image: imageToken, colorCode } = useRosterData(userId);
-
    nickName = nickName || userProfile?.nickName || userId || '';
    imageToken = imageToken || userProfile?.image || '';
    colorCode = colorCode || userProfile?.colorCode || SDK.getRandomColorCode();

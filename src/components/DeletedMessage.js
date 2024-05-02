@@ -7,30 +7,29 @@ import { getConversationHistoryTime } from '../common/TimeStamp';
 import commonStyles from '../common/commonStyles';
 import MessagePressable from '../common/MessagePressable';
 import ApplicationColors from '../config/appColors';
+import { isSelectingMessages, useSelectedChatMessage } from '../hooks/useChatMessage';
 
 const DeletedMessage = (props = {}) => {
    const {
       messageObject,
-      handleMsgSelect,
-      selectedMsgs,
-      messageObject: { msgId = '', createdAt = '', msgType = '' } = {},
+      messageObject: { isSelected = 0, msgId = '', createdAt = '', msgType = '' } = {},
       currentUserJID,
    } = props;
+   const { updateSelectedMessage } = useSelectedChatMessage();
    const messageFrom = getSenderIdFromMsgObj(messageObject);
    const isReceiver = msgType !== 'acknowledge' && messageFrom && messageFrom.indexOf(currentUserJID) === -1;
-
    const isSender = !isReceiver;
 
    const handlePress = () => {
       Keyboard.dismiss();
-      if (selectedMsgs.length > 0) {
-         handleMsgSelect(messageObject, true);
+      if (isSelectingMessages.current) {
+         updateSelectedMessage(msgId);
       }
    };
 
    const handleLongPress = () => {
       Keyboard.dismiss();
-      handleMsgSelect(messageObject, true);
+      updateSelectedMessage(msgId);
    };
 
    return (
@@ -40,11 +39,7 @@ const DeletedMessage = (props = {}) => {
          onPress={handlePress}
          onLongPress={handleLongPress}>
          {({ pressed }) => (
-            <View
-               style={[
-                  styles.messageContainer,
-                  selectedMsgs.find(msg => msg.msgId === msgId) ? styles.highlightMessage : undefined,
-               ]}>
+            <View style={[styles.messageContainer, isSelected ? styles.highlightMessage : undefined]}>
                <MessagePressable
                   forcePress={pressed}
                   style={[

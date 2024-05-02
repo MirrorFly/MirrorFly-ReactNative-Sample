@@ -1,17 +1,42 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React from 'react';
+import { Alert, Platform } from 'react-native';
 import FileViewer from 'react-native-file-viewer';
 import ImagePicker from 'react-native-image-crop-picker';
-import { openSettings } from 'react-native-permissions';
+import { RESULTS, openSettings } from 'react-native-permissions';
+import Sound from 'react-native-sound';
 import { batch } from 'react-redux';
-import { getThumbImage, getVideoThumbImage, showToast } from '..';
+import { getThumbImage, getVideoThumbImage, showCheckYourInternetToast, showToast } from '..';
+import * as RootNav from '../../Navigation/rootNavigation';
 import SDK from '../../SDK/SDK';
 import { changeTimeFormat } from '../../common/TimeStamp';
-import { mediaObjContructor, requestCameraPermission, requestStoragePermission } from '../../common/utils';
-import { isActiveChatScreenRef } from '../../components/ChatConversation';
+import {
+   handleAudioPickerSingle,
+   handleDocumentPickSingle,
+   mediaObjContructor,
+   requestAudioStoragePermission,
+   requestCameraMicPermission,
+   requestCameraPermission,
+   requestContactPermission,
+   requestFileStoragePermission,
+   requestLocationPermission,
+   requestStoragePermission,
+} from '../../common/utils';
+import {
+   getType,
+   isValidFileType,
+   validateFileSize,
+   validation,
+} from '../../components/chat/common/fileUploadValidation';
 import config from '../../config';
-import { addChatMessage } from '../../redux/Actions/ChatMessageAction';
+import { CAMERA_SCREEN, GALLERY_FOLDER_SCREEN, LOCATION_SCREEN, MOBILE_CONTACT_LIST_SCREEN } from '../../constant';
+import { getNetWorkStatus } from '../../hooks';
+import { getChatMessage, getReplyMessageVariable, removeReplyMessageVariable } from '../../hooks/useChatMessage';
+import { conversationFlatListRef } from '../../hooks/useConversation';
+import { addChatMessage, updateChatMessageBodyObject } from '../../redux/Actions/ChatMessageAction';
 import { DELETE_MESSAGE_FOR_EVERYONE, DELETE_MESSAGE_FOR_ME } from '../../redux/Actions/Constants';
 import { addChatConversationHistory, updateUploadStatus } from '../../redux/Actions/ConversationAction';
+import { navigate } from '../../redux/Actions/NavigationAction';
 import { updateRecentChat } from '../../redux/Actions/RecentChatAction';
 import { deleteRecoverMessage } from '../../redux/Actions/RecoverMessageAction';
 import { updateRosterData } from '../../redux/Actions/rosterAction';
@@ -27,7 +52,10 @@ import {
    MSG_SENT_ACKNOWLEDGE_STATUS_ID,
 } from './Constant';
 import { getMessageObjSender, getRecentChatMsgObj, getUserIdFromJid } from './Utility';
-import { conversationFlatListRef } from '../../hooks/useConversation';
+
+export const isActiveChatScreenRef = React.createRef();
+isActiveChatScreenRef.current = false;
+
 export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
 
@@ -137,15 +165,10 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
          statusCode: response.statusCode,
          fromUserId: getUserIdFromJid(jid),
       };
-      if (response?.statusCode === 200) {
-         updateObj.uploadStatus = 2;
-         updateObj.is_downloaded = 2;
-         updateObj.fileToken = response.fileToken;
-         updateObj.thumbImage = response.thumbImage;
-      } else {
+      if (response?.statusCode !== 200) {
          updateObj.uploadStatus = 3;
+         store.dispatch(updateUploadStatus(updateObj));
       }
-      store.dispatch(updateUploadStatus(updateObj));
    } catch (error) {
       console.log('uploadFileToSDK -->', error);
    }
@@ -323,13 +346,27 @@ export const getChatHistoryData = (data, stateData) => {
    const sortedData = concatMessageArray(data.data, Object.values(state), 'msgId', 'timestamp');
 
    const messages = sortedData.map(message => {
-      const { msgId, timestamp } = message;
+      const {
+         msgId,
+         chatType,
+         fromUserId,
+         publisherId,
+         publisherJid,
+         timestamp,
+         message_type,
+         msgBody: { message_type: _message_type = '', replyTo = '' } = {},
+      } = message;
       return {
          msgId,
          timestamp,
+         chatType,
+         fromUserId,
+         publisherId,
+         publisherJid,
+         replyTo,
+         message_type: message_type || _message_type,
       };
    });
-
    const finalData = { messages: arrayToObject(messages, 'msgId') };
 
    return {
@@ -492,6 +529,7 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          };
          batch(() => {
             store.dispatch(addChatConversationHistory(dispatchData));
+            store.dispatch(addChatMessage(dispatchData.data));
             store.dispatch(updateRecentChat(recentChatObj));
          });
       }
@@ -502,41 +540,6 @@ const parseAndSendMessage = async (message, chatType, messageType, fromUserJid, 
    const { content, replyTo = '' } = message;
    content[0].fileDetails.replyTo = replyTo;
    sendMediaMessage(messageType, content, chatType, fromUserJid, toUserJid, userProfile);
-};
-
-export const sendMessageToUserOrGroup = async (message, fromUserJid, userProfile, toUserJid, chatType = 'chat') => {
-   let messageType = message.type;
-
-   if (messageType === 'media') {
-      parseAndSendMessage(message, chatType, messageType, fromUserJid, toUserJid, userProfile);
-      return;
-   }
-
-   if (message.content !== '') {
-      let jid = toUserJid;
-      let msgId = SDK.randomString(8, 'BA');
-      const dataObj = {
-         jid: jid,
-         msgType: 'text',
-         message: message.content,
-         userProfile,
-         chatType: chatType,
-         msgId,
-         fromUserJid: fromUserJid,
-      };
-      const conversationChatObj = getMessageObjSender(dataObj);
-      const recentChatObj = getRecentChatMsgObj(dataObj);
-      const dispatchData = {
-         data: [conversationChatObj],
-         ...(isSingleChat(chatType) ? { userJid: jid } : { groupJid: jid }), // check this when working for group chat
-      };
-      batch(() => {
-         store.dispatch(addChatConversationHistory(dispatchData));
-         store.dispatch(addChatMessage([dispatchData]));
-         store.dispatch(updateRecentChat(recentChatObj));
-      });
-      await SDK.sendTextMessage(jid, message.content, msgId, message.replyTo);
-   }
 };
 
 export const getLocalUserDetails = () => {
@@ -753,6 +756,8 @@ export const handleConversationScollToBottomPress = () => {
    });
 };
 
+export const getProfileDetail = () => Store.getState().profile.profileDetails;
+
 export const handleSendMsg = async message => {
    handleConversationScollToBottomPress();
    const toUserJid = getToUserId();
@@ -763,12 +768,22 @@ export const handleSendMsg = async message => {
    if (toUserJid in data) {
       Store.dispatch(deleteRecoverMessage(toUserJid));
    }
+   const userProfile = getProfileDetail();
 
    const msgId = SDK.randomString(8, 'BA');
-   const replyTo = '';
+   const replyTo = getReplyMessageVariable(toUserJid)?.msgId;
+   message.replyTo = message.replyTo || replyTo;
+   removeReplyMessageVariable(getToUserId());
    switch (messageType) {
       case 'media':
-         parseAndSendMessage(message, MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat', messageType);
+         await parseAndSendMessage(
+            message,
+            MIX_BARE_JID.test(toUserJid) ? CHAT_TYPE_GROUP : 'chat',
+            messageType,
+            currentUserJID,
+            toUserJid,
+            userProfile,
+         );
          break;
       case 'location':
          const { latitude, longitude } = message.location || {};
@@ -820,11 +835,279 @@ export const handleSendMsg = async message => {
                msgId,
                fromUserJid: currentUserJID,
                publisherJid: currentUserJID,
-               replyTo: message.replyTo,
+               replyTo,
             };
             constructAndDispatchConversationAndRecentChatData(dataObj);
-            SDK.sendTextMessage(toUserJid, message.content, msgId, message.replyTo);
+            SDK.sendTextMessage(toUserJid, message.content, msgId, replyTo);
          }
          break;
    }
+};
+
+export const openDocumentPicker = async () => {
+   const storage_permission = await AsyncStorage.getItem('storage_permission');
+   const permissionResult = await requestFileStoragePermission();
+   if (permissionResult === 'granted' || permissionResult === 'limited') {
+      // updating the SDK flag to keep the connection Alive when app goes background because of document picker
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
+      setTimeout(async () => {
+         const file = await handleDocumentPickSingle();
+         // updating the SDK flag back to false to behave as usual
+         SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+         // Validating the file type and size
+         if (!isValidFileType(file.type)) {
+            Alert.alert(
+               'Mirrorfly',
+               'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
+            );
+            return;
+         }
+         const error = validateFileSize(file.size, 'file');
+         if (error) {
+            const toastOptions = {
+               id: 'document-too-large-toast',
+               duration: 2500,
+               avoidKeyboard: true,
+            };
+            showToast(error, toastOptions);
+            return;
+         }
+
+         // preparing the object and passing it to the sendMessage function
+         const updatedFile = {
+            fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
+         };
+         const messageData = {
+            type: 'media',
+            content: [updatedFile],
+         };
+         handleSendMsg(messageData);
+      }, 200);
+   } else if (storage_permission) {
+      openSettings();
+   } else if (permissionResult === RESULTS.BLOCKED) {
+      AsyncStorage.setItem('storage_permission', 'true');
+   }
+};
+
+export const openCamera = async () => {
+   let cameraPermission = await requestCameraMicPermission();
+   let imageReadPermission = await requestStoragePermission();
+   const camera_permission = await AsyncStorage.getItem('camera_permission');
+   if (cameraPermission === 'granted' && imageReadPermission === 'granted') {
+      RootNav.navigate(CAMERA_SCREEN);
+   } else if (camera_permission) {
+      openSettings();
+   } else if (cameraPermission === RESULTS.BLOCKED) {
+      AsyncStorage.setItem('camera_permission', 'true');
+   } else if (imageReadPermission === RESULTS.BLOCKED) {
+      AsyncStorage.setItem('storage_permission', 'true');
+   }
+};
+
+export const openGallery = async () => {
+   const storage_permission = await AsyncStorage.getItem('storage_permission');
+   let imageReadPermission = await requestStoragePermission();
+   if (imageReadPermission === 'granted' || imageReadPermission === 'limited') {
+      RootNav.navigate(GALLERY_FOLDER_SCREEN);
+   } else if (storage_permission) {
+      openSettings();
+   } else if (imageReadPermission === RESULTS.BLOCKED) {
+      AsyncStorage.setItem('storage_permission', 'true');
+   }
+};
+
+export const handleAudioSelect = async () => {
+   const audio_permission = await AsyncStorage.getItem('audio_permission');
+   SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
+   const audioPermission = await requestAudioStoragePermission();
+   SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+   if (audioPermission === 'granted' || audioPermission === 'limited') {
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
+      let response = await handleAudioPickerSingle();
+      const replyTo = getReplyMessageVariable(getToUserId())?.msgId || '';
+      removeReplyMessageVariable(getToUserId());
+      let _validate = validation(response.type);
+      const sizeError = validateFileSize(response.size, getType(response.type));
+      if (_validate && !sizeError) {
+         Alert.alert('Mirrorfly', _validate);
+         return;
+      }
+      const audioDuration = await getAudioDuration(response.fileCopyUri);
+      response.duration = audioDuration;
+      if (sizeError) {
+         return showToast(sizeError, {
+            id: 'media-size-error-toast',
+         });
+      }
+      if (!_validate && !sizeError) {
+         const transformedArray = {
+            caption: '',
+            fileDetails: mediaObjContructor('DOCUMENT_PICKER', response),
+         };
+         let message = {
+            type: 'media',
+            content: [transformedArray],
+            replyTo,
+         };
+
+         handleSendMsg(message);
+      }
+   } else if (audio_permission) {
+      openSettings();
+   } else if (audioPermission === RESULTS.BLOCKED) {
+      AsyncStorage.setItem('audio_permission', 'true');
+   }
+};
+
+export const getAudioDuration = async path => {
+   return new Promise((resolve, reject) => {
+      const sound = new Sound(path, Platform.OS === 'ios' ? '' : Sound.MAIN_BUNDLE, error => {
+         if (error) {
+            return reject(error);
+         } else {
+            const duration = sound.getDuration();
+            return resolve(duration);
+         }
+      });
+   });
+};
+
+export const handleContactSelect = async () => {
+   try {
+      const isNotFirstTimeContactPermissionCheck = await AsyncStorage.getItem('contact_permission');
+      const result = await requestContactPermission();
+      if (result === 'granted') {
+         RootNav.navigate(MOBILE_CONTACT_LIST_SCREEN);
+      } else if (isNotFirstTimeContactPermissionCheck) {
+         openSettings();
+      } else if (result === RESULTS.BLOCKED) {
+         AsyncStorage.setItem('contact_permission', 'true');
+      }
+   } catch (error) {
+      console.error('Error requesting contacts permission:', error);
+   }
+};
+
+export const handleLocationSelect = async () => {
+   try {
+      const isNotFirstTimeLocationPermissionCheck = await AsyncStorage.getItem('location_permission');
+      const result = await requestLocationPermission();
+      if (result === 'granted' || result === 'limited') {
+         if (getNetWorkStatus()) {
+            RootNav.navigate(LOCATION_SCREEN);
+         } else {
+            showCheckYourInternetToast();
+         }
+      } else if (isNotFirstTimeLocationPermissionCheck) {
+         openSettings();
+      } else if (result === RESULTS.BLOCKED) {
+         AsyncStorage.setItem('location_permission', 'true');
+      }
+   } catch (error) {
+      console.error('Failed to request location permission:', error);
+   }
+};
+
+export const handleSendMedia = selectedImages => () => {
+   let message = {
+      type: 'media',
+      content: selectedImages || [],
+   };
+   handleSendMsg(message);
+   RootNav.popToTop();
+};
+
+export const resetChatUserDetails = () => {
+   let x = {
+      fromUserJID: '',
+      profileDetails: {},
+   };
+   store.dispatch(navigate(x));
+};
+
+export const handleUploadNextImage = res => {
+   const { fromUserId, msgId } = res;
+
+   // Find the next message in the state object
+   const nextMessageKey = getNextMessageKey(fromUserId, msgId);
+
+   if (nextMessageKey) {
+      const { msgBody = {} } = getChatMessage(nextMessageKey);
+      if (msgBody?.media && msgBody.media.is_uploading !== 2 && msgBody.media.is_uploading !== 7) {
+         const updatedData = {
+            msgBody: {
+               media: {
+                  is_uploading: 1, // Set the new value for is_uploading
+               },
+            },
+         };
+         const obj = {
+            messageId: nextMessageKey, // Message ID of the message you want to update
+            updatedData, // Updated data containing the new value for is_uploading
+         };
+         Store.dispatch(updateChatMessageBodyObject(obj));
+      }
+   }
+};
+
+export const handleChangeIntoUploadingState = msgId => {
+   // Find the next message in the state object
+
+   if (msgId) {
+      const { msgBody = {} } = getChatMessage(msgId);
+
+      if (msgBody?.media?.is_uploading !== 1 || msgBody?.media?.is_uploading !== 2) {
+         const updatedData = {
+            msgBody: {
+               media: {
+                  is_uploading: 1, // Set the new value for is_uploading
+               },
+            },
+         };
+         const obj = {
+            messageId: msgId, // Message ID of the message you want to update
+            updatedData, // Updated data containing the new value for is_uploading
+         };
+         Store.dispatch(updateChatMessageBodyObject(obj));
+         // uploadFileToSDK(msgBody?.media?.file, getToUserId(), msgId, msgBody?.media);
+      }
+   }
+};
+
+export const handleChangeIntoDownloadingState = msgId => {
+   // Find the next message in the state object
+
+   if (msgId) {
+      const { msgBody = {} } = getChatMessage(msgId);
+      if (msgBody?.media?.is_downloaded !== 1 || msgBody?.media?.is_downloaded !== 2) {
+         const updatedData = {
+            msgBody: {
+               media: {
+                  is_downloaded: 1, // Set the new value for is_uploading
+               },
+            },
+         };
+         const obj = {
+            messageId: msgId, // Message ID of the message you want to update
+            updatedData, // Updated data containing the new value for is_uploading
+         };
+         Store.dispatch(updateChatMessageBodyObject(obj));
+      }
+   }
+};
+
+export const getNextMessageKey = (fromUserId, msgId) => {
+   const conversationData = Store.getState().chatConversationData.data[fromUserId];
+   if (!conversationData) {
+      return null;
+   } // Conversation data not found
+
+   const messageKeys = Object.keys(conversationData.messages);
+   const currentIndex = messageKeys.indexOf(msgId);
+   if (currentIndex === -1 || currentIndex === messageKeys.length - 1) {
+      return null;
+   } // Message not found or last message
+
+   return messageKeys[currentIndex + 1];
 };

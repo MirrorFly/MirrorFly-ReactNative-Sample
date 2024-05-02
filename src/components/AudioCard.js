@@ -8,7 +8,7 @@ import ReplyMessage from './ReplyMessage';
 import AttachmentProgressLoader from './chat/common/AttachmentProgressLoader';
 
 const AudioCard = props => {
-   const { messageObject, isSender, handleReplyPress } = props;
+   const { messageObject, isSender = true, handleReplyPress } = props;
 
    const {
       msgId = '',

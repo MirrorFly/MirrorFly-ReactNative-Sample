@@ -1,7 +1,6 @@
 import React from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { getMessageFromHistoryById } from '../Helper/Chat/ChatHelper';
 import { ORIGINAL_MESSAGE_DELETED } from '../Helper/Chat/Constant';
 import { getUserIdFromJid, millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
 import mapStaticBlurImage from '../assets/google-maps-blur.png';
@@ -20,17 +19,18 @@ import {
 } from '../common/Icons';
 import commonStyles from '../common/commonStyles';
 import { getImageSource } from '../common/utils';
+import { useChatMessage } from '../hooks/useChatMessage';
+import { handleReplyPress } from '../hooks/useConversation';
 import useRosterData from '../hooks/useRosterData';
 import { getExtension } from './chat/common/fileUploadValidation';
 
 function ReplyMessage(props) {
-   const { handleReplyPress } = props;
+   const { message: originalMsg } = props;
    const fromUserJId = useSelector(state => state.navigation.fromUserJid);
    const currentUserJID = useSelector(state => state.auth.currentUserJID);
    const profileDetails = useSelector(state => state.navigation.profileDetails);
-   const { id: messagesReducerId } = useSelector(state => state.chatConversationData);
-   const [repliedMsg, setRepliedMsg] = React.useState({});
-   const { msgBody: { replyTo = '' } = {} } = props.message;
+   const { msgBody: { replyTo = '' } = {} } = originalMsg;
+   const repliedMsg = useChatMessage(replyTo);
    const {
       msgBody = {},
       msgBody: { message_type = '', message = '', media = {} } = {},
@@ -76,10 +76,6 @@ function ReplyMessage(props) {
             return null;
       }
    }, [fileExtension]);
-
-   React.useEffect(() => {
-      setRepliedMsg(getMessageFromHistoryById(getUserIdFromJid(fromUserJId), replyTo));
-   }, [messagesReducerId]);
 
    const durationString = millisToMinutesAndSeconds(media.duration);
 
@@ -220,7 +216,7 @@ function ReplyMessage(props) {
    };
 
    const passReplyTo = () => {
-      handleReplyPress?.(replyTo, props.message);
+      handleReplyPress?.(replyTo);
    };
 
    const handleLongPress = () => {

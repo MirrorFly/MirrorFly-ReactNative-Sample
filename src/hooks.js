@@ -7,6 +7,8 @@ NetInfo.addEventListener(state => {
    networkState = state;
 });
 
+export const getNetWorkStatus = () => networkState;
+
 export const useNetworkStatus = () => {
    const [isConnected, setIsConnected] = React.useState(networkState?.isInternetReachable || null);
 

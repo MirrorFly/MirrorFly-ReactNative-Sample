@@ -2,34 +2,40 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { Divider } from 'native-base';
 import React from 'react';
 import { BackHandler, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { CHAT_TYPE_GROUP } from '../Helper/Chat/Constant';
-import { getThumbBase64URL, getUserIdFromJid } from '../Helper/Chat/Utility';
+import { getThumbBase64URL } from '../Helper/Chat/Utility';
 import SDK from '../SDK/SDK';
 import { SandTimer } from '../common/Icons';
 import { change16TimeWithDateFormat, getConversationHistoryTime } from '../common/TimeStamp';
 import commonStyles from '../common/commonStyles';
+import { useChatMessage } from '../hooks/useChatMessage';
 import ContactCard from './ContactCard';
 import GroupChatMessageInfo from './GroupChatMessageInfo';
 import ImageCard from './ImageCard';
 import MapCard from './MapCard';
 import ScreenHeader from './ScreenHeader';
 import VideoCard from './VideoCard';
-import { CONVERSATION_SCREEN } from '../constant';
+import AudioCard from './AudioCard';
+import DocumentMessageCard from './DocumentMessageCard';
 
 function MessageInfo() {
    const {
       params: { chatUser = '', msgId = '' },
    } = useRoute();
    const navigation = useNavigation();
-   const messages = useSelector(state => state.chatConversationData.data);
-   const messageObject = messages[getUserIdFromJid(chatUser)]?.messages[msgId];
+   const messageObject = useChatMessage(msgId);
    const {
       chatType,
       createdAt,
       msgStatus,
-      msgBody: { message_type = '', message, media: { androidWidth, thumb_image = '' } = {} } = {},
+      msgBody: {
+         fileSize,
+         message_type = '',
+         message,
+         media: { file = {}, androidWidth, thumb_image = '', local_path = '' } = {},
+      } = {},
    } = messageObject;
+   const imageUrl = local_path || file?.fileDetails?.uri;
    const messageWidth = androidWidth || '80%';
    const [dbValue, setDbValue] = React.useState([]);
    const [deliveredReport, setDeliveredReport] = React.useState();
@@ -47,10 +53,10 @@ function MessageInfo() {
          setSeenReport(_dbValue[0].seenTime);
          setDbValue(_dbValue);
       })();
-   }, [messages]);
+   }, [messageObject]);
 
    const handleBackBtn = () => {
-      navigation.navigate(CONVERSATION_SCREEN);
+      navigation.goBack();
       return true;
    };
 
@@ -137,7 +143,7 @@ function MessageInfo() {
             return (
                <ImageCard
                   messageObject={messageObject}
-                  imgSrc={getThumbBase64URL(thumb_image)}
+                  imgSrc={local_path}
                   status={getMessageStatus(msgStatus)}
                   timeStamp={getConversationHistoryTime(createdAt)}
                />
@@ -152,8 +158,25 @@ function MessageInfo() {
                />
             );
          case 'audio':
+            return (
+               <AudioCard
+                  messageObject={messageObject}
+                  mediaUrl={imageUrl}
+                  status={getMessageStatus(msgStatus)}
+                  fileSize={fileSize}
+                  timeStamp={getConversationHistoryTime(createdAt)}
+               />
+            );
          case 'file':
-            return renderDefaultMessageWithData(message_type, true);
+            return (
+               <DocumentMessageCard
+                  message={messageObject}
+                  status={getMessageStatus(msgStatus)}
+                  timeStamp={getConversationHistoryTime(createdAt)}
+                  fileSize={fileSize}
+                  mediaUrl={imageUrl}
+               />
+            );
          case 'location':
             return renderMapCard();
          case 'contact':

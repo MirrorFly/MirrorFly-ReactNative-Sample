@@ -25,7 +25,8 @@ const IconButton = ({ containerStyle, style, pressedStyle, onPress, children }) 
    return (
       <Pressable style={processedPresableStyle} onPress={onPress}>
          {({ pressed }) => (
-            <View style={[commonStyles.padding_8, ProcessedStyle, pressed && (pressedStyle || commonStyles.pressedBg)]}>
+            <View
+               style={[commonStyles.padding_10, ProcessedStyle, pressed && (pressedStyle || commonStyles.pressedBg)]}>
                {children}
             </View>
          )}

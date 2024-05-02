@@ -1,49 +1,59 @@
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Keyboard, Pressable, StyleSheet, View } from 'react-native';
 import FileViewer from 'react-native-file-viewer';
 import { useSelector } from 'react-redux';
 import { isKeyboardVisibleRef } from '../ChatApp';
 import { openLocationExternally, showCheckYourInternetToast, showToast } from '../Helper';
-import { uploadFileToSDK } from '../Helper/Chat/ChatHelper';
+import { isActiveChatScreenRef, uploadFileToSDK } from '../Helper/Chat/ChatHelper';
+import { MIX_BARE_JID } from '../Helper/Chat/Constant';
 import { getThumbBase64URL } from '../Helper/Chat/Utility';
+import SDK from '../SDK/SDK';
 import { SandTimer } from '../common/Icons';
 import MessagePressable from '../common/MessagePressable';
 import { getConversationHistoryTime } from '../common/TimeStamp';
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
-import { MEDIA_POST_PRE_VIEW_SCREEN } from '../constant';
+import { MEDIA_POST_PRE_VIEW_SCREEN, NOTIFICATION } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import { isSelectingMessages, useChatMessage, useSelectedChatMessage } from '../hooks/useChatMessage';
 import AudioCard from './AudioCard';
 import ContactCard from './ContactCard';
+import DeletedMessage from './DeletedMessage';
 import DocumentMessageCard from './DocumentMessageCard';
 import ImageCard from './ImageCard';
 import MapCard from './MapCard';
+import NickName from './NickName';
+import NotificationMessage from './NotificationMessage';
 import TextCard from './TextCard';
 import VideoCard from './VideoCard';
 
 const ChatMessage = props => {
+   const xmppConnection = useSelector(state => state.connection.xmppStatus);
    const currentUserJID = useSelector(state => state.auth.currentUserJID);
    const fromUserJId = useSelector(state => state.navigation.fromUserJid);
-   const { item } = props;
+   const { item, showNickName } = props;
    let statusVisible = 'notSend';
    const { msgId } = item;
 
    const message = useChatMessage(msgId);
    const {
+      shouldHighlight = 0,
       createdAt = '',
       msgStatus,
       msgBody = {},
       publisherJid,
+      deleteStatus,
+      recallStatus,
       msgBody: {
          media: { file = {}, is_uploading, thumb_image = '', local_path = '', androidWidth = 0 } = {},
          message_type,
+         replyToMsg = 0,
       } = {},
       isSelected = 0,
    } = message;
 
-   let isSender = currentUserJID === publisherJid;
+   const isSender = currentUserJID === publisherJid;
 
    const messageWidth = androidWidth || '80%';
    const { updateSelectedMessage } = useSelectedChatMessage();
@@ -58,17 +68,21 @@ const ChatMessage = props => {
 
    const isInternetReachable = useNetworkStatus();
 
-   const imgFileDownload = () => {
-      try {
-         if (imageUrl) {
-            saveImage(imageUrl);
+   useFocusEffect(
+      React.useCallback(() => {
+         isActiveChatScreenRef.current = true;
+         if (
+            !isSender &&
+            msgStatus === 1 &&
+            deleteStatus === 0 &&
+            recallStatus === 0 &&
+            isActiveChatScreenRef.current
+         ) {
+            const groupJid = MIX_BARE_JID.test(fromUserJId) ? fromUserJId : '';
+            SDK.sendSeenStatus(publisherJid, msgId, groupJid);
          }
-      } catch (error) {
-         if (isSubscribed) {
-            saveImage(getThumbBase64URL(thumb_image));
-         }
-      }
-   };
+      }, [xmppConnection]),
+   );
 
    React.useEffect(() => {
       if (is_uploading === 0 || is_uploading === 1 || is_uploading === 3 || is_uploading === 7) {
@@ -88,6 +102,18 @@ const ChatMessage = props => {
          uploadFileToSDK(file, fromUserJId, msgId, msgBody?.media);
       }
    }, [is_uploading]);
+
+   const imgFileDownload = () => {
+      try {
+         if (imageUrl) {
+            saveImage(imageUrl);
+         }
+      } catch (error) {
+         if (isSubscribed) {
+            saveImage(getThumbBase64URL(thumb_image));
+         }
+      }
+   };
 
    const isImageMessage = () => message_type === 'image';
 
@@ -115,10 +141,10 @@ const ChatMessage = props => {
 
    const handleMessageObj = () => {
       if (
-         ['image', 'video'].includes(msgBody?.message_type) &&
-         msgBody?.media?.is_downloaded === 2 &&
-         msgBody?.media?.is_uploading === 2 &&
-         (msgBody?.media?.local_path || msgBody?.media?.file?.fileDetails?.uri)
+         is_uploading === 2 &&
+         (msgBody?.message_type === 'image' ||
+            (msgBody?.message_type === 'video' &&
+               (msgBody?.media?.local_path || msgBody?.media?.file?.fileDetails?.uri)))
       ) {
          if (isKeyboardVisibleRef.current) {
             let hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
@@ -194,7 +220,6 @@ const ChatMessage = props => {
          case 'text':
             return (
                <TextCard
-                  // handleReplyPress={handleReplyPress}
                   isSender={isSender}
                   message={message}
                   data={{
@@ -207,7 +232,6 @@ const ChatMessage = props => {
          case 'image':
             return (
                <ImageCard
-                  // handleReplyPress={handleReplyPress}
                   messageObject={message}
                   imgSrc={imgSrc}
                   isSender={isSender}
@@ -219,7 +243,6 @@ const ChatMessage = props => {
          case 'video':
             return (
                <VideoCard
-                  // handleReplyPress={handleReplyPress}
                   messageObject={message}
                   imgSrc={imgSrc}
                   isSender={isSender}
@@ -231,7 +254,6 @@ const ChatMessage = props => {
          case 'audio':
             return (
                <AudioCard
-                  // handleReplyPress={handleReplyPress}
                   messageObject={message}
                   isSender={isSender}
                   mediaUrl={imageUrl}
@@ -243,7 +265,6 @@ const ChatMessage = props => {
          case 'file':
             return (
                <DocumentMessageCard
-                  // handleReplyPress={handleReplyPress}
                   message={message}
                   status={getMessageStatus(msgStatus)}
                   timeStamp={getConversationHistoryTime(createdAt)}
@@ -255,7 +276,6 @@ const ChatMessage = props => {
          case 'contact':
             return (
                <ContactCard
-                  // handleReplyPress={handleReplyPress}
                   message={message}
                   status={getMessageStatus(msgStatus)}
                   timeStamp={getConversationHistoryTime(createdAt)}
@@ -267,7 +287,6 @@ const ChatMessage = props => {
          case 'location':
             return (
                <MapCard
-                  // handleReplyPress={handleReplyPress}
                   message={message}
                   status={getMessageStatus(msgStatus)}
                   timeStamp={getConversationHistoryTime(createdAt)}
@@ -282,12 +301,18 @@ const ChatMessage = props => {
    const renderChatMessage = React.useMemo(
       () => (
          <Pressable
+            style={
+               shouldHighlight && {
+                  backgroundColor: ApplicationColors.highlighedMessageBg,
+               }
+            }
             delayLongPress={300}
             pressedStyle={commonStyles.bg_transparent}
             onPress={handleMessageSelect}
             onLongPress={handleMessageLongPress}>
             {({ pressed }) => (
                <View style={[styles.messageContainer, isSelected ? styles.highlightMessage : undefined]}>
+                  {console.log('renderChatMessage ==>', message.msgId)}
                   <View
                      style={[
                         commonStyles.paddingHorizontal_12,
@@ -303,20 +328,9 @@ const ChatMessage = props => {
                         delayLongPress={300}
                         onPress={handleContentPress}
                         onLongPress={handleContentLongPress}>
-                        {/* {showNickName && !isSender && (
-                        <Text
-                           style={{
-                              color: colorCode,
-                              marginLeft: 3,
-                              marginTop: 5,
-                              padding: 5,
-                              paddingBottom: 0,
-                              fontWeight: '500',
-                              fontSize: 13,
-                           }}>
-                           {nickName}
-                        </Text>
-                     )} */}
+                        {showNickName && !isSender && (
+                           <NickName style={styles.nickname} userId={item.publisherId} colorCodeRequired={true} />
+                        )}
                         {renderMessageBasedOnType()}
                      </MessagePressable>
                   </View>
@@ -324,10 +338,22 @@ const ChatMessage = props => {
             )}
          </Pressable>
       ),
-      [message, isSelected],
+      [message, local_path, shouldHighlight, msgStatus, isSelected, replyToMsg],
    );
 
-   return <>{renderChatMessage}</>;
+   if (deleteStatus) {
+      return null;
+   }
+
+   if (message_type === NOTIFICATION) {
+      return <NotificationMessage messageObject={message} />;
+   }
+
+   if (recallStatus) {
+      return <DeletedMessage messageObject={message} currentUserJID={currentUserJID} />;
+   }
+
+   return renderChatMessage;
 };
 export default React.memo(ChatMessage);
 
@@ -374,5 +400,13 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
       borderWidth: 1,
       borderBottomLeftRadius: 0,
+   },
+   nickname: {
+      marginLeft: 3,
+      marginTop: 5,
+      padding: 5,
+      paddingBottom: 0,
+      fontWeight: '500',
+      fontSize: 13,
    },
 });

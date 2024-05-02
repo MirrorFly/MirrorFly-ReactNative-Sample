@@ -298,6 +298,9 @@ const commonStyles = StyleSheet.create({
    paddingRight_0: {
       paddingRight: 0,
    },
+   pr_10: {
+      paddingRight: 10,
+   },
    alignSelfFlexStart: {
       alignSelf: 'flex-start',
    },
@@ -387,6 +390,9 @@ const commonStyles = StyleSheet.create({
    },
    r_0: {
       right: 0,
+   },
+   b_m5: {
+      bottom: -5,
    },
    r_5: {
       right: 5,

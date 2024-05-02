@@ -28,7 +28,7 @@ export default useRosterData;
 
 export const getUserName = userId => {
    const { nickName } = Store.getState().rosterData.data[userId] || {};
-   return nickName;
+   return nickName || userId;
 };
 
 export const getUserStatus = userId => {

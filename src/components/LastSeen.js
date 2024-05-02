@@ -9,6 +9,7 @@ import MarqueeText from '../common/MarqueeText';
 import { getLastseen } from '../common/TimeStamp';
 import commonStyles from '../common/commonStyles';
 import { useNetworkStatus } from '../hooks';
+import { useFocusEffect } from '@react-navigation/native';
 
 const LastSeen = props => {
    const isNetworkConnected = useNetworkStatus();
@@ -33,16 +34,20 @@ const LastSeen = props => {
    const { fromUserJid, status } = presenseData;
    const userJid = props.jid;
 
-   React.useEffect(() => {
-      if (userJid) {
-         updateLastSeen(userJid);
-      }
-      return () => clearTimeout(timer);
-   }, []);
+   useFocusEffect(
+      React.useCallback(() => {
+         if (userJid) {
+            updateLastSeen(userJid);
+         }
+         return () => clearTimeout(timer);
+      }, [userJid]),
+   );
 
    React.useEffect(() => {
       if (isNetworkConnected && xmppConnection === 'CONNECTED') {
-         if (!lastSeenData.lastSeen) updateLastSeen(userJid, status);
+         if (!lastSeenData.lastSeen) {
+            updateLastSeen(userJid, status);
+         }
       } else
          setLastSeenData({
             ...lastSeenData,

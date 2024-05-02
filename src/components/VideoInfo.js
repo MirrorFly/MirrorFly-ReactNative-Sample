@@ -28,16 +28,15 @@ const VideoInfo = props => {
          thumbImage: SingleSelectedImage.thumb_image,
       };
    }
-   const { fileDetails: { uri } = {}, thumbImage = '' } = item;
+   const { fileDetails: { uri = '' } = {}, thumbImage = '' } = item;
    const handleVideoPlayButton = () => {
-      navigation.navigate(VIDEO_PLAYER_SCREEN, { item });
+      navigation.navigate(VIDEO_PLAYER_SCREEN, { item, audioOnly });
    };
 
    return (
       <View style={[styles.player, audioOnly ? styles.audioOnly : styles.video]}>
-         {/* Centered AudioMusicIcon */}
          {audioOnly && (
-            <View style={[commonStyles.justifyContentCenter, commonStyles.alignItemsCenter]}>
+            <View style={[commonStyles.flex1, commonStyles.justifyContentCenter, commonStyles.alignItemsCenter]}>
                <AudioMusicIcon width={200} height={200} />
             </View>
          )}
@@ -46,10 +45,12 @@ const VideoInfo = props => {
                <PlayIcon width={15} height={15} />
             </View>
          </Pressable>
-         <Image
-            style={[commonStyles.flex1, commonStyles.resizeContain]}
-            source={{ uri: thumbImage ? getThumbBase64URL(thumbImage) : uri }}
-         />
+         {!audioOnly && (
+            <Image
+               style={[commonStyles.flex1, commonStyles.resizeContain]}
+               source={{ uri: thumbImage ? getThumbBase64URL(thumbImage) : uri }}
+            />
+         )}
       </View>
    );
 };

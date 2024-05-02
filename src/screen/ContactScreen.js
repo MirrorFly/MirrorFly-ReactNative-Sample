@@ -80,8 +80,6 @@ function ContactScreen() {
       if (isNewGrpSrn || isGroupInfoSrn) {
          RootNav.goBack();
       } else {
-         let x = { screen: RECENTCHATSCREEN };
-         dispatch(navigate(x));
          RootNav.navigate(RECENTCHATSCREEN);
       }
       return true;

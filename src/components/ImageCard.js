@@ -12,17 +12,18 @@ import useMediaProgress from '../hooks/useMediaProgress';
 import CaptionContainer from './CaptionContainer';
 
 const ImageCard = props => {
-   const { imgSrc = '', isSender = true, fileSize = '', messageObject = {}, handleReplyPress = () => {} } = props;
+   const { isSender = true, fileSize = '', messageObject = {}, handleReplyPress = () => {} } = props;
 
    const {
       msgId = '',
+      msgStatus,
       msgBody: { media },
       msgBody: {
          replyTo = '',
-         message_type = '',
          media: {
+            is_uploading,
+            is_downloaded,
             file: { fileDetails = {} } = {},
-            file_url = '',
             androidHeight,
             androidWidth,
             local_path = '',
@@ -31,9 +32,9 @@ const ImageCard = props => {
          } = {},
       } = {},
    } = messageObject;
+   const imageUrl =
+      is_uploading === 2 && is_downloaded === 2 ? local_path || fileDetails?.uri : getThumbBase64URL(thumb_image);
 
-   const imageUrl = local_path || fileDetails?.uri;
-   const [imageSource, setImageSource] = React.useState(imgSrc || getThumbBase64URL(thumb_image));
    const { mediaStatus, downloadMedia, retryUploadMedia, cancelUploadMedia } = useMediaProgress({
       isSender,
       mediaUrl: imageUrl,
@@ -41,22 +42,10 @@ const ImageCard = props => {
       downloadStatus: media?.is_downloaded || 0,
       media: media,
       msgId: msgId,
+      msgStatus,
    });
 
-   React.useEffect(() => {
-      if (imgSrc) {
-         setImageSource(imgSrc);
-      } else {
-         setImageSource(getThumbBase64URL(thumb_image));
-      }
-   }, [imgSrc, msgId]);
-
-   React.useEffect(() => {
-      if (message_type === 'image' && file_url) {
-         isSender && setImageSource(imageUrl);
-         imageUrl && !isSender && setImageSource(imageUrl);
-      }
-   }, [file_url, message_type, local_path]);
+   console.log('Image card Rendeing');
 
    return (
       <View style={commonStyles.paddingHorizontal_4}>
@@ -64,8 +53,8 @@ const ImageCard = props => {
             <ReplyMessage handleReplyPress={handleReplyPress} message={messageObject} isSame={isSender} />
          )}
          <View style={styles.imageContainer}>
-            {imageSource ? (
-               <Image style={styles.image(androidWidth, androidHeight)} alt={fileName} source={{ uri: imageSource }} />
+            {imageUrl ? (
+               <Image style={styles.image(androidWidth, androidHeight)} alt={fileName} source={{ uri: imageUrl }} />
             ) : (
                <View style={styles.noPreviewWrapper}>
                   <Image style={styles.noPreview} alt={fileName} source={getImageSource(noPreview)} />

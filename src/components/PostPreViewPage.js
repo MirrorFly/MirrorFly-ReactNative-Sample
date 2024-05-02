@@ -7,8 +7,7 @@ import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import IconButton from '../common/IconButton';
 import { BackArrowIcon } from '../common/Icons';
 import commonStyles from '../common/commonStyles';
-import ImageInfo from './ImageInfo';
-import VideoInfo from './VideoInfo';
+import PostView from './PostView';
 
 const PostPreViewPage = () => {
    const { params: { jid = '', msgId = '' } = {} } = useRoute();
@@ -16,9 +15,9 @@ const PostPreViewPage = () => {
    const currentUserJID = useSelector(state => state.auth.currentUserJID);
    const chatUserId = getUserIdFromJid(jid);
    const { messages } = useSelector(state => state.chatConversationData?.data?.[chatUserId] || []);
+   const chatMessageData = useSelector(state => state.chatMessageData);
 
    const [title, setTitle] = React.useState('');
-   const [mediaForcePause, setMediaForcePause] = React.useState();
    const [currentIndex, setCurrentIndex] = React.useState(0);
 
    React.useEffect(() => {
@@ -29,7 +28,6 @@ const PostPreViewPage = () => {
    }, []);
 
    const handleBackBtn = () => {
-      setMediaForcePause(true);
       navigation.goBack();
       return true;
    };
@@ -40,26 +38,25 @@ const PostPreViewPage = () => {
    }, [currentIndex]);
 
    const handlePageSelected = event => {
-      setMediaForcePause(true);
       setCurrentIndex(event.nativeEvent.position);
    };
 
    const messageList = React.useMemo(() => {
       const data = Object.values(messages) || [];
       const filteredMessages = data.filter(message => {
-         const { deleteStatus, recallStatus } = message;
-         const { media, message_type } = message.msgBody;
+         const { msgId: _msgId, message_type } = message;
+         const _message = chatMessageData[_msgId];
+         const { deleteStatus, recallStatus, msgBody: { media: { is_downloaded, is_uploading } = {} } = {} } = _message;
          return (
             ['image', 'video', 'audio'].includes(message_type) &&
-            media &&
-            media.is_downloaded === 2 &&
-            media.is_uploading === 2 &&
             deleteStatus === 0 &&
-            recallStatus === 0
+            recallStatus === 0 &&
+            is_downloaded === 2 &&
+            is_uploading === 2
          );
       });
       return filteredMessages;
-   }, [messages, jid]);
+   }, [messages, chatMessageData, jid]);
 
    const initialPage = React.useMemo(() => {
       const selectedMsgIndex = messageList.findIndex(message => message.msgId === msgId);
@@ -71,30 +68,11 @@ const PostPreViewPage = () => {
       return (
          <PagerView style={commonStyles.flex1} initialPage={initialPage} onPageScroll={handlePageSelected}>
             {messageList.map(item => (
-               <View key={item.msgId}>
-                  {
-                     {
-                        image: <ImageInfo selectedMedia={item.msgBody} />,
-                        audio: (
-                           <VideoInfo
-                              forcePause={{ mediaForcePause, setMediaForcePause }}
-                              audioOnly={true}
-                              selectedMedia={item.msgBody}
-                           />
-                        ),
-                        video: (
-                           <VideoInfo
-                              forcePause={{ mediaForcePause, setMediaForcePause }}
-                              selectedMedia={item.msgBody}
-                           />
-                        ),
-                     }[item.msgBody.message_type]
-                  }
-               </View>
+               <PostView key={item.msgId} item={item} />
             ))}
          </PagerView>
       );
-   }, [messageList, mediaForcePause]);
+   }, [messageList, chatMessageData]);
 
    return (
       <View style={commonStyles.flex1}>

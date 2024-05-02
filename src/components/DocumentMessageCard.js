@@ -10,7 +10,7 @@ import { ChatConversationHighlightedText } from './TextCard';
 import { useSelector } from 'react-redux';
 import commonStyles from '../common/commonStyles';
 
-const DocumentMessageCard = ({ message, fileSize, status, timeStamp, isSender, mediaUrl, handleReplyPress }) => {
+const DocumentMessageCard = ({ message, fileSize, status, timeStamp, isSender = true, mediaUrl, handleReplyPress }) => {
    const {
       msgBody: { replyTo = '' },
    } = message;

@@ -1,23 +1,14 @@
 import {
    getChatHistoryData,
-   getUpdatedHistoryData,
-   getUpdatedHistoryDataUpload,
-   updateDeletedMessageInHistory,
-   updateMediaUploadStatusHistory,
+   getUpdatedHistoryData
 } from '../../Helper/Chat/ChatHelper';
 import {
    ADD_CHAT_CONVERSATION_HISTORY,
-   CANCEL_MEDIA_DOWNLOAD,
-   CANCEL_MEDIA_UPLOAD,
    CLEAR_CHAT_HISTORY,
    DELETE_CHAT_HISTORY,
    DELETE_CONVERSATION,
-   DELETE_MESSAGE_FOR_EVERYONE,
-   DELETE_MESSAGE_FOR_ME,
    RESET_STORE,
-   RETRY_MEDIA_UPLOAD,
-   UPDATE_CHAT_CONVERSATION_HISTORY,
-   UPDATE_UPLOAD_STATUS
+   UPDATE_CHAT_CONVERSATION_HISTORY
 } from '../Actions/Constants';
 import { StateToObj, getObjectDeepClone } from '../reduxHelper';
 
@@ -47,19 +38,19 @@ const conversationReducer = (state = initialStateClone, action) => {
             id: Date.now(),
             data: getUpdatedHistoryData(action.payload, StateToObj(state.data)),
          };
-      case UPDATE_UPLOAD_STATUS:
-         return {
-            ...state,
-            id: Date.now(),
-            data: getUpdatedHistoryDataUpload(action.payload, StateToObj(state.data)),
-         };
-      case CANCEL_MEDIA_UPLOAD:
-      case RETRY_MEDIA_UPLOAD:
-      case CANCEL_MEDIA_DOWNLOAD:
-         return {
-            id: Date.now(),
-            data: updateMediaUploadStatusHistory(action.payload, StateToObj(state.data)),
-         };
+      // case UPDATE_UPLOAD_STATUS:
+      //    return {
+      //       ...state,
+      //       id: Date.now(),
+      //       data: getUpdatedHistoryDataUpload(action.payload, StateToObj(state.data)),
+      //    };
+      // case CANCEL_MEDIA_UPLOAD:
+      // case RETRY_MEDIA_UPLOAD:
+      // case CANCEL_MEDIA_DOWNLOAD:
+      //    return {
+      //       id: Date.now(),
+      //       data: updateMediaUploadStatusHistory(action.payload, StateToObj(state.data)),
+      //    };
       case CLEAR_CHAT_HISTORY:
          let chatId = action.payload;
          return {
@@ -88,13 +79,13 @@ const conversationReducer = (state = initialStateClone, action) => {
             data: _state,
          };
 
-      case DELETE_MESSAGE_FOR_ME:
-      case DELETE_MESSAGE_FOR_EVERYONE:
-         return {
-            ...state,
-            id: Date.now(),
-            data: updateDeletedMessageInHistory(action.type, action.payload, state.data),
-         };
+      // case DELETE_MESSAGE_FOR_ME:
+      // case DELETE_MESSAGE_FOR_EVERYONE:
+      //    return {
+      //       ...state,
+      //       id: Date.now(),
+      //       data: updateDeletedMessageInHistory(action.type, action.payload, state.data),
+      //    };
       case RESET_STORE:
          return getObjectDeepClone(initialState);
       default:

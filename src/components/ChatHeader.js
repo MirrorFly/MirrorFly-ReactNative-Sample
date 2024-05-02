@@ -18,7 +18,6 @@ import {
    CloseIcon,
    DeleteIcon,
    DownArrowIcon,
-   FavouriteIcon,
    ForwardIcon,
    LeftArrowIcon,
    ReplyIcon,
@@ -37,8 +36,14 @@ import {
    requestMicroPhonePermission,
 } from '../common/utils';
 import ApplicationColors from '../config/appColors';
-import { FORWARD_MESSSAGE_SCREEN, GROUP_INFO, USER_INFO } from '../constant';
+import { FORWARD_MESSSAGE_SCREEN, GROUP_INFO, MESSAGE_INFO_SCREEN, USER_INFO } from '../constant';
 import { useNetworkStatus } from '../hooks';
+import {
+   copyToClipboard,
+   resetMessageSelection,
+   selectedMediaIdRef,
+   useSelectedChatMessage,
+} from '../hooks/useChatMessage';
 import useRosterData from '../hooks/useRosterData';
 import { closePermissionModal, showPermissionModal } from '../redux/Actions/PermissionAction';
 import {
@@ -46,26 +51,15 @@ import {
    setConversationSearchText,
    updateConversationSearchMessageIndex,
 } from '../redux/Actions/conversationSearchAction';
+import { chatInputRef } from './ChatInput';
 import ChatSearchInput from './ChatSearchInput';
 import LastSeen from './LastSeen';
 import NickName from './NickName';
-import { useSelectedChatMessage } from '../hooks/useChatMessage';
+import AlertModal from './AlertModal';
+import { clearLastMessageinRecentChat } from '../redux/Actions/RecentChatAction';
+import { ClearChatHistoryAction } from '../redux/Actions/ConversationAction';
 
-function ChatHeader({
-   handleRecoverMessage,
-   fromUserJId,
-   selectedMsgs,
-   setSelectedMsgs,
-   selectedMsgsIdRef,
-   menuItems,
-   handleBackBtn,
-   handleReply,
-   setLocalNav,
-   chatInputRef,
-   IsSearching,
-   isSearchClose,
-   chatUserProfile,
-}) {
+function ChatHeader({ fromUserJId, handleBackBtn, handleReply, IsSearching, isSearchClose, chatUserProfile }) {
    const navigation = useNavigation();
    const { selectedMessagesArray, resetSelectedChatMessage } = useSelectedChatMessage();
    const chatType = MIX_BARE_JID.test(fromUserJId) ? CHAT_TYPE_GROUP : CHAT_TYPE_SINGLE;
@@ -88,6 +82,7 @@ function ChatHeader({
    const dispatch = useDispatch();
    const searchInputRef = useRef();
    const isMediaFileInSelectedMessageForDelete = useRef(false);
+   const [modalContent, setModalContent] = React.useState(null);
 
    React.useEffect(() => {
       return () => {
@@ -118,32 +113,34 @@ function ChatHeader({
 
    const handleDelete = () => {
       Keyboard.dismiss();
-      isMediaFileInSelectedMessageForDelete.current = selectedMsgs.some(msg => {
+      isMediaFileInSelectedMessageForDelete.current = selectedMessagesArray.some(msg => {
          const { recallStatus, msgBody: { media: { file = {}, local_path = '' } = {} } = {} } = msg;
          return Boolean((local_path || file?.fileDetails?.uri) && recallStatus === 0);
       });
       const now = new Date().getTime();
-      const msgSentLessThan30SecondsAgo = selectedMsgs.every(
+      const msgSentLessThan30SecondsAgo = selectedMessagesArray.every(
          msg => msg.recallStatus === 0 && parseInt(msg.timestamp / 1000, 10) + 30 * 1000 > now,
       );
-      const isSender = selectedMsgs.every(msg => msg.publisherId === vCardProfile.userId && msg.deleteStatus === 0);
+      const isSender = selectedMessagesArray.every(
+         msg => msg.publisherId === vCardProfile.userId && msg.deleteStatus === 0,
+      );
       setDeleteEveryOne(msgSentLessThan30SecondsAgo && isSender);
       setRemove(!remove);
    };
 
    const handleDeleteForMe = async deleteType => {
-      let msgIds = selectedMsgs
+      let msgIds = selectedMessagesArray
          .slice()
          .sort((a, b) => (b.timestamp > a.timestamp ? -1 : 1))
          .map(el => el.msgId);
       const jid = fromUserJId;
-      selectedMsgsIdRef.current = {};
-      setSelectedMsgs([]);
       if (deleteType === 1) {
          SDK.deleteMessagesForMe(jid, msgIds);
       } else {
          SDK.deleteMessagesForEveryone(jid, msgIds);
       }
+      selectedMediaIdRef.current = {};
+      resetMessageSelection();
       setRemove(false);
    };
 
@@ -152,13 +149,34 @@ function ChatHeader({
       console.log('Fav item');
    };
 
+   const clearChat = () => {
+      SDK.clearChat(fromUserJId);
+      dispatch(clearLastMessageinRecentChat(getUserIdFromJid(fromUserJId)));
+      dispatch(ClearChatHistoryAction(getUserIdFromJid(fromUserJId)));
+   };
+
+   const toggleModalContent = () => {
+      setModalContent(null);
+   };
+
+   const toggleConfirmUserRemoveModal = () => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: 'Are you sure you want to clear the chat?',
+         noButton: 'No',
+         yesButton: 'Yes',
+         yesAction: clearChat,
+      });
+   };
+
    const handleReplyMessage = () => {
-      handleReply(selectedMsgs[0]);
-      chatInputRef.current.focus();
+      handleReply(selectedMessagesArray[0]);
+      resetSelectedChatMessage();
+      chatInputRef?.current?.focus?.();
    };
 
    const handleUserInfo = () => {
-      handleRecoverMessage();
       if (MIX_BARE_JID.test(fromUserJId)) {
          navigation.navigate(GROUP_INFO, { chatUser: fromUserJId });
       } else {
@@ -173,7 +191,7 @@ function ChatHeader({
    const handleForwardMessage = () => {
       Keyboard.dismiss();
       navigation.navigate(FORWARD_MESSSAGE_SCREEN, {
-         forwardMessages: selectedMsgs,
+         forwardMessages: selectedMessagesArray,
          onMessageForwaded: resetSelectedChatMessage,
       });
    };
@@ -182,19 +200,13 @@ function ChatHeader({
    };
 
    const renderForwardIcon = () => {
-      const currentUserId = vCardProfile?.userId;
-      const isMediaDownloadedOrUploaded = selectedMsgs.every(_message => {
-         if (_message.msgBody?.media) {
-            const isSender = _message?.publisherId === currentUserId;
-            const localPath = _message?.msgBody?.media?.local_path;
-            return isSender
-               ? _message?.msgBody?.media?.is_uploading === 2
-               : Boolean(localPath) || _message?.msgBody?.media?.is_downloaded === 2;
-         }
-         return true;
-      });
+      const isMediaDownloadedOrUploaded = selectedMessagesArray.every(
+         msg => (msg.msgBody?.media?.is_uploading !== 1 || true) && (msg.msgBody?.media?.is_downloaded !== 1 || true),
+      );
 
-      const isAllowForward = selectedMsgs.every(_message => _message?.msgStatus !== 3 && _message?.deleteStatus === 0);
+      const isAllowForward = selectedMessagesArray.every(
+         _message => _message?.msgStatus !== 3 && _message?.deleteStatus === 0 && _message?.recallStatus === 0,
+      );
 
       return isMediaDownloadedOrUploaded && isAllowForward ? (
          <IconButton style={[commonStyles.padding_10_15]} onPress={handleForwardMessage}>
@@ -205,18 +217,18 @@ function ChatHeader({
 
    const renderReplyIcon = () => {
       const isAllowReply = MIX_BARE_JID.test(fromUserJId)
-         ? userType && selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 && !selectedMsgs[0]?.recall
-         : selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 && !selectedMsgs[0]?.recall;
+         ? userType && selectedMessagesArray[0]?.msgBody?.media?.is_uploading !== 1 && !selectedMessagesArray[0]?.recall
+         : selectedMessagesArray[0]?.msgBody?.media?.is_uploading !== 1 && !selectedMessagesArray[0]?.recall;
       return isAllowReply ? (
          <IconButton style={[commonStyles.padding_10_15]} onPress={handleReplyMessage}>
-            {selectedMsgs?.length === 1 && selectedMsgs[0]?.msgStatus !== 3 && <ReplyIcon />}
+            {selectedMessagesArray?.length === 1 && selectedMessagesArray[0]?.msgStatus !== 3 && <ReplyIcon />}
          </IconButton>
       ) : null;
    };
 
    const renderDeleteIcon = () => {
-      const isMediaDownloadedOrUploaded = selectedMsgs.every(
-         msg => msg.msgBody?.media?.is_uploading !== 1 && msg.msgBody?.media?.is_downloaded !== 1,
+      const isMediaDownloadedOrUploaded = selectedMessagesArray.every(
+         msg => (msg.msgBody?.media?.is_uploading !== 1 || true) && (msg.msgBody?.media?.is_downloaded !== 1 || true),
       );
       return isMediaDownloadedOrUploaded ? (
          <IconButton style={[commonStyles.padding_10_15]} onPress={handleDelete}>
@@ -247,30 +259,6 @@ function ChatHeader({
          conversationSearchText.trim() && showNoMessageFoundToast();
       }
    };
-
-   if (IsSearching) {
-      return (
-         <View style={styles.RootContainer}>
-            <IconButton onPress={handleBackSearch}>{LeftArrowIcon()}</IconButton>
-            <View style={styles.TextInput}>
-               <ChatSearchInput
-                  inputRef={searchInputRef}
-                  placeholder=" Search..."
-                  value={conversationSearchText}
-                  onChangeText={handleSearchTextChange}
-                  cursorColor={ApplicationColors.mainColor}
-                  style={styles.chatSearchInput}
-               />
-            </View>
-            <TouchableOpacity onPress={handleMessageSearchIndexGoUp} style={styles.upAndDownArrow}>
-               <UpArrowIcon />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleMessageSearchIndexGoDown} style={styles.upAndDownArrow}>
-               <DownArrowIcon width={15} height={7} />
-            </TouchableOpacity>
-         </View>
-      );
-   }
 
    const makeOne2OneVideoCall = () => {
       if (!isRoomExist() && isNetworkConnected) {
@@ -347,6 +335,37 @@ function ChatHeader({
       setShowRoomExist(false);
    };
 
+   const handleGoMessageInfoScreen = () => {
+      resetSelectedChatMessage();
+      navigation.navigate(MESSAGE_INFO_SCREEN, { chatUser: fromUserJId, msgId: selectedMessagesArray[0].msgId });
+   };
+
+   let menuItems = [];
+
+   if (
+      selectedMessagesArray[0]?.msgBody?.message_type === 'text' ||
+      selectedMessagesArray[0]?.msgBody?.media?.caption
+   ) {
+      menuItems.push({
+         label: 'Copy',
+         formatter: copyToClipboard(selectedMessagesArray),
+      });
+   }
+   if (selectedMessagesArray.length === 1) {
+      // Show Copy and Message Info options
+      menuItems.push({
+         label: 'Message Info',
+         formatter: handleGoMessageInfoScreen,
+      });
+   }
+   if (!selectedMessagesArray.length) {
+      // Show Clear Chat and Search options
+      menuItems.push({
+         label: 'Clear Chat',
+         formatter: toggleConfirmUserRemoveModal,
+      });
+   }
+
    const renderRoomExistModal = () => {
       return (
          <>
@@ -389,12 +408,39 @@ function ChatHeader({
       );
    };
 
+   if (IsSearching) {
+      return (
+         <View style={styles.RootContainer}>
+            <IconButton onPress={handleBackSearch}>{LeftArrowIcon()}</IconButton>
+            <View style={styles.TextInput}>
+               <ChatSearchInput
+                  inputRef={searchInputRef}
+                  placeholder=" Search..."
+                  value={conversationSearchText}
+                  onChangeText={handleSearchTextChange}
+                  cursorColor={ApplicationColors.mainColor}
+                  style={styles.chatSearchInput}
+               />
+            </View>
+            <TouchableOpacity onPress={handleMessageSearchIndexGoUp} style={styles.upAndDownArrow}>
+               <UpArrowIcon />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleMessageSearchIndexGoDown} style={styles.upAndDownArrow}>
+               <DownArrowIcon width={15} height={7} />
+            </TouchableOpacity>
+         </View>
+      );
+   }
+
    return (
       <>
          {selectedMessagesArray.length === 0 ? (
             <View style={styles.headerContainer}>
                <IconButton onPress={handleBackBtn}>{LeftArrowIcon()}</IconButton>
-               <Pressable style={commonStyles.flex1} contentContainerStyle={styles.userAvatharAndInfoContainer}>
+               <Pressable
+                  onPress={handleUserInfo}
+                  style={commonStyles.flex1}
+                  contentContainerStyle={styles.userAvatharAndInfoContainer}>
                   <Avathar
                      type={chatType}
                      width={36}
@@ -413,6 +459,21 @@ function ChatHeader({
                      <LastSeen jid={fromUserJId} />
                   </View>
                </Pressable>
+               {chatType !== CHAT_TYPE_GROUP && (
+                  <View style={styles.audioCallButton}>
+                     <IconButton onPress={makeOne2OneVideoCall} containerStyle={{ marginRight: 6 }}>
+                        <VideoCallIcon />
+                     </IconButton>
+                     <IconButton onPress={makeOne2OneAudioCall}>
+                        <AudioCall />
+                     </IconButton>
+                  </View>
+               )}
+               {menuItems.length > 0 && (
+                  <View style={commonStyles.pr_10}>
+                     <MenuContainer menuItems={menuItems} />
+                  </View>
+               )}
             </View>
          ) : (
             <View style={styles.subContainer}>
@@ -422,9 +483,16 @@ function ChatHeader({
                   </IconButton>
                   <Text style={styles.selectedMsgsText}>{selectedMessagesArray?.length}</Text>
                </View>
-               {/* <View style={styles.selectedMsgsActionsContainer}>
+               <View style={styles.selectedMsgsActionsContainer}>
                   {renderReplyIcon()}
+                  {renderDeleteIcon()}
                   {renderForwardIcon()}
+                  {menuItems.length > 0 && (
+                     <View style={commonStyles.pr_10}>
+                        <MenuContainer menuItems={menuItems} />
+                     </View>
+                  )}
+                  {/* {renderForwardIcon()}
                   {!selectedMsgs[0]?.recall && (
                      <IconButton style={[commonStyles.padding_10_15]} onPress={handleFavourite}>
                         <FavouriteIcon />
@@ -433,10 +501,73 @@ function ChatHeader({
                   {renderDeleteIcon()}
                   {Object.keys(selectedChatMessages).length === 1 &&
                      menuItems.length > 0 &&
-                     !selectedMsgs[0]?.recall && <MenuContainer menuItems={menuItems} />}
-               </View> */}
+                     !selectedMsgs[0]?.recall && <MenuContainer menuItems={menuItems} />} */}
+               </View>
             </View>
          )}
+         {modalContent && <AlertModal {...modalContent} />}
+         <Modal visible={remove} onRequestClose={onClose}>
+            <ModalCenteredContent onPressOutside={onClose}>
+               <View style={styles.deleteModalContentContainer}>
+                  <Text style={styles.deleteModalContentText} numberOfLines={2}>
+                     Are you sure you want to delete selected Message?
+                  </Text>
+                  {isMediaFileInSelectedMessageForDelete.current === true && (
+                     <View style={[commonStyles.hstack, commonStyles.paddingVertical_12]}>
+                        <Checkbox
+                           value={isSelected}
+                           onValueChange={setSelection}
+                           style={styles.checkbox}
+                           _checked={{
+                              backgroundColor: '#3276E2',
+                              borderColor: '#3276E2',
+                           }}
+                           _pressed={{
+                              backgroundColor: '#3276E2',
+                              borderColor: '#3276E2',
+                           }}>
+                           <Text style={styles.deleteModalCheckboxLabel}>Delete media from my phone</Text>
+                        </Checkbox>
+                     </View>
+                  )}
+                  {deleteEveryOne ? (
+                     <View style={styles.deleteModalVerticalActionButtonsContainer}>
+                        <Pressable
+                           contentContainerStyle={styles.deleteModalVerticalActionButton}
+                           onPress={() => handleDeleteForMe(1)}>
+                           <Text style={styles.deleteModalActionButtonText}>DELETE FOR ME</Text>
+                        </Pressable>
+                        <Pressable
+                           contentContainerStyle={styles.deleteModalVerticalActionButton}
+                           onPress={() => setRemove(false)}>
+                           <Text style={styles.deleteModalActionButtonText}>CANCEL</Text>
+                        </Pressable>
+                        <Pressable
+                           contentContainerStyle={styles.deleteModalVerticalActionButton}
+                           onPress={() => handleDeleteForMe(2)}>
+                           <Text style={styles.deleteModalActionButtonText}>DELETE FOR EVERYONE</Text>
+                        </Pressable>
+                     </View>
+                  ) : (
+                     <View style={styles.deleteModalHorizontalActionButtonsContainer}>
+                        <Pressable
+                           contentContainerStyle={[
+                              styles.deleteModalHorizontalActionButton,
+                              commonStyles.marginRight_16,
+                           ]}
+                           onPress={() => setRemove(false)}>
+                           <Text style={styles.deleteModalActionButtonText}>CANCEL</Text>
+                        </Pressable>
+                        <Pressable
+                           contentContainerStyle={styles.deleteModalHorizontalActionButton}
+                           onPress={() => handleDeleteForMe(1)}>
+                           <Text style={styles.deleteModalActionButtonText}>DELETE FOR ME</Text>
+                        </Pressable>
+                     </View>
+                  )}
+               </View>
+            </ModalCenteredContent>
+         </Modal>
          {/* {selectedMsgs?.length <= 0 ? (
             <View style={styles.headerContainer}>
                <IconButton onPress={handleBackBtn}>{LeftArrowIcon()}</IconButton>

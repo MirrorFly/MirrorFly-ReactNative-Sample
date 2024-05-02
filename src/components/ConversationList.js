@@ -1,54 +1,70 @@
+import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { fetchMessagesFromSDK } from '../Helper/Chat/ChatHelper';
+import { fetchMessagesFromSDK, handleConversationScollToBottomPress } from '../Helper/Chat/ChatHelper';
+import { CHAT_TYPE_GROUP } from '../Helper/Chat/Constant';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { DoubleDownArrow } from '../common/Icons';
 import Pressable from '../common/Pressable';
+import config from '../config';
 import ApplicationColors from '../config/appColors';
+import { NOTIFICATION } from '../constant';
 import { conversationFlatListRef, conversationFlatListScrollPositionRef } from '../hooks/useConversation';
 import ChatMessage from './ChatMessage';
-import config from '../config';
+
+const listBottomYaxisLimit = 60;
 
 function ConversationList({ chatUserJid }) {
-   const { data: messages } = useSelector(state => state.chatConversationData);
+   const [chatLoading, setChatLoading] = React.useState(true);
+   const [showScrollToBottomIcon, setShowScrollToBottomIcon] = React.useState(false);
+   const [newMsgCount, setNewMsgCount] = React.useState(0);
    const messageListRef = React.useRef([]);
    const chatUserId = getUserIdFromJid(chatUserJid);
+   const messages = useSelector(state => state.chatConversationData.data[chatUserId]?.messages || {});
+
    const messageList = React.useMemo(() => {
       if (chatUserId) {
          const _previousMessageList = messageListRef.current;
-         const data = messages[chatUserId]?.messages ? Object.values(messages[chatUserId]?.messages) : [];
+         const data = Object.values(messages) || [];
          data.reverse();
-         // if (
-         //    data.length > _previousMessageList.length && // to check if there is any new msg
-         //    data[0]?.fromUserId === id && // to check if the new msg is received from the other user
-         //    flatListScrollPositionRef.current.y > listBottomYaxisLimit // to check if the list scroll position is not in the bottom
-         // ) {
-         //    setNewMsgCount(val => val + 1);
-         // }
+         if (
+            data.length > _previousMessageList.length && // to check if there is any new msg
+            data[0]?.publisherId === chatUserId && // to check if the new msg is received from the other user
+            conversationFlatListScrollPositionRef.current.y > listBottomYaxisLimit // to check if the list scroll position is not in the bottom
+         ) {
+            setNewMsgCount(val => val + 1);
+         }
          messageListRef.current = data; // updating the ref to track the previously calculated data like the total message count
+
          return data;
       }
       return [];
-   }, [messages, chatUserId]);
+   }, [messages, chatUserJid]);
 
-   React.useEffect(() => {
-      fetchMessagesFromSDK(chatUserJid);
-   }, []);
+   const fetchData = async () => {
+      if (!messageList.length) {
+         await fetchMessagesFromSDK(chatUserJid);
+      }
+      setChatLoading(false);
+   };
+
+   useFocusEffect(
+      React.useCallback(() => {
+         fetchData();
+      }, []),
+   );
 
    const chatMessageRender = React.useCallback(
-      ({ item }) => {
-         return (
-            <ChatMessage
-               // handleRecoverMessage={handleRecoverMessage}
-               // handleReplyPress={handleReplyPress}
-               // setLocalNav={setLocalNav}
-               // handleMsgSelect={handleMsgSelect}
-               // shouldSelectMessage={selectedMsgsIdRef?.current?.[msgId]}
-               // showContactInviteModal={handleShowContactInviteModal}
-               item={item}
-            />
-         );
+      ({ item, index }) => {
+         const notifiactionCheck = messageList[index + 1]?.message_type;
+         const nextMessageUserId = messageList[index + 1]?.publisherId;
+         const currentMessageUserId = item?.publisherId;
+         const showNickName =
+            notifiactionCheck === NOTIFICATION
+               ? true
+               : item.chatType === CHAT_TYPE_GROUP && nextMessageUserId !== currentMessageUserId;
+         return <ChatMessage item={item} showNickName={showNickName} />;
       },
       [messageList],
    );
@@ -56,15 +72,21 @@ function ConversationList({ chatUserJid }) {
    const handleConversationScoll = ({ nativeEvent }) => {
       const { contentOffset } = nativeEvent;
       conversationFlatListScrollPositionRef.current = { ...contentOffset };
-      // if (contentOffset.y > config.conversationListBottomYaxisLimit) {
-      //    !showScrollToBottomIcon && setShowScrollToBottomIcon(true);
-      // } else {
-      //    newMsgCount > 0 && setNewMsgCount(0);
-      //    showScrollToBottomIcon && setShowScrollToBottomIcon(false);
-      // }
+      if (contentOffset.y > config.conversationListBottomYaxisLimit) {
+         !showScrollToBottomIcon && setShowScrollToBottomIcon(true);
+      } else {
+         newMsgCount > 0 && setNewMsgCount(0);
+         showScrollToBottomIcon && setShowScrollToBottomIcon(false);
+      }
    };
 
    const doNothing = () => null;
+
+   const renderChatFooter = () => {
+      return chatLoading && !messageList.length ? (
+         <ActivityIndicator color={ApplicationColors.mainColor} size={'large'} />
+      ) : null;
+   };
 
    return (
       <>
@@ -72,25 +94,25 @@ function ConversationList({ chatUserJid }) {
             keyboardShouldPersistTaps={'always'}
             ref={conversationFlatListRef}
             data={messageList}
-            inverted
+            inverted={Boolean(messageList.length)}
             renderItem={chatMessageRender}
             keyExtractor={item => item.msgId.toString()}
-            initialNumToRender={20}
+            initialNumToRender={2}
             maxToRenderPerBatch={20}
             onScrollToIndexFailed={doNothing}
             onScroll={handleConversationScoll}
-            scrollEventThrottle={1000}
+            scrollEventThrottle={1}
             windowSize={15}
             // onEndReached={handleLoadMore}
-            // ListFooterComponent={renderChatFooter}
+            ListFooterComponent={renderChatFooter}
             onEndReachedThreshold={1}
          />
-         {/* {showScrollToBottomIcon && (
+         {showScrollToBottomIcon && (
             <Pressable
                style={styles.floatingScrollToBottomIconWrapper}
                contentContainerStyle={styles.floatingScrollToBottomIconContent}
                pressedStyle={styles.floatingScrollToBottomIconPressed}
-               onPress={handleScollToBottomPress}>
+               onPress={handleConversationScollToBottomPress}>
                {newMsgCount > 0 && (
                   <View
                      style={[
@@ -102,7 +124,7 @@ function ConversationList({ chatUserJid }) {
                )}
                <DoubleDownArrow width={15} height={15} />
             </Pressable>
-         )} */}
+         )}
       </>
    );
 }

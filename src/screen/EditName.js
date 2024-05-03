@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { showToast } from '../Helper';
 import { SDK } from '../SDK';
@@ -29,6 +29,7 @@ const EditName = () => {
    const headerBg = useSelector(state => state.safeArea.color);
    const [value, setValue] = React.useState(title);
    const [okClicked, setOkClicked] = React.useState(false);
+   const { height } = Dimensions.get('window');
 
    const togglOkCLick = () => {
       setOkClicked(!okClicked);
@@ -66,7 +67,7 @@ const EditName = () => {
       <KeyboardAvoidingView
          style={[commonStyles.bg_white, commonStyles.flex1]}
          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-         keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}>
+         keyboardVerticalOffset={Platform.OS === 'ios' ? height * 0.03 : 0}>
          <View style={[styles.container, commonStyles.hstack, { backgroundColor: headerBg }]}>
             <View
                style={[

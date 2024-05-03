@@ -28,6 +28,7 @@ import { CHATSCREEN, GROUP_INFO, NEW_GROUP, RECENTCHATSCREEN } from '../constant
 import { useNetworkStatus } from '../hooks';
 import { getUserName } from '../hooks/useRosterData';
 import { navigate } from '../redux/Actions/NavigationAction';
+import { debounce } from 'lodash-es';
 
 const contactPaginationRefInitialValue = {
    nextPage: 1,
@@ -138,14 +139,18 @@ function ContactScreen() {
       }
    };
 
+   const fetchContactListFromSDKWithDebounce = debounce(fetchContactListFromSDK, 500);
+
    const fetchContactList = text => {
-      setTimeout(() => {
-         const _searchText = text?.trim?.();
-         searchTextValueRef.current = _searchText;
-         if (isNetworkconneted) {
+      const _searchText = text?.trim?.();
+      searchTextValueRef.current = _searchText;
+      if (isNetworkconneted) {
+         if (_searchText) {
+            fetchContactListFromSDKWithDebounce(_searchText);
+         } else {
             fetchContactListFromSDK(_searchText);
          }
-      }, 0);
+      }
    };
 
    const handlePress = item => {

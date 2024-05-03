@@ -344,13 +344,13 @@ const ChatInput = props => {
       direction === 'right' && swipeFromRightOpen();
    };
 
-   const renderSendButton = () => {
+   const renderSendButton = React.useMemo(() => {
       const isAllowSendMessage = MIX_BARE_JID.test(fromUserJId)
          ? Boolean(userType) && Boolean(message.trim())
          : Boolean(message.trim());
 
       return isAllowSendMessage ? <SendBtn style={styles.sendButton} onPress={sendMessage} /> : null;
-   };
+   }, [message, userType]);
 
    const handleCLoseEmojiWindow = () => {
       setIsEmojiPickerShowing(false);
@@ -359,7 +359,6 @@ const ChatInput = props => {
    const textInputRender = React.useMemo(() => {
       return (
          <>
-            {console.log('textInputRender')}
             <IconButton
                containerStyle={styles.emojiPickerIconWrapper}
                style={styles.emojiPickerIcon}
@@ -408,7 +407,7 @@ const ChatInput = props => {
                ) : (
                   <View style={styles.textInputContainer}>{textInputRender}</View>
                )}
-               {renderSendButton()}
+               {renderSendButton}
             </View>
          ) : (
             <View style={[styles.container, Boolean(message) && commonStyles.paddingRight_0]}>

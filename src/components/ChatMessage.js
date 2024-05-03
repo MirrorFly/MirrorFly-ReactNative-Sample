@@ -350,7 +350,6 @@ const ChatMessage = props => {
             onLongPress={handleMessageLongPress}>
             {({ pressed }) => (
                <View style={[styles.messageContainer, isSelected ? styles.highlightMessage : undefined]}>
-                  {console.log('renderChatMessage ==>', message.msgId)}
                   <View
                      style={[
                         commonStyles.paddingHorizontal_12,

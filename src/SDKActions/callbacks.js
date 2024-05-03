@@ -712,7 +712,6 @@ export const callBacks = {
       }
    },
    messageListener: async res => {
-      console.log('messageListener res ==>', JSON.stringify(res, null, 2));
       await nextFrame();
       switch (res.msgType) {
          case 'acknowledge':
@@ -911,7 +910,6 @@ export const callBacks = {
       }
    },
    mediaDownloadListener: res => {
-      console.log('mediaDownloadListener res ==>', res);
       store.dispatch(updateDownloadData(res));
       // handleChangeIntoDownloadingState(res.msgId);
       if (res.progress === 100) {
@@ -1196,7 +1194,9 @@ export const callBacks = {
    },
    callSwitchListener: function (res) {},
    muteStatusListener: res => {
-      if (!res) return;
+      if (!res) {
+         return;
+      }
       let localUser = false;
       let vcardData = getLocalUserDetails();
       const currentUser = vcardData && vcardData.fromUser;

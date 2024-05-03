@@ -124,7 +124,6 @@ const GroupScreenStackNavigation = () => {
 };
 
 function StackNavigationPage(props) {
-   console.log('props.InitialValue ==>', props.InitialValue);
    return (
       <Stack.Navigator
          screenOptions={{

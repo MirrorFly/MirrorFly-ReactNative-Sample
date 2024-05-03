@@ -45,8 +45,6 @@ const ImageCard = props => {
       msgStatus,
    });
 
-   console.log('Image card Rendeing');
-
    return (
       <View style={commonStyles.paddingHorizontal_4}>
          {Boolean(replyTo) && (
@@ -54,7 +52,11 @@ const ImageCard = props => {
          )}
          <View style={styles.imageContainer}>
             {imageUrl ? (
-               <Image style={styles.image(androidWidth, androidHeight)} alt={fileName} source={{ uri: imageUrl }} />
+               <Image
+                  style={styles.image(androidWidth, androidHeight)}
+                  alt={fileName}
+                  source={{ uri: imageUrl || getThumbBase64URL(thumb_image) }}
+               />
             ) : (
                <View style={styles.noPreviewWrapper}>
                   <Image style={styles.noPreview} alt={fileName} source={getImageSource(noPreview)} />

@@ -31,7 +31,6 @@ function ConversationScreen() {
 
    useFocusEffect(
       React.useCallback(() => {
-         console.log('getReplyMessageVariable(fromUserJId) ==>');
          setReplyMessage(getReplyMessageVariable(fromUserJId));
          return () => {
             isActiveChatScreenRef.current = false;

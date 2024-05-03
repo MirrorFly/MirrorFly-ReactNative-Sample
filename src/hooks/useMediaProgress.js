@@ -41,7 +41,7 @@ const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus
       } else {
          const isDonwloadingStatus =
             downloadStatus === 1 ? mediaStatusConstants.DOWNLOADING : mediaStatusConstants.NOT_DOWNLOADED;
-         setMediaStatus(mediaUrl ? mediaStatusConstants.DOWNLOADED : isDonwloadingStatus);
+         setMediaStatus(downloadStatus === 2 ? mediaStatusConstants.DOWNLOADED : isDonwloadingStatus);
       }
    }, [msgStatus, isSender, mediaUrl, uploadStatus, msgId, media, downloadStatus]);
 

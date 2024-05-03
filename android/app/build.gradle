@@ -83,7 +83,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "2.4.4"
+        versionName "2.4.8"
         /** Add this for react-native-camera */
         missingDimensionStrategy 'react-native-camera', 'general'
         multiDexEnabled true

@@ -17,6 +17,7 @@ const VideoCard = props => {
 
    const {
       msgId = '',
+      msgStatus,
       msgBody: { media },
       msgBody: {
          replyTo = '',
@@ -45,6 +46,7 @@ const VideoCard = props => {
       downloadStatus: media?.is_downloaded || 0,
       media: media,
       msgId: msgId,
+      msgStatus,
    });
 
    return (

@@ -14,10 +14,15 @@ const propTypes = {
    yesAction: PropTypes.func,
 };
 
-function AlertModal({ title, visible, onRequestClose, noButton, yesButton, yesAction }) {
+function AlertModal({ title, visible, onRequestClose, noButton, noAction, yesButton, yesAction }) {
    const onPress = () => {
       yesAction();
       onRequestClose();
+   };
+
+   const noActionPress = () => {
+      onRequestClose();
+      noAction?.();
    };
    return (
       <Modal visible={visible} onRequestClose={onRequestClose}>
@@ -25,7 +30,7 @@ function AlertModal({ title, visible, onRequestClose, noButton, yesButton, yesAc
             <View style={modelStyles.inviteFriendModalContentContainer}>
                <Text style={styles.optionTitleText}>{title}</Text>
                <View style={styles.buttonContainer}>
-                  <IconButton onPress={onRequestClose}>
+                  <IconButton onPress={noActionPress}>
                      <Text style={[styles.pressableText, commonStyles.typingText]}>{noButton}</Text>
                   </IconButton>
                   <IconButton onPress={onPress}>

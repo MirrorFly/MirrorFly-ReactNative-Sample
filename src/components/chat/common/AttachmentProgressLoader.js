@@ -5,12 +5,9 @@ import { DownloadCancel, DownloadIcon, uploadIcon as UploadIcon } from '../../..
 import { Bar } from 'react-native-progress';
 import commonStyles from '../../../common/commonStyles';
 import { useSelector } from 'react-redux';
+import AttachementBar from '../../AttachementBar';
 
 const AttachmentProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel, msgId }) => {
-   const { data: mediaDownloadData = {} } = useSelector(state => state.mediaDownloadData);
-
-   const { data: mediaUploadData = {} } = useSelector(state => state.mediaUploadData);
-
    switch (mediaStatus) {
       case mediaStatusConstants.DOWNLOADING:
       case mediaStatusConstants.UPLOADING:
@@ -19,7 +16,8 @@ const AttachmentProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel,
                <Pressable style={styles.downloadIcon} onPress={onCancel}>
                   <DownloadCancel color="#7285B5" />
                </Pressable>
-               {mediaDownloadData[msgId]?.progress || mediaUploadData[msgId]?.progress ? (
+               <AttachementBar msgId={msgId} />
+               {/* {mediaDownloadData[msgId]?.progress || mediaUploadData[msgId]?.progress ? (
                   <Bar
                      useNativeDriver={true}
                      style={[commonStyles.positionAbsolute, commonStyles.bottom_0]}
@@ -42,7 +40,7 @@ const AttachmentProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel,
                      borderWidth={0}
                      unfilledColor={'#AFB8D0'}
                   />
-               )}
+               )} */}
             </View>
          );
       case mediaStatusConstants.NOT_DOWNLOADED:

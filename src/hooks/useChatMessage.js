@@ -19,7 +19,6 @@ export const setReplyMessageVariable = message => (replyMessage = message);
 
 export const removeReplyMessageVariable = fromUserJId => {
    delete replyMessage[fromUserJId];
-   console.log('replyMessage[fromUserJId] ==>', JSON.stringify(replyMessage[fromUserJId], null, 2));
 };
 
 export const getChatMessage = msgId => Store.getState().chatMessageData[msgId] || {};

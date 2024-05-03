@@ -12,7 +12,7 @@ import commonStyles from '../common/commonStyles';
 
 const DocumentMessageCard = ({ message, fileSize, status, timeStamp, isSender = true, mediaUrl, handleReplyPress }) => {
    const {
-      msgBody: { replyTo = '' },
+      msgBody: { msgStatus, replyTo = '' },
    } = message;
    const fileSizeInKB = convertBytesToKB(fileSize);
    const mediaData = message.msgBody.media;
@@ -24,6 +24,7 @@ const DocumentMessageCard = ({ message, fileSize, status, timeStamp, isSender = 
       downloadStatus: message?.msgBody?.media?.is_downloaded || 0,
       media: message?.msgBody?.media,
       msgId: message?.msgId,
+      msgStatus,
    });
 
    const conversationSearchText = useSelector(state => state.conversationSearchData?.searchText);

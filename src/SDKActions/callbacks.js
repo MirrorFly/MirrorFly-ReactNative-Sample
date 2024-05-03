@@ -894,7 +894,7 @@ export const callBacks = {
    },
    mediaUploadListener: res => {
       store.dispatch(updateMediaUploadData(res));
-      handleChangeIntoUploadingState(res.msgId);
+      // handleChangeIntoUploadingState(res.msgId);
       if (res.progress === 100) {
          let updateObj = {
             statusCode: 200,
@@ -911,8 +911,9 @@ export const callBacks = {
       }
    },
    mediaDownloadListener: res => {
+      console.log('mediaDownloadListener res ==>', res);
       store.dispatch(updateDownloadData(res));
-      handleChangeIntoDownloadingState(res.msgId);
+      // handleChangeIntoDownloadingState(res.msgId);
       if (res.progress === 100) {
          let updateObj = {
             statusCode: 200,

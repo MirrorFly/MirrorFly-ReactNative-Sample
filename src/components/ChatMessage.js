@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Keyboard, Pressable, StyleSheet, View } from 'react-native';
+import { Keyboard, Linking, Platform, Pressable, StyleSheet, View } from 'react-native';
 import FileViewer from 'react-native-file-viewer';
 import { useSelector } from 'react-redux';
 import { isKeyboardVisibleRef } from '../ChatApp';
@@ -14,7 +14,7 @@ import MessagePressable from '../common/MessagePressable';
 import { getConversationHistoryTime } from '../common/TimeStamp';
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
-import { MEDIA_POST_PRE_VIEW_SCREEN, NOTIFICATION } from '../constant';
+import { INVITE_APP_URL, INVITE_SMS_CONTENT, MEDIA_POST_PRE_VIEW_SCREEN, NOTIFICATION } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import { isSelectingMessages, useChatMessage, useSelectedChatMessage } from '../hooks/useChatMessage';
 import AudioCard from './AudioCard';
@@ -27,11 +27,15 @@ import NickName from './NickName';
 import NotificationMessage from './NotificationMessage';
 import TextCard from './TextCard';
 import VideoCard from './VideoCard';
+import AlertModal from './AlertModal';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const ChatMessage = props => {
    const xmppConnection = useSelector(state => state.connection.xmppStatus);
    const currentUserJID = useSelector(state => state.auth.currentUserJID);
    const fromUserJId = useSelector(state => state.navigation.fromUserJid);
+   const [modalContent, setModalContent] = React.useState(null);
+   const inviteContactMessageRef = React.useRef();
    const { item, showNickName } = props;
    let statusVisible = 'notSend';
    const { msgId } = item;
@@ -46,7 +50,7 @@ const ChatMessage = props => {
       deleteStatus,
       recallStatus,
       msgBody: {
-         media: { file = {}, is_uploading, thumb_image = '', local_path = '', androidWidth = 0 } = {},
+         media: { file = {}, is_uploading, is_downloaded, thumb_image = '', local_path = '', androidWidth = 0 } = {},
          message_type,
          replyToMsg = 0,
       } = {},
@@ -142,6 +146,7 @@ const ChatMessage = props => {
    const handleMessageObj = () => {
       if (
          is_uploading === 2 &&
+         is_downloaded === 2 &&
          (msgBody?.message_type === 'image' ||
             (msgBody?.message_type === 'video' &&
                (msgBody?.media?.local_path || msgBody?.media?.file?.fileDetails?.uri)))
@@ -208,6 +213,39 @@ const ChatMessage = props => {
       dismissKeyBoard();
       updateSelectedMessage(msgId);
       // handleMsgSelect(message);
+   };
+
+   const toggleModalContent = () => {
+      setModalContent(null);
+   };
+
+   const handleCopyInviteLink = () => {
+      Clipboard.setString(INVITE_APP_URL);
+      showToast('Link Copied', { id: 'invite-link-copied-toast' });
+   };
+
+   const handleInviteContact = () => {
+      const ContactInfo = inviteContactMessageRef.current?.msgBody?.contact;
+      if (ContactInfo) {
+         // open the message app and invite the user to the app with content
+         const phoneNumber = ContactInfo.phone_number[0];
+         const separator = Platform.OS === 'ios' ? '&' : '?';
+         const url = `sms:${phoneNumber}${separator}body=${INVITE_SMS_CONTENT}`;
+         Linking.openURL(url);
+      }
+   };
+
+   const showContactInviteModal = () => {
+      inviteContactMessageRef.current = message;
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: 'Invite Friend',
+         noButton: 'Send SMS',
+         noAction: handleInviteContact,
+         yesButton: 'Copy Link',
+         yesAction: handleCopyInviteLink,
+      });
    };
 
    const handleContactInvitePress = _message => {
@@ -353,7 +391,12 @@ const ChatMessage = props => {
       return <DeletedMessage messageObject={message} currentUserJID={currentUserJID} />;
    }
 
-   return renderChatMessage;
+   return (
+      <>
+         {renderChatMessage}
+         {modalContent && <AlertModal {...modalContent} />}
+      </>
+   );
 };
 export default React.memo(ChatMessage);
 

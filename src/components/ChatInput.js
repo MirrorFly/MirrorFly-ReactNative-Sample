@@ -55,8 +55,9 @@ const ChatInput = props => {
    const [message, setMessage] = useState(data[fromUserJId]?.textMessage || '');
    const [isOpen, setIsOpen] = useState(false);
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = useState(false);
-   const recentChatList = useSelector(state => state.recentChatData.data);
-   const userType = recentChatList.find(r => r.fromUserJid === fromUserJId)?.userType;
+   // const recentChatList = useSelector(state => state.recentChatData.data);
+   const userType = 'n';
+   // recentChatList.find(r => r.fromUserJid === fromUserJId)?.userType;
    const [showRecorderUi, setShowRecorderUi] = useState(false);
    const [isRecording, setIsRecording] = useState(false);
    const [recordingDuration, setRecordingDuration] = useState('00:00');

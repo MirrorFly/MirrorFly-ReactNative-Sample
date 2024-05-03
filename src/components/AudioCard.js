@@ -11,6 +11,7 @@ const AudioCard = props => {
    const { messageObject, isSender = true, handleReplyPress } = props;
 
    const {
+      msgStatus,
       msgId = '',
       msgBody: { replyTo = '', media },
    } = messageObject;
@@ -21,8 +22,10 @@ const AudioCard = props => {
       isSender,
       mediaUrl: uri,
       uploadStatus: media?.is_uploading || 0,
+      downloadStatus: media?.is_downloaded || 0,
       media: media,
       msgId: msgId,
+      msgStatus,
    });
 
    return (

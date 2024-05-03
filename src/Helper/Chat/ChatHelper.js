@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
-import { Alert, Platform } from 'react-native';
+import { Alert, Dimensions, Platform } from 'react-native';
 import FileViewer from 'react-native-file-viewer';
 import ImagePicker from 'react-native-image-crop-picker';
 import { RESULTS, openSettings } from 'react-native-permissions';
@@ -28,7 +28,7 @@ import {
    validateFileSize,
    validation,
 } from '../../components/chat/common/fileUploadValidation';
-import config from '../../config';
+import config, { offsetMappings } from '../../config';
 import { CAMERA_SCREEN, GALLERY_FOLDER_SCREEN, LOCATION_SCREEN, MOBILE_CONTACT_LIST_SCREEN } from '../../constant';
 import { getNetWorkStatus } from '../../hooks';
 import { getChatMessage, getReplyMessageVariable, removeReplyMessageVariable } from '../../hooks/useChatMessage';
@@ -1110,4 +1110,22 @@ export const getNextMessageKey = (fromUserId, msgId) => {
    } // Message not found or last message
 
    return messageKeys[currentIndex + 1];
+};
+
+// Function to calculate keyboard vertical offset dynamically
+export const calculateKeyboardVerticalOffset = () => {
+   const { height } = Dimensions.get('window');
+   const isIOS = Platform.OS === 'ios';
+
+   // Define known offsets and heights for base and target devices
+   const baseOffset = 20; // Offset for the base device (e.g., iPhone 6s)
+   const baseHeight = 667; // Height of the base device (e.g., iPhone 6s)
+   const targetOffset = 50; // Offset for the target device (e.g., iPhone 12)
+
+   // Calculate the proportional adjustment using linear interpolation
+   const keyboardOffset = Math.round(
+      baseOffset + ((height - baseHeight) / (844 - baseHeight)) * (targetOffset - baseOffset),
+   );
+
+   return isIOS ? keyboardOffset : 0; // Return calculated offset for iOS, 0 for other platforms
 };

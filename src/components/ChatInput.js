@@ -55,9 +55,8 @@ const ChatInput = props => {
    const [message, setMessage] = useState(data[fromUserJId]?.textMessage || '');
    const [isOpen, setIsOpen] = useState(false);
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = useState(false);
-   // const recentChatList = useSelector(state => state.recentChatData.data);
-   const userType = 'n';
-   // recentChatList.find(r => r.fromUserJid === fromUserJId)?.userType;
+   const recentChatList = useSelector(state => state.recentChatData.data);
+   const userType = recentChatList.find(r => r.fromUserJid === fromUserJId)?.userType;
    const [showRecorderUi, setShowRecorderUi] = useState(false);
    const [isRecording, setIsRecording] = useState(false);
    const [recordingDuration, setRecordingDuration] = useState('00:00');
@@ -357,6 +356,47 @@ const ChatInput = props => {
       setIsEmojiPickerShowing(false);
    };
 
+   const textInputRender = React.useMemo(() => {
+      return (
+         <>
+            {console.log('textInputRender')}
+            <IconButton
+               containerStyle={styles.emojiPickerIconWrapper}
+               style={styles.emojiPickerIcon}
+               onPress={toggleEmojiPicker}>
+               {isEmojiPickerShowing ? <KeyboardIcon /> : <EmojiIcon />}
+            </IconButton>
+
+            <TextInput
+               ref={chatInputRef}
+               value={message}
+               style={styles.inputTextbox}
+               onChangeText={onChangeMessage}
+               placeholder="Start Typing..."
+               placeholderTextColor="#767676"
+               numberOfLines={1}
+               multiline={true}
+               cursorColor={ApplicationColors.mainColor}
+               onFocus={handleCLoseEmojiWindow}
+            />
+
+            <View style={commonStyles.marginHorizontal_10}>
+               {/* Remove this view tag while adding mic icon */}
+               <IconButton onPress={handleAttachmentconPressed} style={styles.attachmentIcon}>
+                  <AttachmentIcon />
+               </IconButton>
+            </View>
+
+            {/* <IconButton
+                           containerStyle={styles.audioRecordIconWrapper}
+                           onPress={startRecording}
+                           style={styles.audioRecordIcon}>
+                           <MicIcon style={isRecording && micStyle} />
+                        </IconButton> */}
+         </>
+      );
+   }, [message, userType]);
+
    return (
       <>
          {!showRecorderUi ? (
@@ -366,43 +406,7 @@ const ChatInput = props => {
                      You can't send messages to this group because you're no longer a participant
                   </Text>
                ) : (
-                  <View style={styles.textInputContainer}>
-                     <>
-                        <IconButton
-                           containerStyle={styles.emojiPickerIconWrapper}
-                           style={styles.emojiPickerIcon}
-                           onPress={toggleEmojiPicker}>
-                           {isEmojiPickerShowing ? <KeyboardIcon /> : <EmojiIcon />}
-                        </IconButton>
-
-                        <TextInput
-                           ref={chatInputRef}
-                           value={message}
-                           style={styles.inputTextbox}
-                           onChangeText={onChangeMessage}
-                           placeholder="Start Typing..."
-                           placeholderTextColor="#767676"
-                           numberOfLines={1}
-                           multiline={true}
-                           cursorColor={ApplicationColors.mainColor}
-                           onFocus={handleCLoseEmojiWindow}
-                        />
-
-                        <View style={commonStyles.marginHorizontal_10}>
-                           {/* Remove this view tag while adding mic icon */}
-                           <IconButton onPress={handleAttachmentconPressed} style={styles.attachmentIcon}>
-                              <AttachmentIcon />
-                           </IconButton>
-                        </View>
-
-                        {/* <IconButton
-                           containerStyle={styles.audioRecordIconWrapper}
-                           onPress={startRecording}
-                           style={styles.audioRecordIcon}>
-                           <MicIcon style={isRecording && micStyle} />
-                        </IconButton> */}
-                     </>
-                  </View>
+                  <View style={styles.textInputContainer}>{textInputRender}</View>
                )}
                {renderSendButton()}
             </View>

@@ -88,3 +88,13 @@ export const attachmentMenuIcons = [
       formatter: handleLocationSelect,
    },
 ];
+
+// Define offset mappings based on device heights
+export const offsetMappings = [
+   { height: 667, offset: 20 }, // iPhone 6s
+   { height: 812, offset: 30 }, // iPhone X, iPhone 11 Pro, or iPhone 12 Pro
+   { height: 844, offset: 45 }, // iPhone 12
+   { height: 896, offset: 35 }, // iPhone XS Max, iPhone 11 Pro Max
+   { height: 926, offset: 35 }, // iPhone 12 Pro, iPhone 12 Pro Max
+   // Add more mappings for other iPhone models as needed
+];

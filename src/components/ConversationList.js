@@ -102,7 +102,7 @@ function ConversationList({ chatUserJid }) {
             onScrollToIndexFailed={doNothing}
             onScroll={handleConversationScoll}
             scrollEventThrottle={1}
-            windowSize={15}
+            windowSize={20}
             // onEndReached={handleLoadMore}
             ListFooterComponent={renderChatFooter}
             onEndReachedThreshold={1}

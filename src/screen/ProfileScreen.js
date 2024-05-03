@@ -1,18 +1,19 @@
-import React from 'react';
-import ProfilePage from '../components/ProfilePage';
-import EditStatusPage from '../components/EditStatusPage';
-import StatusPage from '../components/StatusPage';
-import ProfilePhoto from '../components/ProfilePhoto';
-import { useDispatch, useSelector } from 'react-redux';
-import SDK from '../SDK/SDK';
-import { CONNECTED, PROFILESCREEN, RECENTCHATSCREEN, REGISTERSCREEN, statusListConstant } from '../constant';
-import { profileDetail } from '../redux/Actions/ProfileAction';
-import { useNetworkStatus } from '../hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { KeyboardAvoidingView } from 'native-base';
-import { BackHandler, Platform, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { KeyboardAvoidingView } from 'native-base';
+import React from 'react';
+import { BackHandler, Platform, StyleSheet } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { calculateKeyboardVerticalOffset } from '../Helper/Chat/ChatHelper';
+import SDK from '../SDK/SDK';
+import EditStatusPage from '../components/EditStatusPage';
+import ProfilePage from '../components/ProfilePage';
+import ProfilePhoto from '../components/ProfilePhoto';
+import StatusPage from '../components/StatusPage';
+import { CONNECTED, PROFILESCREEN, RECENTCHATSCREEN, REGISTERSCREEN, statusListConstant } from '../constant';
+import { useNetworkStatus } from '../hooks';
 import { navigate } from '../redux/Actions/NavigationAction';
+import { profileDetail } from '../redux/Actions/ProfileAction';
 
 const ProfileScreen = () => {
    const dispatch = useDispatch();
@@ -170,7 +171,7 @@ const ProfileScreen = () => {
       <KeyboardAvoidingView
          style={styles.keyBoardStyle}
          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-         keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}>
+         keyboardVerticalOffset={Platform.OS === 'ios' ? calculateKeyboardVerticalOffset() : 0}>
          {renderedComponent}
       </KeyboardAvoidingView>
    );

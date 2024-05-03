@@ -13,6 +13,7 @@ import ApplicationColors from '../config/appColors';
 import { useNetworkStatus } from '../hooks';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { getUserImage, getUserName } from '../hooks/useRosterData';
+import { calculateKeyboardVerticalOffset } from '../Helper/Chat/ChatHelper';
 
 const LeftArrowComponent = () => LeftArrowIcon();
 
@@ -67,7 +68,7 @@ const EditName = () => {
       <KeyboardAvoidingView
          style={[commonStyles.bg_white, commonStyles.flex1]}
          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-         keyboardVerticalOffset={Platform.OS === 'ios' ? height * 0.03 : 0}>
+         keyboardVerticalOffset={Platform.OS === 'ios' ? calculateKeyboardVerticalOffset() : 0}>
          <View style={[styles.container, commonStyles.hstack, { backgroundColor: headerBg }]}>
             <View
                style={[

@@ -88,13 +88,12 @@ const RootNavigation = props => {
    const { jid } = props;
    const scheme = useColorScheme();
    const [initialRouteValue, setInitialRouteValue] = React.useState(REGISTERSCREEN);
-   const [isLoading, setIsLoading] = React.useState(false);
+   const [isLoading, setIsLoading] = React.useState(true);
 
    const dispatch = useDispatch();
    const safeAreaBgColor = useSelector(state => state.safeArea.color);
    const vCardProfile = useSelector(state => state.profile.profileDetails);
    React.useEffect(() => {
-      setIsLoading(true);
       setTimeout(async () => {
          if (Object.keys(vCardProfile).length === 0) {
             const vCardProfileLocal = await AsyncStorage.getItem('vCardProfile');

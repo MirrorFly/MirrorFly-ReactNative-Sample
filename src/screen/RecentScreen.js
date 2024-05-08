@@ -209,10 +209,10 @@ const RecentScreen = () => {
             style={styles.pagerView}
             initialPage={index}
             onPageSelected={e => setIndex(e.nativeEvent.position)}>
-            <View key="1">
+            <View style={{ flex: 1 }} key="1">
                <RecentChat />
             </View>
-            <View key="2">
+            <View style={{ flex: 1 }} key="2">
                <RecentCalls />
             </View>
          </PagerView>

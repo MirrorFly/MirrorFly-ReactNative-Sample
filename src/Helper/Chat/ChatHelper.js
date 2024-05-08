@@ -656,7 +656,7 @@ export const handleImagePickerOpenCamera = async () => {
             console.log('user cancel', error.message);
             return {};
          });
-   } else if (camera_permission && storage_permission) {
+   } else if (camera_permission || storage_permission) {
       openSettings();
    }
    if (cameraPermission === RESULTS.BLOCKED) {

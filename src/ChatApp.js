@@ -23,7 +23,6 @@ import {
 import { getCurrentUserJid } from './redux/Actions/AuthAction';
 import { navigate } from './redux/Actions/NavigationAction';
 import { profileDetail } from './redux/Actions/ProfileAction';
-import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction';
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
 import { getAppInitialized, getAppSchema } from './uikitHelpers/uikitMethods';
@@ -136,6 +135,10 @@ const RootNavigation = props => {
       return jid ? <RecentStackNavigation /> : <StackNavigationPage InitialValue={initialRouteValue} />;
    };
 
+   if (isLoading) {
+      return <SplashScreen />;
+   }
+
    return (
       <>
          {/** <Box safeAreaBottom backgroundColor={safeAreaBgColor} />
@@ -161,7 +164,7 @@ const RootNavigation = props => {
                linking={linking}
                ref={navigationRef}
                theme={scheme === 'dark' ? ApplicationTheme.darkTheme : ApplicationTheme.lightTheme}>
-               {isLoading ? <SplashScreen /> : renderStactNavigation()}
+               {renderStactNavigation()}
             </NavigationContainer>
          </SafeAreaView>
          <Box safeAreaBottom backgroundColor={safeAreaBgColor} />

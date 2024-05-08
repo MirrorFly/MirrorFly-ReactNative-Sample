@@ -81,7 +81,7 @@ function MediaPreView() {
             {componentSelectedImages.map((item, i) => {
                const type = getType(item?.fileDetails?.type);
                return (
-                  <View key={`tab${i + 1}`}>
+                  <View style={commonStyles.flex1} key={`tab${i + 1}`}>
                      {
                         {
                            image: (

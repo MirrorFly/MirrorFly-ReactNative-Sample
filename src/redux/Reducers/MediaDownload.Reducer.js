@@ -1,5 +1,5 @@
 import { getObjectDeepClone } from '../reduxHelper';
-import { RESET_STORE, UPDATE_MEDIA_DOWNLOAD_DATA } from '../Actions/Constants';
+import { CANCEL_MEDIA_DOWNLOAD_DATA, RESET_STORE, UPDATE_MEDIA_DOWNLOAD_DATA } from '../Actions/Constants';
 
 const initialState = {
    id: null,
@@ -19,6 +19,16 @@ const mediaDownloadReducer = (state = initialStateClone, action) => {
                   [action.payload.msgId]: action.payload,
                },
             },
+         };
+      case CANCEL_MEDIA_DOWNLOAD_DATA:
+         const { msgId } = action.payload;
+         const newData = { ...state.data };
+         delete newData[msgId];
+
+         return {
+            ...state,
+            data: newData,
+            id: Date.now(),
          };
       case RESET_STORE:
          return getObjectDeepClone(initialState);

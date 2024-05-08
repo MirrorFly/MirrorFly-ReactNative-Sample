@@ -1,6 +1,6 @@
 import { Box, Text, Toast } from 'native-base';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { batch, useDispatch, useSelector } from 'react-redux';
 import { showToast } from '../Helper';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import SDK from '../SDK/SDK';
@@ -9,6 +9,7 @@ import { mediaStatusConstants } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import { CancelMediaUpload, RetryMediaUpload, updateUploadStatus } from '../redux/Actions/ConversationAction';
 import Store from '../redux/store';
+import { cancelDownloadData } from '../redux/Actions/MediaDownloadAction';
 
 const toastId = 'network-error-upload-download';
 const toastRef = React.createRef(false);
@@ -82,7 +83,10 @@ const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus
                uploadStatus: 7,
                downloadStatus: 7,
             };
-            dispatch(CancelMediaUpload(cancelObj));
+            batch(() => {
+               dispatch(CancelMediaUpload(cancelObj));
+               dispatch(cancelDownloadData(cancelObj));
+            });
          }
       }
    };
@@ -101,7 +105,11 @@ const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus
 
    const handleCancelUpload = () => {
       if (getMediaProgressSource(msgId)?.source) {
-         getMediaProgressSource(msgId).source?.cancel?.('User Cancelled!');
+         if (getMediaProgressSource(msgId)?.downloadJobId) {
+            getMediaProgressSource(msgId).source?.cancel?.(getMediaProgressSource(msgId)?.downloadJobId);
+         } else {
+            getMediaProgressSource(msgId).source?.cancel?.();
+         }
       }
       const cancelObj = {
          msgId,
@@ -109,7 +117,10 @@ const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus
          uploadStatus: 7,
          downloadStatus: 7,
       };
-      dispatch(CancelMediaUpload(cancelObj));
+      batch(() => {
+         dispatch(CancelMediaUpload(cancelObj));
+         dispatch(cancelDownloadData(cancelObj));
+      });
       if (uploadStatus === 8) {
          return true;
       }

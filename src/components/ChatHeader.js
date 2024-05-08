@@ -45,19 +45,19 @@ import {
    useSelectedChatMessage,
 } from '../hooks/useChatMessage';
 import useRosterData from '../hooks/useRosterData';
+import { ClearChatHistoryAction } from '../redux/Actions/ConversationAction';
 import { closePermissionModal, showPermissionModal } from '../redux/Actions/PermissionAction';
+import { clearLastMessageinRecentChat } from '../redux/Actions/RecentChatAction';
 import {
    clearConversationSearchData,
    setConversationSearchText,
    updateConversationSearchMessageIndex,
 } from '../redux/Actions/conversationSearchAction';
+import AlertModal from './AlertModal';
 import { chatInputRef } from './ChatInput';
 import ChatSearchInput from './ChatSearchInput';
 import LastSeen from './LastSeen';
 import NickName from './NickName';
-import AlertModal from './AlertModal';
-import { clearLastMessageinRecentChat } from '../redux/Actions/RecentChatAction';
-import { ClearChatHistoryAction } from '../redux/Actions/ConversationAction';
 
 function ChatHeader({ fromUserJId, handleBackBtn, handleReply, IsSearching, isSearchClose, chatUserProfile }) {
    const navigation = useNavigation();
@@ -219,9 +219,9 @@ function ChatHeader({ fromUserJId, handleBackBtn, handleReply, IsSearching, isSe
       const isAllowReply = MIX_BARE_JID.test(fromUserJId)
          ? userType && selectedMessagesArray[0]?.msgBody?.media?.is_uploading !== 1 && !selectedMessagesArray[0]?.recall
          : selectedMessagesArray[0]?.msgBody?.media?.is_uploading !== 1 && !selectedMessagesArray[0]?.recall;
-      return isAllowReply ? (
+      return isAllowReply && selectedMessagesArray?.length === 1 && selectedMessagesArray[0]?.msgStatus !== 3 ? (
          <IconButton style={[commonStyles.padding_10_15]} onPress={handleReplyMessage}>
-            {selectedMessagesArray?.length === 1 && selectedMessagesArray[0]?.msgStatus !== 3 && <ReplyIcon />}
+            <ReplyIcon />
          </IconButton>
       ) : null;
    };
@@ -492,141 +492,10 @@ function ChatHeader({ fromUserJId, handleBackBtn, handleReply, IsSearching, isSe
                         <MenuContainer menuItems={menuItems} />
                      </View>
                   )}
-                  {/* {renderForwardIcon()}
-                  {!selectedMsgs[0]?.recall && (
-                     <IconButton style={[commonStyles.padding_10_15]} onPress={handleFavourite}>
-                        <FavouriteIcon />
-                     </IconButton>
-                  )}
-                  {renderDeleteIcon()}
-                  {Object.keys(selectedChatMessages).length === 1 &&
-                     menuItems.length > 0 &&
-                     !selectedMsgs[0]?.recall && <MenuContainer menuItems={menuItems} />} */}
                </View>
             </View>
          )}
          {modalContent && <AlertModal {...modalContent} />}
-         <Modal visible={remove} onRequestClose={onClose}>
-            <ModalCenteredContent onPressOutside={onClose}>
-               <View style={styles.deleteModalContentContainer}>
-                  <Text style={styles.deleteModalContentText} numberOfLines={2}>
-                     Are you sure you want to delete selected Message?
-                  </Text>
-                  {isMediaFileInSelectedMessageForDelete.current === true && (
-                     <View style={[commonStyles.hstack, commonStyles.paddingVertical_12]}>
-                        <Checkbox
-                           value={isSelected}
-                           onValueChange={setSelection}
-                           style={styles.checkbox}
-                           _checked={{
-                              backgroundColor: '#3276E2',
-                              borderColor: '#3276E2',
-                           }}
-                           _pressed={{
-                              backgroundColor: '#3276E2',
-                              borderColor: '#3276E2',
-                           }}>
-                           <Text style={styles.deleteModalCheckboxLabel}>Delete media from my phone</Text>
-                        </Checkbox>
-                     </View>
-                  )}
-                  {deleteEveryOne ? (
-                     <View style={styles.deleteModalVerticalActionButtonsContainer}>
-                        <Pressable
-                           contentContainerStyle={styles.deleteModalVerticalActionButton}
-                           onPress={() => handleDeleteForMe(1)}>
-                           <Text style={styles.deleteModalActionButtonText}>DELETE FOR ME</Text>
-                        </Pressable>
-                        <Pressable
-                           contentContainerStyle={styles.deleteModalVerticalActionButton}
-                           onPress={() => setRemove(false)}>
-                           <Text style={styles.deleteModalActionButtonText}>CANCEL</Text>
-                        </Pressable>
-                        <Pressable
-                           contentContainerStyle={styles.deleteModalVerticalActionButton}
-                           onPress={() => handleDeleteForMe(2)}>
-                           <Text style={styles.deleteModalActionButtonText}>DELETE FOR EVERYONE</Text>
-                        </Pressable>
-                     </View>
-                  ) : (
-                     <View style={styles.deleteModalHorizontalActionButtonsContainer}>
-                        <Pressable
-                           contentContainerStyle={[
-                              styles.deleteModalHorizontalActionButton,
-                              commonStyles.marginRight_16,
-                           ]}
-                           onPress={() => setRemove(false)}>
-                           <Text style={styles.deleteModalActionButtonText}>CANCEL</Text>
-                        </Pressable>
-                        <Pressable
-                           contentContainerStyle={styles.deleteModalHorizontalActionButton}
-                           onPress={() => handleDeleteForMe(1)}>
-                           <Text style={styles.deleteModalActionButtonText}>DELETE FOR ME</Text>
-                        </Pressable>
-                     </View>
-                  )}
-               </View>
-            </ModalCenteredContent>
-         </Modal>
-         {/* {selectedMsgs?.length <= 0 ? (
-            <View style={styles.headerContainer}>
-               <IconButton onPress={handleBackBtn}>{LeftArrowIcon()}</IconButton>
-               <Pressable
-                  onPress={handleUserInfo}
-                  style={commonStyles.flex1}
-                  contentContainerStyle={styles.userAvatharAndInfoContainer}>
-                  <Avathar
-                     type={chatType}
-                     width={36}
-                     height={36}
-                     backgroundColor={colorCode}
-                     data={nickName}
-                     profileImage={profileImage}
-                  />
-                  <View style={styles.userNameAndLastSeenContainer}>
-                     <Text style={styles.userNameText} ellipsizeMode="tail" numberOfLines={1}>
-                        {nickName}
-                     </Text>
-                     <LastSeen jid={fromUserJId} />
-                  </View>
-               </Pressable>
-               {chatType !== CHAT_TYPE_GROUP && (
-                  <View style={styles.audioCallButton}>
-                     <IconButton onPress={makeOne2OneVideoCall} containerStyle={{ marginRight: 6 }}>
-                        <VideoCallIcon />
-                     </IconButton>
-                     <IconButton onPress={makeOne2OneAudioCall}>
-                        <AudioCall />
-                     </IconButton>
-                  </View>
-               )}
-               <View style={styles.menuIconContainer}>
-                  {selectedMsgs?.length < 2 && menuItems.length > 0 && <MenuContainer menuItems={menuItems} />}
-               </View>
-            </View>
-         ) : (
-            <View style={styles.subContainer}>
-               <View style={styles.selectedMsgsTextContainer}>
-                  <IconButton onPress={handleRemove}>
-                     <CloseIcon />
-                  </IconButton>
-                  <Text style={styles.selectedMsgsText}>{selectedMsgs?.length}</Text>
-               </View>
-               <View style={styles.selectedMsgsActionsContainer}>
-                  {renderReplyIcon()}
-                  {renderForwardIcon()}
-                  {!selectedMsgs[0]?.recall && (
-                     <IconButton style={[commonStyles.padding_10_15]} onPress={handleFavourite}>
-                        <FavouriteIcon />
-                     </IconButton>
-                  )}
-                  {renderDeleteIcon()}
-                  {selectedMsgs?.length === 1 && menuItems.length > 0 && !selectedMsgs[0]?.recall && (
-                     <MenuContainer menuItems={menuItems} />
-                  )}
-               </View>
-            </View>
-         )}
          {renderRoomExistModal()}
          <Modal visible={remove} onRequestClose={onClose}>
             <ModalCenteredContent onPressOutside={onClose}>
@@ -689,7 +558,7 @@ function ChatHeader({ fromUserJId, handleBackBtn, handleReply, IsSearching, isSe
                   )}
                </View>
             </ModalCenteredContent>
-         </Modal> */}
+         </Modal>
       </>
    );
 }
@@ -736,6 +605,7 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       alignItems: 'center',
       padding: 13,
+      height: 60,
       backgroundColor: ApplicationColors.headerBg,
       elevation: 2,
       shadowColor: '#181818',

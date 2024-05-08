@@ -1,4 +1,5 @@
-import { StackActions, createNavigationContainerRef } from '@react-navigation/native';
+import { CommonActions, StackActions, createNavigationContainerRef } from '@react-navigation/native';
+import { RECENTCHATSCREEN } from '../constant';
 
 export const navigationRef = createNavigationContainerRef();
 
@@ -31,4 +32,13 @@ export const getCurrentScreen = () => {
 
 export const popToTop = () => {
    navigationRef.dispatch(StackActions.popToTop());
+};
+
+export const popToRecentChatScreen = () => {
+   navigationRef.dispatch(
+      CommonActions.reset({
+         index: 0,
+         routes: [{ name: RECENTCHATSCREEN }],
+      }),
+   );
 };

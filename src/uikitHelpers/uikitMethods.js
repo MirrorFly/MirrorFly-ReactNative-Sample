@@ -165,12 +165,18 @@ export const mirrorflyNotificationHandler = async messageData => {
 };
 
 export const constructMessageData = remoteMessage => {
-   let remoteMessageData = {
-      remoteMessage,
-      apiBaseUrl: config.API_URL,
-      licenseKey: config.licenseKey,
-   };
-   mirrorflyNotificationHandler(remoteMessageData);
+   try {
+      const message = JSON.parse(remoteMessage.data.message);
+      remoteMessage.data = message.data;
+      let remoteMessageData = {
+         remoteMessage,
+         apiBaseUrl: config.API_URL,
+         licenseKey: config.licenseKey,
+      };
+      mirrorflyNotificationHandler(remoteMessageData);
+   } catch (error) {
+      mflog('Failed to construct notification data', error);
+   }
 };
 
 const setApplicationUrl = url => {

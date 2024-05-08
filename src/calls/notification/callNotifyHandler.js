@@ -20,7 +20,7 @@ import {
 } from '../../Helper/Calls/Constant';
 import { answerIncomingCall, declineIncomingCall, endOnGoingCall } from '../../Helper/Calls/Utility';
 import { removeAllDeliveredNotification } from '../../Service/remoteNotifyHandle';
-import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN } from '../../constant';
+import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN, MIRRORFLY_RN } from '../../constant';
 import { callDurationTimestamp, resetNotificationData, setNotificationData } from '../../redux/Actions/CallAction';
 import { updateChatConversationLocalNav } from '../../redux/Actions/ChatConversationLocalNavAction';
 import { navigate } from '../../redux/Actions/NavigationAction';
@@ -259,18 +259,19 @@ const onChatNotificationForeGround = async ({ type, detail }) => {
       if (RootNav.getCurrentScreen() === CHATSCREEN) {
          Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
          return RootNav.navigate(CONVERSATION_SCREEN);
+      } else {
+         RootNav.navigate(CHATSCREEN);
+         Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
       }
-      RootNav.navigate(CHATSCREEN);
-      Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
    }
 };
 
 const onChatNotificationBackGround = async ({ type, detail }) => {
    if (type === EventType.PRESS) {
       const {
-         notification: { data: { fromUserJID } = '' },
+         notification: { data: { fromUserJID = '', from_user = '' } = '' },
       } = detail;
-      let x = { screen: CHATSCREEN, fromUserJID };
+      let x = { screen: CHATSCREEN, fromUserJID: fromUserJID || from_user };
       const push_url = getApplicationUrl() + 'CHATSCREEN?fromUserJID=' + fromUserJID;
       Store.dispatch(navigate(x));
       Linking.openURL(push_url);

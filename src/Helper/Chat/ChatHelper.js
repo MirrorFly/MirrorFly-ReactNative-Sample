@@ -28,7 +28,7 @@ import {
    validateFileSize,
    validation,
 } from '../../components/chat/common/fileUploadValidation';
-import config, { offsetMappings } from '../../config';
+import config from '../../config';
 import { CAMERA_SCREEN, GALLERY_FOLDER_SCREEN, LOCATION_SCREEN, MOBILE_CONTACT_LIST_SCREEN } from '../../constant';
 import { getNetWorkStatus } from '../../hooks';
 import { getChatMessage, getReplyMessageVariable, removeReplyMessageVariable } from '../../hooks/useChatMessage';
@@ -444,7 +444,7 @@ export const getActiveConversationChatId = () => {
  * @param {string} userOrGroupId
  * @param {string} chatType
  */
-export const isActiveConversationUserOrGroup = (userOrGroupId, chatType = CHAT_TYPE_SINGLE) => {
+export const isActiveConversationUserOrGroup = userOrGroupId => {
    if (!userOrGroupId) {
       return false;
    }
@@ -635,7 +635,7 @@ export const handleImagePickerOpenCamera = async () => {
    let cameraPermission = await requestCameraPermission();
    let imageReadPermission = await requestStoragePermission();
    const camera_permission = await AsyncStorage.getItem('camera_permission');
-   AsyncStorage.setItem('camera_permission', 'true');
+   const storage_permission = await AsyncStorage.getItem('storage_permission');
    if (
       (cameraPermission === 'granted' || cameraPermission === 'limited') &&
       (imageReadPermission === 'granted' || imageReadPermission === 'limited')
@@ -656,14 +656,19 @@ export const handleImagePickerOpenCamera = async () => {
             console.log('user cancel', error.message);
             return {};
          });
-   } else if (camera_permission) {
+   } else if (camera_permission && storage_permission) {
       openSettings();
+   }
+   if (cameraPermission === RESULTS.BLOCKED) {
+      AsyncStorage.setItem('camera_permission', 'true');
+   }
+   if (imageReadPermission === RESULTS.BLOCKED) {
+      AsyncStorage.setItem('storage_permission', 'true');
    }
 };
 
 export const handleImagePickerOpenGallery = async () => {
    const storage_permission = await AsyncStorage.getItem('storage_permission');
-   AsyncStorage.setItem('storage_permission', 'true');
    const imageReadPermission = await requestStoragePermission();
    if (imageReadPermission === 'granted' || imageReadPermission === 'limited') {
       return ImagePicker.openPicker({
@@ -688,6 +693,9 @@ export const handleImagePickerOpenGallery = async () => {
          });
    } else if (storage_permission) {
       openSettings();
+   }
+   if (imageReadPermission === RESULTS.BLOCKED) {
+      AsyncStorage.setItem('storage_permission', 'true');
    }
 };
 

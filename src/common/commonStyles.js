@@ -50,6 +50,9 @@ export const pressableStyles = StyleSheet.create({
 });
 
 const commonStyles = StyleSheet.create({
+   dispaly_none: {
+      display: 'none',
+   },
    height_25: { height: 25 },
    screenHeaderHeight: { height: 65 },
    flex1: { flex: 1 },

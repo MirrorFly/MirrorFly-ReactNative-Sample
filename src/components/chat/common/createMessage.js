@@ -8,19 +8,18 @@ import {
    isSingleChat,
 } from '../../../Helper/Chat/ChatHelper';
 import { GROUP_UPDATE_ACTIONS, MSG_RECEIVE_STATUS, MSG_RECEIVE_STATUS_CARBON } from '../../../Helper/Chat/Constant';
-import { getMessageObjReceiver, getUserIdFromJid } from '../../../Helper/Chat/Utility';
-import SDK from '../../../SDK/SDK';
+import { getMessageObjReceiver } from '../../../Helper/Chat/Utility';
 import { changeTimeFormat } from '../../../common/TimeStamp';
+import { addChatMessage } from '../../../redux/Actions/ChatMessageAction';
 import { addChatConversationHistory } from '../../../redux/Actions/ConversationAction';
 import { updateRecentChat } from '../../../redux/Actions/RecentChatAction';
 import { addchatSeenPendingMsg } from '../../../redux/Actions/chatSeenPendingMsgAction';
 import store from '../../../redux/store';
-import { addChatMessage } from '../../../redux/Actions/ChatMessageAction';
 
 export const updateRecentChatMessage = (messgeObject, stateObject) => {
-   const { recentChatData, navigation } = stateObject;
+   const { recentChatData } = stateObject;
    const { rosterData: { recentChatNames } = {}, data: recentChatArray = [] } = recentChatData;
-   const { fromUserJid: activeChatJid } = navigation || {};
+
    if (!recentChatNames) {
       return;
    }
@@ -39,7 +38,7 @@ export const updateRecentChatMessage = (messgeObject, stateObject) => {
       UTCseconds = UTCseconds / 1000;
    }
 
-   const isActiveChatMsg = getUserIdFromJid(activeChatJid) === newChatTo;
+   const isActiveChatMsg = isActiveConversationUserOrGroup(fromUserId);
    /**
     * update the chat message if message alredy exist in recent chat
     */

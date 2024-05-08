@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,7 +32,6 @@ import {
    updateRecentChatSelectedItems,
    updateRecentChatSelectedItemsObj,
 } from '../redux/Actions/recentChatSearchAction';
-import { useNavigation } from '@react-navigation/native';
 
 const VideoSmallIconComponent = () => VideoSmallIcon('#767676');
 

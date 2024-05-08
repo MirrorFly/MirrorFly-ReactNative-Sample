@@ -73,6 +73,7 @@ function MediaPreView() {
    const renderMediaPages = React.useMemo(() => {
       return (
          <PagerView
+            onTouchEnd={Keyboard.dismiss}
             style={commonStyles.flex1}
             initialPage={activeIndex}
             ref={pagerRef}
@@ -102,7 +103,7 @@ function MediaPreView() {
 
    return (
       <KeyboardAvoidingView style={commonStyles.flex1} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-         <Pressable onPress={Keyboard.dismiss} style={styles.container}>
+         <View onPress={Keyboard.dismiss} style={styles.container}>
             <View
                style={[
                   commonStyles.hstack,
@@ -199,7 +200,7 @@ function MediaPreView() {
                   </Pressable>
                )}
             />
-         </Pressable>
+         </View>
          {/* <EmojiOverlay
             place={CHAT_INPUT}
             state={message}

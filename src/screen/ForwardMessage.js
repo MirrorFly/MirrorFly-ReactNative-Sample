@@ -210,7 +210,7 @@ const RecentChatSectionList = ({ data, handleChatSelect, selectedUsers, searchTe
                   status={item.profileDetails?.status}
                   handleItemSelect={handleChatSelect}
                   isSelected={selectedUsers[item.fromUserId]}
-                  isCheckboxAllowed={Object.keys(selectedUsers).length <= 4 || !userType} // allow max 5 contacts
+                  isCheckboxAllowed={Object.keys(selectedUsers).length <= 4} // allow max 5 contacts
                   searchText={searchText}
                />
             ))}

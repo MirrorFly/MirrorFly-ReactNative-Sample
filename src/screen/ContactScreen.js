@@ -69,7 +69,7 @@ function ContactScreen() {
       return () => {
          backHandler.remove();
       };
-   }, [isNewGrpSrn, isGroupInfoSrn]);
+   }, []);
 
    React.useEffect(() => {
       if (isNetworkconneted) {
@@ -78,11 +78,7 @@ function ContactScreen() {
    }, [isNetworkconneted]);
 
    const handleBackBtn = () => {
-      if (isNewGrpSrn || isGroupInfoSrn) {
-         RootNav.goBack();
-      } else {
-         RootNav.navigate(RECENTCHATSCREEN);
-      }
+      RootNav.goBack();
       return true;
    };
 
@@ -139,7 +135,7 @@ function ContactScreen() {
       }
    };
 
-   const fetchContactListFromSDKWithDebounce = debounce(fetchContactListFromSDK, 500);
+   const fetchContactListFromSDKWithDebounce = debounce(fetchContactListFromSDK, 700);
 
    const fetchContactList = text => {
       const _searchText = text?.trim?.();

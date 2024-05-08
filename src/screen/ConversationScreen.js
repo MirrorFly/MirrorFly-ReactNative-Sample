@@ -1,9 +1,10 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { BackHandler, ImageBackground, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
+import { AppState, BackHandler, ImageBackground, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { isActiveChatScreenRef } from '../Helper/Chat/ChatHelper';
 import { fetchGroupParticipants } from '../Helper/Chat/Groups';
+import SDK from '../SDK/SDK';
 import chatBackgroud from '../assets/chatBackgroud.png';
 import { getImageSource } from '../common/utils';
 import ChatHeader from '../components/ChatHeader';
@@ -18,8 +19,6 @@ import {
    useSelectedChatMessage,
 } from '../hooks/useChatMessage';
 import { resetUnreadCountForChat } from '../redux/Actions/RecentChatAction';
-import SDK from '../SDK/SDK';
-import { useAppState } from '../hooks';
 
 function ConversationScreen() {
    const navigation = useNavigation();
@@ -27,27 +26,34 @@ function ConversationScreen() {
    const { selectedMessagesArray, resetSelectedChatMessage } = useSelectedChatMessage();
    const [replyMessage, setReplyMessage] = React.useState({});
    const fromUserJId = useSelector(state => state.navigation.fromUserJid);
-   const appState = useAppState();
 
    useFocusEffect(
       React.useCallback(() => {
+         intiFuntion();
+         isActiveChatScreenRef.current = true;
          setReplyMessage(getReplyMessageVariable(fromUserJId));
+
+         const subscription = AppState.addEventListener('change', _state => {
+            if (_state === 'active') {
+               SDK.activeChatUser(fromUserJId || '');
+            } else if (_state === 'background') {
+               SDK.activeChatUser('');
+            }
+         });
          return () => {
+            SDK.activeChatUser('');
+            subscription.remove();
             isActiveChatScreenRef.current = false;
          };
-      }, [appState]),
+      }, [fromUserJId]),
    );
-
-   React.useEffect(() => {
-      intiFuntion();
-   }, []);
 
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
       return () => {
          backHandler.remove();
       };
-   }, [selectedMessagesArray]);
+   }, [selectedMessagesArray, navigation]);
 
    const handleBackBtn = () => {
       switch (true) {

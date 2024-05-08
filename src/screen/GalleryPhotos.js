@@ -30,6 +30,10 @@ const GalleryPhotos = () => {
    itemWidth = itemWidth - (itemWidth / 100) * 0.45;
 
    React.useEffect(() => {
+      fetchPhotos(grpView);
+   }, []);
+
+   React.useEffect(() => {
       if (routesSelectedImages.length) {
          const convertedData =
             routesSelectedImages.length > 0
@@ -44,8 +48,6 @@ const GalleryPhotos = () => {
    }, [routesSelectedImages]);
 
    React.useEffect(() => {
-      fetchPhotos(grpView);
-
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
 
       return () => {
@@ -97,7 +99,7 @@ const GalleryPhotos = () => {
          const sizeError = validateFileSize(item.image.fileSize, getType(item.type));
          const isImageSelected = selectedImages[item?.image?.uri];
 
-         if (selectedImages.length >= 10 && !isImageSelected) {
+         if (Object.keys(selectedImages).length >= 10 && !isImageSelected) {
             return showToast("Can't share more than 10 media items", {
                id: 'media-error-toast',
             });

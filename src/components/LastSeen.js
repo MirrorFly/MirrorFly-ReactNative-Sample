@@ -82,12 +82,14 @@ const LastSeen = props => {
    };
 
    const updateLastSeen = async (updateUserJid, userPresenceStatus, lastSeenSeconds) => {
-      if (!updateUserJid) return;
+      if (!updateUserJid) {
+         return;
+      }
       updateUserJid = formatUserIdToJid(updateUserJid);
       let seconds = '';
       let lastSeen = '';
       seconds = lastSeenSeconds || (await getLastSeenSeconds(updateUserJid));
-      lastSeen = seconds != -1 ? getLastseen(seconds) : '';
+      lastSeen = seconds !== -1 ? getLastseen(seconds) : '';
       userPresenceStatus =
          userPresenceStatus || (seconds > 0 ? USER_PRESENCE_STATUS_OFFLINE : USER_PRESENCE_STATUS_ONLINE);
       setLastSeenData({

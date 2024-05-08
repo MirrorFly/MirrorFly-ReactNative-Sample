@@ -53,6 +53,7 @@ const RenderItem = ({ item, onhandlePress, selectedUsers }) => {
             }}
             onChange={Platform.OS !== 'ios' && handlePress}
             value={isChecked}
+            disabled={Platform.OS === 'ios'}
             style={styles.checkbox}
          />
       );

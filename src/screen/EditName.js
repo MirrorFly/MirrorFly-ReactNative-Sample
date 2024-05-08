@@ -1,8 +1,10 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { Dimensions, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { showToast } from '../Helper';
+import { calculateKeyboardVerticalOffset } from '../Helper/Chat/ChatHelper';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { SDK } from '../SDK';
 import IconButton from '../common/IconButton';
 import { LeftArrowIcon } from '../common/Icons';
@@ -11,9 +13,7 @@ import commonStyles from '../common/commonStyles';
 import EmojiInput from '../components/EmojiInput';
 import ApplicationColors from '../config/appColors';
 import { useNetworkStatus } from '../hooks';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { getUserImage, getUserName } from '../hooks/useRosterData';
-import { calculateKeyboardVerticalOffset } from '../Helper/Chat/ChatHelper';
 
 const LeftArrowComponent = () => LeftArrowIcon();
 
@@ -30,8 +30,6 @@ const EditName = () => {
    const headerBg = useSelector(state => state.safeArea.color);
    const [value, setValue] = React.useState(title);
    const [okClicked, setOkClicked] = React.useState(false);
-   const { height } = Dimensions.get('window');
-
    const togglOkCLick = () => {
       setOkClicked(!okClicked);
    };

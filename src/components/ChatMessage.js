@@ -1,4 +1,5 @@
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Keyboard, Linking, Platform, Pressable, StyleSheet, View } from 'react-native';
 import FileViewer from 'react-native-file-viewer';
@@ -14,9 +15,10 @@ import MessagePressable from '../common/MessagePressable';
 import { getConversationHistoryTime } from '../common/TimeStamp';
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
-import { INVITE_APP_URL, INVITE_SMS_CONTENT, MEDIA_POST_PRE_VIEW_SCREEN, NOTIFICATION } from '../constant';
+import { CONNECTED, INVITE_APP_URL, INVITE_SMS_CONTENT, MEDIA_POST_PRE_VIEW_SCREEN, NOTIFICATION } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import { isSelectingMessages, useChatMessage, useSelectedChatMessage } from '../hooks/useChatMessage';
+import AlertModal from './AlertModal';
 import AudioCard from './AudioCard';
 import ContactCard from './ContactCard';
 import DeletedMessage from './DeletedMessage';
@@ -27,10 +29,9 @@ import NickName from './NickName';
 import NotificationMessage from './NotificationMessage';
 import TextCard from './TextCard';
 import VideoCard from './VideoCard';
-import AlertModal from './AlertModal';
-import Clipboard from '@react-native-clipboard/clipboard';
 
 const ChatMessage = props => {
+   const isFocused = useIsFocused();
    const xmppConnection = useSelector(state => state.connection.xmppStatus);
    const currentUserJID = useSelector(state => state.auth.currentUserJID);
    const fromUserJId = useSelector(state => state.navigation.fromUserJid);
@@ -72,21 +73,19 @@ const ChatMessage = props => {
 
    const isInternetReachable = useNetworkStatus();
 
-   useFocusEffect(
-      React.useCallback(() => {
-         isActiveChatScreenRef.current = true;
-         if (
-            !isSender &&
-            msgStatus === 1 &&
-            deleteStatus === 0 &&
-            recallStatus === 0 &&
-            isActiveChatScreenRef.current
-         ) {
-            const groupJid = MIX_BARE_JID.test(fromUserJId) ? fromUserJId : '';
-            SDK.sendSeenStatus(publisherJid, msgId, groupJid);
-         }
-      }, [xmppConnection]),
-   );
+   React.useEffect(() => {
+      if (
+         !isSender &&
+         msgStatus === 1 &&
+         deleteStatus === 0 &&
+         recallStatus === 0 &&
+         isActiveChatScreenRef.current &&
+         xmppConnection === CONNECTED
+      ) {
+         const groupJid = MIX_BARE_JID.test(fromUserJId) ? fromUserJId : '';
+         SDK.sendSeenStatus(publisherJid, msgId, groupJid);
+      }
+   }, [xmppConnection, isFocused]);
 
    React.useEffect(() => {
       if (is_uploading === 0 || is_uploading === 1 || is_uploading === 3 || is_uploading === 7) {
@@ -379,7 +378,7 @@ const ChatMessage = props => {
    );
 
    if (deleteStatus) {
-      return null;
+      return <View style={styles.deleteContainer} />;
    }
 
    if (message_type === NOTIFICATION) {
@@ -419,6 +418,9 @@ const styles = StyleSheet.create({
       backgroundColor: '#66E824',
    },
    flex1: { flex: 1 },
+   deleteContainer: {
+      marginBottom: 0.2,
+   },
    messageContainer: {
       marginBottom: 6,
    },

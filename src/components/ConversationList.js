@@ -40,7 +40,7 @@ function ConversationList({ chatUserJid }) {
          return data;
       }
       return [];
-   }, [messages, chatUserJid]);
+   }, [messages, chatUserId]);
 
    const fetchData = async () => {
       if (!messageList.length) {

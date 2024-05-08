@@ -6,6 +6,7 @@ function MediaBar({ msgId }) {
    const { data: mediaDownloadData = {} } = useSelector(state => state.mediaDownloadData);
 
    const { data: mediaUploadData = {} } = useSelector(state => state.mediaUploadData);
+
    return mediaDownloadData[msgId]?.progress || mediaUploadData[msgId]?.progress ? (
       <Bar
          useNativeDriver={true}

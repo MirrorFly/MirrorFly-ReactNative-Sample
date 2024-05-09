@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import { debounce } from 'lodash-es';
 import React from 'react';
 import {
    ActivityIndicator,
@@ -24,11 +25,10 @@ import FlatListView from '../components/FlatListView';
 import ScreenHeader from '../components/ScreenHeader';
 import config from '../config';
 import ApplicationColors from '../config/appColors';
-import { CHATSCREEN, GROUP_INFO, NEW_GROUP, RECENTCHATSCREEN } from '../constant';
+import { CHATSCREEN, GROUP_INFO, NEW_GROUP } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import { getUserName } from '../hooks/useRosterData';
 import { navigate } from '../redux/Actions/NavigationAction';
-import { debounce } from 'lodash-es';
 
 const contactPaginationRefInitialValue = {
    nextPage: 1,
@@ -214,7 +214,6 @@ function ContactScreen() {
                if (statusCode === 200) {
                   fetchGroupParticipants(jid);
                   RootNav.goBack();
-                  return true;
                } else {
                   showToast(message, { id: 'ADD_PARTICIPANTS_ERROR' });
                }
@@ -226,8 +225,7 @@ function ContactScreen() {
             const { statusCode, message } = await SDK.createGroup(grpName, Object.keys(selectedUsers), profileImage);
             if (statusCode === 200) {
                showToast('Group created successfully', { id: 'Group_created_successfully' });
-               RootNav.reset(RECENTCHATSCREEN);
-               return true;
+               RootNav.popToTop();
             } else {
                showToast(message, { id: 'CREATE_GROUP_ERROR' });
             }

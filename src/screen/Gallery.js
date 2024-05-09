@@ -9,12 +9,10 @@ import Pressable from '../common/Pressable';
 import commonStyles from '../common/commonStyles';
 import ScreenHeader from '../components/ScreenHeader';
 import ApplicationColors from '../config/appColors';
-import useRosterData from '../hooks/useRosterData';
-import { addGalleryAlbum } from '../redux/Actions/GalleryAction';
-import store from '../redux/store';
-import { mflog } from '../uikitHelpers/uikitMethods';
 import { GALLERY_PHOTOS_SCREEN } from '../constant';
 import { selectedMediaIdRef } from '../hooks/useChatMessage';
+import useRosterData from '../hooks/useRosterData';
+import { mflog } from '../uikitHelpers/uikitMethods';
 
 const Gallery = () => {
    const navigation = useNavigation();
@@ -28,7 +26,7 @@ const Gallery = () => {
    let numColumns = 3;
    const deviceWidth = Dimensions.get('window').width;
    let itemWidth = deviceWidth / numColumns;
-   itemWidth = itemWidth - (itemWidth / 100) * 0.45;
+   itemWidth = itemWidth - (itemWidth / 100) * 0.6;
 
    const handleBackBtn = () => {
       navigation.goBack();
@@ -51,17 +49,20 @@ const Gallery = () => {
          const photo = await CameraRoll.getAlbums({
             assetType: 'All',
          });
+
          const _galleryData = await Promise.allSettled(
             photo.map(async item => {
                const params = {
-                  first: 5,
+                  first: 1,
                   assetType: 'All',
                   include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'playableDuration', 'orientation'],
                   groupName: item.title,
                };
                return CameraRoll.getPhotos(params).then(res => {
                   const node = res.edges.find(data => {
-                     const filename = data.node.image.filename;
+                     return data;
+                     /**
+                     const filename = data.node.image.filename
                      return (
                         filename.endsWith('.jpg') ||
                         filename.endsWith('.jpeg') ||
@@ -69,6 +70,7 @@ const Gallery = () => {
                         filename.endsWith('.mp4') ||
                         filename.endsWith('.MOV')
                      );
+                     */
                   });
                   if (node) {
                      return {
@@ -93,7 +95,6 @@ const Gallery = () => {
                return 0;
             }
          });
-         store.dispatch(addGalleryAlbum(filtertedData));
          setGalleryData(filtertedData);
       } catch (error) {
          mflog('Photo_Error', error);
@@ -151,8 +152,8 @@ const Gallery = () => {
                   </Text>
                   <Text
                      style={[commonStyles.colorWhite, commonStyles.positionAbsolute, commonStyles.fontSize_11]}
-                     right={1}>
-                     {/** {item.value.count} */}
+                     right={5}>
+                     {item.value.count}
                   </Text>
                </View>
             </View>
@@ -164,7 +165,7 @@ const Gallery = () => {
       <>
          <View>
             <ScreenHeader title={'Send to ' + nickName} onhandleBack={handleBackBtn} />
-            <View>
+            <View style={commonStyles.mb_130}>
                <FlatList
                   numColumns={3}
                   data={galleryData}
@@ -174,7 +175,6 @@ const Gallery = () => {
                   renderItem={albumRender}
                   initialNumToRender={20}
                   maxToRenderPerBatch={20}
-                  windowSize={15}
                />
             </View>
          </View>

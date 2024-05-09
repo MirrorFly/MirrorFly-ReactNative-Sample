@@ -1,13 +1,11 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import { BackHandler, Platform, StyleSheet, View } from 'react-native';
-import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import Video from 'react-native-video';
 import IconButton from '../../common/IconButton';
 import { AudioMusicIcon, BackArrowIcon } from '../../common/Icons';
 import commonStyles from '../../common/commonStyles';
 import { useAppState } from '../../hooks';
-import { mflog } from '../../uikitHelpers/uikitMethods';
 import MediaControls, { PLAYER_STATES } from './media-controls';
 
 const VideoPlayer = () => {
@@ -18,9 +16,9 @@ const VideoPlayer = () => {
       },
    } = useRoute();
    const navigation = useNavigation();
-   const { uri } = fileDetails;
+   const { videoUri: _videoUri } = fileDetails;
    const videoPlayer = React.useRef(null);
-   const [videoUri, setVideoUri] = React.useState(uri);
+   const [videoUri, setVideoUri] = React.useState(_videoUri);
    const [currentTime, setCurrentTime] = React.useState(0);
    const [duration, setDuration] = React.useState(0);
    const [isLoading, setIsLoading] = React.useState(true);
@@ -43,24 +41,6 @@ const VideoPlayer = () => {
       return true;
    };
 
-   React.useLayoutEffect(() => {
-      if (Platform.OS === 'ios' && uri.includes('ph://')) {
-         RNConvertPhAsset.convertVideoFromUrl({
-            url: uri,
-            convertTo: 'mov',
-            quality: 'original',
-         })
-            .then(response => {
-               setVideoUri(response.path);
-            })
-            .catch(err => {
-               mflog(err);
-            });
-      } else {
-         setVideoUri(uri);
-      }
-   }, []);
-
    React.useEffect(() => {
       if (appState) {
          if (!onEnded) {
@@ -72,9 +52,7 @@ const VideoPlayer = () => {
    }, [appState]);
 
    const handleForcePause = () => {
-      videoPlayer?.current?.seek?.(0);
-      setCurrentTime(0);
-      setPaused(!paused);
+      setVideoUri(null);
    };
 
    const handlePause = () => {

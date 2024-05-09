@@ -1,12 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, Platform, StyleSheet, View } from 'react-native';
 import { getThumbBase64URL } from '../Helper/Chat/Utility';
 import { AudioMusicIcon, PlayIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
+import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import { VIDEO_PLAYER_SCREEN } from '../constant';
+import { mflog } from '../uikitHelpers/uikitMethods';
 
 const VideoInfo = props => {
    const navigation = useNavigation();
@@ -29,6 +31,25 @@ const VideoInfo = props => {
       };
    }
    const { fileDetails: { uri = '' } = {}, thumbImage = '' } = item;
+
+   React.useLayoutEffect(() => {
+      if (Platform.OS === 'ios' && uri.includes('ph://')) {
+         RNConvertPhAsset.convertVideoFromUrl({
+            url: uri,
+            convertTo: 'mov',
+            quality: 'original',
+         })
+            .then(response => {
+               item.fileDetails.videoUri = response.path;
+            })
+            .catch(err => {
+               mflog(err);
+            });
+      } else {
+         item.fileDetails.videoUri = uri;
+      }
+   }, []);
+
    const handleVideoPlayButton = () => {
       navigation.navigate(VIDEO_PLAYER_SCREEN, { item, audioOnly });
    };

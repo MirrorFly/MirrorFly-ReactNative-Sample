@@ -217,14 +217,7 @@ const GalleryPhotos = () => {
          }
          const data = await CameraRoll.getPhotos(params).then(res => {
             const filteredArray = res.edges.filter(item => {
-               const filename = item.node.image.filename;
-               return (
-                  filename.endsWith('.jpg') ||
-                  filename.endsWith('.jpeg') ||
-                  filename.endsWith('.png') ||
-                  filename.endsWith('.mp4') ||
-                  filename.endsWith('.MOV')
-               );
+               return item;
             });
             return {
                edges: filteredArray,

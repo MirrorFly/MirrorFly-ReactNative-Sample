@@ -166,8 +166,6 @@ export const mirrorflyNotificationHandler = async messageData => {
 
 export const constructMessageData = remoteMessage => {
    try {
-      const message = JSON.parse(remoteMessage.data.message);
-      remoteMessage.data = message.data;
       let remoteMessageData = {
          remoteMessage,
          apiBaseUrl: config.API_URL,

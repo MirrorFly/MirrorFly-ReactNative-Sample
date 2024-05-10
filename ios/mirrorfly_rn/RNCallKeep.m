@@ -918,10 +918,6 @@ RCT_EXPORT_METHOD(getAudioRoutes: (RCTPromiseResolveBlock)resolve
           NSLog(@"error setAudioCall %@", error.localizedDescription);
       }
       [audioSession unlockForConfiguration];
-//      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2500 * NSEC_PER_MSEC)), dispatch_get_main_queue(), ^{
-//          // Perform actions after 2500 milliseconds (2.5 seconds)
-////          [self validateAndRouteToSpeaker];
-//      });
   });
   
 //  NSUInteger categoryOptions = AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP;

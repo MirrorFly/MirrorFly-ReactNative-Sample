@@ -84,6 +84,7 @@ import {
    OUTGOING_CALL_SCREEN,
    PERMISSION_DENIED,
 } from './Constant';
+import { getNetworkState } from '../../hooks';
 
 let preventMultipleClick = false;
 let callBackgroundNotification = true;
@@ -113,7 +114,7 @@ const calculateAudioRoute = (
    const speakerPriority = isSpeakerEnabled ? AUDIO_ROUTE_SPEAKER : isVideoCall;
    const wiredHeadsetPriority = audioJack ? AUDIO_ROUTE_HEADSET : speakerPriority;
    const bluetoothPriority = bluetooth ? AUDIO_ROUTE_BLUETOOTH : wiredHeadsetPriority;
-  
+
    if (bluetooth && !previousBluetooth) {
       return AUDIO_ROUTE_BLUETOOTH;
    } else if (audioJack && !previousAudioJack) {
@@ -192,7 +193,7 @@ const handleHeadphoneDetection = async data => {
 };
 
 const debouncedHandleHeadphoneDetection = debounce(handleHeadphoneDetection, 140);
-const debouncedRingTone = debounceFunction(startOutgoingCallRingingTone, 900);
+const debouncedRingTone = debounceFunction(startOutgoingCallRingingTone, 1000);
 
 export const addHeadphonesConnectedListenerForCall = (shouldUpdateInitialValue = true) => {
    HeadphoneDetection.addListener(debouncedHandleHeadphoneDetection);
@@ -238,8 +239,8 @@ export const makeCalls = async (callType, userId) => {
    if (!userId || preventMultipleClick) {
       return;
    }
-   let connectionStatus = await AsyncStorage.getItem('connection_status');
-   if (connectionStatus === 'CONNECTED') {
+   let connectionStatus = getNetworkState();
+   if (connectionStatus) {
       preventMultipleClick = true;
       addHeadphonesConnectedListenerForCall();
       let userListData = await getCallData(userId);
@@ -289,8 +290,8 @@ const makeOne2OneCall = async (callType, usersList) => {
 };
 
 const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, groupId = null) => {
-   let connectionStatus = await AsyncStorage.getItem('connection_status');
-   if (connectionStatus === 'CONNECTED') {
+   let connectionStatus = getNetworkState();
+   if (connectionStatus) {
       let users = [],
          roomId = '',
          call = null,
@@ -569,7 +570,7 @@ export const declineIncomingCall = async () => {
 
 const debounceAudioRouteChangeListenerForIos = debounce(
    (currentCallUUID, output, reason) => updateAudioRouteTo(output, output, currentCallUUID, true, reason),
-   500,
+   300,
 );
 
 const handleAudioRouteChangeListenerForIos = () => {
@@ -1048,8 +1049,8 @@ export const updateAudioRouteTo = async (
          RNCallKeep.setAudioRoute(callUUID, audioRouteName);
          // if the user is on outgoing call screen and the call is in ringing state, then routing the audio to speaker will not route the ringing tone to speaker
          // because we are routing only the stream and not the ringing tone. So manually enabling/disabling the speaker
-         RNInCallManager.setSpeakerphoneOn(speakerEnabled);
-         RNInCallManager.setForceSpeakerphoneOn(speakerEnabled);
+         // RNInCallManager.setSpeakerphoneOn(speakerEnabled);
+         // RNInCallManager.setForceSpeakerphoneOn(speakerEnabled);
       } else {
          const { selectedAudioRoute: currentSelectedAudioRouting } = Store.getState().callControlsData || {};
          let prevIsWiredHeadsetConnected = getPreviousHeadsetStatus();
@@ -1068,7 +1069,6 @@ export const updateAudioRouteTo = async (
                   return;
                }
                if (
-                  getCallType() === 'video' &&
                   isSpeakerEnabledUI &&
                   audioRouteName?.toLowerCase?.() !== 'speaker' &&
                   !isBluetoothHeadsetConnected &&
@@ -1089,6 +1089,10 @@ export const updateAudioRouteTo = async (
                   !isWiredHeadsetConnected &&
                   !isBluetoothHeadsetConnected
                ) {
+                  updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, callUUID);
+                  return;
+               }
+               if (audioRouteName?.toLowerCase?.() === 'receiver' && isSpeakerEnabledUI) {
                   updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, callUUID);
                   return;
                }

@@ -154,7 +154,7 @@ const ContactItem = ({
                false: ApplicationColors.mainColor,
             }}
             value={isChecked}
-            disabled={Platform.OS === 'ios'}
+            disabled={true}
             style={styles.checkbox}
             onChange={Platform.OS !== 'ios' && handleChatItemSelect}
          />

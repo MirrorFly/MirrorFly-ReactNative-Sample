@@ -612,8 +612,9 @@ export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
          translatedMessage: '',
          media: {
             ...originalMsg.msgBody.media,
-            is_uploading: 8,
+            is_uploading: 2,
             caption: '',
+            is_downloaded: 2,
          },
       },
    };

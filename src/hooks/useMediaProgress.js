@@ -11,6 +11,7 @@ import { CancelMediaUpload, RetryMediaUpload, updateUploadStatus } from '../redu
 import Store from '../redux/store';
 import { cancelDownloadData } from '../redux/Actions/MediaDownloadAction';
 import { cancelMediaUploadData } from '../redux/Actions/MediaUploadAction';
+import { mflog } from '../uikitHelpers/uikitMethods';
 
 const toastId = 'network-error-upload-download';
 const toastRef = React.createRef(false);

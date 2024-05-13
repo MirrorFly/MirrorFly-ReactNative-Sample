@@ -29,7 +29,7 @@ lane :qa_firebase do
 	firebase_app_distribution(
 		app: "1:695832127329:ios:f8b6b0fab296a800",
 		groups: "reactnative",
-      release_notes: "React-Native ios build for bugfix - MRN-432, MRN-438, MRN-144, MRN-296, MRN-229, MRN-221, MRN-226, MRN-170, MRN-228, MRN-198, MRN-223, MRN-339, MRN-363, MRN-378, MRN-390, MRN-404, MRN-405, MRN-406, MRN-420, MRN-467, MRN-524, MRN-573, MRN-630, MRN-638, MRN-646, MRN-676, MRN-680, MRN-681, MRN-682",
+      release_notes: "React-Native ios build for bugfix - MRN-377, MRN-658,MRN-407, MRN-179, MRN-590, MRN-541,MRN-654, MRN-439, MRN-573, MRN-681, MRN-682",
 		firebase_cli_path: "/usr/local/bin/firebase",
 		firebase_cli_token: "1//0g53oUKW5j5bJCgYIARAAGBASNwF-L9Ir7Ei_6NzWEsyHOMMXytlesfgXShhLeJWRwbcf2MC3e7BaC5dwYlUZB-_osuQFsxy0Du0"
 	)

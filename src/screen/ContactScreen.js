@@ -204,8 +204,8 @@ function ContactScreen() {
       }
       if (isNetworkconneted) {
          toggleModel();
-         try {
-            if (isGroupInfoSrn) {
+         if (isGroupInfoSrn) {
+            try {
                const { statusCode, message } = await SDK.addParticipants(jid, grpName, Object.keys(selectedUsers));
                if (statusCode === 200) {
                   fetchGroupParticipants(jid);
@@ -213,20 +213,21 @@ function ContactScreen() {
                } else {
                   showToast(message, { id: 'ADD_PARTICIPANTS_ERROR' });
                }
+            } catch (error) {
+               showToast('Failed to add participants', { id: 'ADD_PARTICIPANTS_CATCH_ERROR' });
             }
-         } catch (error) {
-            showToast('Failed to add participants', { id: 'ADD_PARTICIPANTS_CATCH_ERROR' });
-         }
-         try {
-            const { statusCode, message } = await SDK.createGroup(grpName, Object.keys(selectedUsers), profileImage);
-            if (statusCode === 200) {
-               showToast('Group created successfully', { id: 'Group_created_successfully' });
-               RootNav.popToTop();
-            } else {
-               showToast(message, { id: 'CREATE_GROUP_ERROR' });
+         } else {
+            try {
+               const { statusCode, message } = await SDK.createGroup(grpName, Object.keys(selectedUsers), profileImage);
+               if (statusCode === 200) {
+                  showToast('Group created successfully', { id: 'Group_created_successfully' });
+                  RootNav.popToTop();
+               } else {
+                  showToast(message, { id: 'CREATE_GROUP_ERROR' });
+               }
+            } catch (error) {
+               showToast('Failed to create group', { id: 'CREATE_GROUP_CATCH_ERROR' });
             }
-         } catch (error) {
-            showToast('Failed to create group', { id: 'CREATE_GROUP_CATCH_ERROR' });
          }
          toggleModel();
       }

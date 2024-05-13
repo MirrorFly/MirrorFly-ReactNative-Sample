@@ -1,20 +1,21 @@
-const {
+import {
    ADD_CHAT_CONVERSATION_MESSAGE,
-   UPDATE_CHAT_CONVERSATION_MESSAGE,
-   RESET_STORE,
-   TOGGLE_SELECT_CHAT_CONVERSATION_MESSAGE,
-   RESET_SELECT_CHAT_CONVERSATION_MESSAGE,
-   CANCEL_MEDIA_UPLOAD,
-   RETRY_MEDIA_UPLOAD,
    CANCEL_MEDIA_DOWNLOAD,
-   UPDATE_UPLOAD_STATUS,
-   DELETE_MESSAGE_FOR_ME,
+   CANCEL_MEDIA_UPLOAD,
    DELETE_MESSAGE_FOR_EVERYONE,
-   UPDATE_SENT_SEEN_STATUS,
+   DELETE_MESSAGE_FOR_ME,
    MESSAGE_HIGHLIGHT,
+   RESET_CHAT_MESSAGES,
+   RESET_SELECT_CHAT_CONVERSATION_MESSAGE,
+   RESET_STORE,
+   RETRY_MEDIA_UPLOAD,
+   TOGGLE_SELECT_CHAT_CONVERSATION_MESSAGE,
+   UPDATE_CHAT_CONVERSATION_MESSAGE,
    UPDATE_MESSAGE_BODY_OBJECT,
-} = require('../Actions/Constants');
-const { getObjectDeepClone, StateToObj } = require('../reduxHelper');
+   UPDATE_SENT_SEEN_STATUS,
+   UPDATE_UPLOAD_STATUS,
+} from '../Actions/Constants';
+import { getObjectDeepClone } from '../reduxHelper';
 
 const initialState = {
    id: Date.now(),
@@ -62,7 +63,7 @@ const chatMessageReducer = (state = initialStateClone, action) => {
          };
       case UPDATE_CHAT_CONVERSATION_MESSAGE:
          const obj = action.payload;
-         const { msgId, msgStatus, msgType = '', type = '' } = obj;
+         const { msgId, msgStatus } = obj;
 
          const updatedMessage = {
             ...state[msgId], // Shallow copy of the existing message object
@@ -180,6 +181,7 @@ const chatMessageReducer = (state = initialStateClone, action) => {
             ...updatedState,
             id: Date.now(),
          };
+      case RESET_CHAT_MESSAGES:
       case RESET_STORE:
          return getObjectDeepClone(initialState);
       default:

@@ -58,7 +58,7 @@ const ContactList = () => {
       return () => {
          backHandler.remove();
       };
-   }, [selectedContacts]);
+   }, []);
 
    React.useEffect(() => {
       fetchContacts();
@@ -92,17 +92,8 @@ const ContactList = () => {
       }
    };
 
-   const resetSelected = () => {
-      selectedContactsRef.current = {};
-      setSelectedContacts([]);
-   };
-
    const goBackToPreviousScreen = () => {
-      if (selectedContacts.length) {
-         resetSelected();
-      } else {
-         navigation.goBack();
-      }
+      navigation.goBack();
       return true;
    };
 
@@ -162,6 +153,8 @@ const ContactList = () => {
    const clearSearch = () => {
       setSearchText('');
    };
+
+   const doNothing = () => {};
 
    const renderItem = ({ item }) => {
       const handlePress = () => handleSelectedItem(item);
@@ -238,6 +231,7 @@ const ContactList = () => {
          </>
       );
    }
+
    return (
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={commonStyles.flex1}>
          {renderHeader()}
@@ -257,6 +251,12 @@ const ContactList = () => {
                showsVerticalScrollIndicator={false}
                renderItem={renderItem}
                keyExtractor={item => item.recordID}
+               initialNumToRender={10}
+               maxToRenderPerBatch={20}
+               onScrollToIndexFailed={doNothing}
+               scrollEventThrottle={1}
+               windowSize={10}
+               onEndReachedThreshold={1}
             />
          ) : (
             <View style={styles.NoContact}>

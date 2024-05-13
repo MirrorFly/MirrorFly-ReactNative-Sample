@@ -19,6 +19,9 @@ import {
    useSelectedChatMessage,
 } from '../hooks/useChatMessage';
 import { resetUnreadCountForChat } from '../redux/Actions/RecentChatAction';
+import { deleteChatConversationById } from '../redux/Actions/ConversationAction';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import { resetChatMessageObject } from '../redux/Actions/ChatMessageAction';
 
 function ConversationScreen() {
    const navigation = useNavigation();
@@ -53,9 +56,9 @@ function ConversationScreen() {
       return () => {
          backHandler.remove();
       };
-   }, [selectedMessagesArray, navigation]);
+   }, [selectedMessagesArray, navigation, handleBackBtn]);
 
-   const handleBackBtn = () => {
+   const handleBackBtn = React.useCallback(() => {
       switch (true) {
          case selectedMessagesArray.length > 0:
             resetSelectedChatMessage();
@@ -71,6 +74,12 @@ function ConversationScreen() {
             break;
       }
       return true;
+   }, [navigation, resetSelectedChatMessage, selectedMessagesArray.length]);
+
+   const clearChatMessage = () => {
+      console.log('working');
+      dispatch(deleteChatConversationById(getUserIdFromJid(fromUserJId)));
+      dispatch(resetChatMessageObject());
    };
 
    const intiFuntion = () => {
@@ -88,10 +97,6 @@ function ConversationScreen() {
       setReplyMessage({});
       removeReplyMessageVariable(fromUserJId);
    };
-
-   const handleClearChat = () => {};
-   const handleGoMessageInfoScreen = () => {};
-   const handleConversationSearchPress = () => {};
 
    const renderChatHeader = React.useMemo(
       () => <ChatHeader fromUserJId={fromUserJId} handleBackBtn={handleBackBtn} handleReply={handleReply} />,

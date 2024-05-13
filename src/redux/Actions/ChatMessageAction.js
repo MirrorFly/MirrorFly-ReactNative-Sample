@@ -1,6 +1,7 @@
 import {
    ADD_CHAT_CONVERSATION_MESSAGE,
    MESSAGE_HIGHLIGHT,
+   RESET_CHAT_MESSAGES,
    RESET_SELECT_CHAT_CONVERSATION_MESSAGE,
    TOGGLE_SELECT_CHAT_CONVERSATION_MESSAGE,
    UPDATE_CHAT_CONVERSATION_MESSAGE,
@@ -54,5 +55,11 @@ export const updateChatMessageBodyObject = data => {
    return {
       type: UPDATE_MESSAGE_BODY_OBJECT,
       payload: data,
+   };
+};
+
+export const resetChatMessageObject = () => {
+   return {
+      type: RESET_CHAT_MESSAGES,
    };
 };

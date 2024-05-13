@@ -8,7 +8,7 @@ import { isKeyboardVisibleRef } from '../ChatApp';
 import { openLocationExternally, showCheckYourInternetToast, showToast } from '../Helper';
 import { isActiveChatScreenRef, uploadFileToSDK } from '../Helper/Chat/ChatHelper';
 import { MIX_BARE_JID } from '../Helper/Chat/Constant';
-import { getThumbBase64URL } from '../Helper/Chat/Utility';
+import { getThumbBase64URL, getUserIdFromJid } from '../Helper/Chat/Utility';
 import SDK from '../SDK/SDK';
 import { SandTimer } from '../common/Icons';
 import MessagePressable from '../common/MessagePressable';
@@ -82,7 +82,7 @@ const ChatMessage = props => {
          isActiveChatScreenRef.current &&
          xmppConnection === CONNECTED
       ) {
-         const groupJid = MIX_BARE_JID.test(fromUserJId) ? fromUserJId : '';
+         const groupJid = MIX_BARE_JID.test(fromUserJId) ? getUserIdFromJid(fromUserJId) : '';
          SDK.sendSeenStatus(publisherJid, msgId, groupJid);
       }
    }, [xmppConnection, isFocused]);

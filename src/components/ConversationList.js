@@ -21,12 +21,12 @@ function ConversationList({ chatUserJid }) {
    const [newMsgCount, setNewMsgCount] = React.useState(0);
    const messageListRef = React.useRef([]);
    const chatUserId = getUserIdFromJid(chatUserJid);
-   const messages = useSelector(state => state.chatConversationData.data[chatUserId]?.messages || {});
+   const messages = useSelector(state => state.chatConversationData.data[chatUserId]?.messages);
 
    const messageList = React.useMemo(() => {
       if (chatUserId) {
          const _previousMessageList = messageListRef.current;
-         const data = Object.values(messages) || [];
+         const data = Object.values(messages || {}) || [];
          data.reverse();
          if (
             data.length > _previousMessageList.length && // to check if there is any new msg

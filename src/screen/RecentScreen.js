@@ -47,7 +47,7 @@ const RecentScreen = () => {
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
       return () => backHandler.remove();
-   }, [selectedItems, isSearching]);
+   }, [navigaiton, selectedItems, isSearching, handleBackBtn]);
 
    React.useEffect(() => {
       if (recentChatData.length) {
@@ -58,21 +58,23 @@ const RecentScreen = () => {
       }
    }, [recentChatData]);
 
-   const handleBackBtn = () => {
-      if (selectedItems.length) {
-         dispatch(clearRecentChatSelectedItems());
-      }
-      if (isSearching) {
-         batch(() => {
-            dispatch(toggleRecentChatSearch(false));
-            dispatch(updateRecentChatSearchText(''));
-         });
-      }
-      if (!selectedItems.length && !isSearching && RootNav.getCurrentScreen() === RECENTCHATSCREEN) {
-         BackHandler.exitApp();
+   const handleBackBtn = React.useCallback(() => {
+      switch (true) {
+         case selectedItems.length:
+            dispatch(clearRecentChatSelectedItems());
+            break;
+         case isSearching:
+            batch(() => {
+               dispatch(toggleRecentChatSearch(false));
+               dispatch(updateRecentChatSearchText(''));
+            });
+            break;
+         default:
+            BackHandler.exitApp();
+            break;
       }
       return true;
-   };
+   }, [dispatch, isSearching, selectedItems.length]);
 
    // Function to handle tab press
    const handleTabPress = tabIndex => () => {

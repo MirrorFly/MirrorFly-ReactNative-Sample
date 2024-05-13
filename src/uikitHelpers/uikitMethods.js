@@ -29,7 +29,7 @@ export const getAppSchema = () => appSchema;
 export const setAppConfig = params => {
    const { appSchema: _appSchema = '', stackURL = '' } = params;
    appSchema = _appSchema || appSchema;
-   schemaUrl = stackURL || _appSchema || appSchema;
+   schemaUrl = _appSchema || stackURL;
 };
 
 export const mflog = (...args) => {
@@ -123,8 +123,7 @@ export const mirrorflyProfileUpdate = async args => {
 
 export const mirrorflyNotificationHandler = async messageData => {
    try {
-      const { remoteMessage = {}, apiBaseUrl = '', licenseKey = '', deepLink = '' } = messageData;
-      setApplicationUrl(deepLink);
+      const { remoteMessage = {}, apiBaseUrl = '', licenseKey = '' } = messageData;
       if (remoteMessage?.data?.push_from !== 'MirrorFly') {
          return;
       }

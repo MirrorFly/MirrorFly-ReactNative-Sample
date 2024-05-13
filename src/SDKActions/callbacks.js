@@ -145,7 +145,7 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateRosterData } from '../redux/Actions/rosterAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
-import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import { mflog, uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
 
 let localStream = null,
    localVideoMuted = false,

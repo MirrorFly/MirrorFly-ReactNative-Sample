@@ -10,6 +10,7 @@ import { useNetworkStatus } from '../hooks';
 import { CancelMediaUpload, RetryMediaUpload, updateUploadStatus } from '../redux/Actions/ConversationAction';
 import Store from '../redux/store';
 import { cancelDownloadData } from '../redux/Actions/MediaDownloadAction';
+import { cancelMediaUploadData } from '../redux/Actions/MediaUploadAction';
 
 const toastId = 'network-error-upload-download';
 const toastRef = React.createRef(false);
@@ -120,6 +121,7 @@ const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus
       batch(() => {
          dispatch(CancelMediaUpload(cancelObj));
          dispatch(cancelDownloadData(cancelObj));
+         dispatch(cancelMediaUploadData(cancelObj));
       });
       if (uploadStatus === 8) {
          return true;

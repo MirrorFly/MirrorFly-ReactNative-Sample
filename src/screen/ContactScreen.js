@@ -141,11 +141,7 @@ function ContactScreen() {
       const _searchText = text?.trim?.();
       searchTextValueRef.current = _searchText;
       if (isNetworkconneted) {
-         if (_searchText) {
-            fetchContactListFromSDKWithDebounce(_searchText);
-         } else {
-            fetchContactListFromSDK(_searchText);
-         }
+         fetchContactListFromSDKWithDebounce(_searchText);
       }
    };
 
@@ -265,6 +261,7 @@ function ContactScreen() {
             isLoading={isFetching}
             footerLoader={footerLoader}
             data={contactList}
+            searchText={searchText}
          />
       );
    };

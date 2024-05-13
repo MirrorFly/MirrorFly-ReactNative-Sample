@@ -29,10 +29,9 @@ function MessageInfo() {
       createdAt,
       msgStatus,
       msgBody: {
-         fileSize,
          message_type = '',
          message,
-         media: { file = {}, androidWidth, thumb_image = '', local_path = '' } = {},
+         media: { file_size, file = {}, androidWidth, thumb_image = '', local_path = '' } = {},
       } = {},
    } = messageObject;
    const imageUrl = local_path || file?.fileDetails?.uri;
@@ -163,7 +162,7 @@ function MessageInfo() {
                   messageObject={messageObject}
                   mediaUrl={imageUrl}
                   status={getMessageStatus(msgStatus)}
-                  fileSize={fileSize}
+                  fileSize={file_size}
                   timeStamp={getConversationHistoryTime(createdAt)}
                />
             );
@@ -173,7 +172,7 @@ function MessageInfo() {
                   message={messageObject}
                   status={getMessageStatus(msgStatus)}
                   timeStamp={getConversationHistoryTime(createdAt)}
-                  fileSize={fileSize}
+                  fileSize={file_size}
                   mediaUrl={imageUrl}
                />
             );

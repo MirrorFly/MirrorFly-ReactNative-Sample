@@ -387,7 +387,7 @@ export default function RecentChat() {
    );
 }
 
-export const HighlightedText = ({ text, searchValue = '', index }) => {
+export const HighlightedText = ({ text, searchValue = '', index = '' }) => {
    const parts = searchValue ? text.split(new RegExp(`(${escapeRegExpReservedChars(searchValue)})`, 'gi')) : [text];
 
    return (

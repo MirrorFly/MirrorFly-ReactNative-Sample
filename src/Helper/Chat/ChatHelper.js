@@ -1042,7 +1042,12 @@ export const handleUploadNextImage = res => {
 
    if (nextMessageKey) {
       const { msgBody = {} } = getChatMessage(nextMessageKey);
-      if (msgBody?.media && msgBody.media.is_uploading !== 2 && msgBody.media.is_uploading !== 7) {
+      if (
+         msgBody?.media &&
+         msgBody.media.is_uploading !== 1 &&
+         msgBody.media.is_uploading !== 2 &&
+         msgBody.media.is_uploading !== 7
+      ) {
          const updatedData = {
             msgBody: {
                media: {

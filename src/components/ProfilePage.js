@@ -146,7 +146,9 @@ const ProfilePage = props => {
    const handleCameraPicker = async () => {
       setOpen(false);
       const _image = await handleImagePickerOpenCamera();
-      if (!Object.keys(_image).length) return;
+      if (!Object.keys(_image).length) {
+         return;
+      }
       setImageUploading(true);
       let sdkRes;
       if (_image) {
@@ -154,24 +156,32 @@ const ProfilePage = props => {
       }
       if (sdkRes?.statusCode === 200) {
          setImageFileToken(sdkRes.imageFileToken);
-         await SDK.setUserProfile(
-            props?.selectProfileInfo?.nickName,
-            sdkRes.imageFileToken,
-            props?.selectProfileInfo?.status,
-            props?.selectProfileInfo?.mobileNumber,
-            props?.selectProfileInfo?.email,
-         );
-         setImageUploading(false);
+         setTimeout(async () => {
+            const { statusCode, message } = await SDK.setUserProfile(
+               props?.selectProfileInfo?.nickName,
+               sdkRes.imageFileToken,
+               props?.selectProfileInfo?.status,
+               props?.selectProfileInfo?.mobileNumber,
+               props?.selectProfileInfo?.email,
+            );
+            if (statusCode !== 200) {
+               showToast(message, { id: message });
+            }
+            setImageUploading(false);
+         }, 200);
       } else {
          showToast('Image upload failed', { id: 'Image upload failed' });
       }
+
       setImageUploading(false);
    };
 
    const handleGalleryPicker = async () => {
       setOpen(false);
       const _image = await handleImagePickerOpenGallery();
-      if (!Object.keys(_image).length) return;
+      if (!Object.keys(_image).length) {
+         return;
+      }
       setImageUploading(true);
       let sdkRes;
       if (_image) {
@@ -186,7 +196,7 @@ const ProfilePage = props => {
             props?.selectProfileInfo?.mobileNumber,
             props?.selectProfileInfo?.email,
          );
-         if (!statusCode == 200) {
+         if (statusCode !== 200) {
             showToast(message, { id: message });
          }
          setImageUploading(false);

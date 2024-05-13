@@ -1,18 +1,19 @@
-import React from 'react';
-import Avathar from '../common/Avathar';
-import useRosterData from '../hooks/useRosterData';
-import SDK from '../SDK/SDK';
-import { ActivityIndicator, StyleSheet, Text, View, FlatList, Platform, Keyboard } from 'react-native';
-import commonStyles from '../common/commonStyles';
-import ApplicationColors from '../config/appColors';
-import Pressable from '../common/Pressable';
 import CheckBox from '@react-native-community/checkbox';
 import { useRoute } from '@react-navigation/native';
-import { GROUP_INFO, NEW_GROUP } from '../constant';
+import React from 'react';
+import { ActivityIndicator, FlatList, Keyboard, Platform, StyleSheet, Text, View } from 'react-native';
 import { showToast } from '../Helper';
+import SDK from '../SDK/SDK';
+import Avathar from '../common/Avathar';
+import Pressable from '../common/Pressable';
+import commonStyles from '../common/commonStyles';
 import config from '../config';
+import ApplicationColors from '../config/appColors';
+import { GROUP_INFO, NEW_GROUP } from '../constant';
+import useRosterData from '../hooks/useRosterData';
+import { HighlightedText } from './RecentChat';
 
-const RenderItem = ({ item, onhandlePress, selectedUsers }) => {
+const RenderItem = ({ item, onhandlePress, selectedUsers, searchText }) => {
    let { nickName, image: imageToken, colorCode, status } = useRosterData(item?.userId);
    const { params: { prevScreen = '' } = {} } = useRoute();
    const [isChecked, setIsChecked] = React.useState(false);
@@ -65,9 +66,7 @@ const RenderItem = ({ item, onhandlePress, selectedUsers }) => {
             <View style={styles.wrapper}>
                <Avathar data={nickName} profileImage={imageToken} backgroundColor={colorCode} />
                <View style={[commonStyles.marginLeft_15, commonStyles.flex1]}>
-                  <Text style={styles.nickNameText} numberOfLines={1} ellipsizeMode="tail">
-                     {nickName}
-                  </Text>
+                  <HighlightedText text={nickName} searchValue={searchText} />
                   <Text style={styles.stautsText} numberOfLines={1} ellipsizeMode="tail">
                      {status}
                   </Text>
@@ -81,9 +80,15 @@ const RenderItem = ({ item, onhandlePress, selectedUsers }) => {
 };
 
 export default function FlatListView(props) {
-   const { selectedUsers, onhandlePress, isLoading, footerLoader, data } = props;
+   const { selectedUsers, onhandlePress, isLoading, footerLoader, data, searchText } = props;
    const renderItem = ({ item, index }) => (
-      <RenderItem item={item} index={index} onhandlePress={onhandlePress} selectedUsers={selectedUsers} />
+      <RenderItem
+         searchText={searchText}
+         item={item}
+         index={index}
+         onhandlePress={onhandlePress}
+         selectedUsers={selectedUsers}
+      />
    );
 
    const renderLoaderIfFetching = () => {

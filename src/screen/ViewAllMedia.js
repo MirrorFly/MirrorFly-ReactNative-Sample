@@ -353,6 +353,7 @@ const styles = StyleSheet.create({
       paddingHorizontal: 12,
       fontWeight: '500',
       color: ApplicationColors.black,
+      maxWidth: '95%',
    },
    tabContainer: {
       flex: 1,

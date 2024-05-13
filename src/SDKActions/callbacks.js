@@ -68,7 +68,6 @@ import {
 import {
    formatUserIdToJid,
    getLocalUserDetails,
-   handleChangeIntoDownloadingState,
    handleChangeIntoUploadingState,
    handleUploadNextImage,
 } from '../Helper/Chat/ChatHelper';
@@ -117,12 +116,12 @@ import {
 } from '../redux/Actions/CallAction';
 import { resetCallControlsStateAction, updateCallVideoMutedAction } from '../redux/Actions/CallControlsAction';
 import { resetCallModalToastDataAction } from '../redux/Actions/CallModalToasAction';
+import { updateChatMessage, updateSentSeenStatus } from '../redux/Actions/ChatMessageAction';
 import {
    ClearChatHistoryAction,
    DeleteChatHistoryAction,
    deleteMessageForEveryone,
    deleteMessageForMe,
-   updateChatConversationHistory,
    updateUploadStatus,
 } from '../redux/Actions/ConversationAction';
 import { updateDownloadData } from '../redux/Actions/MediaDownloadAction';
@@ -147,7 +146,6 @@ import { updateRosterData } from '../redux/Actions/rosterAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
 import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
-import { updateChatMessage, updateSentSeenStatus } from '../redux/Actions/ChatMessageAction';
 
 let localStream = null,
    localVideoMuted = false,
@@ -893,7 +891,9 @@ export const callBacks = {
    },
    mediaUploadListener: res => {
       store.dispatch(updateMediaUploadData(res));
-      // handleChangeIntoUploadingState(res.msgId);
+      if (res?.progress && res?.progress !== 100) {
+         handleChangeIntoUploadingState(res.msgId);
+      }
       if (res.progress === 100) {
          let updateObj = {
             statusCode: 200,

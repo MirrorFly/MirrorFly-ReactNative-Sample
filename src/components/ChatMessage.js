@@ -1,5 +1,5 @@
 import Clipboard from '@react-native-clipboard/clipboard';
-import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Keyboard, Linking, Platform, Pressable, StyleSheet, View } from 'react-native';
 import FileViewer from 'react-native-file-viewer';

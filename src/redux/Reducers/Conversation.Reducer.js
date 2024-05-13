@@ -1,14 +1,11 @@
-import {
-   getChatHistoryData,
-   getUpdatedHistoryData
-} from '../../Helper/Chat/ChatHelper';
+import { getChatHistoryData, getUpdatedHistoryData } from '../../Helper/Chat/ChatHelper';
 import {
    ADD_CHAT_CONVERSATION_HISTORY,
    CLEAR_CHAT_HISTORY,
    DELETE_CHAT_HISTORY,
    DELETE_CONVERSATION,
    RESET_STORE,
-   UPDATE_CHAT_CONVERSATION_HISTORY
+   UPDATE_CHAT_CONVERSATION_HISTORY,
 } from '../Actions/Constants';
 import { StateToObj, getObjectDeepClone } from '../reduxHelper';
 

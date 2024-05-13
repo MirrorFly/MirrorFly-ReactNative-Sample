@@ -52,7 +52,7 @@ function ConversationList({ chatUserJid }) {
    useFocusEffect(
       React.useCallback(() => {
          fetchData();
-      }, []),
+      }, [chatUserId]),
    );
 
    const chatMessageRender = React.useCallback(

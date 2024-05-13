@@ -108,7 +108,7 @@ const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus
          if (getMediaProgressSource(msgId)?.downloadJobId) {
             getMediaProgressSource(msgId).source?.cancel?.(getMediaProgressSource(msgId)?.downloadJobId);
          } else {
-            getMediaProgressSource(msgId).source?.cancel?.();
+            getMediaProgressSource(msgId).source?.cancel?.('User Cancelled!');
          }
       }
       const cancelObj = {

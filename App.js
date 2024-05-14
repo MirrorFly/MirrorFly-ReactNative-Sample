@@ -7,7 +7,6 @@ import config from './src/config';
 import { mirrorflyInitialize } from './src/uikitHelpers/uikitMethods';
 
 export const MirrorflyComponent = (props = {}) => {
-   
    const { hasNativeBaseProvider = false } = props;
    const renderCallComponent = () => {
       return Platform.OS === 'ios' ? <CallComponent hasNativeBaseProvider={hasNativeBaseProvider} /> : null;

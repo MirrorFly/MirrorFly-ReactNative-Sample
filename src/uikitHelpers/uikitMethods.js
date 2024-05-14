@@ -14,6 +14,7 @@ import { setNotificationForegroundService } from '../calls/notification/callNoti
 import { requestNotificationPermission } from '../common/utils';
 import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
 import config from '../config';
+import notifee from '@notifee/react-native';
 
 let uiKitCallbackListenersVal = {},
    appInitialized = false,
@@ -65,6 +66,7 @@ export const handleRegister = async (userIdentifier, fcmToken) => {
 };
 
 const initializeSetup = async () => {
+   Platform.OS === 'ios' && (await notifee.requestPermission());
    requestNotificationPermission();
    setNotificationForegroundService();
 };
@@ -179,7 +181,6 @@ export const getApplicationUrl = () => schemaUrl;
 export const setupCallScreen = async () => {
    //Permissions
    await initializeSetup();
-   console.log('Call Screen');
    if (Platform.OS === 'android') {
       AppRegistry.registerComponent('CallScreen', () => CallComponent);
    }

@@ -8,8 +8,6 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
--keep class io.realm.react.** { *; }
--dontwarn io.realm.react.**
 
 ## WebRTC
 -keep class com.cloudwebrtc.webrtc.** { *; }

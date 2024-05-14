@@ -3,11 +3,7 @@ import { ImageBackground, Platform, StyleSheet, Text, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { startIncomingCallTimer } from '../../Helper/Calls/Call';
-import {
-   answerIncomingCall,
-   closeCallModalActivity,
-   declineIncomingCall
-} from '../../Helper/Calls/Utility';
+import { answerIncomingCall, closeCallModalActivity, declineIncomingCall } from '../../Helper/Calls/Utility';
 import { capitalizeFirstLetter } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
 import Avathar from '../../common/Avathar';
@@ -35,9 +31,37 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
       startIncomingCallTimer();
    }, []);
 
+   /**
+   // React.useEffect(() => {
+   //    const backGroundNotificationRemove = async () => {
+   //       if (appState === false && isActive && userCallStatus !== "Disconnected") {
+   //          BackgroundTimer.clearTimeout(backGroundInterval);
+   //          backGroundInterval = BackgroundTimer.setTimeout(() => {
+   //             handleBackGround();
+   //          }, 200);
+   //       } else {
+   //          // BackgroundTimer.clearTimeout(backGroundInterval);
+   //          // let getDisplayedNotification = await notifee.getDisplayedNotifications();
+   //          // let cancelIDS = getDisplayedNotification?.find(res => res.id === notificationData.id)?.id;
+   //          // cancelIDS && stopForegroundServiceNotification(cancelIDS);
+   //       }
+   //    };
+   //    showCallModal && backGroundNotificationRemove();
+   // }, [appState, notificationData]);
+
+   // const handleBackGround = async () => {
+   //    // let displayedNotificationId = await notifee.getDisplayedNotifications();
+   //    // let cancelIDS = displayedNotificationId?.find(res => res.id === notificationData.id)?.id;
+   //    // await stopForegroundServiceNotification();
+   //    // if (userCallStatus !== CALL_STATUS_DISCONNECTED)
+   //    // await callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'INCOMING_CALL', false);
+   //    ActivityModule.closeActivity();
+   // };
+   */
+
    const handleClosePress = () => {
       if (Platform.OS === 'android') {
-         // dispatch(closeCallModal());
+         /**  dispatch(closeCallModal());*/
          closeCallModalActivity();
       }
    };
@@ -86,7 +110,12 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
          {callStatus?.includes('Incoming') && (
             <GestureHandlerRootView style={styles.actionButtonWrapper}>
                <GestureAnimationScreen acceptCall={acceptCall} declineCall={declineCall} callType={callType} />
-
+               {/* <RectButton onPress={declineCall} style={[styles.actionButton, styles.redButton]}>
+                  <Text style={styles.actionButtonText}> Reject </Text>
+               </RectButton>
+               <RectButton onPress={acceptCall} style={[styles.actionButton, styles.greenButton]}>
+                  <Text style={styles.actionButtonText}> Accept </Text>
+               </RectButton> */}
             </GestureHandlerRootView>
          )}
       </ImageBackground>

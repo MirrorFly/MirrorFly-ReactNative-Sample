@@ -4,11 +4,15 @@ import useFetchImage from '../hooks/useFetchImage';
 import { useNetworkStatus } from '../hooks';
 import { getUsernameGraphemes } from '../Helper/index';
 import ApplicationColors from '../config/appColors';
+import { CHAT_TYPE_GROUP } from '../Helper/Chat/Constant';
+import { getImageSource } from './utils';
+import grpImage from '../assets/ic_grp_bg.png';
 import commonStyles from './commonStyles';
 
 const defaultImageDimension = 48;
 
 const Avathar = ({ profileImage, imageStyle, transparentBackgroundForImage = true, imageProps = {}, ...props }) => {
+   const { type = '' } = props;
    const [isImageLoadError, setIsImageLoadError] = React.useState(false);
    const [isImageLoading, setIsImageLoading] = React.useState(false);
    const isNetworkConnected = useNetworkStatus();
@@ -32,6 +36,10 @@ const Avathar = ({ profileImage, imageStyle, transparentBackgroundForImage = tru
       setIsImageLoading(false);
    };
 
+   if (type === CHAT_TYPE_GROUP && !profileImage) {
+      return <Image {...imageProps} style={imageStyle || styles.imageDiv(props)} source={getImageSource(grpImage)} />;
+   }
+
    if (isLoading && profileImage) {
       return (
          <View style={imageStyle || styles.imageDiv(props, false)}>
@@ -40,7 +48,7 @@ const Avathar = ({ profileImage, imageStyle, transparentBackgroundForImage = tru
       );
    }
 
-   return profileImage && !isImageLoadError && imageUrl ? (
+   return Boolean(profileImage) && !isImageLoadError && Boolean(imageUrl) ? (
       <View style={commonStyles.positionRelative}>
          <Image
             {...imageProps}

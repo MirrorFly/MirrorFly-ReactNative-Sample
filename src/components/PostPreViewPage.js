@@ -1,98 +1,100 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { BackHandler, View } from 'react-native';
+import { BackHandler, StyleSheet, Text, View } from 'react-native';
+import PagerView from 'react-native-pager-view';
 import { useSelector } from 'react-redux';
-import ImageInfo from './ImageInfo';
-import VideoInfo from './VideoInfo';
+import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import IconButton from '../common/IconButton';
 import { BackArrowIcon } from '../common/Icons';
-import { Icon, IconButton, Text } from 'native-base';
-import { useNavigation } from '@react-navigation/native';
+import commonStyles from '../common/commonStyles';
+import PostView from './PostView';
 
 const PostPreViewPage = () => {
-  const chatSelectedMediaImage = useSelector(
-    state => state.chatSelectedMedia.data,
-  );
-  const navigation = useNavigation()
-  const { msgBody } = chatSelectedMediaImage;
-  const currentUserJID = useSelector(state => state.auth.currentUserJID);
-  const isSender = currentUserJID === chatSelectedMediaImage?.fromUserJid;
+   const { params: { jid = '', msgId = '' } = {} } = useRoute();
+   const navigation = useNavigation();
+   const currentUserJID = useSelector(state => state.auth.currentUserJID);
+   const chatUserId = getUserIdFromJid(jid);
+   const { messages } = useSelector(state => state.chatConversationData?.data?.[chatUserId] || []);
+   const chatMessageData = useSelector(state => state.chatMessageData);
 
-  /** const openBottomSheet = async () => {
-    try {
-      const base64Image = SingleSelectedImage.thumb_image;
-      const shareOptions = {
-        type: 'image/png',
-        url: `data:image/png;base64,${base64Image}`,
-        message: 'Hey This is sample message..!!!',
+   const [title, setTitle] = React.useState('');
+   const [currentIndex, setCurrentIndex] = React.useState(0);
+
+   React.useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
+      return () => {
+         backHandler.remove();
       };
-      await Share.share(shareOptions);
-    } catch (error) {
-      console.error('Error sharing image:', error);
-    }
-  }; */
+   }, []);
 
-  const handleBackBtn = () => {
-    navigation.goBack()
-    return true;
-  };
+   const handleBackBtn = () => {
+      navigation.goBack();
+      return true;
+   };
 
-  React.useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      handleBackBtn,
-    );
+   React.useEffect(() => {
+      const isSender = currentUserJID === messageList[currentIndex]?.publisherJid;
+      setTitle(isSender ? 'Sent' : 'Received');
+   }, [currentIndex]);
 
-    return () => {
-      backHandler.remove();
-    };
-  }, []);
+   const handlePageSelected = event => {
+      setCurrentIndex(event.nativeEvent.position);
+   };
 
-  return (
-    <View style={{ flex: 1 }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          padding: 12,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          backgroundColor: '#F2F2F2',
-          width: '100%',
-          borderBottomColor: '#0000001A',
-          borderBottomWidth: 1,
-          zIndex: 10,
-        }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <IconButton
-            onPress={handleBackBtn}
-            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-            borderRadius="full"
-            icon={<Icon as={BackArrowIcon} name="emoji-happy" />}
-          />
-          <Text
-            style={{
-              color: '#000',
-              fontSize: 20,
-              fontWeight: '500',
-              marginLeft: 20,
-            }}>
-            {isSender ? 'Sent' : 'Received'} Media
-          </Text>
-        </View>
-        {/* <Pressable onPress={openBottomSheet}>
-                    <ShareIcon width="24" height="24" color={"#000"} />
-                </Pressable> */}
+   const messageList = React.useMemo(() => {
+      const data = Object.values(messages) || [];
+      const filteredMessages = data.filter(message => {
+         const { msgId: _msgId, message_type } = message;
+         const _message = chatMessageData[_msgId];
+         const { deleteStatus, recallStatus, msgBody: { media: { is_downloaded, is_uploading } = {} } = {} } = _message;
+         return (
+            ['image', 'video', 'audio'].includes(message_type) &&
+            deleteStatus === 0 &&
+            recallStatus === 0 &&
+            is_downloaded === 2 &&
+            is_uploading === 2
+         );
+      });
+      return filteredMessages;
+   }, [messages, chatMessageData, jid]);
+
+   const initialPage = React.useMemo(() => {
+      const selectedMsgIndex = messageList.findIndex(message => message.msgId === msgId);
+      setCurrentIndex(selectedMsgIndex);
+      return selectedMsgIndex === -1 ? messageList.length - 1 : selectedMsgIndex;
+   }, []);
+
+   const renderMediaPages = React.useMemo(() => {
+      return (
+         <PagerView style={commonStyles.flex1} initialPage={initialPage} onPageScroll={handlePageSelected}>
+            {messageList.map(item => (
+               <PostView key={item.msgId} item={item} />
+            ))}
+         </PagerView>
+      );
+   }, [messageList, chatMessageData]);
+
+   return (
+      <View style={commonStyles.flex1}>
+         <View style={styles.header}>
+            <IconButton onPress={handleBackBtn}>
+               <BackArrowIcon />
+            </IconButton>
+            <Text style={styles.titleText}>{title} Media</Text>
+         </View>
+         {renderMediaPages}
       </View>
-      {
-        {
-          image: (
-            <ImageInfo selectedMedia={msgBody} handleBackBtn={handleBackBtn} />
-          ),
-          video: (
-            <VideoInfo selectedMedia={msgBody} handleBackBtn={handleBackBtn} />
-          ),
-        }[[msgBody.message_type]]
-      }
-    </View>
-  );
+   );
 };
+
+const styles = StyleSheet.create({
+   header: { flexDirection: 'row', alignItems: 'center', height: 65 },
+   titleText: {
+      color: '#000',
+      fontSize: 20,
+      fontWeight: '500',
+      marginLeft: 20,
+   },
+});
 
 export default PostPreViewPage;

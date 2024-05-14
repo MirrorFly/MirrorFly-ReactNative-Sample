@@ -84,7 +84,7 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
          return;
       }
       RNCallKeep.getAudioRoutes().then(_routes => {
-         /** sample data from 'getAudioRoutes' method   
+         /** sample data from 'getAudioRoutes' method
           * const sampleAudioRoutes = [
             { "name": "Speaker", "type": "Speaker" },
             { "name": "iPhone Microphone", "type": "Phone" },
@@ -92,10 +92,12 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
          ]; */
          if (Array.isArray(_routes)) {
             if (_routes.length === 2) {
-               setAudioRoutes(_routes.sort(sortAudioRoutes));
+               const _sorted = _routes.sort(sortAudioRoutes);
+               setAudioRoutes(_sorted);
             } else if (_routes.length > 2) {
                const filteredRoutes = _routes.filter(r => r.type !== AUDIO_ROUTE_PHONE);
-               setAudioRoutes(filteredRoutes.sort(sortAudioRoutes));
+               const _sorted = filteredRoutes.sort(sortAudioRoutes);
+               setAudioRoutes(_sorted);
             }
             RBSheetRef.current?.open?.();
          }
@@ -184,15 +186,17 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
             <View style={styles.audioRoutesBottomSheetContainer}>
                {audioRoutes.map(route => (
                   <>
-                  {route.type !== 'Bluetooth' &&<Pressable
-                     key={route.name}
-                     contentContainerStyle={[
-                        styles.audioRouteItem,
-                        selectedAudioRoute === audioRouteNameMap[route.type] && styles.selectedAudioRouteItem,
-                     ]}
-                     onPress={handleSelectAudioRoute(route)}>
-                     <Text style={styles.audioRouteItemText}>{route.type}</Text>
-                  </Pressable>}
+                     {route.type !== 'Bluetooth' && (
+                        <Pressable
+                           key={route.name}
+                           contentContainerStyle={[
+                              styles.audioRouteItem,
+                              selectedAudioRoute === audioRouteNameMap[route.type] && styles.selectedAudioRouteItem,
+                           ]}
+                           onPress={handleSelectAudioRoute(route)}>
+                           <Text style={styles.audioRouteItemText}>{route.type}</Text>
+                        </Pressable>
+                     )}
                   </>
                ))}
             </View>

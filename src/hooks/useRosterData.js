@@ -1,6 +1,5 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
-import { getUserProfileFromSDK } from '../Helper';
+import Store from '../redux/store';
 
 /**
  * @typedef {Object} userProfileDetails
@@ -21,20 +20,23 @@ import { getUserProfileFromSDK } from '../Helper';
  * @returns {userProfileDetails}
  */
 const useRosterData = userId => {
-  const data = useSelector(state => state.rosterData.data);
-  const [userProfileData, setUserProfileData] = React.useState({});
+   const data = useSelector(state => state.rosterData.data);
 
-  React.useLayoutEffect(() => {
-    const userData = data[userId];
-    if (!userData) {
-      setUserProfileData({});
-      getUserProfileFromSDK(userId);
-    } else {
-      setUserProfileData(userData);
-    }
-  }, [data[userId]]);
+   return data[userId] || {};
+};
+export default useRosterData;
 
-  return userProfileData;
+export const getUserName = userId => {
+   const { nickName } = Store.getState().rosterData.data[userId] || {};
+   return nickName || userId;
 };
 
-export default useRosterData;
+export const getUserStatus = userId => {
+   const { status } = Store.getState().rosterData.data[userId] || {};
+   return status;
+};
+
+export const getUserImage = userId => {
+   const { image } = Store.getState().rosterData.data[userId] || {};
+   return image;
+};

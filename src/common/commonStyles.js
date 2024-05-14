@@ -14,6 +14,29 @@ export const toastStyles = StyleSheet.create({
    },
 });
 
+export const modelStyles = StyleSheet.create({
+   inviteFriendModalContentContainer: {
+      maxWidth: 500,
+      width: '80%',
+      backgroundColor: ApplicationColors.mainbg,
+      borderRadius: 5,
+      paddingVertical: 10,
+   },
+   modalTitle: {
+      fontSize: 19,
+      color: '#3c3c3c',
+      fontWeight: '500',
+      marginVertical: 15,
+      paddingHorizontal: 25,
+   },
+   modalOption: {
+      paddingHorizontal: 25,
+      paddingVertical: 15,
+      fontSize: 14,
+      color: '#000',
+   },
+});
+
 export const pressableStyles = StyleSheet.create({
    highlightView: {
       position: 'absolute',
@@ -27,6 +50,11 @@ export const pressableStyles = StyleSheet.create({
 });
 
 const commonStyles = StyleSheet.create({
+   dispaly_none: {
+      display: 'none',
+   },
+   height_25: { height: 25 },
+   screenHeaderHeight: { height: 65 },
    flex1: { flex: 1 },
    flex1_centeredContent: {
       flex: 1,
@@ -85,8 +113,23 @@ const commonStyles = StyleSheet.create({
    bottom_1: {
       bottom: 1,
    },
+   bottom_minus_15: {
+      bottom: -15,
+   },
    pressedBg: {
       backgroundColor: ApplicationColors.pressedBg,
+   },
+   pressedBg_2: {
+      backgroundColor: ApplicationColors.secondaryPressedBg,
+   },
+   m_12: {
+      margin: 12,
+   },
+   mt_20: {
+      marginTop: 20,
+   },
+   ml_4: {
+      marginLeft: 4,
    },
    marginTop_5: {
       marginTop: 5,
@@ -127,11 +170,21 @@ const commonStyles = StyleSheet.create({
    marginBottom_6: {
       marginBottom: 6,
    },
+   marginBottom_8: {
+      marginBottom: 8,
+   },
    marginBottom_10: {
+      marginBottom: 10,
+   },
+   marginBottom_55: {
       marginBottom: 55,
    },
+   my_15: { marginVertical: 15 },
    mb_130: {
       marginBottom: 130,
+   },
+   mt_50: {
+      marginTop: 50,
    },
    p_1: {
       padding: 1,
@@ -139,14 +192,44 @@ const commonStyles = StyleSheet.create({
    p_4: {
       padding: 4,
    },
+   py_2: {
+      paddingVertical: 2,
+   },
+   px_4: {
+      paddingHorizontal: 4,
+   },
+   px_8: {
+      paddingHorizontal: 8,
+   },
+   px_10: {
+      paddingHorizontal: 8,
+   },
+   px_18: {
+      paddingHorizontal: 18,
+   },
    p_10: {
       padding: 10,
+   },
+   p_13: {
+      padding: 13,
+   },
+   p_15: {
+      padding: 15,
+   },
+   p_20: {
+      padding: 20,
    },
    minWidth_250: {
       minWidth: 250,
    },
    minWidth_200: {
       minWidth: 200,
+   },
+   minWidth_30per: {
+      minWidth: '30%',
+   },
+   maxWidth_90per: {
+      maxWidth: '90%',
    },
    paddingHorizontal_4: {
       paddingHorizontal: 4,
@@ -162,6 +245,9 @@ const commonStyles = StyleSheet.create({
    },
    paddingVertical_12: {
       paddingVertical: 12,
+   },
+   paddingVertical_18: {
+      paddingVertical: 18,
    },
    paddingHorizontal_16: {
       paddingHorizontal: 16,
@@ -200,14 +286,23 @@ const commonStyles = StyleSheet.create({
    paddingTop_0: {
       paddingTop: 0,
    },
+   pt_15: {
+      paddingTop: 15,
+   },
    paddingLeft_0: {
       paddingLeft: 0,
    },
    paddingLeft_4: {
       paddingLeft: 4,
    },
+   pl_10: {
+      paddingLeft: 10,
+   },
    paddingRight_0: {
       paddingRight: 0,
+   },
+   pr_10: {
+      paddingRight: 10,
    },
    alignSelfFlexStart: {
       alignSelf: 'flex-start',
@@ -227,14 +322,35 @@ const commonStyles = StyleSheet.create({
    fontWeight_bold: {
       fontWeight: 'bold',
    },
+   fw_400: {
+      fontWeight: '400',
+   },
+   fw_500: {
+      fontWeight: '500',
+   },
+   fw_600: {
+      fontWeight: '600',
+   },
    colorWhite: {
       color: '#fff',
+   },
+   colorBlack: {
+      color: '#000',
    },
    fontSize_11: {
       fontSize: 11,
    },
    fontSize_12: {
       fontSize: 12,
+   },
+   fontSize_14: {
+      fontSize: 14,
+   },
+   fontSize_18: {
+      fontSize: 18,
+   },
+   bgBlack: {
+      backgroundColor: '#000',
    },
    bgBlack_04: {
       backgroundColor: 'rgba(0,0,0,0.4)',
@@ -251,6 +367,9 @@ const commonStyles = StyleSheet.create({
    width_100_per: {
       width: '100%',
    },
+   height_90_per: {
+      height: '80%',
+   },
    height_100_per: {
       height: '100%',
    },
@@ -266,8 +385,32 @@ const commonStyles = StyleSheet.create({
    resizeCover: {
       resizeMode: 'cover',
    },
+   resizeContain: {
+      resizeMode: 'contain',
+   },
+   b_0: {
+      bottom: 0,
+   },
+   r_0: {
+      right: 0,
+   },
+   b_m5: {
+      bottom: -5,
+   },
    r_5: {
       right: 5,
+   },
+   textCenter: {
+      textAlign: 'center',
+   },
+   dividerLine: {
+      borderBottomWidth: 1,
+      borderBottomColor: '#e3e3e3',
+      opacity: 0.8,
+   },
+   verticalDividerLine: {
+      width: 1,
+      backgroundColor: '#e3e3e3',
    },
 });
 

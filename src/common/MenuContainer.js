@@ -1,13 +1,14 @@
 import React from 'react';
-import { MenuIconBtn } from './Button';
+import { Dimensions, Keyboard, Platform, StyleSheet, Text } from 'react-native';
 import { Menu, MenuItem } from 'react-native-material-menu';
-import { Dimensions, Platform, StyleSheet, Text } from 'react-native';
 import ApplicationColors from '../config/appColors';
+import { MenuIconBtn } from './Button';
 
 function MenuContainer({ menuItems, color, menuStyle }) {
    const [visible, setVisible] = React.useState(false);
 
    const showMenu = () => {
+      Keyboard.dismiss();
       setVisible(true);
    };
 
@@ -29,7 +30,9 @@ function MenuContainer({ menuItems, color, menuStyle }) {
          {menuItems?.map(item => {
             const handleMenuItemPress = () => {
                hideMenu();
-               item?.formatter?.();
+               setTimeout(() => {
+                  item?.formatter?.();
+               }, 300);
             };
             return item.label ? (
                <MenuItem key={item.label} onPress={handleMenuItemPress}>
@@ -48,8 +51,8 @@ const styles = StyleSheet.create({
       left: Dimensions.get('screen').width - 5,
    },
    menuItem: {
-      color: ApplicationColors.black
-   }
-})
+      color: ApplicationColors.black,
+   },
+});
 
 export default MenuContainer;

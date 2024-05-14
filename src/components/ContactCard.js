@@ -24,7 +24,7 @@ const ContactCard = ({
 
   return (
     <View style={styles.container}>
-      {replyTo && (
+      {Boolean(replyTo) && (
         <View style={commonStyles.marginHorizontal_4}>
           <ReplyMessage
             handleReplyPress={handleReplyPress}

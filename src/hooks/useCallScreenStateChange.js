@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import ActivityModule from '../customModules/ActivityModule';
+import { Platform } from 'react-native';
 
 /**
  * @typedef

@@ -19,12 +19,16 @@ import {
    OUTGOING_CALL,
 } from '../../Helper/Calls/Constant';
 import { answerIncomingCall, declineIncomingCall, endOnGoingCall } from '../../Helper/Calls/Utility';
+import { getUserIdFromJid } from '../../Helper/Chat/Utility';
+import SDK from '../../SDK/SDK';
 import { removeAllDeliveredNotification } from '../../Service/remoteNotifyHandle';
 import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN } from '../../constant';
 import { callDurationTimestamp, resetNotificationData, setNotificationData } from '../../redux/Actions/CallAction';
 import { updateChatConversationLocalNav } from '../../redux/Actions/ChatConversationLocalNavAction';
 import { navigate } from '../../redux/Actions/NavigationAction';
+import { updateRosterData } from '../../redux/Actions/rosterAction';
 import Store from '../../redux/store';
+import { getApplicationUrl } from '../../uikitHelpers/uikitMethods';
 const { ActivityModule } = NativeModules;
 
 let interval;
@@ -251,26 +255,32 @@ export const getMissedCallNotification = async (roomId, callDetailObj = {}, user
 const onChatNotificationForeGround = async ({ type, detail }) => {
    if (type === EventType.PRESS) {
       const {
-         notification: { data: { fromUserJID } = '' },
+         notification: { data: { fromUserJID = '', from_user = '' } = '' },
       } = detail;
-      let x = { screen: CHATSCREEN, fromUserJID };
+      let x = { screen: CHATSCREEN, fromUserJID: fromUserJID || from_user };
       Store.dispatch(navigate(x));
       if (RootNav.getCurrentScreen() === CHATSCREEN) {
          Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
          return RootNav.navigate(CONVERSATION_SCREEN);
+      } else {
+         RootNav.navigate(CHATSCREEN);
+         Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
       }
-      RootNav.navigate(CHATSCREEN);
-      Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
    }
 };
 
 const onChatNotificationBackGround = async ({ type, detail }) => {
    if (type === EventType.PRESS) {
       const {
-         notification: { data: { fromUserJID } = '' },
+         notification: { data: { fromUserJID = '', from_user = '' } = '' },
       } = detail;
-      let x = { screen: CHATSCREEN, fromUserJID };
-      const push_url = 'mirrorfly_rn://CHATSCREEN?fromUserJID=' + fromUserJID;
+      let x = { screen: CHATSCREEN, fromUserJID: fromUserJID || from_user };
+      const push_url = getApplicationUrl() + 'CHATSCREEN?fromUserJID=' + fromUserJID;
+      const { statusCode, data = {} } = await SDK.getUserProfile(getUserIdFromJid(fromUserJID));
+      if (statusCode === 200) {
+         const { userId = '' } = data;
+         Store.dispatch(updateRosterData({ userId, ...data }));
+      }
       Store.dispatch(navigate(x));
       Linking.openURL(push_url);
       removeAllDeliveredNotification();
@@ -288,6 +298,42 @@ export const onNotificationAction = async ({ type, detail }) => {
          return;
       }
    }
+
+   /** if (type === EventType.PRESS) {
+      let checkChannelID = detail?.notification?.android?.channelId || '';
+      if (checkChannelID && checkChannelID !== MISSED_CALL) {
+         let showCallModal = Store.getState()?.callData?.showCallModal;
+         let activity = await ActivityModule.getActivity();
+         if (AppState.currentState === 'active') {
+            if (showCallModal && activity?.includes('CallScreenActivity')) {
+               return;
+            } else {
+               openCallModelActivity();
+            }
+         } else {
+            const push_url = getApplicationUrl();
+
+            if (push_url) {
+               Linking.openURL(push_url);
+            }
+            if (activity !== 'undefined') {
+               // const push_url = 'mirrorfly_rn://';
+               // Linking.openURL(push_url).then(() => {
+               openCallModelActivity();
+               // });
+            } else {
+               const push_url = getApplicationUrl();
+               if (push_url) {
+                  Linking.openURL(push_url).then(() => {
+                     _BackgroundTimer.setTimeout(() => {
+                        openCallModelActivity();
+                     }, 200);
+                  });
+               }
+            }
+         }
+      }
+   } */
 
    if (detail.pressAction?.id === 'accept') {
       answerIncomingCall(activeCallUUID);

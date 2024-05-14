@@ -2,11 +2,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { Checkbox } from 'native-base';
 import React, { useRef } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Keyboard, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { ALREADY_ON_CALL, CALL_TYPE_AUDIO, CALL_TYPE_VIDEO } from '../Helper/Calls/Constant';
 import { isRoomExist, makeCalls } from '../Helper/Calls/Utility';
+import { CHAT_TYPE_GROUP, CHAT_TYPE_SINGLE, MIX_BARE_JID } from '../Helper/Chat/Constant';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { showToast } from '../Helper/index';
 import SDK from '../SDK/SDK';
@@ -17,7 +18,6 @@ import {
    CloseIcon,
    DeleteIcon,
    DownArrowIcon,
-   FavouriteIcon,
    ForwardIcon,
    LeftArrowIcon,
    ReplyIcon,
@@ -32,37 +32,39 @@ import {
    checkMicroPhonePermission,
    checkVideoPermission,
    requestBluetoothConnectPermission,
-   requestCameraPermission,
+   requestCameraMicPermission,
    requestMicroPhonePermission,
 } from '../common/utils';
 import ApplicationColors from '../config/appColors';
-import { FORWARD_MESSSAGE_SCREEN } from '../constant';
+import { FORWARD_MESSSAGE_SCREEN, GROUP_INFO, MESSAGE_INFO_SCREEN, USER_INFO } from '../constant';
 import { useNetworkStatus } from '../hooks';
+import {
+   copyToClipboard,
+   resetMessageSelection,
+   selectedMediaIdRef,
+   useSelectedChatMessage,
+} from '../hooks/useChatMessage';
 import useRosterData from '../hooks/useRosterData';
+import { ClearChatHistoryAction } from '../redux/Actions/ConversationAction';
 import { closePermissionModal, showPermissionModal } from '../redux/Actions/PermissionAction';
+import { clearLastMessageinRecentChat } from '../redux/Actions/RecentChatAction';
 import {
    clearConversationSearchData,
    setConversationSearchText,
    updateConversationSearchMessageIndex,
 } from '../redux/Actions/conversationSearchAction';
+import AlertModal from './AlertModal';
+import { chatInputRef } from './ChatInput';
 import ChatSearchInput from './ChatSearchInput';
 import LastSeen from './LastSeen';
+import NickName from './NickName';
 
-function ChatHeader({
-   fromUserJId,
-   selectedMsgs,
-   setSelectedMsgs,
-   selectedMsgsIdRef,
-   menuItems,
-   handleBackBtn,
-   handleReply,
-   setLocalNav,
-   chatInputRef,
-   IsSearching,
-   isSearchClose,
-   chatUserProfile,
-}) {
+function ChatHeader({ fromUserJId, handleBackBtn, handleReply, IsSearching, isSearchClose, chatUserProfile }) {
    const navigation = useNavigation();
+   const { selectedMessagesArray, resetSelectedChatMessage } = useSelectedChatMessage();
+   const chatType = MIX_BARE_JID.test(fromUserJId) ? CHAT_TYPE_GROUP : CHAT_TYPE_SINGLE;
+   const recentChatList = useSelector(state => state.recentChatData.data || []);
+   const userType = recentChatList.find(r => r.fromUserJid === fromUserJId)?.userType || '';
    const isNetworkConnected = useNetworkStatus();
    const [remove, setRemove] = React.useState(false);
    const [deleteEveryOne, setDeleteEveryOne] = React.useState(false);
@@ -80,6 +82,7 @@ function ChatHeader({
    const dispatch = useDispatch();
    const searchInputRef = useRef();
    const isMediaFileInSelectedMessageForDelete = useRef(false);
+   const [modalContent, setModalContent] = React.useState(null);
 
    React.useEffect(() => {
       return () => {
@@ -109,51 +112,76 @@ function ChatHeader({
    };
 
    const handleDelete = () => {
-      isMediaFileInSelectedMessageForDelete.current = selectedMsgs.some(msg => {
-         const { deleteStatus, msgBody: { media: { file = {}, local_path = '' } = {} } = {} } = msg;
-         return Boolean((local_path || file?.fileDetails?.uri) && deleteStatus === 0);
+      Keyboard.dismiss();
+      isMediaFileInSelectedMessageForDelete.current = selectedMessagesArray.some(msg => {
+         const { recallStatus, msgBody: { media: { file = {}, local_path = '' } = {} } = {} } = msg;
+         return Boolean((local_path || file?.fileDetails?.uri) && recallStatus === 0);
       });
       const now = new Date().getTime();
-      const msgSentLessThan30SecondsAgo = selectedMsgs.every(
-         msg => parseInt(msg.timestamp / 1000, 10) + 30 * 1000 > now,
+      const msgSentLessThan30SecondsAgo = selectedMessagesArray.every(
+         msg => msg.recallStatus === 0 && parseInt(msg.timestamp / 1000, 10) + 30 * 1000 > now,
       );
-      const isSender = selectedMsgs.every(msg => msg.publisherId === vCardProfile.userId && msg.deleteStatus === 0);
+      const isSender = selectedMessagesArray.every(
+         msg => msg.publisherId === vCardProfile.userId && msg.deleteStatus === 0,
+      );
       setDeleteEveryOne(msgSentLessThan30SecondsAgo && isSender);
       setRemove(!remove);
    };
 
    const handleDeleteForMe = async deleteType => {
-      let msgIds = selectedMsgs
+      let msgIds = selectedMessagesArray
          .slice()
          .sort((a, b) => (b.timestamp > a.timestamp ? -1 : 1))
          .map(el => el.msgId);
       const jid = fromUserJId;
-      selectedMsgsIdRef.current = {};
-      setSelectedMsgs([]);
       if (deleteType === 1) {
          SDK.deleteMessagesForMe(jid, msgIds);
       } else {
          SDK.deleteMessagesForEveryone(jid, msgIds);
       }
+      selectedMediaIdRef.current = {};
+      resetMessageSelection();
       setRemove(false);
    };
 
-   const handleRemove = () => {
-      selectedMsgsIdRef.current = {};
-      setSelectedMsgs([]);
-   };
-
    const handleFavourite = () => {
+      Keyboard.dismiss();
       console.log('Fav item');
    };
 
+   const clearChat = () => {
+      SDK.clearChat(fromUserJId);
+      dispatch(clearLastMessageinRecentChat(getUserIdFromJid(fromUserJId)));
+      dispatch(ClearChatHistoryAction(getUserIdFromJid(fromUserJId)));
+   };
+
+   const toggleModalContent = () => {
+      setModalContent(null);
+   };
+
+   const toggleConfirmUserRemoveModal = () => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: 'Are you sure you want to clear the chat?',
+         noButton: 'No',
+         yesButton: 'Yes',
+         yesAction: clearChat,
+      });
+   };
+
    const handleReplyMessage = () => {
-      handleReply(selectedMsgs[0]);
-      chatInputRef.current.focus();
+      handleReply(selectedMessagesArray[0]);
+      resetSelectedChatMessage();
+      chatInputRef?.current?.focus?.();
    };
 
    const handleUserInfo = () => {
-      setLocalNav('UserInfo');
+      if (MIX_BARE_JID.test(fromUserJId)) {
+         navigation.navigate(GROUP_INFO, { chatUser: fromUserJId });
+      } else {
+         navigation.navigate(USER_INFO, { chatUser: fromUserJId });
+      }
    };
 
    const handleBackSearch = () => {
@@ -161,9 +189,10 @@ function ChatHeader({
       dispatch(clearConversationSearchData());
    };
    const handleForwardMessage = () => {
+      Keyboard.dismiss();
       navigation.navigate(FORWARD_MESSSAGE_SCREEN, {
-         forwardMessages: selectedMsgs,
-         onMessageForwaded: handleRemove,
+         forwardMessages: selectedMessagesArray,
+         onMessageForwaded: resetSelectedChatMessage,
       });
    };
    const handleSearchTextChange = text => {
@@ -171,19 +200,13 @@ function ChatHeader({
    };
 
    const renderForwardIcon = () => {
-      const currentUserId = vCardProfile?.userId;
-      const isMediaDownloadedOrUploaded = selectedMsgs.every(_message => {
-         if (_message.msgBody?.media) {
-            const isSender = _message?.publisherId === currentUserId;
-            const localPath = _message?.msgBody?.media?.local_path;
-            return isSender
-               ? _message?.msgBody?.media?.is_uploading === 2
-               : Boolean(localPath) || _message?.msgBody?.media?.is_downloaded === 2;
-         }
-         return true;
-      });
+      const isMediaDownloadedOrUploaded = selectedMessagesArray.every(
+         msg => (msg.msgBody?.media?.is_uploading !== 1 || true) && (msg.msgBody?.media?.is_downloaded !== 1 || true),
+      );
 
-      const isAllowForward = selectedMsgs.every(_message => _message?.msgStatus !== 3 && _message?.deleteStatus === 0);
+      const isAllowForward = selectedMessagesArray.every(
+         _message => _message?.msgStatus !== 3 && _message?.deleteStatus === 0 && _message?.recallStatus === 0,
+      );
 
       return isMediaDownloadedOrUploaded && isAllowForward ? (
          <IconButton style={[commonStyles.padding_10_15]} onPress={handleForwardMessage}>
@@ -192,9 +215,20 @@ function ChatHeader({
       ) : null;
    };
 
+   const renderReplyIcon = () => {
+      const isAllowReply = MIX_BARE_JID.test(fromUserJId)
+         ? userType && selectedMessagesArray[0]?.msgBody?.media?.is_uploading !== 1 && !selectedMessagesArray[0]?.recall
+         : selectedMessagesArray[0]?.msgBody?.media?.is_uploading !== 1 && !selectedMessagesArray[0]?.recall;
+      return isAllowReply && selectedMessagesArray?.length === 1 && selectedMessagesArray[0]?.msgStatus !== 3 ? (
+         <IconButton style={[commonStyles.padding_10_15]} onPress={handleReplyMessage}>
+            <ReplyIcon />
+         </IconButton>
+      ) : null;
+   };
+
    const renderDeleteIcon = () => {
-      const isMediaDownloadedOrUploaded = selectedMsgs.every(
-         msg => msg.msgBody?.media?.is_uploading !== 1 && msg.msgBody?.media?.is_downloaded !== 1,
+      const isMediaDownloadedOrUploaded = selectedMessagesArray.every(
+         msg => (msg.msgBody?.media?.is_uploading !== 1 || true) && (msg.msgBody?.media?.is_downloaded !== 1 || true),
       );
       return isMediaDownloadedOrUploaded ? (
          <IconButton style={[commonStyles.padding_10_15]} onPress={handleDelete}>
@@ -225,30 +259,6 @@ function ChatHeader({
          conversationSearchText.trim() && showNoMessageFoundToast();
       }
    };
-
-   if (IsSearching) {
-      return (
-         <View style={styles.RootContainer}>
-            <IconButton onPress={handleBackSearch}>{LeftArrowIcon()}</IconButton>
-            <View style={styles.TextInput}>
-               <ChatSearchInput
-                  inputRef={searchInputRef}
-                  placeholder=" Search..."
-                  value={conversationSearchText}
-                  onChangeText={handleSearchTextChange}
-                  cursorColor={ApplicationColors.mainColor}
-                  style={styles.chatSearchInput}
-               />
-            </View>
-            <TouchableOpacity onPress={handleMessageSearchIndexGoUp} style={styles.upAndDownArrow}>
-               <UpArrowIcon />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleMessageSearchIndexGoDown} style={styles.upAndDownArrow}>
-               <DownArrowIcon width={15} height={7} />
-            </TouchableOpacity>
-         </View>
-      );
-   }
 
    const makeOne2OneVideoCall = () => {
       if (!isRoomExist() && isNetworkConnected) {
@@ -287,7 +297,7 @@ function ChatHeader({
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       try {
          const result =
-            callType === CALL_TYPE_AUDIO ? await requestMicroPhonePermission() : await requestCameraPermission();
+            callType === CALL_TYPE_AUDIO ? await requestMicroPhonePermission() : await requestCameraMicPermission();
          // updating the SDK flag back to false to behave as usual
          await requestBluetoothConnectPermission();
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
@@ -324,6 +334,37 @@ function ChatHeader({
    const closeIsRoomExist = () => {
       setShowRoomExist(false);
    };
+
+   const handleGoMessageInfoScreen = () => {
+      resetSelectedChatMessage();
+      navigation.navigate(MESSAGE_INFO_SCREEN, { chatUser: fromUserJId, msgId: selectedMessagesArray[0].msgId });
+   };
+
+   let menuItems = [];
+
+   if (
+      selectedMessagesArray[0]?.msgBody?.message_type === 'text' ||
+      selectedMessagesArray[0]?.msgBody?.media?.caption
+   ) {
+      menuItems.push({
+         label: 'Copy',
+         formatter: copyToClipboard(selectedMessagesArray),
+      });
+   }
+   if (selectedMessagesArray.length === 1) {
+      // Show Copy and Message Info options
+      menuItems.push({
+         label: 'Message Info',
+         formatter: handleGoMessageInfoScreen,
+      });
+   }
+   if (!selectedMessagesArray.length) {
+      // Show Clear Chat and Search options
+      menuItems.push({
+         label: 'Clear Chat',
+         formatter: toggleConfirmUserRemoveModal,
+      });
+   }
 
    const renderRoomExistModal = () => {
       return (
@@ -367,9 +408,33 @@ function ChatHeader({
       );
    };
 
+   if (IsSearching) {
+      return (
+         <View style={styles.RootContainer}>
+            <IconButton onPress={handleBackSearch}>{LeftArrowIcon()}</IconButton>
+            <View style={styles.TextInput}>
+               <ChatSearchInput
+                  inputRef={searchInputRef}
+                  placeholder=" Search..."
+                  value={conversationSearchText}
+                  onChangeText={handleSearchTextChange}
+                  cursorColor={ApplicationColors.mainColor}
+                  style={styles.chatSearchInput}
+               />
+            </View>
+            <TouchableOpacity onPress={handleMessageSearchIndexGoUp} style={styles.upAndDownArrow}>
+               <UpArrowIcon />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleMessageSearchIndexGoDown} style={styles.upAndDownArrow}>
+               <DownArrowIcon width={15} height={7} />
+            </TouchableOpacity>
+         </View>
+      );
+   }
+
    return (
       <>
-         {selectedMsgs?.length <= 0 ? (
+         {selectedMessagesArray.length === 0 ? (
             <View style={styles.headerContainer}>
                <IconButton onPress={handleBackBtn}>{LeftArrowIcon()}</IconButton>
                <Pressable
@@ -377,6 +442,7 @@ function ChatHeader({
                   style={commonStyles.flex1}
                   contentContainerStyle={styles.userAvatharAndInfoContainer}>
                   <Avathar
+                     type={chatType}
                      width={36}
                      height={36}
                      backgroundColor={colorCode}
@@ -384,51 +450,52 @@ function ChatHeader({
                      profileImage={profileImage}
                   />
                   <View style={styles.userNameAndLastSeenContainer}>
-                     <Text style={styles.userNameText} ellipsizeMode="tail" numberOfLines={1}>
-                        {nickName}
-                     </Text>
+                     <NickName
+                        style={styles.userNameText}
+                        ellipsizeMode="tail"
+                        numberOfLines={1}
+                        userId={getUserIdFromJid(fromUserJId)}
+                     />
                      <LastSeen jid={fromUserJId} />
                   </View>
                </Pressable>
-               <View style={styles.audioCallButton}>
-                  <IconButton onPress={makeOne2OneVideoCall} containerStyle={{ marginRight: 6 }}>
-                     <VideoCallIcon />
-                  </IconButton>
-                  <IconButton onPress={makeOne2OneAudioCall}>
-                     <AudioCall />
-                  </IconButton>
-               </View>
-               <View style={styles.menuIconContainer}>
-                  {selectedMsgs?.length < 2 && menuItems.length > 0 && <MenuContainer menuItems={menuItems} />}
-               </View>
+               {chatType !== CHAT_TYPE_GROUP && (
+                  <View style={styles.audioCallButton}>
+                     <IconButton onPress={makeOne2OneVideoCall} containerStyle={{ marginRight: 6 }}>
+                        <VideoCallIcon />
+                     </IconButton>
+                     <IconButton onPress={makeOne2OneAudioCall}>
+                        <AudioCall />
+                     </IconButton>
+                  </View>
+               )}
+               {menuItems.length > 0 && (
+                  <View style={commonStyles.pr_10}>
+                     <MenuContainer menuItems={menuItems} />
+                  </View>
+               )}
             </View>
          ) : (
             <View style={styles.subContainer}>
                <View style={styles.selectedMsgsTextContainer}>
-                  <IconButton onPress={handleRemove}>
+                  <IconButton onPress={resetSelectedChatMessage}>
                      <CloseIcon />
                   </IconButton>
-                  <Text style={styles.selectedMsgsText}>{selectedMsgs?.length}</Text>
+                  <Text style={styles.selectedMsgsText}>{selectedMessagesArray?.length}</Text>
                </View>
                <View style={styles.selectedMsgsActionsContainer}>
-                  {selectedMsgs[0]?.msgBody?.media?.is_uploading !== 1 && !selectedMsgs[0]?.recall && (
-                     <IconButton style={[commonStyles.padding_10_15]} onPress={handleReplyMessage}>
-                        {selectedMsgs?.length === 1 && selectedMsgs[0]?.msgStatus !== 3 && <ReplyIcon />}
-                     </IconButton>
-                  )}
-                  {renderForwardIcon()}
-                  {!selectedMsgs[0]?.recall && (
-                     <IconButton style={[commonStyles.padding_10_15]} onPress={handleFavourite}>
-                        <FavouriteIcon />
-                     </IconButton>
-                  )}
+                  {renderReplyIcon()}
                   {renderDeleteIcon()}
-                  {selectedMsgs?.length === 1 && menuItems.length > 0 && !selectedMsgs[0]?.recall && (
-                     <MenuContainer menuItems={menuItems} />
+                  {renderForwardIcon()}
+                  {menuItems.length > 0 && (
+                     <View style={commonStyles.pr_10}>
+                        <MenuContainer menuItems={menuItems} />
+                     </View>
                   )}
                </View>
             </View>
          )}
+         {modalContent && <AlertModal {...modalContent} />}
          {renderRoomExistModal()}
          <Modal visible={remove} onRequestClose={onClose}>
             <ModalCenteredContent onPressOutside={onClose}>
@@ -538,6 +605,7 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       alignItems: 'center',
       padding: 13,
+      height: 60,
       backgroundColor: ApplicationColors.headerBg,
       elevation: 2,
       shadowColor: '#181818',

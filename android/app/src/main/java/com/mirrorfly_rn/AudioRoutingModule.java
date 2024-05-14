@@ -91,9 +91,10 @@ public class AudioRoutingModule extends ReactContextBaseJavaModule {
         // Unfortunately, there's no direct way to force routing to the wired headset.
         // This method focuses on disabling Bluetooth SCO, which is commonly used for call audio,
         // hoping the system will then route audio to the wired headset if connected.
-        audioManager.setSpeakerphoneOn(false);
         audioManager.stopBluetoothSco();
         audioManager.setBluetoothScoOn(false);
+        audioManager.setSpeakerphoneOn(false);
+        audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
         Log.d("TAG", "routeAudioToWiredHeadset: audio routed to Wired headset ");
     }
 
@@ -103,9 +104,10 @@ public class AudioRoutingModule extends ReactContextBaseJavaModule {
         Log.d("TAG", "routeAudioToBluetoothHeadset: isBluetoothConnected => " + isBluetoothConnected);
         if (Boolean.TRUE.equals(isBluetoothConnected)) {
             // route to bluetooth headset if available
-            audioManager.setSpeakerphoneOn(false);
             audioManager.startBluetoothSco();
             audioManager.setBluetoothScoOn(true);
+            audioManager.setSpeakerphoneOn(false);
+            audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
             Log.d("TAG", "routeAudioToBluetoothHeadset: audio routed to Bluetooth headset ");
         } else {
             // else route to wired headset

@@ -522,33 +522,6 @@ const connected = async res => {
                await stopForegroundServiceNotification();
                showOngoingNotification(res);
             }
-         } else {
-            const { isBluetoothHeadsetConnected = false } = Store.getState().callControlsData || {};
-            if (isBluetoothHeadsetConnected) {
-               const callData = Store.getState().callData || {};
-               const callControlsData = Store.getState().callControlsData || {};
-               const isSpeakerEnabled = Store.getState().callControlsData.isSpeakerEnabled || false;
-               const activeCallerUUID = callData?.callerUUID;
-               const selectedAudioRoute = callControlsData?.selectedAudioRoute;
-               let forceSelectedAudioRoute = getSelectedAudioRoute();
-               if (selectedAudioRoute === AUDIO_ROUTE_SPEAKER) {
-                  await updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, activeCallerUUID, false);
-               }
-               const _routes = await RNCallKeep.getAudioRoutes();
-               const headSetPlugin = Boolean(
-                  _routes.find(res => audioRouteNameMap[res.type] === AUDIO_ROUTE_HEADSET && res.selected),
-               );
-               _routes.forEach(r => {
-                  if (
-                     audioRouteNameMap[r.type] === AUDIO_ROUTE_BLUETOOTH &&
-                     !headSetPlugin &&
-                     !isSpeakerEnabled &&
-                     (selectedAudioRoute === AUDIO_ROUTE_BLUETOOTH || forceSelectedAudioRoute === '')
-                  ) {
-                     updateAudioRouteTo(r.name, r.type, activeCallerUUID, false);
-                  }
-               });
-            }
          }
          onReconnect = false;
       }

@@ -64,6 +64,7 @@ import {
    dispatchDisconnected,
    endCall,
    getMaxUsersInCall,
+   getSelectedAudioRoute,
    startCallingTimer,
    startOutgoingCallRingingTone,
    stopIncomingCallRingtone,
@@ -492,6 +493,7 @@ export const answerIncomingCall = async callId => {
             if (callType === CALL_TYPE_VIDEO) {
                enableSpeaker(activeCallerUUID);
             }
+            Platform.OS === 'ios' && handleRouteToBluetooth();
             if (answerCallResonse.statusCode !== 200) {
                answerCallPermissionError(answerCallResonse);
             } else {
@@ -529,6 +531,35 @@ export const answerIncomingCall = async callId => {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
       callBackgroundNotification = true;
       console.log('answerIncomingCall', error);
+   }
+};
+
+const handleRouteToBluetooth = async () => {
+   const { isBluetoothHeadsetConnected = false } = Store.getState().callControlsData || {};
+   if (isBluetoothHeadsetConnected) {
+      const callData = Store.getState().callData || {};
+      const callControlsData = Store.getState().callControlsData || {};
+      const isSpeakerEnabled = Store.getState().callControlsData.isSpeakerEnabled || false;
+      const activeCallerUUID = callData?.callerUUID;
+      const selectedAudioRoute = callControlsData?.selectedAudioRoute;
+      let forceSelectedAudioRoute = getSelectedAudioRoute();
+      if (selectedAudioRoute === AUDIO_ROUTE_SPEAKER) {
+         await updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, activeCallerUUID, false);
+      }
+      const _routes = await RNCallKeep.getAudioRoutes();
+      const headSetPlugin = Boolean(
+         _routes.find(res => audioRouteNameMap[res.type] === AUDIO_ROUTE_HEADSET && res.selected),
+      );
+      _routes.forEach(r => {
+         if (
+            audioRouteNameMap[r.type] === AUDIO_ROUTE_BLUETOOTH &&
+            !headSetPlugin &&
+            !isSpeakerEnabled &&
+            (selectedAudioRoute === AUDIO_ROUTE_BLUETOOTH || forceSelectedAudioRoute === '')
+         ) {
+            updateAudioRouteTo(r.name, r.type, activeCallerUUID, false);
+         }
+      });
    }
 };
 
@@ -1094,14 +1125,6 @@ export const updateAudioRouteTo = async (
                }
                if (audioRouteName?.toLowerCase?.() === 'receiver' && isSpeakerEnabledUI) {
                   updateAudioRouteTo(AUDIO_ROUTE_SPEAKER, AUDIO_ROUTE_SPEAKER, callUUID);
-                  return;
-               }
-               if (
-                  audioRouteName?.toLowerCase?.() === 'receiver' &&
-                  isBluetoothHeadsetConnected &&
-                  selectedAudioRoute === AUDIO_ROUTE_BLUETOOTH
-               ) {
-                  updateAudioRouteTo(AUDIO_ROUTE_BLUETOOTH, AUDIO_ROUTE_BLUETOOTH, callUUID);
                   return;
                }
                break;

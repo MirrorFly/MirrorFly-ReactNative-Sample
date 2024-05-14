@@ -43,11 +43,11 @@ class ActivityModule {
       }
    };
 
-   getCallActivity = () =>{
+   getCallActivity = () => {
       if (Platform.OS === 'android') {
          return nativeActivityModule?.getCallActivity?.();
       }
-   }
+   };
 }
 
 export default new ActivityModule();

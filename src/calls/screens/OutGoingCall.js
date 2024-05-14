@@ -33,22 +33,62 @@ const OutGoingCall = () => {
    const nickName = userProfile.nickName || userID;
 
    React.useEffect(() => {
-      // startRingingCallTone();
-      if (connectionState && connectionState) {
+      if (Object.keys(connectionState).length) {
          setOutGoingCalls({
             ...outGoingCalls,
             callConnectionData: connectionState,
          });
       }
-      startOutgoingcallTimer(userID, callType, localStream);
+      startOutgoingcallTimer(userID, callType);
+      /**
+      // startRingingCallTone();
+      // uiChangetimer = _BackgroundTimer.setTimeout(() => {
+      //    dispatch(
+      //       updateConference({
+      //          callStatusText: 'Unavailable',
+      //       }),
+      //    );
+      //    setOutGoingCalls({
+      //       ...outGoingCalls,
+      //       callingUiStatus: 'Unavailable',
+      //    });
+      // }, 10000);
+      // timer = setTimeout(() => {
+      //    endCall(true);
+      // }, 30000);
+       */
    }, []);
 
+   /**
 
+   // React.useEffect(() => {
+   //    const backGroundNotificationRemove = async () => {
+   //       // BackgroundTimer.setTimeout(() => {
+   //       //    console.log('679000');
+   //       // }, 2000);
+   //       if (appState === false && callStatus !== 'Disconnected') {
+   //          handleBackGround();
+   //          // BackgroundTimer.clearTimeout(backGroundInterval);
+   //          // handleBackGround();
+   //          // backGroundInterval = BackgroundTimer.setTimeout(() => {
+   //          // }, 200);
+   //       } else {
+   //          // BackgroundTimer.clearTimeout(backGroundInterval);
+   //          // let getDisplayedNotification = await notifee.getDisplayedNotifications();
+   //          // let cancelIDS = getDisplayedNotification?.find(res => res.id === notificationData.id)?.id;
+   //          // cancelIDS && stopForegroundServiceNotification(cancelIDS);
+   //       }
+   //    };
+   //    showCallModal && backGroundNotificationRemove();
+   // }, [appState, notificationData]);
+   */
    const handleClosePress = () => {
       closeCallModalActivity();
-   
+      /**
+      // dispatch(closeCallModal());
+      // callNotifyHandler(connectionState.roomId, connectionState, userJid, nickName, 'OUTGOING_CALL');
+       */
    };
-
 
    return (
       <ImageBackground style={styles.container} source={getImageSource(OutgoingCallBg)}>

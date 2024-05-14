@@ -1,4 +1,4 @@
-import 'mirrorfly-reactnative-sdk';
+import './index';
 
 const SDK = global.SDK;
 

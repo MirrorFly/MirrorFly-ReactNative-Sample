@@ -8,6 +8,12 @@ import chatConversationLocalNavReducer from './Reducers/ChatConversationLocalNav
 import showConfrenceReducer from './Reducers/Confrence.Reducer';
 import conversationReducer from './Reducers/Conversation.Reducer';
 import galleryReducer from './Reducers/Gallery.Reducer';
+import {
+   GroupsMemberListReducer,
+   GroupsMemberParticipantsListReducer,
+   GroupsReducer,
+   currentCallGroupMembersReducer,
+} from './Reducers/Group.Reducer';
 import mediaDownloadReducer from './Reducers/MediaDownload.Reducer';
 import mediaUploadReducer from './Reducers/MediaUpload.Reducer';
 import navigationReducer from './Reducers/Navigation.Reducer';
@@ -29,6 +35,7 @@ import stateDataReducer from './Reducers/statusReducer';
 import streamDataReducer from './Reducers/streamReducer';
 import userReducer from './Reducers/user.Reducer';
 import permissionReducer from './Reducers/PermissionReducer';
+import chatMessageReducer from './Reducers/ChatMessage.Reducer';
 
 const rootReducer = combineReducers({
    navigation: navigationReducer,
@@ -36,6 +43,7 @@ const rootReducer = combineReducers({
    recentChatSearchData: recentChatSearchReducer,
    auth: authReducer,
    chatConversationData: conversationReducer,
+   chatMessageData: chatMessageReducer,
    profile: profileReducer,
    chatSeenPendingMsgData: chatSeenPendingMsgReducer,
    chat: chatReducer,
@@ -60,6 +68,10 @@ const rootReducer = combineReducers({
    callControlsData: callControlsReducer,
    callModalToastData: callModalToastReducer,
    permissionData: permissionReducer,
+   groupsMemberParticipantsListData: GroupsMemberParticipantsListReducer,
+   currentCallGroupMembersData: currentCallGroupMembersReducer,
+   groupsMemberListData: GroupsMemberListReducer,
+   groupsData: GroupsReducer,
 });
 
 const Store = legacy_createStore(rootReducer, applyMiddleware(thunkMiddleware));

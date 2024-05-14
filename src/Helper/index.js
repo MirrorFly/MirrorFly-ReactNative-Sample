@@ -1,24 +1,24 @@
-import React from 'react';
-import { Toast } from 'native-base';
-import { Alert, AppState, Linking, Platform, Text, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Graphemer from 'graphemer';
-import RNFS from 'react-native-fs';
-import PipHandler from '../customModules/PipModule';
+import { Toast } from 'native-base';
+import React from 'react';
+import { Alert, AppState, Keyboard, Linking, Platform, Text, View } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import { createThumbnail } from 'react-native-create-thumbnail';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Store from '../redux/store';
-import { updateRosterData } from '../redux/Actions/rosterAction';
-import { profileDetail } from '../redux/Actions/ProfileAction';
+import RNFS from 'react-native-fs';
 import SDK from '../SDK/SDK';
-import { updateUserProfileStore } from './Chat/ChatHelper';
-import { toastStyles } from '../common/commonStyles';
-import { MAP_THHUMBNAIL_URL } from '../constant';
-import config from '../components/chat/common/config';
-import { addchatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAction';
-import { updateConversationMessage, updateRecentChatMessage } from '../components/chat/common/createMessage';
-import { getUserIdFromJid } from './Chat/Utility';
 import { getIsUserOnCall } from '../SDKActions/callbacks';
+import { toastStyles } from '../common/commonStyles';
+import config from '../config';
+import { updateConversationMessage, updateRecentChatMessage } from '../components/chat/common/createMessage';
+import { MAP_THHUMBNAIL_URL } from '../constant';
+import PipHandler from '../customModules/PipModule';
+import { profileDetail } from '../redux/Actions/ProfileAction';
+import { addchatSeenPendingMsg } from '../redux/Actions/chatSeenPendingMsgAction';
+import { updateRosterData } from '../redux/Actions/rosterAction';
+import Store from '../redux/store';
+import { updateUserProfileStore } from './Chat/ChatHelper';
+import { getUserIdFromJid } from './Chat/Utility';
 
 const toastLocalRef = React.createRef({});
 toastLocalRef.current = {};
@@ -255,9 +255,13 @@ export const escapeRegExpReservedChars = str => {
 };
 
 export const getUserProfileFromSDK = userId => {
+   const data = Store.getState().rosterData.data;
+   const userData = data[userId] || {};
    return SDK.getUserProfile(userId).then(res => {
       if (res?.statusCode === 200) {
-         updateUserProfileStore(res.data);
+         if (res.data !== userData) {
+            updateUserProfileStore(res.data);
+         }
       }
       return res;
    });
@@ -297,6 +301,7 @@ export const enablePipModeIfCallConnected = (
    shouldOpenPermissionScreenIfPipNotAllowed = true,
 ) => {
    if (Platform.OS === 'android') {
+      Keyboard.dismiss();
       const isCallConnected = getIsUserOnCall();
       isCallConnected && PipHandler.enterPipMode(width, height, shouldOpenPermissionScreenIfPipNotAllowed);
       return isCallConnected;

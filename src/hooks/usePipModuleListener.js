@@ -24,20 +24,20 @@ import PipHandler from '../customModules/PipModule/PipHandler';
  * ```
  */
 export function usePipModeListener() {
-  const [isModeEnabled, setIsPipModeEnabled] = useState(false);
+   const [isModeEnabled, setIsPipModeEnabled] = useState(false);
 
-  useEffect(() => {
-    let pipListener;
-    if (Platform.OS === 'android') {
-      pipListener = PipHandler.onPipModeChanged(setIsPipModeEnabled);
-    }
+   useEffect(() => {
+      let pipListener;
+      if (Platform.OS === 'android') {
+         pipListener = PipHandler.onPipModeChanged(setIsPipModeEnabled);
+      }
 
-    return () => {
-      pipListener?.remove();
-    };
-  }, []);
+      return () => {
+         pipListener?.remove();
+      };
+   }, []);
 
-  return isModeEnabled;
+   return isModeEnabled;
 }
 
 export default usePipModeListener;

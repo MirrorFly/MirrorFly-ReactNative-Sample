@@ -3,10 +3,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Box, NativeBaseProvider } from 'native-base';
 import PropTypes from 'prop-types';
 import React, { createRef } from 'react';
-import { Keyboard, Linking, LogBox, SafeAreaView, StatusBar, StyleSheet, useColorScheme } from 'react-native';
+import { Keyboard, Linking, LogBox, SafeAreaView, StatusBar, StyleSheet, Text, useColorScheme } from 'react-native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { navigationRef } from './Navigation/rootNavigation';
 import StackNavigationPage, { RecentStackNavigation } from './Navigation/stackNavigation';
+import commonStyles from './common/commonStyles';
 import { checkAndRequestPermission } from './common/utils';
 import ApplicationTheme from './config/appTheme';
 import {
@@ -14,7 +15,6 @@ import {
    CHATSCREEN,
    CONTACTLIST,
    COUNTRYSCREEN,
-   MIRRORFLY_RN,
    PROFILESCREEN,
    RECENTCHATSCREEN,
    REGISTERSCREEN,
@@ -23,10 +23,9 @@ import {
 import { getCurrentUserJid } from './redux/Actions/AuthAction';
 import { navigate } from './redux/Actions/NavigationAction';
 import { profileDetail } from './redux/Actions/ProfileAction';
-import { addchatSeenPendingMsg } from './redux/Actions/chatSeenPendingMsgAction';
 import store from './redux/store';
 import SplashScreen from './screen/SplashScreen';
-import { getAppInitialized } from './uikitHelpers/uikitMethods';
+import { getAppInitialized, getAppSchema } from './uikitHelpers/uikitMethods';
 
 LogBox.ignoreAllLogs();
 
@@ -42,7 +41,7 @@ const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
 });
 
 const linking = {
-   prefixes: [MIRRORFLY_RN], //NOSONAR
+   prefixes: [getAppSchema()],
    config: {
       screens: {
          [REGISTERSCREEN]: REGISTERSCREEN,
@@ -67,15 +66,17 @@ export const ChatApp = React.memo((props = {}) => {
    }, []);
 
    const renderChatAppContent = () => {
-      const _content = isMfInit ? <RootNavigation jid={jid} /> : <Text>Mirrorfly Not Initialized</Text>;
+      const _content = isMfInit ? (
+         <RootNavigation jid={jid} />
+      ) : (
+         <Text style={[commonStyles.flex1, commonStyles.justifyContentCenter, commonStyles.alignItemsCenter]}>
+            Mirrorfly Not Initialized
+         </Text>
+      );
       return hasNativeBaseProvider ? _content : <NativeBaseProvider>{_content}</NativeBaseProvider>;
    };
 
-   return (
-      <Provider store={store}>
-         {renderChatAppContent()}
-      </Provider>
-   );
+   return <Provider store={store}>{renderChatAppContent()}</Provider>;
 });
 
 ChatApp.propTypes = {
@@ -86,13 +87,12 @@ const RootNavigation = props => {
    const { jid } = props;
    const scheme = useColorScheme();
    const [initialRouteValue, setInitialRouteValue] = React.useState(REGISTERSCREEN);
-   const [isLoading, setIsLoading] = React.useState(false);
+   const [isLoading, setIsLoading] = React.useState(true);
 
    const dispatch = useDispatch();
    const safeAreaBgColor = useSelector(state => state.safeArea.color);
    const vCardProfile = useSelector(state => state.profile.profileDetails);
    React.useEffect(() => {
-      setIsLoading(true);
       setTimeout(async () => {
          if (Object.keys(vCardProfile).length === 0) {
             const vCardProfileLocal = await AsyncStorage.getItem('vCardProfile');
@@ -103,13 +103,7 @@ const RootNavigation = props => {
          const currentUserJID = await AsyncStorage.getItem('currentUserJID');
          const screenObj = await AsyncStorage.getItem('screenObj');
          const parsedScreenOj = JSON.parse(screenObj);
-         const storedVal = await AsyncStorage.getItem('pendingSeenStatus');
-         const parsedStoreVal = JSON.parse(storedVal);
-         if (parsedStoreVal?.data.length) {
-            parsedStoreVal?.data.forEach(element => {
-               dispatch(addchatSeenPendingMsg(element));
-            });
-         }
+
          dispatch(getCurrentUserJid(JSON.parse(currentUserJID)));
          const initialURL = await Linking.getInitialURL();
          if (initialURL) {
@@ -141,6 +135,10 @@ const RootNavigation = props => {
       return jid ? <RecentStackNavigation /> : <StackNavigationPage InitialValue={initialRouteValue} />;
    };
 
+   if (isLoading) {
+      return <SplashScreen />;
+   }
+
    return (
       <>
          <Box safeAreaTop backgroundColor={safeAreaBgColor} />
@@ -151,7 +149,7 @@ const RootNavigation = props => {
                linking={linking}
                ref={navigationRef}
                theme={scheme === 'dark' ? ApplicationTheme.darkTheme : ApplicationTheme.lightTheme}>
-               {isLoading ? <SplashScreen /> : renderStactNavigation()}
+               {renderStactNavigation()}
             </NavigationContainer>
          </SafeAreaView>
          <Box safeAreaBottom backgroundColor={safeAreaBgColor} />

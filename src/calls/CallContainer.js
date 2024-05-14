@@ -83,7 +83,7 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
    const handleModalRequestClose = () => {
       if (screenName === CALL_AGAIN_SCREEN) {
          resetCallModalActivity();
-         // dispatch(resetCallStateData());
+         /**dispatch(resetCallStateData()); */
          dispatch(resetCallAgainData());
       } else {
          const pipEnabled = enablePipModeIfCallConnected();

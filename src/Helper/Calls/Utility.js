@@ -18,7 +18,7 @@ import {
    checkCameraPermission,
    checkMicroPhonePermission,
    requestBluetoothConnectPermission,
-   requestCameraPermission,
+   requestCameraMicPermission,
    requestMicroPhonePermission,
 } from '../../common/utils';
 import ActivityModule from '../../customModules/ActivityModule';
@@ -181,8 +181,7 @@ const handleHeadphoneDetection = async data => {
       }
       data.audioJack !== isWiredHeadsetConnected && setPreviousHeadsetStatus(isWiredHeadsetConnected);
       data.audioJack !== isWiredHeadsetConnected && Store.dispatch(updateCallWiredHeadsetConnected(data.audioJack));
-      data.bluetooth !== isBluetoothHeadsetConnected &&
-         Store.dispatch(updateCallBluetoothHeadsetConnected(false));
+      data.bluetooth !== isBluetoothHeadsetConnected && Store.dispatch(updateCallBluetoothHeadsetConnected(false));
    });
 };
 
@@ -251,7 +250,7 @@ const makeOne2OneCall = async (callType, usersList) => {
    let users = [];
    const maxMemberReached = Boolean(usersList.length > getMaxUsersInCall() - 1);
    if (maxMemberReached) {
-      // toast.error("Maximum " + getMaxUsersInCall() + " members allowed in a call");
+      /** toast.error("Maximum " + getMaxUsersInCall() + " members allowed in a call"); */
       return;
    }
    if (usersList.length > 1) {
@@ -262,22 +261,23 @@ const makeOne2OneCall = async (callType, usersList) => {
          const { userJid, username, GroupUser } = participant;
          let user = userJid || username || GroupUser;
          user = user.split('@')[0];
-         // let userDetails = getDataFromRoster(user);
+         /**let userDetails = getDataFromRoster(user);
+          *
          // if (!userDetails.isDeletedUser) {
-         users.push(formatUserIdToJid(user));
          // }
+          */
+         users.push(formatUserIdToJid(user));
       });
    }
-   if (users.length === 1) {
-      makeCall(callMode, callType, users, usersList, '');
-   } else if (users.length > 1) {
-      makeCall(callMode, callType, users, usersList, '');
-   } else {
+   makeCall(callMode, callType, users, usersList, '');
+   /**
+   else {
       // if(toast.error.length > 1) {
       //     toast.dismiss();
       //     // // toast.error(FEATURE_RESTRICTION_ERROR_MESSAGE);
       // }
    }
+   */
 };
 
 const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, groupId = null) => {
@@ -342,7 +342,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
             }),
          );
          openCallModelActivity();
-         // Store.dispatch(openCallModal());
+         /** Store.dispatch(openCallModal()); */
          Store.dispatch(setCallModalScreen(OUTGOING_CALL_SCREEN));
       });
       try {
@@ -360,6 +360,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
             deleteAndDispatchAction();
          } else {
             roomId = call.roomId;
+            /**
             // callLogsObj.insert({
             //     "callMode": callConnectionStatus.callMode,
             //     "callState": 1,
@@ -372,7 +373,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
             //         "groupId": groupId
             //     })
             // });
-
+            */
             let callConnectionStatusNew = {
                ...callConnectionStatus,
                roomId: roomId,
@@ -416,7 +417,7 @@ const answerCallPermissionError = answerCallResonse => {
    }
    batch(() => {
       resetCallModalActivity();
-      // Store.dispatch(resetCallStateData());
+      /** Store.dispatch(resetCallStateData()); */
       Store.dispatch(resetConferencePopup());
    });
 };
@@ -464,7 +465,7 @@ export const answerIncomingCall = async callId => {
          Store.dispatch(closePermissionModal());
       }, 0);
       const result =
-         callType === CALL_TYPE_AUDIO ? await requestMicroPhonePermission() : await requestCameraPermission(); // updating the SDK flag back to false to behave as usual
+         callType === CALL_TYPE_AUDIO ? await requestMicroPhonePermission() : await requestCameraMicPermission(); // updating the SDK flag back to false to behave as usual
       await requestBluetoothConnectPermission();
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
       callBackgroundNotification = true;
@@ -486,7 +487,7 @@ export const answerIncomingCall = async callId => {
                   Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
                   if (!callData.showCallModal) {
                      openCallModelActivity();
-                     // Store.dispatch(openCallModal());
+                     /** Store.dispatch(openCallModal()); */
                   }
                });
                if (callType === CALL_TYPE_VIDEO) {
@@ -494,11 +495,13 @@ export const answerIncomingCall = async callId => {
                }
                // updating the call connected status to android native code
                Platform.OS === 'android' && ActivityModule.updateCallConnectedStatus(true);
+               /**
                // TODO: update the Call logs when implementing
                // callLogs.update(callConnectionDate.data.roomId, {
                //   startTime: callLogs.initTime(),
                //   callState: 2,
                // });
+                */
             }
          }
       } else if (isPermissionChecked) {
@@ -532,17 +535,18 @@ export const declineIncomingCall = async () => {
       await stopForegroundServiceNotification();
    }
    if (declineCallResponse.statusCode === 200) {
+      /**
       // TODO: update the Call logs when implementing
       // callLogs.update(callConnectionDate.data.roomId, {
       //   endTime: callLogs.initTime(),
       //   sessionStatus: CALL_SESSION_STATUS_CLOSED,
       // });
+       */
       dispatchDisconnected();
       setTimeout(() => {
          batch(() => {
             closeCallModalActivity(true);
             resetCallData();
-            // Store.dispatch(closeCallModal());
             Store.dispatch(clearCallData());
             Store.dispatch(resetConferencePopup());
          });
@@ -594,7 +598,7 @@ export const endOnGoingCall = async () => {
    }
    stopReconnectingTone();
    disconnectCallConnection([], CALL_STATUS_DISCONNECTED, async () => {
-      // Store.dispatch(resetCallStateData());
+      /**Store.dispatch(resetCallStateData()); */
       resetCallModalActivity();
       if (Platform.OS === 'android') {
          await stopForegroundServiceNotification();
@@ -665,7 +669,7 @@ export const displayIncomingCallForAndroid = async callResponse => {
    const nickName =
       callingUserData?.userDetails?.displayName || getUserProfile(contactNumber)?.nickName || contactNumber;
    if (AppState.currentState === 'active') {
-      // Store.dispatch(openCallModal());
+      /** Store.dispatch(openCallModal()); */
       openCallModelActivity();
    }
    appKeepAliveActivity();
@@ -694,7 +698,7 @@ export const openCallModelActivity = async () => {
    Store.dispatch(openCallModal());
    if (Platform.OS === 'android') {
       let deviceLocked = await getDeviceLockState();
-      // console.log('device locked state', deviceLocked);
+      /** console.log('device locked state', deviceLocked); */
       if (!deviceLocked) {
          ActivityModule.openActivity();
       }
@@ -805,7 +809,7 @@ export const endOngoingCallLogout = () => {
    SDK.endCall();
    resetCallData();
    resetCallModalActivity();
-   // Store.dispatch(resetCallStateData());
+   /**Store.dispatch(resetCallStateData()); */
 };
 
 export const updateMissedCallNotification = async callData => {
@@ -915,8 +919,10 @@ export const listnerForNetworkStateChangeWhenIncomingCall = () => {
             batch(() => {
                closeCallModalActivity(true);
                resetCallModalActivity();
+               /**
                // Store.dispatch(closeCallModal());
                // Store.dispatch(resetCallStateData());
+                */
             });
          }
       }
@@ -983,9 +989,11 @@ export const updateCallVideoMute = async (videoMuted, callUUID, isFromCallKeep =
    try {
       const videoMuteResult = await SDK.muteVideo(videoMuted);
       if (videoMuteResult.statusCode === 200) {
+         /**
          // if (Platform.OS === 'ios' && !isFromCallKeep && callUUID) {
          //    RNCallKeep.setMutedCall(callUUID, audioMuted);
          // }
+          */
          batch(() => {
             muteLocalVideo(videoMuted);
             Store.dispatch(updateCallVideoMutedAction(videoMuted));

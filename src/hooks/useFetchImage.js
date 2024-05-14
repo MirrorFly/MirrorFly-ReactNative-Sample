@@ -2,9 +2,9 @@ import SDK from '../SDK/SDK';
 import React from 'react';
 
 const initialState = {
-  isLoading: false,
-  imageUrl: '',
-  authToken: '',
+   isLoading: false,
+   imageUrl: '',
+   authToken: '',
 };
 
 /**
@@ -20,41 +20,36 @@ const initialState = {
  * @returns {ImageData}
  */
 const useFetchImage = imageToken => {
-  const [state, setState] = React.useState({
-    ...initialState,
-    isLoading: Boolean(imageToken),
-  });
+   const [state, setState] = React.useState({
+      ...initialState,
+      isLoading: Boolean(imageToken),
+   });
 
-  React.useEffect(() => {
-    getMediaURL();
-  }, [imageToken]);
+   React.useEffect(() => {
+      getMediaURL();
+   }, [imageToken]);
 
-  const getMediaURL = async () => {
-    if (!imageToken) {
-      if (
-        state.authToken !== initialState.authToken &&
-        state.imageUrl !== initialState.imageUrl
-      ) {
-        setState({ ...initialState });
+   const getMediaURL = async () => {
+      if (!imageToken) {
+         if (state.authToken !== initialState.authToken && state.imageUrl !== initialState.imageUrl) {
+            setState({ ...initialState });
+         }
+         return;
       }
-      return;
-    }
-    const { data: imageData = {}, statusCode } = await SDK.getMediaURL(
-      imageToken,
-    );
-    if (statusCode === 200) {
-      const { fileUrl, token } = imageData;
-      setState({
-        isLoading: false,
-        imageUrl: fileUrl,
-        authToken: token,
-      });
-    } else {
-      setState({ ...initialState });
-    }
-  };
+      const { data: imageData = {}, statusCode } = await SDK.getMediaURL(imageToken);
+      if (statusCode === 200) {
+         const { fileUrl, token } = imageData;
+         setState({
+            isLoading: false,
+            imageUrl: fileUrl,
+            authToken: token,
+         });
+      } else {
+         setState({ ...initialState });
+      }
+   };
 
-  return state;
+   return state;
 };
 
 export default useFetchImage;

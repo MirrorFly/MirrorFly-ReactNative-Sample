@@ -13,7 +13,9 @@ const TextCard = props => {
 
    return (
       <View style={commonStyles.paddingHorizontal_4}>
-         {replyTo && <ReplyMessage handleReplyPress={handleReplyPress} message={props.message} isSame={props.isSame} />}
+         {Boolean(replyTo) && (
+            <ReplyMessage handleReplyPress={handleReplyPress} message={props.message} isSame={props.isSame} />
+         )}
          <Text style={styles.message}>
             <ChatConversationHighlightedText
                text={props.data?.message}

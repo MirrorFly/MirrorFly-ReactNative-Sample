@@ -1,6 +1,6 @@
 import { FlatList } from 'react-native';
 import React from 'react';
-import ScreenHeader from '../components/ScreenHeader';
+import ScreenHeader from './ScreenHeader';
 import {
   Text,
   HStack,

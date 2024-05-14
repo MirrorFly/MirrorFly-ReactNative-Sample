@@ -6,7 +6,16 @@ import {
 } from '../Actions/Constants';
 import { getObjectDeepClone } from '../reduxHelper';
 
-
+/**
+ * @example Example reducer data
+ * {
+ *    id: 123,
+ *    data: {
+ *      '919988776655@xmpp-contus.in': true,
+ *      '919080706050@xmpp-contus.in': true,
+ *    }
+ * }
+ */
 const initialState = {
   id: 0,
   data: {},

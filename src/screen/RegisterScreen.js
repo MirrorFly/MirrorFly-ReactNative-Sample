@@ -1,31 +1,33 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import messaging from '@react-native-firebase/messaging';
+import {
+   Box,
+   Center,
+   HStack,
+   Icon,
+   KeyboardAvoidingView,
+   Modal,
+   Pressable,
+   Spinner,
+   Stack,
+   Text,
+   VStack,
+   View,
+   useToast,
+} from 'native-base';
 import React, { useEffect } from 'react';
 import { BackHandler, Linking, Platform, TextInput } from 'react-native';
-import { PrimaryPillBtn } from '../common/Button';
 import { useDispatch, useSelector } from 'react-redux';
-import { navigate } from '../redux/Actions/NavigationAction';
-import { COUNTRYSCREEN, numRegx, PROFILESCREEN, REGISTERSCREEN } from '../constant';
-import { getCurrentUserJid } from '../redux/Actions/AuthAction';
-import { DownArrowIcon, RegiterPageIcon } from '../common/Icons';
-import {
-   Icon,
-   Modal,
-   Text,
-   Center,
-   Box,
-   useToast,
-   Spinner,
-   HStack,
-   Stack,
-   VStack,
-   Pressable,
-   KeyboardAvoidingView,
-   View,
-} from 'native-base';
-import { useNetworkStatus } from '../hooks';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { showToast } from '../Helper';
+import { getCurrentScreen } from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
-import messaging from '@react-native-firebase/messaging';
-import RNVoipPushNotification from 'react-native-voip-push-notification';
+import { PrimaryPillBtn } from '../common/Button';
+import { DownArrowIcon, RegiterPageIcon } from '../common/Icons';
+import { COUNTRYSCREEN, PROFILESCREEN, REGISTERSCREEN, numRegx } from '../constant';
+import { useNetworkStatus } from '../hooks';
+import { getCurrentUserJid } from '../redux/Actions/AuthAction';
+import { navigate } from '../redux/Actions/NavigationAction';
+import { getVoipToken } from '../uikitHelpers/uikitMethods';
 
 const RegisterScreen = ({ navigation }) => {
    const dispatch = useDispatch();
@@ -35,7 +37,6 @@ const RegisterScreen = ({ navigation }) => {
    const [mobileNumber, setMobileNumber] = React.useState('');
    const [isToastShowing, setIsToastShowing] = React.useState(false);
    const isNetworkConnected = useNetworkStatus();
-   const [voipToken, setVoipToken] = React.useState('');
 
    const termsHandler = () => {
       Linking.openURL('https://www.mirrorfly.com/terms-and-conditions.php');
@@ -45,29 +46,19 @@ const RegisterScreen = ({ navigation }) => {
       Linking.openURL('https://www.mirrorfly.com/privacy-policy.php');
    };
 
-   const registerVoipToken = () => {
-      RNVoipPushNotification.addEventListener('register', token => {
-         // --- send token to your apn provider server
-         setVoipToken(token);
-      });
-      // =====  register =====
-      RNVoipPushNotification.registerVoipToken();
-   };
-
    useEffect(() => {
-      if (Platform.OS === 'ios') {
-         registerVoipToken();
-      }
-
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-         BackHandler.exitApp();
-         return true;
-      });
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
       return () => {
          backHandler.remove();
-         RNVoipPushNotification.removeEventListener('register');
       };
    }, []);
+
+   const handleBackBtn = () => {
+      if (getCurrentScreen() === REGISTERSCREEN) {
+         BackHandler.exitApp();
+      }
+      return true;
+   };
 
    const selectCountryHandler = () => {
       let x = { screen: COUNTRYSCREEN };
@@ -157,7 +148,12 @@ const RegisterScreen = ({ navigation }) => {
    const handleRegister = async () => {
       setIsToastShowing(false);
       const fcmToken = await fcmTokenCheck();
-      const register = await SDK.register(selectcountry?.dial_code + mobileNumber, fcmToken, voipToken, process.env?.NODE_ENV === "production");
+      const register = await SDK.register(
+         selectcountry?.dial_code + mobileNumber,
+         fcmToken,
+         getVoipToken(),
+         process.env?.NODE_ENV === 'production',
+      );
       if (register.statusCode === 200) {
          await AsyncStorage.setItem('mirrorFlyLoggedIn', 'true');
          await AsyncStorage.setItem('userIdentifier', JSON.stringify(selectcountry?.dial_code + mobileNumber));
@@ -165,6 +161,7 @@ const RegisterScreen = ({ navigation }) => {
          handleConnect(register.data);
       } else {
          setIsLoading(false);
+         showToast(register?.message, { id: register?.message });
       }
    };
    const handleConnect = async register => {
@@ -182,6 +179,7 @@ const RegisterScreen = ({ navigation }) => {
             setMobileNumber();
             break;
          default:
+            showToast(connect?.message, { id: connect?.message });
             break;
       }
       setIsLoading(false);

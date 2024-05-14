@@ -385,7 +385,7 @@ const OnGoingCall = () => {
 
    const renderStream = () => {
       if (localStream) {
-         // remoteStreamDatas = [...remoteStream];
+         /**remoteStreamDatas = [...remoteStream]; */
          return renderLargeVideoTile();
       } else {
          return <></>;

@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import nextFrame from 'next-frame';
 import { Platform } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import RNCallKeep from 'react-native-callkeep';
@@ -65,9 +64,21 @@ import {
    updateAudioRouteTo,
    updateMissedCallNotification,
 } from '../Helper/Calls/Utility';
-import { formatUserIdToJid, getLocalUserDetails } from '../Helper/Chat/ChatHelper';
+import {
+   formatUserIdToJid,
+   getLocalUserDetails,
+   handleChangeIntoUploadingState,
+   handleUploadNextImage,
+} from '../Helper/Chat/ChatHelper';
 import {
    CONNECTION_STATE_CONNECTING,
+   GROUP_CREATED,
+   GROUP_PROFILE_INFO_UPDATED,
+   GROUP_USER_ADDED,
+   GROUP_USER_LEFT,
+   GROUP_USER_MADE_ADMIN,
+   GROUP_USER_REMOVED,
+   MIX_BARE_JID,
    MSG_CLEAR_CHAT,
    MSG_CLEAR_CHAT_CARBON,
    MSG_DELETE_CHAT_CARBON,
@@ -77,15 +88,15 @@ import {
    MSG_SEEN_STATUS,
    MSG_SENT_SEEN_STATUS_CARBON,
 } from '../Helper/Chat/Constant';
+import { fetchGroupParticipants } from '../Helper/Chat/Groups';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { getUserProfileFromSDK, showToast, updateUserProfileDetails } from '../Helper/index';
-import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import { pushNotify, updateNotification } from '../Service/remoteNotifyHandle';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../calls/notification/callNotifyHandler';
+import { handleLogOut } from '../common/utils';
 import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
 import { updateConversationMessage, updateRecentChatMessage } from '../components/chat/common/createMessage';
-import { REGISTERSCREEN } from '../constant';
 import ActivityModule from '../customModules/ActivityModule';
 import BluetoothHeadsetDetectionModule from '../customModules/BluetoothHeadsetDetectionModule';
 import RingtoneSilentKeyEventModule from '../customModules/RingtoneSilentKeyEventModule';
@@ -104,16 +115,16 @@ import {
 } from '../redux/Actions/CallAction';
 import { resetCallControlsStateAction, updateCallVideoMutedAction } from '../redux/Actions/CallControlsAction';
 import { resetCallModalToastDataAction } from '../redux/Actions/CallModalToasAction';
+import { updateChatMessage, updateSentSeenStatus } from '../redux/Actions/ChatMessageAction';
 import {
    ClearChatHistoryAction,
    DeleteChatHistoryAction,
    deleteMessageForEveryone,
    deleteMessageForMe,
-   updateChatConversationHistory,
+   updateUploadStatus,
 } from '../redux/Actions/ConversationAction';
 import { updateDownloadData } from '../redux/Actions/MediaDownloadAction';
 import { updateMediaUploadData } from '../redux/Actions/MediaUploadAction';
-import { navigate } from '../redux/Actions/NavigationAction';
 import { updateProfileDetail } from '../redux/Actions/ProfileAction';
 import {
    clearLastMessageinRecentChat,
@@ -133,8 +144,7 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateRosterData } from '../redux/Actions/rosterAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
-import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
-import { handleLogOut } from '../common/utils';
+import { mflog, uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
 
 let localStream = null,
    localVideoMuted = false,
@@ -177,7 +187,13 @@ export const resetCallData = () => {
    remoteAudioMuted = [];
    localVideoMuted = false;
    localAudioMuted = false;
-
+   /**
+   // if (getFromLocalStorageAndDecrypt('isNewCallExist') === true) {
+   //   deleteItemFromLocalStorage('isNewCallExist');
+   // } else {
+   //   Store.dispatch(resetCallIntermediateScreen());
+   // }
+   */
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall();
    HeadphoneDetection.remove?.();
    BluetoothHeadsetDetectionModule.removeAllListeners();
@@ -202,6 +218,11 @@ export const resetCallData = () => {
       Store.dispatch(resetCallModalToastDataAction());
    });
    resetData();
+   /**
+   // setTimeout(() => {
+   //   Store.dispatch(isMuteAudioAction(false));
+   // }, 1000);
+    */
 };
 
 export const muteLocalVideo = isMuted => {
@@ -349,7 +370,12 @@ const ended = async res => {
          callConnectionData = callConnectionStoreData();
       }
       dispatchDisconnected(CALL_STATUS_DISCONNECTED);
-
+      /**
+      // callLogs.update(roomId, {
+      //     "endTime": callLogs.initTime(),
+      //     "sessionStatus": res.sessionStatus
+      // });
+       */
       if (callConnectionData) {
          clearMissedCallNotificationTimer();
       }
@@ -361,6 +387,7 @@ const ended = async res => {
       // SetTimeout not working in background and killed state
       const timeout = BackgroundTimer.setTimeout(() => {
          resetCloseModel();
+         /** Store.dispatch(callConversion()); */
       }, DISCONNECTED_SCREEN_DURATION);
       setDisconnectedScreenTimeoutTimer(timeout);
 
@@ -370,7 +397,7 @@ const ended = async res => {
          const callDetailObj = callConnectionData ? { ...callConnectionData } : {};
          callDetailObj['status'] = 'ended';
          let nickName = getNickName(callConnectionData);
-         // TODO: notify that call disconnected if needed
+         /** TODO: notify that call disconnected if needed */
          callNotifyHandler(callDetailObj.roomId, callDetailObj, callDetailObj.userJid, nickName, 'MISSED_CALL');
       }
    } else {
@@ -378,6 +405,7 @@ const ended = async res => {
          return;
       }
       removingRemoteStream(res);
+      /** resetPinAndLargeVideoUser(res.userJid); */
       updateCallConnectionStatus(res.usersStatus);
       const showConfrenceData = showConfrenceStoreData();
       const { data } = showConfrenceData;
@@ -393,6 +421,9 @@ const ended = async res => {
 };
 
 const dispatchCommon = () => {
+   /**Store.dispatch(callConversion());
+    * Store.dispatch(closeCallModal());
+    */
    closeCallModalActivity(true);
    resetCallData();
 };
@@ -405,6 +436,12 @@ const handleEngagedOrBusyStatus = async res => {
       if (Platform.OS === 'android') {
          stopForegroundServiceNotification();
       }
+      /**
+      // callLogs.update(roomId, {
+      //    endTime: callLogs.initTime(),
+      //    sessionStatus: res.sessionStatus,
+      // });
+       */
       const callStatusMsg = res.status === 'engaged' ? CALL_ENGAGED_STATUS_MESSAGE : CALL_BUSY_STATUS_MESSAGE;
       dispatchDisconnected(callStatusMsg);
       showCallModalToast(callStatusMsg, 2500);
@@ -437,7 +474,6 @@ const handleEngagedOrBusyStatus = async res => {
                callConnectionData.to = updatedUserList[0];
             }
          }
-   
          store.dispatch(updateCallConnectionState(callConnectionData));
       }
       let userDetails = await getUserProfileFromSDK(getUserIdFromJid(res.userJid));
@@ -449,7 +485,6 @@ const handleEngagedOrBusyStatus = async res => {
          id: 'Engaged_Toast',
       });
       removingRemoteStream(res);
- 
       Store.dispatch(
          showConfrence({
             ...(data || {}),
@@ -541,7 +576,7 @@ const connecting = res => {
    updatingUserStatusInRemoteStream(res.usersStatus);
    const showConfrenceData = showConfrenceStoreData();
    const { data } = showConfrenceData;
-   if (data) {
+   if (Object.keys(data).length) {
       Store.dispatch(
          showConfrence({
             ...(data || {}),
@@ -552,6 +587,13 @@ const connecting = res => {
             localAudioMuted,
          }),
       );
+      /**
+      // Store.dispatch(setCallModalScreen(ONGOING_CALL_SCREEN));
+      // callLogs.update(roomId, {
+      //    sessionStatus: res.sessionStatus,
+      //    // "startTime": callLogs.initTime()
+      // });
+       */
    }
 };
 
@@ -566,6 +608,14 @@ const disconnected = res => {
    let disconnectedUser = res.userJid;
    disconnectedUser = disconnectedUser.includes('@') ? disconnectedUser.split('@')[0] : disconnectedUser;
    if (remoteStream.length < 1 || disconnectedUser === currentUser) {
+      /**
+      // callLogs.update(roomId, {
+      //    endTime: callLogs.initTime(),
+      //    sessionStatus: res.sessionStatus,
+      // });
+      // resetPinAndLargeVideoUser();
+      // Store.dispatch(hideModal());
+       */
       resetCallData();
    } else {
       Store.dispatch(
@@ -637,7 +687,7 @@ const callStatus = res => {
    } else if (res.status === 'userstatus') {
       userStatus(res);
    } else if (res.status === 'hold') {
-      // hold(res);
+      /**hold(res); */
    }
 };
 
@@ -658,30 +708,40 @@ export const callBacks = {
          handleLogOut();
       }
    },
-   dbListener: res => {
-      console.log('dbListener', JSON.stringify(res));
-   },
    messageListener: async res => {
-      await nextFrame();
-      if (res.chatType === 'chat') {
-         switch (res.msgType) {
-            case 'sentMessage':
-            case 'carbonSentMessage':
-            case 'receiveMessage':
-            case 'carbonReceiveMessage':
-               updateRecentChatMessage(res, store.getState());
-               updateConversationMessage(res, store.getState());
-               pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.publisherJid);
-               break;
-         }
+      switch (res.msgType) {
+         case 'acknowledge':
+            if (res?.type === 'seen') {
+               store.dispatch(updateSentSeenStatus(res));
+            }
+            break;
+         case 'sentMessage':
+         case 'carbonSentMessage':
+         case 'receiveMessage':
+         case 'carbonReceiveMessage':
+         case 'groupCreated':
+         case 'groupProfileUpdated':
+            updateRecentChatMessage(res, store.getState());
+            updateConversationMessage(res, store.getState());
+            store.dispatch(updateRosterData(res.profileDetails));
+            if (
+               !MIX_BARE_JID.test(res?.fromUserJid) &&
+               !res.notification &&
+               (res.msgType === 'receiveMessage' || res.msgType === 'carbonReceiveMessage')
+            ) {
+               pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.fromUserJid);
+            }
+            break;
       }
       switch (res.msgType) {
          case 'carbonDelivered':
          case 'delivered':
          case 'seen':
          case 'carbonSeen':
-            store.dispatch(updateRecentChatMessageStatus(res));
-            store.dispatch(updateChatConversationHistory(res));
+            batch(() => {
+               store.dispatch(updateRecentChatMessageStatus(res));
+               store.dispatch(updateChatMessage(res));
+            });
             break;
          case 'composing':
          case 'carbonComposing':
@@ -731,6 +791,27 @@ export const callBacks = {
             updateNotification(res.msgId);
          }
       }
+
+      /**
+        // if (res.msgType === "carbonDelivered" || res.msgType === "delivered" || res.msgType === "seen" || res.msgType === "carbonSeen") {
+            // store.dispatch(updateRecentChatMessageStatus(res))
+            // store.dispatch(updateChatConversationHistory(res))
+            // store.dispatch(storeDeliveryStatus(res))
+            // if (res.msgType === "seen" || res.msgType === "carbonSeen") {
+            //     store.dispatch(storeSeenStatus(res))
+            // }
+            // store.dispatch(addMessageInfoUpdate(
+            //     {
+            //         id: SDK.randomString(),
+            //         activeUserId: res.publisherId,
+            //         time: res.timestamp,
+            //         messageStatus:
+            //             res.msgType === MSG_DELIVERED_STATUS_CARBON || res.msgType === MSG_DELIVERED_STATUS
+            //                 ? MSG_DELIVERED_STATUS_ID
+            //                 : MSG_SEEN_STATUS_ID
+            //     }))
+        // }
+        */
       // When message is seen, then delete the seen messages from pending seen message list
       const pendingMessages = store?.getState().chatSeenPendingMsgData?.data || [];
       if (
@@ -743,11 +824,14 @@ export const callBacks = {
       }
 
       if (res.msgType === 'acknowledge' && res.type === 'acknowledge') {
-         store.dispatch(updateRecentChatMessageStatus(res));
-         store.dispatch(updateChatConversationHistory(res));
+         batch(() => {
+            store.dispatch(updateRecentChatMessageStatus(res));
+            store.dispatch(updateChatMessage(res));
+         });
       }
    },
    presenceListener: res => {
+      console.log('presenceListener res ==>', JSON.stringify(res, null, 2));
       store.dispatch(updateUserPresence(res));
    },
    userProfileListener: res => {
@@ -765,16 +849,78 @@ export const callBacks = {
       console.log('favouriteMessageListener', res);
    },
    groupProfileListener: res => {
-      console.log('groupProfileListener = (res) => { }', res);
+      if (
+         res.msgType === GROUP_CREATED ||
+         res.msgType === GROUP_USER_ADDED ||
+         res.msgType === GROUP_PROFILE_INFO_UPDATED
+      ) {
+         const obj = {
+            userId: getUserIdFromJid(res.groupJid),
+            userJid: res.groupJid,
+            ...res.groupProfile,
+         };
+         store.dispatch(updateRosterData(obj));
+         const userObj = {
+            userId: getUserIdFromJid(res.newUserJid),
+            userJid: res.newUserJid,
+            ...res.userProfile,
+         };
+         store.dispatch(updateRosterData(userObj));
+         const publisherObj = {
+            userId: getUserIdFromJid(res.publisherJid),
+            userJid: res.publisherJid,
+            ...res.publisherProfile,
+         };
+         store.dispatch(updateRosterData(publisherObj));
+      }
+      if (
+         res.msgType === GROUP_USER_ADDED ||
+         res.msgType === GROUP_USER_REMOVED ||
+         res.msgType === GROUP_USER_MADE_ADMIN ||
+         res.msgType === GROUP_USER_LEFT
+      ) {
+         setTimeout(() => {
+            fetchGroupParticipants(res.groupJid);
+         }, 1000);
+      }
    },
    groupMsgInfoListener: res => {
       console.log('groupMsgInfoListener = (res) => { }', res);
    },
    mediaUploadListener: res => {
       store.dispatch(updateMediaUploadData(res));
+      if (res?.progress && res?.progress !== 100) {
+         handleChangeIntoUploadingState(res.msgId);
+      }
+      if (res.progress === 100) {
+         let updateObj = {
+            statusCode: 200,
+            msgId: res.msgId,
+            is_downloaded: 2,
+            uploadStatus: 2,
+            local_path: res.local_path,
+            fromUserId: getUserIdFromJid(res.fromUserJid),
+         };
+         store.dispatch(updateUploadStatus(updateObj));
+         BackgroundTimer.setTimeout(() => {
+            handleUploadNextImage(updateObj);
+         }, 200);
+      }
    },
    mediaDownloadListener: res => {
       store.dispatch(updateDownloadData(res));
+      // handleChangeIntoDownloadingState(res.msgId);
+      if (res.progress === 100) {
+         let updateObj = {
+            statusCode: 200,
+            msgId: res.msgId,
+            is_downloaded: 2,
+            uploadStatus: 2,
+            local_path: res.local_path,
+            fromUserId: getUserIdFromJid(res.fromUserJid),
+         };
+         store.dispatch(updateUploadStatus(updateObj));
+      }
    },
    blockUserListener: res => {
       console.log('blockUserListener = (res) => { }', res);
@@ -858,7 +1004,7 @@ export const callBacks = {
          // we should close the call again screen to prevent the user from seeing the Incoming call screen UI, because the incoming call screen UI is only for Android.
          // for iOS incoming call will only be shown in call kit
          const { showCallModal: isCallModalOpen, screenName: currentCallModalScreen } = Store.getState().callData || {};
-         if (Platform.OS === 'ios' && isCallModalOpen & (currentCallModalScreen === CALL_AGAIN_SCREEN)) {
+         if (Platform.OS === 'ios' && isCallModalOpen && currentCallModalScreen === CALL_AGAIN_SCREEN) {
             Store.dispatch(closeCallModal());
          }
          Store.dispatch(setCallModalScreen(INCOMING_CALL_SCREEN));
@@ -868,6 +1014,18 @@ export const callBacks = {
       } else {
          SDK.callEngaged();
       }
+      /**
+      // callLogs.insert({
+      //   callMode: res.callMode,
+      //   callState: 0,
+      //   callTime: callLogs.initTime(),
+      //   callType: res.callType,
+      //   fromUser: res.from,
+      //   roomId: res.roomId,
+      //   userList: res.userList,
+      //   groupId: res.callMode === 'onetoone' ? '' : res.groupId,
+      // });
+       */
    },
    callStatusListener: function (res) {
       callStatus(res);
@@ -908,6 +1066,15 @@ export const callBacks = {
                remoteAudioMuted[user.userJid] = user.audioMuted;
             }
          });
+         /**
+         // const roomName = getFromLocalStorageAndDecrypt('roomName');
+         // if (roomName === '' || roomName == null || roomName == undefined) {
+         //   const { roomId = '' } = SDK.getCallInfo();
+         //   console.log('localStorage roomId :>> ', roomId);
+         //   encryptAndStoreInLocalStorage('roomName', roomId);
+         // }
+          */
+
          dispatch(
             showConfrence({
                localVideoMuted: localVideoMuted,
@@ -920,6 +1087,7 @@ export const callBacks = {
          );
       } else {
          onCall = true;
+         /**encryptAndStoreInLocalStorage('callingComponent', false); */
          const streamType = res.trackType;
          let mediaStream = null;
          if (res.track) {
@@ -985,6 +1153,7 @@ export const callBacks = {
                        status: CALL_CONVERSION_STATUS_CANCEL,
                     }
                   : undefined;
+            /** Store.dispatch(callConversion(status)); */
             status && SDK.callConversion(CALL_CONVERSION_STATUS_CANCEL);
          }
       }
@@ -993,6 +1162,7 @@ export const callBacks = {
       console.log(res, 'userProfileListener');
    },
    callSpeakingListener: res => {
+      /**console.log('Speaking listener', res); */
    },
    callUsersUpdateListener: res => {
       console.log(res, 'userProfileListener');
@@ -1022,7 +1192,9 @@ export const callBacks = {
    },
    callSwitchListener: function (res) {},
    muteStatusListener: res => {
-      if (!res) return;
+      if (!res) {
+         return;
+      }
       let localUser = false;
       let vcardData = getLocalUserDetails();
       const currentUser = vcardData && vcardData.fromUser;
@@ -1062,6 +1234,6 @@ export const callBacks = {
             remoteAudioMuted: remoteAudioMuted,
          }),
       );
+      /** updateCallTypeAfterCallSwitch(); */
    },
-   adminBlockListener: function (res) {},
 };

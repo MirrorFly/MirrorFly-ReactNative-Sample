@@ -1,77 +1,94 @@
-### UI Kit for React-Native
+This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
-Mirrorfly UIKit Sdk is a set of prebuilt UI components that allows you to easily integrate an in-app chat with all the essential messaging features.
+# Getting Started
 
-### Requirements
+> **Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
 
-The requirements for chat SDK for React-Native App are:
+## Step 1: Start the Metro Server
 
-- React Version 16.0 or above
-- Node Version v14.17.4 or above
+First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
 
-### Things to be Noted Before Making a Start
+To start Metro, run the following command from the _root_ of your React Native project:
 
-#### SDK License Key
+```bash
+# using npm
+npm start
 
-> Before integrating CONTUS MirrorFly Chat SDK, you need to have a SDK license key for your MirrorFly application. This SDK needs to be authenticated by the MirrorFly server using the license key for further processing.
-
-Follow the below steps to get your license key:
-
-**Step 1:** Let’s Create an Account - Sign up into MirrorFly Console page (https://console.mirrorfly.com/register) for free MirrorFly account
-
-**Step 2:** Create an account with your basic details including your name, organization details, work email, and contact number
-
-**Step 3:** Once you’re in! You get access to your MirrorFly account ‘Overview page’ where you can find a license key.
-
-**Step 4:** You can copy the license key from the ‘Application info’ section
-
-### Integrate the Chat SDK
-
-> Install mirrorfly-uikit-react-native (https://www.npmjs.com/package/mirrorfly-uikit-react-native) npm package by terminal command 'npm i mirrorfly-uikit-react-native'. Now the node_modules will have a mirrorfly-uikit-react-native folder and package.json is added with the mirrorfly-uikit-react-native dependency.
-
-**Step 1:** Create a new React project or Open an existing project.
-
-**Step 2:** Open terminal and install mirrorfly-uikit-react-native with npm command 'npm i mirrorfly-uikit-react-native' and check package.json whether the dependency is added with mirrorfly-uikit-react-native as mentioned below.
-
-```jsx
-"dependencies": {
- "mirrorfly-uikit-react-native": "^1.2.0",
- "mirrorfly-reactnative-sdk": “^0.3.0”,
- "react": "^16.0.0",
- }
+# OR using Yarn
+yarn start
 ```
 
-**Step 3:** Import ChatApp component from the mirrorfly-uikit-react-native package in node modules.
+## Step 2: Start your Application
 
-```jsx
-import { mirrorflyInitialize } from "mirrorfly-uikit-react-native"
-import { MirrorflyComponent } from "mirrorfly-uikit-react-native"
+Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
 
-function YourComponent() {
-  return <MirrorflyComponent />;
-}
+### For Android
 
-   function App() {
+```bash
+# using npm
+npm run android
 
-      React.useEffect(() => {
-         (async () => {
-            const initializeResponse = await mirrorflyInitialize({
-              licenseKey:"********************",
-              apiUrl:"*******************",
-              isSandbox: true,
-              callBack: res => {
-                console.log(res);
-              },
-            });
-         })();
-      }, []);
-    
-    return(
-      <>
-        <YourComponent/>
-      </>
-    )
-   }
-
-  export default App;
+# OR using Yarn
+yarn android
 ```
+
+### For iOS
+
+```bash
+# using npm
+npm run ios
+
+# OR using Yarn
+yarn ios
+```
+
+If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+
+This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+
+## Step 3: Modifying your App
+
+Now that you have successfully run the app, let's modify it.
+
+1. Open `App.tsx` in your text editor of choice and edit some lines.
+2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+
+   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+
+## Congratulations! :tada:
+
+You've successfully run and modified your React Native App. :partying_face:
+
+### Now what?
+
+-  If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
+-  If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+
+# Troubleshooting
+
+If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+
+# Learn More
+
+To learn more about React Native, take a look at the following resources:
+
+-  [React Native Website](https://reactnative.dev) - learn more about React Native.
+-  [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
+-  [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
+-  [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
+-  [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+
+# In constant.js file
+
+-  place you application shema here APP_SCHEMA
+
+# In src/config.js file
+
+-  Update the variables
+
+   GOOGLE_LOCATION_API_KEY: '', // Paste GOOGLE_LOCATION_API_KEY HERE
+
+   // =====================================
+   API_URL: '', // Paste API BASE URL HERE
+   licenseKey: '', // Paste LICENSEKEY BASE URL HERE
+   // =====================================

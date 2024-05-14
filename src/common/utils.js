@@ -1,11 +1,12 @@
-import React from 'react';
-import DocumentPicker from 'react-native-document-picker';
-import { Box, Text } from 'native-base';
-import { request, PERMISSIONS, requestMultiple, check, checkMultiple } from 'react-native-permissions';
-import { Alert, Linking, NativeModules, Platform } from 'react-native';
-import SDK from '../SDK/SDK';
-import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import messaging from '@react-native-firebase/messaging';
+import { Box, Text } from 'native-base';
+import React from 'react';
+import { Alert, Linking, NativeModules, Platform } from 'react-native';
+import DocumentPicker from 'react-native-document-picker';
+import { PERMISSIONS, RESULTS, check, checkMultiple, request, requestMultiple } from 'react-native-permissions';
+import { batch } from 'react-redux';
+import { showToast } from '../Helper';
 import {
    BRAND_REDMI,
    BRAND_XIAOMI,
@@ -13,15 +14,15 @@ import {
    PACKAGE_XIAOMI_WINDOW_COMPONENT,
    alertPermissionMessage,
 } from '../Helper/Calls/Constant';
-import { showToast } from '../Helper';
-import { REGISTERSCREEN } from '../constant';
 import { endOngoingCallLogout } from '../Helper/Calls/Utility';
-import { batch } from 'react-redux';
-import Store from '../redux/store';
-import { profileDetail } from '../redux/Actions/ProfileAction';
-import { navigate } from '../redux/Actions/NavigationAction';
-import { ResetStore } from '../redux/Actions/ResetAction';
 import * as RootNav from '../Navigation/rootNavigation';
+import SDK from '../SDK/SDK';
+import { REGISTERSCREEN } from '../constant';
+import { navigate } from '../redux/Actions/NavigationAction';
+import { profileDetail } from '../redux/Actions/ProfileAction';
+import { ResetStore } from '../redux/Actions/ResetAction';
+import Store from '../redux/store';
+import { mflog } from '../uikitHelpers/uikitMethods';
 const { ActivityModule } = NativeModules;
 
 const toastConfig = {
@@ -30,18 +31,19 @@ const toastConfig = {
 };
 
 const documentAttachmentTypes = [
-   DocumentPicker.types.pdf,
-   DocumentPicker.types.ppt,
-   DocumentPicker.types.pptx,
-   DocumentPicker.types.doc,
-   DocumentPicker.types.docx,
-   DocumentPicker.types.xls,
-   DocumentPicker.types.xlsx,
-   DocumentPicker.types.plainText,
-   DocumentPicker.types.zip,
-   DocumentPicker.types.csv,
-   /** need to add rar file type and verify that */
-   '.rar',
+   DocumentPicker.types.allFiles,
+   // DocumentPicker.types.pdf
+   // DocumentPicker.types.ppt
+   // DocumentPicker.types.pptx
+   // DocumentPicker.types.doc
+   // DocumentPicker.types.docx
+   // DocumentPicker.types.xls
+   // DocumentPicker.types.xlsx
+   // DocumentPicker.types.plainText
+   // DocumentPicker.types.zip
+   // DocumentPicker.types.csv
+   // /** need to add rar file type and verify that */
+   // '.rar'
 ];
 
 export const getExtention = filename => {
@@ -61,7 +63,7 @@ export const handleGalleryPickerSingle = async () => {
          return res;
       }
    } catch (error) {
-      console.log(error);
+      mflog('Failed to pick single image using document picker', error);
    }
 };
 
@@ -78,7 +80,7 @@ export const handleAudioPickerSingle = async () => {
       }
    } catch (error) {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-      console.log(error);
+      mflog('Failed to pick single audio using document picker', error);
    }
 };
 
@@ -93,26 +95,54 @@ export const handleDocumentPickSingle = async () => {
    } catch (error) {
       // updating the SDK flag back to false to behave as usual
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-      console.log('Error in document picker pick single ', error);
+      mflog('Error in document picker pick single ', error);
    }
 };
 
 export const requestCameraPermission = async () => {
    switch (true) {
       case Platform.OS === 'ios':
-         const ios_permit = await requestMultiple([PERMISSIONS.IOS.CAMERA, PERMISSIONS.IOS.MICROPHONE]);
-         return (ios_permit['ios.permission.CAMERA'] === 'granted' ||
-            ios_permit['ios.permission.CAMERA'] === 'limited') &&
-            (ios_permit['ios.permission.MICROPHONE'] === 'granted' ||
-               ios_permit['ios.permission.MICROPHONE'] === 'limited')
-            ? 'granted'
-            : 'denied';
+         const ios_permit = await requestMultiple([PERMISSIONS.IOS.CAMERA]);
+         return ios_permit['ios.permission.CAMERA'];
       case Platform.OS === 'android':
-         const permited = await requestMultiple([PERMISSIONS.ANDROID.CAMERA, PERMISSIONS.ANDROID.RECORD_AUDIO]);
-         return permited['android.permission.CAMERA'] === 'granted' &&
-            permited['android.permission.RECORD_AUDIO'] === 'granted'
-            ? 'granted'
-            : 'denied';
+         const permited = await requestMultiple([PERMISSIONS.ANDROID.CAMERA]);
+         return permited['android.permission.CAMERA'];
+   }
+};
+
+export const requestCameraMicPermission = async () => {
+   switch (true) {
+      case Platform.OS === 'ios':
+         const { 'ios.permission.CAMERA': camera, 'ios.permission.MICROPHONE': mic } = await requestMultiple([
+            PERMISSIONS.IOS.CAMERA,
+            PERMISSIONS.IOS.MICROPHONE,
+         ]);
+         if (
+            (camera === RESULTS.GRANTED || camera === RESULTS.LIMITED) &&
+            (mic === RESULTS.GRANTED || mic === RESULTS.LIMITED)
+         ) {
+            return 'granted';
+         } else if (camera === RESULTS.BLOCKED || mic === RESULTS.BLOCKED) {
+            return 'blocked';
+         } else {
+            return 'denied';
+         }
+      case Platform.OS === 'android':
+         const permissionStatus = await requestMultiple([PERMISSIONS.ANDROID.CAMERA, PERMISSIONS.ANDROID.RECORD_AUDIO]);
+
+         if (
+            permissionStatus[PERMISSIONS.ANDROID.CAMERA] === RESULTS.GRANTED &&
+            permissionStatus[PERMISSIONS.ANDROID.RECORD_AUDIO] === RESULTS.GRANTED
+         ) {
+            return RESULTS.GRANTED;
+         } else if (
+            permissionStatus[PERMISSIONS.ANDROID.CAMERA] === RESULTS.BLOCKED ||
+            permissionStatus[PERMISSIONS.ANDROID.RECORD_AUDIO] === RESULTS.BLOCKED
+         ) {
+            return RESULTS.BLOCKED;
+         } else {
+            return RESULTS.DENIED;
+         }
    }
 };
 
@@ -121,18 +151,33 @@ export const checkVideoPermission = async () => {
 };
 
 export const requestStoragePermission = async () => {
-   console.log(Platform.Version, 'Platform.Version UI');
    switch (true) {
       case Platform.OS === 'ios':
-         return await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
-      case Platform.OS === 'android' && Platform.Version <= 32: // Android Vresion 32 and below
+         const iosPermission = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+         if (iosPermission === RESULTS.GRANTED || iosPermission === RESULTS.LIMITED) {
+            return RESULTS.GRANTED;
+         }
+         break;
+      case Platform.OS === 'android' && Platform.Version <= 32: // Android Version 32 and below
          return await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
       default:
-         const permited = await requestMultiple([
+         const androidPermissions = await requestMultiple([
             PERMISSIONS.ANDROID.READ_MEDIA_IMAGES,
             PERMISSIONS.ANDROID.READ_MEDIA_VIDEO,
-         ]); // Android Vresion 33 and above
-         return permited['android.permission.READ_MEDIA_IMAGES'] || permited['android.permission.READ_MEDIA_VIDEO'];
+         ]); // Android Version 33 and above
+         if (
+            androidPermissions[PERMISSIONS.ANDROID.READ_MEDIA_IMAGES] === RESULTS.GRANTED ||
+            androidPermissions[PERMISSIONS.ANDROID.READ_MEDIA_VIDEO] === RESULTS.GRANTED
+         ) {
+            return RESULTS.GRANTED;
+         } else if (
+            androidPermissions[PERMISSIONS.ANDROID.READ_MEDIA_IMAGES] === RESULTS.BLOCKED ||
+            androidPermissions[PERMISSIONS.ANDROID.READ_MEDIA_VIDEO] === RESULTS.BLOCKED
+         ) {
+            return RESULTS.BLOCKED;
+         } else {
+            return RESULTS.DENIED;
+         }
    }
 };
 
@@ -238,9 +283,9 @@ export const handleGalleryPickerMulti = async toast => {
       }
    } catch (err) {
       if (DocumentPicker.isCancel(err)) {
-         console.log('Image picker canceled.');
+         mflog('Image picker canceled.');
       } else {
-         console.log('Error picking images:', err);
+         mflog('Error picking images:', err);
       }
    }
 };

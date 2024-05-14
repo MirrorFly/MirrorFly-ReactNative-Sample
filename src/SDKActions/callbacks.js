@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import nextFrame from 'next-frame';
 import { Platform } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
-import RNCallKeep from '../customModules/CallKitModule';
 import HeadphoneDetection from 'react-native-headphone-detection';
 import RNInCallManager from 'react-native-incall-manager';
 import KeepAwake from 'react-native-keep-awake';
@@ -16,7 +15,6 @@ import {
    clearOutgoingTimer,
    dispatchDisconnected,
    getCurrentCallRoomId,
-   getSelectedAudioRoute,
    resetPinAndLargeVideoUser,
    setSelectedAudioRoute,
    showConfrenceStoreData,
@@ -29,10 +27,6 @@ import {
    stopReconnectingTone,
 } from '../Helper/Calls/Call';
 import {
-   AUDIO_ROUTE_BLUETOOTH,
-   AUDIO_ROUTE_HEADSET,
-   AUDIO_ROUTE_PHONE,
-   AUDIO_ROUTE_SPEAKER,
    CALL_AGAIN_SCREEN,
    CALL_BUSY_STATUS_MESSAGE,
    CALL_CONVERSION_STATUS_CANCEL,
@@ -48,11 +42,10 @@ import {
    DISCONNECTED_SCREEN_DURATION,
    INCOMING_CALL_SCREEN,
    ONGOING_CALL_SCREEN,
-   OUTGOING_CALL_SCREEN,
+   OUTGOING_CALL_SCREEN
 } from '../Helper/Calls/Constant';
 import {
    addHeadphonesConnectedListenerForCall,
-   audioRouteNameMap,
    closeCallModalActivity,
    constructMuteStatus,
    displayIncomingCallForAndroid,
@@ -67,7 +60,7 @@ import {
    stopProximityListeners,
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
    updateAudioRouteTo,
-   updateMissedCallNotification,
+   updateMissedCallNotification
 } from '../Helper/Calls/Utility';
 import { formatUserIdToJid, getLocalUserDetails } from '../Helper/Chat/ChatHelper';
 import {
@@ -99,6 +92,7 @@ import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Help
 import { updateConversationMessage, updateRecentChatMessage } from '../components/chat/common/createMessage';
 import ActivityModule from '../customModules/ActivityModule';
 import BluetoothHeadsetDetectionModule from '../customModules/BluetoothHeadsetDetectionModule';
+import RNCallKeep from '../customModules/CallKitModule';
 import RingtoneSilentKeyEventModule from '../customModules/RingtoneSilentKeyEventModule';
 import {
    callDurationTimestamp,
@@ -174,7 +168,6 @@ export const clearIosCallListeners = () => {
       RNCallKeep.removeEventListener('endCall');
       RNCallKeep.removeEventListener('didPerformSetMutedCallAction');
       RNCallKeep.removeEventListener('didChangeAudioRoute');
-      // RNInCallManager.setForceSpeakerphoneOn(false);
    }
 };
 

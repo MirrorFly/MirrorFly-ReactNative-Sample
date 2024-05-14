@@ -6,7 +6,7 @@ import notifee, {
    AndroidVisibility,
    EventType,
 } from '@notifee/react-native';
-import { Alert, AppState, Linking, NativeModules, Platform } from 'react-native';
+import { AppState, Linking, NativeModules, Platform } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
 import * as RootNav from '../../../src/Navigation/rootNavigation';
 import { endCall, getCallDuration } from '../../Helper/Calls/Call';
@@ -19,11 +19,14 @@ import {
    OUTGOING_CALL,
 } from '../../Helper/Calls/Constant';
 import { answerIncomingCall, declineIncomingCall, endOnGoingCall } from '../../Helper/Calls/Utility';
+import { getUserIdFromJid } from '../../Helper/Chat/Utility';
+import SDK from '../../SDK/SDK';
 import { removeAllDeliveredNotification } from '../../Service/remoteNotifyHandle';
-import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN, MIRRORFLY_RN } from '../../constant';
+import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN } from '../../constant';
 import { callDurationTimestamp, resetNotificationData, setNotificationData } from '../../redux/Actions/CallAction';
 import { updateChatConversationLocalNav } from '../../redux/Actions/ChatConversationLocalNavAction';
 import { navigate } from '../../redux/Actions/NavigationAction';
+import { updateRosterData } from '../../redux/Actions/rosterAction';
 import Store from '../../redux/store';
 import { getApplicationUrl } from '../../uikitHelpers/uikitMethods';
 const { ActivityModule } = NativeModules;
@@ -273,6 +276,11 @@ const onChatNotificationBackGround = async ({ type, detail }) => {
       } = detail;
       let x = { screen: CHATSCREEN, fromUserJID: fromUserJID || from_user };
       const push_url = getApplicationUrl() + 'CHATSCREEN?fromUserJID=' + fromUserJID;
+      const { statusCode, data = {} } = await SDK.getUserProfile(getUserIdFromJid(fromUserJID));
+      if (statusCode === 200) {
+         const { userId = '' } = data;
+         Store.dispatch(updateRosterData({ userId, ...data }));
+      }
       Store.dispatch(navigate(x));
       Linking.openURL(push_url);
       removeAllDeliveredNotification();

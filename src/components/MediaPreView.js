@@ -253,6 +253,7 @@ const styles = StyleSheet.create({
    miniPreviewList: { flexGrow: 0 },
    nickNameColor: {
       color: '#7f7f7f',
+      width: '90%',
    },
    textInput: {
       flex: 1,

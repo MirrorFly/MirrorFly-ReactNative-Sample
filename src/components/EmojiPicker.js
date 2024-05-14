@@ -1,12 +1,12 @@
-import React from 'react';
-import { StyleSheet, Text, View, FlatList, Pressable, useWindowDimensions, Keyboard, Animated } from 'react-native';
 import emoji from 'emoji-datasource';
+import Graphemer from 'graphemer';
 import { groupBy, orderBy } from 'lodash-es/collection';
 import { mapValues } from 'lodash-es/object';
+import React from 'react';
+import { Animated, FlatList, Keyboard, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { TabView } from 'react-native-tab-view';
-import Graphemer from 'graphemer';
-import { BackSpaceIcon } from '../common/Icons';
 import { CHAT_INPUT } from '../Helper/Chat/Constant';
+import { BackSpaceIcon } from '../common/Icons';
 import commonStyles from '../common/commonStyles';
 
 const charFromUtf16 = utf16 => String.fromCodePoint(...utf16.split('-').map(u => '0x' + u));

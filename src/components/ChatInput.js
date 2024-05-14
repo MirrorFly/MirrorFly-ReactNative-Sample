@@ -21,18 +21,17 @@ import Sound from 'react-native-sound';
 import { useSelector } from 'react-redux';
 import { CHAT_INPUT, MIX_BARE_JID } from '../Helper/Chat/Constant';
 import { showToast } from '../Helper/index';
-
+import { handleMessageTextSend, handleSendMsg } from '../Helper/Chat/ChatHelper';
 import SDK from '../SDK/SDK';
 import AttachmentMenu from '../common/AttachmentMenu';
 import IconButton from '../common/IconButton';
 import commonStyles from '../common/commonStyles';
 import { getExtention } from '../common/utils';
+import config, { attachmentMenuIcons } from '../config';
 import ApplicationColors from '../config/appColors';
 import { useNetworkStatus } from '../hooks';
 import EmojiOverlay from './EmojiPicker';
 import { soundRef } from './Media/AudioPlayer';
-import config, { attachmentMenuIcons } from '../config';
-import { handleMessageTextSend, handleSendMsg } from '../Helper/Chat/ChatHelper';
 
 export const chatInputMessageRef = createRef();
 export const chatInputRef = createRef();

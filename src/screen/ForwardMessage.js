@@ -645,18 +645,21 @@ const ForwardMessage = () => {
       <>
          <View style={styles.container}>
             {renderHeader}
-            {!filteredRecentChatList.length && !filteredContactList.length && !filteredGroupChatList.length && (
-               <View
-                  style={[
-                     commonStyles.alignItemsCenter,
-                     commonStyles.justifyContentCenter,
-                     commonStyles.width_100_per,
-                     commonStyles.height_100_per,
-                     commonStyles.bg_white,
-                  ]}>
-                  <Text style={styles.noMsg}>No Result Found</Text>
-               </View>
-            )}
+            {Boolean(searchText) &&
+               !filteredRecentChatList.length &&
+               !filteredContactList.length &&
+               !filteredGroupChatList.length && (
+                  <View
+                     style={[
+                        commonStyles.alignItemsCenter,
+                        commonStyles.justifyContentCenter,
+                        commonStyles.width_100_per,
+                        commonStyles.height_100_per,
+                        commonStyles.bg_white,
+                     ]}>
+                     <Text style={styles.noMsg}>No Result Found</Text>
+                  </View>
+               )}
             <ScrollView style={commonStyles.flex1} onScroll={handleScroll} scrollEventThrottle={150}>
                {renderRecentChat}
                {renderGroupChat}

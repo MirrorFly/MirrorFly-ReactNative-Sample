@@ -77,7 +77,7 @@ export default {
       'react-native-geocoding',
       '@react-native-camera-roll/camera-roll',
       '@react-native-community/checkbox',
-      //Calls
+      //Calls 
       "react-native-incall-manager",
       'react-native-webrtc',
       'react-native-keep-awake',
@@ -86,7 +86,6 @@ export default {
       'react-native-silentmode-detector',
       'react-native-headphone-detection',
       '@notifee/react-native',
-      'react-native-callkeep',
       'react-native-voip-push-notification',
       'mirrorfly-reactnative-sdk',
       "react-native-material-menu",

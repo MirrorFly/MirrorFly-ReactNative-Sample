@@ -609,7 +609,7 @@ PODS:
     - RNSound/Core (= 0.11.2)
   - RNSound/Core (0.11.2):
     - React-Core
-  - RNSVG (13.14.0):
+  - RNSVG (13.14.1):
     - React-Core
   - RNVoipPushNotification (3.3.2):
     - React-Core
@@ -982,7 +982,7 @@ SPEC CHECKSUMS:
   RNPermissions: 6aa8b0c4b55c3113d1b5a4bf328dc05415031b16
   RNScreens: 396c07678c1c35614bc5feba74a56df387bf1965
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
-  RNSVG: d00c8f91c3cbf6d476451313a18f04d220d4f396
+  RNSVG: af3907ac5d4fa26a862b75a16d8f15bc74f2ceda
   RNVoipPushNotification: 543e18f83089134a35e7f1d2eba4c8b1f7776b08
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863

@@ -21,7 +21,6 @@ import Store from '../redux/store';
  */
 const useRosterData = userId => {
    const data = useSelector(state => state.rosterData.data);
-
    return data[userId] || {};
 };
 export default useRosterData;

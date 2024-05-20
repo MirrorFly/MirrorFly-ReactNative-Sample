@@ -257,7 +257,10 @@ export const escapeRegExpReservedChars = str => {
 export const getUserProfileFromSDK = userId => {
    const data = Store.getState().rosterData.data;
    const userData = data[userId] || {};
-   return SDK.getUserProfile(userId).then(res => {
+   if (data[userId]) {
+      return userData;
+   }
+   return SDK.getUserProfile(userId, false, true).then(res => {
       if (res?.statusCode === 200) {
          if (res.data !== userData) {
             updateUserProfileStore(res.data);

@@ -86,7 +86,6 @@ export default {
       'react-native-silentmode-detector',
       'react-native-headphone-detection',
       '@notifee/react-native',
-      'react-native-callkeep',
       'react-native-voip-push-notification',
       'mirrorfly-reactnative-sdk',
       'react-native-material-menu',

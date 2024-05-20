@@ -38,3 +38,5 @@ export const useAppState = () => {
 
    return isActive;
 };
+
+export const getNetworkState = () => networkState?.isInternetReachable || false;

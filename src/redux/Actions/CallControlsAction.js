@@ -6,6 +6,7 @@ import {
    UPDATE_CALL_SPEAKER_ENABLED,
    UPDATE_CALL_VIDEO_MUTED,
    UPDATE_CALL_WIRED_HEADSET_CONNECTED,
+   UPDATE_DEVICE_AUDIO_ROUTE_STATE,
    UPDATE_SWITCH_CAMERA,
 } from './Constants';
 
@@ -61,5 +62,12 @@ export const updateCallSelectedAudioRoute = data => {
 export const resetCallControlsStateAction = () => {
    return {
       type: RESET_CALL_CONTROLS_DATA,
+   };
+};
+
+export const updateCurrentDeviceAudioState = data => {
+   return {
+      type: UPDATE_DEVICE_AUDIO_ROUTE_STATE,
+      payload: data,
    };
 };

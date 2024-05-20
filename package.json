@@ -1,6 +1,6 @@
 {
    "name": "mirrorfly-uikit-react-native",
-   "version": "1.4.1",
+   "version": "1.4.2",
    "description": "React-Native based UI kit for Mirrorfly",
    "main": "dist/index.js",
    "module": "dist/index.js",
@@ -78,7 +78,7 @@
       "react-native-svg": "^13.10.0",
       "react-native-video": "^5.2.1",
       "react-native-voip-push-notification": "3.3.2",
-      "react-native-webrtc": "118.0.2"
+      "react-native-webrtc": "118.0.5"
    },
    "devDependencies": {
       "@babel/core": "^7.12.9",
@@ -131,7 +131,6 @@
       "react-native": "0.72.10",
       "react-native-audio-recorder-player": "3.6.0",
       "react-native-background-timer": "^2.4.1",
-      "react-native-callkeep": "^4.3.12",
       "react-native-camera": "^4.2.1",
       "react-native-compressor": "1.6.1",
       "react-native-contacts": "^7.0.6",
@@ -170,7 +169,7 @@
       "react-native-tab-view": "^3.5.1",
       "react-native-video": "^5.2.1",
       "react-native-voip-push-notification": "3.3.2",
-      "react-native-webrtc": "118.0.2",
+      "react-native-webrtc": "118.0.5",
       "react-redux": "^8.0.5",
       "react-test-renderer": "18.2.0",
       "realm": "^11.9.0",

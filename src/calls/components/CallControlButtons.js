@@ -1,9 +1,11 @@
+import { debounce } from 'lodash-es';
 import React, { useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import RNCallKeep from 'react-native-callkeep';
+import RNCallKeep from '../../customModules/CallKitModule';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { useSelector } from 'react-redux';
+import { setSelectedAudioRoute } from '../../Helper/Calls/Call';
 import {
    AUDIO_ROUTE_BLUETOOTH,
    AUDIO_ROUTE_HEADSET,
@@ -49,10 +51,10 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
    const RBSheetRef = useRef(null);
 
    const [audioRoutes, setAudioRoutes] = React.useState([]);
+   const audioRouteUpdateNeeded = React.useRef(true);
 
-   const { isAudioMuted, isVideoMuted, selectedAudioRoute, isFrontCameraEnabled } = useSelector(
-      state => state.callControlsData,
-   );
+   const { isAudioMuted, isVideoMuted, selectedAudioRoute, isFrontCameraEnabled, currentDeviceAudioRouteState } =
+      useSelector(state => state.callControlsData);
 
    const { callerUUID } = useSelector(state => state.callData) || {};
 
@@ -92,12 +94,12 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
          ]; */
          if (Array.isArray(_routes)) {
             if (_routes.length === 2) {
-               const _sorted = _routes.sort(sortAudioRoutes);
-               setAudioRoutes(_sorted);
+               _routes.sort(sortAudioRoutes);
+               setAudioRoutes(_routes);
             } else if (_routes.length > 2) {
                const filteredRoutes = _routes.filter(r => r.type !== AUDIO_ROUTE_PHONE);
-               const _sorted = filteredRoutes.sort(sortAudioRoutes);
-               setAudioRoutes(_sorted);
+               filteredRoutes.sort(sortAudioRoutes);
+               setAudioRoutes(filteredRoutes);
             }
             RBSheetRef.current?.open?.();
          }
@@ -128,8 +130,40 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
       updateCallVideoMute(_videoMuted, callerUUID);
    };
 
+   const handleSelectedRoutes = () => {
+      if (audioRouteUpdateNeeded.current && RBSheetRef.current && RBSheetRef.current.state.modalVisible) {
+         RNCallKeep.getAudioRoutes().then(_routes => {
+            /** sample data from 'getAudioRoutes' method
+             * const sampleAudioRoutes = [
+               { "name": "Speaker", "type": "Speaker" },
+               { "name": "iPhone Microphone", "type": "Phone" },
+               { "name": "Headset Microphone", "selected": true, "type": "Headset" }
+            ]; */
+            if (Array.isArray(_routes)) {
+               if (_routes.length === 2) {
+                  _routes.sort(sortAudioRoutes);
+                  setAudioRoutes(_routes);
+               } else if (_routes.length > 2) {
+                  const filteredRoutes = _routes.filter(r => r.type !== AUDIO_ROUTE_PHONE);
+                  filteredRoutes.sort(sortAudioRoutes);
+                  setAudioRoutes(filteredRoutes);
+               }
+            }
+         });
+      }
+      audioRouteUpdateNeeded.current = true;
+   };
+
+   React.useEffect(() => {
+      //for changing the popup route values when headset and blutooth value changes automatically
+      const debouncedHandleSelectedPopupRoutes = debounce(handleSelectedRoutes, 180);
+      debouncedHandleSelectedPopupRoutes();
+   }, [selectedAudioRoute, currentDeviceAudioRouteState]);
+
    const handleSelectAudioRoute = _audioRoute => () => {
+      audioRouteUpdateNeeded.current = false;
       RBSheetRef.current?.close?.();
+      setSelectedAudioRoute(_audioRoute.name);
       updateAudioRouteTo(_audioRoute.name, _audioRoute.type, callerUUID);
    };
 
@@ -170,12 +204,14 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
             </RectButton>
          </GestureHandlerRootView>
          <RBSheet
-            animationType="slide"
-            height={audioRoutes.length * 50 + 50}
+            animationType="none"
             ref={RBSheetRef}
             closeOnDragDown={true}
             closeOnPressMask={true}
             customStyles={{
+               container: {
+                  height: audioRoutes.length * 50 + 50,
+               },
                wrapper: {
                   backgroundColor: 'transparent',
                },
@@ -185,19 +221,15 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
             }}>
             <View style={styles.audioRoutesBottomSheetContainer}>
                {audioRoutes.map(route => (
-                  <>
-                     {route.type !== 'Bluetooth' && (
-                        <Pressable
-                           key={route.name}
-                           contentContainerStyle={[
-                              styles.audioRouteItem,
-                              selectedAudioRoute === audioRouteNameMap[route.type] && styles.selectedAudioRouteItem,
-                           ]}
-                           onPress={handleSelectAudioRoute(route)}>
-                           <Text style={styles.audioRouteItemText}>{route.type}</Text>
-                        </Pressable>
-                     )}
-                  </>
+                  <Pressable
+                     key={route.name}
+                     contentContainerStyle={[
+                        styles.audioRouteItem,
+                        selectedAudioRoute === audioRouteNameMap[route.type] && styles.selectedAudioRouteItem,
+                     ]}
+                     onPress={handleSelectAudioRoute(route)}>
+                     <Text style={styles.audioRouteItemText}>{route.type}</Text>
+                  </Pressable>
                ))}
             </View>
          </RBSheet>
@@ -205,7 +237,7 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
    );
 };
 
-export default CallControlButtons;
+export default React.memo(CallControlButtons);
 
 const styles = StyleSheet.create({
    container: {

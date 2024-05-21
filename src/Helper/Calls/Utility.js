@@ -194,7 +194,6 @@ const handleHeadphoneDetection = async data => {
 };
 
 const debouncedHandleHeadphoneDetection = debounce(handleHeadphoneDetection, 140);
-const debouncedRingTone = debounceFunction(startOutgoingCallRingingTone, 1000);
 
 export const addHeadphonesConnectedListenerForCall = (shouldUpdateInitialValue = true) => {
    HeadphoneDetection.addListener(debouncedHandleHeadphoneDetection);
@@ -338,6 +337,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          Store.dispatch(updateCallerUUID(uuid));
          startCall(uuid, callerId, callerName, hasVideo);
       }
+      const debouncedRingTone = debounceFunction(startOutgoingCallRingingTone, 1000);
       debouncedRingTone(callType);
 
       const showConfrenceData = Store.getState().showConfrenceData;

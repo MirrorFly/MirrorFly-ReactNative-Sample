@@ -9,13 +9,20 @@ import {
 } from './Helper/Chat/ChatHelper';
 
 const config = {
+   attachement: true,
+   videoDuaration: 40,
+   audioDuaration: 60,
    fileSize: 50,
    imageFileSize: 10,
    videoFileSize: 30,
    audioFileSize: 30,
    documentFileSize: 20,
+   maxAllowedMediaCount: 5,
+   maximumAllowedUsersToForward: 5,
+   maximumCharForwardPopUp: 60,
    internetErrorMessage: 'Please check your Internet connection',
-   GOOGLE_LOCATION_API_KEY: '', // Paste GOOGLE_LOCATION_API_KEY HERE
+   reportMembers: 5,
+   GOOGLE_LOCATION_API_KEY: '', // NOSONAR
    typingStatusGoneWaitTime: 500,
    minAllowdGroupMembers: 2,
    maxAllowdGroupMembers: 238,

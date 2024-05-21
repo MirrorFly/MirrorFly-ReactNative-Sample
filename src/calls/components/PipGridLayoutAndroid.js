@@ -54,6 +54,23 @@ const PIPGridItem = ({
       ) : null;
    };
 
+   const speakingIndicator = () => {
+      switch (true) {
+         case isAudioMuted:
+            return <View style={styles.emptyVoiceLevelIndicator} />;
+         case !isUserReconnecting:
+            return (
+               <View style={styles.gridItemVoiceLevelWrapper}>
+                  <View style={styles.gridItemVoiceLevelIndicator} />
+                  <View style={styles.gridItemVoiceLevelIndicator} />
+                  <View style={styles.gridItemVoiceLevelIndicator} />
+               </View>
+            );
+         default:
+            return null;
+      }
+   };
+
    return (
       <View
          style={{
@@ -66,15 +83,7 @@ const PIPGridItem = ({
          )}
          <View style={{ padding: 5, justifyContent: 'space-between', alignItems: 'center', flex: 1 }}>
             {/* Speaking indicator */}
-            {isAudioMuted ? (
-               <View style={styles.emptyVoiceLevelIndicator} />
-            ) : isUserReconnecting ? null : (
-               <View style={styles.gridItemVoiceLevelWrapper}>
-                  <View style={styles.gridItemVoiceLevelIndicator} />
-                  <View style={styles.gridItemVoiceLevelIndicator} />
-                  <View style={styles.gridItemVoiceLevelIndicator} />
-               </View>
-            )}
+            {speakingIndicator()}
             {/* if image loading error then showing the initials */}
             {(isVideoMuted || callStatus.toLowerCase() === CALL_STATUS_RECONNECT || (stream && !stream.video)) && (
                <View style={styles.avatharWrapper}>

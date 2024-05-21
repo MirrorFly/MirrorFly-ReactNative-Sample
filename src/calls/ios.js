@@ -1,4 +1,4 @@
-import RNCallKeep from 'react-native-callkeep';
+import RNCallKeep from '../customModules/CallKitModule';
 
 export const setupCallKit = async () => {
    await RNCallKeep.setup({

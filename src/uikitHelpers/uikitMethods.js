@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppRegistry, Platform } from 'react-native';
-import RNVoipPushNotification from 'react-native-voip-push-notification';
 import { version } from '../../package.json';
 import { handleSetPendingSeenStatus, updateRecentAndConversationStore } from '../Helper';
 import { pushNotifyBackground } from '../Helper/Calls/Utility';
@@ -14,6 +13,7 @@ import { setNotificationForegroundService } from '../calls/notification/callNoti
 import { requestNotificationPermission } from '../common/utils';
 import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
 import config from '../config';
+import RNVoipPushNotification from 'react-native-voip-push-notification';
 import notifee from '@notifee/react-native';
 
 let uiKitCallbackListenersVal = {},
@@ -174,6 +174,10 @@ export const constructMessageData = remoteMessage => {
    } catch (error) {
       mflog('Failed to construct notification data', error);
    }
+};
+
+const setApplicationUrl = url => {
+   schemaUrl = url;
 };
 
 export const getApplicationUrl = () => schemaUrl;

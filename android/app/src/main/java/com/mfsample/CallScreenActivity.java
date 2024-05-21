@@ -3,6 +3,7 @@ package com.mfsample;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AppOpsManager;
+import android.app.KeyguardManager;
 import android.app.PictureInPictureParams;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.util.Rational;
 import android.view.KeyEvent;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -87,9 +89,19 @@ public class CallScreenActivity extends ReactActivity {
         Log.d("TAG", "callScreenStateChanged: CallScreenActivity== CallScreenActivityOnPause: ");
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onStop() {
         CallScreenActivity.isActive = false;
+        Boolean isPip = this.isInPictureInPictureMode();
+        new android.os.Handler().postDelayed(new Runnable() {
+            public void run() {
+                KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+                if (isPip && CallScreenActivity.isCallConnected && !km.isDeviceLocked()) {
+                    finish();
+                }
+            }
+        }, 130);
         super.onStop();
         Log.d("TAG", "CallScreenActivity== CallScreenActivityOnStop: ");
     }
@@ -201,10 +213,4 @@ public class CallScreenActivity extends ReactActivity {
     public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
         PipAndroidModule.pipModeChanged(isInPictureInPictureMode, getLifecycle().getCurrentState(), this);
     }
-
-    // @Override
-    // public void onPictureInPictureUiStateChanged(@NonNull PictureInPictureUiState
-    // pipState) {
-    // super.onPictureInPictureUiStateChanged(pipState);
-    // }
 }

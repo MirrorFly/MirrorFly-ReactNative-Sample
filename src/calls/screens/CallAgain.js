@@ -43,7 +43,6 @@ const CallAgain = () => {
 
    return (
       <ImageBackground style={styles.container} source={getImageSource(CallsBg)}>
-         {/* {localStream && localStream.video && <VideoComponent stream={localStream} />} */}
          <View>
             {/* call status */}
             <View style={styles.callStatusWrapper}>

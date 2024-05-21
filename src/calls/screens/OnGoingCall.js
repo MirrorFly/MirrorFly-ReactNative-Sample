@@ -73,6 +73,7 @@ const OnGoingCall = () => {
    const controlsOffsetBottom = React.useRef(new Animated.Value(0)).current;
    // animated value variables for initial render of the user views
    const layoutOpacity = React.useRef(new Animated.Value(0)).current;
+   const smallVideoLayoutOpacity = React.useRef(new Animated.Value(0)).current;
 
    const dispatch = useDispatch();
 
@@ -80,11 +81,7 @@ const OnGoingCall = () => {
 
    React.useEffect(() => {
       animateLayout(1);
-      if (layout === 'grid') {
-         hideControlsTimeout = setTimeout(() => {
-            animateControls(0, 100);
-         }, hideControlsTimeoutMilliSeconds);
-      } else if (callViewType === 'video') {
+      if (layout === 'grid' || callViewType === 'video') {
          hideControlsTimeout = setTimeout(() => {
             animateControls(0, 100);
          }, hideControlsTimeoutMilliSeconds);
@@ -201,11 +198,18 @@ const OnGoingCall = () => {
    };
 
    const animateLayout = toValue => {
-      Animated.timing(layoutOpacity, {
-         toValue: toValue,
-         duration: layoutAnimationDuration,
-         useNativeDriver: true,
-      }).start();
+      Animated.parallel([
+         Animated.timing(layoutOpacity, {
+            toValue: toValue,
+            duration: layoutAnimationDuration,
+            useNativeDriver: true,
+         }),
+         Animated.timing(smallVideoLayoutOpacity, {
+            toValue: toValue,
+            duration: layoutAnimationDuration,
+            useNativeDriver: true,
+         }),
+      ]).start();
    };
 
    const handleClosePress = () => {
@@ -297,7 +301,7 @@ const OnGoingCall = () => {
          return (
             <Animated.ScrollView
                style={{
-                  opacity: layoutOpacity,
+                  opacity: smallVideoLayoutOpacity,
                   transform: [{ translateY: controlsOffsetBottom }],
                }}
                horizontal

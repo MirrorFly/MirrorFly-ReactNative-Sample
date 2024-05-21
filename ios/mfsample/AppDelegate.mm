@@ -4,7 +4,7 @@
 // add the below imports
 #import <PushKit/PushKit.h>
 #import <RNVoipPushNotificationManager.h>
-#import <RNCallKeep.h>
+#import "RNCallKeep.h"
 #import <CallKit/CallKit.h>
 #import <RNKeyEvent.h>
 #import <AVFoundation/AVFoundation.h>
@@ -81,26 +81,27 @@
                               payload: [payload dictionaryPayload]
                 withCompletionHandler: completion];
     
-    if (hasvideo ? !self.checkVideoPermission : !self.checkAudioPermission) {
-      [RNCallKeep endCallWithUUID:uuid reason:1]; // ending the call with reason Failed
-      
-      // Showing local notification for the ended incoming call
-      UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-      content.title = callerId;
-      content.body = [NSString stringWithFormat:@"You missed %@ %@. Please enable permission in App Settings to help you connect with your friends.", hasvideo ? @"a" : @"an", hasvideo ? @"video call" : @"audio call"];
-      content.sound = [UNNotificationSound defaultSound];
-
-      UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:@"ImmediateNotification"
-                                                                            content:content
-                                                                            trigger:nil];
-
-      UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-      [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
-          if (error) {
-              NSLog(@"Error scheduling local notification: %@", error);
-          }
-      }];
-    }
+    
+   if (hasvideo ? !self.checkVideoPermission : !self.checkAudioPermission) {
+     [RNCallKeep endCallWithUUID:uuid reason:1]; // ending the call with reason Failed
+     
+     // Showing local notification for the ended incoming call
+        //     UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+        //     content.title = callerId;
+        //     content.body = [NSString stringWithFormat:@"You missed %@ %@. Please enable permission in App Settings to help you connect with your friends.", hasvideo ? @"a" : @"an", hasvideo ? @"video call" : @"audio call"];
+        //     content.sound = [UNNotificationSound defaultSound];
+        //
+        //     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:@"ImmediateNotification"
+        //                                                                           content:content
+        //                                                                           trigger:nil];
+        //
+        //     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+        //     [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+        //         if (error) {
+        //             NSLog(@"Error scheduling local notification: %@", error);
+        //         }
+        //     }];
+   }
   }else{
     // --- sending the received push to JS for the incoming call (while the user is already on a call) to send busy status to the caller
     [RNVoipPushNotificationManager didReceiveIncomingPushWithPayload:payload forType:(NSString *)type];

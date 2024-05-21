@@ -83,7 +83,9 @@ function ConversationList({ chatUserJid }) {
    const doNothing = () => null;
 
    const renderChatFooter = () => {
-      return chatLoading ? <ActivityIndicator color={ApplicationColors.mainColor} size={'large'} /> : null;
+      return chatLoading && !messageList.length ? (
+         <ActivityIndicator color={ApplicationColors.mainColor} size={'large'} />
+      ) : null;
    };
 
    return (

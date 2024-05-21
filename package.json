@@ -1,6 +1,6 @@
 {
   "name": "mirrorfly-uikit-react-native",
-  "version": "1.4.1",
+  "version": "1.4.3",
   "description": "React-Native based UI kit for Mirrorfly",
   "scripts": {
     "android": "react-native run-android",
@@ -44,7 +44,7 @@
     "@notifee/react-native": "^7.8.2",
     "@react-native-async-storage/async-storage": "^1.17.7",
     "@react-native-camera-roll/camera-roll": "^7.5.0",
-    "@react-native-clipboard/clipboard": "^1.11.2",
+    "@react-native-clipboard/clipboard": "1.11.2",
     "@react-native-community/checkbox": "^0.5.16",
     "@react-native-community/eslint-config": "^3.2.0",
     "@react-native-community/netinfo": "^8.0.0",
@@ -70,6 +70,7 @@
     "lodash-es": "^4.17.21",
     "luxon": "^1.24.1",
     "metro-react-native-babel-preset": "0.76.8",
+    "mirrorfly-reactnative-sdk": "^1.0.2",
     "moment": "2.29.4",
     "native-base": "^3.4.28",
     "patch-package": "^8.0.0",
@@ -77,7 +78,6 @@
     "prop-types": "^15.8.1",
     "react-native-audio-recorder-player": "3.6.0",
     "react-native-background-timer": "^2.4.1",
-    "react-native-callkeep": "^4.3.12",
     "react-native-camera": "^4.2.1",
     "react-native-compressor": "1.6.1",
     "react-native-contacts": "^7.0.6",

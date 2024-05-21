@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
-import android.bluetooth.BluetoothA2dp;
 import android.os.Build;
 import android.util.Log;
 
@@ -97,43 +96,37 @@ public class BluetoothHeadsetDetectModule extends ReactContextBaseJavaModule imp
 
             @Override
             public void onServiceDisconnected(int i) {
+                AudioRoutingModule.stopBluetoothDevice();
                 Log.d("TAG", "onServiceDisconnected: bluetoothServiceListener");
             }
         };
         final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        Log.d("TAG", "BluetoothHeadsetDetectModule: Constructor of bluetooth detection module");
-//        IntentFilter intentFilter = new IntentFilter(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED);
-//        intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.setPriority(1);
-//        intentFilter.addAction(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED);
-//        intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         intentFilter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
         intentFilter.addAction(BluetoothHeadset.ACTION_AUDIO_STATE_CHANGED);
         this.receiver = new BroadcastReceiver() {
-            private static final String LOG_TAG = "BluetoothHeadsetDetect";
-
             @SuppressLint("MissingPermission")
             @Override
             public void onReceive(Context context, Intent intent) {
                 try {
                     final String action = intent.getAction();
-                    Log.d("Bluetooth Detected", "BluetoothHeadsetDetectModule onReceive: BLUETooth headset detected " + action);
-                    if (action.equals(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED) || action.equals(BluetoothHeadset.ACTION_AUDIO_STATE_CHANGED)) {
+                    if (action.equals(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED)
+                            || action.equals(BluetoothHeadset.ACTION_AUDIO_STATE_CHANGED)) {
                         // Bluetooth headset connection state has changed
                         BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                         String deviceName = device != null ? device.getName() : null;
-                        final int state = intent.getIntExtra(BluetoothProfile.EXTRA_STATE, BluetoothProfile.STATE_DISCONNECTED);
+                        final int state = intent.getIntExtra(BluetoothProfile.EXTRA_STATE,
+                                BluetoothProfile.STATE_DISCONNECTED);
                         if (state == BluetoothProfile.STATE_CONNECTED) {
                             // Device has connected, report it
                             onChange(deviceName);
                         } else if (state == BluetoothProfile.STATE_DISCONNECTED) {
                             // Device has disconnected, report it
+                            AudioRoutingModule.stopBluetoothDevice();
                             onChange("");
                         }
                     }
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     Log.d("TAG", "onReceive: Error when processing bluetooth connect state change event ==>> " + ex);
                 }
             }
@@ -142,12 +135,9 @@ public class BluetoothHeadsetDetectModule extends ReactContextBaseJavaModule imp
         // Subscribe for intents
         reactContext.registerReceiver(this.receiver, intentFilter);
         Log.d("TAG", "BluetoothHeadsetDetectModule: receiver registered for event");
-        Boolean hasProxy = bluetoothAdapter.getProfileProxy(reactContext, bluetoothServiceListener, BluetoothProfile.HEADSET);
+        Boolean hasProxy = bluetoothAdapter.getProfileProxy(reactContext, bluetoothServiceListener,
+                BluetoothProfile.HEADSET);
         Log.d("TAG", "BluetoothHeadsetDetectModule: hasProxy " + hasProxy);
-        if (bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET) == BluetoothAdapter.STATE_CONNECTED) {
-            Log.d("", "BluetoothHeadsetDetectModule isBlueToothConnectedWhenStarting = true");
-//            isBlueToothConnectedWhenStarting = true
-        }
         // Subscribe for lifecycle
         reactContext.addLifecycleEventListener(this);
     }
@@ -165,18 +155,18 @@ public class BluetoothHeadsetDetectModule extends ReactContextBaseJavaModule imp
         }
         final AudioManager audioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
         AudioDeviceInfo[] devices = new AudioDeviceInfo[0];
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
         }
         for (AudioDeviceInfo device : devices) {
             final int type;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                 type = device.getType();
 
                 if (type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP || type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
                     // Device is found
                     final String deviceName;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                         deviceName = device.getProductName().toString();
                         onChange(deviceName);
                         return;

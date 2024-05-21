@@ -28,7 +28,7 @@ import {
    validateFileSize,
    validation,
 } from '../../components/chat/common/fileUploadValidation';
-
+import config from '../../config';
 import { CAMERA_SCREEN, GALLERY_FOLDER_SCREEN, LOCATION_SCREEN, MOBILE_CONTACT_LIST_SCREEN } from '../../constant';
 import { getNetWorkStatus } from '../../hooks';
 import { getChatMessage, getReplyMessageVariable, removeReplyMessageVariable } from '../../hooks/useChatMessage';
@@ -52,7 +52,6 @@ import {
    MSG_SENT_ACKNOWLEDGE_STATUS_ID,
 } from './Constant';
 import { getMessageObjSender, getRecentChatMsgObj, getUserIdFromJid } from './Utility';
-import config from '../../config';
 
 export const isActiveChatScreenRef = React.createRef();
 isActiveChatScreenRef.current = false;

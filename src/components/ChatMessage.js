@@ -247,7 +247,7 @@ const ChatMessage = props => {
    const handleContactInvitePress = _message => {
       // Same as handleContentPress but calling showContactInviteModal function with _message as param
       dismissKeyBoard();
-      isSelectingMessages.current ? handleMessageSelect() : showContactInviteModal(_message);
+      isSelectingMessages.current ? handleMessageSelect() : showContactInviteModal();
    };
    const renderMessageBasedOnType = () => {
       switch (message_type) {

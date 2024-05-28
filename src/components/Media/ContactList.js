@@ -154,7 +154,7 @@ const ContactList = () => {
       setSearchText('');
    };
 
-   const doNothing = () => {};
+   const doNothing = () => null;
 
    const renderItem = ({ item }) => {
       const handlePress = () => handleSelectedItem(item);

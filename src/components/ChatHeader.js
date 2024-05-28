@@ -29,6 +29,7 @@ import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import commonStyles from '../common/commonStyles';
 import {
+   checkBluetoothConnectPermission,
    checkMicroPhonePermission,
    checkVideoPermission,
    requestBluetoothConnectPermission,
@@ -298,10 +299,10 @@ function ChatHeader({ fromUserJId, handleBackBtn, handleReply, IsSearching, isSe
       try {
          const result =
             callType === CALL_TYPE_AUDIO ? await requestMicroPhonePermission() : await requestCameraMicPermission();
+         const bluetoothPermission = await requestBluetoothConnectPermission();
          // updating the SDK flag back to false to behave as usual
-         await requestBluetoothConnectPermission();
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-         if (result === 'granted' || result === 'limited') {
+         if ((result === 'granted' || result === 'limited') && bluetoothPermission === 'granted') {
             // Checking If Room exist when user granted permission
             if (!isRoomExist()) {
                makeCalls(callType, [fromUserId]);
@@ -309,18 +310,12 @@ function ChatHeader({ fromUserJId, handleBackBtn, handleReply, IsSearching, isSe
                setShowRoomExist(true);
             }
          } else if (isPermissionChecked) {
-            let cameraAndMic =
-               (await checkVideoPermission()) !== 'granted' && (await checkMicroPhonePermission()) !== 'granted'
-                  ? 'Audio and Video Permissions'
-                  : (await checkVideoPermission()) !== 'granted'
-                  ? 'Video Permission'
-                  : (await checkMicroPhonePermission()) !== 'granted'
-                  ? 'Audio Permission'
-                  : '';
+            let cameraAndMic = await checkVideoCallPermission();
+            let audioBluetoothPermission = await checkAudioCallpermission();
             let permissionStatus =
                callType === 'video'
                   ? `${cameraAndMic}${' are needed for calling. Please enable it in Settings'}`
-                  : 'Audio Permissions are needed for calling. Please enable it in Settings';
+                  : `${audioBluetoothPermission}${' are needed for calling. Please enable it in Settings'}`;
             setPermissionText(permissionStatus);
             dispatch(showPermissionModal());
          }
@@ -328,6 +323,31 @@ function ChatHeader({ fromUserJId, handleBackBtn, handleReply, IsSearching, isSe
          // updating the SDK flag back to false to behave as usual
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
          console.log('makeOne2OneCall', error);
+      }
+   };
+
+   const checkAudioCallpermission = async () => {
+      if (
+         (await checkMicroPhonePermission()) !== 'granted' &&
+         (await checkBluetoothConnectPermission()) !== 'granted'
+      ) {
+         return 'Audio and Bluetooth Permissions';
+      } else if ((await checkMicroPhonePermission()) !== 'granted') {
+         return 'Audio Permission';
+      } else if ((await checkBluetoothConnectPermission()) !== 'granted') {
+         return 'Bluetooth Permission';
+      }
+   };
+
+   const checkVideoCallPermission = async () => {
+      if ((await checkVideoPermission()) !== 'granted' && (await checkMicroPhonePermission()) !== 'granted') {
+         return 'Audio and Video Permissions';
+      } else if ((await checkVideoPermission()) !== 'granted') {
+         return 'Video Permission';
+      } else if ((await checkMicroPhonePermission()) !== 'granted') {
+         return 'Audio Permission';
+      } else if (await checkBluetoothConnectPermission()) {
+         return 'Bluetooth Permission';
       }
    };
 

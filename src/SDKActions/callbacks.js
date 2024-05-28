@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import nextFrame from 'next-frame';
 import { Platform } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
-import RNCallKeep from 'react-native-callkeep';
 import HeadphoneDetection from 'react-native-headphone-detection';
 import RNInCallManager from 'react-native-incall-manager';
 import KeepAwake from 'react-native-keep-awake';
@@ -17,6 +16,7 @@ import {
    dispatchDisconnected,
    getCurrentCallRoomId,
    resetPinAndLargeVideoUser,
+   setSelectedAudioRoute,
    showConfrenceStoreData,
    startCallingTimer,
    startIncomingCallRingtone,
@@ -27,9 +27,6 @@ import {
    stopReconnectingTone,
 } from '../Helper/Calls/Call';
 import {
-   AUDIO_ROUTE_BLUETOOTH,
-   AUDIO_ROUTE_PHONE,
-   AUDIO_ROUTE_SPEAKER,
    CALL_AGAIN_SCREEN,
    CALL_BUSY_STATUS_MESSAGE,
    CALL_CONVERSION_STATUS_CANCEL,
@@ -45,11 +42,10 @@ import {
    DISCONNECTED_SCREEN_DURATION,
    INCOMING_CALL_SCREEN,
    ONGOING_CALL_SCREEN,
-   OUTGOING_CALL_SCREEN,
+   OUTGOING_CALL_SCREEN
 } from '../Helper/Calls/Constant';
 import {
    addHeadphonesConnectedListenerForCall,
-   audioRouteNameMap,
    closeCallModalActivity,
    constructMuteStatus,
    displayIncomingCallForAndroid,
@@ -61,9 +57,10 @@ import {
    showCallModalToast,
    showOngoingNotification,
    startDurationTimer,
+   stopProximityListeners,
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
    updateAudioRouteTo,
-   updateMissedCallNotification,
+   updateMissedCallNotification
 } from '../Helper/Calls/Utility';
 import {
    formatUserIdToJid,
@@ -100,6 +97,7 @@ import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Help
 import { updateConversationMessage, updateRecentChatMessage } from '../components/chat/common/createMessage';
 import ActivityModule from '../customModules/ActivityModule';
 import BluetoothHeadsetDetectionModule from '../customModules/BluetoothHeadsetDetectionModule';
+import RNCallKeep from '../customModules/CallKitModule';
 import RingtoneSilentKeyEventModule from '../customModules/RingtoneSilentKeyEventModule';
 import {
    callDurationTimestamp,
@@ -175,7 +173,6 @@ export const clearIosCallListeners = () => {
       RNCallKeep.removeEventListener('endCall');
       RNCallKeep.removeEventListener('didPerformSetMutedCallAction');
       RNCallKeep.removeEventListener('didChangeAudioRoute');
-      RNInCallManager.setForceSpeakerphoneOn(false);
    }
 };
 
@@ -201,9 +198,11 @@ export const resetCallData = () => {
    RingtoneSilentKeyEventModule.removeAllListeners();
    setPreviousHeadsetStatus(false);
    KeyEvent.removeKeyUpListener();
+   setSelectedAudioRoute('');
    if (Platform.OS === 'ios') {
       clearIosCallListeners();
       endCallForIos();
+      stopProximityListeners();
    } else {
       RNInCallManager.setSpeakerphoneOn(false);
       // updating the call connected status to android native code
@@ -520,23 +519,6 @@ const connected = async res => {
             if (!onReconnect) {
                await stopForegroundServiceNotification();
                showOngoingNotification(res);
-            }
-         } else {
-            const { isBluetoothHeadsetConnected = false } = Store.getState().callControlsData || {};
-            if (isBluetoothHeadsetConnected) {
-               const callData = Store.getState().callData || {};
-               const callControlsData = Store.getState().callControlsData || {};
-               const activeCallerUUID = callData?.callerUUID;
-               const selectedAudioRoute = callControlsData?.selectedAudioRoute;
-               if (selectedAudioRoute === AUDIO_ROUTE_SPEAKER) {
-                  await updateAudioRouteTo(AUDIO_ROUTE_PHONE, AUDIO_ROUTE_PHONE, activeCallerUUID, false);
-               }
-               const _routes = await RNCallKeep.getAudioRoutes();
-               _routes.forEach(r => {
-                  if (audioRouteNameMap[r.type] === AUDIO_ROUTE_BLUETOOTH) {
-                     updateAudioRouteTo(r.name, r.type, activeCallerUUID, false);
-                  }
-               });
             }
          }
          onReconnect = false;
@@ -952,6 +934,7 @@ export const callBacks = {
       if (res.toUsers.length === 1 && res.groupId === null) {
          res.from = res.toUsers[0];
          res.to = res.userJid;
+         getUserProfileFromSDK(getUserIdFromJid(res.userJid));
          if (res.callType === 'audio') {
             localVideoMuted = true;
          } else {

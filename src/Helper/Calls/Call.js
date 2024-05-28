@@ -31,7 +31,13 @@ import {
    CALL_STATUS_TRYING,
    DISCONNECTED_SCREEN_DURATION,
 } from './Constant';
-import { closeCallModalActivity, endCallForIos, getNickName, resetCallModalActivity } from './Utility';
+import {
+   closeCallModalActivity,
+   endCallForIos,
+   getNickName,
+   resetCallModalActivity,
+   setpreventMultipleClick,
+} from './Utility';
 
 let missedCallNotificationTimer = null;
 let callingRemoteStreamRemovalTimer = null;
@@ -42,6 +48,7 @@ let isPlayingRingintTone = false;
 let reconnectingSound = null;
 let unsubscribeVibrationEvent;
 let silentEvent = false;
+let audioRouted = '';
 
 export const getMaxUsersInCall = () => 8;
 
@@ -212,14 +219,12 @@ export const clearOutgoingTimer = () => {
 };
 
 //Call Again Screen
-const updateCallAgainScreenData = (userID, callType, localVideoStream, localVideoMuted) => {
+const updateCallAgainScreenData = (userID, callType) => {
    batch(() => {
       Store.dispatch(
          updateCallAgainData({
             callType,
             userId: userID,
-            localVideoStream,
-            localVideoMuted,
          }),
       );
       Store.dispatch(setCallModalScreen(CALL_AGAIN_SCREEN));
@@ -227,6 +232,7 @@ const updateCallAgainScreenData = (userID, callType, localVideoStream, localVide
 };
 
 export const endCall = async (isFromTimeout = false, userId = '', callType = '') => {
+   setpreventMultipleClick(false);
    const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
    const { callStatusText } = confrenceData;
    if ((callStatusText === CALL_STATUS_DISCONNECTED || callStatusText === undefined) && !isFromTimeout) {
@@ -246,29 +252,16 @@ export const endCall = async (isFromTimeout = false, userId = '', callType = '')
     */
 
    if (isFromTimeout) {
-      let localVideoStream = Store.getState().showConfrenceData.data;
       resetCallData();
       const _userID = userId;
       const _callType = callType;
-      updateCallAgainScreenData(_userID, _callType, localVideoStream.localStream, localVideoStream.localVideoMuted);
+      updateCallAgainScreenData(_userID, _callType);
    } else {
       clearIosCallListeners();
       endCallForIos();
       const timeout = BackgroundTimer.setTimeout(() => {
          resetCallData();
          closeCallModalActivity(true);
-         /**
-         // Store.dispatch(closeCallModal());
-         // batch(()=>{
-         //     Store.dispatch(showConfrence({
-         //         showComponent: false,
-         //         screenName:'',
-         //         showCalleComponent:false,
-         //         stopSound: true,
-         //         callStatusText: null
-         //     }))
-         // })
-          */
       }, DISCONNECTED_SCREEN_DURATION);
       setDisconnectedScreenTimeoutTimer(timeout);
    }
@@ -451,4 +444,22 @@ export function getCallDuration(timerTime) {
 
 export const getMissedCallMessage = callType => {
    return `You missed an ${callType} call`;
+};
+
+export const debounceFunction = (func, delay) => {
+   let timeout;
+   return (...args) => {
+      BackgroundTimer.clearTimeout(timeout);
+      timeout = BackgroundTimer.setTimeout(() => {
+         func(...args);
+      }, delay);
+   };
+};
+
+export const setSelectedAudioRoute = selectedAudioRoute => {
+   audioRouted = selectedAudioRoute;
+};
+
+export const getSelectedAudioRoute = () => {
+   return audioRouted;
 };

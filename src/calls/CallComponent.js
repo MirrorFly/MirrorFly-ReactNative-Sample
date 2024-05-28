@@ -1,5 +1,5 @@
 import React from 'react';
-import RNCallKeep from 'react-native-callkeep';
+import RNCallKeep from '../customModules/CallKitModule';
 import RNVoipPushNotification from 'react-native-voip-push-notification';
 import { Provider } from 'react-redux';
 import Store from '../redux/store';

@@ -1,5 +1,5 @@
+import notifee from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import messaging from '@react-native-firebase/messaging';
 import { AppRegistry, Platform } from 'react-native';
 import RNVoipPushNotification from 'react-native-voip-push-notification';
 import { version } from '../../package.json';
@@ -66,7 +66,7 @@ export const handleRegister = async (userIdentifier, fcmToken) => {
 };
 
 const initializeSetup = async () => {
-   await messaging().requestPermission();
+   Platform.OS === 'ios' && (await notifee.requestPermission());
    requestNotificationPermission();
    setNotificationForegroundService();
 };

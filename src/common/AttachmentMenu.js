@@ -41,7 +41,7 @@ function AttachmentMenu({ visible, onRequestClose, attachmentMenuIcons, handleAt
             onRequestClose={onRequestClose}
             visible={visible}>
             {iconChunks.map((chunk, index) => (
-               <View key={index} style={styles.row}>
+               <View key={`chunk${index + 1}`} style={styles.row}>
                   {chunk.map((item, idx) => {
                      const { name, icon: MenuIcon } = item;
                      return (

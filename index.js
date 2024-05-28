@@ -1,63 +1,28 @@
-import { AppRegistry } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
+import { AppRegistry, Platform } from 'react-native';
+import 'react-native-get-random-values';
 import App from './App';
 import { name as appName } from './app.json';
-import 'react-native-get-random-values';
-import messaging from '@react-native-firebase/messaging';
-import SDK from './src/SDK/SDK';
-import {
-  pushNotify,
-  updateNotification,
-} from './src/Service/remoteNotifyHandle';
-import {
-  getNotifyMessage,
-  getNotifyNickName,
-} from './src/components/RNCamera/Helper';
-import {
-  handleSetPendingSeenStatus,
-  updateRecentAndConversationStore,
-} from './src/Helper';
-import { callBacks } from './src/SDKActions/callbacks';
+import { constructMessageData, setAppConfig, setupCallScreen } from './src/uikitHelpers/uikitMethods';
+import { MIRRORFLY_RN } from './src/constant';
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
-  try {
-    await SDK.initializeSDK({
-      apiBaseUrl: 'https://api-uikit-qa.contus.us/api/v1',
-      licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
-      callbackListeners: callBacks,
-      isSandbox: false,
-    });
-    if (remoteMessage.data.type === 'recall') {
-      updateNotification(remoteMessage.data.message_id);
+   if (Platform.OS === 'ios') {
       return;
-    }
-    const notify = await SDK.getNotificationData(remoteMessage);
-    if (notify?.statusCode === 200) {
-      if (notify?.data?.type === 'receiveMessage') {
-        updateRecentAndConversationStore(notify?.data);
-        await handleSetPendingSeenStatus(notify?.data);
-        pushNotify(
-          notify?.data?.msgId,
-          getNotifyNickName(notify?.data),
-          getNotifyMessage(notify?.data),
-          notify?.data?.fromUserJid,
-        );
-      }
-    }
-  } catch (error) {
-    console.log('messaging().setBackgroundMessageHandler', error);
-  }
+   }
+   constructMessageData(remoteMessage);
 });
-/**
-// messaging().onMessage(async remoteMessage => {
-//   console.log(
-//     'Message handled in the forground!',
-//     JSON.stringify(remoteMessage, null, 2),
-//   );
-//   Alert.alert(
-//     'A new FCM message arrived!',
-//     JSON.stringify(remoteMessage, null, 2),
-//   );
-// });
- */
+
+setAppConfig({
+   appSchema: MIRRORFLY_RN, //NOSONAR
+});
+
+setupCallScreen();
+
+messaging().onMessage(async remoteMessage => {
+   if (remoteMessage?.data.type === 'mediacall') {
+      constructMessageData(remoteMessage);
+   }
+});
 
 AppRegistry.registerComponent(appName, () => App);

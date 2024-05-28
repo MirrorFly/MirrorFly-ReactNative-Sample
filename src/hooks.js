@@ -4,39 +4,39 @@ import { AppState } from 'react-native';
 
 let networkState = null;
 NetInfo.addEventListener(state => {
-  networkState = state;
+   networkState = state;
 });
 
 export const useNetworkStatus = () => {
-  const [isConnected, setIsConnected] = React.useState(
-    networkState?.isInternetReachable || null,
-  );
+   const [isConnected, setIsConnected] = React.useState(networkState?.isInternetReachable || null);
 
-  React.useLayoutEffect(() => {
-    const unsubscribe = NetInfo.addEventListener(state => {
-      setIsConnected(state.isInternetReachable);
-    });
+   React.useLayoutEffect(() => {
+      const unsubscribe = NetInfo.addEventListener(state => {
+         setIsConnected(state.isInternetReachable);
+      });
 
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+      return () => {
+         unsubscribe();
+      };
+   }, []);
 
-  return isConnected;
+   return isConnected;
 };
 
 export const useAppState = () => {
-  const [isActive, setIsActive] = React.useState(null);
+   const [isActive, setIsActive] = React.useState(null);
 
-  React.useEffect(() => {
-    AppState.addEventListener('change', nextAppState => {
-      if (nextAppState === 'active') {
-        setIsActive(true);
-      } else {
-        setIsActive(false);
-      }
-    });
-  }, []);
+   React.useEffect(() => {
+      AppState.addEventListener('change', nextAppState => {
+         if (nextAppState === 'active') {
+            setIsActive(true);
+         } else {
+            setIsActive(false);
+         }
+      });
+   }, []);
 
-  return isActive;
+   return isActive;
 };
+
+export const getNetworkState = () => networkState?.isInternetReachable || false;

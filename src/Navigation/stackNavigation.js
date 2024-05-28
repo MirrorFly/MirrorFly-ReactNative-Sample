@@ -66,7 +66,6 @@ const ChatScreenStackNavigation = () => {
          }}
          initialRouteName={CONVERSATION_SCREEN}>
          <Stack.Screen name={CONVERSATION_SCREEN}>{prop => <ConversationScreen {...prop} />}</Stack.Screen>
-         {/* <Stack.Screen name={CONVERSATION_SCREEN}>{prop => <ChatScreen {...prop} />}</Stack.Screen> */}
          <Stack.Screen name={USER_INFO}>{prop => <UserInfo {...prop} />}</Stack.Screen>
          <Stack.Screen name={FORWARD_MESSSAGE_SCREEN}>{prop => <ForwardMessage {...prop} />}</Stack.Screen>
          <Stack.Screen name={VIEWALLMEDIA}>{prop => <ViewAllMedia {...prop} />}</Stack.Screen>

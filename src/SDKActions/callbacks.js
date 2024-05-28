@@ -145,7 +145,7 @@ import { setXmppStatus } from '../redux/Actions/connectionAction';
 import { updateRosterData } from '../redux/Actions/rosterAction';
 import { updateUserPresence } from '../redux/Actions/userAction';
 import { default as Store, default as store } from '../redux/store';
-import { mflog, uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
+import { uikitCallbackListeners } from '../uikitHelpers/uikitMethods';
 
 let localStream = null,
    localVideoMuted = false,
@@ -900,7 +900,6 @@ export const callBacks = {
             msgId: res.msgId,
             is_downloaded: 2,
             uploadStatus: 2,
-            local_path: res.local_path,
             fromUserId: getUserIdFromJid(res.fromUserJid),
          };
          store.dispatch(updateUploadStatus(updateObj));

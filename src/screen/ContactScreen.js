@@ -135,7 +135,7 @@ function ContactScreen() {
       }
    };
 
-   const fetchContactListFromSDKWithDebounce = debounce(fetchContactListFromSDK, 700);
+   const fetchContactListFromSDKWithDebounce = React.useRef(debounce(fetchContactListFromSDK, 700)).current;
 
    const fetchContactList = text => {
       const _searchText = text?.trim?.();

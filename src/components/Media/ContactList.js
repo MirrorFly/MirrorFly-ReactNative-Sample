@@ -257,6 +257,7 @@ const ContactList = () => {
                scrollEventThrottle={1}
                windowSize={10}
                onEndReachedThreshold={1}
+               disableVirtualization={true}
             />
          ) : (
             <View style={styles.NoContact}>

@@ -15,14 +15,16 @@ import {
    alertPermissionMessage,
 } from '../Helper/Calls/Constant';
 import { endOngoingCallLogout } from '../Helper/Calls/Utility';
+import { clearVariables } from '../Helper/Chat/ChatHelper';
 import * as RootNav from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
+import config from '../config';
 import { REGISTERSCREEN } from '../constant';
 import { navigate } from '../redux/Actions/NavigationAction';
 import { profileDetail } from '../redux/Actions/ProfileAction';
 import { ResetStore } from '../redux/Actions/ResetAction';
 import Store from '../redux/store';
-import { mflog } from '../uikitHelpers/uikitMethods';
+import { mflog, mirrorflyInitialize } from '../uikitHelpers/uikitMethods';
 const { ActivityModule } = NativeModules;
 
 const toastConfig = {
@@ -413,8 +415,17 @@ export const handleLogOut = async () => {
          Store.dispatch(navigate({ screen: REGISTERSCREEN }));
          Store.dispatch(ResetStore());
       });
+      clearVariables();
       RootNav.reset(REGISTERSCREEN);
+      mirrorflyInitialize({
+         apiBaseUrl: config.API_URL,
+         licenseKey: config.licenseKey,
+         callbackListeners: {},
+         isSandbox: false,
+      });
+      return statusCode;
    } else {
       showToast(message, { id: message });
+      return 500;
    }
 };

@@ -1,8 +1,8 @@
+import Clipboard from '@react-native-clipboard/clipboard';
 import React, { createRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { resetSelectChatMessage, selectChatMessage } from '../redux/Actions/ChatMessageAction';
 import { showToast } from '../Helper';
-import Clipboard from '@react-native-clipboard/clipboard';
+import { resetSelectChatMessage, selectChatMessage } from '../redux/Actions/ChatMessageAction';
 import Store from '../redux/store';
 
 export const isSelectingMessages = createRef(),
@@ -24,7 +24,7 @@ export const removeReplyMessageVariable = fromUserJId => {
 export const getChatMessage = msgId => Store.getState().chatMessageData[msgId] || {};
 
 export const useChatMessage = msgId => {
-   const message = useSelector(state => state.chatMessageData[msgId] || {});
+   const message = useSelector(state => state.chatMessageData[msgId]);
    return message;
 };
 

@@ -27,14 +27,15 @@ const config = {
    minAllowdGroupMembers: 2,
    maxAllowdGroupMembers: 238,
    chatMessagesSizePerPage: 20,
+   recentChatsPerPage: 20,
    conversationListBottomYaxisLimit: 60,
    // ================ Dev environment variables =====================
    // API_URL: 'https://api-uikit-dev.contus.us/api/v1',
    // licenseKey: '2sdgNtr3sFBSM3bYRa7RKDPEiB38Xo',
    // =====================================
-   // ================ QA Environment variables =====================
-   API_URL: 'https://api-uikit-qa.contus.us/api/v1',
-   licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
+   // // ================ QA Environment variables =====================
+   // API_URL: 'https://api-uikit-qa.contus.us/api/v1',
+   // licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
    // ================ UAT/Staging Environment variables =====================
    // API_URL: 'https://api-uikit-uat.contus.us/api/v1',
    // licenseKey: 'lu3Om85JYSghcsB6vgVoSgTlSQArL5',
@@ -52,6 +53,9 @@ const config = {
    // ================ ace Environment variables =====================
    // API_URL: 'https://dev-api.ace.online/api/v1',
    // licenseKey: 'fq7zLEnyR48iq8O6zu0TEkWiQ701zI',
+   // ================ chatterr Environment variables =====================
+   API_URL: 'https://wayfarerkk-api.mirrorfly.com/api/v1',
+   licenseKey: 'dc6FCTZufWPDdfrGP0p9zUd47p04Rm',
 };
 
 export default config;

@@ -13,7 +13,7 @@ import {
    UPDATE_RECENT_CHAT_MESSAGE_STATUS,
    UPDATE_ROSTER_LAST_MESSAGE,
 } from '../Actions/Constants';
-import { StateToObj, getObjectDeepClone } from '../reduxHelper';
+import { getObjectDeepClone, StateToObj } from '../reduxHelper';
 
 const initialState = {
    id: Date.now(),
@@ -35,6 +35,7 @@ const updateRecentChatFunc = (filterBy, newMessage, _state) => {
             ...recentItem,
             ...newMessage,
             deleteStatus: 0,
+            recallStatus: 0,
          };
       }
       return recentItem;
@@ -112,10 +113,7 @@ const recentChatReducer = (state = initialStateClone, action) => {
       case ADD_RECENT_CHAT:
          return {
             id: Date.now(),
-            data: action.payload,
-            rosterData: {
-               recentChatNames: getNames(action.payload),
-            },
+            data: [...state.data, ...action.payload],
          };
       case UPDATE_RECENT_CHAT_MESSAGE_STATUS:
          return {

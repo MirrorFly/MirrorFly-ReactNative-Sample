@@ -77,6 +77,15 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
+    signingConfigs {
+        config {
+            keyAlias 'UiKit'
+            keyPassword 'contus@uikit'
+            storeFile file('contus_internal_uikit_keystore.jks')
+            storePassword 'contus@uikit'
+        }
+    }
+
     namespace "com.mirrorfly_rn"
     defaultConfig {
         applicationId "com.mirrorfly_rn"
@@ -95,7 +104,14 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('contus_internal_uikit_keystore.jks')
+            storePassword 'contus@uikit'
+            keyAlias 'UiKit'
+            keyPassword 'contus@uikit'
+        }
     }
+
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
@@ -103,7 +119,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }

@@ -135,7 +135,7 @@ const chatMessageReducer = (state = initialStateClone, action) => {
                      ...state[updateMsgId].msgBody.media,
                      is_downloaded,
                      is_uploading: uploadStatus,
-                     local_path,
+                     ...(local_path && { local_path }),
                   },
                },
             },

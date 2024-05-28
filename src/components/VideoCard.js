@@ -1,16 +1,16 @@
 import React from 'react';
-import { PlayIcon, VideoIcon } from '../common/Icons';
-import noPreview from '../assets/noPreview.png';
 import { Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
-import ReplyMessage from './ReplyMessage';
 import ic_ballon from '../assets/ic_baloon.png';
-import { getImageSource } from '../common/utils';
+import noPreview from '../assets/noPreview.png';
+import { PlayIcon, VideoIcon } from '../common/Icons';
 import commonStyles from '../common/commonStyles';
+import { getImageSource } from '../common/utils';
 import ApplicationColors from '../config/appColors';
-import MediaProgressLoader from './chat/common/MediaProgressLoader';
 import useMediaProgress from '../hooks/useMediaProgress';
 import CaptionContainer from './CaptionContainer';
+import ReplyMessage from './ReplyMessage';
+import MediaProgressLoader from './chat/common/MediaProgressLoader';
 
 const VideoCard = props => {
    const { isSender = true, fileSize = '', messageObject = {}, handleReplyPress = () => {} } = props;
@@ -38,7 +38,7 @@ const VideoCard = props => {
    const durationInMinutes = millisToMinutesAndSeconds(durationInSeconds);
    const base64ImageData = 'data:image/jpg;base64,' + thumb_image;
    const imageUrl = local_path || fileDetails?.uri;
-   const checkDownloaded = isSender ? is_uploading === 2 : imageUrl;
+
    const { mediaStatus, downloadMedia, retryUploadMedia, cancelUploadMedia } = useMediaProgress({
       isSender,
       mediaUrl: imageUrl,
@@ -48,6 +48,8 @@ const VideoCard = props => {
       msgId: msgId,
       msgStatus,
    });
+
+   const checkDownloaded = media?.is_uploading === 2 && media?.is_downloaded === 2;
 
    return (
       <View style={commonStyles.paddingHorizontal_4}>

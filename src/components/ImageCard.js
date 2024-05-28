@@ -1,15 +1,15 @@
 import React from 'react';
 import { Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
-import noPreview from '../assets/noPreview.png';
 import { getThumbBase64URL } from '../Helper/Chat/Utility';
-import ReplyMessage from './ReplyMessage';
 import ic_baloon from '../assets/ic_baloon.png';
-import { getImageSource } from '../common/utils';
+import noPreview from '../assets/noPreview.png';
 import commonStyles from '../common/commonStyles';
+import { getImageSource } from '../common/utils';
 import ApplicationColors from '../config/appColors';
-import MediaProgressLoader from './chat/common/MediaProgressLoader';
 import useMediaProgress from '../hooks/useMediaProgress';
 import CaptionContainer from './CaptionContainer';
+import ReplyMessage from './ReplyMessage';
+import MediaProgressLoader from './chat/common/MediaProgressLoader';
 
 const ImageCard = props => {
    const { isSender = true, fileSize = '', messageObject = {}, handleReplyPress = () => {} } = props;
@@ -73,7 +73,7 @@ const ImageCard = props => {
                   fileSize={fileSize}
                />
             </View>
-            {!Boolean(media?.caption) && (
+            {Boolean(!media?.caption) && (
                <View style={styles.messgeStatusAndTimestampWithoutCaption}>
                   <ImageBackground source={ic_baloon} style={styles.imageBg}>
                      {props.status}

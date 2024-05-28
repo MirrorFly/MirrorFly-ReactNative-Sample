@@ -37,7 +37,7 @@ import { addChatMessage, updateChatMessageBodyObject } from '../../redux/Actions
 import { DELETE_MESSAGE_FOR_EVERYONE, DELETE_MESSAGE_FOR_ME } from '../../redux/Actions/Constants';
 import { addChatConversationHistory, updateUploadStatus } from '../../redux/Actions/ConversationAction';
 import { navigate } from '../../redux/Actions/NavigationAction';
-import { updateRecentChat } from '../../redux/Actions/RecentChatAction';
+import { addRecentChat, updateRecentChat } from '../../redux/Actions/RecentChatAction';
 import { deleteRecoverMessage } from '../../redux/Actions/RecoverMessageAction';
 import { updateRosterData } from '../../redux/Actions/rosterAction';
 import { default as Store, default as store } from '../../redux/store';
@@ -60,7 +60,9 @@ export const isGroupChat = chatType => chatType === CHAT_TYPE_GROUP;
 export const isSingleChat = chatType => chatType === CHAT_TYPE_SINGLE;
 
 let chatPage = {},
-   hasNextPage = {};
+   hasNextPage = {},
+   hasNextRecentChatPage = true,
+   recentChatPage = 1;
 
 export const setHasNextPage = (userId, val) => {
    hasNextPage[userId] = val;
@@ -72,7 +74,31 @@ export const setChatPage = (userId, page) => {
    chatPage[userId] = page;
 };
 
+export const resetChatPage = userId => {
+   delete chatPage[userId];
+   delete hasNextPage[userId];
+};
+
+export const clearVariables = () => {
+   chatPage = {};
+   hasNextPage = {};
+   hasNextRecentChatPage = true;
+   recentChatPage = 1;
+};
+
 export const getChatPage = userId => chatPage[userId] || 1;
+
+export const setRecentChatPage = val => {
+   recentChatPage = val;
+};
+
+export const getRecentChatPage = () => recentChatPage;
+
+export const setHasNextRecentChatPage = val => {
+   hasNextRecentChatPage = val;
+};
+
+export const getHasNextRecentChatPage = () => hasNextRecentChatPage;
 
 export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false) => {
    const { data: messages } = Store.getState().chatConversationData;
@@ -84,13 +110,27 @@ export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false)
          if (chatMessage.data.length) {
             setChatPage(userId, page + 1);
          }
-         setHasNextPage(userId, Boolean(chatMessage.data.length));
+         setHasNextPage(userId, chatMessage.data.length >= config.chatMessagesSizePerPage);
          batch(() => {
             Store.dispatch(addChatConversationHistory(chatMessage));
             Store.dispatch(addChatMessage(chatMessage.data));
          });
+         return chatMessage.data || [];
       }
    }
+};
+
+export const fetchRecentChats = async () => {
+   const page = getRecentChatPage();
+   const { statusCode, data = [] } = await SDK.getRecentChats(page, config.recentChatsPerPage);
+   if (statusCode === 200) {
+      if (data.length) {
+         setRecentChatPage(page + 1);
+      }
+      setHasNextRecentChatPage(data.length === config.recentChatsPerPage);
+      store.dispatch(addRecentChat(data));
+   }
+   return data;
 };
 
 export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {
@@ -847,7 +887,8 @@ export const handleSendMsg = async message => {
                replyTo,
             };
             constructAndDispatchConversationAndRecentChatData(dataObj);
-            SDK.sendTextMessage(toUserJid, message.content, msgId, replyTo);
+            const res = await SDK.sendTextMessage(toUserJid, message.content, msgId, replyTo);
+            console.log('res ==>', res);
          }
          break;
    }
@@ -1142,4 +1183,9 @@ export const calculateKeyboardVerticalOffset = () => {
    );
 
    return isIOS ? keyboardOffset : 0; // Return calculated offset for iOS, 0 for other platforms
+};
+
+export const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
+   const paddingToBottom = 10;
+   return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
 };

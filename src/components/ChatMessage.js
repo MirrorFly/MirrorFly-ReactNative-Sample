@@ -266,6 +266,18 @@ const ChatMessage = props => {
                   }}
                />
             );
+         case 'auto_text':
+            return (
+               <TextCard
+                  isSender={isSender}
+                  message={message}
+                  data={{
+                     message: msgBody?.message,
+                     timeStamp: getConversationHistoryTime(createdAt),
+                     status: getMessageStatus(msgStatus),
+                  }}
+               />
+            );
          case 'image':
             return (
                <ImageCard

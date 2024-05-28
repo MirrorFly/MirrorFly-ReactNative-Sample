@@ -28,7 +28,7 @@ const ViewAllMedia = () => {
    const messages = useSelector(state => state.chatConversationData.data[chatUserId]);
    const messagesArr = Object.values(messages.messages);
    const [index, setIndex] = React.useState(0);
-   const [loading, setLoading] = React.useState(false);
+   const [loading, setLoading] = React.useState(true);
    const [countBasedOnType, setCountBasedOnType] = React.useState({});
    const [mediaMessages, setMediaMessages] = React.useState([]);
    const [docsMessages, setDocsMessages] = React.useState([]);
@@ -43,13 +43,8 @@ const ViewAllMedia = () => {
    }, []);
 
    React.useEffect(() => {
-      toggleLoading();
       handleGetMedia();
    }, [messages]);
-
-   const toggleLoading = () => {
-      setLoading(val => !val);
-   };
 
    const messageList = React.useMemo(() => {
       const filteredMessages = messagesArr.filter(message => {
@@ -74,7 +69,7 @@ const ViewAllMedia = () => {
       const filtedDocsMessages = messageList.filter(res => ['file'].includes(res?.message_type));
       setDocsMessages(filtedDocsMessages || []);
       setMediaMessages(filtedMediaMessages || []);
-      toggleLoading();
+      setLoading(false);
    };
 
    const handleBackBtn = () => {
@@ -353,7 +348,6 @@ const styles = StyleSheet.create({
       paddingHorizontal: 12,
       fontWeight: '500',
       color: ApplicationColors.black,
-      maxWidth: '95%',
    },
    tabContainer: {
       flex: 1,

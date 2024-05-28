@@ -237,6 +237,7 @@ export const getMissedCallNotification = async (roomId, callDetailObj = {}, user
          },
       },
       ios: {
+         sound: 'default',
          foregroundPresentationOptions: {
             alert: true,
             badge: true,

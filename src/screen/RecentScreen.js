@@ -1,34 +1,34 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Animated, BackHandler, Dimensions, StyleSheet, Text, View } from 'react-native';
 import PagerView from 'react-native-pager-view'; // Import PagerView components
+import { batch, useDispatch, useSelector } from 'react-redux';
+import { showToast } from '../Helper';
+import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
+import { MIX_BARE_JID } from '../Helper/Chat/Constant';
+import SDK from '../SDK/SDK';
+import logo from '../assets/mirrorfly-logo.png';
 import { FloatingBtn } from '../common/Button';
+import LoadingModal from '../common/LoadingModal';
+import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
+import commonStyles from '../common/commonStyles';
+import { handleLogOut } from '../common/utils';
 import RecentCalls from '../components/RecentCalls';
 import RecentChat from '../components/RecentChat';
-import { CONTACTLIST, GROUPSCREEN, PROFILESCREEN, RECENTCHATSCREEN } from '../constant';
-import ApplicationColors from '../config/appColors';
-import { useNavigation } from '@react-navigation/native';
-import ScreenHeader from '../components/ScreenHeader';
-import { batch, useDispatch, useSelector } from 'react-redux';
-import logo from '../assets/mirrorfly-logo.png';
 import RecentHeader from '../components/RecentHeader';
-import { handleLogOut } from '../common/utils';
+import ScreenHeader from '../components/ScreenHeader';
+import ApplicationColors from '../config/appColors';
+import { CONTACTLIST, GROUPSCREEN, PROFILESCREEN, RECENTCHATSCREEN } from '../constant';
+import { getUserName } from '../hooks/useRosterData';
+import { DeleteChatHistoryAction } from '../redux/Actions/ConversationAction';
+import { navigate } from '../redux/Actions/NavigationAction';
+import { deleteActiveChatAction } from '../redux/Actions/RecentChatAction';
 import {
    clearRecentChatSelectedItems,
    toggleRecentChatSearch,
    updateRecentChatSearchText,
 } from '../redux/Actions/recentChatSearchAction';
-import * as RootNav from '../Navigation/rootNavigation';
-import Modal, { ModalCenteredContent } from '../common/Modal';
-import commonStyles from '../common/commonStyles';
-import { showToast } from '../Helper';
-import { MIX_BARE_JID } from '../Helper/Chat/Constant';
-import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
-import SDK from '../SDK/SDK';
-import { deleteActiveChatAction } from '../redux/Actions/RecentChatAction';
-import { DeleteChatHistoryAction } from '../redux/Actions/ConversationAction';
-import { getUserName } from '../hooks/useRosterData';
-import { navigate } from '../redux/Actions/NavigationAction';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -43,6 +43,7 @@ const RecentScreen = () => {
    const [indicatorPosition] = React.useState(new Animated.Value(0)); // State to track the position of the active tab indicator
    const [showDeleteChatModal, setShowDeleteChatModal] = React.useState(false);
    const [chatsBadge, setChatsBadge] = React.useState(0);
+   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
 
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
@@ -97,7 +98,10 @@ const RecentScreen = () => {
    }, [index]);
 
    const handleLogout = async () => {
-      handleLogOut();
+      setIsLoggingOut(true);
+      await handleLogOut().then(() => {
+         setIsLoggingOut(false);
+      });
    };
 
    const toggleSearching = val => {
@@ -206,18 +210,21 @@ const RecentScreen = () => {
 
    const renderPagerView = React.useMemo(
       () => (
-         <PagerView
-            ref={pagerRef}
-            style={styles.pagerView}
-            initialPage={index}
-            onPageSelected={e => setIndex(e.nativeEvent.position)}>
-            <View style={{ flex: 1 }} key="1">
-               <RecentChat />
-            </View>
-            <View style={{ flex: 1 }} key="2">
-               <RecentCalls />
-            </View>
-         </PagerView>
+         <>
+            {console.log('first')}
+            <PagerView
+               ref={pagerRef}
+               style={[styles.pagerView, commonStyles.bg_white]}
+               initialPage={index}
+               onPageSelected={e => setIndex(e.nativeEvent.position)}>
+               <View style={{ flex: 1 }} key="1">
+                  <RecentChat />
+               </View>
+               <View style={{ flex: 1 }} key="2">
+                  <RecentCalls />
+               </View>
+            </PagerView>
+         </>
       ),
       [],
    );
@@ -247,6 +254,7 @@ const RecentScreen = () => {
                navigaiton.navigate(CONTACTLIST);
             }}
          />
+         <LoadingModal visible={isLoggingOut} />
          <Modal visible={showDeleteChatModal} onRequestClose={toggleDeleteModal}>
             <ModalCenteredContent onPressOutside={toggleDeleteModal}>
                <View style={styles.deleteChatModalContentContainer}>

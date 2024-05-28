@@ -27,11 +27,8 @@ import {
    requestLocationPermission,
    requestStoragePermission,
 } from '../common/utils';
-import CameraPickView from '../components/CameraPickView';
 import ChatConversation from '../components/ChatConversation';
 import { chatInputMessageRef } from '../components/ChatInput';
-import GalleryPickView from '../components/GalleryPickView';
-import Camera from '../components/RNCamera';
 import { getType, isValidFileType, validateFileSize, validation } from '../components/chat/common/fileUploadValidation';
 import { LOCATION_SCREEN, MOBILE_CONTACT_LIST_SCREEN, RECENTCHATSCREEN } from '../constant';
 import { useNetworkStatus } from '../hooks';
@@ -43,7 +40,6 @@ import { deleteRecoverMessage, recoverMessage } from '../redux/Actions/RecoverMe
 import { clearConversationSearchData } from '../redux/Actions/conversationSearchAction';
 import store from '../redux/store';
 import { mflog } from '../uikitHelpers/uikitMethods';
-import SavePicture from './Gallery';
 
 export const selectedMediaIdRef = createRef();
 selectedMediaIdRef.current = {};

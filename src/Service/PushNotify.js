@@ -24,6 +24,7 @@ export const displayRemoteNotification = async (id, date, title, body, jid, impo
          importance,
       },
       ios: {
+         sound: 'default',
          foregroundPresentationOptions: {
             alert: true,
             badge: true,

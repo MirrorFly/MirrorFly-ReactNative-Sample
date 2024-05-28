@@ -6,7 +6,7 @@ import { batch, useDispatch, useSelector } from 'react-redux';
 import { showToast } from '../Helper';
 import { isLocalUser, showInternetconnectionToast } from '../Helper/Chat/ChatHelper';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
-import { SDK } from '../SDK';
+import SDK from '../SDK/SDK';
 import IconButton from '../common/IconButton';
 import {
    AddUserIcon,
@@ -20,6 +20,7 @@ import {
 import Modal, { ModalBottomContent, ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import commonStyles, { modelStyles } from '../common/commonStyles';
+import config from '../config';
 import ApplicationColors from '../config/appColors';
 import { CONTACTLIST, EDITNAME, GROUP_INFO, IMAGEVIEW, RECENTCHATSCREEN, VIEWALLMEDIA } from '../constant';
 import { useNetworkStatus } from '../hooks';
@@ -31,7 +32,6 @@ import InfoImageView from './InfoImageView';
 import NickName from './NickName';
 import UserAvathar from './UserAvathar';
 import UserStatus from './UserStatus';
-import config from '../config';
 
 const LeftArrowComponent = () => LeftArrowIcon();
 

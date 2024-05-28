@@ -1,16 +1,15 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import ReplyMessage from './ReplyMessage';
-import commonStyles from '../common/commonStyles';
 import { escapeRegExpReservedChars } from '../Helper';
+import commonStyles from '../common/commonStyles';
+import ReplyMessage from './ReplyMessage';
 
 const TextCard = props => {
    const { handleReplyPress, message } = props;
    const { msgBody: { replyTo = '' } = {} } = message;
 
    const conversationSearchText = useSelector(state => state.conversationSearchData?.searchText);
-
    return (
       <View style={commonStyles.paddingHorizontal_4}>
          {Boolean(replyTo) && (

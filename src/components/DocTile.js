@@ -1,21 +1,24 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import { convertBytesToKB } from '../Helper';
 import { handleFileOpen } from '../Helper/Chat/ChatHelper';
 import { CSVIcon, DocIcon, PPTIcon, PdfIcon, TXTIcon, XLSIcon, ZipIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import { docTimeFormat } from '../common/TimeStamp';
 import commonStyles from '../common/commonStyles';
-import { useChatMessage } from '../hooks/useChatMessage';
 import { getExtension } from './chat/common/fileUploadValidation';
 
 function DocTile({ item, onDelete }) {
+   const chatMessageData = useSelector(state => state.chatMessageData);
+   const message = chatMessageData[item.msgId];
+
    const {
       deleteStatus,
       recallStatus,
       createdAt,
       msgBody: { media: { fileName, file_size, is_downloaded, is_uploading } } = {},
-   } = useChatMessage(item.msgId);
+   } = message;
    const fileExtension = getExtension(fileName, false);
    const onPress = () => {
       handleFileOpen(item);

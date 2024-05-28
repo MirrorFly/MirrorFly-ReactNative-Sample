@@ -26,6 +26,17 @@ const useFetchImage = imageToken => {
    });
 
    React.useEffect(() => {
+      if (/^(blob:http|blob:https):\/\//i.test(imageToken)) {
+         return setState({
+            imageUrl: imageToken,
+         });
+      }
+      if (/^(http|https):\/\//i.test(imageToken)) {
+         return setState({
+            imageUrl: imageToken,
+         });
+      }
+
       getMediaURL();
    }, [imageToken]);
 

@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { showToast } from '../Helper';
 import { calculateKeyboardVerticalOffset } from '../Helper/Chat/ChatHelper';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
-import { SDK } from '../SDK';
+import SDK from '../SDK/SDK';
 import IconButton from '../common/IconButton';
 import { LeftArrowIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';

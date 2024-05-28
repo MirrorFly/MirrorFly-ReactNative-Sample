@@ -138,6 +138,8 @@
 		13B07FAE1A68108700A75B9A /* mirrorfly_rn */ = {
 			isa = PBXGroup;
 			children = (
+				A7DAC5752BB2AF3C005DD787 /* fly_reconnecting_tone.mp3 */,
+				A7DAC5742BB2AF3C005DD787 /* incallmanager_ringback.mp3 */,
 				A7E1A3AB2BB1854C00F4D084 /* GoogleService-Info.plist */,
 				CE57D1A62ABD800F0086E3A9 /* mirrorfly_rn.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -172,8 +174,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				A7DAC5752BB2AF3C005DD787 /* fly_reconnecting_tone.mp3 */,
-				A7DAC5742BB2AF3C005DD787 /* incallmanager_ringback.mp3 */,
 				13B07FAE1A68108700A75B9A /* mirrorfly_rn */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* mirrorfly_rnTests */,

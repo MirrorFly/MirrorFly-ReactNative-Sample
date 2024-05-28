@@ -3,7 +3,13 @@ import React from 'react';
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { escapeRegExpReservedChars } from '../Helper';
-import { formatUserIdToJid, isActiveChatScreenRef, updateRosterDataForRecentChats } from '../Helper/Chat/ChatHelper';
+import {
+   fetchRecentChats,
+   formatUserIdToJid,
+   getHasNextRecentChatPage,
+   isActiveChatScreenRef,
+   isCloseToBottom,
+} from '../Helper/Chat/ChatHelper';
 import { THIS_MESSAGE_WAS_DELETED, YOU_DELETED_THIS_MESSAGE } from '../Helper/Chat/Constant';
 import { sortBydate } from '../Helper/Chat/RecentChat';
 import SDK from '../SDK/SDK';
@@ -27,7 +33,6 @@ import ApplicationColors from '../config/appColors';
 import { CHATSCREEN } from '../constant';
 import useRosterData from '../hooks/useRosterData';
 import { navigate } from '../redux/Actions/NavigationAction';
-import { addRecentChat } from '../redux/Actions/RecentChatAction';
 import {
    updateRecentChatSelectedItems,
    updateRecentChatSelectedItemsObj,
@@ -35,164 +40,160 @@ import {
 
 const VideoSmallIconComponent = () => VideoSmallIcon('#767676');
 
-const RecentChatItem = ({
-   item,
-   index,
-   isSame,
-   isSelected,
-   statusVisible,
-   handleSelect,
-   handleOnSelect,
-   searchValue,
-   isTyping,
-}) => {
-   const _handlePress = () => {
-      handleSelect(item);
-   };
-   const { profileDetails = {} } = item;
-   let { nickName, userId = '', image, colorCode } = useRosterData(item?.fromUserId);
-   // updating default values
-   nickName = nickName || profileDetails.nickName || item?.fromUserId || '';
-   image = image || '';
-   userId = userId || item?.fromUserId || '';
-   colorCode = colorCode || profileDetails?.colorCode;
+const RecentChatItem = React.memo(
+   ({ item, index, isSame, isSelected, statusVisible, handleSelect, handleOnSelect, searchValue, isTyping }) => {
+      const _handlePress = () => {
+         handleSelect(item);
+      };
+      const { profileDetails = {} } = item;
+      let { nickName, userId = '', image, colorCode } = useRosterData(item?.fromUserId);
+      // updating default values
+      nickName = nickName || profileDetails.nickName || item?.fromUserId || '';
+      image = image || '';
+      userId = userId || item?.fromUserId || '';
+      colorCode = colorCode || profileDetails?.colorCode;
 
-   const renderLastSentMessageBasedOnType = () => {
-      const audioType = item?.msgBody?.media?.audioType;
-      switch (item?.msgBody?.message_type) {
-         case 'text':
-            return <HighlightedMessage text={item?.msgBody?.message} searchValue={searchValue} index={index} />;
-         case 'image':
-            return (
-               <View style={[styles.lastSentMessageWrapper, commonStyles.paddingLeft_4]}>
-                  <ImageIcon />
-                  <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
-                     Image
-                  </Text>
-               </View>
-            );
-         case 'video':
-            return (
-               <View style={[styles.lastSentMessageWrapper, commonStyles.paddingLeft_4]}>
-                  <VideoSmallIconComponent />
-                  <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
-                     Video
-                  </Text>
-               </View>
-            );
-         case 'file':
-            return (
-               <View style={[styles.lastSentMessageWrapper, commonStyles.paddingLeft_4]}>
-                  <DocumentChatIcon />
-                  <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
-                     File
-                  </Text>
-               </View>
-            );
-         case 'audio':
-            return (
-               <View style={[styles.lastSentMessageWrapper, commonStyles.paddingLeft_4]}>
-                  {Boolean(audioType) ? (
-                     <AudioMicIcon width="14" height="14" fill={'#767676'} />
-                  ) : (
-                     <AudioMusicIcon width="14" height="14" color={'#767676'} />
-                  )}
+      const renderLastSentMessageBasedOnType = () => {
+         const audioType = item?.msgBody?.media?.audioType;
+         switch (item?.msgBody?.message_type) {
+            case 'text':
+               return <HighlightedMessage text={item?.msgBody?.message} searchValue={searchValue} index={index} />;
+            case 'auto_text':
+               return <HighlightedMessage text={item?.msgBody?.message} searchValue={searchValue} index={index} />;
+            case 'image':
+               return (
+                  <View style={[styles.lastSentMessageWrapper, commonStyles.paddingLeft_4]}>
+                     <ImageIcon />
+                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
+                        Image
+                     </Text>
+                  </View>
+               );
+            case 'video':
+               return (
+                  <View style={[styles.lastSentMessageWrapper, commonStyles.paddingLeft_4]}>
+                     <VideoSmallIconComponent />
+                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
+                        Video
+                     </Text>
+                  </View>
+               );
+            case 'file':
+               return (
+                  <View style={[styles.lastSentMessageWrapper, commonStyles.paddingLeft_4]}>
+                     <DocumentChatIcon />
+                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
+                        File
+                     </Text>
+                  </View>
+               );
+            case 'audio':
+               return (
+                  <View style={[styles.lastSentMessageWrapper, commonStyles.paddingLeft_4]}>
+                     {Boolean(audioType) ? (
+                        <AudioMicIcon width="14" height="14" fill={'#767676'} />
+                     ) : (
+                        <AudioMusicIcon width="14" height="14" color={'#767676'} />
+                     )}
 
-                  <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
-                     Audio
-                  </Text>
-               </View>
-            );
-         case 'location':
+                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
+                        Audio
+                     </Text>
+                  </View>
+               );
+            case 'location':
+               return (
+                  <View style={styles.lastSentMessageWrapper}>
+                     <LocationMarkerIcon width="23" height="23" color={'#000'} />
+                     <Text
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        style={[styles.lastSentMessageTypeText, commonStyles.paddingLeft_0]}>
+                        Location
+                     </Text>
+                  </View>
+               );
+            case 'contact':
+               return (
+                  <View style={styles.lastSentMessageWrapper}>
+                     <ContactChatIcon />
+                     <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.lastSentMessageTypeText]}>
+                        Contact
+                     </Text>
+                  </View>
+               );
+            default:
+               return null;
+         }
+      };
+      const renderLastMessage = () => {
+         if (isTyping) {
+            return <Text style={commonStyles.typingText}>typing...</Text>;
+         }
+         if (item?.msgBody?.message_type === 'notification') {
             return (
                <View style={styles.lastSentMessageWrapper}>
-                  <LocationMarkerIcon width="23" height="23" color={'#000'} />
-                  <Text
-                     numberOfLines={1}
-                     ellipsizeMode="tail"
-                     style={[styles.lastSentMessageTypeText, commonStyles.paddingLeft_0]}>
-                     Location
-                  </Text>
-               </View>
-            );
-         case 'contact':
-            return (
-               <View style={styles.lastSentMessageWrapper}>
-                  <ContactChatIcon />
                   <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.lastSentMessageTypeText]}>
-                     Contact
+                     {item?.msgBody?.notificationContent}
                   </Text>
                </View>
             );
-         default:
-            return null;
-      }
-   };
-   const renderLastMessage = () => {
-      if (isTyping) {
-         return <Text style={commonStyles.typingText}>typing...</Text>;
-      }
-      if (item?.msgBody?.message_type === 'notification') {
-         return (
-            <View style={styles.lastSentMessageWrapper}>
-               <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.lastSentMessageTypeText]}>
-                  {item?.msgBody?.notificationContent}
+         }
+         return item?.recallStatus === 1 ? (
+            <View style={styles.lastSentDeletedMessageContainer}>
+               <Text style={styles.deletedMessageText}>
+                  {isSame ? YOU_DELETED_THIS_MESSAGE : THIS_MESSAGE_WAS_DELETED}
                </Text>
+            </View>
+         ) : (
+            <View style={styles.lastSentMessageContainer}>
+               {isSame && item?.msgStatus !== 3 ? (
+                  <View style={[styles.msgStatus, isSame && Object.keys(item.msgBody).length ? statusVisible : '']} />
+               ) : (
+                  isSame && item?.msgStatus === 3 && Object.keys(item.msgBody).length > 0 && <SandTimer />
+               )}
+               {renderLastSentMessageBasedOnType()}
             </View>
          );
-      }
-      return item?.recallStatus === 1 ? (
-         <View style={styles.lastSentDeletedMessageContainer}>
-            <Text style={styles.deletedMessageText}>
-               {isSame ? YOU_DELETED_THIS_MESSAGE : THIS_MESSAGE_WAS_DELETED}
-            </Text>
-         </View>
-      ) : (
-         <View style={styles.lastSentMessageContainer}>
-            {isSame && item?.msgStatus !== 3 ? (
-               <View style={[styles.msgStatus, isSame && Object.keys(item.msgBody).length ? statusVisible : '']} />
-            ) : (
-               isSame && item?.msgStatus === 3 && Object.keys(item.msgBody).length > 0 && <SandTimer />
-            )}
-            {renderLastSentMessageBasedOnType()}
+      };
+
+      return (
+         <View key={item.msgId}>
+            <Pressable
+               contentContainerStyle={[styles.recentChatItemContainer, isSelected && commonStyles.pressedBg]}
+               onPress={_handlePress}
+               onLongPress={() => {
+                  handleOnSelect(item);
+               }}>
+               <View
+                  style={[
+                     commonStyles.hstack,
+                     item.msgBody.message_type ? commonStyles.alignItemsCenter : commonStyles.alignItemsFlexStart,
+                  ]}>
+                  <View style={commonStyles.positionRelative}>
+                     <Avathar type={item.chatType} data={nickName} backgroundColor={colorCode} profileImage={image} />
+                     {item.unreadCount > 0 && (
+                        <View style={styles.unreadCountWrapper}>
+                           <Text style={styles.unreadCountText}>
+                              {item.unreadCount > 99 ? '99+' : item.unreadCount}
+                           </Text>
+                        </View>
+                     )}
+                  </View>
+                  <View style={[commonStyles.flex1, commonStyles.marginLeft_20]}>
+                     <HighlightedText text={nickName || userId} searchValue={searchValue} index={index} />
+                     {renderLastMessage()}
+                  </View>
+                  <Text style={[styles.lastMessageTimestamp, item.unreadCount > 0 && styles.mainColoredText]}>
+                     {item?.createdAt && formatChatDateTime(convertUTCTOLocalTimeStamp(item?.createdAt), 'recent-chat')}
+                  </Text>
+               </View>
+            </Pressable>
+            <View style={styles.divider} />
          </View>
       );
-   };
-
-   return (
-      <View key={index}>
-         <Pressable
-            contentContainerStyle={[styles.recentChatItemContainer, isSelected && commonStyles.pressedBg]}
-            onPress={_handlePress}
-            onLongPress={() => {
-               handleOnSelect(item);
-            }}>
-            <View
-               style={[
-                  commonStyles.hstack,
-                  item.msgBody.message_type ? commonStyles.alignItemsCenter : commonStyles.alignItemsFlexStart,
-               ]}>
-               <View style={commonStyles.positionRelative}>
-                  <Avathar type={item.chatType} data={nickName} backgroundColor={colorCode} profileImage={image} />
-                  {item.unreadCount > 0 && (
-                     <View style={styles.unreadCountWrapper}>
-                        <Text style={styles.unreadCountText}>{item.unreadCount > 99 ? '99+' : item.unreadCount}</Text>
-                     </View>
-                  )}
-               </View>
-               <View style={[commonStyles.flex1, commonStyles.marginLeft_20]}>
-                  <HighlightedText text={nickName || userId} searchValue={searchValue} index={index} />
-                  {renderLastMessage()}
-               </View>
-               <Text style={[styles.lastMessageTimestamp, item.unreadCount > 0 && styles.mainColoredText]}>
-                  {item?.createdAt && formatChatDateTime(convertUTCTOLocalTimeStamp(item?.createdAt), 'recent-chat')}
-               </Text>
-            </View>
-         </Pressable>
-         <View style={styles.divider} />
-      </View>
-   );
-};
+   },
+);
 
 export default function RecentChat() {
    const RootNav = useNavigation();
@@ -202,6 +203,7 @@ export default function RecentChat() {
    const [recentData, setRecentData] = React.useState([]);
    const recentChatList = useSelector(state => state.recentChatData.data);
    const [recentChatLoading, setRecentChatLoading] = React.useState(true);
+   const [fetchingData, setFetchingData] = React.useState(false);
    const { isSearching, selectedItems, searchText, selectedItemsObj } =
       useSelector(state => state.recentChatSearchData) || {};
    const typingStatusData = useSelector(state => state.typingStatusData?.data) || {};
@@ -209,7 +211,7 @@ export default function RecentChat() {
    const currentUserJID = useSelector(state => state.auth.currentUserJID);
 
    React.useEffect(() => {
-      getRecentChatsFromSDK();
+      initFunc();
    }, []);
 
    React.useEffect(() => {
@@ -226,10 +228,8 @@ export default function RecentChat() {
       }
    }, [recentData, searchText]);
 
-   const getRecentChatsFromSDK = async () => {
-      const recentChats = await SDK.getRecentChats();
-      dispatch(addRecentChat(recentChats?.data || []));
-      updateRosterDataForRecentChats(recentChats?.data || []);
+   const initFunc = async () => {
+      await fetchRecentChats();
       setRecentChatLoading(false);
    };
 
@@ -255,7 +255,7 @@ export default function RecentChat() {
    };
 
    const searchFilter = text => {
-      const filtered = recentData?.filter(
+      const filtered = recentChatList?.filter(
          item =>
             item.fromUserId.toLowerCase().includes(text.toLowerCase()) ||
             item?.profileDetails?.nickName?.toLowerCase().includes(text.toLowerCase()),
@@ -284,15 +284,7 @@ export default function RecentChat() {
       if (selectedItems.length) {
          handleRecentItemSelect(item);
       } else {
-         let jid = formatUserIdToJid(
-            item?.fromUserId,
-            item?.chatType,
-         ); /** Need to add chat type here while working in Group
-      formatUserIdToJid(
-       item?.fromUserId,
-       item?.chatType,
-     )
-     */
+         let jid = formatUserIdToJid(item?.fromUserId, item?.chatType);
          let x = {
             fromUserJID: item?.userJid || jid,
             profileDetails: item?.profileDetails,
@@ -303,16 +295,18 @@ export default function RecentChat() {
       }
    };
 
+   const handleLoadMore = async ({ nativeEvent }) => {
+      if (!isSearching && isCloseToBottom(nativeEvent) && !fetchingData && getHasNextRecentChatPage()) {
+         setFetchingData(true);
+         fetchRecentChats().then(() => {
+            setFetchingData(false);
+         });
+      }
+   };
+
    const renderItem = (item, index) => {
       const isSame = currentUserJID === item?.publisherJid;
-      const jid =
-         item?.userJid ||
-         formatUserIdToJid(item?.fromUserId, item?.chatType); /** Need to add chat type here while working in Group
-    formatUserIdToJid(
-     item?.fromUserId,
-     item?.chatType,
-   )
-   */
+      const jid = item?.userJid || formatUserIdToJid(item?.fromUserId, item?.chatType);
       const isSelected = selectedItemsObj[jid];
       let statusVisible;
       switch (item?.msgStatus) {
@@ -329,9 +323,9 @@ export default function RecentChat() {
       const isTyping = Boolean(typingStatusData[item?.fromUserId]);
       return (
          <RecentChatItem
-            key={item?.fromUserId}
-            item={item}
+            key={item?.msgId || item?.fromUserId}
             index={index}
+            item={item}
             isSame={isSame}
             isSelected={isSelected}
             statusVisible={statusVisible}
@@ -342,6 +336,14 @@ export default function RecentChat() {
          />
       );
    };
+
+   if (recentChatLoading) {
+      return (
+         <View style={commonStyles.mt_20}>
+            <ActivityIndicator color={ApplicationColors.mainColor} size="large" />
+         </View>
+      );
+   }
 
    if (!recentChatLoading && !filteredData.length && !filteredMessages.length) {
       return (
@@ -360,7 +362,7 @@ export default function RecentChat() {
    }
 
    return (
-      <ScrollView style={styles.scrollView}>
+      <ScrollView style={styles.scrollView} onScroll={handleLoadMore} scrollEventThrottle={200}>
          {Boolean(searchText) && filteredData.length > 0 && (
             <View style={styles.chatsSearchSubHeader}>
                <Text style={styles.chatsSearchSubHeaderText}>Chats</Text>
@@ -377,12 +379,13 @@ export default function RecentChat() {
          {Boolean(searchText) &&
             filteredMessages.length > 0 &&
             filteredMessages.map((item, index) => renderItem(item, index))}
-         {/* ActivityIndicator as the footer */}
          {recentChatLoading && (
             <View style={commonStyles.mt_20}>
                <ActivityIndicator color={ApplicationColors.mainColor} size="large" />
             </View>
          )}
+         {fetchingData && <ActivityIndicator color={ApplicationColors.mainColor} size={'large'} />}
+         {fetchingData && <View style={commonStyles.mb_130} />}
       </ScrollView>
    );
 }
@@ -470,6 +473,7 @@ const styles = StyleSheet.create({
    lastSentMessageWrapper: {
       flexDirection: 'row',
       alignItems: 'center',
+      maxWidth: '95%',
    },
    lastSentMessageTypeText: {
       paddingHorizontal: 5,

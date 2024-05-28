@@ -1,11 +1,12 @@
-import { THIS_MESSAGE_WAS_DELETED } from '../Helper/Chat/Constant';
-import { AppState, Platform } from 'react-native';
-import { isActiveConversationUserOrGroup } from '../Helper/Chat/ChatHelper';
-import { displayRemoteNotification } from './PushNotify';
 import notifee, { AndroidImportance } from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AppState, Platform } from 'react-native';
+import _BackgroundTimer from 'react-native-background-timer';
+import { isActiveConversationUserOrGroup } from '../Helper/Chat/ChatHelper';
+import { THIS_MESSAGE_WAS_DELETED } from '../Helper/Chat/Constant';
 import { getCurrentUserJid } from '../redux/Actions/AuthAction';
 import Store from '../redux/store';
+import { displayRemoteNotification } from './PushNotify';
 
 let notifyObj = {};
 let ids = [];
@@ -29,7 +30,7 @@ export const pushNotify = async (msgId, title, body, sent_from, onForGround) => 
       }
       ids.push(notifyObj[msgId].id);
       if (AppState.currentState === 'active') {
-         setTimeout(() => {
+         _BackgroundTimer.setTimeout(() => {
             notifee.cancelDisplayedNotifications(Object.values(ids));
             ids = [];
             notifyObj = {};

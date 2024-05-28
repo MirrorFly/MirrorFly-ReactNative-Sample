@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 import { AppRegistry, Platform } from 'react-native';
+import RNVoipPushNotification from 'react-native-voip-push-notification';
 import { version } from '../../package.json';
 import { handleSetPendingSeenStatus, updateRecentAndConversationStore } from '../Helper';
 import { pushNotifyBackground } from '../Helper/Calls/Utility';
@@ -14,7 +15,6 @@ import { setNotificationForegroundService } from '../calls/notification/callNoti
 import { requestNotificationPermission } from '../common/utils';
 import { getNotifyMessage, getNotifyNickName } from '../components/RNCamera/Helper';
 import config from '../config';
-import RNVoipPushNotification from 'react-native-voip-push-notification';
 
 let uiKitCallbackListenersVal = {},
    appInitialized = false,
@@ -74,14 +74,14 @@ const initializeSetup = async () => {
 export const mirrorflyInitialize = async args => {
    try {
       removeAllDeliveredNotification();
-      const { apiBaseUrl, licenseKey, isSandbox, callBack, chatHistroy = false } = args;
+      const { apiBaseUrl, licenseKey, isSandbox, callBack } = args;
       const mfInit = await SDK.initializeSDK({
          apiBaseUrl: apiBaseUrl,
          licenseKey: licenseKey,
          callbackListeners: sdkCallBacks,
          isSandbox: isSandbox,
-         chatHistroy,
       });
+      console.log('mfInit ==>', mfInit);
       uiKitCallbackListenersVal = { callBack };
       if (mfInit.statusCode === 200) {
          setAppInitialized(true);
@@ -135,7 +135,6 @@ export const mirrorflyNotificationHandler = async messageData => {
          licenseKey: licenseKey,
          callbackListeners: sdkCallBacks,
          isSandbox: false,
-         chatHistroy: false,
       });
       if (remoteMessage?.data.type === 'mediacall') {
          await SDK.getCallNotification(remoteMessage);

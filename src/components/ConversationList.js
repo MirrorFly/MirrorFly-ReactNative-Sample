@@ -1,8 +1,7 @@
-import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { fetchMessagesFromSDK, handleConversationScollToBottomPress } from '../Helper/Chat/ChatHelper';
+import { fetchMessagesFromSDK, getHasNextPage, handleConversationScollToBottomPress } from '../Helper/Chat/ChatHelper';
 import { CHAT_TYPE_GROUP } from '../Helper/Chat/Constant';
 import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import { DoubleDownArrow } from '../common/Icons';
@@ -16,22 +15,30 @@ import ChatMessage from './ChatMessage';
 const listBottomYaxisLimit = 60;
 
 function ConversationList({ chatUserJid }) {
-   const [chatLoading, setChatLoading] = React.useState(true);
+   const [initLoading, setInitLoading] = React.useState(true);
+   const [chatLoading, setChatLoading] = React.useState(false);
    const [showScrollToBottomIcon, setShowScrollToBottomIcon] = React.useState(false);
    const [newMsgCount, setNewMsgCount] = React.useState(0);
    const messageListRef = React.useRef([]);
    const chatUserId = getUserIdFromJid(chatUserJid);
    const messages = useSelector(state => state.chatConversationData.data[chatUserId]?.messages);
 
+   React.useEffect(() => {
+      fetchData();
+   }, [chatUserId]);
+
    const messageList = React.useMemo(() => {
       if (chatUserId) {
          const _previousMessageList = messageListRef.current;
+         const lastMessageInPreviousMessage = _previousMessageList?.[0]?.msgId;
          const data = Object.values(messages || {}) || [];
+         const lastMessageInCurrentMessage = data[data.length - 1]?.msgId;
          data.reverse();
          if (
             data.length > _previousMessageList.length && // to check if there is any new msg
             data[0]?.publisherId === chatUserId && // to check if the new msg is received from the other user
-            conversationFlatListScrollPositionRef.current.y > listBottomYaxisLimit // to check if the list scroll position is not in the bottom
+            conversationFlatListScrollPositionRef.current.y > listBottomYaxisLimit && // to check if the list scroll position is not in the bottom
+            lastMessageInPreviousMessage !== lastMessageInCurrentMessage
          ) {
             setNewMsgCount(val => val + 1);
          }
@@ -46,14 +53,8 @@ function ConversationList({ chatUserJid }) {
       if (!messageList.length) {
          await fetchMessagesFromSDK(chatUserJid);
       }
-      setChatLoading(false);
+      setInitLoading(false);
    };
-
-   useFocusEffect(
-      React.useCallback(() => {
-         fetchData();
-      }, [chatUserId]),
-   );
 
    const chatMessageRender = React.useCallback(
       ({ item, index }) => {
@@ -82,10 +83,21 @@ function ConversationList({ chatUserJid }) {
 
    const doNothing = () => null;
 
+   const handleLoadMore = async () => {
+      if (chatLoading || !getHasNextPage(getUserIdFromJid(chatUserJid))) {
+         return;
+      }
+      setChatLoading(true);
+      await fetchMessagesFromSDK(chatUserJid, true);
+      setChatLoading(false);
+   };
+
+   if (initLoading && !messageList.length) {
+      return <ActivityIndicator color={ApplicationColors.mainColor} size={'large'} />;
+   }
+
    const renderChatFooter = () => {
-      return chatLoading && !messageList.length ? (
-         <ActivityIndicator color={ApplicationColors.mainColor} size={'large'} />
-      ) : null;
+      return chatLoading ? <ActivityIndicator color={ApplicationColors.mainColor} size={'large'} /> : null;
    };
 
    return (
@@ -97,15 +109,15 @@ function ConversationList({ chatUserJid }) {
             inverted={Boolean(messageList.length)}
             renderItem={chatMessageRender}
             keyExtractor={item => item.msgId.toString()}
-            initialNumToRender={2}
             maxToRenderPerBatch={20}
             onScrollToIndexFailed={doNothing}
             onScroll={handleConversationScoll}
             scrollEventThrottle={1}
             windowSize={20}
-            // onEndReached={handleLoadMore}
+            onEndReached={handleLoadMore}
             ListFooterComponent={renderChatFooter}
-            onEndReachedThreshold={1}
+            onEndReachedThreshold={0.1}
+            disableVirtualization={true}
          />
          {showScrollToBottomIcon && (
             <Pressable

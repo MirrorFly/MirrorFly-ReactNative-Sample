@@ -19,7 +19,7 @@ import {
 } from '../common/Icons';
 import commonStyles from '../common/commonStyles';
 import { getImageSource } from '../common/utils';
-import { useChatMessage } from '../hooks/useChatMessage';
+import { isSelectingMessages, useChatMessage, useSelectedChatMessage } from '../hooks/useChatMessage';
 import { handleReplyPress } from '../hooks/useConversation';
 import useRosterData from '../hooks/useRosterData';
 import { getExtension } from './chat/common/fileUploadValidation';
@@ -30,14 +30,21 @@ function ReplyMessage(props) {
    const currentUserJID = useSelector(state => state.auth.currentUserJID);
    const profileDetails = useSelector(state => state.navigation.profileDetails);
    const { msgBody: { replyTo = '' } = {} } = originalMsg;
-   const repliedMsg = useChatMessage(replyTo);
+   const repliedMessage = useChatMessage(replyTo) || {};
+   const { updateSelectedMessage } = useSelectedChatMessage();
+   let { msgId, msgBody: { parentMessage = {} } = {} } = originalMsg;
+
+   if (!Object.keys(parentMessage).length) {
+      parentMessage = repliedMessage;
+   }
+
    const {
       msgBody = {},
       msgBody: { message_type = '', message = '', media = {} } = {},
       deleteStatus = 0,
       recallStatus = 0,
       publisherJid = '',
-   } = repliedMsg;
+   } = parentMessage;
 
    /**const fromUserId = React.useMemo(() => getUserIdFromJid(fromUserJId), [fromUserJId]);*/
    const publisherId = getUserIdFromJid(publisherJid);
@@ -216,11 +223,15 @@ function ReplyMessage(props) {
    };
 
    const passReplyTo = () => {
-      handleReplyPress?.(replyTo);
+      if (isSelectingMessages.current) {
+         updateSelectedMessage(msgId);
+      } else {
+         handleReplyPress?.(replyTo, parentMessage);
+      }
    };
 
    const handleLongPress = () => {
-      handleReplyPress?.(replyTo, props.message, true);
+      updateSelectedMessage(msgId);
    };
 
    return (

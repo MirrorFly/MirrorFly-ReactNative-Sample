@@ -8,10 +8,9 @@ import config from '../config';
 import { mediaStatusConstants } from '../constant';
 import { useNetworkStatus } from '../hooks';
 import { CancelMediaUpload, RetryMediaUpload, updateUploadStatus } from '../redux/Actions/ConversationAction';
-import Store from '../redux/store';
 import { cancelDownloadData } from '../redux/Actions/MediaDownloadAction';
 import { cancelMediaUploadData } from '../redux/Actions/MediaUploadAction';
-import { mflog } from '../uikitHelpers/uikitMethods';
+import Store from '../redux/store';
 
 const toastId = 'network-error-upload-download';
 const toastRef = React.createRef(false);
@@ -36,16 +35,31 @@ const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus
    };
 
    React.useEffect(() => {
-      if (isSender) {
-         const isUploading = uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8;
-         const isUploaded =
-            uploadStatus === 2 && mediaUrl ? mediaStatusConstants.UPLOADED : mediaStatusConstants.NOT_UPLOADED;
-         setMediaStatus(isUploading ? mediaStatusConstants.UPLOADING : isUploaded);
-      } else {
-         const isDonwloadingStatus =
-            downloadStatus === 1 ? mediaStatusConstants.DOWNLOADING : mediaStatusConstants.NOT_DOWNLOADED;
-         setMediaStatus(downloadStatus === 2 ? mediaStatusConstants.DOWNLOADED : isDonwloadingStatus);
+      if (downloadStatus === 1) {
+         setMediaStatus(mediaStatusConstants.DOWNLOADING);
       }
+      if (uploadStatus === 2 && downloadStatus === 0) {
+         setMediaStatus(mediaStatusConstants.NOT_DOWNLOADED);
+      }
+      if (uploadStatus === 2 && downloadStatus === 2) {
+         setMediaStatus(mediaStatusConstants.LOADED);
+      }
+      if (uploadStatus === 3 && downloadStatus === 2) {
+         setMediaStatus(mediaStatusConstants.NOT_UPLOADED);
+      }
+      if (uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8) {
+         setMediaStatus(mediaStatusConstants.UPLOADING);
+      }
+      // if (isSender) {
+      //    const isUploading = uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8;
+      //    const isUploaded =
+      //       uploadStatus === 2 && mediaUrl ? mediaStatusConstants.UPLOADED : mediaStatusConstants.NOT_UPLOADED;
+      //    setMediaStatus(isUploading ? mediaStatusConstants.UPLOADING : isUploaded);
+      // } else {
+      //    const isDonwloadingStatus =
+      //       downloadStatus === 1 ? mediaStatusConstants.DOWNLOADING : mediaStatusConstants.NOT_DOWNLOADED;
+      //    setMediaStatus(downloadStatus === 2 ? mediaStatusConstants.DOWNLOADED : isDonwloadingStatus);
+      // }
    }, [msgStatus, isSender, mediaUrl, uploadStatus, msgId, media, downloadStatus]);
 
    const { file_url = '', thumb_image = '' } = media;
@@ -82,8 +96,8 @@ const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus
             const cancelObj = {
                msgId,
                fromUserId: getUserIdFromJid(fromUserJId),
-               uploadStatus: 7,
-               downloadStatus: 7,
+               uploadStatus: 2,
+               downloadStatus: 0,
             };
             batch(() => {
                dispatch(CancelMediaUpload(cancelObj));
@@ -109,21 +123,31 @@ const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus
       if (getMediaProgressSource(msgId)?.source) {
          if (getMediaProgressSource(msgId)?.downloadJobId) {
             getMediaProgressSource(msgId).source?.cancel?.(getMediaProgressSource(msgId)?.downloadJobId);
+            const cancelObj = {
+               msgId,
+               fromUserId: fromUserJId,
+               uploadStatus: 2,
+               downloadStatus: 0,
+            };
+            batch(() => {
+               dispatch(CancelMediaUpload(cancelObj));
+               dispatch(cancelDownloadData(cancelObj));
+            });
          } else {
             getMediaProgressSource(msgId).source?.cancel?.('User Cancelled!');
+            const cancelObj = {
+               msgId,
+               fromUserId: fromUserJId,
+               uploadStatus: 3,
+               downloadStatus: 2,
+            };
+            batch(() => {
+               dispatch(CancelMediaUpload(cancelObj));
+               dispatch(cancelMediaUploadData(cancelObj));
+            });
          }
       }
-      const cancelObj = {
-         msgId,
-         fromUserId: fromUserJId,
-         uploadStatus: 7,
-         downloadStatus: 7,
-      };
-      batch(() => {
-         dispatch(CancelMediaUpload(cancelObj));
-         dispatch(cancelDownloadData(cancelObj));
-         dispatch(cancelMediaUploadData(cancelObj));
-      });
+
       if (uploadStatus === 8) {
          return true;
       }

@@ -1,21 +1,26 @@
 import React from 'react';
 import { Dimensions, Image, StyleSheet, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import { getThumbBase64URL } from '../Helper/Chat/Utility';
 import { AudioWhileIcon, PlayIcon } from '../common/Icons';
 import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
-import { useChatMessage } from '../hooks/useChatMessage';
 
 const AudioWhileIconComponent = () => AudioWhileIcon();
 
-function MediaTile({ item, onDelete }) {
+const MediaTile = React.memo(({ item, onDelete }) => {
    let numColumns = 4;
    const { width } = Dimensions.get('window');
    const tileSize = width / numColumns;
-   const message = useChatMessage(item.msgId);
+   const chatMessageData = useSelector(state => state.chatMessageData);
+
+   const message = React.useMemo(() => {
+      return chatMessageData[item.msgId];
+   }, [chatMessageData, item.msgId]);
+
    const {
-      deleteStatus,
-      recallStatus,
+      deleteStatus = 0,
+      recallStatus = 0,
       msgBody: {
          media: { thumb_image = '', local_path = '', is_downloaded, is_uploading } = {},
          message_type = '',
@@ -64,7 +69,7 @@ function MediaTile({ item, onDelete }) {
          </View>
       );
    }
-}
+});
 
 export default MediaTile;
 

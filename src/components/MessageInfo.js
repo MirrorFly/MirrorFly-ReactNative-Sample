@@ -9,14 +9,14 @@ import { SandTimer } from '../common/Icons';
 import { change16TimeWithDateFormat, getConversationHistoryTime } from '../common/TimeStamp';
 import commonStyles from '../common/commonStyles';
 import { useChatMessage } from '../hooks/useChatMessage';
+import AudioCard from './AudioCard';
 import ContactCard from './ContactCard';
+import DocumentMessageCard from './DocumentMessageCard';
 import GroupChatMessageInfo from './GroupChatMessageInfo';
 import ImageCard from './ImageCard';
 import MapCard from './MapCard';
 import ScreenHeader from './ScreenHeader';
 import VideoCard from './VideoCard';
-import AudioCard from './AudioCard';
-import DocumentMessageCard from './DocumentMessageCard';
 
 function MessageInfo() {
    const {
@@ -48,6 +48,7 @@ function MessageInfo() {
    React.useEffect(() => {
       (async () => {
          const _dbValue = await SDK.getMessageInfo(msgId);
+         console.log('_dbValue ==>', JSON.stringify(_dbValue, null, 2));
          setDeliveredReport(_dbValue[0].receivedTime);
          setSeenReport(_dbValue[0].seenTime);
          setDbValue(_dbValue);

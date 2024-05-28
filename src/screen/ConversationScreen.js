@@ -19,9 +19,6 @@ import {
    useSelectedChatMessage,
 } from '../hooks/useChatMessage';
 import { resetUnreadCountForChat } from '../redux/Actions/RecentChatAction';
-import { deleteChatConversationById } from '../redux/Actions/ConversationAction';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
-import { resetChatMessageObject } from '../redux/Actions/ChatMessageAction';
 
 function ConversationScreen() {
    const navigation = useNavigation();
@@ -32,7 +29,6 @@ function ConversationScreen() {
 
    useFocusEffect(
       React.useCallback(() => {
-         intiFuntion();
          isActiveChatScreenRef.current = true;
          setReplyMessage(getReplyMessageVariable(fromUserJId));
 
@@ -58,6 +54,10 @@ function ConversationScreen() {
       };
    }, [selectedMessagesArray, navigation, handleBackBtn]);
 
+   React.useEffect(() => {
+      intiFuntion();
+   }, []);
+
    const handleBackBtn = React.useCallback(() => {
       switch (true) {
          case selectedMessagesArray.length > 0:
@@ -75,12 +75,6 @@ function ConversationScreen() {
       }
       return true;
    }, [navigation, resetSelectedChatMessage, selectedMessagesArray.length]);
-
-   const clearChatMessage = () => {
-      console.log('working');
-      dispatch(deleteChatConversationById(getUserIdFromJid(fromUserJId)));
-      dispatch(resetChatMessageObject());
-   };
 
    const intiFuntion = () => {
       fetchGroupParticipants(fromUserJId);

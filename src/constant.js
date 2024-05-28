@@ -65,6 +65,7 @@ export const mediaStatusConstants = {
    UPLOADING: 'UPLOADING',
    DOWNLOADED: 'DOWNLOADED',
    UPLOADED: 'UPLOADED',
+   LOADED: 'LOADED',
 };
 // Notification constants
 export const deletedMessage = 'This message was deleted';

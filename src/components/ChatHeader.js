@@ -144,11 +144,13 @@ function ChatHeader({ fromUserJId, handleBackBtn, handleReply, IsSearching, isSe
       resetMessageSelection();
       setRemove(false);
    };
-
+   /**
+    *
    const handleFavourite = () => {
       Keyboard.dismiss();
       console.log('Fav item');
    };
+   */
 
    const clearChat = () => {
       SDK.clearChat(fromUserJId);

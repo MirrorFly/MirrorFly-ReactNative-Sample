@@ -24,7 +24,6 @@ const VideoCard = props => {
          media: {
             file: { fileDetails = {} } = {},
             duration = 0,
-            is_uploading,
             androidHeight,
             androidWidth,
             local_path = '',

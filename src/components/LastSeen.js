@@ -1,3 +1,4 @@
+import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
 import { Text } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -9,7 +10,6 @@ import MarqueeText from '../common/MarqueeText';
 import { getLastseen } from '../common/TimeStamp';
 import commonStyles from '../common/commonStyles';
 import { useNetworkStatus } from '../hooks';
-import { useFocusEffect } from '@react-navigation/native';
 
 const LastSeen = props => {
    const isNetworkConnected = useNetworkStatus();
@@ -73,7 +73,9 @@ const LastSeen = props => {
    }, [typingStatusData]);
 
    const getLastSeenSeconds = async user_Jid => {
-      if (!user_Jid) return -1;
+      if (!user_Jid) {
+         return -1;
+      }
       const lastSeenRes = await SDK.getLastSeen(user_Jid);
       if (lastSeenRes && lastSeenRes.statusCode === 200) {
          return lastSeenRes?.data?.seconds;
@@ -89,7 +91,7 @@ const LastSeen = props => {
       let seconds = '';
       let lastSeen = '';
       seconds = lastSeenSeconds || (await getLastSeenSeconds(updateUserJid));
-      lastSeen = seconds !== -1 ? getLastseen(seconds) : '';
+      lastSeen = seconds != -1 ? getLastseen(seconds) : '';
       userPresenceStatus =
          userPresenceStatus || (seconds > 0 ? USER_PRESENCE_STATUS_OFFLINE : USER_PRESENCE_STATUS_ONLINE);
       setLastSeenData({

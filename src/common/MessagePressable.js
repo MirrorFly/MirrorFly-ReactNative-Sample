@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-   PressableProps,
    Pressable as RNPressable, // NOSONAR
    View,
    ViewStyle, // NOSONAR

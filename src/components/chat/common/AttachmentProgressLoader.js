@@ -1,10 +1,8 @@
 import React from 'react';
-import { mediaStatusConstants } from '../../../constant';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { DownloadCancel, DownloadIcon, uploadIcon as UploadIcon } from '../../../common/Icons';
-import { Bar } from 'react-native-progress';
 import commonStyles from '../../../common/commonStyles';
-import { useSelector } from 'react-redux';
+import { mediaStatusConstants } from '../../../constant';
 import AttachementBar from '../../AttachementBar';
 
 const AttachmentProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel, msgId }) => {
@@ -17,30 +15,6 @@ const AttachmentProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel,
                   <DownloadCancel color="#7285B5" />
                </Pressable>
                <AttachementBar msgId={msgId} />
-               {/* {mediaDownloadData[msgId]?.progress || mediaUploadData[msgId]?.progress ? (
-                  <Bar
-                     useNativeDriver={true}
-                     style={[commonStyles.positionAbsolute, commonStyles.bottom_0]}
-                     progress={mediaDownloadData[msgId]?.progress / 100 || mediaUploadData[msgId]?.progress / 100}
-                     width={36}
-                     height={3.5}
-                     color="#7285B5"
-                     borderWidth={0}
-                     unfilledColor={'#AFB8D0'}
-                  />
-               ) : (
-                  <Bar
-                     useNativeDriver={true}
-                     style={[commonStyles.positionAbsolute, commonStyles.bottom_0]}
-                     indeterminate
-                     progress={mediaDownloadData[msgId]?.progress / 100 || mediaUploadData[msgId]?.progress / 100}
-                     width={36}
-                     height={3.5}
-                     color="#7285B5"
-                     borderWidth={0}
-                     unfilledColor={'#AFB8D0'}
-                  />
-               )} */}
             </View>
          );
       case mediaStatusConstants.NOT_DOWNLOADED:

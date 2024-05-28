@@ -141,14 +141,6 @@ function MediaPreView() {
                {preScreen !== CAMERA_SCREEN && componentSelectedImages.length < 10 && (
                   <IconButton onPress={handleAddButton}>{PreViewAddIcon()}</IconButton>
                )}
-               {/* {preScreen === CAMERA_SCREEN && (
-                  <IconButton
-                     containerStyle={styles.emojiPickerIconWrapper}
-                     style={styles.emojiPickerIcon}
-                     onPress={toggleEmojiPicker}>
-                     {isEmojiPickerShowing ? <KeyboardIcon /> : <EmojiIcon fill="#A5A5A8" />}
-                  </IconButton>
-               )} */}
                {preScreen !== CAMERA_SCREEN && componentSelectedImages.length < 10 && (
                   <View
                      style={[commonStyles.verticalDividerLine, commonStyles.height_25, commonStyles.marginHorizontal_4]}

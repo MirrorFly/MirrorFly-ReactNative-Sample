@@ -55,7 +55,7 @@ function ChatScreen() {
    const localNav = useSelector(state => state.chatConversationLocalNav.chatConversationLocalNav);
    const dispatch = useDispatch();
    const [selectedImages, setSelectedImages] = React.useState([]);
-   const [selectedSingle, setselectedSingle] = React.useState(false);
+   /*const [selectedSingle, setselectedSingle] = React.useState(false);*/
    const [alert, setAlert] = React.useState(false);
    const [validate, setValidate] = React.useState('');
    const [isSearching, setIsSearching] = React.useState(false);
@@ -429,7 +429,8 @@ function ChatScreen() {
       setReplyMsg('');
       sendMediaMessage(messageType, content, chatType);
    };
-
+   /**
+    *
    const handleMedia = item => {
       const sizeError = validateFileSize(item.image.fileSize, getType(item.type));
       if (sizeError) {
@@ -480,6 +481,7 @@ function ChatScreen() {
       },
       [selectedImages],
    );
+   */
 
    const constructAndDispatchConversationAndRecentChatData = dataObj => {
       const conversationChatObj = getMessageObjSender(dataObj);

@@ -3,9 +3,7 @@ import {
    formatUserIdToJid,
    getChatHistoryMessagesData,
    isActiveConversationUserOrGroup,
-   isGroupChat,
-   isLocalUser,
-   isSingleChat,
+   isLocalUser
 } from '../../../Helper/Chat/ChatHelper';
 import { GROUP_UPDATE_ACTIONS, MSG_RECEIVE_STATUS, MSG_RECEIVE_STATUS_CARBON } from '../../../Helper/Chat/Constant';
 import { getMessageObjReceiver } from '../../../Helper/Chat/Utility';
@@ -105,13 +103,14 @@ export const updateMsgSeenStatus = async () => {
    if (state?.navigation?.fromUserJid) {
       const pendingMessages = state?.chatSeenPendingMsgData?.data || [];
       pendingMessages.forEach(message => {
-         const fromUserId = isGroupChat(message.chatType) ? message.publisherId : message.fromUserId;
-         const groupId = isGroupChat(message.chatType) ? message.fromUserId : '';
          if (isActiveConversationUserOrGroup(message.fromUserId)) {
             if (
                !(GROUP_UPDATE_ACTIONS.indexOf(message?.profileUpdatedStatus) >= 0) //NOSONAR Changed from -1 to 0 due to sonar issue
             ) {
-               // SDK.sendSeenStatus(formatUserIdToJid(fromUserId), message.msgId, groupId);
+               /**
+                *
+               // SDK.sendSeenStatus(formatUserIdToJid(fromUserId), message.msgId, groupId)
+               */
             }
          }
       });
@@ -120,12 +119,15 @@ export const updateMsgSeenStatus = async () => {
 
 export const updateConversationMessage = (messgeObject, currentState) => {
    const newChatTo = messgeObject.msgType === 'carbonSentMessage' ? messgeObject.toUserId : messgeObject.fromUserId;
-   const singleChat = isSingleChat(messgeObject.chatType);
    if (isActiveConversationUserOrGroup(newChatTo)) {
-      const publisherId = singleChat ? newChatTo : messgeObject.publisherId;
       if ([MSG_RECEIVE_STATUS, MSG_RECEIVE_STATUS_CARBON].indexOf(messgeObject.msgType) > -1) {
-         const groupId = singleChat ? '' : newChatTo;
+         /**
+          *
+         // const publisherId = singleChat ? newChatTo : messgeObject.publisherId;
+         // const singleChat = isSingleChat(messgeObject.chatType);
+         // const groupId = singleChat ? '' : newChatTo;
          // SDK.sendSeenStatus(formatUserIdToJid(publisherId), messgeObject.msgId, groupId);
+         */
       }
    } else if (!isLocalUser(messgeObject.publisherId)) {
       // If the Chat is Already Opened but if it is Not Currently Active, Store the Messages for Sending Seen Status

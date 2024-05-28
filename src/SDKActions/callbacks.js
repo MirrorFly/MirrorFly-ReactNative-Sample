@@ -42,7 +42,7 @@ import {
    DISCONNECTED_SCREEN_DURATION,
    INCOMING_CALL_SCREEN,
    ONGOING_CALL_SCREEN,
-   OUTGOING_CALL_SCREEN
+   OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
 import {
    addHeadphonesConnectedListenerForCall,
@@ -60,7 +60,7 @@ import {
    stopProximityListeners,
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
    updateAudioRouteTo,
-   updateMissedCallNotification
+   updateMissedCallNotification,
 } from '../Helper/Calls/Utility';
 import {
    formatUserIdToJid,
@@ -892,7 +892,9 @@ export const callBacks = {
    },
    mediaDownloadListener: res => {
       store.dispatch(updateDownloadData(res));
+      /**
       // handleChangeIntoDownloadingState(res.msgId);
+      */
       if (res.progress === 100) {
          let updateObj = {
             statusCode: 200,

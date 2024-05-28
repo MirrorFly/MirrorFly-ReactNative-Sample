@@ -193,14 +193,12 @@ const ChatMessage = props => {
       dismissKeyBoard();
       if (isSelectingMessages.current) {
          updateSelectedMessage(msgId);
-         // handleMsgSelect(message);
       }
    };
 
    const handleMessageLongPress = () => {
       dismissKeyBoard();
       updateSelectedMessage(msgId);
-      // handleMsgSelect(message);
    };
 
    const handleContentPress = () => {
@@ -211,7 +209,6 @@ const ChatMessage = props => {
    const handleContentLongPress = () => {
       dismissKeyBoard();
       updateSelectedMessage(msgId);
-      // handleMsgSelect(message);
    };
 
    const toggleModalContent = () => {
@@ -255,17 +252,6 @@ const ChatMessage = props => {
    const renderMessageBasedOnType = () => {
       switch (message_type) {
          case 'text':
-            return (
-               <TextCard
-                  isSender={isSender}
-                  message={message}
-                  data={{
-                     message: msgBody?.message,
-                     timeStamp: getConversationHistoryTime(createdAt),
-                     status: getMessageStatus(msgStatus),
-                  }}
-               />
-            );
          case 'auto_text':
             return (
                <TextCard

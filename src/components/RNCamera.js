@@ -14,13 +14,13 @@ import flashOnIcon from '../assets/ic_flash_on.png';
 import flipCameraIcon from '../assets/ic_flip_camera_android.png';
 import { LeftArrowIcon } from '../common/Icons';
 import { getImageSource, mediaObjContructor } from '../common/utils';
+import { CAMERA_SCREEN, MEDIA_PRE_VIEW_SCREEN } from '../constant';
 import { resetSafeArea, safeAreaBgColor } from '../redux/Actions/SafeAreaAction';
 import CameraService from './RNCamera/CameraService';
 import { orientationCheck } from './RNCamera/Helper';
 import useCallbackRef from './RNCamera/camHooks';
 import useCamera from './RNCamera/useCam';
 import { getType, validateFileSize } from './chat/common/fileUploadValidation';
-import { CAMERA_SCREEN, MEDIA_PRE_VIEW_SCREEN } from '../constant';
 
 const cameraService = new CameraService();
 
@@ -35,7 +35,6 @@ const Camera = () => {
       setCameraType(cameraService.getNewCameraType(cameraType));
    };
 
-   // const { setLocalNav = () => {}, setSelectedImages = () => {} } = {};
    const recordingIntervalRef = React.useRef(null);
    const dispatch = useDispatch();
    const [data, setData] = React.useState();

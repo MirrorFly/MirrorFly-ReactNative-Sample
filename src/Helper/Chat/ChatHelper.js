@@ -1125,7 +1125,9 @@ export const handleChangeIntoUploadingState = msgId => {
             updatedData, // Updated data containing the new value for is_uploading
          };
          Store.dispatch(updateChatMessageBodyObject(obj));
+         /**
          // uploadFileToSDK(msgBody?.media?.file, getToUserId(), msgId, msgBody?.media);
+         */
       }
    }
 };

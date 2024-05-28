@@ -50,16 +50,6 @@ const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus
       if (uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8) {
          setMediaStatus(mediaStatusConstants.UPLOADING);
       }
-      // if (isSender) {
-      //    const isUploading = uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8;
-      //    const isUploaded =
-      //       uploadStatus === 2 && mediaUrl ? mediaStatusConstants.UPLOADED : mediaStatusConstants.NOT_UPLOADED;
-      //    setMediaStatus(isUploading ? mediaStatusConstants.UPLOADING : isUploaded);
-      // } else {
-      //    const isDonwloadingStatus =
-      //       downloadStatus === 1 ? mediaStatusConstants.DOWNLOADING : mediaStatusConstants.NOT_DOWNLOADED;
-      //    setMediaStatus(downloadStatus === 2 ? mediaStatusConstants.DOWNLOADED : isDonwloadingStatus);
-      // }
    }, [msgStatus, isSender, mediaUrl, uploadStatus, msgId, media, downloadStatus]);
 
    const { file_url = '', thumb_image = '' } = media;

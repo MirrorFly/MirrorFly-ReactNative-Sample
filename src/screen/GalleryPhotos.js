@@ -115,14 +115,17 @@ const GalleryPhotos = () => {
             fileDetails: mediaObjContructor('CAMERA_ROLL', item),
          };
          setSelectedImages(prevSelectedImages => {
+            const uri = item?.image?.uri;
+
             // Check if the item is already selected
-            if (prevSelectedImages[item?.image?.uri]) {
-               // If selected, deselect it by removing it from the state
-               const { [item.image.uri]: _, ...rest } = prevSelectedImages;
-               return { ...rest };
+            if (prevSelectedImages[uri]) {
+               // If selected, deselect it by creating a new object without the selected key
+               const newSelectedImages = { ...prevSelectedImages };
+               delete newSelectedImages[uri];
+               return newSelectedImages;
             } else {
                // If not selected, select it by adding it to the state
-               return { ...prevSelectedImages, [item?.image?.uri]: transformedArray };
+               return { ...prevSelectedImages, [uri]: transformedArray };
             }
          });
       },

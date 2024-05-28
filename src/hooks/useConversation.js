@@ -33,7 +33,6 @@ export const findConversationMessageIndex = (msgId, message) => {
       showToast('This message is no longer available', {
          id: 'message_no_longer_available',
       });
-      return;
    } else if (index < 0) {
       return;
    } else {

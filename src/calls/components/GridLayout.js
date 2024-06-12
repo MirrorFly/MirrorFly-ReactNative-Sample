@@ -1,12 +1,12 @@
 import React from 'react';
-import { StyleSheet, View, Animated, Text, Pressable } from 'react-native';
-import Avathar from '../../common/Avathar';
-import useRosterData from '../../hooks/useRosterData';
-import { getUserIdFromJid } from '../../Helper/Chat/Utility';
-import ApplicationColors from '../../config/appColors';
-import { AudioMuteIcon } from '../../common/Icons';
-import VideoComponent from './VideoComponent';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
+import Avathar from '../../common/Avathar';
+import { AudioMuteIcon } from '../../common/Icons';
+import ApplicationColors from '../../config/appColors';
+import { getUserIdFromJid } from '../../helpers/chatHelpers';
+import { useRoasterData } from '../../redux/reduxHook';
+import VideoComponent from './VideoComponent';
 
 const GridItem = ({
    wrapperStyle,
@@ -21,7 +21,7 @@ const GridItem = ({
    callStatus,
 }) => {
    const userId = getUserIdFromJid(item?.fromJid || '');
-   const userProfile = useRosterData(userId);
+   const userProfile = useRoasterData(userId);
    const nickName = userProfile.nickName || userId || '';
    let stream = isLocalUser ? localStream : item?.stream;
    let reconnectStatus =

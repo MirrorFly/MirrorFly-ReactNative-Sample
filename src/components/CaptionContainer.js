@@ -2,13 +2,13 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import ApplicationColors from '../config/appColors';
 
-const CaptionContainer = ({ caption, status, timeStamp }) => {
+const CaptionContainer = ({ caption, msgStatus, timeStamp }) => {
    return (
       Boolean(caption) && (
          <View style={styles.captionContainer}>
             <Text style={styles.captionText}>{caption}</Text>
             <View style={styles.messgeStatusAndTimestampWithCaption}>
-               {status}
+               {isSender && getMessageStatus(msgStatus)}
                <Text style={styles.timeStampText}>{timeStamp}</Text>
             </View>
          </View>

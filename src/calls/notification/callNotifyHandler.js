@@ -8,7 +8,7 @@ import notifee, {
 } from '@notifee/react-native';
 import { AppState, Linking, NativeModules, Platform } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
-import * as RootNav from '../../../src/Navigation/rootNavigation';
+import RootNavigation from '../../../src/Navigation/rootNavigation';
 import { endCall, getCallDuration } from '../../Helper/Calls/Call';
 import {
    CALL_STATUS_CONNECTED,
@@ -19,16 +19,16 @@ import {
    OUTGOING_CALL,
 } from '../../Helper/Calls/Constant';
 import { answerIncomingCall, declineIncomingCall, endOnGoingCall } from '../../Helper/Calls/Utility';
-import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import SDK from '../../SDK/SDK';
 import { removeAllDeliveredNotification } from '../../Service/remoteNotifyHandle';
-import { CHATCONVERSATION, CHATSCREEN, CONVERSATION_SCREEN } from '../../constant';
-import { callDurationTimestamp, resetNotificationData, setNotificationData } from '../../redux/Actions/CallAction';
-import { updateChatConversationLocalNav } from '../../redux/Actions/ChatConversationLocalNavAction';
-import { navigate } from '../../redux/Actions/NavigationAction';
-import { updateRosterData } from '../../redux/Actions/rosterAction';
+import { getUserIdFromJid } from '../../helpers/chatHelpers';
+import { callDurationTimestamp } from '../../redux/callStateSlice';
+import { resetNotificationData, setNotificationData } from '../../redux/notificationDataSlice';
+import { setRoasterData } from '../../redux/rosterDataSlice';
 import Store from '../../redux/store';
-import { getApplicationUrl } from '../../uikitHelpers/uikitMethods';
+import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../../screens/constants';
+import { getApplicationUrl } from '../../uikitMethods';
+
 const { ActivityModule } = NativeModules;
 
 let interval;
@@ -264,14 +264,10 @@ const onChatNotificationForeGround = async ({ type, detail }) => {
       const {
          notification: { data: { fromUserJID = '', from_user = '' } = '' },
       } = detail;
-      let x = { screen: CHATSCREEN, fromUserJID: fromUserJID || from_user };
-      Store.dispatch(navigate(x));
-      if (RootNav.getCurrentScreen() === CHATSCREEN) {
-         Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
-         return RootNav.navigate(CONVERSATION_SCREEN);
+      if (RootNavigation.getCurrentScreen() === CONVERSATION_STACK) {
+         return RootNavigation.navigate(CONVERSATION_SCREEN);
       } else {
-         RootNav.navigate(CHATSCREEN);
-         Store.dispatch(updateChatConversationLocalNav(CHATCONVERSATION));
+         RootNavigation.navigate(CONVERSATION_STACK);
       }
    }
 };
@@ -281,14 +277,12 @@ const onChatNotificationBackGround = async ({ type, detail }) => {
       const {
          notification: { data: { fromUserJID = '', from_user = '' } = '' },
       } = detail;
-      let x = { screen: CHATSCREEN, fromUserJID: fromUserJID || from_user };
-      const push_url = getApplicationUrl() + 'CHATSCREEN?fromUserJID=' + fromUserJID;
-      const { statusCode, data = {} } = await SDK.getUserProfile(getUserIdFromJid(fromUserJID));
+      const push_url = getApplicationUrl() + 'CONVERSATION_STACK?fromUserJID=' + fromUserJID || from_user;
+      const { statusCode, data = {} } = await SDK.getUserProfile(getUserIdFromJid(fromUserJID || from_user));
       if (statusCode === 200) {
          const { userId = '' } = data;
-         Store.dispatch(updateRosterData({ userId, ...data }));
+         Store.dispatch(setRoasterData({ userId, ...data }));
       }
-      Store.dispatch(navigate(x));
       Linking.openURL(push_url);
       removeAllDeliveredNotification();
    }

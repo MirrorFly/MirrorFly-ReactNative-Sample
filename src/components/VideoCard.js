@@ -1,66 +1,67 @@
 import React from 'react';
 import { Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
-import { millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
 import ic_ballon from '../assets/ic_baloon.png';
 import noPreview from '../assets/noPreview.png';
 import { PlayIcon, VideoIcon } from '../common/Icons';
-import commonStyles from '../common/commonStyles';
-import { getImageSource } from '../common/utils';
+import MediaProgressLoader from '../common/MediaProgressLoader';
+import { getConversationHistoryTime } from '../common/timeStamp';
 import ApplicationColors from '../config/appColors';
+import {
+    getImageSource,
+    getMessageStatus,
+    getThumbBase64URL,
+    millisToMinutesAndSeconds,
+} from '../helpers/chatHelpers';
 import useMediaProgress from '../hooks/useMediaProgress';
-import CaptionContainer from './CaptionContainer';
-import ReplyMessage from './ReplyMessage';
-import MediaProgressLoader from './chat/common/MediaProgressLoader';
+import commonStyles from '../styles/commonStyles';
 
-const VideoCard = props => {
-   const { isSender = true, fileSize = '', messageObject = {}, handleReplyPress = () => {} } = props;
-
+function VideoCard({ item, isSender }) {
    const {
-      msgId = '',
       msgStatus,
-      msgBody: { media },
+      createdAt = '',
+      msgId,
       msgBody: {
          replyTo = '',
          media: {
-            file: { fileDetails = {} } = {},
-            duration = 0,
-            androidHeight,
-            androidWidth,
-            local_path = '',
-            fileName,
+            caption = '',
+            fileDetails = {},
+            fileName = '',
             thumb_image = '',
+            file_size: fileSize = '',
+            androidHeight = 0,
+            androidWidth = 0,
+            is_downloaded = 0,
+            is_uploading = 0,
+            local_path = '',
+            duration = 0,
          } = {},
       } = {},
-   } = messageObject;
-
-   const durationInSeconds = duration;
-   const durationInMinutes = millisToMinutesAndSeconds(durationInSeconds);
-   const base64ImageData = 'data:image/jpg;base64,' + thumb_image;
-   const imageUrl = local_path || fileDetails?.uri;
+   } = item;
+   const imageUrl =
+      is_uploading === 2 && is_downloaded === 2 ? local_path || fileDetails?.uri : getThumbBase64URL(thumb_image);
 
    const { mediaStatus, downloadMedia, retryUploadMedia, cancelUploadMedia } = useMediaProgress({
-      isSender,
       mediaUrl: imageUrl,
-      uploadStatus: media?.is_uploading || 0,
-      downloadStatus: media?.is_downloaded || 0,
-      media: media,
+      uploadStatus: is_uploading || 0,
+      downloadStatus: is_downloaded || 0,
       msgId: msgId,
-      msgStatus,
    });
 
-   const checkDownloaded = media?.is_uploading === 2 && media?.is_downloaded === 2;
+   const durationInMinutes = millisToMinutesAndSeconds(duration);
+
+   const checkDownloaded = is_uploading === 2 && is_downloaded === 2;
 
    return (
       <View style={commonStyles.paddingHorizontal_4}>
-         {Boolean(replyTo) && (
-            <ReplyMessage handleReplyPress={handleReplyPress} message={messageObject} isSame={isSender} />
-         )}
+         {/* {Boolean(replyTo) && (
+                <ReplyMessage handleReplyPress={handleReplyPress} message={messageObject} isSame={isSender} />
+            )} */}
          <View style={styles.videoContainer}>
             {thumb_image ? (
                <Image
                   style={styles.videoImage(androidWidth, androidHeight)}
                   alt={fileName}
-                  source={{ uri: base64ImageData }}
+                  source={{ uri: getThumbBase64URL(thumb_image) }}
                />
             ) : (
                <View style={styles.noPreviewImage}>
@@ -78,7 +79,6 @@ const VideoCard = props => {
 
             <View style={styles.progressLoaderWrapper}>
                <MediaProgressLoader
-                  isSender={isSender}
                   mediaStatus={mediaStatus}
                   onDownload={downloadMedia}
                   onUpload={retryUploadMedia}
@@ -88,11 +88,11 @@ const VideoCard = props => {
                />
             </View>
 
-            {!Boolean(media?.caption) && (
+            {!Boolean(caption) && (
                <View style={styles.messgeStatusAndTimestampWithoutCaption}>
                   <ImageBackground source={ic_ballon} style={styles.imageBg}>
-                     {props.status}
-                     <Text style={styles.timestampText}>{props.timeStamp}</Text>
+                     {isSender && getMessageStatus(msgStatus)}
+                     <Text style={styles.timestampText}>{getConversationHistoryTime(createdAt)}</Text>
                   </ImageBackground>
                </View>
             )}
@@ -102,12 +102,10 @@ const VideoCard = props => {
                </View>
             )}
          </View>
-         {Boolean(media?.caption) && (
-            <CaptionContainer caption={media.caption} status={props.status} timeStamp={props.timeStamp} />
-         )}
       </View>
    );
-};
+}
+
 export default VideoCard;
 
 const styles = StyleSheet.create({

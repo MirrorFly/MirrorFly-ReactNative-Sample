@@ -1,9 +1,8 @@
-import { NativeBaseProvider } from 'native-base';
 import React from 'react';
 import { Modal, Platform, View } from 'react-native';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
-import { enablePipModeIfCallConnected } from '../Helper';
+import { enablePipModeIfCallConnected } from '../Helper/Calls/Call';
 import {
    CALL_AGAIN_SCREEN,
    INCOMING_CALL_SCREEN,
@@ -11,11 +10,11 @@ import {
    OUTGOING_CALL_SCREEN,
 } from '../Helper/Calls/Constant';
 import { closeCallModalActivity, resetCallModalActivity } from '../Helper/Calls/Utility';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
-import commonStyles from '../common/commonStyles';
 import { usePipModeListener } from '../customModules/PipModule';
-import { openCallModal } from '../redux/Actions/CallAction';
-import { resetCallAgainData } from '../redux/Actions/CallAgainAction';
+import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { resetCallAgainData } from '../redux/callAgainSlice';
+import { openCallModal } from '../redux/callStateSlice';
+import commonStyles from '../styles/commonStyles';
 import CallModalToastContainer from './components/CallModalToastContainer';
 import CallAgain from './screens/CallAgain';
 import IncomingCall from './screens/IncomingCall';
@@ -23,7 +22,7 @@ import OnGoingCall from './screens/OnGoingCall';
 import OutGoingCall from './screens/OutGoingCall';
 import PipViewIos from './screens/PipViewIos';
 
-const CallContainer = ({ hasNativeBaseProvider }) => {
+const CallContainer = () => {
    const {
       showCallModal,
       connectionState = {},
@@ -77,7 +76,7 @@ const CallContainer = ({ hasNativeBaseProvider }) => {
             <CallModalToastContainer />
          </View>
       );
-      return hasNativeBaseProvider ? content : <NativeBaseProvider>{content}</NativeBaseProvider>;
+      return content;
    };
 
    const handleModalRequestClose = () => {

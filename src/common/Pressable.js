@@ -1,13 +1,11 @@
 import React from 'react';
 import {
-   Pressable as RNPressable,
-   View,
-   // eslint-disable-next-line no-unused-vars
-   PressableProps, // NOSONAR
-   // eslint-disable-next-line no-unused-vars
-   ViewStyle, // NOSONAR
+    PressableProps,
+    Pressable as RNPressable,
+    View, // NOSONAR
+    ViewStyle, // NOSONAR
 } from 'react-native';
-import commonStyles from './commonStyles';
+import commonStyles from '../styles/commonStyles';
 
 /**
  * @typedef {Object} CustomProps
@@ -25,7 +23,7 @@ const Pressable = ({ children, contentContainerStyle, pressedStyle, ...props }) 
       return [...(Array.isArray(contentContainerStyle) ? contentContainerStyle : [contentContainerStyle])];
    }, [contentContainerStyle]);
    return (
-      <RNPressable delayLongPress={300} {...props}>
+      <RNPressable delayLongPress={250} {...props}>
          {({ pressed }) => (
             <View style={[processedContentContainerStyle, pressed && (pressedStyle || commonStyles.pressedBg)]}>
                {children}

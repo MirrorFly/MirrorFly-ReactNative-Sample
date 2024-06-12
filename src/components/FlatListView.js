@@ -2,23 +2,22 @@ import CheckBox from '@react-native-community/checkbox';
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import { ActivityIndicator, FlatList, Keyboard, Platform, StyleSheet, Text, View } from 'react-native';
-import { showToast } from '../Helper';
 import SDK from '../SDK/SDK';
 import Avathar from '../common/Avathar';
+import NickName from '../common/NickName';
 import Pressable from '../common/Pressable';
-import commonStyles from '../common/commonStyles';
-import config from '../config';
 import ApplicationColors from '../config/appColors';
-import { GROUP_INFO, NEW_GROUP } from '../constant';
-import useRosterData from '../hooks/useRosterData';
-import { HighlightedText } from './RecentChat';
+import config from '../config/config';
+import { showToast } from '../helpers/chatHelpers';
+import { useRoasterData } from '../redux/reduxHook';
+import commonStyles from '../styles/commonStyles';
 
 const RenderItem = ({ item, onhandlePress, selectedUsers, searchText }) => {
-   let { nickName, image: imageToken, colorCode, status } = useRosterData(item?.userId);
+   let { nickName, image: imageToken, colorCode, status } = useRoasterData(item?.userId);
    const { params: { prevScreen = '' } = {} } = useRoute();
    const [isChecked, setIsChecked] = React.useState(false);
-   const isNewGrpSrn = prevScreen === NEW_GROUP;
-   const isGroupInfoSrn = prevScreen === GROUP_INFO;
+   const isNewGrpSrn = prevScreen === 'NEW_GROUP';
+   const isGroupInfoSrn = prevScreen === 'GROUP_INFO';
    // updating default values
    nickName = nickName || item?.nickName || item?.userId || '';
    imageToken = imageToken || '';
@@ -28,9 +27,7 @@ const RenderItem = ({ item, onhandlePress, selectedUsers, searchText }) => {
    const handlePress = () => {
       Keyboard.dismiss();
       if (Object.keys(selectedUsers).length > config.maxAllowdGroupMembers - 2) {
-         return showToast('Maximum allowed group members ' + config.maxAllowdGroupMembers, {
-            id: 'Maximum_allowed_group_members',
-         });
+         return showToast('Maximum allowed group members ' + config.maxAllowdGroupMembers);
       }
       onhandlePress(item);
    };
@@ -66,7 +63,12 @@ const RenderItem = ({ item, onhandlePress, selectedUsers, searchText }) => {
             <View style={styles.wrapper}>
                <Avathar data={nickName} profileImage={imageToken} backgroundColor={colorCode} />
                <View style={[commonStyles.marginLeft_15, commonStyles.flex1]}>
-                  <HighlightedText text={nickName} searchValue={searchText} />
+                  <NickName
+                     userId={item?.userId}
+                     data={nickName}
+                     searchValue={searchText}
+                     style={styles.nickNameText}
+                  />
                   <Text style={styles.stautsText} numberOfLines={1} ellipsizeMode="tail">
                      {status}
                   </Text>
@@ -178,5 +180,9 @@ const styles = StyleSheet.create({
       borderColor: '#3276E2',
       width: 20,
       height: 20,
+   },
+   nickName: {
+      color: '#3276E2',
+      fontWeight: 'bold',
    },
 });

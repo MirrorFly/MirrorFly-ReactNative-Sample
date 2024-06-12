@@ -2,7 +2,7 @@ import React from 'react';
 import { Animated, ImageBackground, Platform, Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
 import { useDispatch, useSelector } from 'react-redux';
-import { enablePipModeIfCallConnected, getUserProfile } from '../../Helper';
+// import { enablePipModeIfCallConnected, getUserProfile } from '../../Helper';
 import {
    CALL_RINGING_DURATION,
    CALL_STATUS_CONNECTING,
@@ -10,17 +10,17 @@ import {
    CALL_STATUS_RECONNECT,
 } from '../../Helper/Calls/Constant';
 import { endOnGoingCall } from '../../Helper/Calls/Utility';
-import { formatUserIdToJid } from '../../Helper/Chat/ChatHelper';
-import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
 import IconButton from '../../common/IconButton';
 import { LayoutIcon, MenuIcon } from '../../common/Icons';
 import Pressable from '../../common/Pressable';
-import commonStyles from '../../common/commonStyles';
-import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
 import { usePipModeListener } from '../../customModules/PipModule';
-import { closeCallModal, selectLargeVideoUser, updateCallLayout } from '../../redux/Actions/CallAction';
+import { formatUserIdToJid, getImageSource, getUserIdFromJid } from '../../helpers/chatHelpers';
+import { closeCallModal, updateCallLayout } from '../../redux/callStateSlice';
+import { getRoasterData } from '../../redux/reduxHook';
+import commonStyles from '../../styles/commonStyles';
+import { getCurrentUserJid, getLocalUserDetails } from '../../uikitMethods';
 import BigVideoTile from '../components/BigVideoTile';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
@@ -46,7 +46,7 @@ let hideControlsTimeout = null,
 
 let remoteStreamDatas = [];
 const OnGoingCall = () => {
-   const localUserJid = useSelector(state => state.auth.currentUserJID);
+   const localUserJid = getCurrentUserJid();
    const {
       largeVideoUser: largeVideoUserData = {},
       connectionState: callConnectionState = {},
@@ -57,7 +57,7 @@ const OnGoingCall = () => {
       useSelector(state => state.showConfrenceData) || {};
    const remoteAudioMuted = showConfrenceData?.remoteAudioMuted || [];
    const remoteVideoMuted = showConfrenceData?.remoteVideoMuted || [];
-   const vCardData = useSelector(state => state.profile?.profileDetails);
+   const vCardData = getLocalUserDetails();
    const rosterData = useSelector(state => state.rosterData.data);
    const { isFrontCameraEnabled } = useSelector(state => state.callControlsData);
 
@@ -131,7 +131,7 @@ const OnGoingCall = () => {
       let usersText = 'You';
       const _remoteUsers = remoteStream.filter(u => u.fromJid !== localUserJid);
       _remoteUsers.forEach((_user, i) => {
-         const _userProfile = getUserProfile(_user.fromJid);
+         const _userProfile = getRoasterData(getUserIdFromJid(_user.fromJid));
          const _userNickName = _userProfile.nickName;
          if (i + 1 === _remoteUsers.length) {
             usersText = `${usersText} and ${_userNickName}`;
@@ -309,7 +309,7 @@ const OnGoingCall = () => {
                contentContainerStyle={styles.smallVideoTileContainer}>
                {smallVideoUsers.map(_user => {
                   const changeLargeVideoUser = () => {
-                     dispatch(selectLargeVideoUser(_user.fromJid));
+                     // dispatch(selectLargeVideoUser(_user.fromJid));
                   };
                   return (
                      <Pressable onPress={changeLargeVideoUser} key={_user.fromJid} pressedStyle={{}}>

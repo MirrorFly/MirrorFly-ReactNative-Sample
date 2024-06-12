@@ -1,9 +1,9 @@
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import IconButton from '../../common/IconButton';
 import { DownArrowIcon } from '../../common/Icons';
-import { StyleSheet, View } from 'react-native';
 import ApplicationColors from '../../config/appColors';
-import commonStyles from '../../common/commonStyles';
+import commonStyles from '../../styles/commonStyles';
 
 const CloseCallModalButton = ({ onPress }) => {
    return (

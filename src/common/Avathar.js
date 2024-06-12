@@ -1,13 +1,11 @@
-import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import React from 'react';
-import useFetchImage from '../hooks/useFetchImage';
-import { useNetworkStatus } from '../hooks';
-import { getUsernameGraphemes } from '../Helper/index';
-import ApplicationColors from '../config/appColors';
-import { CHAT_TYPE_GROUP } from '../Helper/Chat/Constant';
-import { getImageSource } from './utils';
+import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
 import grpImage from '../assets/ic_grp_bg.png';
-import commonStyles from './commonStyles';
+import ApplicationColors from '../config/appColors';
+import { getImageSource, getUsernameGraphemes } from '../helpers/chatHelpers';
+import { CHAT_TYPE_GROUP } from '../helpers/constants';
+import commonStyles from '../styles/commonStyles';
+import { useFetchImage, useNetworkStatus } from './hooks';
 
 const defaultImageDimension = 48;
 
@@ -82,19 +80,16 @@ export default Avathar;
 
 const styles = StyleSheet.create({
    imageDiv: (props, hasImage, transparentBackgroundForImage) => {
-      let backgroundColor = '';
-      if (hasImage && transparentBackgroundForImage) {
-         backgroundColor = 'transparent';
-      } else if (hasImage && !transparentBackgroundForImage) {
-         backgroundColor = '#9D9D9D'; // to have some background for png images
-      } else {
-         backgroundColor = props.backgroundColor || '#9D9D9D';
-      }
       return {
          width: props.width || defaultImageDimension,
          height: props.height || defaultImageDimension,
          borderRadius: 100,
-         backgroundColor,
+         backgroundColor:
+            (hasImage
+               ? transparentBackgroundForImage
+                  ? 'transparent'
+                  : '#9D9D9D' // to have some background for png images
+               : props.backgroundColor) || '#9D9D9D',
          justifyContent: 'center',
          alignItems: 'center',
       };

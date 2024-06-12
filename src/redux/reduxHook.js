@@ -1,0 +1,28 @@
+import { useSelector } from 'react-redux';
+import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { selectArchivedChatData, selectFilteredRecentChatData } from './recentChatDataSlice';
+import store from './store';
+
+export const useRecentChatData = () => useSelector(state => state.recentChatData.recentChats);
+export const useRecentChatSearchText = () => useSelector(state => state.recentChatData.searchText);
+export const useFilteredRecentChatData = () => useSelector(selectFilteredRecentChatData);
+export const useArchivedChatData = () => useSelector(selectArchivedChatData);
+export const useRoasterData = userId => useSelector(state => state.rosterData.data[userId]);
+export const useReceiveMessageData = () => useSelector(state => state.messageListener.receiveMessageData);
+export const useChatMessages = userId => useSelector(state => state.chatMessagesData?.[userId]);
+export const useXmppConnectionStatus = () => useSelector(state => state.loggedInUserData.xmppStatus);
+export const usePresenceData = userId => useSelector(state => state.presenceData[userId]);
+export const useTypingData = userId => useSelector(state => state.typingData[userId]);
+export const useMediaProgress = msgId => useSelector(state => state.progressData[msgId]);
+export const useArchive = () => useSelector(state => state.settingsData?.archive);
+
+export const getRecentChatData = () => store.getState().recentChatData.recentChats;
+export const getSelectedChats = () => store.getState().recentChatData.recentChats.filter(item => item.isSelected === 1);
+export const getChatMessages = userId => store.getState().chatMessagesData?.[userId];
+export const getUserNameFromStore = userId => store.getState().rosterData.data?.[userId]?.nickName;
+export const getUserColorFromStore = userId => store.getState().rosterData.data?.[userId]?.colorCode;
+export const getSelectedChatMessages = userId =>
+   store.getState().chatMessagesData?.[userId].filter(item => item.isSelected === 1);
+export const getMediaProgress = msgId => store.getState().progressData[msgId];
+export const getRoasterData = userId => store.getState().rosterData.data[getUserIdFromJid(userId)] || {};
+export const getArchive = () => store.getState().settingsData?.archive;

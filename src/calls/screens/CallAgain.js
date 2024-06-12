@@ -1,22 +1,22 @@
 import React from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
-import { batch, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { CALL_TYPE_AUDIO } from '../../Helper/Calls/Constant';
 import { makeCalls, resetCallModalActivity, showCallModalToast } from '../../Helper/Calls/Utility';
 import CallsBg from '../../assets/calls-bg.png';
 import Avathar from '../../common/Avathar';
 import { CloseIcon, PhoneIcon, PhoneVideoIcon } from '../../common/Icons';
-import commonStyles from '../../common/commonStyles';
-import { getImageSource } from '../../common/utils';
+import { useNetworkStatus } from '../../common/hooks';
 import ApplicationColors from '../../config/appColors';
-import { useNetworkStatus } from '../../hooks';
-import useRosterData from '../../hooks/useRosterData';
-import { resetCallAgainData } from '../../redux/Actions/CallAgainAction';
+import { getImageSource } from '../../helpers/chatHelpers';
+import { resetCallAgainData } from '../../redux/callAgainSlice';
+import { useRoasterData } from '../../redux/reduxHook';
+import commonStyles from '../../styles/commonStyles';
 
 const CallAgain = () => {
    const { data: { callType, userId } = {} } = useSelector(state => state.callAgainData) || {};
-   const userProfile = useRosterData(userId);
+   const userProfile = useRoasterData(userId);
    const nickName = userProfile.nickName || userProfile.userId;
    const callStatus = 'Unavailable, Try again later';
 
@@ -24,11 +24,9 @@ const CallAgain = () => {
    const isNetworkConnected = useNetworkStatus();
 
    const closeScreen = () => {
-      batch(() => {
-         resetCallModalActivity();
-         /** dispatch(resetCallStateData()); */
-         dispatch(resetCallAgainData());
-      });
+      resetCallModalActivity();
+      /** dispatch(resetCallStateData()); */
+      dispatch(resetCallAgainData());
    };
 
    const handleCallAgain = () => {

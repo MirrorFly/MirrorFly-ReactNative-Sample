@@ -1,7 +1,6 @@
 import { debounce } from 'lodash-es';
 import React, { useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import RNCallKeep from '../../customModules/CallKitModule';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { useSelector } from 'react-redux';
@@ -34,6 +33,7 @@ import {
    VideoUnMuteIcon,
 } from '../../common/Icons';
 import Pressable from '../../common/Pressable';
+import RNCallKeep from '../../customModules/CallKitModule';
 
 const sortAudioRoutes = (a, b) => {
    const nameA = a.name.toLowerCase();
@@ -131,7 +131,7 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
    };
 
    const handleSelectedRoutes = () => {
-      if (audioRouteUpdateNeeded.current && RBSheetRef.current && RBSheetRef.current.state.modalVisible) {
+      if (audioRouteUpdateNeeded.current && RBSheetRef.current && RBSheetRef.current?.state?.modalVisible) {
          RNCallKeep.getAudioRoutes().then(_routes => {
             /** sample data from 'getAudioRoutes' method
              * const sampleAudioRoutes = [

@@ -4,13 +4,12 @@ import { useSelector } from 'react-redux';
 import { endCall, startOutgoingcallTimer } from '../../Helper/Calls/Call';
 import { CALL_STATUS_DISCONNECTED } from '../../Helper/Calls/Constant';
 import { closeCallModalActivity } from '../../Helper/Calls/Utility';
-import { capitalizeFirstLetter, getUserIdFromJid } from '../../Helper/Chat/Utility';
 import OutgoingCallBg from '../../assets/OutgoingCallBg.png';
 import Avathar from '../../common/Avathar';
-import commonStyles from '../../common/commonStyles';
-import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
-import useRosterData from '../../hooks/useRosterData';
+import { capitalizeFirstLetter, getImageSource, getUserIdFromJid } from '../../helpers/chatHelpers';
+import { useRoasterData } from '../../redux/reduxHook';
+import commonStyles from '../../styles/commonStyles';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 import ProfilePictureWithPulse from '../components/ProfilePictureWithPulse';
@@ -29,7 +28,7 @@ const OutGoingCall = () => {
    });
 
    let userID = getUserIdFromJid(to || userJid);
-   const userProfile = useRosterData(userID);
+   const userProfile = useRoasterData(userID) || {};
    const nickName = userProfile.nickName || userID;
 
    React.useEffect(() => {

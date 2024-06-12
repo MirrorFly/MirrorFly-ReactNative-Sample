@@ -1,38 +1,18 @@
-import { Box, Text, Toast } from 'native-base';
 import React from 'react';
-import { batch, useDispatch, useSelector } from 'react-redux';
-import { showToast } from '../Helper';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
-import SDK from '../SDK/SDK';
-import config from '../config';
-import { mediaStatusConstants } from '../constant';
-import { useNetworkStatus } from '../hooks';
-import { CancelMediaUpload, RetryMediaUpload, updateUploadStatus } from '../redux/Actions/ConversationAction';
-import { cancelDownloadData } from '../redux/Actions/MediaDownloadAction';
-import { cancelMediaUploadData } from '../redux/Actions/MediaUploadAction';
-import Store from '../redux/store';
+import { useDispatch } from 'react-redux';
+import { useNetworkStatus } from '../common/hooks';
+import config from '../config/config';
+import { getUserIdFromJid, showToast } from '../helpers/chatHelpers';
+import { mediaStatusConstants } from '../helpers/constants';
+import { updateMediaStatus } from '../redux/chatMessageDataSlice';
+import { getMediaProgress } from '../redux/reduxHook';
 
-const toastId = 'network-error-upload-download';
-const toastRef = React.createRef(false);
-
-const getMediaProgressSource = msgId =>
-   Store.getState().mediaDownloadData?.data?.[msgId] || Store.getState().mediaUploadData?.data?.[msgId];
-
-const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus = 0, msgId, media, msgStatus }) => {
+const useMediaProgress = ({ chatUser, uploadStatus = 0, downloadStatus = 0, msgId }) => {
+   const userId = getUserIdFromJid(chatUser);
    const dispatch = useDispatch();
    const networkState = useNetworkStatus();
    /** 'NOT_DOWNLOADED' | 'NOT_UPLOADED' | 'DOWNLOADING' | 'UPLOADING' | 'DOWNLOADED' | 'UPLOADED'  */
    const [mediaStatus, setMediaStatus] = React.useState('');
-
-   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
-
-   const toastConfig = {
-      duration: 2500,
-      avoidKeyboard: true,
-      onCloseComplete: () => {
-         toastRef.current = false;
-      },
-   };
 
    React.useEffect(() => {
       if (downloadStatus === 1) {
@@ -50,94 +30,68 @@ const useMediaProgress = ({ isSender, mediaUrl, uploadStatus = 0, downloadStatus
       if (uploadStatus === 1 || uploadStatus === 0 || uploadStatus === 8) {
          setMediaStatus(mediaStatusConstants.UPLOADING);
       }
-   }, [msgStatus, isSender, mediaUrl, uploadStatus, msgId, media, downloadStatus]);
-
-   const { file_url = '', thumb_image = '' } = media;
+   }, [uploadStatus, downloadStatus]);
 
    const handleDownload = async () => {
-      if (!networkState && !toastRef.current) {
-         toastRef.current = true;
-         return Toast.show({
-            id: toastId,
-            ...toastConfig,
-            render: () => {
-               return (
-                  <Box bg="black" px="2" py="1" rounded="sm">
-                     <Text style={{ color: '#fff', padding: 5 }}>{config.internetErrorMessage}</Text>
-                  </Box>
-               );
-            },
-         });
+      if (!networkState) {
+         showToast(config.internetErrorMessage);
+         return;
       }
       if (networkState) {
          setMediaStatus(mediaStatusConstants.DOWNLOADING);
-         let downloadData = {
+         let mediaStatusObj = {
             msgId,
             statusCode: 200,
-            fromUserId: getUserIdFromJid(fromUserJId),
+            fromUserId: userId,
             local_path: '',
             is_downloaded: 1,
-            fileToken: file_url,
-            thumbImage: thumb_image,
          };
-         dispatch(updateUploadStatus(downloadData));
+         dispatch(updateMediaStatus(mediaStatusObj));
          const response = await SDK.downloadMedia(msgId);
-         if (response.statusCode !== 200) {
-            const cancelObj = {
+         if (response?.statusCode !== 200) {
+            const mediaStatusObj = {
                msgId,
-               fromUserId: getUserIdFromJid(fromUserJId),
-               uploadStatus: 2,
+               fromUserId: userId,
                downloadStatus: 0,
+               local_path: '',
             };
-            batch(() => {
-               dispatch(CancelMediaUpload(cancelObj));
-               dispatch(cancelDownloadData(cancelObj));
-            });
+            dispatch(updateMediaStatus(mediaStatusObj));
          }
       }
    };
    const handleUpload = () => {
       if (!networkState) {
-         showToast('Please check your internet connection', { id: 'MEDIA_RETRY' });
+         showToast('Please check your internet connection');
          return;
       }
       const retryObj = {
          msgId,
-         fromUserId: getUserIdFromJid(fromUserJId),
-         uploadStatus: 1,
+         userId,
+         is_uploading: 1,
       };
-      dispatch(RetryMediaUpload(retryObj));
+      dispatch(updateMediaStatus(retryObj));
    };
 
    const handleCancelUpload = () => {
-      if (getMediaProgressSource(msgId)?.source) {
-         if (getMediaProgressSource(msgId)?.downloadJobId) {
-            getMediaProgressSource(msgId).source?.cancel?.(getMediaProgressSource(msgId)?.downloadJobId);
-            const cancelObj = {
+      if (getMediaProgress(msgId)?.source) {
+         if (getMediaProgress(msgId)?.downloadJobId) {
+            getMediaProgress(msgId).source?.cancel?.(getMediaProgress(msgId)?.downloadJobId);
+            const mediaStatusObj = {
                msgId,
-               fromUserId: fromUserJId,
-               uploadStatus: 2,
+               fromUserId: userId,
                downloadStatus: 0,
             };
-            batch(() => {
-               dispatch(CancelMediaUpload(cancelObj));
-               dispatch(cancelDownloadData(cancelObj));
-            });
+            dispatch(updateMediaStatus(mediaStatusObj));
          } else {
-            getMediaProgressSource(msgId).source?.cancel?.('User Cancelled!');
-            const cancelObj = {
+            getMediaProgress(msgId).source?.cancel?.('User Cancelled!');
+            const mediaStatusObj = {
                msgId,
-               fromUserId: fromUserJId,
+               fromUserId: userId,
                uploadStatus: 3,
-               downloadStatus: 2,
             };
-            batch(() => {
-               dispatch(CancelMediaUpload(cancelObj));
-               dispatch(cancelMediaUploadData(cancelObj));
-            });
+            dispatch(updateMediaStatus(mediaStatusObj));
          }
       }
-
       if (uploadStatus === 8) {
          return true;
       }

@@ -2,25 +2,21 @@ import { AppState, Platform, Vibration } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import InCallManager from 'react-native-incall-manager';
 import { RINGER_MODE, getRingerMode } from 'react-native-ringer-mode';
-import { subscribe as vibrationEventListener } from 'react-native-silentmode-detector';
+// import { subscribe as vibrationEventListener } from 'react-native-silentmode-detector';
 import Sound from 'react-native-sound';
-import { batch } from 'react-redux';
 import SDK from '../../SDK/SDK';
 import {
    clearIosCallListeners,
+   getIsUserOnCall,
    removeRemoteStream,
    resetCallData,
    setDisconnectedScreenTimeoutTimer,
-} from '../../SDKActions/callbacks';
+} from '../../SDK/sdkCallBacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
-import {
-   pinUser,
-   selectLargeVideoUser,
-   setCallModalScreen,
-   showConfrence,
-   updateConference,
-} from '../../redux/Actions/CallAction';
-import { updateCallAgainData } from '../../redux/Actions/CallAgainAction';
+import PipHandler from '../../customModules/PipModule';
+import { updateCallAgainData } from '../../redux/callAgainSlice';
+import { pinUser, setCallModalScreen } from '../../redux/callStateSlice';
+import { showConfrence, updateConference } from '../../redux/showConfrenceSlice';
 import Store from '../../redux/store';
 import {
    CALL_AGAIN_SCREEN,
@@ -220,15 +216,13 @@ export const clearOutgoingTimer = () => {
 
 //Call Again Screen
 const updateCallAgainScreenData = (userID, callType) => {
-   batch(() => {
-      Store.dispatch(
-         updateCallAgainData({
-            callType,
-            userId: userID,
-         }),
-      );
-      Store.dispatch(setCallModalScreen(CALL_AGAIN_SCREEN));
-   });
+   Store.dispatch(
+      updateCallAgainData({
+         callType,
+         userId: userID,
+      }),
+   );
+   Store.dispatch(setCallModalScreen(CALL_AGAIN_SCREEN));
 };
 
 export const endCall = async (isFromTimeout = false, userId = '', callType = '') => {
@@ -344,13 +338,13 @@ export function dispatchDisconnected(statusMessage, remoteStreams = []) {
 
 export function resetPinAndLargeVideoUser(fromJid) {
    if (!fromJid) {
-      Store.dispatch(selectLargeVideoUser());
+      // Store.dispatch(selectLargeVideoUser());
       Store.dispatch(pinUser());
    }
    const state = Store.getState();
    const largeVideoUserData = state.callData?.largeVideoUser || {};
    if (largeVideoUserData.userJid === fromJid) {
-      Store.dispatch(selectLargeVideoUser());
+      // Store.dispatch(selectLargeVideoUser());
    }
    // If pinned user disconnected from the call, Need to remove the user.
    const pinUserData = state.callData?.pinUserData || {};
@@ -383,14 +377,14 @@ export const startVibration = async () => {
 export const startVibrationBasedOnEvent = () => {
    if (Platform.OS === 'android') {
       silentEvent = true;
-      unsubscribeVibrationEvent = vibrationEventListener(async () => {
-         const currentMode = await getRingerMode();
-         if (currentMode !== RINGER_MODE.vibrate) {
-            stopVibration();
-         } else if (currentMode === RINGER_MODE.vibrate) {
-            startVibration();
-         }
-      });
+      // unsubscribeVibrationEvent = vibrationEventListener(async () => {
+      //    const currentMode = await getRingerMode();
+      //    if (currentMode !== RINGER_MODE.vibrate) {
+      //       stopVibration();
+      //    } else if (currentMode === RINGER_MODE.vibrate) {
+      //       startVibration();
+      //    }
+      // });
    }
 };
 
@@ -462,4 +456,17 @@ export const setSelectedAudioRoute = selectedAudioRoute => {
 
 export const getSelectedAudioRoute = () => {
    return audioRouted;
+};
+
+export const enablePipModeIfCallConnected = (
+   width = 300,
+   height = 600,
+   shouldOpenPermissionScreenIfPipNotAllowed = true,
+) => {
+   if (Platform.OS === 'android') {
+      Keyboard.dismiss();
+      const isCallConnected = getIsUserOnCall();
+      isCallConnected && PipHandler.enterPipMode(width, height, shouldOpenPermissionScreenIfPipNotAllowed);
+      return isCallConnected;
+   }
 };

@@ -1,399 +1,127 @@
-import Clipboard from '@react-native-clipboard/clipboard';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Keyboard, Linking, Platform, Pressable, StyleSheet, View } from 'react-native';
-import FileViewer from 'react-native-file-viewer';
-import { useSelector } from 'react-redux';
-import { isKeyboardVisibleRef } from '../ChatApp';
-import { openLocationExternally, showCheckYourInternetToast, showToast } from '../Helper';
-import { isActiveChatScreenRef, uploadFileToSDK } from '../Helper/Chat/ChatHelper';
-import { MIX_BARE_JID } from '../Helper/Chat/Constant';
-import { getThumbBase64URL, getUserIdFromJid } from '../Helper/Chat/Utility';
-import SDK from '../SDK/SDK';
-import { SandTimer } from '../common/Icons';
-import MessagePressable from '../common/MessagePressable';
-import { getConversationHistoryTime } from '../common/TimeStamp';
-import commonStyles from '../common/commonStyles';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { CONNECTED } from '../SDK/constants';
+import { sendSeenStatus } from '../SDK/utils';
+import NickName from '../common/NickName';
 import ApplicationColors from '../config/appColors';
-import { CONNECTED, INVITE_APP_URL, INVITE_SMS_CONTENT, MEDIA_POST_PRE_VIEW_SCREEN, NOTIFICATION } from '../constant';
-import { useNetworkStatus } from '../hooks';
-import { isSelectingMessages, useChatMessage, useSelectedChatMessage } from '../hooks/useChatMessage';
-import AlertModal from './AlertModal';
-import AudioCard from './AudioCard';
-import ContactCard from './ContactCard';
+import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { MIX_BARE_JID } from '../helpers/constants';
+import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
+import { getChatMessages, useXmppConnectionStatus } from '../redux/reduxHook';
+import commonStyles from '../styles/commonStyles';
+import { getCurrentUserJid } from '../uikitMethods';
 import DeletedMessage from './DeletedMessage';
-import DocumentMessageCard from './DocumentMessageCard';
-import ImageCard from './ImageCard';
-import MapCard from './MapCard';
-import NickName from './NickName';
+import Message from './Message';
+import MessagePressable from './MessagePressable';
 import NotificationMessage from './NotificationMessage';
-import TextCard from './TextCard';
-import VideoCard from './VideoCard';
 
-const ChatMessage = props => {
-   const isFocused = useIsFocused();
-   const xmppConnection = useSelector(state => state.connection.xmppStatus);
-   const currentUserJID = useSelector(state => state.auth.currentUserJID);
-   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
-   const [modalContent, setModalContent] = React.useState(null);
-   const inviteContactMessageRef = React.useRef();
-   const { item, showNickName } = props;
-   let statusVisible = 'notSend';
-   const { msgId } = item;
-
-   const message = useChatMessage(msgId);
+function ChatMessage({ chatUser, item, showNickName }) {
+   const dispatch = useDispatch();
+   const useXmppStatus = useXmppConnectionStatus();
+   const userId = getUserIdFromJid(chatUser);
    const {
-      shouldHighlight = 0,
-      createdAt = '',
       msgStatus,
-      msgBody = {},
       publisherJid,
-      deleteStatus,
-      recallStatus,
-      msgBody: {
-         media: { file = {}, is_uploading, is_downloaded, thumb_image = '', local_path = '', androidWidth = 0 } = {},
-         message_type,
-         replyToMsg = 0,
-      } = {},
+      msgId,
+      recallStatus = 0,
+      deleteStatus = 0,
       isSelected = 0,
-   } = message;
-
-   const isSender = currentUserJID === publisherJid;
-
+      msgBody: {
+         nickName = '',
+         message_type,
+         media = {},
+         media: { is_uploading, file = {}, androidWidth = 0 } = {},
+      } = {},
+   } = item;
+   const isSender = getCurrentUserJid() === publisherJid;
    const messageWidth = androidWidth || '80%';
-   const { updateSelectedMessage } = useSelectedChatMessage();
-   const navigation = useNavigation();
-   const imageUrl = local_path || file?.fileDetails?.uri;
-   const thumbURL = thumb_image ? getThumbBase64URL(thumb_image) : '';
-
-   const [imgSrc, saveImage] = React.useState(thumbURL);
-   const imageSize = msgBody?.media?.file_size || '';
-   const fileSize = imageSize;
-   const [isSubscribed, setIsSubscribed] = React.useState(true);
-
-   const isInternetReachable = useNetworkStatus();
+   console.log('msgId ==>', msgId, message_type);
 
    React.useEffect(() => {
-      if (
-         !isSender &&
-         msgStatus === 1 &&
-         deleteStatus === 0 &&
-         recallStatus === 0 &&
-         isActiveChatScreenRef.current &&
-         xmppConnection === CONNECTED
-      ) {
-         const groupJid = MIX_BARE_JID.test(fromUserJId) ? getUserIdFromJid(fromUserJId) : '';
-         SDK.sendSeenStatus(publisherJid, msgId, groupJid);
+      if (useXmppStatus === CONNECTED && !isSender && msgStatus !== 2) {
+         const groupId = MIX_BARE_JID.test(chatUser) ? getUserIdFromJid(chatUser) : '';
+         sendSeenStatus(publisherJid, msgId, groupId);
       }
-   }, [xmppConnection, isFocused]);
+   }, [useXmppStatus]);
 
-   React.useEffect(() => {
-      if (is_uploading === 0 || is_uploading === 1 || is_uploading === 3 || is_uploading === 7) {
-         if (isImageMessage()) {
-            saveImage(getThumbBase64URL(thumb_image));
-         }
-      } else if (is_uploading !== 0 && is_uploading !== 8) {
-         if (isImageMessage()) {
-            imgFileDownload();
-         }
-      }
-      return () => setIsSubscribed(false);
-   }, []);
-
-   React.useEffect(() => {
-      if (is_uploading === 1) {
-         uploadFileToSDK(file, fromUserJId, msgId, msgBody?.media);
-      }
-   }, [is_uploading]);
-
-   const imgFileDownload = () => {
-      try {
-         if (imageUrl) {
-            saveImage(imageUrl);
-         }
-      } catch (error) {
-         if (isSubscribed) {
-            saveImage(getThumbBase64URL(thumb_image));
-         }
+   const onPress = () => {
+      const messsageList = getChatMessages(userId);
+      const isAnySelected = messsageList.some(item => item.isSelected === 1);
+      if (isAnySelected) {
+         const selectData = {
+            chatUserId: getUserIdFromJid(chatUser),
+            msgId,
+         };
+         dispatch(toggleMessageSelection(selectData));
       }
    };
 
-   const isImageMessage = () => message_type === 'image';
+   const onLongPress = () => {
+      const selectData = {
+         chatUserId: getUserIdFromJid(chatUser),
+         msgId,
+      };
+      dispatch(toggleMessageSelection(selectData));
+   };
 
-   switch (msgStatus) {
-      case 3:
-         statusVisible = styles.bgClr;
-         break;
-      case 0:
-         statusVisible = styles.notDelivered;
-         break;
-      case 1:
-         statusVisible = styles.delivered;
-         break;
-      case 2:
-         statusVisible = styles.seen;
-         break;
+   if (!message_type) {
+      return null;
    }
-
-   const getMessageStatus = currentStatus => {
-      if (isSender && currentStatus === 3) {
-         return <SandTimer />;
-      }
-      return <View style={[styles?.currentStatus, isSender ? statusVisible : '']} />;
-   };
-
-   const handleMessageObj = () => {
-      if (
-         is_uploading === 2 &&
-         is_downloaded === 2 &&
-         (msgBody?.message_type === 'image' ||
-            (msgBody?.message_type === 'video' &&
-               (msgBody?.media?.local_path || msgBody?.media?.file?.fileDetails?.uri)))
-      ) {
-         if (isKeyboardVisibleRef.current) {
-            let hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-               navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid: fromUserJId, msgId: msgId });
-               hideSubscription.remove();
-            });
-            Keyboard.dismiss();
-         } else {
-            navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid: fromUserJId, msgId: msgId });
-         }
-      } else if (
-         msgBody?.message_type === 'file' &&
-         (msgBody?.media?.local_path || msgBody?.media?.file?.fileDetails?.uri)
-      ) {
-         FileViewer.open(msgBody?.media?.local_path || msgBody?.media?.file?.fileDetails?.uri, {
-            showOpenWithDialog: true,
-         })
-            .then(res => {
-               console.log('Document opened externally', res);
-            })
-            .catch(err => {
-               console.log('Error while opening Document', err);
-               showToast('No apps available to open this file', {
-                  id: 'no-supported-app-to-open-file',
-               });
-            });
-      } else if (msgBody?.message_type === 'location') {
-         if (!isInternetReachable) {
-            showCheckYourInternetToast();
-            return;
-         }
-         const { latitude = '', longitude = '' } = msgBody?.location || {};
-         openLocationExternally(latitude, longitude);
-      }
-   };
-
-   const dismissKeyBoard = () => {
-      Keyboard.dismiss();
-   };
-
-   const handleMessageSelect = () => {
-      dismissKeyBoard();
-      if (isSelectingMessages.current) {
-         updateSelectedMessage(msgId);
-      }
-   };
-
-   const handleMessageLongPress = () => {
-      dismissKeyBoard();
-      updateSelectedMessage(msgId);
-   };
-
-   const handleContentPress = () => {
-      dismissKeyBoard();
-      isSelectingMessages.current ? handleMessageSelect() : handleMessageObj();
-   };
-
-   const handleContentLongPress = () => {
-      dismissKeyBoard();
-      updateSelectedMessage(msgId);
-   };
-
-   const toggleModalContent = () => {
-      setModalContent(null);
-   };
-
-   const handleCopyInviteLink = () => {
-      Clipboard.setString(INVITE_APP_URL);
-      showToast('Link Copied', { id: 'invite-link-copied-toast' });
-   };
-
-   const handleInviteContact = () => {
-      const ContactInfo = inviteContactMessageRef.current?.msgBody?.contact;
-      if (ContactInfo) {
-         // open the message app and invite the user to the app with content
-         const phoneNumber = ContactInfo.phone_number[0];
-         const separator = Platform.OS === 'ios' ? '&' : '?';
-         const url = `sms:${phoneNumber}${separator}body=${INVITE_SMS_CONTENT}`;
-         Linking.openURL(url);
-      }
-   };
-
-   const showContactInviteModal = () => {
-      inviteContactMessageRef.current = message;
-      setModalContent({
-         visible: true,
-         onRequestClose: toggleModalContent,
-         title: 'Invite Friend',
-         noButton: 'Send SMS',
-         noAction: handleInviteContact,
-         yesButton: 'Copy Link',
-         yesAction: handleCopyInviteLink,
-      });
-   };
-
-   const handleContactInvitePress = _message => {
-      // Same as handleContentPress but calling showContactInviteModal function with _message as param
-      dismissKeyBoard();
-      isSelectingMessages.current ? handleMessageSelect() : showContactInviteModal();
-   };
-   const renderMessageBasedOnType = () => {
-      switch (message_type) {
-         case 'text':
-         case 'auto_text':
-            return (
-               <TextCard
-                  isSender={isSender}
-                  message={message}
-                  data={{
-                     message: msgBody?.message,
-                     timeStamp: getConversationHistoryTime(createdAt),
-                     status: getMessageStatus(msgStatus),
-                  }}
-               />
-            );
-         case 'image':
-            return (
-               <ImageCard
-                  messageObject={message}
-                  imgSrc={imgSrc}
-                  isSender={isSender}
-                  status={getMessageStatus(msgStatus)}
-                  timeStamp={getConversationHistoryTime(createdAt)}
-                  fileSize={fileSize}
-               />
-            );
-         case 'video':
-            return (
-               <VideoCard
-                  messageObject={message}
-                  imgSrc={imgSrc}
-                  isSender={isSender}
-                  status={getMessageStatus(msgStatus)}
-                  fileSize={fileSize}
-                  timeStamp={getConversationHistoryTime(createdAt)}
-               />
-            );
-         case 'audio':
-            return (
-               <AudioCard
-                  messageObject={message}
-                  isSender={isSender}
-                  mediaUrl={imageUrl}
-                  status={getMessageStatus(msgStatus)}
-                  fileSize={fileSize}
-                  timeStamp={getConversationHistoryTime(createdAt)}
-               />
-            );
-         case 'file':
-            return (
-               <DocumentMessageCard
-                  message={message}
-                  status={getMessageStatus(msgStatus)}
-                  timeStamp={getConversationHistoryTime(createdAt)}
-                  fileSize={fileSize}
-                  isSender={isSender}
-                  mediaUrl={imageUrl}
-               />
-            );
-         case 'contact':
-            return (
-               <ContactCard
-                  message={message}
-                  status={getMessageStatus(msgStatus)}
-                  timeStamp={getConversationHistoryTime(createdAt)}
-                  onInvitePress={handleContactInvitePress}
-                  handleInvitetLongPress={handleContentLongPress}
-                  isSender={isSender}
-               />
-            );
-         case 'location':
-            return (
-               <MapCard
-                  message={message}
-                  status={getMessageStatus(msgStatus)}
-                  timeStamp={getConversationHistoryTime(createdAt)}
-                  handleContentPress={handleContentPress}
-                  handleContentLongPress={handleContentLongPress}
-                  isSender={isSender}
-               />
-            );
-      }
-   };
-
-   const renderChatMessage = React.useMemo(
-      () => (
-         <Pressable
-            style={
-               shouldHighlight && {
-                  backgroundColor: ApplicationColors.highlighedMessageBg,
-               }
-            }
-            delayLongPress={300}
-            pressedStyle={commonStyles.bg_transparent}
-            onPress={handleMessageSelect}
-            onLongPress={handleMessageLongPress}>
-            {({ pressed }) => (
-               <View style={[styles.messageContainer, isSelected ? styles.highlightMessage : undefined]}>
-                  <View
-                     style={[
-                        commonStyles.paddingHorizontal_12,
-                        isSender ? commonStyles.alignSelfFlexEnd : commonStyles.alignSelfFlexStart,
-                     ]}>
-                     <MessagePressable
-                        forcePress={pressed}
-                        style={[styles.messageContentPressable, { maxWidth: messageWidth }]}
-                        contentContainerStyle={[
-                           styles.messageCommonStyle,
-                           isSender ? styles.sentMessage : styles.receivedMessage,
-                        ]}
-                        delayLongPress={300}
-                        onPress={handleContentPress}
-                        onLongPress={handleContentLongPress}>
-                        {showNickName && !isSender && (
-                           <NickName style={styles.nickname} userId={item.publisherId} colorCodeRequired={true} />
-                        )}
-                        {renderMessageBasedOnType()}
-                     </MessagePressable>
-                  </View>
-               </View>
-            )}
-         </Pressable>
-      ),
-      [message, local_path, shouldHighlight, msgStatus, isSelected, replyToMsg],
-   );
 
    if (deleteStatus) {
-      return <View style={styles.deleteContainer} />;
+      return null;
    }
 
-   if (message_type === NOTIFICATION) {
-      return <NotificationMessage messageObject={message} />;
+   if (message_type === 'notification') {
+      return <NotificationMessage messageObject={item} />;
    }
 
    if (recallStatus) {
-      return <DeletedMessage messageObject={message} currentUserJID={currentUserJID} />;
+      return <DeletedMessage chatUser={chatUser} item={item} isSender={isSender} />;
    }
 
    return (
-      <>
-         {renderChatMessage}
-         {modalContent && <AlertModal {...modalContent} />}
-      </>
+      <Pressable
+         style={{}}
+         delayLongPress={300}
+         pressedStyle={commonStyles.bg_transparent}
+         onPress={onPress}
+         onLongPress={onLongPress}>
+         {({ pressed }) => (
+            <View style={[styles.messageContainer, isSelected ? styles.highlightMessage : undefined]}>
+               <View
+                  style={[
+                     commonStyles.paddingHorizontal_12,
+                     isSender ? commonStyles.alignSelfFlexEnd : commonStyles.alignSelfFlexStart,
+                  ]}>
+                  <MessagePressable
+                     forcePress={pressed}
+                     style={[styles.messageContentPressable, { maxWidth: messageWidth }]}
+                     contentContainerStyle={[
+                        styles.messageCommonStyle,
+                        isSender ? styles.sentMessage : styles.receivedMessage,
+                     ]}
+                     delayLongPress={300}
+                     onPress={onPress}
+                     onLongPress={onLongPress}>
+                     {showNickName && !isSender && message_type && (
+                        <NickName
+                           style={styles.nickname}
+                           userId={item.publisherId}
+                           colorCodeRequired={true}
+                           data={{ nickName }}
+                        />
+                     )}
+                     <Message item={item} isSender={isSender} chatUser={chatUser} />
+                  </MessagePressable>
+               </View>
+            </View>
+         )}
+      </Pressable>
    );
-};
+}
+
 export default React.memo(ChatMessage);
 
 const styles = StyleSheet.create({

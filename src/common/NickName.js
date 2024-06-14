@@ -9,10 +9,11 @@ function NickName({ userId, searchValue = '', index, style, colorCodeRequired = 
    const [userProfile, setUserProfile] = React.useState(data);
 
    React.useEffect(() => {
-      if (profile) {
+      if (profile && JSON.stringify(profile) !== JSON.stringify(userProfile)) {
          setUserProfile(prevData => ({
             ...prevData,
             ...profile,
+            status: profile.status || prevData.status || 'I am in Mirror Fly',
          }));
       }
    }, [profile]);

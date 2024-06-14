@@ -163,3 +163,14 @@ export const checkAudioCallpermission = async () => {
       return 'Bluetooth Permission';
    }
 };
+
+export const requestCameraPermission = async () => {
+   switch (true) {
+      case Platform.OS === 'ios':
+         const ios_permit = await requestMultiple([PERMISSIONS.IOS.CAMERA]);
+         return ios_permit['ios.permission.CAMERA'];
+      case Platform.OS === 'android':
+         const permited = await requestMultiple([PERMISSIONS.ANDROID.CAMERA]);
+         return permited['android.permission.CAMERA'];
+   }
+};

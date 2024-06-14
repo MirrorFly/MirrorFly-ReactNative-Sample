@@ -12,8 +12,6 @@ function ArchiveToggle() {
       SDK.updateUserSettings(value);
    };
 
-   console.log('archive ==>', archive);
-
    return (
       <>
          <View style={styles.contentContainer}>

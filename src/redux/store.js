@@ -5,6 +5,7 @@ import callControlsReducer from './callControlsSlice';
 import callModalToastReducer from './callModalToastSlice';
 import callStateReducer from './callStateSlice';
 import chatMessageDataReducer from './chatMessageDataSlice';
+import groupsReducer from './groupDataSlice';
 import loggedInUserDataReducer from './loggedInUserDataSlice';
 import notificationDataReducer from './notificationDataSlice';
 import permissionReducer from './permissionSlice';
@@ -56,6 +57,7 @@ const appReducer = combineReducers({
    callModalToastData: callModalToastReducer,
    permissionData: permissionReducer,
    settingsData: settingDataReducer,
+   groupData: groupsReducer,
 });
 
 // Root reducer

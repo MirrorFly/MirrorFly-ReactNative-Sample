@@ -51,9 +51,16 @@ const RecentChatItem = React.memo(
                delayLongPress={300}
                onPress={onPress(item.userJid)}
                onLongPress={handleSelectChat(item.userJid)}>
-               <View style={[styles.container, isSelected && commonStyles.pressedBg]}>
-                  <View style={styles.avatarContainer}>
+               <View style={[styles.container, isSelected && commonStyles.pressedBg, styles.avatarContainer]}>
+                  <View style={[commonStyles.positionRelative]}>
                      <RecentChatAvathar type={item.chatType} userId={userId} data={item?.profileDetails} />
+                     {item.unreadCount > 0 && (
+                        <View style={styles.unreadCountWrapper}>
+                           <Text style={styles.unreadCountText}>
+                              {item.unreadCount > 99 ? '99+' : item.unreadCount}
+                           </Text>
+                        </View>
+                     )}
                   </View>
                   <View style={styles.contentContainer}>
                      <NickName
@@ -104,6 +111,7 @@ const styles = StyleSheet.create({
    contentContainer: {
       flex: 1,
       maxWidth: '90%',
+      marginLeft: 10,
    },
    nickname: {
       fontWeight: 'bold',
@@ -139,6 +147,22 @@ const styles = StyleSheet.create({
    lastSentMessageContainer: {
       flexDirection: 'row',
       alignItems: 'center',
+   },
+   unreadCountWrapper: {
+      position: 'absolute',
+      top: -3,
+      left: 30,
+      backgroundColor: ApplicationColors.mainColor,
+      minWidth: 20,
+      paddingVertical: 1,
+      paddingHorizontal: 4,
+      borderRadius: 50,
+      justifyContent: 'center',
+      alignItems: 'center',
+   },
+   unreadCountText: {
+      color: ApplicationColors.white,
+      fontSize: 13,
    },
 });
 

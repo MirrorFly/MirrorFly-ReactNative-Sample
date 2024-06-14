@@ -1,6 +1,8 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { BackHandler, ImageBackground, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
+import { BackHandler, ImageBackground, KeyboardAvoidingView, Linking, Platform, StyleSheet } from 'react-native';
+import { useDispatch } from 'react-redux';
+import SDK from '../SDK/SDK';
 import { fetchGroupParticipants } from '../SDK/utils';
 import chatBackgroud from '../assets/chatBackgroud.png';
 import ChatHeader from '../components/ChatHeader';
@@ -8,15 +10,19 @@ import ChatInput from '../components/ChatInput';
 import ConversationList from '../components/ConversationList';
 import { getImageSource, getUserIdFromJid, handelResetMessageSelection } from '../helpers/chatHelpers';
 import { MIX_BARE_JID, RECENTCHATSCREEN } from '../helpers/constants';
+import { resetUnreadCountForChat } from '../redux/recentChatDataSlice';
 import { useChatMessages } from '../redux/reduxHook';
 
 export let currentChatUser = '';
 
 function ConversationScreen({ chatUser = '' }) {
-   const { params: { jid = '' } = {} } = useRoute();
-   const _jid = jid || chatUser; // TO HANDLE APPLCATION RENDER BY COMPONENT BY COMPONENT
+   let url = '';
+   const { params: { jid: _jid = '' } = {} } = useRoute();
+   const [jid, setJid] = React.useState(_jid || chatUser); // TO HANDLE APPLCATION RENDER BY COMPONENT BY COMPONENT
    currentChatUser = _jid;
-   const userId = getUserIdFromJid(_jid);
+   SDK.activeChatUser(currentChatUser);
+   const dispatch = useDispatch();
+   const userId = getUserIdFromJid(jid);
    const navigation = useNavigation();
    const messaesList = useChatMessages(userId) || [];
 
@@ -24,9 +30,12 @@ function ConversationScreen({ chatUser = '' }) {
       return messaesList.some(item => item.isSelected === 1);
    }, [messaesList.map(item => item.isSelected).join(',')]); // Include isSelected in the dependency array
 
-   React.useState(() => {
-      if (MIX_BARE_JID.test(_jid)) {
-         fetchGroupParticipants(_jid);
+   React.useEffect(() => {
+      getURL();
+      SDK.updateRecentChatUnreadCount(currentChatUser);
+      dispatch(resetUnreadCountForChat(currentChatUser));
+      if (MIX_BARE_JID.test(jid)) {
+         fetchGroupParticipants(jid);
       }
    }, []);
 
@@ -35,15 +44,30 @@ function ConversationScreen({ chatUser = '' }) {
       return () => backHandler.remove();
    }, [isAnySelected]);
 
+   const getURL = async () => {
+      const url = await Linking.getInitialURL();
+      if (url) {
+         const regexStr = '[?&]([^=#]+)=([^&#]*)';
+         let regex = new RegExp(regexStr, 'g'), //NOSONAR
+            match;
+         match = regex.exec(initialURL);
+         setJid(match[2]);
+      }
+   };
+
    const handleBackBtn = () => {
       switch (true) {
          case isAnySelected:
             handelResetMessageSelection(userId)();
             break;
          case navigation.canGoBack():
+            currentChatUser = '';
+            SDK.activeChatUser(currentChatUser);
             navigation.goBack();
             break;
          default:
+            currentChatUser = '';
+            SDK.activeChatUser(currentChatUser);
             navigation.reset({
                index: 0,
                routes: [{ name: RECENTCHATSCREEN }],
@@ -53,11 +77,11 @@ function ConversationScreen({ chatUser = '' }) {
       return true;
    };
 
-   const renderChatHeader = React.useMemo(() => <ChatHeader chatUser={_jid} />, [_jid]);
+   const renderChatHeader = React.useMemo(() => <ChatHeader chatUser={jid} />, [jid]);
 
-   const renderConversationList = React.useMemo(() => <ConversationList chatUser={_jid} />, [_jid]);
+   const renderConversationList = React.useMemo(() => <ConversationList chatUser={jid} />, [jid]);
 
-   const renderChatInput = React.useMemo(() => <ChatInput chatUser={_jid} />, []);
+   const renderChatInput = React.useMemo(() => <ChatInput chatUser={jid} />, []);
 
    return (
       <KeyboardAvoidingView

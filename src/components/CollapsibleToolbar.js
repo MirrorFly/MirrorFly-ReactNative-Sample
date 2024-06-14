@@ -10,6 +10,7 @@ import Pressable from '../common/Pressable';
 import ApplicationColors from '../config/appColors';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
 import { CHAT_TYPE_SINGLE } from '../helpers/constants';
+import { VIEWALLMEDIA } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 
 const propTypes = {

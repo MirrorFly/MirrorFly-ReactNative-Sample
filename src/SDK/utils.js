@@ -1,4 +1,4 @@
-import { changeTimeFormat, getConversationHistoryTime } from '../common/timeStamp';
+import { changeTimeFormat } from '../common/timeStamp';
 import config from '../config/config';
 import {
    calculateWidthAndHeight,
@@ -58,11 +58,7 @@ export const updateRosterDataForChats = singleRecentChatList => {
 
 export const fetchRecentChats = async () => {
    const page = getRecentChatPage();
-   const start = Date.now();
-   console.log('SDK start ==>', start, getConversationHistoryTime(start));
    const { statusCode, data = [] } = await SDK.getRecentChats(page, config.recentChatsPerPage);
-   const end = Date.now();
-   console.log('SDK data.length end ==>', data.length, end, end - start, getConversationHistoryTime(end));
    if (statusCode === 200) {
       if (data.length) {
          setRecentChatPage(page + 1);
@@ -101,7 +97,6 @@ export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false)
       if (data.length && hasEqualDataFetched) {
          chatPage[userId] = page + 1;
       }
-      console.log('hasEqualDataFetched data.length ==>', hasEqualDataFetched, data.length);
       hasNextChatPage[userId] = hasEqualDataFetched;
       store.dispatch(setChatMessages({ userJid, data }));
    }
@@ -151,7 +146,6 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          store.dispatch(addRecentChatItem(conversationChatObj));
          if (i === 0) {
             const { msgId, userJid, msgBody: { media = {}, media: { file = {} } = {} } = {} } = conversationChatObj;
-            console.log('uploadFileToSDK ==>', file, userJid, msgId, media);
             uploadFileToSDK(file, userJid, msgId, media);
          }
       }
@@ -394,7 +388,7 @@ export const setGroupParticipantsByGroupId = (groupId, participantsList) => {
    });
    store.dispatch(
       setMemberParticipantsList({
-         groupId: groupId,
+         groupId: getUserIdFromJid(groupId),
          participantsList: uniqueParticipantsList,
       }),
    );

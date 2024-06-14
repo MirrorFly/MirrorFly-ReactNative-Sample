@@ -15,9 +15,12 @@ export const usePresenceData = userId => useSelector(state => state.presenceData
 export const useTypingData = userId => useSelector(state => state.typingData[userId]);
 export const useMediaProgress = msgId => useSelector(state => state.progressData[msgId]);
 export const useArchive = () => useSelector(state => state.settingsData?.archive);
+export const useGroupParticipantsList = groupId => useSelector(state => state.groupData.participantsList[groupId]);
 
 export const getRecentChatData = () => store.getState().recentChatData.recentChats;
 export const getSelectedChats = () => store.getState().recentChatData.recentChats.filter(item => item.isSelected === 1);
+export const getArchiveSelectedChats = () =>
+   store.getState().recentChatData.recentChats.filter(item => item.isSelected === 1 && item.archiveStatus === 1);
 export const getChatMessages = userId => store.getState().chatMessagesData?.[userId];
 export const getUserNameFromStore = userId => store.getState().rosterData.data?.[userId]?.nickName;
 export const getUserColorFromStore = userId => store.getState().rosterData.data?.[userId]?.colorCode;
@@ -26,3 +29,7 @@ export const getSelectedChatMessages = userId =>
 export const getMediaProgress = msgId => store.getState().progressData[msgId];
 export const getRoasterData = userId => store.getState().rosterData.data[getUserIdFromJid(userId)] || {};
 export const getArchive = () => store.getState().settingsData?.archive;
+export const getUserImage = userId => {
+   const { image } = store.getState().rosterData.data[userId] || {};
+   return image;
+};

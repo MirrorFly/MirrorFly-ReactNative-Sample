@@ -87,7 +87,6 @@ const chatMessageDataSlice = createSlice({
          }
       },
       updateMediaStatus(state, action) {
-         console.log('action ==>', JSON.stringify(action, null, 2));
          const { userId, msgId, is_downloaded, is_uploading, local_path } = action.payload;
          if (state[userId]) {
             state[userId] = state[userId].map(message => {

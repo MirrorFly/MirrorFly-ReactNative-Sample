@@ -3,6 +3,7 @@ import { Alert, Dimensions, Linking, Platform, StyleSheet, View } from 'react-na
 import { Image as ImageCompressor } from 'react-native-compressor';
 import { createThumbnail } from 'react-native-create-thumbnail';
 import DocumentPicker from 'react-native-document-picker';
+import FileViewer from 'react-native-file-viewer';
 import RNFS from 'react-native-fs';
 import ImagePicker from 'react-native-image-crop-picker';
 import { RESULTS, openSettings } from 'react-native-permissions';
@@ -22,9 +23,11 @@ import {
    ProfileIcon,
    SandTimer,
 } from '../common/Icons';
+import { getNetworkState } from '../common/hooks';
 import {
    requestAudioStoragePermission,
    requestCameraMicPermission,
+   requestCameraPermission,
    requestContactPermission,
    requestFileStoragePermission,
    requestStoragePermission,
@@ -61,13 +64,23 @@ import {
    resetMessageSelections,
    updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
-import { clearRecentChatData, deleteMessagesForEveryoneInRecentChat } from '../redux/recentChatDataSlice';
-import { getChatMessages, getSelectedChatMessages, getSelectedChats } from '../redux/reduxHook';
+import {
+   clearRecentChatData,
+   deleteMessagesForEveryoneInRecentChat,
+   toggleArchiveChats,
+} from '../redux/recentChatDataSlice';
+import {
+   getArchiveSelectedChats,
+   getChatMessages,
+   getSelectedChatMessages,
+   getSelectedChats,
+} from '../redux/reduxHook';
 import store from '../redux/store';
 import { currentChatUser } from '../screens/ConversationScreen';
 import {
    CAMERA_SCREEN,
    CHATS_CREEN,
+   CONVERSATION_SCREEN,
    GALLERY_FOLDER_SCREEN,
    MOBILE_CONTACT_LIST_SCREEN,
    PROFILE_SCREEN,
@@ -771,6 +784,42 @@ export const isLocalUser = (userId = '') => {
    return userId === getUserIdFromJid(currentUserJID);
 };
 
+export const handleImagePickerOpenCamera = async () => {
+   let cameraPermission = await requestCameraPermission();
+   let imageReadPermission = await requestStoragePermission();
+   const camera_permission = await RealmKeyValueStore.getItem('camera_permission');
+   const storage_permission = await RealmKeyValueStore.getItem('storage_permission');
+   if (
+      (cameraPermission === 'granted' || cameraPermission === 'limited') &&
+      (imageReadPermission === 'granted' || imageReadPermission === 'limited')
+   ) {
+      return ImagePicker.openCamera({
+         mediaType: 'photo',
+         width: 450,
+         height: 450,
+         cropping: true,
+         cropperCircleOverlay: true,
+         compressImageQuality: 0.8,
+      })
+         .then(async image => {
+            const converted = mediaObjContructor('IMAGE_PICKER', image);
+            return converted;
+         })
+         .catch(error => {
+            console.log('user cancel', error.message);
+            return {};
+         });
+   } else if (camera_permission || storage_permission) {
+      openSettings();
+   }
+   if (cameraPermission === RESULTS.BLOCKED) {
+      RealmKeyValueStore.setItem('camera_permission', 'true');
+   }
+   if (imageReadPermission === RESULTS.BLOCKED) {
+      RealmKeyValueStore.setItem('storage_permission', 'true');
+   }
+};
+
 export const handleImagePickerOpenGallery = async () => {
    const storage_permission = await RealmKeyValueStore.getItem('storage_permission');
    const imageReadPermission = await requestStoragePermission();
@@ -879,17 +928,47 @@ export const settingsMenu = [
    },
 ];
 
-export const toggleArchive = () => {
+export function capitalizeFirstLetter(string) {
+   if (!string) return null;
+   return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+export const toggleArchive = val => () => {
    try {
-      const selectedChats = getSelectedChats();
-      const userJids = selectedChats.map(item => item.userJid);
-      console.log('selectedChats ==>', JSON.stringify(userJids, null, 2));
+      const netWorkState = getNetworkState();
+      if (!netWorkState) {
+         return showNetWorkToast();
+      }
+      store.dispatch(toggleArchiveChats(val));
+      if (val) {
+         const userJids = getSelectedChats().map(item => item.userJid);
+         // userJids.forEach(item => {
+         //    SDK.updateArchiveChat(item, val);
+         // });
+      } else {
+         const userJids = getArchiveSelectedChats().map(item => item.userJid);
+         // userJids.forEach(item => {
+         //    SDK.updateArchiveChat(item, val);
+         // });
+      }
    } catch (error) {
       return error;
    }
 };
 
-export function capitalizeFirstLetter(string) {
-   if (!string) return null;
-   return string.charAt(0).toUpperCase() + string.slice(1);
-}
+export const isActiveChat = jid => {
+   return currentChatUser !== jid || RootNavigation.getCurrentScreen() !== CONVERSATION_SCREEN;
+};
+
+export const handleFileOpen = message => {
+   FileViewer.open(message?.msgBody?.media?.local_path || message?.msgBody?.media?.file?.fileDetails?.uri, {
+      showOpenWithDialog: true,
+   })
+      .then(res => {
+         console.log('Document opened externally', res);
+      })
+      .catch(err => {
+         console.log('Error while opening Document', err);
+         showToast('No apps available to open this file');
+      });
+};

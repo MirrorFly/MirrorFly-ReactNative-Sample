@@ -9,7 +9,7 @@ import RecentChat from '../components/RecentChat';
 import RecentChatHeader from '../components/RecentChatHeader';
 import ApplicationColors from '../config/appColors';
 import { resetChatSelections } from '../redux/recentChatDataSlice';
-import { useRecentChatData } from '../redux/reduxHook';
+import { useFilteredRecentChatData } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { USERS_LIST_SCREEN } from './constants';
 
@@ -19,7 +19,7 @@ function RecentChatScreen() {
    const pagerRef = React.useRef();
    const navigation = useNavigation();
    const dispatch = useDispatch();
-   const recentChatData = useRecentChatData();
+   const recentChatData = useFilteredRecentChatData();
    const [index, setIndex] = React.useState(0);
    const [chatsBadge, setChatsBadge] = React.useState(0);
    const [indicatorPosition] = React.useState(new Animated.Value(0));
@@ -28,6 +28,15 @@ function RecentChatScreen() {
    const isAnySelected = React.useMemo(() => {
       return recentChatData.some(item => item.isSelected === 1);
    }, [recentChatData.map(item => item.isSelected).join(',')]); // Include isSelected in the dependency array
+
+   React.useEffect(() => {
+      if (recentChatData.length) {
+         const unreadChatCount = recentChatData.filter(d => d.unreadCount > 0).length;
+         setChatsBadge(unreadChatCount > 99 ? '99+' : String(unreadChatCount || 0));
+      } else {
+         setChatsBadge(0);
+      }
+   }, [recentChatData]);
 
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
@@ -42,12 +51,12 @@ function RecentChatScreen() {
 
    const handleBackBtn = React.useCallback(() => {
       switch (true) {
-         case isAnySelected:
-            dispatch(resetChatSelections());
-            break;
          case index !== 0:
             setIndex(0);
             pagerRef.current.setPage(0);
+            break;
+         case isAnySelected:
+            dispatch(resetChatSelections());
             break;
          case navigation.canGoBack():
             navigation.goBack();
@@ -100,7 +109,7 @@ function RecentChatScreen() {
             />
          </View>
       ),
-      [index],
+      [index, chatsBadge],
    );
 
    const renderPagerView = React.useMemo(
@@ -162,6 +171,20 @@ const styles = StyleSheet.create({
       bottom: 0,
       height: 3,
       backgroundColor: ApplicationColors.mainColor, // Color of the active tab indicator
+   },
+   tabBadgeWrapper: {
+      minWidth: 20,
+      paddingVertical: 1,
+      paddingHorizontal: 4,
+      backgroundColor: ApplicationColors.mainColor,
+      borderRadius: 50,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginLeft: 7,
+   },
+   tabBadgeText: {
+      color: ApplicationColors.white,
+      fontSize: 13,
    },
 });
 

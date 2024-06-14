@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
@@ -7,21 +7,35 @@ import { BackArrowIcon } from '../common/Icons';
 import PostView from '../components/PostView';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
 import { useChatMessages } from '../redux/reduxHook';
+import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
 
 const PostPreViewPage = () => {
    const { params: { jid = '', msgId = '' } = {} } = useRoute();
+   const navigation = useNavigation();
    const currentUserJID = getCurrentUserJid();
    const chatUserId = getUserIdFromJid(jid);
-   const messageList = useChatMessages(chatUserId);
+   const messages = useChatMessages(chatUserId);
 
    const [title, setTitle] = React.useState('');
    const [currentIndex, setCurrentIndex] = React.useState(0);
+
+   const messageList = React.useMemo(() => {
+      const filteredMessages = messages.filter(message => {
+         const { msgBody: { message_type = '' } = {} } = message || {};
+         return ['image', 'video', 'audio', 'file'].includes(message_type);
+      });
+      return filteredMessages;
+   }, [messages, jid]);
 
    React.useEffect(() => {
       const isSender = currentUserJID === messageList[currentIndex]?.publisherJid;
       setTitle(isSender ? 'Sent' : 'Received');
    }, [currentIndex]);
+
+   const handleBackBtn = () => {
+      navigation.goBack();
+   };
 
    const handlePageSelected = event => {
       setCurrentIndex(event.nativeEvent.position);
@@ -41,7 +55,7 @@ const PostPreViewPage = () => {
             ))}
          </PagerView>
       );
-   }, [messageList, chatMessageData]);
+   }, [messageList]);
 
    return (
       <View style={commonStyles.flex1}>

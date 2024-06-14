@@ -1,21 +1,24 @@
-import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { ActivityIndicator, Image, SectionList, StyleSheet, Text, View } from 'react-native';
-import { useDispatch } from 'react-redux';
 import { fetchRecentChats, getHasNextRecentChatPage } from '../SDK/utils';
 import no_messages from '../assets/no_messages.png';
 import ApplicationColors from '../config/appColors';
 import { getImageSource } from '../helpers/chatHelpers';
-import { useFilteredRecentChatData, useRecentChatSearchText } from '../redux/reduxHook';
+import {
+   useArchive,
+   useArchivedChatData,
+   useFilteredRecentChatData,
+   useRecentChatSearchText,
+} from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ArchivedChat from './ArchivedChat';
 import RecentChatItem from './RecentChatItem';
 
 const RecentChat = () => {
-   const navigation = useNavigation();
-   const dispatch = useDispatch();
+   const archive = useArchive();
    const searchText = useRecentChatSearchText();
    const recentChatData = useFilteredRecentChatData() || [];
+   const recentArchiveChatData = useArchivedChatData() || [];
    const [filteredMessages, setFilteredMessages] = React.useState([]);
    const [isFetchingData, setIsFetchingData] = React.useState(true);
 
@@ -23,38 +26,17 @@ const RecentChat = () => {
       initFunc();
    }, []);
 
-   React.useEffect(() => {
-      if (searchText) {
-         SDK.messageSearch(searchText).then(res => {
-            if (res.statusCode === 200) {
-               setFilteredMessages(res.data);
-            }
-         });
-      }
-   }, [searchText]);
-
    const initFunc = async () => {
       await fetchRecentChats();
       setIsFetchingData(false);
    };
 
    const handleLoadMore = async () => {
-      console.log('handleLoadMore');
       if (!searchText && !isFetchingData && getHasNextRecentChatPage()) {
          setIsFetchingData(true);
          await fetchRecentChats().then(() => {
             setIsFetchingData(false);
          });
-      }
-   };
-
-   const renderFooterLoaderIfFetching = () => {
-      if (isFetchingData) {
-         return (
-            <View style={commonStyles.mb_130}>
-               <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
-            </View>
-         );
       }
    };
 
@@ -83,9 +65,55 @@ const RecentChat = () => {
 
    const renderSectionHeader = ({ section }) => (searchText ? renderSectionHeaderBasedOnCondition(section) : null);
 
-   const renderArchive = React.useMemo(() => {
-      return searchText ? null : <ArchivedChat />;
-   }, [searchText]);
+   const DATA = [
+      {
+         title: 'Chats',
+         data: recentChatData,
+      },
+      {
+         title: 'Messages',
+         data: filteredMessages,
+      },
+   ];
+
+   const renderHeader = React.useMemo(() => {
+      if (recentArchiveChatData.length && archive && !searchText) {
+         return <ArchivedChat />;
+      }
+   }, [searchText, archive, recentArchiveChatData]);
+
+   const renderFooter = React.useMemo(() => {
+      return (
+         <View style={commonStyles.marginBottom_10}>
+            {Boolean(recentArchiveChatData.length) && !archive && !searchText && <ArchivedChat />}
+            {isFetchingData && (
+               <View style={commonStyles.mb_130}>
+                  <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
+               </View>
+            )}
+         </View>
+      );
+   }, [searchText, archive, isFetchingData]);
+
+   const renderSectionList = React.useMemo(
+      () => (
+         <SectionList
+            sections={DATA}
+            ListHeaderComponent={renderHeader}
+            keyExtractor={item => item.userJid}
+            renderItem={renderItem}
+            renderSectionHeader={renderSectionHeader}
+            onEndReached={handleLoadMore}
+            ListFooterComponent={renderFooter}
+            scrollEventThrottle={1}
+            windowSize={20}
+            onEndReachedThreshold={0.1}
+            disableVirtualization={true}
+            maxToRenderPerBatch={20}
+         />
+      ),
+      [recentChatData, filteredMessages, archive, searchText, isFetchingData],
+   );
 
    if (!isFetchingData && !recentChatData.length && !filteredMessages.length) {
       return (
@@ -103,35 +131,7 @@ const RecentChat = () => {
       );
    }
 
-   const DATA = [
-      {
-         title: 'Chats',
-         data: recentChatData,
-      },
-      {
-         title: 'Messages',
-         data: filteredMessages,
-      },
-   ];
-
-   return (
-      <View style={styles.container}>
-         <SectionList
-            sections={DATA}
-            ListHeaderComponent={renderArchive}
-            keyExtractor={item => item.userJid}
-            renderItem={renderItem}
-            renderSectionHeader={renderSectionHeader}
-            onEndReached={handleLoadMore}
-            ListFooterComponent={renderFooterLoaderIfFetching}
-            scrollEventThrottle={1}
-            windowSize={20}
-            onEndReachedThreshold={0.1}
-            disableVirtualization={true}
-            maxToRenderPerBatch={20}
-         />
-      </View>
-   );
+   return <View style={styles.container}>{renderSectionList}</View>;
 };
 
 const styles = StyleSheet.create({

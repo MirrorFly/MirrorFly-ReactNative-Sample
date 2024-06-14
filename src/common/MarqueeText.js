@@ -1,14 +1,14 @@
 import React from 'react';
 import {
-    Animated,
-    Easing,
-    findNodeHandle,
-    NativeModules,
-    PixelRatio,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+   Animated,
+   Easing,
+   findNodeHandle,
+   NativeModules,
+   PixelRatio,
+   ScrollView,
+   StyleSheet,
+   Text,
+   View,
 } from 'react-native';
 
 const { UIManager } = NativeModules;

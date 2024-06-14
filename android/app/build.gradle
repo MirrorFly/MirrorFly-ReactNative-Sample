@@ -3,7 +3,6 @@ apply plugin: "com.facebook.react"
 
 /** Add this Firebase intialize */
 apply plugin: 'com.google.gms.google-services'
-apply plugin: 'kotlin-android'
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -76,15 +75,6 @@ android {
     ndkVersion rootProject.ext.ndkVersion
 
     compileSdkVersion rootProject.ext.compileSdkVersion
-
-    signingConfigs {
-        config {
-            keyAlias 'UiKit'
-            keyPassword 'contus@uikit'
-            storeFile file('contus_internal_uikit_keystore.jks')
-            storePassword 'contus@uikit'
-        }
-    }
 
     namespace "com.mirrorfly_rn"
     defaultConfig {

@@ -1,14 +1,16 @@
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { CONNECTED } from '../SDK/constants';
 import { sendSeenStatus } from '../SDK/utils';
 import NickName from '../common/NickName';
 import ApplicationColors from '../config/appColors';
-import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { getUserIdFromJid, handleFileOpen } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
 import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
 import { getChatMessages, useXmppConnectionStatus } from '../redux/reduxHook';
+import { MEDIA_POST_PRE_VIEW_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
 import DeletedMessage from './DeletedMessage';
@@ -18,6 +20,7 @@ import NotificationMessage from './NotificationMessage';
 
 function ChatMessage({ chatUser, item, showNickName }) {
    const dispatch = useDispatch();
+   const navigation = useNavigation();
    const useXmppStatus = useXmppConnectionStatus();
    const userId = getUserIdFromJid(chatUser);
    const {
@@ -28,32 +31,53 @@ function ChatMessage({ chatUser, item, showNickName }) {
       deleteStatus = 0,
       isSelected = 0,
       msgBody: {
+         location: { latitude = '', longitude = '' } = {},
          nickName = '',
          message_type,
-         media = {},
-         media: { is_uploading, file = {}, androidWidth = 0 } = {},
+         media: { is_uploading, is_downloaded, androidWidth = 0 } = {},
       } = {},
    } = item;
    const isSender = getCurrentUserJid() === publisherJid;
    const messageWidth = androidWidth || '80%';
    console.log('msgId ==>', msgId, message_type);
 
-   React.useEffect(() => {
-      if (useXmppStatus === CONNECTED && !isSender && msgStatus !== 2) {
-         const groupId = MIX_BARE_JID.test(chatUser) ? getUserIdFromJid(chatUser) : '';
-         sendSeenStatus(publisherJid, msgId, groupId);
-      }
-   }, [useXmppStatus]);
+   useFocusEffect(
+      React.useCallback(() => {
+         if (useXmppStatus === CONNECTED && !isSender && msgStatus !== 2 && deleteStatus === 0 && recallStatus === 0) {
+            const groupId = MIX_BARE_JID.test(chatUser) ? getUserIdFromJid(chatUser) : '';
+            sendSeenStatus(publisherJid, msgId, groupId);
+         }
+      }, [useXmppStatus]),
+   );
 
    const onPress = () => {
       const messsageList = getChatMessages(userId);
       const isAnySelected = messsageList.some(item => item.isSelected === 1);
-      if (isAnySelected) {
-         const selectData = {
-            chatUserId: getUserIdFromJid(chatUser),
-            msgId,
-         };
-         dispatch(toggleMessageSelection(selectData));
+      switch (true) {
+         case isAnySelected:
+            const selectData = {
+               chatUserId: getUserIdFromJid(chatUser),
+               msgId,
+            };
+            dispatch(toggleMessageSelection(selectData));
+            break;
+         case is_downloaded === 2 && is_uploading === 2 && (message_type === 'image' || message_type === 'video'):
+            if (Keyboard.isVisible()) {
+               let hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+                  navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid: chatUser, msgId: msgId });
+                  hideSubscription.remove();
+               });
+               Keyboard.dismiss();
+            } else {
+               navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid: chatUser, msgId: msgId });
+            }
+            break;
+         case is_downloaded === 2 && is_uploading === 2 && message_type === 'file':
+            handleFileOpen(item);
+            break;
+         case message_type === 'locaiton':
+            openLocationExternally(latitude, longitude);
+            break;
       }
    };
 

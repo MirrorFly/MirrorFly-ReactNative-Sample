@@ -37,7 +37,11 @@ const ProfileScreen = () => {
 
    React.useEffect(() => {
       if (!isEqualObjet(profile, profileDetails)) {
-         setProfileDetails(profile);
+         setProfileDetails({
+            ...profile,
+            mobileNumber: profile?.mobileNumber || profile?.userId,
+            status: profile?.status || 'I am in Mirror Fly',
+         });
       }
       setIsLoading(false);
    }, [profile]);
@@ -56,7 +60,6 @@ const ProfileScreen = () => {
    };
 
    const handleProfileUpdate = async () => {
-      console.log('profileDetails ===>', JSON.stringify(profileDetails, null, 2));
       const validation =
          profileDetails?.nickName.trim() &&
          profileDetails?.nickName.trim()?.length > 2 &&
@@ -161,7 +164,7 @@ const ProfileScreen = () => {
                            fontSize={60}
                            width={157}
                            height={157}
-                           data={profile?.nickName?.trim()}
+                           data={profileDetails?.nickName?.trim()}
                            backgroundColor={'#3276E2'}
                         />
                      )}

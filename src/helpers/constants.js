@@ -269,15 +269,3 @@ export const PACKAGE_XIAOMI = 'com.miui.securitycenter';
 export const PACKAGE_XIAOMI_WINDOW_COMPONENT = 'com.miui.permcenter.permissions.PermissionsEditorActivity';
 export const alertPermissionMessage =
    'Allow MirrorFly to send you notifications while the app in background.\n\n Please continue to app Settings > select OthersPermission > enable the all permissions.';
-
-export const notification_constants = {
-   chennelId: {
-      MIRRORFLY_INCOMING_MESSAGE: 'MIRRORFLY_INCOMING_MESSAGE',
-   },
-   channelName: {
-      CHAT_MESSGAE_NOTIFICAITON: 'CHAT_MESSGAE_NOTIFICAITON',
-   },
-   sound: {
-      default: 'default',
-   },
-};

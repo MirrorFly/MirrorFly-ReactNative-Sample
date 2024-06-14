@@ -8,7 +8,7 @@ import RootNavigation from './Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from './SDK/SDK';
 import { callBacks } from './SDK/sdkCallBacks';
 import { resetVariable } from './SDK/utils';
-import { pushNotify, registeNotificationChannelId, updateNotification } from './Service/remoteNotifyHandle';
+import { pushNotify, registeNotificationChannelId } from './Service/remoteNotifyHandle';
 import { CallComponent } from './calls/CallComponent';
 import { setupCallKit } from './calls/ios';
 import { setNotificationForegroundService } from './calls/notification/callNotifyHandler';
@@ -28,11 +28,11 @@ let uiKitCallbackListenersVal = {},
    currentUserProfile = {},
    currentScreen = '';
 
+export const getAppInitStatus = () => appInitialized;
+
 export const mflog = (...args) => {
    console.log('RN-UIKIT', Platform.OS, version, ...args);
 };
-
-export const getApplicationUrl = () => schemaUrl;
 
 export const getAppSchema = () => appSchema;
 
@@ -85,6 +85,7 @@ export const mirrorflyInitialize = async args => {
       });
       uiKitCallbackListenersVal = { callBack };
       if (mfInit.statusCode === 200) {
+         appInitialized = true;
          const data = await RealmKeyValueStore.getAll();
          const _extractedData = data.reduce((result, { key, value }) => {
             result[key] = value;
@@ -159,21 +160,22 @@ export const mirrorflyConnect = async (username, password) => {
    }
 };
 
-export const mirrorflyLogout = async ({ navEnabled = false }) => {
+export const logoutClearVariables = () => {
+   resetVariable();
+   currentUserJID = '';
+   currentUserProfile = {};
+   currentScreen = REGISTERSCREEN;
+   store.dispatch(clearState());
+};
+
+export const mirrorflyLogout = async () => {
    try {
       const { statusCode = '', message = '' } = await SDK.logout();
-      if (statusCode === 200) {
-         resetVariable();
-         store.dispatch(clearState());
-         currentUserJID = '';
-         currentUserProfile = {};
-         currentScreen = REGISTERSCREEN;
-         if (navEnabled) {
-            RootNavigation.reset(REGISTERSCREEN);
-         }
-      } else {
+      if (statusCode !== 200) {
          showToast(message);
+         return statusCode;
       }
+      return statusCode;
    } catch (error) {}
 };
 

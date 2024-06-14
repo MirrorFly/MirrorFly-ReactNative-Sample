@@ -1,5 +1,5 @@
 import notifee, { AndroidVisibility } from '@notifee/react-native';
-import { onNotificationAction } from '../calls/notification/callNotifyHandler';
+import { onChatNotificationBackGround, onChatNotificationForeGround } from '../calls/notification/callNotifyHandler';
 
 export const displayRemoteNotification = async (id, date, title, body, jid, importance) => {
    const channelId = await notifee.createChannel({
@@ -32,26 +32,6 @@ export const displayRemoteNotification = async (id, date, title, body, jid, impo
          },
       },
    });
-   notifee.onForegroundEvent(onNotificationAction);
-   notifee.onBackgroundEvent(onNotificationAction);
-};
-
-export const handleNotifeeNotify = async () => {
-   const channelId = await notifee.createChannel({
-      id: 'default',
-      name: 'Default name',
-   });
-   const groupId = await notifee.createChannelGroup({
-      id: 'incoming',
-      name: 'Default name',
-   });
-   notifee.displayNotification({
-      title: 'Sarah Lane',
-      body: 'Great thanks, food later?',
-      android: {
-         channelId,
-         groupId,
-         smallIcon: 'ic_notification_blue',
-      },
-   });
+   notifee.onForegroundEvent(onChatNotificationForeGround);
+   notifee.onBackgroundEvent(onChatNotificationBackGround);
 };

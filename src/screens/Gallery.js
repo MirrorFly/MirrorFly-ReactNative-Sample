@@ -7,10 +7,10 @@ import Pressable from '../common/Pressable';
 import ScreenHeader from '../common/ScreenHeader';
 import ApplicationColors from '../config/appColors';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
-import { GALLERY_PHOTOS_SCREEN } from '../helpers/constants';
 import { useRoasterData } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { currentChatUser } from './ConversationScreen';
+import { GALLERY_PHOTOS_SCREEN } from './constants';
 
 const Gallery = () => {
    const navigation = useNavigation();
@@ -137,18 +137,17 @@ const Gallery = () => {
    return (
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
          <ScreenHeader title={'Send to ' + nickName} isSearchable={false} />
-         <View style={commonStyles.mb_130}>
-            <FlatList
-               numColumns={3}
-               data={galleryData}
-               keyExtractor={item => item.value.title.toString()}
-               bounces={false}
-               ListFooterComponent={renderFooter}
-               renderItem={albumRender}
-               initialNumToRender={20}
-               maxToRenderPerBatch={20}
-            />
-         </View>
+
+         <FlatList
+            numColumns={3}
+            data={galleryData}
+            keyExtractor={item => item.value.title.toString()}
+            bounces={false}
+            ListFooterComponent={renderFooter}
+            renderItem={albumRender}
+            initialNumToRender={20}
+            maxToRenderPerBatch={20}
+         />
       </View>
    );
 };

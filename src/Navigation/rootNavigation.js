@@ -26,7 +26,17 @@ const RootNavigation = {
 
    getCurrentScreen() {
       if (navigationRef.isReady()) {
-         return navigationRef.getState().routes[navigationRef.getState().routes.length - 1].name;
+         const findCurrentRoute = routes => {
+            const route = routes[routes.length - 1];
+            if (route.state) {
+               // Recursively find the current route in nested navigators
+               return findCurrentRoute(route.state.routes);
+            }
+            return route.name;
+         };
+
+         const state = navigationRef.getState();
+         return findCurrentRoute(state.routes);
       }
    },
 

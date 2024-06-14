@@ -54,6 +54,7 @@ import {
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
    updateAudioRouteTo,
 } from '../Helper/Calls/Utility';
+import RootNavigation from '../Navigation/rootNavigation';
 import { pushNotify } from '../Service/remoteNotifyHandle';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../calls/notification/callNotifyHandler';
 import ActivityModule from '../customModules/ActivityModule';
@@ -70,7 +71,16 @@ import {
    showToast,
    updateDeleteForEveryOne,
 } from '../helpers/chatHelpers';
-import { CONNECTION_STATE_CONNECTING, MIX_BARE_JID } from '../helpers/constants';
+import {
+   CONNECTION_STATE_CONNECTING,
+   GROUP_CREATED,
+   GROUP_PROFILE_INFO_UPDATED,
+   GROUP_USER_ADDED,
+   GROUP_USER_LEFT,
+   GROUP_USER_MADE_ADMIN,
+   GROUP_USER_REMOVED,
+   MIX_BARE_JID,
+} from '../helpers/constants';
 import { resetCallControlsStateAction, updateCallVideoMutedAction } from '../redux/callControlsSlice';
 import { resetCallModalToastDataAction } from '../redux/callModalToastSlice';
 import {
@@ -95,10 +105,11 @@ import { toggleArchiveSetting } from '../redux/settingDataSlice';
 import { resetConferencePopup, showConfrence, updateConference } from '../redux/showConfrenceSlice';
 import store from '../redux/store';
 import { resetTypingStatus, setTypingStatus } from '../redux/typingStatusDataSlice';
-import { getLocalUserDetails, mirrorflyLogout, setCurrectUserProfile } from '../uikitMethods';
+import { REGISTERSCREEN } from '../screens/constants';
+import { getLocalUserDetails, logoutClearVariables, setCurrectUserProfile } from '../uikitMethods';
 import SDK from './SDK';
 import { CONNECTED } from './constants';
-import { getUserProfileFromSDK, getUserSettings } from './utils';
+import { fetchGroupParticipants, getUserProfileFromSDK, getUserSettings } from './utils';
 
 let localStream = null,
    localVideoMuted = false,
@@ -226,9 +237,7 @@ const updatingUserStatusInRemoteStream = usersStatus => {
             fromJid: user.userJid,
             status: user.status || CONNECTION_STATE_CONNECTING,
          };
-         console.log('before remoteStream ==>', remoteStream);
          remoteStream.push(streamObject);
-         console.log('after remoteStream ==>', remoteStream);
          remoteVideoMuted = constructMuteStatus(remoteVideoMuted, user.userJid, user.videoMuted);
          remoteAudioMuted[user.userJid] = user.audioMuted;
       }
@@ -399,7 +408,6 @@ const handleEngagedOrBusyStatus = async res => {
       // });
        */
       const callStatusMsg = res.status === 'engaged' ? CALL_ENGAGED_STATUS_MESSAGE : CALL_BUSY_STATUS_MESSAGE;
-      console.log('callStatusMsg ==>', callStatusMsg);
       dispatchDisconnected(callStatusMsg);
       showCallModalToast(callStatusMsg, 2500);
       // UI and toast show without delay
@@ -634,7 +642,8 @@ export const callBacks = {
          getUserSettings();
       }
       if (response.status === 'LOGOUT') {
-         mirrorflyLogout({ navEnabled: true });
+         logoutClearVariables();
+         RootNavigation.reset(REGISTERSCREEN);
       }
    },
    messageListener: async res => {
@@ -692,12 +701,44 @@ export const callBacks = {
    },
    replyMessageListener: res => {},
    favouriteMessageListener: res => {},
-   groupProfileListener: res => {},
-   groupMsgInfoListener: res => {
-      console.log('groupMsgInfoListener = (res) => { }', res);
+   groupProfileListener: res => {
+      if (
+         res.msgType === GROUP_CREATED ||
+         res.msgType === GROUP_USER_ADDED ||
+         res.msgType === GROUP_PROFILE_INFO_UPDATED
+      ) {
+         const obj = {
+            userId: getUserIdFromJid(res.groupJid),
+            userJid: res.groupJid,
+            ...res.groupProfile,
+         };
+         store.dispatch(setRoasterData(obj));
+         const userObj = {
+            userId: getUserIdFromJid(res.newUserJid),
+            userJid: res.newUserJid,
+            ...res.userProfile,
+         };
+         store.dispatch(setRoasterData(userObj));
+         const publisherObj = {
+            userId: getUserIdFromJid(res.publisherJid),
+            userJid: res.publisherJid,
+            ...res.publisherProfile,
+         };
+         store.dispatch(setRoasterData(publisherObj));
+      }
+      if (
+         res.msgType === GROUP_USER_ADDED ||
+         res.msgType === GROUP_USER_REMOVED ||
+         res.msgType === GROUP_USER_MADE_ADMIN ||
+         res.msgType === GROUP_USER_LEFT
+      ) {
+         setTimeout(() => {
+            fetchGroupParticipants(res.groupJid);
+         }, 1000);
+      }
    },
+   groupMsgInfoListener: res => {},
    mediaUploadListener: res => {
-      // console.log('mediaUploadListener res ==>', JSON.stringify(res, null, 2));
       store.dispatch(setProgress(res));
       if (res.progress === 100) {
          const mediaStatusObj = {

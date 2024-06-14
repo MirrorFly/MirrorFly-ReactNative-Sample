@@ -6,7 +6,7 @@ import notifee, {
    AndroidVisibility,
    EventType,
 } from '@notifee/react-native';
-import { AppState, Linking, NativeModules, Platform } from 'react-native';
+import { AppState, NativeModules, Platform } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
 import RootNavigation from '../../../src/Navigation/rootNavigation';
 import { endCall, getCallDuration } from '../../Helper/Calls/Call';
@@ -19,15 +19,10 @@ import {
    OUTGOING_CALL,
 } from '../../Helper/Calls/Constant';
 import { answerIncomingCall, declineIncomingCall, endOnGoingCall } from '../../Helper/Calls/Utility';
-import SDK from '../../SDK/SDK';
-import { removeAllDeliveredNotification } from '../../Service/remoteNotifyHandle';
-import { getUserIdFromJid } from '../../helpers/chatHelpers';
 import { callDurationTimestamp } from '../../redux/callStateSlice';
 import { resetNotificationData, setNotificationData } from '../../redux/notificationDataSlice';
-import { setRoasterData } from '../../redux/rosterDataSlice';
 import Store from '../../redux/store';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../../screens/constants';
-import { getApplicationUrl } from '../../uikitMethods';
 
 const { ActivityModule } = NativeModules;
 
@@ -259,25 +254,28 @@ export const getMissedCallNotification = async (
    }
 };
 
-const onChatNotificationForeGround = async ({ type, detail }) => {
-   if (type === EventType.PRESS) {
+export const onChatNotificationForeGround = async ({ type, detail }) => {
+   if (detail.notification?.data?.roomId) {
+      callNotifiHandling(detail);
+   } else if (type === EventType.PRESS) {
       const {
          notification: { data: { fromUserJID = '', from_user = '' } = '' },
       } = detail;
-      if (RootNavigation.getCurrentScreen() === CONVERSATION_STACK) {
-         return RootNavigation.navigate(CONVERSATION_SCREEN);
-      } else {
-         RootNavigation.navigate(CONVERSATION_STACK);
-      }
+      RootNavigation.navigate(CONVERSATION_STACK, {
+         screen: CONVERSATION_SCREEN,
+         params: { jid: fromUserJID || from_user },
+      });
    }
 };
 
-const onChatNotificationBackGround = async ({ type, detail }) => {
-   if (type === EventType.PRESS) {
+export const onChatNotificationBackGround = async ({ type, detail }) => {
+   if (detail.notification?.data?.roomId) {
+      callNotifiHandling(detail);
+   } else if (type === EventType.PRESS) {
       const {
          notification: { data: { fromUserJID = '', from_user = '' } = '' },
       } = detail;
-      const push_url = getApplicationUrl() + 'CONVERSATION_STACK?fromUserJID=' + fromUserJID || from_user;
+      const push_url = getAppSchema() + 'CONVERSATION_STACK?fromUserJID=' + fromUserJID || from_user;
       const { statusCode, data = {} } = await SDK.getUserProfile(getUserIdFromJid(fromUserJID || from_user));
       if (statusCode === 200) {
          const { userId = '' } = data;
@@ -288,54 +286,7 @@ const onChatNotificationBackGround = async ({ type, detail }) => {
    }
 };
 
-export const onNotificationAction = async ({ type, detail }) => {
-   const { callerUUID: activeCallUUID = '' } = Store.getState().callData || {};
-   if (!detail.notification?.data?.roomId) {
-      if (AppState.currentState === 'active') {
-         onChatNotificationForeGround({ type, detail });
-         return;
-      } else {
-         onChatNotificationBackGround({ type, detail });
-         return;
-      }
-   }
-
-   /** if (type === EventType.PRESS) {
-      let checkChannelID = detail?.notification?.android?.channelId || '';
-      if (checkChannelID && checkChannelID !== MISSED_CALL) {
-         let showCallModal = Store.getState()?.callData?.showCallModal;
-         let activity = await ActivityModule.getActivity();
-         if (AppState.currentState === 'active') {
-            if (showCallModal && activity?.includes('CallScreenActivity')) {
-               return;
-            } else {
-               openCallModelActivity();
-            }
-         } else {
-            const push_url = getApplicationUrl();
-
-            if (push_url) {
-               Linking.openURL(push_url);
-            }
-            if (activity !== 'undefined') {
-               // const push_url = 'mirrorfly_rn://';
-               // Linking.openURL(push_url).then(() => {
-               openCallModelActivity();
-               // });
-            } else {
-               const push_url = getApplicationUrl();
-               if (push_url) {
-                  Linking.openURL(push_url).then(() => {
-                     _BackgroundTimer.setTimeout(() => {
-                        openCallModelActivity();
-                     }, 200);
-                  });
-               }
-            }
-         }
-      }
-   } */
-
+const callNotifiHandling = detail => {
    if (detail.pressAction?.id === 'accept') {
       answerIncomingCall(activeCallUUID);
    } else if (detail.pressAction?.id === 'decline') {
@@ -396,8 +347,8 @@ export const setNotificationForegroundService = async () => {
 
 export const registerNotificationEvents = () => {
    //  Register notification listeners
-   notifee.onBackgroundEvent(onNotificationAction);
-   notifee.onForegroundEvent(onNotificationAction);
+   notifee.onBackgroundEvent(onChatNotificationBackGround);
+   notifee.onForegroundEvent(onChatNotificationForeGround);
 };
 
 export const stopForegroundServiceNotification = async (cancelID = '') => {

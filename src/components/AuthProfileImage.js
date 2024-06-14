@@ -36,7 +36,6 @@ const AuthProfileImage = props => {
 
    const getImageURL = async () => {
       const imageUrl = await SDK.getMediaURL(props.image);
-      console.log(imageUrl);
       return fetchImage(imageUrl.data.fileUrl, imageUrl.data.token);
    };
 

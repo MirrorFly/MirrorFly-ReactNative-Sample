@@ -1,7 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { clearState } from './clearSlice';
 
-const initialState = {};
+const initialState = {
+   participantsList: {},
+};
 
 const groupDataSlice = createSlice({
    name: 'groupData',
@@ -9,7 +11,7 @@ const groupDataSlice = createSlice({
    reducers: {
       setMemberParticipantsList(state, action) {
          const { groupId, participantsList } = action.payload;
-         state[groupId] = participantsList;
+         state.participantsList[groupId] = participantsList;
       },
    },
    extraReducers: builder => {

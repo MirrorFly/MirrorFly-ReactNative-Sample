@@ -4,7 +4,7 @@ import React from 'react';
 import { ActivityIndicator, Image, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
-import { fetchContactsFromSDK } from '../SDK/utils';
+import { fetchContactsFromSDK, fetchGroupParticipants } from '../SDK/utils';
 import no_contacts from '../assets/no_contacts.png';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import ScreenHeader from '../common/ScreenHeader';
@@ -16,6 +16,7 @@ import { getImageSource, getUserIdFromJid, showToast } from '../helpers/chatHelp
 import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../helpers/constants';
 import { getUserNameFromStore } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
+import { GROUP_INFO, NEW_GROUP } from './constants';
 
 const contactPaginationRefInitialValue = {
    nextPage: 1,
@@ -31,8 +32,8 @@ function ContactScreen() {
    } = useRoute();
    const navigation = useNavigation();
    grpName = getUserNameFromStore(getUserIdFromJid(jid)) || grpName;
-   const isNewGrpSrn = prevScreen === 'NEW_GROUP';
-   const isGroupInfoSrn = prevScreen === 'GROUP_INFO';
+   const isNewGrpSrn = prevScreen === NEW_GROUP;
+   const isGroupInfoSrn = prevScreen === GROUP_INFO;
    const isNetworkconneted = useNetworkStatus();
    const [isFetching, setIsFetching] = React.useState(true);
    const [footerLoader, setFooterLoader] = React.useState(false);
@@ -95,7 +96,6 @@ function ContactScreen() {
          }
          const { statusCode, message, users, totalPages } = await fetchContactsFromSDK(_searchText, nextPage, 23);
          if (statusCode !== 200) {
-            console.log('statusCode', statusCode, message);
             showToast('Could not get contacts from server');
          }
          if (statusCode === 200) {

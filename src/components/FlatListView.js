@@ -10,14 +10,15 @@ import ApplicationColors from '../config/appColors';
 import config from '../config/config';
 import { showToast } from '../helpers/chatHelpers';
 import { useRoasterData } from '../redux/reduxHook';
+import { GROUP_INFO, NEW_GROUP } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 
 const RenderItem = ({ item, onhandlePress, selectedUsers, searchText }) => {
    let { nickName, image: imageToken, colorCode, status } = useRoasterData(item?.userId);
    const { params: { prevScreen = '' } = {} } = useRoute();
    const [isChecked, setIsChecked] = React.useState(false);
-   const isNewGrpSrn = prevScreen === 'NEW_GROUP';
-   const isGroupInfoSrn = prevScreen === 'GROUP_INFO';
+   const isNewGrpSrn = prevScreen === NEW_GROUP;
+   const isGroupInfoSrn = prevScreen === GROUP_INFO;
    // updating default values
    nickName = nickName || item?.nickName || item?.userId || '';
    imageToken = imageToken || '';

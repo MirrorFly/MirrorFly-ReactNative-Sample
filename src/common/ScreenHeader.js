@@ -159,4 +159,9 @@ const styles = StyleSheet.create({
       fontWeight: '600',
       color: ApplicationColors.black,
    },
+   subText: {
+      fontSize: 14,
+      color: ApplicationColors.black,
+      fontWeight: '600',
+   },
 });

@@ -8,13 +8,13 @@ import { ArchiveIcon, CloseIcon, DeleteIcon } from '../common/Icons';
 import LoadingModal from '../common/LoadingModal';
 import ScreenHeader from '../common/ScreenHeader';
 import ApplicationColors from '../config/appColors';
-import { getUserIdFromJid, toggleArchive } from '../helpers/chatHelpers';
+import { getUserIdFromJid, showToast, toggleArchive } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
-import { resetChatSelections, setSearchText } from '../redux/recentChatDataSlice';
-import { getUserNameFromStore, useRecentChatData } from '../redux/reduxHook';
-import { MENU_SCREEN, SETTINGS_STACK } from '../screens/constants';
+import { deleteRecentChats, setSearchText } from '../redux/recentChatDataSlice';
+import { getSelectedChats, getUserNameFromStore, useRecentChatData } from '../redux/reduxHook';
+import { GROUP_STACK, MENU_SCREEN, REGISTERSCREEN, SETTINGS_STACK } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
-import { mirrorflyLogout } from '../uikitMethods';
+import { logoutClearVariables, mirrorflyLogout } from '../uikitMethods';
 
 const RecentChatHeader = () => {
    const dispatch = useDispatch();
@@ -51,7 +51,24 @@ const RecentChatHeader = () => {
    };
 
    const handleRemoveClose = () => {
-      dispatch(resetChatSelections());
+      const isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
+      if (!isUserLeft && filtered.length > 1) {
+         toggleModalContent();
+         return showToast('You are a member of a certain group');
+      }
+
+      if (!isUserLeft) {
+         toggleModalContent();
+         return showToast('You are a participant in this group');
+      }
+
+      const userJids = getSelectedChats().map(item => item.userJid);
+
+      userJids.forEach(item => {
+         SDK.deleteChat(item);
+      });
+
+      dispatch(deleteRecentChats());
    };
 
    const renderDeleteIcon = () => {
@@ -67,7 +84,7 @@ const RecentChatHeader = () => {
    const renderArchiveIcon = () => {
       return (
          <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-            <IconButton onPress={toggleArchive}>
+            <IconButton onPress={toggleArchive(true)}>
                <ArchiveIcon />
             </IconButton>
          </View>
@@ -76,14 +93,27 @@ const RecentChatHeader = () => {
 
    const hanldeLogout = async () => {
       setIsLoading(true);
-      mirrorflyLogout({ navEnabled: true });
+      const res = await mirrorflyLogout();
+      setIsLoading(false);
+      if (res === 200) {
+         logoutClearVariables();
+         RootNavigation.reset(REGISTERSCREEN);
+      }
    };
 
    const hanldeRoute = () => {
       RootNavigation.navigate(SETTINGS_STACK, { screen: MENU_SCREEN });
    };
 
+   const hanldeGroupRoute = () => {
+      RootNavigation.navigate(GROUP_STACK);
+   };
+
    const menuItems = [
+      {
+         label: 'New Group',
+         formatter: hanldeGroupRoute,
+      },
       {
          label: 'Settings',
          formatter: hanldeRoute,

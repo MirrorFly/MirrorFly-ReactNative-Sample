@@ -6,10 +6,10 @@ import IconButton from '../common/IconButton';
 import { CloseIcon, DeleteIcon, UnArchiveIcon } from '../common/Icons';
 import ScreenHeader from '../common/ScreenHeader';
 import ApplicationColors from '../config/appColors';
-import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { getUserIdFromJid, toggleArchive } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
-import { resetChatSelections } from '../redux/recentChatDataSlice';
-import { getUserNameFromStore, useArchivedChatData } from '../redux/reduxHook';
+import { deleteRecentChats } from '../redux/recentChatDataSlice';
+import { getArchiveSelectedChats, getUserNameFromStore, useArchivedChatData } from '../redux/reduxHook';
 import { ARCHIVED_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 
@@ -43,7 +43,24 @@ function ArchivedHeader() {
    };
 
    const handleRemoveClose = () => {
-      dispatch(resetChatSelections(ARCHIVED_SCREEN));
+      const isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
+      if (!isUserLeft && filtered.length > 1) {
+         toggleModalContent();
+         return showToast('You are a member of a certain group');
+      }
+
+      if (!isUserLeft) {
+         toggleModalContent();
+         return showToast('You are a participant in this group');
+      }
+
+      const userJids = getArchiveSelectedChats().map(item => item.userJid);
+
+      userJids.forEach(item => {
+         SDK.deleteChat(item);
+      });
+
+      dispatch(deleteRecentChats(ARCHIVED_SCREEN));
    };
 
    const renderDeleteIcon = () => {
@@ -59,7 +76,7 @@ function ArchivedHeader() {
    const renderUnArchiveIcon = () => {
       return (
          <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-            <IconButton>
+            <IconButton onPress={toggleArchive(false)}>
                <UnArchiveIcon />
             </IconButton>
          </View>

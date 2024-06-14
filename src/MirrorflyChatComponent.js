@@ -14,7 +14,7 @@ import {
    SETTINGS_STACK,
    USERS_LIST_SCREEN,
 } from './screens/constants';
-import { getAppSchema } from './uikitMethods';
+import { getAppInitStatus, getAppSchema } from './uikitMethods';
 
 const linking = {
    prefixes: [getAppSchema()],
@@ -33,6 +33,16 @@ const linking = {
 };
 
 export function MirrorflyChatComponent() {
+   if (!getAppInitStatus()) {
+      return (
+         <SafeAreaView style={{ flex: 1, backgroundColor: ApplicationColors.headerBg }}>
+            <View style={[commonStyles.flex1, commonStyles.justifyContentCenter, commonStyles.alignItemsCenter]}>
+               <Text> Mirrorfly Not Initialized</Text>
+            </View>
+         </SafeAreaView>
+      );
+   }
+
    return (
       <SafeAreaView style={{ flex: 1, backgroundColor: ApplicationColors.headerBg }}>
          <NavigationContainer linking={linking} independent={true} ref={navigationRef}>

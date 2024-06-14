@@ -30,10 +30,10 @@ import {
    isAnyMessageWithinLast30Seconds,
    showToast,
 } from '../helpers/chatHelpers';
-import { CALL_TYPE_AUDIO, CALL_TYPE_VIDEO } from '../helpers/constants';
+import { CALL_TYPE_AUDIO, CALL_TYPE_VIDEO, MIX_BARE_JID } from '../helpers/constants';
 import { setChatSearchText } from '../redux/chatMessageDataSlice';
 import { getSelectedChatMessages, useChatMessages } from '../redux/reduxHook';
-import { MESSAGE_INFO_SCREEN, USER_INFO } from '../screens/constants';
+import { GROUP_INFO, MESSAGE_INFO_SCREEN, RECENTCHATSCREEN, USER_INFO } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 import LastSeen from './LastSeen';
 import UserAvathar from './UserAvathar';
@@ -72,7 +72,7 @@ function ChatHeader({ chatUser }) {
             navigation.goBack();
             break;
          default:
-            navigation.reset.reset({
+            navigation.reset({
                index: 0,
                routes: [{ name: RECENTCHATSCREEN }],
             });
@@ -230,7 +230,11 @@ function ChatHeader({ chatUser }) {
    }
 
    const handleRoute = () => {
-      navigation.navigate(USER_INFO, { chatUser });
+      if (MIX_BARE_JID.test(chatUser)) {
+         navigation.navigate(GROUP_INFO, { chatUser });
+      } else {
+         navigation.navigate(USER_INFO, { chatUser });
+      }
    };
 
    if (isSearching) {

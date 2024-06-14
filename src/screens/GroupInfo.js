@@ -1,12 +1,17 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { useSelector } from 'react-redux';
+import RootNavigation from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import { fetchGroupParticipants } from '../SDK/utils';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import { useNetworkStatus } from '../common/hooks';
+import GrpCollapsibleToolbar from '../components/GrpCollapsibleToolbar';
 import ApplicationColors from '../config/appColors';
-import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { getUserIdFromJid, handleImagePickerOpenCamera, handleImagePickerOpenGallery } from '../helpers/chatHelpers';
+import { getUserNameFromStore } from '../redux/reduxHook';
+import commonStyles from '../styles/commonStyles';
 
 const GroupInfo = () => {
    const {
@@ -15,7 +20,11 @@ const GroupInfo = () => {
    const chatUserId = getUserIdFromJid(chatUser);
    const isNetworkconneted = useNetworkStatus();
    const [modelOpen, setModelOpen] = React.useState(false);
-   const groupParticipants = [];
+   const groupParticipants = useSelector(state => state.groupData.participantsList[chatUserId]);
+
+   const handleBackBtn = () => {
+      RootNavigation.goBack();
+   };
 
    const toggleModel = () => {
       setModelOpen(val => !val);
@@ -35,7 +44,7 @@ const GroupInfo = () => {
          const _image = await handleImagePickerOpenGallery();
          setTimeout(async () => {
             if (Object.keys(_image).length) {
-               const { statusCode, message } = await SDK.setGroupProfile(chatUser, getUserName(chatUserId), _image);
+               const { statusCode, message } = await SDK.setGroupProfile(chatUser, getUserNameFromStore(chatUserId), _image);
                if (statusCode !== 200) {
                   showToast(message, { id: message });
                }
@@ -51,7 +60,7 @@ const GroupInfo = () => {
          const _image = await handleImagePickerOpenCamera();
          setTimeout(async () => {
             if (Object.keys(_image).length) {
-               const { statusCode, message } = await SDK.setGroupProfile(chatUser, getUserName(chatUserId), _image);
+               const { statusCode, message } = await SDK.setGroupProfile(chatUser, getUserNameFromStore(chatUserId), _image);
                if (statusCode !== 200) {
                   showToast(message, { id: message });
                }
@@ -65,7 +74,7 @@ const GroupInfo = () => {
       if (!isNetworkconneted) {
          return showInternetconnectionToast();
       }
-      const { statusCode, message } = await SDK.setGroupProfile(chatUser, getUserName(chatUserId));
+      const { statusCode, message } = await SDK.setGroupProfile(chatUser, getUserNameFromStore(chatUserId));
       if (statusCode !== 200) {
          showToast(message, { id: message });
       } else {

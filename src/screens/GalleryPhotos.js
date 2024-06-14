@@ -7,8 +7,9 @@ import Pressable from '../common/Pressable';
 import GalleryHeader from '../components/GalleryHeader';
 import ApplicationColors from '../config/appColors';
 import { getType, mediaObjContructor, showToast, validateFileSize } from '../helpers/chatHelpers';
-import { GALLERY_PHOTOS_SCREEN, MEDIA_PRE_VIEW_SCREEN } from '../helpers/constants';
+
 import commonStyles from '../styles/commonStyles';
+import { GALLERY_PHOTOS_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
 
 const GalleryPhotos = () => {
    const { params: { grpView = '', selectedImages: routesSelectedImages = [] } = {} } = useRoute();

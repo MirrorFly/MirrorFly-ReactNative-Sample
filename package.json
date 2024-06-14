@@ -104,7 +104,7 @@
       "react-native-tab-view": "^3.5.2",
       "react-native-video": "^5.2.1",
       "react-native-voip-push-notification": "^3.3.2",
-      "react-native-webrtc": "^118.0.7",
+      "react-native-webrtc": "^118.0.5",
       "react-redux": "^9.1.2",
       "react-test-renderer": "18.2.0",
       "realm": "^11.9.0",
@@ -117,5 +117,8 @@
    },
    "engines": {
       "node": ">=16"
+   },
+   "dependencies": {
+      "@react-native-clipboard/clipboard": "^1.14.1"
    }
 }

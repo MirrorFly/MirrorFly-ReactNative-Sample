@@ -3,21 +3,17 @@ import { Platform } from 'react-native';
 import { MirrorflyChatComponent } from './src/MirrorflyChatComponent';
 import { CallComponent } from './src/calls/CallComponent';
 
-export const MirrorflyComponent = (props = {}) => {
+function App() {
    const renderCallComponent = () => {
       return Platform.OS === 'ios' ? <CallComponent /> : null;
    };
 
    return (
       <>
-         <MirrorflyChatComponent {...props} />
+         <MirrorflyChatComponent />
          {renderCallComponent()}
       </>
    );
-};
-
-function App() {
-   return <MirrorflyComponent />;
 }
 
 export default App;

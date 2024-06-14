@@ -51,7 +51,7 @@ const callStateSlice = createSlice({
          return {
             ...state,
             id: Date.now(),
-            showCallModal: true,
+            showCallModal: false,
          };
       },
       setCallModalScreen(state, action) {
@@ -100,6 +100,7 @@ const callStateSlice = createSlice({
             callerUUID: '',
             callLayout: defaultCallLayout,
             isCallFromVoip: false,
+            showCallModal: false,
          };
       },
       updateCallLayout(state, action) {

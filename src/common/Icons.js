@@ -158,11 +158,11 @@ export const RegiterPageIcon = () => {
                fill="#f5f5f5"
             />
             <Text
+               fontSize={5}
                id="_1"
                data-name="1"
                transform="translate(174.428 147.007)"
                fill="#110c0d"
-               font-size="4"
                font-family="Arimo-Bold, Arimo"
                font-weight="700">
                <TSpan x="0" y="0">
@@ -184,7 +184,7 @@ export const RegiterPageIcon = () => {
                data-name="4"
                transform="translate(174.428 156.441)"
                fill="#110c0d"
-               font-size="4"
+               fontSize={5}
                font-family="Arimo-Bold, Arimo"
                font-weight="700">
                <TSpan x="0" y="0">
@@ -206,7 +206,7 @@ export const RegiterPageIcon = () => {
                data-name="7"
                transform="translate(174.428 166.923)"
                fill="#110c0d"
-               font-size="4"
+               fontSize={5}
                font-family="Arimo-Bold, Arimo"
                font-weight="700">
                <TSpan x="0" y="0">
@@ -228,7 +228,7 @@ export const RegiterPageIcon = () => {
                data-name="*"
                transform="translate(174.738 178.454)"
                fill="#110c0d"
-               font-size="4"
+               fontSize={5}
                font-family="Arimo-Bold, Arimo"
                font-weight="700">
                <TSpan x="0" y="0">
@@ -250,7 +250,7 @@ export const RegiterPageIcon = () => {
                data-name="2"
                transform="translate(185.571 147.007)"
                fill="#110c0d"
-               font-size="4"
+               fontSize={5}
                font-family="Arimo-Bold, Arimo"
                font-weight="700">
                <TSpan x="0" y="0">
@@ -272,7 +272,7 @@ export const RegiterPageIcon = () => {
                data-name="5"
                transform="translate(185.262 156.441)"
                fill="#110c0d"
-               font-size="4"
+               fontSize={5}
                font-family="Arimo-Bold, Arimo"
                font-weight="700">
                <TSpan x="0" y="0">
@@ -294,7 +294,7 @@ export const RegiterPageIcon = () => {
                data-name="8"
                transform="translate(185.262 166.923)"
                fill="#110c0d"
-               font-size="4"
+               fontSize={5}
                font-family="Arimo-Bold, Arimo"
                font-weight="700">
                <TSpan x="0" y="0">
@@ -316,7 +316,7 @@ export const RegiterPageIcon = () => {
                data-name="0"
                transform="translate(185.262 177.405)"
                fill="#110c0d"
-               font-size="4"
+               fontSize={5}
                font-family="Arimo-Bold, Arimo"
                font-weight="700">
                <TSpan x="0" y="0">
@@ -338,7 +338,7 @@ export const RegiterPageIcon = () => {
                data-name="3"
                transform="translate(196.096 147.007)"
                fill="#110c0d"
-               font-size="4"
+               fontSize={5}
                font-family="Arimo-Bold, Arimo"
                font-weight="700">
                <TSpan x="0" y="0">
@@ -360,7 +360,7 @@ export const RegiterPageIcon = () => {
                data-name="6"
                transform="translate(196.096 156.441)"
                fill="#110c0d"
-               font-size="4"
+               fontSize={5}
                font-family="Arimo-Bold, Arimo"
                font-weight="700">
                <TSpan x="0" y="0">
@@ -382,7 +382,7 @@ export const RegiterPageIcon = () => {
                data-name="9"
                transform="translate(196.096 166.923)"
                fill="#110c0d"
-               font-size="4"
+               fontSize={5}
                font-family="Arimo-Bold, Arimo"
                font-weight="700">
                <TSpan x="0" y="0">
@@ -404,7 +404,7 @@ export const RegiterPageIcon = () => {
                data-name="#"
                transform="translate(196.096 177.405)"
                fill="#110c0d"
-               font-size="4"
+               fontSize={5}
                font-family="Arimo-Bold, Arimo"
                font-weight="700">
                <TSpan x="0" y="0">

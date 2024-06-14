@@ -1,13 +1,27 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Image, Keyboard, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+   Animated,
+   Image,
+   Keyboard,
+   Platform,
+   ScrollView,
+   StyleSheet,
+   Text,
+   TextInput,
+   View,
+   useWindowDimensions,
+} from 'react-native';
 import RootNavigation from '../Navigation/rootNavigation';
 import { RealmKeyValueStore } from '../SDK/SDK';
 import CamerIcon from '../assets/camera.png';
 import profileImage from '../assets/profile.png';
+import AlertModal from '../common/AlertModal';
 import Avathar from '../common/Avathar';
 import { MailIcon, StatusIcon } from '../common/Icons';
 import LoadingModal from '../common/LoadingModal';
+import Modal, { ModalBottomContent } from '../common/Modal';
+import Pressable from '../common/Pressable';
 import ScreenHeader from '../common/ScreenHeader';
 import { useNetworkStatus } from '../common/hooks';
 import AuthProfileImage from '../components/AuthProfileImage';
@@ -16,13 +30,16 @@ import {
    calculateKeyboardVerticalOffset,
    getImageSource,
    getUserIdFromJid,
+   handleImagePickerOpenCamera,
+   handleImagePickerOpenGallery,
+   handleRoute,
    isEqualObjet,
    showToast,
 } from '../helpers/chatHelpers';
-import { useRoasterData } from '../redux/reduxHook';
+import { getUserImage, useRoasterData } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid, mirrorflyProfileUpdate } from '../uikitMethods';
-import { RECENTCHATSCREEN } from './constants';
+import { PROFILE_IMAGE, PROFILE_STATUS_EDIT, RECENTCHATSCREEN } from './constants';
 
 const ProfileScreen = () => {
    const [isLoading, setIsLoading] = React.useState(true);
@@ -34,6 +51,9 @@ const ProfileScreen = () => {
    const [imageUploading, setImageUploading] = React.useState(false);
    const isConnected = useNetworkStatus();
    const canGoBack = navigaiton.canGoBack();
+   const [optionModelOpen, setOptionModelOpen] = React.useState(false);
+   const [modalContent, setModalContent] = React.useState(null);
+   const layout = useWindowDimensions();
 
    React.useEffect(() => {
       if (!isEqualObjet(profile, profileDetails)) {
@@ -46,6 +66,25 @@ const ProfileScreen = () => {
       setIsLoading(false);
    }, [profile]);
 
+   const translateY = React.useRef(new Animated.Value(layout.height)).current;
+   React.useEffect(() => {
+      if (optionModelOpen) {
+         // Animate in if visible
+         Animated.timing(translateY, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+         }).start();
+      } else {
+         // Animate out if not visible
+         Animated.timing(translateY, {
+            toValue: layout.height,
+            duration: 300,
+            useNativeDriver: true,
+         }).start();
+      }
+   }, [optionModelOpen, translateY, layout.height]);
+
    const isUnsavedChangesAvailable = React.useMemo(() => {
       return !isEqualObjet(profile, profileDetails);
    }, [profile, profileDetails]);
@@ -55,7 +94,11 @@ const ProfileScreen = () => {
       if (!isConnected) {
          showToast('Please check your internet connectivity');
       } else if (isConnected) {
-         // to write logic here
+         if (position === 'big' && profileDetails.image) {
+            navigaiton.navigate(PROFILE_IMAGE, { userId });
+         } else {
+            toggleOptionModel();
+         }
       }
    };
 
@@ -84,12 +127,13 @@ const ProfileScreen = () => {
          setIsLoading(true);
          const { nickName, image, status, mobileNumber, email } = profileDetails;
          const { statusCode, message } = await mirrorflyProfileUpdate({
-            _nickName: nickName,
-            _image: image,
-            _status: status,
-            _mobileNumber: mobileNumber,
-            _email: email,
+            nickName,
+            image,
+            status,
+            mobileNumber,
+            email,
          });
+         setIsLoading(false);
          if (statusCode === 200) {
             showToast('Profile Updated successfully');
             if (!canGoBack) {
@@ -123,6 +167,69 @@ const ProfileScreen = () => {
       }
    };
 
+   const handleRemoveImage = () => {
+      console.log('onCLick');
+      mirrorflyProfileUpdate({
+         image: '',
+      });
+   };
+
+   const toggleModalContent = () => {
+      setModalContent(null);
+   };
+
+   const toggleConfirmRemovePhotoModal = () => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: 'Are you sure you want to remove the photo?',
+         noButton: 'No',
+         yesButton: 'Yes',
+         yesAction: handleRemoveImage,
+      });
+   };
+
+   const handleTakePhoto = async () => {
+      const _image = await handleImagePickerOpenCamera();
+      if (Object.keys(_image).length) {
+         setIsLoading(true);
+         setTimeout(async () => {
+            await mirrorflyProfileUpdate({ image: _image });
+            setIsLoading(false);
+         }, 1000);
+      }
+   };
+
+   const handleFromGallery = async () => {
+      const _image = await handleImagePickerOpenGallery();
+      if (Object.keys(_image).length) {
+         setIsLoading(true);
+         setTimeout(async () => {
+            await mirrorflyProfileUpdate({ image: _image });
+            setIsLoading(false);
+         }, 1000);
+      }
+   };
+
+   const toggleOptionModel = () => {
+      setOptionModelOpen(val => !val);
+   };
+
+   const handleOptionTakePhoto = () => {
+      toggleOptionModel();
+      handleTakePhoto();
+   };
+
+   const handleOptionGallery = () => {
+      toggleOptionModel();
+      handleFromGallery();
+   };
+
+   const handleOptionRemove = () => {
+      toggleOptionModel();
+      toggleConfirmRemovePhotoModal();
+   };
+
    const handleRenderAuthImage = React.useMemo(() => {
       return (
          <AuthProfileImage
@@ -136,136 +243,161 @@ const ProfileScreen = () => {
    }, [profileDetails]);
 
    return (
-      <ScrollView
-         style={styles.keyBoardStyle}
-         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-         keyboardVerticalOffset={Platform.OS === 'ios' ? calculateKeyboardVerticalOffset() : 0}>
-         {navigaiton.canGoBack() ? (
-            <ScreenHeader title="Profile" isSearchable={false} />
-         ) : (
-            <View style={styles.titleContainer}>
-               <Text style={styles.titleText}>Profile</Text>
-            </View>
-         )}
-         <View style={[commonStyles.justifyContentCenter]}>
-            <View style={[commonStyles.alignItemsCenter, commonStyles.mt_50]}>
-               <View
-                  style={{
-                     justifyContent: 'center',
-                     alignItems: 'center',
-                     height: 157,
-                     width: 157,
-                     position: 'relative',
-                  }}>
-                  <Pressable onPress={handleImage('big')}>
-                     {Boolean(profileDetails?.image) && handleRenderAuthImage}
-                     {!Boolean(profileDetails?.image) && Boolean(profileDetails?.nickName?.trim()) && (
-                        <Avathar
-                           fontSize={60}
-                           width={157}
-                           height={157}
-                           data={profileDetails?.nickName?.trim()}
-                           backgroundColor={'#3276E2'}
-                        />
-                     )}
-                     {!Boolean(profileDetails?.image) && !Boolean(profileDetails?.nickName?.trim()) && (
-                        <Image
-                           resizeMode="contain"
-                           source={getImageSource(profileImage)}
-                           style={{ height: 157, width: 157 }}
-                        />
-                     )}
-                  </Pressable>
-                  <Pressable
-                     activeOpacity={1}
-                     onPress={handleImage('small')}
-                     style={{ position: 'absolute', right: 0, bottom: 0 }}>
-                     <Image resizeMode="contain" source={getImageSource(CamerIcon)} style={styles.CameraImage} />
-                  </Pressable>
+      <>
+         <ScrollView
+            style={styles.keyBoardStyle}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? calculateKeyboardVerticalOffset() : 0}>
+            {navigaiton.canGoBack() ? (
+               <ScreenHeader title="Profile" isSearchable={false} />
+            ) : (
+               <View style={styles.titleContainer}>
+                  <Text style={styles.titleText}>Profile</Text>
                </View>
-               <TextInput
-                  style={{
-                     fontSize: 16,
-                     fontWeight: '600',
-                     marginTop: 5,
-                  }}
-                  numberOfLines={1}
-                  defaultValue={profileDetails?.nickName}
-                  onChangeText={handleNicknameChange}
-                  placeholder="Username " // Adding a trailing space to fix a strange issue ( last letter "e" is not visible )
-                  maxLength={31}
-                  placeholderTextColor="#959595"
-                  keyboardType="default"
-                  cursorColor={ApplicationColors.mainColor}
-               />
-            </View>
-            <View style={{ padding: 20 }}>
-               <Text
-                  style={{
-                     fontSize: 14,
-                     fontWeight: '500',
-                     marginTop: 5,
-                     color: '#000',
-                  }}>
-                  Email
-               </Text>
-               <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-                  <MailIcon />
+            )}
+            <View style={[commonStyles.justifyContentCenter]}>
+               <View style={[commonStyles.alignItemsCenter, commonStyles.mt_50]}>
+                  <View
+                     style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: 157,
+                        width: 157,
+                        position: 'relative',
+                     }}>
+                     <Pressable
+                        pressedStyle={{ borderRadius: 100, padding: 8, backgroundColor: ApplicationColors.pressedBg }}
+                        onPress={handleImage('big')}>
+                        {Boolean(profileDetails?.image) && handleRenderAuthImage}
+                        {!Boolean(profileDetails?.image) && Boolean(profileDetails?.nickName?.trim()) && (
+                           <Avathar
+                              fontSize={60}
+                              width={157}
+                              height={157}
+                              data={profileDetails?.nickName?.trim()}
+                              backgroundColor={'#3276E2'}
+                           />
+                        )}
+                        {!Boolean(profileDetails?.image) && !Boolean(profileDetails?.nickName?.trim()) && (
+                           <Image
+                              resizeMode="contain"
+                              source={getImageSource(profileImage)}
+                              style={{ height: 157, width: 157 }}
+                           />
+                        )}
+                     </Pressable>
+                     <Pressable
+                        activeOpacity={1}
+                        onPress={handleImage('small')}
+                        style={{ position: 'absolute', right: 0, bottom: 0 }}>
+                        <Image resizeMode="contain" source={getImageSource(CamerIcon)} style={styles.CameraImage} />
+                     </Pressable>
+                  </View>
                   <TextInput
-                     editable={!canGoBack}
-                     style={{ color: '#959595', flex: 1, marginLeft: 8 }}
-                     defaultValue={profileDetails?.email}
-                     onChangeText={handleEmailChange}
-                     maxLength={35}
-                     placeholder="Enter Email Id"
-                     placeholderTextColor={'#959595'}
-                     keyboardType="default"
+                     style={{
+                        fontSize: 16,
+                        fontWeight: '600',
+                        marginTop: 5,
+                     }}
                      numberOfLines={1}
+                     defaultValue={profileDetails?.nickName}
+                     onChangeText={handleNicknameChange}
+                     placeholder="Username " // Adding a trailing space to fix a strange issue ( last letter "e" is not visible )
+                     maxLength={31}
+                     placeholderTextColor="#959595"
+                     keyboardType="default"
+                     cursorColor={ApplicationColors.mainColor}
                   />
                </View>
-               <View style={[commonStyles.dividerLine, commonStyles.mt_12]} />
-               <Text style={{ paddingVertical: 10, fontSize: 14, fontWeight: '500', marginTop: 5, color: '#000' }}>
-                  Mobile Number
-               </Text>
-               <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-                  <MailIcon />
-                  <Text style={{ color: '#959595', flex: 1, marginLeft: 8 }}>+{profileDetails?.mobileNumber}</Text>
+               <View style={{ padding: 20 }}>
+                  <Text
+                     style={{
+                        fontSize: 14,
+                        fontWeight: '500',
+                        marginTop: 5,
+                        color: '#000',
+                     }}>
+                     Email
+                  </Text>
+                  <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+                     <MailIcon />
+                     <TextInput
+                        // editable={!canGoBack}
+                        style={{ color: '#959595', flex: 1, marginLeft: 8 }}
+                        defaultValue={profileDetails?.email}
+                        onChangeText={handleEmailChange}
+                        maxLength={35}
+                        placeholder="Enter Email Id"
+                        placeholderTextColor={'#959595'}
+                        keyboardType="default"
+                        numberOfLines={1}
+                     />
+                  </View>
+                  <View style={[commonStyles.dividerLine, commonStyles.mt_12]} />
+                  <Text style={{ paddingVertical: 10, fontSize: 14, fontWeight: '500', marginTop: 5, color: '#000' }}>
+                     Mobile Number
+                  </Text>
+                  <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+                     <MailIcon />
+                     <Text style={{ color: '#959595', flex: 1, marginLeft: 8 }}>+{profileDetails?.mobileNumber}</Text>
+                  </View>
+                  <View style={[commonStyles.dividerLine, commonStyles.mt_12]} />
+                  <Text style={{ fontSize: 14, fontWeight: '500', marginTop: 5, color: '#000', paddingTop: 10 }}>
+                     Status
+                  </Text>
+                  <Pressable onPress={handleRoute(PROFILE_STATUS_EDIT, { userId })}>
+                     <View style={[commonStyles.hstack, commonStyles.alignItemsCenter, { paddingVertical: 10 }]}>
+                        <StatusIcon />
+                        <Text style={{ color: '#959595', flex: 1, marginLeft: 8 }}>{profileDetails?.status}</Text>
+                     </View>
+                  </Pressable>
+                  <View style={[commonStyles.dividerLine, commonStyles.mt_12]} />
                </View>
-               <View style={[commonStyles.dividerLine, commonStyles.mt_12]} />
-               <Text style={{ paddingVertical: 10, fontSize: 14, fontWeight: '500', marginTop: 5, color: '#000' }}>
-                  Status
-               </Text>
-               <Pressable style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-                  <StatusIcon />
-                  <Text style={{ color: '#959595', flex: 1, marginLeft: 8 }}>{profileDetails?.status}</Text>
-               </Pressable>
-               <View style={[commonStyles.dividerLine, commonStyles.mt_12]} />
+               <View style={[commonStyles.alignItemsCenter, commonStyles.mt_50]}>
+                  {!canGoBack && (
+                     <Pressable style={[commonStyles.primarypilbtn]} onPress={handleProfileUpdate}>
+                        <Text style={commonStyles.primarypilbtntext}>
+                           {isUnsavedChangesAvailable ? 'Update & Continue' : 'Save'}
+                        </Text>
+                     </Pressable>
+                  )}
+                  {canGoBack && (
+                     <Pressable
+                        disabled={!isUnsavedChangesAvailable}
+                        style={[
+                           commonStyles.primarypilbtn,
+                           {
+                              backgroundColor: isUnsavedChangesAvailable && canGoBack ? '#3276E2' : '#d3d3d3',
+                           },
+                        ]}
+                        onPress={handleProfileUpdate}>
+                        <Text style={commonStyles.primarypilbtntext}>Save</Text>
+                     </Pressable>
+                  )}
+               </View>
             </View>
-            <View style={[commonStyles.alignItemsCenter, commonStyles.mt_50]}>
-               {!canGoBack && (
-                  <Pressable style={[commonStyles.primarypilbtn]} onPress={handleProfileUpdate}>
-                     <Text style={commonStyles.primarypilbtntext}>
-                        {isUnsavedChangesAvailable ? 'Update & Continue' : 'Save'}
-                     </Text>
+            {isLoading && <LoadingModal />}
+         </ScrollView>
+         {modalContent && <AlertModal {...modalContent} />}
+         <Modal visible={optionModelOpen} onRequestClose={toggleOptionModel}>
+            <ModalBottomContent onPressOutside={toggleOptionModel}>
+               <Animated.View style={[styles.optionModelContainer, { transform: [{ translateY }] }]}>
+                  <Text style={styles.optionTitleText}>Options</Text>
+                  <Pressable onPress={handleOptionTakePhoto}>
+                     <Text style={styles.pressableText}>Take Photo</Text>
                   </Pressable>
-               )}
-               {canGoBack && (
-                  <Pressable
-                     disabled={!isUnsavedChangesAvailable}
-                     style={[
-                        commonStyles.primarypilbtn,
-                        {
-                           backgroundColor: isUnsavedChangesAvailable && canGoBack ? '#3276E2' : '#d3d3d3',
-                        },
-                     ]}
-                     onPress={handleProfileUpdate}>
-                     <Text style={commonStyles.primarypilbtntext}>Save</Text>
+                  <Pressable onPress={handleOptionGallery}>
+                     <Text style={styles.pressableText}>Choose from Gallery</Text>
                   </Pressable>
-               )}
-            </View>
-         </View>
-         {isLoading && <LoadingModal />}
-      </ScrollView>
+                  {Boolean(getUserImage(userId)) && (
+                     <Pressable onPress={handleOptionRemove}>
+                        <Text style={styles.pressableText}>Remove Photo</Text>
+                     </Pressable>
+                  )}
+               </Animated.View>
+            </ModalBottomContent>
+         </Modal>
+      </>
    );
 };
 
@@ -293,5 +425,20 @@ const styles = StyleSheet.create({
       paddingHorizontal: 12,
       fontWeight: '600',
       color: ApplicationColors.black,
+   },
+   optionTitleText: { fontSize: 16, color: '#000', marginVertical: 5, marginHorizontal: 20, lineHeight: 25 },
+   optionModelContainer: {
+      maxWidth: 500,
+      width: '98%',
+      backgroundColor: '#fff',
+      paddingVertical: 12,
+      borderTopLeftRadius: 30,
+      borderTopRightRadius: 30,
+      borderBottomWidth: 3,
+   },
+   pressableText: {
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      fontWeight: '600',
    },
 });

@@ -23,6 +23,7 @@ import {
    stopReconnectingTone,
 } from '../Helper/Calls/Call';
 import {
+   CALL_AGAIN_SCREEN,
    CALL_BUSY_STATUS_MESSAGE,
    CALL_ENGAGED_STATUS_MESSAGE,
    CALL_STATUS_CONNECTED,
@@ -100,6 +101,7 @@ import { setXmppConnectionStatus } from '../redux/loggedInUserDataSlice';
 import { setPresenceData } from '../redux/presenceDataSlice';
 import { setProgress } from '../redux/progressDataSlice';
 import { addRecentChatItem, updateMsgByLastMsgId, updateRecentMessageStatus } from '../redux/recentChatDataSlice';
+import { getArchive } from '../redux/reduxHook';
 import { setRoasterData } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting } from '../redux/settingDataSlice';
 import { resetConferencePopup, showConfrence, updateConference } from '../redux/showConfrenceSlice';
@@ -652,6 +654,7 @@ export const callBacks = {
          case 'groupCreated':
          case 'receiveMessage':
          case 'groupProfileUpdated':
+            res.archiveSetting = getArchive();
             store.dispatch(addRecentChatItem(res));
             store.dispatch(addChatMessageItem(res));
             if (

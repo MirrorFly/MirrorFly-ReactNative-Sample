@@ -15,7 +15,6 @@ import { COUNTRY_LIST_SCREEN, PROFILE_SCREEN, SETTINGS_STACK } from './constants
 
 const RegisterScreen = ({ navigation }) => {
    const { params: { selectcountry = { dial_code: '91', name: 'India', code: 'IN' } } = {} } = useRoute();
-
    const [isLoading, setIsLoading] = React.useState(false);
    const [mobileNumber, setMobileNumber] = React.useState('');
    const [isToastShowing, setIsToastShowing] = React.useState(false);
@@ -146,10 +145,7 @@ const RegisterScreen = ({ navigation }) => {
                   <Text style={commonStyles.primarypilbtntext}>Continue</Text>
                </Pressable>
             </View>
-            <View
-               style={{ marginTop: 44, justifyContent: 'center', alignItems: 'center' }}
-               // mt="22" justifyContent="center" alignItems="center"
-            >
+            <View style={{ marginTop: 44, justifyContent: 'center', alignItems: 'center' }}>
                <Text style={{ color: '#767676', fontSize: 14, fontWeight: '400' }}>
                   By clicking continue you agree to MirroFly
                </Text>

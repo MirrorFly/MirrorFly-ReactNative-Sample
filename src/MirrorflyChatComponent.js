@@ -1,6 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, Text, View } from 'react-native';
 import StackNavigationPage from './Navigation/StackNavigation';
 import { navigationRef } from './Navigation/rootNavigation';
 import ApplicationColors from './config/appColors';
@@ -14,6 +14,7 @@ import {
    SETTINGS_STACK,
    USERS_LIST_SCREEN,
 } from './screens/constants';
+import commonStyles from './styles/commonStyles';
 import { getAppInitStatus, getAppSchema } from './uikitMethods';
 
 const linking = {

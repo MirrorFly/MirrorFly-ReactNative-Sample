@@ -22,6 +22,7 @@ import {
 } from '../common/permissions';
 import ApplicationColors from '../config/appColors';
 import {
+   copyToClipboard,
    getUserIdFromJid,
    getUserType,
    handelResetMessageSelection,
@@ -29,11 +30,12 @@ import {
    handleMessageDelete,
    handleMessageDeleteForEveryOne,
    isAnyMessageWithinLast30Seconds,
+   isLocalUser,
    showToast,
 } from '../helpers/chatHelpers';
 import { CALL_TYPE_AUDIO, CALL_TYPE_VIDEO, MIX_BARE_JID } from '../helpers/constants';
 import { setChatSearchText } from '../redux/chatMessageDataSlice';
-import { closePermissionModal } from '../redux/permissionSlice';
+import { closePermissionModal, showPermissionModal } from '../redux/permissionSlice';
 import { getSelectedChatMessages, useChatMessages } from '../redux/reduxHook';
 import { GROUP_INFO, MESSAGE_INFO_SCREEN, RECENTCHATSCREEN, USER_INFO } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
@@ -214,10 +216,10 @@ function ChatHeader({ chatUser }) {
    if (filtered[0]?.msgBody?.message_type === 'text' || filtered[0]?.msgBody?.media?.caption) {
       menuItems.push({
          label: 'Copy',
-         // formatter: copyToClipboard(filtered),
+         formatter: copyToClipboard(filtered, userId),
       });
    }
-   if (filtered.length === 1) {
+   if (filtered.length === 1 && isLocalUser(filtered[0]?.publisherJid)) {
       // Show Copy and Message Info options
       menuItems.push({
          label: 'Message Info',
@@ -336,23 +338,25 @@ function ChatHeader({ chatUser }) {
                {Boolean(menuItems.length) && <MenuContainer menuItems={menuItems} />}
             </View>
             {modalContent && <AlertModal {...modalContent} />}
-            <Modal visible={permissionData}>
-               <ModalCenteredContent>
-                  <View style={styles.callModalContentContainer}>
-                     <Text style={styles.callModalContentText}>{permissionText}</Text>
-                     <View style={styles.callModalHorizontalActionButtonsContainer}>
-                        <Pressable
-                           contentContainerStyle={styles.deleteModalHorizontalActionButton}
-                           onPress={() => {
-                              openSettings();
-                              dispatch(closePermissionModal());
-                           }}>
-                           <Text style={styles.deleteModalActionButtonText}>OK</Text>
-                        </Pressable>
+            {permissionData && (
+               <Modal visible={permissionData}>
+                  <ModalCenteredContent>
+                     <View style={styles.callModalContentContainer}>
+                        <Text style={styles.callModalContentText}>{permissionText}</Text>
+                        <View style={styles.callModalHorizontalActionButtonsContainer}>
+                           <Pressable
+                              contentContainerStyle={styles.deleteModalHorizontalActionButton}
+                              onPress={() => {
+                                 openSettings();
+                                 dispatch(closePermissionModal());
+                              }}>
+                              <Text style={styles.deleteModalActionButtonText}>OK</Text>
+                           </Pressable>
+                        </View>
                      </View>
-                  </View>
-               </ModalCenteredContent>
-            </Modal>
+                  </ModalCenteredContent>
+               </Modal>
+            )}
          </View>
       );
    }

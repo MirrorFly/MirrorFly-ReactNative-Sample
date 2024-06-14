@@ -16,7 +16,6 @@ import { useChatMessages } from '../redux/reduxHook';
 export let currentChatUser = '';
 
 function ConversationScreen({ chatUser = '' }) {
-   let url = '';
    const { params: { jid: _jid = '' } = {} } = useRoute();
    const [jid, setJid] = React.useState(_jid || chatUser); // TO HANDLE APPLCATION RENDER BY COMPONENT BY COMPONENT
    currentChatUser = _jid;

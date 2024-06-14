@@ -11,7 +11,7 @@ import { CHAT_TYPE_GROUP, DOCUMENT_FORMATS, MIX_BARE_JID } from '../helpers/cons
 import { addChatMessageItem, setChatMessages } from '../redux/chatMessageDataSlice';
 import { setMemberParticipantsList } from '../redux/groupDataSlice';
 import { addRecentChatItem, setRecentChats } from '../redux/recentChatDataSlice';
-import { getChatMessages, getRoasterData } from '../redux/reduxHook';
+import { getArchive, getChatMessages, getRoasterData } from '../redux/reduxHook';
 import { setRoasterData } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting } from '../redux/settingDataSlice';
 import store from '../redux/store';
@@ -141,6 +141,7 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
             replyTo,
          };
          const conversationChatObj = getSenderMessageObj(dataObj, i);
+         conversationChatObj.archiveSetting = getArchive();
          store.dispatch(addChatMessageItem(conversationChatObj));
          store.dispatch(addRecentChatItem(conversationChatObj));
          if (i === 0) {
@@ -270,6 +271,7 @@ export const handleSendMsg = async (obj = {}) => {
             replyTo,
          };
          const senderObj = getSenderMessageObj(dataObj);
+         senderObj.archiveSetting = getArchive();
          store.dispatch(addChatMessageItem(senderObj));
          store.dispatch(addRecentChatItem(senderObj));
          SDK.sendTextMessage(chatUser, message, msgId, replyTo);
@@ -299,6 +301,7 @@ export const handleSendMsg = async (obj = {}) => {
                replyTo: replyTo,
             };
             const senderObj = getSenderMessageObj(dataObj);
+            senderObj.archiveSetting = getArchive();
             store.dispatch(addChatMessageItem(senderObj));
             store.dispatch(addRecentChatItem(senderObj));
          }

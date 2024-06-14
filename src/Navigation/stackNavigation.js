@@ -8,6 +8,7 @@ import ChatsScreen from '../screens/ChatsScreen';
 import ConversationScreen from '../screens/ConversationScreen';
 import CountryList from '../screens/CountryList';
 import EditName from '../screens/EditName';
+import EditStatusPage from '../screens/EditStatusPage';
 import Gallery from '../screens/Gallery';
 import GalleryPhotos from '../screens/GalleryPhotos';
 import GroupInfo from '../screens/GroupInfo';
@@ -19,6 +20,7 @@ import MobileContactPreview from '../screens/MobileContactPreview';
 import MobileContacts from '../screens/MobileContacts';
 import NewGroup from '../screens/NewGroup';
 import PostPreViewPage from '../screens/PostPreViewPage';
+import ProfilePhoto from '../screens/ProfilePhoto';
 import ProfileScreen from '../screens/ProfileScreen';
 import Camera from '../screens/RNCamera';
 import RecentChatScreen from '../screens/RecentChatScreen';
@@ -46,7 +48,10 @@ import {
    MOBILE_CONTACT_LIST_SCREEN,
    MOBILE_CONTACT_PREVIEW_SCREEN,
    NEW_GROUP,
+   PROFILE_IMAGE,
    PROFILE_SCREEN,
+   PROFILE_STACK,
+   PROFILE_STATUS_EDIT,
    RECENTCHATSCREEN,
    REGISTERSCREEN,
    SETTINGS_STACK,
@@ -92,7 +97,7 @@ export function ChatScreen({ chatUser }) {
    );
 }
 
-export function SettingsScreen() {
+export const ProfileStack = () => {
    return (
       <Provider store={store}>
          <Stack.Navigator
@@ -102,6 +107,23 @@ export function SettingsScreen() {
             }}
             initialRouteName={PROFILE_SCREEN}>
             <Stack.Screen name={PROFILE_SCREEN}>{prop => <ProfileScreen {...prop} />}</Stack.Screen>
+            <Stack.Screen name={PROFILE_IMAGE}>{prop => <ProfilePhoto {...prop} />}</Stack.Screen>
+            <Stack.Screen name={PROFILE_STATUS_EDIT}>{prop => <EditStatusPage {...prop} />}</Stack.Screen>
+         </Stack.Navigator>
+      </Provider>
+   );
+};
+
+export function SettingsScreen() {
+   return (
+      <Provider store={store}>
+         <Stack.Navigator
+            screenOptions={{
+               headerShown: false,
+               orientation: 'portrait',
+            }}
+            initialRouteName={PROFILE_STACK}>
+            <Stack.Screen name={PROFILE_STACK}>{prop => <ProfileStack {...prop} />}</Stack.Screen>
             <Stack.Screen name={MENU_SCREEN}>{prop => <MenuScreen {...prop} />}</Stack.Screen>
             <Stack.Screen name={CHATS_CREEN}>{prop => <ChatsScreen {...prop} />}</Stack.Screen>
          </Stack.Navigator>

@@ -1,3 +1,4 @@
+import Clipboard from '@react-native-clipboard/clipboard';
 import Graphemer from 'graphemer';
 import { Alert, Dimensions, Linking, Platform, StyleSheet, View } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
@@ -17,6 +18,7 @@ import {
    ChatsIcon,
    ContactIcon,
    DocumentIcon,
+   ExitIcon,
    GalleryIcon,
    HeadSetIcon,
    LocationIcon,
@@ -83,7 +85,7 @@ import {
    CONVERSATION_SCREEN,
    GALLERY_FOLDER_SCREEN,
    MOBILE_CONTACT_LIST_SCREEN,
-   PROFILE_SCREEN,
+   PROFILE_STACK,
 } from '../screens/constants';
 import { getCurrentUserJid } from '../uikitMethods';
 
@@ -128,8 +130,8 @@ export function getType(type = '') {
    return type && type.includes('/') ? type.split('/')[0] : type;
 }
 
-export const handleRoute = params => () => {
-   RootNavigation.navigate(params);
+export const handleRoute = (name, params) => () => {
+   RootNavigation.navigate(name, params);
 };
 
 export const getImageSource = image => {
@@ -919,12 +921,16 @@ export const settingsMenu = [
    {
       name: 'Profile',
       icon: ProfileIcon,
-      rounteName: PROFILE_SCREEN,
+      rounteName: PROFILE_STACK,
    },
    {
       name: 'Chats',
       icon: ChatsIcon,
       rounteName: CHATS_CREEN,
+   },
+   {
+      name: 'Log out',
+      icon: ExitIcon,
    },
 ];
 
@@ -943,7 +949,6 @@ export const toggleArchive = val => () => {
       const archivedUserJids = getArchiveSelectedChats().map(item => item.userJid);
 
       store.dispatch(toggleArchiveChats(val));
-      console.log('val ==>', val);
       if (val) {
          unArchivedUserJids.forEach(item => {
             console.log('item, val ==>', item, val);
@@ -974,4 +979,11 @@ export const handleFileOpen = message => {
          console.log('Error while opening Document', err);
          showToast('No apps available to open this file');
       });
+};
+
+export const copyToClipboard = (selectedMsgs, userId) => () => {
+   console.log('userId ==>', userId);
+   handelResetMessageSelection(userId)();
+   Clipboard.setString(selectedMsgs[0]?.msgBody.message || selectedMsgs[0]?.msgBody?.media?.caption);
+   showToast('1 Text copied successfully to the clipboard');
 };

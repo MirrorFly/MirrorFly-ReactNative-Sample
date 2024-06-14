@@ -78,6 +78,7 @@ PODS:
     - nanopb/encode (= 2.30910.0)
   - nanopb/decode (2.30910.0)
   - nanopb/encode (2.30910.0)
+  - NextLevelSessionExporter (0.4.6)
   - PromisesObjC (2.4.0)
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -392,8 +393,8 @@ PODS:
   - react-native-cameraroll (7.8.1):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - react-native-compressor (1.8.24):
-    - RCT-Folly (= 2021.07.22.00)
+  - react-native-compressor (1.6.1):
+    - NextLevelSessionExporter
     - React-Core
   - react-native-contacts (7.0.8):
     - React-Core
@@ -413,12 +414,12 @@ PODS:
     - React
   - react-native-keyevent (0.3.2):
     - React
-  - react-native-netinfo (11.3.2):
+  - react-native-netinfo (11.3.1):
     - React-Core
   - react-native-pager-view (6.3.1):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - react-native-safe-area-context (4.10.4):
+  - react-native-safe-area-context (4.10.1):
     - React-Core
   - react-native-simple-toast (3.3.1):
     - React-Core
@@ -543,12 +544,14 @@ PODS:
     - React-perflogger (= 0.72.10)
   - ReactNativeIncallManager (4.2.0):
     - React-Core
-  - RealmJS (11.10.2):
+  - RealmJS (11.9.0):
     - React
   - rn-fetch-blob (0.12.0):
     - React-Core
   - RNCCheckbox (0.5.17):
     - BEMCheckBox (~> 1.4)
+    - React-Core
+  - RNCClipboard (1.14.1):
     - React-Core
   - RNConvertPhAsset (1.0.3):
     - React
@@ -560,8 +563,10 @@ PODS:
     - FirebaseCoreExtension
     - React-Core
     - RNFBApp
-  - RNFS (2.20.0):
+  - RNFileViewer (2.1.5):
     - React-Core
+  - RNFS (2.18.0):
+    - React
   - RNGestureHandler (2.16.2):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -590,7 +595,7 @@ PODS:
     - RNSound/Core (= 0.11.2)
   - RNSound/Core (0.11.2):
     - React-Core
-  - RNSVG (15.3.0):
+  - RNSVG (15.2.0):
     - React-Core
   - RNVoipPushNotification (3.3.2):
     - React-Core
@@ -663,9 +668,11 @@ DEPENDENCIES:
   - RealmJS (from `../node_modules/realm`)
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - "RNCCheckbox (from `../node_modules/@react-native-community/checkbox`)"
+  - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - RNConvertPhAsset (from `../node_modules/react-native-convert-ph-asset`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
+  - RNFileViewer (from `../node_modules/react-native-file-viewer`)
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
@@ -692,6 +699,7 @@ SPEC REPOS:
     - JitsiWebRTC
     - libevent
     - nanopb
+    - NextLevelSessionExporter
     - PromisesObjC
     - SocketRocket
     - Toast
@@ -820,12 +828,16 @@ EXTERNAL SOURCES:
     :path: "../node_modules/rn-fetch-blob"
   RNCCheckbox:
     :path: "../node_modules/@react-native-community/checkbox"
+  RNCClipboard:
+    :path: "../node_modules/@react-native-clipboard/clipboard"
   RNConvertPhAsset:
     :path: "../node_modules/react-native-convert-ph-asset"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBMessaging:
     :path: "../node_modules/@react-native-firebase/messaging"
+  RNFileViewer:
+    :path: "../node_modules/react-native-file-viewer"
   RNFS:
     :path: "../node_modules/react-native-fs"
   RNGestureHandler:
@@ -867,6 +879,7 @@ SPEC CHECKSUMS:
   JitsiWebRTC: 3a41671ef65a51d7204323814b055a2690b921c7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
+  NextLevelSessionExporter: 4d8aa5e617f1c709724f2453efe5d4628480f65a
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: b4d3068afa6f52ec5260a8417053b1f1b421483d
@@ -886,7 +899,7 @@ SPEC CHECKSUMS:
   react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: 1184a0e640f2660b39cf9c64fa396b9059e9c325
-  react-native-compressor: 415b1861823b4dd1d142aed0547439f310f85321
+  react-native-compressor: ebcf8bc36f8e44581a8f831583caee8a27e55a01
   react-native-contacts: cb4f3b823550adbce0802901b9e63bf1526ec0af
   react-native-create-thumbnail: ab55d24aea01723cf386f18b0b542aabb1982f27
   react-native-document-picker: 5b97e24a7f1a1e4a50a72c540a043f32d29a70a2
@@ -896,9 +909,9 @@ SPEC CHECKSUMS:
   react-native-headphone-detection: 4192cc8cfd94068a1f32cb41cc7c4cd5aa0f8b3b
   react-native-keep-awake: afad8a51dfef9fe9655a6344771be32c8596d774
   react-native-keyevent: 0babd7e275086da5386d831211e3283b624dc0b5
-  react-native-netinfo: 076df4f9b07f6670acf4ce9a75aac8d34c2e2ccc
+  react-native-netinfo: bdb108d340cdb41875c9ced535977cac6d2ff321
   react-native-pager-view: ab79276c05d7cb9d1f7f1c386333d4d95e25d887
-  react-native-safe-area-context: 399a5859f6acbdf67f671c69b53113f535f3b5b0
+  react-native-safe-area-context: dcab599c527c2d7de2d76507a523d20a0b83823d
   react-native-simple-toast: 1f1cc551d419bc0ab05dcb0136554006c274789d
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
   react-native-webrtc: 8b024c7bb9a005d2b9efeba4c691172dbd00268d
@@ -920,20 +933,22 @@ SPEC CHECKSUMS:
   React-utils: a715392dfaaa383668566e400f40493093c08d7e
   ReactCommon: a655a8b61cc80c7cabd8db83f69e6f498d4d0894
   ReactNativeIncallManager: bfc9c67358cd524882a7c4116dcb311ac2293d4b
-  RealmJS: 73a36da3cbbe85e1bdcbf55683172b51f35070d3
+  RealmJS: 64ae0907c1f21ce8e74bd480a8503032b19804fd
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNCCheckbox: a3ca9978cb0846b981d28da4e9914bd437403d77
+  RNCClipboard: 0a720adef5ec193aa0e3de24c3977222c7e52a37
   RNConvertPhAsset: 9b366b8a1abc194b76572712c6f7dd89c9e4e37f
   RNFBApp: 9acbe359ef3559d6f8ca5c350db471f2b352f98a
   RNFBMessaging: b82ef70d252500d3ad104284c0c7f8e1cd22b51e
-  RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
+  RNFileViewer: ce7ca3ac370e18554d35d6355cffd7c30437c592
+  RNFS: 3ab21fa6c56d65566d1fb26c2228e2b6132e5e32
   RNGestureHandler: ee924bd0024545efc4bc88c1e856f24b785d2ca2
   RNImageCropPicker: 601604515fd6fbba318147b0a56aed0be9379415
   RNNotifee: 8e2d3df3f0e9ce8f5d1fe4c967431138190b6175
   RNPermissions: 8d958bf0fd34aca7059a935110dca4ee9140d1b6
   RNScreens: 396c07678c1c35614bc5feba74a56df387bf1965
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
-  RNSVG: a48668fd382115bc89761ce291a81c4ca5f2fd2e
+  RNSVG: 43b64ed39c14ce830d840903774154ca0c1f27ec
   RNVoipPushNotification: 543e18f83089134a35e7f1d2eba4c8b1f7776b08
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Toast: 1f5ea13423a1e6674c4abdac5be53587ae481c4e

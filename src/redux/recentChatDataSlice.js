@@ -1,16 +1,12 @@
-import { createAction, createSelector, createSlice } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 import { GROUP_CREATED } from '../helpers/constants';
 import { currentChatUser } from '../screens/ConversationScreen';
 import { ARCHIVED_SCREEN } from '../screens/constants';
 import { clearState } from './clearSlice';
 
-// Define the reset action
-export const reset = createAction('reset');
-
 const initialState = {
    recentChats: [],
    searchText: '',
-   archivedChats: [],
 };
 
 const recentChatDataSlice = createSlice({
@@ -21,7 +17,7 @@ const recentChatDataSlice = createSlice({
          state.recentChats = [...state.recentChats, ...action.payload];
       },
       addRecentChatItem(state, action) {
-         let { userJid, newIndex = 0, msgType = '', fromUserJid = '' } = action.payload;
+         let { userJid, newIndex = 0, msgType = '', fromUserJid = '', archiveSetting } = action.payload;
          const index = state.recentChats.findIndex(item => item?.userJid === userJid);
          if (msgType === GROUP_CREATED) {
             userJid = fromUserJid;
@@ -33,6 +29,7 @@ const recentChatDataSlice = createSlice({
             const updatedChat = {
                ...newData[index],
                ...action.payload,
+               ...{ archiveStatus: archiveSetting },
             };
 
             if (msgType === 'receiveMessage' && userJid !== currentChatUser) {
@@ -49,6 +46,7 @@ const recentChatDataSlice = createSlice({
             // If the item is not found, add the new message at the top
             const newChat = {
                ...action.payload,
+               archiveStatus: archiveSetting,
                unreadCount: 1,
                isUnread: 1,
                userJid,
@@ -118,7 +116,7 @@ const recentChatDataSlice = createSlice({
       },
       resetUnreadCountForChat(state, action) {
          const userJid = action.payload;
-         const index = state.recentChats.findIndex(item => item.userId === userJid);
+         const index = state.recentChats.findIndex(item => item.userJid === userJid);
          if (index !== -1) {
             // Toggle the isSelected property
             state.recentChats[index] = { ...state.recentChats[index], unreadCount: 0, isUnread: 0 };

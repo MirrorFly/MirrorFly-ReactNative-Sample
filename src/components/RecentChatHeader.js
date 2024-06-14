@@ -5,23 +5,20 @@ import RootNavigation from '../Navigation/rootNavigation';
 import AlertModal from '../common/AlertModal';
 import IconButton from '../common/IconButton';
 import { ArchiveIcon, CloseIcon, DeleteIcon } from '../common/Icons';
-import LoadingModal from '../common/LoadingModal';
 import ScreenHeader from '../common/ScreenHeader';
 import ApplicationColors from '../config/appColors';
 import { getUserIdFromJid, showToast, toggleArchive } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
 import { deleteRecentChats, setSearchText } from '../redux/recentChatDataSlice';
 import { getSelectedChats, getUserNameFromStore, useRecentChatData } from '../redux/reduxHook';
-import { GROUP_STACK, MENU_SCREEN, REGISTERSCREEN, SETTINGS_STACK } from '../screens/constants';
+import { GROUP_STACK, MENU_SCREEN, SETTINGS_STACK } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
-import { logoutClearVariables, mirrorflyLogout } from '../uikitMethods';
 
 const RecentChatHeader = () => {
    const dispatch = useDispatch();
    const recentChatData = useRecentChatData();
    const [modalContent, setModalContent] = React.useState(null);
    const [text, setText] = React.useState('');
-   const [isLoading, setIsLoading] = React.useState(false);
 
    const filtered = React.useMemo(() => {
       return recentChatData.filter(item => item.isSelected === 1);
@@ -91,16 +88,6 @@ const RecentChatHeader = () => {
       );
    };
 
-   const hanldeLogout = async () => {
-      setIsLoading(true);
-      const res = await mirrorflyLogout();
-      setIsLoading(false);
-      if (res === 200) {
-         logoutClearVariables();
-         RootNavigation.reset(REGISTERSCREEN);
-      }
-   };
-
    const hanldeRoute = () => {
       RootNavigation.navigate(SETTINGS_STACK, { screen: MENU_SCREEN });
    };
@@ -117,10 +104,6 @@ const RecentChatHeader = () => {
       {
          label: 'Settings',
          formatter: hanldeRoute,
-      },
-      {
-         label: 'Logout',
-         formatter: hanldeLogout,
       },
    ];
 
@@ -160,7 +143,6 @@ const RecentChatHeader = () => {
       <>
          {renderScreenHeader}
          {renderSelectionHeader}
-         {isLoading && <LoadingModal />}
       </>
    );
 };

@@ -20,13 +20,14 @@ const AuthProfileImage = props => {
          const _profileImage = await RealmKeyValueStore.getItem('profileImage');
          if (_profileImage) {
             let profileImage = JSON.parse(_profileImage);
-            if (profileImage && profileImage[profileImageKey]) {
+            if (profileImage[profileImageKey]) {
                setImageSource(profileImage[profileImageKey]);
+               return; // Exit early if image source is set
             }
-         } else {
-            RealmKeyValueStore.removeItem('profileImage');
-            getImageURL();
          }
+         // If no valid image source, remove item and fetch new image URL
+         RealmKeyValueStore.removeItem('profileImage');
+         getImageURL();
       }
    };
 
@@ -58,6 +59,8 @@ const AuthProfileImage = props => {
       setIsFetching(false);
    };
 
+   console.log('imageSource ==>', imageSource);
+
    return (
       <View>
          {isFetching || Boolean(props?.imageUploading) ? (
@@ -71,9 +74,10 @@ const AuthProfileImage = props => {
                         resizeMode: 'contain',
                         borderColor: '#d3d3d3',
                         borderWidth: 0.25,
+                        width: 157,
+                        height: 157,
+                        ...props.style,
                      }}
-                     width={157}
-                     height={157}
                      source={{ uri: imageSource }}
                      resizeMode="contain"
                      alt="profile_image"

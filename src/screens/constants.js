@@ -24,12 +24,17 @@ export const IMAGEVIEW = 'IMAGEVIEW';
 // SETTTING STACK
 export const SETTINGS_STACK = 'SETTINGS_STACK';
 export const MENU_SCREEN = 'MENU_SCREEN';
-export const PROFILE_SCREEN = 'PROFILE_SCREEN';
-export const CHATS_CREEN = 'CHATS_CREEN';
 
+export const CHATS_CREEN = 'CHATS_CREEN';
+export const PROFILE_STACK = 'PROFILE_STACK';
 // GROUP STACK
 export const NEW_GROUP = 'NEW_GROUPF';
 export const GROUP_INFO = 'GROUP_INFO';
 export const screenConstans = {
    SETTINGS_STACK: 'SETTINGS_STACK',
 };
+
+//PROFILE_STACK
+export const PROFILE_SCREEN = 'PROFILE_SCREEN';
+export const PROFILE_IMAGE = 'PROFILE_IMAGE';
+export const PROFILE_STATUS_EDIT = 'PROFILE_STATUS_EDIT';

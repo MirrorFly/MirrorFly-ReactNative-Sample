@@ -1,8 +1,8 @@
-import notifee, { AndroidImportance, AndroidVisibility } from '@notifee/react-native';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 import { AppState } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
 import { isActiveChat } from '../helpers/chatHelpers';
-import { THIS_MESSAGE_WAS_DELETED, notification_constants } from '../helpers/constants';
+import { THIS_MESSAGE_WAS_DELETED } from '../helpers/constants';
 import { displayRemoteNotification } from './PushNotify';
 
 let notifyObj = {};
@@ -44,13 +44,4 @@ export const removeAllDeliveredNotification = () => {
    } catch (error) {
       console.log('removeAllDeliveredNotificatoin', error);
    }
-};
-
-export const registeNotificationChannelId = () => {
-   notifee.createChannel({
-      id: notification_constants.chennelId.MIRRORFLY_INCOMING_MESSAGE,
-      name: notification_constants.channelName.CHAT_MESSGAE_NOTIFICAITON,
-      visibility: AndroidVisibility.PUBLIC,
-      sound: notification_constants.sound.default,
-   });
 };

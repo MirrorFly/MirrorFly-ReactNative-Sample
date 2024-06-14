@@ -17,29 +17,6 @@ import settingDataReducer from './settingDataSlice';
 import showConfrenceReducer from './showConfrenceSlice';
 import typingStatusDataReducer from './typingStatusDataSlice';
 
-// chatConversationLocalNav: chatConversationLocalNavReducer,
-// recentChatSearchData: recentChatDataReducer,
-// recoverMessage: recoverMessageReducer,
-// streamData: streamDataReducer,
-
-// recentChatData: recentChatDataReducer,
-// chatConversationData: chatMessageDataReducer,
-// connection: loggedInUserDataReducer,
-// rosterData: rosterDataReducer,
-// stateData: stateDataReducer,
-// typingStatusData: TypingReducer,
-// showConfrenceData: showConfrenceReducer,
-// callData: CallStateReducer,
-// callAgainData: callAgainReducer,
-// notificationData: notificationDataReducer,
-// callControlsData: callControlsReducer,
-// callModalToastData: callModalToastReducer,
-// permissionData: permissionReducer,
-// groupsMemberParticipantsListData: GroupsMemberParticipantsListReducer,
-// currentCallGroupMembersData: currentCallGroupMembersReducer,
-// groupsMemberListData: GroupsMemberListReducer,
-// groupsData: GroupsReducer,
-
 // Combine reducers
 const appReducer = combineReducers({
    recentChatData: recentChatDataReducer,
@@ -72,6 +49,7 @@ const store = configureStore({
    reducer: rootReducer,
    middleware: getDefaultMiddleware =>
       getDefaultMiddleware({
+         immutableCheck: false, // Disable the ImmutableStateInvariantMiddleware
          serializableCheck: false, // Disable non-serializable check
       }),
 });

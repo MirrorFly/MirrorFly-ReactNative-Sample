@@ -1,6 +1,5 @@
 import notifee from '@notifee/react-native';
 import { AppRegistry, Platform } from 'react-native';
-import Toast from 'react-native-simple-toast';
 import RNVoipPushNotification from 'react-native-voip-push-notification';
 import { version } from '../package.json';
 import { pushNotifyBackground } from './Helper/Calls/Utility';
@@ -8,7 +7,6 @@ import RootNavigation from './Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from './SDK/SDK';
 import { callBacks } from './SDK/sdkCallBacks';
 import { resetVariable } from './SDK/utils';
-import { pushNotify, registeNotificationChannelId } from './Service/remoteNotifyHandle';
 import { CallComponent } from './calls/CallComponent';
 import { setupCallKit } from './calls/ios';
 import { setNotificationForegroundService } from './calls/notification/callNotifyHandler';
@@ -28,13 +26,18 @@ let uiKitCallbackListenersVal = {},
    currentUserProfile = {},
    currentScreen = '';
 
+export const getAppSchema = () => appSchema;
+export const getCurrentScreen = () => currentScreen;
 export const getAppInitStatus = () => appInitialized;
+export const getCurrentUserJid = () => currentUserJID;
+export const getLocalUserDetails = () => currentUserProfile;
+export const setCurrectUserProfile = profile => {
+   currentUserProfile = profile;
+};
 
 export const mflog = (...args) => {
    console.log('RN-UIKIT', Platform.OS, version, ...args);
 };
-
-export const getAppSchema = () => appSchema;
 
 export const setAppConfig = params => {
    const { appSchema: _appSchema = '', stackURL = '' } = params;
@@ -77,7 +80,8 @@ export const mirrorflyNotificationHandler = async remoteMessage => {
 export const mirrorflyInitialize = async args => {
    try {
       const { apiBaseUrl, licenseKey, isSandbox, callBack } = args;
-      const mfInit = await SDK.initializeSDK({
+      const mfInit = { statusCode: 200 };
+      await SDK.initializeSDK({
          apiBaseUrl: apiBaseUrl,
          licenseKey: licenseKey,
          callbackListeners: callBacks,
@@ -96,7 +100,6 @@ export const mirrorflyInitialize = async args => {
          fetchCurrentUserProfile();
       }
       await notifee.requestPermission();
-      registeNotificationChannelId();
       return mfInit;
    } catch (error) {
       return error;
@@ -179,30 +182,27 @@ export const mirrorflyLogout = async () => {
    } catch (error) {}
 };
 
-export const getCurrentUserJid = () => currentUserJID;
-
-export const getLocalUserDetails = () => currentUserProfile;
-
-export const setCurrectUserProfile = profile => {
-   currentUserProfile = profile;
-};
-
 export const fetchCurrentUserProfile = async (iq = false) => {
-   const { data = {} } = await SDK.getUserProfile(getUserIdFromJid(currentUserJID), iq);
-   currentUserProfile = data;
-   store.dispatch(setRoasterData(data));
+   if (currentUserJID) {
+      const { data = {} } = await SDK.getUserProfile(getUserIdFromJid(currentUserJID), iq);
+      currentUserProfile = data;
+      store.dispatch(setRoasterData(data));
+   }
 };
 
-export const getCurrentScreen = () => currentScreen;
-
-export const mirrorflyProfileUpdate = async ({ _nickName, _image, _status, _mobileNumber, _email }) => {
-   const { nickName, image, status, mobileNumber, email } = getRoasterData(getUserIdFromJid(currentUserJID));
-   // Use the passed values if they exist, otherwise use the existing values
-   const updatedNickName = _nickName || nickName;
-   const updatedImage = _image || image;
-   const updatedStatus = _status || status;
-   const updatedMobileNumber = _mobileNumber || mobileNumber;
-   const updatedEmail = _email || email;
+export const mirrorflyProfileUpdate = async ({ nickName, image, status, mobileNumber, email }) => {
+   const {
+      nickName: _nickName,
+      image: _image,
+      status: _status,
+      mobileNumber: _mobileNumber,
+      email: _email,
+   } = getRoasterData(getUserIdFromJid(currentUserJID));
+   const updatedNickName = nickName !== undefined ? nickName : _nickName;
+   const updatedImage = image !== undefined ? image : _image;
+   const updatedStatus = status !== undefined ? status : _status;
+   const updatedMobileNumber = mobileNumber !== undefined ? mobileNumber : _mobileNumber;
+   const updatedEmail = email !== undefined ? email : _email;
    let UserInfo = await SDK.setUserProfile(
       updatedNickName,
       updatedImage,

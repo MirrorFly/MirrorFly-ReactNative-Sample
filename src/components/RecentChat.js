@@ -85,7 +85,6 @@ const RecentChat = () => {
    const renderFooter = React.useMemo(() => {
       return (
          <View style={commonStyles.marginBottom_10}>
-            {Boolean(recentArchiveChatData.length) && !archive && !searchText && <ArchivedChat />}
             {isFetchingData && (
                <View style={commonStyles.mb_130}>
                   <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
@@ -99,7 +98,6 @@ const RecentChat = () => {
       () => (
          <SectionList
             sections={DATA}
-            ListHeaderComponent={renderHeader}
             keyExtractor={item => item.userJid}
             renderItem={renderItem}
             renderSectionHeader={renderSectionHeader}
@@ -112,7 +110,7 @@ const RecentChat = () => {
             maxToRenderPerBatch={20}
          />
       ),
-      [recentChatData, filteredMessages, archive, searchText, isFetchingData],
+      [recentChatData, filteredMessages, searchText, isFetchingData],
    );
 
    if (!isFetchingData && !recentChatData.length && !filteredMessages.length) {
@@ -131,7 +129,13 @@ const RecentChat = () => {
       );
    }
 
-   return <View style={styles.container}>{renderSectionList}</View>;
+   return (
+      <View style={styles.container}>
+         {renderHeader}
+         {renderSectionList}
+         {Boolean(recentArchiveChatData.length) && !archive && !searchText && <ArchivedChat />}
+      </View>
+   );
 };
 
 const styles = StyleSheet.create({

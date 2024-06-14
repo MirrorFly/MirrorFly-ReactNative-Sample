@@ -105,7 +105,6 @@ export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false)
 
 const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUserJid) => {
    if (messageType === 'media') {
-      let mediaData = {};
       for (let i = 0; i < files.length; i++) {
          const file = files[i],
             msgId = SDK.randomString(8, 'BA');
@@ -160,7 +159,6 @@ const parseAndSendMessage = async (message, chatType, messageType, fromUserJid, 
 
 export const getSenderMessageObj = (dataObj, idx) => {
    const {
-      jid,
       msgType,
       msgId,
       chatType,

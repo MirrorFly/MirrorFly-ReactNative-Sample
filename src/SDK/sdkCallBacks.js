@@ -770,7 +770,9 @@ export const callBacks = {
       store.dispatch(updateMsgByLastMsgId(res));
    },
    muteChatListener: res => {},
-   archiveChatListener: res => {},
+   archiveChatListener: res => {
+      console.log('archiveChatListener res ==>', JSON.stringify(res, null, 2));
+   },
    userDeletedListener: res => {},
    adminBlockListener: res => {},
    incomingCallListener: function (res) {

@@ -1,9 +1,9 @@
 import React from 'react';
 import {
-    PressableProps,
-    Pressable as RNPressable,
-    View, // NOSONAR
-    ViewStyle, // NOSONAR
+   PressableProps, // NOSONAR
+   Pressable as RNPressable,
+   View, // NOSONAR
+   ViewStyle, // NOSONAR
 } from 'react-native';
 import commonStyles from '../styles/commonStyles';
 

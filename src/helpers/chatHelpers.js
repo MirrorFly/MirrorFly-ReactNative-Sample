@@ -939,17 +939,20 @@ export const toggleArchive = val => () => {
       if (!netWorkState) {
          return showNetWorkToast();
       }
+      const unArchivedUserJids = getSelectedChats().map(item => item.userJid);
+      const archivedUserJids = getArchiveSelectedChats().map(item => item.userJid);
+
       store.dispatch(toggleArchiveChats(val));
+      console.log('val ==>', val);
       if (val) {
-         const userJids = getSelectedChats().map(item => item.userJid);
-         // userJids.forEach(item => {
-         //    SDK.updateArchiveChat(item, val);
-         // });
+         unArchivedUserJids.forEach(item => {
+            console.log('item, val ==>', item, val);
+            SDK.updateArchiveChat(item, val);
+         });
       } else {
-         const userJids = getArchiveSelectedChats().map(item => item.userJid);
-         // userJids.forEach(item => {
-         //    SDK.updateArchiveChat(item, val);
-         // });
+         archivedUserJids.forEach(item => {
+            SDK.updateArchiveChat(item, val);
+         });
       }
    } catch (error) {
       return error;

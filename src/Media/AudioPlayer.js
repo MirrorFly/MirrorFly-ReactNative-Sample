@@ -156,7 +156,7 @@ const AudioPlayer = props => {
    const durationString = millisToMinutesAndSeconds(media.duration);
 
    const sliderDisable = React.useMemo(() => {
-      return !(mediaStatus === mediaStatusConstants.LOADED);
+      return mediaStatus !== mediaStatusConstants.LOADED;
    }, [mediaStatus]);
 
    return (

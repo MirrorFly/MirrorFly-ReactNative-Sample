@@ -17,6 +17,7 @@ import RecentChatMessage from './RecentChatMessage';
 
 const RecentChatItem = React.memo(
    ({ item, index, component = 'recent-chat' }) => {
+      const isRecentChatComponent = component === 'recent-chat';
       const { msgStatus, createdAt = '', userId = '', isSelected = 0, userJid, publisherJid, recallStatus } = item;
       const dispatch = useDispatch();
       const navigation = useNavigation();
@@ -25,7 +26,7 @@ const RecentChatItem = React.memo(
       console.log('RecentChatItem userJid ==>', userJid);
 
       const handleSelectChat = userJid => () => {
-         if (component === 'recent-chat') {
+         if (isRecentChatComponent) {
             dispatch(toggleChatSelection(getUserIdFromJid(userJid)));
          } else {
             dispatch(toggleArchiveChatSelection(getUserIdFromJid(userJid)));
@@ -85,9 +86,14 @@ const RecentChatItem = React.memo(
                         />
                      </View>
                   </View>
-                  <Text style={styles.time}>
-                     {createdAt && formatChatDateTime(convertUTCTOLocalTimeStamp(createdAt), 'recent-chat')}
-                  </Text>
+                  <View style={[commonStyles.justifyContentCenter, commonStyles.alignItemsCenter]}>
+                     <Text style={styles.time}>
+                        {createdAt && formatChatDateTime(convertUTCTOLocalTimeStamp(createdAt), 'recent-chat')}
+                     </Text>
+                     {Boolean(item.archiveStatus) && isRecentChatComponent && (
+                        <Text style={styles.archived}>Archived</Text>
+                     )}
+                  </View>
                </View>
             </Pressable>
             <View style={styles.divider} />
@@ -163,6 +169,15 @@ const styles = StyleSheet.create({
    unreadCountText: {
       color: ApplicationColors.white,
       fontSize: 13,
+   },
+   archived: {
+      marginTop: 2,
+      padding: 2,
+      borderWidth: 1,
+      borderColor: ApplicationColors.mainColor,
+      color: ApplicationColors.mainColor,
+      fontSize: 10,
+      borderRadius: 5,
    },
 });
 

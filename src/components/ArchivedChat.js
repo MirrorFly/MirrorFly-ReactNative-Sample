@@ -9,6 +9,7 @@ import commonStyles from '../styles/commonStyles';
 
 function ArchivedChat() {
    const recentArchiveChatData = useArchivedChatData() || [];
+   const count = recentArchiveChatData.filter(d => d.unreadCount > 0).length;
 
    return (
       <>
@@ -19,7 +20,7 @@ function ArchivedChat() {
                <ArchiveIcon />
                <Text style={[commonStyles.marginLeft_20, { color: '#000' }]}>Archived</Text>
             </View>
-            <Text>{recentArchiveChatData.length}</Text>
+            {Boolean(count) && <Text>{count}</Text>}
          </Pressable>
          <View style={commonStyles.dividerLine} />
       </>

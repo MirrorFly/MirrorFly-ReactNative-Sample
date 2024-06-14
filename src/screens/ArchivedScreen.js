@@ -36,7 +36,9 @@ function ArchivedScreen() {
       return true;
    }, [archiveChats]);
 
-   const renderItem = ({ item, index }) => <RecentChatItem key={item.userJid} item={item} index={index} />;
+   const renderItem = ({ item, index }) => (
+      <RecentChatItem key={item.userJid} item={item} index={index} component="archived-chat" />
+   );
 
    return (
       <>

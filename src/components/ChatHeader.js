@@ -1,7 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { BackHandler, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { openSettings } from 'react-native-permissions';
+import { useDispatch, useSelector } from 'react-redux';
 import { isRoomExist, makeCalls } from '../Helper/Calls/Utility';
 import { RealmKeyValueStore } from '../SDK/SDK';
 import AlertModal from '../common/AlertModal';
@@ -32,6 +33,7 @@ import {
 } from '../helpers/chatHelpers';
 import { CALL_TYPE_AUDIO, CALL_TYPE_VIDEO, MIX_BARE_JID } from '../helpers/constants';
 import { setChatSearchText } from '../redux/chatMessageDataSlice';
+import { closePermissionModal } from '../redux/permissionSlice';
 import { getSelectedChatMessages, useChatMessages } from '../redux/reduxHook';
 import { GROUP_INFO, MESSAGE_INFO_SCREEN, RECENTCHATSCREEN, USER_INFO } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
@@ -48,6 +50,7 @@ function ChatHeader({ chatUser }) {
    const [isSearching, setIsSearching] = React.useState(false);
    const [modalContent, setModalContent] = React.useState(null);
    const [remove, setRemove] = React.useState(false);
+   const permissionData = useSelector(state => state.permissionData.permissionStatus);
    const [permissionText, setPermissionText] = React.useState('');
 
    const filtered = React.useMemo(() => {
@@ -333,6 +336,23 @@ function ChatHeader({ chatUser }) {
                {Boolean(menuItems.length) && <MenuContainer menuItems={menuItems} />}
             </View>
             {modalContent && <AlertModal {...modalContent} />}
+            <Modal visible={permissionData}>
+               <ModalCenteredContent>
+                  <View style={styles.callModalContentContainer}>
+                     <Text style={styles.callModalContentText}>{permissionText}</Text>
+                     <View style={styles.callModalHorizontalActionButtonsContainer}>
+                        <Pressable
+                           contentContainerStyle={styles.deleteModalHorizontalActionButton}
+                           onPress={() => {
+                              openSettings();
+                              dispatch(closePermissionModal());
+                           }}>
+                           <Text style={styles.deleteModalActionButtonText}>OK</Text>
+                        </Pressable>
+                     </View>
+                  </View>
+               </ModalCenteredContent>
+            </Modal>
          </View>
       );
    }
@@ -415,5 +435,32 @@ const styles = StyleSheet.create({
    deleteModalActionButtonText: {
       color: ApplicationColors.mainColor,
       fontWeight: '600',
+   },
+   callModalContentText: {
+      fontSize: 16,
+      fontWeight: '400',
+      marginBottom: 10,
+      color: ApplicationColors.black,
+   },
+   callModalContentContainer: {
+      width: '88%',
+      paddingHorizontal: 24,
+      paddingTop: 18,
+      fontWeight: '300',
+      backgroundColor: ApplicationColors.mainbg,
+   },
+   callModalHorizontalActionButtonsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      paddingVertical: 14,
+   },
+   deleteModalHorizontalActionButtonsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      paddingVertical: 12,
+   },
+   deleteModalHorizontalActionButton: {
+      paddingVertical: 4,
+      paddingHorizontal: 8,
    },
 });

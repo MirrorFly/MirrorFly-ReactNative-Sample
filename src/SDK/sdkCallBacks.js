@@ -218,7 +218,7 @@ export const muteLocalAudio = isMuted => {
 export const removeRemoteStream = userJid => {
    remoteStream.forEach((item, key) => {
       if (item.fromJid === userJid) {
-         remoteStream.splice(key, 1);
+         remoteStream?.splice?.(key, 1);
       }
    });
 };

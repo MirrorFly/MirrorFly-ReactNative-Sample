@@ -100,7 +100,6 @@ const callStateSlice = createSlice({
             callerUUID: '',
             callLayout: defaultCallLayout,
             isCallFromVoip: false,
-            showCallModal: false,
          };
       },
       updateCallLayout(state, action) {
@@ -117,8 +116,8 @@ const callStateSlice = createSlice({
             isCallFromVoip: action.payload,
          };
       },
-      resetCallStateData(state, action) {
-         state = initialState;
+      resetCallStateData() {
+         return { ...initialState };
       },
    },
    extraReducers: builder => {

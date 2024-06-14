@@ -10,8 +10,8 @@ const rosterDataSlice = createSlice({
    name: 'rosterData',
    initialState,
    reducers: {
-      resetRoasterData(state) {
-         state = initialState;
+      resetRoasterData() {
+         return { ...initialState };
       },
       setRoasterData(state, action) {
          const data = Array.isArray(action.payload) ? action.payload : [action.payload];

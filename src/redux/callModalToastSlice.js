@@ -23,7 +23,7 @@ const callModalToastSlice = createSlice({
          };
       },
       resetCallModalToastDataAction(state) {
-         state = initialState;
+         return { ...initialState };
       },
    },
    extraReducers: builder => {

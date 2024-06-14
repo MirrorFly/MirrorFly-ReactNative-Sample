@@ -11,13 +11,13 @@ const notificationDataSlice = createSlice({
    initialState,
    reducers: {
       setNotificationData(state, action) {
-          return {
+         return {
             id: Date.now(),
             data: action.payload,
          };
       },
       resetNotificationData(state) {
-         state = initialState;
+         return { ...initialState };
       },
    },
    extraReducers: builder => {

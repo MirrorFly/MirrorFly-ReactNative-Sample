@@ -22,8 +22,8 @@ const callAgainSlice = createSlice({
             data: action.payload,
          };
       },
-      resetCallAgainData(state) {
-         state = initialState;
+      resetCallAgainData() {
+         return { ...initialState };
       },
    },
    extraReducers: builder => {

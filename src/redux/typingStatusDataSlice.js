@@ -5,8 +5,8 @@ const typingStatusDataSlice = createSlice({
    name: 'presenceData',
    initialState,
    reducers: {
-      resetTypingStatusData(state) {
-         state = initialState;
+      resetTypingStatusData() {
+         return { ...initialState };
       },
       setTypingStatus(state, action) {
          const { fromUserId, groupId } = action.payload;

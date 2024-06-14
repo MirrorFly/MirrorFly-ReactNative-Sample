@@ -216,11 +216,7 @@ export const muteLocalAudio = isMuted => {
 };
 
 export const removeRemoteStream = userJid => {
-   remoteStream.forEach((item, key) => {
-      if (item.fromJid === userJid) {
-         remoteStream?.splice?.(key, 1);
-      }
-   });
+   remoteStream = remoteStream.filter(item => item.fromJid !== userJid);
 };
 
 const updatingUserStatusInRemoteStream = usersStatus => {
@@ -614,6 +610,7 @@ const reconnecting = res => {
 };
 
 const callStatus = res => {
+   console.log('callStatus res ==>', res);
    if (res.status === 'ringing') {
       ringing(res);
    } else if (res.status === 'connecting') {

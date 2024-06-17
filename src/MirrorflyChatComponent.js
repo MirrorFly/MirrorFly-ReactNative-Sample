@@ -1,6 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import { SafeAreaView, Text, View } from 'react-native';
+import { SafeAreaView, StatusBar, Text, View } from 'react-native';
 import StackNavigationPage from './Navigation/StackNavigation';
 import { navigationRef } from './Navigation/rootNavigation';
 import ApplicationColors from './config/appColors';
@@ -45,10 +45,13 @@ export function MirrorflyChatComponent() {
    }
 
    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: ApplicationColors.headerBg }}>
-         <NavigationContainer linking={linking} independent={true} ref={navigationRef}>
-            <StackNavigationPage />
-         </NavigationContainer>
-      </SafeAreaView>
+      <>
+         <StatusBar animated={true} backgroundColor={'#E5E5E5'} />
+         <SafeAreaView style={{ flex: 1, backgroundColor: '#E5E5E5' }}>
+            <NavigationContainer linking={linking} independent={true} ref={navigationRef}>
+               <StackNavigationPage />
+            </NavigationContainer>
+         </SafeAreaView>
+      </>
    );
 }

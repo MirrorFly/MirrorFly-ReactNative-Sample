@@ -174,3 +174,9 @@ export const requestCameraPermission = async () => {
          return permited['android.permission.CAMERA'];
    }
 };
+
+export const requestLocationPermission = async () => {
+   return request(
+      Platform.OS === 'android' ? PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION : PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+   );
+};

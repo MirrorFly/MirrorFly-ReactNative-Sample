@@ -256,7 +256,7 @@ export const getSenderMessageObj = (dataObj, idx) => {
 };
 
 export const handleSendMsg = async (obj = {}) => {
-   const { messageType, replyTo = '', message } = obj;
+   const { messageType, replyTo = '', message, location = {} } = obj;
    const chatUser = currentChatUser;
    const msgId = SDK.randomString(8, 'BA');
    switch (messageType) {
@@ -306,6 +306,27 @@ export const handleSendMsg = async (obj = {}) => {
             store.dispatch(addRecentChatItem(senderObj));
          }
          SDK.sendContactMessage(chatUser, updatedContacts, replyTo);
+         break;
+      case 'location':
+         const { latitude, longitude } = location;
+         if (latitude && longitude) {
+            const dataObj = {
+               jid: chatUser,
+               msgType: messageType,
+               chatType: MIX_BARE_JID.test(chatUser) ? CHAT_TYPE_GROUP : 'chat',
+               msgId,
+               location: { latitude, longitude },
+               fromUserJid: chatUser,
+               publisherJid: getCurrentUserJid(),
+               replyTo: replyTo,
+            };
+            const senderObj = getSenderMessageObj(dataObj);
+            senderObj.archiveSetting = getArchive();
+            store.dispatch(addChatMessageItem(senderObj));
+            store.dispatch(addRecentChatItem(senderObj));
+            SDK.sendLocationMessage(chatUser, latitude, longitude, msgId, replyTo);
+         }
+         break;
    }
 };
 

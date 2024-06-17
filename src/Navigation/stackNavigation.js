@@ -13,6 +13,7 @@ import Gallery from '../screens/Gallery';
 import GalleryPhotos from '../screens/GalleryPhotos';
 import GroupInfo from '../screens/GroupInfo';
 import ImageView from '../screens/ImageView';
+import LocationScreen from '../screens/LocationScreen';
 import MediaPreView from '../screens/MediaPreView';
 import MenuScreen from '../screens/MenuScreen';
 import MessageInfo from '../screens/MessageInfo';
@@ -41,6 +42,7 @@ import {
    GROUP_INFO,
    GROUP_STACK,
    IMAGEVIEW,
+   LOCATION_SCREEN,
    MEDIA_POST_PRE_VIEW_SCREEN,
    MEDIA_PRE_VIEW_SCREEN,
    MENU_SCREEN,
@@ -87,6 +89,7 @@ export function ChatScreen({ chatUser }) {
             <Stack.Screen name={MOBILE_CONTACT_PREVIEW_SCREEN}>
                {prop => <MobileContactPreview {...prop} />}
             </Stack.Screen>
+            <Stack.Screen name={LOCATION_SCREEN}>{prop => <LocationScreen {...prop} />}</Stack.Screen>
             <Stack.Screen name={USER_INFO}>{prop => <UserInfo {...prop} />}</Stack.Screen>
             <Stack.Screen name={MEDIA_POST_PRE_VIEW_SCREEN}>{prop => <PostPreViewPage {...prop} />}</Stack.Screen>
             <Stack.Screen name={GROUP_INFO}>{prop => <GroupInfo {...prop} />}</Stack.Screen>

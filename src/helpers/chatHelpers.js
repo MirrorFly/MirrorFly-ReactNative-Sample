@@ -32,6 +32,7 @@ import {
    requestCameraPermission,
    requestContactPermission,
    requestFileStoragePermission,
+   requestLocationPermission,
    requestStoragePermission,
 } from '../common/permissions';
 import config from '../config/config';
@@ -84,6 +85,7 @@ import {
    CHATS_CREEN,
    CONVERSATION_SCREEN,
    GALLERY_FOLDER_SCREEN,
+   LOCATION_SCREEN,
    MOBILE_CONTACT_LIST_SCREEN,
    PROFILE_STACK,
 } from '../screens/constants';
@@ -622,6 +624,26 @@ export const openMobileContact = async () => {
    }
 };
 
+export const openLocation = async () => {
+   try {
+      const isNotFirstTimeLocationPermissionCheck = await RealmKeyValueStore.getItem('location_permission');
+      const result = await requestLocationPermission();
+      if (result === 'granted' || result === 'limited') {
+         if (getNetworkState()) {
+            RootNavigation.navigate(LOCATION_SCREEN);
+         } else {
+            showCheckYourInternetToast();
+         }
+      } else if (isNotFirstTimeLocationPermissionCheck) {
+         openSettings();
+      } else if (result === RESULTS.BLOCKED) {
+         RealmKeyValueStore.setItem('location_permission', 'true');
+      }
+   } catch (error) {
+      console.error('Failed to request location permission:', error);
+   }
+};
+
 export const handleAudioSelect = async () => {
    const audio_permission = await RealmKeyValueStore.getItem('audio_permission');
    SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
@@ -913,7 +935,7 @@ export const attachmentMenuIcons = [
    {
       name: 'Location',
       icon: LocationIcon,
-      //   formatter: handleLocationSelect,
+      formatter: openLocation,
    },
 ];
 

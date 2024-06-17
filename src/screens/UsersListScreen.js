@@ -14,7 +14,7 @@ import ApplicationColors from '../config/appColors';
 import config from '../config/config';
 import { getImageSource, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../helpers/constants';
-import { getUserNameFromStore } from '../redux/reduxHook';
+import { getUserNameFromStore, useRecentChatData } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { GROUP_INFO, NEW_GROUP } from './constants';
 
@@ -32,6 +32,7 @@ function ContactScreen() {
    } = useRoute();
    const navigation = useNavigation();
    grpName = getUserNameFromStore(getUserIdFromJid(jid)) || grpName;
+   const recentChatList = useRecentChatData();
    const isNewGrpSrn = prevScreen === NEW_GROUP;
    const isGroupInfoSrn = prevScreen === GROUP_INFO;
    const isNetworkconneted = useNetworkStatus();
@@ -42,6 +43,12 @@ function ContactScreen() {
    const [contactList, setContactList] = React.useState([]);
    const [selectedUsers, setSelectedUsers] = React.useState({});
    const [modelOpen, setModelOpen] = React.useState(false);
+
+   const filters = [
+      { fn: filterOutRecentChatUsers, data: recentChatList },
+      { fn: filterOutParticipants, data: participants },
+      // Add more filters here if needed
+   ];
 
    const toggleModel = () => {
       setModelOpen(val => !val);
@@ -77,36 +84,56 @@ function ContactScreen() {
       }
    };
 
-   const getUsersExceptRecentChatsUsers = _users => {
-      const participantsObj = {};
-      for (let _participant of participants) {
-         participantsObj[_participant.userId] = true;
+   // Define the filtering functions
+   const filterOutRecentChatUsers = (users, recentChatList) => {
+      const recentChatUsersObj = {};
+      for (let _recentChat of recentChatList) {
+         recentChatUsersObj[_recentChat.fromUserId] = true;
       }
-      return _users.filter(u => !participantsObj[u.userId]);
+      return users.filter(user => !recentChatUsersObj[user.userId]);
    };
 
-   const fetchContactListFromSDK = async _searchText => {
+   const filterOutParticipants = (users, participants) => {
+      const participantsObj = {};
+      for (let participant of participants) {
+         participantsObj[participant.userId] = true;
+      }
+      return users.filter(user => !participantsObj[user.userId]);
+   };
+
+   // Main method to apply all filters
+   const getUsersWithFilters = (_users, filters) => {
+      return filters.reduce((filteredUsers, filter) => {
+         return filter.fn(filteredUsers, filter.data);
+      }, _users);
+   };
+
+   const fetchContactListFromSDK = async filter => {
       let { nextPage = 1, hasNextPage = true } = contactsPaginationRef.current || {};
-      if (hasNextPage && _searchText === searchTextValueRef.current) {
-         nextPage = _searchText ? 1 : nextPage;
+      if (hasNextPage && filter === searchTextValueRef.current) {
+         nextPage = filter ? 1 : nextPage;
          if (nextPage > 1) {
             setFooterLoader(true);
          } else {
             setIsFetching(true);
          }
-         const { statusCode, message, users, totalPages } = await fetchContactsFromSDK(_searchText, nextPage, 23);
-         if (statusCode !== 200) {
-            showToast('Could not get contacts from server');
-         }
+         const { statusCode, users, totalPages } = await fetchContactsFromSDK(filter, nextPage, 23);
          if (statusCode === 200) {
-            const filteredUsers = getUsersExceptRecentChatsUsers(users);
-            updateContactPaginationRefData(totalPages, _searchText);
+            updateContactPaginationRefData(totalPages, filter);
+            const filteredUsers = getUsersWithFilters(users, filters);
             if (nextPage === 1) {
                setContactList(filteredUsers);
             } else {
-               const arr = [...contactList, ...filteredUsers];
-               setContactList(arr);
+               setContactList(prevContactList => {
+                  const newUsers = filteredUsers.filter(
+                     newUser => !prevContactList.some(existingUser => existingUser.userJid === newUser.userJid),
+                  );
+                  const updatedList = [...prevContactList, ...newUsers];
+                  return updatedList;
+               });
             }
+         } else {
+            showToast('Could not get contacts from server');
          }
          setIsFetching(false);
          setFooterLoader(false);

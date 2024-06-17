@@ -414,6 +414,8 @@ PODS:
     - React
   - react-native-keyevent (0.3.2):
     - React
+  - react-native-maps (1.7.1):
+    - React-Core
   - react-native-netinfo (11.3.1):
     - React-Core
   - react-native-pager-view (6.3.1):
@@ -641,6 +643,7 @@ DEPENDENCIES:
   - react-native-headphone-detection (from `../node_modules/react-native-headphone-detection`)
   - react-native-keep-awake (from `../node_modules/react-native-keep-awake`)
   - react-native-keyevent (from `../node_modules/react-native-keyevent`)
+  - react-native-maps (from `../node_modules/react-native-maps`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -774,6 +777,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-keep-awake"
   react-native-keyevent:
     :path: "../node_modules/react-native-keyevent"
+  react-native-maps:
+    :path: "../node_modules/react-native-maps"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-pager-view:
@@ -909,6 +914,7 @@ SPEC CHECKSUMS:
   react-native-headphone-detection: 4192cc8cfd94068a1f32cb41cc7c4cd5aa0f8b3b
   react-native-keep-awake: afad8a51dfef9fe9655a6344771be32c8596d774
   react-native-keyevent: 0babd7e275086da5386d831211e3283b624dc0b5
+  react-native-maps: 667f9b975549c6fa9b1631bf859440f68ebd3b8f
   react-native-netinfo: bdb108d340cdb41875c9ced535977cac6d2ff321
   react-native-pager-view: ab79276c05d7cb9d1f7f1c386333d4d95e25d887
   react-native-safe-area-context: dcab599c527c2d7de2d76507a523d20a0b83823d

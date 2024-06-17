@@ -104,8 +104,8 @@ const ProfileScreen = () => {
 
    const handleProfileUpdate = async () => {
       const validation =
-         profileDetails?.nickName.trim() &&
-         profileDetails?.nickName.trim()?.length > 2 &&
+         profileDetails?.nickName?.trim() &&
+         profileDetails?.nickName?.trim()?.length > 2 &&
          profileDetails?.email &&
          /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(profileDetails?.email);
       if (!profileDetails?.nickName.trim()) {

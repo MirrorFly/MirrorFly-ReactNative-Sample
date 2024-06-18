@@ -44,12 +44,6 @@ function ContactScreen() {
    const [selectedUsers, setSelectedUsers] = React.useState({});
    const [modelOpen, setModelOpen] = React.useState(false);
 
-   const filters = [
-      { fn: filterOutRecentChatUsers, data: recentChatList },
-      { fn: filterOutParticipants, data: participants },
-      // Add more filters here if needed
-   ];
-
    const toggleModel = () => {
       setModelOpen(val => !val);
    };
@@ -100,6 +94,12 @@ function ContactScreen() {
       }
       return users.filter(user => !participantsObj[user.userId]);
    };
+
+   const filters = [
+      { fn: filterOutRecentChatUsers, data: recentChatList },
+      { fn: filterOutParticipants, data: participants },
+      // Add more filters here if needed
+   ];
 
    // Main method to apply all filters
    const getUsersWithFilters = (_users, filters) => {

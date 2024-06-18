@@ -40,12 +40,14 @@ function ScreenHeader({
       return true;
    };
 
-   React.useEffect(() => {
+   const handleChangeText = text => {
+      setText(text);
       onChangeText(text);
-   }, [text]);
+   };
 
    const clearText = () => {
       setText('');
+      onChangeText(''); // Clear the text in the parent component as well
    };
 
    const toggleSearch = () => {
@@ -63,7 +65,7 @@ function ScreenHeader({
                placeholderTextColor="#d3d3d3"
                value={text}
                style={styles.textInput}
-               onChangeText={setText}
+               onChangeText={handleChangeText}
                placeholder=" Search..."
                cursorColor={ApplicationColors.mainColor}
                returnKeyType="done"

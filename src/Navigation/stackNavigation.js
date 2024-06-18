@@ -9,6 +9,7 @@ import ConversationScreen from '../screens/ConversationScreen';
 import CountryList from '../screens/CountryList';
 import EditName from '../screens/EditName';
 import EditStatusPage from '../screens/EditStatusPage';
+import ForwardMessage from '../screens/ForwardMessage';
 import Gallery from '../screens/Gallery';
 import GalleryPhotos from '../screens/GalleryPhotos';
 import GroupInfo from '../screens/GroupInfo';
@@ -37,6 +38,7 @@ import {
    CONVERSATION_STACK,
    COUNTRY_LIST_SCREEN,
    EDITNAME,
+   FORWARD_MESSSAGE_SCREEN,
    GALLERY_FOLDER_SCREEN,
    GALLERY_PHOTOS_SCREEN,
    GROUP_INFO,
@@ -95,6 +97,7 @@ export function ChatScreen({ chatUser }) {
             <Stack.Screen name={GROUP_INFO}>{prop => <GroupInfo {...prop} />}</Stack.Screen>
             <Stack.Screen name={EDITNAME}>{prop => <EditName {...prop} />}</Stack.Screen>
             <Stack.Screen name={IMAGEVIEW}>{prop => <ImageView {...prop} />}</Stack.Screen>
+            <Stack.Screen name={FORWARD_MESSSAGE_SCREEN}>{prop => <ForwardMessage {...prop} />}</Stack.Screen>
          </Stack.Navigator>
       </Provider>
    );

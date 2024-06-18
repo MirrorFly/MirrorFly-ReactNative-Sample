@@ -107,6 +107,13 @@ const chatMessageDataSlice = createSlice({
             });
          }
       },
+      highlightMessage(state, action) {
+         const { msgId: highlightMessageId, shouldHighlight, userId } = action.payload;
+         const index = state[userId]?.findIndex(item => item.msgId === highlightMessageId);
+         if (index !== -1 && state[userId]) {
+            state[userId][index].shouldHighlight = shouldHighlight;
+         }
+      },
       extraReducers: builder => {
          builder.addCase(clearState, () => initialState);
       },
@@ -126,6 +133,7 @@ export const {
    deleteMessagesForEveryone,
    updateMediaStatus,
    resetChatMessageSlice,
+   highlightMessage,
 } = chatMessageDataSlice.actions;
 
 export default chatMessageDataSlice.reducer;

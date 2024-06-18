@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { escapeRegExpReservedChars } from '../helpers/chatHelpers';
+import { escapeRegExpReservedChars, isLocalUser } from '../helpers/chatHelpers';
 import { useRoasterData } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
@@ -19,7 +19,7 @@ function NickName({ userId, searchValue = '', index, style, colorCodeRequired = 
    }, [profile]);
 
    let { nickName, colorCode } = userProfile;
-   // const localUser = isLocalUser(userId);
+   const localUser = isLocalUser(userId);
    const parts = searchValue
       ? (nickName || userId).split(new RegExp(`(${escapeRegExpReservedChars(searchValue)})`, 'gi'))
       : [nickName || userId];
@@ -31,7 +31,7 @@ function NickName({ userId, searchValue = '', index, style, colorCodeRequired = 
             const isSearchMatch = part?.toLowerCase() === searchValue?.toLowerCase() ? commonStyles.highlight : {};
             return (
                <Text numberOfLines={1} key={++i + '-' + index} ellipsizeMode="tail" style={[textStyle, isSearchMatch]}>
-                  {part}
+                  {localUser ? 'You' : part}
                </Text>
             );
          })}

@@ -8,6 +8,7 @@ import chatBackgroud from '../assets/chatBackgroud.png';
 import ChatHeader from '../components/ChatHeader';
 import ChatInput from '../components/ChatInput';
 import ConversationList from '../components/ConversationList';
+import ReplyContainer from '../components/ReplyContainer';
 import { getImageSource, getUserIdFromJid, handelResetMessageSelection } from '../helpers/chatHelpers';
 import { MIX_BARE_JID, RECENTCHATSCREEN } from '../helpers/constants';
 import { resetUnreadCountForChat } from '../redux/recentChatDataSlice';
@@ -24,6 +25,7 @@ function ConversationScreen({ chatUser = '' }) {
    const userId = getUserIdFromJid(jid);
    const navigation = useNavigation();
    const messaesList = useChatMessages(userId) || [];
+   const [replyMessage, setReplyMessage] = React.useState({});
 
    const isAnySelected = React.useMemo(() => {
       return messaesList.some(item => item.isSelected === 1);
@@ -76,11 +78,30 @@ function ConversationScreen({ chatUser = '' }) {
       return true;
    };
 
-   const renderChatHeader = React.useMemo(() => <ChatHeader chatUser={jid} />, [jid]);
+   const handleCloseReplyContainer = () => {
+      setReplyMessage({});
+   };
+
+   const handleReply = msg => {
+      setReplyMessage(msg);
+   };
+
+   const renderChatHeader = React.useMemo(() => <ChatHeader chatUser={jid} handleReply={handleReply} />, [jid]);
 
    const renderConversationList = React.useMemo(() => <ConversationList chatUser={jid} />, [jid]);
 
    const renderChatInput = React.useMemo(() => <ChatInput chatUser={jid} />, []);
+
+   const renderReplyContainer = React.useMemo(
+      () => (
+         <>
+            {Object.keys(replyMessage).length > 0 && (
+               <ReplyContainer replyMessage={replyMessage} handleCloseReplyContainer={handleCloseReplyContainer} />
+            )}
+         </>
+      ),
+      [replyMessage],
+   );
 
    return (
       <KeyboardAvoidingView
@@ -91,6 +112,7 @@ function ConversationScreen({ chatUser = '' }) {
          <ImageBackground source={getImageSource(chatBackgroud)} style={styles.imageBackground}>
             {renderConversationList}
          </ImageBackground>
+         {renderReplyContainer}
          {renderChatInput}
       </KeyboardAvoidingView>
    );

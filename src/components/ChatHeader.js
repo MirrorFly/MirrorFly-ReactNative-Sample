@@ -7,7 +7,16 @@ import { isRoomExist, makeCalls } from '../Helper/Calls/Utility';
 import { RealmKeyValueStore } from '../SDK/SDK';
 import AlertModal from '../common/AlertModal';
 import IconButton from '../common/IconButton';
-import { AudioCall, BackArrowIcon, CloseIcon, DeleteIcon, LeftArrowIcon, VideoCallIcon } from '../common/Icons';
+import {
+   AudioCall,
+   BackArrowIcon,
+   CloseIcon,
+   DeleteIcon,
+   ForwardIcon,
+   LeftArrowIcon,
+   ReplyIcon,
+   VideoCallIcon,
+} from '../common/Icons';
 import MenuContainer from '../common/MenuContainer';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import NickName from '../common/NickName';
@@ -34,15 +43,21 @@ import {
    showToast,
 } from '../helpers/chatHelpers';
 import { CALL_TYPE_AUDIO, CALL_TYPE_VIDEO, MIX_BARE_JID } from '../helpers/constants';
-import { setChatSearchText } from '../redux/chatMessageDataSlice';
+import { resetMessageSelections, setChatSearchText } from '../redux/chatMessageDataSlice';
 import { closePermissionModal, showPermissionModal } from '../redux/permissionSlice';
-import { getSelectedChatMessages, useChatMessages } from '../redux/reduxHook';
-import { GROUP_INFO, MESSAGE_INFO_SCREEN, RECENTCHATSCREEN, USER_INFO } from '../screens/constants';
+import { getSelectedChatMessages, useChatMessages, useRecentChatData } from '../redux/reduxHook';
+import {
+   FORWARD_MESSSAGE_SCREEN,
+   GROUP_INFO,
+   MESSAGE_INFO_SCREEN,
+   RECENTCHATSCREEN,
+   USER_INFO,
+} from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 import LastSeen from './LastSeen';
 import UserAvathar from './UserAvathar';
 
-function ChatHeader({ chatUser }) {
+function ChatHeader({ chatUser, handleReply }) {
    const dispatch = useDispatch();
    const isNetworkConnected = useNetworkStatus();
    const navigation = useNavigation();
@@ -54,6 +69,7 @@ function ChatHeader({ chatUser }) {
    const [remove, setRemove] = React.useState(false);
    const permissionData = useSelector(state => state.permissionData.permissionStatus);
    const [permissionText, setPermissionText] = React.useState('');
+   const userType = useRecentChatData().find(r => r.userJid === chatUser)?.userType || '';
 
    const filtered = React.useMemo(() => {
       return messsageList.filter(item => item.isSelected === 1);
@@ -123,6 +139,46 @@ function ChatHeader({ chatUser }) {
             </IconButton>
          </View>
       );
+   };
+
+   const _handleForwardMessage = () => {
+      navigation.navigate(FORWARD_MESSSAGE_SCREEN, { forwardMessages: filtered });
+   };
+
+   const renderForwardIcon = () => {
+      const isMediaDownloadedOrUploaded = filtered.every(
+         msg => (msg.msgBody?.media?.is_uploading !== 1 || true) && (msg.msgBody?.media?.is_downloaded !== 1 || true),
+      );
+
+      const isAllowForward = filtered.every(
+         _message => _message?.msgStatus !== 3 && _message?.deleteStatus === 0 && _message?.recallStatus === 0,
+      );
+
+      return isMediaDownloadedOrUploaded && isAllowForward ? (
+         <IconButton style={[commonStyles.padding_10_15]} onPress={_handleForwardMessage}>
+            <ForwardIcon />
+         </IconButton>
+      ) : null;
+   };
+
+   const _handleReplyMessage = () => {
+      handleReply(filtered[0]);
+      dispatch(resetMessageSelections(userId));
+   };
+
+   const renderReplyIcon = () => {
+      const isAllowReply = MIX_BARE_JID.test(chatUser)
+         ? userType &&
+           filtered[0]?.msgBody?.media?.is_uploading !== 1 &&
+           !filtered[0]?.recall &&
+           filtered[0]?.msgBody?.media?.is_uploading !== 1 &&
+           !filtered[0]?.recall
+         : filtered[0]?.msgBody?.media?.is_uploading !== 1 && !filtered[0]?.recall;
+      return isAllowReply && filtered?.length === 1 && filtered[0]?.msgStatus !== 3 ? (
+         <IconButton style={[commonStyles.padding_10_15]} onPress={_handleReplyMessage}>
+            <ReplyIcon />
+         </IconButton>
+      ) : null;
    };
 
    const toggleModalContent = () => {
@@ -277,7 +333,9 @@ function ChatHeader({ chatUser }) {
                </Text>
             </View>
             <View style={styles.iconsContainer}>
+               {renderReplyIcon()}
                {renderDeleteIcon()}
+               {renderForwardIcon()}
                {Boolean(menuItems.length) && filtered.length === 1 && <MenuContainer menuItems={menuItems} />}
                {modalContent && <AlertModal {...modalContent} />}
             </View>

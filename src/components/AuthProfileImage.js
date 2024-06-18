@@ -59,8 +59,6 @@ const AuthProfileImage = props => {
       setIsFetching(false);
    };
 
-   console.log('imageSource ==>', imageSource);
-
    return (
       <View>
          {isFetching || Boolean(props?.imageUploading) ? (

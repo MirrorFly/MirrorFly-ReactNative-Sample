@@ -24,6 +24,7 @@ function ChatMessage({ chatUser, item, showNickName }) {
    const useXmppStatus = useXmppConnectionStatus();
    const userId = getUserIdFromJid(chatUser);
    const {
+      shouldHighlight = 0,
       msgStatus,
       publisherJid,
       msgId,
@@ -107,7 +108,11 @@ function ChatMessage({ chatUser, item, showNickName }) {
 
    return (
       <Pressable
-         style={{}}
+         style={
+            shouldHighlight && {
+               backgroundColor: ApplicationColors.highlighedMessageBg,
+            }
+         }
          delayLongPress={300}
          pressedStyle={commonStyles.bg_transparent}
          onPress={onPress}

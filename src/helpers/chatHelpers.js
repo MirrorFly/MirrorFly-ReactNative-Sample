@@ -35,6 +35,8 @@ import {
    requestLocationPermission,
    requestStoragePermission,
 } from '../common/permissions';
+import { changeTimeFormat } from '../common/timeStamp';
+import { conversationFlatListRef } from '../components/ConversationList';
 import config from '../config/config';
 import {
    ALLOWED_AUDIO_FORMATS,
@@ -64,6 +66,7 @@ import {
    clearChatMessageData,
    deleteMessagesForEveryone,
    deleteMessagesForMe,
+   highlightMessage,
    resetMessageSelections,
    updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
@@ -1008,4 +1011,103 @@ export const copyToClipboard = (selectedMsgs, userId) => () => {
    handelResetMessageSelection(userId)();
    Clipboard.setString(selectedMsgs[0]?.msgBody.message || selectedMsgs[0]?.msgBody?.media?.caption);
    showToast('1 Text copied successfully to the clipboard');
+};
+
+export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
+   const timestamp = Date.now() * 1000;
+   const createdAt = changeTimeFormat(timestamp);
+   const senderId = getUserIdFromJid(getCurrentUserJid());
+
+   return {
+      ...originalMsg,
+      timestamp,
+      createdAt: createdAt,
+      msgStatus: 3,
+      msgType: 'processing',
+      msgId: newMsgId,
+      fromUserJid: formatUserIdToJid(senderId),
+      fromUserId: senderId,
+      chatType: MIX_BARE_JID.test(toJid) ? CHAT_TYPE_SINGLE : CHAT_TYPE_GROUP,
+      publisherId: senderId,
+      publisherJid: formatUserIdToJid(senderId),
+      deleteStatus: 0,
+      favouriteBy: '0',
+      favouriteStatus: 0,
+      isSelected: 0,
+      msgBody: {
+         ...originalMsg.msgBody,
+         replyTo: '',
+         translatedMessage: '',
+         media: {
+            ...originalMsg.msgBody.media,
+            is_uploading: 2,
+            caption: '',
+            is_downloaded: 2,
+         },
+      },
+   };
+};
+
+export const getRecentChatMsgObjForward = (originalMsg, toJid, newMsgId) => {
+   const timestamp = Date.now() * 1000;
+   const createdAt = changeTimeFormat(timestamp);
+   const senderId = getUserIdFromJid(getCurrentUserJid());
+
+   return {
+      ...originalMsg,
+      timestamp: timestamp,
+      createdAt: createdAt,
+      msgStatus: 3,
+      msgId: newMsgId,
+      fromUserJid: toJid,
+      fromUserId: getUserIdFromJid(toJid),
+      chatType: MIX_BARE_JID.test(toJid) ? CHAT_TYPE_SINGLE : CHAT_TYPE_GROUP,
+      publisherId: senderId,
+      deleteStatus: 0,
+      notificationTo: '',
+      toUserId: getUserIdFromJid(toJid),
+      unreadCount: 0,
+      filterBy: getUserIdFromJid(toJid),
+      msgType: originalMsg?.msgBody?.message_type,
+      favouriteBy: '0',
+      favouriteStatus: 0,
+      isSelected: 0,
+      msgBody: {
+         ...originalMsg.msgBody,
+         media: {
+            ...originalMsg.msgBody.media,
+            caption: '',
+         },
+      },
+   };
+};
+
+export const handleReplyPress = (userId, msgId, message) => {
+   const scrollIndex = findConversationMessageIndex(msgId, message);
+   if (!scrollIndex || scrollIndex < 0) {
+      return;
+   }
+   store.dispatch(highlightMessage({ userId, msgId, shouldHighlight: 1 }));
+   conversationFlatListRef.current.scrollToIndex({
+      index: scrollIndex,
+      animated: true,
+      viewPosition: 0.5,
+   });
+   setTimeout(() => {
+      store.dispatch(highlightMessage({ userId, msgId, shouldHighlight: 0 }));
+   }, 500);
+};
+
+export const findConversationMessageIndex = (msgId, message) => {
+   const data = conversationFlatListRef.current.props.data;
+   const index = data.findIndex(item => item.msgId === msgId);
+   console.log('message ==>', index, JSON.stringify(message, null, 2));
+   const { deleteStatus, recallStatus } = message;
+   if (deleteStatus !== 0 || recallStatus !== 0) {
+      showToast('This message is no longer available');
+   } else if (index < 0) {
+      return;
+   } else {
+      return index;
+   }
 };

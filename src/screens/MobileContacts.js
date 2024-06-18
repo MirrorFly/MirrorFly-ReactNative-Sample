@@ -25,8 +25,8 @@ import {
 import Pressable from '../common/Pressable';
 import ApplicationColors from '../config/appColors';
 import { showToast } from '../helpers/chatHelpers';
-import { MOBILE_CONTACT_PREVIEW_SCREEN } from '../helpers/constants';
 import commonStyles from '../styles/commonStyles';
+import { MOBILE_CONTACT_PREVIEW_SCREEN } from './constants';
 
 const screenWidth = Dimensions.get('screen').width;
 

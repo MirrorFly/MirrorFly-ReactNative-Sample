@@ -3,15 +3,14 @@ import { StyleSheet, Text, View } from 'react-native';
 import { getConversationHistoryTime } from '../common/timeStamp';
 import { escapeRegExpReservedChars, getMessageStatus } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
+import ReplyMessage from './ReplyMessage';
 
 const TextCard = ({ item, isSender }) => {
    const { createdAt = '', msgStatus = 0, msgBody: { message = '', replyTo = '' } = {} } = item;
 
    return (
       <View style={commonStyles.paddingHorizontal_4}>
-         {/* {Boolean(replyTo) && (
-                <ReplyMessage handleReplyPress={handleReplyPress} message={props.message} isSame={props.isSame} />
-            )} */}
+         {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
          <Text style={styles.message}>
             <ChatConversationHighlightedText text={message} textStyle={styles.message} searchValue={''} />
          </Text>

@@ -8,8 +8,9 @@ export const useRecentChatSearchText = () => useSelector(state => state.recentCh
 export const useFilteredRecentChatData = () => useSelector(selectFilteredRecentChatData);
 export const useArchivedChatData = () => useSelector(selectArchivedChatData);
 export const useRoasterData = userId => useSelector(state => state.rosterData.data[userId]);
-export const useReceiveMessageData = () => useSelector(state => state.messageListener.receiveMessageData);
 export const useChatMessages = userId => useSelector(state => state.chatMessagesData?.[userId]);
+export const useChatMessage = (userId, msgId) =>
+   useSelector(state => state.chatMessagesData?.[userId]?.find(msg => msg.msgId === msgId));
 export const useXmppConnectionStatus = () => useSelector(state => state.loggedInUserData.xmppStatus);
 export const usePresenceData = userId => useSelector(state => state.presenceData[userId]);
 export const useTypingData = userId => useSelector(state => state.typingData[userId]);

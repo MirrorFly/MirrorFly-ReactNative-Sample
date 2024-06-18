@@ -490,7 +490,7 @@ const commonStyles = StyleSheet.create({
    },
    userName: {
       color: '#1f2937',
-      maxWidth: '90%',
+      fontWeight: 'bold',
    },
 });
 

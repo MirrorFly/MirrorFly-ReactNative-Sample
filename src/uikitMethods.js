@@ -7,10 +7,12 @@ import RootNavigation from './Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from './SDK/SDK';
 import { callBacks } from './SDK/sdkCallBacks';
 import { resetVariable } from './SDK/utils';
+import { pushNotify, updateNotification } from './Service/remoteNotifyHandle';
 import { CallComponent } from './calls/CallComponent';
 import { setupCallKit } from './calls/ios';
 import { setNotificationForegroundService } from './calls/notification/callNotifyHandler';
 import { getNotifyMessage, getNotifyNickName, getUserIdFromJid, showToast } from './helpers/chatHelpers';
+import { MIX_BARE_JID } from './helpers/constants';
 import { clearState } from './redux/clearSlice';
 import { getRoasterData } from './redux/reduxHook';
 import { setRoasterData } from './redux/rosterDataSlice';
@@ -80,8 +82,7 @@ export const mirrorflyNotificationHandler = async remoteMessage => {
 export const mirrorflyInitialize = async args => {
    try {
       const { apiBaseUrl, licenseKey, isSandbox, callBack } = args;
-      const mfInit = { statusCode: 200 };
-      await SDK.initializeSDK({
+      const mfInit = await SDK.initializeSDK({
          apiBaseUrl: apiBaseUrl,
          licenseKey: licenseKey,
          callbackListeners: callBacks,

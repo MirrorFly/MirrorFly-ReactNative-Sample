@@ -1,4 +1,3 @@
-
 const config = {
    attachement: true,
    videoDuaration: 40,
@@ -45,6 +44,9 @@ const config = {
    // ================ ace Environment variables =====================
    // API_URL: 'https://dev-api.ace.online/api/v1',
    // licenseKey: 'fq7zLEnyR48iq8O6zu0TEkWiQ701zI',
+   // // ================ growthAXL Environment variables =====================
+   // API_URL: 'https://growthaxlllc-api.mirrorfly.com/api/v1',
+   // licenseKey: 'o3mN05oAgepcbO0noe3T058WC8jkKN',
 };
 
 export default config;

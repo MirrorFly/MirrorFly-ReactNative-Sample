@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal, Platform, View } from 'react-native';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
-import { enablePipModeIfCallConnected } from '../Helper/Calls/Call';
+import { enablePipModeIfCallConnected } from '../Helper';
 import {
    CALL_AGAIN_SCREEN,
    INCOMING_CALL_SCREEN,

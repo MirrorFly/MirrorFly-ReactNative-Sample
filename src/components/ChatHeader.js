@@ -455,6 +455,7 @@ const styles = StyleSheet.create({
    },
    lastSeenText: {
       fontSize: 12,
+      width:"98%",
       color: '#888888',
    },
    iconsContainer: {

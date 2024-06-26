@@ -49,7 +49,7 @@ import {
    updateIsCallFromVoip,
 } from '../../redux/callStateSlice';
 import { closePermissionModal } from '../../redux/permissionSlice';
-import { getRoasterData, getUserNameFromstore } from '../../redux/reduxHook';
+import { getRoasterData, getUserNameFromStore } from '../../redux/reduxHook';
 import { resetConferencePopup, showConfrence, updateConference } from '../../redux/showConfrenceSlice';
 import store from '../../redux/store';
 import { getLocalUserDetails } from '../../uikitMethods';
@@ -383,7 +383,7 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
             };
             if (Platform.OS === 'android') {
                const contactNumber = getUserIdFromJid(callConnectionStatus.to);
-               let nickName = getUserNameFromstore(contactNumber) || contactNumber;
+               let nickName = getUserNameFromStore(contactNumber) || contactNumber;
                callNotifyHandler(roomId, callConnectionStatus, callConnectionStatus.to, nickName, 'OUTGOING_CALL');
             }
             store.dispatch(updateCallConnectionState(callConnectionStatusNew));

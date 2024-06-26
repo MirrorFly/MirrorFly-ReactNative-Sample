@@ -20,6 +20,10 @@
 // import { updateUserProfileStore } from './Chat/ChatHelper';
 // import { getUserIdFromJid } from './Chat/Utility';
 
+import { Keyboard, Platform } from "react-native";
+import { getIsUserOnCall } from "../SDK/sdkCallBacks";
+import PipHandler from "../customModules/PipModule";
+
 // const toastLocalRef = React.createRef({});
 // toastLocalRef.current = {};
 
@@ -125,15 +129,15 @@
 //    return response;
 // };
 
-// export const debounce = (func, delay) => {
-//    let timeout;
-//    return (...args) => {
-//       clearTimeout(timeout);
-//       timeout = setTimeout(() => {
-//          func(...args);
-//       }, delay);
-//    };
-// };
+export const debounce = (func, delay) => {
+   let timeout;
+   return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+         func(...args);
+      }, delay);
+   };
+};
 
 // /**
 //  * Helper function to update the User profile details
@@ -292,21 +296,21 @@
 //    }
 // };
 
-// /**
-//  * Helper function to enable PIP mode for Android if the call is connected
-//  * @param {number} width
-//  * @param {number} height
-//  * @returns {boolean} - whether PIP mode has enabled or not based on the call connected status condition
-//  */
-// export const enablePipModeIfCallConnected = (
-//    width = 300,
-//    height = 600,
-//    shouldOpenPermissionScreenIfPipNotAllowed = true,
-// ) => {
-//    if (Platform.OS === 'android') {
-//       Keyboard.dismiss();
-//       const isCallConnected = getIsUserOnCall();
-//       isCallConnected && PipHandler.enterPipMode(width, height, shouldOpenPermissionScreenIfPipNotAllowed);
-//       return isCallConnected;
-//    }
-// };
+/**
+ * Helper function to enable PIP mode for Android if the call is connected
+ * @param {number} width
+ * @param {number} height
+ * @returns {boolean} - whether PIP mode has enabled or not based on the call connected status condition
+ */
+export const enablePipModeIfCallConnected = (
+   width = 300,
+   height = 600,
+   shouldOpenPermissionScreenIfPipNotAllowed = true,
+) => {
+   if (Platform.OS === 'android') {
+      Keyboard.dismiss();
+      const isCallConnected = getIsUserOnCall();
+      isCallConnected && PipHandler.enterPipMode(width, height, shouldOpenPermissionScreenIfPipNotAllowed);
+      return isCallConnected;
+   }
+};

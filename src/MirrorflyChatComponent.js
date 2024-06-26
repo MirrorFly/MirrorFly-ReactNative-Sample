@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import { SafeAreaView, StatusBar, Text, View } from 'react-native';
-import StackNavigationPage from './Navigation/StackNavigation';
+import StackNavigationPage from './Navigation/stackNavigation';
 import { navigationRef } from './Navigation/rootNavigation';
 import ApplicationColors from './config/appColors';
 import {

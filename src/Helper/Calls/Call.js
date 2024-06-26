@@ -7,15 +7,13 @@ import Sound from 'react-native-sound';
 import SDK from '../../SDK/SDK';
 import {
    clearIosCallListeners,
-   getIsUserOnCall,
    removeRemoteStream,
    resetCallData,
    setDisconnectedScreenTimeoutTimer,
 } from '../../SDK/sdkCallBacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
-import PipHandler from '../../customModules/PipModule';
 import { updateCallAgainData } from '../../redux/callAgainSlice';
-import { pinUser, setCallModalScreen } from '../../redux/callStateSlice';
+import { pinUser, setCallModalScreen, setLargeVideoUser } from '../../redux/callStateSlice';
 import { showConfrence, updateConference } from '../../redux/showConfrenceSlice';
 import Store from '../../redux/store';
 import {
@@ -34,6 +32,8 @@ import {
    resetCallModalActivity,
    setpreventMultipleClick,
 } from './Utility';
+import { getLocalUserDetails } from '../../uikitMethods';
+import AudioRoutingModule from '../../customModules/AudioRoutingModule';
 
 let missedCallNotificationTimer = null;
 let callingRemoteStreamRemovalTimer = null;
@@ -45,6 +45,14 @@ let reconnectingSound = null;
 let unsubscribeVibrationEvent;
 let silentEvent = false;
 let audioRouted = '';
+
+let volumeLevelsInDBBasedOnUserJid = [];
+let volumeLevelsBasedOnUserJid = [];
+let volumeLevelResettingTimeout = null;
+let speakingUser = {};
+let largeUserJid = null;
+let showVoiceDetect = false;
+let pinUserData = {};
 
 export const getMaxUsersInCall = () => 8;
 
@@ -338,13 +346,13 @@ export function dispatchDisconnected(statusMessage, remoteStreams = []) {
 
 export function resetPinAndLargeVideoUser(fromJid) {
    if (!fromJid) {
-      // Store.dispatch(selectLargeVideoUser());
+      Store.dispatch(selectLargeVideoUser());
       Store.dispatch(pinUser());
    }
    const state = Store.getState();
    const largeVideoUserData = state.callData?.largeVideoUser || {};
    if (largeVideoUserData.userJid === fromJid) {
-      // Store.dispatch(selectLargeVideoUser());
+      Store.dispatch(selectLargeVideoUser());
    }
    // If pinned user disconnected from the call, Need to remove the user.
    const pinUserData = state.callData?.pinUserData || {};
@@ -377,14 +385,14 @@ export const startVibration = async () => {
 export const startVibrationBasedOnEvent = () => {
    if (Platform.OS === 'android') {
       silentEvent = true;
-      // unsubscribeVibrationEvent = vibrationEventListener(async () => {
-      //    const currentMode = await getRingerMode();
-      //    if (currentMode !== RINGER_MODE.vibrate) {
-      //       stopVibration();
-      //    } else if (currentMode === RINGER_MODE.vibrate) {
-      //       startVibration();
-      //    }
-      // });
+      unsubscribeVibrationEvent = AudioRoutingModule.startVibrateEvent(async () => {
+         const currentMode = await getRingerMode();
+         if (currentMode !== RINGER_MODE.vibrate) {
+            stopVibration();
+         } else if (currentMode === RINGER_MODE.vibrate) {
+            startVibration();
+         }
+      });
    }
 };
 
@@ -458,15 +466,135 @@ export const getSelectedAudioRoute = () => {
    return audioRouted;
 };
 
-export const enablePipModeIfCallConnected = (
-   width = 300,
-   height = 600,
-   shouldOpenPermissionScreenIfPipNotAllowed = true,
-) => {
-   if (Platform.OS === 'android') {
-      Keyboard.dismiss();
-      const isCallConnected = getIsUserOnCall();
-      isCallConnected && PipHandler.enterPipMode(width, height, shouldOpenPermissionScreenIfPipNotAllowed);
-      return isCallConnected;
-   }
+export const resetData = () => {
+   volumeLevelsInDBBasedOnUserJid = [];
+   volumeLevelsBasedOnUserJid = [];
+   volumeLevelResettingTimeout = null;
+   speakingUser = {};
+   largeUserJid = null;
+   showVoiceDetect = false;
+   pinUserData = {};
+};
+
+export const selectLargeVideoUser = (userJid, volumelevel) => {
+   return (dispatch, getState) => {
+      if (largeUserJid === userJid) {
+         return;
+      }
+      if (largeUserJid !== userJid) {
+         largeUserJid = userJid;
+      }
+      const state = getState();
+      const showConfrenceData = state.showConfrenceData;
+      const { data: { remoteStream = [] } = {} } = showConfrenceData || {};
+
+      let volumeLevelClassName;
+      let volumeLevelVideo = 0;
+      if (userJid) {
+         if (!volumeLevelsBasedOnUserJid[userJid]) {
+            volumeLevelsBasedOnUserJid[userJid] = 0.5;
+         }
+         volumeLevelsInDBBasedOnUserJid[userJid] = volumelevel ? volumelevel : 0;
+         if (Object.keys(volumeLevelsInDBBasedOnUserJid).length > 1) {
+            let largest = Object.values(volumeLevelsInDBBasedOnUserJid)[0];
+            userJid = Object.keys(volumeLevelsInDBBasedOnUserJid)[0];
+            for (const index in volumeLevelsInDBBasedOnUserJid) {
+               if (volumeLevelsInDBBasedOnUserJid[index] > largest) {
+                  largest = volumeLevelsInDBBasedOnUserJid[index];
+                  userJid = index;
+               }
+            }
+         }
+
+         if (!speakingUser.jid) {
+            largeUserJid = userJid;
+         }
+
+         if (speakingUser.jid === userJid) {
+            if (speakingUser.count >= 2) {
+               largeUserJid = userJid;
+               speakingUser.jid = userJid;
+               speakingUser.count = 1;
+            } else {
+               speakingUser.count += 1;
+            }
+         } else {
+            speakingUser.jid = userJid;
+            speakingUser.count = 1;
+         }
+         volumeLevelVideo = volumeLevelsInDBBasedOnUserJid[userJid];
+         if (parseInt(volumeLevelsInDBBasedOnUserJid[userJid]) <= 0) {
+            volumeLevelClassName = 0.5;
+         } else if (parseInt(volumeLevelsInDBBasedOnUserJid[userJid]) <= 1) {
+            volumeLevelClassName = 0.52;
+         } else if (parseInt(volumeLevelsInDBBasedOnUserJid[userJid]) <= 2) {
+            volumeLevelClassName = 0.54;
+         } else if (parseInt(volumeLevelsInDBBasedOnUserJid[userJid]) <= 3) {
+            volumeLevelClassName = 0.58;
+         } else if (parseInt(volumeLevelsInDBBasedOnUserJid[userJid]) <= 4) {
+            volumeLevelClassName = 0.6;
+         } else if (parseInt(volumeLevelsInDBBasedOnUserJid[userJid]) <= 5) {
+            volumeLevelClassName = 0.64;
+         } else if (parseInt(volumeLevelsInDBBasedOnUserJid[userJid]) <= 6) {
+            volumeLevelClassName = 0.68;
+         } else if (parseInt(volumeLevelsInDBBasedOnUserJid[userJid]) <= 7) {
+            volumeLevelClassName = 0.72;
+         } else if (parseInt(volumeLevelsInDBBasedOnUserJid[userJid]) <= 8) {
+            volumeLevelClassName = 0.76;
+         } else if (parseInt(volumeLevelsInDBBasedOnUserJid[userJid]) <= 9) {
+            volumeLevelClassName = 0.78;
+         } else if (parseInt(volumeLevelsInDBBasedOnUserJid[userJid]) <= 10) {
+            volumeLevelClassName = 0.8;
+         }
+
+         showVoiceDetect = false;
+         if (volumeLevelsBasedOnUserJid[userJid]) {
+            if (
+               (volumeLevelsBasedOnUserJid[userJid] === 0.5 && volumeLevelClassName !== 0.5) ||
+               (volumeLevelsBasedOnUserJid[userJid] !== 0.5 && volumeLevelClassName === 0.5)
+            ) {
+               showVoiceDetect = true;
+            }
+         }
+      } else {
+         showVoiceDetect = true;
+         const vcardData = getLocalUserDetails();
+         if (remoteStream && remoteStream.length > 0) {
+            remoteStream.map(rs => {
+               let id = rs.fromJid;
+               id = id.includes('@') ? id.split('@')[0] : id;
+               if (id !== vcardData.fromUser) {
+                  largeUserJid = rs.fromJid;
+               }
+            });
+         }
+      }
+      volumeLevelsBasedOnUserJid[userJid] = volumeLevelClassName;
+
+      dispatch(
+         setLargeVideoUser({
+            userJid: largeUserJid,
+            volumeLevelsBasedOnUserJid,
+            showVoiceDetect,
+            volumeLevelVideo: volumeLevelVideo,
+         }),
+      );
+      if (volumeLevelResettingTimeout !== null && userJid === largeUserJid) {
+         clearInterval(volumeLevelResettingTimeout);
+         volumeLevelResettingTimeout = null;
+      }
+
+      volumeLevelResettingTimeout = setTimeout(() => {
+         setTimeout(() => {
+            showVoiceDetect = false;
+            dispatch(
+               setLargeVideoUser({
+                  userJid: largeUserJid,
+                  volumeLevelsBasedOnUserJid,
+                  showVoiceDetect,
+               }),
+            );
+         }, 1000);
+      }, 1000);
+   };
 };

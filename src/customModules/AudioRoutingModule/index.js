@@ -1,4 +1,4 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 
 const AudioRoutingNativeModule = NativeModules.AudioRoutingModule;
 
@@ -7,6 +7,12 @@ const AudioRoutingNativeModule = NativeModules.AudioRoutingModule;
  */
 
 class AudioRoutingModule {
+   silentModeDetectorEventEmitter;
+   constructor() {
+      this.silentModeDetectorEventEmitter =
+         Platform.OS === 'android' ? new NativeEventEmitter(AudioRoutingNativeModule) : null;
+   }
+
    /**
     * @param {HeadsetRoute} routeName - route to be navigated to
     * @returns {Promise<boolean>} return true if the routing has successfully done else returns false
@@ -25,6 +31,21 @@ class AudioRoutingModule {
       if (Platform.OS === 'android') {
          return AudioRoutingNativeModule?.getAudioRoutes();
       }
+   };
+
+   startVibrateEvent = callback => {
+      if (Platform.OS === 'android') {
+         AudioRoutingNativeModule.startObserving();
+      }
+      this.silentModeDetectorEventEmitter.addListener('onSilentModeStatusChange', callback);
+      return this.removeAllListeners;
+   };
+
+   removeAllListeners = () => {
+      if (Platform.OS === 'android') {
+         AudioRoutingNativeModule.stopObserving();
+      }
+      this.silentModeDetectorEventEmitter.removeAllListeners('onSilentModeStatusChange');
    };
 }
 

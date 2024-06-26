@@ -19,7 +19,7 @@ const SmallVideoTile = ({
    callStatus = '',
 }) => {
    const userId = getUserIdFromJid(user.fromJid);
-   const userProfile = useRoasterData(userId);
+   const userProfile = useRoasterData(userId) || {};
    const nickName = userProfile.nickName || userId || '';
    let reconnectStatus =
       callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && !isLocalUser ? true : false;

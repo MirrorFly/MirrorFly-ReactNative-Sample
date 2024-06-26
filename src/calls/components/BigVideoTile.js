@@ -20,7 +20,7 @@ const BigVideoTile = ({
 }) => {
    let reconnectStatus =
       callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && userId !== localUserJid ? true : false;
-   const userProfile = useRoasterData(userId);
+   const userProfile = useRoasterData(userId) || {};
    const nickName = userProfile.nickName || userId || '';
 
    const renderAudioMuted = React.useMemo(() => {

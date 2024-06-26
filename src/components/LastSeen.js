@@ -10,7 +10,7 @@ import { USER_PRESENCE_STATUS_OFFLINE, USER_PRESENCE_STATUS_ONLINE } from '../he
 import { getUserNameFromStore, usePresenceData, useTypingData, useXmppConnectionStatus } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
-const LastSeen = ({ userJid = '' }) => {
+const LastSeen = ({ userJid = '', style }) => {
    const userId = getUserIdFromJid(userJid);
    const isNetworkConnected = useNetworkStatus();
    const xmppConnection = useXmppConnectionStatus();
@@ -22,10 +22,10 @@ const LastSeen = ({ userJid = '' }) => {
    let timer = 0;
    const [config] = React.useState({
       marqueeOnStart: true,
-      speed: 0.3,
-      loop: true,
+      speed: 2,
+      loop: false,
       delay: 0,
-      consecutive: false,
+      consecutive: true,
    });
    const [isTyping, setIsTyping] = React.useState('');
    const marqueeRef = React.useRef(null);
@@ -115,7 +115,7 @@ const LastSeen = ({ userJid = '' }) => {
    return (
       <>
          {lastSeenData.lastSeen ? (
-            <MarqueeText key={JSON.stringify(config)} ref={marqueeRef} {...config}>
+            <MarqueeText style={style} key={JSON.stringify(config)} ref={marqueeRef} {...config}>
                {lastSeenData.lastSeen}
             </MarqueeText>
          ) : null}

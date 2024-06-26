@@ -63,9 +63,7 @@ const DocumentMessageCard = ({ item, isSender }) => {
 
    return (
       <View style={styles.container}>
-         {/* {Boolean(replyTo) && (
-                <ReplyMessage handleReplyPress={handleReplyPress} message={message} isSame={isSender} />
-            )} */}
+         {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
          <View style={styles.fileIconAndNameContainer(isSender ? '#D5DCEC' : '#EFEFEF')}>
             <View style={commonStyles.paddingVertical_8}>{renderFileIcon()}</View>
             <Text numberOfLines={2} style={styles.fileNameText}>

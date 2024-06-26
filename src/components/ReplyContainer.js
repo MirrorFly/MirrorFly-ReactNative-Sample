@@ -1,5 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { setReplyMessage } from '../redux/draftSlice';
 import ReplyAudio from './ReplyAudio';
 import ReplyContact from './ReplyContact';
 import ReplyDeleted from './ReplyDeleted';
@@ -9,8 +12,13 @@ import ReplyLocation from './ReplyLocation';
 import ReplyText from './ReplyText';
 import ReplyVideo from './ReplyVideo';
 
-function ReplyContainer({ replyMessage, handleCloseReplyContainer }) {
+function ReplyContainer({ chatUser, replyMessage }) {
+   const userId = getUserIdFromJid(chatUser);
+   const dispatch = useDispatch();
    const { msgBody = {}, deleteStatus = 0, recallStatus = 0, msgBody: { message_type = '' } = {} } = replyMessage;
+   const handleCloseReplyContainer = () => {
+      dispatch(setReplyMessage({ userId, message: {} }));
+   };
 
    const renderReplyMessageTemplateAboveInput = () => {
       switch (true) {

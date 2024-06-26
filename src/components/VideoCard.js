@@ -6,12 +6,7 @@ import { PlayIcon, VideoIcon } from '../common/Icons';
 import MediaProgressLoader from '../common/MediaProgressLoader';
 import { getConversationHistoryTime } from '../common/timeStamp';
 import ApplicationColors from '../config/appColors';
-import {
-    getImageSource,
-    getMessageStatus,
-    getThumbBase64URL,
-    millisToMinutesAndSeconds,
-} from '../helpers/chatHelpers';
+import { getImageSource, getMessageStatus, getThumbBase64URL, millisToMinutesAndSeconds } from '../helpers/chatHelpers';
 import useMediaProgress from '../hooks/useMediaProgress';
 import commonStyles from '../styles/commonStyles';
 
@@ -53,9 +48,7 @@ function VideoCard({ item, isSender }) {
 
    return (
       <View style={commonStyles.paddingHorizontal_4}>
-         {/* {Boolean(replyTo) && (
-                <ReplyMessage handleReplyPress={handleReplyPress} message={messageObject} isSame={isSender} />
-            )} */}
+         {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
          <View style={styles.videoContainer}>
             {thumb_image ? (
                <Image

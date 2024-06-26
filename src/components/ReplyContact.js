@@ -13,10 +13,6 @@ const ReplyContact = props => {
    const isSameUser = publisherJid === getCurrentUserJid();
    const publisherId = getUserIdFromJid(publisherJid);
 
-   const RemoveHandle = () => {
-      handleRemove();
-   };
-
    return (
       <View>
          <View flexDirection="row" justifyContent={'space-between'} alignItems={'center'}>
@@ -36,7 +32,7 @@ const ReplyContact = props => {
                   borderColor: '#000',
                   borderWidth: 1,
                }}
-               onPress={RemoveHandle}>
+               onPress={handleRemove}>
                <ClearTextIcon />
             </Pressable>
          </View>

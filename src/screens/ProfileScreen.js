@@ -242,6 +242,16 @@ const ProfileScreen = () => {
       );
    }, [profileDetails]);
 
+   const handleGetMetaData = async () => {
+      const res = await SDK.getMetaData();
+      console.log('res ==>', JSON.stringify(res, null, 2));
+   };
+
+   const handleUpdateMetaData = async () => {
+      const res = await SDK.updateMetaData({ date: 'Meta-Data' });
+      console.log('res ==>', JSON.stringify(res, null, 2));
+   };
+
    return (
       <>
          <ScrollView
@@ -379,6 +389,15 @@ const ProfileScreen = () => {
             {isLoading && <LoadingModal />}
          </ScrollView>
          {modalContent && <AlertModal {...modalContent} />}
+
+         <Pressable style={[commonStyles.primarypilbtn]} onPress={handleGetMetaData}>
+            <Text style={commonStyles.primarypilbtntext}>Get</Text>
+         </Pressable>
+
+         <Pressable style={[commonStyles.primarypilbtn, commonStyles.mt_12]} onPress={handleUpdateMetaData}>
+            <Text style={commonStyles.primarypilbtntext}>Update</Text>
+         </Pressable>
+
          <Modal visible={optionModelOpen} onRequestClose={toggleOptionModel}>
             <ModalBottomContent onPressOutside={toggleOptionModel}>
                <Animated.View style={[styles.optionModelContainer, { transform: [{ translateY }] }]}>

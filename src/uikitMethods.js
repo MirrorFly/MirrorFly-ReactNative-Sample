@@ -107,7 +107,7 @@ export const mirrorflyInitialize = async args => {
    }
 };
 
-export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '' }) => {
+export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadata = {} }) => {
    try {
       if (currentUserJID) {
          return {
@@ -116,11 +116,13 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '' }) => {
             jid: currentUserJID,
          };
       }
+      console.log(' userIdentifier, fcmToken = , metadata = {} ==>', userIdentifier, fcmToken, metadata);
       const registerRes = await SDK.register(
          userIdentifier,
          fcmToken,
          voipToken,
          process.env?.NODE_ENV === 'production',
+         metadata,
       );
       if (registerRes.statusCode === 200) {
          const { data } = registerRes;

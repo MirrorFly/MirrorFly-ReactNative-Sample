@@ -17,7 +17,7 @@ function ConversationList({ chatUser }) {
 
    React.useEffect(() => {
       initFunc();
-   }, []);
+   }, [chatUser]);
 
    const initFunc = async () => {
       setChatLoading(true);

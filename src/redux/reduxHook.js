@@ -17,7 +17,10 @@ export const useTypingData = userId => useSelector(state => state.typingData[use
 export const useMediaProgress = msgId => useSelector(state => state.progressData[msgId]);
 export const useArchive = () => useSelector(state => state.settingsData?.archive);
 export const useGroupParticipantsList = groupId => useSelector(state => state.groupData.participantsList[groupId]);
+export const useReplyMessage = userId => useSelector(state => state.draftData.data[userId]?.replyMessage);
+export const useTextMessage = userId => useSelector(state => state.draftData.data[userId]?.text);
 
+export const getReplyMessage = userId => store.getState().draftData.data[userId]?.replyMessage || {};
 export const getRecentChatData = () => store.getState().recentChatData.recentChats;
 export const getSelectedChats = () => store.getState().recentChatData.recentChats.filter(item => item.isSelected === 1);
 export const getArchiveSelectedChats = () =>

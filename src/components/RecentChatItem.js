@@ -7,7 +7,7 @@ import Pressable from '../common/Pressable';
 import { convertUTCTOLocalTimeStamp, formatChatDateTime } from '../common/timeStamp';
 import ApplicationColors from '../config/appColors';
 import { getMessageStatus, getUserIdFromJid } from '../helpers/chatHelpers';
-import { toggleArchiveChatSelection, toggleChatSelection } from '../redux/recentChatDataSlice';
+import { toggleChatSelection } from '../redux/recentChatDataSlice';
 import { getSelectedChats, useRecentChatSearchText } from '../redux/reduxHook';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
@@ -26,11 +26,7 @@ const RecentChatItem = React.memo(
       console.log('RecentChatItem userJid ==>', userJid);
 
       const handleSelectChat = userJid => () => {
-         if (isRecentChatComponent) {
-            dispatch(toggleChatSelection(getUserIdFromJid(userJid)));
-         } else {
-            dispatch(toggleArchiveChatSelection(getUserIdFromJid(userJid)));
-         }
+         dispatch(toggleChatSelection(getUserIdFromJid(userJid)));
       };
 
       const handleRoute = chatUser => {

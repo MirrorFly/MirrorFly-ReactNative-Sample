@@ -13,10 +13,10 @@ import FlatListView from '../components/FlatListView';
 import ApplicationColors from '../config/appColors';
 import config from '../config/config';
 import { getImageSource, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
-import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../helpers/constants';
+// import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../helpers/constants';
 import { getUserNameFromStore, useRecentChatData } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
-import { GROUP_INFO, NEW_GROUP } from './constants';
+import { CONVERSATION_SCREEN, CONVERSATION_STACK, GROUP_INFO, NEW_GROUP } from './constants';
 
 const contactPaginationRefInitialValue = {
    nextPage: 1,
@@ -118,6 +118,7 @@ function ContactScreen() {
             setIsFetching(true);
          }
          const { statusCode, users, totalPages } = await fetchContactsFromSDK(filter, nextPage, 23);
+         console.log('users ==>', JSON.stringify(users, null, 2));
          if (statusCode === 200) {
             updateContactPaginationRefData(totalPages, filter);
             const filteredUsers = getUsersWithFilters(users, filters);

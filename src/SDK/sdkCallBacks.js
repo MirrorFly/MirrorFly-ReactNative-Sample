@@ -700,6 +700,7 @@ export const callBacks = {
       }
    },
    presenceListener: res => {
+      console.log('presenceListener res ==>', JSON.stringify(res, null, 2));
       store.dispatch(setPresenceData(res));
    },
    userProfileListener: res => {

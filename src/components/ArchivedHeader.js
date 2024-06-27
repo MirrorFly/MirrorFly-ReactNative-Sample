@@ -8,7 +8,7 @@ import ScreenHeader from '../common/ScreenHeader';
 import ApplicationColors from '../config/appColors';
 import { getUserIdFromJid, toggleArchive } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
-import { deleteRecentChats } from '../redux/recentChatDataSlice';
+import { deleteRecentChats, resetChatSelections } from '../redux/recentChatDataSlice';
 import { getArchiveSelectedChats, getUserNameFromStore, useArchivedChatData } from '../redux/reduxHook';
 import { ARCHIVED_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
@@ -83,12 +83,16 @@ function ArchivedHeader() {
       );
    };
 
+   const resetSelections = () => {
+      dispatch(resetChatSelections(ARCHIVED_SCREEN));
+   };
+
    const renderSelectionHeader = React.useMemo(() => {
       return (
          Boolean(filtered.length) && (
             <View style={[styles.container, commonStyles.p_15]}>
                <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-                  <IconButton onPress={handleRemoveClose}>
+                  <IconButton onPress={resetSelections}>
                      <CloseIcon />
                   </IconButton>
                   <Text

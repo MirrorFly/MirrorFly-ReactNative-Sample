@@ -9,7 +9,7 @@ import ScreenHeader from '../common/ScreenHeader';
 import ApplicationColors from '../config/appColors';
 import { getUserIdFromJid, showToast, toggleArchive } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
-import { deleteRecentChats, setSearchText } from '../redux/recentChatDataSlice';
+import { deleteRecentChats, resetChatSelections, setSearchText } from '../redux/recentChatDataSlice';
 import { getSelectedChats, getUserNameFromStore, useRecentChatData } from '../redux/reduxHook';
 import { GROUP_STACK, MENU_SCREEN, SETTINGS_STACK } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
@@ -112,7 +112,7 @@ const RecentChatHeader = () => {
          Boolean(filtered.length) && (
             <View style={[styles.container, commonStyles.p_15]}>
                <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-                  <IconButton onPress={handleRemoveClose}>
+                  <IconButton onPress={dispatch(resetChatSelections)}>
                      <CloseIcon />
                   </IconButton>
                   <Text

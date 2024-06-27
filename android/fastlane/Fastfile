@@ -44,7 +44,6 @@ platform :android do
         groups: "reactnative",
         release_notes: "React-Native android 1.2.3",
         apk_path: "../android/app/build/outputs/apk/debug/app-debug.apk",
-        
         firebase_cli_token: "1//0gfTJ_oWJ0mHNCgYIARAAGBASNwF-L9IrYZM4cUIV5EB8gVnSvtMC6Q7aAtgrgG8R1ybhSY1Np_5r5UuZu28N144_weOQDyONcW4",
       )
     end
@@ -55,9 +54,8 @@ platform :android do
       firebase_app_distribution(
         app: "1:235373697524:android:8b3becf8d8ff9be3a0c1a1",
         groups: "reactnative",
-        release_notes: "React-Native android build for MRN-688, MRN-685",
+        release_notes: "React-Native ios build for MRN-689",
         apk_path: "../android/app/build/outputs/apk/release/app-release.apk",
-        
         firebase_cli_token: "1//0gfTJ_oWJ0mHNCgYIARAAGBASNwF-L9IrYZM4cUIV5EB8gVnSvtMC6Q7aAtgrgG8R1ybhSY1Np_5r5UuZu28N144_weOQDyONcW4",
       )
     end

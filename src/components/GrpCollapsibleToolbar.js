@@ -22,7 +22,9 @@ import Pressable from '../common/Pressable';
 import { useNetworkStatus } from '../common/hooks';
 import ApplicationColors from '../config/appColors';
 import config from '../config/config';
-import { getUserIdFromJid, isLocalUser, showToast } from '../helpers/chatHelpers';
+import { getUserIdFromJid, isLocalUser, showNetWorkToast, showToast } from '../helpers/chatHelpers';
+import { clearChatMessageData } from '../redux/chatMessageDataSlice';
+import { deleteRecentChatOnUserId } from '../redux/recentChatDataSlice';
 import { getUserImage, useFilteredRecentChatData } from '../redux/reduxHook';
 import {
    EDITNAME,
@@ -204,7 +206,7 @@ const GrpCollapsibleToolbar = ({
 
    const handelGroupProfileUpdate = () => {
       if (!isNetworkconneted) {
-         return showInternetconnectionToast();
+         return showNetWorkToast();
       }
       toggleOptionModel();
    };
@@ -223,7 +225,7 @@ const GrpCollapsibleToolbar = ({
 
    const handleLeaveGroup = async () => {
       if (!isNetworkconneted) {
-         return showInternetconnectionToast();
+         return showNetWorkToast();
       }
       const { statusCode, message } = await SDK.userExitGroup(chatUser, localUser?.userType === 'o');
       if (statusCode === 200) {
@@ -234,14 +236,14 @@ const GrpCollapsibleToolbar = ({
    };
    const handleDeleteGroup = async () => {
       if (!isNetworkconneted) {
-         return showInternetconnectionToast();
+         return showNetWorkToast();
       }
       if (isNetworkconneted) {
          const { statusCode, message } = await SDK.userDeleteGroup(chatUser);
          if (statusCode === 200) {
             navigation.navigate(RECENTCHATSCREEN);
-            dispatch(deleteActiveChatAction({ fromUserId: getUserIdFromJid(chatUser) }));
-            dispatch(DeleteChatHistoryAction({ fromUserId: getUserIdFromJid(chatUser) }));
+            dispatch(deleteRecentChatOnUserId(chatUser));
+            dispatch(clearChatMessageData({ userId: getUserIdFromJid(chatUser) }));
          } else {
             showToast(message, { id: message });
          }
@@ -250,7 +252,7 @@ const GrpCollapsibleToolbar = ({
 
    const handleRemoveUser = async () => {
       if (!isNetworkconneted) {
-         return showInternetconnectionToast();
+         return showNetWorkToast();
       }
       const { statusCode, message } = await SDK.removeParticipant(
          chatUser,
@@ -266,7 +268,7 @@ const GrpCollapsibleToolbar = ({
 
    const handleMakeAdmin = async () => {
       if (!isNetworkconneted) {
-         return showInternetconnectionToast();
+         return showNetWorkToast();
       }
       const { statusCode, message } = await SDK.makeAsAdmin(chatUser, userDetails.userJid);
       if (statusCode === 200) {

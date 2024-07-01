@@ -19,7 +19,6 @@ export let currentChatUser = '';
 
 function ConversationScreen({ chatUser = '' }) {
    const { params: { jid: _jid = '' } = {} } = useRoute();
-   console.log('jid ==>', _jid);
    const [jid, setJid] = React.useState(_jid || chatUser); // TO HANDLE APPLCATION RENDER BY COMPONENT BY COMPONENT
    currentChatUser = _jid || chatUser;
    SDK.activeChatUser(currentChatUser);
@@ -28,6 +27,7 @@ function ConversationScreen({ chatUser = '' }) {
    const navigation = useNavigation();
    const messaesList = useChatMessages(userId) || [];
    const replyMessage = useReplyMessage(userId) || {};
+   console.log('ConversationScreen jid ==>', jid);
 
    const isAnySelected = React.useMemo(() => {
       return messaesList.some(item => item.isSelected === 1);

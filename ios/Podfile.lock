@@ -409,6 +409,8 @@ PODS:
     - React-Core
   - react-native-headphone-detection (1.3.0):
     - React
+  - react-native-heic-converter (1.3.3):
+    - React
   - react-native-keep-awake (4.0.0):
     - React
   - react-native-keyevent (0.3.2):
@@ -642,6 +644,7 @@ DEPENDENCIES:
   - react-native-geolocation-service (from `../node_modules/react-native-geolocation-service`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-headphone-detection (from `../node_modules/react-native-headphone-detection`)
+  - react-native-heic-converter (from `../node_modules/react-native-heic-converter`)
   - react-native-keep-awake (from `../node_modules/react-native-keep-awake`)
   - react-native-keyevent (from `../node_modules/react-native-keyevent`)
   - react-native-maps (from `../node_modules/react-native-maps`)
@@ -774,6 +777,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-get-random-values"
   react-native-headphone-detection:
     :path: "../node_modules/react-native-headphone-detection"
+  react-native-heic-converter:
+    :path: "../node_modules/react-native-heic-converter"
   react-native-keep-awake:
     :path: "../node_modules/react-native-keep-awake"
   react-native-keyevent:
@@ -914,6 +919,7 @@ SPEC CHECKSUMS:
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
   react-native-headphone-detection: 4192cc8cfd94068a1f32cb41cc7c4cd5aa0f8b3b
+  react-native-heic-converter: 5e6c2a09ba2ffef6f64115919a86be8e46170fab
   react-native-keep-awake: afad8a51dfef9fe9655a6344771be32c8596d774
   react-native-keyevent: 0babd7e275086da5386d831211e3283b624dc0b5
   react-native-maps: 667f9b975549c6fa9b1631bf859440f68ebd3b8f

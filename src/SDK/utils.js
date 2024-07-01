@@ -1,14 +1,16 @@
+import { Platform } from 'react-native';
 import { changeTimeFormat } from '../common/timeStamp';
 import config from '../config/config';
 import {
    calculateWidthAndHeight,
+   convertHeicToJpg,
    getThumbImage,
    getUserIdFromJid,
    getVideoThumbImage,
    isLocalUser,
 } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, DOCUMENT_FORMATS, MIX_BARE_JID } from '../helpers/constants';
-import { addChatMessageItem, setChatMessages } from '../redux/chatMessageDataSlice';
+import { addChatMessageItem, setChatMessages, updateMediaStatus } from '../redux/chatMessageDataSlice';
 import { setReplyMessage } from '../redux/draftSlice';
 import { setMemberParticipantsList } from '../redux/groupDataSlice';
 import { addRecentChatItem, setRecentChats } from '../redux/recentChatDataSlice';
@@ -118,16 +120,20 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
             fileDetails = {},
             fileDetails: { fileSize, filename, duration, uri, type, replyTo = '' } = {},
          } = file;
-
+         let _uri = uri;
+         if (Platform.OS === 'ios') {
+            _uri = await convertHeicToJpg(uri);
+         }
+         file.fileDetails = { ...file.fileDetails, uri: _uri };
          const isDocument = DOCUMENT_FORMATS.includes(type);
          const msgType = isDocument ? 'file' : type.split('/')[0];
-         let thumbImage = msgType === 'image' ? await getThumbImage(uri) : '';
-         thumbImage = msgType === 'video' ? await getVideoThumbImage(uri) : thumbImage;
+         let thumbImage = msgType === 'image' ? await getThumbImage(_uri) : '';
+         thumbImage = msgType === 'video' ? await getVideoThumbImage(_uri) : thumbImage;
          let fileOptions = {
             fileName: filename,
             fileSize: fileSize,
             caption: caption,
-            uri: uri,
+            uri: _uri,
             duration: duration,
             msgId: msgId,
             thumbImage: thumbImage,
@@ -145,7 +151,6 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
             replyTo,
          };
          const conversationChatObj = getSenderMessageObj(dataObj, i);
-         console.log('conversationChatObj ==>', JSON.stringify(conversationChatObj, null, 2));
          conversationChatObj.archiveSetting = getArchive();
          store.dispatch(addChatMessageItem(conversationChatObj));
          store.dispatch(addRecentChatItem(conversationChatObj));
@@ -348,6 +353,7 @@ export const sendSeenStatus = (publisherJid, msgId, groupJid) => {
 export const uploadFileToSDK = async (file, jid, msgId, media) => {
    try {
       const { caption = '', fileDetails: { replyTo = '', duration = 0, audioType = '', type = '' } = {} } = file;
+      console.log('uploadFileToSDK file ==>', JSON.stringify(file, null, 2));
       const isDocument = DOCUMENT_FORMATS.includes(type);
       const msgType = isDocument ? 'file' : type?.split('/')[0] || media.fileType.split('/')[0];
       let fileOptions = {
@@ -377,7 +383,7 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
       };
       if (response?.statusCode !== 200) {
          updateObj.uploadStatus = 3;
-         store.dispatch(updateUploadStatus(updateObj));
+         store.dispatch(updateMediaStatus(updateObj));
       }
    } catch (error) {
       console.log('uploadFileToSDK -->', error);

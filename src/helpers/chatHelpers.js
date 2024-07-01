@@ -6,6 +6,7 @@ import { createThumbnail } from 'react-native-create-thumbnail';
 import DocumentPicker from 'react-native-document-picker';
 import FileViewer from 'react-native-file-viewer';
 import RNFS from 'react-native-fs';
+import HeicConverter from 'react-native-heic-converter';
 import ImagePicker from 'react-native-image-crop-picker';
 import { RESULTS, openSettings } from 'react-native-permissions';
 import Toast from 'react-native-simple-toast';
@@ -376,11 +377,11 @@ export const calculateWidthAndHeight = (width, height) => {
    return response;
 };
 
-export const handleConversationClear = jid => {
+export const handleConversationClear = async jid => {
    const userId = getUserIdFromJid(jid);
    const messageList = getChatMessages(userId) || [];
    if (messageList.length) {
-      SDK.clearChat(jid);
+      await SDK.clearChat(jid);
       store.dispatch(clearChatMessageData(userId));
       store.dispatch(clearRecentChatData(jid));
    } else {
@@ -735,12 +736,7 @@ export const getVideoThumbImage = async uri => {
    let response;
    if (Platform.OS === 'ios') {
       if (uri.includes('ph://')) {
-         let result = await ImageCompressor.compress(uri, {
-            maxWidth: 600,
-            maxHeight: 600,
-            quality: 0.8,
-         });
-         response = await RNFS.readFile(result, 'base64');
+         response = getThumbImage(uri);
       } else {
          const frame = await createThumbnail({
             url: uri,
@@ -758,13 +754,23 @@ export const getVideoThumbImage = async uri => {
    return response;
 };
 
+export const convertHeicToJpg = async heicFilePath => {
+   try {
+      const result = await HeicConverter.convert({ path: heicFilePath });
+      if (result.success) {
+         return result.path; // Path to the converted JPG file
+      }
+   } catch (error) {
+      console.error('HEIC Conversion Error:', error);
+   }
+};
+
 /**
  * Helper function to generate thumbnail for image
  * @param {string} uri - local path if the image
  * @returns {Promise<string>} returns the base64 data of the Thumbnail Image
  */
 export const getThumbImage = async uri => {
-   console.log('uri ==>', uri);
    const result = await ImageCompressor.compress(uri, {
       maxWidth: 200,
       maxHeight: 200,

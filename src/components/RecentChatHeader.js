@@ -107,12 +107,16 @@ const RecentChatHeader = () => {
       },
    ];
 
+   const resetSelections = () => {
+      dispatch(resetChatSelections());
+   };
+
    const renderSelectionHeader = React.useMemo(() => {
       return (
          Boolean(filtered.length) && (
             <View style={[styles.container, commonStyles.p_15]}>
                <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-                  <IconButton onPress={dispatch(resetChatSelections)}>
+                  <IconButton onPress={resetSelections}>
                      <CloseIcon />
                   </IconButton>
                   <Text

@@ -7,7 +7,7 @@ import ApplicationColors from '../config/appColors';
 import { getMessageStatus } from '../helpers/chatHelpers';
 
 const ContactCard = ({ item, isSender }) => {
-   const { createdAt, msgStatus, msgBody: { contact: ContactInfo, replyTo = '' } = {} } = item;
+   const { createdAt, msgStatus, msgBody: { contact: ContactInfo = {}, replyTo = '' } = {} } = item;
 
    const handleInvitePress = () => {
       onInvitePress?.(message);

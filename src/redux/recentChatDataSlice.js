@@ -108,6 +108,10 @@ const recentChatDataSlice = createSlice({
             state.recentChats = state.recentChats.filter(item => item.isSelected !== 1);
          }
       },
+      deleteRecentChatOnUserId(state, action) {
+         const userJid = action.payload;
+         state.recentChats = state.recentChats.filter(item => item.userJid !== userJid);
+      },
       toggleArchiveChats(state, action) {
          const archive = action.payload;
          state.recentChats = state.recentChats
@@ -140,6 +144,7 @@ export const {
    updateMsgByLastMsgId,
    deleteMessagesForEveryoneInRecentChat,
    deleteRecentChats,
+   deleteRecentChatOnUserId,
    toggleArchiveChats,
    resetUnreadCountForChat,
 } = recentChatDataSlice.actions;

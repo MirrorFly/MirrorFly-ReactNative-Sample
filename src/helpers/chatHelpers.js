@@ -24,8 +24,9 @@ import {
    GalleryIcon,
    HeadSetIcon,
    LocationIcon,
+   NotificationSettingsIcon,
    ProfileIcon,
-   SandTimer
+   SandTimer,
 } from '../common/Icons';
 import { getNetworkState } from '../common/hooks';
 import {
@@ -95,7 +96,8 @@ import {
    LOCATION_SCREEN,
    MOBILE_CONTACT_LIST_SCREEN,
    NOTIFICATION_ALERT_STACK,
-   PROFILE_STACK
+   NOTIFICATION_STACK,
+   PROFILE_STACK,
 } from '../screens/constants';
 import { getCurrentUserJid, mflog } from '../uikitMethods';
 
@@ -966,6 +968,11 @@ export const settingsMenu = [
       rounteName: NOTIFICATION_STACK,
    },
    */
+   {
+      name: 'Notifications',
+      icon: NotificationSettingsIcon,
+      rounteName: NOTIFICATION_STACK,
+   },
    {
       name: 'Log out',
       icon: ExitIcon,

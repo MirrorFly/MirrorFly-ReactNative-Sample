@@ -655,7 +655,7 @@ export const callBacks = {
       }
    },
    messageListener: async res => {
-      console.log('res ==>', JSON.stringify(res, null, 2));
+      // console.log('res ==>', JSON.stringify(res, null, 2));
       switch (res.msgType) {
          case 'groupCreated':
          case 'receiveMessage':
@@ -780,7 +780,7 @@ export const callBacks = {
       store.dispatch(updateMsgByLastMsgId(res));
    },
    muteChatListener: res => {
-      store.dispatch(toggleChatMute({ userJid: res.fromUserJid, muteStatus: res.isMuted ? 1 : 0 }));
+      console.log(res, 'res');
    },
    archiveChatListener: res => {
       store.dispatch(toggleArchiveChatsByUserId(res));

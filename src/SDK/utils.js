@@ -475,5 +475,5 @@ export const sendNotificationData = async () => {
 };
 
 export const getMuteStatus = async userJid => {
-   return await SDK.getMuteStatus?.(userJid);
+   return await SDK.getMuteStatus(userJid);
 };

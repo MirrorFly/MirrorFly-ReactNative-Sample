@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { clearState } from './clearSlice';
+import SDK from '../SDK/SDK';
 
 const initialState = {};
 

@@ -98,7 +98,7 @@ const Camera = () => {
          setIsCapturing(true);
          let fileInfo, combinedData;
          takePicture().then(async res => {
-            fileInfo = await RNFS.stat(res.uri);
+            fileInfo = await RNFS.stat(res?.uri);
             combinedData = {
                ...fileInfo,
                ...res,

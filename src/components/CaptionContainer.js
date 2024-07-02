@@ -1,8 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import ApplicationColors from '../config/appColors';
+import { getMessageStatus } from '../helpers/chatHelpers';
 
-const CaptionContainer = ({ caption, msgStatus, timeStamp }) => {
+const CaptionContainer = ({ caption, msgStatus, timeStamp, isSender }) => {
    return (
       Boolean(caption) && (
          <View style={styles.captionContainer}>

@@ -9,6 +9,7 @@ import ApplicationColors from '../config/appColors';
 import { getImageSource, getMessageStatus, getThumbBase64URL, millisToMinutesAndSeconds } from '../helpers/chatHelpers';
 import useMediaProgress from '../hooks/useMediaProgress';
 import commonStyles from '../styles/commonStyles';
+import CaptionContainer from './CaptionContainer';
 
 function VideoCard({ item, isSender }) {
    const {
@@ -88,6 +89,14 @@ function VideoCard({ item, isSender }) {
                      <Text style={styles.timestampText}>{getConversationHistoryTime(createdAt)}</Text>
                   </ImageBackground>
                </View>
+            )}
+            {Boolean(caption) && (
+               <CaptionContainer
+                  isSender={isSender}
+                  caption={caption}
+                  msgStatus={msgStatus}
+                  timeStamp={getConversationHistoryTime(createdAt)}
+               />
             )}
             {checkDownloaded && (
                <View style={styles.playIconWrapper}>

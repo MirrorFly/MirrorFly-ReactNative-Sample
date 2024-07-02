@@ -735,15 +735,7 @@ export const handleSendMedia = selectedImages => () => {
 export const getVideoThumbImage = async uri => {
    let response;
    if (Platform.OS === 'ios') {
-      if (uri.includes('ph://')) {
-         response = getThumbImage(uri);
-      } else {
-         const frame = await createThumbnail({
-            url: uri,
-            timeStamp: 10000,
-         });
-         response = await RNFS.readFile(frame.path, 'base64');
-      }
+      response = getThumbImage(uri);
    } else {
       const frame = await createThumbnail({
          url: uri,

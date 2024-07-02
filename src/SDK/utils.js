@@ -121,7 +121,7 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
             fileDetails: { fileSize, filename, duration, uri, type, replyTo = '' } = {},
          } = file;
          let _uri = uri;
-         if (Platform.OS === 'ios') {
+         if (Platform.OS === 'ios' && uri.includes('ph://')) {
             _uri = await convertHeicToJpg(uri);
          }
          file.fileDetails = { ...file.fileDetails, uri: _uri };

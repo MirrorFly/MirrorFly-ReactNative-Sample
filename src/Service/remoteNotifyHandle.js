@@ -7,6 +7,13 @@ import { displayRemoteNotification } from './PushNotify';
 
 let notifyObj = {};
 let ids = [];
+let notificationTimer = null;
+
+export const clearNotifyTimer = () => {
+   _BackgroundTimer.clearTimeout(notificationTimer);
+   notificationTimer = null;
+};
+
 export const pushNotify = (msgId, title, body, sent_from, onForGround) => {
    const date = Date.now();
    const dateStr = date.toString();
@@ -20,7 +27,8 @@ export const pushNotify = (msgId, title, body, sent_from, onForGround) => {
       displayRemoteNotification(id, date, title, body, sent_from, AndroidImportance.HIGH);
       ids.push(notifyObj[msgId].id);
       if (AppState.currentState === 'active') {
-         _BackgroundTimer.setTimeout(() => {
+         clearNotifyTimer();
+         notificationTimer = _BackgroundTimer.setTimeout(() => {
             notifee.cancelDisplayedNotifications(Object.values(ids));
             ids = [];
             notifyObj = {};

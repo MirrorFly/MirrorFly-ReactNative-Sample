@@ -6,7 +6,7 @@ import { pushNotifyBackground } from './Helper/Calls/Utility';
 import RootNavigation from './Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from './SDK/SDK';
 import { callBacks } from './SDK/sdkCallBacks';
-import { resetVariable } from './SDK/utils';
+import { resetVariable, updateNotificationSettings } from './SDK/utils';
 import { pushNotify, updateNotification } from './Service/remoteNotifyHandle';
 import { CallComponent } from './calls/CallComponent';
 import { setupCallKit } from './calls/ios';
@@ -60,6 +60,9 @@ export const mirrorflyNotificationHandler = async remoteMessage => {
          return;
       }
       const notify = await SDK.getNotificationData(remoteMessage);
+      if (notify?.data.muteStatus === 1) {
+         return;
+      }
       if (remoteMessage.data.type === 'recall') {
          updateNotification(remoteMessage?.data?.message_id);
          return;
@@ -99,6 +102,7 @@ export const mirrorflyInitialize = async args => {
          currentUserJID = _extractedData?.['currentUserJID'];
          currentScreen = _extractedData?.['screen'] || REGISTERSCREEN;
          fetchCurrentUserProfile();
+         updateNotificationSettings();
       }
       await notifee.requestPermission();
       return mfInit;

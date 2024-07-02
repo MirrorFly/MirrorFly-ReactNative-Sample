@@ -16,6 +16,10 @@ export const usePresenceData = userId => useSelector(state => state.presenceData
 export const useTypingData = userId => useSelector(state => state.typingData[userId]);
 export const useMediaProgress = msgId => useSelector(state => state.progressData[msgId]);
 export const useArchive = () => useSelector(state => state.settingsData?.archive);
+export const useNotificationSound = () => useSelector(state => state.settingsData?.notificationSound);
+export const useNotificationVibration = () => useSelector(state => state.settingsData?.notificationVibrate);
+export const useNotificationDisable = () => useSelector(state => state.settingsData?.muteNotification);
+
 export const useGroupParticipantsList = groupId => useSelector(state => state.groupData.participantsList[groupId]);
 
 export const getRecentChatData = () => store.getState().recentChatData.recentChats;

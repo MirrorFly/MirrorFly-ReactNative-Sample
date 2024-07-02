@@ -22,6 +22,7 @@ import {
    GalleryIcon,
    HeadSetIcon,
    LocationIcon,
+   NotificationSettingsIcon,
    ProfileIcon,
    SandTimer,
 } from '../common/Icons';
@@ -74,6 +75,7 @@ import {
    clearRecentChatData,
    deleteMessagesForEveryoneInRecentChat,
    toggleArchiveChats,
+   toggleChatMute,
 } from '../redux/recentChatDataSlice';
 import {
    getArchiveSelectedChats,
@@ -90,6 +92,8 @@ import {
    GALLERY_FOLDER_SCREEN,
    LOCATION_SCREEN,
    MOBILE_CONTACT_LIST_SCREEN,
+   NOTIFICATION_ALERT_STACK,
+   NOTIFICATION_STACK,
    PROFILE_STACK,
 } from '../screens/constants';
 import { getCurrentUserJid } from '../uikitMethods';
@@ -954,8 +958,21 @@ export const settingsMenu = [
       rounteName: CHATS_CREEN,
    },
    {
+      name: 'Notifications',
+      icon: NotificationSettingsIcon,
+      rounteName: NOTIFICATION_STACK,
+   },
+   {
       name: 'Log out',
       icon: ExitIcon,
+   },
+];
+
+export const notificationMenu = [
+   {
+      title: 'Notification Alert',
+      subtitle: 'Choose alert type for incoming messages',
+      rounteName: NOTIFICATION_ALERT_STACK,
    },
 ];
 
@@ -984,6 +1001,19 @@ export const toggleArchive = val => () => {
             SDK.updateArchiveChat(item, val);
          });
       }
+   } catch (error) {
+      return error;
+   }
+};
+
+export const toggleMuteChat = () => {
+   try {
+      let seletedChat = getSelectedChats();
+      let muteStatus = seletedChat.some(res => res.muteStatus === 1) ? 0 : 1;
+      seletedChat.map(item => {
+         SDK.updateMuteNotification(item.userJid, muteStatus === 1 ? true : false);
+         store.dispatch(toggleChatMute({ userJid: item.userJid, muteStatus }));
+      });
    } catch (error) {
       return error;
    }

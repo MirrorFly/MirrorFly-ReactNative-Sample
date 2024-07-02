@@ -13,7 +13,7 @@ import { setMemberParticipantsList } from '../redux/groupDataSlice';
 import { addRecentChatItem, setRecentChats } from '../redux/recentChatDataSlice';
 import { getArchive, getChatMessages, getRoasterData } from '../redux/reduxHook';
 import { setRoasterData } from '../redux/rosterDataSlice';
-import { toggleArchiveSetting } from '../redux/settingDataSlice';
+import { toggleArchiveSetting, updateNotificationSetting } from '../redux/settingDataSlice';
 import store from '../redux/store';
 import { currentChatUser } from '../screens/ConversationScreen';
 import { getCurrentUserJid } from '../uikitMethods';
@@ -436,5 +436,29 @@ export const getUserSettings = async () => {
    const {
       data: { archive = 0 },
    } = await SDK.getUserSettings();
-   store.dispatch(toggleArchiveSetting(archive));
+   store.dispatch(toggleArchiveSetting(Number(archive)));
+};
+
+export const updateNotificationSettings = async () => {
+   const {
+      data: { muteNotification = false, notificationSound = false, notificationVibrate = false },
+   } = await SDK.getUserSettings();
+   store.dispatch(updateNotificationSetting({ muteNotification, notificationSound, notificationVibrate }));
+};
+
+export const sendNotificationData = async () => {
+   const {
+      notificationSound = false,
+      notificationVibrate = false,
+      muteNotification = false,
+   } = store.getState().settingsData;
+   SDK.updateSettings({
+      muteNotification,
+      notificationSound,
+      notificationVibrate,
+   });
+};
+
+export const getMuteStatus = async userJid => {
+   return await SDK.getMuteStatus(userJid);
 };

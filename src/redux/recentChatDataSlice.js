@@ -56,8 +56,8 @@ const recentChatDataSlice = createSlice({
          }
       },
       toggleChatSelection(state, action) {
-         const userId = action.payload;
-         const index = state.recentChats.findIndex(item => item.userId === userId);
+         const userJid = action.payload;
+         const index = state.recentChats.findIndex(item => item.userJid === userJid);
          if (index !== -1) {
             // Toggle the isSelected property
             state.recentChats[index].isSelected = state.recentChats[index].isSelected ? 0 : 1;
@@ -114,6 +114,13 @@ const recentChatDataSlice = createSlice({
             .map(chat => (chat.isSelected === 1 ? { ...chat, archiveStatus: archive ? 1 : 0, isSelected: 0 } : chat))
             .sort((a, b) => b.timestamp - a.timestamp);
       },
+      toggleChatMute(state, action) {
+         const { userJid, muteStatus } = action.payload;
+         const index = state.recentChats.findIndex(item => item.userJid === userJid);
+         if (index !== -1) {
+            state.recentChats[index] = { ...state.recentChats[index], muteStatus, isSelected: 0 };
+         }
+      },
       resetUnreadCountForChat(state, action) {
          const userJid = action.payload;
          const index = state.recentChats.findIndex(item => item.userJid === userJid);
@@ -141,6 +148,7 @@ export const {
    deleteMessagesForEveryoneInRecentChat,
    deleteRecentChats,
    toggleArchiveChats,
+   toggleChatMute,
    resetUnreadCountForChat,
 } = recentChatDataSlice.actions;
 

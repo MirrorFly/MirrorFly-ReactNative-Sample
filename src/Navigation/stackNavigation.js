@@ -52,6 +52,8 @@ import {
    MOBILE_CONTACT_LIST_SCREEN,
    MOBILE_CONTACT_PREVIEW_SCREEN,
    NEW_GROUP,
+   NOTIFICATION_ALERT_STACK,
+   NOTIFICATION_STACK,
    PROFILE_IMAGE,
    PROFILE_SCREEN,
    PROFILE_STACK,
@@ -65,6 +67,8 @@ import {
    VIEWALLMEDIA,
 } from '../screens/constants';
 import { getCurrentScreen } from '../uikitMethods';
+import NotificationScreen from '../screens/NotificationScreen';
+import NotificationAlertScreen from '../screens/NotificationAlertScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -132,6 +136,8 @@ export function SettingsScreen() {
             <Stack.Screen name={PROFILE_STACK}>{prop => <ProfileStack {...prop} />}</Stack.Screen>
             <Stack.Screen name={MENU_SCREEN}>{prop => <MenuScreen {...prop} />}</Stack.Screen>
             <Stack.Screen name={CHATS_CREEN}>{prop => <ChatsScreen {...prop} />}</Stack.Screen>
+            <Stack.Screen name={NOTIFICATION_STACK}>{prop => <NotificationScreen {...prop} />}</Stack.Screen>
+            <Stack.Screen name={NOTIFICATION_ALERT_STACK}>{prop => <NotificationAlertScreen {...prop} />}</Stack.Screen>
          </Stack.Navigator>
       </Provider>
    );

@@ -19,9 +19,12 @@ import {
    OUTGOING_CALL,
 } from '../../Helper/Calls/Constant';
 import { answerIncomingCall, declineIncomingCall, endOnGoingCall } from '../../Helper/Calls/Utility';
+import SDK from '../../SDK/SDK';
+import { getMuteStatus } from '../../SDK/utils';
+import { getChannelIds } from '../../Service/PushNotify';
 import { callDurationTimestamp } from '../../redux/callStateSlice';
 import { resetNotificationData, setNotificationData } from '../../redux/notificationDataSlice';
-import Store from '../../redux/store';
+import store from '../../redux/store';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../../screens/constants';
 
 const { ActivityModule } = NativeModules;
@@ -35,13 +38,15 @@ export const callNotifyHandler = async (
    callStatusType,
    isFullScreenIntent = false,
 ) => {
+   let muteStatus = await getMuteStatus(userJid);
+   const { muteNotification = false } = store.getState().settingsData;
    if (callStatusType === INCOMING_CALL) {
       getIncomingCallNotification(roomId, data, userJid, nickName, callStatusType, isFullScreenIntent);
    } else if (callStatusType === OUTGOING_CALL) {
       getOutGoingCallNotification(roomId, data, userJid, nickName, callStatusType);
    } else if (callStatusType === ONGOING_CALL) {
       getOnGoingCallNotification(roomId, data, userJid, nickName, callStatusType);
-   } else if (callStatusType === MISSED_CALL) {
+   } else if (callStatusType === MISSED_CALL && muteStatus === 0 && !muteNotification) {
       getMissedCallNotification(roomId, data, userJid, nickName, callStatusType);
    }
 };
@@ -203,20 +208,25 @@ export const getMissedCallNotification = async (
    const launchActivityName = Platform.OS === 'android' ? await ActivityModule.getMainActivity() : '';
    let title = `You missed ${callDetailObj.callType === 'audio' ? 'an' : 'a'} ${callDetailObj.callType} call`;
    let displayedNotificationId = await notifee.getDisplayedNotifications();
+   const channelIds = getChannelIds(true);
    let notificationExist = displayedNotificationId.find(
-      res => res?.notification?.title === title && res?.notification?.body === nickName,
+      res =>
+         res?.notification?.title === title &&
+         res?.notification?.body === nickName &&
+         res?.notification?.android?.channelId === channelIds.channelId,
    );
    let channelId =
       notificationExist && Platform.OS === 'android' ? notificationExist?.notification?.android?.channelId : '';
    if (!notificationExist) {
-      channelId = await notifee.createChannel({
-         id: MISSED_CALL,
-         name: 'Missed Call',
+      let channelData = {
+         id: channelIds.channelId,
+         name: channelIds.channelId,
          importance: AndroidImportance.HIGH,
          visibility: AndroidVisibility.PUBLIC,
-         vibration: true,
-         sound: 'default',
-      });
+      };
+      if (channelIds.sound) channelData.sound = channelIds.sound;
+      channelData.vibration = channelIds.vibration;
+      channelId = await notifee.createChannel(channelData);
    }
    const notification = {
       title: title,
@@ -230,7 +240,6 @@ export const getMissedCallNotification = async (
          timestamp: Date.now(),
          showTimestamp: true,
          visibility: AndroidVisibility.PUBLIC,
-         sound: 'default',
          pressAction: {
             id: 'MissedCallNotification',
             launchActivityFlags: [AndroidLaunchActivityFlag.NEW_TASK],
@@ -238,7 +247,6 @@ export const getMissedCallNotification = async (
          },
       },
       ios: {
-         sound: 'default',
          foregroundPresentationOptions: {
             alert: true,
             badge: true,
@@ -246,6 +254,7 @@ export const getMissedCallNotification = async (
          },
       },
    };
+   if (Platform.OS === 'ios' && channelIds.sound) notification.ios.sound = 'default';
    if (notificationExist) notification.id = notificationExist?.notification?.id;
    /** Display a notification */
    await notifee.displayNotification(notification);
@@ -279,7 +288,7 @@ export const onChatNotificationBackGround = async ({ type, detail }) => {
       const { statusCode, data = {} } = await SDK.getUserProfile(getUserIdFromJid(fromUserJID || from_user));
       if (statusCode === 200) {
          const { userId = '' } = data;
-         Store.dispatch(setRoasterData({ userId, ...data }));
+         store.dispatch(setRoasterData({ userId, ...data }));
       }
       Linking.openURL(push_url);
       removeAllDeliveredNotification();
@@ -301,15 +310,15 @@ const callNotifiHandling = detail => {
 export const setNotificationForegroundService = async () => {
    // Register foreground service, NOOP
    notifee.registerForegroundService(notification => {
-      const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
+      const { data: confrenceData = {} } = store.getState().showConfrenceData || {};
       const { callStatusText } = confrenceData;
       return new Promise(() => {
-         Store.dispatch(setNotificationData(notification));
+         store.dispatch(setNotificationData(notification));
          if (notification?.android?.channelId === 'OnGoing Call' && callStatusText === CALL_STATUS_CONNECTED) {
-            let callStartTime = Store.getState()?.callData?.callDuration;
+            let callStartTime = store.getState()?.callData?.callDuration;
             if (!callStartTime) {
                callStartTime = Date.now();
-               Store.dispatch(callDurationTimestamp(callStartTime));
+               store.dispatch(callDurationTimestamp(callStartTime));
             }
             interval = _BackgroundTimer.setInterval(() => {
                onTaskUpdate({
@@ -354,7 +363,7 @@ export const registerNotificationEvents = () => {
 export const stopForegroundServiceNotification = async (cancelID = '') => {
    try {
       _BackgroundTimer.clearInterval(interval);
-      let notifications = Store.getState().notificationData.data;
+      let notifications = store.getState().notificationData.data;
       await notifee.stopForegroundService();
       let displayedNotificationId = await notifee.getDisplayedNotifications();
       let cancelIDS = displayedNotificationId?.find(res => res.id === notifications.id)?.id;
@@ -364,7 +373,7 @@ export const stopForegroundServiceNotification = async (cancelID = '') => {
          channelId &&
          (await notifee.getChannels()).find(res => res.id === channelId && res?.id?.includes('IncomingCall'))?.id;
       channel && (await notifee.deleteChannel(channel));
-      Store.dispatch(resetNotificationData());
+      store.dispatch(resetNotificationData());
    } catch (error) {
       console.log('Error when stopping foreground service ', error);
    }

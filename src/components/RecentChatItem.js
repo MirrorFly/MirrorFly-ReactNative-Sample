@@ -2,12 +2,13 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useDispatch } from 'react-redux';
+import { ChatMuteIcon } from '../common/Icons';
 import NickName from '../common/NickName';
 import Pressable from '../common/Pressable';
 import { convertUTCTOLocalTimeStamp, formatChatDateTime } from '../common/timeStamp';
 import ApplicationColors from '../config/appColors';
 import { getMessageStatus, getUserIdFromJid } from '../helpers/chatHelpers';
-import { toggleArchiveChatSelection, toggleChatSelection } from '../redux/recentChatDataSlice';
+import { toggleChatSelection } from '../redux/recentChatDataSlice';
 import { getSelectedChats, useRecentChatSearchText } from '../redux/reduxHook';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
@@ -23,14 +24,9 @@ const RecentChatItem = React.memo(
       const navigation = useNavigation();
       const searchText = useRecentChatSearchText();
       const isSender = getCurrentUserJid() === publisherJid;
-      console.log('RecentChatItem userJid ==>', userJid);
 
       const handleSelectChat = userJid => () => {
-         if (isRecentChatComponent) {
-            dispatch(toggleChatSelection(getUserIdFromJid(userJid)));
-         } else {
-            dispatch(toggleArchiveChatSelection(getUserIdFromJid(userJid)));
-         }
+         dispatch(toggleChatSelection(userJid));
       };
 
       const handleRoute = chatUser => {
@@ -40,7 +36,7 @@ const RecentChatItem = React.memo(
       // Memoized onPress function
       const onPress = chatUser => () => {
          if (getSelectedChats().length) {
-            handleSelectChat(getUserIdFromJid(chatUser))();
+            handleSelectChat(chatUser)();
          } else {
             handleRoute(chatUser);
          }
@@ -90,9 +86,14 @@ const RecentChatItem = React.memo(
                      <Text style={styles.time}>
                         {createdAt && formatChatDateTime(convertUTCTOLocalTimeStamp(createdAt), 'recent-chat')}
                      </Text>
-                     {Boolean(item.archiveStatus) && isRecentChatComponent && (
-                        <Text style={styles.archived}>Archived</Text>
-                     )}
+                     <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+                        {Boolean(item.muteStatus === 1) && isRecentChatComponent && (
+                           <ChatMuteIcon width={13} height={13} />
+                        )}
+                        {Boolean(item.archiveStatus) && isRecentChatComponent && (
+                           <Text style={styles.archived}>Archived</Text>
+                        )}
+                     </View>
                   </View>
                </View>
             </Pressable>

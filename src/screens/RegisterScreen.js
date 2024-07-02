@@ -7,6 +7,7 @@ import { RealmKeyValueStore } from '../SDK/SDK';
 import { DownArrowIcon, RegiterPageIcon } from '../common/Icons';
 import LoadingModal from '../common/LoadingModal';
 import { useNetworkStatus } from '../common/hooks';
+import { change16TimeWithDateFormat } from '../common/timeStamp';
 import { showToast } from '../helpers/chatHelpers';
 import { numRegx } from '../helpers/constants';
 import commonStyles from '../styles/commonStyles';
@@ -72,6 +73,9 @@ const RegisterScreen = ({ navigation }) => {
             userIdentifier: selectcountry?.dial_code + mobileNumber,
             fcmToken,
             navEnabled: true,
+            metadata: {
+               register: change16TimeWithDateFormat(Date.now()),
+            },
          });
          setIsLoading(false);
          if (statusCode === 200 || statusCode === 409) {

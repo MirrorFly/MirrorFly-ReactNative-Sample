@@ -1,3 +1,3 @@
-export { MirrorflyComponent } from './MirrorflyChatComponent';
-export { ChatScreen } from './Navigation/StackNavigation';
+export { MirrorflyChatComponent } from './MirrorflyChatComponent';
+export { ChatScreen } from './Navigation/stackNavigation';
 

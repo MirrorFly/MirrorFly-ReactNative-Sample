@@ -488,7 +488,6 @@ const ForwardMessage = () => {
    const forwardMessagesToSelectedUsers = async () => {
       const newMsgIds = [];
       const totalLength = forwardMessages.length * Object.keys(selectedUsers).length;
-
       forwardMessages.sort((a, b) => {
          if (a.timestamp > b.timestamp) {
             return 1;
@@ -505,7 +504,7 @@ const ForwardMessage = () => {
       for (let i = 0; i < forwardMessages.length; i++) {
          const msg = forwardMessages[i];
          for (const userId in selectedUsers) {
-            dispatch(resetMessageSelections(userId));
+            dispatch(resetMessageSelections(getUserIdFromJid(currentChatUser)));
             let toUserJid = selectedUsers[userId]?.userJid || formatUserIdToJid(userId);
             const currentNewMsgId = newMsgIdsCopy.shift();
             const recentChatObj = await getRecentChatMsgObjForward(msg, toUserJid, currentNewMsgId);

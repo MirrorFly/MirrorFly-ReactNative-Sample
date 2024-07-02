@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 import { handleSendMsg } from '../SDK/utils';
 import AttachmentMenu from '../common/AttachmentMenu';
 import { SendBtn } from '../common/Button';
@@ -7,14 +8,17 @@ import IconButton from '../common/IconButton';
 import { AttachmentIcon, EmojiIcon, KeyboardIcon } from '../common/Icons';
 import ApplicationColors from '../config/appColors';
 import config from '../config/config';
-import { attachmentMenuIcons } from '../helpers/chatHelpers';
+import { attachmentMenuIcons, getUserIdFromJid } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
-import { useRecentChatData } from '../redux/reduxHook';
+import { setTextMessage } from '../redux/draftSlice';
+import { useRecentChatData, useTextMessage } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
 function ChatInput({ chatUser }) {
+   const userId = getUserIdFromJid(chatUser);
+   const dispatch = useDispatch();
    const typingTimeoutRef = React.useRef(null);
-   const [message, setMessage] = React.useState('');
+   const message = useTextMessage(userId) || '';
    const [menuOpen, setMenuOpen] = React.useState(false);
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
 
@@ -33,6 +37,10 @@ function ChatInput({ chatUser }) {
          setUserType(memoizedUserType);
       }
    }, [memoizedUserType, userType]);
+
+   const setMessage = text => {
+      dispatch(setTextMessage({ userId, message: text }));
+   };
 
    const closeModal = () => {
       setMenuOpen(false);

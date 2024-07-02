@@ -242,6 +242,16 @@ const ProfileScreen = () => {
       );
    }, [profileDetails]);
 
+   const handleGetMetaData = async () => {
+      const res = await SDK.getMetaData();
+      console.log('res ==>', JSON.stringify(res, null, 2));
+   };
+
+   const handleUpdateMetaData = async () => {
+      const res = await SDK.updateMetaData({ date: 'Meta-Data' });
+      console.log('res ==>', JSON.stringify(res, null, 2));
+   };
+
    return (
       <>
          <ScrollView

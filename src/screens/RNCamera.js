@@ -22,8 +22,9 @@ import {
    showToast,
    validateFileSize,
 } from '../helpers/chatHelpers';
-import { CAMERA_SCREEN, MEDIA_PRE_VIEW_SCREEN } from '../helpers/constants';
+
 import commonStyles from '../styles/commonStyles';
+import { CAMERA_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
 
 const cameraService = new CameraService();
 
@@ -97,7 +98,7 @@ const Camera = () => {
          setIsCapturing(true);
          let fileInfo, combinedData;
          takePicture().then(async res => {
-            fileInfo = await RNFS.stat(res.uri);
+            fileInfo = await RNFS.stat(res?.uri);
             combinedData = {
                ...fileInfo,
                ...res,

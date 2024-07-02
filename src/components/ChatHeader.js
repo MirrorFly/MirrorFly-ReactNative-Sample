@@ -44,6 +44,7 @@ import {
 } from '../helpers/chatHelpers';
 import { CALL_TYPE_AUDIO, CALL_TYPE_VIDEO, MIX_BARE_JID } from '../helpers/constants';
 import { resetMessageSelections, setChatSearchText } from '../redux/chatMessageDataSlice';
+import { setReplyMessage } from '../redux/draftSlice';
 import { closePermissionModal, showPermissionModal } from '../redux/permissionSlice';
 import { getSelectedChatMessages, useChatMessages, useRecentChatData } from '../redux/reduxHook';
 import {
@@ -57,7 +58,7 @@ import commonStyles from '../styles/commonStyles';
 import LastSeen from './LastSeen';
 import UserAvathar from './UserAvathar';
 
-function ChatHeader({ chatUser, handleReply }) {
+function ChatHeader({ chatUser }) {
    const dispatch = useDispatch();
    const isNetworkConnected = useNetworkStatus();
    const navigation = useNavigation();
@@ -162,7 +163,8 @@ function ChatHeader({ chatUser, handleReply }) {
    };
 
    const _handleReplyMessage = () => {
-      handleReply(filtered[0]);
+      // handleReply(filtered[0]);
+      dispatch(setReplyMessage({ userId, message: filtered[0] }));
       dispatch(resetMessageSelections(userId));
    };
 

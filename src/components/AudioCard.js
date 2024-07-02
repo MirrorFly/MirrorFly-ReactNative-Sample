@@ -7,6 +7,7 @@ import { getConversationHistoryTime } from '../common/timeStamp';
 import { getMessageStatus } from '../helpers/chatHelpers';
 import useMediaProgress from '../hooks/useMediaProgress';
 import commonStyles from '../styles/commonStyles';
+import ReplyMessage from './ReplyMessage';
 
 const AudioCard = ({ item, isSender }) => {
    const {
@@ -16,8 +17,8 @@ const AudioCard = ({ item, isSender }) => {
       msgBody: {
          media,
          media: { file: { fileDetails = {} } = {}, is_uploading, is_downloaded, local_path = '', audioType = '' } = {},
+         replyTo = '',
       } = {},
-      replyTo = '',
    } = item;
    const uri = local_path || fileDetails?.uri;
 
@@ -31,9 +32,7 @@ const AudioCard = ({ item, isSender }) => {
 
    return (
       <View style={[styles.container, replyTo ? commonStyles.p_4 : undefined]}>
-         {/* {Boolean(replyTo) && (
-                <ReplyMessage handleReplyPress={handleReplyPress} message={messageObject} isSame={isSender} />
-            )} */}
+         {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
          <View style={styles.audioControlsContainer(isSender ? '#D0D8EB' : '#EFEFEF')}>
             <View style={styles.audioIconContainer}>
                {audioType ? <AudioMicIcon width="14" height="14" /> : <AudioMusicIcon width="14" height="14" />}

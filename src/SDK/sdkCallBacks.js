@@ -111,9 +111,8 @@ import { setProgress } from '../redux/progressDataSlice';
 import {
    addRecentChatItem,
    toggleArchiveChatsByUserId,
-   toggleChatMute,
    updateMsgByLastMsgId,
-   updateRecentMessageStatus,
+   updateRecentMessageStatus
 } from '../redux/recentChatDataSlice';
 import { getArchive } from '../redux/reduxHook';
 import { setRoasterData } from '../redux/rosterDataSlice';
@@ -655,7 +654,6 @@ export const callBacks = {
       }
    },
    messageListener: async res => {
-      // console.log('res ==>', JSON.stringify(res, null, 2));
       switch (res.msgType) {
          case 'groupCreated':
          case 'receiveMessage':
@@ -780,7 +778,7 @@ export const callBacks = {
       store.dispatch(updateMsgByLastMsgId(res));
    },
    muteChatListener: res => {
-      console.log(res, 'res');
+      console.log(res,"muteChatListener");
    },
    archiveChatListener: res => {
       store.dispatch(toggleArchiveChatsByUserId(res));

@@ -19,6 +19,8 @@ export const useArchive = () => useSelector(state => state.settingsData?.archive
 export const useNotificationSound = () => useSelector(state => state.settingsData?.notificationSound);
 export const useNotificationVibration = () => useSelector(state => state.settingsData?.notificationVibrate);
 export const useNotificationDisable = () => useSelector(state => state.settingsData?.muteNotification);
+export const useMuteStatus = userJid =>
+   useSelector(state => state.recentChatData?.recentChats.find(item => item.userJid === userJid).muteStatus);
 
 export const useGroupParticipantsList = groupId => useSelector(state => state.groupData.participantsList[groupId]);
 export const useReplyMessage = userId => useSelector(state => state.draftData.data[userId]?.replyMessage);

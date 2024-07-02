@@ -57,6 +57,7 @@ import {
    stopProximityListeners,
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
    updateAudioRouteTo,
+   updateMissedCallNotification,
 } from '../Helper/Calls/Utility';
 import RootNavigation from '../Navigation/rootNavigation';
 import { pushNotify } from '../Service/remoteNotifyHandle';
@@ -103,7 +104,12 @@ import {
 import { setXmppConnectionStatus } from '../redux/loggedInUserDataSlice';
 import { setPresenceData } from '../redux/presenceDataSlice';
 import { setProgress } from '../redux/progressDataSlice';
-import { addRecentChatItem, updateMsgByLastMsgId, updateRecentMessageStatus } from '../redux/recentChatDataSlice';
+import {
+   addRecentChatItem,
+   toggleChatMute,
+   updateMsgByLastMsgId,
+   updateRecentMessageStatus,
+} from '../redux/recentChatDataSlice';
 import { getArchive } from '../redux/reduxHook';
 import { setRoasterData } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting } from '../redux/settingDataSlice';
@@ -111,10 +117,9 @@ import { resetConferencePopup, showConfrence, updateConference } from '../redux/
 import store from '../redux/store';
 import { resetTypingStatus, setTypingStatus } from '../redux/typingStatusDataSlice';
 import { REGISTERSCREEN } from '../screens/constants';
-import { getLocalUserDetails, logoutClearVariables, mflog, setCurrectUserProfile } from '../uikitMethods';
+import { getLocalUserDetails, logoutClearVariables, setCurrectUserProfile } from '../uikitMethods';
 import { CONNECTED } from './constants';
 import { fetchGroupParticipants, getUserProfileFromSDK, getUserSettings } from './utils';
-import { updateMissedCallNotification } from '../Helper/Calls/Utility';
 
 let localStream = null,
    localVideoMuted = false,
@@ -780,7 +785,7 @@ export const callBacks = {
       store.dispatch(updateMsgByLastMsgId(res));
    },
    muteChatListener: res => {
-      console.log(res, 'res');
+      store.dispatch(toggleChatMute({ userJid: res.fromUserJid, muteStatus: res.isMuted ? 1 : 0 }));
    },
    archiveChatListener: res => {
       console.log('archiveChatListener res ==>', JSON.stringify(res, null, 2));

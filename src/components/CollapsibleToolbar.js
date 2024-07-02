@@ -12,6 +12,7 @@ import { getUserIdFromJid } from '../helpers/chatHelpers';
 import { CHAT_TYPE_SINGLE } from '../helpers/constants';
 import { VIEWALLMEDIA } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
+import MuteToggle from './MuteToggle';
 
 const propTypes = {
    chatUser: PropTypes.string,
@@ -160,6 +161,13 @@ const CollapsibleToolbar = ({
             })}>
             <View style={{ marginHorizontal: 12, marginTop: toolbarMaxHeight, minHeight: adaptiveMinHeight }}>
                <View>
+                  <View
+                     style={[
+                        commonStyles.hstack,
+                        { marginBottom: 8, borderBottomWidth: 1, borderBottomColor: '#f2f2f2' },
+                     ]}>
+                     <MuteToggle chatUser={chatUser} />
+                  </View>
                   <View style={{ marginBottom: 12, borderBottomWidth: 1, borderBottomColor: '#f2f2f2' }}>
                      <Text style={{ marginBottom: 8, fontSize: 14, color: '#181818', fontWeight: '800' }}>Email</Text>
                      <View style={commonStyles.hstack}>

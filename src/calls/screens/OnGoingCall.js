@@ -1,8 +1,9 @@
 import React from 'react';
 import { Animated, ImageBackground, Platform, Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
-import { useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { enablePipModeIfCallConnected } from '../../Helper';
+import { selectLargeVideoUser } from '../../Helper/Calls/Call';
 import {
    CALL_RINGING_DURATION,
    CALL_STATUS_CONNECTING,
@@ -46,6 +47,7 @@ let hideControlsTimeout = null,
 
 let remoteStreamDatas = [];
 const OnGoingCall = () => {
+   const dispatch = useDispatch();
    const layout = useSelector(state => state.callData.callLayout) || 'tile';
    const [topViewControlsHeight, setTopViewControlsHeight] = React.useState(0);
    const isPipMode = usePipModeListener();
@@ -62,15 +64,14 @@ const OnGoingCall = () => {
    const largeVideoUserData = useSelector(state => state.callData.largeVideoUser) || {};
    const callConnectionState = useSelector(state => state.callData.connectionState) || {};
    const { callType, callMode } = callConnectionState;
-   const { data: showConfrenceData = {} } = useSelector(state => state.showConfrenceData) || {};
-   const remoteStream = useSelector(state => state.showConfrenceData.data.remoteStream) || [];
-   const localStream = useSelector(state => state.showConfrenceData.data.localStream) || {};
+   const { data: showConfrenceData = {} } = useSelector(state => state.showConfrenceData, shallowEqual) || {};
+   const remoteStream = useSelector(state => state.showConfrenceData.data.remoteStream, shallowEqual) || [];
+   const localStream = useSelector(state => state.showConfrenceData.data.localStream, shallowEqual) || {};
    const remoteAudioMuted = showConfrenceData?.remoteAudioMuted || [];
    const remoteVideoMuted = showConfrenceData?.remoteVideoMuted || [];
    const vCardData = getLocalUserDetails();
    const rosterData = useSelector(state => state.rosterData.data);
    const { isFrontCameraEnabled } = useSelector(state => state.callControlsData);
-   const dispatch = useDispatch();
    const [showMenuPopup, setShowMenuPopup] = React.useState(false);
 
    const animateLayout = toValue => {
@@ -171,7 +172,6 @@ const OnGoingCall = () => {
    // because when the user goes offline or the call could not be connected for 30 seconds then we are ending the call in the timeout
    React.useEffect(() => {
       if (callStatus.toLowerCase() === CALL_STATUS_CONNECTING.toLowerCase()) {
-         _BackgroundTimer.clearTimeout(connectingCallStatusTimeout);
          connectingCallStatusTimeout = _BackgroundTimer.setTimeout(() => {
             const _currentCallStatus = (getCallStatus() || '').toLowerCase();
             if (_currentCallStatus === CALL_STATUS_CONNECTING.toLowerCase()) {
@@ -179,6 +179,7 @@ const OnGoingCall = () => {
             }
          }, CALL_RINGING_DURATION);
       }
+      return () => _BackgroundTimer.clearTimeout(connectingCallStatusTimeout);
    }, [callStatus]);
 
    const setLayout = val => {

@@ -1008,11 +1008,6 @@ export const updateCallAudioMute = async (audioMuted, callUUID, isFromCallKeep =
          }
 
          store.dispatch(updateCallAudioMutedAction(audioMuted));
-         store.dispatch(
-            updateConference({
-               localAudioMuted: audioMuted,
-            }),
-         );
       }
    } catch (error) {
       console.log('Error when muting/unmuting local user audio', error);

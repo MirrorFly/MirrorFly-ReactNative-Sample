@@ -75,7 +75,6 @@ export const getIncomingCallNotification = async (
          color: '#36A8F4',
          channelId: channelId,
          category: AndroidCategory.CALL,
-         onlyAlertOnce: true,
          ongoing: true,
          flags: [AndroidFlags.FLAG_NO_CLEAR],
          importance: AndroidImportance.HIGH,
@@ -131,7 +130,6 @@ export const getOutGoingCallNotification = async (roomId, callDetailObj, userJid
       data: { roomId: roomId } || null,
       android: {
          color: '#36A8F4',
-         onlyAlertOnce: true,
          channelId: channelId,
          importance: AndroidImportance.DEFAULT,
          ongoing: true,
@@ -171,7 +169,6 @@ export const getOnGoingCallNotification = async (roomId, callDetailObj, userJid,
       data: { roomId: roomId } || null,
       android: {
          color: '#36A8F4',
-         onlyAlertOnce: true,
          channelId: channelId,
          autoCancel: false,
          ongoing: true,
@@ -287,6 +284,7 @@ export const onChatNotificationBackGround = async ({ type, detail }) => {
 };
 
 const callNotifiHandling = detail => {
+   const { callerUUID: activeCallUUID = '' } = Store.getState().callData || {};
    if (detail.pressAction?.id === 'accept') {
       answerIncomingCall(activeCallUUID);
    } else if (detail.pressAction?.id === 'decline') {
@@ -332,7 +330,7 @@ export const setNotificationForegroundService = async () => {
                         sound: '',
                         importance: AndroidImportance.LOW,
                         color: '#36A8F4',
-                        smallIcon: 'ic_call_notification',
+                        smallIcon: notification.android.smallIcon,
                         timestamp: Date.now(),
                         showTimestamp: true,
                      },

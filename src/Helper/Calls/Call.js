@@ -2,38 +2,53 @@ import { AppState, Platform, Vibration } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import InCallManager from 'react-native-incall-manager';
 import { RINGER_MODE, getRingerMode } from 'react-native-ringer-mode';
-// import { subscribe as vibrationEventListener } from 'react-native-silentmode-detector';
 import Sound from 'react-native-sound';
 import SDK from '../../SDK/SDK';
 import {
    clearIosCallListeners,
+   muteLocalVideo,
    removeRemoteStream,
    resetCallData,
    setDisconnectedScreenTimeoutTimer,
 } from '../../SDK/sdkCallBacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
+import AudioRoutingModule from '../../customModules/AudioRoutingModule';
 import { updateCallAgainData } from '../../redux/callAgainSlice';
-import { pinUser, setCallModalScreen, setLargeVideoUser } from '../../redux/callStateSlice';
+import { updateCallVideoMutedAction } from '../../redux/callControlsSlice';
+import {
+   callConversion,
+   pinUser,
+   setCallModalScreen,
+   setLargeVideoUser,
+   updateCallConnectionState,
+} from '../../redux/callStateSlice';
 import { showConfrence, updateConference } from '../../redux/showConfrenceSlice';
 import Store from '../../redux/store';
+import { getLocalUserDetails } from '../../uikitMethods';
 import {
    CALL_AGAIN_SCREEN,
+   CALL_CONVERSION_STATUS_REQUEST,
    CALL_RINGING_DURATION,
    CALL_STATUS_CALLING,
    CALL_STATUS_DISCONNECTED,
    CALL_STATUS_RINGING,
    CALL_STATUS_TRYING,
+   CALL_TYPE_VIDEO,
    DISCONNECTED_SCREEN_DURATION,
 } from './Constant';
 import {
    closeCallModalActivity,
+   enableSpeaker,
    endCallForIos,
    getNickName,
+   isPipModeEnabled,
+   openCallModelActivity,
    resetCallModalActivity,
    setpreventMultipleClick,
+   showOngoingNotification,
+   startProximitySensor,
+   stopProximityListeners,
 } from './Utility';
-import { getLocalUserDetails } from '../../uikitMethods';
-import AudioRoutingModule from '../../customModules/AudioRoutingModule';
 
 let missedCallNotificationTimer = null;
 let callingRemoteStreamRemovalTimer = null;
@@ -85,14 +100,16 @@ export const stopOutgoingCallRingingTone = () => {
 
 export const startReconnectingTone = () => {
    try {
-      reconnectingSound = new Sound('fly_reconnecting_tone.mp3', Sound.MAIN_BUNDLE, error => {
-         if (error) {
-            console.log('Error Loading reconnecting sound from bundle', error);
-            return;
-         }
-         reconnectingSound?.play?.();
-         reconnectingSound?.setNumberOfLoops(-1);
-      });
+      if (reconnectingSound === null) {
+         reconnectingSound = new Sound('fly_reconnecting_tone.mp3', Sound.MAIN_BUNDLE, error => {
+            if (error) {
+               console.log('Error Loading reconnecting sound from bundle', error);
+               return;
+            }
+            reconnectingSound?.play?.();
+            reconnectingSound?.setNumberOfLoops(-1);
+         });
+      }
    } catch (err) {
       console.log('Error when starting reconnecting rigntone', err);
    }
@@ -327,6 +344,10 @@ export const callConnectionStoreData = () => {
 
 export const showConfrenceStoreData = () => {
    return Store.getState?.().showConfrenceData || {};
+};
+
+export const getCallConversionStoreData = () => {
+   return Store.getState?.().callData.callConversionData || {};
 };
 
 export function dispatchDisconnected(statusMessage, remoteStreams = []) {
@@ -597,4 +618,100 @@ export const selectLargeVideoUser = (userJid, volumelevel) => {
          }, 1000);
       }, 1000);
    };
+};
+
+function getFromJidFromRemoteStream(remoteStream) {
+   const vcardData = getLocalUserDetails();
+   let fromJid = '';
+   if (remoteStream.length > 0) {
+      remoteStream.map(rs => {
+         let id = rs.fromJid;
+         id = id.includes('@') ? id.split('@')[0] : id;
+         if (id !== vcardData.fromUser) {
+            fromJid = rs.fromJid;
+         }
+      });
+   }
+   return fromJid;
+}
+
+export const switchCallData = (callType, res) => {
+   const callerUUID = Store.getState().callData.callerUUID || {};
+   const isSpeakerEnabled = callType === CALL_TYPE_VIDEO ? true : false;
+   enableSpeaker(callerUUID, isSpeakerEnabled);
+   if (Platform.OS === 'android') {
+      stopForegroundServiceNotification().then(() => {
+         showOngoingNotification(res);
+      });
+   } else {
+      isSpeakerEnabled ? stopProximityListeners() : startProximitySensor();
+   }
+};
+
+/**
+ * onetoone call, there is a feature called CALL SWITCH. So
+ * Need update the callType after converted the audio call to video and
+ * When both the user mute the call again conerted the video call to audio
+ *
+ * @param {*} param0
+ * @param {*} localVideoMuted
+ */
+export const updateCallTypeAfterCallSwitch = async (localVideoMute, isLocalMute = false) => {
+   const { getState } = Store;
+   const { data } = getState().showConfrenceData;
+   let { remoteStream, remoteVideoMuted } = data || {};
+   const { isVideoMuted: localVideoMuted } = getState().callControlsData;
+   const callConnectionStatus = { ...callConnectionStoreData() };
+   if (!callConnectionStatus) return;
+   let callType = null;
+   if (
+      remoteStream &&
+      Array.isArray(remoteStream) &&
+      remoteStream.length === 2 &&
+      callConnectionStatus.callMode === 'onetoone'
+   ) {
+      let fromJid = getFromJidFromRemoteStream(remoteStream);
+      if (localVideoMuted && fromJid && remoteVideoMuted[fromJid]) {
+         callType = 'audio';
+      } else {
+         callType = 'video';
+      }
+      if (!isLocalMute) {
+         Store.dispatch(updateCallVideoMutedAction(localVideoMute));
+         muteLocalVideo(localVideoMute);
+      }
+      if (callType && callType !== callConnectionStatus.callType) {
+         callConnectionStatus.callType = callType;
+         Store.dispatch(updateCallConnectionState(callConnectionStatus));
+         switchCallData(callType, callConnectionStatus);
+         // need to update the callLogs in as per calltype
+         // callLogs.update(callConnectionStatus.roomId, {
+         //    callType,
+         // });
+      }
+   }
+};
+
+let callSwitchTimer = null;
+const clearCallSwitchTimer = () => {
+   BackgroundTimer.clearTimeout(callSwitchTimer);
+   callSwitchTimer = null;
+};
+
+export const callSwitch = res => {
+   clearCallSwitchTimer();
+   const { status, userJid } = res;
+   const dispatchCallConversion = () => Store.dispatch(callConversion({ status, fromUser: userJid }));
+   if (isPipModeEnabled()) {
+      openCallModelActivity();
+      if (status === CALL_CONVERSION_STATUS_REQUEST && callSwitchTimer === null) {
+         callSwitchTimer = BackgroundTimer.setTimeout(() => {
+            if (status === CALL_CONVERSION_STATUS_REQUEST) {
+               dispatchCallConversion();
+            }
+         }, 650);
+         return;
+      }
+   }
+   dispatchCallConversion();
 };

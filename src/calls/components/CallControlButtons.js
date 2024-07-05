@@ -13,13 +13,7 @@ import {
    CALL_STATUS_DISCONNECTED,
    CALL_TYPE_VIDEO,
 } from '../../Helper/Calls/Constant';
-import {
-   audioRouteNameMap,
-   switchCamera,
-   updateAudioRouteTo,
-   updateCallAudioMute,
-   updateCallVideoMute,
-} from '../../Helper/Calls/Utility';
+import { audioRouteNameMap, switchCamera, updateAudioRouteTo, updateCallAudioMute } from '../../Helper/Calls/Utility';
 import {
    AudioMuteIcon,
    AudioUnMuteIcon,
@@ -46,7 +40,7 @@ const sortAudioRoutes = (a, b) => {
    return 0;
 };
 
-const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callType }) => {
+const CallControlButtons = ({ callStatus, handleEndCall, callType, handleVideoMute }) => {
    let endActionButtonRef = useRef(false);
    const RBSheetRef = useRef(null);
 
@@ -127,11 +121,11 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
          return;
       }
       const _videoMuted = !isVideoMuted;
-      updateCallVideoMute(_videoMuted, callerUUID);
+      handleVideoMute(_videoMuted, callerUUID);
    };
 
    const handleSelectedRoutes = () => {
-      if (audioRouteUpdateNeeded.current && RBSheetRef.current && RBSheetRef.current?.state?.modalVisible) {
+      if (audioRouteUpdateNeeded.current && RBSheetRef.current && RBSheetRef.current.state.modalVisible) {
          RNCallKeep.getAudioRoutes().then(_routes => {
             /** sample data from 'getAudioRoutes' method
              * const sampleAudioRoutes = [

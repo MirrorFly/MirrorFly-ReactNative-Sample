@@ -7,6 +7,7 @@ import KeyEvent from 'react-native-keyevent';
 import { MediaStream } from 'react-native-webrtc';
 import {
    callConnectionStoreData,
+   callSwitch,
    clearIncomingCallTimer,
    clearMissedCallNotificationTimer,
    clearOutgoingTimer,
@@ -24,6 +25,7 @@ import {
    stopIncomingCallRingtone,
    stopOutgoingCallRingingTone,
    stopReconnectingTone,
+   updateCallTypeAfterCallSwitch,
 } from '../Helper/Calls/Call';
 import {
    CALL_AGAIN_SCREEN,
@@ -88,6 +90,7 @@ import {
 import { resetCallControlsStateAction, updateCallVideoMutedAction } from '../redux/callControlsSlice';
 import { resetCallModalToastDataAction } from '../redux/callModalToastSlice';
 import {
+   callConversion,
    callDurationTimestamp,
    clearCallData,
    setCallModalScreen,
@@ -115,6 +118,7 @@ import { getLocalUserDetails, logoutClearVariables, mflog, setCurrectUserProfile
 import { CONNECTED } from './constants';
 import { fetchGroupParticipants, getUserProfileFromSDK, getUserSettings } from './utils';
 import { updateMissedCallNotification } from '../Helper/Calls/Utility';
+import { clearIntervalConversionPopUp } from '../Helper/Calls';
 
 let localStream = null,
    localVideoMuted = false,
@@ -187,6 +191,7 @@ export const resetCallData = () => {
    store.dispatch(callDurationTimestamp(0));
    store.dispatch(resetCallControlsStateAction());
    store.dispatch(resetCallModalToastDataAction());
+   store.dispatch(callConversion());
 
    resetData();
    /**
@@ -341,6 +346,7 @@ const ended = async res => {
          // Call ended before attend
          callConnectionData = callConnectionStoreData();
       }
+      clearIntervalConversionPopUp();
       dispatchDisconnected(CALL_STATUS_DISCONNECTED);
       /**
       // callLogs.update(roomId, {
@@ -359,7 +365,6 @@ const ended = async res => {
       // SetTimeout not working in background and killed state
       const timeout = BackgroundTimer.setTimeout(() => {
          resetCloseModel();
-         /** store.dispatch(callConversion()); */
       }, DISCONNECTED_SCREEN_DURATION);
       setDisconnectedScreenTimeoutTimer(timeout);
 
@@ -377,7 +382,6 @@ const ended = async res => {
          return;
       }
       removingRemoteStream(res);
-      /** resetPinAndLargeVideoUser(res.userJid); */
       updateCallConnectionStatus(res.usersStatus);
       const showConfrenceData = showConfrenceStoreData();
       const { data } = showConfrenceData;
@@ -389,13 +393,11 @@ const ended = async res => {
             remoteAudioMuted,
          }),
       );
+      resetPinAndLargeVideoUser(res.userJid);
    }
 };
 
 const dispatchCommon = () => {
-   /**store.dispatch(callConversion());
-    * store.dispatch(closeCallModal());
-    */
    closeCallModalActivity(true);
    resetCallData();
 };
@@ -450,9 +452,7 @@ const handleEngagedOrBusyStatus = async res => {
       }
       let userDetails = await getUserProfileFromSDK(getUserIdFromJid(res.userJid));
       let toastMessage =
-         res.status === 'engaged'
-            ? `${userDetails.displayName} is on another call`
-            : `${userDetails.displayName} is busy`;
+         res.status === 'engaged' ? `${userDetails.nickName} is on another call` : `${userDetails.nickName} is busy`;
       showToast(toastMessage);
       removingRemoteStream(res);
       store.dispatch(
@@ -491,7 +491,7 @@ const connected = async res => {
                showOngoingNotification(res);
             }
          }
-         onReconnect = false;
+         onReconnect = false
       }
       dispatch(
          showConfrence({
@@ -999,13 +999,13 @@ export const callBacks = {
                        status: CALL_CONVERSION_STATUS_CANCEL,
                     }
                   : undefined;
-            /** store.dispatch(callConversion(status)); */
+            store.dispatch(callConversion(status));
             status && SDK.callConversion(CALL_CONVERSION_STATUS_CANCEL);
          }
       }
    },
    mediaErrorListener: res => {
-      console.log(res, 'userProfileListener');
+      console.log(res, 'mediaErrorListener');
    },
    callSpeakingListener: res => {},
    callUsersUpdateListener: res => {},
@@ -1031,7 +1031,9 @@ export const callBacks = {
    missedCallListener: res => {
       updateMissedCallNotification(res);
    },
-   callSwitchListener: function (res) {},
+   callSwitchListener: function (res) {
+      callSwitch(res);
+   },
    muteStatusListener: res => {
       if (!res) return;
       let localUser = false;
@@ -1073,7 +1075,7 @@ export const callBacks = {
             remoteAudioMuted: remoteAudioMuted,
          }),
       );
-      /** updateCallTypeAfterCallSwitch(); */
+      updateCallTypeAfterCallSwitch(localVideoMuted, false);
    },
    userSettingsListener: res => {
       store.dispatch(toggleArchiveSetting(res?.archive));

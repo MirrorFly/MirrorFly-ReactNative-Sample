@@ -6,19 +6,24 @@ import { enablePipModeIfCallConnected } from '../../Helper';
 import { selectLargeVideoUser } from '../../Helper/Calls/Call';
 import {
    CALL_RINGING_DURATION,
+   CALL_STATUS_CONNECTED,
    CALL_STATUS_CONNECTING,
    CALL_STATUS_DISCONNECTED,
+   CALL_STATUS_PERMISSION,
    CALL_STATUS_RECONNECT,
 } from '../../Helper/Calls/Constant';
-import { endOnGoingCall } from '../../Helper/Calls/Utility';
+import { endOnGoingCall, updateCallVideoMute } from '../../Helper/Calls/Utility';
+import SDK, { RealmKeyValueStore } from '../../SDK/SDK';
 import CallsBg from '../../assets/calls-bg.png';
 import IconButton from '../../common/IconButton';
 import { LayoutIcon, MenuIcon } from '../../common/Icons';
 import Pressable from '../../common/Pressable';
+import { requestCameraMicPermission } from '../../common/permissions';
 import ApplicationColors from '../../config/appColors';
 import { usePipModeListener } from '../../customModules/PipModule';
 import { formatUserIdToJid, getImageSource, getUserIdFromJid } from '../../helpers/chatHelpers';
-import { closeCallModal, updateCallLayout } from '../../redux/callStateSlice';
+import { CALL_STATUS_HOLD } from '../../helpers/constants';
+import { callConversion, closeCallModal, updateCallLayout } from '../../redux/callStateSlice';
 import { getRoasterData } from '../../redux/reduxHook';
 import commonStyles from '../../styles/commonStyles';
 import { getCurrentUserJid, getLocalUserDetails } from '../../uikitMethods';
@@ -493,6 +498,36 @@ const OnGoingCall = () => {
       );
    };
 
+   const handleVideoMute = async (_videoMuted, callerUUID) => {
+      let isPermissionChecked = await RealmKeyValueStore.getItem('camera_microPhone_Permission');
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
+      const videoPermission = await requestCameraMicPermission();
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+      if (videoPermission === 'granted') {
+         const allUsersVideoMuted = await SDK.isAllUsersVideoMuted();
+         if (allUsersVideoMuted && callMode === 'onetoone' && remoteStream.length <= 2) {
+            if (
+               callStatus &&
+               (callStatus.toLowerCase() === CALL_STATUS_CONNECTED || callStatus.toLowerCase() === CALL_STATUS_HOLD)
+            ) {
+               dispatch(
+                  callConversion({
+                     status: 'request_init',
+                     fromUser: callConnectionState.to || callConnectionState.userJid,
+                  }),
+               );
+               return;
+            }
+         } else {
+            updateCallVideoMute(_videoMuted, callerUUID);
+         }
+      } else if (isPermissionChecked) {
+         dispatch(callConversion({ status: CALL_STATUS_PERMISSION }));
+      } else if (videoPermission === RESULTS.BLOCKED) {
+         RealmKeyValueStore.setItem('camera_microPhone_Permission', 'true');
+      }
+   };
+
    // if in PIP mode then returning PIP layout
    if (isPipMode) {
       return (
@@ -535,7 +570,7 @@ const OnGoingCall = () => {
                   handleEndCall={handleHangUp}
                   callStatus={callStatus}
                   callType={callType}
-                  // handleVideoMute={handleVideoMute}
+                  handleVideoMute={handleVideoMute}
                   // videoMute={!!localVideoMuted}
                   // audioMute={true}
                   // audioControl={audioControl}

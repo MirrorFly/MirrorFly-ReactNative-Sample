@@ -253,11 +253,17 @@ const commonStyles = StyleSheet.create({
    px_4: {
       paddingHorizontal: 4,
    },
+   px_6: {
+      paddingHorizontal: 6,
+   },
    px_8: {
       paddingHorizontal: 8,
    },
    px_10: {
-      paddingHorizontal: 8,
+      paddingHorizontal: 10,
+   },
+   px_12: {
+      paddingHorizontal: 12,
    },
    px_18: {
       paddingHorizontal: 18,

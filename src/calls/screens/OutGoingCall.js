@@ -2,8 +2,8 @@ import React from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { endCall, startOutgoingcallTimer } from '../../Helper/Calls/Call';
-import { CALL_STATUS_DISCONNECTED } from '../../Helper/Calls/Constant';
-import { closeCallModalActivity } from '../../Helper/Calls/Utility';
+import { CALL_STATUS_DISCONNECTED, CALL_TYPE_AUDIO } from '../../Helper/Calls/Constant';
+import { closeCallModalActivity, updateCallVideoMute } from '../../Helper/Calls/Utility';
 import OutgoingCallBg from '../../assets/OutgoingCallBg.png';
 import Avathar from '../../common/Avathar';
 import ApplicationColors from '../../config/appColors';
@@ -89,6 +89,11 @@ const OutGoingCall = () => {
        */
    };
 
+   const handleVideoMute = (_videoMuted, callerUUID) => {
+      if (callType === CALL_TYPE_AUDIO) return;
+      updateCallVideoMute(_videoMuted, callerUUID);
+   };
+
    return (
       <ImageBackground style={styles.container} source={getImageSource(OutgoingCallBg)}>
          {localStream &&
@@ -131,7 +136,7 @@ const OutGoingCall = () => {
                callStatus={callStatus}
                handleEndCall={endCall}
                callType={callType}
-               // handleVideoMute={handleVideoMute}
+               handleVideoMute={handleVideoMute}
                // videoMute={!!localVideoMuted}
                // audioMute={true}
                // audioControl={audioControl}

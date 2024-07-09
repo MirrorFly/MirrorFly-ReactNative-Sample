@@ -33,7 +33,7 @@ const Camera = () => {
    const [flashMode, setFlashMode] = React.useState(RNCamera.Constants.FlashMode.off);
    const [cameraType, setCameraType] = React.useState(RNCamera.Constants.Type.back);
    const { ref, callbackRef } = useCallbackRef();
-   const { recording, takePicture, startRecordingVideo, stopRecordingVideo } = useCamera(ref);
+   const { recording, takePicture, stopRecordingVideo } = useCamera(ref);
    const changeCameraType = () => {
       setCameraType(cameraService.getNewCameraType(cameraType));
    };

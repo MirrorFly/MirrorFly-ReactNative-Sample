@@ -45,6 +45,10 @@ const Camera = () => {
    const [isCapturing, setIsCapturing] = React.useState(false);
 
    React.useEffect(() => {
+      setVideoData();
+   }, []);
+
+   React.useEffect(() => {
       if (data) {
          setCaptureTime(0);
          navigation.navigate(MEDIA_PRE_VIEW_SCREEN, { preScreen: CAMERA_SCREEN, selectedImages: [data] });

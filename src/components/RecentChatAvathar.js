@@ -21,7 +21,6 @@ function RecentChatAvathar({ type, userId, data = {}, ...props }) {
    }, [profile]);
 
    let { nickName, colorCode, image: imageToken } = userProfile;
-   // const localUser = isLocalUser(userId);
    const onPress = () => {
       setVisible(true);
    };

@@ -437,8 +437,8 @@ export const setGroupParticipantsByGroupId = (groupId, participantsList) => {
 
 export const getUserProfileFromSDK = userId => {
    const userData = getRoasterData(userId);
-   if (userData) {
-      return userData || {};
+   if (Object.keys(userData).length) {
+      return userData;
    }
    return SDK.getUserProfile(userId, false, true).then(res => {
       if (res?.statusCode === 200) {

@@ -163,7 +163,6 @@ function ChatHeader({ chatUser }) {
    };
 
    const _handleReplyMessage = () => {
-      // handleReply(filtered[0]);
       dispatch(setReplyMessage({ userId, message: filtered[0] }));
       dispatch(resetMessageSelections(userId));
    };
@@ -457,7 +456,7 @@ const styles = StyleSheet.create({
    },
    lastSeenText: {
       fontSize: 12,
-      width:"98%",
+      width: '98%',
       color: '#888888',
    },
    iconsContainer: {

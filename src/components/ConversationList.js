@@ -63,8 +63,6 @@ function ConversationList({ chatUser }) {
          renderItem={chatMessageRender}
          keyExtractor={item => item.msgId.toString()}
          maxToRenderPerBatch={20}
-         // onScrollToIndexFailed={doNothing}
-         // onScroll={handleConversationScoll}
          scrollEventThrottle={1}
          windowSize={20}
          onEndReached={handleLoadMore}

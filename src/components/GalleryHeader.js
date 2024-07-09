@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { CheckBox, LeftArrowIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
-// import commonStyles from '../styles/commonStyles';
 import ApplicationColors from '../config/appColors';
 import commonStyles from '../styles/commonStyles';
 

@@ -2,7 +2,6 @@ import { AppState, Platform, Vibration } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import InCallManager from 'react-native-incall-manager';
 import { RINGER_MODE, getRingerMode } from 'react-native-ringer-mode';
-// import { subscribe as vibrationEventListener } from 'react-native-silentmode-detector';
 import Sound from 'react-native-sound';
 import SDK from '../../SDK/SDK';
 import {
@@ -12,10 +11,12 @@ import {
    setDisconnectedScreenTimeoutTimer,
 } from '../../SDK/sdkCallBacks';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
+import AudioRoutingModule from '../../customModules/AudioRoutingModule';
 import { updateCallAgainData } from '../../redux/callAgainSlice';
 import { pinUser, setCallModalScreen, setLargeVideoUser } from '../../redux/callStateSlice';
 import { showConfrence, updateConference } from '../../redux/showConfrenceSlice';
 import Store from '../../redux/store';
+import { getLocalUserDetails } from '../../uikitMethods';
 import {
    CALL_AGAIN_SCREEN,
    CALL_RINGING_DURATION,
@@ -32,8 +33,6 @@ import {
    resetCallModalActivity,
    setpreventMultipleClick,
 } from './Utility';
-import { getLocalUserDetails } from '../../uikitMethods';
-import AudioRoutingModule from '../../customModules/AudioRoutingModule';
 
 let missedCallNotificationTimer = null;
 let callingRemoteStreamRemovalTimer = null;

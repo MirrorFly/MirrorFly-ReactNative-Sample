@@ -49,7 +49,6 @@ function ChatInput({ chatUser }) {
    const toggleEmojiPicker = () => {
       setIsEmojiPickerShowing(!isEmojiPickerShowing);
       if (isEmojiPickerShowing) {
-         // chatInputRef?.current?.focus();
       } else {
          Keyboard.dismiss();
       }
@@ -71,16 +70,13 @@ function ChatInput({ chatUser }) {
    const onChangeMessage = text => {
       setMessage(text);
       if (text) {
-         // updateTypingStatus(fromUserJId);
       }
       if (typingTimeoutRef.current) {
          clearTimeout(typingTimeoutRef.current);
       }
 
       // Set timeout to update typing status after 1000ms (adjust as needed)
-      typingTimeoutRef.current = setTimeout(() => {
-         // updateTypingGoneStatus(fromUserJId);
-      }, config.typingStatusGoneWaitTime);
+      typingTimeoutRef.current = setTimeout(() => {}, config.typingStatusGoneWaitTime);
    };
 
    const sendMessage = () => {

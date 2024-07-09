@@ -55,7 +55,7 @@ const GroupInfo = () => {
                   _image,
                );
                if (statusCode !== 200) {
-                  showToast(message, { id: message });
+                  showToast(message);
                }
             }
             toggleModel();
@@ -75,7 +75,7 @@ const GroupInfo = () => {
                   _image,
                );
                if (statusCode !== 200) {
-                  showToast(message, { id: message });
+                  showToast(message);
                }
             }
             toggleModel();
@@ -89,9 +89,7 @@ const GroupInfo = () => {
       }
       const { statusCode, message } = await SDK.setGroupProfile(chatUser, getUserNameFromStore(chatUserId));
       if (statusCode !== 200) {
-         showToast(message, { id: message });
-      } else {
-         showToast('');
+         showToast(message);
       }
    };
 

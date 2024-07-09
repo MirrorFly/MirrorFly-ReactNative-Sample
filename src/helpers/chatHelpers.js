@@ -864,7 +864,7 @@ export const handleImagePickerOpenGallery = async () => {
          .then(async image => {
             const converted = mediaObjContructor('IMAGE_PICKER', image);
             if (converted.fileSize > '10485760') {
-               showToast('Image size too large', { id: 'Image size too large' });
+               showToast('Image size too large');
                return {};
             }
             return converted;

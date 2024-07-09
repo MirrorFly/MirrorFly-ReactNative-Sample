@@ -9,7 +9,7 @@ const progressDataSlice = createSlice({
    initialState,
    reducers: {
       resetProgressData(state) {
-         state = initialState;
+         state = { ...initialState };
       },
       setProgress(state, action) {
          const { msgId } = action.payload;

@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { clearState } from './clearSlice';
-import SDK from '../SDK/SDK';
 
 const initialState = {};
 
@@ -26,7 +25,7 @@ const settingDataSlice = createSlice({
          state['notificationVibrate'] = action.payload;
       },
       updateNotificationSetting(state, action) {
-         console.log(action.payload,"payload");
+         console.log(action.payload, 'payload');
          Object.keys(action.payload).forEach(key => {
             state[key] = action.payload[key];
          });

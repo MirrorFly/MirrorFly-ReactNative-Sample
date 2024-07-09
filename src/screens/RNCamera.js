@@ -128,6 +128,7 @@ const Camera = () => {
       }
    };
 
+   /**
    const handleLongPress = () => {
       try {
          if (flashMode === RNCamera.Constants.FlashMode.on) {
@@ -145,6 +146,7 @@ const Camera = () => {
          console.log('startRecording', error);
       }
    };
+   */
 
    const handlePressOut = () => {
       stopRecordingVideo();
@@ -215,7 +217,8 @@ const Camera = () => {
             </View>
          </View>
          <View style={styles.textContainer}>
-            <Text style={[commonStyles.fontSize_12, commonStyles.colorWhite]}>Hold for video, tap for photo</Text>
+            {/* Hold for video,  */}
+            <Text style={[commonStyles.fontSize_12, commonStyles.colorWhite]}>Tap for photo</Text>
          </View>
       </>
    );

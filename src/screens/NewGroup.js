@@ -60,9 +60,7 @@ function NewGroup() {
       Keyboard.dismiss();
       switch (true) {
          case !isConnected:
-            showToast('Please check your internet connection', {
-               id: 'internet-connection-toast',
-            });
+            showToast('Please check your internet connection');
             break;
          case isConnected && position === 'small':
             toggleModel();
@@ -86,7 +84,7 @@ function NewGroup() {
                toggleLoading();
             })
             .catch(error => {
-               showToast(error, { id: error });
+               showToast(error);
             });
       }, 800);
    };
@@ -101,7 +99,7 @@ function NewGroup() {
                toggleLoading();
             })
             .catch(error => {
-               showToast(error, { id: error });
+               showToast(error);
             });
       }, 800);
    };

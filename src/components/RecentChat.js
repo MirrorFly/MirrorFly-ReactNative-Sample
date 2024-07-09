@@ -1,5 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, Image, SectionList, StyleSheet, Text, View } from 'react-native';
+import SDK from '../SDK/SDK';
 import { fetchRecentChats, getHasNextRecentChatPage } from '../SDK/utils';
 import no_messages from '../assets/no_messages.png';
 import ApplicationColors from '../config/appColors';
@@ -36,6 +37,11 @@ const RecentChat = () => {
          setIsFetchingData(true);
          await fetchRecentChats().then(() => {
             setIsFetchingData(false);
+         });
+         SDK.messageSearch(searchText).then(res => {
+            if (res.statusCode === 200) {
+               setFilteredMessages(res.data);
+            }
          });
       }
    };

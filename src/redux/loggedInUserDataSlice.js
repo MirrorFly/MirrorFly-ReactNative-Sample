@@ -9,7 +9,7 @@ const loggedInUserDataSlice = createSlice({
    initialState,
    reducers: {
       resetLoggedinUserData(state) {
-         state = initialState;
+         state = { ...initialState };
       },
       setUserJid: (state, action) => {
          state.currentUserJID = action.payload;

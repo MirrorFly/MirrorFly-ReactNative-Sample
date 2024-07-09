@@ -48,7 +48,6 @@ const ProfileScreen = () => {
    const userId = getUserIdFromJid(currentUserJID);
    const profile = useRoasterData(userId);
    const [profileDetails, setProfileDetails] = React.useState({ status: 'I am in Mirror Fly' });
-   const [imageUploading, setImageUploading] = React.useState(false);
    const isConnected = useNetworkStatus();
    const canGoBack = navigaiton.canGoBack();
    const [optionModelOpen, setOptionModelOpen] = React.useState(false);
@@ -235,13 +234,13 @@ const ProfileScreen = () => {
          <AuthProfileImage
             component="profileImage"
             borderRadius="100"
-            imageUploading={imageUploading}
             image={profileDetails?.image}
             nickName={profileDetails?.nickName}
          />
       );
    }, [profileDetails]);
 
+   /**
    const handleGetMetaData = async () => {
       const res = await SDK.getMetaData();
       console.log('res ==>', JSON.stringify(res, null, 2));
@@ -251,6 +250,7 @@ const ProfileScreen = () => {
       const res = await SDK.updateMetaData({ date: 'Meta-Data' });
       console.log('res ==>', JSON.stringify(res, null, 2));
    };
+   */
 
    return (
       <>

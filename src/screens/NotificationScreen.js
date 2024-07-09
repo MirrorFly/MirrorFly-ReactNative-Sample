@@ -6,7 +6,6 @@ import ScreenHeader from '../common/ScreenHeader';
 import ApplicationColors from '../config/appColors';
 import { notificationMenu } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
-import { NOTIFICATION_ALERT_STACK } from './constants';
 
 function NotificationScreen() {
    const navigation = useNavigation();

@@ -5,6 +5,8 @@ import Pressable from '../common/Pressable';
 import { getConversationHistoryTime } from '../common/timeStamp';
 import ApplicationColors from '../config/appColors';
 import { getMessageStatus } from '../helpers/chatHelpers';
+import commonStyles from '../styles/commonStyles';
+import ReplyMessage from './ReplyMessage';
 
 const ContactCard = ({ item, isSender }) => {
    const { createdAt, msgStatus, msgBody: { contact: ContactInfo = {}, replyTo = '' } = {} } = item;
@@ -15,6 +17,11 @@ const ContactCard = ({ item, isSender }) => {
 
    return (
       <View style={styles.container}>
+         {Boolean(replyTo) && (
+            <View style={commonStyles.marginHorizontal_4}>
+               {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
+            </View>
+         )}
          <View style={styles.contactInfo}>
             <View style={styles.SelectedIcon}>
                <ContactInfoIcon width={15} height={15} />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useDispatch } from 'react-redux';
+import { sendNotificationData } from '../SDK/utils';
 import CustomRadio from '../common/CustomRadio';
 import Pressable from '../common/Pressable';
 import ScreenHeader from '../common/ScreenHeader';
@@ -12,7 +13,6 @@ import {
    toggleNotificationVibrate,
 } from '../redux/settingDataSlice';
 import commonStyles from '../styles/commonStyles';
-import { sendNotificationData } from '../SDK/utils';
 
 const NotificationSound = () => {
    const notificationSound = useNotificationSound();
@@ -21,7 +21,6 @@ const NotificationSound = () => {
    const handlePress = async () => {
       dispatch(toggleNotificationSound(!notificationSound));
       sendNotificationData();
-      return;
    };
 
    return (
@@ -55,7 +54,6 @@ const NotificationVibration = () => {
    const handlePress = async () => {
       dispatch(toggleNotificationVibrate(!notificationVibration));
       sendNotificationData();
-      return;
    };
 
    return (
@@ -89,7 +87,6 @@ const NotificationMute = () => {
    const handlePress = async () => {
       dispatch(toggleNotificationDisabled(!notificationDisable));
       sendNotificationData();
-      return;
    };
 
    return (

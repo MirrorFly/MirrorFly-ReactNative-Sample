@@ -100,9 +100,7 @@ const GalleryPhotos = () => {
          }
 
          if (sizeError) {
-            return showToast(sizeError, {
-               id: 'media-size-error-toast',
-            });
+            return showToast(sizeError);
          }
          const transformedArray = {
             caption: '',

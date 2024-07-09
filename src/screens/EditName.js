@@ -43,7 +43,7 @@ const EditName = () => {
          if (statusCode === 200) {
             navigation.goBack();
          } else {
-            showToast(message, { id: message });
+            showToast(message);
          }
       }
       togglOkCLick();

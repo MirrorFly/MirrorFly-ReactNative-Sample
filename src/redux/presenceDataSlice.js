@@ -9,7 +9,7 @@ const presenceDataSlice = createSlice({
    initialState,
    reducers: {
       resetPresenceData(state) {
-         state = initialState;
+         state = { ...initialState };
       },
       setPresenceData(state, action) {
          const { fromUserJid } = action.payload;

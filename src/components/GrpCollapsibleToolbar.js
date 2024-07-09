@@ -231,7 +231,7 @@ const GrpCollapsibleToolbar = ({
       if (statusCode === 200) {
          getGroupParticipants(2500);
       } else {
-         showToast(message, { id: message });
+         showToast(message);
       }
    };
    const handleDeleteGroup = async () => {
@@ -245,7 +245,7 @@ const GrpCollapsibleToolbar = ({
             dispatch(deleteRecentChatOnUserId(chatUser));
             dispatch(clearChatMessageData({ userId: getUserIdFromJid(chatUser) }));
          } else {
-            showToast(message, { id: message });
+            showToast(message);
          }
       }
    };
@@ -262,7 +262,7 @@ const GrpCollapsibleToolbar = ({
       if (statusCode === 200) {
          getGroupParticipants(2500);
       } else {
-         showToast(message, { id: message });
+         showToast(message);
       }
    };
 
@@ -274,7 +274,7 @@ const GrpCollapsibleToolbar = ({
       if (statusCode === 200) {
          getGroupParticipants(2500);
       } else {
-         showToast(message, { id: message });
+         showToast(message);
       }
    };
 

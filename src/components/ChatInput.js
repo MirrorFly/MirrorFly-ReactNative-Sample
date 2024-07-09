@@ -49,6 +49,7 @@ function ChatInput({ chatUser }) {
    const toggleEmojiPicker = () => {
       setIsEmojiPickerShowing(!isEmojiPickerShowing);
       if (isEmojiPickerShowing) {
+         // Need to check here
       } else {
          Keyboard.dismiss();
       }
@@ -70,6 +71,7 @@ function ChatInput({ chatUser }) {
    const onChangeMessage = text => {
       setMessage(text);
       if (text) {
+         // Need to check here
       }
       if (typingTimeoutRef.current) {
          clearTimeout(typingTimeoutRef.current);

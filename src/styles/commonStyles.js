@@ -57,9 +57,6 @@ const commonStyles = StyleSheet.create({
    alignItemsCenter: {
       alignItems: 'center',
    },
-   alignItemsFlexStart: {
-      alignItems: 'flex-start',
-   },
    positionRelative: {
       position: 'relative',
    },

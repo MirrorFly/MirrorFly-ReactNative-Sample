@@ -57,6 +57,7 @@ import {
    stopProximityListeners,
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
    updateAudioRouteTo,
+   updateMissedCallNotification,
 } from '../Helper/Calls/Utility';
 import RootNavigation from '../Navigation/rootNavigation';
 import { pushNotify } from '../Service/remoteNotifyHandle';
@@ -111,10 +112,9 @@ import { resetConferencePopup, showConfrence, updateConference } from '../redux/
 import store from '../redux/store';
 import { resetTypingStatus, setTypingStatus } from '../redux/typingStatusDataSlice';
 import { REGISTERSCREEN } from '../screens/constants';
-import { getLocalUserDetails, logoutClearVariables, mflog, setCurrectUserProfile } from '../uikitMethods';
+import { getLocalUserDetails, logoutClearVariables, setCurrectUserProfile } from '../uikitMethods';
 import { CONNECTED } from './constants';
 import { fetchGroupParticipants, getUserProfileFromSDK, getUserSettings } from './utils';
-import { updateMissedCallNotification } from '../Helper/Calls/Utility';
 
 let localStream = null,
    localVideoMuted = false,

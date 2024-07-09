@@ -29,7 +29,9 @@ const recentChatDataSlice = createSlice({
             const updatedChat = {
                ...newData[index],
                ...action.payload,
-               ...{ archiveStatus: archiveSetting },
+               archiveStatus: archiveSetting,
+               deleteStatus: 0,
+               recallStatus: 0,
             };
 
             if (msgType === 'receiveMessage' && userJid !== currentChatUser) {

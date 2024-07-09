@@ -451,9 +451,7 @@ export const getUserProfileFromSDK = userId => {
 };
 
 export const getUserSettings = async () => {
-   const {
-      data: { archive = 0 },
-   } = await SDK.getUserSettings();
+   const { data: { archive = 0 } = {} } = await SDK.getUserSettings?.();
    store.dispatch(toggleArchiveSetting(Number(archive)));
 };
 

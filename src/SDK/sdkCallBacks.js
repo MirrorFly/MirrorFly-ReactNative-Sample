@@ -370,7 +370,6 @@ const ended = async res => {
          const callDetailObj = callConnectionData ? { ...callConnectionData } : {};
          callDetailObj['status'] = 'ended';
          let nickName = getNickName(callConnectionData);
-         /** TODO: notify that call disconnected if needed */
          callNotifyHandler(callDetailObj.roomId, callDetailObj, callDetailObj.userJid, nickName, 'MISSED_CALL');
       }
    } else {

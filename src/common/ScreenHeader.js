@@ -77,6 +77,11 @@ function ScreenHeader({
                   <CloseIcon />
                </IconButton>
             )}
+            {Boolean(title === 'Add Participants') && (
+               <IconButton onPress={onCreateBtn}>
+                  <Text style={styles.subText}>{isGroupInfoSrn ? 'NEXT' : 'CREATE'}</Text>
+               </IconButton>
+            )}
          </View>
       );
    }

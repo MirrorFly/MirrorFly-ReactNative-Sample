@@ -104,7 +104,12 @@ import {
 import { setXmppConnectionStatus } from '../redux/loggedInUserDataSlice';
 import { setPresenceData } from '../redux/presenceDataSlice';
 import { setProgress } from '../redux/progressDataSlice';
-import { addRecentChatItem, updateMsgByLastMsgId, updateRecentMessageStatus } from '../redux/recentChatDataSlice';
+import {
+   addRecentChatItem,
+   toggleArchiveChatsByUserId,
+   updateMsgByLastMsgId,
+   updateRecentMessageStatus,
+} from '../redux/recentChatDataSlice';
 import { getArchive } from '../redux/reduxHook';
 import { setRoasterData } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting } from '../redux/settingDataSlice';
@@ -113,8 +118,7 @@ import store from '../redux/store';
 import { resetTypingStatus, setTypingStatus } from '../redux/typingStatusDataSlice';
 import { REGISTERSCREEN } from '../screens/constants';
 import { getLocalUserDetails, logoutClearVariables, setCurrectUserProfile } from '../uikitMethods';
-import { CONNECTED } from './constants';
-import { fetchGroupParticipants, getUserProfileFromSDK, getUserSettings } from './utils';
+import { fetchGroupParticipants, getUserProfileFromSDK } from './utils';
 
 let localStream = null,
    localVideoMuted = false,
@@ -645,9 +649,6 @@ const callStatus = res => {
 export const callBacks = {
    connectionListener: response => {
       store.dispatch(setXmppConnectionStatus(response.status));
-      if (response.status === CONNECTED) {
-         getUserSettings();
-      }
       if (response.status === 'LOGOUT') {
          logoutClearVariables();
          RootNavigation.reset(REGISTERSCREEN);
@@ -781,7 +782,7 @@ export const callBacks = {
       console.log(res, 'res');
    },
    archiveChatListener: res => {
-      console.log('archiveChatListener res ==>', JSON.stringify(res, null, 2));
+      store.dispatch(toggleArchiveChatsByUserId(res));
    },
    userDeletedListener: res => {},
    adminBlockListener: res => {},

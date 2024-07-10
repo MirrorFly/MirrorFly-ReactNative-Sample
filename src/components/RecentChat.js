@@ -93,13 +93,13 @@ const RecentChat = () => {
          <View style={commonStyles.marginBottom_10}>
             {Boolean(recentArchiveChatData.length) && !archive && !searchText && <ArchivedChat />}
             {isFetchingData && (
-               <View style={commonStyles.mb_130}>
+               <View style={commonStyles.marginBottom_10}>
                   <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
                </View>
             )}
          </View>
       );
-   }, [searchText, archive, isFetchingData]);
+   }, [searchText, archive, isFetchingData, recentArchiveChatData]);
 
    const renderSectionList = React.useMemo(
       () => (
@@ -111,7 +111,7 @@ const RecentChat = () => {
             onEndReached={handleLoadMore}
             ListHeaderComponent={renderHeader}
             ListFooterComponent={renderFooter}
-            scrollEventThrottle={1}
+            scrollEventThrottle={100}
             windowSize={20}
             onEndReachedThreshold={0.1}
             disableVirtualization={true}
@@ -121,7 +121,7 @@ const RecentChat = () => {
       [recentChatData, filteredMessages, archive, searchText, isFetchingData],
    );
 
-   if (!isFetchingData && !recentChatData.length && !filteredMessages.length) {
+   if (!isFetchingData && !recentChatData.length && !filteredMessages.length && !recentArchiveChatData.length) {
       return (
          <View style={styles.emptyChatView}>
             <Image style={styles.image} resizeMode="cover" source={getImageSource(no_messages)} />

@@ -25,13 +25,12 @@ const recentChatDataSlice = createSlice({
          if (index !== -1) {
             // If the item is found, update its position and data
             const newData = [...state.recentChats];
-
             const updatedChat = {
                ...newData[index],
                ...action.payload,
-               archiveStatus: archiveSetting,
                deleteStatus: 0,
                recallStatus: 0,
+               archiveStatus: archiveSetting === 0 ? archiveSetting : newData[index].archiveStatus,
             };
 
             if (msgType === 'receiveMessage' && userJid !== currentChatUser) {
@@ -48,10 +47,10 @@ const recentChatDataSlice = createSlice({
             // If the item is not found, add the new message at the top
             const newChat = {
                ...action.payload,
-               archiveStatus: archiveSetting,
                unreadCount: 1,
                isUnread: 1,
                userJid,
+               archiveStatus: archiveSetting === 0 ? archiveSetting : action.payload.archiveStatus,
             };
 
             state.recentChats = [newChat, ...state.recentChats];
@@ -120,6 +119,13 @@ const recentChatDataSlice = createSlice({
             .map(chat => (chat.isSelected === 1 ? { ...chat, archiveStatus: archive ? 1 : 0, isSelected: 0 } : chat))
             .sort((a, b) => b.timestamp - a.timestamp);
       },
+      toggleArchiveChatsByUserId(state, action) {
+         const { fromUserJid, isArchived } = action.payload;
+         const index = state.recentChats.findIndex(item => item.userJid === fromUserJid);
+         if (index !== -1) {
+            state.recentChats[index].archiveStatus = isArchived;
+         }
+      },
       toggleChatMute(state, action) {
          const { userJid, muteStatus } = action.payload;
          const index = state.recentChats.findIndex(item => item.userJid === userJid);
@@ -157,6 +163,7 @@ export const {
    toggleArchiveChats,
    toggleChatMute,
    resetUnreadCountForChat,
+   toggleArchiveChatsByUserId,
 } = recentChatDataSlice.actions;
 
 export default recentChatDataSlice.reducer;

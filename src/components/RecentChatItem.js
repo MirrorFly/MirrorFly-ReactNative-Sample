@@ -19,7 +19,16 @@ import RecentChatMessage from './RecentChatMessage';
 const RecentChatItem = React.memo(
    ({ item, index, component = 'recent-chat' }) => {
       const isRecentChatComponent = component === 'recent-chat';
-      const { msgStatus, createdAt = '', userId = '', isSelected = 0, userJid, publisherJid, recallStatus } = item;
+      const {
+         msgStatus,
+         createdAt = '',
+         userId = '',
+         isSelected = 0,
+         userJid,
+         publisherJid,
+         recallStatus,
+         msgBody,
+      } = item;
       const dispatch = useDispatch();
       const navigation = useNavigation();
       const searchText = useRecentChatSearchText();
@@ -70,6 +79,7 @@ const RecentChatItem = React.memo(
                      />
                      <View style={styles.lastSentMessageContainer}>
                         {isSender &&
+                           Boolean(Object.keys(msgBody).length) &&
                            item?.msgBody?.message_type !== 'notification' &&
                            !recallStatus &&
                            getMessageStatus(msgStatus, 8)}
@@ -169,7 +179,7 @@ const styles = StyleSheet.create({
    },
    unreadCountText: {
       color: ApplicationColors.white,
-      fontSize: 13,
+      fontSize: 11,
    },
    archived: {
       marginTop: 2,

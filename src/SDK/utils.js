@@ -450,15 +450,16 @@ export const getUserProfileFromSDK = userId => {
    });
 };
 
-export const getUserSettings = async () => {
-   const { data: { archive = 0 } = {} } = await SDK.getUserSettings?.();
+export const getUserSettings = async (iq = false) => {
+   const { data: { archive = 0 } = {} } = await SDK.getUserSettings?.(iq);
    store.dispatch(toggleArchiveSetting(Number(archive)));
 };
 
 export const updateNotificationSettings = async () => {
    const {
-      data: { muteNotification = false, notificationSound = false, notificationVibrate = false },
+      data: { archive = 0, muteNotification = false, notificationSound = false, notificationVibrate = false },
    } = await SDK.getUserSettings();
+   store.dispatch(toggleArchiveSetting(Number(archive)));
    store.dispatch(updateNotificationSetting({ muteNotification, notificationSound, notificationVibrate }));
 };
 
@@ -476,5 +477,5 @@ export const sendNotificationData = async () => {
 };
 
 export const getMuteStatus = async userJid => {
-   return await SDK.getMuteStatus(userJid);
+   return await SDK.getMuteStatus?.(userJid);
 };

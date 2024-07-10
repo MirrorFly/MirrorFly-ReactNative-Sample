@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { BackHandler, StyleSheet, Text, TextInput, View } from 'react-native';
+import { BackHandler, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isRoomExist, makeCalls } from '../Helper/Calls/Utility';
@@ -116,9 +116,10 @@ function ChatHeader({ chatUser }) {
    };
 
    const _handleMessageDelete = () => {
+      Keyboard.dismiss();
       const selectedMessages = getSelectedChatMessages(userId);
       const deleteForEveryOne = isAnyMessageWithinLast30Seconds(selectedMessages);
-      if (deleteForEveryOne) {
+      if (!deleteForEveryOne) {
          setModalContent({
             visible: true,
             onRequestClose: toggleModalContent,
@@ -143,6 +144,7 @@ function ChatHeader({ chatUser }) {
    };
 
    const _handleForwardMessage = () => {
+      Keyboard.dismiss();
       navigation.navigate(FORWARD_MESSSAGE_SCREEN, { forwardMessages: filtered });
    };
 
@@ -163,6 +165,7 @@ function ChatHeader({ chatUser }) {
    };
 
    const _handleReplyMessage = () => {
+      Keyboard.dismiss();
       dispatch(setReplyMessage({ userId, message: filtered[0] }));
       dispatch(resetMessageSelections(userId));
    };

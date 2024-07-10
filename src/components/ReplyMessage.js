@@ -36,9 +36,8 @@ function ReplyMessage(props) {
    const chatUser = currentChatUser;
    const dispatch = useDispatch();
    const userId = getUserIdFromJid(chatUser);
-   console.log('replyTo ==>', chatUser, replyTo);
    const repliedMessage = useChatMessage(userId, replyTo) || {};
-   console.log('repliedMessage ==>', JSON.stringify(repliedMessage, null, 2));
+
    let { msgId, msgBody: { parentMessage = {} } = {} } = originalMsg;
 
    if (!Object.keys(parentMessage).length) {

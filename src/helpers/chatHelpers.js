@@ -395,7 +395,7 @@ export const handleConversationClear = async jid => {
 
 export const isAnyMessageWithinLast30Seconds = (messages = []) => {
    const now = Date.now();
-   return messages.some(message => now - message.timestamp > config.deleteForEveryOneTime * 1000);
+   return messages.some(message => now - message.timestamp <= 30000 && isLocalUser(message.publisherJid));
 };
 
 export const getExtention = filename => {
@@ -994,10 +994,12 @@ export const toggleArchive = val => () => {
             console.log('item, val ==>', item, val);
             SDK.updateArchiveChat(item, val);
          });
+         showToast(`${unArchivedUserJids.length} chat has been unarchived`);
       } else {
          archivedUserJids.forEach(item => {
             SDK.updateArchiveChat(item, val);
          });
+         showToast(`${archivedUserJids.length} chat has been archived`);
       }
    } catch (error) {
       return error;

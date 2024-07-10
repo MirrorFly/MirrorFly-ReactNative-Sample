@@ -18,7 +18,7 @@ import CamerIcon from '../assets/camera.png';
 import profileImage from '../assets/profile.png';
 import AlertModal from '../common/AlertModal';
 import Avathar from '../common/Avathar';
-import { MailIcon, StatusIcon } from '../common/Icons';
+import { CallIcon, MailIcon, StatusIcon } from '../common/Icons';
 import LoadingModal from '../common/LoadingModal';
 import Modal, { ModalBottomContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
@@ -348,7 +348,7 @@ const ProfileScreen = () => {
                      Mobile Number
                   </Text>
                   <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-                     <MailIcon />
+                     <CallIcon />
                      <Text style={{ color: '#959595', flex: 1, marginLeft: 8 }}>+{profileDetails?.mobileNumber}</Text>
                   </View>
                   <View style={[commonStyles.dividerLine, commonStyles.mt_12]} />

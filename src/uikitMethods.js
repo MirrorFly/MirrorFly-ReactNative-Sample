@@ -6,7 +6,7 @@ import { pushNotifyBackground } from './Helper/Calls/Utility';
 import RootNavigation from './Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from './SDK/SDK';
 import { callBacks } from './SDK/sdkCallBacks';
-import { resetVariable, updateNotificationSettings } from './SDK/utils';
+import { getUserSettings, resetVariable, updateNotificationSettings } from './SDK/utils';
 import { pushNotify, updateNotification } from './Service/remoteNotifyHandle';
 import { CallComponent } from './calls/CallComponent';
 import { setupCallKit } from './calls/ios';
@@ -120,7 +120,7 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadat
             jid: currentUserJID,
          };
       }
-      console.log(' userIdentifier, fcmToken = , metadata = {} ==>', userIdentifier, fcmToken, metadata);
+
       const registerRes = await SDK.register(
          userIdentifier,
          fcmToken,
@@ -140,6 +140,8 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadat
                RealmKeyValueStore.setItem('currentUserJID', userJID);
                currentUserJID = userJID;
                fetchCurrentUserProfile(true);
+               getUserSettings(true);
+               SDK.getArchivedChats(true);
                return connect;
             default:
                return connect;

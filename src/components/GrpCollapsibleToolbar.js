@@ -96,7 +96,7 @@ const GrpCollapsibleToolbar = ({
    const navigation = useNavigation();
    const dispatch = useDispatch();
    const isNetworkconneted = useNetworkStatus();
-   const scrollY = React.useRef(new Animated.Value(0)).current;
+   const grpscrollY = React.useRef(new Animated.Value(0)).current;
    const [animatedTitleColor, setAnimatedTitleColor] = React.useState(250);
    const [userDetails, setUserDetails] = React.useState({});
    const scrollDistance = toolbarMaxHeight - toolbarMinHeight;
@@ -116,30 +116,30 @@ const GrpCollapsibleToolbar = ({
     * const scaledFontSize = ((baseFontSize * screenWidth) / 375) * pixelRatio;
     * */
 
-   const [optionModelOpen, setOptionModelOpen] = React.useState(false);
+   const [grpoptionModelOpen, setOptionModelOpen] = React.useState(false);
 
    const toggleOptionModel = () => {
       setOptionModelOpen(val => !val);
    };
 
-   const translateY = React.useRef(new Animated.Value(layout.height)).current;
+   const translateBottomSlide = React.useRef(new Animated.Value(layout.height)).current;
    React.useEffect(() => {
-      if (optionModelOpen) {
+      if (grpoptionModelOpen) {
          // Animate in if visible
-         Animated.timing(translateY, {
+         Animated.timing(translateBottomSlide, {
             toValue: 0,
             duration: 300,
             useNativeDriver: true,
          }).start();
       } else {
          // Animate out if not visible
-         Animated.timing(translateY, {
+         Animated.timing(translateBottomSlide, {
             toValue: layout.height,
             duration: 300,
             useNativeDriver: true,
          }).start();
       }
-   }, [optionModelOpen, translateY, layout.height]);
+   }, [grpoptionModelOpen, translateBottomSlide, layout.height]);
 
    const toggleModalContent = () => {
       setModalContent(null);
@@ -151,19 +151,19 @@ const GrpCollapsibleToolbar = ({
       setModelOpen(val => !val);
    };
 
-   const headerTranslate = scrollY.interpolate({
+   const grpheaderTranslate = grpscrollY.interpolate({
       inputRange: [0, scrollDistance],
       outputRange: [0, -scrollDistance],
       extrapolate: 'clamp',
    });
 
-   const imageOpacity = scrollY.interpolate({
+   const grpimageOpacity = grpscrollY.interpolate({
       inputRange: [0, scrollDistance / 2, scrollDistance],
       outputRange: [1, 1, 0],
       extrapolate: 'clamp',
    });
 
-   const titleScale = scrollY.interpolate({
+   const grptitleScale = grpscrollY.interpolate({
       inputRange: [0, scrollDistance / 2, scrollDistance],
       outputRange: [1, 1, 0.8],
       extrapolate: 'clamp',
@@ -337,7 +337,7 @@ const GrpCollapsibleToolbar = ({
       });
    };
 
-   const handleViewAllMedia = () => {
+   const grphandleViewAllMedia = () => {
       navigation.navigate(VIEWALLMEDIA, { jid: chatUser });
    };
 
@@ -365,7 +365,7 @@ const GrpCollapsibleToolbar = ({
                   zIndex: 9,
                   backgroundColor: '#f2f2f2',
                   height: toolbarMaxHeight,
-                  transform: [{ translateY: headerTranslate }],
+                  transform: [{ translateY: grpheaderTranslate }],
                },
             ]}>
             <Animated.View
@@ -375,7 +375,7 @@ const GrpCollapsibleToolbar = ({
                      alignItems: 'center',
                      backgroundColor: '#f2f2f2',
                      height: toolbarMaxHeight,
-                     opacity: imageOpacity,
+                     opacity: grpimageOpacity,
                      shadowColor: '#181818',
                      shadowOffset: { width: 0, height: 6 },
                      shadowOpacity: 0.1,
@@ -392,7 +392,7 @@ const GrpCollapsibleToolbar = ({
                   commonStyles.justifyContentSpaceBetween,
                   {
                      backgroundColor: 'transparent',
-                     transform: [{ scale: titleScale }],
+                     transform: [{ scale: grptitleScale }],
                   },
                ]}>
                <View>
@@ -442,7 +442,7 @@ const GrpCollapsibleToolbar = ({
             bounces={false}
             style={styles.scrollView}
             scrollEventThrottle={1}
-            onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+            onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: grpscrollY } } }], {
                useNativeDriver: true,
                listener: event => {
                   const { y } = event.nativeEvent.contentOffset;
@@ -477,7 +477,7 @@ const GrpCollapsibleToolbar = ({
                {renderParticipants()}
                <View mt="5" />
                <Pressable
-                  onPress={handleViewAllMedia}
+                  onPress={grphandleViewAllMedia}
                   contentContainerStyle={{ paddingVertical: 20, paddingHorizontal: 10 }}>
                   <View
                      style={[
@@ -557,9 +557,9 @@ const GrpCollapsibleToolbar = ({
                </View>
             </ModalCenteredContent>
          </Modal>
-         <Modal visible={optionModelOpen} onRequestClose={toggleOptionModel}>
+         <Modal visible={grpoptionModelOpen} onRequestClose={toggleOptionModel}>
             <ModalBottomContent onPressOutside={toggleOptionModel}>
-               <Animated.View style={[styles.optionModelContainer, { transform: [{ translateY }] }]}>
+               <Animated.View style={[styles.optionModelContainer, { transform: [{ translateBottomSlide }] }]}>
                   <Text style={styles.optionTitleText}>Options</Text>
                   <Pressable onPress={handleOptionTakePhoto}>
                      <Text style={styles.pressableText}>Take Photo</Text>

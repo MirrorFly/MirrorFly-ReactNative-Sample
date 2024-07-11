@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { handleSendMsg } from '../SDK/utils';
@@ -11,7 +11,7 @@ import config from '../config/config';
 import { attachmentMenuIcons, getUserIdFromJid } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
 import { setTextMessage } from '../redux/draftSlice';
-import { useRecentChatData, useTextMessage } from '../redux/reduxHook';
+import { useTextMessage, useUserType } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
 function ChatInput({ chatUser }) {
@@ -21,22 +21,7 @@ function ChatInput({ chatUser }) {
    const message = useTextMessage(userId) || '';
    const [menuOpen, setMenuOpen] = React.useState(false);
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
-
-   const recentChatList = useRecentChatData(); // have to check this to avoid the re-render if any update happen in recent chat this chat input also renders
-
-   // Memoize userType calculation
-   const memoizedUserType = useMemo(() => {
-      return recentChatList.find(r => r.userJid === chatUser)?.userType;
-   }, [recentChatList, chatUser]);
-
-   const [userType, setUserType] = useState(memoizedUserType);
-
-   // Update userType if memoizedUserType changes
-   useEffect(() => {
-      if (memoizedUserType !== userType) {
-         setUserType(memoizedUserType);
-      }
-   }, [memoizedUserType, userType]);
+   const userType = useUserType(chatUser); // have to check this to avoid the re-render if any update happen in recent chat this chat input also renders
 
    const setMessage = text => {
       dispatch(setTextMessage({ userId, message: text }));

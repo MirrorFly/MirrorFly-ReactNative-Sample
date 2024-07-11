@@ -7,6 +7,7 @@ import commonStyles from '../styles/commonStyles';
 function NickName({ userId, searchValue = '', index, style, colorCodeRequired = false, data = {} }) {
    const profile = useRoasterData(userId);
    const [userProfile, setUserProfile] = React.useState(() => ({
+      ...data,
       ...profile,
    }));
 

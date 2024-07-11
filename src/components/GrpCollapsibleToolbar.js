@@ -559,7 +559,8 @@ const GrpCollapsibleToolbar = ({
          </Modal>
          <Modal visible={grpoptionModelOpen} onRequestClose={toggleOptionModel}>
             <ModalBottomContent onPressOutside={toggleOptionModel}>
-               <Animated.View style={[styles.optionModelContainer, { transform: [{ translateBottomSlide }] }]}>
+               <Animated.View
+                  style={[styles.optionModelContainer, { transform: [{ translateY: translateBottomSlide }] }]}>
                   <Text style={styles.optionTitleText}>Options</Text>
                   <Pressable onPress={handleOptionTakePhoto}>
                      <Text style={styles.pressableText}>Take Photo</Text>

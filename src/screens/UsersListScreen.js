@@ -79,6 +79,9 @@ function ContactScreen() {
 
    // Define the filtering functions
    const filterOutRecentChatUsers = (users, recentChatList) => {
+      if (isGroupInfoSrn || isNewGrpSrn) {
+         return users;
+      }
       const recentChatUsersObj = {};
       for (let _recentChat of recentChatList) {
          recentChatUsersObj[_recentChat.fromUserId] = true;

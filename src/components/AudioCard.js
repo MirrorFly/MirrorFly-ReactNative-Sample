@@ -22,7 +22,7 @@ const AudioCard = ({ item, isSender }) => {
    } = item;
    const uri = local_path || fileDetails?.uri;
 
-   const { mediaStatus, downloadMedia, retryUploadMedia, cancelUploadMedia } = useMediaProgress({
+   const { mediaStatus, downloadMedia, retryUploadMedia, cancelProgress } = useMediaProgress({
       mediaUrl: uri,
       uploadStatus: is_uploading || 0,
       downloadStatus: is_downloaded || 0,
@@ -42,7 +42,7 @@ const AudioCard = ({ item, isSender }) => {
                   mediaStatus={mediaStatus}
                   onDownload={downloadMedia}
                   onUpload={retryUploadMedia}
-                  onCancel={cancelUploadMedia}
+                  onCancel={cancelProgress}
                   msgId={msgId}
                />
             </View>

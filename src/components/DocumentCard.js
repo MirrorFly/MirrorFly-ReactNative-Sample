@@ -25,7 +25,7 @@ const DocumentMessageCard = ({ item, isSender }) => {
    const fileExtension = getExtension(fileName, false);
    const mediaUrl = local_path || fileDetails?.uri;
 
-   const { mediaStatus, downloadMedia, retryUploadMedia, cancelUploadMedia } = useMediaProgress({
+   const { mediaStatus, downloadMedia, retryUploadMedia, cancelProgress } = useMediaProgress({
       mediaUrl,
       uploadStatus: is_uploading || 0,
       downloadStatus: is_downloaded || 0,
@@ -73,7 +73,7 @@ const DocumentMessageCard = ({ item, isSender }) => {
                mediaStatus={mediaStatus}
                onDownload={downloadMedia}
                onUpload={retryUploadMedia}
-               onCancel={cancelUploadMedia}
+               onCancel={cancelProgress}
                msgId={msgId}
             />
          </View>

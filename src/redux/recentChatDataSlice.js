@@ -50,6 +50,8 @@ const recentChatDataSlice = createSlice({
                unreadCount: 1,
                isUnread: 1,
                userJid,
+               deleteStatus: 0,
+               recallStatus: 0,
                archiveStatus: archiveSetting === 0 ? archiveSetting : action.payload.archiveStatus,
             };
 

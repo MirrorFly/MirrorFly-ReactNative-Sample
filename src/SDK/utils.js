@@ -114,7 +114,6 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
       for (let i = 0; i < files.length; i++) {
          const file = files[i],
             msgId = SDK.randomString(8, 'BA');
-         console.log('file ==>', JSON.stringify(file, null, 2));
          const {
             caption = '',
             fileDetails = {},
@@ -353,7 +352,6 @@ export const sendSeenStatus = (publisherJid, msgId, groupJid) => {
 export const uploadFileToSDK = async (file, jid, msgId, media) => {
    try {
       const { caption = '', fileDetails: { replyTo = '', duration = 0, audioType = '', type = '' } = {} } = file;
-      console.log('uploadFileToSDK file ==>', JSON.stringify(file, null, 2));
       const isDocument = DOCUMENT_FORMATS.includes(type);
       const msgType = isDocument ? 'file' : type?.split('/')[0] || media.fileType.split('/')[0];
       let fileOptions = {
@@ -379,10 +377,10 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
       let updateObj = {
          msgId,
          statusCode: response.statusCode,
-         fromUserId: getUserIdFromJid(jid),
+         userId: getUserIdFromJid(jid),
       };
       if (response?.statusCode !== 200) {
-         updateObj.uploadStatus = 3;
+         updateObj.is_uploading = 3;
          store.dispatch(updateMediaStatus(updateObj));
       }
    } catch (error) {

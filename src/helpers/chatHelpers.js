@@ -787,16 +787,17 @@ export const handleUploadNextImage = res => {
       const {
          msgId: _msgId,
          userJid,
-         msgBody: { media = {}, media: { file = {} } = {} } = {},
+         msgBody: { media = {}, media: { file = {}, uploadStatus } = {} } = {},
       } = conversationData[nextMessageIndex];
-      const retryObj = {
-         _msgId,
-         userId,
-         is_uploading: 1,
-      };
-      console.log('retryObj ===>', JSON.stringify(retryObj, null, 2));
-      store.dispatch(updateMediaStatus(retryObj));
-      uploadFileToSDK(file, userJid, _msgId, media);
+      if (uploadStatus === 0) {
+         const retryObj = {
+            _msgId,
+            userId,
+            is_uploading: 1,
+         };
+         store.dispatch(updateMediaStatus(retryObj));
+         uploadFileToSDK(file, userJid, _msgId, media);
+      }
    }
 };
 

@@ -21,6 +21,8 @@ import MessageInfo from '../screens/MessageInfo';
 import MobileContactPreview from '../screens/MobileContactPreview';
 import MobileContacts from '../screens/MobileContacts';
 import NewGroup from '../screens/NewGroup';
+import NotificationAlertScreen from '../screens/NotificationAlertScreen';
+import NotificationScreen from '../screens/NotificationScreen';
 import PostPreViewPage from '../screens/PostPreViewPage';
 import ProfilePhoto from '../screens/ProfilePhoto';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -67,8 +69,6 @@ import {
    VIEWALLMEDIA,
 } from '../screens/constants';
 import { getCurrentScreen } from '../uikitMethods';
-import NotificationScreen from '../screens/NotificationScreen';
-import NotificationAlertScreen from '../screens/NotificationAlertScreen';
 
 const Stack = createNativeStackNavigator();
 

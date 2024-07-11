@@ -13,7 +13,7 @@ const progressDataSlice = createSlice({
       },
       setProgress(state, action) {
          const { msgId } = action.payload;
-         state[msgId] = JSON.parse(JSON.stringify(action.payload));
+         state[msgId] = action.payload;
       },
       deleteProgress(state, action) {
          const { msgId } = action.payload;

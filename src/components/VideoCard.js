@@ -36,7 +36,7 @@ function VideoCard({ item, isSender }) {
    const imageUrl =
       is_uploading === 2 && is_downloaded === 2 ? local_path || fileDetails?.uri : getThumbBase64URL(thumb_image);
 
-   const { mediaStatus, downloadMedia, retryUploadMedia, cancelUploadMedia } = useMediaProgress({
+   const { mediaStatus, downloadMedia, retryUploadMedia, cancelProgress } = useMediaProgress({
       mediaUrl: imageUrl,
       uploadStatus: is_uploading || 0,
       downloadStatus: is_downloaded || 0,
@@ -76,7 +76,7 @@ function VideoCard({ item, isSender }) {
                   mediaStatus={mediaStatus}
                   onDownload={downloadMedia}
                   onUpload={retryUploadMedia}
-                  onCancel={cancelUploadMedia}
+                  onCancel={cancelProgress}
                   msgId={msgId}
                   fileSize={fileSize}
                />

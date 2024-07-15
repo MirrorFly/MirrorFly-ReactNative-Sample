@@ -174,10 +174,10 @@ function ChatHeader({ chatUser }) {
       const isAllowReply = MIX_BARE_JID.test(chatUser)
          ? userType &&
            filtered[0]?.msgBody?.media?.is_uploading !== 1 &&
-           !filtered[0]?.recall &&
+           !filtered[0]?.recallStatus &&
            filtered[0]?.msgBody?.media?.is_uploading !== 1 &&
-           !filtered[0]?.recall
-         : filtered[0]?.msgBody?.media?.is_uploading !== 1 && !filtered[0]?.recall;
+           !filtered[0]?.recallStatus
+         : filtered[0]?.msgBody?.media?.is_uploading !== 1 && !filtered[0]?.recallStatus;
       return isAllowReply && filtered?.length === 1 && filtered[0]?.msgStatus !== 3 ? (
          <IconButton style={[commonStyles.padding_10_15]} onPress={_handleReplyMessage}>
             <ReplyIcon />

@@ -5,7 +5,7 @@ import store from './store';
 
 export const useRecentChatData = () => useSelector(state => state.recentChatData.recentChats);
 export const useUserType = chatUser =>
-   useSelector(state => state.recentChatData.recentChats.find(item => item.userJid === chatUser).userType);
+   useSelector(state => state.recentChatData.recentChats.find(item => item.userJid === chatUser)?.userType);
 export const useRecentChatSearchText = () => useSelector(state => state.recentChatData.searchText);
 export const useFilteredRecentChatData = () => useSelector(selectFilteredRecentChatData);
 export const useArchivedChatData = () => useSelector(selectArchivedChatData);

@@ -33,7 +33,7 @@ const recentChatDataSlice = createSlice({
                archiveStatus: archiveSetting === 0 ? archiveSetting : newData[index].archiveStatus,
             };
 
-            if (msgType === 'receiveMessage' && userJid !== currentChatUser) {
+            if (userJid !== currentChatUser) {
                updatedChat.unreadCount += 1;
                updatedChat.isUnread = 1;
             }

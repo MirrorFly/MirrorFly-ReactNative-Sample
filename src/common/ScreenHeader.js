@@ -29,6 +29,7 @@ function ScreenHeader({
          case isSearching:
             setText('');
             setIsSearching(false);
+            onChangeText(''); // Clear the text in the parent component as well
             break;
          case navigation.canGoBack():
             navigation.goBack();

@@ -40,7 +40,7 @@ function ChatMessage({ chatUser, item, showNickName }) {
    } = item;
    const isSender = getCurrentUserJid() === publisherJid;
    const messageWidth = androidWidth || '80%';
-   console.log('msgId ==>', msgId, message_type);
+
 
    useFocusEffect(
       React.useCallback(() => {

@@ -26,11 +26,7 @@ const RecentChatItem = React.memo(
       console.log('RecentChatItem userJid ==>', userJid);
 
       const handleSelectChat = userJid => () => {
-         if (isRecentChatComponent) {
-            dispatch(toggleChatSelection(getUserIdFromJid(userJid)));
-         } else {
-            dispatch(toggleArchiveChatSelection(getUserIdFromJid(userJid)));
-         }
+         dispatch(toggleChatSelection(userJid));
       };
 
       const handleRoute = chatUser => {
@@ -40,7 +36,7 @@ const RecentChatItem = React.memo(
       // Memoized onPress function
       const onPress = chatUser => () => {
          if (getSelectedChats().length) {
-            handleSelectChat(getUserIdFromJid(chatUser))();
+            handleSelectChat(chatUser)();
          } else {
             handleRoute(chatUser);
          }
@@ -51,7 +47,7 @@ const RecentChatItem = React.memo(
             <Pressable
                delayLongPress={300}
                onPress={onPress(item.userJid)}
-               onLongPress={handleSelectChat(item.userJid)}>
+               onLongPress={searchText ? null : handleSelectChat(item.userJid)}>
                <View style={[styles.container, isSelected && commonStyles.pressedBg, styles.avatarContainer]}>
                   <View style={[commonStyles.positionRelative]}>
                      <RecentChatAvathar type={item.chatType} userId={userId} data={item?.profileDetails} />

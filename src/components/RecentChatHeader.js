@@ -9,7 +9,7 @@ import ScreenHeader from '../common/ScreenHeader';
 import ApplicationColors from '../config/appColors';
 import { getUserIdFromJid, showToast, toggleArchive } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
-import { deleteRecentChats, setSearchText } from '../redux/recentChatDataSlice';
+import { deleteRecentChats, resetChatSelections, setSearchText } from '../redux/recentChatDataSlice';
 import { getSelectedChats, getUserNameFromStore, useRecentChatData } from '../redux/reduxHook';
 import { GROUP_STACK, MENU_SCREEN, SETTINGS_STACK } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
@@ -28,9 +28,9 @@ const RecentChatHeader = () => {
    const deleteMessage =
       filtered.length === 1 ? `Delete chat with "${userName}"?` : `Delete ${filtered.length} selected chats?`;
 
-   React.useEffect(() => {
-      dispatch(setSearchText(text.trim()));
-   }, [text]);
+   const handleSearchText = text => {
+      dispatch(setSearchText(text));
+   };
 
    const toggleModalContent = () => {
       setModalContent(null);
@@ -92,6 +92,10 @@ const RecentChatHeader = () => {
       RootNavigation.navigate(SETTINGS_STACK, { screen: MENU_SCREEN });
    };
 
+   const resetChatSelection = () => {
+      dispatch(resetChatSelections());
+   };
+
    const hanldeGroupRoute = () => {
       RootNavigation.navigate(GROUP_STACK);
    };
@@ -112,7 +116,7 @@ const RecentChatHeader = () => {
          Boolean(filtered.length) && (
             <View style={[styles.container, commonStyles.p_15]}>
                <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-                  <IconButton onPress={handleRemoveClose}>
+                  <IconButton onPress={resetChatSelection}>
                      <CloseIcon />
                   </IconButton>
                   <Text
@@ -136,7 +140,7 @@ const RecentChatHeader = () => {
    }, [filtered.length, modalContent]);
 
    const renderScreenHeader = React.useMemo(() => {
-      return !Boolean(filtered.length) && <ScreenHeader onChangeText={setText} menuItems={menuItems} />;
+      return !Boolean(filtered.length) && <ScreenHeader onChangeText={handleSearchText} menuItems={menuItems} />;
    }, [filtered.length]);
 
    return (

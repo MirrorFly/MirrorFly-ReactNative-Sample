@@ -56,8 +56,8 @@ const recentChatDataSlice = createSlice({
          }
       },
       toggleChatSelection(state, action) {
-         const userId = action.payload;
-         const index = state.recentChats.findIndex(item => item.userId === userId);
+         const userJid = action.payload;
+         const index = state.recentChats.findIndex(item => item.userJid === userJid);
          if (index !== -1) {
             // Toggle the isSelected property
             state.recentChats[index].isSelected = state.recentChats[index].isSelected ? 0 : 1;

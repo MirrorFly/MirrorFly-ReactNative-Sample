@@ -184,23 +184,23 @@ const ViewAllMedia = () => {
 
    const tabBar = React.useMemo(
       () => (
-         <View style={styles.tabBar}>
-            <Pressable pressedStyle={{}} style={[styles.tabItem, { width: '33.33%' }]} onPress={handleTabPress(0)}>
+         <View style={styles.mediaTabBar}>
+            <Pressable pressedStyle={{}} style={[styles.mediaTabItem, { width: '33.33%' }]} onPress={handleTabPress(0)}>
                <View style={commonStyles.hstack}>
-                  <Text style={[styles.tabText, index === 0 ? styles.activeTabText : styles.inactiveTabText]}>
+                  <Text style={[styles.mediaTabText, index === 0 ? styles.mediaActiveTabText : styles.mediaInactiveTabText]}>
                      Media
                   </Text>
                </View>
             </Pressable>
-            <Pressable pressedStyle={{}} style={[styles.tabItem, { width: '33.33%' }]} onPress={handleTabPress(1)}>
-               <Text style={[styles.tabText, index === 1 ? styles.activeTabText : styles.inactiveTabText]}>Docs</Text>
+            <Pressable pressedStyle={{}} style={[styles.mediaTabItem, { width: '33.33%' }]} onPress={handleTabPress(1)}>
+               <Text style={[styles.mediaTabText, index === 1 ? styles.mediaActiveTabText : styles.mediaInactiveTabText]}>Docs</Text>
             </Pressable>
-            <Pressable pressedStyle={{}} style={[styles.tabItem, { width: '33.33%' }]} onPress={handleTabPress(2)}>
-               <Text style={[styles.tabText, index === 2 ? styles.activeTabText : styles.inactiveTabText]}>Links</Text>
+            <Pressable pressedStyle={{}} style={[styles.mediaTabItem, { width: '33.33%' }]} onPress={handleTabPress(2)}>
+               <Text style={[styles.mediaTabText, index === 2 ? styles.mediaActiveTabText : styles.mediaInactiveTabText]}>Links</Text>
             </Pressable>
             {/* Animated active tab indicator */}
             <Animated.View
-               style={[styles.indicator, { transform: [{ translateX: indicatorPosition }], width: indicatorWidth }]}
+               style={[styles.mediaIndicator, { transform: [{ translateX: indicatorPosition }], width: indicatorWidth }]}
             />
          </View>
       ),
@@ -303,35 +303,35 @@ const ViewAllMedia = () => {
 };
 export default ViewAllMedia;
 const styles = StyleSheet.create({
-   tabBar: {
+   mediaTabBar: {
       flexDirection: 'row',
       justifyContent: 'space-around',
       alignItems: 'center',
       backgroundColor: ApplicationColors.headerBg,
    },
-   tabItem: {
+   mediaTabItem: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
       height: 50,
    },
-   tabText: {
+   mediaTabText: {
       fontSize: 16,
       fontWeight: 'bold',
    },
-   activeTabText: {
+   mediaActiveTabText: {
       color: ApplicationColors.mainColor, // Color of the active tab text
    },
-   inactiveTabText: {
+   mediaInactiveTabText: {
       color: 'black', // Color of the inactive tab text
    },
-   indicator: {
+   mediaIndicator: {
       position: 'absolute',
       bottom: 0,
       height: 3,
       backgroundColor: ApplicationColors.mainColor, // Color of the active tab indicator
    },
-   pagerView: {
+   mediapagerView: {
       flex: 1,
    },
    parentContainer: {

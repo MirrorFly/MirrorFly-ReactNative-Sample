@@ -59,7 +59,7 @@ const EditName = () => {
          style={[commonStyles.bg_white, commonStyles.flex1]}
          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
          keyboardVerticalOffset={Platform.OS === 'ios' ? calculateKeyboardVerticalOffset() : 0}>
-         <View style={[styles.container, commonStyles.hstack]}>
+         <View style={[styles.editNameContainer, commonStyles.hstack]}>
             <View
                style={[
                   commonStyles.hstack,
@@ -70,7 +70,7 @@ const EditName = () => {
                <IconButton onPress={handleBackBtn}>
                   <LeftArrowIcon />
                </IconButton>
-               <Text style={styles.titleText}>Enter New Name</Text>
+               <Text style={styles.editNameTitleText}>Enter New Name</Text>
             </View>
          </View>
          <EmojiInput
@@ -104,36 +104,15 @@ const EditName = () => {
 export default EditName;
 
 const styles = StyleSheet.create({
-   container: {
+   editNameContainer: {
       height: 60,
       backgroundColor: ApplicationColors.headerBg,
    },
-   titleText: {
+   editNameTitleText: {
       fontSize: 18,
       paddingHorizontal: 12,
       fontWeight: '500',
       color: ApplicationColors.black,
-   },
-   subText: {
-      fontSize: 14,
-      paddingHorizontal: 12,
-      color: ApplicationColors.black,
-   },
-   cameraImage: {
-      height: 42,
-      width: 42,
-      padding: 10,
-   },
-   nameTextView: {
-      borderBottomWidth: 1,
-      borderBottomColor: '#f2f2f2',
-   },
-   nameTextInput: {
-      flex: 1,
-      fontSize: 15,
-      fontWeight: '400',
-      marginTop: 5,
-      paddingLeft: 40,
    },
    cancelContainer: {
       left: 0,

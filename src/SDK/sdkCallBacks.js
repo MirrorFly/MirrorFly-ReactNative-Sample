@@ -491,7 +491,7 @@ const connected = async res => {
                showOngoingNotification(res);
             }
          }
-         onReconnect = false
+         onReconnect = false;
       }
       dispatch(
          showConfrence({
@@ -784,10 +784,6 @@ export const callBacks = {
    userDeletedListener: res => {},
    adminBlockListener: res => {},
    incomingCallListener: function (res) {
-      if (onCall) {
-         SDK.callEngaged();
-         return;
-      }
       remoteStream = [];
       localStream = null;
       let callMode = 'onetoone';
@@ -854,8 +850,6 @@ export const callBacks = {
          updatingUserStatusInRemoteStream(res.usersStatus);
          startMissedCallNotificationTimer();
          startCallingTimer();
-      } else {
-         SDK.callEngaged();
       }
       /**
       // callLogs.insert({

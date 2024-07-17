@@ -126,10 +126,6 @@ const RecentChatHeader = () => {
       },
    ];
 
-   const resetChatSelection = () => {
-      dispatch(resetChatSelections());
-   };
-
    const renderSelectionHeader = React.useMemo(() => {
       return (
          Boolean(filtered.length) && (

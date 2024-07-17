@@ -60,7 +60,7 @@ export const mirrorflyNotificationHandler = async remoteMessage => {
          return;
       }
       const notify = await SDK.getNotificationData(remoteMessage);
-      if (notify?.data.muteStatus === 1) {
+      if (notify?.data?.muteStatus === 1) {
          return;
       }
       if (remoteMessage.data.type === 'recall') {

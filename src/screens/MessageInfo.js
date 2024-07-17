@@ -75,7 +75,7 @@ function MessageInfo() {
 
    return (
       <View style={[commonStyles.bg_white, commonStyles.flex1]}>
-         <ScreenHeader onhandleBack={handleBackBtn} title="Message Info" />
+         <ScreenHeader onhandleBack={handleBackBtn} title="Message Info" isSearchable={false} />
          <ScrollView>
             <View style={[commonStyles.paddingHorizontal_12, commonStyles.alignSelfFlexEnd, commonStyles.mt_20]}>
                <View style={[styles.messageContentWrapper, { maxWidth: messageWidth }]}>

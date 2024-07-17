@@ -1,18 +1,68 @@
+import Clipboard from '@react-native-clipboard/clipboard';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Linking, StyleSheet, Text, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 import { ContactInfoIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import { getConversationHistoryTime } from '../common/timeStamp';
 import ApplicationColors from '../config/appColors';
+import config from '../config/config';
 import { getMessageStatus } from '../helpers/chatHelpers';
+import { currentChatUser } from '../screens/ConversationScreen';
 import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
 
 const ContactCard = ({ item, isSender }) => {
+   const chatUser = currentChatUser;
+   const dispatch = useDispatch();
+   const userId = getUserIdFromJid(chatUser);
+   const [modalContent, setModalContent] = React.useState(null);
    const { createdAt, msgStatus, msgBody: { contact: ContactInfo = {}, replyTo = '' } = {} } = item;
 
+   const handleInviteContact = () => {
+      const ContactInfo = getChatMessage(userId, msgId)?.msgBody?.contact;
+      if (ContactInfo) {
+         // open the message app and invite the user to the app with content
+         const phoneNumber = ContactInfo.phone_number[0];
+         const separator = Platform.OS === 'ios' ? '&' : '?';
+         const url = `sms:${phoneNumber}${separator}body=${config.INVITE_SMS_CONTENT}`;
+         Linking.openURL(url);
+      }
+   };
+
+   const handleCopyInviteLink = () => {
+      Clipboard.setString(config.INVITE_APP_URL);
+      showToast('Link Copied');
+   };
+
+   const toggleModalContent = () => {
+      setModalContent(null);
+   };
+
+   const showContactInviteModal = () => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: 'Invite Friend',
+         noButton: 'Send SMS',
+         noAction: handleInviteContact,
+         yesButton: 'Copy Link',
+         yesAction: handleCopyInviteLink,
+      });
+   };
+
    const handleInvitePress = () => {
-      onInvitePress?.(message);
+      const messsageList = getChatMessages(userId);
+      const isAnySelected = messsageList.some(item => item.isSelected === 1);
+      if (isAnySelected) {
+         const selectData = {
+            chatUserId: userId,
+            msgId,
+         };
+         dispatch(toggleMessageSelection(selectData));
+      } else {
+         showContactInviteModal();
+      }
    };
 
    return (
@@ -42,6 +92,7 @@ const ContactCard = ({ item, isSender }) => {
                </Pressable>
             </>
          )}
+         {modalContent && <AlertModal {...modalContent} />}
       </View>
    );
 };

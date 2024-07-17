@@ -992,15 +992,14 @@ export const toggleArchive = val => () => {
       store.dispatch(toggleArchiveChats(val));
       if (val) {
          unArchivedUserJids.forEach(item => {
-            console.log('item, val ==>', item, val);
             SDK.updateArchiveChat(item, val);
          });
-         showToast(`${unArchivedUserJids.length} chat has been unarchived`);
+         showToast(`${unArchivedUserJids.length} chat has been archived`);
       } else {
          archivedUserJids.forEach(item => {
             SDK.updateArchiveChat(item, val);
          });
-         showToast(`${archivedUserJids.length} chat has been archived`);
+         showToast(`${archivedUserJids.length} chat has been unarchived`);
       }
    } catch (error) {
       return error;

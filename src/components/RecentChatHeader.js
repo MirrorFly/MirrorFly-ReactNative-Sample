@@ -23,8 +23,6 @@ const RecentChatHeader = () => {
       return recentChatData.filter(item => item.isSelected === 1);
    }, [recentChatData.map(item => item.isSelected).join(',')]); // Include isSelected in the dependency array
    const isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
-   const isChatMuted = filtered.some(res => res.muteStatus === 1);
-   const isGroupExistMute = filtered.some(res => MIX_BARE_JID.test(res.userJid));
 
    const userName = getUserNameFromStore(getUserIdFromJid(filtered[0]?.userJid)) || '';
    const deleteMessage =
@@ -90,7 +88,10 @@ const RecentChatHeader = () => {
       );
    };
 
-   /**  {!isGroupExistMute && renderMuteIcon()}
+   /**  
+    * const isChatMuted = filtered.some(res => res.muteStatus === 1);
+      const isGroupExistMute = filtered.some(res => MIX_BARE_JID.test(res.userJid));
+    * {!isGroupExistMute && renderMuteIcon()}
    // const renderMuteIcon = () => {
    //    return (
    //       <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>

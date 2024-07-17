@@ -79,6 +79,7 @@ import {
    toggleChatMute,
 } from '../redux/recentChatDataSlice';
 import {
+   getArchive,
    getArchiveSelectedChats,
    getChatMessages,
    getSelectedChatMessages,
@@ -1082,6 +1083,7 @@ export const getRecentChatMsgObjForward = (originalMsg, toJid, newMsgId) => {
    const timestamp = Date.now() * 1000;
    const createdAt = changeTimeFormat(timestamp);
    const senderId = getUserIdFromJid(getCurrentUserJid());
+   const archiveSetting = getArchive();
 
    return {
       ...originalMsg,
@@ -1102,6 +1104,7 @@ export const getRecentChatMsgObjForward = (originalMsg, toJid, newMsgId) => {
       favouriteBy: '0',
       favouriteStatus: 0,
       isSelected: 0,
+      archiveSetting,
       msgBody: {
          ...originalMsg.msgBody,
          media: {

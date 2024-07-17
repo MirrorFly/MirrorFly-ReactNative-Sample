@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import SDK from '../SDK/SDK';
-import { fetchContactsFromSDK } from '../SDK/utils';
+import { fetchContactsFromSDK, resetChatPage } from '../SDK/utils';
 import Avathar from '../common/Avathar';
 import IconButton from '../common/IconButton';
 import { BackArrowIcon, CloseIcon, SearchIcon, SendBlueIcon } from '../common/Icons';
@@ -522,6 +522,7 @@ const ForwardMessage = () => {
             } else {
                // deleting conversation history data if available to avoid unwanted UI issue or complexity
                dispatch(clearChatMessageData(userId));
+               resetChatPage(userId);
             }
          }
       }

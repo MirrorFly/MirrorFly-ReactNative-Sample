@@ -6,7 +6,7 @@ import notifee, {
    AndroidVisibility,
    EventType,
 } from '@notifee/react-native';
-import { AppState, NativeModules, Platform } from 'react-native';
+import { AppState, Linking, NativeModules, Platform } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
 import RootNavigation from '../../../src/Navigation/rootNavigation';
 import { endCall, getCallDuration } from '../../Helper/Calls/Call';
@@ -22,10 +22,12 @@ import { answerIncomingCall, declineIncomingCall, endOnGoingCall } from '../../H
 import SDK from '../../SDK/SDK';
 import { getMuteStatus } from '../../SDK/utils';
 import { getChannelIds } from '../../Service/PushNotify';
+import { removeAllDeliveredNotification } from '../../Service/remoteNotifyHandle';
 import { callDurationTimestamp } from '../../redux/callStateSlice';
 import { resetNotificationData, setNotificationData } from '../../redux/notificationDataSlice';
 import store from '../../redux/store';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../../screens/constants';
+import { getAppSchema } from '../../uikitMethods';
 
 const { ActivityModule } = NativeModules;
 

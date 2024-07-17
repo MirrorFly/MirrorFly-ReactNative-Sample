@@ -9,7 +9,7 @@ import {
    useArchive,
    useArchivedChatData,
    useFilteredRecentChatData,
-   useRecentChatSearchText,
+   useRecentChatSearchText
 } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ArchivedChat from './ArchivedChat';
@@ -28,8 +28,10 @@ const RecentChat = () => {
    }, []);
 
    const initFunc = async () => {
-      await fetchRecentChats();
-      setIsFetchingData(false);
+      if (!searchText && getHasNextRecentChatPage()) {
+         await fetchRecentChats();
+         setIsFetchingData(false);
+      }
    };
 
    const handleLoadMore = async () => {

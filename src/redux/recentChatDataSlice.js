@@ -1,4 +1,5 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
+import { isLocalUser } from '../helpers/chatHelpers';
 import { GROUP_CREATED } from '../helpers/constants';
 import { currentChatUser } from '../screens/ConversationScreen';
 import { ARCHIVED_SCREEN } from '../screens/constants';
@@ -17,7 +18,7 @@ const recentChatDataSlice = createSlice({
          state.recentChats = [...state.recentChats, ...action.payload];
       },
       addRecentChatItem(state, action) {
-         let { userJid, newIndex = 0, msgType = '', fromUserJid = '', archiveSetting } = action.payload;
+         let { userJid, newIndex = 0, msgType = '', fromUserJid = '', archiveSetting, publisherId } = action.payload;
          const index = state.recentChats.findIndex(item => item?.userJid === userJid);
          if (msgType === GROUP_CREATED) {
             userJid = fromUserJid;
@@ -32,8 +33,7 @@ const recentChatDataSlice = createSlice({
                recallStatus: 0,
                archiveStatus: archiveSetting === 0 ? archiveSetting : newData[index].archiveStatus,
             };
-
-            if (userJid !== currentChatUser) {
+            if (userJid !== currentChatUser && !isLocalUser(publisherId)) {
                updatedChat.unreadCount += 1;
                updatedChat.isUnread = 1;
             }

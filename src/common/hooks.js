@@ -5,7 +5,7 @@ import SDK from '../SDK/SDK';
 
 let networkState = null;
 NetInfo.addEventListener(state => {
-   networkState = state;
+   networkState = state.isInternetReachable;
 });
 
 const initialState = {

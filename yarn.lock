@@ -6608,10 +6608,10 @@ minizlib@^2.1.1:
     minipass "^3.0.0"
     yallist "^4.0.0"
 
-mirrorfly-reactnative-sdk@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/mirrorfly-reactnative-sdk/-/mirrorfly-reactnative-sdk-1.0.4.tgz"
-  integrity sha512-VnDcbHX/6GtCfeA9YgQX+FicSY9lj0BleOeKTeqUk0haqAqGvB3sggnbxwXA+GpJQ+aTZBr8al3ru600jG8rJA==
+mirrorfly-reactnative-sdk@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.npmjs.org/mirrorfly-reactnative-sdk/-/mirrorfly-reactnative-sdk-1.0.6.tgz"
+  integrity sha512-mhZRMglF0l19WSrt5n7+5buOkybIn/xMOBckkqfpDgIQfWP5RtsXAr4cj/cf5g0j4+DhC3FrDNmxVs0hFiLRIw==
   optionalDependencies:
     fsevents "^2.2.1"
 
@@ -7519,11 +7519,6 @@ react-native-material-menu@^2.0.0:
   resolved "https://registry.npmjs.org/react-native-material-menu/-/react-native-material-menu-2.0.0.tgz"
   integrity sha512-SmO9PLE3E469EPbVWZqvdu6JGPPZIm7YjqDcWs2PPoY0k7w2V9tFo3BmmLXNzNZDCVCAi+PPSsL7h/5WkfHcSg==
 
-react-native-network-logger@^1.16.1:
-  version "1.16.1"
-  resolved "https://registry.npmjs.org/react-native-network-logger/-/react-native-network-logger-1.16.1.tgz"
-  integrity sha512-R2qALPeUnce1ZTsgjEnrBxvsehcgydXIoDaTW8X2qUN6QembPvPUErrEuKiJGZT/e//DLp1NV6Weep0xeBTUPw==
-
 react-native-pager-view@*, react-native-pager-view@^6.3.1:
   version "6.3.3"
   resolved "https://registry.npmjs.org/react-native-pager-view/-/react-native-pager-view-6.3.3.tgz"
@@ -7548,10 +7543,10 @@ react-native-progress@^5.0.1:
   dependencies:
     prop-types "^15.7.2"
 
-react-native-raw-bottom-sheet@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.npmjs.org/react-native-raw-bottom-sheet/-/react-native-raw-bottom-sheet-3.0.0.tgz"
-  integrity sha512-kHR7j2ExCLqf/AO3MECozMJXi48O1+YxUYSRgRo/5Ftm7mEcrxJEzvjqMmqUbVhhKlfk5hLCGFnEQ5Z9OHCUtg==
+react-native-raw-bottom-sheet@^2.2.0:
+  version "2.2.1"
+  resolved "https://registry.npmjs.org/react-native-raw-bottom-sheet/-/react-native-raw-bottom-sheet-2.2.1.tgz"
+  integrity sha512-9MkumyiXEmtSx01cTYOzauUXPRckLSQP1DrRc9zq7TMqtcKk0n67tMyzy8qsrgEPLs63+Kjr/eJc6PlaSgpZ5g==
 
 react-native-ringer-mode@^2.0.1:
   version "2.0.1"

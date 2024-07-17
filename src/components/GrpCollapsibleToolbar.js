@@ -25,7 +25,7 @@ import config from '../config/config';
 import { getUserIdFromJid, isLocalUser, showNetWorkToast, showToast } from '../helpers/chatHelpers';
 import { clearChatMessageData } from '../redux/chatMessageDataSlice';
 import { deleteRecentChatOnUserId } from '../redux/recentChatDataSlice';
-import { getUserImage, useFilteredRecentChatData } from '../redux/reduxHook';
+import { getUserImage, useUserType } from '../redux/reduxHook';
 import {
    EDITNAME,
    GROUP_INFO,
@@ -71,8 +71,18 @@ const RenderItem = ({ item, index, onhandlePress }) => {
             <View style={styles.groupwrapper}>
                <UserAvathar userId={item?.userId} userProfile={item.userProfile} />
                <View style={[commonStyles.marginLeft_15, commonStyles.flex1]}>
-                  <NickName userId={item?.userId} style={styles.groupnickNameText} numberOfLines={1} ellipsizeMode="tail" />
-                  <UserStatus userId={item?.userId} style={styles.groupstautsText} numberOfLines={1} ellipsizeMode="tail" />
+                  <NickName
+                     userId={item?.userId}
+                     style={styles.groupnickNameText}
+                     numberOfLines={1}
+                     ellipsizeMode="tail"
+                  />
+                  <UserStatus
+                     userId={item?.userId}
+                     style={styles.groupstautsText}
+                     numberOfLines={1}
+                     ellipsizeMode="tail"
+                  />
                </View>
                {item.userType === 'o' && <Text style={{ color: ApplicationColors.mainColor }}>Admin</Text>}
             </View>
@@ -101,9 +111,8 @@ const GrpCollapsibleToolbar = ({
    const [userDetails, setUserDetails] = React.useState({});
    const scrollDistance = toolbarMaxHeight - toolbarMinHeight;
    const { height: screenHeight } = Dimensions.get('window');
-   const recentChatList = useFilteredRecentChatData();
    const chatUserId = getUserIdFromJid(chatUser);
-   const userType = recentChatList.find(r => r.fromUserJid === chatUser)?.userType || '';
+   const userType = useUserType(chatUser);
    const layout = useWindowDimensions();
    const [modalContent, setModalContent] = React.useState(null);
 

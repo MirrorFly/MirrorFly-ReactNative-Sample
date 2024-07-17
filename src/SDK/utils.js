@@ -34,7 +34,7 @@ export const resetVariable = () => {
    recentChatPage = 1;
 };
 
-export const resetChatPageVariables = userJid => {
+export const resetChatPage = userJid => {
    delete chatPage[userJid];
    delete hasNextChatPage[userJid];
 };

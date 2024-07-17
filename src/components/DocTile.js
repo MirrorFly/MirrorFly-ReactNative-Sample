@@ -4,6 +4,7 @@ import { CSVIcon, DocIcon, PPTIcon, PdfIcon, TXTIcon, XLSIcon, ZipIcon } from '.
 import Pressable from '../common/Pressable';
 import { docTimeFormat } from '../common/timeStamp';
 import { convertBytesToKB, getExtension, handleFileOpen } from '../helpers/chatHelpers';
+import commonStyles from '../styles/commonStyles';
 
 function DocTile({ item, onDelete }) {
    const {

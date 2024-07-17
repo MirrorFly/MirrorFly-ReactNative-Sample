@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { getUserIdFromJid } from '../helpers/chatHelpers';
 import { clearState } from './clearSlice';
-const { getUserIdFromJid } = require('../helpers/chatHelpers');
 
 const initialState = {
    searchText: '',
@@ -39,6 +39,8 @@ const chatMessageDataSlice = createSlice({
          const userId = getUserIdFromJid(userJid);
          if (state[userId]) {
             state[userId] = [action.payload, ...state[userId]];
+         } else {
+            state[userId] = [action.payload];
          }
       },
       updateChatMessageStatus(state, action) {

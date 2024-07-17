@@ -27,7 +27,6 @@ function ConversationScreen({ chatUser = '' }) {
    const navigation = useNavigation();
    const messaesList = useChatMessages(userId) || [];
    const replyMessage = useReplyMessage(userId) || {};
-   console.log('ConversationScreen jid ==>', jid);
 
    const isAnySelected = React.useMemo(() => {
       return messaesList.some(item => item.isSelected === 1);
@@ -40,6 +39,9 @@ function ConversationScreen({ chatUser = '' }) {
       if (MIX_BARE_JID.test(jid)) {
          fetchGroupParticipants(jid);
       }
+      return () => {
+         currentChatUser = '';
+      };
    }, []);
 
    React.useEffect(() => {

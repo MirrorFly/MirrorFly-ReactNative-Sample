@@ -654,6 +654,7 @@ export const callBacks = {
       }
    },
    messageListener: async res => {
+      console.log('res ==>', JSON.stringify(res, null, 2));
       switch (res.msgType) {
          case 'groupCreated':
          case 'receiveMessage':

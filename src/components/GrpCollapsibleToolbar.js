@@ -68,16 +68,16 @@ const RenderItem = ({ item, index, onhandlePress }) => {
    return (
       <React.Fragment key={index}>
          <Pressable onPress={handlePress}>
-            <View style={styles.wrapper}>
+            <View style={styles.groupwrapper}>
                <UserAvathar userId={item?.userId} userProfile={item.userProfile} />
                <View style={[commonStyles.marginLeft_15, commonStyles.flex1]}>
-                  <NickName userId={item?.userId} style={styles.nickNameText} numberOfLines={1} ellipsizeMode="tail" />
-                  <UserStatus userId={item?.userId} style={styles.stautsText} numberOfLines={1} ellipsizeMode="tail" />
+                  <NickName userId={item?.userId} style={styles.groupnickNameText} numberOfLines={1} ellipsizeMode="tail" />
+                  <UserStatus userId={item?.userId} style={styles.groupstautsText} numberOfLines={1} ellipsizeMode="tail" />
                </View>
                {item.userType === 'o' && <Text style={{ color: ApplicationColors.mainColor }}>Admin</Text>}
             </View>
          </Pressable>
-         <View style={commonStyles.dividerLine} />
+         <View style={commonStyles.groupdividerLine} />
       </React.Fragment>
    );
 };
@@ -357,10 +357,10 @@ const GrpCollapsibleToolbar = ({
    };
 
    return (
-      <View style={styles.fill}>
+      <View style={commonStyles.flex1}>
          <Animated.View
             style={[
-               styles.header,
+               styles.grpHeader,
                {
                   zIndex: 9,
                   backgroundColor: '#f2f2f2',
@@ -382,13 +382,13 @@ const GrpCollapsibleToolbar = ({
                      shadowRadius: 6,
                   },
                ]}>
-               <Pressable onPress={handleViewImage} style={styles.profileImage}>
-                  <InfoImageView userId={chatUserId} style={styles.profileImage} />
+               <Pressable onPress={handleViewImage} style={styles.groupprofileImage}>
+                  <InfoImageView userId={chatUserId} style={styles.groupprofileImage} />
                </Pressable>
             </Animated.View>
             <Animated.View
                style={[
-                  styles.action,
+                  styles.grpAction,
                   commonStyles.justifyContentSpaceBetween,
                   {
                      backgroundColor: 'transparent',
@@ -401,7 +401,7 @@ const GrpCollapsibleToolbar = ({
                      numberOfLines={1}
                      ellipsizeMode="tail"
                      style={[
-                        styles.title,
+                        styles.grouptitle,
                         {
                            color: animatedTitleColor < 280 ? '#fff' : '#000',
                         },
@@ -411,7 +411,7 @@ const GrpCollapsibleToolbar = ({
                      <Animated.Text
                         numberOfLines={1}
                         ellipsizeMode="tail"
-                        style={[styles.stautsText, commonStyles.colorWhite]}>
+                        style={[styles.groupstautsText, commonStyles.colorWhite]}>
                         {participants.length} members
                      </Animated.Text>
                   )}
@@ -426,21 +426,21 @@ const GrpCollapsibleToolbar = ({
                )}
             </Animated.View>
          </Animated.View>
-         <Animated.View style={styles.bar}>
-            <View style={styles.left}>
+         <Animated.View style={styles.grpBar}>
+            <View style={styles.groupleft}>
                <IconButton onPress={handleBackBtn}>
                   <LeftArrowIcon color={animatedTitleColor < 280 ? '#fff' : '#000'} />
                </IconButton>
             </View>
             {Boolean(userType) && (
-               <Pressable onPress={handelGroupProfileUpdate} style={styles.right}>
+               <Pressable onPress={handelGroupProfileUpdate} style={styles.groupleft}>
                   <ImageEditIcon width="25" height="25" color={animatedTitleColor < 280 ? '#fff' : '#000'} />
                </Pressable>
             )}
          </Animated.View>
          <Animated.ScrollView
             bounces={false}
-            style={styles.scrollView}
+            style={commonStyles.flex1}
             scrollEventThrottle={1}
             onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: grpscrollY } } }], {
                useNativeDriver: true,
@@ -510,7 +510,7 @@ const GrpCollapsibleToolbar = ({
                   <Pressable onPress={toggleLeaveGroup}>
                      <View style={[commonStyles.hstack, commonStyles.m_12, commonStyles.p_4]}>
                         <ExitIcon color="#ff3939" />
-                        <Text style={styles.groupActionButton}>Leave Group</Text>
+                        <Text style={styles.groupgroupActionButton}>Leave Group</Text>
                      </View>
                   </Pressable>
                )}
@@ -518,7 +518,7 @@ const GrpCollapsibleToolbar = ({
                   <Pressable onPress={toggleDeleteGroup}>
                      <View style={[commonStyles.hstack, commonStyles.m_12, commonStyles.p_4]}>
                         <ExitIcon color="#ff3939" />
-                        <Text style={styles.groupActionButton}>Delete Group</Text>
+                        <Text style={styles.groupgroupActionButton}>Delete Group</Text>
                      </View>
                   </Pressable>
                )}
@@ -560,17 +560,17 @@ const GrpCollapsibleToolbar = ({
          <Modal visible={grpoptionModelOpen} onRequestClose={toggleOptionModel}>
             <ModalBottomContent onPressOutside={toggleOptionModel}>
                <Animated.View
-                  style={[styles.optionModelContainer, { transform: [{ translateY: translateBottomSlide }] }]}>
-                  <Text style={styles.optionTitleText}>Options</Text>
+                  style={[stylesgroupoptionModelContainer, { transform: [{ translateY: translateBottomSlide }] }]}>
+                  <Text style={styles.groupoptionTitleText}>Options</Text>
                   <Pressable onPress={handleOptionTakePhoto}>
-                     <Text style={styles.pressableText}>Take Photo</Text>
+                     <Text style={styles.grouppressableText}>Take Photo</Text>
                   </Pressable>
                   <Pressable onPress={handleOptionGallery}>
-                     <Text style={styles.pressableText}>Choose from Gallery</Text>
+                     <Text style={styles.grouppressableText}>Choose from Gallery</Text>
                   </Pressable>
                   {Boolean(getUserImage(chatUserId)) && (
                      <Pressable onPress={handleOptionRemove}>
-                        <Text style={styles.pressableText}>Remove Photo</Text>
+                        <Text style={styles.grouppressableText}>Remove Photo</Text>
                      </Pressable>
                   )}
                </Animated.View>
@@ -586,13 +586,7 @@ GrpCollapsibleToolbar.defaultProps = defaultProps;
 
 export default GrpCollapsibleToolbar;
 const styles = StyleSheet.create({
-   fill: {
-      flex: 1,
-   },
-   scrollView: {
-      flex: 1,
-   },
-   header: {
+   grpHeader: {
       top: 0,
       left: 0,
       right: 0,
@@ -604,20 +598,20 @@ const styles = StyleSheet.create({
       shadowOpacity: 0.1,
       shadowRadius: 6,
    },
-   action: {
+   grpAction: {
       left: 20,
       right: 20,
       bottom: 15,
       flexDirection: 'row',
       position: 'absolute',
    },
-   bar: {
+   grpBar: {
       zIndex: 10,
       height: 65,
       flexDirection: 'row',
       justifyContent: 'space-between',
    },
-   left: {
+   groupleft: {
       top: 0,
       left: 0,
       width: 50,
@@ -625,7 +619,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
    },
-   right: {
+   groupright: {
       top: 0,
       right: 0,
       width: 50,
@@ -633,20 +627,17 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
    },
-   title: {
+   grouptitle: {
       fontSize: 25,
       padding: 2,
       alignItems: 'center',
       maxWidth: 350,
    },
-   titleStatus: {
-      fontSize: 14,
-   },
-   profileImage: {
+   groupprofileImage: {
       width: '100%',
       height: '100%',
    },
-   wrapper: {
+   groupwrapper: {
       width: '100%',
       marginVertical: 12,
       paddingLeft: 16,
@@ -655,23 +646,23 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
    },
-   nickNameText: {
+   groupnickNameText: {
       flexWrap: 'wrap',
       color: '#1f2937',
       fontWeight: 'bold',
       marginVertical: 2,
    },
-   stautsText: {
+   groupstautsText: {
       marginVertical: 2,
    },
-   divider: {
+   groupdivider: {
       width: '83%',
       height: 1,
       alignSelf: 'flex-end',
-      backgroundColor: ApplicationColors.dividerBg,
+      backgroundColor: ApplicationColors.groupdividerBg,
    },
-   optionTitleText: { fontSize: 16, color: '#000', marginVertical: 5, marginHorizontal: 20, lineHeight: 25 },
-   optionModelContainer: {
+   groupoptionTitleText: { fontSize: 16, color: '#000', marginVertical: 5, marginHorizontal: 20, lineHeight: 25 },
+   groupoptionModelContainer: {
       maxWidth: 500,
       width: '98%',
       backgroundColor: '#fff',
@@ -680,14 +671,10 @@ const styles = StyleSheet.create({
       borderTopRightRadius: 30,
       borderBottomWidth: 3,
    },
-   pressableText: {
+   grouppressableText: {
       paddingHorizontal: 20,
       paddingVertical: 10,
       fontWeight: '600',
    },
-   buttonContainer: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-   },
-   groupActionButton: { marginLeft: 20, fontSize: 14, color: '#FF0000' },
+   groupgroupActionButton: { marginLeft: 20, fontSize: 14, color: '#FF0000' },
 });

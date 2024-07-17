@@ -56,7 +56,7 @@ const RecentChatItem = React.memo(
             <Pressable
                delayLongPress={300}
                onPress={onPress(item.userJid)}
-               onLongPress={handleSelectChat(item.userJid)}>
+               onLongPress={searchText ? null : handleSelectChat(item.userJid)}>
                <View style={[styles.container, isSelected && commonStyles.pressedBg, styles.avatarContainer]}>
                   <View style={[commonStyles.positionRelative]}>
                      <RecentChatAvathar type={item.chatType} userId={userId} data={item?.profileDetails} />

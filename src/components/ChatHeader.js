@@ -42,7 +42,7 @@ import {
    isLocalUser,
    showToast,
 } from '../helpers/chatHelpers';
-import { CALL_TYPE_AUDIO, CALL_TYPE_VIDEO, MIX_BARE_JID } from '../helpers/constants';
+import { ALREADY_ON_CALL, CALL_TYPE_AUDIO, CALL_TYPE_VIDEO, MIX_BARE_JID } from '../helpers/constants';
 import { resetMessageSelections, setChatSearchText } from '../redux/chatMessageDataSlice';
 import { setReplyMessage } from '../redux/draftSlice';
 import { closePermissionModal, showPermissionModal } from '../redux/permissionSlice';
@@ -70,6 +70,7 @@ function ChatHeader({ chatUser }) {
    const [remove, setRemove] = React.useState(false);
    const permissionData = useSelector(state => state.permissionData.permissionStatus);
    const [permissionText, setPermissionText] = React.useState('');
+   const [showRoomExist, setShowRoomExist] = React.useState(false);
    const userType = useRecentChatData().find(r => r.userJid === chatUser)?.userType || '';
 
    const filtered = React.useMemo(() => {
@@ -271,6 +272,53 @@ function ChatHeader({ chatUser }) {
       }
    };
 
+   const closeIsRoomExist = () => {
+      setShowRoomExist(false);
+   };
+   const renderRoomExistModal = () => {
+      return (
+         <>
+            {/* display modal already in the call */}
+            <Modal visible={showRoomExist} onRequestClose={closeIsRoomExist}>
+               <ModalCenteredContent onPressOutside={closeIsRoomExist}>
+                  <View style={styles.callModalContentContainer}>
+                     <Text style={styles.callModalContentText} numberOfLines={1}>
+                        {ALREADY_ON_CALL}
+                     </Text>
+                     <View style={styles.callModalHorizontalActionButtonsContainer}>
+                        <Pressable
+                           contentContainerStyle={styles.deleteModalHorizontalActionButton}
+                           onPress={() => closeIsRoomExist()}>
+                           <Text style={styles.deleteModalActionButtonText}>OK</Text>
+                        </Pressable>
+                     </View>
+                  </View>
+               </ModalCenteredContent>
+            </Modal>
+            {/* display permission Model */}
+            {permissionData && (
+               <Modal visible={permissionData}>
+                  <ModalCenteredContent>
+                     <View style={styles.callModalContentContainer}>
+                        <Text style={styles.callModalContentText}>{permissionText}</Text>
+                        <View style={styles.callModalHorizontalActionButtonsContainer}>
+                           <Pressable
+                              contentContainerStyle={styles.deleteModalHorizontalActionButton}
+                              onPress={() => {
+                                 openSettings();
+                                 dispatch(closePermissionModal());
+                              }}>
+                              <Text style={styles.deleteModalActionButtonText}>OK</Text>
+                           </Pressable>
+                        </View>
+                     </View>
+                  </ModalCenteredContent>
+               </Modal>
+            )}
+         </>
+      );
+   };
+
    const menuItems = [];
 
    if (filtered[0]?.msgBody?.message_type === 'text' || filtered[0]?.msgBody?.media?.caption) {
@@ -343,6 +391,7 @@ function ChatHeader({ chatUser }) {
                {Boolean(menuItems.length) && filtered.length === 1 && <MenuContainer menuItems={menuItems} />}
                {modalContent && <AlertModal {...modalContent} />}
             </View>
+            {renderRoomExistModal()}
             <Modal visible={remove} onRequestClose={onClose}>
                <ModalCenteredContent onPressOutside={onClose}>
                   <View style={styles.deleteModalContentContainer}>
@@ -399,26 +448,8 @@ function ChatHeader({ chatUser }) {
                </IconButton>
                {Boolean(menuItems.length) && <MenuContainer menuItems={menuItems} />}
             </View>
+            {renderRoomExistModal()}
             {modalContent && <AlertModal {...modalContent} />}
-            {permissionData && (
-               <Modal visible={permissionData}>
-                  <ModalCenteredContent>
-                     <View style={styles.callModalContentContainer}>
-                        <Text style={styles.callModalContentText}>{permissionText}</Text>
-                        <View style={styles.callModalHorizontalActionButtonsContainer}>
-                           <Pressable
-                              contentContainerStyle={styles.deleteModalHorizontalActionButton}
-                              onPress={() => {
-                                 openSettings();
-                                 dispatch(closePermissionModal());
-                              }}>
-                              <Text style={styles.deleteModalActionButtonText}>OK</Text>
-                           </Pressable>
-                        </View>
-                     </View>
-                  </ModalCenteredContent>
-               </Modal>
-            )}
          </View>
       );
    }

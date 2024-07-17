@@ -82,7 +82,6 @@ export default {
       'react-native-keep-awake',
       'react-native-raw-bottom-sheet',
       'react-native-background-timer',
-      'react-native-silentmode-detector',
       'react-native-headphone-detection',
       '@notifee/react-native',
       'react-native-voip-push-notification',

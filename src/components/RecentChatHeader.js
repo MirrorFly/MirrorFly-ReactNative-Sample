@@ -107,6 +107,10 @@ const RecentChatHeader = () => {
       RootNavigation.navigate(SETTINGS_STACK, { screen: MENU_SCREEN });
    };
 
+   const resetChatSelection = () => {
+      dispatch(resetChatSelections());
+   };
+
    const hanldeGroupRoute = () => {
       RootNavigation.navigate(GROUP_STACK);
    };

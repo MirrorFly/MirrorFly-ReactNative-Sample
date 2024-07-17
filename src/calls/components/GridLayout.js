@@ -30,7 +30,7 @@ const GridItem = ({
    return (
       <Pressable style={[wrapperStyle]} onPress={onPress}>
          <View style={styles.gridItem}>
-            {!isVideoMuted && stream && stream.video && !reconnectStatus && (
+            {!isVideoMuted && stream && stream?.video && !reconnectStatus && (
                <VideoComponent
                   stream={stream}
                   isFrontCameraEnabled={isLocalUser ? isFrontCameraEnabled : false}

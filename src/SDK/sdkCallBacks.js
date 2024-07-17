@@ -5,8 +5,10 @@ import RNInCallManager from 'react-native-incall-manager';
 import KeepAwake from 'react-native-keep-awake';
 import KeyEvent from 'react-native-keyevent';
 import { MediaStream } from 'react-native-webrtc';
+import { clearIntervalConversionPopUp } from '../Helper/Calls';
 import {
    callConnectionStoreData,
+   callSwitch,
    clearIncomingCallTimer,
    clearMissedCallNotificationTimer,
    clearOutgoingTimer,
@@ -24,6 +26,7 @@ import {
    stopIncomingCallRingtone,
    stopOutgoingCallRingingTone,
    stopReconnectingTone,
+   updateCallTypeAfterCallSwitch,
 } from '../Helper/Calls/Call';
 import {
    CALL_AGAIN_SCREEN,
@@ -89,6 +92,7 @@ import {
 import { resetCallControlsStateAction, updateCallVideoMutedAction } from '../redux/callControlsSlice';
 import { resetCallModalToastDataAction } from '../redux/callModalToastSlice';
 import {
+   callConversion,
    callDurationTimestamp,
    clearCallData,
    setCallModalScreen,
@@ -191,6 +195,7 @@ export const resetCallData = () => {
    store.dispatch(callDurationTimestamp(0));
    store.dispatch(resetCallControlsStateAction());
    store.dispatch(resetCallModalToastDataAction());
+   store.dispatch(callConversion());
 
    resetData();
    /**
@@ -219,7 +224,13 @@ export const muteLocalAudio = isMuted => {
    let vcardData = getLocalUserDetails();
    let currentUser = vcardData?.fromUser;
    currentUser = formatUserIdToJid(currentUser);
-   remoteAudioMuted[currentUser] = isMuted;
+   remoteAudioMuted = constructMuteStatus(remoteAudioMuted, currentUser, isMuted);
+   store.dispatch(
+      updateConference({
+         localAudioMuted,
+         remoteAudioMuted,
+      }),
+   );
 };
 
 export const removeRemoteStream = userJid => {
@@ -227,22 +238,17 @@ export const removeRemoteStream = userJid => {
 };
 
 const updatingUserStatusInRemoteStream = usersStatus => {
+   let newRemoteStream = [...remoteStream];
    usersStatus.forEach(user => {
       const index = remoteStream.findIndex(item => item.fromJid === user.userJid);
       if (index > -1) {
-         const newRemoteStreamupdate = remoteStream.map((ele, ind) => {
-            if (ind === index) {
-               return {
-                  ...ele,
-                  status: user.status,
-               };
-            } else {
-               return { ...ele };
-            }
-         });
-         remoteStream = newRemoteStreamupdate;
+         newRemoteStream[index] = {
+            ...newRemoteStream[index],
+            status: user.status,
+         };
+         remoteStream = newRemoteStream;
          remoteVideoMuted = constructMuteStatus(remoteVideoMuted, user.userJid, user.videoMuted);
-         remoteAudioMuted[user.userJid] = user.audioMuted;
+         remoteAudioMuted = constructMuteStatus(remoteAudioMuted, user.userJid, user.audioMuted);
       } else {
          let streamObject = {
             id: Date.now(),
@@ -251,7 +257,7 @@ const updatingUserStatusInRemoteStream = usersStatus => {
          };
          remoteStream = [...remoteStream, streamObject];
          remoteVideoMuted = constructMuteStatus(remoteVideoMuted, user.userJid, user.videoMuted);
-         remoteAudioMuted[user.userJid] = user.audioMuted;
+         remoteAudioMuted = constructMuteStatus(remoteAudioMuted, user.userJid, user.audioMuted);
       }
    });
 };
@@ -274,18 +280,16 @@ const ringing = async res => {
       );
       store.dispatch(setCallModalScreen(OUTGOING_CALL_SCREEN));
    } else {
+      let newRemoteStream = [...remoteStream];
       const showConfrenceData = showConfrenceStoreData();
       const { data } = showConfrenceData;
       const index = remoteStream.findIndex(item => item.fromJid === res.userJid);
       if (index > -1) {
-         const mapRemoteStream = remoteStream.map((ele, ind) => {
-            if (ind === index) {
-               return { ...ele, status: res.status };
-            } else {
-               return { ...ele };
-            }
-         });
-         remoteStream = mapRemoteStream;
+         newRemoteStream[index] = {
+            ...newRemoteStream[index],
+            status: res.status,
+         };
+         remoteStream = newRemoteStream;
          store.dispatch(
             showConfrence({
                ...(data || {}),
@@ -346,6 +350,7 @@ const ended = async res => {
          // Call ended before attend
          callConnectionData = callConnectionStoreData();
       }
+      clearIntervalConversionPopUp();
       dispatchDisconnected(CALL_STATUS_DISCONNECTED);
       /**
       // callLogs.update(roomId, {
@@ -364,7 +369,6 @@ const ended = async res => {
       // SetTimeout not working in background and killed state
       const timeout = BackgroundTimer.setTimeout(() => {
          resetCloseModel();
-         /** store.dispatch(callConversion()); */
       }, DISCONNECTED_SCREEN_DURATION);
       setDisconnectedScreenTimeoutTimer(timeout);
 
@@ -381,7 +385,6 @@ const ended = async res => {
          return;
       }
       removingRemoteStream(res);
-      /** resetPinAndLargeVideoUser(res.userJid); */
       updateCallConnectionStatus(res.usersStatus);
       const showConfrenceData = showConfrenceStoreData();
       const { data } = showConfrenceData;
@@ -393,13 +396,11 @@ const ended = async res => {
             remoteAudioMuted,
          }),
       );
+      resetPinAndLargeVideoUser(res.userJid);
    }
 };
 
 const dispatchCommon = () => {
-   /**store.dispatch(callConversion());
-    * store.dispatch(closeCallModal());
-    */
    closeCallModalActivity(true);
    resetCallData();
 };
@@ -454,9 +455,7 @@ const handleEngagedOrBusyStatus = async res => {
       }
       let userDetails = await getUserProfileFromSDK(getUserIdFromJid(res.userJid));
       let toastMessage =
-         res.status === 'engaged'
-            ? `${userDetails.displayName} is on another call`
-            : `${userDetails.displayName} is busy`;
+         res.status === 'engaged' ? `${userDetails.nickName} is on another call` : `${userDetails.nickName} is busy`;
       showToast(toastMessage);
       removingRemoteStream(res);
       store.dispatch(
@@ -787,10 +786,6 @@ export const callBacks = {
    userDeletedListener: res => {},
    adminBlockListener: res => {},
    incomingCallListener: function (res) {
-      if (onCall) {
-         SDK.callEngaged();
-         return;
-      }
       remoteStream = [];
       localStream = null;
       let callMode = 'onetoone';
@@ -857,8 +852,6 @@ export const callBacks = {
          updatingUserStatusInRemoteStream(res.usersStatus);
          startMissedCallNotificationTimer();
          startCallingTimer();
-      } else {
-         SDK.callEngaged();
       }
       /**
       // callLogs.insert({
@@ -881,7 +874,7 @@ export const callBacks = {
          if (!res.trackType) {
             return;
          }
-         localStream = localStream || {};
+         localStream = { ...localStream } || {};
          let mediaStream = null;
          if (res.track) {
             mediaStream = new MediaStream();
@@ -892,19 +885,17 @@ export const callBacks = {
          const showConfrenceData = getState().showConfrenceData;
          const { data } = showConfrenceData;
          const usersStatus = res.usersStatus;
+         let newRemoteStream = [...remoteStream];
          usersStatus.map(user => {
             const index = remoteStream.findIndex(item => item.fromJid === user.userJid);
             if (index > -1) {
-               const mapRemoteStreamSucc = remoteStream.map((ele, ind) => {
-                  if (ind === index) {
-                     return { ...ele, status: user.status };
-                  } else {
-                     return { ...ele };
-                  }
-               });
-               remoteStream = mapRemoteStreamSucc;
+               newRemoteStream[index] = {
+                  ...newRemoteStream[index],
+                  status: user.status,
+               };
+               remoteStream = newRemoteStream;
                remoteVideoMuted = constructMuteStatus(remoteVideoMuted, user.userJid, user.videoMuted);
-               remoteAudioMuted[user.userJid] = user.audioMuted;
+               remoteAudioMuted = constructMuteStatus(remoteAudioMuted, user.userJid, user.audioMuted);
             } else {
                let streamObject = {
                   id: Date.now(),
@@ -913,7 +904,7 @@ export const callBacks = {
                };
                remoteStream = [...remoteStream, streamObject];
                remoteVideoMuted = constructMuteStatus(remoteVideoMuted, user.userJid, user.videoMuted);
-               remoteAudioMuted[user.userJid] = user.audioMuted;
+               remoteAudioMuted = constructMuteStatus(remoteAudioMuted, user.userJid, user.audioMuted);
             }
          });
          /**
@@ -946,21 +937,15 @@ export const callBacks = {
          }
          const streamUniqueId = `stream${streamType.charAt(0).toUpperCase() + streamType.slice(1)}Id`;
          updatingUserStatusInRemoteStream(res.usersStatus);
+         let newRemoteStream = [...remoteStream];
          const userIndex = remoteStream.findIndex(item => item.fromJid === res.userJid);
          if (userIndex > -1) {
-            let { stream } = remoteStream[userIndex];
+            let { stream } = newRemoteStream[userIndex];
             stream = { ...stream } || {};
             stream[streamType] = mediaStream;
             stream['id'] = Date.now();
             stream[streamUniqueId] = Date.now();
-            const mapRemote = remoteStream.map((ele, ind) => {
-               if (ind === userIndex) {
-                  return { ...ele, stream: stream };
-               } else {
-                  return { ...ele };
-               }
-            });
-            remoteStream = mapRemote;
+            newRemoteStream[userIndex]['stream'] = stream;
          } else {
             let streamObject = {
                id: Date.now(),
@@ -971,9 +956,9 @@ export const callBacks = {
                   [streamType]: mediaStream,
                },
             };
-            remoteStream = [...remoteStream, streamObject];
+            newRemoteStream = [...remoteStream, streamObject];
          }
-
+         remoteStream = newRemoteStream;
          // When remoteStream user length is one, set that user as large video user
          if (remoteStream.length === 2) {
             store.dispatch(selectLargeVideoUser(res.userJid));
@@ -1010,13 +995,13 @@ export const callBacks = {
                        status: CALL_CONVERSION_STATUS_CANCEL,
                     }
                   : undefined;
-            /** store.dispatch(callConversion(status)); */
+            store.dispatch(callConversion(status));
             status && SDK.callConversion(CALL_CONVERSION_STATUS_CANCEL);
          }
       }
    },
    mediaErrorListener: res => {
-      console.log(res, 'userProfileListener');
+      console.log(res, 'mediaErrorListener');
    },
    callSpeakingListener: res => {},
    callUsersUpdateListener: res => {},
@@ -1042,7 +1027,9 @@ export const callBacks = {
    missedCallListener: res => {
       updateMissedCallNotification(res);
    },
-   callSwitchListener: function (res) {},
+   callSwitchListener: function (res) {
+      callSwitch(res);
+   },
    muteStatusListener: res => {
       if (!res) return;
       let localUser = false;
@@ -1062,7 +1049,7 @@ export const callBacks = {
          }
       } else {
          if (res.trackType === CALL_TYPE_AUDIO) {
-            remoteAudioMuted[res.userJid] = res.isMuted;
+            remoteAudioMuted = constructMuteStatus(remoteAudioMuted, res.userJid, res.isMuted);
             if (res.isMuted) {
                store.dispatch(selectLargeVideoUser(res.userJid, -100));
             }
@@ -1084,7 +1071,7 @@ export const callBacks = {
             remoteAudioMuted: remoteAudioMuted,
          }),
       );
-      /** updateCallTypeAfterCallSwitch(); */
+      updateCallTypeAfterCallSwitch(localVideoMuted, false);
    },
    userSettingsListener: res => {
       store.dispatch(toggleArchiveSetting(res?.archive));

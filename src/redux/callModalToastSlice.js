@@ -14,7 +14,6 @@ const callModalToastSlice = createSlice({
    initialState,
    reducers: {
       showCallModalToastAction(state, action) {
-         console.log('action.payload ==>', action.payload);
          return {
             ...state,
             id: Date.now(),

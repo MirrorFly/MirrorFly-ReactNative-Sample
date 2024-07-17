@@ -47,6 +47,10 @@ const BigVideoTile = ({
       );
    }, [isAudioMuted]);
 
+   const renderVideoComponent = React.useMemo(() => {
+      return <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={0} />;
+   }, [stream, isFrontCameraEnabled]);
+
    return (
       <>
          {!videoMuted && stream && stream?.video && !reconnectStatus && (
@@ -62,7 +66,7 @@ const BigVideoTile = ({
                   bottom: 0,
                }}
                contentContainerStyle={{ flex: 1 }}>
-               <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={0} />
+               {renderVideoComponent}
                {renderAudioMuted}
             </Pressable>
          )}

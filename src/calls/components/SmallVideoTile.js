@@ -23,11 +23,14 @@ const SmallVideoTile = ({
    const nickName = userProfile.nickName || userId || '';
    let reconnectStatus =
       callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && !isLocalUser ? true : false;
+
+   const renderVideoComponent = React.useMemo(() => {
+      return <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={1} />;
+   }, [stream, isFrontCameraEnabled]);
+
    return (
       <View style={styles.smallVideoWrapper}>
-         {!isVideoMuted && stream && stream?.video && !reconnectStatus && (
-            <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={1} />
-         )}
+         {!isVideoMuted && stream && stream?.video && !reconnectStatus && renderVideoComponent}
          <View
             style={[
                commonStyles.p_10,

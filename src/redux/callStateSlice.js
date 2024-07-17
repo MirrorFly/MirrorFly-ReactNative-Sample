@@ -9,7 +9,7 @@ const initialState = {
    screenName: '',
    connectionState: {},
    callDuration: 0,
-
+   callConversionData: {},
    /* // Example data for largeVideoUser property
    largeVideoUser: {
       userJid: largeUserJid,
@@ -116,6 +116,13 @@ const callStateSlice = createSlice({
             isCallFromVoip: action.payload,
          };
       },
+      callConversion(state, action) {
+         return {
+            ...state,
+            id: Date.now(),
+            callConversionData: action.payload,
+         };
+      },
       resetCallStateData() {
          return { ...initialState };
       },
@@ -138,6 +145,7 @@ export const {
    updateCallLayout,
    updateIsCallFromVoip,
    resetCallStateData,
+   callConversion,
 } = callStateSlice.actions;
 
 export default callStateSlice.reducer;

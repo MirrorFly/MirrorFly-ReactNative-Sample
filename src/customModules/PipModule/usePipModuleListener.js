@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
+
+import { setPipMode } from '../../Helper/Calls/Utility';
 import PipHandler from './PipHandler';
 
 /**
@@ -28,7 +30,10 @@ export function usePipModeListener() {
    useEffect(() => {
       let pipListener;
       if (Platform.OS === 'android') {
-         pipListener = PipHandler.onPipModeChanged(setIsPipModeEnabled);
+         pipListener = PipHandler.onPipModeChanged(isPip => {
+            setPipMode(isPip);
+            setIsPipModeEnabled(isPip);
+         });
       }
 
       return () => {

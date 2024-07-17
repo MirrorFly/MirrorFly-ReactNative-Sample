@@ -4,10 +4,10 @@ import { useDispatch } from 'react-redux';
 import RootNavigation from '../Navigation/rootNavigation';
 import AlertModal from '../common/AlertModal';
 import IconButton from '../common/IconButton';
-import { ArchiveIcon, ChatMuteIcon, ChatUnMuteIcon, CloseIcon, DeleteIcon } from '../common/Icons';
+import { ArchiveIcon, CloseIcon, DeleteIcon } from '../common/Icons';
 import ScreenHeader from '../common/ScreenHeader';
 import ApplicationColors from '../config/appColors';
-import { getUserIdFromJid, showToast, toggleArchive, toggleMuteChat } from '../helpers/chatHelpers';
+import { getUserIdFromJid, showToast, toggleArchive } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
 import { deleteRecentChats, resetChatSelections, setSearchText } from '../redux/recentChatDataSlice';
 import { getSelectedChats, getUserNameFromStore, useRecentChatData } from '../redux/reduxHook';
@@ -90,15 +90,17 @@ const RecentChatHeader = () => {
       );
    };
 
-   const renderMuteIcon = () => {
-      return (
-         <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-            <IconButton onPress={toggleMuteChat}>
-               {!isChatMuted ? <ChatMuteIcon width={17} height={17} /> : <ChatUnMuteIcon width={17} height={17} />}
-            </IconButton>
-         </View>
-      );
-   };
+   /**  {!isGroupExistMute && renderMuteIcon()}
+   // const renderMuteIcon = () => {
+   //    return (
+   //       <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+   //          <IconButton onPress={toggleMuteChat}>
+   //             {!isChatMuted ? <ChatMuteIcon width={17} height={17} /> : <ChatUnMuteIcon width={17} height={17} />}
+   //          </IconButton>
+   //       </View>
+   //    );
+   // };
+   */
 
    const hanldeRoute = () => {
       RootNavigation.navigate(SETTINGS_STACK, { screen: MENU_SCREEN });
@@ -143,7 +145,6 @@ const RecentChatHeader = () => {
                </View>
                <View style={commonStyles.hstack}>
                   {renderDeleteIcon()}
-                  {!isGroupExistMute && renderMuteIcon()}
                   {renderArchiveIcon()}
                </View>
                {modalContent && <AlertModal {...modalContent} />}

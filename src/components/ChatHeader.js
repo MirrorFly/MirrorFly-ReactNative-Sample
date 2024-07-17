@@ -436,12 +436,16 @@ function ChatHeader({ chatUser, handleReply }) {
                </View>
             </Pressable>
             <View style={styles.iconsContainer}>
-               <IconButton onPress={makeOne2OneVideoCall} containerStyle={{ marginRight: 6 }}>
-                  <VideoCallIcon />
-               </IconButton>
-               <IconButton onPress={makeOne2OneAudioCall}>
-                  <AudioCall />
-               </IconButton>
+               {!MIX_BARE_JID.test(chatUser) && (
+                  <IconButton onPress={makeOne2OneVideoCall} containerStyle={{ marginRight: 6 }}>
+                     <VideoCallIcon />
+                  </IconButton>
+               )}
+               {!MIX_BARE_JID.test(chatUser) && (
+                  <IconButton onPress={makeOne2OneAudioCall}>
+                     <AudioCall />
+                  </IconButton>
+               )}
                {Boolean(menuItems.length) && <MenuContainer menuItems={menuItems} />}
             </View>
             {renderRoomExistModal()}

@@ -96,9 +96,6 @@ const RecentChatItem = React.memo(
                         {createdAt && formatChatDateTime(convertUTCTOLocalTimeStamp(createdAt), 'recent-chat')}
                      </Text>
                      <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-                        {/* {Boolean(item.muteStatus === 1) && isRecentChatComponent && (
-                           <ChatMuteIcon width={13} height={13} />
-                        )} */}
                         {Boolean(item.archiveStatus) && isRecentChatComponent && (
                            <Text style={styles.archived}>Archived</Text>
                         )}

@@ -1,93 +1,210 @@
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
-import { changeTimeFormat } from '../common/TimeStamp';
-import { Box, HStack, Icon, Pressable, Text, View } from 'native-base';
-import { SandTimer } from '../common/Icons';
+import { Keyboard, Pressable, StyleSheet, View } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { CONNECTED } from '../SDK/constants';
+import { sendSeenStatus } from '../SDK/utils';
+import NickName from '../common/NickName';
+import ApplicationColors from '../config/appColors';
+import { getUserIdFromJid, handleFileOpen } from '../helpers/chatHelpers';
+import { MIX_BARE_JID } from '../helpers/constants';
+import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
+import { getChatMessages, useXmppConnectionStatus } from '../redux/reduxHook';
+import { MEDIA_POST_PRE_VIEW_SCREEN } from '../screens/constants';
+import commonStyles from '../styles/commonStyles';
+import { getCurrentUserJid } from '../uikitMethods';
+import DeletedMessage from './DeletedMessage';
+import Message from './Message';
+import MessagePressable from './MessagePressable';
+import NotificationMessage from './NotificationMessage';
 
-const ChatMessage = (props) => {
-  const currentUserJID = useSelector(state => state?.auth?.currentUserJID)
-  let isSame = currentUserJID === props?.message?.fromUserJid
-  let statusVisible = 'notSend'
+function ChatMessage({ chatUser, item, showNickName }) {
+   const dispatch = useDispatch();
+   const navigation = useNavigation();
+   const useXmppStatus = useXmppConnectionStatus();
+   const userId = getUserIdFromJid(chatUser);
+   const {
+      shouldHighlight = 0,
+      msgStatus,
+      publisherJid,
+      msgId,
+      recallStatus = 0,
+      deleteStatus = 0,
+      isSelected = 0,
+      msgBody: {
+         location: { latitude = '', longitude = '' } = {},
+         nickName = '',
+         message_type,
+         media: { is_uploading, is_downloaded, androidWidth = 0 } = {},
+      } = {},
+   } = item;
+   const isSender = getCurrentUserJid() === publisherJid;
+   const messageWidth = androidWidth || '80%';
 
-  switch (props?.message?.msgStatus) {
-    case 3:
-      statusVisible = styles.bgClr
-      break;
-    case 0:
-      statusVisible = styles.notDelivered
-      break;
-    case 1:
-      statusVisible = styles.delivered
-      break;
-    case 2:
-      statusVisible = styles.seen
-      break;
-  }
+   useFocusEffect(
+      React.useCallback(() => {
+         if (useXmppStatus === CONNECTED && !isSender && msgStatus !== 2 && deleteStatus === 0 && recallStatus === 0) {
+            const groupId = MIX_BARE_JID.test(chatUser) ? getUserIdFromJid(chatUser) : '';
+            sendSeenStatus(publisherJid, msgId, groupId);
+         }
+      }, [useXmppStatus]),
+   );
 
-  const getMessageStatus = (msgStatus) => {
-    if (msgStatus == 3) {
-      return <Icon px='3' as={SandTimer} name="emoji-happy" />
-    }
-    return (
-      <>
-        <View style={[styles?.msgStatus, isSame ? statusVisible : ""]}></View>
-      </>
-    )
-  }
-  return (
-    <Pressable
-      onPress={() => props?.selectedMsgs?.length && props.handleMsgSelect(props.message)}
-      onLongPress={() => props?.message?.msgStatus !== 3 && props.handleMsgSelect(props.message)}>
-      {({ isPressed }) => {
-        return <Box >
-          <Box my={"1"} bg={props.selectedMsgs.includes(props.message) ? 'rgba(0,0,0, 0.2)' : 'transparent'}>
-            <HStack alignSelf={isSame ? 'flex-end' : 'flex-start'} my='1' px='3'>
-              <View px='2' py='1.5' minWidth='30%' maxWidth='90%' bgColor={isSame ? '#E2E8F7' : '#fff'}
-                borderWidth={isSame ? 0 : 0.25}
-                borderRadius={10}
-                borderBottomLeftRadius={isSame ? 10 : 0}
-                borderBottomRightRadius={isSame ? 0 : 10}
-                borderColor='#959595'>
-                {{
-                  "text": <Text fontSize={14} color='#313131'>{props?.message?.msgBody?.message}</Text>,
-                  "image": <Text fontWeight={'600'} fontStyle={'italic'} fontSize={14} color='#313131'>image</Text>,
-                  "video": <Text fontWeight={'600'} fontStyle={'italic'} fontSize={14} color='#313131'>video</Text>,
-                  "audio": <Text fontWeight={'600'} fontStyle={'italic'} fontSize={14} color='#313131'>audio</Text>,
-                }[props?.message?.msgBody?.message_type]}
-                <HStack alignItems='center' alignSelf='flex-end'>
-                  {getMessageStatus(props?.message?.msgStatus)}
-                  <Text pl='1' color='#959595' fontSize='11'>{changeTimeFormat(props?.message?.timestamp)}</Text>
-                </HStack>
-              </View>
-            </HStack>
-          </Box>
-        </Box>
-      }}
+   const onPress = () => {
+      const messsageList = getChatMessages(userId);
+      const isAnySelected = messsageList.some(item => item.isSelected === 1);
+      switch (true) {
+         case isAnySelected:
+            const selectData = {
+               chatUserId: getUserIdFromJid(chatUser),
+               msgId,
+            };
+            dispatch(toggleMessageSelection(selectData));
+            break;
+         case is_downloaded === 2 && is_uploading === 2 && (message_type === 'image' || message_type === 'video'):
+            if (Keyboard.isVisible()) {
+               let hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+                  navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid: chatUser, msgId: msgId });
+                  hideSubscription.remove();
+               });
+               Keyboard.dismiss();
+            } else {
+               navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid: chatUser, msgId: msgId });
+            }
+            break;
+         case is_downloaded === 2 && is_uploading === 2 && message_type === 'file':
+            handleFileOpen(item);
+            break;
+         case message_type === 'locaiton':
+            openLocationExternally(latitude, longitude);
+            break;
+      }
+   };
 
-    </Pressable>
-  );
-};
+   const onLongPress = () => {
+      const selectData = {
+         chatUserId: getUserIdFromJid(chatUser),
+         msgId,
+      };
+      dispatch(toggleMessageSelection(selectData));
+   };
 
-export default ChatMessage;
+   if (!message_type) {
+      return null;
+   }
+
+   if (deleteStatus) {
+      return null;
+   }
+
+   if (message_type === 'notification') {
+      return <NotificationMessage messageObject={item} />;
+   }
+
+   if (recallStatus) {
+      return <DeletedMessage chatUser={chatUser} item={item} isSender={isSender} />;
+   }
+
+   return (
+      <Pressable
+         style={
+            shouldHighlight && {
+               backgroundColor: ApplicationColors.highlighedMessageBg,
+            }
+         }
+         delayLongPress={300}
+         pressedStyle={commonStyles.bg_transparent}
+         onPress={onPress}
+         onLongPress={onLongPress}>
+         {({ pressed }) => (
+            <View style={[styles.messageContainer, isSelected ? styles.highlightMessage : undefined]}>
+               <View
+                  style={[
+                     commonStyles.paddingHorizontal_12,
+                     isSender ? commonStyles.alignSelfFlexEnd : commonStyles.alignSelfFlexStart,
+                  ]}>
+                  <MessagePressable
+                     forcePress={pressed}
+                     style={[styles.messageContentPressable, { maxWidth: messageWidth }]}
+                     contentContainerStyle={[
+                        styles.messageCommonStyle,
+                        isSender ? styles.sentMessage : styles.receivedMessage,
+                     ]}
+                     delayLongPress={300}
+                     onPress={onPress}
+                     onLongPress={onLongPress}>
+                     {showNickName && !isSender && message_type && (
+                        <NickName
+                           style={styles.nickname}
+                           userId={item.publisherId}
+                           colorCodeRequired={true}
+                           data={{ nickName }}
+                        />
+                     )}
+                     <Message item={item} isSender={isSender} chatUser={chatUser} />
+                  </MessagePressable>
+               </View>
+            </View>
+         )}
+      </Pressable>
+   );
+}
+
+export default React.memo(ChatMessage);
 
 const styles = StyleSheet.create({
-  msgStatus: {
-    marginStart: 15,
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  bgClr: {
-    backgroundColor: 'red'
-  },
-  notDelivered: {
-    backgroundColor: '#818181'
-  },
-  delivered: {
-    backgroundColor: '#FFA500'
-  },
-  seen: {
-    backgroundColor: '#66E824'
-  },
+   currentStatus: {
+      marginStart: 15,
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+   },
+   bgClr: {
+      backgroundColor: 'red',
+   },
+   notDelivered: {
+      backgroundColor: '#818181',
+   },
+   delivered: {
+      backgroundColor: '#FFA500',
+   },
+   seen: {
+      backgroundColor: '#66E824',
+   },
+   flex1: { flex: 1 },
+   deleteContainer: {
+      marginBottom: 0.2,
+   },
+   messageContainer: {
+      marginBottom: 6,
+   },
+   highlightMessage: {
+      backgroundColor: ApplicationColors.highlighedMessageBg,
+   },
+   messageContentPressable: {
+      minWidth: '30%',
+   },
+   messageCommonStyle: {
+      borderRadius: 10,
+      overflow: 'hidden',
+      borderColor: '#DDE3E5',
+   },
+   sentMessage: {
+      backgroundColor: '#E2E8F7',
+      borderWidth: 0,
+      borderBottomRightRadius: 0,
+   },
+   receivedMessage: {
+      backgroundColor: '#fff',
+      borderWidth: 1,
+      borderBottomLeftRadius: 0,
+   },
+   nickname: {
+      marginLeft: 3,
+      marginTop: 5,
+      padding: 5,
+      paddingBottom: 0,
+      fontWeight: '500',
+      fontSize: 13,
+   },
 });

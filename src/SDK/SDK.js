@@ -1,5 +1,7 @@
-import './index'
+import 'mirrorfly-reactnative-sdk';
 
-const SDK = global.SDK
+const SDK = global.SDK;
 
-export default SDK
+export const { RealmKeyValueStore } = SDK;
+
+export default SDK;

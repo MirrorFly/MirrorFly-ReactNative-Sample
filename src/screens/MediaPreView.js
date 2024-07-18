@@ -20,10 +20,10 @@ import VideoInfo from '../common/VideoInfo';
 import UserAvathar from '../components/UserAvathar';
 import ApplicationColors from '../config/appColors';
 import { getType, getUserIdFromJid, handleSendMedia } from '../helpers/chatHelpers';
+import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../helpers/constants';
 import commonStyles from '../styles/commonStyles';
 import { currentChatUser } from './ConversationScreen';
-import { GALLERY_PHOTOS_SCREEN, CAMERA_SCREEN } from './constants';
-import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../helpers/constants';
+import { CAMERA_SCREEN, GALLERY_PHOTOS_SCREEN } from './constants';
 
 function MediaPreView() {
    const chatUser = currentChatUser;

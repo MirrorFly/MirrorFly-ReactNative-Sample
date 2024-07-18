@@ -18,12 +18,12 @@ const RecentChatHeader = () => {
    const dispatch = useDispatch();
    const recentChatData = useRecentChatData();
    const [modalContent, setModalContent] = React.useState(null);
-   const [text, setText] = React.useState('');
 
    const filtered = React.useMemo(() => {
       return recentChatData.filter(item => item.isSelected === 1);
    }, [recentChatData.map(item => item.isSelected).join(',')]); // Include isSelected in the dependency array
    const isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
+
    const userName = getUserNameFromStore(getUserIdFromJid(filtered[0]?.userJid)) || '';
    const deleteMessage =
       filtered.length === 1 ? `Delete chat with "${userName}"?` : `Delete ${filtered.length} selected chats?`;
@@ -87,6 +87,21 @@ const RecentChatHeader = () => {
          </View>
       );
    };
+
+   /**  
+    * const isChatMuted = filtered.some(res => res.muteStatus === 1);
+      const isGroupExistMute = filtered.some(res => MIX_BARE_JID.test(res.userJid));
+    * {!isGroupExistMute && renderMuteIcon()}
+   // const renderMuteIcon = () => {
+   //    return (
+   //       <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+   //          <IconButton onPress={toggleMuteChat}>
+   //             {!isChatMuted ? <ChatMuteIcon width={17} height={17} /> : <ChatUnMuteIcon width={17} height={17} />}
+   //          </IconButton>
+   //       </View>
+   //    );
+   // };
+   */
 
    const hanldeRoute = () => {
       RootNavigation.navigate(SETTINGS_STACK, { screen: MENU_SCREEN });

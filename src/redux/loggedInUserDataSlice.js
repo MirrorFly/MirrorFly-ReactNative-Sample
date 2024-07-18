@@ -1,5 +1,5 @@
-import { clearState } from './clearSlice';
 import { createSlice } from '@reduxjs/toolkit';
+import { clearState } from './clearSlice';
 
 const initialState = {};
 
@@ -7,8 +7,8 @@ const loggedInUserDataSlice = createSlice({
    name: 'loggedInUserData',
    initialState,
    reducers: {
-      resetLoggedinUserData(state) {
-         state = initialState;
+      resetLoggedinUserData() {
+         return initialState;
       },
       setUserJid: (state, action) => {
          state.currentUserJID = action.payload;

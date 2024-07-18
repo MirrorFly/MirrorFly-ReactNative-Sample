@@ -1,19 +1,22 @@
+import { Platform } from 'react-native';
 import { changeTimeFormat } from '../common/timeStamp';
 import config from '../config/config';
 import {
    calculateWidthAndHeight,
+   convertHeicToJpg,
    getThumbImage,
    getUserIdFromJid,
    getVideoThumbImage,
    isLocalUser,
 } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, DOCUMENT_FORMATS, MIX_BARE_JID } from '../helpers/constants';
-import { addChatMessageItem, setChatMessages } from '../redux/chatMessageDataSlice';
+import { addChatMessageItem, setChatMessages, updateMediaStatus } from '../redux/chatMessageDataSlice';
+import { setReplyMessage } from '../redux/draftSlice';
 import { setMemberParticipantsList } from '../redux/groupDataSlice';
 import { addRecentChatItem, setRecentChats } from '../redux/recentChatDataSlice';
-import { getArchive, getChatMessages, getRoasterData } from '../redux/reduxHook';
+import { getArchive, getChatMessages, getReplyMessage, getRoasterData } from '../redux/reduxHook';
 import { setRoasterData } from '../redux/rosterDataSlice';
-import { toggleArchiveSetting } from '../redux/settingDataSlice';
+import { toggleArchiveSetting, updateNotificationSetting } from '../redux/settingDataSlice';
 import store from '../redux/store';
 import { currentChatUser } from '../screens/ConversationScreen';
 import { getCurrentUserJid } from '../uikitMethods';
@@ -31,7 +34,7 @@ export const resetVariable = () => {
    recentChatPage = 1;
 };
 
-export const resetChatPageVariables = userJid => {
+export const resetChatPage = userJid => {
    delete chatPage[userJid];
    delete hasNextChatPage[userJid];
 };
@@ -79,11 +82,14 @@ export const fetchContactsFromSDK = async (_searchText, _pageNumber, _limit) => 
    return contactsResponse;
 };
 
-export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false) => {
+export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false, pageReset = false) => {
    const userId = getUserIdFromJid(fromUserJId);
    const messsageList = getChatMessages(userId) || [];
    if (messsageList.length && !forceGetFromSDK) {
       return;
+   }
+   if (pageReset) {
+      delete chatPage[userId];
    }
    const page = chatPage[userId] || 1;
    const {
@@ -91,7 +97,6 @@ export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false)
       userJid,
       data = [],
    } = await SDK.getChatMessages(fromUserJId, page, config.chatMessagesSizePerPage);
-   console.log('data ==>', JSON.stringify(data, null, 2));
    if (statusCode === 200) {
       let hasEqualDataFetched = data.length >= config.chatMessagesSizePerPage;
 
@@ -109,22 +114,25 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
       for (let i = 0; i < files.length; i++) {
          const file = files[i],
             msgId = SDK.randomString(8, 'BA');
-
          const {
             caption = '',
             fileDetails = {},
             fileDetails: { fileSize, filename, duration, uri, type, replyTo = '' } = {},
          } = file;
-
+         let _uri = uri;
+         if (Platform.OS === 'ios' && uri.includes('ph://')) {
+            _uri = await convertHeicToJpg(uri);
+         }
+         file.fileDetails = { ...file.fileDetails, uri: _uri };
          const isDocument = DOCUMENT_FORMATS.includes(type);
          const msgType = isDocument ? 'file' : type.split('/')[0];
-         let thumbImage = msgType === 'image' ? await getThumbImage(uri) : '';
-         thumbImage = msgType === 'video' ? await getVideoThumbImage(uri) : thumbImage;
+         let thumbImage = msgType === 'image' ? await getThumbImage(_uri) : '';
+         thumbImage = msgType === 'video' ? await getVideoThumbImage(_uri) : thumbImage;
          let fileOptions = {
             fileName: filename,
             fileSize: fileSize,
             caption: caption,
-            uri: uri,
+            uri: _uri,
             duration: duration,
             msgId: msgId,
             thumbImage: thumbImage,
@@ -153,8 +161,8 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
    }
 };
 
-const parseAndSendMessage = async (message, chatType, messageType, fromUserJid, toUserJid) => {
-   const { content, replyTo = '' } = message;
+const parseAndSendMessage = async (message, chatType, messageType, fromUserJid, toUserJid, replyTo) => {
+   const { content } = message;
    content[0].fileDetails.replyTo = replyTo;
    sendMediaMessage(messageType, content, chatType, fromUserJid, toUserJid);
 };
@@ -257,8 +265,11 @@ export const getSenderMessageObj = (dataObj, idx) => {
 };
 
 export const handleSendMsg = async (obj = {}) => {
-   const { messageType, replyTo = '', message, location = {} } = obj;
+   const { messageType, message, location = {} } = obj;
    const chatUser = currentChatUser;
+   const userId = getUserIdFromJid(chatUser);
+   const replyTo = getReplyMessage(getUserIdFromJid(chatUser)).msgId;
+   store.dispatch(setReplyMessage({ userId, message: {} }));
    const msgId = SDK.randomString(8, 'BA');
    switch (messageType) {
       case 'text':
@@ -275,7 +286,7 @@ export const handleSendMsg = async (obj = {}) => {
          senderObj.archiveSetting = getArchive();
          store.dispatch(addChatMessageItem(senderObj));
          store.dispatch(addRecentChatItem(senderObj));
-         SDK.sendTextMessage(chatUser, message, msgId, replyTo);
+         SDK.sendTextMessage(chatUser, message, msgId, replyTo, { broadCastId1: SDK.randomString(8, 'BA') });
          break;
       case 'media':
          await parseAndSendMessage(
@@ -284,6 +295,7 @@ export const handleSendMsg = async (obj = {}) => {
             messageType,
             getCurrentUserJid(),
             chatUser,
+            replyTo,
          );
          break;
       case 'contact':
@@ -306,7 +318,7 @@ export const handleSendMsg = async (obj = {}) => {
             store.dispatch(addChatMessageItem(senderObj));
             store.dispatch(addRecentChatItem(senderObj));
          }
-         SDK.sendContactMessage(chatUser, updatedContacts, replyTo);
+         SDK.sendContactMessage(chatUser, updatedContacts, replyTo, { broadCastIdContact: SDK.randomString(8, 'BA') });
          break;
       case 'location':
          const { latitude, longitude } = location;
@@ -325,7 +337,9 @@ export const handleSendMsg = async (obj = {}) => {
             senderObj.archiveSetting = getArchive();
             store.dispatch(addChatMessageItem(senderObj));
             store.dispatch(addRecentChatItem(senderObj));
-            SDK.sendLocationMessage(chatUser, latitude, longitude, msgId, replyTo);
+            SDK.sendLocationMessage(chatUser, latitude, longitude, msgId, replyTo, {
+               broadCastIdLocation: SDK.randomString(8, 'BA'),
+            });
          }
          break;
    }
@@ -357,15 +371,17 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
       };
 
       let response = {};
-      response = await SDK.sendMediaMessage(jid, msgId, msgType, file.fileDetails, fileOptions, replyTo);
+      response = await SDK.sendMediaMessage(jid, msgId, msgType, file.fileDetails, fileOptions, replyTo, {
+         broadCastIdMedia: SDK.randomString(8, 'BA'),
+      });
       let updateObj = {
          msgId,
          statusCode: response.statusCode,
-         fromUserId: getUserIdFromJid(jid),
+         userId: getUserIdFromJid(jid),
       };
       if (response?.statusCode !== 200) {
-         updateObj.uploadStatus = 3;
-         store.dispatch(updateUploadStatus(updateObj));
+         updateObj.is_uploading = 3;
+         store.dispatch(updateMediaStatus(updateObj));
       }
    } catch (error) {
       console.log('uploadFileToSDK -->', error);
@@ -432,9 +448,32 @@ export const getUserProfileFromSDK = userId => {
    });
 };
 
-export const getUserSettings = async () => {
+export const getUserSettings = async (iq = false) => {
+   const { data: { archive = 0 } = {} } = await SDK.getUserSettings?.(iq);
+   store.dispatch(toggleArchiveSetting(Number(archive)));
+};
+
+export const updateNotificationSettings = async () => {
    const {
-      data: { archive = 0 },
+      data: { archive = 0, muteNotification = false, notificationSound = false, notificationVibrate = false },
    } = await SDK.getUserSettings();
-   store.dispatch(toggleArchiveSetting(archive));
+   store.dispatch(toggleArchiveSetting(Number(archive)));
+   store.dispatch(updateNotificationSetting({ muteNotification, notificationSound, notificationVibrate }));
+};
+
+export const sendNotificationData = async () => {
+   const {
+      notificationSound = false,
+      notificationVibrate = false,
+      muteNotification = false,
+   } = store.getState().settingsData;
+   SDK.updateSettings({
+      muteNotification,
+      notificationSound,
+      notificationVibrate,
+   });
+};
+
+export const getMuteStatus = async userJid => {
+   return await SDK.getMuteStatus?.(userJid);
 };

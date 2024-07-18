@@ -16,7 +16,7 @@ const ReplyAudio = props => {
       handleRemove();
    };
 
-   const durationInSeconds = replyMsgItems.msgBody.media.duration;
+   const durationInSeconds = msgBody.media.duration;
    const durationInMinutes = Math.floor(durationInSeconds / 1000);
 
    return (

@@ -502,13 +502,6 @@ export const answerIncomingCall = async callId => {
                }
                // updating the call connected status to android native code
                Platform.OS === 'android' && ActivityModule.updateCallConnectedStatus(true);
-               /**
-               // TODO: update the Call logs when implementing
-               // callLogs.update(callConnectionDate.data.roomId, {
-               //   startTime: callLogs.initTime(),
-               //   callState: 2,
-               // });
-                */
             }
          }
       } else if (isPermissionChecked) {
@@ -571,13 +564,6 @@ export const declineIncomingCall = async () => {
       await stopForegroundServiceNotification();
    }
    if (declineCallResponse.statusCode === 200) {
-      /**
-      // TODO: update the Call logs when implementing
-      // callLogs.update(callConnectionDate.data.roomId, {
-      //   endTime: callLogs.initTime(),
-      //   sessionStatus: CALL_SESSION_STATUS_CLOSED,
-      // });
-       */
       dispatchDisconnected();
       setTimeout(() => {
          closeCallModalActivity(true);

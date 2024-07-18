@@ -6,7 +6,7 @@ import { pushNotifyBackground } from './Helper/Calls/Utility';
 import RootNavigation from './Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from './SDK/SDK';
 import { callBacks } from './SDK/sdkCallBacks';
-import { resetVariable } from './SDK/utils';
+import { getUserSettings, resetVariable, updateNotificationSettings } from './SDK/utils';
 import { pushNotify, updateNotification } from './Service/remoteNotifyHandle';
 import { CallComponent } from './calls/CallComponent';
 import { setupCallKit } from './calls/ios';
@@ -60,6 +60,9 @@ export const mirrorflyNotificationHandler = async remoteMessage => {
          return;
       }
       const notify = await SDK.getNotificationData(remoteMessage);
+      if (notify?.data?.muteStatus === 1) {
+         return;
+      }
       if (remoteMessage.data.type === 'recall') {
          updateNotification(remoteMessage?.data?.message_id);
          return;
@@ -99,6 +102,7 @@ export const mirrorflyInitialize = async args => {
          currentUserJID = _extractedData?.['currentUserJID'];
          currentScreen = _extractedData?.['screen'] || REGISTERSCREEN;
          fetchCurrentUserProfile();
+         updateNotificationSettings();
       }
       await notifee.requestPermission();
       return mfInit;
@@ -107,7 +111,7 @@ export const mirrorflyInitialize = async args => {
    }
 };
 
-export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '' }) => {
+export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadata = {} }) => {
    try {
       if (currentUserJID) {
          return {
@@ -116,11 +120,13 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '' }) => {
             jid: currentUserJID,
          };
       }
+
       const registerRes = await SDK.register(
          userIdentifier,
          fcmToken,
          voipToken,
          process.env?.NODE_ENV === 'production',
+         metadata,
       );
       if (registerRes.statusCode === 200) {
          const { data } = registerRes;
@@ -134,6 +140,8 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '' }) => {
                RealmKeyValueStore.setItem('currentUserJID', userJID);
                currentUserJID = userJID;
                fetchCurrentUserProfile(true);
+               getUserSettings(true);
+               SDK.getArchivedChats(true);
                return connect;
             default:
                return connect;

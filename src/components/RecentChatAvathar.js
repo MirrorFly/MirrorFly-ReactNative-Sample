@@ -21,7 +21,6 @@ function RecentChatAvathar({ type, userId, data = {}, ...props }) {
    }, [profile]);
 
    let { nickName, colorCode, image: imageToken } = userProfile;
-   // const localUser = isLocalUser(userId);
    const onPress = () => {
       setVisible(true);
    };
@@ -32,7 +31,7 @@ function RecentChatAvathar({ type, userId, data = {}, ...props }) {
 
    return (
       <>
-         <Pressable style={[commonStyles.flex1]} onPress={onPress}>
+         <Pressable disabled style={[commonStyles.flex1]} onPress={onPress}>
             <Avathar type={type} data={nickName || userId} backgroundColor={colorCode} profileImage={imageToken} />
          </Pressable>
          <Modal visible={visible} onRequestClose={onRequestClose}>

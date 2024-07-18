@@ -10,9 +10,9 @@ import ChatInput from '../components/ChatInput';
 import ConversationList from '../components/ConversationList';
 import ReplyContainer from '../components/ReplyContainer';
 import { getImageSource, getUserIdFromJid, handelResetMessageSelection } from '../helpers/chatHelpers';
-import { MIX_BARE_JID,  } from '../helpers/constants';
+import { MIX_BARE_JID, } from '../helpers/constants';
 import { resetUnreadCountForChat } from '../redux/recentChatDataSlice';
-import { useChatMessages } from '../redux/reduxHook';
+import { useChatMessages, useReplyMessage } from '../redux/reduxHook';
 import { RECENTCHATSCREEN } from './constants';
 
 export let currentChatUser = '';
@@ -20,13 +20,13 @@ export let currentChatUser = '';
 function ConversationScreen({ chatUser = '' }) {
    const { params: { jid: _jid = '' } = {} } = useRoute();
    const [jid, setJid] = React.useState(_jid || chatUser); // TO HANDLE APPLCATION RENDER BY COMPONENT BY COMPONENT
-   currentChatUser = _jid;
+   currentChatUser = _jid || chatUser;
    SDK.activeChatUser(currentChatUser);
    const dispatch = useDispatch();
    const userId = getUserIdFromJid(jid);
    const navigation = useNavigation();
    const messaesList = useChatMessages(userId) || [];
-   const [replyMessage, setReplyMessage] = React.useState({});
+   const replyMessage = useReplyMessage(userId) || {};
 
    const isAnySelected = React.useMemo(() => {
       return messaesList.some(item => item.isSelected === 1);
@@ -39,7 +39,14 @@ function ConversationScreen({ chatUser = '' }) {
       if (MIX_BARE_JID.test(jid)) {
          fetchGroupParticipants(jid);
       }
+      return () => {
+         currentChatUser = '';
+      };
    }, []);
+
+   React.useEffect(() => {
+      setJid(currentChatUser);
+   }, [_jid, chatUser]);
 
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
@@ -79,15 +86,7 @@ function ConversationScreen({ chatUser = '' }) {
       return true;
    };
 
-   const handleCloseReplyContainer = () => {
-      setReplyMessage({});
-   };
-
-   const handleReply = msg => {
-      setReplyMessage(msg);
-   };
-
-   const renderChatHeader = React.useMemo(() => <ChatHeader chatUser={jid} handleReply={handleReply} />, [jid]);
+   const renderChatHeader = React.useMemo(() => <ChatHeader chatUser={jid} />, [jid]);
 
    const renderConversationList = React.useMemo(() => <ConversationList chatUser={jid} />, [jid]);
 
@@ -95,11 +94,7 @@ function ConversationScreen({ chatUser = '' }) {
 
    const renderReplyContainer = React.useMemo(
       () => (
-         <>
-            {Object.keys(replyMessage).length > 0 && (
-               <ReplyContainer replyMessage={replyMessage} handleCloseReplyContainer={handleCloseReplyContainer} />
-            )}
-         </>
+         <>{Object.keys(replyMessage).length > 0 && <ReplyContainer chatUser={jid} replyMessage={replyMessage} />}</>
       ),
       [replyMessage],
    );

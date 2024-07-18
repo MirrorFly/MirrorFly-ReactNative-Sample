@@ -7,7 +7,7 @@ import Pressable from '../common/Pressable';
 import { convertUTCTOLocalTimeStamp, formatChatDateTime } from '../common/timeStamp';
 import ApplicationColors from '../config/appColors';
 import { getMessageStatus, getUserIdFromJid } from '../helpers/chatHelpers';
-import { toggleArchiveChatSelection, toggleChatSelection } from '../redux/recentChatDataSlice';
+import { toggleChatSelection } from '../redux/recentChatDataSlice';
 import { getSelectedChats, useRecentChatSearchText } from '../redux/reduxHook';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
@@ -18,12 +18,20 @@ import RecentChatMessage from './RecentChatMessage';
 const RecentChatItem = React.memo(
    ({ item, index, component = 'recent-chat' }) => {
       const isRecentChatComponent = component === 'recent-chat';
-      const { msgStatus, createdAt = '', userId = '', isSelected = 0, userJid, publisherJid, recallStatus } = item;
+      const {
+         msgStatus,
+         createdAt = '',
+         userId = '',
+         isSelected = 0,
+         userJid,
+         publisherJid,
+         recallStatus,
+         msgBody,
+      } = item;
       const dispatch = useDispatch();
       const navigation = useNavigation();
       const searchText = useRecentChatSearchText();
       const isSender = getCurrentUserJid() === publisherJid;
-      console.log('RecentChatItem userJid ==>', userJid);
 
       const handleSelectChat = userJid => () => {
          dispatch(toggleChatSelection(userJid));
@@ -70,6 +78,7 @@ const RecentChatItem = React.memo(
                      />
                      <View style={styles.lastSentMessageContainer}>
                         {isSender &&
+                           Boolean(Object.keys(msgBody).length) &&
                            item?.msgBody?.message_type !== 'notification' &&
                            !recallStatus &&
                            getMessageStatus(msgStatus, 8)}
@@ -86,9 +95,11 @@ const RecentChatItem = React.memo(
                      <Text style={styles.time}>
                         {createdAt && formatChatDateTime(convertUTCTOLocalTimeStamp(createdAt), 'recent-chat')}
                      </Text>
-                     {Boolean(item.archiveStatus) && isRecentChatComponent && (
-                        <Text style={styles.archived}>Archived</Text>
-                     )}
+                     <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+                        {Boolean(item.archiveStatus) && isRecentChatComponent && (
+                           <Text style={styles.archived}>Archived</Text>
+                        )}
+                     </View>
                   </View>
                </View>
             </Pressable>
@@ -164,7 +175,7 @@ const styles = StyleSheet.create({
    },
    unreadCountText: {
       color: ApplicationColors.white,
-      fontSize: 13,
+      fontSize: 11,
    },
    archived: {
       marginTop: 2,

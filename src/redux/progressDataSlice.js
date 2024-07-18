@@ -1,6 +1,6 @@
+import { createSlice } from '@reduxjs/toolkit';
 import { clearState } from './clearSlice';
 
-import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {};
 
@@ -8,12 +8,12 @@ const progressDataSlice = createSlice({
    name: 'progressData',
    initialState,
    reducers: {
-      resetProgressData(state) {
-         state = initialState;
+      resetProgressData() {
+         return initialState;
       },
       setProgress(state, action) {
          const { msgId } = action.payload;
-         state[msgId] = JSON.parse(JSON.stringify(action.payload));
+         state[msgId] = action.payload;
       },
       deleteProgress(state, action) {
          const { msgId } = action.payload;

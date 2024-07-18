@@ -1,3 +1,4 @@
+/**
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import Graphemer from 'graphemer';
 // import { Toast } from 'native-base';
@@ -20,10 +21,11 @@
 // import { updateUserProfileStore } from './Chat/ChatHelper';
 // import { getUserIdFromJid } from './Chat/Utility';
 
-import { Keyboard, Platform } from "react-native";
-import { getIsUserOnCall } from "../SDK/sdkCallBacks";
-import PipHandler from "../customModules/PipModule";
-
+import { Keyboard, Platform } from 'react-native';
+import { getIsUserOnCall } from '../SDK/sdkCallBacks';
+import PipHandler from '../customModules/PipModule';
+*/
+/**
 // const toastLocalRef = React.createRef({});
 // toastLocalRef.current = {};
 
@@ -31,13 +33,14 @@ import PipHandler from "../customModules/PipModule";
 //    duration: 2500,
 //    avoidKeyboard: true,
 // };
-
+*/
 // /**
 //  * showToast
 //  * @param {String} message
 //  * @param {Object} options
 //  * @example ('Toast Message', {id:'toast-id'})
 //  */
+/**
 // export const showToast = (message, options, ignoreDuplicateToast = true) => {
 //    const id = options?.id || Date.now();
 //    if (options.id && ignoreDuplicateToast && toastLocalRef.current[options.id]) {
@@ -81,12 +84,14 @@ import PipHandler from "../customModules/PipModule";
 //       return MB.toFixed(2) + ' MB';
 //    }
 // };
+*/
 
 // /**
 //  * Helper function to generate thumbnail for image
 //  * @param {string} uri - local path if the image
 //  * @returns {Promise<string>} returns the base64 data of the Thumbnail Image
 //  */
+/**
 // export const getThumbImage = async uri => {
 //    const result = await ImageCompressor.compress(uri, {
 //       maxWidth: 200,
@@ -96,12 +101,13 @@ import PipHandler from "../customModules/PipModule";
 //    const response = await RNFS.readFile(result, 'base64');
 //    return response;
 // };
-
+ */
 // /**
 //  * Helpler function to generate thumbnail for video
 //  * @param {string} uri local file path of the video
 //  * @returns {Promise<string>} returns the base64 data of the Thumbnail Image
 //  */
+/**
 // export const getVideoThumbImage = async uri => {
 //    let response;
 //    if (Platform.OS === 'ios') {
@@ -138,12 +144,13 @@ export const debounce = (func, delay) => {
       }, delay);
    };
 };
-
+ */
 // /**
 //  * Helper function to update the User profile details
 //  *
 //  * If It is current User It is update in Async Storage as well
 //  */
+/**
 // export const updateUserProfileDetails = async data => {
 //    const userIdentifier = JSON.parse((await AsyncStorage.getItem('userIdentifier')) || '""');
 //    if (data?.userId === userIdentifier) {
@@ -273,12 +280,13 @@ export const debounce = (func, delay) => {
 //       return res;
 //    });
 // };
-
+ */
 // /**
 //  * Helper function to get the contact user profile details for specific userId from rosterData redux reducer state
 //  * @param {string} userId userId of the profile details needed
 //  * @returns {import('../hooks/useRosterData').userProfileDetails}
 //  */
+/**
 // export const getUserProfile = userId => {
 //    // if JID passed mistakenly, then get the userId from it
 //    const _userId = getUserIdFromJid(userId);
@@ -295,7 +303,7 @@ export const debounce = (func, delay) => {
 //       return {};
 //    }
 // };
-
+ */
 /**
  * Helper function to enable PIP mode for Android if the call is connected
  * @param {number} width

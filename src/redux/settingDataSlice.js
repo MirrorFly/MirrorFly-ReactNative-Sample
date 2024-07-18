@@ -35,5 +35,11 @@ const settingDataSlice = createSlice({
    },
 });
 
-export const { toggleArchiveSetting } = settingDataSlice.actions;
+export const {
+   toggleArchiveSetting,
+   toggleNotificationDisabled,
+   toggleNotificationSound,
+   toggleNotificationVibrate,
+   updateNotificationSetting,
+} = settingDataSlice.actions;
 export default settingDataSlice.reducer;

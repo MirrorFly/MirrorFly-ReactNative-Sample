@@ -5,6 +5,7 @@ import RNInCallManager from 'react-native-incall-manager';
 import KeepAwake from 'react-native-keep-awake';
 import KeyEvent from 'react-native-keyevent';
 import { MediaStream } from 'react-native-webrtc';
+import { clearIntervalConversionPopUp } from '../Helper/Calls';
 import {
    callConnectionStoreData,
    callSwitch,
@@ -59,6 +60,7 @@ import {
    stopProximityListeners,
    unsubscribeListnerForNetworkStateChangeWhenIncomingCall,
    updateAudioRouteTo,
+   updateMissedCallNotification,
 } from '../Helper/Calls/Utility';
 import RootNavigation from '../Navigation/rootNavigation';
 import { pushNotify } from '../Service/remoteNotifyHandle';
@@ -106,7 +108,13 @@ import {
 import { setXmppConnectionStatus } from '../redux/loggedInUserDataSlice';
 import { setPresenceData } from '../redux/presenceDataSlice';
 import { setProgress } from '../redux/progressDataSlice';
-import { addRecentChatItem, updateMsgByLastMsgId, updateRecentMessageStatus } from '../redux/recentChatDataSlice';
+import {
+   addRecentChatItem,
+   toggleArchiveChatsByUserId,
+   toggleChatMute,
+   updateMsgByLastMsgId,
+   updateRecentMessageStatus,
+} from '../redux/recentChatDataSlice';
 import { getArchive } from '../redux/reduxHook';
 import { setRoasterData } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting } from '../redux/settingDataSlice';
@@ -114,11 +122,8 @@ import { resetConferencePopup, showConfrence, updateConference } from '../redux/
 import store from '../redux/store';
 import { resetTypingStatus, setTypingStatus } from '../redux/typingStatusDataSlice';
 import { REGISTERSCREEN } from '../screens/constants';
-import { getLocalUserDetails, logoutClearVariables, mflog, setCurrectUserProfile } from '../uikitMethods';
-import { CONNECTED } from './constants';
-import { fetchGroupParticipants, getUserProfileFromSDK, getUserSettings } from './utils';
-import { updateMissedCallNotification } from '../Helper/Calls/Utility';
-import { clearIntervalConversionPopUp } from '../Helper/Calls';
+import { getLocalUserDetails, logoutClearVariables, setCurrectUserProfile } from '../uikitMethods';
+import { fetchGroupParticipants, getUserProfileFromSDK } from './utils';
 
 let localStream = null,
    localVideoMuted = false,
@@ -374,7 +379,6 @@ const ended = async res => {
          const callDetailObj = callConnectionData ? { ...callConnectionData } : {};
          callDetailObj['status'] = 'ended';
          let nickName = getNickName(callConnectionData);
-         /** TODO: notify that call disconnected if needed */
          callNotifyHandler(callDetailObj.roomId, callDetailObj, callDetailObj.userJid, nickName, 'MISSED_CALL');
       }
    } else {
@@ -645,9 +649,6 @@ const callStatus = res => {
 export const callBacks = {
    connectionListener: response => {
       store.dispatch(setXmppConnectionStatus(response.status));
-      if (response.status === CONNECTED) {
-         getUserSettings();
-      }
       if (response.status === 'LOGOUT') {
          logoutClearVariables();
          RootNavigation.reset(REGISTERSCREEN);
@@ -699,6 +700,7 @@ export const callBacks = {
       }
    },
    presenceListener: res => {
+      console.log('presenceListener res ==>', JSON.stringify(res, null, 2));
       store.dispatch(setPresenceData(res));
    },
    userProfileListener: res => {
@@ -777,9 +779,11 @@ export const callBacks = {
    singleMessageDataListener: res => {
       store.dispatch(updateMsgByLastMsgId(res));
    },
-   muteChatListener: res => {},
+   muteChatListener: res => {
+      store.dispatch(toggleChatMute({ userJid: res.fromUserJid, muteStatus: res.isMuted ? 1 : 0 }));
+   },
    archiveChatListener: res => {
-      console.log('archiveChatListener res ==>', JSON.stringify(res, null, 2));
+      store.dispatch(toggleArchiveChatsByUserId(res));
    },
    userDeletedListener: res => {},
    adminBlockListener: res => {},

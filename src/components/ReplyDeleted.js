@@ -1,6 +1,3 @@
-// import { ORIGINAL_MESSAGE_DELETED } from '../Helper/Chat/Constant';
-// import { getUserIdFromJid } from '../Helper/Chat/Utility';
-// import { HStack, Text, View } from 'native-base';
 import React from 'react';
 import { Pressable, View } from 'react-native';
 import { ClearTextIcon } from '../common/Icons';

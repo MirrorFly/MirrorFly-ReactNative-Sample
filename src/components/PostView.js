@@ -1,8 +1,8 @@
 import React from 'react';
 import { View } from 'react-native';
+import VideoInfo from '../common/VideoInfo';
 import commonStyles from '../styles/commonStyles';
 import ImageInfo from './ImageInfo';
-import VideoInfo from './VideoInfo';
 
 function PostView({ item }) {
    const { msgId } = item;

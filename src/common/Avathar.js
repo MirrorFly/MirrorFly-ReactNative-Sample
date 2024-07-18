@@ -80,16 +80,24 @@ export default Avathar;
 
 const styles = StyleSheet.create({
    imageDiv: (props, hasImage, transparentBackgroundForImage) => {
+      let backgroundColor;
+
+      if (hasImage) {
+         if (transparentBackgroundForImage) {
+            backgroundColor = 'transparent';
+         } else {
+            backgroundColor = '#9D9D9D'; // to have some background for png images
+         }
+      } else {
+         backgroundColor = props.backgroundColor;
+      }
+
+      backgroundColor = backgroundColor || '#9D9D9D';
       return {
          width: props.width || defaultImageDimension,
          height: props.height || defaultImageDimension,
          borderRadius: 100,
-         backgroundColor:
-            (hasImage
-               ? transparentBackgroundForImage
-                  ? 'transparent'
-                  : '#9D9D9D' // to have some background for png images
-               : props.backgroundColor) || '#9D9D9D',
+         backgroundColor,
          justifyContent: 'center',
          alignItems: 'center',
       };

@@ -1,4 +1,3 @@
-// import { Box, Text, useToast } from 'native-base';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';

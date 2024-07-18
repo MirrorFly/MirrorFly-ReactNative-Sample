@@ -25,7 +25,7 @@ const DocumentMessageCard = ({ item, isSender }) => {
    const fileExtension = getExtension(fileName, false);
    const mediaUrl = local_path || fileDetails?.uri;
 
-   const { mediaStatus, downloadMedia, retryUploadMedia, cancelUploadMedia } = useMediaProgress({
+   const { mediaStatus, downloadMedia, retryUploadMedia, cancelProgress } = useMediaProgress({
       mediaUrl,
       uploadStatus: is_uploading || 0,
       downloadStatus: is_downloaded || 0,
@@ -63,9 +63,7 @@ const DocumentMessageCard = ({ item, isSender }) => {
 
    return (
       <View style={styles.container}>
-         {/* {Boolean(replyTo) && (
-                <ReplyMessage handleReplyPress={handleReplyPress} message={message} isSame={isSender} />
-            )} */}
+         {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
          <View style={styles.fileIconAndNameContainer(isSender ? '#D5DCEC' : '#EFEFEF')}>
             <View style={commonStyles.paddingVertical_8}>{renderFileIcon()}</View>
             <Text numberOfLines={2} style={styles.fileNameText}>
@@ -75,7 +73,7 @@ const DocumentMessageCard = ({ item, isSender }) => {
                mediaStatus={mediaStatus}
                onDownload={downloadMedia}
                onUpload={retryUploadMedia}
-               onCancel={cancelUploadMedia}
+               onCancel={cancelProgress}
                msgId={msgId}
             />
          </View>

@@ -96,15 +96,11 @@ const GalleryPhotos = () => {
          const isImageSelected = selectedImages[item?.image?.uri];
 
          if (Object.keys(selectedImages).length >= 10 && !isImageSelected) {
-            return showToast("Can't share more than 10 media items", {
-               id: 'media-error-toast',
-            });
+            return showToast("Can't share more than 10 media items");
          }
 
          if (sizeError) {
-            return showToast(sizeError, {
-               id: 'media-size-error-toast',
-            });
+            return showToast(sizeError);
          }
          const transformedArray = {
             caption: '',

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 import mapStaticBlurImage from '../assets/google-maps-blur.png';
 import {
    AudioMusicIcon,
@@ -33,9 +34,10 @@ function ReplyMessage(props) {
    const { message: originalMsg } = props;
    const { msgBody: { replyTo = '' } = {} } = originalMsg;
    const chatUser = currentChatUser;
+   const dispatch = useDispatch();
    const userId = getUserIdFromJid(chatUser);
-   console.log('replyTo ==>', chatUser, replyTo);
    const repliedMessage = useChatMessage(userId, replyTo) || {};
+
    let { msgId, msgBody: { parentMessage = {} } = {} } = originalMsg;
 
    if (!Object.keys(parentMessage).length) {

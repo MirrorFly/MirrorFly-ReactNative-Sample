@@ -14,6 +14,7 @@ import commonStyles from '../styles/commonStyles';
 import { USERS_LIST_SCREEN } from './constants';
 
 const { width: screenWidth } = Dimensions.get('window');
+const tabWidth = screenWidth / 2;
 
 function RecentChatScreen() {
    const pagerRef = React.useRef();
@@ -44,7 +45,6 @@ function RecentChatScreen() {
    }, [isAnySelected, index]);
 
    React.useEffect(() => {
-      const tabWidth = screenWidth / 2; // Adjust the width of each tab as needed
       const toValue = index * tabWidth;
       animateIndicator(toValue);
    }, [index]);
@@ -85,6 +85,12 @@ function RecentChatScreen() {
       }).start();
    };
 
+   const onScroll = e => {
+      const { offset, position } = e.nativeEvent;
+      const scrollPosition = position * tabWidth + offset * tabWidth;
+      indicatorPosition.setValue(scrollPosition);
+   };
+
    const tabBar = React.useMemo(
       () => (
          <View style={styles.tabBar}>
@@ -118,6 +124,7 @@ function RecentChatScreen() {
             ref={pagerRef}
             style={[commonStyles.flex1, commonStyles.bg_white]}
             initialPage={index}
+            onPageScroll={onScroll}
             onPageSelected={e => setIndex(e.nativeEvent.position)}>
             <View style={commonStyles.flex1} key="1">
                <RecentChat />

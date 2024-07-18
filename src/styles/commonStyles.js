@@ -57,9 +57,6 @@ const commonStyles = StyleSheet.create({
    alignItemsCenter: {
       alignItems: 'center',
    },
-   alignItemsFlexStart: {
-      alignItems: 'flex-start',
-   },
    positionRelative: {
       position: 'relative',
    },
@@ -110,7 +107,6 @@ const commonStyles = StyleSheet.create({
    },
    height_25: { height: 25 },
    screenHeaderHeight: { height: 65 },
-   flex1: { flex: 1 },
    flex1_centeredContent: {
       flex: 1,
       justifyContent: 'center',
@@ -131,9 +127,6 @@ const commonStyles = StyleSheet.create({
    justifyContentFlexEnd: {
       justifyContent: 'flex-end',
    },
-   alignItemsCenter: {
-      alignItems: 'center',
-   },
    alignItemsFlexStart: {
       alignItems: 'flex-start',
    },
@@ -146,18 +139,12 @@ const commonStyles = StyleSheet.create({
    alignItemsStretch: {
       alignItems: 'stretch',
    },
-   hstack: {
-      flexDirection: 'row',
-   },
    vstack: {
       flexDirection: 'column',
    },
    iconButton: {
       borderRadius: 50,
       overflow: 'hidden',
-   },
-   positionRelative: {
-      position: 'relative',
    },
    positionAbsolute: {
       position: 'absolute',
@@ -170,9 +157,6 @@ const commonStyles = StyleSheet.create({
    },
    bottom_minus_15: {
       bottom: -15,
-   },
-   pressedBg: {
-      backgroundColor: ApplicationColors.pressedBg,
    },
    pressedBg_2: {
       backgroundColor: ApplicationColors.secondaryPressedBg,
@@ -235,9 +219,6 @@ const commonStyles = StyleSheet.create({
       marginBottom: 55,
    },
    my_15: { marginVertical: 15 },
-   mb_130: {
-      marginBottom: 130,
-   },
    mt_50: {
       marginTop: 50,
    },
@@ -268,14 +249,8 @@ const commonStyles = StyleSheet.create({
    px_18: {
       paddingHorizontal: 18,
    },
-   p_10: {
-      padding: 10,
-   },
    p_13: {
       padding: 13,
-   },
-   p_15: {
-      padding: 15,
    },
    p_20: {
       padding: 20,
@@ -356,9 +331,6 @@ const commonStyles = StyleSheet.create({
    paddingLeft_4: {
       paddingLeft: 4,
    },
-   pl_10: {
-      paddingLeft: 10,
-   },
    paddingRight_0: {
       paddingRight: 0,
    },
@@ -377,9 +349,6 @@ const commonStyles = StyleSheet.create({
    bg_transparent: {
       backgroundColor: 'transparent',
    },
-   bg_white: {
-      backgroundColor: '#fff',
-   },
    fontWeight_bold: {
       fontWeight: 'bold',
    },
@@ -395,9 +364,6 @@ const commonStyles = StyleSheet.create({
    colorWhite: {
       color: '#fff',
    },
-   colorBlack: {
-      color: '#000',
-   },
    fontSize_11: {
       fontSize: 11,
    },
@@ -406,9 +372,6 @@ const commonStyles = StyleSheet.create({
    },
    fontSize_14: {
       fontSize: 14,
-   },
-   fontSize_18: {
-      fontSize: 18,
    },
    bgBlack: {
       backgroundColor: '#000',
@@ -434,9 +397,6 @@ const commonStyles = StyleSheet.create({
    height_100_per: {
       height: '100%',
    },
-   typingText: {
-      color: ApplicationColors.mainColor,
-   },
    borderRadius_5: {
       borderRadius: 5,
    },
@@ -460,9 +420,6 @@ const commonStyles = StyleSheet.create({
    },
    r_5: {
       right: 5,
-   },
-   textCenter: {
-      textAlign: 'center',
    },
    dividerLine: {
       height: 0.5,

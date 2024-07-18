@@ -15,7 +15,7 @@ import config from '../config/config';
 import { getImageSource, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
 import { getUserNameFromStore, useRecentChatData } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
-import { CONVERSATION_STACK,CONVERSATION_SCREEN, GROUP_INFO, NEW_GROUP } from './constants';
+import { CONVERSATION_SCREEN, CONVERSATION_STACK, GROUP_INFO, NEW_GROUP } from './constants';
 
 const contactPaginationRefInitialValue = {
    nextPage: 1,
@@ -79,6 +79,9 @@ function ContactScreen() {
 
    // Define the filtering functions
    const filterOutRecentChatUsers = (users, recentChatList) => {
+      if (isGroupInfoSrn || isNewGrpSrn) {
+         return users;
+      }
       const recentChatUsersObj = {};
       for (let _recentChat of recentChatList) {
          recentChatUsersObj[_recentChat.fromUserId] = true;

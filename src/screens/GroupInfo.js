@@ -9,7 +9,12 @@ import Modal, { ModalCenteredContent } from '../common/Modal';
 import { useNetworkStatus } from '../common/hooks';
 import GrpCollapsibleToolbar from '../components/GrpCollapsibleToolbar';
 import ApplicationColors from '../config/appColors';
-import { getUserIdFromJid, handleImagePickerOpenCamera, handleImagePickerOpenGallery } from '../helpers/chatHelpers';
+import {
+   getUserIdFromJid,
+   handleImagePickerOpenCamera,
+   handleImagePickerOpenGallery,
+   showNetWorkToast,
+} from '../helpers/chatHelpers';
 import { getUserNameFromStore } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
@@ -44,9 +49,13 @@ const GroupInfo = () => {
          const _image = await handleImagePickerOpenGallery();
          setTimeout(async () => {
             if (Object.keys(_image).length) {
-               const { statusCode, message } = await SDK.setGroupProfile(chatUser, getUserNameFromStore(chatUserId), _image);
+               const { statusCode, message } = await SDK.setGroupProfile(
+                  chatUser,
+                  getUserNameFromStore(chatUserId),
+                  _image,
+               );
                if (statusCode !== 200) {
-                  showToast(message, { id: message });
+                  showToast(message);
                }
             }
             toggleModel();
@@ -60,9 +69,13 @@ const GroupInfo = () => {
          const _image = await handleImagePickerOpenCamera();
          setTimeout(async () => {
             if (Object.keys(_image).length) {
-               const { statusCode, message } = await SDK.setGroupProfile(chatUser, getUserNameFromStore(chatUserId), _image);
+               const { statusCode, message } = await SDK.setGroupProfile(
+                  chatUser,
+                  getUserNameFromStore(chatUserId),
+                  _image,
+               );
                if (statusCode !== 200) {
-                  showToast(message, { id: message });
+                  showToast(message);
                }
             }
             toggleModel();
@@ -72,13 +85,11 @@ const GroupInfo = () => {
 
    const handleRemovePhoto = async () => {
       if (!isNetworkconneted) {
-         return showInternetconnectionToast();
+         return showNetWorkToast();
       }
       const { statusCode, message } = await SDK.setGroupProfile(chatUser, getUserNameFromStore(chatUserId));
       if (statusCode !== 200) {
-         showToast(message, { id: message });
-      } else {
-         showToast('');
+         showToast(message);
       }
    };
 

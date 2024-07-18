@@ -39,13 +39,13 @@ const VideoInfo = props => {
             quality: 'original',
          })
             .then(response => {
-               item.fileDetails.videoUri = response.path;
+               item.fileDetails = { ...item.fileDetails, videoUri: response.path };
             })
             .catch(err => {
                mflog(err);
             });
       } else {
-         item.fileDetails.videoUri = uri;
+         item.fileDetails = { ...item.fileDetails, videoUri: uri };
       }
    }, []);
 

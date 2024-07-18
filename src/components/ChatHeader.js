@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { BackHandler, StyleSheet, Text, TextInput, View } from 'react-native';
+import { BackHandler, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isRoomExist, makeCalls } from '../Helper/Calls/Utility';
@@ -44,6 +44,7 @@ import {
 } from '../helpers/chatHelpers';
 import { ALREADY_ON_CALL, CALL_TYPE_AUDIO, CALL_TYPE_VIDEO, MIX_BARE_JID } from '../helpers/constants';
 import { resetMessageSelections, setChatSearchText } from '../redux/chatMessageDataSlice';
+import { setReplyMessage } from '../redux/draftSlice';
 import { closePermissionModal, showPermissionModal } from '../redux/permissionSlice';
 import { getSelectedChatMessages, useChatMessages, useRecentChatData } from '../redux/reduxHook';
 import {
@@ -57,7 +58,7 @@ import commonStyles from '../styles/commonStyles';
 import LastSeen from './LastSeen';
 import UserAvathar from './UserAvathar';
 
-function ChatHeader({ chatUser, handleReply }) {
+function ChatHeader({ chatUser }) {
    const dispatch = useDispatch();
    const isNetworkConnected = useNetworkStatus();
    const navigation = useNavigation();
@@ -116,9 +117,10 @@ function ChatHeader({ chatUser, handleReply }) {
    };
 
    const _handleMessageDelete = () => {
+      Keyboard.dismiss();
       const selectedMessages = getSelectedChatMessages(userId);
       const deleteForEveryOne = isAnyMessageWithinLast30Seconds(selectedMessages);
-      if (deleteForEveryOne) {
+      if (!deleteForEveryOne) {
          setModalContent({
             visible: true,
             onRequestClose: toggleModalContent,
@@ -143,6 +145,7 @@ function ChatHeader({ chatUser, handleReply }) {
    };
 
    const _handleForwardMessage = () => {
+      Keyboard.dismiss();
       navigation.navigate(FORWARD_MESSSAGE_SCREEN, { forwardMessages: filtered });
    };
 
@@ -163,7 +166,8 @@ function ChatHeader({ chatUser, handleReply }) {
    };
 
    const _handleReplyMessage = () => {
-      handleReply(filtered[0]);
+      Keyboard.dismiss();
+      dispatch(setReplyMessage({ userId, message: filtered[0] }));
       dispatch(resetMessageSelections(userId));
    };
 
@@ -171,10 +175,10 @@ function ChatHeader({ chatUser, handleReply }) {
       const isAllowReply = MIX_BARE_JID.test(chatUser)
          ? userType &&
            filtered[0]?.msgBody?.media?.is_uploading !== 1 &&
-           !filtered[0]?.recall &&
+           !filtered[0]?.recallStatus &&
            filtered[0]?.msgBody?.media?.is_uploading !== 1 &&
-           !filtered[0]?.recall
-         : filtered[0]?.msgBody?.media?.is_uploading !== 1 && !filtered[0]?.recall;
+           !filtered[0]?.recallStatus
+         : filtered[0]?.msgBody?.media?.is_uploading !== 1 && !filtered[0]?.recallStatus;
       return isAllowReply && filtered?.length === 1 && filtered[0]?.msgStatus !== 3 ? (
          <IconButton style={[commonStyles.padding_10_15]} onPress={_handleReplyMessage}>
             <ReplyIcon />

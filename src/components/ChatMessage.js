@@ -41,7 +41,6 @@ function ChatMessage({ chatUser, item, showNickName }) {
    const isSender = getCurrentUserJid() === publisherJid;
    const messageWidth = androidWidth || '80%';
 
-
    useFocusEffect(
       React.useCallback(() => {
          if (useXmppStatus === CONNECTED && !isSender && msgStatus !== 2 && deleteStatus === 0 && recallStatus === 0) {

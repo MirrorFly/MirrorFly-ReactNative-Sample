@@ -23,7 +23,8 @@ import {
    validateFileSize,
 } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
-import { MEDIA_PRE_VIEW_SCREEN, CAMERA_SCREEN } from './constants';
+import { CAMERA_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
+
 
 const cameraService = new CameraService();
 
@@ -32,7 +33,7 @@ const Camera = () => {
    const [flashMode, setFlashMode] = React.useState(RNCamera.Constants.FlashMode.off);
    const [cameraType, setCameraType] = React.useState(RNCamera.Constants.Type.back);
    const { ref, callbackRef } = useCallbackRef();
-   const { recording, takePicture, startRecordingVideo, stopRecordingVideo } = useCamera(ref);
+   const { recording, takePicture, stopRecordingVideo } = useCamera(ref);
    const changeCameraType = () => {
       setCameraType(cameraService.getNewCameraType(cameraType));
    };
@@ -42,6 +43,10 @@ const Camera = () => {
    const [captureTime, setCaptureTime] = React.useState(0);
    const [flashIcon, setFlashIcon] = React.useState(flashOffIcon);
    const [isCapturing, setIsCapturing] = React.useState(false);
+
+   React.useEffect(() => {
+      setVideoData();
+   }, []);
 
    React.useEffect(() => {
       if (data) {
@@ -97,7 +102,7 @@ const Camera = () => {
          setIsCapturing(true);
          let fileInfo, combinedData;
          takePicture().then(async res => {
-            fileInfo = await RNFS.stat(res.uri);
+            fileInfo = await RNFS.stat(res?.uri);
             combinedData = {
                ...fileInfo,
                ...res,
@@ -127,6 +132,7 @@ const Camera = () => {
       }
    };
 
+   /**
    const handleLongPress = () => {
       try {
          if (flashMode === RNCamera.Constants.FlashMode.on) {
@@ -144,6 +150,7 @@ const Camera = () => {
          console.log('startRecording', error);
       }
    };
+   */
 
    const handlePressOut = () => {
       stopRecordingVideo();
@@ -214,7 +221,8 @@ const Camera = () => {
             </View>
          </View>
          <View style={styles.textContainer}>
-            <Text style={[commonStyles.fontSize_12, commonStyles.colorWhite]}>Hold for video, tap for photo</Text>
+            {/* Hold for video,  */}
+            <Text style={[commonStyles.fontSize_12, commonStyles.colorWhite]}>Tap for photo</Text>
          </View>
       </>
    );

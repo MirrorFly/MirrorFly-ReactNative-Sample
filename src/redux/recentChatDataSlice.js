@@ -1,4 +1,5 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
+import { isLocalUser } from '../helpers/chatHelpers';
 import { GROUP_CREATED } from '../helpers/constants';
 import { currentChatUser } from '../screens/ConversationScreen';
 import { ARCHIVED_SCREEN } from '../screens/constants';
@@ -17,7 +18,7 @@ const recentChatDataSlice = createSlice({
          state.recentChats = [...state.recentChats, ...action.payload];
       },
       addRecentChatItem(state, action) {
-         let { userJid, newIndex = 0, msgType = '', fromUserJid = '', archiveSetting } = action.payload;
+         let { userJid, newIndex = 0, msgType = '', fromUserJid = '', archiveSetting, publisherId } = action.payload;
          const index = state.recentChats.findIndex(item => item?.userJid === userJid);
          if (msgType === GROUP_CREATED) {
             userJid = fromUserJid;
@@ -25,14 +26,14 @@ const recentChatDataSlice = createSlice({
          if (index !== -1) {
             // If the item is found, update its position and data
             const newData = [...state.recentChats];
-
             const updatedChat = {
                ...newData[index],
                ...action.payload,
-               ...{ archiveStatus: archiveSetting },
+               deleteStatus: 0,
+               recallStatus: 0,
+               archiveStatus: archiveSetting === 0 ? archiveSetting : newData[index].archiveStatus,
             };
-
-            if (msgType === 'receiveMessage' && userJid !== currentChatUser) {
+            if (userJid !== currentChatUser && !isLocalUser(publisherId)) {
                updatedChat.unreadCount += 1;
                updatedChat.isUnread = 1;
             }
@@ -46,10 +47,12 @@ const recentChatDataSlice = createSlice({
             // If the item is not found, add the new message at the top
             const newChat = {
                ...action.payload,
-               archiveStatus: archiveSetting,
                unreadCount: 1,
                isUnread: 1,
                userJid,
+               deleteStatus: 0,
+               recallStatus: 0,
+               archiveStatus: archiveSetting === 0 ? archiveSetting : action.payload.archiveStatus,
             };
 
             state.recentChats = [newChat, ...state.recentChats];
@@ -108,11 +111,29 @@ const recentChatDataSlice = createSlice({
             state.recentChats = state.recentChats.filter(item => item.isSelected !== 1);
          }
       },
+      deleteRecentChatOnUserId(state, action) {
+         const userJid = action.payload;
+         state.recentChats = state.recentChats.filter(item => item.userJid !== userJid);
+      },
       toggleArchiveChats(state, action) {
          const archive = action.payload;
          state.recentChats = state.recentChats
             .map(chat => (chat.isSelected === 1 ? { ...chat, archiveStatus: archive ? 1 : 0, isSelected: 0 } : chat))
             .sort((a, b) => b.timestamp - a.timestamp);
+      },
+      toggleArchiveChatsByUserId(state, action) {
+         const { fromUserJid, isArchived } = action.payload;
+         const index = state.recentChats.findIndex(item => item.userJid === fromUserJid);
+         if (index !== -1) {
+            state.recentChats[index].archiveStatus = isArchived;
+         }
+      },
+      toggleChatMute(state, action) {
+         const { userJid, muteStatus } = action.payload;
+         const index = state.recentChats.findIndex(item => item.userJid === userJid);
+         if (index !== -1) {
+            state.recentChats[index] = { ...state.recentChats[index], muteStatus, isSelected: 0 };
+         }
       },
       resetUnreadCountForChat(state, action) {
          const userJid = action.payload;
@@ -140,8 +161,11 @@ export const {
    updateMsgByLastMsgId,
    deleteMessagesForEveryoneInRecentChat,
    deleteRecentChats,
+   deleteRecentChatOnUserId,
    toggleArchiveChats,
+   toggleChatMute,
    resetUnreadCountForChat,
+   toggleArchiveChatsByUserId,
 } = recentChatDataSlice.actions;
 
 export default recentChatDataSlice.reducer;

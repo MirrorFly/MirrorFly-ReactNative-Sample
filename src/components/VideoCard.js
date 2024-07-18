@@ -6,14 +6,10 @@ import { PlayIcon, VideoIcon } from '../common/Icons';
 import MediaProgressLoader from '../common/MediaProgressLoader';
 import { getConversationHistoryTime } from '../common/timeStamp';
 import ApplicationColors from '../config/appColors';
-import {
-    getImageSource,
-    getMessageStatus,
-    getThumbBase64URL,
-    millisToMinutesAndSeconds,
-} from '../helpers/chatHelpers';
+import { getImageSource, getMessageStatus, getThumbBase64URL, millisToMinutesAndSeconds } from '../helpers/chatHelpers';
 import useMediaProgress from '../hooks/useMediaProgress';
 import commonStyles from '../styles/commonStyles';
+import CaptionContainer from './CaptionContainer';
 
 function VideoCard({ item, isSender }) {
    const {
@@ -40,7 +36,7 @@ function VideoCard({ item, isSender }) {
    const imageUrl =
       is_uploading === 2 && is_downloaded === 2 ? local_path || fileDetails?.uri : getThumbBase64URL(thumb_image);
 
-   const { mediaStatus, downloadMedia, retryUploadMedia, cancelUploadMedia } = useMediaProgress({
+   const { mediaStatus, downloadMedia, retryUploadMedia, cancelProgress } = useMediaProgress({
       mediaUrl: imageUrl,
       uploadStatus: is_uploading || 0,
       downloadStatus: is_downloaded || 0,
@@ -53,9 +49,7 @@ function VideoCard({ item, isSender }) {
 
    return (
       <View style={commonStyles.paddingHorizontal_4}>
-         {/* {Boolean(replyTo) && (
-                <ReplyMessage handleReplyPress={handleReplyPress} message={messageObject} isSame={isSender} />
-            )} */}
+         {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
          <View style={styles.videoContainer}>
             {thumb_image ? (
                <Image
@@ -82,7 +76,7 @@ function VideoCard({ item, isSender }) {
                   mediaStatus={mediaStatus}
                   onDownload={downloadMedia}
                   onUpload={retryUploadMedia}
-                  onCancel={cancelUploadMedia}
+                  onCancel={cancelProgress}
                   msgId={msgId}
                   fileSize={fileSize}
                />
@@ -95,6 +89,14 @@ function VideoCard({ item, isSender }) {
                      <Text style={styles.timestampText}>{getConversationHistoryTime(createdAt)}</Text>
                   </ImageBackground>
                </View>
+            )}
+            {Boolean(caption) && (
+               <CaptionContainer
+                  isSender={isSender}
+                  caption={caption}
+                  msgStatus={msgStatus}
+                  timeStamp={getConversationHistoryTime(createdAt)}
+               />
             )}
             {checkDownloaded && (
                <View style={styles.playIconWrapper}>

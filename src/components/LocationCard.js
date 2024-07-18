@@ -7,12 +7,12 @@ import { useNetworkStatus } from '../common/hooks';
 import { getConversationHistoryTime } from '../common/timeStamp';
 import ApplicationColors from '../config/appColors';
 import {
-    getImageSource,
-    getLocationImageURL,
-    getMessageStatus,
-    getUserIdFromJid,
-    openLocationExternally,
-    showCheckYourInternetToast,
+   getImageSource,
+   getLocationImageURL,
+   getMessageStatus,
+   getUserIdFromJid,
+   openLocationExternally,
+   showCheckYourInternetToast,
 } from '../helpers/chatHelpers';
 import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
 import { getChatMessages } from '../redux/reduxHook';
@@ -75,7 +75,7 @@ const LocationCard = ({ chatUser, item, isSender }) => {
 
    return (
       <View style={[styles.container, replyTo && commonStyles.paddingTop_0]}>
-         {/* {Boolean(replyTo) && <ReplyMessage handleReplyPress={handleReplyPress} message={message} isSame={isSender} />} */}
+         {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
          <MessagePressable
             onPress={handleMapPress}
             onLongPress={onLongPress}

@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 import { handleSendMsg } from '../SDK/utils';
 import AttachmentMenu from '../common/AttachmentMenu';
 import { SendBtn } from '../common/Button';
@@ -7,32 +8,24 @@ import IconButton from '../common/IconButton';
 import { AttachmentIcon, EmojiIcon, KeyboardIcon } from '../common/Icons';
 import ApplicationColors from '../config/appColors';
 import config from '../config/config';
-import { attachmentMenuIcons } from '../helpers/chatHelpers';
+import { attachmentMenuIcons, getUserIdFromJid } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
-import { useRecentChatData } from '../redux/reduxHook';
+import { setTextMessage } from '../redux/draftSlice';
+import { useTextMessage, useUserType } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
 function ChatInput({ chatUser }) {
+   const userId = getUserIdFromJid(chatUser);
+   const dispatch = useDispatch();
    const typingTimeoutRef = React.useRef(null);
-   const [message, setMessage] = React.useState('');
+   const message = useTextMessage(userId) || '';
    const [menuOpen, setMenuOpen] = React.useState(false);
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
+   const userType = useUserType(chatUser); // have to check this to avoid the re-render if any update happen in recent chat this chat input also renders
 
-   const recentChatList = useRecentChatData(); // have to check this to avoid the re-render if any update happen in recent chat this chat input also renders
-
-   // Memoize userType calculation
-   const memoizedUserType = useMemo(() => {
-      return recentChatList.find(r => r.userJid === chatUser)?.userType;
-   }, [recentChatList, chatUser]);
-
-   const [userType, setUserType] = useState(memoizedUserType);
-
-   // Update userType if memoizedUserType changes
-   useEffect(() => {
-      if (memoizedUserType !== userType) {
-         setUserType(memoizedUserType);
-      }
-   }, [memoizedUserType, userType]);
+   const setMessage = text => {
+      dispatch(setTextMessage({ userId, message: text }));
+   };
 
    const closeModal = () => {
       setMenuOpen(false);
@@ -41,7 +34,7 @@ function ChatInput({ chatUser }) {
    const toggleEmojiPicker = () => {
       setIsEmojiPickerShowing(!isEmojiPickerShowing);
       if (isEmojiPickerShowing) {
-         // chatInputRef?.current?.focus();
+         // Need to check here
       } else {
          Keyboard.dismiss();
       }
@@ -63,16 +56,14 @@ function ChatInput({ chatUser }) {
    const onChangeMessage = text => {
       setMessage(text);
       if (text) {
-         // updateTypingStatus(fromUserJId);
+         // Need to check here
       }
       if (typingTimeoutRef.current) {
          clearTimeout(typingTimeoutRef.current);
       }
 
       // Set timeout to update typing status after 1000ms (adjust as needed)
-      typingTimeoutRef.current = setTimeout(() => {
-         // updateTypingGoneStatus(fromUserJId);
-      }, config.typingStatusGoneWaitTime);
+      typingTimeoutRef.current = setTimeout(() => {}, config.typingStatusGoneWaitTime);
    };
 
    const sendMessage = () => {

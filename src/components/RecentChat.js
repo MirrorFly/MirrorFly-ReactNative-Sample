@@ -1,5 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, Image, SectionList, StyleSheet, Text, View } from 'react-native';
+import SDK from '../SDK/SDK';
 import { fetchRecentChats, getHasNextRecentChatPage } from '../SDK/utils';
 import no_messages from '../assets/no_messages.png';
 import ApplicationColors from '../config/appColors';
@@ -8,7 +9,7 @@ import {
    useArchive,
    useArchivedChatData,
    useFilteredRecentChatData,
-   useRecentChatSearchText,
+   useRecentChatSearchText
 } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ArchivedChat from './ArchivedChat';
@@ -27,8 +28,10 @@ const RecentChat = () => {
    }, []);
 
    const initFunc = async () => {
-      await fetchRecentChats();
-      setIsFetchingData(false);
+      if (!searchText && getHasNextRecentChatPage()) {
+         await fetchRecentChats();
+         setIsFetchingData(false);
+      }
    };
 
    const handleLoadMore = async () => {
@@ -36,6 +39,11 @@ const RecentChat = () => {
          setIsFetchingData(true);
          await fetchRecentChats().then(() => {
             setIsFetchingData(false);
+         });
+         SDK.messageSearch(searchText).then(res => {
+            if (res.statusCode === 200) {
+               setFilteredMessages(res.data);
+            }
          });
       }
    };
@@ -87,13 +95,13 @@ const RecentChat = () => {
          <View style={commonStyles.marginBottom_10}>
             {Boolean(recentArchiveChatData.length) && !archive && !searchText && <ArchivedChat />}
             {isFetchingData && (
-               <View style={commonStyles.mb_130}>
+               <View style={commonStyles.marginBottom_10}>
                   <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
                </View>
             )}
          </View>
       );
-   }, [searchText, archive, isFetchingData]);
+   }, [searchText, archive, isFetchingData, recentArchiveChatData]);
 
    const renderSectionList = React.useMemo(
       () => (
@@ -105,7 +113,7 @@ const RecentChat = () => {
             onEndReached={handleLoadMore}
             ListHeaderComponent={renderHeader}
             ListFooterComponent={renderFooter}
-            scrollEventThrottle={1}
+            scrollEventThrottle={100}
             windowSize={20}
             onEndReachedThreshold={0.1}
             disableVirtualization={true}
@@ -115,7 +123,7 @@ const RecentChat = () => {
       [recentChatData, filteredMessages, archive, searchText, isFetchingData],
    );
 
-   if (!isFetchingData && !recentChatData.length && !filteredMessages.length) {
+   if (!isFetchingData && !recentChatData.length && !filteredMessages.length && !recentArchiveChatData.length) {
       return (
          <View style={styles.emptyChatView}>
             <Image style={styles.image} resizeMode="cover" source={getImageSource(no_messages)} />

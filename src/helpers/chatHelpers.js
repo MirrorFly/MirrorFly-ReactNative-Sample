@@ -6,6 +6,7 @@ import { createThumbnail } from 'react-native-create-thumbnail';
 import DocumentPicker from 'react-native-document-picker';
 import FileViewer from 'react-native-file-viewer';
 import RNFS from 'react-native-fs';
+import HeicConverter from 'react-native-heic-converter';
 import ImagePicker from 'react-native-image-crop-picker';
 import { RESULTS, openSettings } from 'react-native-permissions';
 import Toast from 'react-native-simple-toast';
@@ -23,6 +24,7 @@ import {
    GalleryIcon,
    HeadSetIcon,
    LocationIcon,
+   NotificationSettingsIcon,
    ProfileIcon,
    SandTimer,
 } from '../common/Icons';
@@ -75,8 +77,10 @@ import {
    clearRecentChatData,
    deleteMessagesForEveryoneInRecentChat,
    toggleArchiveChats,
+   toggleChatMute,
 } from '../redux/recentChatDataSlice';
 import {
+   getArchive,
    getArchiveSelectedChats,
    getChatMessages,
    getSelectedChatMessages,
@@ -91,6 +95,8 @@ import {
    GALLERY_FOLDER_SCREEN,
    LOCATION_SCREEN,
    MOBILE_CONTACT_LIST_SCREEN,
+   NOTIFICATION_ALERT_STACK,
+   NOTIFICATION_STACK,
    PROFILE_STACK,
 } from '../screens/constants';
 import { getCurrentUserJid } from '../uikitMethods';
@@ -377,11 +383,11 @@ export const calculateWidthAndHeight = (width, height) => {
    return response;
 };
 
-export const handleConversationClear = jid => {
+export const handleConversationClear = async jid => {
    const userId = getUserIdFromJid(jid);
    const messageList = getChatMessages(userId) || [];
    if (messageList.length) {
-      SDK.clearChat(jid);
+      await SDK.clearChat(jid);
       store.dispatch(clearChatMessageData(userId));
       store.dispatch(clearRecentChatData(jid));
    } else {
@@ -391,7 +397,7 @@ export const handleConversationClear = jid => {
 
 export const isAnyMessageWithinLast30Seconds = (messages = []) => {
    const now = Date.now();
-   return messages.some(message => now - message.timestamp > config.deleteForEveryOneTime * 1000);
+   return messages.some(message => now - message.timestamp <= 30000 && isLocalUser(message.publisherJid));
 };
 
 export const getExtention = filename => {
@@ -735,20 +741,7 @@ export const handleSendMedia = selectedImages => () => {
 export const getVideoThumbImage = async uri => {
    let response;
    if (Platform.OS === 'ios') {
-      if (uri.includes('ph://')) {
-         let result = await ImageCompressor.compress(uri, {
-            maxWidth: 600,
-            maxHeight: 600,
-            quality: 0.8,
-         });
-         response = await RNFS.readFile(result, 'base64');
-      } else {
-         const frame = await createThumbnail({
-            url: uri,
-            timeStamp: 10000,
-         });
-         response = await RNFS.readFile(frame.path, 'base64');
-      }
+      response = getThumbImage(uri);
    } else {
       const frame = await createThumbnail({
          url: uri,
@@ -759,13 +752,23 @@ export const getVideoThumbImage = async uri => {
    return response;
 };
 
+export const convertHeicToJpg = async heicFilePath => {
+   try {
+      const result = await HeicConverter.convert({ path: heicFilePath });
+      if (result.success) {
+         return result.path; // Path to the converted JPG file
+      }
+   } catch (error) {
+      console.error('HEIC Conversion Error:', error);
+   }
+};
+
 /**
  * Helper function to generate thumbnail for image
  * @param {string} uri - local path if the image
  * @returns {Promise<string>} returns the base64 data of the Thumbnail Image
  */
 export const getThumbImage = async uri => {
-   console.log('uri ==>', uri);
    const result = await ImageCompressor.compress(uri, {
       maxWidth: 200,
       maxHeight: 200,
@@ -786,16 +789,17 @@ export const handleUploadNextImage = res => {
       const {
          msgId: _msgId,
          userJid,
-         msgBody: { media = {}, media: { file = {} } = {} } = {},
+         msgBody: { media = {}, media: { file = {}, uploadStatus } = {} } = {},
       } = conversationData[nextMessageIndex];
-      const retryObj = {
-         _msgId,
-         userId,
-         is_uploading: 1,
-      };
-      console.log('retryObj ===>', JSON.stringify(retryObj, null, 2));
-      store.dispatch(updateMediaStatus(retryObj));
-      uploadFileToSDK(file, userJid, _msgId, media);
+      if (uploadStatus === 0) {
+         const retryObj = {
+            _msgId,
+            userId,
+            is_uploading: 1,
+         };
+         store.dispatch(updateMediaStatus(retryObj));
+         uploadFileToSDK(file, userJid, _msgId, media);
+      }
    }
 };
 
@@ -863,7 +867,7 @@ export const handleImagePickerOpenGallery = async () => {
          .then(async image => {
             const converted = mediaObjContructor('IMAGE_PICKER', image);
             if (converted.fileSize > '10485760') {
-               showToast('Image size too large', { id: 'Image size too large' });
+               showToast('Image size too large');
                return {};
             }
             return converted;
@@ -955,8 +959,21 @@ export const settingsMenu = [
       rounteName: CHATS_CREEN,
    },
    {
+      name: 'Notifications',
+      icon: NotificationSettingsIcon,
+      rounteName: NOTIFICATION_STACK,
+   },
+   {
       name: 'Log out',
       icon: ExitIcon,
+   },
+];
+
+export const notificationMenu = [
+   {
+      title: 'Notification Alert',
+      subtitle: 'Choose alert type for incoming messages',
+      rounteName: NOTIFICATION_ALERT_STACK,
    },
 ];
 
@@ -977,14 +994,28 @@ export const toggleArchive = val => () => {
       store.dispatch(toggleArchiveChats(val));
       if (val) {
          unArchivedUserJids.forEach(item => {
-            console.log('item, val ==>', item, val);
             SDK.updateArchiveChat(item, val);
          });
+         showToast(`${unArchivedUserJids.length} chat has been archived`);
       } else {
          archivedUserJids.forEach(item => {
             SDK.updateArchiveChat(item, val);
          });
+         showToast(`${archivedUserJids.length} chat has been unarchived`);
       }
+   } catch (error) {
+      return error;
+   }
+};
+
+export const toggleMuteChat = () => {
+   try {
+      let seletedChat = getSelectedChats();
+      let muteStatus = seletedChat.some(res => res.muteStatus === 1) ? 0 : 1;
+      seletedChat.map(item => {
+         SDK.updateMuteNotification(item.userJid, muteStatus === 1 ? true : false);
+         store.dispatch(toggleChatMute({ userJid: item.userJid, muteStatus }));
+      });
    } catch (error) {
       return error;
    }
@@ -1028,7 +1059,7 @@ export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
       msgId: newMsgId,
       fromUserJid: formatUserIdToJid(senderId),
       fromUserId: senderId,
-      chatType: MIX_BARE_JID.test(toJid) ? CHAT_TYPE_SINGLE : CHAT_TYPE_GROUP,
+      chatType: MIX_BARE_JID.test(toJid) ? CHAT_TYPE_GROUP : CHAT_TYPE_SINGLE,
       publisherId: senderId,
       publisherJid: formatUserIdToJid(senderId),
       deleteStatus: 0,
@@ -1053,6 +1084,7 @@ export const getRecentChatMsgObjForward = (originalMsg, toJid, newMsgId) => {
    const timestamp = Date.now() * 1000;
    const createdAt = changeTimeFormat(timestamp);
    const senderId = getUserIdFromJid(getCurrentUserJid());
+   const archiveSetting = getArchive();
 
    return {
       ...originalMsg,
@@ -1062,7 +1094,7 @@ export const getRecentChatMsgObjForward = (originalMsg, toJid, newMsgId) => {
       msgId: newMsgId,
       fromUserJid: toJid,
       fromUserId: getUserIdFromJid(toJid),
-      chatType: MIX_BARE_JID.test(toJid) ? CHAT_TYPE_SINGLE : CHAT_TYPE_GROUP,
+      chatType: MIX_BARE_JID.test(toJid) ? CHAT_TYPE_GROUP : CHAT_TYPE_SINGLE,
       publisherId: senderId,
       deleteStatus: 0,
       notificationTo: '',
@@ -1073,6 +1105,7 @@ export const getRecentChatMsgObjForward = (originalMsg, toJid, newMsgId) => {
       favouriteBy: '0',
       favouriteStatus: 0,
       isSelected: 0,
+      archiveSetting,
       msgBody: {
          ...originalMsg.msgBody,
          media: {

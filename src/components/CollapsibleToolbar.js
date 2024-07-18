@@ -2,7 +2,6 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Animated, Dimensions, PixelRatio, StyleSheet, Text, View } from 'react-native';
-import AlertModal from '../common/AlertModal';
 import IconButton from '../common/IconButton';
 import { CallIcon, FrontArrowIcon, GalleryAllIcon, LeftArrowIcon, MailIcon, StatusIcon } from '../common/Icons';
 import InfoImageView from '../common/InfoImageView';
@@ -48,7 +47,6 @@ const CollapsibleToolbar = ({
    const scrollDistance = toolbarMaxHeight - toolbarMinHeight;
    const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
    const chatUserId = getUserIdFromJid(chatUser);
-   const [modalContent, setModalContent] = React.useState(null);
 
    const adaptiveMinHeight = screenHeight * 0.92;
    const pixelRatio = PixelRatio.get();
@@ -160,6 +158,13 @@ const CollapsibleToolbar = ({
             })}>
             <View style={{ marginHorizontal: 12, marginTop: toolbarMaxHeight, minHeight: adaptiveMinHeight }}>
                <View>
+                  {/* <View
+                     style={[
+                        commonStyles.hstack,
+                        { marginBottom: 8, borderBottomWidth: 1, borderBottomColor: '#f2f2f2' },
+                     ]}>
+                     <MuteToggle chatUser={chatUser} />
+                  </View> */}
                   <View style={{ marginBottom: 12, borderBottomWidth: 1, borderBottomColor: '#f2f2f2' }}>
                      <Text style={{ marginBottom: 8, fontSize: 14, color: '#181818', fontWeight: '800' }}>Email</Text>
                      <View style={commonStyles.hstack}>
@@ -235,7 +240,6 @@ const CollapsibleToolbar = ({
                </Pressable>
             </View>
          </Animated.ScrollView>
-         {modalContent && <AlertModal {...modalContent} />}
       </View>
    );
 };

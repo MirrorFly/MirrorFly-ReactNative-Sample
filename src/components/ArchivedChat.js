@@ -3,11 +3,12 @@ import { Text, View } from 'react-native';
 import { ArchiveIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import { handleRoute } from '../helpers/chatHelpers';
-import { useArchivedChatData } from '../redux/reduxHook';
+import { useArchive, useArchivedChatData } from '../redux/reduxHook';
 import { ARCHIVED_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 
 function ArchivedChat() {
+   const archive = useArchive();
    const recentArchiveChatData = useArchivedChatData() || [];
    const count = recentArchiveChatData.filter(d => d.unreadCount > 0).length;
 
@@ -20,7 +21,8 @@ function ArchivedChat() {
                <ArchiveIcon />
                <Text style={[commonStyles.marginLeft_20, { color: '#000' }]}>Archived</Text>
             </View>
-            {Boolean(count) && <Text>{count}</Text>}
+            {Boolean(count) && archive && <Text>{count}</Text>}
+            {!archive && <Text>{recentArchiveChatData.length}</Text>}
          </Pressable>
          <View style={commonStyles.dividerLine} />
       </>

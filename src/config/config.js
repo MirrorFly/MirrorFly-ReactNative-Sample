@@ -20,13 +20,16 @@ const config = {
    recentChatsPerPage: 20,
    conversationListBottomYaxisLimit: 60,
    deleteForEveryOneTime: 30, // in Seconds
+   INVITE_APP_URL: 'https://app.mirrorfly.com',
+   INVITE_SMS_CONTENT:
+      'Hey, MirrorFly is a real time chat, Audio and Video call solution for B2B and B2C.\n Download the app from this URL: https://app.mirrorfly.com',
    // ================ Dev environment variables =====================
-   // API_URL: 'https://api-uikit-dev.contus.us/api/v1',
-   // licenseKey: '2sdgNtr3sFBSM3bYRa7RKDPEiB38Xo',
+   API_URL: 'https://api-uikit-dev.contus.us/api/v1',
+   licenseKey: '2sdgNtr3sFBSM3bYRa7RKDPEiB38Xo',
    // =====================================
    // ================ QA Environment variables =====================
-   API_URL: 'https://api-uikit-qa.contus.us/api/v1',
-   licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
+   // API_URL: 'https://api-uikit-qa.contus.us/api/v1',
+   // licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
    // ================ UAT/Staging Environment variables =====================
    // API_URL: 'https://api-uikit-uat.contus.us/api/v1',
    // licenseKey: 'lu3Om85JYSghcsB6vgVoSgTlSQArL5',

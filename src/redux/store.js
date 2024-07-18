@@ -5,6 +5,7 @@ import callControlsReducer from './callControlsSlice';
 import callModalToastReducer from './callModalToastSlice';
 import callStateReducer from './callStateSlice';
 import chatMessageDataReducer from './chatMessageDataSlice';
+import draftReducer from './draftSlice';
 import groupsReducer from './groupDataSlice';
 import loggedInUserDataReducer from './loggedInUserDataSlice';
 import notificationDataReducer from './notificationDataSlice';
@@ -19,6 +20,7 @@ import typingStatusDataReducer from './typingStatusDataSlice';
 
 // Combine reducers
 const appReducer = combineReducers({
+   draftData: draftReducer,
    recentChatData: recentChatDataReducer,
    rosterData: rosterDataReducer,
    chatMessagesData: chatMessageDataReducer,

@@ -139,7 +139,6 @@ export const startMissedCallNotificationTimer = res => {
          const callDetailObj = callConnectionData ? { ...callConnectionData } : {};
          callDetailObj['status'] = 'ended';
          let nickName = getNickName(callConnectionData);
-         /**TODO: notify that call disconnected if needed */
          callNotifyHandler(callDetailObj.roomId, callDetailObj, callDetailObj.userJid, nickName, 'MISSED_CALL');
       }
    }, CALL_RINGING_DURATION + DISCONNECTED_SCREEN_DURATION);
@@ -159,13 +158,6 @@ export const disconnectCallConnection = (remoteStreams = [], callStatusMessage =
    endCallForIos();
 
    dispatchDisconnected(callStatusMessage, remoteStreams);
-   /**
-    // TODO: update the callLogs when implementing the feature
-    * callLogs.update(callConnectionData.roomId, {
-   		"endTime": callLogs.initTime(),
-   		"sessionStatus": CALL_SESSION_STATUS_CLOSED
-         // TODO: getFromLocalStorageAndDecrypt("isNewCallExist") verify
-   });*/
    const _isNewCallExist = /* getFromLocalStorageAndDecrypt("isNewCallExist") */ false;
    let timeOut = _isNewCallExist === true ? 0 : DISCONNECTED_SCREEN_DURATION;
    setTimeout(() => {
@@ -315,13 +307,6 @@ export const endIncomingCall = () => {
    clearIncomingCallTimer();
    SDK.endCall();
    dispatchDisconnected('');
-   /**
-   // TODO: update the Call logs when implementing
-   // callLogs.update(callConnectionDate.data.roomId, {
-   //     "endTime": callLogs.initTime(),
-   //     "sessionStatus": CALL_SESSION_STATUS_CLOSED
-   // });
-    */
    const timeout = BackgroundTimer.setTimeout(() => {
       resetCallData();
       resetCallModalActivity();

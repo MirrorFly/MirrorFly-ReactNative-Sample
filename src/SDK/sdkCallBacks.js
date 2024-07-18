@@ -111,6 +111,7 @@ import { setProgress } from '../redux/progressDataSlice';
 import {
    addRecentChatItem,
    toggleArchiveChatsByUserId,
+   toggleChatMute,
    updateMsgByLastMsgId,
    updateRecentMessageStatus,
 } from '../redux/recentChatDataSlice';
@@ -779,7 +780,7 @@ export const callBacks = {
       store.dispatch(updateMsgByLastMsgId(res));
    },
    muteChatListener: res => {
-      console.log(res, 'res');
+      store.dispatch(toggleChatMute({ userJid: res.fromUserJid, muteStatus: res.isMuted ? 1 : 0 }));
    },
    archiveChatListener: res => {
       store.dispatch(toggleArchiveChatsByUserId(res));

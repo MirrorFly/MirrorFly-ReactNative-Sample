@@ -20,7 +20,6 @@ import {
 } from '../../Helper/Calls/Constant';
 import { answerIncomingCall, declineIncomingCall, endOnGoingCall } from '../../Helper/Calls/Utility';
 import SDK from '../../SDK/SDK';
-import { getMuteStatus } from '../../SDK/utils';
 import { getChannelIds } from '../../Service/PushNotify';
 import { removeAllDeliveredNotification } from '../../Service/remoteNotifyHandle';
 import { callDurationTimestamp } from '../../redux/callStateSlice';
@@ -40,7 +39,6 @@ export const callNotifyHandler = async (
    callStatusType,
    isFullScreenIntent = false,
 ) => {
-   let muteStatus = await getMuteStatus(userJid);
    const { muteNotification = false } = store.getState().settingsData;
    if (callStatusType === INCOMING_CALL) {
       getIncomingCallNotification(roomId, data, userJid, nickName, callStatusType, isFullScreenIntent);
@@ -48,7 +46,7 @@ export const callNotifyHandler = async (
       getOutGoingCallNotification(roomId, data, userJid, nickName, callStatusType);
    } else if (callStatusType === ONGOING_CALL) {
       getOnGoingCallNotification(roomId, data, userJid, nickName, callStatusType);
-   } else if (callStatusType === MISSED_CALL && muteStatus === 0 && !muteNotification) {
+   } else if (callStatusType === MISSED_CALL && !muteNotification) {
       getMissedCallNotification(roomId, data, userJid, nickName, callStatusType);
    }
 };

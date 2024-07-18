@@ -960,11 +960,14 @@ export const settingsMenu = [
       icon: ChatsIcon,
       rounteName: CHATS_CREEN,
    },
+   /** 
+    * 
    {
       name: 'Notifications',
       icon: NotificationSettingsIcon,
       rounteName: NOTIFICATION_STACK,
    },
+   */
    {
       name: 'Log out',
       icon: ExitIcon,

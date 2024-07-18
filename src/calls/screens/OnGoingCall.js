@@ -1,26 +1,32 @@
 import React from 'react';
 import { Animated, ImageBackground, Platform, Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
-import { useDispatch, useSelector } from 'react-redux';
-import { enablePipModeIfCallConnected, getUserProfile } from '../../Helper';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { enablePipModeIfCallConnected } from '../../Helper';
+import { selectLargeVideoUser } from '../../Helper/Calls/Call';
 import {
    CALL_RINGING_DURATION,
+   CALL_STATUS_CONNECTED,
    CALL_STATUS_CONNECTING,
    CALL_STATUS_DISCONNECTED,
+   CALL_STATUS_PERMISSION,
    CALL_STATUS_RECONNECT,
 } from '../../Helper/Calls/Constant';
-import { endOnGoingCall } from '../../Helper/Calls/Utility';
-import { formatUserIdToJid } from '../../Helper/Chat/ChatHelper';
-import { getUserIdFromJid } from '../../Helper/Chat/Utility';
+import { endOnGoingCall, updateCallVideoMute } from '../../Helper/Calls/Utility';
+import SDK, { RealmKeyValueStore } from '../../SDK/SDK';
 import CallsBg from '../../assets/calls-bg.png';
 import IconButton from '../../common/IconButton';
 import { LayoutIcon, MenuIcon } from '../../common/Icons';
 import Pressable from '../../common/Pressable';
-import commonStyles from '../../common/commonStyles';
-import { getImageSource } from '../../common/utils';
+import { requestCameraMicPermission } from '../../common/permissions';
 import ApplicationColors from '../../config/appColors';
 import { usePipModeListener } from '../../customModules/PipModule';
-import { closeCallModal, selectLargeVideoUser, updateCallLayout } from '../../redux/Actions/CallAction';
+import { formatUserIdToJid, getImageSource, getUserIdFromJid } from '../../helpers/chatHelpers';
+import { CALL_STATUS_HOLD } from '../../helpers/constants';
+import { callConversion, closeCallModal, updateCallLayout } from '../../redux/callStateSlice';
+import { getRoasterData } from '../../redux/reduxHook';
+import commonStyles from '../../styles/commonStyles';
+import { getCurrentUserJid, getLocalUserDetails } from '../../uikitMethods';
 import BigVideoTile from '../components/BigVideoTile';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
@@ -41,32 +47,17 @@ const initialLayout = 'tile';
 let hideControlsTimeout = null,
    hideControlsTimeoutMilliSeconds = 6000,
    controlsAnimationDuration = 400,
-   layoutAnimationDuration = 200,
+   layoutAnimationDuration = 300,
    connectingCallStatusTimeout;
 
 let remoteStreamDatas = [];
 const OnGoingCall = () => {
-   const localUserJid = useSelector(state => state.auth.currentUserJID);
-   const {
-      largeVideoUser: largeVideoUserData = {},
-      connectionState: callConnectionState = {},
-      callLayout: layout = 'tile',
-   } = useSelector(state => state.callData) || {};
-   const { callType, callMode } = callConnectionState;
-   const { data: showConfrenceData = {}, data: { remoteStream = [], localStream } = {} } =
-      useSelector(state => state.showConfrenceData) || {};
-   const remoteAudioMuted = showConfrenceData?.remoteAudioMuted || [];
-   const remoteVideoMuted = showConfrenceData?.remoteVideoMuted || [];
-   const vCardData = useSelector(state => state.profile?.profileDetails);
-   const rosterData = useSelector(state => state.rosterData.data);
-   const { isFrontCameraEnabled } = useSelector(state => state.callControlsData);
-
-   const isPipMode = usePipModeListener();
-
+   const dispatch = useDispatch();
+   const layout = useSelector(state => state.callData.callLayout) || 'tile';
    const [topViewControlsHeight, setTopViewControlsHeight] = React.useState(0);
+   const isPipMode = usePipModeListener();
    const showControlsRef = React.useRef(true);
    const bottomControlsViewHeightRef = React.useRef(0);
-
    // animated value variables for toggling the controls and timer
    const controlsOpacity = React.useRef(new Animated.Value(1)).current;
    const controlsOffsetTop = React.useRef(new Animated.Value(0)).current;
@@ -74,10 +65,36 @@ const OnGoingCall = () => {
    // animated value variables for initial render of the user views
    const layoutOpacity = React.useRef(new Animated.Value(0)).current;
    const smallVideoLayoutOpacity = React.useRef(new Animated.Value(0)).current;
-
-   const dispatch = useDispatch();
-
+   const localUserJid = getCurrentUserJid();
+   const largeVideoUserData = useSelector(state => state.callData.largeVideoUser) || {};
+   const callConnectionState = useSelector(state => state.callData.connectionState) || {};
+   const { callType, callMode } = callConnectionState;
+   const { data: showConfrenceData = {} } = useSelector(state => state.showConfrenceData, shallowEqual) || {};
+   const remoteStream = useSelector(state => state.showConfrenceData.data.remoteStream, shallowEqual) || [];
+   const localStream = useSelector(state => state.showConfrenceData.data.localStream, shallowEqual) || {};
+   const remoteAudioMuted = showConfrenceData?.remoteAudioMuted || [];
+   const remoteVideoMuted = showConfrenceData?.remoteVideoMuted || [];
+   const vCardData = getLocalUserDetails();
+   const rosterData = useSelector(state => state.rosterData.data);
+   const { isFrontCameraEnabled } = useSelector(state => state.callControlsData);
    const [showMenuPopup, setShowMenuPopup] = React.useState(false);
+
+   const animateLayout = toValue => {
+      Animated.sequence([
+         Animated.parallel([
+            Animated.timing(layoutOpacity, {
+               toValue: toValue,
+               duration: layoutAnimationDuration,
+               useNativeDriver: true,
+            }),
+            Animated.timing(smallVideoLayoutOpacity, {
+               toValue: toValue,
+               duration: layoutAnimationDuration,
+               useNativeDriver: true,
+            }),
+         ]).start(),
+      ]);
+   };
 
    React.useEffect(() => {
       animateLayout(1);
@@ -131,7 +148,7 @@ const OnGoingCall = () => {
       let usersText = 'You';
       const _remoteUsers = remoteStream.filter(u => u.fromJid !== localUserJid);
       _remoteUsers.forEach((_user, i) => {
-         const _userProfile = getUserProfile(_user.fromJid);
+         const _userProfile = getRoasterData(getUserIdFromJid(_user.fromJid));
          const _userNickName = _userProfile.nickName;
          if (i + 1 === _remoteUsers.length) {
             usersText = `${usersText} and ${_userNickName}`;
@@ -160,7 +177,6 @@ const OnGoingCall = () => {
    // because when the user goes offline or the call could not be connected for 30 seconds then we are ending the call in the timeout
    React.useEffect(() => {
       if (callStatus.toLowerCase() === CALL_STATUS_CONNECTING.toLowerCase()) {
-         _BackgroundTimer.clearTimeout(connectingCallStatusTimeout);
          connectingCallStatusTimeout = _BackgroundTimer.setTimeout(() => {
             const _currentCallStatus = (getCallStatus() || '').toLowerCase();
             if (_currentCallStatus === CALL_STATUS_CONNECTING.toLowerCase()) {
@@ -168,6 +184,7 @@ const OnGoingCall = () => {
             }
          }, CALL_RINGING_DURATION);
       }
+      return () => _BackgroundTimer.clearTimeout(connectingCallStatusTimeout);
    }, [callStatus]);
 
    const setLayout = val => {
@@ -192,21 +209,6 @@ const OnGoingCall = () => {
          Animated.timing(controlsOffsetBottom, {
             toValue: _offsetBottom,
             duration: controlsAnimationDuration,
-            useNativeDriver: true,
-         }),
-      ]).start();
-   };
-
-   const animateLayout = toValue => {
-      Animated.parallel([
-         Animated.timing(layoutOpacity, {
-            toValue: toValue,
-            duration: layoutAnimationDuration,
-            useNativeDriver: true,
-         }),
-         Animated.timing(smallVideoLayoutOpacity, {
-            toValue: toValue,
-            duration: layoutAnimationDuration,
             useNativeDriver: true,
          }),
       ]).start();
@@ -248,7 +250,7 @@ const OnGoingCall = () => {
       let stream = null;
       let remoteStreams = null;
       let callStatusText = null;
-      if (callMode === 'onetoone') {
+      if (callMode === 'onetoone' && remoteStream.length > 0) {
          remoteStream.forEach(rs => {
             let id = rs.fromJid;
             id = id.includes('@') ? id.split('@')[0] : id;
@@ -301,7 +303,7 @@ const OnGoingCall = () => {
          return (
             <Animated.ScrollView
                style={{
-                  opacity: smallVideoLayoutOpacity,
+                  opacity: callType === 'video' ? smallVideoLayoutOpacity : layoutOpacity,
                   transform: [{ translateY: controlsOffsetBottom }],
                }}
                horizontal
@@ -403,7 +405,7 @@ const OnGoingCall = () => {
          callStatus?.toLowerCase() === CALL_STATUS_CONNECTING
             ? callConnectionState.to || callConnectionState.userJid
             : largeVideoUser?.userJid || '';
-      if (callMode === 'onetoone') {
+      if (callMode === 'onetoone' && remoteStream.length > 0) {
          remoteStream.forEach(rs => {
             let id = rs.fromJid;
             id = id.includes('@') ? id.split('@')[0] : id;
@@ -411,7 +413,7 @@ const OnGoingCall = () => {
                remoteStreams = rs;
             }
          });
-         stream = largeVideoUserJid === localUserJid ? localStream : remoteStreams?.stream;
+         stream = largeVideoUserJid === localUserJid ? localStream : remoteStreams.stream;
       }
       //Check remote User is reconnecting state
       let reconnectStatus =
@@ -428,6 +430,7 @@ const OnGoingCall = () => {
 
    React.useEffect(() => {
       if (callViewType === 'video' && hideControlsTimeout == null) {
+         animateControls(1, 0);
          hideControlsTimeout = setTimeout(() => {
             animateControls(0, 100);
          }, hideControlsTimeoutMilliSeconds);
@@ -495,6 +498,36 @@ const OnGoingCall = () => {
       );
    };
 
+   const handleVideoMute = async (_videoMuted, callerUUID) => {
+      let isPermissionChecked = await RealmKeyValueStore.getItem('camera_microPhone_Permission');
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
+      const videoPermission = await requestCameraMicPermission();
+      SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
+      if (videoPermission === 'granted') {
+         const allUsersVideoMuted = await SDK.isAllUsersVideoMuted();
+         if (allUsersVideoMuted && callMode === 'onetoone' && remoteStream.length <= 2) {
+            if (
+               callStatus &&
+               (callStatus.toLowerCase() === CALL_STATUS_CONNECTED || callStatus.toLowerCase() === CALL_STATUS_HOLD)
+            ) {
+               dispatch(
+                  callConversion({
+                     status: 'request_init',
+                     fromUser: callConnectionState.to || callConnectionState.userJid,
+                  }),
+               );
+               return;
+            }
+         } else {
+            updateCallVideoMute(_videoMuted, callerUUID);
+         }
+      } else if (isPermissionChecked) {
+         dispatch(callConversion({ status: CALL_STATUS_PERMISSION }));
+      } else if (videoPermission === RESULTS.BLOCKED) {
+         RealmKeyValueStore.setItem('camera_microPhone_Permission', 'true');
+      }
+   };
+
    // if in PIP mode then returning PIP layout
    if (isPipMode) {
       return (
@@ -537,7 +570,7 @@ const OnGoingCall = () => {
                   handleEndCall={handleHangUp}
                   callStatus={callStatus}
                   callType={callType}
-                  // handleVideoMute={handleVideoMute}
+                  handleVideoMute={handleVideoMute}
                   // videoMute={!!localVideoMuted}
                   // audioMute={true}
                   // audioControl={audioControl}

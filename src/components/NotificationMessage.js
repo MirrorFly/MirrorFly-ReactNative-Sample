@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
+import commonStyles from '../styles/commonStyles';
 
 function NotificationMessage(props) {
    const { messageObject: { msgBody: { notificationContent = '' } = {} } = {} } = props;

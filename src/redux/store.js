@@ -1,84 +1,59 @@
-import { applyMiddleware, combineReducers, legacy_createStore } from 'redux';
-import thunkMiddleware from 'redux-thunk';
-import authReducer from './Reducers/Auth.Reducer';
-import callControlsReducer from './Reducers/CallControls.Reducer';
-import callModalToastReducer from './Reducers/CallModalToast.Reducer';
-import CallStateReducer from './Reducers/CallState.Reducer';
-import chatConversationLocalNavReducer from './Reducers/ChatConversationLocalNav.Reducer';
-import showConfrenceReducer from './Reducers/Confrence.Reducer';
-import conversationReducer from './Reducers/Conversation.Reducer';
-import galleryReducer from './Reducers/Gallery.Reducer';
-import {
-   GroupsMemberListReducer,
-   GroupsMemberParticipantsListReducer,
-   GroupsReducer,
-   currentCallGroupMembersReducer,
-} from './Reducers/Group.Reducer';
-import mediaDownloadReducer from './Reducers/MediaDownload.Reducer';
-import mediaUploadReducer from './Reducers/MediaUpload.Reducer';
-import navigationReducer from './Reducers/Navigation.Reducer';
-import notificationDataReducer from './Reducers/NotificationData.Reducer';
-import profileReducer from './Reducers/Profile.Reducer';
-import recentChatReducer from './Reducers/RecentChat.Reducer';
-import recoverMessageReducer from './Reducers/RecoverMessage.Reducer';
-import safeAreaReducer from './Reducers/SafeArea.Reducer';
-import singleChatImageReducer from './Reducers/SingleChatImage.Reducer';
-import TypingReducer from './Reducers/Typing.Reducer';
-import callAgainReducer from './Reducers/callAgain.Reducer';
-import chatReducer from './Reducers/chat.Reducer';
-import chatSeenPendingMsgReducer from './Reducers/chatSeenPendingMsg.Reducer';
-import connectionReducer from './Reducers/connection.Reducer';
-import conversationSearchReducer from './Reducers/conversationSearch.Reducer';
-import recentChatSearchReducer from './Reducers/recentChatSearch.Reducer';
-import rosterReducer from './Reducers/roster.Reducer';
-import stateDataReducer from './Reducers/statusReducer';
-import streamDataReducer from './Reducers/streamReducer';
-import userReducer from './Reducers/user.Reducer';
-import permissionReducer from './Reducers/PermissionReducer';
-import chatMessageReducer from './Reducers/ChatMessage.Reducer';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
-const rootReducer = combineReducers({
-   navigation: navigationReducer,
-   recentChatData: recentChatReducer,
-   recentChatSearchData: recentChatSearchReducer,
-   auth: authReducer,
-   chatConversationData: conversationReducer,
-   chatMessageData: chatMessageReducer,
-   profile: profileReducer,
-   chatSeenPendingMsgData: chatSeenPendingMsgReducer,
-   chat: chatReducer,
-   connection: connectionReducer,
-   user: userReducer,
-   galleryData: galleryReducer,
-   mediaUploadData: mediaUploadReducer,
-   chatSelectedMedia: singleChatImageReducer,
-   mediaDownloadData: mediaDownloadReducer,
-   safeArea: safeAreaReducer,
-   conversationSearchData: conversationSearchReducer,
-   rosterData: rosterReducer,
-   recoverMessage: recoverMessageReducer,
-   chatConversationLocalNav: chatConversationLocalNavReducer,
-   streamData: streamDataReducer,
-   stateData: stateDataReducer,
-   typingStatusData: TypingReducer,
+import callAgainSlice from './callAgainSlice';
+import callControlsReducer from './callControlsSlice';
+import callModalToastReducer from './callModalToastSlice';
+import callStateReducer from './callStateSlice';
+import chatMessageDataReducer from './chatMessageDataSlice';
+import draftReducer from './draftSlice';
+import groupsReducer from './groupDataSlice';
+import loggedInUserDataReducer from './loggedInUserDataSlice';
+import notificationDataReducer from './notificationDataSlice';
+import permissionReducer from './permissionSlice';
+import presenceDataReducer from './presenceDataSlice';
+import progressDataReducer from './progressDataSlice';
+import recentChatDataReducer from './recentChatDataSlice';
+import rosterDataReducer from './rosterDataSlice';
+import settingDataReducer from './settingDataSlice';
+import showConfrenceReducer from './showConfrenceSlice';
+import typingStatusDataReducer from './typingStatusDataSlice';
+
+// Combine reducers
+const appReducer = combineReducers({
+   draftData: draftReducer,
+   recentChatData: recentChatDataReducer,
+   rosterData: rosterDataReducer,
+   chatMessagesData: chatMessageDataReducer,
+   loggedInUserData: loggedInUserDataReducer,
+   presenceData: presenceDataReducer,
+   typingData: typingStatusDataReducer,
+   progressData: progressDataReducer,
    showConfrenceData: showConfrenceReducer,
-   callData: CallStateReducer,
-   callAgainData: callAgainReducer,
+   callData: callStateReducer,
+   callAgainData: callAgainSlice,
    notificationData: notificationDataReducer,
    callControlsData: callControlsReducer,
    callModalToastData: callModalToastReducer,
    permissionData: permissionReducer,
-   groupsMemberParticipantsListData: GroupsMemberParticipantsListReducer,
-   currentCallGroupMembersData: currentCallGroupMembersReducer,
-   groupsMemberListData: GroupsMemberListReducer,
-   groupsData: GroupsReducer,
+   settingsData: settingDataReducer,
+   groupData: groupsReducer,
 });
 
-const Store = legacy_createStore(rootReducer, applyMiddleware(thunkMiddleware));
-
-export const getStoreState = store => {
-   store = store || Store;
-   return store.getState?.() || {};
+// Root reducer
+const rootReducer = (state, action) => {
+   if (action.type === 'clearState') {
+      state = undefined;
+   }
+   return appReducer(state, action);
 };
 
-export default Store;
+const store = configureStore({
+   reducer: rootReducer,
+   middleware: getDefaultMiddleware =>
+      getDefaultMiddleware({
+         immutableCheck: false, // Disable the ImmutableStateInvariantMiddleware
+         serializableCheck: false, // Disable non-serializable check
+      }),
+});
+
+export default store;

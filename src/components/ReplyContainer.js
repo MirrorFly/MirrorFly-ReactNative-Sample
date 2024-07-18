@@ -1,25 +1,26 @@
 import React from 'react';
-import ReplyDeleted from './ReplyDeleted';
-import ReplyText from './ReplyText';
-import ReplyImage from './ReplyImage';
-import ReplyVideo from './ReplyVideo';
-import ReplyAudio from './ReplyAudio';
-import ReplyDocument from './ReplyDocument';
-import ReplyContact from './ReplyContact';
-import ReplyLocation from './ReplyLocation';
 import { StyleSheet, View } from 'react-native';
-import { useChatMessage } from '../hooks/useChatMessage';
+import { useDispatch } from 'react-redux';
+import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { setReplyMessage } from '../redux/draftSlice';
+import ReplyAudio from './ReplyAudio';
+import ReplyContact from './ReplyContact';
+import ReplyDeleted from './ReplyDeleted';
+import ReplyDocument from './ReplyDocument';
+import ReplyImage from './ReplyImage';
+import ReplyLocation from './ReplyLocation';
+import ReplyText from './ReplyText';
+import ReplyVideo from './ReplyVideo';
 
-function ReplyContainer({ replyMessage, handleCloseReplyContainer }) {
-   const { msgId } = replyMessage;
-   const message = useChatMessage(msgId);
+function ReplyContainer({ chatUser, replyMessage }) {
+   const userId = getUserIdFromJid(chatUser);
+   const dispatch = useDispatch();
+   const { msgBody = {}, deleteStatus = 0, recallStatus = 0, msgBody: { message_type = '' } = {} } = replyMessage;
+   const handleCloseReplyContainer = () => {
+      dispatch(setReplyMessage({ userId, message: {} }));
+   };
+
    const renderReplyMessageTemplateAboveInput = () => {
-      const {
-         msgBody,
-         deleteStatus = 0,
-         recallStatus = 0,
-         msgBody: { message_type },
-      } = message;
       switch (true) {
          case Object.keys(msgBody).length === 0 || deleteStatus !== 0 || recallStatus !== 0:
             return <ReplyDeleted replyMsgItems={replyMessage} handleRemove={handleCloseReplyContainer} />;
@@ -41,6 +42,7 @@ function ReplyContainer({ replyMessage, handleCloseReplyContainer }) {
             return null;
       }
    };
+
    return (
       <View style={styles.replyingMessageContainer}>
          <View style={styles.replyingMessageContainer}>{renderReplyMessageTemplateAboveInput()}</View>
@@ -60,6 +62,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       backgroundColor: '#0000001A',
    },
+   mapStaticImage: { width: 60, height: 69 },
 });
 
 export default ReplyContainer;

@@ -1,19 +1,19 @@
+import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
 import { Text } from 'react-native';
-import { useSelector } from 'react-redux';
-import { formatUserIdToJid } from '../Helper/Chat/ChatHelper';
-import { USER_PRESENCE_STATUS_OFFLINE, USER_PRESENCE_STATUS_ONLINE } from '../Helper/Chat/Constant';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import SDK from '../SDK/SDK';
 import MarqueeText from '../common/MarqueeText';
-import { getLastseen } from '../common/TimeStamp';
-import commonStyles from '../common/commonStyles';
-import { useNetworkStatus } from '../hooks';
-import { useFocusEffect } from '@react-navigation/native';
+import { useNetworkStatus } from '../common/hooks';
+import { getLastseen } from '../common/timeStamp';
+import { formatUserIdToJid, getUserIdFromJid } from '../helpers/chatHelpers';
+import { USER_PRESENCE_STATUS_OFFLINE, USER_PRESENCE_STATUS_ONLINE } from '../helpers/constants';
+import { getUserNameFromStore, usePresenceData, useTypingData, useXmppConnectionStatus } from '../redux/reduxHook';
+import commonStyles from '../styles/commonStyles';
 
-const LastSeen = props => {
+const LastSeen = ({ userJid = '', style }) => {
+   const userId = getUserIdFromJid(userJid);
    const isNetworkConnected = useNetworkStatus();
-   const xmppConnection = useSelector(state => state.connection.xmppStatus);
+   const xmppConnection = useXmppConnectionStatus();
    const [lastSeenData, setLastSeenData] = React.useState({
       seconds: -1,
       lastSeen: '',
@@ -22,17 +22,18 @@ const LastSeen = props => {
    let timer = 0;
    const [config] = React.useState({
       marqueeOnStart: true,
-      speed: 0.3,
-      loop: true,
+      speed: 2,
+      loop: false,
       delay: 0,
-      consecutive: false,
+      consecutive: true,
    });
-   const [isTyping, setIsTyping] = React.useState(false);
+   const [isTyping, setIsTyping] = React.useState('');
    const marqueeRef = React.useRef(null);
-   const presenseData = useSelector(state => state.user.userPresence);
-   const typingStatusData = useSelector(state => state.typingStatusData?.data) || {};
-   const { fromUserJid, status } = presenseData;
-   const userJid = props.jid;
+   const presenseData = usePresenceData(userId) || {};
+   const typingStatusData = useTypingData(userId) || {};
+
+   const memoizedTypingStatusData = React.useMemo(() => typingStatusData, [typingStatusData]);
+   const { fromUserJid = '', status = '' } = presenseData;
 
    useFocusEffect(
       React.useCallback(() => {
@@ -68,12 +69,19 @@ const LastSeen = props => {
    }, [presenseData]);
 
    React.useEffect(() => {
-      const _isTyping = Boolean(typingStatusData[getUserIdFromJid(userJid)]);
-      isTyping !== _isTyping && setIsTyping(_isTyping);
-   }, [typingStatusData]);
+      if (typingStatusData.groupId) {
+         setIsTyping(`${getUserNameFromStore(typingStatusData.fromUserId)} typing...`);
+      } else if (typingStatusData.fromUserId) {
+         setIsTyping('typing...');
+      } else {
+         setIsTyping('');
+      }
+   }, [memoizedTypingStatusData]);
 
    const getLastSeenSeconds = async user_Jid => {
-      if (!user_Jid) return -1;
+      if (!user_Jid) {
+         return -1;
+      }
       const lastSeenRes = await SDK.getLastSeen(user_Jid);
       if (lastSeenRes && lastSeenRes.statusCode === 200) {
          return lastSeenRes?.data?.seconds;
@@ -89,7 +97,7 @@ const LastSeen = props => {
       let seconds = '';
       let lastSeen = '';
       seconds = lastSeenSeconds || (await getLastSeenSeconds(updateUserJid));
-      lastSeen = seconds !== -1 ? getLastseen(seconds) : '';
+      lastSeen = seconds != -1 ? getLastseen(seconds) : '';
       userPresenceStatus =
          userPresenceStatus || (seconds > 0 ? USER_PRESENCE_STATUS_OFFLINE : USER_PRESENCE_STATUS_ONLINE);
       setLastSeenData({
@@ -101,13 +109,13 @@ const LastSeen = props => {
    };
 
    if (isTyping) {
-      return <Text style={[commonStyles.typingText, commonStyles.fontSize_11]}>typing...</Text>;
+      return <Text style={[commonStyles.typingText, commonStyles.fontSize_11]}>{isTyping}</Text>;
    }
 
    return (
       <>
          {lastSeenData.lastSeen ? (
-            <MarqueeText key={JSON.stringify(config)} ref={marqueeRef} {...config}>
+            <MarqueeText style={style} key={JSON.stringify(config)} ref={marqueeRef} {...config}>
                {lastSeenData.lastSeen}
             </MarqueeText>
          ) : null}

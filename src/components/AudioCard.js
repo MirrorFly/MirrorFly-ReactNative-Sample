@@ -1,57 +1,56 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import AudioPlayer from '../Media/AudioPlayer';
+import AttachmentProgressLoader from '../common/AttachmentProgressLoader';
 import { AudioMicIcon, AudioMusicIcon } from '../common/Icons';
-import commonStyles from '../common/commonStyles';
+import { getConversationHistoryTime } from '../common/timeStamp';
+import { getMessageStatus } from '../helpers/chatHelpers';
 import useMediaProgress from '../hooks/useMediaProgress';
-import AudioPlayer from './Media/AudioPlayer';
+import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
-import AttachmentProgressLoader from './chat/common/AttachmentProgressLoader';
 
-const AudioCard = props => {
-   const { messageObject, isSender = true, handleReplyPress } = props;
-
+const AudioCard = ({ item, isSender }) => {
    const {
+      createdAt,
+      msgId,
       msgStatus,
-      msgId = '',
-      msgBody: { replyTo = '', media },
-   } = messageObject;
-   const uri = media.local_path || media?.file?.fileDetails?.uri;
-   const audioType = media.audioType;
+      msgBody: {
+         media,
+         media: { file: { fileDetails = {} } = {}, is_uploading, is_downloaded, local_path = '', audioType = '' } = {},
+         replyTo = '',
+      } = {},
+   } = item;
+   const uri = local_path || fileDetails?.uri;
 
-   const { mediaStatus, downloadMedia, retryUploadMedia, cancelUploadMedia } = useMediaProgress({
-      isSender,
+   const { mediaStatus, downloadMedia, retryUploadMedia, cancelProgress } = useMediaProgress({
       mediaUrl: uri,
-      uploadStatus: media?.is_uploading || 0,
-      downloadStatus: media?.is_downloaded || 0,
+      uploadStatus: is_uploading || 0,
+      downloadStatus: is_downloaded || 0,
       media: media,
       msgId: msgId,
-      msgStatus,
    });
 
    return (
       <View style={[styles.container, replyTo ? commonStyles.p_4 : undefined]}>
-         {Boolean(replyTo) && (
-            <ReplyMessage handleReplyPress={handleReplyPress} message={messageObject} isSame={isSender} />
-         )}
+         {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
          <View style={styles.audioControlsContainer(isSender ? '#D0D8EB' : '#EFEFEF')}>
             <View style={styles.audioIconContainer}>
                {audioType ? <AudioMicIcon width="14" height="14" /> : <AudioMusicIcon width="14" height="14" />}
             </View>
             <View style={[commonStyles.marginLeft_8, commonStyles.marginRight_4]}>
                <AttachmentProgressLoader
-                  isSender={isSender}
                   mediaStatus={mediaStatus}
                   onDownload={downloadMedia}
                   onUpload={retryUploadMedia}
-                  onCancel={cancelUploadMedia}
+                  onCancel={cancelProgress}
                   msgId={msgId}
                />
             </View>
             <AudioPlayer msgId={msgId} uri={uri} media={media} mediaStatus={mediaStatus} />
          </View>
          <View style={styles.bottomView(isSender ? '#E2E8F7' : '#fff')}>
-            {props.status}
-            <Text style={styles.timeStampText}>{props.timeStamp}</Text>
+            {isSender && getMessageStatus(msgStatus)}
+            <Text style={styles.timeStampText}>{getConversationHistoryTime(createdAt)}</Text>
          </View>
       </View>
    );

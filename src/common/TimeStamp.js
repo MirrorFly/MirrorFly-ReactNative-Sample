@@ -1,5 +1,5 @@
-import moment from 'moment';
 import { DateTime } from 'luxon';
+import moment from 'moment';
 
 function datetoTime(secs) {
    let todayDate = new Date();
@@ -77,8 +77,8 @@ export const change16TimeWithDateFormat = time => {
    if (!time) {
       return '';
    } else {
-      let convertedDate = moment(time / 1000).format('DD-MMM-YYYY');
-      let convertedTime = moment(time / 1000).format('hh:mm A');
+      let convertedDate = moment(time).format('DD-MMM-YYYY');
+      let convertedTime = moment(time).format('hh:mm A');
       return `${convertedDate} at ${convertedTime}`;
    }
 };

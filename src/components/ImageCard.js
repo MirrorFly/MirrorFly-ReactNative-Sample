@@ -1,58 +1,55 @@
 import React from 'react';
 import { Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
-import noPreview from '../assets/noPreview.png';
-import { getThumbBase64URL } from '../Helper/Chat/Utility';
-import ReplyMessage from './ReplyMessage';
 import ic_baloon from '../assets/ic_baloon.png';
-import { getImageSource } from '../common/utils';
-import commonStyles from '../common/commonStyles';
+import noPreview from '../assets/noPreview.png';
+import MediaProgressLoader from '../common/MediaProgressLoader';
+import { getConversationHistoryTime } from '../common/timeStamp';
 import ApplicationColors from '../config/appColors';
-import MediaProgressLoader from './chat/common/MediaProgressLoader';
+import { getImageSource, getMessageStatus, getThumbBase64URL } from '../helpers/chatHelpers';
 import useMediaProgress from '../hooks/useMediaProgress';
+import commonStyles from '../styles/commonStyles';
 import CaptionContainer from './CaptionContainer';
 
-const ImageCard = props => {
-   const { isSender = true, fileSize = '', messageObject = {}, handleReplyPress = () => {} } = props;
-
+function ImageCard({ chatUser, item, isSender }) {
    const {
-      msgId = '',
       msgStatus,
-      msgBody: { media },
+      createdAt = '',
+      msgId,
       msgBody: {
          replyTo = '',
          media: {
-            is_uploading,
-            is_downloaded,
+            caption = '',
             file: { fileDetails = {} } = {},
-            androidHeight,
-            androidWidth,
-            local_path = '',
-            fileName,
+            fileName = '',
             thumb_image = '',
+            file_size: fileSize = '',
+            androidHeight = 0,
+            androidWidth = 0,
+            is_downloaded = 0,
+            is_uploading = 0,
+            local_path = '',
          } = {},
       } = {},
-   } = messageObject;
+   } = item;
+
    const imageUrl =
       is_uploading === 2 && is_downloaded === 2 ? local_path || fileDetails?.uri : getThumbBase64URL(thumb_image);
 
-   const { mediaStatus, downloadMedia, retryUploadMedia, cancelUploadMedia } = useMediaProgress({
-      isSender,
+   const { mediaStatus, downloadMedia, retryUploadMedia, cancelProgress } = useMediaProgress({
+      chatUser,
       mediaUrl: imageUrl,
-      uploadStatus: media?.is_uploading || 0,
-      downloadStatus: media?.is_downloaded || 0,
-      media: media,
+      uploadStatus: is_uploading || 0,
+      downloadStatus: is_downloaded || 0,
       msgId: msgId,
-      msgStatus,
    });
 
    return (
       <View style={commonStyles.paddingHorizontal_4}>
-         {Boolean(replyTo) && (
-            <ReplyMessage handleReplyPress={handleReplyPress} message={messageObject} isSame={isSender} />
-         )}
+         {Boolean(replyTo) && <ReplyMessage message={messageObject} />}
          <View style={styles.imageContainer}>
             {imageUrl ? (
                <Image
+                  resizeMode="cover"
                   style={styles.image(androidWidth, androidHeight)}
                   alt={fileName}
                   source={{ uri: imageUrl || getThumbBase64URL(thumb_image) }}
@@ -64,49 +61,51 @@ const ImageCard = props => {
             )}
             <View style={styles.progressLoaderWrapper}>
                <MediaProgressLoader
-                  isSender={isSender}
                   mediaStatus={mediaStatus}
                   onDownload={downloadMedia}
                   onUpload={retryUploadMedia}
-                  onCancel={cancelUploadMedia}
+                  onCancel={cancelProgress}
                   msgId={msgId}
                   fileSize={fileSize}
                />
             </View>
-            {!Boolean(media?.caption) && (
+            {!Boolean(caption) && (
                <View style={styles.messgeStatusAndTimestampWithoutCaption}>
                   <ImageBackground source={ic_baloon} style={styles.imageBg}>
-                     {props.status}
-                     <Text style={styles.timestampText}>{props.timeStamp}</Text>
+                     {isSender && getMessageStatus(msgStatus)}
+                     <Text style={styles.timestampText}>{getConversationHistoryTime(createdAt)}</Text>
                   </ImageBackground>
                </View>
             )}
          </View>
-         {Boolean(media?.caption) && (
-            <CaptionContainer caption={media.caption} status={props.status} timeStamp={props.timeStamp} />
+         {Boolean(caption) && (
+            <CaptionContainer
+               isSender={isSender}
+               caption={caption}
+               msgStatus={msgStatus}
+               timeStamp={getConversationHistoryTime(createdAt)}
+            />
          )}
       </View>
    );
-};
+}
 
 export default ImageCard;
 
 const styles = StyleSheet.create({
    imageContainer: {
       paddingVertical: 4,
-      position: 'relative',
+      overflow: 'hidden',
    },
    imageBg: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-end',
       width: 100,
-      resizeMode: 'cover',
       padding: 1,
    },
    image: (w, h) => ({
       borderRadius: 5,
-      resizeMode: 'cover',
       width: w,
       height: h,
    }),

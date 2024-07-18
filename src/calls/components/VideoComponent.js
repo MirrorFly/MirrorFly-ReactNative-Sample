@@ -4,18 +4,18 @@ import { RTCView } from 'react-native-webrtc';
 
 const VideoComponent = (props = {}) => {
    const { stream, isFrontCameraEnabled, zIndex = 0 } = props;
-   /**
-   // const streamURL = React.useMemo(() => {
-   //    return stream?.video.toURL();
-   // }, [stream?.video.toURL()]);
-   */
+
+   const streamURL = React.useMemo(() => {
+      return stream?.video.toURL();
+   }, [stream?.video.toURL()]);
+
    const frontCamera = React.useMemo(() => {
       return isFrontCameraEnabled ? true : false;
    }, [isFrontCameraEnabled]);
 
    return stream ? (
       <RTCView
-         streamURL={stream?.video.toURL()}
+         streamURL={streamURL}
          style={[styles.localVideo]}
          objectFit={'cover'}
          zOrder={zIndex}
@@ -24,7 +24,7 @@ const VideoComponent = (props = {}) => {
    ) : null;
 };
 
-export default VideoComponent;
+export default React.memo(VideoComponent);
 
 const styles = StyleSheet.create({
    localVideo: {

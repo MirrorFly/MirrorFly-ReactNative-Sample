@@ -1,11 +1,10 @@
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
-import { Chat_FABICON, MenuIcon } from './Icons';
-import { Icon, IconButton, Pressable } from 'native-base';
-import MFIconButton from './IconButton';
+import { Image, StyleSheet, View } from 'react-native';
 import SendIcon from '../assets/send.png';
-import LeftArrow from '../assets/leftArrow.png';
-import { getImageSource } from './utils';
+import { getImageSource } from '../helpers/chatHelpers';
+import IconButton from './IconButton';
+import { Chat_FABICON, MenuIcon } from './Icons';
+import Pressable from './Pressable';
 
 const styles = StyleSheet.create({
    primarypilbtn: {
@@ -41,30 +40,6 @@ const styles = StyleSheet.create({
    },
 });
 
-export const PrimaryPillBtn = props => {
-   return (
-      <Pressable style={styles.primarypilbtn} {...props}>
-         <Text style={styles.primarypilbtntext}>{props.title}</Text>
-      </Pressable>
-   );
-};
-
-export const BackBtn = props => {
-   return (
-      <Pressable activeOpacity={1} {...props} style={{ padding: 10 }}>
-         <Image source={getImageSource(LeftArrow)} style={{ width: 18.33, height: 15.32 }} />
-      </Pressable>
-   );
-};
-
-export const SendBtn = React.memo(props => {
-   return (
-      <MFIconButton {...props}>
-         <Image source={getImageSource(SendIcon)} style={{ width: 24.33, height: 20.32 }} />
-      </MFIconButton>
-   );
-});
-
 export const FloatingBtn = props => {
    return (
       <View style={styles.FloatingBtnContainer}>
@@ -75,14 +50,18 @@ export const FloatingBtn = props => {
    );
 };
 
-export const MenuIconBtn = (triggerProps, color, onPress) => {
+export const MenuIconBtn = ({ color, onPress }) => {
    return (
-      <IconButton
-         {...triggerProps}
-         borderRadius="full"
-         _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-         onPress={onPress}
-         icon={<Icon px="3" as={<MenuIcon color={color} />} name="emoji-happy" />}
-      />
+      <IconButton onPress={onPress}>
+         <MenuIcon color={color} />
+      </IconButton>
    );
 };
+
+export const SendBtn = React.memo(props => {
+   return (
+      <IconButton {...props}>
+         <Image source={getImageSource(SendIcon)} style={{ width: 24.33, height: 20.32 }} />
+      </IconButton>
+   );
+});

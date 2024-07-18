@@ -2,11 +2,9 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Animated, Dimensions, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import { batch, useDispatch, useSelector } from 'react-redux';
-import { showToast } from '../Helper';
-import { isLocalUser, showInternetconnectionToast } from '../Helper/Chat/ChatHelper';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
-import { SDK } from '../SDK';
+import { useDispatch } from 'react-redux';
+import SDK from '../SDK/SDK';
+import AlertModal from '../common/AlertModal';
 import IconButton from '../common/IconButton';
 import {
    AddUserIcon,
@@ -17,23 +15,28 @@ import {
    LeftArrowIcon,
    TextEditIcon,
 } from '../common/Icons';
+import InfoImageView from '../common/InfoImageView';
 import Modal, { ModalBottomContent, ModalCenteredContent } from '../common/Modal';
+import NickName from '../common/NickName';
 import Pressable from '../common/Pressable';
-import commonStyles, { modelStyles } from '../common/commonStyles';
+import { useNetworkStatus } from '../common/hooks';
 import ApplicationColors from '../config/appColors';
-import { CONTACTLIST, EDITNAME, GROUP_INFO, IMAGEVIEW, RECENTCHATSCREEN, VIEWALLMEDIA } from '../constant';
-import { useNetworkStatus } from '../hooks';
-import { getUserImage } from '../hooks/useRosterData';
-import { DeleteChatHistoryAction } from '../redux/Actions/ConversationAction';
-import { deleteActiveChatAction } from '../redux/Actions/RecentChatAction';
-import AlertModal from './AlertModal';
-import InfoImageView from './InfoImageView';
-import NickName from './NickName';
+import config from '../config/config';
+import { getUserIdFromJid, isLocalUser, showNetWorkToast, showToast } from '../helpers/chatHelpers';
+import { clearChatMessageData } from '../redux/chatMessageDataSlice';
+import { deleteRecentChatOnUserId } from '../redux/recentChatDataSlice';
+import { getUserImage, useUserType } from '../redux/reduxHook';
+import {
+   EDITNAME,
+   GROUP_INFO,
+   IMAGEVIEW,
+   RECENTCHATSCREEN,
+   USERS_LIST_SCREEN,
+   VIEWALLMEDIA,
+} from '../screens/constants';
+import commonStyles, { modelStyles } from '../styles/commonStyles';
 import UserAvathar from './UserAvathar';
 import UserStatus from './UserStatus';
-import config from '../config';
-
-const LeftArrowComponent = () => LeftArrowIcon();
 
 const propTypes = {
    chatUser: PropTypes.string,
@@ -65,16 +68,26 @@ const RenderItem = ({ item, index, onhandlePress }) => {
    return (
       <React.Fragment key={index}>
          <Pressable onPress={handlePress}>
-            <View style={styles.wrapper}>
+            <View style={styles.groupwrapper}>
                <UserAvathar userId={item?.userId} userProfile={item.userProfile} />
                <View style={[commonStyles.marginLeft_15, commonStyles.flex1]}>
-                  <NickName userId={item?.userId} style={styles.nickNameText} numberOfLines={1} ellipsizeMode="tail" />
-                  <UserStatus userId={item?.userId} style={styles.stautsText} numberOfLines={1} ellipsizeMode="tail" />
+                  <NickName
+                     userId={item?.userId}
+                     style={styles.groupnickNameText}
+                     numberOfLines={1}
+                     ellipsizeMode="tail"
+                  />
+                  <UserStatus
+                     userId={item?.userId}
+                     style={styles.groupstautsText}
+                     numberOfLines={1}
+                     ellipsizeMode="tail"
+                  />
                </View>
                {item.userType === 'o' && <Text style={{ color: ApplicationColors.mainColor }}>Admin</Text>}
             </View>
          </Pressable>
-         <View style={commonStyles.dividerLine} />
+         <View style={commonStyles.groupdividerLine} />
       </React.Fragment>
    );
 };
@@ -93,14 +106,13 @@ const GrpCollapsibleToolbar = ({
    const navigation = useNavigation();
    const dispatch = useDispatch();
    const isNetworkconneted = useNetworkStatus();
-   const scrollY = React.useRef(new Animated.Value(0)).current;
+   const grpscrollY = React.useRef(new Animated.Value(0)).current;
    const [animatedTitleColor, setAnimatedTitleColor] = React.useState(250);
    const [userDetails, setUserDetails] = React.useState({});
    const scrollDistance = toolbarMaxHeight - toolbarMinHeight;
    const { height: screenHeight } = Dimensions.get('window');
-   const recentChatList = useSelector(state => state.recentChatData.data || []);
    const chatUserId = getUserIdFromJid(chatUser);
-   const userType = recentChatList.find(r => r.fromUserJid === chatUser)?.userType || '';
+   const userType = useUserType(chatUser);
    const layout = useWindowDimensions();
    const [modalContent, setModalContent] = React.useState(null);
 
@@ -113,30 +125,30 @@ const GrpCollapsibleToolbar = ({
     * const scaledFontSize = ((baseFontSize * screenWidth) / 375) * pixelRatio;
     * */
 
-   const [optionModelOpen, setOptionModelOpen] = React.useState(false);
+   const [grpoptionModelOpen, setOptionModelOpen] = React.useState(false);
 
    const toggleOptionModel = () => {
       setOptionModelOpen(val => !val);
    };
 
-   const translateY = React.useRef(new Animated.Value(layout.height)).current;
+   const translateBottomSlide = React.useRef(new Animated.Value(layout.height)).current;
    React.useEffect(() => {
-      if (optionModelOpen) {
+      if (grpoptionModelOpen) {
          // Animate in if visible
-         Animated.timing(translateY, {
+         Animated.timing(translateBottomSlide, {
             toValue: 0,
             duration: 300,
             useNativeDriver: true,
          }).start();
       } else {
          // Animate out if not visible
-         Animated.timing(translateY, {
+         Animated.timing(translateBottomSlide, {
             toValue: layout.height,
             duration: 300,
             useNativeDriver: true,
          }).start();
       }
-   }, [optionModelOpen, translateY, layout.height]);
+   }, [grpoptionModelOpen, translateBottomSlide, layout.height]);
 
    const toggleModalContent = () => {
       setModalContent(null);
@@ -148,19 +160,19 @@ const GrpCollapsibleToolbar = ({
       setModelOpen(val => !val);
    };
 
-   const headerTranslate = scrollY.interpolate({
+   const grpheaderTranslate = grpscrollY.interpolate({
       inputRange: [0, scrollDistance],
       outputRange: [0, -scrollDistance],
       extrapolate: 'clamp',
    });
 
-   const imageOpacity = scrollY.interpolate({
+   const grpimageOpacity = grpscrollY.interpolate({
       inputRange: [0, scrollDistance / 2, scrollDistance],
       outputRange: [1, 1, 0],
       extrapolate: 'clamp',
    });
 
-   const titleScale = scrollY.interpolate({
+   const grptitleScale = grpscrollY.interpolate({
       inputRange: [0, scrollDistance / 2, scrollDistance],
       outputRange: [1, 1, 0.8],
       extrapolate: 'clamp',
@@ -195,7 +207,7 @@ const GrpCollapsibleToolbar = ({
             id: 'Maximum_allowed_group_members',
          });
       }
-      navigation.navigate(CONTACTLIST, {
+      navigation.navigate(USERS_LIST_SCREEN, {
          prevScreen: GROUP_INFO,
          grpDetails: { jid: chatUser, participants },
       });
@@ -203,7 +215,7 @@ const GrpCollapsibleToolbar = ({
 
    const handelGroupProfileUpdate = () => {
       if (!isNetworkconneted) {
-         return showInternetconnectionToast();
+         return showNetWorkToast();
       }
       toggleOptionModel();
    };
@@ -222,36 +234,34 @@ const GrpCollapsibleToolbar = ({
 
    const handleLeaveGroup = async () => {
       if (!isNetworkconneted) {
-         return showInternetconnectionToast();
+         return showNetWorkToast();
       }
       const { statusCode, message } = await SDK.userExitGroup(chatUser, localUser?.userType === 'o');
       if (statusCode === 200) {
          getGroupParticipants(2500);
       } else {
-         showToast(message, { id: message });
+         showToast(message);
       }
    };
    const handleDeleteGroup = async () => {
       if (!isNetworkconneted) {
-         return showInternetconnectionToast();
+         return showNetWorkToast();
       }
       if (isNetworkconneted) {
          const { statusCode, message } = await SDK.userDeleteGroup(chatUser);
          if (statusCode === 200) {
             navigation.navigate(RECENTCHATSCREEN);
-            batch(() => {
-               dispatch(deleteActiveChatAction({ fromUserId: getUserIdFromJid(chatUser) }));
-               dispatch(DeleteChatHistoryAction({ fromUserId: getUserIdFromJid(chatUser) }));
-            });
+            dispatch(deleteRecentChatOnUserId(chatUser));
+            dispatch(clearChatMessageData({ userId: getUserIdFromJid(chatUser) }));
          } else {
-            showToast(message, { id: message });
+            showToast(message);
          }
       }
    };
 
    const handleRemoveUser = async () => {
       if (!isNetworkconneted) {
-         return showInternetconnectionToast();
+         return showNetWorkToast();
       }
       const { statusCode, message } = await SDK.removeParticipant(
          chatUser,
@@ -261,19 +271,19 @@ const GrpCollapsibleToolbar = ({
       if (statusCode === 200) {
          getGroupParticipants(2500);
       } else {
-         showToast(message, { id: message });
+         showToast(message);
       }
    };
 
    const handleMakeAdmin = async () => {
       if (!isNetworkconneted) {
-         return showInternetconnectionToast();
+         return showNetWorkToast();
       }
       const { statusCode, message } = await SDK.makeAsAdmin(chatUser, userDetails.userJid);
       if (statusCode === 200) {
          getGroupParticipants(2500);
       } else {
-         showToast(message, { id: message });
+         showToast(message);
       }
    };
 
@@ -336,7 +346,7 @@ const GrpCollapsibleToolbar = ({
       });
    };
 
-   const handleViewAllMedia = () => {
+   const grphandleViewAllMedia = () => {
       navigation.navigate(VIEWALLMEDIA, { jid: chatUser });
    };
 
@@ -356,15 +366,15 @@ const GrpCollapsibleToolbar = ({
    };
 
    return (
-      <View style={styles.fill}>
+      <View style={commonStyles.flex1}>
          <Animated.View
             style={[
-               styles.header,
+               styles.grpHeader,
                {
                   zIndex: 9,
                   backgroundColor: '#f2f2f2',
                   height: toolbarMaxHeight,
-                  transform: [{ translateY: headerTranslate }],
+                  transform: [{ translateY: grpheaderTranslate }],
                },
             ]}>
             <Animated.View
@@ -374,24 +384,24 @@ const GrpCollapsibleToolbar = ({
                      alignItems: 'center',
                      backgroundColor: '#f2f2f2',
                      height: toolbarMaxHeight,
-                     opacity: imageOpacity,
+                     opacity: grpimageOpacity,
                      shadowColor: '#181818',
                      shadowOffset: { width: 0, height: 6 },
                      shadowOpacity: 0.1,
                      shadowRadius: 6,
                   },
                ]}>
-               <Pressable onPress={handleViewImage} style={styles.profileImage}>
-                  <InfoImageView userId={chatUserId} style={styles.profileImage} />
+               <Pressable onPress={handleViewImage} style={styles.groupprofileImage}>
+                  <InfoImageView userId={chatUserId} style={styles.groupprofileImage} />
                </Pressable>
             </Animated.View>
             <Animated.View
                style={[
-                  styles.action,
+                  styles.grpAction,
                   commonStyles.justifyContentSpaceBetween,
                   {
                      backgroundColor: 'transparent',
-                     transform: [{ scale: titleScale }],
+                     transform: [{ scale: grptitleScale }],
                   },
                ]}>
                <View>
@@ -400,7 +410,7 @@ const GrpCollapsibleToolbar = ({
                      numberOfLines={1}
                      ellipsizeMode="tail"
                      style={[
-                        styles.title,
+                        styles.grouptitle,
                         {
                            color: animatedTitleColor < 280 ? '#fff' : '#000',
                         },
@@ -410,7 +420,7 @@ const GrpCollapsibleToolbar = ({
                      <Animated.Text
                         numberOfLines={1}
                         ellipsizeMode="tail"
-                        style={[styles.stautsText, commonStyles.colorWhite]}>
+                        style={[styles.groupstautsText, commonStyles.colorWhite]}>
                         {participants.length} members
                      </Animated.Text>
                   )}
@@ -425,23 +435,23 @@ const GrpCollapsibleToolbar = ({
                )}
             </Animated.View>
          </Animated.View>
-         <Animated.View style={styles.bar}>
-            <View style={styles.left}>
+         <Animated.View style={styles.grpBar}>
+            <View style={styles.groupleft}>
                <IconButton onPress={handleBackBtn}>
-                  {LeftArrowIcon(animatedTitleColor < 280 ? '#fff' : '#000')}
+                  <LeftArrowIcon color={animatedTitleColor < 280 ? '#fff' : '#000'} />
                </IconButton>
             </View>
             {Boolean(userType) && (
-               <Pressable onPress={handelGroupProfileUpdate} style={styles.right}>
+               <Pressable onPress={handelGroupProfileUpdate} style={styles.groupleft}>
                   <ImageEditIcon width="25" height="25" color={animatedTitleColor < 280 ? '#fff' : '#000'} />
                </Pressable>
             )}
          </Animated.View>
          <Animated.ScrollView
             bounces={false}
-            style={styles.scrollView}
+            style={commonStyles.flex1}
             scrollEventThrottle={1}
-            onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+            onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: grpscrollY } } }], {
                useNativeDriver: true,
                listener: event => {
                   const { y } = event.nativeEvent.contentOffset;
@@ -449,18 +459,6 @@ const GrpCollapsibleToolbar = ({
                },
             })}>
             <View style={{ marginHorizontal: 12, marginTop: toolbarMaxHeight, minHeight: adaptiveMinHeight }}>
-               <View style={[commonStyles.hstack]} mb="7" justifyContent={'space-between'}>
-                  {/* <Text fontSize={14} fontWeight={500} color={'#181818'}>
-                     Mute Notification
-                  </Text> */}
-                  {/* <Switch
-                     size="md"
-                     offTrackColor="indigo.100"
-                     onTrackColor="indigo.200"
-                     onThumbColor="blue.500"
-                     offThumbColor="indigo.50"
-                  /> */}
-               </View>
                {localUser?.userType === 'o' && (
                   <Pressable onPress={handleAddParticipants}>
                      <View
@@ -488,7 +486,7 @@ const GrpCollapsibleToolbar = ({
                {renderParticipants()}
                <View mt="5" />
                <Pressable
-                  onPress={handleViewAllMedia}
+                  onPress={grphandleViewAllMedia}
                   contentContainerStyle={{ paddingVertical: 20, paddingHorizontal: 10 }}>
                   <View
                      style={[
@@ -521,7 +519,7 @@ const GrpCollapsibleToolbar = ({
                   <Pressable onPress={toggleLeaveGroup}>
                      <View style={[commonStyles.hstack, commonStyles.m_12, commonStyles.p_4]}>
                         <ExitIcon color="#ff3939" />
-                        <Text style={styles.groupActionButton}>Leave Group</Text>
+                        <Text style={styles.groupgroupActionButton}>Leave Group</Text>
                      </View>
                   </Pressable>
                )}
@@ -529,7 +527,7 @@ const GrpCollapsibleToolbar = ({
                   <Pressable onPress={toggleDeleteGroup}>
                      <View style={[commonStyles.hstack, commonStyles.m_12, commonStyles.p_4]}>
                         <ExitIcon color="#ff3939" />
-                        <Text style={styles.groupActionButton}>Delete Group</Text>
+                        <Text style={styles.groupgroupActionButton}>Delete Group</Text>
                      </View>
                   </Pressable>
                )}
@@ -568,19 +566,20 @@ const GrpCollapsibleToolbar = ({
                </View>
             </ModalCenteredContent>
          </Modal>
-         <Modal visible={optionModelOpen} onRequestClose={toggleOptionModel}>
+         <Modal visible={grpoptionModelOpen} onRequestClose={toggleOptionModel}>
             <ModalBottomContent onPressOutside={toggleOptionModel}>
-               <Animated.View style={[styles.optionModelContainer, { transform: [{ translateY }] }]}>
-                  <Text style={styles.optionTitleText}>Options</Text>
+               <Animated.View
+                  style={[styles.groupoptionModelContainer, { transform: [{ translateY: translateBottomSlide }] }]}>
+                  <Text style={styles.groupoptionTitleText}>Options</Text>
                   <Pressable onPress={handleOptionTakePhoto}>
-                     <Text style={styles.pressableText}>Take Photo</Text>
+                     <Text style={styles.grouppressableText}>Take Photo</Text>
                   </Pressable>
                   <Pressable onPress={handleOptionGallery}>
-                     <Text style={styles.pressableText}>Choose from Gallery</Text>
+                     <Text style={styles.grouppressableText}>Choose from Gallery</Text>
                   </Pressable>
                   {Boolean(getUserImage(chatUserId)) && (
                      <Pressable onPress={handleOptionRemove}>
-                        <Text style={styles.pressableText}>Remove Photo</Text>
+                        <Text style={styles.grouppressableText}>Remove Photo</Text>
                      </Pressable>
                   )}
                </Animated.View>
@@ -596,13 +595,7 @@ GrpCollapsibleToolbar.defaultProps = defaultProps;
 
 export default GrpCollapsibleToolbar;
 const styles = StyleSheet.create({
-   fill: {
-      flex: 1,
-   },
-   scrollView: {
-      flex: 1,
-   },
-   header: {
+   grpHeader: {
       top: 0,
       left: 0,
       right: 0,
@@ -614,20 +607,20 @@ const styles = StyleSheet.create({
       shadowOpacity: 0.1,
       shadowRadius: 6,
    },
-   action: {
+   grpAction: {
       left: 20,
       right: 20,
       bottom: 15,
       flexDirection: 'row',
       position: 'absolute',
    },
-   bar: {
+   grpBar: {
       zIndex: 10,
       height: 65,
       flexDirection: 'row',
       justifyContent: 'space-between',
    },
-   left: {
+   groupleft: {
       top: 0,
       left: 0,
       width: 50,
@@ -635,7 +628,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
    },
-   right: {
+   groupright: {
       top: 0,
       right: 0,
       width: 50,
@@ -643,20 +636,17 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
    },
-   title: {
+   grouptitle: {
       fontSize: 25,
       padding: 2,
       alignItems: 'center',
       maxWidth: 350,
    },
-   titleStatus: {
-      fontSize: 14,
-   },
-   profileImage: {
+   groupprofileImage: {
       width: '100%',
       height: '100%',
    },
-   wrapper: {
+   groupwrapper: {
       width: '100%',
       marginVertical: 12,
       paddingLeft: 16,
@@ -665,23 +655,23 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
    },
-   nickNameText: {
+   groupnickNameText: {
       flexWrap: 'wrap',
       color: '#1f2937',
       fontWeight: 'bold',
       marginVertical: 2,
    },
-   stautsText: {
+   groupstautsText: {
       marginVertical: 2,
    },
-   divider: {
+   groupdivider: {
       width: '83%',
       height: 1,
       alignSelf: 'flex-end',
-      backgroundColor: ApplicationColors.dividerBg,
+      backgroundColor: ApplicationColors.groupdividerBg,
    },
-   optionTitleText: { fontSize: 16, color: '#000', marginVertical: 5, marginHorizontal: 20, lineHeight: 25 },
-   optionModelContainer: {
+   groupoptionTitleText: { fontSize: 16, color: '#000', marginVertical: 5, marginHorizontal: 20, lineHeight: 25 },
+   groupoptionModelContainer: {
       maxWidth: 500,
       width: '98%',
       backgroundColor: '#fff',
@@ -690,14 +680,10 @@ const styles = StyleSheet.create({
       borderTopRightRadius: 30,
       borderBottomWidth: 3,
    },
-   pressableText: {
+   grouppressableText: {
       paddingHorizontal: 20,
       paddingVertical: 10,
       fontWeight: '600',
    },
-   buttonContainer: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-   },
-   groupActionButton: { marginLeft: 20, fontSize: 14, color: '#FF0000' },
+   groupgroupActionButton: { marginLeft: 20, fontSize: 14, color: '#FF0000' },
 });

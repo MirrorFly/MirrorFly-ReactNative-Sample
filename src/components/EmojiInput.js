@@ -1,13 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
 import Graphemer from 'graphemer';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { BackHandler, StyleSheet, Text, TextInput, View } from 'react-native';
 import IconButton from '../common/IconButton';
 import { KeyboardIcon, SmileIcon } from '../common/Icons';
-import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
+import commonStyles from '../styles/commonStyles';
 import EmojiOverlay from './EmojiPicker';
-import PropTypes from 'prop-types';
 
 const propTypes = {
    children: PropTypes.node,

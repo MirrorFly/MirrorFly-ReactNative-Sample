@@ -1,26 +1,25 @@
 import React from 'react';
 import { Dimensions, Image, StyleSheet, View } from 'react-native';
-import { getThumbBase64URL } from '../Helper/Chat/Utility';
 import { AudioWhileIcon, PlayIcon } from '../common/Icons';
-import commonStyles from '../common/commonStyles';
 import ApplicationColors from '../config/appColors';
-import { useChatMessage } from '../hooks/useChatMessage';
+import { getThumbBase64URL } from '../helpers/chatHelpers';
+import commonStyles from '../styles/commonStyles';
 
 const AudioWhileIconComponent = () => AudioWhileIcon();
 
-function MediaTile({ item, onDelete }) {
+const MediaTile = ({ item, onDelete }) => {
    let numColumns = 4;
    const { width } = Dimensions.get('window');
    const tileSize = width / numColumns;
-   const message = useChatMessage(item.msgId);
+
    const {
-      deleteStatus,
-      recallStatus,
+      deleteStatus = 0,
+      recallStatus = 0,
       msgBody: {
          media: { thumb_image = '', local_path = '', is_downloaded, is_uploading } = {},
          message_type = '',
       } = {},
-   } = message;
+   } = item;
    const thumbURL = local_path || getThumbBase64URL(thumb_image);
 
    if (deleteStatus !== 0 || recallStatus !== 0 || is_downloaded !== 2 || is_uploading !== 2) {
@@ -64,9 +63,9 @@ function MediaTile({ item, onDelete }) {
          </View>
       );
    }
-}
+};
 
-export default MediaTile;
+export default React.memo(MediaTile);
 
 const styles = StyleSheet.create({
    mediaTile: {

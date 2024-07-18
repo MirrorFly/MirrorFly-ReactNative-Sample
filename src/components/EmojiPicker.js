@@ -5,9 +5,9 @@ import { mapValues } from 'lodash-es/object';
 import React from 'react';
 import { Animated, FlatList, Keyboard, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { TabView } from 'react-native-tab-view';
-import { CHAT_INPUT } from '../Helper/Chat/Constant';
 import { BackSpaceIcon } from '../common/Icons';
-import commonStyles from '../common/commonStyles';
+import { CHAT_INPUT } from '../helpers/constants';
+import commonStyles from '../styles/commonStyles';
 
 const charFromUtf16 = utf16 => String.fromCodePoint(...utf16.split('-').map(u => '0x' + u));
 const charFromEmojiObj = obj => charFromUtf16(obj.unified);

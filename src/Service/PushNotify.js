@@ -1,56 +1,67 @@
 import notifee, { AndroidVisibility } from '@notifee/react-native';
-import { onNotificationAction } from '../calls/notification/callNotifyHandler';
+import { MISSED_CALL } from '../Helper/Calls/Constant';
+import { getMuteStatus } from '../SDK/utils';
+import { onChatNotificationBackGround, onChatNotificationForeGround } from '../calls/notification/callNotifyHandler';
+import store from '../redux/store';
 
 export const displayRemoteNotification = async (id, date, title, body, jid, importance) => {
-   const channelId = await notifee.createChannel({
-      id: 'default',
-      name: 'Default Channel',
-      importance,
-      visibility: AndroidVisibility.PUBLIC,
-      sound: 'default',
-   });
-
-   /** Display a notification */
-   await notifee.displayNotification({
-      id: id,
-      title: title,
-      body: body,
-      data: { fromUserJID: jid } || null,
-      android: {
-         channelId,
-         sound: 'default',
-         timestamp: date,
-         smallIcon: 'ic_notification',
+   let isMute = await getMuteStatus(jid);
+   const { muteNotification = false } = store.getState().settingsData;
+   if (isMute === 0 && !muteNotification) {
+      const channelIds = getChannelIds();
+      let channelId = {
+         id: channelIds.channelId,
+         name: channelIds.channelId,
          importance,
-      },
-      ios: {
-         foregroundPresentationOptions: {
-            alert: true,
-            badge: true,
-            sound: true,
+         visibility: AndroidVisibility.PUBLIC,
+      };
+      if (channelIds.sound) channelId.sound = channelIds.sound;
+      channelId.vibration = channelIds.vibration;
+      let channelIdData = await notifee.createChannel(channelId);
+      /** Display a notification */
+      let notification = {
+         id: id,
+         title: title,
+         body: body,
+         data: { fromUserJID: jid } || null,
+         android: {
+            channelId: channelIdData,
+            timestamp: date,
+            smallIcon: 'ic_notification',
+            importance,
          },
-      },
-   });
-   notifee.onForegroundEvent(onNotificationAction);
-   notifee.onBackgroundEvent(onNotificationAction);
+         ios: {
+            foregroundPresentationOptions: {
+               alert: true,
+               badge: true,
+               sound: true,
+            },
+         },
+      };
+      if (Platform.OS === 'ios' && channelIds.sound) notification.ios.sound = 'default';
+      await notifee.displayNotification(notification);
+   }
+   notifee.onForegroundEvent(onChatNotificationForeGround);
+   notifee.onBackgroundEvent(onChatNotificationBackGround);
 };
 
-export const handleNotifeeNotify = async () => {
-   const channelId = await notifee.createChannel({
-      id: 'default',
-      name: 'Default name',
-   });
-   const groupId = await notifee.createChannelGroup({
-      id: 'incoming',
-      name: 'Default name',
-   });
-   notifee.displayNotification({
-      title: 'Sarah Lane',
-      body: 'Great thanks, food later?',
-      android: {
-         channelId,
-         groupId,
-         smallIcon: 'ic_notification_blue',
-      },
-   });
+export const getChannelIds = (missedCall = false) => {
+   const channelIds = {};
+   const { notificationSound = false, notificationVibrate = false } = store.getState().settingsData;
+   if (notificationSound && notificationVibrate) {
+      channelIds.channelId = missedCall ? MISSED_CALL : 'Incoming Message';
+      channelIds.vibration = notificationVibrate;
+      channelIds.sound = 'default';
+   } else if (notificationVibrate) {
+      channelIds.channelId = 'Vibrate Notification';
+      channelIds.vibration = notificationVibrate;
+   } else if (notificationSound) {
+      channelIds.channelId = 'Sound Notification';
+      channelIds.vibration = notificationVibrate;
+      channelIds.sound = 'default';
+   } else {
+      channelIds.channelId = 'Silent Notification';
+      channelIds.vibration = false;
+   }
+   return channelIds;
 };

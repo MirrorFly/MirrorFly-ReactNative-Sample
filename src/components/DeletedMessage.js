@@ -1,36 +1,41 @@
 import React from 'react';
-import { BlockedIcon } from '../common/Icons';
-import { THIS_MESSAGE_WAS_DELETED, YOU_DELETED_THIS_MESSAGE } from '../Helper/Chat/Constant';
 import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
-import { getSenderIdFromMsgObj } from '../Helper/Chat/Utility';
-import { getConversationHistoryTime } from '../common/TimeStamp';
-import commonStyles from '../common/commonStyles';
-import MessagePressable from '../common/MessagePressable';
+import { useDispatch } from 'react-redux';
+import { BlockedIcon } from '../common/Icons';
+import { getConversationHistoryTime } from '../common/timeStamp';
 import ApplicationColors from '../config/appColors';
+import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { THIS_MESSAGE_WAS_DELETED, YOU_DELETED_THIS_MESSAGE } from '../helpers/constants';
+import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
+import { getChatMessages } from '../redux/reduxHook';
+import commonStyles from '../styles/commonStyles';
+import MessagePressable from './MessagePressable';
 
-const DeletedMessage = (props = {}) => {
-   const {
-      messageObject,
-      handleMsgSelect,
-      selectedMsgs,
-      messageObject: { msgId = '', createdAt = '', msgType = '' } = {},
-      currentUserJID,
-   } = props;
-   const messageFrom = getSenderIdFromMsgObj(messageObject);
-   const isReceiver = msgType !== 'acknowledge' && messageFrom && messageFrom.indexOf(currentUserJID) === -1;
-
-   const isSender = !isReceiver;
+const DeletedMessage = ({ chatUser, item, isSender }) => {
+   const userId = getUserIdFromJid(chatUser);
+   const dispatch = useDispatch();
+   const { isSelected = 0, msgId = '', createdAt = '' } = item;
 
    const handlePress = () => {
       Keyboard.dismiss();
-      if (selectedMsgs.length > 0) {
-         handleMsgSelect(messageObject, true);
+      const messsageList = getChatMessages(userId);
+      const isAnySelected = messsageList.some(item => item.isSelected === 1);
+      if (isAnySelected) {
+         const selectData = {
+            chatUserId: getUserIdFromJid(chatUser),
+            msgId,
+         };
+         dispatch(toggleMessageSelection(selectData));
       }
    };
 
    const handleLongPress = () => {
       Keyboard.dismiss();
-      handleMsgSelect(messageObject, true);
+      const selectData = {
+         chatUserId: getUserIdFromJid(chatUser),
+         msgId,
+      };
+      dispatch(toggleMessageSelection(selectData));
    };
 
    return (
@@ -40,11 +45,7 @@ const DeletedMessage = (props = {}) => {
          onPress={handlePress}
          onLongPress={handleLongPress}>
          {({ pressed }) => (
-            <View
-               style={[
-                  styles.messageContainer,
-                  selectedMsgs.find(msg => msg.msgId === msgId) ? styles.highlightMessage : undefined,
-               ]}>
+            <View style={[styles.messageContainer, isSelected ? styles.highlightMessage : undefined]}>
                <MessagePressable
                   forcePress={pressed}
                   style={[

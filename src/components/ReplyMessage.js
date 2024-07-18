@@ -1,9 +1,6 @@
 import React from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
-import { getMessageFromHistoryById } from '../Helper/Chat/ChatHelper';
-import { ORIGINAL_MESSAGE_DELETED } from '../Helper/Chat/Constant';
-import { getUserIdFromJid, millisToMinutesAndSeconds } from '../Helper/Chat/Utility';
+import { useDispatch } from 'react-redux';
 import mapStaticBlurImage from '../assets/google-maps-blur.png';
 import {
    AudioMusicIcon,
@@ -18,37 +15,47 @@ import {
    XLSIcon,
    ZipIcon,
 } from '../common/Icons';
-import commonStyles from '../common/commonStyles';
-import { getImageSource } from '../common/utils';
-import useRosterData from '../hooks/useRosterData';
-import { getExtension } from './chat/common/fileUploadValidation';
+import NickName from '../common/NickName';
+import {
+   getExtension,
+   getImageSource,
+   getUserIdFromJid,
+   handleReplyPress,
+   millisToMinutesAndSeconds,
+} from '../helpers/chatHelpers';
+import { ORIGINAL_MESSAGE_DELETED } from '../helpers/constants';
+import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
+import { getChatMessages, useChatMessage } from '../redux/reduxHook';
+import { currentChatUser } from '../screens/ConversationScreen';
+import commonStyles from '../styles/commonStyles';
+import { getCurrentUserJid } from '../uikitMethods';
 
 function ReplyMessage(props) {
-   const { handleReplyPress } = props;
-   const fromUserJId = useSelector(state => state.navigation.fromUserJid);
-   const currentUserJID = useSelector(state => state.auth.currentUserJID);
-   const profileDetails = useSelector(state => state.navigation.profileDetails);
-   const { id: messagesReducerId } = useSelector(state => state.chatConversationData);
-   const [repliedMsg, setRepliedMsg] = React.useState({});
-   const { msgBody: { replyTo = '' } = {} } = props.message;
+   const { message: originalMsg } = props;
+   const { msgBody: { replyTo = '' } = {} } = originalMsg;
+   const chatUser = currentChatUser;
+   const dispatch = useDispatch();
+   const userId = getUserIdFromJid(chatUser);
+   const repliedMessage = useChatMessage(userId, replyTo) || {};
+
+   let { msgId, msgBody: { parentMessage = {} } = {} } = originalMsg;
+
+   if (!Object.keys(parentMessage).length) {
+      parentMessage = repliedMessage;
+   }
+
    const {
       msgBody = {},
       msgBody: { message_type = '', message = '', media = {} } = {},
       deleteStatus = 0,
       recallStatus = 0,
       publisherJid = '',
-   } = repliedMsg;
+   } = parentMessage;
 
    /**const fromUserId = React.useMemo(() => getUserIdFromJid(fromUserJId), [fromUserJId]);*/
    const publisherId = getUserIdFromJid(publisherJid);
 
-   const isSameUser = publisherJid === currentUserJID;
-
-   let { nickName } = useRosterData(isSameUser ? '' : publisherId);
-   // updating default values
-   nickName = nickName || profileDetails?.nickName || publisherId || '';
-
-   const replyMessageUserNickName = !isSameUser ? nickName : 'You';
+   const isSameUser = publisherJid === getCurrentUserJid();
 
    const fileExtension = getExtension(media?.fileName, false);
 
@@ -77,19 +84,13 @@ function ReplyMessage(props) {
       }
    }, [fileExtension]);
 
-   React.useEffect(() => {
-      setRepliedMsg(getMessageFromHistoryById(getUserIdFromJid(fromUserJId), replyTo));
-   }, [messagesReducerId]);
-
    const durationString = millisToMinutesAndSeconds(media.duration);
 
    const renderReplyItem = () => {
       if (message_type === 'text') {
          return (
             <View style={[styles.replyContainer, props.isSame ? styles.senderBg : styles.receiverBg]}>
-               <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nickNameText}>
-                  {replyMessageUserNickName}
-               </Text>
+               <NickName userId={publisherId} style={styles.nickNameText} />
                <Text numberOfLines={1} ellipsizeMode="tail">
                   {message}
                </Text>
@@ -100,9 +101,7 @@ function ReplyMessage(props) {
       if (message_type === 'image') {
          return (
             <View style={[styles.mediaReplyContainer, props.isSame ? styles.senderBg : styles.receiverBg]}>
-               <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nickNameText}>
-                  {replyMessageUserNickName}
-               </Text>
+               <NickName userId={publisherId} style={styles.nickNameText} />
                <View style={styles.mediaLeftStack}>
                   <CameraSmallIcon color={'#7285B5'} width={13} height={13} />
                   <Text style={styles.attachmentTypeText}>Photo</Text>
@@ -123,9 +122,8 @@ function ReplyMessage(props) {
       if (message_type === 'video') {
          return (
             <View style={[styles.mediaReplyContainer, props.isSame ? styles.senderBg : styles.receiverBg]}>
-               <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nickNameText}>
-                  {replyMessageUserNickName}
-               </Text>
+               <NickName userId={publisherId} style={styles.nickNameText} />
+
                <View style={styles.mediaLeftStack}>
                   <VideoIcon color={'#767676'} width="13" height="13" />
                   <Text style={styles.attachmentTypeText}>Video</Text>
@@ -145,9 +143,8 @@ function ReplyMessage(props) {
       if (message_type === 'audio') {
          return (
             <View style={[styles.mediaReplyContainer, props.isSame ? styles.senderBg : styles.receiverBg]}>
-               <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nickNameText}>
-                  {replyMessageUserNickName}
-               </Text>
+               <NickName userId={publisherId} style={styles.nickNameText} />
+
                <Text style={styles.audioDurationText}>{durationString}</Text>
                <View style={[styles.miniMediaPreviewWrapper, styles.audioMiniPreviewWrapperBg]}>
                   <AudioMusicIcon width="22" height="22" color={'#fff'} />
@@ -163,9 +160,7 @@ function ReplyMessage(props) {
                   commonStyles.minWidth_250,
                   props.isSame ? styles.senderBg : styles.receiverBg,
                ]}>
-               <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nickNameTextForFile}>
-                  {replyMessageUserNickName}
-               </Text>
+               <NickName userId={publisherId} style={styles.nickNameText} />
                <View style={[styles.mediaLeftStack, commonStyles.paddingLeft_0]}>
                   <DocumentChatIcon width="12" height="12" color={props.isSame ? '#7285B5' : '#959595'} />
                   <Text numberOfLines={1} ellipsizeMode="tail" style={styles.documentFileNameText}>
@@ -182,9 +177,7 @@ function ReplyMessage(props) {
       if (message_type === 'contact') {
          return (
             <View style={[styles.replyContainer, props.isSame ? styles.senderBg : styles.receiverBg]}>
-               <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nickNameText}>
-                  {replyMessageUserNickName}
-               </Text>
+               <NickName userId={publisherId} style={styles.nickNameText} />
                <View style={styles.mediaLeftStack}>
                   <ContactChatIcon width="12" height="12" color={props.isSame ? '#7285B5' : '#959595'} />
                   <Text numberOfLines={1} ellipsizeMode="tail" style={styles.attachmentTypeText}>
@@ -198,10 +191,7 @@ function ReplyMessage(props) {
       if (message_type === 'location') {
          return (
             <View style={[styles.locationReplyContainer, props.isSame ? styles.senderBg : styles.receiverBg]}>
-               <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nickNameText}>
-                  {replyMessageUserNickName}
-               </Text>
-
+               <NickName userId={publisherId} style={styles.nickNameText} />
                <View style={styles.miniPreviewImageWrapperForLocation}>
                   <Image
                      alt="location"
@@ -209,7 +199,6 @@ function ReplyMessage(props) {
                      source={getImageSource(mapStaticBlurImage)}
                   />
                </View>
-
                <View style={[styles.mediaLeftStack, commonStyles.paddingLeft_0]}>
                   <LocationMarkerIcon color={props.isSame ? '#7285B5' : '#959595'} />
                   <Text style={styles.attachmentTypeText}>Location</Text>
@@ -220,20 +209,32 @@ function ReplyMessage(props) {
    };
 
    const passReplyTo = () => {
-      handleReplyPress?.(replyTo, props.message);
+      const messsageList = getChatMessages(userId);
+      const isAnySelected = messsageList.some(item => item.isSelected === 1);
+      if (isAnySelected) {
+         const selectData = {
+            chatUserId: userId,
+            msgId,
+         };
+         dispatch(toggleMessageSelection(selectData));
+      } else {
+         handleReplyPress(userId, replyTo, parentMessage);
+      }
    };
 
    const handleLongPress = () => {
-      handleReplyPress?.(replyTo, props.message, true);
+      const selectData = {
+         chatUserId: userId,
+         msgId,
+      };
+      dispatch(toggleMessageSelection(selectData));
    };
 
    return (
       <Pressable onPress={passReplyTo} onLongPress={handleLongPress}>
          {recallStatus !== 0 || deleteStatus !== 0 || Object.keys(msgBody).length === 0 ? (
             <View style={[styles.replyContainer, props.isSame ? styles.senderBg : styles.receiverBg]}>
-               <Text numberOfLines={1} ellipsizeMode="tail" style={commonStyles.fontWeight_bold}>
-                  {!isSameUser ? nickName || getUserIdFromJid(fromUserJId) : 'You'}
-               </Text>
+               <NickName userId={publisherId} style={commonStyles.fontWeight_bold} />
                <Text numberOfLines={1} ellipsizeMode="tail">
                   {ORIGINAL_MESSAGE_DELETED}
                </Text>

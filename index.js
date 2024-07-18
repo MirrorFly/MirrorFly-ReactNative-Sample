@@ -1,28 +1,38 @@
+/**
+ * @format
+ */
 import messaging from '@react-native-firebase/messaging';
 import { AppRegistry, Platform } from 'react-native';
-import 'react-native-get-random-values';
 import App from './App';
 import { name as appName } from './app.json';
-import { constructMessageData, setAppConfig, setupCallScreen } from './src/uikitHelpers/uikitMethods';
-import { MIRRORFLY_RN } from './src/constant';
+import config from './src/config/config';
+import { mirrorflyInitialize, mirrorflyNotificationHandler, setupCallScreen } from './src/uikitMethods';
+
+/**
+// import { startNetworkLogging } from 'react-native-network-logger';
+// if (process.env?.NODE_ENV === 'development') {
+//    startNetworkLogging();
+// }
+ */
+mirrorflyInitialize({
+   apiBaseUrl: config.API_URL,
+   licenseKey: config.licenseKey,
+   callbackListeners: () => {},
+   isSandbox: false,
+});
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
-   if (Platform.OS === 'ios') {
-      return;
+   if (Platform.OS === 'android') {
+      mirrorflyNotificationHandler(remoteMessage);
    }
-   constructMessageData(remoteMessage);
 });
-
-setAppConfig({
-   appSchema: MIRRORFLY_RN, //NOSONAR
-});
-
-setupCallScreen();
 
 messaging().onMessage(async remoteMessage => {
    if (remoteMessage?.data.type === 'mediacall') {
-      constructMessageData(remoteMessage);
+      mirrorflyNotificationHandler(remoteMessage);
    }
 });
+
+setupCallScreen();
 
 AppRegistry.registerComponent(appName, () => App);

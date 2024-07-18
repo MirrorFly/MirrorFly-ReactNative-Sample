@@ -1,4 +1,7 @@
 import React from 'react';
+import { StyleSheet, Text } from 'react-native';
+import { useSelector } from 'react-redux';
+import { getCallDuration } from '../../Helper/Calls/Call';
 import {
    CALL_STATUS_BUSY,
    CALL_STATUS_CALLING,
@@ -10,13 +13,10 @@ import {
    CALL_STATUS_RECONNECT,
    CALL_STATUS_RINGING,
 } from '../../Helper/Calls/Constant';
-import { capitalizeFirstLetter } from '../../Helper/Chat/Utility';
-import { getCallDuration } from '../../Helper/Calls/Call';
-import Store from '../../redux/store';
-import { callDurationTimestamp } from '../../redux/Actions/CallAction';
-import { useSelector } from 'react-redux';
-import { StyleSheet, Text } from 'react-native';
 import ApplicationColors from '../../config/appColors';
+import { capitalizeFirstLetter } from '../../helpers/chatHelpers';
+import { callDurationTimestamp } from '../../redux/callStateSlice';
+import Store from '../../redux/store';
 
 let interval = '';
 const Timer = (props = {}) => {

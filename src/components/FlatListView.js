@@ -1,19 +1,20 @@
-import React from 'react';
-import Avathar from '../common/Avathar';
-import useRosterData from '../hooks/useRosterData';
-import SDK from '../SDK/SDK';
-import { ActivityIndicator, StyleSheet, Text, View, FlatList, Platform, Keyboard } from 'react-native';
-import commonStyles from '../common/commonStyles';
-import ApplicationColors from '../config/appColors';
-import Pressable from '../common/Pressable';
 import CheckBox from '@react-native-community/checkbox';
 import { useRoute } from '@react-navigation/native';
-import { GROUP_INFO, NEW_GROUP } from '../constant';
-import { showToast } from '../Helper';
-import config from './chat/common/config';
+import React from 'react';
+import { ActivityIndicator, FlatList, Keyboard, Platform, StyleSheet, Text, View } from 'react-native';
+import SDK from '../SDK/SDK';
+import Avathar from '../common/Avathar';
+import NickName from '../common/NickName';
+import Pressable from '../common/Pressable';
+import ApplicationColors from '../config/appColors';
+import config from '../config/config';
+import { showToast } from '../helpers/chatHelpers';
+import { useRoasterData } from '../redux/reduxHook';
+import { GROUP_INFO, NEW_GROUP } from '../screens/constants';
+import commonStyles from '../styles/commonStyles';
 
-const RenderItem = ({ item, onhandlePress, selectedUsers }) => {
-   let { nickName, image: imageToken, colorCode, status } = useRosterData(item?.userId);
+const RenderItem = ({ item, onhandlePress, selectedUsers, searchText }) => {
+   let { nickName, image: imageToken, colorCode, status } = useRoasterData(item?.userId);
    const { params: { prevScreen = '' } = {} } = useRoute();
    const [isChecked, setIsChecked] = React.useState(false);
    const isNewGrpSrn = prevScreen === NEW_GROUP;
@@ -27,9 +28,7 @@ const RenderItem = ({ item, onhandlePress, selectedUsers }) => {
    const handlePress = () => {
       Keyboard.dismiss();
       if (Object.keys(selectedUsers).length > config.maxAllowdGroupMembers - 2) {
-         return showToast('Maximum allowed group members ' + config.maxAllowdGroupMembers, {
-            id: 'Maximum_allowed_group_members',
-         });
+         return showToast('Maximum allowed group members ' + config.maxAllowdGroupMembers);
       }
       onhandlePress(item);
    };
@@ -53,6 +52,7 @@ const RenderItem = ({ item, onhandlePress, selectedUsers }) => {
             }}
             onChange={Platform.OS !== 'ios' && handlePress}
             value={isChecked}
+            disabled={Platform.OS === 'ios'}
             style={styles.checkbox}
          />
       );
@@ -64,9 +64,12 @@ const RenderItem = ({ item, onhandlePress, selectedUsers }) => {
             <View style={styles.wrapper}>
                <Avathar data={nickName} profileImage={imageToken} backgroundColor={colorCode} />
                <View style={[commonStyles.marginLeft_15, commonStyles.flex1]}>
-                  <Text style={styles.nickNameText} numberOfLines={1} ellipsizeMode="tail">
-                     {nickName}
-                  </Text>
+                  <NickName
+                     userId={item?.userId}
+                     data={nickName}
+                     searchValue={searchText}
+                     style={styles.nickNameText}
+                  />
                   <Text style={styles.stautsText} numberOfLines={1} ellipsizeMode="tail">
                      {status}
                   </Text>
@@ -80,9 +83,15 @@ const RenderItem = ({ item, onhandlePress, selectedUsers }) => {
 };
 
 export default function FlatListView(props) {
-   const { selectedUsers, onhandlePress, isLoading, footerLoader, data } = props;
+   const { selectedUsers, onhandlePress, isLoading, footerLoader, data, searchText } = props;
    const renderItem = ({ item, index }) => (
-      <RenderItem item={item} index={index} onhandlePress={onhandlePress} selectedUsers={selectedUsers} />
+      <RenderItem
+         searchText={searchText}
+         item={item}
+         index={index}
+         onhandlePress={onhandlePress}
+         selectedUsers={selectedUsers}
+      />
    );
 
    const renderLoaderIfFetching = () => {
@@ -172,5 +181,9 @@ const styles = StyleSheet.create({
       borderColor: '#3276E2',
       width: 20,
       height: 20,
+   },
+   nickName: {
+      color: '#3276E2',
+      fontWeight: 'bold',
    },
 });

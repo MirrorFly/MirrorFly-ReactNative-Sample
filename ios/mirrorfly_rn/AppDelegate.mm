@@ -10,6 +10,8 @@
 #import <RNKeyEvent.h>
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
+// Add the header at the top of the file:
+#import <React/RCTLinkingManager.h>
 
 @implementation AppDelegate
 
@@ -175,6 +177,14 @@ RNKeyEvent *keyEvent = nil;
 - (void)keyInput:(UIKeyCommand *)sender {
   NSString *selected = sender.input;
   [keyEvent sendKeyEvent:selected];
+}
+
+
+- (BOOL)application:(UIApplication *)application
+   openURL:(NSURL *)url
+   options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+  return [RCTLinkingManager application:application openURL:url options:options];
 }
 
 @end

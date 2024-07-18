@@ -1,23 +1,22 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
 import no_messages from '../assets/no_messages.png';
 import Avathar from '../common/Avathar';
 import { CollapseIcon, ExpandIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
-import { changeTimeFormat, timeFormat } from '../common/TimeStamp';
-import commonStyles from '../common/commonStyles';
-import { getImageSource } from '../common/utils';
+import { changeTimeFormat, timeFormat } from '../common/timeStamp';
 import ApplicationColors from '../config/appColors';
-import useRosterData from '../hooks/useRosterData';
+import { getImageSource, getUserIdFromJid } from '../helpers/chatHelpers';
+import { useRoasterData } from '../redux/reduxHook';
+import commonStyles from '../styles/commonStyles';
 
 const propTypes = {
    dbValue: PropTypes.array,
 };
 
 const Tile = ({ item, renderKey }) => {
-   const { nickName, image: imageToken, colorCode } = useRosterData(getUserIdFromJid(item?.jid));
+   const { nickName, image: imageToken, colorCode } = useRoasterData(getUserIdFromJid(item?.jid));
    return (
       <>
          <Pressable contentContainerStyle={[commonStyles.hstack, commonStyles.p_15]}>

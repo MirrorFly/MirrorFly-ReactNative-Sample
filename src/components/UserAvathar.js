@@ -1,16 +1,25 @@
 import React from 'react';
-import useRosterData from '../hooks/useRosterData';
 import Avathar from '../common/Avathar';
-import SDK from '../SDK/SDK';
+import { useRoasterData } from '../redux/reduxHook';
 
-function UserAvathar({ userId, userProfile, ...props }) {
-   let { nickName, image: imageToken, colorCode } = useRosterData(userId);
+function UserAvathar({ type, userId, data = {}, ...props }) {
+   const profile = useRoasterData(userId);
+   const [userProfile, setUserProfile] = React.useState(data);
 
-   nickName = nickName || userProfile?.nickName || userId || '';
-   imageToken = imageToken || userProfile?.image || '';
-   colorCode = colorCode || userProfile?.colorCode || SDK.getRandomColorCode();
+   React.useEffect(() => {
+      if (profile) {
+         setUserProfile(prevData => ({
+            ...prevData,
+            ...profile,
+         }));
+      }
+   }, [profile]);
 
-   return <Avathar data={nickName} profileImage={imageToken} backgroundColor={colorCode} {...props} />;
+   let { nickName, colorCode, image: imageToken } = userProfile;
+
+   return (
+      <Avathar type={type} data={nickName || userId} backgroundColor={colorCode} profileImage={imageToken} {...props} />
+   );
 }
 
 export default UserAvathar;

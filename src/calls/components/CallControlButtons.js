@@ -1,7 +1,6 @@
 import { debounce } from 'lodash-es';
 import React, { useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import RNCallKeep from '../../customModules/CallKitModule';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { useSelector } from 'react-redux';
@@ -14,13 +13,7 @@ import {
    CALL_STATUS_DISCONNECTED,
    CALL_TYPE_VIDEO,
 } from '../../Helper/Calls/Constant';
-import {
-   audioRouteNameMap,
-   switchCamera,
-   updateAudioRouteTo,
-   updateCallAudioMute,
-   updateCallVideoMute,
-} from '../../Helper/Calls/Utility';
+import { audioRouteNameMap, switchCamera, updateAudioRouteTo, updateCallAudioMute } from '../../Helper/Calls/Utility';
 import {
    AudioMuteIcon,
    AudioUnMuteIcon,
@@ -34,6 +27,7 @@ import {
    VideoUnMuteIcon,
 } from '../../common/Icons';
 import Pressable from '../../common/Pressable';
+import RNCallKeep from '../../customModules/CallKitModule';
 
 const sortAudioRoutes = (a, b) => {
    const nameA = a.name.toLowerCase();
@@ -46,7 +40,7 @@ const sortAudioRoutes = (a, b) => {
    return 0;
 };
 
-const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callType }) => {
+const CallControlButtons = ({ callStatus, handleEndCall, callType, handleVideoMute }) => {
    let endActionButtonRef = useRef(false);
    const RBSheetRef = useRef(null);
 
@@ -127,7 +121,7 @@ const CallControlButtons = ({ callStatus, handleEndCall, handleVideoMute, callTy
          return;
       }
       const _videoMuted = !isVideoMuted;
-      updateCallVideoMute(_videoMuted, callerUUID);
+      handleVideoMute(_videoMuted, callerUUID);
    };
 
    const handleSelectedRoutes = () => {

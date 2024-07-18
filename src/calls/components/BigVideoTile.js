@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
 import Avathar from '../../common/Avathar';
 import { AudioMuteIcon } from '../../common/Icons';
 import Pressable from '../../common/Pressable';
-import useRosterData from '../../hooks/useRosterData';
+import { CALL_STATUS_RECONNECT } from '../../helpers/constants';
+import { useRoasterData } from '../../redux/reduxHook';
 import PulseAnimatedView from './PulseAnimatedView';
 import VideoComponent from './VideoComponent';
 
@@ -20,7 +20,7 @@ const BigVideoTile = ({
 }) => {
    let reconnectStatus =
       callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && userId !== localUserJid ? true : false;
-   const userProfile = useRosterData(userId);
+   const userProfile = useRoasterData(userId) || {};
    const nickName = userProfile.nickName || userId || '';
 
    const renderAudioMuted = React.useMemo(() => {
@@ -47,6 +47,10 @@ const BigVideoTile = ({
       );
    }, [isAudioMuted]);
 
+   const renderVideoComponent = React.useMemo(() => {
+      return <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={0} />;
+   }, [stream, isFrontCameraEnabled]);
+
    return (
       <>
          {!videoMuted && stream && stream?.video && !reconnectStatus && (
@@ -62,7 +66,7 @@ const BigVideoTile = ({
                   bottom: 0,
                }}
                contentContainerStyle={{ flex: 1 }}>
-               <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={0} />
+               {renderVideoComponent}
                {renderAudioMuted}
             </Pressable>
          )}

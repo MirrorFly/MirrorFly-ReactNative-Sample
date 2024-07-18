@@ -4,13 +4,12 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { startIncomingCallTimer } from '../../Helper/Calls/Call';
 import { answerIncomingCall, closeCallModalActivity, declineIncomingCall } from '../../Helper/Calls/Utility';
-import { capitalizeFirstLetter } from '../../Helper/Chat/Utility';
 import CallsBg from '../../assets/calls-bg.png';
 import Avathar from '../../common/Avathar';
-import commonStyles from '../../common/commonStyles';
-import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
-import useRosterData from '../../hooks/useRosterData';
+import { capitalizeFirstLetter, getImageSource } from '../../helpers/chatHelpers';
+import { useRoasterData } from '../../redux/reduxHook';
+import commonStyles from '../../styles/commonStyles';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 import GestureAnimationScreen from './GestureAnimationScreen';
 
@@ -19,7 +18,7 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
       connectionState: { callType },
       callerUUID: activeCallUUID = '',
    } = useSelector(state => state.callData) || {};
-   const userProfile = useRosterData(userId);
+   const userProfile = useRoasterData(userId) || {};
    const nickName = userProfile.nickName || userProfile.userId;
    const acceptButtonRef = useRef(false);
    const declineButtonRef = useRef(false);

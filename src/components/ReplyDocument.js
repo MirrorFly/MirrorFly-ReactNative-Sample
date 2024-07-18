@@ -1,54 +1,50 @@
-import { Pressable } from 'react-native';
 import React from 'react';
-import { HStack, Text, View } from 'native-base';
+import { Pressable, Text, View } from 'react-native';
 import { ClearTextIcon, DocumentChatIcon } from '../common/Icons';
-import { useSelector } from 'react-redux';
-import useRosterData from '../hooks/useRosterData';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import NickName from '../common/NickName';
+import { getUserIdFromJid } from '../helpers/chatHelpers';
+import commonStyles from '../styles/commonStyles';
+import { getCurrentUserJid } from '../uikitMethods';
 
 const ReplyDocument = props => {
    const { replyMsgItems, handleRemove } = props;
-   const { publisherJid = '', fromUserId = '' } = replyMsgItems;
-   const profileDetails = useSelector(state => state.navigation.profileDetails);
-   const currentUserJID = useSelector(state => state.auth.currentUserJID);
-   const isSameUser = publisherJid === currentUserJID;
+   const { publisherJid = '' } = replyMsgItems;
+   const isSameUser = publisherJid === getCurrentUserJid();
    const publisherId = getUserIdFromJid(publisherJid);
-
-   let { nickName } = useRosterData(isSameUser ? '' : publisherId);
-   // updating default values
-   nickName = nickName || profileDetails?.nickName || publisherId || '';
 
    const RemoveHandle = () => {
       handleRemove();
    };
+
    return (
       <View>
-         <HStack justifyContent={'space-between'} alignItems={'center'}>
+         <View flexDirection="row" justifyContent={'space-between'} alignItems={'center'}>
             {isSameUser ? (
-               <Text color={'#000'} pl={1} fontSize={14} mb={1} fontWeight={600} py="0">
-                  You
-               </Text>
+               <Text style={commonStyles.userName}>You</Text>
             ) : (
-               <Text mb={2} color={'#000'} pl={1} fontSize={14} fontWeight={600} py="0">
-                  {nickName || fromUserId}
-               </Text>
+               <NickName style={commonStyles.userName} userId={publisherId} />
             )}
             <Pressable
                style={{
                   padding: 5,
+                  top: -3,
+                  right: 10,
+                  bottom: 0,
                   backgroundColor: '#FFF',
-                  borderRadius: 20,
+                  borderRadius: 10,
+                  borderColor: '#000',
+                  borderWidth: 1,
                }}
                onPress={RemoveHandle}>
                <ClearTextIcon />
             </Pressable>
-         </HStack>
-         <HStack alignItems={'center'} pl={1}>
+         </View>
+         <View flexDirection="row" alignItems={'center'}>
             <DocumentChatIcon />
             <Text pl={2} color="#313131" fontSize={14} mb={1} fontWeight={400}>
                {replyMsgItems.msgBody.media.fileName}
             </Text>
-         </HStack>
+         </View>
       </View>
    );
 };

@@ -1,39 +1,30 @@
-import { Pressable, Image } from 'react-native';
 import React from 'react';
+import { Image, Pressable, Text, View } from 'react-native';
 import { ClearTextIcon, VideoIcon } from '../common/Icons';
-import { HStack, Text, View } from 'native-base';
-import { useSelector } from 'react-redux';
-import useRosterData from '../hooks/useRosterData';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import NickName from '../common/NickName';
+import { getUserIdFromJid } from '../helpers/chatHelpers';
+import commonStyles from '../styles/commonStyles';
+import { getCurrentUserJid } from '../uikitMethods';
 
-const ReplyVideo = props => {
+const ReplyImage = props => {
    const { replyMsgItems, handleRemove } = props;
-   const { publisherJid = '', fromUserId = '' } = replyMsgItems;
-   const profileDetails = useSelector(state => state.navigation.profileDetails);
-   const currentUserJID = useSelector(state => state.auth.currentUserJID);
-   const isSameUser = publisherJid === currentUserJID;
+   const { publisherJid = '' } = replyMsgItems;
+   const isSameUser = publisherJid === getCurrentUserJid();
    const publisherId = getUserIdFromJid(publisherJid);
-
-   let { nickName } = useRosterData(isSameUser ? '' : publisherId);
-   // updating default values
-   nickName = nickName || profileDetails?.nickName || publisherId || '';
 
    const RemoveHandle = () => {
       handleRemove();
    };
+
    return (
       <View style={{ position: 'relative' }}>
-         <HStack justifyContent={'space-between'} alignItems={'center'}>
+         <View flexDirection="row" justifyContent={'space-between'} alignItems={'center'}>
             {isSameUser ? (
-               <Text color={'#000'} fontSize={14} pl={1} mb={1} fontWeight={600} py="0">
-                  You
-               </Text>
+               <Text style={[commonStyles.userName]}>You</Text>
             ) : (
-               <Text mb={1} color={'#000'} pl={1} fontSize={14} fontWeight={600} py="0">
-                  {nickName || fromUserId}
-               </Text>
+               <NickName style={commonStyles.userName} userId={publisherId} />
             )}
-         </HStack>
+         </View>
          <View
             style={{
                width: 70,
@@ -44,13 +35,22 @@ const ReplyVideo = props => {
                bottom: 0,
                right: -10,
             }}>
-            <Image
-               resizeMode="cover"
-               style={{ width: 60, height: 69 }}
-               source={{
-                  uri: `data:image/png;base64,${replyMsgItems?.msgBody?.media?.thumb_image}`,
-               }}
-            />
+            {replyMsgItems.msgBody.media.local_path ? (
+               <Image
+                  resizeMode="cover"
+                  style={{ width: 60, height: 69 }}
+                  source={{ uri: replyMsgItems.msgBody.media.local_path }}
+               />
+            ) : (
+               <Image
+                  resizeMode="cover"
+                  style={{ width: 60, height: 69 }}
+                  source={{
+                     uri: `data:image/png;base64,${replyMsgItems.msgBody.media.thumb_image}`,
+                  }}
+               />
+            )}
+
             <Pressable
                style={{
                   padding: 5,
@@ -67,14 +67,12 @@ const ReplyVideo = props => {
             </Pressable>
          </View>
 
-         <HStack alignItems={'center'} pl={1}>
-            <VideoIcon color={'#767676'} width="13" height="13" />
-            <Text pl={2} fontSize={14} color="#313131" fontWeight={400}>
-               Video
-            </Text>
-         </HStack>
+         <View flexDirection="row" alignItems={'center'} pl={1}>
+            <VideoIcon width="12" height="13" color={'#7285B5'} />
+            <Text style={{ fontSize: 14, color: '#313131', paddingLeft: 8 }}>Video</Text>
+         </View>
       </View>
    );
 };
 
-export default ReplyVideo;
+export default ReplyImage;

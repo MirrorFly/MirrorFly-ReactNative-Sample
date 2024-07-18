@@ -1,8 +1,8 @@
 import React from 'react';
 import { Pressable, View } from 'react-native';
-import commonStyles from './commonStyles';
+import commonStyles from '../styles/commonStyles';
 
-const IconButton = ({ containerStyle, style, pressedStyle, onPress, children }) => {
+const IconButton = ({ containerStyle, style, pressedStyle, onPress, children, ...props }) => {
    const ProcessedStyle = React.useMemo(() => {
       if (Array.isArray(style)) {
          // merging all the objects into 1 single object
@@ -23,9 +23,14 @@ const IconButton = ({ containerStyle, style, pressedStyle, onPress, children }) 
    }, [containerStyle]);
 
    return (
-      <Pressable style={processedPresableStyle} onPress={onPress}>
+      <Pressable style={processedPresableStyle} onPress={onPress} {...props}>
          {({ pressed }) => (
-            <View style={[commonStyles.padding_8, ProcessedStyle, pressed && (pressedStyle || commonStyles.pressedBg)]}>
+            <View
+               style={[
+                  commonStyles.p_10,
+                  ProcessedStyle,
+                  pressed && (pressedStyle || [commonStyles.pressedBg, { borderRadius: 50 }]),
+               ]}>
                {children}
             </View>
          )}

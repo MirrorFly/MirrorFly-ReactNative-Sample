@@ -3,14 +3,14 @@ import { StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import Avathar from '../../common/Avathar';
 import Pressable from '../../common/Pressable';
-import useRosterData from '../../hooks/useRosterData';
-import { openCallModal } from '../../redux/Actions/CallAction';
+import { openCallModal } from '../../redux/callStateSlice';
+import { useRoasterData } from '../../redux/reduxHook';
 import PulseAnimationComponent from '../components/PulseAnimationComponent';
 
 function PipViewIos(props = {}) {
    const { userId } = props;
    const dispatch = useDispatch();
-   const userProfile = useRosterData(userId);
+   const userProfile = useRoasterData(userId);
    const nickName = userProfile.nickName || userProfile.userId;
    const openCallModelPip = () => {
       dispatch(openCallModal());

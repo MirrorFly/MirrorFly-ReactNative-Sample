@@ -1,13 +1,13 @@
 import babel from '@rollup/plugin-babel';
-import resolve, { nodeResolve } from '@rollup/plugin-node-resolve';
-import nodePolyfills from 'rollup-plugin-node-polyfills';
-import svgr from '@svgr/rollup';
-import peerDepsExternal from 'rollup-plugin-peer-deps-external';
-import json from '@rollup/plugin-json';
-import image from '@rollup/plugin-image';
-import copy from 'rollup-plugin-copy';
-import replace from '@rollup/plugin-replace';
 import commonjs from '@rollup/plugin-commonjs';
+import image from '@rollup/plugin-image';
+import json from '@rollup/plugin-json';
+import resolve, { nodeResolve } from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
+import svgr from '@svgr/rollup';
+import copy from 'rollup-plugin-copy';
+import nodePolyfills from 'rollup-plugin-node-polyfills';
+import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import { terser } from 'rollup-plugin-terser';
 
 export default {
@@ -46,7 +46,6 @@ export default {
       'emoji-datasource',
       '@react-navigation/native-stack',
       '@react-native-async-storage/async-storage',
-      'react-native-mov-to-mp4',
       'react-native-image-crop-picker',
       'react-native-safe-area-context',
       '@react-native-community/netinfo',
@@ -77,20 +76,22 @@ export default {
       'react-native-geocoding',
       '@react-native-camera-roll/camera-roll',
       '@react-native-community/checkbox',
-      //Calls 
-      "react-native-incall-manager",
+      'react-native-heic-converter',
+      'react-native-simple-toast',
+      //Calls
+      'react-native-incall-manager',
       'react-native-webrtc',
       'react-native-keep-awake',
       'react-native-raw-bottom-sheet',
       'react-native-background-timer',
-      'react-native-silentmode-detector',
       'react-native-headphone-detection',
       '@notifee/react-native',
       'react-native-voip-push-notification',
       'mirrorfly-reactnative-sdk',
-      "react-native-material-menu",
-      "react-native-keyevent",
-      "react-native-ringer-mode",
+      'react-native-material-menu',
+      'react-native-keyevent',
+      'react-native-ringer-mode',
+      'react-native-simple-toast',
    ],
    plugins: [
       replace({

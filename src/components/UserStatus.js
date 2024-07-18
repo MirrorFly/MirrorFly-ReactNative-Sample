@@ -1,9 +1,9 @@
 import React from 'react';
 import { Text } from 'react-native';
-import useRosterData from '../hooks/useRosterData';
+import { useRoasterData } from '../redux/reduxHook';
 
 function UserStatus({ userId, ...props }) {
-   let { status } = useRosterData(userId);
+   let { status } = useRoasterData(userId);
 
    return <Text {...props}>{status}</Text>;
 }

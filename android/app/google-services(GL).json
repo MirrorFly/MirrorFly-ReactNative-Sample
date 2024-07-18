@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "287831404174",
+    "project_id": "the-collective-dev",
+    "storage_bucket": "the-collective-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:287831404174:android:20108938314a6b05ee63df",
+        "android_client_info": {
+          "package_name": "com.growthaxl"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVNc7sn5oPiYkliY-fdDqwxrl_431M4XY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,17 +1,17 @@
-import { ORIGINAL_MESSAGE_DELETED } from '../Helper/Chat/Constant';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
-import { HStack, Text, View } from 'native-base';
 import React from 'react';
-import { Pressable } from 'react-native';
-import { useSelector } from 'react-redux';
+import { Pressable, View } from 'react-native';
 import { ClearTextIcon } from '../common/Icons';
+import NickName from '../common/NickName';
+import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { ORIGINAL_MESSAGE_DELETED } from '../helpers/constants';
+import { currentChatUser } from '../screens/ConversationScreen';
+import commonStyles from '../styles/commonStyles';
+import { getCurrentUserJid } from '../uikitMethods';
 
 const ReplyDeleted = props => {
    const { replyMsgItems, handleRemove } = props;
    const { publisherJid = '' } = replyMsgItems;
-   const profileDetails = useSelector(state => state.navigation.profileDetails);
-   const currentUserJID = useSelector(state => state.auth.currentUserJID);
-   const isSameUser = publisherJid === currentUserJID;
+   const isSameUser = publisherJid === getCurrentUserJid();
 
    const RemoveHandle = () => {
       handleRemove();
@@ -19,15 +19,16 @@ const ReplyDeleted = props => {
 
    return (
       <View>
-         <HStack justifyContent={'space-between'} alignItems={'center'}>
+         <View style={[commonStyles.hstack, commonStyles.justifyContentSpaceBetween, commonStyles.alignItemsCenter]}>
             {isSameUser ? (
                <Text color={'#000'} fontSize={14} pl={1} mb={1} fontWeight={600} py="0">
                   You
                </Text>
             ) : (
-               <Text mb={2} color={'#000'} pl={0} fontSize={14} fontWeight={600} py="0">
-                  {profileDetails?.nickName || getUserIdFromJid(currentUserJID)}
-               </Text>
+               <NickName userId={getUserIdFromJid(currentChatUser)} />
+               // <Text mb={2} color={'#000'} pl={0} fontSize={14} fontWeight={600} py="0">
+               //    {profileDetails?.nickName || getUserIdFromJid(currentUserJID)}
+               // </Text>
             )}
             <Pressable
                style={{
@@ -38,7 +39,7 @@ const ReplyDeleted = props => {
                onPress={RemoveHandle}>
                <ClearTextIcon />
             </Pressable>
-         </HStack>
+         </View>
          <Text numberOfLines={1} pl={1} fontSize={14} color="#313131">
             {ORIGINAL_MESSAGE_DELETED}
          </Text>

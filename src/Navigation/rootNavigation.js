@@ -1,30 +1,48 @@
-import { createNavigationContainerRef } from '@react-navigation/native';
+import { StackActions, createNavigationContainerRef } from '@react-navigation/native';
 
 export const navigationRef = createNavigationContainerRef();
 
-export function navigate(name, params) {
-   if (navigationRef.isReady()) {
-      navigationRef.navigate(name, params);
-   }
-}
+const RootNavigation = {
+   navigate(name, params) {
+      if (navigationRef.isReady()) {
+         navigationRef.navigate(name, params);
+      }
+   },
 
-export function goBack() {
-   if (navigationRef.isReady()) {
-      navigationRef.goBack();
-   }
-}
+   goBack() {
+      if (navigationRef.isReady()) {
+         navigationRef.goBack();
+      }
+   },
 
-export function reset(name) {
-   if (navigationRef.isReady()) {
-      navigationRef.reset({
-         index: 0,
-         routes: [{ name: name }],
-      });
-   }
-}
+   reset(name, params) {
+      if (navigationRef.isReady()) {
+         navigationRef.reset({
+            index: 0,
+            routes: [{ name: name, params: params }],
+         });
+      }
+   },
 
-export const getCurrentScreen = () => {
-   if (navigationRef.isReady()) {
-      return navigationRef.getState().routes[navigationRef.getState().routes.length - 1].name;
-   }
+   getCurrentScreen() {
+      if (navigationRef.isReady()) {
+         const findCurrentRoute = routes => {
+            const route = routes[routes.length - 1];
+            if (route.state) {
+               // Recursively find the current route in nested navigators
+               return findCurrentRoute(route.state.routes);
+            }
+            return route.name;
+         };
+
+         const state = navigationRef.getState();
+         return findCurrentRoute(state.routes);
+      }
+   },
+
+   popToTop() {
+      navigationRef.dispatch(StackActions.popToTop());
+   },
 };
+
+export default RootNavigation;

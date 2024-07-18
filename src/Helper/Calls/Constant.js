@@ -13,6 +13,7 @@ export const CALL_CONVERSION_STATUS_CANCEL = 'cancel';
 export const CALL_CONVERSION_STATUS_REQ_WAITING = 'request_waiting';
 export const CALL_CONVERSION_STATUS_REQUEST_INIT = 'request_init';
 export const CALL_CONVERSION_STATUS_REQUEST = 'request';
+export const CALL_STATUS_PERMISSION = 'permissionError';
 // CALL STATUS
 export const CALL_STATUS_INCOMING = 'Incoming audio call';
 export const CALL_STATUS_RECONNECT = 'reconnecting';

@@ -4,7 +4,10 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
@@ -23,6 +26,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.util.ArrayList;
 
@@ -57,6 +61,16 @@ public class AudioRoutingModule extends ReactContextBaseJavaModule {
         super.initialize();
         audioManager = (AudioManager) reactApplicationContext.getSystemService(Context.AUDIO_SERVICE);
     }
+
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean isSilent = isSilentModeEnabled(audioManager);
+            reactApplicationContext
+                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                    .emit("onSilentModeStatusChange", isSilent);
+        }
+    };
 
     private Boolean checkIsBluetoothHeadsetConnected() {
         Boolean isBlHeadsetConnected = false;
@@ -189,6 +203,43 @@ public class AudioRoutingModule extends ReactContextBaseJavaModule {
             default:
                 return null;
         }
+    }
+
+    public static boolean isSilentModeEnabled(AudioManager audioManager) {
+        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        switch (audioManager.getRingerMode()) {
+            case AudioManager.RINGER_MODE_SILENT:
+                return true;
+            case AudioManager.RINGER_MODE_VIBRATE:
+                return true;
+            case AudioManager.RINGER_MODE_NORMAL:
+                if (currentVolume == 0) {
+                    return true;
+                }
+                return false;
+            default:
+                return false;
+        }
+    }
+
+    @ReactMethod
+    public void startObserving() {
+        IntentFilter filter = new IntentFilter();
+        String[] actions = {
+            AudioManager.RINGER_MODE_CHANGED_ACTION,
+            "android.media.VOLUME_CHANGED_ACTION"
+        };
+
+        for (String action : actions) {
+            filter.addAction(action);
+        }
+
+        reactApplicationContext.registerReceiver(receiver, filter);
+    }
+
+    @ReactMethod
+    public void stopObserving() {
+        reactApplicationContext.unregisterReceiver(receiver);
     }
 }
 

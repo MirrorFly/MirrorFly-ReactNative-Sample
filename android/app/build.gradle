@@ -3,7 +3,6 @@ apply plugin: "com.facebook.react"
 
 /** Add this Firebase intialize */
 apply plugin: 'com.google.gms.google-services'
-apply plugin: 'kotlin-android'
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -83,7 +82,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "2.4.15"
+        versionName "2.4.29"
         /** Add this for react-native-camera */
         missingDimensionStrategy 'react-native-camera', 'general'
         multiDexEnabled true
@@ -95,7 +94,14 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('contus_internal_uikit_keystore.jks')
+            storePassword 'contus@uikit'
+            keyAlias 'UiKit'
+            keyPassword 'contus@uikit'
+        }
     }
+
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
@@ -103,7 +109,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
@@ -113,9 +119,6 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-    implementation "androidx.core:core-ktx:1.8.0"
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {

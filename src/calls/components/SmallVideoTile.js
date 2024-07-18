@@ -1,12 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
-import { getUserIdFromJid } from '../../Helper/Chat/Utility';
 import Avathar from '../../common/Avathar';
 import { AudioMuteIcon } from '../../common/Icons';
-import commonStyles from '../../common/commonStyles';
 import ApplicationColors from '../../config/appColors';
-import useRosterData from '../../hooks/useRosterData';
+import { getUserIdFromJid } from '../../helpers/chatHelpers';
+import { useRoasterData } from '../../redux/reduxHook';
+import commonStyles from '../../styles/commonStyles';
 import VideoComponent from './VideoComponent';
 
 const SmallVideoTile = ({
@@ -19,15 +19,18 @@ const SmallVideoTile = ({
    callStatus = '',
 }) => {
    const userId = getUserIdFromJid(user.fromJid);
-   const userProfile = useRosterData(userId);
+   const userProfile = useRoasterData(userId) || {};
    const nickName = userProfile.nickName || userId || '';
    let reconnectStatus =
       callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && !isLocalUser ? true : false;
+
+   const renderVideoComponent = React.useMemo(() => {
+      return <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={1} />;
+   }, [stream, isFrontCameraEnabled]);
+
    return (
       <View style={styles.smallVideoWrapper}>
-         {!isVideoMuted && stream && stream?.video && !reconnectStatus && (
-            <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnabled} zIndex={1} />
-         )}
+         {!isVideoMuted && stream && stream?.video && !reconnectStatus && renderVideoComponent}
          <View
             style={[
                commonStyles.p_10,

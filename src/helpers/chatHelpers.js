@@ -1,5 +1,6 @@
 import Clipboard from '@react-native-clipboard/clipboard';
 import Graphemer from 'graphemer';
+import React from 'react';
 import { Alert, Dimensions, Linking, Platform, StyleSheet, View } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import { createThumbnail } from 'react-native-create-thumbnail';
@@ -14,7 +15,6 @@ import Sound from 'react-native-sound';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
 import { handleSendMsg, uploadFileToSDK } from '../SDK/utils';
-import React from 'react';
 import {
    CameraIcon,
    ChatsIcon,
@@ -24,9 +24,8 @@ import {
    GalleryIcon,
    HeadSetIcon,
    LocationIcon,
-   NotificationSettingsIcon,
    ProfileIcon,
-   SandTimer,
+   SandTimer
 } from '../common/Icons';
 import { getNetworkState } from '../common/hooks';
 import {
@@ -96,8 +95,7 @@ import {
    LOCATION_SCREEN,
    MOBILE_CONTACT_LIST_SCREEN,
    NOTIFICATION_ALERT_STACK,
-   NOTIFICATION_STACK,
-   PROFILE_STACK,
+   PROFILE_STACK
 } from '../screens/constants';
 import { getCurrentUserJid, mflog } from '../uikitMethods';
 
@@ -960,11 +958,14 @@ export const settingsMenu = [
       icon: ChatsIcon,
       rounteName: CHATS_CREEN,
    },
+   /** 
+    * 
    {
       name: 'Notifications',
       icon: NotificationSettingsIcon,
       rounteName: NOTIFICATION_STACK,
    },
+   */
    {
       name: 'Log out',
       icon: ExitIcon,

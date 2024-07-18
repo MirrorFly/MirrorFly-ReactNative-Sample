@@ -1,16 +1,16 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import {
-    BackHandler,
-    FlatList,
-    Image,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    StyleSheet,
-    TextInput,
-    View,
+   BackHandler,
+   FlatList,
+   Image,
+   Keyboard,
+   KeyboardAvoidingView,
+   Platform,
+   Pressable,
+   StyleSheet,
+   TextInput,
+   View,
 } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import IconButton from '../common/IconButton';
@@ -20,9 +20,10 @@ import VideoInfo from '../common/VideoInfo';
 import UserAvathar from '../components/UserAvathar';
 import ApplicationColors from '../config/appColors';
 import { getType, getUserIdFromJid, handleSendMedia } from '../helpers/chatHelpers';
-import { CAMERA_SCREEN, CHAT_TYPE_GROUP, GALLERY_PHOTOS_SCREEN, MIX_BARE_JID } from '../helpers/constants';
 import commonStyles from '../styles/commonStyles';
 import { currentChatUser } from './ConversationScreen';
+import { GALLERY_PHOTOS_SCREEN, CAMERA_SCREEN } from './constants';
+import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../helpers/constants';
 
 function MediaPreView() {
    const chatUser = currentChatUser;

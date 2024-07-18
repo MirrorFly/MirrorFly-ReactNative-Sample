@@ -13,10 +13,9 @@ import FlatListView from '../components/FlatListView';
 import ApplicationColors from '../config/appColors';
 import config from '../config/config';
 import { getImageSource, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
-import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../helpers/constants';
 import { getUserNameFromStore, useRecentChatData } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
-import { GROUP_INFO, NEW_GROUP } from './constants';
+import { CONVERSATION_STACK,CONVERSATION_SCREEN, GROUP_INFO, NEW_GROUP } from './constants';
 
 const contactPaginationRefInitialValue = {
    nextPage: 1,

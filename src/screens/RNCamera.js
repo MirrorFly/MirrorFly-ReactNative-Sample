@@ -22,8 +22,8 @@ import {
    showToast,
    validateFileSize,
 } from '../helpers/chatHelpers';
-import { CAMERA_SCREEN, MEDIA_PRE_VIEW_SCREEN } from '../helpers/constants';
 import commonStyles from '../styles/commonStyles';
+import { MEDIA_PRE_VIEW_SCREEN, CAMERA_SCREEN } from './constants';
 
 const cameraService = new CameraService();
 

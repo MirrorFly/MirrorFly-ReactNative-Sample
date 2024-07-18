@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { clearState } from './clearSlice';
-const { getUserIdFromJid } = require('../helpers/chatHelpers');
+import { getUserIdFromJid } from '../helpers/chatHelpers';
 
 const initialState = {
    searchText: '',

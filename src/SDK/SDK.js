@@ -1,4 +1,4 @@
-import './index';
+import 'contus-mf-sdk-rn';
 
 const SDK = global.SDK;
 

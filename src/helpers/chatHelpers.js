@@ -13,6 +13,7 @@ import Sound from 'react-native-sound';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
 import { handleSendMsg, uploadFileToSDK } from '../SDK/utils';
+import React from 'react';
 import {
    CameraIcon,
    ChatsIcon,

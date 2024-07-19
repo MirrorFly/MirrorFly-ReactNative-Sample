@@ -1,20 +1,27 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { ActivityIndicator, Animated, BackHandler, Dimensions, FlatList, StyleSheet, Text, View } from 'react-native';
+import { Animated, BackHandler, Dimensions, StyleSheet, Text, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import IconButton from '../common/IconButton';
 import { LeftArrowIcon } from '../common/Icons';
 import NickName from '../common/NickName';
 import Pressable from '../common/Pressable';
-import DocTile from '../components/DocTile';
-import MediaTile from '../components/MediaTile';
+import DocumentTab from '../components/DocumentTab';
+import { default as MediaTab } from '../components/MediaTab';
 import ApplicationColors from '../config/appColors';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
 import { useChatMessages } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
-import { MEDIA_POST_PRE_VIEW_SCREEN } from './constants';
 
 const { width: screenWidth } = Dimensions.get('window');
+
+// Function to fetch count based on message_type
+export const getMessageTypeCount = (_messages, messageType) => {
+   return _messages.filter(
+      message =>
+         message?.msgBody.message_type === messageType && message.deleteStatus !== 1 && message.recallStatus !== 1,
+   ).length;
+};
 
 const ViewAllMedia = () => {
    const navigation = useNavigation();
@@ -51,11 +58,6 @@ const ViewAllMedia = () => {
       return filteredMessages;
    }, [messagesArr, jid]);
 
-   // Function to fetch count based on message_type
-   const getMessageTypeCount = (_messages, messageType) => {
-      return _messages.filter(message => message?.msgBody.message_type === messageType).length;
-   };
-
    const handleGetMedia = async () => {
       const imageCount = messageList?.reverse()?.filter(res => ['image'].includes(res.message_type));
       setCountBasedOnType({
@@ -76,95 +78,8 @@ const ViewAllMedia = () => {
       return true;
    };
 
-   const handleMediaDeleteMessageId = msgId => {
-      // Filter out the deleted message from the mediaMessages state
-      const updatedMediaMessages = mediaMessages.filter(message => message.msgId !== msgId);
-
-      // Update the mediaMessages state with the filtered messages
-      setMediaMessages(updatedMediaMessages);
-   };
-
-   const handleDocDeleteMessageId = msgId => {
-      // Filter out the deleted message from the mediaMessages state
-      const updatedDocMessages = docsMessages.filter(message => message.msgId !== msgId);
-
-      // Update the mediaMessages state with the filtered messages
-      setDocsMessages(updatedDocMessages);
-   };
-
    const handleTabPress = tabIndex => () => {
       pagerRef.current.setPage(tabIndex);
-   };
-
-   const renderImageCountLabel = () => {
-      return getMessageTypeCount(mediaMessages, 'image') > 1
-         ? getMessageTypeCount(mediaMessages, 'image') + ' Photos'
-         : getMessageTypeCount(mediaMessages, 'image') + ' Photo';
-   };
-
-   const renderVideoCountLabel = () => {
-      return getMessageTypeCount(mediaMessages, 'video') > 1
-         ? getMessageTypeCount(mediaMessages, 'video') + ' Videos'
-         : getMessageTypeCount(mediaMessages, 'video') + ' Video';
-   };
-
-   const renderAudioCountLabel = () => {
-      return getMessageTypeCount(mediaMessages, 'audio') > 1
-         ? getMessageTypeCount(mediaMessages, 'audio') + ' Audios'
-         : getMessageTypeCount(mediaMessages, 'audio') + ' Audio';
-   };
-
-   const renderDocCountLabel = () => {
-      return getMessageTypeCount(docsMessages, 'file') > 1
-         ? getMessageTypeCount(docsMessages, 'file') + ' Documents'
-         : getMessageTypeCount(docsMessages, 'file') + ' Document';
-   };
-
-   const renderMediaFooter = () => {
-      return (
-         <>
-            {mediaMessages.length > 0 && (
-               <Text style={[commonStyles.textCenter, commonStyles.colorBlack]}>
-                  {renderImageCountLabel()}, {renderVideoCountLabel()}, {renderAudioCountLabel()}
-               </Text>
-            )}
-            {loading && (
-               <View style={[commonStyles.mb_130, commonStyles.marginTop_5]}>
-                  <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
-               </View>
-            )}
-         </>
-      );
-   };
-
-   const renderDocFooter = () => {
-      return (
-         <>
-            {docsMessages.length > 0 && (
-               <Text style={[commonStyles.textCenter, commonStyles.colorBlack]}>{renderDocCountLabel()}</Text>
-            )}
-            {loading && (
-               <View style={[commonStyles.mb_130, commonStyles.marginTop_5]}>
-                  <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
-               </View>
-            )}
-         </>
-      );
-   };
-
-   const renderTileBasedOnMessageType = item => {
-      return <MediaTile item={item} onDelete={handleMediaDeleteMessageId} />;
-   };
-
-   const renderMediaTile = ({ item }) => {
-      const handleMediaPress = () => {
-         navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid, msgId: item.msgId });
-      };
-      return <Pressable onPress={handleMediaPress}>{renderTileBasedOnMessageType(item)}</Pressable>;
-   };
-
-   const renderDocTile = ({ item }) => {
-      return <DocTile item={item} onDelete={handleDocDeleteMessageId} />;
    };
 
    // Function to animate the movement of the active tab indicator
@@ -187,20 +102,33 @@ const ViewAllMedia = () => {
          <View style={styles.mediaTabBar}>
             <Pressable pressedStyle={{}} style={[styles.mediaTabItem, { width: '33.33%' }]} onPress={handleTabPress(0)}>
                <View style={commonStyles.hstack}>
-                  <Text style={[styles.mediaTabText, index === 0 ? styles.mediaActiveTabText : styles.mediaInactiveTabText]}>
+                  <Text
+                     style={[
+                        styles.mediaTabText,
+                        index === 0 ? styles.mediaActiveTabText : styles.mediaInactiveTabText,
+                     ]}>
                      Media
                   </Text>
                </View>
             </Pressable>
             <Pressable pressedStyle={{}} style={[styles.mediaTabItem, { width: '33.33%' }]} onPress={handleTabPress(1)}>
-               <Text style={[styles.mediaTabText, index === 1 ? styles.mediaActiveTabText : styles.mediaInactiveTabText]}>Docs</Text>
+               <Text
+                  style={[styles.mediaTabText, index === 1 ? styles.mediaActiveTabText : styles.mediaInactiveTabText]}>
+                  Docs
+               </Text>
             </Pressable>
             <Pressable pressedStyle={{}} style={[styles.mediaTabItem, { width: '33.33%' }]} onPress={handleTabPress(2)}>
-               <Text style={[styles.mediaTabText, index === 2 ? styles.mediaActiveTabText : styles.mediaInactiveTabText]}>Links</Text>
+               <Text
+                  style={[styles.mediaTabText, index === 2 ? styles.mediaActiveTabText : styles.mediaInactiveTabText]}>
+                  Links
+               </Text>
             </Pressable>
             {/* Animated active tab indicator */}
             <Animated.View
-               style={[styles.mediaIndicator, { transform: [{ translateX: indicatorPosition }], width: indicatorWidth }]}
+               style={[
+                  styles.mediaIndicator,
+                  { transform: [{ translateX: indicatorPosition }], width: indicatorWidth },
+               ]}
             />
          </View>
       ),
@@ -211,7 +139,7 @@ const ViewAllMedia = () => {
       () => (
          <PagerView
             ref={pagerRef}
-            style={styles.pagerView}
+            style={commonStyles.flex1}
             initialPage={index}
             onPageSelected={e => setIndex(e.nativeEvent.position)}>
             <View key="1">
@@ -227,17 +155,7 @@ const ViewAllMedia = () => {
                      </View>
                   ) : (
                      <View style={commonStyles.marginTop_5}>
-                        <FlatList
-                           numColumns={4}
-                           keyExtractor={item => item.msgId}
-                           data={mediaMessages}
-                           bounces={false}
-                           ListFooterComponent={renderMediaFooter}
-                           renderItem={renderMediaTile}
-                           initialNumToRender={20}
-                           maxToRenderPerBatch={20}
-                           windowSize={15}
-                        />
+                        <MediaTab mediaMessages={mediaMessages} loading={loading} />
                      </View>
                   )}
                </View>
@@ -255,17 +173,7 @@ const ViewAllMedia = () => {
                      </View>
                   ) : (
                      <View style={[commonStyles.marginTop_5, commonStyles.padding_8]}>
-                        <FlatList
-                           showsVerticalScrollIndicator={false}
-                           data={docsMessages}
-                           keyExtractor={item => item.msgId}
-                           bounces={false}
-                           renderItem={renderDocTile}
-                           ListFooterComponent={renderDocFooter}
-                           initialNumToRender={20}
-                           maxToRenderPerBatch={20}
-                           windowSize={15}
-                        />
+                        <DocumentTab docsMessages={docsMessages} loading={loading} />
                      </View>
                   )}
                </View>

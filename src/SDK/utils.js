@@ -62,12 +62,13 @@ export const updateRosterDataForChats = singleRecentChatList => {
 export const fetchRecentChats = async () => {
    const page = getRecentChatPage();
    const { statusCode, data = [] } = await SDK.getRecentChats(page, config.recentChatsPerPage);
+   console.log('data ==>', JSON.stringify(data, null, 2));
    if (statusCode === 200) {
       if (data.length) {
          setRecentChatPage(page + 1);
       }
       store.dispatch(setRecentChats(data));
-      hasNextRecentChatPage = data.length === config.recentChatsPerPage;
+      hasNextRecentChatPage = data.length !== 0;
       updateRosterDataForRecentChats(data);
    }
    return data;
@@ -435,10 +436,10 @@ export const setGroupParticipantsByGroupId = (groupId, participantsList) => {
 
 export const getUserProfileFromSDK = userId => {
    const userData = getRoasterData(userId);
-   if (Object.keys(userData).length > 0) {
+   if (Object.keys(userData).length > 0 && userData?.status) {
       return userData || {};
    }
-   return SDK.getUserProfile(userId, false, true).then(res => {
+   return SDK.getUserProfile(userId).then(res => {
       if (res?.statusCode === 200) {
          if (res.data !== userData) {
             store.dispatch(setRoasterData(res.data));

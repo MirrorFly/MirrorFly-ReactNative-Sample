@@ -21,7 +21,7 @@ function ArchivedChat() {
                <ArchiveIcon />
                <Text style={[commonStyles.marginLeft_20, { color: '#000' }]}>Archived</Text>
             </View>
-            {Boolean(count) && archive && <Text>{count}</Text>}
+            {Boolean(count) && !!archive && <Text>{count}</Text>}
             {!archive && <Text>{recentArchiveChatData.length}</Text>}
          </Pressable>
          <View style={commonStyles.dividerLine} />

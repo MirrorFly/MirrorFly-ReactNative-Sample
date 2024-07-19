@@ -1,22 +1,16 @@
-import { Pressable, Image } from 'react-native';
 import React from 'react';
+import { Image, Pressable, Text, View } from 'react-native';
 import { CameraSmallIcon, ClearTextIcon } from '../common/Icons';
-import { HStack, Text, View } from 'native-base';
-import { useSelector } from 'react-redux';
-import useRosterData from '../hooks/useRosterData';
-import { getUserIdFromJid } from '../Helper/Chat/Utility';
+import NickName from '../common/NickName';
+import { getUserIdFromJid } from '../helpers/chatHelpers';
+import commonStyles from '../styles/commonStyles';
+import { getCurrentUserJid } from '../uikitMethods';
 
 const ReplyImage = props => {
    const { replyMsgItems, handleRemove } = props;
-   const { publisherJid = '', fromUserId = '' } = replyMsgItems;
-   const profileDetails = useSelector(state => state.navigation.profileDetails);
-   const currentUserJID = useSelector(state => state.auth.currentUserJID);
-   const isSameUser = publisherJid === currentUserJID;
+   const { publisherJid = '' } = replyMsgItems;
+   const isSameUser = publisherJid === getCurrentUserJid();
    const publisherId = getUserIdFromJid(publisherJid);
-
-   let { nickName } = useRosterData(isSameUser ? '' : publisherId);
-   // updating default values
-   nickName = nickName || profileDetails?.nickName || publisherId || '';
 
    const RemoveHandle = () => {
       handleRemove();
@@ -24,17 +18,13 @@ const ReplyImage = props => {
 
    return (
       <View style={{ position: 'relative' }}>
-         <HStack justifyContent={'space-between'} alignItems={'center'}>
+         <View flexDirection="row" justifyContent={'space-between'} alignItems={'center'}>
             {isSameUser ? (
-               <Text color={'#000'} pl={1} fontSize={14} mb={1} fontWeight={600} py="0">
-                  You
-               </Text>
+               <Text style={[commonStyles.userName]}>You</Text>
             ) : (
-               <Text mb={1} pl={1} color={'#000'} fontSize={14} fontWeight={600} py="0">
-                  {nickName || fromUserId}
-               </Text>
+               <NickName style={commonStyles.userName} userId={publisherId} />
             )}
-         </HStack>
+         </View>
          <View
             style={{
                width: 70,
@@ -77,12 +67,10 @@ const ReplyImage = props => {
             </Pressable>
          </View>
 
-         <HStack alignItems={'center'} pl={1}>
+         <View flexDirection="row" alignItems={'center'} pl={1}>
             <CameraSmallIcon width="12" height="13" color={'#7285B5'} />
-            <Text pl={2} fontSize={14} color="#313131" fontWeight={400}>
-               Photo
-            </Text>
-         </HStack>
+            <Text style={{ fontSize: 14, color: '#313131', paddingLeft: 8 }}>Photo</Text>
+         </View>
       </View>
    );
 };

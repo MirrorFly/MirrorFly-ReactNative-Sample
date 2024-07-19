@@ -1,13 +1,13 @@
 import React from 'react';
 import { Animated, PanResponder, StyleSheet, View } from 'react-native';
+import { CALL_TYPE_AUDIO } from '../../Helper/Calls/Constant';
 import callDownArrow from '../../assets/callDownArrow.png';
 import callDownArrow1 from '../../assets/callDownArrow1.png';
 import callUpArrow from '../../assets/callUpArrow.png';
 import callUpArrow1 from '../../assets/callUpArrow1.png';
 import { IncomingCallAccept, IncomingCallEnd, IncomingCallIcon, IncomingVideoIcon } from '../../common/Icons';
-import { getImageSource } from '../../common/utils';
+import { getImageSource } from '../../helpers/chatHelpers';
 import PulseAnimationComponent from '../components/PulseAnimationComponent';
-import { CALL_TYPE_AUDIO } from '../../Helper/Calls/Constant';
 
 const GestureAnimationScreen = (props = {}) => {
    const { acceptCall, declineCall, callType } = props;

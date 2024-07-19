@@ -1,9 +1,9 @@
 import React from 'react';
 import {
-   StyleSheet,
-   Modal as RNModal,
    ModalProps, // NOSONAR
    Pressable,
+   Modal as RNModal,
+   StyleSheet,
    View,
 } from 'react-native';
 import ApplicationColors from '../config/appColors';

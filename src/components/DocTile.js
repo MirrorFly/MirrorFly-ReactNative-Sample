@@ -1,13 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { convertBytesToKB } from '../Helper';
-import { handleFileOpen } from '../Helper/Chat/ChatHelper';
 import { CSVIcon, DocIcon, PPTIcon, PdfIcon, TXTIcon, XLSIcon, ZipIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
-import { docTimeFormat } from '../common/TimeStamp';
-import commonStyles from '../common/commonStyles';
-import { useChatMessage } from '../hooks/useChatMessage';
-import { getExtension } from './chat/common/fileUploadValidation';
+import { docTimeFormat } from '../common/timeStamp';
+import { convertBytesToKB, getExtension, handleFileOpen } from '../helpers/chatHelpers';
+import commonStyles from '../styles/commonStyles';
 
 function DocTile({ item, onDelete }) {
    const {
@@ -15,7 +12,8 @@ function DocTile({ item, onDelete }) {
       recallStatus,
       createdAt,
       msgBody: { media: { fileName, file_size, is_downloaded, is_uploading } } = {},
-   } = useChatMessage(item.msgId);
+   } = item;
+
    const fileExtension = getExtension(fileName, false);
    const onPress = () => {
       handleFileOpen(item);
@@ -76,7 +74,7 @@ function DocTile({ item, onDelete }) {
    );
 }
 
-export default DocTile;
+export default React.memo(DocTile);
 
 const styles = StyleSheet.create({
    fileNameText: {

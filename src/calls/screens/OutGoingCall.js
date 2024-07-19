@@ -2,15 +2,14 @@ import React from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { endCall, startOutgoingcallTimer } from '../../Helper/Calls/Call';
-import { CALL_STATUS_DISCONNECTED } from '../../Helper/Calls/Constant';
-import { closeCallModalActivity } from '../../Helper/Calls/Utility';
-import { capitalizeFirstLetter, getUserIdFromJid } from '../../Helper/Chat/Utility';
+import { CALL_STATUS_DISCONNECTED, CALL_TYPE_AUDIO } from '../../Helper/Calls/Constant';
+import { closeCallModalActivity, updateCallVideoMute } from '../../Helper/Calls/Utility';
 import OutgoingCallBg from '../../assets/OutgoingCallBg.png';
 import Avathar from '../../common/Avathar';
-import commonStyles from '../../common/commonStyles';
-import { getImageSource } from '../../common/utils';
 import ApplicationColors from '../../config/appColors';
-import useRosterData from '../../hooks/useRosterData';
+import { capitalizeFirstLetter, getImageSource, getUserIdFromJid } from '../../helpers/chatHelpers';
+import { useRoasterData } from '../../redux/reduxHook';
+import commonStyles from '../../styles/commonStyles';
 import CallControlButtons from '../components/CallControlButtons';
 import CloseCallModalButton from '../components/CloseCallModalButton';
 import ProfilePictureWithPulse from '../components/ProfilePictureWithPulse';
@@ -29,7 +28,7 @@ const OutGoingCall = () => {
    });
 
    let userID = getUserIdFromJid(to || userJid);
-   const userProfile = useRosterData(userID);
+   const userProfile = useRoasterData(userID) || {};
    const nickName = userProfile.nickName || userID;
 
    React.useEffect(() => {
@@ -90,6 +89,11 @@ const OutGoingCall = () => {
        */
    };
 
+   const handleVideoMute = (_videoMuted, callerUUID) => {
+      if (callType === CALL_TYPE_AUDIO) return;
+      updateCallVideoMute(_videoMuted, callerUUID);
+   };
+
    return (
       <ImageBackground style={styles.container} source={getImageSource(OutgoingCallBg)}>
          {localStream &&
@@ -132,7 +136,7 @@ const OutGoingCall = () => {
                callStatus={callStatus}
                handleEndCall={endCall}
                callType={callType}
-               // handleVideoMute={handleVideoMute}
+               handleVideoMute={handleVideoMute}
                // videoMute={!!localVideoMuted}
                // audioMute={true}
                // audioControl={audioControl}

@@ -1,13 +1,11 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import { getUsernameGraphemes } from '../../Helper';
 import { CALL_STATUS_RECONNECT } from '../../Helper/Calls/Constant';
-import { getUserIdFromJid } from '../../Helper/Chat/Utility';
-import commonStyles from '../../common/commonStyles';
+import { useFetchImage, useNetworkStatus } from '../../common/hooks';
 import ApplicationColors from '../../config/appColors';
-import { useNetworkStatus } from '../../hooks';
-import useFetchImage from '../../hooks/useFetchImage';
-import useRosterData from '../../hooks/useRosterData';
+import { getUserIdFromJid, getUsernameGraphemes } from '../../helpers/chatHelpers';
+import { useRoasterData } from '../../redux/reduxHook';
+import commonStyles from '../../styles/commonStyles';
 import VideoComponent from './VideoComponent';
 
 const PIPGridItem = ({
@@ -22,7 +20,7 @@ const PIPGridItem = ({
    callStatus,
 }) => {
    const userId = getUserIdFromJid(item?.fromJid || '');
-   const userProfile = useRosterData(userId);
+   const userProfile = useRoasterData(userId);
    const nickName = userProfile.nickName || userId || '';
 
    const [isImageLoadError, setIsImageLoadError] = React.useState(false);

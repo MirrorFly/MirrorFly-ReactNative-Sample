@@ -1,32 +1,22 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { useSelector } from 'react-redux';
+import { StyleSheet, Text, View } from 'react-native';
+import { getConversationHistoryTime } from '../common/timeStamp';
+import { escapeRegExpReservedChars, getMessageStatus } from '../helpers/chatHelpers';
+import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
-import commonStyles from '../common/commonStyles';
-import { escapeRegExpReservedChars } from '../Helper';
 
-const TextCard = props => {
-   const { handleReplyPress, message } = props;
-   const { msgBody: { replyTo = '' } = {} } = message;
-
-   const conversationSearchText = useSelector(state => state.conversationSearchData?.searchText);
+const TextCard = ({ item, isSender }) => {
+   const { createdAt = '', msgStatus = 0, msgBody: { message = '', replyTo = '' } = {} } = item;
 
    return (
       <View style={commonStyles.paddingHorizontal_4}>
-         {Boolean(replyTo) && (
-            <ReplyMessage handleReplyPress={handleReplyPress} message={props.message} isSame={props.isSame} />
-         )}
+         {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
          <Text style={styles.message}>
-            <ChatConversationHighlightedText
-               text={props.data?.message}
-               textStyle={styles.message}
-               searchValue={conversationSearchText.trim()}
-            />
+            <ChatConversationHighlightedText text={message} textStyle={styles.message} searchValue={''} />
          </Text>
-
          <View style={styles.timeStamp}>
-            {props.data.status}
-            <Text style={styles.timeStampText}>{props.data.timeStamp}</Text>
+            {isSender && getMessageStatus(msgStatus)}
+            <Text style={styles.timeStampText}>{getConversationHistoryTime(createdAt)}</Text>
          </View>
       </View>
    );

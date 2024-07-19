@@ -1,7 +1,7 @@
-import React from 'react';
-import { Dimensions, StyleSheet, Text, View, Platform } from 'react-native';
-import { Menu } from 'react-native-material-menu';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { Dimensions, Platform, StyleSheet, Text, View } from 'react-native';
+import { Menu } from 'react-native-material-menu';
 import ApplicationColors from '../config/appColors';
 import IconButton from './IconButton';
 

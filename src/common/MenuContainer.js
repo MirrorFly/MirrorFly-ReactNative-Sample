@@ -23,7 +23,7 @@ function MenuContainer({ menuItems, color, menuStyle }) {
    return (
       <Menu
          animationDuration={200}
-         anchor={MenuIconBtn({}, color, showMenu)}
+         anchor={<MenuIconBtn onPress={showMenu} />}
          style={menuStyle || defaultMenuStyle}
          onRequestClose={hideMenu}
          visible={visible}>

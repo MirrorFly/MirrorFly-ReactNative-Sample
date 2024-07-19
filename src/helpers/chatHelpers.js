@@ -14,6 +14,7 @@ import Sound from 'react-native-sound';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
 import { handleSendMsg, uploadFileToSDK } from '../SDK/utils';
+import React from 'react';
 import {
    CameraIcon,
    ChatsIcon,
@@ -98,7 +99,7 @@ import {
    NOTIFICATION_STACK,
    PROFILE_STACK,
 } from '../screens/constants';
-import { getCurrentUserJid } from '../uikitMethods';
+import { getCurrentUserJid, mflog } from '../uikitMethods';
 
 const { fileSize, imageFileSize, videoFileSize, audioFileSize, documentFileSize } = config;
 
@@ -557,6 +558,7 @@ export const openDocumentPicker = async () => {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       setTimeout(async () => {
          const file = await handleDocumentPickSingle();
+         if (!file) return;
          // updating the SDK flag back to false to behave as usual
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
          // Validating the file type and size
@@ -661,6 +663,7 @@ export const handleAudioSelect = async () => {
    if (audioPermission === 'granted' || audioPermission === 'limited') {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       let response = await handleAudioPickerSingle();
+      if (!response) return;
       const replyTo = '';
       let _validate = validation(response.type);
       const sizeError = validateFileSize(response.size, getType(response.type));

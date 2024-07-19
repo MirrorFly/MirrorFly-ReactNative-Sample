@@ -8,6 +8,7 @@ import ApplicationColors from '../config/appColors';
 import { getThumbBase64URL } from '../helpers/chatHelpers';
 import { VIDEO_PLAYER_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
+import { mflog } from '../uikitMethods';
 
 const VideoInfo = props => {
    const navigation = useNavigation();

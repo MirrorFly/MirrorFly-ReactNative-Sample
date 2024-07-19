@@ -26,6 +26,7 @@ import BluetoothHeadsetDetectionModule from '../../customModules/BluetoothHeadse
 import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from '../../customModules/CallKitModule';
 import RingtoneSilentKeyEventModule from '../../customModules/RingtoneSilentKeyEventModule';
 import { formatUserIdToJid, getUserIdFromJid, showToast } from '../../helpers/chatHelpers';
+import { resetCallAgainData } from '../../redux/callAgainSlice';
 import {
    updateCallAudioMutedAction,
    updateCallBluetoothHeadsetConnected,
@@ -49,7 +50,7 @@ import {
    updateIsCallFromVoip,
 } from '../../redux/callStateSlice';
 import { closePermissionModal } from '../../redux/permissionSlice';
-import { getRoasterData, getUserNameFromStore, getUserNameFromstore } from '../../redux/reduxHook';
+import { getRoasterData, getUserNameFromStore } from '../../redux/reduxHook';
 import { resetConferencePopup, showConfrence } from '../../redux/showConfrenceSlice';
 import store from '../../redux/store';
 import { getLocalUserDetails } from '../../uikitMethods';
@@ -86,7 +87,6 @@ import {
    PERMISSION_DENIED,
 } from './Constant';
 import { clearIntervalConversionPopUp } from './index';
-import { resetCallAgainData } from '../../redux/callAgainSlice';
 
 let preventMultipleClick = false;
 let callBackgroundNotification = true;
@@ -662,7 +662,7 @@ export const displayIncomingCallForIos = callResponse => {
       store.dispatch(updateCallerUUID(callUUID));
       const contactNumber = getUserIdFromJid(callResponse.userJid);
       const contactName =
-         callingUserData?.userDetails?.displayName || getUserNameFromstore(contactNumber) || contactNumber;
+         callingUserData?.userDetails?.displayName || getUserNameFromStore(contactNumber) || contactNumber;
       RNCallKeep.displayIncomingCall(
          callUUID,
          contactNumber,

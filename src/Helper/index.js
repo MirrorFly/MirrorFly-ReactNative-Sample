@@ -86,6 +86,10 @@ import PipHandler from '../customModules/PipModule';
 // };
 */
 
+import { Keyboard } from 'react-native';
+import { getIsUserOnCall } from '../SDK/sdkCallBacks';
+import PipHandler from '../customModules/PipModule';
+
 // /**
 //  * Helper function to generate thumbnail for image
 //  * @param {string} uri - local path if the image

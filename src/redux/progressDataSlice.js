@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { clearState } from './clearSlice';
 
+
 const initialState = {};
 
 const progressDataSlice = createSlice({

@@ -293,7 +293,7 @@ export const onChatNotificationBackGround = async ({ type, detail }) => {
 };
 
 const callNotifiHandling = detail => {
-   const { callerUUID: activeCallUUID = '' } = Store.getState().callData || {};
+   const { callerUUID: activeCallUUID = '' } = store.getState().callData || {};
    if (detail.pressAction?.id === 'accept') {
       answerIncomingCall(activeCallUUID);
    } else if (detail.pressAction?.id === 'decline') {

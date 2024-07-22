@@ -9,6 +9,7 @@ import ChatMessage from './ChatMessage';
 
 export const conversationFlatListRef = createRef();
 conversationFlatListRef.current = {};
+const ITEM_HEIGHT = 50;
 
 function ConversationList({ chatUser }) {
    const userId = getUserIdFromJid(chatUser);
@@ -34,6 +35,12 @@ function ConversationList({ chatUser }) {
       }
    };
 
+   const keyExtractor = React.useCallback(item => item.msgId.toString(), []);
+   const getItemLayout = React.useCallback(
+      (data, index) => ({ length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }),
+      [],
+   );
+
    const chatMessageRender = React.useCallback(
       ({ item, index }) => {
          const notifiactionCheck = messages[index + 1]?.message_type;
@@ -48,28 +55,26 @@ function ConversationList({ chatUser }) {
       [messages],
    );
 
-   const renderChatFooter = () => {
-      if (chatLoading) {
-         return <ActivityIndicator size="large" color={ApplicationColors.mainColor} />;
-      }
-   };
-
    return (
-      <FlatList
-         keyboardShouldPersistTaps={'always'}
-         ref={conversationFlatListRef}
-         data={messages}
-         inverted={Boolean(messages.length)}
-         renderItem={chatMessageRender}
-         keyExtractor={item => item.msgId.toString()}
-         maxToRenderPerBatch={20}
-         scrollEventThrottle={1}
-         windowSize={20}
-         onEndReached={handleLoadMore}
-         ListFooterComponent={renderChatFooter}
-         onEndReachedThreshold={0.1}
-         disableVirtualization={true}
-      />
+      <>
+         {chatLoading && <ActivityIndicator size="large" color={ApplicationColors.mainColor} />}
+         <FlatList
+            initialNumToRender={10}
+            keyboardShouldPersistTaps={'always'}
+            ref={conversationFlatListRef}
+            data={messages}
+            inverted={true}
+            renderItem={chatMessageRender}
+            keyExtractor={keyExtractor}
+            maxToRenderPerBatch={20}
+            scrollEventThrottle={16}
+            windowSize={5}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.5}
+            disableVirtualization={true}
+            getItemLayout={getItemLayout}
+         />
+      </>
    );
 }
 

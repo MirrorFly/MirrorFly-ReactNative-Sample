@@ -62,7 +62,6 @@ export const updateRosterDataForChats = singleRecentChatList => {
 export const fetchRecentChats = async () => {
    const page = getRecentChatPage();
    const { statusCode, data = [] } = await SDK.getRecentChats(page, config.recentChatsPerPage);
-   console.log('data ==>', JSON.stringify(data, null, 2));
    if (statusCode === 200) {
       if (data.length) {
          setRecentChatPage(page + 1);
@@ -99,8 +98,7 @@ export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false,
       data = [],
    } = await SDK.getChatMessages(fromUserJId, page, config.chatMessagesSizePerPage);
    if (statusCode === 200) {
-      let hasEqualDataFetched = data.length >= config.chatMessagesSizePerPage;
-
+      let hasEqualDataFetched = data.length !== 0;
       if (data.length && hasEqualDataFetched) {
          chatPage[userId] = page + 1;
       }
@@ -284,7 +282,6 @@ export const handleSendMsg = async (obj = {}) => {
             replyTo,
          };
          const senderObj = getSenderMessageObj(dataObj);
-         senderObj.archiveSetting = getArchive();
          store.dispatch(addChatMessageItem(senderObj));
          store.dispatch(addRecentChatItem(senderObj));
          SDK.sendTextMessage(chatUser, message, msgId, replyTo, { broadCastId1: SDK.randomString(8, 'BA') });

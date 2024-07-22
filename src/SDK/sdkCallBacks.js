@@ -122,7 +122,7 @@ import { resetConferencePopup, showConfrence, updateConference } from '../redux/
 import store from '../redux/store';
 import { resetTypingStatus, setTypingStatus } from '../redux/typingStatusDataSlice';
 import { REGISTERSCREEN } from '../screens/constants';
-import { getLocalUserDetails, logoutClearVariables, setCurrectUserProfile } from '../uikitMethods';
+import { getLocalUserDetails, logoutClearVariables, mflog, setCurrectUserProfile } from '../uikitMethods';
 import { fetchGroupParticipants, getUserProfileFromSDK } from './utils';
 
 let localStream = null,
@@ -655,7 +655,7 @@ export const callBacks = {
       }
    },
    messageListener: async res => {
-      console.log('res ==>', JSON.stringify(res, null, 2));
+      mflog('res ==>', JSON.stringify(res, null, 2));
       switch (res.msgType) {
          case 'groupCreated':
          case 'receiveMessage':

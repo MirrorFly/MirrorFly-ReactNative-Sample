@@ -10,7 +10,7 @@ import ChatInput from '../components/ChatInput';
 import ConversationList from '../components/ConversationList';
 import ReplyContainer from '../components/ReplyContainer';
 import { getImageSource, getUserIdFromJid, handelResetMessageSelection } from '../helpers/chatHelpers';
-import { MIX_BARE_JID, } from '../helpers/constants';
+import { MIX_BARE_JID } from '../helpers/constants';
 import { resetUnreadCountForChat } from '../redux/recentChatDataSlice';
 import { useChatMessages, useReplyMessage } from '../redux/reduxHook';
 import { RECENTCHATSCREEN } from './constants';
@@ -42,6 +42,7 @@ function ConversationScreen({ chatUser = '' }) {
          getUserProfileFromSDK(userId);
       }
       return () => {
+         handelResetMessageSelection(userId)();
          currentChatUser = '';
       };
    }, []);

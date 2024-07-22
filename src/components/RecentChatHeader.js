@@ -20,7 +20,7 @@ const RecentChatHeader = () => {
    const [modalContent, setModalContent] = React.useState(null);
 
    const filtered = React.useMemo(() => {
-      return recentChatData.filter(item => item.isSelected === 1);
+      return recentChatData.filter(item => item.isSelected === 1 && item.archiveStatus === 0);
    }, [recentChatData.map(item => item.isSelected).join(',')]); // Include isSelected in the dependency array
    const isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
 

@@ -23,7 +23,7 @@ const PostPreViewPage = () => {
    const messageList = React.useMemo(() => {
       const filteredMessages = messages.filter(message => {
          const { msgBody: { message_type = '' } = {} } = message || {};
-         return ['image', 'video', 'audio', 'file'].includes(message_type);
+         return ['image', 'video', 'audio'].includes(message_type);
       });
       return filteredMessages;
    }, [messages, jid]);

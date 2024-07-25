@@ -1145,7 +1145,6 @@ export const handleReplyPress = (userId, msgId, message) => {
 export const findConversationMessageIndex = (msgId, message) => {
    const data = conversationFlatListRef.current.props.data;
    const index = data.findIndex(item => item.msgId === msgId);
-   console.log('message ==>', index, JSON.stringify(message, null, 2));
    const { deleteStatus, recallStatus } = message;
    if (deleteStatus !== 0 || recallStatus !== 0) {
       showToast('This message is no longer available');

@@ -11,12 +11,13 @@ import {
    VideoSmallIcon,
 } from '../common/Icons';
 import ApplicationColors from '../config/appColors';
+import { getMessageStatus } from '../helpers/chatHelpers';
 import { THIS_MESSAGE_WAS_DELETED, YOU_DELETED_THIS_MESSAGE } from '../helpers/constants';
 import { getUserNameFromStore, useTypingData } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
 function RecentChatMessage({ userId, item, index, isSender }) {
-   const { recallStatus } = item;
+   const { msgStatus, recallStatus, msgBody } = item;
    const [isTyping, setIsTyping] = React.useState('');
    const typingStatusData = useTypingData(userId) || {};
 
@@ -114,14 +115,21 @@ function RecentChatMessage({ userId, item, index, isSender }) {
 
    if (recallStatus) {
       return (
-         <View style={styles.lastSentMessageWrapper}>
-            <Text style={styles.deletedMessageText}>
-               {isSender ? YOU_DELETED_THIS_MESSAGE : THIS_MESSAGE_WAS_DELETED}
-            </Text>
+         <View>
+            <Text>{isSender ? YOU_DELETED_THIS_MESSAGE : THIS_MESSAGE_WAS_DELETED}</Text>
          </View>
       );
    }
-   return renderLastSentMessageBasedOnType();
+   return (
+      <View style={styles.lastSentMessageContainer}>
+         {isSender &&
+            Boolean(Object.keys(msgBody).length) &&
+            item?.msgBody?.message_type !== 'notification' &&
+            getMessageStatus(msgStatus, 8)}
+         {renderLastSentMessageBasedOnType()}
+         <View style={commonStyles.p_1} />
+      </View>
+   );
 }
 
 export default RecentChatMessage;

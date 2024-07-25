@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { BackHandler, FlatList, StyleSheet, Text, View } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -18,6 +18,14 @@ function ArchivedScreen() {
    const isAnySelected = React.useMemo(() => {
       return archiveChats.some(item => item.isSelected === 1);
    }, [archiveChats.map(item => item.isSelected).join(',')]); // Include isSelected in the dependency array
+
+   useFocusEffect(
+      React.useCallback(() => {
+         return () => {
+            dispatch(resetChatSelections(ARCHIVED_SCREEN));
+         };
+      }, []),
+   );
 
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);

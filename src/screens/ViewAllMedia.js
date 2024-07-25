@@ -19,7 +19,11 @@ const { width: screenWidth } = Dimensions.get('window');
 export const getMessageTypeCount = (_messages, messageType) => {
    return _messages.filter(
       message =>
-         message?.msgBody.message_type === messageType && message.deleteStatus !== 1 && message.recallStatus !== 1,
+         message?.msgBody.message_type === messageType &&
+         message.deleteStatus !== 1 &&
+         message.recallStatus !== 1 &&
+         message?.msgBody?.media?.is_uploading === 2 &&
+         message?.msgBody?.media?.is_downloaded === 2,
    ).length;
 };
 

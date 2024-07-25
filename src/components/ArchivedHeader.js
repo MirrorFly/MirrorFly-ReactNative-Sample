@@ -12,6 +12,7 @@ import { deleteRecentChats, resetChatSelections } from '../redux/recentChatDataS
 import { getArchiveSelectedChats, getUserNameFromStore, useArchivedChatData } from '../redux/reduxHook';
 import { ARCHIVED_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
+import MuteChat from './MuteChat';
 
 function ArchivedHeader() {
    const dispatch = useDispatch();
@@ -23,6 +24,7 @@ function ArchivedHeader() {
 
    const isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
    const userName = getUserNameFromStore(getUserIdFromJid(filtered[0]?.userJid)) || '';
+   const isGroupExistMute = filtered.some(res => MIX_BARE_JID.test(res.userJid));
 
    const deleteMessage =
       filtered.length === 1 ? `Delete chat with "${userName}"?` : `Delete ${filtered.length} selected chats?`;
@@ -107,6 +109,7 @@ function ArchivedHeader() {
                </View>
                <View style={commonStyles.hstack}>
                   {renderDeleteIcon()}
+                  {!isGroupExistMute && <MuteChat filteredChats={filtered} />}
                   {renderUnArchiveIcon()}
                </View>
                {modalContent && <AlertModal {...modalContent} />}

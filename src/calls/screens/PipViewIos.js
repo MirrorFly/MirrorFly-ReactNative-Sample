@@ -11,7 +11,7 @@ function PipViewIos(props = {}) {
    const { userId } = props;
    const dispatch = useDispatch();
    const userProfile = useRoasterData(userId);
-   const nickName = userProfile.nickName || userProfile.userId;
+   const nickName = userProfile?.nickName || userProfile?.userId;
    const openCallModelPip = () => {
       dispatch(openCallModal());
    };

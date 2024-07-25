@@ -112,7 +112,7 @@ import {
    addRecentChatItem,
    toggleArchiveChatsByUserId,
    updateMsgByLastMsgId,
-   updateRecentMessageStatus
+   updateRecentMessageStatus,
 } from '../redux/recentChatDataSlice';
 import { getArchive } from '../redux/reduxHook';
 import { setRoasterData } from '../redux/rosterDataSlice';
@@ -778,7 +778,7 @@ export const callBacks = {
       store.dispatch(updateMsgByLastMsgId(res));
    },
    muteChatListener: res => {
-      console.log(res,"muteChatListener");
+      console.log(res, 'muteChatListener');
    },
    archiveChatListener: res => {
       store.dispatch(toggleArchiveChatsByUserId(res));

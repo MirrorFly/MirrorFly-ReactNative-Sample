@@ -5,7 +5,7 @@ import { showNetWorkToast } from '../helpers/chatHelpers';
 import IconButton from './IconButton';
 import { useNetworkStatus } from './hooks';
 
-function CustomSwitch({ value, onToggle }) {
+function CustomSwitch({ value, onToggle, disabled = false }) {
    const isNetWorkConnected = useNetworkStatus();
    const animatedValue = useRef(new Animated.Value(value ? 1 : 0)).current;
 
@@ -35,13 +35,19 @@ function CustomSwitch({ value, onToggle }) {
    });
 
    return (
-      <IconButton onPress={toggleSwitch}>
-         <View style={[styles.switchContainer, Boolean(value) ? styles.switchBorderdOn : styles.switchBorderdOff]}>
+      <IconButton onPress={toggleSwitch} disabled={disabled}>
+         <View
+            style={[
+               styles.switchContainer,
+               Boolean(value) ? styles.switchBorderdOn : styles.switchBorderdOff,
+               { opacity: disabled ? 0.7 : 1 },
+            ]}>
             <View style={[styles.switchBackground]} />
             <Animated.View
                style={[
                   styles.thumb,
                   Boolean(value) ? styles.thumbOn : styles.thumbOff,
+                  { opacity: disabled ? 0.7 : 1 },
                   { transform: [{ translateX }] },
                ]}
             />

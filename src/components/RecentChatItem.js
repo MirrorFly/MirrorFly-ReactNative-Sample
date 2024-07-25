@@ -2,7 +2,6 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { ChatMuteIcon } from '../common/Icons';
 import NickName from '../common/NickName';
 import Pressable from '../common/Pressable';
 import { convertUTCTOLocalTimeStamp, formatChatDateTime } from '../common/timeStamp';
@@ -13,6 +12,7 @@ import { getSelectedChats, useRecentChatSearchText } from '../redux/reduxHook';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
+import { MuteChatRecentItem } from './MuteChat';
 import RecentChatAvathar from './RecentChatAvathar';
 import RecentChatMessage from './RecentChatMessage';
 
@@ -97,9 +97,7 @@ const RecentChatItem = React.memo(
                         {createdAt && formatChatDateTime(convertUTCTOLocalTimeStamp(createdAt), 'recent-chat')}
                      </Text>
                      <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-                        {Boolean(item.muteStatus === 1) && isRecentChatComponent && (
-                           <ChatMuteIcon width={13} height={13} />
-                        )}
+                        <MuteChatRecentItem recentChatItem={item} isRecentChatComponent={isRecentChatComponent} />
                         {Boolean(item.archiveStatus) && isRecentChatComponent && (
                            <Text style={styles.archived}>Archived</Text>
                         )}

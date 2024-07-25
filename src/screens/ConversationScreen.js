@@ -3,7 +3,7 @@ import React from 'react';
 import { BackHandler, ImageBackground, KeyboardAvoidingView, Linking, Platform, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
 import SDK from '../SDK/SDK';
-import { fetchGroupParticipants } from '../SDK/utils';
+import { fetchGroupParticipants, getUserProfileFromSDK } from '../SDK/utils';
 import chatBackgroud from '../assets/chatBackgroud.png';
 import ChatHeader from '../components/ChatHeader';
 import ChatInput from '../components/ChatInput';
@@ -38,6 +38,8 @@ function ConversationScreen({ chatUser = '' }) {
       dispatch(resetUnreadCountForChat(currentChatUser));
       if (MIX_BARE_JID.test(jid)) {
          fetchGroupParticipants(jid);
+      } else {
+         getUserProfileFromSDK(userId);
       }
       return () => {
          currentChatUser = '';

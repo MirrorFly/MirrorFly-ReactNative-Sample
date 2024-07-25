@@ -28,6 +28,7 @@ export const MuteChatRecentItem = props => {
       recentChatItem: { muteStatus },
       isRecentChatComponent = false,
    } = props;
-   const archiveChatSetting = !isRecentChatComponent ? useArchive() : false;
+   const letArchive = useArchive();
+   const archiveChatSetting = !isRecentChatComponent ? letArchive : false;
    return Boolean(muteStatus === 1) && Boolean(archiveChatSetting !== 1) && <ChatMuteIcon width={13} height={13} />;
 };

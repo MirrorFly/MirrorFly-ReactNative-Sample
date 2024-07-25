@@ -121,7 +121,7 @@ import { resetConferencePopup, showConfrence, updateConference } from '../redux/
 import store from '../redux/store';
 import { resetTypingStatus, setTypingStatus } from '../redux/typingStatusDataSlice';
 import { REGISTERSCREEN } from '../screens/constants';
-import { getLocalUserDetails, logoutClearVariables, mflog, setCurrectUserProfile } from '../uikitMethods';
+import { getLocalUserDetails, logoutClearVariables, setCurrectUserProfile } from '../uikitMethods';
 import { fetchGroupParticipants, getUserProfileFromSDK } from './utils';
 
 let localStream = null,

@@ -20,12 +20,14 @@ const RecentChatHeader = () => {
    const [modalContent, setModalContent] = React.useState(null);
 
    const filtered = React.useMemo(() => {
-      return recentChatData.filter(item => item.isSelected === 1 && item.archiveStatus === 0);
+      return recentChatData.filter(
+         item => item.isSelected === 1 && (item.archiveStatus === 0 || item.archiveStatus === undefined),
+      );
    }, [recentChatData.map(item => item.isSelected).join(',')]); // Include isSelected in the dependency array
    const isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
    const isChatMuted = filtered.some(res => res.muteStatus === 1);
    const isGroupExistMute = filtered.some(res => MIX_BARE_JID.test(res.userJid));
-   
+
    const userName = getUserNameFromStore(getUserIdFromJid(filtered[0]?.userJid)) || '';
    const deleteMessage =
       filtered.length === 1 ? `Delete chat with "${userName}"?` : `Delete ${filtered.length} selected chats?`;

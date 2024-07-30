@@ -142,6 +142,7 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadat
                fetchCurrentUserProfile(true);
                getUserSettings(true);
                SDK.getArchivedChats(true);
+               updateNotificationSettings();
                return connect;
             default:
                return connect;

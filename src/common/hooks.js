@@ -62,7 +62,7 @@ export const useFetchImage = imageToken => {
 export const getNetworkState = () => networkState;
 
 export const useNetworkStatus = () => {
-   const [isConnected, setIsConnected] = React.useState(networkState?.isInternetReachable || null);
+   const [isConnected, setIsConnected] = React.useState(networkState || null);
 
    React.useLayoutEffect(() => {
       const unsubscribe = NetInfo.addEventListener(state => {

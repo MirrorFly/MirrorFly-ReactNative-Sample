@@ -22,7 +22,9 @@ export const useNotificationSound = () => useSelector(state => state.settingsDat
 export const useNotificationVibration = () => useSelector(state => state.settingsData?.notificationVibrate);
 export const useNotificationDisable = () => useSelector(state => state.settingsData?.muteNotification);
 export const useMuteStatus = userJid =>
-   useSelector(state => state.recentChatData?.recentChats.find(item => item.userJid === userJid).muteStatus);
+   useSelector(state => state.recentChatData?.recentChats.find(item => item.userJid === userJid)?.muteStatus) || 0;
+export const useArchiveStatus = jid =>
+   useSelector(state => state.recentChatData.recentChats.find(item => item.userJid === jid)?.archiveStatus);
 
 export const useGroupParticipantsList = groupId => useSelector(state => state.groupData.participantsList[groupId]);
 export const useReplyMessage = userId => useSelector(state => state.draftData.data[userId]?.replyMessage);

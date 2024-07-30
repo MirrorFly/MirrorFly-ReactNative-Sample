@@ -9,7 +9,7 @@ import {
    useArchive,
    useArchivedChatData,
    useFilteredRecentChatData,
-   useRecentChatSearchText
+   useRecentChatSearchText,
 } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ArchivedChat from './ArchivedChat';

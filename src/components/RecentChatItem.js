@@ -6,28 +6,20 @@ import NickName from '../common/NickName';
 import Pressable from '../common/Pressable';
 import { convertUTCTOLocalTimeStamp, formatChatDateTime } from '../common/timeStamp';
 import ApplicationColors from '../config/appColors';
-import { getMessageStatus, getUserIdFromJid } from '../helpers/chatHelpers';
+import { getUserIdFromJid } from '../helpers/chatHelpers';
 import { toggleChatSelection } from '../redux/recentChatDataSlice';
 import { getSelectedChats, useRecentChatSearchText } from '../redux/reduxHook';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
+import { MuteChatRecentItem } from './MuteChat';
 import RecentChatAvathar from './RecentChatAvathar';
 import RecentChatMessage from './RecentChatMessage';
 
 const RecentChatItem = React.memo(
    ({ item, index, component = 'recent-chat' }) => {
       const isRecentChatComponent = component === 'recent-chat';
-      const {
-         msgStatus,
-         createdAt = '',
-         userId = '',
-         isSelected = 0,
-         userJid,
-         publisherJid,
-         recallStatus,
-         msgBody,
-      } = item;
+      const { createdAt = '', userId = '', isSelected = 0, userJid, publisherJid } = item;
       const dispatch = useDispatch();
       const navigation = useNavigation();
       const searchText = useRecentChatSearchText();
@@ -76,26 +68,19 @@ const RecentChatItem = React.memo(
                         data={item?.profileDetails}
                         ellipsizeMode="tail"
                      />
-                     <View style={styles.lastSentMessageContainer}>
-                        {isSender &&
-                           Boolean(Object.keys(msgBody).length) &&
-                           item?.msgBody?.message_type !== 'notification' &&
-                           !recallStatus &&
-                           getMessageStatus(msgStatus, 8)}
-                        <View style={commonStyles.p_1} />
-                        <RecentChatMessage
-                           isSender={isSender}
-                           userId={getUserIdFromJid(userJid)}
-                           item={item}
-                           index={index}
-                        />
-                     </View>
+                     <RecentChatMessage
+                        isSender={isSender}
+                        userId={getUserIdFromJid(userJid)}
+                        item={item}
+                        index={index}
+                     />
                   </View>
                   <View style={[commonStyles.justifyContentCenter, commonStyles.alignItemsCenter]}>
                      <Text style={styles.time}>
                         {createdAt && formatChatDateTime(convertUTCTOLocalTimeStamp(createdAt), 'recent-chat')}
                      </Text>
                      <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+                        <MuteChatRecentItem recentChatItem={item} isRecentChatComponent={isRecentChatComponent} />
                         {Boolean(item.archiveStatus) && isRecentChatComponent && (
                            <Text style={styles.archived}>Archived</Text>
                         )}
@@ -147,19 +132,6 @@ const styles = StyleSheet.create({
       height: 0.5,
       alignSelf: 'flex-end',
       backgroundColor: ApplicationColors.dividerBg,
-   },
-   lastSentMessageWrapper: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      maxWidth: '95%',
-   },
-   lastSentMessageTypeText: {
-      paddingHorizontal: 5,
-      color: '#767676',
-   },
-   lastSentMessageContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
    },
    unreadCountWrapper: {
       position: 'absolute',

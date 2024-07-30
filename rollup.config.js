@@ -76,6 +76,8 @@ export default {
       'react-native-geocoding',
       '@react-native-camera-roll/camera-roll',
       '@react-native-community/checkbox',
+      'react-native-heic-converter',
+      'react-native-simple-toast',
       //Calls
       'react-native-incall-manager',
       'react-native-webrtc',

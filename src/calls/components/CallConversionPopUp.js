@@ -50,7 +50,7 @@ const CallConversionPopUp = props => {
    const dispatch = useDispatch();
    let userID = getUserIdFromJid(callConversionData.fromUser);
    const userProfile = useRoasterData(userID);
-   const nickName = userProfile.nickName || userID;
+   const nickName = userProfile?.nickName || userID || '';
 
    React.useEffect(() => {
       if (status === CALL_CONVERSION_STATUS_REQUEST_INIT) {

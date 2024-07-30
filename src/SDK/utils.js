@@ -19,7 +19,7 @@ import { setRoasterData } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting, updateNotificationSetting } from '../redux/settingDataSlice';
 import store from '../redux/store';
 import { currentChatUser } from '../screens/ConversationScreen';
-import { getCurrentUserJid } from '../uikitMethods';
+import { getCurrentUserJid, mflog } from '../uikitMethods';
 import SDK from './SDK';
 
 let chatPage = {},

@@ -1,5 +1,6 @@
 import Clipboard from '@react-native-clipboard/clipboard';
 import Graphemer from 'graphemer';
+import React from 'react';
 import { Alert, Dimensions, Linking, Platform, StyleSheet, View } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import { createThumbnail } from 'react-native-create-thumbnail';
@@ -23,9 +24,8 @@ import {
    GalleryIcon,
    HeadSetIcon,
    LocationIcon,
-   NotificationSettingsIcon,
    ProfileIcon,
-   SandTimer,
+   SandTimer
 } from '../common/Icons';
 import { getNetworkState } from '../common/hooks';
 import {
@@ -95,10 +95,9 @@ import {
    LOCATION_SCREEN,
    MOBILE_CONTACT_LIST_SCREEN,
    NOTIFICATION_ALERT_STACK,
-   NOTIFICATION_STACK,
-   PROFILE_STACK,
+   PROFILE_STACK
 } from '../screens/constants';
-import { getCurrentUserJid } from '../uikitMethods';
+import { getCurrentUserJid, mflog } from '../uikitMethods';
 
 const { fileSize, imageFileSize, videoFileSize, audioFileSize, documentFileSize } = config;
 
@@ -557,6 +556,7 @@ export const openDocumentPicker = async () => {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       setTimeout(async () => {
          const file = await handleDocumentPickSingle();
+         if (!file) return;
          // updating the SDK flag back to false to behave as usual
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
          // Validating the file type and size
@@ -661,6 +661,7 @@ export const handleAudioSelect = async () => {
    if (audioPermission === 'granted' || audioPermission === 'limited') {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       let response = await handleAudioPickerSingle();
+      if (!response) return;
       const replyTo = '';
       let _validate = validation(response.type);
       const sizeError = validateFileSize(response.size, getType(response.type));
@@ -957,11 +958,14 @@ export const settingsMenu = [
       icon: ChatsIcon,
       rounteName: CHATS_CREEN,
    },
+   /** 
+    * 
    {
       name: 'Notifications',
       icon: NotificationSettingsIcon,
       rounteName: NOTIFICATION_STACK,
    },
+   */
    {
       name: 'Log out',
       icon: ExitIcon,

@@ -10,6 +10,7 @@ import { getType, mediaObjContructor, showToast, validateFileSize } from '../hel
 
 import commonStyles from '../styles/commonStyles';
 import { GALLERY_PHOTOS_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
+import { mflog } from '../uikitMethods';
 
 const GalleryPhotos = () => {
    const { params: { grpView = '', selectedImages: routesSelectedImages = [] } = {} } = useRoute();

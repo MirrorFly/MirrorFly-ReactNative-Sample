@@ -53,6 +53,16 @@ public class BluetoothHeadsetDetectModule extends ReactContextBaseJavaModule imp
         }
     }
 
+    @ReactMethod
+    public void addListener(String eventName) {
+        // Keep: Required for RN built in Event Emitter Calls.
+    }
+
+    @ReactMethod
+    public void removeListeners(Integer count) {
+        // Keep: Required for RN built in Event Emitter Calls.
+    }
+
     private static String getCurrentOutputDeviceMarshmallow(AudioManager audioManager) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             AudioDeviceInfo[] devices = new AudioDeviceInfo[0];

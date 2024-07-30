@@ -1,17 +1,35 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import SDK from '../SDK/SDK';
 import CustomSwitch from '../common/CustomSwitch';
 import ApplicationColors from '../config/appColors';
 import { toggleChatMute } from '../redux/recentChatDataSlice';
-import { useMuteStatus } from '../redux/reduxHook';
+import { useArchive, useArchiveStatus } from '../redux/reduxHook';
 import store from '../redux/store';
+import SDK from '../SDK/SDK';
+import { getMuteStatus } from '../SDK/utils';
 
-function MuteToggle({ chatUser }) {
-   const muteStatus = useMuteStatus(chatUser);
+const MuteToggle = ({ chatUser }) => {
+   const [muteStatus, setMuteStatus] = React.useState(0);
+   const archiveStatus = useArchiveStatus(chatUser);
+   const archive = useArchive();
+   const isDisabledMuteChat = archiveStatus === 1 && archive;
+
+   const fetchMuteStatus = React.useCallback(async () => {
+      try {
+         const status = await getMuteStatus(chatUser);
+         setMuteStatus(status);
+      } catch (error) {
+         console.error('Error fetching mute status:', error);
+      }
+   }, [chatUser]);
+
+   React.useEffect(() => {
+      fetchMuteStatus();
+   }, []);
 
    const handleSwitchToggle = value => {
       SDK.updateMuteNotification(chatUser, value);
+      setMuteStatus(value ? 1 : 0);
       store.dispatch(toggleChatMute({ userJid: chatUser, muteStatus: value ? 1 : 0 }));
    };
 
@@ -28,10 +46,10 @@ function MuteToggle({ chatUser }) {
                Mute Notification
             </Text>
          </View>
-         <CustomSwitch value={muteStatus} onToggle={handleSwitchToggle} />
+         <CustomSwitch value={muteStatus} onToggle={handleSwitchToggle} disabled={Boolean(isDisabledMuteChat)} />
       </>
    );
-}
+};
 
 export default MuteToggle;
 

@@ -67,7 +67,7 @@ export const fetchRecentChats = async () => {
          setRecentChatPage(page + 1);
       }
       store.dispatch(setRecentChats(data));
-      hasNextRecentChatPage = data.length === config.recentChatsPerPage;
+      hasNextRecentChatPage = data.length !== 0;
       updateRosterDataForRecentChats(data);
    }
    return data;
@@ -98,8 +98,7 @@ export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false,
       data = [],
    } = await SDK.getChatMessages(fromUserJId, page, config.chatMessagesSizePerPage);
    if (statusCode === 200) {
-      let hasEqualDataFetched = data.length >= config.chatMessagesSizePerPage;
-
+      let hasEqualDataFetched = data.length !== 0;
       if (data.length && hasEqualDataFetched) {
          chatPage[userId] = page + 1;
       }
@@ -111,6 +110,7 @@ export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false,
 
 const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUserJid) => {
    if (messageType === 'media') {
+      const isMuted = await getMuteStatus(toUserJid);
       for (let i = 0; i < files.length; i++) {
          const file = files[i],
             msgId = SDK.randomString(8, 'BA');
@@ -148,6 +148,7 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
             fileDetails: fileDetails,
             fromUserJid: toUserJid,
             replyTo,
+            isMuted,
          };
          const conversationChatObj = getSenderMessageObj(dataObj, i);
          conversationChatObj.archiveSetting = getArchive();
@@ -180,6 +181,7 @@ export const getSenderMessageObj = (dataObj, idx) => {
       fromUserJid,
       location = {},
       contact = {},
+      isMuted = 0,
    } = dataObj;
    const publisherJid = getCurrentUserJid();
    const timestamp = Date.now();
@@ -255,6 +257,7 @@ export const getSenderMessageObj = (dataObj, idx) => {
       msgBody: msgBody,
       msgId: msgId,
       msgStatus: 3,
+      muteStatus: isMuted,
       timestamp: timestamp,
       publisherId: getUserIdFromJid(publisherJid),
       publisherJid,
@@ -271,6 +274,7 @@ export const handleSendMsg = async (obj = {}) => {
    const replyTo = getReplyMessage(getUserIdFromJid(chatUser)).msgId;
    store.dispatch(setReplyMessage({ userId, message: {} }));
    const msgId = SDK.randomString(8, 'BA');
+   const isMuted = await getMuteStatus(chatUser);
    switch (messageType) {
       case 'text':
          const dataObj = {
@@ -281,9 +285,9 @@ export const handleSendMsg = async (obj = {}) => {
             msgId,
             fromUserJid: chatUser,
             replyTo,
+            isMuted,
          };
          const senderObj = getSenderMessageObj(dataObj);
-         senderObj.archiveSetting = getArchive();
          store.dispatch(addChatMessageItem(senderObj));
          store.dispatch(addRecentChatItem(senderObj));
          SDK.sendTextMessage(chatUser, message, msgId, replyTo, { broadCastId1: SDK.randomString(8, 'BA') });
@@ -312,6 +316,7 @@ export const handleSendMsg = async (obj = {}) => {
                contact: { ...contact },
                fromUserJid: chatUser,
                replyTo: replyTo,
+               isMuted,
             };
             const senderObj = getSenderMessageObj(dataObj);
             senderObj.archiveSetting = getArchive();
@@ -332,6 +337,7 @@ export const handleSendMsg = async (obj = {}) => {
                fromUserJid: chatUser,
                publisherJid: getCurrentUserJid(),
                replyTo: replyTo,
+               isMuted,
             };
             const senderObj = getSenderMessageObj(dataObj);
             senderObj.archiveSetting = getArchive();
@@ -435,10 +441,10 @@ export const setGroupParticipantsByGroupId = (groupId, participantsList) => {
 
 export const getUserProfileFromSDK = userId => {
    const userData = getRoasterData(userId);
-   if (Object.keys(userData).length > 0) {
+   if (Object.keys(userData).length > 0 && userData?.status) {
       return userData || {};
    }
-   return SDK.getUserProfile(userId, false, true).then(res => {
+   return SDK.getUserProfile(userId).then(res => {
       if (res?.statusCode === 200) {
          if (res.data !== userData) {
             store.dispatch(setRoasterData(res.data));
@@ -454,8 +460,8 @@ export const getUserSettings = async (iq = false) => {
 };
 
 export const updateNotificationSettings = async () => {
-   const {
-      data: { archive = 0, muteNotification = false, notificationSound = false, notificationVibrate = false },
+   let {
+      data: { archive = 0, muteNotification = false, notificationSound = true, notificationVibrate = false },
    } = await SDK.getUserSettings();
    store.dispatch(toggleArchiveSetting(Number(archive)));
    store.dispatch(updateNotificationSetting({ muteNotification, notificationSound, notificationVibrate }));
@@ -475,5 +481,5 @@ export const sendNotificationData = async () => {
 };
 
 export const getMuteStatus = async userJid => {
-   return await SDK.getMuteStatus?.(userJid);
+   return await SDK.getMuteStatus(userJid);
 };

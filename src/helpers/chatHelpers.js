@@ -24,8 +24,9 @@ import {
    GalleryIcon,
    HeadSetIcon,
    LocationIcon,
+   NotificationSettingsIcon,
    ProfileIcon,
-   SandTimer
+   SandTimer,
 } from '../common/Icons';
 import { getNetworkState } from '../common/hooks';
 import {
@@ -95,7 +96,8 @@ import {
    LOCATION_SCREEN,
    MOBILE_CONTACT_LIST_SCREEN,
    NOTIFICATION_ALERT_STACK,
-   PROFILE_STACK
+   NOTIFICATION_STACK,
+   PROFILE_STACK,
 } from '../screens/constants';
 import { getCurrentUserJid, mflog } from '../uikitMethods';
 
@@ -967,6 +969,11 @@ export const settingsMenu = [
    },
    */
    {
+      name: 'Notifications',
+      icon: NotificationSettingsIcon,
+      rounteName: NOTIFICATION_STACK,
+   },
+   {
       name: 'Log out',
       icon: ExitIcon,
    },
@@ -1138,7 +1145,6 @@ export const handleReplyPress = (userId, msgId, message) => {
 export const findConversationMessageIndex = (msgId, message) => {
    const data = conversationFlatListRef.current.props.data;
    const index = data.findIndex(item => item.msgId === msgId);
-   console.log('message ==>', index, JSON.stringify(message, null, 2));
    const { deleteStatus, recallStatus } = message;
    if (deleteStatus !== 0 || recallStatus !== 0) {
       showToast('This message is no longer available');

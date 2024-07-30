@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import { Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { handleSendMsg } from '../SDK/utils';
@@ -13,6 +13,10 @@ import { MIX_BARE_JID } from '../helpers/constants';
 import { setTextMessage } from '../redux/draftSlice';
 import { useTextMessage, useUserType } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
+import EmojiOverlay from './EmojiPicker';
+
+export const chatInputRef = createRef();
+chatInputRef.current = {};
 
 function ChatInput({ chatUser }) {
    const userId = getUserIdFromJid(chatUser);
@@ -34,7 +38,7 @@ function ChatInput({ chatUser }) {
    const toggleEmojiPicker = () => {
       setIsEmojiPickerShowing(!isEmojiPickerShowing);
       if (isEmojiPickerShowing) {
-         // Need to check here
+         chatInputRef?.current?.focus();
       } else {
          Keyboard.dismiss();
       }
@@ -71,6 +75,14 @@ function ChatInput({ chatUser }) {
       handleSendMsg({ chatUser, message: message.trim(), messageType: 'text' });
    };
 
+   const handleCloseEmojiWindow = () => {
+      setIsEmojiPickerShowing(false);
+   };
+
+   const handleEmojiSelect = (...emojis) => {
+      setMessage(message + emojis);
+   };
+
    const textInputRender = React.useMemo(() => {
       return (
          <>
@@ -81,7 +93,7 @@ function ChatInput({ chatUser }) {
                {isEmojiPickerShowing ? <KeyboardIcon /> : <EmojiIcon />}
             </IconButton>
             <TextInput
-               //   ref={chatInputRef}
+               ref={chatInputRef}
                value={message}
                style={styles.inputTextbox}
                onChangeText={onChangeMessage}
@@ -90,7 +102,7 @@ function ChatInput({ chatUser }) {
                numberOfLines={1}
                multiline={true}
                cursorColor={ApplicationColors.mainColor}
-               //   onFocus={handleCLoseEmojiWindow}
+               onFocus={handleCloseEmojiWindow}
             />
 
             <View style={commonStyles.marginHorizontal_10}>
@@ -108,7 +120,7 @@ function ChatInput({ chatUser }) {
                 </IconButton> */}
          </>
       );
-   }, [message]);
+   }, [message, isEmojiPickerShowing]);
 
    const renderSendButton = React.useMemo(() => {
       const isAllowSendMessage = Boolean(message.trim());
@@ -137,6 +149,14 @@ function ChatInput({ chatUser }) {
             onRequestClose={closeModal}
             attachmentMenuIcons={attachmentMenuIcons}
             handleAttachmentIconPressed={handleAttachmentIconPressed}
+         />
+         <EmojiOverlay
+            place={'CHAT_INPUT'}
+            state={message}
+            setState={setMessage}
+            visible={isEmojiPickerShowing}
+            onClose={handleCloseEmojiWindow}
+            onSelect={handleEmojiSelect}
          />
       </>
    );

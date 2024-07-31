@@ -1,6 +1,6 @@
 {
    "name": "mirrorfly-uikit-react-native",
-   "version": "1.4.5",
+   "version": "1.4.6",
    "description": "React-Native based UI kit for Mirrorfly",
    "main": "dist/index.js",
    "module": "dist/index.js",
@@ -64,7 +64,7 @@
       "lodash-es": "^4.17.21",
       "luxon": "^3.4.4",
       "metro-react-native-babel-preset": "0.76.8",
-      "mirrorfly-reactnative-sdk": "^1.0.8",
+      "mirrorfly-reactnative-sdk": "^1.0.9",
       "moment": "^2.30.1",
       "patch-package": "^8.0.0",
       "prettier": "^2.4.1",
@@ -76,7 +76,7 @@
       "react-native-compressor": "^1.6.1",
       "react-native-contacts": "^7.0.8",
       "react-native-convert-ph-asset": "^1.0.3",
-      "react-native-create-thumbnail": "^2.0.0",
+      "react-native-create-thumbnail": "1.6.4",
       "react-native-document-picker": "^9.3.0",
       "react-native-file-viewer": "^2.1.5",
       "react-native-fs": "^2.18.0",
@@ -88,12 +88,11 @@
       "react-native-headphone-detection": "^1.3.0",
       "react-native-heic-converter": "^1.3.3",
       "react-native-image-crop-picker": "^0.41.1",
-      "react-native-incall-manager": "^4.2.0",
+      "react-native-incall-manager": "4.1.0",
       "react-native-keep-awake": "^4.0.0",
       "react-native-keyevent": "^0.3.2",
       "react-native-maps": "1.7.1",
       "react-native-material-menu": "^2.0.0",
-      "react-native-network-logger": "^1.16.1",
       "react-native-pager-view": "^6.3.1",
       "react-native-permissions": "^4.1.5",
       "react-native-progress": "^5.0.1",
@@ -103,7 +102,7 @@
       "react-native-screens": "^3.31.1",
       "react-native-simple-toast": "^3.3.1",
       "react-native-sound": "^0.11.2",
-      "react-native-svg": "^15.2.0",
+      "react-native-svg": "^14.1.0",
       "react-native-svg-transformer": "^1.3.0",
       "react-native-tab-view": "^3.5.2",
       "react-native-video": "^5.2.1",
@@ -121,5 +120,5 @@
    },
    "engines": {
       "node": ">=16"
-   }
+      }
 }

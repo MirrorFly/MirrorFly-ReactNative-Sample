@@ -8,11 +8,11 @@ import { name as appName } from './app.json';
 import config from './src/config/config';
 import { mirrorflyInitialize, mirrorflyNotificationHandler, setupCallScreen } from './src/uikitMethods';
 
-import { startNetworkLogging } from 'react-native-network-logger';
-if (process.env?.NODE_ENV === 'development') {
-   startNetworkLogging();
-}
 /**
+// import { startNetworkLogging } from 'react-native-network-logger';
+// if (process.env?.NODE_ENV === 'development') {
+//    startNetworkLogging();
+// }
  */
 mirrorflyInitialize({
    apiBaseUrl: config.API_URL,

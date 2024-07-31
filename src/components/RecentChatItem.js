@@ -12,6 +12,7 @@ import { getSelectedChats, useRecentChatSearchText } from '../redux/reduxHook';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
+import { MuteChatRecentItem } from './MuteChat';
 import RecentChatAvathar from './RecentChatAvathar';
 import RecentChatMessage from './RecentChatMessage';
 
@@ -79,6 +80,7 @@ const RecentChatItem = React.memo(
                         {createdAt && formatChatDateTime(convertUTCTOLocalTimeStamp(createdAt), 'recent-chat')}
                      </Text>
                      <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+                        <MuteChatRecentItem recentChatItem={item} isRecentChatComponent={isRecentChatComponent} />
                         {Boolean(item.archiveStatus) && isRecentChatComponent && (
                            <Text style={styles.archived}>Archived</Text>
                         )}

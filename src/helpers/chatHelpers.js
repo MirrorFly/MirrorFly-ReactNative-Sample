@@ -1,5 +1,6 @@
 import Clipboard from '@react-native-clipboard/clipboard';
 import Graphemer from 'graphemer';
+import React from 'react';
 import { Alert, Dimensions, Linking, Platform, StyleSheet, View } from 'react-native';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import { createThumbnail } from 'react-native-create-thumbnail';
@@ -14,7 +15,6 @@ import Sound from 'react-native-sound';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
 import { handleSendMsg, uploadFileToSDK } from '../SDK/utils';
-import React from 'react';
 import {
    CameraIcon,
    ChatsIcon,
@@ -960,6 +960,14 @@ export const settingsMenu = [
       icon: ChatsIcon,
       rounteName: CHATS_CREEN,
    },
+   /** 
+    * 
+   {
+      name: 'Notifications',
+      icon: NotificationSettingsIcon,
+      rounteName: NOTIFICATION_STACK,
+   },
+   */
    {
       name: 'Notifications',
       icon: NotificationSettingsIcon,

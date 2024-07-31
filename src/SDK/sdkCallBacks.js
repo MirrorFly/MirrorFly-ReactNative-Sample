@@ -111,7 +111,6 @@ import { setProgress } from '../redux/progressDataSlice';
 import {
    addRecentChatItem,
    toggleArchiveChatsByUserId,
-   toggleChatMute,
    updateMsgByLastMsgId,
    updateRecentMessageStatus,
 } from '../redux/recentChatDataSlice';
@@ -122,7 +121,7 @@ import { resetConferencePopup, showConfrence, updateConference } from '../redux/
 import store from '../redux/store';
 import { resetTypingStatus, setTypingStatus } from '../redux/typingStatusDataSlice';
 import { REGISTERSCREEN } from '../screens/constants';
-import { getLocalUserDetails, logoutClearVariables, mflog, setCurrectUserProfile } from '../uikitMethods';
+import { getLocalUserDetails, logoutClearVariables, setCurrectUserProfile } from '../uikitMethods';
 import { fetchGroupParticipants, getUserProfileFromSDK } from './utils';
 
 let localStream = null,
@@ -655,7 +654,6 @@ export const callBacks = {
       }
    },
    messageListener: async res => {
-      mflog('res ==>', JSON.stringify(res, null, 2));
       switch (res.msgType) {
          case 'groupCreated':
          case 'receiveMessage':
@@ -780,7 +778,7 @@ export const callBacks = {
       store.dispatch(updateMsgByLastMsgId(res));
    },
    muteChatListener: res => {
-      store.dispatch(toggleChatMute({ userJid: res.fromUserJid, muteStatus: res.isMuted ? 1 : 0 }));
+      console.log(res, 'muteChatListener');
    },
    archiveChatListener: res => {
       store.dispatch(toggleArchiveChatsByUserId(res));

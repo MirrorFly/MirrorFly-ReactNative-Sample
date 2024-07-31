@@ -1,7 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { clearState } from './clearSlice';
 
-const initialState = {};
+const initialState = {
+   notificationSound: true,
+};
 
 const settingDataSlice = createSlice({
    name: 'settingDataData',

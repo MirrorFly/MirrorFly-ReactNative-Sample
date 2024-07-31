@@ -7,7 +7,7 @@ import Pressable from '../common/Pressable';
 import { getConversationHistoryTime } from '../common/timeStamp';
 import ApplicationColors from '../config/appColors';
 import config from '../config/config';
-import { getMessageStatus } from '../helpers/chatHelpers';
+import { getMessageStatus, getUserIdFromJid } from '../helpers/chatHelpers';
 import { currentChatUser } from '../screens/ConversationScreen';
 import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';

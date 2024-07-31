@@ -20,7 +20,7 @@ public class MFModule implements ReactPackage {
         modules.add(new RingtoneSilentKeyEventModule(reactContext));
         return modules;
     }
-
+    
 
     @Override
     public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {

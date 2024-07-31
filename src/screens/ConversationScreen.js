@@ -3,14 +3,14 @@ import React from 'react';
 import { BackHandler, ImageBackground, KeyboardAvoidingView, Linking, Platform, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
 import SDK from '../SDK/SDK';
-import { fetchGroupParticipants } from '../SDK/utils';
+import { fetchGroupParticipants, getUserProfileFromSDK } from '../SDK/utils';
 import chatBackgroud from '../assets/chatBackgroud.png';
 import ChatHeader from '../components/ChatHeader';
 import ChatInput from '../components/ChatInput';
 import ConversationList from '../components/ConversationList';
 import ReplyContainer from '../components/ReplyContainer';
 import { getImageSource, getUserIdFromJid, handelResetMessageSelection } from '../helpers/chatHelpers';
-import { MIX_BARE_JID, } from '../helpers/constants';
+import { MIX_BARE_JID } from '../helpers/constants';
 import { resetUnreadCountForChat } from '../redux/recentChatDataSlice';
 import { useChatMessages, useReplyMessage } from '../redux/reduxHook';
 import { RECENTCHATSCREEN } from './constants';
@@ -38,8 +38,11 @@ function ConversationScreen({ chatUser = '' }) {
       dispatch(resetUnreadCountForChat(currentChatUser));
       if (MIX_BARE_JID.test(jid)) {
          fetchGroupParticipants(jid);
+      } else {
+         getUserProfileFromSDK(userId);
       }
       return () => {
+         handelResetMessageSelection(userId)();
          currentChatUser = '';
       };
    }, []);

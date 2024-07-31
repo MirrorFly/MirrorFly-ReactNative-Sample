@@ -4,10 +4,10 @@ import { useDispatch } from 'react-redux';
 import RootNavigation from '../Navigation/rootNavigation';
 import AlertModal from '../common/AlertModal';
 import IconButton from '../common/IconButton';
-import { ArchiveIcon, CloseIcon, DeleteIcon } from '../common/Icons';
+import { ArchiveIcon, ChatMuteIcon, ChatUnMuteIcon, CloseIcon, DeleteIcon } from '../common/Icons';
 import ScreenHeader from '../common/ScreenHeader';
 import ApplicationColors from '../config/appColors';
-import { getUserIdFromJid, showToast, toggleArchive } from '../helpers/chatHelpers';
+import { getUserIdFromJid, showToast, toggleArchive, toggleMuteChat } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
 import { deleteRecentChats, resetChatSelections, setSearchText } from '../redux/recentChatDataSlice';
 import { getSelectedChats, getUserNameFromStore, useRecentChatData } from '../redux/reduxHook';
@@ -20,9 +20,13 @@ const RecentChatHeader = () => {
    const [modalContent, setModalContent] = React.useState(null);
 
    const filtered = React.useMemo(() => {
-      return recentChatData.filter(item => item.isSelected === 1);
+      return recentChatData.filter(
+         item => item.isSelected === 1 && (item.archiveStatus === 0 || item.archiveStatus === undefined),
+      );
    }, [recentChatData.map(item => item.isSelected).join(',')]); // Include isSelected in the dependency array
    const isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
+   const isChatMuted = filtered.some(res => res.muteStatus === 1);
+   const isGroupExistMute = filtered.some(res => MIX_BARE_JID.test(res.userJid));
 
    const userName = getUserNameFromStore(getUserIdFromJid(filtered[0]?.userJid)) || '';
    const deleteMessage =
@@ -88,27 +92,18 @@ const RecentChatHeader = () => {
       );
    };
 
-   /**  
-    * const isChatMuted = filtered.some(res => res.muteStatus === 1);
-      const isGroupExistMute = filtered.some(res => MIX_BARE_JID.test(res.userJid));
-    * {!isGroupExistMute && renderMuteIcon()}
-   // const renderMuteIcon = () => {
-   //    return (
-   //       <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-   //          <IconButton onPress={toggleMuteChat}>
-   //             {!isChatMuted ? <ChatMuteIcon width={17} height={17} /> : <ChatUnMuteIcon width={17} height={17} />}
-   //          </IconButton>
-   //       </View>
-   //    );
-   // };
-   */
+   const renderMuteIcon = () => {
+      return (
+         <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+            <IconButton onPress={toggleMuteChat}>
+               {!isChatMuted ? <ChatMuteIcon width={17} height={17} /> : <ChatUnMuteIcon width={17} height={17} />}
+            </IconButton>
+         </View>
+      );
+   };
 
    const hanldeRoute = () => {
       RootNavigation.navigate(SETTINGS_STACK, { screen: MENU_SCREEN });
-   };
-
-   const resetChatSelection = () => {
-      dispatch(resetChatSelections());
    };
 
    const hanldeGroupRoute = () => {
@@ -125,6 +120,10 @@ const RecentChatHeader = () => {
          formatter: hanldeRoute,
       },
    ];
+
+   const resetChatSelection = () => {
+      dispatch(resetChatSelections());
+   };
 
    const renderSelectionHeader = React.useMemo(() => {
       return (
@@ -146,6 +145,7 @@ const RecentChatHeader = () => {
                </View>
                <View style={commonStyles.hstack}>
                   {renderDeleteIcon()}
+                  {!isGroupExistMute && renderMuteIcon()}
                   {renderArchiveIcon()}
                </View>
                {modalContent && <AlertModal {...modalContent} />}

@@ -1,6 +1,3 @@
-// Adapted from
-// https://github.com/gijoehosaphat/react-native-keep-screen-on
-
 package com.mfsample;
 
 import android.app.Activity;
@@ -145,6 +142,16 @@ public class ActivityModule extends ReactContextBaseJavaModule {
             return true;
         else
             return false;
+    }
+
+    @ReactMethod
+    public void addListener(String eventName) {
+        // Keep: Required for RN built in Event Emitter Calls.
+    }
+
+    @ReactMethod
+    public void removeListeners(Integer count) {
+        // Keep: Required for RN built in Event Emitter Calls.
     }
 
     @ReactMethod

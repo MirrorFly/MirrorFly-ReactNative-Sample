@@ -225,6 +225,7 @@ export const mirrorflyProfileUpdate = async ({ nickName, image, status, mobileNu
       updatedMobileNumber,
       updatedEmail,
    );
+   currentScreen = RECENTCHATSCREEN;
    return UserInfo;
 };
 

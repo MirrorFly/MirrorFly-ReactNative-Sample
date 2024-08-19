@@ -43,8 +43,7 @@ export function MirrorflyChatComponent() {
       const handleDeepLink = ({ url }) => {
          if (url) {
             const route = url.replace(getAppSchema(), '');
-            const [stack, screenWithQuery] = route.split('/');
-            const [screen, queryString] = screenWithQuery.split('?');
+            const queryString = route.split('?')[1];
             // Manually parse the query string
             const params = {};
             if (queryString) {

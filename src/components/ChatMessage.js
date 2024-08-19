@@ -44,6 +44,7 @@ function ChatMessage({ chatUser, item, showNickName }) {
    useFocusEffect(
       React.useCallback(() => {
          if (useXmppStatus === CONNECTED && !isSender && msgStatus !== 2 && deleteStatus === 0 && recallStatus === 0) {
+            console.log('useXmppStatus ==>', useXmppStatus, isSender, msgStatus, deleteStatus, recallStatus);
             const groupId = MIX_BARE_JID.test(chatUser) ? getUserIdFromJid(chatUser) : '';
             sendSeenStatus(publisherJid, msgId, groupId);
          }

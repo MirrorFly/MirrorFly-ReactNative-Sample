@@ -459,6 +459,22 @@ export const mediaObjContructor = (_package, file) => {
          mediaObj.duration = file.duration * 1000 || 0;
          mediaObj.type = file.type + '/' + mediaObj.extension;
          return mediaObj;
+      case 'AUDIO_RECORD':
+         mediaObj.extension = getExtension(file.fileCopyUri, false);
+         mediaObj.uri = `${file.fileCopyUri}`;
+         mediaObj.fileSize = file.size;
+         mediaObj.type = file.type;
+         mediaObj.filename = file.name;
+         mediaObj.duration = file.duration || 0;
+         return mediaObj;
+      case 'REDUX':
+         mediaObj.extension = getExtension(file.local_path, false);
+         mediaObj.uri = file.local_path;
+         mediaObj.fileSize = file.file_size;
+         mediaObj.duration = file.duration;
+         mediaObj.filename = file.fileName;
+         mediaObj.type = file.fileType;
+         return mediaObj;
       default:
          break;
    }

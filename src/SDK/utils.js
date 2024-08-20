@@ -25,7 +25,8 @@ import SDK from './SDK';
 let chatPage = {},
    hasNextChatPage = {},
    hasNextRecentChatPage = true,
-   recentChatPage = 1;
+   recentChatPage = 1,
+   typingStatusSent = false;
 
 export const resetVariable = () => {
    chatPage = {};
@@ -482,4 +483,18 @@ export const sendNotificationData = async () => {
 
 export const getMuteStatus = async userJid => {
    return await SDK.getMuteStatus(userJid);
+};
+
+export const updateTypingStatus = jid => {
+   if (!typingStatusSent && !jid.includes(config.aiAgentId)) {
+      SDK.sendTypingStatus(jid);
+      typingStatusSent = true;
+   }
+};
+
+export const updateTypingGoneStatus = jid => {
+   if (typingStatusSent) {
+      SDK.sendTypingGoneStatus(jid);
+      typingStatusSent = false;
+   }
 };

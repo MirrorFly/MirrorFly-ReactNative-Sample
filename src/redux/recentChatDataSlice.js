@@ -14,7 +14,22 @@ const recentChatDataSlice = createSlice({
    initialState,
    reducers: {
       setRecentChats(state, action) {
-         state.recentChats = [...state.recentChats, ...action.payload];
+         const newChats = action.payload;
+
+         // Create a map of existing chats by userJid for quick lookup
+         const existingChatsMap = state.recentChats.reduce((acc, chat) => {
+            acc[chat.userJid] = chat;
+            return acc;
+         }, {});
+
+         // Merge the new chats into the existing ones, prioritizing new chats
+         const updatedChats = [
+            ...Object.values(existingChatsMap),
+            ...newChats.filter(chat => !existingChatsMap[chat.userJid]),
+         ];
+
+         // Update the state with the combined result
+         state.recentChats = updatedChats;
       },
       addRecentChatItem(state, action) {
          const { userJid, newIndex = 0, archiveSetting, publisherId } = action.payload;

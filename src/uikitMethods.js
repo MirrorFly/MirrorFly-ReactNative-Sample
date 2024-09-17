@@ -151,6 +151,7 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadat
                Promise.resolve(connect);
                SDK.getUsersIBlocked();
                SDK.getUsersWhoBlockedMe();
+               break;
             default:
                return connect;
          }

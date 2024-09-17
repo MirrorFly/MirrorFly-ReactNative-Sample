@@ -10,11 +10,10 @@ import Pressable from './Pressable';
 
 function UserAvatharNickname({ item }) {
    const [modalContent, setModalContent] = React.useState(null);
-   let { nickName, image: imageToken, colorCode, status } = useRoasterData(item?.userId);
+   let { nickName, image: imageToken, colorCode } = useRoasterData(item?.userId);
    nickName = nickName || item?.nickName || item?.userId || '';
    imageToken = imageToken || '';
    colorCode = colorCode || SDK.getRandomColorCode();
-   status = status || item.status || '';
 
    const toggleModalContent = () => {
       setModalContent(null);

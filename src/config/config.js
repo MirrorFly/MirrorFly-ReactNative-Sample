@@ -50,6 +50,9 @@ const config = {
    // // ================ growthAXL Environment variables =====================
    // API_URL: 'https://growthaxlllc-api.mirrorfly.com/api/v1',
    // licenseKey: 'o3mN05oAgepcbO0noe3T058WC8jkKN',
+   // ================ growthAXL Prod Environment variables =====================
+   // API_URL: 'https://growthaxlprod-api.mirrorfly.com/api/v1',
+   // licenseKey: 'WYXL9kugIbfnKQrvzA4qHOVnpbxmD8',
 };
 
 export default config;

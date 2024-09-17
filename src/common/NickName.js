@@ -37,7 +37,7 @@ function NickName({ userId, searchValue = '', index, style, colorCodeRequired = 
                   return (
                      <Text
                         numberOfLines={1}
-                        key={`${i}-${index}`}
+                        key={`${i}-${index}`} // NOSONAR
                         ellipsizeMode="tail"
                         style={[textStyle, isSearchMatch]}>
                         {localUser ? 'You' : part}
@@ -49,7 +49,11 @@ function NickName({ userId, searchValue = '', index, style, colorCodeRequired = 
             parts?.map((part, i) => {
                const isSearchMatch = part?.toLowerCase() === searchValue?.toLowerCase() ? commonStyles.highlight : {};
                return (
-                  <Text numberOfLines={1} key={`${i}-${index}`} ellipsizeMode="tail" style={[textStyle, isSearchMatch]}>
+                  <Text
+                     numberOfLines={1}
+                     key={`${i}-${index}`} // NOSONAR
+                     ellipsizeMode="tail"
+                     style={[textStyle, isSearchMatch]}>
                      {localUser ? 'You' : part}
                   </Text>
                );

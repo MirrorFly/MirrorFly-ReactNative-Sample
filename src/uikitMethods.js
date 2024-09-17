@@ -143,7 +143,9 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadat
                getUserSettings(true);
                SDK.getArchivedChats(true);
                updateNotificationSettings();
-               return connect;
+               Promise.resolve(connect);
+               SDK.getUsersIBlocked();
+               SDK.getUsersWhoBlockedMe();
             default:
                return connect;
          }

@@ -28,16 +28,34 @@ function NickName({ userId, searchValue = '', index, style, colorCodeRequired = 
 
    const textStyle = colorCodeRequired ? { ...style, color: colorCode } : style;
    return (
-      <View style={commonStyles.hstack}>
-         {parts?.map((part, i) => {
-            const isSearchMatch = part?.toLowerCase() === searchValue?.toLowerCase() ? commonStyles.highlight : {};
-            return (
-               <Text numberOfLines={1} key={++i + '-' + index} ellipsizeMode="tail" style={[textStyle, isSearchMatch]}>
-                  {localUser ? 'You' : part}
-               </Text>
-            );
-         })}
-      </View>
+      <>
+         {searchValue ? (
+            <View style={commonStyles.hstack}>
+               {parts?.map((part, i) => {
+                  const isSearchMatch =
+                     part?.toLowerCase() === searchValue?.toLowerCase() ? commonStyles.highlight : {};
+                  return (
+                     <Text
+                        numberOfLines={1}
+                        key={`${i}-${index}`}
+                        ellipsizeMode="tail"
+                        style={[textStyle, isSearchMatch]}>
+                        {localUser ? 'You' : part}
+                     </Text>
+                  );
+               })}
+            </View>
+         ) : (
+            parts?.map((part, i) => {
+               const isSearchMatch = part?.toLowerCase() === searchValue?.toLowerCase() ? commonStyles.highlight : {};
+               return (
+                  <Text numberOfLines={1} key={`${i}-${index}`} ellipsizeMode="tail" style={[textStyle, isSearchMatch]}>
+                     {localUser ? 'You' : part}
+                  </Text>
+               );
+            })
+         )}
+      </>
    );
 }
 

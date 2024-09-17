@@ -45,7 +45,7 @@ function RecentChatMessage({ userId, item, index, isSender }) {
             );
          case 'image':
             return (
-               <View style={[styles.lastSentMessageWrapper, commonStyles.paddingLeft_4]}>
+               <View style={[styles.lastSentMessageWrapper, isSender && commonStyles.paddingLeft_4]}>
                   <ImageIcon />
                   <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
                      Image
@@ -54,7 +54,7 @@ function RecentChatMessage({ userId, item, index, isSender }) {
             );
          case 'video':
             return (
-               <View style={[styles.lastSentMessageWrapper, commonStyles.paddingLeft_4]}>
+               <View style={[styles.lastSentMessageWrapper, isSender && commonStyles.paddingLeft_4]}>
                   <VideoSmallIcon color={'#767676'} />
                   <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
                      Video
@@ -63,7 +63,7 @@ function RecentChatMessage({ userId, item, index, isSender }) {
             );
          case 'file':
             return (
-               <View style={[styles.lastSentMessageWrapper, commonStyles.paddingLeft_4]}>
+               <View style={[styles.lastSentMessageWrapper, isSender && commonStyles.paddingLeft_4]}>
                   <DocumentChatIcon />
                   <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
                      File
@@ -72,7 +72,7 @@ function RecentChatMessage({ userId, item, index, isSender }) {
             );
          case 'audio':
             return (
-               <View style={[styles.lastSentMessageWrapper, commonStyles.paddingLeft_4]}>
+               <View style={[styles.lastSentMessageWrapper, isSender && commonStyles.paddingLeft_4]}>
                   {Boolean(audioType) ? (
                      <AudioMicIcon width="14" height="14" fill={'#767676'} />
                   ) : (
@@ -126,8 +126,8 @@ function RecentChatMessage({ userId, item, index, isSender }) {
             Boolean(Object.keys(msgBody).length) &&
             item?.msgBody?.message_type !== 'notification' &&
             getMessageStatus(msgStatus, 8)}
+         <View style={commonStyles.paddingLeft_4} />
          {renderLastSentMessageBasedOnType()}
-         <View style={commonStyles.p_1} />
       </View>
    );
 }

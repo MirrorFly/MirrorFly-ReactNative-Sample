@@ -13,8 +13,10 @@ import { setupCallKit } from './calls/ios';
 import { setNotificationForegroundService } from './calls/notification/callNotifyHandler';
 import { getNotifyMessage, getNotifyNickName, getUserIdFromJid, showToast } from './helpers/chatHelpers';
 import { MIX_BARE_JID } from './helpers/constants';
+import { addChatMessageItem } from './redux/chatMessageDataSlice';
 import { clearState } from './redux/clearSlice';
-import { getRoasterData } from './redux/reduxHook';
+import { addRecentChatItem } from './redux/recentChatDataSlice';
+import { getArchive, getRoasterData } from './redux/reduxHook';
 import { setRoasterData } from './redux/rosterDataSlice';
 import store from './redux/store';
 import { RECENTCHATSCREEN, REGISTERSCREEN } from './screens/constants';
@@ -75,6 +77,9 @@ export const mirrorflyNotificationHandler = async remoteMessage => {
                getNotifyMessage(notify?.data),
                notify?.data?.fromUserJid,
             );
+            notify.data.archiveSetting = getArchive();
+            store.dispatch(addRecentChatItem(notify?.data));
+            store.dispatch(addChatMessageItem(notify?.data));
          }
       }
    } catch (error) {
@@ -150,7 +155,7 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadat
                return connect;
          }
       } else {
-         showToast(registerRes.message, Toast.SHORT);
+         showToast(registerRes.message);
          return registerRes;
       }
    } catch (error) {
@@ -222,6 +227,7 @@ export const mirrorflyProfileUpdate = async ({ nickName, image, status, mobileNu
       updatedMobileNumber,
       updatedEmail,
    );
+   currentScreen = RECENTCHATSCREEN;
    return UserInfo;
 };
 

@@ -1,94 +1,231 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+<p style="text-align: center;">
+  <img  src="https://dasa7d6hxd0bp.cloudfront.net/images/mirrorfly.webp" data-canonical-src="https://dasa7d6hxd0bp.cloudfront.net/images/mirrorfly.webp" width="400"  alt=""/>
+</p>
 
-# Getting Started
+<h1 style="text-align: center">
+Build Platform-specific Apps With Custom React Native Video & Chat SDK
+</h1>
 
-> **Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+<b>MirrorFly’s React Native Sample App</b> is the easiest way to build messaging platforms. You’ll use the pre-built sample app, integrate the React Native Chat SDK, and launch a fully-functional messaging app for any platform you prefer. 
 
-## Step 1: Start the Metro Server
+React Native is highly flexible and extensible. You can use MirrorFly’s own sample app to build any Android or iOS app with 1000s of real-time communication capabilities. The React native chat SDK is low-code, enabling easy integration and launch in less than 20 mins. Plus, the performance is faster when compared to apps as the SDK is carefully designed with minimal codes.
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+# ⚒️ Key Product Offerings
 
-To start Metro, run the following command from the _root_ of your React Native project:
+MirrorFly’s React Native SDK allows you to add the following capabilities to your platform. 
 
-```bash
-# using npm
-npm start
+💬 [Enterprise Instant Messaging](https://www.mirrorfly.com/enterprise-collaboration-software.php) - Secure real-time communication across organizations.
 
-# OR using Yarn
-yarn start
+ 🎯 [HD Group Video Calling](https://www.mirrorfly.com/video-conferencing-api.php)- High-definition Group video calling for face to face conversations.
+
+ 🦾 [SIP/ VoIP Calling](https://www.mirrorfly.com/sip-voip-solution.php) - Enable instant communication on IP-based phone lines.
+ 
+ 🦾 [Live Streaming](https://www.mirrorfly.com/live-streaming-sdk.php) - Broadcasting functionality to take content to millions of audience.
+
+ You can also add 1000+ real-time communication capabilities. Check out our other 
+ offerings [here](https://www.mirrorfly.com/chat-features.php) 
+ 
+# ☁️ Deployment Models - Self-hosted and Cloud
+
+ MirrorFly offers full freedom with the hosting options:
+ 
+ </br>
+
+ - Self-hosted: Host your React Native client on your own data centers, private cloud servers or third-party servers.
+  </br>
+ [Check out our multi-tenant cloud hosting](https://www.mirrorfly.com/self-hosted-chat-solution.php)
+
+ - Cloud: Deploy your React Native client platform on MirrorFly’s multi-tenant cloud servers. 
+ </br>
+[Check out our multi-tenant cloud hosting](https://www.mirrorfly.com/multi-tenant-chat-for-saas.php)
+ </br>
+# 📱 Mobile Client
+MirrorFly offers a fully-built client <b>SafeTalk</b> that is available in:
+
+<a href="https://play.google.com/store/apps/details?id=com.mirrorfly&hl=en"><img src="./GetItOnGooglePlay_Badge_Web_color_English.png" alt="image" width="140" height="auto"></a>  &nbsp;   [![appstore](./Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg)](https://apps.apple.com/app/safetalk/id1442769177)
+
+You can use this client as a messaging app, or customize, rebrand & white-label it as your chat client.
+
+# ⚙️ Requirements
+For MirrorFly React Native, ensure you install the following dependencies:
+
+<ul>
+<li><b>Node:</b> 14.20.0 </li>
+<li><b>npm:</b> 6.14.10 </li>
+<li><b>React Native:</b> 0.69.12 or higher</li>
+</ul>
+
+
+# 📥Integrate the Chat SDK
+
+<b>[Video](https://www.youtube.com/watch?v=TL7RTm6g0Ek)</b>
+
+<b>Step 1:</b> Update package.json
+Ensure all dependencies in your <b>package.json</b> file are up-to-date. You can use:
+
+```react
+npm install
+```
+or for specific updates:
+
+```react
+npm update
 ```
 
-## Step 2: Start your Application
+<b>Step 2: Check for Duplicates (For iOS Issues)</b>
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+Look for duplicate packages that might cause conflicts, especially for iOS. Run:
 
-### For Android
+```react
+npm ls | grep 'package-name'
+```
+If duplicates are found, remove or consolidate them to avoid version conflicts.
 
-```bash
-# using npm
-npm run android
+<b>Step 3:</b> Install Mirrorfly SDK in your App
 
-# OR using Yarn
-yarn android
+```react
+npm i mirrorfly-reactnative-sdk
+```
+<b>Step 4:</b> Import the SDK. In the file where you want to use the MirrorFly SDK, add the import statement at the top:
+```react
+import { SDK } from "mirrorfly-reactnative-sdk";
+```
+# 🛠️ Setting Up NPM Dependencies for Chat SDK Integration
+
+```react
+
+{
+   
+    "react-native-get-random-values": "1.7.1",//must use version >=1.7.1
+    'realm': "^10.8.0" <= "^11.9.0",
+    'react-native-fs':  "^2.18.0",
+    '@react-native-community/netinfo': "^8.0.0",
+    'moment': "2.29.4",
+    'react-native-compressor': "1.6.1",
+    'react-native-convert-ph-asset': "^1.0.3",
+    "react-native-create-thumbnail": "^1.6.4",
+    //add the below calls related dependencies
+    "react-native-webrtc": "118.0.5", // must use version "118.0.5"
+    "react-native-background-timer": "2.*.*"
+  }
+
+
+```
+# ▶️ Initialize Chat SDK
+To start initializing the chat SDK, you need data that handles connection status changes in the client's app.
+
+Paste the license key into the <b>license key</b> parameter and use the method below to pass this data to the SDK.
+
+In your App file (e.g., App.tsx or App.js), import the SDK and call the <b>initializeSDK</b> function with the required parameters.
+
+```react
+const initializeObj = {
+  apiBaseUrl: `API_URL`,
+  licenseKey: `LICENSE_KEY`,
+  isTrialLicenseKey: `TRIAL_MODE`,
+  callbackListeners: {},
+  };
+await SDK.initializeSDK(initializeObj);
+```
+# 📝Register User
+
+<b>Step 1</b>
+
+Use the method below to register a new user.
+
+<b>Step 2</b>
+
+After registration, you'll receive a username and password. Use these credentials to <b>connect</b> to the server with the connect method.
+
+```react
+await SDK.register(`USER_IDENTIFIER`);
+```
+# 🛜Connect to MirrorFly Server
+
+<b>Step 1 </b></br>
+Use the registration credentials to connect to the server.
+
+<b>Step 2</b></br>
+Upon a successful connection, you’ll receive an approval message with a status code of 200. If there’s an issue, you’ll encounter an execution error.
+
+<b>Step 3</b></br>
+You can track the connection status through the connectionListener callback function.
+
+<b>Step 4</b></br>
+If an error occurs during the connection, you’ll receive an error message via the callback.
+
+```react
+await SDK.connect(`USERNAME`, `PASSWORD`);
 ```
 
-### For iOS
+# ⏩Send a Message
+Finally, use the method below to send a message to another user
+```react
+await SDK.sendTextMessage(`TO_USER_JID`, `MESSAGE_BODY`,`MESSAGE_ID`,`REPLY_TO`);
+```
+# ⏪ Receive a Message
 
-```bash
-# using npm
-npm run ios
+To receive messages from another user, implement the messageListener function. This function will be triggered whenever you receive a new message or related event in one-to-one or group chats. Additionally, include the callback method below during the SDK initialization process.
 
-# OR using Yarn
-yarn ios
+```react
+function messageListener(response) {
+  console.log("Message Listener", response);
+}
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+# 🤹Add More Capabilities
+To add additional capabilities like group chat, recent chat and push notifications, follow the steps demonstrated in our [official documentation.](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/)
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+# 🤝Getting Help
+If you need any further help with our React Native Sample App, check out our resources
 
-## Step 3: Modifying your App
 
-Now that you have successfully run the app, let's modify it.
+- [React Native API](https://www.mirrorfly.com/react-native-chat-sdk.php)
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+- [React Native Tutorial](https://www.mirrorfly.com/tutorials/react-native-chat-app.php)
 
-## Congratulations! :tada:
+- [React Native Docs](https://www.mirrorfly.com/docs/chat/reactnative/quick-start/)
 
-You've successfully run and modified your React Native App. :partying_face:
+- [Developer Portal](https://www.mirrorfly.com/docs/)
 
-### Now what?
+If you need any help in resolving any issues or have questions, Drop a mail to <b>integration@contus.in</b>
 
--  If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
--  If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
 
-# Troubleshooting
+# 📚 Learn More
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+●	[Developer Documentation](https://www.mirrorfly.com/docs/)
 
-# Learn More
+●	[Product Tutorials](https://www.mirrorfly.com/tutorials/)
 
-To learn more about React Native, take a look at the following resources:
+●	[Pubdev Documentation](https://pub.dev/packages/mirrorfly_plugin)
 
--  [React Native Website](https://reactnative.dev) - learn more about React Native.
--  [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
--  [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
--  [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
--  [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+●	[Npmjs Documentation](https://www.npmjs.com/~contus)
 
-# In constant.js file
+●	[On-premise Deployment](https://www.mirrorfly.com/on-premises-chat-server.php) 
 
--  place you application shema here APP_SCHEMA
+●	[See who's using MirrorFly](https://www.mirrorfly.com/chat-use-cases.php)
 
-# In src/config.js file
+# 🧑‍💻 Hire Experts
+Looking for a tech team to develop your enterprise app in React Native? [Hire a team of seasoned professionals](https://www.mirrorfly.com/hire-video-chat-developer.php) who manage the entire process from concept to launch. We’ll deliver a high-quality app, expertly crafted and ready for launch.
 
--  Update the variables
+# ⏱️ Round-the-clock Support
+If you’d like to take help when working with our solution, feel free to [contact our experts](https://www.mirrorfly.com/contact-sales.php) who will be available to help you anytime of the day or night. 
 
-   GOOGLE_LOCATION_API_KEY: '', // Paste GOOGLE_LOCATION_API_KEY HERE
+# 💼 Become a Part of our amazing team
 
-   // =====================================
-   API_URL: '', // Paste API BASE URL HERE
-   licenseKey: '', // Paste LICENSEKEY BASE URL HERE
-   // =====================================
+We're always on the lookout for talented developers, support specialists, and product managers. Visit our [careers page](https://www.contus.com/careers.php) to explore current opportunities.
+
+# 🗞️ Get the Latest Updates
+
+●	[Blog](https://www.mirrorfly.com/blog/)
+
+●	[Facebook](https://www.facebook.com/MirrorFlyofficial/)
+
+●	[Twitter](https://twitter.com/mirrorflyteam)
+
+●	[LinkedIn](https://www.linkedin.com/showcase/mirrorfly-official/)
+
+●	[Youtube](https://www.linkedin.com/showcase/mirrorfly-official/)
+
+●	[Instagram](https://www.instagram.com/mirrorflyofficial/)

@@ -32,11 +32,11 @@ MirrorFly’s React Native SDK allows you to add the following capabilities to y
  </br>
 
  - Self-hosted: Host your React Native client on your own data centers, private cloud servers or third-party servers.
-  </br>
+
  [Check out our multi-tenant cloud hosting](https://www.mirrorfly.com/self-hosted-chat-solution.php)
 
  - Cloud: Deploy your React Native client platform on MirrorFly’s multi-tenant cloud servers. 
- </br>
+
 [Check out our multi-tenant cloud hosting](https://www.mirrorfly.com/multi-tenant-chat-for-saas.php)
  </br>
 # 📱 Mobile Client

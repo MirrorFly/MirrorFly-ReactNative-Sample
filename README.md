@@ -194,17 +194,17 @@ If you need any help in resolving any issues or have questions, Drop a mail to <
 
 # 📚 Learn More
 
-●	[Developer Documentation](https://www.mirrorfly.com/docs/)
+ - [Developer Documentation](https://www.mirrorfly.com/docs/)
 
-●	[Product Tutorials](https://www.mirrorfly.com/tutorials/)
+ - [Product Tutorials](https://www.mirrorfly.com/tutorials/)
 
-●	[Pubdev Documentation](https://pub.dev/packages/mirrorfly_plugin)
+ - [Pubdev Documentation](https://pub.dev/packages/mirrorfly_plugin)
 
-●	[Npmjs Documentation](https://www.npmjs.com/~contus)
+ - Npmjs Documentation](https://www.npmjs.com/~contus)
 
-●	[On-premise Deployment](https://www.mirrorfly.com/on-premises-chat-server.php) 
+ - [On-premise Deployment](https://www.mirrorfly.com/on-premises-chat-server.php) 
 
-●	[See who's using MirrorFly](https://www.mirrorfly.com/chat-use-cases.php)
+ - [See who's using MirrorFly](https://www.mirrorfly.com/chat-use-cases.php)
 
 # 🧑‍💻 Hire Experts
 Looking for a tech team to develop your enterprise app in React Native? [Hire a team of seasoned professionals](https://www.mirrorfly.com/hire-video-chat-developer.php) who manage the entire process from concept to launch. We’ll deliver a high-quality app, expertly crafted and ready for launch.
@@ -218,14 +218,14 @@ We're always on the lookout for talented developers, support specialists, and pr
 
 # 🗞️ Get the Latest Updates
 
-●	[Blog](https://www.mirrorfly.com/blog/)
+ - [Blog](https://www.mirrorfly.com/blog/)
 
-●	[Facebook](https://www.facebook.com/MirrorFlyofficial/)
+ - [Facebook](https://www.facebook.com/MirrorFlyofficial/)
 
-●	[Twitter](https://twitter.com/mirrorflyteam)
+ - [Twitter](https://twitter.com/mirrorflyteam)
 
-●	[LinkedIn](https://www.linkedin.com/showcase/mirrorfly-official/)
+ - [LinkedIn](https://www.linkedin.com/showcase/mirrorfly-official/)
 
-●	[Youtube](https://www.linkedin.com/showcase/mirrorfly-official/)
+ - [Youtube](https://www.linkedin.com/showcase/mirrorfly-official/)
 
-●	[Instagram](https://www.instagram.com/mirrorflyofficial/)
+ - [Instagram](https://www.instagram.com/mirrorflyofficial/)

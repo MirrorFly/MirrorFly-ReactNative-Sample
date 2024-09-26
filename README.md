@@ -144,13 +144,13 @@ await SDK.register(`USER_IDENTIFIER`);
 
 <b>Step 1 </b></br>
 Use the registration credentials to connect to the server.
-
+</br></br>
 <b>Step 2</b></br>
 Upon a successful connection, you’ll receive an approval message with a status code of 200. If there’s an issue, you’ll encounter an execution error.
-
+</br></br>
 <b>Step 3</b></br>
 You can track the connection status through the connectionListener callback function.
-
+</br></br>
 <b>Step 4</b></br>
 If an error occurs during the connection, you’ll receive an error message via the callback.
 
@@ -200,7 +200,7 @@ If you need any help in resolving any issues or have questions, Drop a mail to <
 
  - [Pubdev Documentation](https://pub.dev/packages/mirrorfly_plugin)
 
- - Npmjs Documentation](https://www.npmjs.com/~contus)
+ - [Npmjs Documentation](https://www.npmjs.com/~contus)
 
  - [On-premise Deployment](https://www.mirrorfly.com/on-premises-chat-server.php) 
 

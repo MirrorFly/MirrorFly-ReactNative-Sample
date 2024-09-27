@@ -58,7 +58,7 @@ For MirrorFly React Native, ensure you install the following dependencies:
 
 # 📥Integrate the Chat SDK
 
-<b>[Video](https://www.youtube.com/watch?v=TL7RTm6g0Ek)</b>
+Prefer to learn the full integration steps as a video? <b>[Watch here](https://www.youtube.com/watch?v=TL7RTm6g0Ek)</b>
 
 <b>Step 1:</b> Update package.json
 Ensure all dependencies in your <b>package.json</b> file are up-to-date. You can use:

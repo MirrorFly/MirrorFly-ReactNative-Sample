@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import { changeTimeFormat } from '../common/timeStamp';
 import config from '../config/config';
 import {
@@ -108,6 +108,27 @@ export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false,
    return data;
 };
 
+const fileFormatConversion = async ({ uri, msgType }) => {
+   try {
+      switch (true) {
+         case uri.includes('ph://') && msgType === 'image':
+            return await convertHeicToJpg(uri);
+         case uri.includes('ph://') && msgType === 'video':
+            const response = await RNConvertPhAsset.convertVideoFromUrl({
+               url: uri,
+            convertTo: 'mpeg4',
+               quality: 'original',
+            });
+            return response.path; // Return the converted video path
+         default:
+            return uri;
+      }
+   } catch (error) {
+      mflog('Failed to convert the file:', error);
+      return ''; // Return empty string in case of an error
+   }
+};
+
 const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUserJid) => {
    if (messageType === 'media') {
       const isMuted = await getMuteStatus(toUserJid);
@@ -119,13 +140,15 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
             fileDetails = {},
             fileDetails: { fileSize, filename, duration, uri, type, replyTo = '' } = {},
          } = file;
-         let _uri = uri;
-         if (Platform.OS === 'ios' && uri.includes('ph://')) {
-            _uri = await convertHeicToJpg(uri);
-         }
-         file.fileDetails = { ...file.fileDetails, uri: _uri };
          const isDocument = DOCUMENT_FORMATS.includes(type);
          const msgType = isDocument ? 'file' : type.split('/')[0];
+         let _uri = uri;
+
+         if (Platform.OS === 'ios') {
+            _uri = await fileFormatConversion({ uri, msgType });
+         }
+
+         file.fileDetails = { ...file.fileDetails, uri: _uri };
          let thumbImage = msgType === 'image' ? await getThumbImage(_uri) : '';
          thumbImage = msgType === 'video' ? await getVideoThumbImage(_uri) : thumbImage;
          let fileOptions = {

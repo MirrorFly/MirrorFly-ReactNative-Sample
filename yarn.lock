@@ -7954,6 +7954,11 @@ react-native-material-menu@^2.0.0:
   resolved "https://registry.npmjs.org/react-native-material-menu/-/react-native-material-menu-2.0.0.tgz"
   integrity sha512-SmO9PLE3E469EPbVWZqvdu6JGPPZIm7YjqDcWs2PPoY0k7w2V9tFo3BmmLXNzNZDCVCAi+PPSsL7h/5WkfHcSg==
 
+react-native-network-logger@^1.16.1:
+  version "1.16.1"
+  resolved "https://registry.npmjs.org/react-native-network-logger/-/react-native-network-logger-1.16.1.tgz"
+  integrity sha512-R2qALPeUnce1ZTsgjEnrBxvsehcgydXIoDaTW8X2qUN6QembPvPUErrEuKiJGZT/e//DLp1NV6Weep0xeBTUPw==
+
 react-native-pager-view@*, react-native-pager-view@^6.3.1:
   version "6.3.3"
   resolved "https://registry.npmjs.org/react-native-pager-view/-/react-native-pager-view-6.3.3.tgz"

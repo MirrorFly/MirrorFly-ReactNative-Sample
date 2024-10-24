@@ -116,7 +116,7 @@ const fileFormatConversion = async ({ uri, msgType }) => {
          case uri.includes('ph://') && msgType === 'video':
             const response = await RNConvertPhAsset.convertVideoFromUrl({
                url: uri,
-            convertTo: 'mpeg4',
+               convertTo: 'mpeg4',
                quality: 'original',
             });
             return response.path; // Return the converted video path
@@ -144,9 +144,11 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          const msgType = isDocument ? 'file' : type.split('/')[0];
          let _uri = uri;
 
-         if (Platform.OS === 'ios') {
-            _uri = await fileFormatConversion({ uri, msgType });
-         }
+         // if (Platform.OS === 'ios') {
+         //    _uri = await fileFormatConversion({ uri, msgType });
+         // }
+
+         console.log('_uri ==>', _uri);
 
          file.fileDetails = { ...file.fileDetails, uri: _uri };
          let thumbImage = msgType === 'image' ? await getThumbImage(_uri) : '';
@@ -403,6 +405,7 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
       response = await SDK.sendMediaMessage(jid, msgId, msgType, file.fileDetails, fileOptions, replyTo, {
          broadCastIdMedia: SDK.randomString(8, 'BA'),
       });
+      console.log('response ==>', JSON.stringify(response, null, 2));
       let updateObj = {
          msgId,
          statusCode: response.statusCode,

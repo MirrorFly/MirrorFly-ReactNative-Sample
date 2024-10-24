@@ -4,6 +4,7 @@ import android.app.AppOpsManager;
 import android.app.PictureInPictureParams;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Process;
@@ -99,7 +100,10 @@ public class PipAndroidModule extends ReactContextBaseJavaModule {
                         PictureInPictureParams.Builder pipBuilder = null;
 
                         pipBuilder = new PictureInPictureParams.Builder();
+                        final Rect sourceRectHint = new Rect();
+                        this.getCurrentActivity().getWindow().getDecorView().getGlobalVisibleRect(sourceRectHint);
                         pipBuilder.setAspectRatio(ratio).build();
+                        pipBuilder.setSourceRectHint(sourceRectHint);
                         reactApplicationContext.getCurrentActivity().enterPictureInPictureMode(pipBuilder.build());
                     }
                 } else if (shouldOpenPermissionScreenIfPipNotAllowed) {

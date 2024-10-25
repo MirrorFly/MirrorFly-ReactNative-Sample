@@ -32,7 +32,13 @@ function RecentChatAvathar({ type, userId, data = {}, ...props }) {
    return (
       <>
          <Pressable disabled style={[commonStyles.flex1]} onPress={onPress}>
-            <Avathar type={type} data={nickName || userId} backgroundColor={colorCode} profileImage={imageToken} />
+            <Avathar
+               userId={userId}
+               type={type}
+               data={nickName || userId}
+               backgroundColor={colorCode}
+               profileImage={imageToken}
+            />
          </Pressable>
          <Modal visible={visible} onRequestClose={onRequestClose}>
             <ModalCenteredContent onPressOutside={onRequestClose}>

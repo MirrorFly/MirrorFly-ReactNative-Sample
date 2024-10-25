@@ -21,10 +21,22 @@ const rosterDataSlice = createSlice({
                if (!d.colorCode) {
                   d.colorCode = _updatedData[d.userId]?.colorCode || SDK.getRandomColorCode();
                }
-               _updatedData[d.userId] = { ...d };
+               _updatedData[d.userId] = { ..._updatedData[d.userId], ...d };
             }
          });
          state.data = _updatedData;
+      },
+      updateBlockUser(state, action) {
+         const { userId, isBlocked } = action.payload;
+         if (state.data[userId]) {
+            state.data[userId] = { ...state.data[userId], isBlocked };
+         }
+      },
+      updateIsBlockedMe(state, action) {
+         const { userId, isBlockedMe } = action.payload;
+         if (state.data[userId]) {
+            state.data[userId] = { ...state.data[userId], isBlockedMe };
+         }
       },
    },
    extraReducers: builder => {
@@ -32,6 +44,6 @@ const rosterDataSlice = createSlice({
    },
 });
 
-export const { resetRoasterData, setRoasterData } = rosterDataSlice.actions;
+export const { resetRoasterData, setRoasterData, updateBlockUser, updateIsBlockedMe } = rosterDataSlice.actions;
 
 export default rosterDataSlice.reducer;

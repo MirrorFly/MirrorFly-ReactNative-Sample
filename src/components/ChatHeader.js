@@ -52,7 +52,7 @@ import {
    getUserNameFromStore,
    useBlockedStatus,
    useChatMessages,
-   useRecentChatData
+   useRecentChatData,
 } from '../redux/reduxHook';
 import {
    FORWARD_MESSSAGE_SCREEN,
@@ -361,12 +361,13 @@ function ChatHeader({ chatUser }) {
       });
    }
 
+   /**
    if (!filtered.length && !MIX_BARE_JID.test(chatUser)) {
       menuItems.push({
          label: blockedStaus ? 'Unblock' : 'Block',
          formatter: hadleBlockUser,
       });
-   }
+   } */
 
    const handleRoute = () => {
       if (MIX_BARE_JID.test(chatUser)) {

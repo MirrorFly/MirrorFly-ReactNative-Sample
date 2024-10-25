@@ -15,7 +15,14 @@ import { TickIcon, VideoSmallIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import GalleryHeader from '../components/GalleryHeader';
 import ApplicationColors from '../config/appColors';
-import { getType, mediaObjContructor, showToast, validateFileSize } from '../helpers/chatHelpers';
+import {
+   getThumbBase64URL,
+   getType,
+   getVideoThumbImage,
+   mediaObjContructor,
+   showToast,
+   validateFileSize,
+} from '../helpers/chatHelpers';
 
 import commonStyles from '../styles/commonStyles';
 import { mflog } from '../uikitMethods';
@@ -28,9 +35,10 @@ const getAbsolutePath = async uri => {
       if (Platform.OS !== 'ios') {
          return uri;
       }
-      return await MediaConverter.convertMedia(uri);
+      return await MediaConverter?.convertMedia?.(uri);
    } catch (error) {
-      console.error('Error:', error);
+      mflog('Get Absolute Path Error:', error);
+      return uri;
    }
 };
 
@@ -170,56 +178,6 @@ const GalleryPhotos = () => {
 
    const memoizedData = React.useMemo(() => photos, [photos]);
 
-   const renderItem = ({ item }) => {
-      const isImageSelected = selectedImages[item?.node?.image.uri];
-      return (
-         <View style={[commonStyles.positionRelative, commonStyles.padding_04]}>
-            <Pressable
-               contentContainerStyle={commonStyles.bgBlack_01}
-               style={{
-                  width: itemWidth,
-               }}
-               delayLongPress={200}
-               onPress={() => {
-                  setCheckbox(false);
-                  Object.keys(selectedImages).length === 0 && !checkBox
-                     ? handleMedia(item.node)
-                     : handleSelectImage(item.node);
-               }}
-               onLongPress={() => {
-                  setCheckbox(false);
-                  handleSelectImage(item.node);
-               }}>
-               <Image alt="" style={{ width: itemWidth, aspectRatio: 1 }} source={{ uri: item?.node?.image.uri }} />
-               {Boolean(isImageSelected) && (
-                  <View
-                     style={[
-                        commonStyles.positionAbsolute,
-                        commonStyles.p_1,
-                        commonStyles.width_100_per,
-                        commonStyles.mr_3,
-                        commonStyles.bgBlack_04,
-                        { aspectRatio: 1 },
-                     ]}>
-                     <View style={[commonStyles.positionAbsolute, { left: 60, bottom: 60 }]}>{TickIcon()}</View>
-                  </View>
-               )}
-               <View
-                  style={[
-                     commonStyles.paddingHorizontal_4,
-                     commonStyles.borderRadius_5,
-                     commonStyles.paddingHorizontal_4,
-                     commonStyles.positionAbsolute,
-                  ]}
-                  bottom={1}
-                  left={1}>
-                  {item?.node.type.split('/')[0] === 'video' && <View p="0.5">{<VideoSmallIcon />}</View>}
-               </View>
-            </Pressable>
-         </View>
-      );
-   };
-
    const fetchPhotos = async (groupName, after = '') => {
       try {
          setLoading(true);
@@ -240,6 +198,10 @@ const GalleryPhotos = () => {
          const processedEdges = await Promise.all(
             result.edges.map(async item => {
                item.node.image.uri = await getAbsolutePath(item?.node?.image.uri);
+
+               item.node.image.thumbImage =
+                  item.node.type === 'video' && (await getVideoThumbImage(item?.node?.image.uri));
+
                return item;
             }),
          );
@@ -262,6 +224,66 @@ const GalleryPhotos = () => {
       if (!loading && hasNextPage) {
          fetchPhotos(grpView, endCursor);
       }
+   };
+
+   const renderItem = ({ item }) => {
+      const isImageSelected = selectedImages[item?.node?.image.uri];
+
+      return (
+         <View style={[commonStyles.positionRelative, commonStyles.padding_04]}>
+            <Pressable
+               contentContainerStyle={commonStyles.bgBlack_01}
+               style={{
+                  width: itemWidth,
+               }}
+               delayLongPress={200}
+               onPress={() => {
+                  setCheckbox(false);
+                  Object.keys(selectedImages).length === 0 && !checkBox
+                     ? handleMedia(item.node)
+                     : handleSelectImage(item.node);
+               }}
+               onLongPress={() => {
+                  setCheckbox(false);
+                  handleSelectImage(item.node);
+               }}>
+               <Image
+                  alt=""
+                  style={{ width: itemWidth, aspectRatio: 1 }}
+                  source={{
+                     uri:
+                        item.node.type === 'video' && item?.node?.image.thumbImage
+                           ? getThumbBase64URL(item?.node?.image.thumbImage)
+                           : item?.node?.image.uri,
+                  }}
+               />
+               {Boolean(isImageSelected) && (
+                  <View
+                     style={[
+                        commonStyles.positionAbsolute,
+                        commonStyles.p_1,
+                        commonStyles.width_100_per,
+                        commonStyles.mr_3,
+                        commonStyles.bgBlack_04,
+                        { aspectRatio: 1 },
+                     ]}>
+                     <View style={[commonStyles.positionAbsolute, { left: 60, bottom: 60 }]}>{TickIcon()}</View>
+                  </View>
+               )}
+               <View
+                  style={[
+                     commonStyles.paddingHorizontal_4,
+                     commonStyles.borderRadius_5,
+                     commonStyles.paddingHorizontal_4,
+                     commonStyles.positionAbsolute,
+                  ]}
+                  bottom={1}
+                  left={1}>
+                  {item?.node.type.includes('video') && <View p="0.5">{<VideoSmallIcon />}</View>}
+               </View>
+            </Pressable>
+         </View>
+      );
    };
 
    const renderFooter = () => {

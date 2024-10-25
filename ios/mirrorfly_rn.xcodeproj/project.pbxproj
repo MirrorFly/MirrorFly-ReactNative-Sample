@@ -23,7 +23,7 @@
 		CE56DABC2AC447C100A2BB3A /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE56DABB2AC447C100A2BB3A /* NotificationService.m */; };
 		CE56DAC02AC447C100A2BB3A /* NotificationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CE56DAB82AC447C100A2BB3A /* NotificationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CE7BED472AC6E6F6001F131C /* sendDeliveredApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7BED462AC6E6F6001F131C /* sendDeliveredApiCall.swift */; };
-		CEEF16542CCA0C6900A07FD7 /* MediaConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = CEEF16532CCA0C6900A07FD7 /* MediaConverter.m */; };
+		CEEF16612CCB7AA200A07FD7 /* MediaConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = CEEF16602CCB7AA200A07FD7 /* MediaConverter.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,8 +89,8 @@
 		CE57D1A62ABD800F0086E3A9 /* mirrorfly_rn.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = mirrorfly_rn.entitlements; path = mirrorfly_rn/mirrorfly_rn.entitlements; sourceTree = "<group>"; };
 		CE7BED412AC6A37D001F131C /* NotificationExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotificationExtension.entitlements; sourceTree = "<group>"; };
 		CE7BED462AC6E6F6001F131C /* sendDeliveredApiCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sendDeliveredApiCall.swift; sourceTree = "<group>"; };
-		CEEF16532CCA0C6900A07FD7 /* MediaConverter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MediaConverter.m; sourceTree = "<group>"; };
 		CEEF16552CCA143C00A07FD7 /* mirrorfly_rn-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "mirrorfly_rn-Bridging-Header.h"; sourceTree = "<group>"; };
+		CEEF16602CCB7AA200A07FD7 /* MediaConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaConverter.m; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -141,6 +141,7 @@
 		13B07FAE1A68108700A75B9A /* mirrorfly_rn */ = {
 			isa = PBXGroup;
 			children = (
+				CEEF16602CCB7AA200A07FD7 /* MediaConverter.m */,
 				CEEF16552CCA143C00A07FD7 /* mirrorfly_rn-Bridging-Header.h */,
 				A7E1A3AB2BB1854C00F4D084 /* GoogleService-Info.plist */,
 				CE57D1A62ABD800F0086E3A9 /* mirrorfly_rn.entitlements */,
@@ -152,7 +153,6 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				A7F049462BDA882700A0C4E8 /* RNCallKeep.h */,
 				A7F049472BDA882700A0C4E8 /* RNCallKeep.m */,
-				CEEF16532CCA0C6900A07FD7 /* MediaConverter.m */,
 			);
 			name = mirrorfly_rn;
 			sourceTree = "<group>";
@@ -544,7 +544,7 @@
 				A7F049482BDA882700A0C4E8 /* RNCallKeep.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				CEEF16542CCA0C6900A07FD7 /* MediaConverter.m in Sources */,
+				CEEF16612CCB7AA200A07FD7 /* MediaConverter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

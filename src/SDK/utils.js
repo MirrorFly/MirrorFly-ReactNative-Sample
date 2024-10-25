@@ -144,12 +144,6 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          const msgType = isDocument ? 'file' : type.split('/')[0];
          let _uri = uri;
 
-         // if (Platform.OS === 'ios') {
-         //    _uri = await fileFormatConversion({ uri, msgType });
-         // }
-
-         console.log('_uri ==>', _uri);
-
          file.fileDetails = { ...file.fileDetails, uri: _uri };
          let thumbImage = msgType === 'image' ? await getThumbImage(_uri) : '';
          thumbImage = msgType === 'video' ? await getVideoThumbImage(_uri) : thumbImage;

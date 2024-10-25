@@ -30,7 +30,7 @@ const VideoInfo = props => {
          thumbImage: SingleSelectedImage.thumb_image,
       };
    }
-   const { fileDetails: { uri = '' } = {}, thumbImage = '' } = item;
+   const { fileDetails: { thumbImage: fileDetailsThumbImage, uri = '' } = {}, thumbImage = '' } = item;
 
    React.useLayoutEffect(() => {
       if (Platform.OS === 'ios' && uri.includes('ph://')) {
@@ -66,10 +66,13 @@ const VideoInfo = props => {
                <PlayIcon width={15} height={15} />
             </View>
          </Pressable>
-         {!audioOnly && (
+         {!audioOnly && (fileDetailsThumbImage || thumbImage || uri) && (
             <Image
                style={[commonStyles.flex1, commonStyles.resizeContain]}
-               source={{ uri: thumbImage ? getThumbBase64URL(thumbImage) : uri }}
+               source={{
+                  uri:
+                     thumbImage || fileDetailsThumbImage ? getThumbBase64URL(thumbImage || fileDetailsThumbImage) : uri,
+               }}
             />
          )}
       </View>

@@ -430,6 +430,7 @@ export const mediaObjContructor = (_package, file) => {
          mediaObj.height = image.height;
          mediaObj.duration = image.playableDuration * 1000;
          mediaObj.filename = image.filename;
+         mediaObj.thumbImage = image.thumbImage || '';
          return mediaObj;
       case 'DOCUMENT_PICKER':
          mediaObj.extension = getExtention(file.name);

@@ -38,10 +38,9 @@ import {
    handleConversationClear,
    handleMessageDelete,
    handleMessageDeleteForEveryOne,
-   handleUpdateBlockUser,
    isAnyMessageWithinLast30Seconds,
    isLocalUser,
-   showToast,
+   showToast
 } from '../helpers/chatHelpers';
 import { ALREADY_ON_CALL, CALL_TYPE_AUDIO, CALL_TYPE_VIDEO, MIX_BARE_JID } from '../helpers/constants';
 import { resetMessageSelections, setChatSearchText } from '../redux/chatMessageDataSlice';
@@ -49,10 +48,9 @@ import { setReplyMessage } from '../redux/draftSlice';
 import { closePermissionModal, showPermissionModal } from '../redux/permissionSlice';
 import {
    getSelectedChatMessages,
-   getUserNameFromStore,
    useBlockedStatus,
    useChatMessages,
-   useRecentChatData,
+   useRecentChatData
 } from '../redux/reduxHook';
 import {
    FORWARD_MESSSAGE_SCREEN,
@@ -327,6 +325,7 @@ function ChatHeader({ chatUser }) {
       );
    };
 
+   /**
    const hadleBlockUser = () => {
       setModalContent({
          visible: true,
@@ -337,6 +336,7 @@ function ChatHeader({ chatUser }) {
          yesAction: handleUpdateBlockUser(userId, blockedStaus ? 0 : 1, chatUser),
       });
    };
+    */
 
    const menuItems = [];
 

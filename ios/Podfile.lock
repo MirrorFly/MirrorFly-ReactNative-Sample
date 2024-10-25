@@ -417,7 +417,7 @@ PODS:
     - React
   - react-native-maps (1.7.1):
     - React-Core
-  - react-native-netinfo (11.3.2):
+  - react-native-netinfo (11.4.1):
     - React-Core
   - react-native-pager-view (6.3.3):
     - RCT-Folly (= 2021.07.22.00)
@@ -584,10 +584,10 @@ PODS:
     - React-Core
     - React-RCTImage
     - TOCropViewController (~> 2.7.4)
-  - RNNotifee (7.8.2):
+  - RNNotifee (7.9.0):
     - React-Core
-    - RNNotifee/NotifeeCore (= 7.8.2)
-  - RNNotifee/NotifeeCore (7.8.2):
+    - RNNotifee/NotifeeCore (= 7.9.0)
+  - RNNotifee/NotifeeCore (7.9.0):
     - React-Core
   - RNPermissions (4.1.5):
     - React-Core
@@ -923,7 +923,7 @@ SPEC CHECKSUMS:
   react-native-keep-awake: afad8a51dfef9fe9655a6344771be32c8596d774
   react-native-keyevent: 0babd7e275086da5386d831211e3283b624dc0b5
   react-native-maps: 667f9b975549c6fa9b1631bf859440f68ebd3b8f
-  react-native-netinfo: 076df4f9b07f6670acf4ce9a75aac8d34c2e2ccc
+  react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-pager-view: 7ad123a253d73975a0e3518a52ef09361484cfa8
   react-native-safe-area-context: b7daa1a8df36095a032dff095a1ea8963cb48371
   react-native-simple-toast: 1f1cc551d419bc0ab05dcb0136554006c274789d
@@ -959,7 +959,7 @@ SPEC CHECKSUMS:
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 972ca9d35b54c108637dd07055f718446b9276d4
   RNImageCropPicker: 771e2ca319d2cf92e04ebf334ece892ee9a6728f
-  RNNotifee: 8e2d3df3f0e9ce8f5d1fe4c967431138190b6175
+  RNNotifee: 935f3ea8c134c88cbf8b13ea0c97c72c09ad2116
   RNPermissions: 8d958bf0fd34aca7059a935110dca4ee9140d1b6
   RNScreens: 835807a1f3c74c8ea0d0b9e089bf14333141f17f
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852

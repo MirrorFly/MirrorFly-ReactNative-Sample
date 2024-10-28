@@ -8,6 +8,7 @@ import {
    getUserIdFromJid,
    getVideoThumbImage,
    isLocalUser,
+   showToast,
 } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, DOCUMENT_FORMATS, MIX_BARE_JID } from '../helpers/constants';
 import { addChatMessageItem, setChatMessages, updateMediaStatus } from '../redux/chatMessageDataSlice';
@@ -408,6 +409,7 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
       if (response?.statusCode !== 200) {
          updateObj.is_uploading = 3;
          store.dispatch(updateMediaStatus(updateObj));
+         showToast(response.message);
       }
    } catch (error) {
       console.log('uploadFileToSDK -->', error);

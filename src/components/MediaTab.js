@@ -111,7 +111,7 @@ const MediaTab = ({ mediaMessages, loading }) => {
 
    const renderMediaTile = ({ item }) => {
       const handleMediaPress = () => {
-         navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid, msgId: item.msgId });
+         navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid: item.userJid, msgId: item.msgId });
       };
       return <Pressable onPress={handleMediaPress}>{renderTileBasedOnMessageType(item)}</Pressable>;
    };

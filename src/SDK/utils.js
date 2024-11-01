@@ -61,9 +61,7 @@ export const updateRosterDataForChats = singleRecentChatList => {
 
 export const fetchRecentChats = async () => {
    const page = getRecentChatPage();
-   const { statusCode, data = [] } = await SDK.getRecentChats(page, config.recentChatsPerPage);
-   console.log(JSON.stringify(data),"data");
-   
+   const { statusCode, data = [] } = await SDK.getRecentChats(page, config.recentChatsPerPage);   
    if (statusCode === 200) {
       if (data.length) {
          setRecentChatPage(page + 1);

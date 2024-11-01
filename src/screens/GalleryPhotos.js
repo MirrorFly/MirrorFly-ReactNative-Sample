@@ -198,9 +198,8 @@ const GalleryPhotos = () => {
          const processedEdges = await Promise.all(
             result.edges.map(async item => {
                item.node.image.uri = await getAbsolutePath(item?.node?.image.uri);
-
                item.node.image.thumbImage =
-                  item.node.type === 'video' && (await getVideoThumbImage(item?.node?.image.uri));
+                  item.node.type === 'video' && (await getVideoThumbImage(item.node.image.uri));
 
                return item;
             }),

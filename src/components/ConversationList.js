@@ -22,7 +22,7 @@ function ConversationList({ chatUser }) {
 
    const initFunc = async () => {
       setChatLoading(true);
-      await fetchMessagesFromSDK(chatUser);
+      await fetchMessagesFromSDK(chatUser, messages.length < 10);
       setChatLoading(false);
    };
 

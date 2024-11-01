@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "686921706810",
+    "project_id": "thecollectiveapp-1dbc9",
+    "storage_bucket": "thecollectiveapp-1dbc9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:686921706810:android:759989ce574808dacab403",
+        "android_client_info": {
+          "package_name": "com.thecollective.collective"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7Rv3gN-Tq3vJECbGVSiV_Rp49N6jPBD4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

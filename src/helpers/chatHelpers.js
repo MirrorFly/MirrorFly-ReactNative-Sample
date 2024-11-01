@@ -440,6 +440,7 @@ export const mediaObjContructor = (_package, file) => {
          mediaObj.height = image.height;
          mediaObj.duration = image.playableDuration * 1000;
          mediaObj.filename = image.filename;
+         mediaObj.thumbImage = image.thumbImage || '';
          return mediaObj;
       case 'DOCUMENT_PICKER':
          mediaObj.extension = getExtention(file.name);
@@ -751,17 +752,11 @@ export const handleSendMedia = selectedImages => () => {
  * @returns {Promise<string>} returns the base64 data of the Thumbnail Image
  */
 export const getVideoThumbImage = async uri => {
-   let response;
-   if (Platform.OS === 'ios') {
-      response = getThumbImage(uri);
-   } else {
-      const frame = await createThumbnail({
-         url: uri,
-         timeStamp: 10000,
-      });
-      response = await RNFS.readFile(frame.path, 'base64');
-   }
-   return response;
+   const frame = await createThumbnail({
+      url: uri,
+      timeStamp: 10000,
+   });
+   return await RNFS.readFile(frame.path, 'base64');
 };
 
 export const convertHeicToJpg = async heicFilePath => {

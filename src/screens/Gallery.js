@@ -33,7 +33,7 @@ const Gallery = () => {
       try {
          setLoading(true);
          const photo = await CameraRoll.getAlbums({
-            assetType: 'All',
+            albumType: 'All',
          });
          const _galleryData = await Promise.allSettled(
             photo.map(async item => {

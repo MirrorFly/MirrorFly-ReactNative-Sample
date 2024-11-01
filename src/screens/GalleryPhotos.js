@@ -1,16 +1,46 @@
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { ActivityIndicator, BackHandler, Dimensions, FlatList, Image, View } from 'react-native';
+import {
+   ActivityIndicator,
+   BackHandler,
+   Dimensions,
+   FlatList,
+   Image,
+   NativeModules,
+   Platform,
+   View,
+} from 'react-native';
 import { TickIcon, VideoSmallIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import GalleryHeader from '../components/GalleryHeader';
 import ApplicationColors from '../config/appColors';
-import { getType, mediaObjContructor, showToast, validateFileSize } from '../helpers/chatHelpers';
+import {
+   getThumbBase64URL,
+   getType,
+   getVideoThumbImage,
+   mediaObjContructor,
+   showToast,
+   validateFileSize,
+} from '../helpers/chatHelpers';
 
 import commonStyles from '../styles/commonStyles';
-import { GALLERY_PHOTOS_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
 import { mflog } from '../uikitMethods';
+import { GALLERY_PHOTOS_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
+
+const { MediaConverter } = NativeModules;
+
+const getAbsolutePath = async uri => {
+   try {
+      if (Platform.OS !== 'ios') {
+         return uri;
+      }
+      return await MediaConverter?.convertMedia?.(uri);
+   } catch (error) {
+      mflog('Get Absolute Path Error:', error);
+      return uri;
+   }
+};
 
 const GalleryPhotos = () => {
    const { params: { grpView = '', selectedImages: routesSelectedImages = [] } = {} } = useRoute();
@@ -148,8 +178,56 @@ const GalleryPhotos = () => {
 
    const memoizedData = React.useMemo(() => photos, [photos]);
 
+   const fetchPhotos = async (groupName, after = '') => {
+      try {
+         setLoading(true);
+
+         // Define parameters for fetching photos
+         const params = {
+            first: PAGE_SIZE,
+            groupName,
+            assetType: 'All',
+            include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'playableDuration', 'orientation'],
+            ...(after && { after }), // Add 'after' only if it exists
+         };
+
+         // Fetch photos using CameraRoll
+         const result = await CameraRoll.getPhotos(params);
+
+         // Process each photo to get the absolute path
+         const processedEdges = await Promise.all(
+            result.edges.map(async item => {
+               item.node.image.uri = await getAbsolutePath(item?.node?.image.uri);
+               item.node.image.thumbImage =
+                  item.node.type === 'video' && (await getVideoThumbImage(item.node.image.uri));
+
+               return item;
+            }),
+         );
+
+         // Merge new photos with existing ones
+         const updatedPhotos = after ? [...photos, ...processedEdges] : [...processedEdges];
+
+         // Update state with photos and pagination data
+         setPhotos(updatedPhotos);
+         setEndCursor(result.page_info.end_cursor);
+         setHasNextPage(result.page_info.has_next_page);
+      } catch (error) {
+         mflog('fetchPhotos', error);
+      } finally {
+         setLoading(false);
+      }
+   };
+
+   const handleLoadMore = async (after = null) => {
+      if (!loading && hasNextPage) {
+         fetchPhotos(grpView, endCursor);
+      }
+   };
+
    const renderItem = ({ item }) => {
       const isImageSelected = selectedImages[item?.node?.image.uri];
+
       return (
          <View style={[commonStyles.positionRelative, commonStyles.padding_04]}>
             <Pressable
@@ -168,7 +246,16 @@ const GalleryPhotos = () => {
                   setCheckbox(false);
                   handleSelectImage(item.node);
                }}>
-               <Image alt="" style={{ width: itemWidth, aspectRatio: 1 }} source={{ uri: item?.node?.image.uri }} />
+               <Image
+                  alt=""
+                  style={{ width: itemWidth, aspectRatio: 1 }}
+                  source={{
+                     uri:
+                        item.node.type === 'video' && item?.node?.image.thumbImage
+                           ? getThumbBase64URL(item?.node?.image.thumbImage)
+                           : item?.node?.image.uri,
+                  }}
+               />
                {Boolean(isImageSelected) && (
                   <View
                      style={[
@@ -191,70 +278,11 @@ const GalleryPhotos = () => {
                   ]}
                   bottom={1}
                   left={1}>
-                  {item?.node.type.split('/')[0] === 'video' && <View p="0.5">{<VideoSmallIcon />}</View>}
+                  {item?.node.type.includes('video') && <View p="0.5">{<VideoSmallIcon />}</View>}
                </View>
             </Pressable>
          </View>
       );
-   };
-
-   const fetchPhotos = async (groupName, after = '') => {
-      try {
-         setLoading(true);
-
-         let params = {
-            first: PAGE_SIZE,
-            groupName: groupName,
-            assetType: 'All',
-            include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'playableDuration', 'orientation'],
-         };
-         if (after) {
-            params.after = after;
-         }
-         const data = await CameraRoll.getPhotos(params).then(res => {
-            const filteredArray = res.edges.filter(item => {
-               return item;
-            });
-            return {
-               edges: filteredArray,
-               page_info: {
-                  has_next_page: res.page_info.has_next_page,
-                  end_cursor: res.page_info.end_cursor,
-               },
-            };
-         });
-         /**
-        const data = await CameraRoll.getPhotos(params);
-        mflog(data,"datadata");
-      * */
-         const { has_next_page, end_cursor } = data.page_info;
-         setEndCursor(end_cursor);
-         setHasNextPage(has_next_page);
-         let getPhoto = [];
-         if (after) {
-            getPhoto = [...photos, ...data.edges];
-         } else {
-            getPhoto = [...data.edges];
-         }
-         const updatedPhotos = [...getPhoto];
-         for (const newPhoto of getPhoto) {
-            const existingPhoto = updatedPhotos.find(photo => photo.image?.uri === newPhoto.image?.uri);
-            if (!existingPhoto) {
-               updatedPhotos.push(newPhoto);
-            }
-         }
-         setPhotos(updatedPhotos);
-      } catch (error) {
-         mflog('fetchPhotos', error);
-      } finally {
-         setLoading(false);
-      }
-   };
-
-   const handleLoadMore = async (after = null) => {
-      if (!loading && hasNextPage) {
-         fetchPhotos(grpView, endCursor);
-      }
    };
 
    const renderFooter = () => {

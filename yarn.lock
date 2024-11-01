@@ -7855,10 +7855,10 @@ react-native-convert-ph-asset@^1.0.3:
   resolved "https://registry.npmjs.org/react-native-convert-ph-asset/-/react-native-convert-ph-asset-1.0.3.tgz"
   integrity sha512-qdTrUsDlxOvC7KnamjjRnxaijr3myfOwzbYR0vyTl0BjPT25jkCQ9a4Q26egRdy8uqiw7mqB1ZhG5OohwnpsOg==
 
-react-native-create-thumbnail@^1.6.4, react-native-create-thumbnail@1.6.4:
-  version "1.6.4"
-  resolved "https://registry.npmjs.org/react-native-create-thumbnail/-/react-native-create-thumbnail-1.6.4.tgz"
-  integrity sha512-JWuKXswDXtqUPfuqh6rjCVMvTSSG3kUtwvSK/YdaNU0i+nZKxeqHmt/CO2+TyI/WSUFynGVmWT1xOHhCZAFsRQ==
+react-native-create-thumbnail@^1.6.4, react-native-create-thumbnail@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/react-native-create-thumbnail/-/react-native-create-thumbnail-2.0.0.tgz"
+  integrity sha512-1GA0PHGlhSirKUqbtlLLk++3Wkd/fo8H8YUi71Lp5Y2z+AxZMKmY1/IcB9ooDiMzI1Pxr006Kq99JWuXowoykg==
 
 react-native-document-picker@^9.3.0:
   version "9.3.0"

@@ -1,3 +1,4 @@
+import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Graphemer from 'graphemer';
 import React from 'react';
@@ -430,6 +431,7 @@ export const mediaObjContructor = (_package, file) => {
          mediaObj.height = image.height;
          mediaObj.duration = image.playableDuration * 1000;
          mediaObj.filename = image.filename;
+         mediaObj.thumbImage = image.thumbImage || '';
          return mediaObj;
       case 'DOCUMENT_PICKER':
          mediaObj.extension = getExtention(file.name);
@@ -741,17 +743,12 @@ export const handleSendMedia = selectedImages => () => {
  * @returns {Promise<string>} returns the base64 data of the Thumbnail Image
  */
 export const getVideoThumbImage = async uri => {
-   let response;
-   if (Platform.OS === 'ios') {
-      response = getThumbImage(uri);
-   } else {
-      const frame = await createThumbnail({
-         url: uri,
-         timeStamp: 10000,
-      });
-      response = await RNFS.readFile(frame.path, 'base64');
-   }
-   return response;
+   const frame = await createThumbnail({
+      url: uri,
+      timeStamp: 10000,
+   });
+   const base64 = await RNFS.readFile(frame.path, 'base64');
+   return base64;
 };
 
 export const convertHeicToJpg = async heicFilePath => {
@@ -762,6 +759,28 @@ export const convertHeicToJpg = async heicFilePath => {
       }
    } catch (error) {
       console.error('HEIC Conversion Error:', error);
+   }
+};
+
+export const getAbsolutePath = async uri => {
+   try {
+      if (Platform.OS !== 'ios') {
+         return { uri };
+      }
+      const options = {
+         allowNetworkAccess: true,
+         targetSize: {
+            height: 300,
+            width: 300,
+         },
+         quality: 0.5,
+      };
+      const thumbnailResponse = await CameraRoll.getPhotoThumbnail(uri, options);
+      const imageData = await CameraRoll.iosGetImageDataById(uri);
+      return { uri: imageData.node.image.filepath, thumbnailBase64: thumbnailResponse.thumbnailBase64 };
+   } catch (error) {
+      mflog('Get Absolute Path Error:', error);
+      return uri;
    }
 };
 

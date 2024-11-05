@@ -397,7 +397,7 @@ PODS:
     - React-Core
   - react-native-contacts (7.0.8):
     - React-Core
-  - react-native-create-thumbnail (1.6.4):
+  - react-native-create-thumbnail (2.0.0):
     - React-Core
   - react-native-document-picker (9.3.0):
     - React-Core
@@ -913,7 +913,7 @@ SPEC CHECKSUMS:
   react-native-cameraroll: f067fd2a6b8e80b31307d145a118d4324a264c8a
   react-native-compressor: 3f05b3b6153f31ed5c4145ed293396a19f6ff52a
   react-native-contacts: cb4f3b823550adbce0802901b9e63bf1526ec0af
-  react-native-create-thumbnail: e022bcdcba8a0b4529a50d3fa1a832ec921be39d
+  react-native-create-thumbnail: ab55d24aea01723cf386f18b0b542aabb1982f27
   react-native-document-picker: 5b97e24a7f1a1e4a50a72c540a043f32d29a70a2
   react-native-geocoder: 757427682892bb256f3b3745858cc90eba148a8e
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b

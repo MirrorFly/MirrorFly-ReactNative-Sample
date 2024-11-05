@@ -1,3 +1,4 @@
+import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Graphemer from 'graphemer';
 import React from 'react';
@@ -746,7 +747,8 @@ export const getVideoThumbImage = async uri => {
       url: uri,
       timeStamp: 10000,
    });
-   return await RNFS.readFile(frame.path, 'base64');
+   const base64 = await RNFS.readFile(frame.path, 'base64');
+   return base64;
 };
 
 export const convertHeicToJpg = async heicFilePath => {
@@ -757,6 +759,28 @@ export const convertHeicToJpg = async heicFilePath => {
       }
    } catch (error) {
       console.error('HEIC Conversion Error:', error);
+   }
+};
+
+export const getAbsolutePath = async uri => {
+   try {
+      if (Platform.OS !== 'ios') {
+         return { uri };
+      }
+      const options = {
+         allowNetworkAccess: true,
+         targetSize: {
+            height: 300,
+            width: 300,
+         },
+         quality: 0.5,
+      };
+      const thumbnailResponse = await CameraRoll.getPhotoThumbnail(uri, options);
+      const imageData = await CameraRoll.iosGetImageDataById(uri);
+      return { uri: imageData.node.image.filepath, thumbnailBase64: thumbnailResponse.thumbnailBase64 };
+   } catch (error) {
+      mflog('Get Absolute Path Error:', error);
+      return uri;
    }
 };
 

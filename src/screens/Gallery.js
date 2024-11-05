@@ -40,6 +40,7 @@ const Gallery = () => {
                const params = {
                   first: 1,
                   assetType: 'All',
+                  groupTypes: 'Album',
                   include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'playableDuration', 'orientation'],
                   groupName: item.title,
                };

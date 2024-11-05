@@ -1,46 +1,22 @@
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import {
-   ActivityIndicator,
-   BackHandler,
-   Dimensions,
-   FlatList,
-   Image,
-   NativeModules,
-   Platform,
-   View,
-} from 'react-native';
+import { ActivityIndicator, BackHandler, Dimensions, FlatList, Image, View } from 'react-native';
 import { TickIcon, VideoSmallIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import GalleryHeader from '../components/GalleryHeader';
 import ApplicationColors from '../config/appColors';
 import {
+   getAbsolutePath,
    getThumbBase64URL,
    getType,
-   getVideoThumbImage,
    mediaObjContructor,
    showToast,
    validateFileSize,
 } from '../helpers/chatHelpers';
-
 import commonStyles from '../styles/commonStyles';
 import { mflog } from '../uikitMethods';
 import { GALLERY_PHOTOS_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
-
-const { MediaConverter } = NativeModules;
-
-const getAbsolutePath = async uri => {
-   try {
-      if (Platform.OS !== 'ios') {
-         return uri;
-      }
-      return await MediaConverter?.convertMedia?.(uri);
-   } catch (error) {
-      mflog('Get Absolute Path Error:', error);
-      return uri;
-   }
-};
 
 const GalleryPhotos = () => {
    const { params: { grpView = '', selectedImages: routesSelectedImages = [] } = {} } = useRoute();
@@ -187,6 +163,7 @@ const GalleryPhotos = () => {
             first: PAGE_SIZE,
             groupName,
             assetType: 'All',
+            groupTypes: 'Album',
             include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'playableDuration', 'orientation'],
             ...(after && { after }), // Add 'after' only if it exists
          };
@@ -197,10 +174,9 @@ const GalleryPhotos = () => {
          // Process each photo to get the absolute path
          const processedEdges = await Promise.all(
             result.edges.map(async item => {
-               item.node.image.uri = await getAbsolutePath(item?.node?.image.uri);
-               item.node.image.thumbImage =
-                  item.node.type === 'video' && (await getVideoThumbImage(item.node.image.uri));
-
+               const { uri, thumbnailBase64 } = await getAbsolutePath(item?.node?.image.uri);
+               item.node.image.uri = uri;
+               item.node.image.thumbImage = thumbnailBase64;
                return item;
             }),
          );

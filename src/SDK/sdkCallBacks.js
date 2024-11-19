@@ -87,8 +87,7 @@ import {
    GROUP_USER_ADDED,
    GROUP_USER_LEFT,
    GROUP_USER_MADE_ADMIN,
-   GROUP_USER_REMOVED,
-   MIX_BARE_JID,
+   GROUP_USER_REMOVED
 } from '../helpers/constants';
 import { resetCallControlsStateAction, updateCallVideoMutedAction } from '../redux/callControlsSlice';
 import { resetCallModalToastDataAction } from '../redux/callModalToastSlice';

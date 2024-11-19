@@ -60,7 +60,7 @@ const DeletedMessage = ({ chatUser, item, isSender }) => {
                   onPress={handlePress}
                   onLongPress={handleLongPress}>
                   <View style={styles.messageWrapper}>
-                     <BlockedIcon />
+                     <BlockedIcon fill="#959595" />
                      <Text style={styles.message(isSender)}>
                         {isSender ? YOU_DELETED_THIS_MESSAGE : THIS_MESSAGE_WAS_DELETED}
                      </Text>

@@ -9,7 +9,10 @@ export const useUserType = chatUser =>
 export const useRecentChatSearchText = () => useSelector(state => state.recentChatData.searchText);
 export const useFilteredRecentChatData = () => useSelector(selectFilteredRecentChatData);
 export const useArchivedChatData = () => useSelector(selectArchivedChatData);
+export const useRoasterList = () => useSelector(state => state.rosterData.data);
 export const useRoasterData = userId => useSelector(state => state.rosterData.data[userId]);
+export const useBlockedStatus = userId => useSelector(state => state.rosterData.data[userId]?.isBlocked);
+export const useIsBlockedMeStatus = userId => useSelector(state => state.rosterData.data[userId]?.isBlockedMe);
 export const useChatMessages = userId => useSelector(state => state.chatMessagesData?.[userId]);
 export const useChatMessage = (userId, msgId) =>
    useSelector(state => state.chatMessagesData?.[userId]?.find(msg => msg.msgId === msgId));
@@ -49,3 +52,5 @@ export const getUserImage = userId => {
 };
 export const getChatMessage = (userId, msgId) =>
    store.getState().chatMessagesData?.[userId]?.find(msg => msg.msgId === msgId);
+export const getXmppConnectionStatus = () => store.getState().loggedInUserData.xmppStatus;
+export const getBlockedStatus = userId => store.getState().rosterData.data[userId]?.isBlocked;

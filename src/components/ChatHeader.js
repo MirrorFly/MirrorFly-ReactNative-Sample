@@ -4,7 +4,7 @@ import { BackHandler, Keyboard, StyleSheet, Text, TextInput, View } from 'react-
 import { openSettings } from 'react-native-permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isRoomExist, makeCalls } from '../Helper/Calls/Utility';
-import { RealmKeyValueStore } from '../SDK/SDK';
+import SDK, { RealmKeyValueStore } from '../SDK/SDK';
 import AlertModal from '../common/AlertModal';
 import IconButton from '../common/IconButton';
 import {
@@ -40,13 +40,18 @@ import {
    handleMessageDeleteForEveryOne,
    isAnyMessageWithinLast30Seconds,
    isLocalUser,
-   showToast,
+   showToast
 } from '../helpers/chatHelpers';
 import { ALREADY_ON_CALL, CALL_TYPE_AUDIO, CALL_TYPE_VIDEO, MIX_BARE_JID } from '../helpers/constants';
 import { resetMessageSelections, setChatSearchText } from '../redux/chatMessageDataSlice';
 import { setReplyMessage } from '../redux/draftSlice';
 import { closePermissionModal, showPermissionModal } from '../redux/permissionSlice';
-import { getSelectedChatMessages, useChatMessages, useRecentChatData } from '../redux/reduxHook';
+import {
+   getSelectedChatMessages,
+   useBlockedStatus,
+   useChatMessages,
+   useRecentChatData
+} from '../redux/reduxHook';
 import {
    FORWARD_MESSSAGE_SCREEN,
    GROUP_INFO,
@@ -72,6 +77,7 @@ function ChatHeader({ chatUser }) {
    const [permissionText, setPermissionText] = React.useState('');
    const [showRoomExist, setShowRoomExist] = React.useState(false);
    const userType = useRecentChatData().find(r => r.userJid === chatUser)?.userType || '';
+   const blockedStaus = useBlockedStatus(userId);
 
    const filtered = React.useMemo(() => {
       return messsageList.filter(item => item.isSelected === 1);
@@ -167,8 +173,8 @@ function ChatHeader({ chatUser }) {
 
    const _handleReplyMessage = () => {
       Keyboard.dismiss();
-      dispatch(setReplyMessage({ userId, message: filtered[0] }));
       dispatch(resetMessageSelections(userId));
+      if (!blockedStaus) dispatch(setReplyMessage({ userId, message: filtered[0] }));
    };
 
    const renderReplyIcon = () => {
@@ -319,6 +325,19 @@ function ChatHeader({ chatUser }) {
       );
    };
 
+   /**
+   const hadleBlockUser = () => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: `${blockedStaus ? 'Unblock' : 'Block'} ${getUserNameFromStore(userId)}`,
+         noButton: 'CANCEL',
+         yesButton: blockedStaus ? 'UNBLOCK' : 'BLOCK',
+         yesAction: handleUpdateBlockUser(userId, blockedStaus ? 0 : 1, chatUser),
+      });
+   };
+    */
+
    const menuItems = [];
 
    if (filtered[0]?.msgBody?.message_type === 'text' || filtered[0]?.msgBody?.media?.caption) {
@@ -327,20 +346,28 @@ function ChatHeader({ chatUser }) {
          formatter: copyToClipboard(filtered, userId),
       });
    }
+
    if (filtered.length === 1 && isLocalUser(filtered[0]?.publisherJid)) {
-      // Show Copy and Message Info options
       menuItems.push({
          label: 'Message Info',
          formatter: handleGoMessageInfoScreen,
       });
    }
+
    if (!filtered.length) {
-      // Show Clear Chat and Search options
       menuItems.push({
          label: 'Clear Chat',
          formatter: handleClear,
       });
    }
+
+   /**
+   if (!filtered.length && !MIX_BARE_JID.test(chatUser)) {
+      menuItems.push({
+         label: blockedStaus ? 'Unblock' : 'Block',
+         formatter: hadleBlockUser,
+      });
+   } */
 
    const handleRoute = () => {
       if (MIX_BARE_JID.test(chatUser)) {
@@ -441,13 +468,16 @@ function ChatHeader({ chatUser }) {
             </Pressable>
             <View style={styles.iconsContainer}>
                {!MIX_BARE_JID.test(chatUser) && (
-                  <IconButton onPress={makeOne2OneVideoCall} containerStyle={{ marginRight: 6 }}>
-                     <VideoCallIcon />
+                  <IconButton
+                     disabled={Boolean(blockedStaus)}
+                     onPress={makeOne2OneVideoCall}
+                     containerStyle={{ marginRight: 6 }}>
+                     <VideoCallIcon fill={blockedStaus ? '#959595' : '#181818'} />
                   </IconButton>
                )}
                {!MIX_BARE_JID.test(chatUser) && (
-                  <IconButton onPress={makeOne2OneAudioCall}>
-                     <AudioCall />
+                  <IconButton disabled={Boolean(blockedStaus)} onPress={makeOne2OneAudioCall}>
+                     <AudioCall fill={blockedStaus ? '#959595' : '#181818'} />
                   </IconButton>
                )}
                {Boolean(menuItems.length) && <MenuContainer menuItems={menuItems} />}

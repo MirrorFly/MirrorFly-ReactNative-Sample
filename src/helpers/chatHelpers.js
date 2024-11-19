@@ -15,8 +15,10 @@ import Toast from 'react-native-simple-toast';
 import Sound from 'react-native-sound';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
+import { CONNECTED } from '../SDK/constants';
 import { handleSendMsg, uploadFileToSDK } from '../SDK/utils';
 import {
+   BlockedIcon,
    CameraIcon,
    ChatsIcon,
    ContactIcon,
@@ -86,10 +88,14 @@ import {
    getChatMessages,
    getSelectedChatMessages,
    getSelectedChats,
+   getUserNameFromStore,
+   getXmppConnectionStatus,
 } from '../redux/reduxHook';
+import { updateBlockUser } from '../redux/rosterDataSlice';
 import store from '../redux/store';
 import { currentChatUser } from '../screens/ConversationScreen';
 import {
+   BLOCKED_CONTACT_LIST_STACK,
    CAMERA_SCREEN,
    CHATS_CREEN,
    CONVERSATION_SCREEN,
@@ -251,9 +257,13 @@ export const millisToMinutesAndSeconds = millis => {
 export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {
    const currentUserJid = getCurrentUserJid();
    if (chatType === CHAT_TYPE_SINGLE) {
-      return userId?.includes('@') ? userId : `${userId}@${currentUserJid?.split('@')[1] || ''}`;
+      return userId?.includes(currentUserJid?.split('@')[1])
+         ? userId
+         : `${userId}@${currentUserJid?.split('@')[1] || ''}`;
    } else {
-      return userId?.includes('@') ? userId : `${userId}@mix.${currentUserJid?.split('@')[1] || ''}`;
+      return userId?.includes(currentUserJid?.split('@')[1])
+         ? userId
+         : `${userId}@mix.${currentUserJid?.split('@')[1] || ''}`;
    }
 };
 
@@ -987,18 +997,15 @@ export const settingsMenu = [
       icon: ChatsIcon,
       rounteName: CHATS_CREEN,
    },
-   /** 
-    * 
    {
       name: 'Notifications',
       icon: NotificationSettingsIcon,
       rounteName: NOTIFICATION_STACK,
    },
-   */
    {
-      name: 'Notifications',
-      icon: NotificationSettingsIcon,
-      rounteName: NOTIFICATION_STACK,
+      name: 'Blocked Contact',
+      icon: BlockedIcon,
+      rounteName: BLOCKED_CONTACT_LIST_STACK,
    },
    {
       name: 'Log out',
@@ -1180,4 +1187,35 @@ export const findConversationMessageIndex = (msgId, message) => {
    } else {
       return index;
    }
+};
+
+export const handleUpdateBlockUser = (userId, isBlocked, chatUser) => async () => {
+   if (connectionCheck()) {
+      store.dispatch(updateBlockUser({ userId, isBlocked }));
+      if (isBlocked) {
+         const res = await SDK.blockUser(chatUser);
+         if (res.statusCode === 200) {
+            showToast(`You have blocked ${getUserNameFromStore(userId)}`);
+         }
+      } else {
+         const res = await SDK.unblockUser(chatUser);
+         if (res.statusCode === 200) {
+            showToast(`${getUserNameFromStore(userId)} has been unblocked`);
+         }
+      }
+   }
+};
+
+export const connectionCheck = () => {
+   const xmppConnection = getXmppConnectionStatus();
+   const isNetworkConnected = getNetworkState();
+   if (!isNetworkConnected) {
+      showCheckYourInternetToast();
+      return false;
+   }
+   if (xmppConnection !== CONNECTED) {
+      showToast('Connection Error');
+      return false;
+   }
+   return true;
 };

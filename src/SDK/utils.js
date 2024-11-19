@@ -62,7 +62,7 @@ export const updateRosterDataForChats = singleRecentChatList => {
 
 export const fetchRecentChats = async () => {
    const page = getRecentChatPage();
-   const { statusCode, data = [] } = await SDK.getRecentChats(page, config.recentChatsPerPage);   
+   const { statusCode, data = [] } = await SDK.getRecentChats(page, config.recentChatsPerPage);
    if (statusCode === 200) {
       if (data.length) {
          setRecentChatPage(page + 1);
@@ -104,7 +104,7 @@ export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false,
          chatPage[userId] = page + 1;
       }
       hasNextChatPage[userId] = hasEqualDataFetched;
-      store.dispatch(setChatMessages({ userJid, data }));
+      store.dispatch(setChatMessages({ userJid, data, forceUpdate: page === 1 }));
    }
    return data;
 };

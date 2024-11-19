@@ -906,12 +906,18 @@ export const handleImagePickerOpenGallery = async () => {
 };
 
 export const getNotifyNickName = res => {
-   return (
-      res?.msgBody?.nickName ||
-      res?.profileDetails?.nickName ||
-      res?.profileDetails?.userId ||
-      getUserIdFromJid(res?.publisherJid)
-   );
+   if (res.chatType === CHAT_TYPE_GROUP) {
+      return res.msgBody.message_type !== 'notification'
+         ? `${res?.msgBody?.nickName || getUserIdFromJid(res?.publisherJid)} ${`@ ${res?.profileDetails?.nickName}`}`
+         : res.profileDetails.nickName;
+   } else {
+      return (
+         res?.msgBody?.nickName ||
+         res?.profileDetails?.nickName ||
+         res?.profileDetails?.userId ||
+         getUserIdFromJid(res?.publisherJid)
+      );
+   }
 };
 
 export const getNotifyMessage = res => {
@@ -932,6 +938,8 @@ export const getNotifyMessage = res => {
          return locationEmoji + ' Location';
       case res.msgBody.message_type === 'contact':
          return contactEmoji + ' Contact';
+      case res.msgBody.message_type === 'notification':
+         return res.msgBody.notificationContent;
    }
 };
 

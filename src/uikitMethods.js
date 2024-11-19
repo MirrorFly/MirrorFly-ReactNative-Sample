@@ -54,9 +54,6 @@ export const mirrorflyNotificationHandler = async remoteMessage => {
       if (remoteMessage?.data?.push_from !== 'MirrorFly') {
          return;
       }
-      if (MIX_BARE_JID.test(remoteMessage?.data?.user_jid)) {
-         return;
-      }
       if (remoteMessage?.data.type === 'mediacall') {
          await SDK.getCallNotification(remoteMessage);
          return;
@@ -70,7 +67,11 @@ export const mirrorflyNotificationHandler = async remoteMessage => {
          return;
       }
       if (notify?.statusCode === 200) {
-         if (notify?.data?.type === 'receiveMessage') {
+         if (
+            notify?.data?.type === 'receiveMessage' ||
+            notify?.data?.msgType === 'groupCreated' ||
+            notify?.data?.msgType === 'groupProfileUpdated'
+         ) {
             pushNotify(
                notify?.data?.msgId,
                getNotifyNickName(notify?.data),

@@ -548,7 +548,7 @@ PODS:
     - React-perflogger (= 0.72.10)
   - ReactNativeIncallManager (4.1.0):
     - React-Core
-  - RealmJS (12.11.1):
+  - RealmJS (11.9.0):
     - React
   - rn-fetch-blob (0.12.0):
     - React-Core
@@ -915,7 +915,7 @@ SPEC CHECKSUMS:
   react-native-compressor: d920e812f9f50edadd7ada05d80e9a4bd840094d
   react-native-contacts: cb4f3b823550adbce0802901b9e63bf1526ec0af
   react-native-create-thumbnail: ab55d24aea01723cf386f18b0b542aabb1982f27
-  react-native-document-picker: 5b97e24a7f1a1e4a50a72c540a043f32d29a70a2
+  react-native-document-picker: 844beb44fa84b8a8e173a01344dd072c05124ba2
   react-native-geocoder: 757427682892bb256f3b3745858cc90eba148a8e
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
@@ -948,7 +948,7 @@ SPEC CHECKSUMS:
   React-utils: a715392dfaaa383668566e400f40493093c08d7e
   ReactCommon: a655a8b61cc80c7cabd8db83f69e6f498d4d0894
   ReactNativeIncallManager: 2385505fa5dfdbbc78925e3b8d23b30ce0cde40e
-  RealmJS: ecd23895a68689ce2c048d28df3d699cf76cedb7
+  RealmJS: 64ae0907c1f21ce8e74bd480a8503032b19804fd
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNAudioRecorderPlayer: 224c7de87722938aedce04000d09baa633148f5b
   RNCCheckbox: a3ca9978cb0846b981d28da4e9914bd437403d77

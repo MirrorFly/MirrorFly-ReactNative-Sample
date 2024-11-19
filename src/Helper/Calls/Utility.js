@@ -69,7 +69,7 @@ import {
    stopIncomingCallRingtone,
    stopOutgoingCallRingingTone,
    stopReconnectingTone,
-   updateCallTypeAfterCallSwitch
+   updateCallTypeAfterCallSwitch,
 } from './Call';
 import {
    AUDIO_ROUTE_BLUETOOTH,
@@ -789,13 +789,13 @@ const deleteAndDispatchAction = () => {
          callStatusText: null,
       }),
    );
-}
+};
 
 export const getCallData = async userJid => {
    return Promise.all(
       userJid.map(async userId => {
          const jid = formatUserIdToJid(userId);
-         const profileData = await SDK.getUserProfile(jid);
+         const profileData = await SDK.getUserProfile(jid, true);
          if (profileData && profileData.statusCode === 200) {
             let response = {
                email: profileData.data.email,

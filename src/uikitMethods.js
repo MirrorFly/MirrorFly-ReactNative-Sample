@@ -12,7 +12,6 @@ import { CallComponent } from './calls/CallComponent';
 import { setupCallKit } from './calls/ios';
 import { setNotificationForegroundService } from './calls/notification/callNotifyHandler';
 import { getNotifyMessage, getNotifyNickName, getUserIdFromJid, showToast } from './helpers/chatHelpers';
-import { MIX_BARE_JID } from './helpers/constants';
 import { addChatMessageItem } from './redux/chatMessageDataSlice';
 import { clearState } from './redux/clearSlice';
 import { addRecentChatItem } from './redux/recentChatDataSlice';

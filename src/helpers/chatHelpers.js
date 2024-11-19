@@ -907,8 +907,9 @@ export const handleImagePickerOpenGallery = async () => {
 
 export const getNotifyNickName = res => {
    if (res.chatType === CHAT_TYPE_GROUP) {
+      const userNickName = res?.msgBody?.nickName ?? getUserIdFromJid(res?.publisherJid);
       return res.msgBody.message_type !== 'notification'
-         ? `${res?.msgBody?.nickName || getUserIdFromJid(res?.publisherJid)} ${`@ ${res?.profileDetails?.nickName}`}`
+         ? `${userNickName} @ ${res.profileDetails.nickName}`
          : res.profileDetails.nickName;
    } else {
       return (

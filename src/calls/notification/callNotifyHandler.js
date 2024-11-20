@@ -1,7 +1,6 @@
 import notifee, {
    AndroidCategory,
    AndroidFlags,
-   AndroidForegroundServiceType,
    AndroidImportance,
    AndroidLaunchActivityFlag,
    AndroidVisibility,

@@ -87,7 +87,8 @@ import {
    GROUP_USER_ADDED,
    GROUP_USER_LEFT,
    GROUP_USER_MADE_ADMIN,
-   GROUP_USER_REMOVED
+   GROUP_USER_REMOVED,
+   NOTIFICATION,
 } from '../helpers/constants';
 import { resetCallControlsStateAction, updateCallVideoMutedAction } from '../redux/callControlsSlice';
 import { resetCallModalToastDataAction } from '../redux/callModalToastSlice';
@@ -121,7 +122,7 @@ import { resetConferencePopup, showConfrence, updateConference } from '../redux/
 import store from '../redux/store';
 import { resetTypingStatus, setTypingStatus } from '../redux/typingStatusDataSlice';
 import { REGISTERSCREEN } from '../screens/constants';
-import { getLocalUserDetails, logoutClearVariables, setCurrectUserProfile } from '../uikitMethods';
+import { getCurrentUserJid, getLocalUserDetails, logoutClearVariables, setCurrectUserProfile } from '../uikitMethods';
 import { fetchGroupParticipants, getUserProfileFromSDK } from './utils';
 
 let localStream = null,
@@ -662,8 +663,11 @@ export const callBacks = {
             store.dispatch(addRecentChatItem(res));
             store.dispatch(addChatMessageItem(res));
             if (
-               !res.notification &&
-               (res.msgType === 'receiveMessage' || res.msgType === 'carbonReceiveMessage')
+               res.msgType === 'receiveMessage' ||
+               res.msgType === 'carbonReceiveMessage' ||
+               (res.msgBody.message_type === NOTIFICATION.toLowerCase() &&
+                  res.msgBody.message === '2' &&
+                  getCurrentUserJid() === res.toUserJid)
             ) {
                pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.fromUserJid);
             }

@@ -102,7 +102,6 @@ export const getIncomingCallNotification = async (
          ],
          timestamp: Date.now(),
          showTimestamp: true,
-         foregroundServiceTypes:[AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_DATA_SYNC],
          pressAction: {
             id: 'incomingcallnotification',
             launchActivityFlags: [AndroidLaunchActivityFlag.NEW_TASK],

@@ -662,8 +662,7 @@ export const callBacks = {
             store.dispatch(addRecentChatItem(res));
             store.dispatch(addChatMessageItem(res));
             if (
-               res.msgType === 'receiveMessage' ||
-               res.msgType === 'carbonReceiveMessage' ||
+               (!res.notification && (res.msgType === 'receiveMessage' || res.msgType === 'carbonReceiveMessage')) ||
                (res.msgBody.message_type === NOTIFICATION.toLowerCase() &&
                   res.msgBody.message === '2' &&
                   getCurrentUserJid() === res.toUserJid)

@@ -235,7 +235,7 @@ export const addHeadphonesConnectedListenerForCall = (shouldUpdateInitialValue =
 };
 
 //Making OutGoing Call
-export const makeCalls = async (callType, userId) => {
+export const initiateMirroflyCall = async (callType, userId) => {
    let userList = [];
    if (!userId || preventMultipleClick) {
       return;

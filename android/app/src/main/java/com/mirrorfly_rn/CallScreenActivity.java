@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
@@ -133,7 +134,10 @@ public class CallScreenActivity extends ReactActivity {
                         PictureInPictureParams.Builder pipBuilder = null;
 
                         pipBuilder = new PictureInPictureParams.Builder();
+                        final Rect sourceRectHint = new Rect();
+                        getWindow().getDecorView().getGlobalVisibleRect(sourceRectHint);
                         pipBuilder.setAspectRatio(ratio).build();
+                        pipBuilder.setSourceRectHint(sourceRectHint);
                         CallScreenActivity.this.enterPictureInPictureMode(pipBuilder.build());
                     }
                 } catch (Exception e) {

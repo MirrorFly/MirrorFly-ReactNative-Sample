@@ -64,8 +64,6 @@ function DocumentTab({ docsMessages, loading }) {
          msgBody: { media: { fileName, file_size, is_downloaded, is_uploading } } = {},
       } = item;
 
-      console.log('item ==>', JSON.stringify(item, null, 2));
-
       const fileExtension = getExtension(fileName, false);
       const onPress = () => {
          handleFileOpen(item);

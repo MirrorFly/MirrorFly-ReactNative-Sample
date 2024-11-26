@@ -2,10 +2,11 @@
  * @format
  */
 import messaging from '@react-native-firebase/messaging';
-import { AppRegistry, Platform } from 'react-native';
+import { AppRegistry, AppState, Platform } from 'react-native';
 import App from './App';
 import { name as appName } from './app.json';
 import config from './src/config/config';
+import { isPipModeEnabled } from './src/Helper/Calls/Utility';
 import { MIRRORFLY_RN } from './src/helpers/constants';
 import { mirrorflyInitialize, mirrorflyNotificationHandler, setAppConfig, setupCallScreen } from './src/uikitMethods';
 
@@ -31,7 +32,7 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 });
 
 messaging().onMessage(async remoteMessage => {
-   if (remoteMessage?.data.type === 'mediacall') {
+   if (remoteMessage?.data.type === 'mediacall' || (isPipModeEnabled() && AppState.currentState === 'background')) {
       mirrorflyNotificationHandler(remoteMessage);
    }
 });

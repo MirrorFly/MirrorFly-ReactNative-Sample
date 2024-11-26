@@ -1,6 +1,6 @@
 {
    "name": "mirrorfly-uikit-react-native",
-   "version": "1.4.6",
+   "version": "1.4.7",
    "description": "React-Native based UI kit for Mirrorfly",
    "main": "dist/index.js",
    "module": "dist/index.js",
@@ -32,7 +32,7 @@
       "@babel/core": "^7.20.0",
       "@babel/preset-env": "^7.20.0",
       "@babel/runtime": "^7.20.0",
-      "@notifee/react-native": "^7.8.2",
+      "@notifee/react-native": "^9.1.2",
       "@react-native-camera-roll/camera-roll": "^7.8.1",
       "@react-native-clipboard/clipboard": "1.11.2",
       "@react-native-community/checkbox": "^0.5.17",
@@ -76,7 +76,6 @@
       "react-native-compressor": "^1.6.1",
       "react-native-contacts": "^7.0.8",
       "react-native-convert-ph-asset": "^1.0.3",
-      "react-native-create-thumbnail": "1.6.4",
       "react-native-document-picker": "^9.3.0",
       "react-native-file-viewer": "^2.1.5",
       "react-native-fs": "^2.18.0",
@@ -93,6 +92,7 @@
       "react-native-keyevent": "^0.3.2",
       "react-native-maps": "1.7.1",
       "react-native-material-menu": "^2.0.0",
+      "react-native-network-logger": "^1.16.1",
       "react-native-pager-view": "^6.3.1",
       "react-native-permissions": "^4.1.5",
       "react-native-progress": "^5.0.1",
@@ -110,15 +110,16 @@
       "react-native-webrtc": "^118.0.5",
       "react-redux": "^9.1.2",
       "react-test-renderer": "18.2.0",
-      "realm": "^11.9.0",
+      "realm": "11.9.0",
       "rn-fetch-blob": "^0.12.0",
       "rollup-plugin-copy": "^3.5.0",
       "rollup-plugin-node-polyfills": "^0.2.1",
       "rollup-plugin-peer-deps-external": "^2.2.4",
       "rollup-plugin-terser": "^7.0.2",
-      "typescript": "4.8.4"
+      "typescript": "4.8.4",
+      "react-native-create-thumbnail": "^2.0.0"
    },
    "engines": {
       "node": ">=16"
-      }
+   }
 }

@@ -10,7 +10,18 @@ const initialState = {
    connectionState: {},
    callDuration: 0,
    callConversionData: {},
+   /* // Example data for largeVideoUser property
+   largeVideoUser: {
+      userJid: largeUserJid,
+      volumeLevelsBasedOnUserJid: { '919988776655@xmpp.contus.us': 10 },
+      showVoiceDetect: true | false,
+      volumeLevelVideo: 0,
+   }, */
    largeVideoUser: {},
+   /* // Example data for pinUserData property
+   pinUserData: {
+      userJid: '919988776655@xmpp.contus.us' | null,
+   }, */
    pinUserData: {},
    callerUUID: '',
    // selected Call Layout ('grid'|'tile'), by default it is 'tile'

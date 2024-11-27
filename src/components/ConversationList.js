@@ -22,7 +22,7 @@ function ConversationList({ chatUser }) {
 
    const initFunc = async () => {
       setChatLoading(true);
-      await fetchMessagesFromSDK(chatUser);
+      await fetchMessagesFromSDK(chatUser, messages.length < 10);
       setChatLoading(false);
    };
 
@@ -43,13 +43,12 @@ function ConversationList({ chatUser }) {
 
    const chatMessageRender = React.useCallback(
       ({ item, index }) => {
-         const notifiactionCheck = messages[index + 1]?.message_type;
+         const notifiactionCheck = messages[index + 1]?.msgBody.message_type;
          const nextMessageUserId = messages[index + 1]?.publisherId;
          const currentMessageUserId = item?.publisherId;
          const showNickName =
-            notifiactionCheck === NOTIFICATION
-               ? true
-               : item.chatType === CHAT_TYPE_GROUP && nextMessageUserId !== currentMessageUserId;
+            notifiactionCheck === NOTIFICATION.toLowerCase() ||
+            (item.chatType === CHAT_TYPE_GROUP && nextMessageUserId !== currentMessageUserId);
          return <ChatMessage chatUser={chatUser} item={item} showNickName={showNickName} />;
       },
       [messages],

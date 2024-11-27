@@ -12,6 +12,7 @@ import RecentChatAvathar from './RecentChatAvathar';
 //    "nickName": "",
 //    "email": "",
 //    "mobileNumber": "",
+//    "userJid": "uoqg1efv23w92ejgrrla@xmpp-uikit-qa.contus.us",
 //    "userId": "uoqg1efv23w92ejgrrla",
 //    "colorCode": "#90631d"
 //  }

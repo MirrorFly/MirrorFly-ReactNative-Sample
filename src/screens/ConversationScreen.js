@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { BackHandler, ImageBackground, KeyboardAvoidingView, Linking, Platform, StyleSheet } from 'react-native';
+import { BackHandler, ImageBackground, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
 import SDK from '../SDK/SDK';
 import { fetchGroupParticipants, getUserProfileFromSDK } from '../SDK/utils';
@@ -33,7 +33,6 @@ function ConversationScreen({ chatUser = '' }) {
    }, [messaesList.map(item => item.isSelected).join(',')]); // Include isSelected in the dependency array
 
    React.useEffect(() => {
-      getURL();
       SDK.updateRecentChatUnreadCount(currentChatUser);
       dispatch(resetUnreadCountForChat(currentChatUser));
       if (MIX_BARE_JID.test(jid)) {
@@ -55,17 +54,6 @@ function ConversationScreen({ chatUser = '' }) {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
       return () => backHandler.remove();
    }, [isAnySelected]);
-
-   const getURL = async () => {
-      const url = await Linking.getInitialURL();
-      if (url) {
-         const regexStr = '[?&]([^=#]+)=([^&#]*)';
-         let regex = new RegExp(regexStr, 'g'), //NOSONAR
-            match;
-         match = regex.exec(initialURL);
-         setJid(match[2]);
-      }
-   };
 
    const handleBackBtn = () => {
       switch (true) {

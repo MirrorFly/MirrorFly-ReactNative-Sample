@@ -60,14 +60,14 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:supportsRtl="true">
         <meta-data
             android:name="ic_notification"
             android:resource="@mipmap/ic_notification" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCfG5u1-XDZhWD8vOZGK5hTKyqsVOjHSSM" />
-
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"

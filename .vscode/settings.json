@@ -1,7 +1,0 @@
-{
-    "java.configuration.updateBuildConfiguration": "interactive",
-    "sonarlint.connectedMode.project": {
-        "connectionId": "https-sonar-fly-devops-contus-us",
-        "projectKey": "P078-MirrorFly-RN_UIKit"
-    }
-}

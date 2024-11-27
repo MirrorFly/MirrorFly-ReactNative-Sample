@@ -78,3 +78,5 @@ mirrorfly-uikit-react-native-*.tgz
 
 # zip file
 *.zip
+
+patches/react-native-network-logger+1.16.1.patch

@@ -22,8 +22,10 @@ import { answerIncomingCall, declineIncomingCall, endOnGoingCall } from '../../H
 import SDK from '../../SDK/SDK';
 import { getChannelIds } from '../../Service/PushNotify';
 import { removeAllDeliveredNotification } from '../../Service/remoteNotifyHandle';
+import { getUserIdFromJid } from '../../helpers/chatHelpers';
 import { callDurationTimestamp } from '../../redux/callStateSlice';
 import { resetNotificationData, setNotificationData } from '../../redux/notificationDataSlice';
+import { setRoasterData } from '../../redux/rosterDataSlice';
 import store from '../../redux/store';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../../screens/constants';
 import { getAppSchema } from '../../uikitMethods';
@@ -281,7 +283,7 @@ export const onChatNotificationBackGround = async ({ type, detail }) => {
       const {
          notification: { data: { fromUserJID = '', from_user = '' } = '' },
       } = detail;
-      const push_url = getAppSchema() + 'CONVERSATION_STACK?fromUserJID=' + fromUserJID || from_user;
+      const push_url = getAppSchema() + `${CONVERSATION_STACK}/${CONVERSATION_SCREEN}?jid=${fromUserJID || from_user}`;
       const { statusCode, data = {} } = await SDK.getUserProfile(getUserIdFromJid(fromUserJID || from_user));
       if (statusCode === 200) {
          const { userId = '' } = data;
@@ -360,18 +362,20 @@ export const registerNotificationEvents = () => {
 
 export const stopForegroundServiceNotification = async (cancelID = '') => {
    try {
-      _BackgroundTimer.clearInterval(interval);
-      let notifications = store.getState().notificationData.data;
-      await notifee.stopForegroundService();
-      let displayedNotificationId = await notifee.getDisplayedNotifications();
-      let cancelIDS = displayedNotificationId?.find(res => res.id === notifications.id)?.id;
-      cancelIDS && (await notifee.cancelDisplayedNotification(cancelIDS));
-      let channelId = notifications.android?.channelId;
-      let channel =
-         channelId &&
-         (await notifee.getChannels()).find(res => res.id === channelId && res?.id?.includes('IncomingCall'))?.id;
-      channel && (await notifee.deleteChannel(channel));
-      store.dispatch(resetNotificationData());
+      new Promise(async () => {
+         _BackgroundTimer.clearInterval(interval);
+         let notifications = store.getState().notificationData.data;
+         await notifee.stopForegroundService();
+         let displayedNotificationId = await notifee.getDisplayedNotifications();
+         let cancelIDS = displayedNotificationId?.find(res => res.id === notifications.id)?.id;
+         cancelIDS && (await notifee.cancelDisplayedNotification(cancelIDS));
+         let channelId = notifications.android?.channelId;
+         let channel =
+            channelId &&
+            (await notifee.getChannels()).find(res => res.id === channelId && res?.id?.includes('IncomingCall'))?.id;
+         channel && (await notifee.deleteChannel(channel));
+         store.dispatch(resetNotificationData());
+      });
    } catch (error) {
       console.log('Error when stopping foreground service ', error);
    }

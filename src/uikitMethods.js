@@ -12,9 +12,10 @@ import { CallComponent } from './calls/CallComponent';
 import { setupCallKit } from './calls/ios';
 import { setNotificationForegroundService } from './calls/notification/callNotifyHandler';
 import { getNotifyMessage, getNotifyNickName, getUserIdFromJid, showToast } from './helpers/chatHelpers';
-import { MIX_BARE_JID } from './helpers/constants';
+import { addChatMessageItem } from './redux/chatMessageDataSlice';
 import { clearState } from './redux/clearSlice';
-import { getRoasterData } from './redux/reduxHook';
+import { addRecentChatItem } from './redux/recentChatDataSlice';
+import { getArchive, getRoasterData } from './redux/reduxHook';
 import { setRoasterData } from './redux/rosterDataSlice';
 import store from './redux/store';
 import { RECENTCHATSCREEN, REGISTERSCREEN } from './screens/constants';
@@ -52,9 +53,6 @@ export const mirrorflyNotificationHandler = async remoteMessage => {
       if (remoteMessage?.data?.push_from !== 'MirrorFly') {
          return;
       }
-      if (MIX_BARE_JID.test(remoteMessage?.data?.user_jid)) {
-         return;
-      }
       if (remoteMessage?.data.type === 'mediacall') {
          await SDK.getCallNotification(remoteMessage);
          return;
@@ -68,13 +66,20 @@ export const mirrorflyNotificationHandler = async remoteMessage => {
          return;
       }
       if (notify?.statusCode === 200) {
-         if (notify?.data?.type === 'receiveMessage') {
+         if (
+            notify?.data?.type === 'receiveMessage' ||
+            notify?.data?.msgType === 'groupCreated' ||
+            notify?.data?.msgType === 'groupProfileUpdated'
+         ) {
             pushNotify(
                notify?.data?.msgId,
                getNotifyNickName(notify?.data),
                getNotifyMessage(notify?.data),
                notify?.data?.fromUserJid,
             );
+            notify.data.archiveSetting = getArchive();
+            store.dispatch(addRecentChatItem(notify?.data));
+            store.dispatch(addChatMessageItem(notify?.data));
          }
       }
    } catch (error) {
@@ -98,7 +103,7 @@ export const mirrorflyInitialize = async args => {
          const _extractedData = data.reduce((result, { key, value }) => {
             result[key] = value;
             return result;
-         });
+        }, {});         
          currentUserJID = _extractedData?.['currentUserJID'];
          currentScreen = _extractedData?.['screen'] || REGISTERSCREEN;
          fetchCurrentUserProfile();
@@ -143,12 +148,14 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadat
                getUserSettings(true);
                SDK.getArchivedChats(true);
                updateNotificationSettings();
+               SDK.getUsersIBlocked();
+               SDK.getUsersWhoBlockedMe();
                return connect;
             default:
                return connect;
          }
       } else {
-         showToast(registerRes.message, Toast.SHORT);
+         showToast(registerRes.message);
          return registerRes;
       }
    } catch (error) {
@@ -220,6 +227,7 @@ export const mirrorflyProfileUpdate = async ({ nickName, image, status, mobileNu
       updatedMobileNumber,
       updatedEmail,
    );
+   currentScreen = RECENTCHATSCREEN;
    return UserInfo;
 };
 

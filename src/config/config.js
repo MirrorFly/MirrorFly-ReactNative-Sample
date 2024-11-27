@@ -48,8 +48,8 @@ const config = {
    // API_URL: 'https://dev-api.ace.online/api/v1',
    // licenseKey: 'fq7zLEnyR48iq8O6zu0TEkWiQ701zI',
    // // ================ growthAXL Environment variables =====================
-   // API_URL: 'https://growthaxlllc-api.mirrorfly.com/api/v1',
-   // licenseKey: 'o3mN05oAgepcbO0noe3T058WC8jkKN',
+   // API_URL: 'https://growthaxlprod-api.mirrorfly.com/api/v1', // Paste API BASE URL HERE
+   // licenseKey: 'WYXL9kugIbfnKQrvzA4qHOVnpbxmD8',
 };
 
 export default config;

@@ -42,7 +42,7 @@ import { getCurrentUserJid, mirrorflyProfileUpdate } from '../uikitMethods';
 import { PROFILE_IMAGE, PROFILE_STATUS_EDIT, RECENTCHATSCREEN } from './constants';
 
 const ProfileScreen = () => {
-   const [isLoading, setIsLoading] = React.useState(true);
+   const [isLoading, setIsLoading] = React.useState(false);
    const currentUserJID = getCurrentUserJid();
    const navigaiton = useNavigation();
    const userId = getUserIdFromJid(currentUserJID);
@@ -55,6 +55,7 @@ const ProfileScreen = () => {
    const layout = useWindowDimensions();
 
    React.useEffect(() => {
+      setIsLoading(true);
       if (!isEqualObjet(profile, profileDetails)) {
          setProfileDetails({
             ...profile,

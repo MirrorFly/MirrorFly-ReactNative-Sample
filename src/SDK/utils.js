@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import { changeTimeFormat } from '../common/timeStamp';
 import config from '../config/config';
 import {
@@ -8,6 +8,7 @@ import {
    getUserIdFromJid,
    getVideoThumbImage,
    isLocalUser,
+   showToast,
 } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, DOCUMENT_FORMATS, MIX_BARE_JID } from '../helpers/constants';
 import { addChatMessageItem, setChatMessages, updateMediaStatus } from '../redux/chatMessageDataSlice';
@@ -103,9 +104,30 @@ export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false,
          chatPage[userId] = page + 1;
       }
       hasNextChatPage[userId] = hasEqualDataFetched;
-      store.dispatch(setChatMessages({ userJid, data }));
+      store.dispatch(setChatMessages({ userJid, data, forceUpdate: page === 1 }));
    }
    return data;
+};
+
+const fileFormatConversion = async ({ uri, msgType }) => {
+   try {
+      switch (true) {
+         case uri.includes('ph://') && msgType === 'image':
+            return await convertHeicToJpg(uri);
+         case uri.includes('ph://') && msgType === 'video':
+            const response = await RNConvertPhAsset.convertVideoFromUrl({
+               url: uri,
+               convertTo: 'mpeg4',
+               quality: 'original',
+            });
+            return response.path; // Return the converted video path
+         default:
+            return uri;
+      }
+   } catch (error) {
+      mflog('Failed to convert the file:', error);
+      return ''; // Return empty string in case of an error
+   }
 };
 
 const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUserJid) => {
@@ -119,13 +141,11 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
             fileDetails = {},
             fileDetails: { fileSize, filename, duration, uri, type, replyTo = '' } = {},
          } = file;
-         let _uri = uri;
-         if (Platform.OS === 'ios' && uri.includes('ph://')) {
-            _uri = await convertHeicToJpg(uri);
-         }
-         file.fileDetails = { ...file.fileDetails, uri: _uri };
          const isDocument = DOCUMENT_FORMATS.includes(type);
          const msgType = isDocument ? 'file' : type.split('/')[0];
+         let _uri = uri;
+
+         file.fileDetails = { ...file.fileDetails, uri: _uri };
          let thumbImage = msgType === 'image' ? await getThumbImage(_uri) : '';
          thumbImage = msgType === 'video' ? await getVideoThumbImage(_uri) : thumbImage;
          let fileOptions = {
@@ -380,6 +400,7 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
       response = await SDK.sendMediaMessage(jid, msgId, msgType, file.fileDetails, fileOptions, replyTo, {
          broadCastIdMedia: SDK.randomString(8, 'BA'),
       });
+      console.log('response ==>', JSON.stringify(response, null, 2));
       let updateObj = {
          msgId,
          statusCode: response.statusCode,
@@ -388,6 +409,7 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
       if (response?.statusCode !== 200) {
          updateObj.is_uploading = 3;
          store.dispatch(updateMediaStatus(updateObj));
+         showToast(response.message);
       }
    } catch (error) {
       console.log('uploadFileToSDK -->', error);

@@ -3,7 +3,7 @@ import React from 'react';
 import { BackHandler, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import { useDispatch, useSelector } from 'react-redux';
-import { isRoomExist, makeCalls } from '../Helper/Calls/Utility';
+import { initiateMirroflyCall, isRoomExist } from '../Helper/Calls/Utility';
 import { RealmKeyValueStore } from '../SDK/SDK';
 import AlertModal from '../common/AlertModal';
 import IconButton from '../common/IconButton';
@@ -251,7 +251,7 @@ function ChatHeader({ chatUser }) {
          if ((result === 'granted' || result === 'limited') && bluetoothPermission === 'granted') {
             // Checking If Room exist when user granted permission
             if (!isRoomExist()) {
-               makeCalls(callType, [userId]);
+               initiateMirroflyCall(callType, [userId]);
             } else {
                setShowRoomExist(true);
             }

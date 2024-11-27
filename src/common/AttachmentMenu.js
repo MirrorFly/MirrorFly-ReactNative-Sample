@@ -76,7 +76,10 @@ const styles = StyleSheet.create({
       paddingVertical: 10,
       ...Platform.select({
          ios: {
-            top: Dimensions.get('screen').height - 80,
+            top: Math.round(Dimensions.get('screen').height * 0.878),
+         },
+         android: {
+            top: Math.round(Dimensions.get('screen').height * 0.835),
          },
       }),
    },

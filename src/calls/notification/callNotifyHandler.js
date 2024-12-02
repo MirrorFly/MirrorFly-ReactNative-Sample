@@ -1,10 +1,11 @@
 import notifee, {
    AndroidCategory,
    AndroidFlags,
+   AndroidForegroundServiceType,
    AndroidImportance,
    AndroidLaunchActivityFlag,
    AndroidVisibility,
-   EventType,
+   EventType
 } from '@notifee/react-native';
 import { AppState, Linking, NativeModules, Platform } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
@@ -22,6 +23,7 @@ import { answerIncomingCall, declineIncomingCall, endOnGoingCall } from '../../H
 import SDK from '../../SDK/SDK';
 import { getChannelIds } from '../../Service/PushNotify';
 import { removeAllDeliveredNotification } from '../../Service/remoteNotifyHandle';
+import { getForegroundPermission } from '../../common/permissions';
 import { getUserIdFromJid } from '../../helpers/chatHelpers';
 import { callDurationTimestamp } from '../../redux/callStateSlice';
 import { resetNotificationData, setNotificationData } from '../../redux/notificationDataSlice';
@@ -89,6 +91,7 @@ export const getIncomingCallNotification = async (
          autoCancel: false,
          smallIcon: callType === CALL_TYPE_AUDIO ? 'ic_call_notification' : 'ic_video_call',
          asForegroundService: true,
+         foregroundServiceTypes: [AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK],
          actions: [
             { title: 'Decline', pressAction: { id: 'decline' } },
             {
@@ -124,6 +127,7 @@ export const getOutGoingCallNotification = async (roomId, callDetailObj, userJid
    let title = `Outgoing ${callDetailObj.callType} call`;
    let callType = callDetailObj?.callType;
    const launchCallActivity = await ActivityModule.getCallActivity();
+   const foregroundServiceTypes = await getForegroundPermission(callType);   
    let channelId = await notifee.createChannel({
       id: 'Outgoing Call',
       name: 'Outgoing Call',
@@ -145,6 +149,7 @@ export const getOutGoingCallNotification = async (roomId, callDetailObj, userJid
          category: AndroidCategory.CALL,
          smallIcon: callType === CALL_TYPE_AUDIO ? 'ic_call_notification' : 'ic_video_call',
          asForegroundService: true,
+         foregroundServiceTypes,
          actions: [{ title: 'Hang up', pressAction: { id: 'hangup' } }],
          timestamp: Date.now(),
          showTimestamp: true,
@@ -163,6 +168,7 @@ export const getOnGoingCallNotification = async (roomId, callDetailObj, userJid,
    let title = `Ongoing ${callDetailObj.callType} call`;
    let callType = callDetailObj?.callType;
    const launchCallActivity = await ActivityModule.getCallActivity();
+   const foregroundServiceTypes = await getForegroundPermission(callType);   
    let channelId = await notifee.createChannel({
       id: 'OnGoing Call',
       name: 'OnGoing Call',
@@ -183,6 +189,7 @@ export const getOnGoingCallNotification = async (roomId, callDetailObj, userJid,
          sound: '',
          smallIcon: callType === CALL_TYPE_AUDIO ? 'ic_call_notification' : 'ic_video_call',
          asForegroundService: true,
+         foregroundServiceTypes,
          actions: [{ title: 'Hang up', pressAction: { id: 'endCall' } }],
          timestamp: Date.now(),
          showTimestamp: true,

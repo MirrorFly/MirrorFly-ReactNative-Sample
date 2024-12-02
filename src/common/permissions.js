@@ -1,3 +1,4 @@
+import { AndroidForegroundServiceType } from '@notifee/react-native';
 import { Platform } from 'react-native';
 import { PERMISSIONS, RESULTS, check, request, requestMultiple } from 'react-native-permissions';
 
@@ -162,6 +163,38 @@ export const checkAudioCallpermission = async () => {
    } else if ((await checkBluetoothConnectPermission()) !== 'granted') {
       return 'Bluetooth Permission';
    }
+};
+
+export const getForegroundPermission = async callType => {
+   const [microphonePermission, videoPermission, bluetoothPermission] = await Promise.all([
+      checkMicroPhonePermission(),
+      checkVideoPermission(),
+      checkBluetoothConnectPermission(),
+   ]);
+
+   if (microphonePermission === 'granted' && callType === 'audio') {
+      return bluetoothPermission === 'granted'
+         ? [
+              AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_MICROPHONE,
+              AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE,
+           ]
+         : [AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_MICROPHONE];
+   }
+
+   if (videoPermission === 'granted' && callType === 'video') {
+      return bluetoothPermission === 'granted'
+         ? [
+              AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_CAMERA,
+              AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_MICROPHONE,
+              AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE,
+           ]
+         : [
+              AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_MICROPHONE,
+              AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_CAMERA,
+           ];
+   }
+
+   return [];
 };
 
 export const requestCameraPermission = async () => {

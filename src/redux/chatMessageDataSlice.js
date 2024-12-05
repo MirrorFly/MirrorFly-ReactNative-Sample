@@ -11,12 +11,22 @@ const chatMessageDataSlice = createSlice({
    initialState,
    reducers: {
       setChatMessages(state, action) {
-         const { userJid = '', data } = action.payload;
+         const removeDuplicates = messages => {
+            const seen = new Set();
+            return messages.filter(message => {
+               const isDuplicate = seen.has(message.msgId);
+               seen.add(message.msgId);
+               return !isDuplicate;
+            });
+         };
+         const { userJid = '', data, forceUpdate = false } = action.payload;
          const userId = getUserIdFromJid(userJid);
          if (!Array.isArray(data)) return;
-         if (state[userId]) {
-            state[userId] = [...state[userId], ...data];
+         if (state[userId] && !forceUpdate) {
+            // Merge existing messages with new ones
+            state[userId] = removeDuplicates([...state[userId], ...data]);
          } else {
+            // Add new messages if userId does not exist
             state[userId] = data;
          }
       },

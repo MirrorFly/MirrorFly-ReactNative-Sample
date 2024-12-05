@@ -5,6 +5,7 @@ import { AudioWhileIcon, PlayIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import ApplicationColors from '../config/appColors';
 import { getThumbBase64URL } from '../helpers/chatHelpers';
+import { currentChatUser } from '../screens/ConversationScreen';
 import { getMessageTypeCount } from '../screens/ViewAllMedia';
 import { MEDIA_POST_PRE_VIEW_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
@@ -111,7 +112,7 @@ const MediaTab = ({ mediaMessages, loading }) => {
 
    const renderMediaTile = ({ item }) => {
       const handleMediaPress = () => {
-         navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid, msgId: item.msgId });
+         navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid: currentChatUser, msgId: item.msgId });
       };
       return <Pressable onPress={handleMediaPress}>{renderTileBasedOnMessageType(item)}</Pressable>;
    };

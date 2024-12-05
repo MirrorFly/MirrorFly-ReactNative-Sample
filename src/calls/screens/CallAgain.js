@@ -3,7 +3,7 @@ import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
 import { CALL_TYPE_AUDIO } from '../../Helper/Calls/Constant';
-import { makeCalls, resetCallModalActivity, showCallModalToast } from '../../Helper/Calls/Utility';
+import { initiateMirroflyCall, resetCallModalActivity, showCallModalToast } from '../../Helper/Calls/Utility';
 import CallsBg from '../../assets/calls-bg.png';
 import Avathar from '../../common/Avathar';
 import { CloseIcon, PhoneIcon, PhoneVideoIcon } from '../../common/Icons';
@@ -32,7 +32,7 @@ const CallAgain = () => {
    const handleCallAgain = () => {
       if (callType && userId) {
          if (isNetworkConnected) {
-            makeCalls(callType, [userId]);
+            initiateMirroflyCall(callType, [userId]);
          } else {
             showCallModalToast('Please check your internet connection', 2500);
          }

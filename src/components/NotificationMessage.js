@@ -4,9 +4,10 @@ import ApplicationColors from '../config/appColors';
 import commonStyles from '../styles/commonStyles';
 
 function NotificationMessage(props) {
-   const { messageObject: { msgBody: { notificationContent = '' } = {} } = {} } = props;
+   const { label, messageObject: { msgBody: { notificationContent = '' } = {} } = {} } = props;
+
    return (
-      <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom_6]}>
+      <View style={[{}, commonStyles.alignItemsCenter, commonStyles.marginBottom_6]}>
          <View
             style={[
                commonStyles.px_8,
@@ -15,7 +16,7 @@ function NotificationMessage(props) {
                { backgroundColor: ApplicationColors.groupNotificationBgColour },
             ]}>
             <Text style={{ fontSize: 13, color: ApplicationColors.groupNotificationTextColour }}>
-               {notificationContent}
+               {notificationContent || label}
             </Text>
          </View>
       </View>

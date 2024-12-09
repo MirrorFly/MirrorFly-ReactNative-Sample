@@ -7,9 +7,10 @@ import { LeftArrowIcon } from '../common/Icons';
 import NickName from '../common/NickName';
 import Pressable from '../common/Pressable';
 import DocumentTab from '../components/DocumentTab';
+import LinksTab from '../components/LinksTab';
 import { default as MediaTab } from '../components/MediaTab';
 import ApplicationColors from '../config/appColors';
-import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { getUserIdFromJid, isValidUrl } from '../helpers/chatHelpers';
 import { useChatMessages } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
@@ -40,6 +41,10 @@ const ViewAllMedia = () => {
    const [countBasedOnType, setCountBasedOnType] = React.useState({});
    const [mediaMessages, setMediaMessages] = React.useState([]);
    const [docsMessages, setDocsMessages] = React.useState([]);
+   // const [linkMessage, setLinkMessage] = React.useState([]);
+
+   console.log('messagesArr==>', JSON.stringify(messagesArr, null, 2));
+
    const [indicatorPosition] = React.useState(new Animated.Value(0)); // State to track the position of the active tab indicator
    const [indicatorWidth] = React.useState(screenWidth / 3); // State to track the width of the active tab indicator
 
@@ -62,16 +67,34 @@ const ViewAllMedia = () => {
       return filteredMessages;
    }, [messagesArr, jid]);
 
+   const linksMessage = React.useMemo(() => {
+      const filteredMessages = messagesArr.filter(message => {
+         const { msgBody: { message_type = '', message: textMessage } = {} } = message || {};
+         return ['text'].includes(message_type) && isValidUrl(textMessage);
+      });
+      return filteredMessages;
+   }, [messagesArr, jid]);
+
+   console.log('linksMessage ==>', JSON.stringify(linksMessage, null, 2));
+
    const handleGetMedia = async () => {
       const imageCount = messageList?.reverse()?.filter(res => ['image'].includes(res.message_type));
       setCountBasedOnType({
          ...countBasedOnType,
          imageCount: imageCount.length,
       });
-      const filtedMediaMessages = messageList.filter(res =>
-         ['image', 'video', 'audio'].includes(res?.msgBody?.message_type),
+      const filtedMediaMessages = messageList.filter(
+         res =>
+            ['image', 'video', 'audio'].includes(res?.msgBody?.message_type) &&
+            res?.msgBody?.media.is_downloaded === 2 &&
+            res?.msgBody?.media.is_uploading === 2,
       );
-      const filtedDocsMessages = messageList.filter(res => ['file'].includes(res?.msgBody?.message_type));
+      const filtedDocsMessages = messageList.filter(
+         res =>
+            ['file'].includes(res?.msgBody?.message_type) &&
+            res?.msgBody?.media.is_downloaded === 2 &&
+            res?.msgBody?.media.is_uploading === 2,
+      );
       setDocsMessages(filtedDocsMessages || []);
       setMediaMessages(filtedMediaMessages || []);
       setLoading(false);
@@ -182,10 +205,23 @@ const ViewAllMedia = () => {
                   )}
                </View>
             </View>
-            <View
-               key="3"
-               style={[commonStyles.flex1, commonStyles.justifyContentCenter, commonStyles.alignItemsCenter]}>
-               <Text> No Links Found...!!!</Text>
+            <View key="3">
+               <View>
+                  {!loading && linksMessage.length === 0 ? (
+                     <View
+                        style={[
+                           commonStyles.justifyContentCenter,
+                           commonStyles.alignItemsCenter,
+                           commonStyles.height_100_per,
+                        ]}>
+                        <Text> No Links Found...!!!</Text>
+                     </View>
+                  ) : (
+                     <View style={[commonStyles.marginTop_5, commonStyles.padding_8]}>
+                        <LinksTab linksMessage={linksMessage} loading={loading} />
+                     </View>
+                  )}
+               </View>
             </View>
          </PagerView>
       ),

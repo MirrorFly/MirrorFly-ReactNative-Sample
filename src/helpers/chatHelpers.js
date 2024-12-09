@@ -64,6 +64,7 @@ import {
    fileEmoji,
    imageEmoji,
    locationEmoji,
+   urlRegx,
    videoEmoji,
 } from '../helpers/constants';
 import {
@@ -1192,8 +1193,9 @@ export const findConversationMessageIndex = (msgId, message) => {
 
 // Calculate total offset for the FlatList to scroll to
 export const calculateOffset = (itemHeights, index) => {
-   return Array.from({ length: index }, (_, i) => itemHeights[i] || 60).reduce(
-      (total, height) => total + height,
-      0,
-   );
+   return Array.from({ length: index }, (_, i) => itemHeights[i] || 60).reduce((total, height) => total + height, 0);
+};
+
+export const isValidUrl = str => {
+   return urlRegx.test(str);
 };

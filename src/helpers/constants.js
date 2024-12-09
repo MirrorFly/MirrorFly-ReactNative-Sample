@@ -2,6 +2,7 @@ export const MIRRORFLY_RN = 'mirrorfly_rn://';
 
 export const numRegx = /^\d+$/;
 export const MIX_BARE_JID = /^([^( "'&\/:<>@\\)])+\@(mix\.[^( "'&\/:<>@\\)]{1,})$/; //NOSONAR
+export const urlRegx = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i; //NOSONAR
 export const BLOCK_CONTACT_TYPE = 'block_user';
 export const UNBLOCK_CONTACT_TYPE = 'unblock_user';
 export const CHAT_TYPE_SINGLE = 'chat';

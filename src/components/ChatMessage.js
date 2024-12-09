@@ -18,7 +18,7 @@ import Message from './Message';
 import MessagePressable from './MessagePressable';
 import NotificationMessage from './NotificationMessage';
 
-function ChatMessage({ chatUser, item, showNickName }) {
+function ChatMessage({ chatUser, item, showNickName, label }) {
    const dispatch = useDispatch();
    const navigation = useNavigation();
    const useXmppStatus = useXmppConnectionStatus();
@@ -98,8 +98,8 @@ function ChatMessage({ chatUser, item, showNickName }) {
       return null;
    }
 
-   if (message_type === 'notification') {
-      return <NotificationMessage messageObject={item} />;
+   if (label || message_type === 'notification') {
+      return <NotificationMessage messageObject={item} label={label} />;
    }
 
    if (recallStatus) {

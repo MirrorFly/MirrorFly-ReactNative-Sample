@@ -1,4 +1,5 @@
-import React, { createRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import moment from 'moment';
+import React, { createRef } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { fetchMessagesFromSDK, getHasNextChatPage } from '../SDK/utils';
 import { DoubleDownArrow } from '../common/Icons';
@@ -16,17 +17,17 @@ conversationFlatListRef.current = {};
 const estimatedItemHeight = 60;
 
 const ConversationList = ({ chatUser }) => {
-   const userId = useMemo(() => getUserIdFromJid(chatUser), [chatUser]);
-   const currentUserId = useMemo(() => getUserIdFromJid(getCurrentUserJid()), []);
+   const userId = React.useMemo(() => getUserIdFromJid(chatUser), [chatUser]);
+   const currentUserId = React.useMemo(() => getUserIdFromJid(getCurrentUserJid()), []);
    const messages = useChatMessages(userId) || [];
-   const messageListRef = useRef([]);
-   const [chatLoading, setChatLoading] = useState(false);
-   const [itemHeights, setItemHeights] = useState({});
-   const [showScrollToBottomIcon, setShowScrollToBottomIcon] = useState(false);
-   const [newMessagesCount, setNewMessagesCount] = useState(0);
+   const messageListRef = React.useRef([]);
+   const [chatLoading, setChatLoading] = React.useState(false);
+   const [itemHeights, setItemHeights] = React.useState({});
+   const [showScrollToBottomIcon, setShowScrollToBottomIcon] = React.useState(false);
+   const [newMessagesCount, setNewMessagesCount] = React.useState(0);
 
    // Fetch initial messages
-   useEffect(() => {
+   React.useEffect(() => {
       const initialize = async () => {
          setChatLoading(true);
          await fetchMessagesFromSDK(chatUser, messages.length < 10);
@@ -36,7 +37,7 @@ const ConversationList = ({ chatUser }) => {
    }, [chatUser]);
 
    // Monitor new messages and update counter
-   useMemo(() => {
+   React.useMemo(() => {
       const prevMessages = messageListRef.current;
       const prevLastMessage = prevMessages[0];
       const currentLastMessage = messages[0];
@@ -51,6 +52,30 @@ const ConversationList = ({ chatUser }) => {
       messageListRef.current = messages;
    }, [messages, currentUserId]);
 
+   // Precompute the labels for all messages in a useMemo hook to prevent re-calculation on every render
+   const messageLabels = React.useMemo(() => {
+      const today = moment().startOf('day');
+      const yesterday = moment().subtract(1, 'day').startOf('day');
+
+      return messages.map((message, index) => {
+         const messageDatePrev = moment(messages[index + 1]?.timestamp);
+         const currentMessage = moment(message.timestamp);
+
+         let label;
+         if (!messageDatePrev.isSame(currentMessage, 'day')) {
+            if (currentMessage.isSame(today, 'day')) {
+               label = 'Today';
+            } else if (currentMessage.isSame(yesterday, 'day')) {
+               label = 'Yesterday';
+            } else {
+               label = currentMessage.format('MMMM D, YYYY');
+            }
+         }
+
+         return label;
+      });
+   }, [messages]);
+
    // Load more messages
    const handleLoadMore = async () => {
       if (chatLoading || !getHasNextChatPage(userId)) return;
@@ -60,7 +85,7 @@ const ConversationList = ({ chatUser }) => {
    };
 
    // Handle scroll position
-   const handleScroll = useCallback(
+   const handleScroll = React.useCallback(
       ({ nativeEvent }) => {
          const isAboveThreshold = nativeEvent.contentOffset.y > config.conversationListBottomYaxisLimit;
          setShowScrollToBottomIcon(isAboveThreshold);
@@ -72,25 +97,26 @@ const ConversationList = ({ chatUser }) => {
    );
 
    // Cache item layout
-   const onItemLayout = useCallback((event, index) => {
+   const onItemLayout = React.useCallback((event, index) => {
       const { height } = event.nativeEvent.layout;
       setItemHeights(prev => ({ ...prev, [index]: height }));
    }, []);
 
    // Render each chat message
-   const renderChatMessage = useCallback(
+   const renderChatMessage = React.useCallback(
       ({ item, index }) => {
          const isNotification = messages[index + 1]?.msgBody.message_type === NOTIFICATION.toLowerCase();
          const nextPublisherId = messages[index + 1]?.publisherId;
          const showNickName =
             isNotification || (item.chatType === CHAT_TYPE_GROUP && nextPublisherId !== item?.publisherId);
+
          return (
             <View onLayout={event => onItemLayout(event, index)}>
-               <ChatMessage chatUser={chatUser} item={item} showNickName={showNickName} />
+               <ChatMessage chatUser={chatUser} item={item} showNickName={showNickName} label={messageLabels[index]} />
             </View>
          );
       },
-      [messages, chatUser],
+      [messages, chatUser, messageLabels],
    );
 
    return (
@@ -101,6 +127,7 @@ const ConversationList = ({ chatUser }) => {
             ref={conversationFlatListRef}
             data={messages}
             inverted
+            ListFooterComponent={res => console.log(' ListFooterComponent ==>,', res)}
             renderItem={renderChatMessage}
             keyExtractor={item => item.msgId.toString()}
             maxToRenderPerBatch={20}

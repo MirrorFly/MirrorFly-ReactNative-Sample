@@ -1,18 +1,18 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Linking, StyleSheet, Text, View } from 'react-native';
 import { getConversationHistoryTime } from '../common/timeStamp';
-import { escapeRegExpReservedChars, getMessageStatus } from '../helpers/chatHelpers';
+import { escapeRegExpReservedChars, getMessageStatus, isValidUrl } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
 
 const TextCard = ({ item, isSender }) => {
    const { createdAt = '', msgStatus = 0, msgBody: { message = '', replyTo = '' } = {}, editMessageId } = item;
-
+   const _isValidUrl = isValidUrl(message);
    return (
       <View style={commonStyles.paddingHorizontal_4}>
          {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
-         <Text style={styles.message}>
-            <ChatConversationHighlightedText text={message} textStyle={styles.message} searchValue={''} />
+         <Text style={styles.message(_isValidUrl)}>
+            <ChatConversationHighlightedText text={message} textStyle={styles.message(_isValidUrl)} searchValue={''} />
          </Text>
          <View style={styles.timeStamp}>
             {isSender && getMessageStatus(msgStatus)}
@@ -26,8 +26,13 @@ export default TextCard;
 
 export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchValue = '', index }) => {
    let parts = searchValue ? text.split(new RegExp(`(${escapeRegExpReservedChars(searchValue)})`, 'i')) : [text];
+
+   const handlePress = () => {
+      Linking.openURL(text);
+   };
+
    return (
-      <Text>
+      <Text onPress={handlePress} disabled={!isValidUrl(text)}>
          {parts.map((part, i) => {
             const isSearchMatch = part?.toLowerCase() === searchValue.toLowerCase() ? styles.highlight : {};
             return (
@@ -41,13 +46,14 @@ export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchVa
 };
 
 const styles = StyleSheet.create({
-   message: {
+   message: _isValidUrl => ({
       fontSize: 14,
       paddingHorizontal: 5,
       paddingVertical: 8,
       color: '#313131',
       lineHeight: 20,
-   },
+      ...(_isValidUrl && { textDecorationLine: 'underline', color: '#3276E2' }),
+   }),
    timeStamp: {
       flexDirection: 'row',
       borderBottomLeftRadius: 6,

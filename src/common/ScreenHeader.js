@@ -14,6 +14,7 @@ function ScreenHeader({
    isSearchable = true,
    onCreateBtn = () => {},
    isGroupInfoSrn = false,
+   onBackAction,
 }) {
    const navigation = useNavigation();
    const [text, setText] = React.useState('');
@@ -26,6 +27,9 @@ function ScreenHeader({
 
    const closeSearch = () => {
       switch (true) {
+         case Boolean(onBackAction):
+            onBackAction?.();
+            break;
          case isSearching:
             setText('');
             setIsSearching(false);

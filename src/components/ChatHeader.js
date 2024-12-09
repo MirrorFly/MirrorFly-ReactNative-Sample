@@ -3,7 +3,7 @@ import React from 'react';
 import { BackHandler, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import { useDispatch, useSelector } from 'react-redux';
-import { isRoomExist, initiateMirroflyCall } from '../Helper/Calls/Utility';
+import { initiateMirroflyCall, isRoomExist } from '../Helper/Calls/Utility';
 import { RealmKeyValueStore } from '../SDK/SDK';
 import AlertModal from '../common/AlertModal';
 import IconButton from '../common/IconButton';
@@ -30,6 +30,7 @@ import {
    requestMicroPhonePermission,
 } from '../common/permissions';
 import ApplicationColors from '../config/appColors';
+import config from '../config/config';
 import {
    copyToClipboard,
    getUserIdFromJid,
@@ -43,8 +44,8 @@ import {
    showToast,
 } from '../helpers/chatHelpers';
 import { ALREADY_ON_CALL, CALL_TYPE_AUDIO, CALL_TYPE_VIDEO, MIX_BARE_JID } from '../helpers/constants';
-import { resetMessageSelections, setChatSearchText } from '../redux/chatMessageDataSlice';
-import { setReplyMessage } from '../redux/draftSlice';
+import { resetMessageSelections, setChatSearchText, toggleEditMessage } from '../redux/chatMessageDataSlice';
+import { setReplyMessage, setTextMessage } from '../redux/draftSlice';
 import { closePermissionModal, showPermissionModal } from '../redux/permissionSlice';
 import { getSelectedChatMessages, useChatMessages, useRecentChatData } from '../redux/reduxHook';
 import {
@@ -275,6 +276,15 @@ function ChatHeader({ chatUser }) {
    const closeIsRoomExist = () => {
       setShowRoomExist(false);
    };
+
+   const handleEditMessage = () => {
+      handelResetMessageSelection(userId)();
+      dispatch(toggleEditMessage(filtered[0].msgId));
+      dispatch(
+         setTextMessage({ userId, message: filtered[0]?.msgBody?.message || filtered[0]?.msgBody?.media?.caption }),
+      );
+   };
+
    const renderRoomExistModal = () => {
       return (
          <>
@@ -333,6 +343,16 @@ function ChatHeader({ chatUser }) {
          label: 'Message Info',
          formatter: handleGoMessageInfoScreen,
       });
+      const now = Date.now();
+      if (
+         now - filtered[0]?.timestamp <= config.editMessageTime &&
+         (filtered[0]?.msgBody.message_type === 'text' || filtered[0]?.msgBody?.media?.caption)
+      ) {
+         menuItems.push({
+            label: 'Edit Message',
+            formatter: handleEditMessage,
+         });
+      }
    }
    if (!filtered.length) {
       // Show Clear Chat and Search options

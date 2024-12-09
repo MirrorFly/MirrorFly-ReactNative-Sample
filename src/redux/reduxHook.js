@@ -29,6 +29,8 @@ export const useArchiveStatus = jid =>
 export const useGroupParticipantsList = groupId => useSelector(state => state.groupData.participantsList[groupId]);
 export const useReplyMessage = userId => useSelector(state => state.draftData.data[userId]?.replyMessage);
 export const useTextMessage = userId => useSelector(state => state.draftData.data[userId]?.text);
+export const useEditMessageId = () => useSelector(state => state.chatMessagesData?.editMessage) || '';
+export const useParentMessage = msgId => useSelector(state => state.chatMessagesData?.parentMessage[msgId]);
 
 export const getReplyMessage = userId => store.getState().draftData.data[userId]?.replyMessage || {};
 export const getRecentChatData = () => store.getState().recentChatData.recentChats;

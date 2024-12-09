@@ -10,8 +10,9 @@ import ApplicationColors from '../config/appColors';
 import config from '../config/config';
 import { attachmentMenuIcons, getUserIdFromJid } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
+import { toggleEditMessage } from '../redux/chatMessageDataSlice';
 import { setTextMessage } from '../redux/draftSlice';
-import { useTextMessage, useUserType } from '../redux/reduxHook';
+import { useEditMessageId, useTextMessage, useUserType } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import EmojiOverlay from './EmojiPicker';
 
@@ -26,6 +27,7 @@ function ChatInput({ chatUser }) {
    const [menuOpen, setMenuOpen] = React.useState(false);
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
    const userType = useUserType(chatUser); // have to check this to avoid the re-render if any update happen in recent chat this chat input also renders
+   const editMessageId = useEditMessageId();
 
    const setMessage = text => {
       dispatch(setTextMessage({ userId, message: text }));
@@ -71,8 +73,40 @@ function ChatInput({ chatUser }) {
    };
 
    const sendMessage = () => {
-      setMessage('');
-      handleSendMsg({ chatUser, message: message.trim(), messageType: 'text' });
+      switch (true) {
+         case Boolean(editMessageId):
+            setMessage('');
+            dispatch(toggleEditMessage(''));
+            handleSendMsg({
+               chatUser,
+               message: message.trim(),
+               messageType: 'messageEdit',
+               editMessageId: editMessageId,
+            });
+            break;
+         case Boolean(message.trim()):
+            setMessage('');
+            handleSendMsg({ chatUser, message: message.trim(), messageType: 'text' });
+            break;
+         /** For Audio Record
+         case recordSecs < 1000:
+            showToast(stringSet.TOAST_MESSAGES.RECORD_TIME_TOO_SHORT);
+            onResetRecord();
+            break;
+         case recordSecs >= 1000:
+            onResetRecord();
+            const updatedFile = {
+               fileDetails: fileInfo[userId],
+            };
+            const messageData = {
+               messageType: 'media',
+               content: [updatedFile],
+               chatUser,
+            };
+            handleSendMsg(messageData);
+            break;
+         */
+      }
    };
 
    const handleCloseEmojiWindow = () => {

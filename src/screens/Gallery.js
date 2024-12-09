@@ -34,15 +34,16 @@ const Gallery = () => {
          setLoading(true);
          const photo = await CameraRoll.getAlbums({
             albumType: 'All',
+            assetType: 'All',
          });
          const _galleryData = await Promise.allSettled(
             photo.map(async item => {
                const params = {
                   first: 1,
-                  assetType: 'All',
-                  groupTypes: 'Album',
                   include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'playableDuration', 'orientation'],
                   groupName: item.title,
+                  assetType: 'All',
+                  groupTypes: 'SmartAlbum',
                };
                return CameraRoll.getPhotos(params).then(res => {
                   const node = res.edges.find(data => {

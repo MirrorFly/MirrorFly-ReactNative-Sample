@@ -163,7 +163,7 @@ const GalleryPhotos = () => {
             first: PAGE_SIZE,
             groupName,
             assetType: 'All',
-            groupTypes: 'Album',
+            groupTypes: 'SmartAlbum',
             include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'playableDuration', 'orientation'],
             ...(after && { after }), // Add 'after' only if it exists
          };

@@ -3,13 +3,14 @@ import { StyleSheet, Text, View } from 'react-native';
 import ApplicationColors from '../config/appColors';
 import { getMessageStatus } from '../helpers/chatHelpers';
 
-const CaptionContainer = ({ caption, msgStatus, timeStamp, isSender }) => {
+const CaptionContainer = ({ caption, msgStatus, timeStamp, isSender, editMessageId }) => {
    return (
       Boolean(caption) && (
          <View style={styles.captionContainer}>
             <Text style={styles.captionText}>{caption}</Text>
             <View style={styles.messgeStatusAndTimestampWithCaption}>
                {isSender && getMessageStatus(msgStatus)}
+               {editMessageId && <Text style={[styles.timeStampText, { paddingLeft: 4 }]}>Edited</Text>}
                <Text style={styles.timeStampText}>{timeStamp}</Text>
             </View>
          </View>

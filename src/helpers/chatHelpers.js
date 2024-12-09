@@ -728,6 +728,13 @@ export const isEqualObjet = (obj1, obj2) => {
    return true;
 };
 
+export const handleConversationScollToBottom = () => {
+   conversationFlatListRef.current.scrollToOffset({
+      indexoffset: 0,
+      animated: true,
+   });
+};
+
 export const handleSendMedia = selectedImages => () => {
    let message = {
       messageType: 'media',
@@ -1181,4 +1188,12 @@ export const findConversationMessageIndex = (msgId, message) => {
    } else {
       return index;
    }
+};
+
+// Calculate total offset for the FlatList to scroll to
+export const calculateOffset = (itemHeights, index) => {
+   return Array.from({ length: index }, (_, i) => itemHeights[i] || 60).reduce(
+      (total, height) => total + height,
+      0,
+   );
 };

@@ -6,7 +6,7 @@ import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
 
 const TextCard = ({ item, isSender }) => {
-   const { createdAt = '', msgStatus = 0, msgBody: { message = '', replyTo = '' } = {} } = item;
+   const { createdAt = '', msgStatus = 0, msgBody: { message = '', replyTo = '' } = {}, editMessageId } = item;
 
    return (
       <View style={commonStyles.paddingHorizontal_4}>
@@ -16,6 +16,7 @@ const TextCard = ({ item, isSender }) => {
          </Text>
          <View style={styles.timeStamp}>
             {isSender && getMessageStatus(msgStatus)}
+            {editMessageId && <Text style={[styles.timeStampText, { paddingLeft: 4 }]}>Edited</Text>}
             <Text style={styles.timeStampText}>{getConversationHistoryTime(createdAt)}</Text>
          </View>
       </View>

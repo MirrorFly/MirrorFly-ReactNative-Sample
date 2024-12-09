@@ -155,9 +155,22 @@ const recentChatDataSlice = createSlice({
             state.recentChats[index] = { ...state.recentChats[index], unreadCount: 0, isUnread: 0 };
          }
       },
-      extraReducers: builder => {
-         builder.addCase(clearState, () => initialState);
+      editRecentChatItem(state, action) {
+         const { userJid, msgId, message, caption } = action.payload;
+         const index = state.recentChats.findIndex(item => item.userJid === userJid && item.msgId === msgId);
+         if (state.recentChats[index]) {
+            state.recentChats[index].msgStatus = 3;
+         }
+         if (state.recentChats[index] && message) {
+            state.recentChats[index].msgBody.message = message;
+         }
+         if (state[index] && caption) {
+            state.recentChats[index].msgBody.media.caption = caption;
+         }
       },
+   },
+   extraReducers: builder => {
+      builder.addCase(clearState, () => initialState);
    },
 });
 
@@ -178,6 +191,7 @@ export const {
    toggleChatMute,
    resetUnreadCountForChat,
    toggleArchiveChatsByUserId,
+   editRecentChatItem,
 } = recentChatDataSlice.actions;
 
 export default recentChatDataSlice.reducer;

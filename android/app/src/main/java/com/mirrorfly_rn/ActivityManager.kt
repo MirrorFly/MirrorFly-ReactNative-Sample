@@ -3,8 +3,7 @@ package com.mirrorfly_rn
 import android.app.Activity
 
 class ActivityManager private constructor() {
-    private val activities: MutableList<Activity> =
-        ArrayList()
+    private val activities: MutableList<Activity> = ArrayList()
 
     fun addActivity(activity: Activity) {
         activities.add(activity)

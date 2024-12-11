@@ -22,7 +22,6 @@ class RingtoneSilentKeyEventModule(reactContext: ReactApplicationContext) :
             }
         }
     }
-    private val ACTION_VOLUME_CHANGED = "android.media.VOLUME_CHANGED_ACTION"
     private var isRegistered = false
 
     override fun getName(): String {

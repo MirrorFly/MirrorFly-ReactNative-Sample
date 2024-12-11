@@ -92,6 +92,7 @@ function ConversationScreen({ chatUser = '' }) {
 
    return (
       <KeyboardAvoidingView
+         enabled={Platform.OS === 'ios'}
          keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 'auto'}
          style={styles.container}
          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>

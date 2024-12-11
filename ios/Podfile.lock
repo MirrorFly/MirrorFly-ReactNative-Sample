@@ -1728,7 +1728,7 @@ PODS:
     - React-utils (= 0.75.4)
   - ReactNativeIncallManager (4.2.0):
     - React-Core
-  - RealmJS (12.13.2):
+  - RealmJS (20.1.0):
     - React
   - rn-fetch-blob (0.12.0):
     - React-Core
@@ -1786,7 +1786,7 @@ PODS:
     - RNNotifee/NotifeeCore (= 9.1.3)
   - RNNotifee/NotifeeCore (9.1.3):
     - React-Core
-  - RNPermissions (5.2.0):
+  - RNPermissions (5.2.1):
     - React-Core
   - RNScreens (4.3.0):
     - DoubleConversion
@@ -2248,7 +2248,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 99b435b58bd874bb0626b3fb16437d2e8735d370
   ReactCommon: 1007c09a406a451ddbd874e51511aa541d6034f6
   ReactNativeIncallManager: bfc9c67358cd524882a7c4116dcb311ac2293d4b
-  RealmJS: bfe9a997a1f813c05c432c94405753879572a1a2
+  RealmJS: 389361669e771fe4d13a86be48928d560d214294
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNCCheckbox: a3ca9978cb0846b981d28da4e9914bd437403d77
   RNCClipboard: 69ab8e51324d5b351f6ba72bbdb72478087a2c64
@@ -2260,7 +2260,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 5cf4d43fd8d31b236a6d8e392aa48432f01650aa
   RNImageCropPicker: a536bb88eade8336e1d18fdeafa77dc893fbc42e
   RNNotifee: 522276e0be010e98173175fb838514b69f18cbe0
-  RNPermissions: c6012ad85dc393b88b201523147f80ef6c7ad4d8
+  RNPermissions: b36480ca76824ed67c1828354e6bd6e1948e96ce
   RNScreens: 4cfc072a1e1c416e253dd0a9562a595a30bc9a98
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: 3d2bdcaef51c8071880a9c0072fe324f4423a3ba

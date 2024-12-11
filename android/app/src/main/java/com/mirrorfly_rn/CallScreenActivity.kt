@@ -1,111 +1,71 @@
 package com.mirrorfly_rn
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AppOpsManager
 import android.app.KeyguardManager
 import android.app.PictureInPictureParams
 import android.content.Context
-import android.content.SharedPreferences
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.Process
 import android.util.Log
 import android.util.Rational
 import android.view.KeyEvent
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.facebook.react.ReactActivity
+import com.facebook.react.ReactActivityDelegate
+import com.facebook.react.bridge.LifecycleEventListener
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
+import com.facebook.react.defaults.DefaultReactActivityDelegate
 import com.github.kevinejohn.keyevent.KeyEventModule
+import com.mirrorfly_rn.ActivityModule.Companion.reactModuleContext
 
-class CallScreenActivity : ReactActivity() {
-    private val callScreenStateActive = "active"
-    private var onCall: Boolean = false
-    private var context: Context? = null
-    private lateinit var sharedPreferences: SharedPreferences
-    private var editor: SharedPreferences.Editor? = null
+class CallScreenActivity : ReactActivity(), LifecycleEventListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("TAG", "onCreate: CallScreenActivityLL Creating")
         super.onCreate(null)
-        this.context = this
-        window.decorView.setBackgroundColor(Color.parseColor("#0D2852"))
-        // Get SharedPreferences instance
-        sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
-        // Write to SharedPreferences
-        editor = sharedPreferences.edit()
-        onCall = sharedPreferences.getBoolean("onCall", false)
-
+        Log.d("TAG", "onCreate: CallScreenActivity Create")
+        reactModuleContext?.addLifecycleEventListener(this)
+        this.window.decorView.setBackgroundColor(Color.parseColor("#0D2852"))
         // Register the activity with the ActivityManager
         ActivityManager.instance?.addActivity(this)
-        isActive = true
+    }
+
+    override fun getMainComponentName(): String = "CallScreen"
+
+    override fun createReactActivityDelegate(): ReactActivityDelegate =
+        DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
     }
 
     override fun onResume() {
-        isActive = true
-        Log.d("TAG", "CallScreenActivity== CallScreenActivityOnResume: ")
+        Log.d("TAG", "onResume: CallScreenActivity Resume")
         super.onResume()
-        val permission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-        val rational = ActivityCompat.shouldShowRequestPermissionRationale(
-            this,
-            Manifest.permission.RECORD_AUDIO
-        )
-        if (onCall) {
-            window.decorView.setBackgroundColor(Color.parseColor("#F2F2F2"))
-        }
-        if (permission == -1 && rational && !onCall) {
-            onCall = true
-            editor?.putBoolean("onCall", true)
-            editor?.commit()
-        } else {
-            if (permission != 0 && onCall && rational) {
-                Handler(Looper.getMainLooper()).postDelayed({ finish() }, 100)
-            } else {
-                onCall = true
-                editor?.putBoolean("onCall", true)
-                editor?.commit()
-            }
-        }
-        ActivityModule.callScreenStateChanged(callScreenStateActive)
     }
 
     override fun onPause() {
-        isActive = false
+        Log.d("TAG", "onPause: CallScreenActivity Pause")
         super.onPause()
-        Log.d("TAG", "callScreenStateChanged: CallScreenActivity== CallScreenActivityOnPause: ")
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     override fun onStop() {
-        isActive = false
-        val isPip: Boolean = this.isInPictureInPictureMode
-        Handler(Looper.getMainLooper()).postDelayed({
-            val km: KeyguardManager =
-                getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-            if (isPip && isCallConnected && !km.isDeviceLocked) {
-                finish()
-            }
-        }, 130)
+        Log.d("TAG", "onStop: CallScreenActivity OnStop")
         super.onStop()
-        Log.d("TAG", "CallScreenActivity== CallScreenActivityOnStop: ")
     }
 
     override fun onDestroy() {
-        isActive = false
-        Log.d("TAG", "onCreate: CallScreenActivityLL Destroying")
-        // Unregister the activity from the ActivityManager
-        ActivityManager.instance?.removeActivity(this)
-
         super.onDestroy()
-        editor?.clear()
-        editor?.commit()
-        Log.d("TAG", "CallScreenActivity== CallScreenActivityOnDestroy: ")
+        Log.d("TAG", "onDestroy: CallScreenActivity Destroy")
+        // Unregister the activity from the ActivityManager
+        reactInstanceManager.onHostDestroy(this)
+        ActivityManager.instance?.removeActivity(this)
     }
 
     override fun onUserLeaveHint() {
@@ -124,7 +84,7 @@ class CallScreenActivity : ReactActivity() {
 
                         pipBuilder = PictureInPictureParams.Builder()
                         val sourceRectHint = Rect()
-                        window.decorView.getGlobalVisibleRect(sourceRectHint)
+                        this.window.decorView.getGlobalVisibleRect(sourceRectHint)
                         pipBuilder.setAspectRatio(ratio).build()
                         pipBuilder.setSourceRectHint(sourceRectHint)
                         this@CallScreenActivity.enterPictureInPictureMode(pipBuilder.build())
@@ -136,9 +96,6 @@ class CallScreenActivity : ReactActivity() {
         }
         super.onUserLeaveHint()
     }
-
-
-    override fun getMainComponentName(): String = "CallScreen"
 
     // <--- Addding this method for keyDown events
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
@@ -204,9 +161,21 @@ class CallScreenActivity : ReactActivity() {
         )
     }
 
+    override fun onHostDestroy() {}
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    override fun onHostPause() {
+        val km: KeyguardManager =
+            getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        if (isInPictureInPictureMode && !km.isKeyguardLocked) {
+            reactInstanceManager.onHostResume(this)
+        }
+    }
+
+    override fun onHostResume() {}
+
     companion object {
         @JvmField
         var isCallConnected: Boolean = false
-        var isActive: Boolean = false
     }
 }

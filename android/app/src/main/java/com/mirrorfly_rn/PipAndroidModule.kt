@@ -14,10 +14,8 @@ import androidx.lifecycle.Lifecycle
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.common.LifecycleState
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.mirrorfly_rn.PipAndroidModule
 import java.util.Locale
 
 @ReactModule(name = PipAndroidModule.NAME)

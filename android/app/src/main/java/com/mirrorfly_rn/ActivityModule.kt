@@ -5,19 +5,19 @@ package com.mirrorfly_rn
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.mirrorfly_rn.CallScreenActivity
 
 class ActivityModule(var reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(
     reactContext
 ) {
     override fun initialize() {
         super.initialize()
+        reactModuleContext = reactContext
         eventEmitter = reactApplicationContext.getJSModule(
             DeviceEventManagerModule.RCTDeviceEventEmitter::class.java
         )
@@ -58,7 +58,7 @@ class ActivityModule(var reactContext: ReactApplicationContext) : ReactContextBa
         promise.resolve(isPackageExists)
     }
 
-    fun isPackageExists(targetPackage: String): Boolean {
+    private fun isPackageExists(targetPackage: String): Boolean {
         val pm = reactApplicationContext.packageManager
         val packages = pm.getInstalledApplications(0)
         for (packageInfo in packages) {
@@ -142,18 +142,16 @@ class ActivityModule(var reactContext: ReactApplicationContext) : ReactContextBa
             reactApplicationContext,
             CallScreenActivity::class.java
         )
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.addFlags(
+            Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+        )
         reactApplicationContext.startActivity(intent)
     }
 
     companion object {
-        const val CALL_SCREEN_ACTIVITY_STATE_CHANGE: String = "CALL_SCREEN_ACTIVITY_STATE_CHANGE"
         private var eventEmitter: DeviceEventManagerModule.RCTDeviceEventEmitter? = null
-
-        @Synchronized
-        fun callScreenStateChanged(state: String?) {
-            Log.d("TAG", "callScreenStateChanged: emitting event callScreenStateChanged")
-            eventEmitter!!.emit(CALL_SCREEN_ACTIVITY_STATE_CHANGE, state)
-        }
+        var reactModuleContext: ReactContext? = null
     }
 }

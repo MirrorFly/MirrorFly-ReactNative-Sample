@@ -5,7 +5,7 @@ import notifee, {
    AndroidImportance,
    AndroidLaunchActivityFlag,
    AndroidVisibility,
-   EventType
+   EventType,
 } from '@notifee/react-native';
 import { AppState, Linking, NativeModules, Platform } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
@@ -91,7 +91,10 @@ export const getIncomingCallNotification = async (
          autoCancel: false,
          smallIcon: callType === CALL_TYPE_AUDIO ? 'ic_call_notification' : 'ic_video_call',
          asForegroundService: true,
-         foregroundServiceTypes: [AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK],
+         foregroundServiceTypes: [
+            AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE,
+            AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK,
+         ],
          actions: [
             { title: 'Decline', pressAction: { id: 'decline' } },
             {
@@ -127,7 +130,7 @@ export const getOutGoingCallNotification = async (roomId, callDetailObj, userJid
    let title = `Outgoing ${callDetailObj.callType} call`;
    let callType = callDetailObj?.callType;
    const launchCallActivity = await ActivityModule.getCallActivity();
-   const foregroundServiceTypes = await getForegroundPermission(callType);   
+   const foregroundServiceTypes = await getForegroundPermission(callType);
    let channelId = await notifee.createChannel({
       id: 'Outgoing Call',
       name: 'Outgoing Call',
@@ -168,7 +171,7 @@ export const getOnGoingCallNotification = async (roomId, callDetailObj, userJid,
    let title = `Ongoing ${callDetailObj.callType} call`;
    let callType = callDetailObj?.callType;
    const launchCallActivity = await ActivityModule.getCallActivity();
-   const foregroundServiceTypes = await getForegroundPermission(callType);   
+   const foregroundServiceTypes = await getForegroundPermission(callType);
    let channelId = await notifee.createChannel({
       id: 'OnGoing Call',
       name: 'OnGoing Call',

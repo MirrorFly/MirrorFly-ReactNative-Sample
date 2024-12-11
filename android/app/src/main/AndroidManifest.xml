@@ -75,7 +75,7 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
             android:exported="true"
             android:label="@string/app_name"
-            android:launchMode="standard"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -97,7 +97,9 @@
             android:name=".CallScreenActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden|uiMode"
             android:excludeFromRecents="true"
+            android:taskAffinity="call.video"
             android:exported="false"
+            android:autoRemoveFromRecents="true"
             android:launchMode="singleTask"
             android:lockTaskMode="if_whitelisted"
             android:resizeableActivity="false"
@@ -106,11 +108,11 @@
             android:showWhenLocked="true"
             android:supportsPictureInPicture="true"
             android:turnScreenOn="true"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden"/>
         <service
             android:name="app.notifee.core.ForegroundService"
             android:exported="false"
-            android:foregroundServiceType="camera|microphone|connectedDevice|mediaPlayback"
+            android:foregroundServiceType="mediaPlayback|camera|microphone|connectedDevice|shortService"
             tools:replace="android:foregroundServiceType"
         />
     </application>

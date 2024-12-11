@@ -13,7 +13,6 @@ import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
@@ -22,7 +21,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.mirrorfly_rn.AudioRoutingModule
 
 @ReactModule(name = AudioRoutingModule.NAME)
 class AudioRoutingModule(var reactContext: ReactApplicationContext) :
@@ -213,6 +211,19 @@ class AudioRoutingModule(var reactContext: ReactApplicationContext) :
         reactContext.unregisterReceiver(receiver)
     }
 
+    fun isSilentModeEnabled(audioManager: AudioManager): Boolean {
+        val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+        return when (audioManager.ringerMode) {
+            AudioManager.RINGER_MODE_SILENT -> true
+            AudioManager.RINGER_MODE_VIBRATE -> true
+            AudioManager.RINGER_MODE_NORMAL -> {
+                currentVolume == 0
+            }
+
+            else -> false
+        }
+    }
+
     companion object {
         const val NAME: String = "AudioRoutingModule"
         lateinit var bluetoothAdapter: BluetoothAdapter
@@ -229,22 +240,6 @@ class AudioRoutingModule(var reactContext: ReactApplicationContext) :
                 (AudioDeviceInfo.TYPE_BUILTIN_MIC) -> "Phone"
                 (AudioDeviceInfo.TYPE_BUILTIN_SPEAKER) -> "Speaker"
                 else -> null
-            }
-        }
-
-        fun isSilentModeEnabled(audioManager: AudioManager): Boolean {
-            val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-            when (audioManager.ringerMode) {
-                AudioManager.RINGER_MODE_SILENT -> return true
-                AudioManager.RINGER_MODE_VIBRATE -> return true
-                AudioManager.RINGER_MODE_NORMAL -> {
-                    if (currentVolume == 0) {
-                        return true
-                    }
-                    return false
-                }
-
-                else -> return false
             }
         }
     }

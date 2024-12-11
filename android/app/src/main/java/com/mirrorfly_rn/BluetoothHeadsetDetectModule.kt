@@ -150,54 +150,52 @@ class BluetoothHeadsetDetectModule(reactContext: ReactApplicationContext) :
     override fun onHostDestroy() {
     }
 
-    companion object {
-        @ReactMethod
-        fun getCurrentOutputDevice(context: Context): String {
-            val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    @ReactMethod
+    fun getCurrentOutputDevice(context: Context): String {
+        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                // For Android Marshmallow (API level 23) and above
-                getCurrentOutputDeviceMarshmallow(
-                    audioManager
-                )
-            } else {
-                // For versions below Marshmallow
-                getCurrentOutputDevicePreMarshmallow(
-                    audioManager
-                )
-            }
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // For Android Marshmallow (API level 23) and above
+            getCurrentOutputDeviceMarshmallow(
+                audioManager
+            )
+        } else {
+            // For versions below Marshmallow
+            getCurrentOutputDevicePreMarshmallow(
+                audioManager
+            )
         }
+    }
 
-        private fun getCurrentOutputDevicePreMarshmallow(audioManager: AudioManager): String {
-            return if (audioManager.isBluetoothA2dpOn) {
-                "Bluetooth A2DP"
-            } else if (audioManager.isWiredHeadsetOn) {
-                "Wired Headset"
-            } else if (audioManager.isSpeakerphoneOn) {
-                "Speakerphone"
-            } else {
-                "Unknown"
-            }
+    private fun getCurrentOutputDevicePreMarshmallow(audioManager: AudioManager): String {
+        return if (audioManager.isBluetoothA2dpOn) {
+            "Bluetooth A2DP"
+        } else if (audioManager.isWiredHeadsetOn) {
+            "Wired Headset"
+        } else if (audioManager.isSpeakerphoneOn) {
+            "Speakerphone"
+        } else {
+            "Unknown"
         }
+    }
 
-        @SuppressLint("ObsoleteSdkInt")
-        private fun getCurrentOutputDeviceMarshmallow(audioManager: AudioManager): String {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                var devices = arrayOfNulls<AudioDeviceInfo>(0)
-                devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
+    @SuppressLint("ObsoleteSdkInt")
+    private fun getCurrentOutputDeviceMarshmallow(audioManager: AudioManager): String {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            var devices = arrayOfNulls<AudioDeviceInfo>(0)
+            devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
 
-                for (device in devices) {
-                    if (device!!.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP) {
-                        return "Bluetooth A2DP"
-                    } else if (device.type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
-                        return "Wired Headset"
-                    } else if (device.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER) {
-                        return "Built-in Speaker"
-                    }
+            for (device in devices) {
+                if (device!!.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP) {
+                    return "Bluetooth A2DP"
+                } else if (device.type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+                    return "Wired Headset"
+                } else if (device.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER) {
+                    return "Built-in Speaker"
                 }
-                return "Unknown"
             }
             return "Unknown"
         }
+        return "Unknown"
     }
 }

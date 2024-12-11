@@ -19,10 +19,10 @@ const chatMessageDataSlice = createSlice({
                return !isDuplicate;
             });
          };
-         const { userJid = '', data } = action.payload;
+         const { userJid = '', data, forceUpdate = false } = action.payload;
          const userId = getUserIdFromJid(userJid);
          if (!Array.isArray(data)) return;
-         if (state[userId]) {
+         if (state[userId] && !forceUpdate) {
             // Merge existing messages with new ones
             state[userId] = removeDuplicates([...state[userId], ...data]);
          } else {

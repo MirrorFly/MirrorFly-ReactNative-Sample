@@ -104,7 +104,7 @@ export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false,
          chatPage[userId] = page + 1;
       }
       hasNextChatPage[userId] = hasEqualDataFetched;
-      store.dispatch(setChatMessages({ userJid, data }));
+      store.dispatch(setChatMessages({ userJid, data, forceUpdate: page === 1 }));
    }
    return data;
 };

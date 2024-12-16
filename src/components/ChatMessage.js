@@ -90,64 +90,71 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
       dispatch(toggleMessageSelection(selectData));
    };
 
-   if (!message_type) {
-      return null;
-   }
+   const renderMessage = React.useMemo(() => {
+      if (!message_type) {
+         return null;
+      }
+      if (deleteStatus) {
+         return null;
+      }
+      if (message_type === 'notification') {
+         return <NotificationMessage messageObject={item} label={label} />;
+      }
 
-   if (deleteStatus) {
-      return null;
-   }
+      if (recallStatus) {
+         return <DeletedMessage chatUser={chatUser} item={item} isSender={isSender} />;
+      }
 
-   if (label || message_type === 'notification') {
-      return <NotificationMessage messageObject={item} label={label} />;
-   }
-
-   if (recallStatus) {
-      return <DeletedMessage chatUser={chatUser} item={item} isSender={isSender} />;
-   }
+      return (
+         <Pressable
+            style={
+               shouldHighlight && {
+                  backgroundColor: ApplicationColors.highlighedMessageBg,
+               }
+            }
+            delayLongPress={300}
+            pressedStyle={commonStyles.bg_transparent}
+            onPress={onPress}
+            onLongPress={onLongPress}>
+            {({ pressed }) => (
+               <View style={[styles.messageContainer, isSelected ? styles.highlightMessage : undefined]}>
+                  <View
+                     style={[
+                        commonStyles.paddingHorizontal_12,
+                        isSender ? commonStyles.alignSelfFlexEnd : commonStyles.alignSelfFlexStart,
+                     ]}>
+                     <MessagePressable
+                        forcePress={pressed}
+                        style={[styles.messageContentPressable, { maxWidth: messageWidth }]}
+                        contentContainerStyle={[
+                           styles.messageCommonStyle,
+                           isSender ? styles.sentMessage : styles.receivedMessage,
+                        ]}
+                        delayLongPress={300}
+                        onPress={onPress}
+                        onLongPress={onLongPress}>
+                        {showNickName && !isSender && message_type && (
+                           <NickName
+                              style={styles.nickname}
+                              userId={item.publisherId}
+                              colorCodeRequired={true}
+                              data={{ nickName }}
+                           />
+                        )}
+                        <Message item={item} isSender={isSender} chatUser={chatUser} />
+                     </MessagePressable>
+                  </View>
+               </View>
+            )}
+         </Pressable>
+      );
+   });
 
    return (
-      <Pressable
-         style={
-            shouldHighlight && {
-               backgroundColor: ApplicationColors.highlighedMessageBg,
-            }
-         }
-         delayLongPress={300}
-         pressedStyle={commonStyles.bg_transparent}
-         onPress={onPress}
-         onLongPress={onLongPress}>
-         {({ pressed }) => (
-            <View style={[styles.messageContainer, isSelected ? styles.highlightMessage : undefined]}>
-               <View
-                  style={[
-                     commonStyles.paddingHorizontal_12,
-                     isSender ? commonStyles.alignSelfFlexEnd : commonStyles.alignSelfFlexStart,
-                  ]}>
-                  <MessagePressable
-                     forcePress={pressed}
-                     style={[styles.messageContentPressable, { maxWidth: messageWidth }]}
-                     contentContainerStyle={[
-                        styles.messageCommonStyle,
-                        isSender ? styles.sentMessage : styles.receivedMessage,
-                     ]}
-                     delayLongPress={300}
-                     onPress={onPress}
-                     onLongPress={onLongPress}>
-                     {showNickName && !isSender && message_type && (
-                        <NickName
-                           style={styles.nickname}
-                           userId={item.publisherId}
-                           colorCodeRequired={true}
-                           data={{ nickName }}
-                        />
-                     )}
-                     <Message item={item} isSender={isSender} chatUser={chatUser} />
-                  </MessagePressable>
-               </View>
-            </View>
-         )}
-      </Pressable>
+      <>
+         <NotificationMessage label={label} />
+         {renderMessage}
+      </>
    );
 }
 

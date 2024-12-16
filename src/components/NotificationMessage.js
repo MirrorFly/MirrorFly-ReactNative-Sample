@@ -5,7 +5,7 @@ import commonStyles from '../styles/commonStyles';
 
 function NotificationMessage(props) {
    const { label, messageObject: { msgBody: { notificationContent = '' } = {} } = {} } = props;
-
+   if (!label && !notificationContent) return null;
    return (
       <View style={[{}, commonStyles.alignItemsCenter, commonStyles.marginBottom_6]}>
          <View

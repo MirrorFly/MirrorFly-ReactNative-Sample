@@ -127,7 +127,6 @@ const ConversationList = ({ chatUser }) => {
             ref={conversationFlatListRef}
             data={messages}
             inverted
-            ListFooterComponent={res => console.log(' ListFooterComponent ==>,', res)}
             renderItem={renderChatMessage}
             keyExtractor={item => item.msgId.toString()}
             maxToRenderPerBatch={20}

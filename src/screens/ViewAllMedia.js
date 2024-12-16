@@ -41,9 +41,6 @@ const ViewAllMedia = () => {
    const [countBasedOnType, setCountBasedOnType] = React.useState({});
    const [mediaMessages, setMediaMessages] = React.useState([]);
    const [docsMessages, setDocsMessages] = React.useState([]);
-   // const [linkMessage, setLinkMessage] = React.useState([]);
-
-   console.log('messagesArr==>', JSON.stringify(messagesArr, null, 2));
 
    const [indicatorPosition] = React.useState(new Animated.Value(0)); // State to track the position of the active tab indicator
    const [indicatorWidth] = React.useState(screenWidth / 3); // State to track the width of the active tab indicator
@@ -74,8 +71,6 @@ const ViewAllMedia = () => {
       });
       return filteredMessages;
    }, [messagesArr, jid]);
-
-   console.log('linksMessage ==>', JSON.stringify(linksMessage, null, 2));
 
    const handleGetMedia = async () => {
       const imageCount = messageList?.reverse()?.filter(res => ['image'].includes(res.message_type));

@@ -57,6 +57,8 @@ export const getHasNextRecentChatPage = () => hasNextRecentChatPage;
 
 export const getHasNextChatPage = userId => hasNextChatPage[userId];
 
+export const randomString = () => SDK.randomString(8, 'BA');
+
 export const updateRosterDataForRecentChats = singleRecentChatList => {
    const userProfileDetails = singleRecentChatList.map(chat => chat.profileDetails);
    store.dispatch(setRoasterData(userProfileDetails));

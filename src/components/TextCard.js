@@ -1,18 +1,18 @@
 import React from 'react';
 import { Linking, StyleSheet, Text, View } from 'react-native';
 import { getConversationHistoryTime } from '../common/timeStamp';
-import { escapeRegExpReservedChars, getMessageStatus, isValidUrl } from '../helpers/chatHelpers';
+import { findUrls, getMessageStatus } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
 
 const TextCard = ({ item, isSender }) => {
    const { createdAt = '', msgStatus = 0, msgBody: { message = '', replyTo = '' } = {}, editMessageId } = item;
-   const _isValidUrl = isValidUrl(message);
+
    return (
       <View style={commonStyles.paddingHorizontal_4}>
          {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
-         <Text style={styles.message(_isValidUrl)}>
-            <ChatConversationHighlightedText text={message} textStyle={styles.message(_isValidUrl)} searchValue={''} />
+         <Text style={styles.message}>
+            <ChatConversationHighlightedText text={message} textStyle={styles.message} searchValue={''} />
          </Text>
          <View style={styles.timeStamp}>
             {isSender && getMessageStatus(msgStatus)}
@@ -22,22 +22,27 @@ const TextCard = ({ item, isSender }) => {
       </View>
    );
 };
-export default TextCard;
 
-export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchValue = '', index }) => {
-   let parts = searchValue ? text.split(new RegExp(`(${escapeRegExpReservedChars(searchValue)})`, 'i')) : [text];
-
-   const handlePress = () => {
-      Linking.openURL(text);
+export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchValue = 'hi', index }) => {
+   // Use the findUrls function to split the text into URL and non-URL parts
+   const segments = findUrls(text);
+   const handlePress = url => {
+      Linking.openURL(url);
    };
 
    return (
-      <Text onPress={handlePress} disabled={!isValidUrl(text)}>
-         {parts.map((part, i) => {
-            const isSearchMatch = part?.toLowerCase() === searchValue.toLowerCase() ? styles.highlight : {};
+      <Text>
+         {segments.map((segment, i) => {
+            const isSearchMatch = segment.content.toLowerCase() === searchValue.toLowerCase() ? styles.highlight : {};
+            const urlStyle = segment.isUrl ? styles.underline : {}; // Apply underline only for URLs
             return (
-               <Text key={++i + '-' + index} ellipsizeMode="tail" style={[textStyle, isSearchMatch]}>
-                  {part}
+               <Text
+                  key={i + '-' + index}
+                  ellipsizeMode="tail"
+                  style={[textStyle, isSearchMatch, urlStyle]} // Combine textStyle, highlight, and urlStyle
+                  onPress={() => segment.isUrl && handlePress(segment.content)} // Only make URL parts clickable
+                  suppressHighlighting={!segment.isUrl}>
+                  {segment.content}
                </Text>
             );
          })}
@@ -46,14 +51,13 @@ export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchVa
 };
 
 const styles = StyleSheet.create({
-   message: _isValidUrl => ({
+   message: {
       fontSize: 14,
       paddingHorizontal: 5,
       paddingVertical: 8,
       color: '#313131',
       lineHeight: 20,
-      ...(_isValidUrl && { textDecorationLine: 'underline', color: '#3276E2' }),
-   }),
+   },
    timeStamp: {
       flexDirection: 'row',
       borderBottomLeftRadius: 6,
@@ -73,4 +77,10 @@ const styles = StyleSheet.create({
       backgroundColor: '#D69C23',
       fontWeight: 'bold',
    },
+   underline: {
+      color: '#3276E2',
+      textDecorationLine: 'underline', // Underline style for URLs
+   },
 });
+
+export default TextCard;

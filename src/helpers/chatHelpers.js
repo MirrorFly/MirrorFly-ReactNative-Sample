@@ -1205,3 +1205,26 @@ export const calculateOffset = (itemHeights, index) => {
 export const isValidUrl = str => {
    return urlRegx.test(str);
 };
+
+export const findUrls = text => {
+   const urlRegex = /https?:\/\/[^\s]+/g;
+   let segments = [];
+   let lastIndex = 0;
+
+   text.replace(urlRegex, (match, offset) => {
+      // Push the text before the URL (if any)
+      if (offset > lastIndex) {
+         segments.push({ isUrl: false, content: text.slice(lastIndex, offset) });
+      }
+      // Push the URL itself
+      segments.push({ isUrl: true, content: match });
+      lastIndex = offset + match.length;
+   });
+
+   // If there's any remaining text after the last URL, add it
+   if (lastIndex < text.length) {
+      segments.push({ isUrl: false, content: text.slice(lastIndex) });
+   }
+
+   return segments;
+};

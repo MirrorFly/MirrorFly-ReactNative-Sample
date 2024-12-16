@@ -144,10 +144,11 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          const isDocument = DOCUMENT_FORMATS.includes(type);
          const msgType = isDocument ? 'file' : type.split('/')[0];
          let _uri = uri;
-
+         console.log('_uri ==>', _uri);
          file.fileDetails = { ...file.fileDetails, uri: _uri };
          let thumbImage = msgType === 'image' ? await getThumbImage(_uri) : '';
          thumbImage = msgType === 'video' ? await getVideoThumbImage(_uri) : thumbImage;
+         console.log('thumbImage ==>', thumbImage?.length);
          let fileOptions = {
             fileName: filename,
             fileSize: fileSize,
@@ -176,7 +177,7 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          store.dispatch(addRecentChatItem(conversationChatObj));
          if (i === 0) {
             const { msgId, userJid, msgBody: { media = {}, media: { file = {} } = {} } = {} } = conversationChatObj;
-            uploadFileToSDK(file, userJid, msgId, media);
+            // uploadFileToSDK(file, userJid, msgId, media);
          }
       }
    }

@@ -745,7 +745,13 @@ export const handleSendMedia = selectedImages => () => {
 export const getVideoThumbImage = async uri => {
    const frame = await createThumbnail({
       url: uri,
-      timeStamp: 10000,
+      timeStamp: 1000,
+      maxWidth: 250,
+      maxHeight: 250,
+      quality: Platform.select({
+         android: 100,
+         ios: 0.9,
+      }),
    });
    const base64 = await RNFS.readFile(frame.path, 'base64');
    return base64;
@@ -793,7 +799,7 @@ export const getThumbImage = async uri => {
    const result = await ImageCompressor.compress(uri, {
       maxWidth: 200,
       maxHeight: 200,
-      quality: 0.8,
+      quality: 0.5,
    });
    const response = await RNFS.readFile(result, 'base64');
    return response;

@@ -40,6 +40,8 @@ const Gallery = () => {
             photo.map(async item => {
                const params = {
                   first: 1,
+                  assetType: 'All',
+                  groupTypes: 'SmartAlbum',
                   include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'playableDuration', 'orientation'],
                   groupName: item.title,
                   assetType: 'All',

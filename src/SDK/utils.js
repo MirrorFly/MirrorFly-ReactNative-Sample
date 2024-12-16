@@ -146,15 +146,23 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          const {
             caption = '',
             fileDetails = {},
-            fileDetails: { fileSize, filename, duration, uri, type, replyTo = '' } = {},
+            fileDetails: {
+               fileSize,
+               filename,
+               duration,
+               uri,
+               type,
+               replyTo = '',
+               thumbImage: fileDetailsThumbImage,
+            } = {},
          } = file;
          const isDocument = DOCUMENT_FORMATS.includes(type);
          const msgType = isDocument ? 'file' : type.split('/')[0];
          let _uri = uri;
-
+         console.log('_uri ==>', _uri);
          file.fileDetails = { ...file.fileDetails, uri: _uri };
          let thumbImage = msgType === 'image' ? await getThumbImage(_uri) : '';
-         thumbImage = msgType === 'video' ? await getVideoThumbImage(_uri) : thumbImage;
+         thumbImage = msgType === 'video' ? fileDetailsThumbImage || (await getVideoThumbImage(_uri)) : thumbImage;
          let fileOptions = {
             fileName: filename,
             fileSize: fileSize,

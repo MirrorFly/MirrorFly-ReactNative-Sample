@@ -34,6 +34,8 @@ export const useReplyMessage = userId => useSelector(state => state.draftData.da
 export const useTextMessage = userId => useSelector(state => state.draftData.data[userId]?.text);
 export const useEditMessageId = () => useSelector(state => state.chatMessagesData?.editMessage) || '';
 export const useParentMessage = msgId => useSelector(state => state.chatMessagesData?.parentMessage[msgId]);
+export const useAudioRecording = userId => useSelector(state => state.draftData.data[userId]?.audioRecord);
+export const useAudioRecordTime = userId => useSelector(state => state.draftData.data[userId]?.audioRecordTime);
 
 export const getReplyMessage = userId => store.getState().draftData.data[userId]?.replyMessage || {};
 export const getRecentChatData = () => store.getState().recentChatData.recentChats;
@@ -52,6 +54,8 @@ export const getUserImage = userId => {
    const { image } = store.getState().rosterData.data[userId] || {};
    return image;
 };
+export const getAudioRecording = userId => store.getState().draftData.data[userId]?.audioRecord;
+export const getAudioRecordTime = userId => store.getState().draftData.data[userId]?.audioRecordTime;
 export const getChatMessage = (userId, msgId) =>
    store.getState().chatMessagesData?.[userId]?.find(msg => msg.msgId === msgId);
 export const getXmppConnectionStatus = () => store.getState().loggedInUserData.xmppStatus;

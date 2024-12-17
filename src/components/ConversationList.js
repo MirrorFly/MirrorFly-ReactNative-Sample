@@ -46,10 +46,6 @@ const ConversationList = ({ chatUser }) => {
       messageListRef.current = messages;
    }, [messages.length, currentUserId]);
 
-   const messageList = React.useMemo(() => {
-      return messages;
-   }, [messages.length]);
-
    // Precompute the labels for all messages in a useMemo hook to prevent re-calculation on every render
    const messageLabels = React.useMemo(() => {
       const today = moment().startOf('day');
@@ -114,15 +110,16 @@ const ConversationList = ({ chatUser }) => {
             </View>
          );
       },
-      [messageList, chatUser, messageLabels],
+      [messages, chatUser, messageLabels],
    );
 
-   const renderFlatList = React.useMemo(() => {
-      return (
+   return (
+      <>
+         {chatLoading && <ActivityIndicator size="large" color={ApplicationColors.mainColor} />}
          <FlatList
             initialNumToRender={10}
             ref={conversationFlatListRef}
-            data={messageList}
+            data={messages}
             inverted
             renderItem={renderChatMessage}
             keyExtractor={item => item.msgId.toString()}
@@ -138,13 +135,6 @@ const ConversationList = ({ chatUser }) => {
                index,
             })}
          />
-      );
-   }, [messageList.length]);
-
-   return (
-      <>
-         {chatLoading && <ActivityIndicator size="large" color={ApplicationColors.mainColor} />}
-         {renderFlatList}
          {showScrollToBottomIcon && (
             <Pressable
                style={styles.floatingScrollToBottomIconWrapper}

@@ -36,7 +36,7 @@ function ReplyMessage(props) {
    const chatUser = currentChatUser;
    const dispatch = useDispatch();
    const userId = getUserIdFromJid(chatUser);
-   const repliedMessage = useParentMessage(replyTo) || {};
+   const repliedMessage = useParentMessage(replyTo);
    let { msgId } = originalMsg;
 
    const {
@@ -45,7 +45,7 @@ function ReplyMessage(props) {
       deleteStatus = 0,
       recallStatus = 0,
       publisherJid = '',
-   } = repliedMessage;
+   } = repliedMessage || {};
 
    /**const fromUserId = React.useMemo(() => getUserIdFromJid(fromUserJId), [fromUserJId]);*/
    const publisherId = getUserIdFromJid(publisherJid);
@@ -80,6 +80,28 @@ function ReplyMessage(props) {
    }, [fileExtension]);
 
    const durationString = millisToMinutesAndSeconds(media.duration);
+
+   const passReplyTo = () => {
+      const messsageList = getChatMessages(userId);
+      const isAnySelected = messsageList.some(item => item.isSelected === 1);
+      if (isAnySelected) {
+         const selectData = {
+            chatUserId: userId,
+            msgId,
+         };
+         dispatch(toggleMessageSelection(selectData));
+      } else {
+         handleReplyPress(userId, replyTo, repliedMessage);
+      }
+   };
+
+   const handleLongPress = () => {
+      const selectData = {
+         chatUserId: userId,
+         msgId,
+      };
+      dispatch(toggleMessageSelection(selectData));
+   };
 
    const renderReplyItem = () => {
       if (message_type === 'text') {
@@ -201,28 +223,6 @@ function ReplyMessage(props) {
             </View>
          );
       }
-   };
-
-   const passReplyTo = () => {
-      const messsageList = getChatMessages(userId);
-      const isAnySelected = messsageList.some(item => item.isSelected === 1);
-      if (isAnySelected) {
-         const selectData = {
-            chatUserId: userId,
-            msgId,
-         };
-         dispatch(toggleMessageSelection(selectData));
-      } else {
-         handleReplyPress(userId, replyTo, repliedMessage);
-      }
-   };
-
-   const handleLongPress = () => {
-      const selectData = {
-         chatUserId: userId,
-         msgId,
-      };
-      dispatch(toggleMessageSelection(selectData));
    };
 
    return (

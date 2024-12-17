@@ -30,7 +30,7 @@ const ConversationList = ({ chatUser }) => {
    React.useEffect(() => {
       const initialize = async () => {
          setChatLoading(true);
-         await fetchMessagesFromSDK(chatUser, messages.length < 10);
+         await fetchMessagesFromSDK(chatUser, messages.length < 10 && getHasNextChatPage());
          setChatLoading(false);
       };
       initialize();
@@ -39,18 +39,16 @@ const ConversationList = ({ chatUser }) => {
    // Monitor new messages and update counter
    React.useMemo(() => {
       const prevMessages = messageListRef.current;
-      const prevLastMessage = prevMessages[0];
-      const currentLastMessage = messages[0];
 
-      if (
-         messages.length > prevMessages.length &&
-         messages[0]?.publisherId !== currentUserId &&
-         currentLastMessage !== prevLastMessage
-      ) {
+      if (messages.length > prevMessages.length && messages[0]?.publisherId !== currentUserId) {
          setNewMessagesCount(count => count + 1);
       }
       messageListRef.current = messages;
-   }, [messages, currentUserId]);
+   }, [messages.length, currentUserId]);
+
+   const messageList = React.useMemo(() => {
+      return messages;
+   }, [messages.length]);
 
    // Precompute the labels for all messages in a useMemo hook to prevent re-calculation on every render
    const messageLabels = React.useMemo(() => {
@@ -116,16 +114,15 @@ const ConversationList = ({ chatUser }) => {
             </View>
          );
       },
-      [messages, chatUser, messageLabels],
+      [messageList, chatUser, messageLabels],
    );
 
-   return (
-      <>
-         {chatLoading && <ActivityIndicator size="large" color={ApplicationColors.mainColor} />}
+   const renderFlatList = React.useMemo(() => {
+      return (
          <FlatList
             initialNumToRender={10}
             ref={conversationFlatListRef}
-            data={messages}
+            data={messageList}
             inverted
             renderItem={renderChatMessage}
             keyExtractor={item => item.msgId.toString()}
@@ -141,6 +138,13 @@ const ConversationList = ({ chatUser }) => {
                index,
             })}
          />
+      );
+   }, [messageList.length]);
+
+   return (
+      <>
+         {chatLoading && <ActivityIndicator size="large" color={ApplicationColors.mainColor} />}
+         {renderFlatList}
          {showScrollToBottomIcon && (
             <Pressable
                style={styles.floatingScrollToBottomIconWrapper}
@@ -197,6 +201,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 50,
+      backgroundColor: ApplicationColors.mainColor,
    },
    newMessgesCountBadgeWrapperWith3Chars: {
       width: 33,

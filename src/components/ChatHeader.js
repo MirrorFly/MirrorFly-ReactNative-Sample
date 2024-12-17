@@ -56,6 +56,7 @@ import {
    USER_INFO,
 } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
+import { chatInputRef } from './ChatInput';
 import LastSeen from './LastSeen';
 import UserAvathar from './UserAvathar';
 
@@ -170,6 +171,7 @@ function ChatHeader({ chatUser }) {
       Keyboard.dismiss();
       dispatch(setReplyMessage({ userId, message: filtered[0] }));
       dispatch(resetMessageSelections(userId));
+      chatInputRef?.current?.focus();
    };
 
    const renderReplyIcon = () => {
@@ -283,6 +285,7 @@ function ChatHeader({ chatUser }) {
       dispatch(
          setTextMessage({ userId, message: filtered[0]?.msgBody?.message || filtered[0]?.msgBody?.media?.caption }),
       );
+      chatInputRef?.current?.focus();
    };
 
    const renderRoomExistModal = () => {

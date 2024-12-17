@@ -53,7 +53,7 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
 
    const onPress = () => {
       const messsageList = getChatMessages(userId);
-      const isAnySelected = messsageList.some(item => item.isSelected === 1);
+      const isAnySelected = messsageList?.some?.(item => item.isSelected === 1);
       switch (true) {
          case isAnySelected:
             const selectData = {

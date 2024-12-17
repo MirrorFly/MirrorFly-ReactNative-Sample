@@ -1074,6 +1074,7 @@ export const toggleMuteChat = () => {
 };
 
 export const isActiveChat = jid => {
+   console.log('currentChatUser ==>', currentChatUser, jid, RootNavigation.getCurrentScreen());
    return currentChatUser !== jid || RootNavigation.getCurrentScreen() !== CONVERSATION_SCREEN;
 };
 
@@ -1185,15 +1186,19 @@ export const handleReplyPress = (userId, msgId, message) => {
 };
 
 export const findConversationMessageIndex = (msgId, message) => {
-   const data = conversationFlatListRef.current.props.data;
-   const index = data.findIndex(item => item.msgId === msgId);
-   const { deleteStatus, recallStatus } = message;
-   if (deleteStatus !== 0 || recallStatus !== 0) {
-      showToast('This message is no longer available');
-   } else if (index < 0) {
-      return;
-   } else {
-      return index;
+   try {
+      const data = conversationFlatListRef.current.props.data;
+      const index = data.findIndex(item => item.msgId === msgId);
+      const { deleteStatus = 1, recallStatus = 1 } = message;
+      if (deleteStatus !== 0 || recallStatus !== 0) {
+         showToast('This message is no longer available');
+      } else if (index < 0) {
+         return;
+      } else {
+         return index;
+      }
+   } catch (error) {
+      showToast('Something went wrong');
    }
 };
 

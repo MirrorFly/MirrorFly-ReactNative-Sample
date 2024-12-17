@@ -45,7 +45,7 @@ function ReplyContainer({ chatUser, replyMessage }) {
 
    return (
       <View style={styles.replyingMessageContainer}>
-         <View style={styles.replyingMessageContainer}>{renderReplyMessageTemplateAboveInput()}</View>
+         <View style={styles.replyingMessageWrapper}>{renderReplyMessageTemplateAboveInput()}</View>
       </View>
    );
 }
@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
       paddingVertical: 12,
       justifyContent: 'center',
       backgroundColor: '#0000001A',
+      overflow: 'hidden',
    },
    mapStaticImage: { width: 60, height: 69 },
 });

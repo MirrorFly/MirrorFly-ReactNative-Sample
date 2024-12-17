@@ -542,7 +542,7 @@ export const getMuteStatus = async userJid => {
 };
 
 export const updateTypingStatus = jid => {
-   if (!typingStatusSent && !jid.includes(config.aiAgentId)) {
+   if (!typingStatusSent) {
       SDK.sendTypingStatus(jid);
       typingStatusSent = true;
    }

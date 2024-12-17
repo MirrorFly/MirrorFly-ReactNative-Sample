@@ -80,6 +80,7 @@ import {
    updateDeleteForEveryOne,
 } from '../helpers/chatHelpers';
 import {
+   BLOCK_CONTACT_TYPE,
    CONNECTION_STATE_CONNECTING,
    GROUP_CREATED,
    GROUP_PROFILE_INFO_UPDATED,
@@ -115,7 +116,7 @@ import {
    updateRecentMessageStatus,
 } from '../redux/recentChatDataSlice';
 import { getArchive } from '../redux/reduxHook';
-import { setRoasterData } from '../redux/rosterDataSlice';
+import { setRoasterData, updateIsBlockedMe } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting } from '../redux/settingDataSlice';
 import { resetConferencePopup, showConfrence, updateConference } from '../redux/showConfrenceSlice';
 import store from '../redux/store';
@@ -696,10 +697,14 @@ export const callBacks = {
          case 'recallMessage':
             updateDeleteForEveryOne(res.fromUserId, res.msgId.split(','), res.fromUserJid);
             break;
+         case 'userBlockStatus':
+            store.dispatch(
+               updateIsBlockedMe({ userId: res.blockedUserId, isBlockedMe: res.type === BLOCK_CONTACT_TYPE ? 1 : 0 }),
+            );
+            break;
       }
    },
    presenceListener: res => {
-      console.log('presenceListener res ==>', JSON.stringify(res, null, 2));
       store.dispatch(setPresenceData(res));
    },
    userProfileListener: res => {

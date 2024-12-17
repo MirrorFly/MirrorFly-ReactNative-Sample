@@ -2,17 +2,25 @@ import React, { createRef } from 'react';
 import { Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { handleSendMsg } from '../SDK/utils';
+import AlertModal from '../common/AlertModal';
 import AttachmentMenu from '../common/AttachmentMenu';
 import { SendBtn } from '../common/Button';
 import IconButton from '../common/IconButton';
 import { AttachmentIcon, EmojiIcon, KeyboardIcon } from '../common/Icons';
+import NickName from '../common/NickName';
 import ApplicationColors from '../config/appColors';
 import config from '../config/config';
-import { attachmentMenuIcons, getUserIdFromJid } from '../helpers/chatHelpers';
+import { attachmentMenuIcons, getUserIdFromJid, handleUpdateBlockUser } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
 import { toggleEditMessage } from '../redux/chatMessageDataSlice';
 import { setTextMessage } from '../redux/draftSlice';
-import { useEditMessageId, useTextMessage, useUserType } from '../redux/reduxHook';
+import {
+   getUserNameFromStore,
+   useBlockedStatus,
+   useEditMessageId,
+   useTextMessage,
+   useUserType,
+} from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import EmojiOverlay from './EmojiPicker';
 
@@ -28,6 +36,8 @@ function ChatInput({ chatUser }) {
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
    const userType = useUserType(chatUser); // have to check this to avoid the re-render if any update happen in recent chat this chat input also renders
    const editMessageId = useEditMessageId();
+   const [modalContent, setModalContent] = React.useState(null);
+   const blockedStaus = useBlockedStatus(userId);
 
    const setMessage = text => {
       dispatch(setTextMessage({ userId, message: text }));
@@ -117,6 +127,21 @@ function ChatInput({ chatUser }) {
       setMessage(message + emojis);
    };
 
+   const toggleModalContent = () => {
+      setModalContent(null);
+   };
+
+   const hadleBlockUser = () => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: `Unblock ${getUserNameFromStore(userId)}`,
+         noButton: 'CANCEL',
+         yesButton: 'UNBLOCK',
+         yesAction: handleUpdateBlockUser(userId, 0, chatUser),
+      });
+   };
+
    const textInputRender = React.useMemo(() => {
       return (
          <>
@@ -145,13 +170,6 @@ function ChatInput({ chatUser }) {
                   <AttachmentIcon />
                </IconButton>
             </View>
-
-            {/* <IconButton
-                    containerStyle={styles.audioRecordIconWrapper}
-                    //   onPress={startRecording}
-                    style={styles.audioRecordIcon}>
-                    <MicIcon style={isRecording && micStyle} />
-                </IconButton> */}
          </>
       );
    }, [message, isEmojiPickerShowing]);
@@ -161,6 +179,22 @@ function ChatInput({ chatUser }) {
 
       return isAllowSendMessage ? <SendBtn style={styles.sendButton} onPress={sendMessage} /> : null;
    }, [message]);
+
+   if (blockedStaus) {
+      return (
+         <View style={styles.container}>
+            <Text style={[commonStyles.px_4, styles.cantMessaegs]}>
+               You have blocked <NickName userId={userId} />.
+               <Text
+                  style={[commonStyles.mainTextColor, commonStyles.textDecorationLine, commonStyles.fontSize_15]}
+                  onPress={hadleBlockUser}>
+                  Unblock
+               </Text>
+            </Text>
+            {modalContent && <AlertModal {...modalContent} />}
+         </View>
+      );
+   }
 
    if (MIX_BARE_JID.test(chatUser) && !userType) {
       return (
@@ -207,6 +241,7 @@ const styles = StyleSheet.create({
       borderTopWidth: 0.25,
       borderColor: ApplicationColors.mainBorderColor,
       padding: 8,
+      justifyContent: 'center',
    },
    textInputContainer: {
       flexDirection: 'row',

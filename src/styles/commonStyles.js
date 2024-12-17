@@ -51,6 +51,10 @@ const commonStyles = StyleSheet.create({
       width: width, // Set width to the width of the screen
       height: height, // Set height to the height of the screen
    },
+   resetMarginAndPadding: {
+      padding: 0,
+      margin: 0,
+   },
    mt_12: {
       marginTop: 12,
    },
@@ -89,9 +93,6 @@ const commonStyles = StyleSheet.create({
    },
    p_15: {
       padding: 15,
-   },
-   fontSize_18: {
-      fontSize: 18,
    },
    colorBlack: {
       color: '#000',
@@ -373,6 +374,12 @@ const commonStyles = StyleSheet.create({
    fontSize_14: {
       fontSize: 14,
    },
+   fontSize_15: {
+      fontSize: 15,
+   },
+   fontSize_18: {
+      fontSize: 18,
+   },
    bgBlack: {
       backgroundColor: '#000',
    },
@@ -454,6 +461,13 @@ const commonStyles = StyleSheet.create({
    userName: {
       color: '#1f2937',
       fontWeight: 'bold',
+   },
+   textDecorationLine: { textDecorationLine: 'underline' },
+   mainTextColor: {
+      color: ApplicationColors.mainColor,
+   },
+   opacity_0_5: {
+      opacity: 0.5,
    },
 });
 

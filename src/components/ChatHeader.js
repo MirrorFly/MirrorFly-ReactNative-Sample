@@ -30,8 +30,7 @@ import {
    getSelectedChatMessages,
    getUserNameFromStore,
    useBlockedStatus,
-   useRecentChatData,
-   useSelectedChatMessages,
+   useSelectedChatMessages
 } from '../redux/reduxHook';
 import {
    FORWARD_MESSSAGE_SCREEN,
@@ -56,7 +55,6 @@ function ChatHeader({ chatUser }) {
    const [isSearching, setIsSearching] = React.useState(false);
    const [modalContent, setModalContent] = React.useState(null);
    const [remove, setRemove] = React.useState(false);
-   const userType = useRecentChatData().find(r => r.userJid === chatUser)?.userType || '';
    const blockedStaus = useBlockedStatus(userId);
 
    React.useEffect(() => {

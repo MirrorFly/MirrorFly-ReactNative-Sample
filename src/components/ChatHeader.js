@@ -4,7 +4,7 @@ import { BackHandler, Keyboard, StyleSheet, Text, TextInput, View } from 'react-
 import { useDispatch } from 'react-redux';
 import AlertModal from '../common/AlertModal';
 import IconButton from '../common/IconButton';
-import { BackArrowIcon, CloseIcon, DeleteIcon, ForwardIcon, LeftArrowIcon, ReplyIcon } from '../common/Icons';
+import { BackArrowIcon, CloseIcon, DeleteIcon, ForwardIcon, LeftArrowIcon } from '../common/Icons';
 import MenuContainer from '../common/MenuContainer';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import NickName from '../common/NickName';
@@ -143,21 +143,6 @@ function ChatHeader({ chatUser }) {
       return isMediaDownloadedOrUploaded && isAllowForward ? (
          <IconButton style={[commonStyles.padding_10_15]} onPress={_handleForwardMessage}>
             <ForwardIcon />
-         </IconButton>
-      ) : null;
-   };
-
-   const renderReplyIcon = () => {
-      const isAllowReply = MIX_BARE_JID.test(chatUser)
-         ? userType &&
-           filtered[0]?.msgBody?.media?.is_uploading !== 1 &&
-           !filtered[0]?.recallStatus &&
-           filtered[0]?.msgBody?.media?.is_uploading !== 1 &&
-           !filtered[0]?.recallStatus
-         : filtered[0]?.msgBody?.media?.is_uploading !== 1 && !filtered[0]?.recallStatus;
-      return isAllowReply && filtered?.length === 1 && filtered[0]?.msgStatus !== 3 ? (
-         <IconButton style={[commonStyles.padding_10_15]} onPress={_handleReplyMessage}>
-            <ReplyIcon />
          </IconButton>
       ) : null;
    };

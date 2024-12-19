@@ -34,7 +34,8 @@ let chatPage = {},
    hasNextChatPage = {},
    hasNextRecentChatPage = true,
    recentChatPage = 1,
-   typingStatusSent = false;
+   typingStatusSent = false,
+   mediaUploadQueue = {};
 
 export const resetVariable = () => {
    chatPage = {};
@@ -190,8 +191,14 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          };
          const conversationChatObj = getSenderMessageObj(dataObj, i);
          conversationChatObj.archiveSetting = getArchive();
+         const userId = getUserIdFromJid(toUserJid);
          store.dispatch(addChatMessageItem(conversationChatObj));
          store.dispatch(addRecentChatItem(conversationChatObj));
+         if (!mediaUploadQueue[userId]) {
+            mediaUploadQueue[userId] = []; // Initialize the array if it doesn't exist
+         }
+
+         mediaUploadQueue[userId].push(conversationChatObj);
          if (i === 0) {
             const { msgId, userJid, msgBody: { media = {}, media: { file = {} } = {} } = {} } = conversationChatObj;
             uploadFileToSDK(file, userJid, msgId, media);
@@ -329,7 +336,7 @@ export const handleSendMsg = async (obj = {}) => {
 
          store.dispatch(editChatMessageItem(editObj));
          store.dispatch(editRecentChatItem(editObj));
-         SDK.editTextMessage({ ...editObj, originalMessageId: originalMsgId, toJid: chatUser });
+         SDK.editTextOrCaptionMessage({ ...editObj, originalMessageId: originalMsgId, toJid: chatUser });
          break;
       case 'text':
          const dataObj = {
@@ -408,6 +415,25 @@ export const handleSendMsg = async (obj = {}) => {
 
 export const sendSeenStatus = (publisherJid, msgId, groupJid) => {
    SDK.sendSeenStatus(publisherJid, msgId, groupJid);
+};
+
+export const handleUploadNextImage = res => {
+   const { userId } = res;
+   mediaUploadQueue[userId].shift();
+   if (!mediaUploadQueue[userId][0]) return;
+   const {
+      msgId,
+      userJid,
+      msgBody: { media = {}, media: { file = {}, uploadStatus } = {} } = {},
+   } = mediaUploadQueue[userId][0];
+
+   const retryObj = {
+      msgId,
+      userId: getUserIdFromJid(userJid),
+      is_uploading: 1,
+   };
+   store.dispatch(updateMediaStatus(retryObj));
+   uploadFileToSDK(file, userJid, msgId, media);
 };
 
 export const uploadFileToSDK = async (file, jid, msgId, media) => {

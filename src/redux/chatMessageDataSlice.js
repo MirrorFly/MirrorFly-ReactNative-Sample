@@ -53,10 +53,28 @@ const chatMessageDataSlice = createSlice({
          );
       },
       addChatMessageItem(state, action) {
-         const { userJid } = action.payload;
+         const { userJid, msgBody: { replyTo = '', msgId } = {} } = action.payload;
          const userId = getUserIdFromJid(userJid);
+         if (replyTo && state[userId]) {
+            const message = state[userId].find(item => item.msgId === replyTo);
+            if (message) {
+               state.parentMessage[replyTo] = message;
+            }
+         }
          if (state[userId]) {
-            state[userId] = [action.payload, ...state[userId]];
+            const messageIndex = state[userId].findIndex(item => item.msgId === msgId);
+
+            if (messageIndex !== -1) {
+               if (state[userId][messageIndex] !== action.payload) {
+                  state[userId][messageIndex] = {
+                     ...state[userId][messageIndex],
+                     ...action.payload,
+                  };
+               }
+            } else {
+               state[userId].push(action.payload);
+            }
+            state[userId].sort((a, b) => b.timestamp - a.timestamp);
          } else {
             state[userId] = [action.payload];
          }

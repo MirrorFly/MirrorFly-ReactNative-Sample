@@ -30,7 +30,7 @@ const ConversationList = ({ chatUser }) => {
    React.useEffect(() => {
       const initialize = async () => {
          setChatLoading(true);
-         await fetchMessagesFromSDK(chatUser, messages.length < 10 && getHasNextChatPage());
+         await fetchMessagesFromSDK(chatUser, messages.length < 10 && !getHasNextChatPage());
          setChatLoading(false);
       };
       initialize();
@@ -39,8 +39,13 @@ const ConversationList = ({ chatUser }) => {
    // Monitor new messages and update counter
    React.useMemo(() => {
       const prevMessages = messageListRef.current;
-
-      if (messages.length > prevMessages.length && messages[0]?.publisherId !== currentUserId) {
+      const prevLastMessage = prevMessages[0]?.msgId;
+      const currentLastMessage = messages[0]?.msgId;
+      if (
+         prevLastMessage !== currentLastMessage &&
+         messages.length > prevMessages.length &&
+         messages[0]?.publisherId !== currentUserId
+      ) {
          setNewMessagesCount(count => count + 1);
       }
       messageListRef.current = messages;

@@ -6,7 +6,12 @@ import { CONNECTED } from '../SDK/constants';
 import { sendSeenStatus } from '../SDK/utils';
 import NickName from '../common/NickName';
 import ApplicationColors from '../config/appColors';
-import { getUserIdFromJid, handleFileOpen } from '../helpers/chatHelpers';
+import {
+   getIsConversationScreenActive,
+   getUserIdFromJid,
+   handleFileOpen,
+   setIsConversationScreenActive,
+} from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
 import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
 import { getChatMessages, useXmppConnectionStatus } from '../redux/reduxHook';
@@ -43,11 +48,21 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
 
    useFocusEffect(
       React.useCallback(() => {
-         if (useXmppStatus === CONNECTED && !isSender && msgStatus !== 2 && deleteStatus === 0 && recallStatus === 0) {
-            console.log('useXmppStatus ==>', useXmppStatus, isSender, msgStatus, deleteStatus, recallStatus);
+         setIsConversationScreenActive(true);
+         if (
+            getIsConversationScreenActive() &&
+            useXmppStatus === CONNECTED &&
+            !isSender &&
+            msgStatus !== 2 &&
+            deleteStatus === 0 &&
+            recallStatus === 0
+         ) {
             const groupId = MIX_BARE_JID.test(chatUser) ? getUserIdFromJid(chatUser) : '';
             sendSeenStatus(publisherJid, msgId, groupId);
          }
+         return () => {
+            setIsConversationScreenActive(false);
+         };
       }, [useXmppStatus]),
    );
 
@@ -91,6 +106,7 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
    };
 
    const renderMessage = React.useMemo(() => {
+      console.log('render chat message msgId ==>', msgId);
       if (!message_type) {
          return null;
       }
@@ -148,7 +164,7 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
             )}
          </Pressable>
       );
-   });
+   }, [item]);
 
    return (
       <>

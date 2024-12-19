@@ -45,6 +45,7 @@ function ConversationScreen({ chatUser = '' }) {
       return () => {
          handelResetMessageSelection(userId)();
          currentChatUser = '';
+         SDK.updateRecentChatUnreadCount('');
          dispatch(toggleEditMessage(''));
       };
    }, []);

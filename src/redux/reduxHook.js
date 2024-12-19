@@ -14,6 +14,8 @@ export const useRoasterData = userId => useSelector(state => state.rosterData.da
 export const useBlockedStatus = userId => useSelector(state => state.rosterData.data[userId]?.isBlocked);
 export const useIsBlockedMeStatus = userId => useSelector(state => state.rosterData.data[userId]?.isBlockedMe);
 export const useChatMessages = userId => useSelector(state => state.chatMessagesData?.[userId]);
+export const useSelectedChatMessages = userId =>
+   useSelector(state => state.chatMessagesData?.[userId]?.filter(item => item.isSelected === 1));
 export const useChatMessage = (userId, msgId) =>
    useSelector(state => state.chatMessagesData?.[userId]?.find(msg => msg.msgId === msgId));
 export const useXmppConnectionStatus = () => useSelector(state => state.loggedInUserData.xmppStatus);

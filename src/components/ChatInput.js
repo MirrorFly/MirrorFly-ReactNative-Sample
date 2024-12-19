@@ -12,25 +12,34 @@ import RNFS from 'react-native-fs';
 import { useDispatch } from 'react-redux';
 import { pauseAudio } from '../Media/AudioPlayer';
 import { handleSendMsg, updateTypingGoneStatus, updateTypingStatus } from '../SDK/utils';
+import AlertModal from '../common/AlertModal';
 import AttachmentMenu from '../common/AttachmentMenu';
 import { SendBtn } from '../common/Button';
 import IconButton from '../common/IconButton';
 import { AttachmentIcon, BackArrowIconR, DeleteBinIcon, EmojiIcon, KeyboardIcon, MicIcon } from '../common/Icons';
+import NickName from '../common/NickName';
 import RippleAnimation from '../common/RippleAnimation';
 import { useAppState } from '../common/hooks';
 import { audioRecordPermission } from '../common/permissions';
 import { formatMillisecondsToTime } from '../common/timeStamp';
 import ApplicationColors from '../config/appColors';
 import config from '../config/config';
-import { attachmentMenuIcons, getUserIdFromJid, mediaObjContructor } from '../helpers/chatHelpers';
+import {
+   attachmentMenuIcons,
+   getUserIdFromJid,
+   handleUpdateBlockUser,
+   mediaObjContructor,
+} from '../helpers/chatHelpers';
 import { MIX_BARE_JID, audioRecord, uriPattern } from '../helpers/constants';
 import { toggleEditMessage } from '../redux/chatMessageDataSlice';
 import { setAudioRecordTime, setAudioRecording, setTextMessage } from '../redux/draftSlice';
 import {
    getAudioRecordTime,
    getAudioRecording,
+   getUserNameFromStore,
    useAudioRecordTime,
    useAudioRecording,
+   useBlockedStatus,
    useEditMessageId,
    useTextMessage,
    useUserType,
@@ -57,7 +66,7 @@ export const stopAudioRecord = () => {
 };
 
 function ChatInput({ chatUser }) {
-   const userId = getUserIdFromJid(chatUser);
+   userId = getUserIdFromJid(chatUser);
    const dispatch = useDispatch();
    const appState = useAppState();
    const typingTimeoutRef = React.useRef(null);
@@ -71,6 +80,8 @@ function ChatInput({ chatUser }) {
    const recordSecs = useAudioRecordTime(userId) || 0;
    const [recordTime, setRecordTime] = React.useState(formatMillisecondsToTime(recordSecs) || '00:00');
    const [showDeleteIcon, setShowDeleteIcon] = React.useState(false);
+   const blockedStaus = useBlockedStatus(userId);
+   const [modalContent, setModalContent] = React.useState(null);
 
    useFocusEffect(
       React.useCallback(() => {
@@ -184,7 +195,6 @@ function ChatInput({ chatUser }) {
                content: [updatedFile],
                chatUser,
             };
-            console.log('updatedFile ==>', JSON.stringify(updatedFile, null, 2));
             handleSendMsg(messageData);
             break;
       }
@@ -271,6 +281,21 @@ function ChatInput({ chatUser }) {
 
    const handleEmojiSelect = (...emojis) => {
       setMessage(message + emojis);
+   };
+
+   const toggleModalContent = () => {
+      setModalContent(null);
+   };
+
+   const hadleBlockUser = () => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: `Unblock ${getUserNameFromStore(userId)}`,
+         noButton: 'CANCEL',
+         yesButton: 'UNBLOCK',
+         yesAction: handleUpdateBlockUser(userId, 0, chatUser),
+      });
    };
 
    const panResponder = React.useRef(
@@ -394,6 +419,22 @@ function ChatInput({ chatUser }) {
       return isAllowSendMessage ? <SendBtn style={styles.sendButton} onPress={sendMessage} /> : null;
    }, [message, recordSecs, isAudioRecording]);
 
+   if (blockedStaus) {
+      return (
+         <View style={styles.container}>
+            <Text style={[commonStyles.px_4, styles.cantMessaegs]}>
+               You have blocked <NickName userId={userId} />.{' '}
+               <Text
+                  style={[commonStyles.mainTextColor, commonStyles.textDecorationLine, commonStyles.fontSize_15]}
+                  onPress={hadleBlockUser}>
+                  Unblock
+               </Text>
+            </Text>
+            {modalContent && <AlertModal {...modalContent} />}
+         </View>
+      );
+   }
+
    if (MIX_BARE_JID.test(chatUser) && !userType) {
       return (
          <View style={styles.container}>
@@ -461,6 +502,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       width: '100%',
       alignItems: 'center',
+      justifyContent: 'center',
       borderTopWidth: 0.25,
       borderColor: ApplicationColors.mainBorderColor,
       padding: 8,

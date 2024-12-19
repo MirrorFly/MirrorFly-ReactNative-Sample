@@ -16,7 +16,7 @@ import Sound from 'react-native-sound';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
 import { CONNECTED } from '../SDK/constants';
-import { handleSendMsg, uploadFileToSDK } from '../SDK/utils';
+import { handleSendMsg } from '../SDK/utils';
 import {
    BlockedIcon,
    CameraIcon,
@@ -75,7 +75,6 @@ import {
    deleteMessagesForMe,
    highlightMessage,
    resetMessageSelections,
-   updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
 import {
    clearRecentChatData,
@@ -99,7 +98,6 @@ import {
    BLOCKED_CONTACT_LIST_STACK,
    CAMERA_SCREEN,
    CHATS_CREEN,
-   CONVERSATION_SCREEN,
    GALLERY_FOLDER_SCREEN,
    LOCATION_SCREEN,
    MOBILE_CONTACT_LIST_SCREEN,
@@ -113,6 +111,7 @@ const { fileSize, imageFileSize, videoFileSize, audioFileSize, documentFileSize 
 
 const memoizedUsernameGraphemes = {};
 const splitter = new Graphemer();
+let isConversationScreenActive = false;
 
 const documentAttachmentTypes = [
    DocumentPicker.types.allFiles,
@@ -129,6 +128,12 @@ const documentAttachmentTypes = [
    // /** need to add rar file type and verify that */
    // '.rar'
 ];
+
+export const setIsConversationScreenActive = val => {
+   isConversationScreenActive = val;
+};
+
+export const getIsConversationScreenActive = () => isConversationScreenActive;
 
 export const showToast = message => {
    Toast.show(message, Toast.SHORT);
@@ -839,31 +844,6 @@ export const getThumbImage = async uri => {
    return response;
 };
 
-export const handleUploadNextImage = res => {
-   const { userId, msgId } = res;
-
-   // Find the next message in the state object
-   const conversationData = getChatMessages(userId);
-   const nextMessageIndex = conversationData.findIndex(item => item.msgId === msgId) - 1;
-
-   if (nextMessageIndex > -1) {
-      const {
-         msgId: _msgId,
-         userJid,
-         msgBody: { media = {}, media: { file = {}, uploadStatus } = {} } = {},
-      } = conversationData[nextMessageIndex];
-      if (uploadStatus === 0) {
-         const retryObj = {
-            _msgId,
-            userId,
-            is_uploading: 1,
-         };
-         store.dispatch(updateMediaStatus(retryObj));
-         uploadFileToSDK(file, userJid, _msgId, media);
-      }
-   }
-};
-
 /**
  * Check the given user is local or not
  * @param {*} userId
@@ -1097,8 +1077,7 @@ export const toggleMuteChat = () => {
 };
 
 export const isActiveChat = jid => {
-   console.log('currentChatUser ==>', currentChatUser, jid, RootNavigation.getCurrentScreen());
-   return currentChatUser !== jid || RootNavigation.getCurrentScreen() !== CONVERSATION_SCREEN;
+   return currentChatUser !== jid || !isConversationScreenActive;
 };
 
 export const handleFileOpen = message => {

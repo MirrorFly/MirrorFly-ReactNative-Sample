@@ -12,6 +12,8 @@ import { mirrorflyInitialize, mirrorflyNotificationHandler, setAppConfig, setupC
 
 setAppConfig({ appSchema: MIRRORFLY_RN });
 
+console.debug = () => {};
+
 /**
  import { startNetworkLogging } from 'react-native-network-logger';
  if (process.env?.NODE_ENV === 'development') {

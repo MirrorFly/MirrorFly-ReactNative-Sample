@@ -12,6 +12,7 @@ import CaptionContainer from './CaptionContainer';
 
 function ImageCard({ chatUser, item, isSender }) {
    const {
+      editMessageId,
       msgStatus,
       createdAt = '',
       msgId,
@@ -84,6 +85,7 @@ function ImageCard({ chatUser, item, isSender }) {
                caption={caption}
                msgStatus={msgStatus}
                timeStamp={getConversationHistoryTime(createdAt)}
+               editMessageId={editMessageId}
             />
          )}
       </View>

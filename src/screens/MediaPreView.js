@@ -19,7 +19,7 @@ import NickName from '../common/NickName';
 import VideoInfo from '../common/VideoInfo';
 import UserAvathar from '../components/UserAvathar';
 import ApplicationColors from '../config/appColors';
-import { getType, getUserIdFromJid, handleSendMedia } from '../helpers/chatHelpers';
+import { getThumbBase64URL, getType, getUserIdFromJid, handleSendMedia } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../helpers/constants';
 import commonStyles from '../styles/commonStyles';
 import { currentChatUser } from './ConversationScreen';
@@ -172,18 +172,23 @@ function MediaPreView() {
                removeClippedSubviews={true}
                showsVerticalScrollIndicator={false}
                keyExtractor={item => item?.fileDetails?.uri}
-               renderItem={({ item, index: i }) => (
-                  <Pressable
-                     activeOpacity={1}
-                     key={item?.fileDetails?.uri}
-                     style={styles.tabButton}
-                     onPress={() => handleIndexChange(i)}>
-                     <Image
-                        source={{ uri: item?.fileDetails?.uri }}
-                        style={[styles.tabImage, activeIndex === i && styles.selectedTabImage]}
-                     />
-                  </Pressable>
-               )}
+               renderItem={({ item, index: i }) => {
+                  const uri = item?.fileDetails?.thumbImage
+                     ? getThumbBase64URL(item?.fileDetails?.thumbImage)
+                     : item?.fileDetails?.uri;
+                  return (
+                     <Pressable
+                        activeOpacity={1}
+                        key={item?.fileDetails?.uri}
+                        style={styles.tabButton}
+                        onPress={() => handleIndexChange(i)}>
+                        <Image
+                           source={{ uri }}
+                           style={[styles.tabImage, activeIndex === i && styles.selectedTabImage]}
+                        />
+                     </Pressable>
+                  );
+               }}
             />
          </View>
          {/* <EmojiOverlay

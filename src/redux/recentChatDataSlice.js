@@ -32,29 +32,30 @@ const recentChatDataSlice = createSlice({
          state.recentChats = updatedChats;
       },
       addRecentChatItem(state, action) {
-         const { userJid, newIndex = 0, archiveSetting, publisherId } = action.payload;
+         const { userJid, newIndex = 0, archiveSetting, publisherId, timestamp } = action.payload;
          const index = state.recentChats.findIndex(item => item?.userJid === userJid);
 
          if (index !== -1) {
-            // If the item is found, update its position and data
-            const newData = [...state.recentChats];
-            const updatedChat = {
-               ...newData[index],
-               ...action.payload,
-               deleteStatus: 0,
-               recallStatus: 0,
-               archiveStatus: archiveSetting === 0 ? archiveSetting : newData[index].archiveStatus,
-            };
-            if (userJid !== currentChatUser && !isLocalUser(publisherId)) {
-               updatedChat.unreadCount += 1;
-               updatedChat.isUnread = 1;
+            const existingChat = state.recentChats[index];
+            if (timestamp > existingChat.timestamp) {
+               const updatedChat = {
+                  ...existingChat,
+                  ...action.payload,
+                  deleteStatus: 0,
+                  recallStatus: 0,
+                  archiveStatus: archiveSetting === 0 ? archiveSetting : existingChat.archiveStatus,
+               };
+               if (userJid !== currentChatUser && !isLocalUser(publisherId)) {
+                  updatedChat.unreadCount += 1;
+                  updatedChat.isUnread = 1;
+               }
+
+               const newData = [...state.recentChats];
+               newData.splice(index, 1); // Remove the old entry
+               newData.splice(newIndex, 0, updatedChat); // Insert the updated entry
+
+               state.recentChats = newData;
             }
-
-            // Move the updated chat to the new index
-            newData.splice(index, 1); // Remove the item from the old position
-            newData.splice(newIndex, 0, updatedChat); // Insert the item at the new position
-
-            state.recentChats = newData;
          } else if (action.payload) {
             // If the item is not found, add the new message at the top
             const newChat = {
@@ -155,9 +156,22 @@ const recentChatDataSlice = createSlice({
             state.recentChats[index] = { ...state.recentChats[index], unreadCount: 0, isUnread: 0 };
          }
       },
-      extraReducers: builder => {
-         builder.addCase(clearState, () => initialState);
+      editRecentChatItem(state, action) {
+         const { userJid, msgId, message, caption } = action.payload;
+         const index = state.recentChats.findIndex(item => item.userJid === userJid && item.msgId === msgId);
+         if (state.recentChats[index]) {
+            state.recentChats[index].msgStatus = 3;
+         }
+         if (state.recentChats[index] && message) {
+            state.recentChats[index].msgBody.message = message;
+         }
+         if (state[index] && caption) {
+            state.recentChats[index].msgBody.media.caption = caption;
+         }
       },
+   },
+   extraReducers: builder => {
+      builder.addCase(clearState, () => initialState);
    },
 });
 
@@ -178,6 +192,7 @@ export const {
    toggleChatMute,
    resetUnreadCountForChat,
    toggleArchiveChatsByUserId,
+   editRecentChatItem,
 } = recentChatDataSlice.actions;
 
 export default recentChatDataSlice.reducer;

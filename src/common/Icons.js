@@ -1408,15 +1408,15 @@ export const BackSpaceIcon = props => {
       </Svg>
    );
 };
-export const FrontArrowIcon = props => {
+export const FrontArrowIcon = ({ width = '6', height = '10', color = '#767676' }) => {
    return (
-      <Svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10">
+      <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 6 10">
          <Path
             id="Forma_1_copy_2"
             data-name="Forma 1 copy 2"
             d="M333.663,295.335a.681.681,0,0,1-.216.5l-4.526,4.3a.765.765,0,0,1-1.042,0,.676.676,0,0,1,0-.99l4-3.8-4-3.8a.676.676,0,0,1,0-.99.765.765,0,0,1,1.042,0l4.526,4.3A.681.681,0,0,1,333.663,295.335Z"
             transform="translate(-327.663 -290.335)"
-            fill="#767676"
+            fill={color}
          />
       </Svg>
    );
@@ -1506,6 +1506,14 @@ export const BackArrowIcon = props => {
             transform="translate(-17.999 -45.643)"
             fill={props?.color || '#181818'}
          />
+      </Svg>
+   );
+};
+
+export const BackArrowIconR = ({ height = '24', width = '24', fill = '#5f6368' }) => {
+   return (
+      <Svg xmlns="http://www.w3.org/2000/svg" height={height} viewBox="0 -960 960 960" width={width} fill={fill}>
+         <Path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z" />
       </Svg>
    );
 };
@@ -3423,6 +3431,24 @@ export const NotificationSettingsIcon = ({ width, height }) => {
             stroke="#181818"
             stroke-width="0.2"
          />
+      </Svg>
+   );
+};
+
+export const LinkIcon = ({ width = '26.332', height = '11.132', color = '#fff' }) => {
+   return (
+      <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 26.332 11.132">
+         <G id="noun_link_551540" transform="translate(-3.4 -29.3)">
+            <G id="Group_16111" data-name="Group 16111" transform="translate(3.4 29.3)">
+               <Path
+                  id="Path_13926"
+                  data-name="Path 13926"
+                  d="M5.745,34.866a3.219,3.219,0,0,1,3.221-3.221h6.329V29.3H8.966a5.566,5.566,0,1,0,0,11.132h6.329V38.087H8.966A3.219,3.219,0,0,1,5.745,34.866ZM24.166,29.3H17.837v2.345h6.329a3.221,3.221,0,0,1,0,6.442H17.837v2.345h6.329a5.566,5.566,0,1,0,0-11.132ZM9.87,34.866a1.194,1.194,0,0,0,1.187,1.187H22.1a1.187,1.187,0,0,0,0-2.373H11.057A1.194,1.194,0,0,0,9.87,34.866Z"
+                  transform="translate(-3.4 -29.3)"
+                  fill={color}
+               />
+            </G>
+         </G>
       </Svg>
    );
 };

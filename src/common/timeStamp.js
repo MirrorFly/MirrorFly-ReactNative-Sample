@@ -227,3 +227,15 @@ export const docTimeFormat = time => {
    let offset = moment().utcOffset();
    return moment.utc(time).utcOffset(offset).format('D/MM/YYYY');
 };
+
+export const formatMillisecondsToTime = milliseconds => {
+   const totalSeconds = Math.floor(milliseconds / 1000);
+   const minutes = Math.floor(totalSeconds / 60);
+   const seconds = totalSeconds % 60;
+
+   // Pad minutes and seconds with leading zeros if they are less than 10
+   const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+   const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+
+   return `${formattedMinutes}:${formattedSeconds}`;
+};

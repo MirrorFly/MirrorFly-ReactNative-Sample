@@ -1,6 +1,6 @@
 {
    "name": "mirrorfly-uikit-react-native",
-   "version": "1.4.6",
+   "version": "1.4.7",
    "description": "React-Native based UI kit for Mirrorfly",
    "main": "dist/index.js",
    "module": "dist/index.js",
@@ -67,7 +67,7 @@
       "mirrorfly-reactnative-sdk": "^1.0.9",
       "moment": "^2.30.1",
       "patch-package": "^8.0.0",
-      "prettier": "^2.4.1",
+      "prettier": "2.4.1",
       "react": "18.2.0",
       "react-native": "0.72.10",
       "react-native-audio-recorder-player": "^3.6.8",
@@ -76,6 +76,7 @@
       "react-native-compressor": "^1.6.1",
       "react-native-contacts": "^7.0.8",
       "react-native-convert-ph-asset": "^1.0.3",
+      "react-native-create-thumbnail": "^2.0.1",
       "react-native-document-picker": "^9.3.0",
       "react-native-file-viewer": "^2.1.5",
       "react-native-fs": "^2.18.0",
@@ -93,7 +94,7 @@
       "react-native-maps": "1.7.1",
       "react-native-material-menu": "^2.0.0",
       "react-native-network-logger": "^1.16.1",
-      "react-native-pager-view": "^6.3.1",
+      "react-native-pager-view": "6.3.1",
       "react-native-permissions": "^4.1.5",
       "react-native-progress": "^5.0.1",
       "react-native-raw-bottom-sheet": "^2.2.0",
@@ -116,8 +117,7 @@
       "rollup-plugin-node-polyfills": "^0.2.1",
       "rollup-plugin-peer-deps-external": "^2.2.4",
       "rollup-plugin-terser": "^7.0.2",
-      "typescript": "4.8.4",
-      "react-native-create-thumbnail": "^2.0.0"
+      "typescript": "4.8.4"
    },
    "engines": {
       "node": ">=16"

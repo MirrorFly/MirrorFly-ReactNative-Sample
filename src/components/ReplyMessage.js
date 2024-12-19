@@ -25,7 +25,7 @@ import {
 } from '../helpers/chatHelpers';
 import { ORIGINAL_MESSAGE_DELETED } from '../helpers/constants';
 import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
-import { getChatMessages, useChatMessage } from '../redux/reduxHook';
+import { getChatMessages, useParentMessage } from '../redux/reduxHook';
 import { currentChatUser } from '../screens/ConversationScreen';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
@@ -36,21 +36,16 @@ function ReplyMessage(props) {
    const chatUser = currentChatUser;
    const dispatch = useDispatch();
    const userId = getUserIdFromJid(chatUser);
-   const repliedMessage = useChatMessage(userId, replyTo) || {};
-
-   let { msgId, msgBody: { parentMessage = {} } = {} } = originalMsg;
-
-   if (!Object.keys(parentMessage).length) {
-      parentMessage = repliedMessage;
-   }
+   const repliedMessage = useParentMessage(replyTo);
+   let { msgId } = originalMsg;
 
    const {
       msgBody = {},
-      msgBody: { message_type = '', message = '', media = {} } = {},
+      msgBody: { message_type = '', message = '', media = {}, } = {},
       deleteStatus = 0,
       recallStatus = 0,
       publisherJid = '',
-   } = parentMessage;
+   } = repliedMessage || {};
 
    /**const fromUserId = React.useMemo(() => getUserIdFromJid(fromUserJId), [fromUserJId]);*/
    const publisherId = getUserIdFromJid(publisherJid);
@@ -85,6 +80,28 @@ function ReplyMessage(props) {
    }, [fileExtension]);
 
    const durationString = millisToMinutesAndSeconds(media.duration);
+
+   const passReplyTo = () => {
+      const messsageList = getChatMessages(userId);
+      const isAnySelected = messsageList.some(item => item.isSelected === 1);
+      if (isAnySelected) {
+         const selectData = {
+            chatUserId: userId,
+            msgId,
+         };
+         dispatch(toggleMessageSelection(selectData));
+      } else {
+         handleReplyPress(userId, replyTo, repliedMessage);
+      }
+   };
+
+   const handleLongPress = () => {
+      const selectData = {
+         chatUserId: userId,
+         msgId,
+      };
+      dispatch(toggleMessageSelection(selectData));
+   };
 
    const renderReplyItem = () => {
       if (message_type === 'text') {
@@ -206,28 +223,6 @@ function ReplyMessage(props) {
             </View>
          );
       }
-   };
-
-   const passReplyTo = () => {
-      const messsageList = getChatMessages(userId);
-      const isAnySelected = messsageList.some(item => item.isSelected === 1);
-      if (isAnySelected) {
-         const selectData = {
-            chatUserId: userId,
-            msgId,
-         };
-         dispatch(toggleMessageSelection(selectData));
-      } else {
-         handleReplyPress(userId, replyTo, parentMessage);
-      }
-   };
-
-   const handleLongPress = () => {
-      const selectData = {
-         chatUserId: userId,
-         msgId,
-      };
-      dispatch(toggleMessageSelection(selectData));
    };
 
    return (

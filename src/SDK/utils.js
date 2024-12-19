@@ -424,7 +424,7 @@ export const handleUploadNextImage = res => {
    const {
       msgId,
       userJid,
-      msgBody: { media = {}, media: { file = {}, uploadStatus } = {} } = {},
+      msgBody: { media = {}, media: { file = {} } = {} } = {},
    } = mediaUploadQueue[userId][0];
 
    const retryObj = {

@@ -41,7 +41,7 @@ function ReplyMessage(props) {
 
    const {
       msgBody = {},
-      msgBody: { message_type = '', message = '', media = {}, media: { audioType = '' } = {} } = {},
+      msgBody: { message_type = '', message = '', media = {}, } = {},
       deleteStatus = 0,
       recallStatus = 0,
       publisherJid = '',

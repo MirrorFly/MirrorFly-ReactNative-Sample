@@ -37,7 +37,7 @@ export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchVa
             const urlStyle = segment.isUrl ? styles.underline : {}; // Apply underline only for URLs
             return (
                <Text
-                  key={i + '-' + index}
+                  key={++i + '-' + index}
                   ellipsizeMode="tail"
                   style={[textStyle, isSearchMatch, urlStyle]} // Combine textStyle, highlight, and urlStyle
                   onPress={() => segment.isUrl && handlePress(segment.content)} // Only make URL parts clickable

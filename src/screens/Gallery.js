@@ -44,8 +44,6 @@ const Gallery = () => {
                   groupTypes: 'SmartAlbum',
                   include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'playableDuration', 'orientation'],
                   groupName: item.title,
-                  assetType: 'All',
-                  groupTypes: 'SmartAlbum',
                };
                return CameraRoll.getPhotos(params).then(res => {
                   const node = res.edges.find(data => {

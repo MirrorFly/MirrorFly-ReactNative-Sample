@@ -14,7 +14,7 @@ import { getImageSource, getUserIdFromJid, handelResetMessageSelection } from '.
 import { MIX_BARE_JID } from '../helpers/constants';
 import { toggleEditMessage } from '../redux/chatMessageDataSlice';
 import { resetUnreadCountForChat } from '../redux/recentChatDataSlice';
-import { useChatMessages, useReplyMessage } from '../redux/reduxHook';
+import { useReplyMessage, useSelectedChatMessages } from '../redux/reduxHook';
 import { RECENTCHATSCREEN } from './constants';
 
 export let currentChatUser = '';
@@ -27,12 +27,8 @@ function ConversationScreen({ chatUser = '' }) {
    const dispatch = useDispatch();
    const userId = getUserIdFromJid(jid);
    const navigation = useNavigation();
-   const messaesList = useChatMessages(userId) || [];
+   const isAnySelected = useSelectedChatMessages(userId) || [];
    const replyMessage = useReplyMessage(userId) || {};
-
-   const isAnySelected = React.useMemo(() => {
-      return messaesList.some(item => item.isSelected === 1);
-   }, [messaesList.map(item => item.isSelected).join(',')]); // Include isSelected in the dependency array
 
    React.useEffect(() => {
       SDK.updateRecentChatUnreadCount(currentChatUser);

@@ -1,234 +1,33 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { BackHandler, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useDispatch } from 'react-redux';
-import AlertModal from '../common/AlertModal';
+import { StyleSheet, View } from 'react-native';
 import IconButton from '../common/IconButton';
-import { BackArrowIcon, CloseIcon, DeleteIcon, ForwardIcon, LeftArrowIcon } from '../common/Icons';
-import MenuContainer from '../common/MenuContainer';
-import Modal, { ModalCenteredContent } from '../common/Modal';
+import { BackArrowIcon, CloseIcon } from '../common/Icons';
 import NickName from '../common/NickName';
 import Pressable from '../common/Pressable';
 import ApplicationColors from '../config/appColors';
-import config from '../config/config';
-import {
-   copyToClipboard,
-   getUserIdFromJid,
-   getUserType,
-   handelResetMessageSelection,
-   handleConversationClear,
-   handleMessageDelete,
-   handleMessageDeleteForEveryOne,
-   handleUpdateBlockUser,
-   isAnyMessageWithinLast30Seconds,
-   isLocalUser,
-} from '../helpers/chatHelpers';
+import { getUserIdFromJid, getUserType, handelResetMessageSelection } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
-import { setChatSearchText, toggleEditMessage } from '../redux/chatMessageDataSlice';
-import { setTextMessage } from '../redux/draftSlice';
-import {
-   getSelectedChatMessages,
-   getUserNameFromStore,
-   useBlockedStatus,
-   useSelectedChatMessages
-} from '../redux/reduxHook';
-import {
-   FORWARD_MESSSAGE_SCREEN,
-   GROUP_INFO,
-   MESSAGE_INFO_SCREEN,
-   RECENTCHATSCREEN,
-   USER_INFO,
-} from '../screens/constants';
+import { useAnySelectedChatMessages } from '../redux/reduxHook';
+import { GROUP_INFO, USER_INFO } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
-import { RenderReplyIcon } from './ChatHeaderActions';
-import { chatInputRef } from './ChatInput';
+import {
+   RenderDeleteIcon,
+   RenderForwardIcon,
+   RenderMenuItems,
+   RenderMessageSelectionCount,
+   RenderReplyIcon,
+} from './ChatHeaderActions';
+import ChatHeaderSearch from './ChatHeaderSearch';
 import LastSeen from './LastSeen';
 import MakeCall from './MakeCall';
 import UserAvathar from './UserAvathar';
 
 function ChatHeader({ chatUser }) {
-   const dispatch = useDispatch();
    const navigation = useNavigation();
    const userId = getUserIdFromJid(chatUser);
-   const filtered = useSelectedChatMessages(userId) || [];
-   const [text, setText] = React.useState('');
-   const [isSearching, setIsSearching] = React.useState(false);
-   const [modalContent, setModalContent] = React.useState(null);
-   const [remove, setRemove] = React.useState(false);
-   const blockedStaus = useBlockedStatus(userId);
-
-   React.useEffect(() => {
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
-      return () => backHandler.remove();
-   }, [isSearching]);
-
-   React.useEffect(() => {
-      dispatch(setChatSearchText(text));
-   }, [text]);
-
-   const handleBackBtn = () => {
-      switch (true) {
-         case isSearching:
-            toggleSearch();
-            break;
-         case navigation.canGoBack():
-            navigation.goBack();
-            break;
-         default:
-            navigation.reset({
-               index: 0,
-               routes: [{ name: RECENTCHATSCREEN }],
-            });
-            break;
-      }
-      return true;
-   };
-
-   const toggleSearch = () => {
-      setIsSearching(!isSearching);
-   };
-
-   const clearText = () => {
-      setText('');
-   };
-
-   const onClose = () => {
-      setRemove(false);
-   };
-
-   const _handleMessageDelete = () => {
-      Keyboard.dismiss();
-      const selectedMessages = getSelectedChatMessages(userId);
-      const deleteForEveryOne = isAnyMessageWithinLast30Seconds(selectedMessages);
-      if (!deleteForEveryOne) {
-         setModalContent({
-            visible: true,
-            onRequestClose: toggleModalContent,
-            title: 'Are you sure you want to delete selected Message?',
-            noButton: 'CANCEL',
-            yesButton: 'DELETE FOR ME',
-            yesAction: handleMessageDelete(chatUser),
-         });
-      } else {
-         setRemove(true);
-      }
-   };
-
-   const renderDeleteIcon = () => {
-      return (
-         <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-            <IconButton onPress={_handleMessageDelete}>
-               <DeleteIcon />
-            </IconButton>
-         </View>
-      );
-   };
-
-   const _handleForwardMessage = () => {
-      Keyboard.dismiss();
-      navigation.navigate(FORWARD_MESSSAGE_SCREEN, { forwardMessages: filtered });
-   };
-
-   const renderForwardIcon = () => {
-      const isMediaDownloadedOrUploaded = filtered.every(
-         msg => (msg.msgBody?.media?.is_uploading !== 1 || true) && (msg.msgBody?.media?.is_downloaded !== 1 || true),
-      );
-
-      const isAllowForward = filtered.every(
-         _message => _message?.msgStatus !== 3 && _message?.deleteStatus === 0 && _message?.recallStatus === 0,
-      );
-
-      return isMediaDownloadedOrUploaded && isAllowForward ? (
-         <IconButton style={[commonStyles.padding_10_15]} onPress={_handleForwardMessage}>
-            <ForwardIcon />
-         </IconButton>
-      ) : null;
-   };
-
-   const toggleModalContent = () => {
-      setModalContent(null);
-   };
-
-   const handleClearAction = () => {
-      handleConversationClear(chatUser);
-      setModalContent(null);
-   };
-
-   const handleClear = () => {
-      setModalContent({
-         visible: true,
-         onRequestClose: toggleModalContent,
-         title: 'Are you sure you want to clear the chat?',
-         noButton: 'No',
-         yesButton: 'Yes',
-         yesAction: handleClearAction,
-      });
-   };
-
-   const handleGoMessageInfoScreen = () => {
-      navigation.navigate(MESSAGE_INFO_SCREEN, { chatUser, msgId: filtered[0].msgId });
-      handelResetMessageSelection(userId)();
-   };
-
-   const handleEditMessage = () => {
-      handelResetMessageSelection(userId)();
-      dispatch(toggleEditMessage(filtered[0].msgId));
-      dispatch(
-         setTextMessage({ userId, message: filtered[0]?.msgBody?.media?.caption || filtered[0]?.msgBody?.message }),
-      );
-      chatInputRef?.current?.focus();
-   };
-
-   const hadleBlockUser = () => {
-      setModalContent({
-         visible: true,
-         onRequestClose: toggleModalContent,
-         title: `${blockedStaus ? 'Unblock' : 'Block'} ${getUserNameFromStore(userId)}`,
-         noButton: 'CANCEL',
-         yesButton: blockedStaus ? 'UNBLOCK' : 'BLOCK',
-         yesAction: handleUpdateBlockUser(userId, blockedStaus ? 0 : 1, chatUser),
-      });
-   };
-
-   const menuItems = [];
-
-   if (filtered[0]?.msgBody?.message_type === 'text' || filtered[0]?.msgBody?.media?.caption) {
-      menuItems.push({
-         label: 'Copy',
-         formatter: copyToClipboard(filtered, userId),
-      });
-   }
-
-   if (filtered.length === 1 && isLocalUser(filtered[0]?.publisherJid) && filtered[0]?.msgStatus !== 3) {
-      menuItems.push({
-         label: 'Message Info',
-         formatter: handleGoMessageInfoScreen,
-      });
-      const now = Date.now();
-      if (
-         now - filtered[0]?.timestamp <= config.editMessageTime &&
-         (filtered[0]?.msgBody.message_type === 'text' || filtered[0]?.msgBody?.media?.caption)
-      ) {
-         menuItems.push({
-            label: 'Edit Message',
-            formatter: handleEditMessage,
-         });
-      }
-   }
-
-   if (!filtered.length) {
-      menuItems.push({
-         label: 'Clear Chat',
-         formatter: handleClear,
-      });
-   }
-
-   if (!filtered.length && !MIX_BARE_JID.test(chatUser)) {
-      menuItems.push({
-         label: blockedStaus ? 'Unblock' : 'Block',
-         formatter: hadleBlockUser,
-      });
-   }
+   const isAnyChatMessageSelected = useAnySelectedChatMessages(userId);
+   const isSearching = false;
 
    const handleRoute = () => {
       if (MIX_BARE_JID.test(chatUser)) {
@@ -239,78 +38,29 @@ function ChatHeader({ chatUser }) {
    };
 
    if (isSearching) {
-      return (
-         <View style={[styles.headerContainer]}>
-            <IconButton onPress={toggleSearch}>
-               <LeftArrowIcon />
-            </IconButton>
-            <TextInput
-               placeholderTextColor="#d3d3d3"
-               value={text}
-               style={styles.textInput}
-               onChangeText={setText}
-               placeholder=" Search..."
-               cursorColor={ApplicationColors.mainColor}
-               returnKeyType="done"
-               autoFocus={true}
-            />
-            <IconButton onPress={clearText}>
-               <CloseIcon />
-            </IconButton>
-         </View>
-      );
+      return <ChatHeaderSearch userId={userId} />;
    }
 
-   if (filtered.length) {
+   if (isAnyChatMessageSelected) {
       return (
          <View style={styles.headerContainer}>
             <IconButton onPress={handelResetMessageSelection(userId)}>
                <CloseIcon />
             </IconButton>
             <View style={commonStyles.flex1}>
-               <Text style={[commonStyles.fontSize_18, commonStyles.colorBlack, commonStyles.pl_10]}>
-                  {filtered.length}
-               </Text>
+               <RenderMessageSelectionCount userId={userId} />
             </View>
             <View style={styles.iconsContainer}>
                <RenderReplyIcon userId={userId} />
-               {renderDeleteIcon()}
-               {renderForwardIcon()}
-               {Boolean(menuItems.length) && filtered.length === 1 && <MenuContainer menuItems={menuItems} />}
-               {modalContent && <AlertModal {...modalContent} />}
+               <RenderDeleteIcon userId={userId} chatUser={chatUser} />
+               <RenderForwardIcon userId={userId} />
+               <RenderMenuItems userId={userId} chatUser={chatUser} />
             </View>
-            <Modal visible={remove} onRequestClose={onClose}>
-               <ModalCenteredContent onPressOutside={onClose}>
-                  <View style={styles.deleteModalContentContainer}>
-                     <Text style={styles.deleteModalContentText} numberOfLines={2}>
-                        Are you sure you want to delete selected Message?
-                     </Text>
-                     <View style={styles.deleteModalVerticalActionButtonsContainer}>
-                        <Pressable
-                           contentContainerStyle={styles.deleteModalVerticalActionButton}
-                           onPress={handleMessageDelete(chatUser)}>
-                           <Text style={styles.deleteModalActionButtonText}>DELETE FOR ME</Text>
-                        </Pressable>
-                        <Pressable contentContainerStyle={styles.deleteModalVerticalActionButton} onPress={onClose}>
-                           <Text style={styles.deleteModalActionButtonText}>CANCEL</Text>
-                        </Pressable>
-                        <Pressable
-                           contentContainerStyle={styles.deleteModalVerticalActionButton}
-                           onPress={() => {
-                              onClose();
-                              handleMessageDeleteForEveryOne(chatUser)();
-                           }}>
-                           <Text style={styles.deleteModalActionButtonText}>DELETE FOR EVERYONE</Text>
-                        </Pressable>
-                     </View>
-                  </View>
-               </ModalCenteredContent>
-            </Modal>
          </View>
       );
    }
 
-   if (!filtered.length) {
+   if (!isAnyChatMessageSelected) {
       return (
          <View style={styles.headerContainer}>
             <IconButton onPress={navigation.goBack}>
@@ -328,9 +78,8 @@ function ChatHeader({ chatUser }) {
             </Pressable>
             <View style={styles.iconsContainer}>
                <MakeCall chatUser={chatUser} userId={userId} />
-               {Boolean(menuItems.length) && <MenuContainer menuItems={menuItems} />}
+               <RenderMenuItems userId={userId} chatUser={chatUser} />
             </View>
-            {modalContent && <AlertModal {...modalContent} />}
          </View>
       );
    }
@@ -383,32 +132,5 @@ const styles = StyleSheet.create({
       flex: 1,
       color: 'black',
       fontSize: 16,
-   },
-   deleteModalContentContainer: {
-      width: '88%',
-      paddingHorizontal: 24,
-      paddingVertical: 16,
-      fontWeight: '300',
-      backgroundColor: ApplicationColors.mainbg,
-   },
-   deleteModalContentText: {
-      fontSize: 16,
-      fontWeight: '400',
-      color: ApplicationColors.modalTextColor,
-      marginTop: 10,
-   },
-   deleteModalVerticalActionButtonsContainer: {
-      justifyContent: 'flex-end',
-      alignItems: 'flex-start',
-      paddingTop: 20,
-   },
-   deleteModalVerticalActionButton: {
-      marginBottom: 16,
-      paddingVertical: 4,
-      paddingHorizontal: 8,
-   },
-   deleteModalActionButtonText: {
-      color: ApplicationColors.mainColor,
-      fontWeight: '600',
    },
 });

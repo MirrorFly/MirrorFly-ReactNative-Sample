@@ -14,8 +14,33 @@ export const useRoasterData = userId => useSelector(state => state.rosterData.da
 export const useBlockedStatus = userId => useSelector(state => state.rosterData.data[userId]?.isBlocked);
 export const useIsBlockedMeStatus = userId => useSelector(state => state.rosterData.data[userId]?.isBlockedMe);
 export const useChatMessages = userId => useSelector(state => state.chatMessagesData?.[userId]);
-export const useSelectedChatMessages = userId =>
-   useSelector(state => state.chatMessagesData?.[userId]?.filter(item => item.isSelected === 1));
+export const useChatSearchText = () => useSelector(state => state.chatMessagesData?.searchText);
+export const useChatSearchLoading = userId =>
+   useSelector(state => state.chatMessagesData?.isSearchChatLoading?.[userId]) || '';
+export const useAnySelectedChatMessages = userId => {
+   return useSelector(state => {
+      const messages = state.chatMessagesData?.[userId] || [];
+      // Return true if at least one message is selected
+      return messages.some(item => item.isSelected === 1);
+   });
+};
+// Selector for fetching only selected messages
+export const useSelectedChatMessages = userId => {
+   return useSelector(
+      state => {
+         const messages = state.chatMessagesData?.[userId] || [];
+         // Memoize the filtered array based on selection status
+         return messages.reduce((acc, message) => {
+            if (message.isSelected === 1) {
+               acc.push(message);
+            }
+            return acc;
+         }, []);
+      },
+      // Custom equality function to prevent unnecessary rerenders
+      (prev, next) => prev.length === next.length && prev.every((msg, index) => msg === next[index]),
+   );
+};
 export const useChatMessage = (userId, msgId) =>
    useSelector(state => state.chatMessagesData?.[userId]?.find(msg => msg.msgId === msgId));
 export const useXmppConnectionStatus = () => useSelector(state => state.loggedInUserData.xmppStatus);

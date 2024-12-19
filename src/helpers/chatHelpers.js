@@ -414,7 +414,7 @@ export const handleConversationClear = async jid => {
 
 export const isAnyMessageWithinLast30Seconds = (messages = []) => {
    const now = Date.now();
-   return messages.some(message => now - message.timestamp <= 30000 && isLocalUser(message.publisherJid));
+   return messages.every(message => now - message.timestamp <= 30000 && isLocalUser(message.publisherJid));
 };
 
 export const getExtention = filename => {

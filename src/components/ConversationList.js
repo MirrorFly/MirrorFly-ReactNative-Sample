@@ -30,7 +30,10 @@ const ConversationList = ({ chatUser }) => {
    React.useEffect(() => {
       const initialize = async () => {
          setChatLoading(true);
-         await fetchMessagesFromSDK(chatUser, messages.length < 10 && !getHasNextChatPage());
+         await fetchMessagesFromSDK({
+            fromUserJId: chatUser,
+            forceGetFromSDK: messages.length < 10 && !getHasNextChatPage(),
+         });
          setChatLoading(false);
       };
       initialize();
@@ -79,7 +82,7 @@ const ConversationList = ({ chatUser }) => {
    const handleLoadMore = async () => {
       if (chatLoading || !getHasNextChatPage(userId)) return;
       setChatLoading(true);
-      await fetchMessagesFromSDK(chatUser, true);
+      await fetchMessagesFromSDK({ fromUserJId: chatUser, forceGetFromSDK: true });
       setChatLoading(false);
    };
 
@@ -99,6 +102,10 @@ const ConversationList = ({ chatUser }) => {
    const onItemLayout = React.useCallback((event, index) => {
       const { height } = event.nativeEvent.layout;
       setItemHeights(prev => ({ ...prev, [index]: height }));
+      conversationFlatListRef.current.itemLayout = {
+         ...conversationFlatListRef.current.itemLayout,
+         [index]: height,
+      };
    }, []);
 
    // Render each chat message
@@ -129,6 +136,7 @@ const ConversationList = ({ chatUser }) => {
             renderItem={renderChatMessage}
             keyExtractor={item => item.msgId.toString()}
             maxToRenderPerBatch={20}
+            disableVirtualization={true}
             scrollEventThrottle={16}
             windowSize={5}
             onEndReached={handleLoadMore}

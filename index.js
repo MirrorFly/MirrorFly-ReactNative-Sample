@@ -18,7 +18,7 @@ console.debug = () => {};
  import { startNetworkLogging } from 'react-native-network-logger';
  if (process.env?.NODE_ENV === 'development') {
     startNetworkLogging();
- } 
+ }
  */
 mirrorflyInitialize({
    apiBaseUrl: config.API_URL,

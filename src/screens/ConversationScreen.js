@@ -10,9 +10,13 @@ import ChatInput from '../components/ChatInput';
 import ConversationList from '../components/ConversationList';
 import EditMessage from '../components/EditMessage';
 import ReplyContainer from '../components/ReplyContainer';
-import { getImageSource, getUserIdFromJid, handelResetMessageSelection } from '../helpers/chatHelpers';
+import {
+   getImageSource,
+   getUserIdFromJid,
+   handelResetMessageSelection,
+   resetConversationScreen,
+} from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
-import { toggleEditMessage } from '../redux/chatMessageDataSlice';
 import { resetUnreadCountForChat } from '../redux/recentChatDataSlice';
 import { useReplyMessage, useSelectedChatMessages } from '../redux/reduxHook';
 import { RECENTCHATSCREEN } from './constants';
@@ -38,12 +42,7 @@ function ConversationScreen({ chatUser = '' }) {
       } else {
          getUserProfileFromSDK(userId);
       }
-      return () => {
-         handelResetMessageSelection(userId)();
-         currentChatUser = '';
-         SDK.updateRecentChatUnreadCount('');
-         dispatch(toggleEditMessage(''));
-      };
+      return () => resetConversationScreen(userId);
    }, []);
 
    React.useEffect(() => {

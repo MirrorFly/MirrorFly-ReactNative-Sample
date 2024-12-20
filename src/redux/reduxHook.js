@@ -15,6 +15,7 @@ export const useBlockedStatus = userId => useSelector(state => state.rosterData.
 export const useIsBlockedMeStatus = userId => useSelector(state => state.rosterData.data[userId]?.isBlockedMe);
 export const useChatMessages = userId => useSelector(state => state.chatMessagesData?.[userId]);
 export const useChatSearchText = () => useSelector(state => state.chatMessagesData?.searchText);
+export const useIsChatSearching = () => useSelector(state => state.chatMessagesData?.isChatSearching);
 export const useChatSearchLoading = userId =>
    useSelector(state => state.chatMessagesData?.isSearchChatLoading?.[userId]) || '';
 export const useAnySelectedChatMessages = userId => {
@@ -70,6 +71,9 @@ export const getSelectedChats = () => store.getState().recentChatData.recentChat
 export const getArchiveSelectedChats = () =>
    store.getState().recentChatData.recentChats.filter(item => item.isSelected === 1 && item.archiveStatus === 1);
 export const getChatMessages = userId => store.getState().chatMessagesData?.[userId];
+export const getChatSearchText = () => store.getState().chatMessagesData?.searchText;
+export const getIsChatSearching = () => store.getState().chatMessagesData?.isChatSearching;
+export const getChatSearchLoading = userId => store.getState().chatMessagesData?.isSearchChatLoading?.[userId] || '';
 export const getUserNameFromStore = userId => store.getState().rosterData.data?.[userId]?.nickName;
 export const getUserColorFromStore = userId => store.getState().rosterData.data?.[userId]?.colorCode;
 export const getSelectedChatMessages = userId =>

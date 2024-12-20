@@ -75,6 +75,10 @@ import {
    deleteMessagesForMe,
    highlightMessage,
    resetMessageSelections,
+   setChatSearchText,
+   setIsSearchChatLoading,
+   toggleEditMessage,
+   toggleIsChatSearching,
 } from '../redux/chatMessageDataSlice';
 import {
    clearRecentChatData,
@@ -1265,4 +1269,19 @@ export const findUrls = text => {
    }
 
    return segments;
+};
+
+export const resetConversationScreen = userId => {
+   dispatchSearchLoading(userId);
+   handelResetMessageSelection(userId)();
+   SDK.updateRecentChatUnreadCount('');
+   store.dispatch(toggleEditMessage(''));
+   store.dispatch(setChatSearchText(''));
+   store.dispatch(toggleIsChatSearching(false));
+};
+
+// Dispatch loading state helper
+export const dispatchSearchLoading = (userId, loadingState = '') => {
+   store.dispatch(setIsSearchChatLoading({ [userId]: loadingState }));
+   // hasDispatchedSearchLoading = loadingState !== '';
 };

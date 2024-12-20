@@ -94,7 +94,7 @@ export const fetchContactsFromSDK = async (_searchText, _pageNumber, _limit) => 
    return contactsResponse;
 };
 
-export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false, pageReset = false) => {
+export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = false, pageReset = false }) => {
    const userId = getUserIdFromJid(fromUserJId);
    const messsageList = getChatMessages(userId) || [];
    if (messsageList.length && !forceGetFromSDK) {
@@ -103,14 +103,30 @@ export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false,
    if (pageReset) {
       delete chatPage[userId];
    }
+   const lastMessageId = messsageList[messsageList.length - 1]?.msgId || '';
+   console.log('lastMessageId ==>', messsageList.length, messsageList.length - 1, lastMessageId);
+   if (lastMessageId.includes('groupCreated')) return (hasNextChatPage[userId] = false);
    const page = chatPage[userId] || 1;
+   // const {
+   //    statusCode,
+   //    userJid,
+   //    data = [],
+   // } = await SDK.getChatMessages(fromUserJId, page, config.chatMessagesSizePerPage);
+
    const {
       statusCode,
       userJid,
       data = [],
-   } = await SDK.getChatMessages(fromUserJId, page, config.chatMessagesSizePerPage);
+   } = await SDK.getChatMessagesByMessageId({
+      jid: fromUserJId,
+      messageId: lastMessageId,
+      size: config.chatMessagesSizePerPage,
+      direction: 'backward',
+      fromServer: false,
+   });
+
    if (statusCode === 200) {
-      let hasEqualDataFetched = data.length !== 0;
+      let hasEqualDataFetched = data.length === config.chatMessagesSizePerPage;
       if (data.length && hasEqualDataFetched) {
          chatPage[userId] = page + 1;
       }
@@ -421,11 +437,7 @@ export const handleUploadNextImage = res => {
    const { userId } = res;
    mediaUploadQueue[userId].shift();
    if (!mediaUploadQueue[userId][0]) return;
-   const {
-      msgId,
-      userJid,
-      msgBody: { media = {}, media: { file = {} } = {} } = {},
-   } = mediaUploadQueue[userId][0];
+   const { msgId, userJid, msgBody: { media = {}, media: { file = {} } = {} } = {} } = mediaUploadQueue[userId][0];
 
    const retryObj = {
       msgId,

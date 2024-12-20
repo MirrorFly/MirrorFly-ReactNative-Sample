@@ -8,7 +8,7 @@ import Pressable from '../common/Pressable';
 import ApplicationColors from '../config/appColors';
 import { getUserIdFromJid, getUserType, handelResetMessageSelection } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
-import { useAnySelectedChatMessages } from '../redux/reduxHook';
+import { useAnySelectedChatMessages, useIsChatSearching } from '../redux/reduxHook';
 import { GROUP_INFO, USER_INFO } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 import {
@@ -27,7 +27,7 @@ function ChatHeader({ chatUser }) {
    const navigation = useNavigation();
    const userId = getUserIdFromJid(chatUser);
    const isAnyChatMessageSelected = useAnySelectedChatMessages(userId);
-   const isSearching = false;
+   const isSearching = useIsChatSearching();
 
    const handleRoute = () => {
       if (MIX_BARE_JID.test(chatUser)) {

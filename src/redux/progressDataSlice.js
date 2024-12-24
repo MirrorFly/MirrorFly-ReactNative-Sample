@@ -21,9 +21,9 @@ const progressDataSlice = createSlice({
             delete state[msgId];
          }
       },
-      extraReducers: builder => {
-         builder.addCase(clearState, () => initialState);
-      },
+   },
+   extraReducers: builder => {
+      builder.addCase(clearState, () => initialState);
    },
 });
 

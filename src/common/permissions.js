@@ -1,6 +1,6 @@
 import { AndroidForegroundServiceType } from '@notifee/react-native';
 import { Platform } from 'react-native';
-import { PERMISSIONS, RESULTS, check, request, requestMultiple } from 'react-native-permissions';
+import { PERMISSIONS, RESULTS, check, checkMultiple, request, requestMultiple } from 'react-native-permissions';
 
 export const requestFileStoragePermission = async () => {
    // Android Version 32 and below

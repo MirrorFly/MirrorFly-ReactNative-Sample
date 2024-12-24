@@ -12,12 +12,6 @@ const propTypes = {
    handleAttachmentIconPressed: PropTypes.func,
 };
 
-const defaultProps = {
-   visible: false,
-   onRequestClose: () => {},
-   attachmentMenuIcons: [],
-};
-
 function AttachmentMenu({ visible, onRequestClose, attachmentMenuIcons, handleAttachmentIconPressed }) {
    const { width } = Dimensions.get('window');
    const menuWidth = width * 0.96;
@@ -98,6 +92,5 @@ const styles = StyleSheet.create({
 });
 
 AttachmentMenu.propTypes = propTypes;
-AttachmentMenu.defaultProps = defaultProps;
 
 export default AttachmentMenu;

@@ -4,6 +4,7 @@ import config from '../config/config';
 import {
    calculateWidthAndHeight,
    convertHeicToJpg,
+   getCurrentChatUser,
    getThumbImage,
    getUserIdFromJid,
    getVideoThumbImage,
@@ -19,7 +20,6 @@ import { getArchive, getChatMessages, getReplyMessage, getRoasterData } from '..
 import { setRoasterData } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting, updateNotificationSetting } from '../redux/settingDataSlice';
 import store from '../redux/store';
-import { currentChatUser } from '../screens/ConversationScreen';
 import { getCurrentUserJid, mflog } from '../uikitMethods';
 import SDK from './SDK';
 
@@ -289,7 +289,7 @@ export const getSenderMessageObj = (dataObj, idx) => {
 
 export const handleSendMsg = async (obj = {}) => {
    const { messageType, message, location = {} } = obj;
-   const chatUser = currentChatUser;
+   const chatUser = getCurrentChatUser();
    const userId = getUserIdFromJid(chatUser);
    const replyTo = getReplyMessage(getUserIdFromJid(chatUser)).msgId;
    store.dispatch(setReplyMessage({ userId, message: {} }));

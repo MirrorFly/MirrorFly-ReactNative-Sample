@@ -48,6 +48,12 @@ class ActivityModule {
          return nativeActivityModule?.getCallActivity?.();
       }
    };
+
+   getMainActivity = () => {
+      if (Platform.OS === 'android') {
+         return nativeActivityModule?.getMainActivity?.();
+      }
+   };
 }
 
 export default new ActivityModule();

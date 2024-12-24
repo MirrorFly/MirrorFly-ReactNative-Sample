@@ -7,7 +7,7 @@ import notifee, {
    AndroidVisibility,
    EventType,
 } from '@notifee/react-native';
-import { AppState, Linking, NativeModules, Platform } from 'react-native';
+import { AppState, Linking, Platform } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
 import RootNavigation from '../../../src/Navigation/rootNavigation';
 import { endCall, getCallDuration } from '../../Helper/Calls/Call';
@@ -24,6 +24,7 @@ import SDK from '../../SDK/SDK';
 import { getChannelIds } from '../../Service/PushNotify';
 import { removeAllDeliveredNotification } from '../../Service/remoteNotifyHandle';
 import { getForegroundPermission } from '../../common/permissions';
+import ActivityModule from '../../customModules/ActivityModule';
 import { getUserIdFromJid } from '../../helpers/chatHelpers';
 import { callDurationTimestamp } from '../../redux/callStateSlice';
 import { resetNotificationData, setNotificationData } from '../../redux/notificationDataSlice';
@@ -32,7 +33,6 @@ import store from '../../redux/store';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../../screens/constants';
 import { getAppSchema } from '../../uikitMethods';
 
-const { ActivityModule } = NativeModules;
 
 let interval;
 export const callNotifyHandler = async (

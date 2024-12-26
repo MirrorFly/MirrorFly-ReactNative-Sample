@@ -29,6 +29,7 @@ import {
    getUserIdFromJid,
    handleUpdateBlockUser,
    mediaObjContructor,
+   showToast,
 } from '../helpers/chatHelpers';
 import { MIX_BARE_JID, audioRecord, uriPattern } from '../helpers/constants';
 import { toggleEditMessage } from '../redux/chatMessageDataSlice';
@@ -40,6 +41,7 @@ import {
    useAudioRecordTime,
    useAudioRecording,
    useBlockedStatus,
+   useChatMessage,
    useEditMessageId,
    useTextMessage,
    useUserType,
@@ -75,6 +77,8 @@ function ChatInput({ chatUser }) {
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
    const userType = useUserType(chatUser); // have to check this to avoid the re-render if any update happen in recent chat this chat input also renders
    const editMessageId = useEditMessageId();
+   const originalMessageObj = useChatMessage(userId, editMessageId);
+   const originalMessage = originalMessageObj?.msgBody?.media?.caption || originalMessageObj?.msgBody?.message;
    const panRef = React.useRef(new Animated.ValueXY({ x: 0.1, y: 0 })).current;
    const isAudioRecording = useAudioRecording(userId);
    const recordSecs = useAudioRecordTime(userId) || 0;
@@ -349,7 +353,7 @@ function ChatInput({ chatUser }) {
                onFocus={handleCloseEmojiWindow}
             />
 
-            {!chatUser.includes(config.aiAgentId) && (
+            {!editMessageId && (
                <IconButton onPress={handleAttachmentconPressed} style={styles.attachmentIcon}>
                   <AttachmentIcon />
                </IconButton>
@@ -394,8 +398,8 @@ function ChatInput({ chatUser }) {
    };
 
    const renderSendButton = React.useMemo(() => {
-      const isAllowSendMessage =
-         Boolean(message.trim()) || Boolean(recordSecs) || isAudioRecording === audioRecord.STOPPED;
+      const isMessage = originalMessage ? originalMessage !== message.trim() : Boolean(message.trim());
+      const isAllowSendMessage = isMessage || Boolean(recordSecs) || isAudioRecording === audioRecord.STOPPED;
 
       if (isAudioRecording === audioRecord.RECORDING) {
          return (

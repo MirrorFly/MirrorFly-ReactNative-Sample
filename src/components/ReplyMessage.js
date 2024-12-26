@@ -38,10 +38,10 @@ function ReplyMessage(props) {
    const userId = getUserIdFromJid(chatUser);
    const repliedMessage = useParentMessage(replyTo);
    let { msgId } = originalMsg;
-
+ 
    const {
       msgBody = {},
-      msgBody: { message_type = '', message = '', media = {}, } = {},
+      msgBody: { message_type = '', message = '', media = {} } = {},
       deleteStatus = 0,
       recallStatus = 0,
       publisherJid = '',
@@ -91,6 +91,7 @@ function ReplyMessage(props) {
          };
          dispatch(toggleMessageSelection(selectData));
       } else {
+         console.log('repliedMessage ==>', JSON.stringify(repliedMessage, null, 2));
          handleReplyPress(userId, replyTo, repliedMessage);
       }
    };

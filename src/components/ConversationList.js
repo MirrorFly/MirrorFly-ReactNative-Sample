@@ -122,6 +122,7 @@ const ConversationList = ({ chatUser }) => {
       <>
          {chatLoading && <ActivityIndicator size="large" color={ApplicationColors.mainColor} />}
          <FlatList
+            keyboardShouldPersistTaps={'always'}
             initialNumToRender={10}
             ref={conversationFlatListRef}
             data={messages}

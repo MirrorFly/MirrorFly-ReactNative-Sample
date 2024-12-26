@@ -585,10 +585,10 @@ PODS:
     - React-Core
     - React-RCTImage
     - TOCropViewController (~> 2.7.4)
-  - RNNotifee (9.1.7):
+  - RNNotifee (9.1.8):
     - React-Core
-    - RNNotifee/NotifeeCore (= 9.1.7)
-  - RNNotifee/NotifeeCore (9.1.7):
+    - RNNotifee/NotifeeCore (= 9.1.8)
+  - RNNotifee/NotifeeCore (9.1.8):
     - React-Core
   - RNPermissions (4.1.5):
     - React-Core
@@ -960,7 +960,7 @@ SPEC CHECKSUMS:
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: c6482695d8c64b1a5e8e1396d3ac196e8cfee26c
   RNImageCropPicker: 8e39c01f205e00d739c31e682f068aac315587bf
-  RNNotifee: 569d29af4583204ca0d882b69686f98e8fe69797
+  RNNotifee: 4a6ee5c7deaf00e005050052d73ee6315dff7ec9
   RNPermissions: 8d958bf0fd34aca7059a935110dca4ee9140d1b6
   RNScreens: 8339eaea29177ee61983ec4b7b5df3ac2658b41f
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852

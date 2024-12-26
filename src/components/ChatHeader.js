@@ -30,7 +30,7 @@ import {
    getSelectedChatMessages,
    getUserNameFromStore,
    useBlockedStatus,
-   useSelectedChatMessages
+   useSelectedChatMessages,
 } from '../redux/reduxHook';
 import {
    FORWARD_MESSSAGE_SCREEN,
@@ -176,7 +176,9 @@ function ChatHeader({ chatUser }) {
       dispatch(
          setTextMessage({ userId, message: filtered[0]?.msgBody?.media?.caption || filtered[0]?.msgBody?.message }),
       );
-      chatInputRef?.current?.focus();
+      setTimeout(() => {
+         chatInputRef?.current?.focus();
+      }, 100);
    };
 
    const hadleBlockUser = () => {

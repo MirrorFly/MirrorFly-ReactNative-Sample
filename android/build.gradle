@@ -19,6 +19,7 @@ buildscript {
         classpath("com.facebook.react:react-native-gradle-plugin")
         /** Add this Firebase intialize */
         classpath('com.google.gms:google-services:4.4.0')
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0")
     }
 }
 
@@ -42,6 +43,8 @@ allprojects {
      configurations.all {
          resolutionStrategy {
              force "com.google.android.gms:play-services-location:21.0.1"
+             force 'com.squareup.okhttp3:okhttp:4.11.0'
+             force 'com.squareup.okhttp3:logging-interceptor:4.11.0'
          }
      }
    }

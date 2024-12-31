@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import VideoPlayer from '../Media/VideoPlayer';
 import store from '../redux/store';
 import ArchivedScreen from '../screens/ArchivedScreen';
+import BlockedContactListScreen from '../screens/BlockedContactListScreen';
 import ChatsScreen from '../screens/ChatsScreen';
 import ConversationScreen from '../screens/ConversationScreen';
 import CountryList from '../screens/CountryList';
@@ -34,6 +35,7 @@ import UsersListScreen from '../screens/UsersListScreen';
 import ViewAllMedia from '../screens/ViewAllMedia';
 import {
    ARCHIVED_SCREEN,
+   BLOCKED_CONTACT_LIST_STACK,
    CAMERA_SCREEN,
    CHATS_CREEN,
    CONVERSATION_SCREEN,
@@ -138,6 +140,9 @@ export function SettingsScreen() {
             <Stack.Screen name={CHATS_CREEN}>{prop => <ChatsScreen {...prop} />}</Stack.Screen>
             <Stack.Screen name={NOTIFICATION_STACK}>{prop => <NotificationScreen {...prop} />}</Stack.Screen>
             <Stack.Screen name={NOTIFICATION_ALERT_STACK}>{prop => <NotificationAlertScreen {...prop} />}</Stack.Screen>
+            <Stack.Screen name={BLOCKED_CONTACT_LIST_STACK}>
+               {prop => <BlockedContactListScreen {...prop} />}
+            </Stack.Screen>
          </Stack.Navigator>
       </Provider>
    );

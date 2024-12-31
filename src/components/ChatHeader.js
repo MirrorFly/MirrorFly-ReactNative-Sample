@@ -1,35 +1,16 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { BackHandler, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
-import { openSettings } from 'react-native-permissions';
-import { useDispatch, useSelector } from 'react-redux';
-import { isRoomExist, initiateMirroflyCall } from '../Helper/Calls/Utility';
-import SDK, { RealmKeyValueStore } from '../SDK/SDK';
+import { useDispatch } from 'react-redux';
 import AlertModal from '../common/AlertModal';
 import IconButton from '../common/IconButton';
-import {
-   AudioCall,
-   BackArrowIcon,
-   CloseIcon,
-   DeleteIcon,
-   ForwardIcon,
-   LeftArrowIcon,
-   ReplyIcon,
-   VideoCallIcon,
-} from '../common/Icons';
+import { BackArrowIcon, CloseIcon, DeleteIcon, ForwardIcon, LeftArrowIcon } from '../common/Icons';
 import MenuContainer from '../common/MenuContainer';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import NickName from '../common/NickName';
 import Pressable from '../common/Pressable';
-import { useNetworkStatus } from '../common/hooks';
-import {
-   checkAudioCallpermission,
-   checkVideoCallPermission,
-   requestBluetoothConnectPermission,
-   requestCameraMicPermission,
-   requestMicroPhonePermission,
-} from '../common/permissions';
 import ApplicationColors from '../config/appColors';
+import config from '../config/config';
 import {
    copyToClipboard,
    getUserIdFromJid,
@@ -38,15 +19,19 @@ import {
    handleConversationClear,
    handleMessageDelete,
    handleMessageDeleteForEveryOne,
+   handleUpdateBlockUser,
    isAnyMessageWithinLast30Seconds,
    isLocalUser,
-   showToast,
 } from '../helpers/chatHelpers';
-import { ALREADY_ON_CALL, CALL_TYPE_AUDIO, CALL_TYPE_VIDEO, MIX_BARE_JID } from '../helpers/constants';
-import { resetMessageSelections, setChatSearchText } from '../redux/chatMessageDataSlice';
-import { setReplyMessage } from '../redux/draftSlice';
-import { closePermissionModal, showPermissionModal } from '../redux/permissionSlice';
-import { getSelectedChatMessages, useChatMessages, useRecentChatData } from '../redux/reduxHook';
+import { MIX_BARE_JID } from '../helpers/constants';
+import { setChatSearchText, toggleEditMessage } from '../redux/chatMessageDataSlice';
+import { setTextMessage } from '../redux/draftSlice';
+import {
+   getSelectedChatMessages,
+   getUserNameFromStore,
+   useBlockedStatus,
+   useSelectedChatMessages,
+} from '../redux/reduxHook';
 import {
    FORWARD_MESSSAGE_SCREEN,
    GROUP_INFO,
@@ -55,27 +40,22 @@ import {
    USER_INFO,
 } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
+import { RenderReplyIcon } from './ChatHeaderActions';
+import { chatInputRef } from './ChatInput';
 import LastSeen from './LastSeen';
+import MakeCall from './MakeCall';
 import UserAvathar from './UserAvathar';
 
 function ChatHeader({ chatUser }) {
    const dispatch = useDispatch();
-   const isNetworkConnected = useNetworkStatus();
    const navigation = useNavigation();
    const userId = getUserIdFromJid(chatUser);
-   const messsageList = useChatMessages(userId) || [];
+   const filtered = useSelectedChatMessages(userId) || [];
    const [text, setText] = React.useState('');
    const [isSearching, setIsSearching] = React.useState(false);
    const [modalContent, setModalContent] = React.useState(null);
    const [remove, setRemove] = React.useState(false);
-   const permissionData = useSelector(state => state.permissionData.permissionStatus);
-   const [permissionText, setPermissionText] = React.useState('');
-   const [showRoomExist, setShowRoomExist] = React.useState(false);
-   const userType = useRecentChatData().find(r => r.userJid === chatUser)?.userType || '';
-
-   const filtered = React.useMemo(() => {
-      return messsageList.filter(item => item.isSelected === 1);
-   }, [messsageList.map(item => item.isSelected).join(',')]);
+   const blockedStaus = useBlockedStatus(userId);
 
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
@@ -165,27 +145,6 @@ function ChatHeader({ chatUser }) {
       ) : null;
    };
 
-   const _handleReplyMessage = () => {
-      Keyboard.dismiss();
-      dispatch(setReplyMessage({ userId, message: filtered[0] }));
-      dispatch(resetMessageSelections(userId));
-   };
-
-   const renderReplyIcon = () => {
-      const isAllowReply = MIX_BARE_JID.test(chatUser)
-         ? userType &&
-           filtered[0]?.msgBody?.media?.is_uploading !== 1 &&
-           !filtered[0]?.recallStatus &&
-           filtered[0]?.msgBody?.media?.is_uploading !== 1 &&
-           !filtered[0]?.recallStatus
-         : filtered[0]?.msgBody?.media?.is_uploading !== 1 && !filtered[0]?.recallStatus;
-      return isAllowReply && filtered?.length === 1 && filtered[0]?.msgStatus !== 3 ? (
-         <IconButton style={[commonStyles.padding_10_15]} onPress={_handleReplyMessage}>
-            <ReplyIcon />
-         </IconButton>
-      ) : null;
-   };
-
    const toggleModalContent = () => {
       setModalContent(null);
    };
@@ -211,112 +170,24 @@ function ChatHeader({ chatUser }) {
       handelResetMessageSelection(userId)();
    };
 
-   const makeOne2OneVideoCall = () => {
-      if (!isRoomExist() && isNetworkConnected) {
-         makeOne2OneCall(CALL_TYPE_VIDEO);
-      } else if (!isNetworkConnected) {
-         showToast('Please check your internet connection');
-      } else {
-         setShowRoomExist(true);
-      }
-   };
-
-   const makeOne2OneAudioCall = () => {
-      if (!isRoomExist() && isNetworkConnected) {
-         makeOne2OneCall(CALL_TYPE_AUDIO);
-      } else if (!isNetworkConnected) {
-         showToast('Please check your internet connection');
-      } else {
-         setShowRoomExist(true);
-      }
-   };
-
-   const makeOne2OneCall = async callType => {
-      let isPermissionChecked = false;
-      if (callType === CALL_TYPE_AUDIO) {
-         isPermissionChecked = await RealmKeyValueStore.getItem('microPhone_Permission');
-         RealmKeyValueStore.setItem('microPhone_Permission', 'true');
-      } else {
-         isPermissionChecked = await RealmKeyValueStore.getItem('camera_microPhone_Permission');
-         RealmKeyValueStore.setItem('camera_microPhone_Permission', 'true');
-      }
-      // updating the SDK flag to keep the connection Alive when app goes background because of microphone permission popup
-      SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
-      try {
-         const result =
-            callType === CALL_TYPE_AUDIO ? await requestMicroPhonePermission() : await requestCameraMicPermission();
-         const bluetoothPermission = await requestBluetoothConnectPermission();
-         // updating the SDK flag back to false to behave as usual
-         SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-         if ((result === 'granted' || result === 'limited') && bluetoothPermission === 'granted') {
-            // Checking If Room exist when user granted permission
-            if (!isRoomExist()) {
-               initiateMirroflyCall(callType, [userId]);
-            } else {
-               setShowRoomExist(true);
-            }
-         } else if (isPermissionChecked) {
-            let cameraAndMic = await checkVideoCallPermission();
-            let audioBluetoothPermission = await checkAudioCallpermission();
-            let permissionStatus =
-               callType === 'video'
-                  ? `${cameraAndMic}${' are needed for calling. Please enable it in Settings'}`
-                  : `${audioBluetoothPermission}${' are needed for calling. Please enable it in Settings'}`;
-            setPermissionText(permissionStatus);
-            dispatch(showPermissionModal());
-         }
-      } catch (error) {
-         // updating the SDK flag back to false to behave as usual
-         SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-         console.log('makeOne2OneCall', error);
-      }
-   };
-
-   const closeIsRoomExist = () => {
-      setShowRoomExist(false);
-   };
-   const renderRoomExistModal = () => {
-      return (
-         <>
-            {/* display modal already in the call */}
-            <Modal visible={showRoomExist} onRequestClose={closeIsRoomExist}>
-               <ModalCenteredContent onPressOutside={closeIsRoomExist}>
-                  <View style={styles.callModalContentContainer}>
-                     <Text style={styles.callModalContentText} numberOfLines={1}>
-                        {ALREADY_ON_CALL}
-                     </Text>
-                     <View style={styles.callModalHorizontalActionButtonsContainer}>
-                        <Pressable
-                           contentContainerStyle={styles.deleteModalHorizontalActionButton}
-                           onPress={() => closeIsRoomExist()}>
-                           <Text style={styles.deleteModalActionButtonText}>OK</Text>
-                        </Pressable>
-                     </View>
-                  </View>
-               </ModalCenteredContent>
-            </Modal>
-            {/* display permission Model */}
-            {permissionData && (
-               <Modal visible={permissionData}>
-                  <ModalCenteredContent>
-                     <View style={styles.callModalContentContainer}>
-                        <Text style={styles.callModalContentText}>{permissionText}</Text>
-                        <View style={styles.callModalHorizontalActionButtonsContainer}>
-                           <Pressable
-                              contentContainerStyle={styles.deleteModalHorizontalActionButton}
-                              onPress={() => {
-                                 openSettings();
-                                 dispatch(closePermissionModal());
-                              }}>
-                              <Text style={styles.deleteModalActionButtonText}>OK</Text>
-                           </Pressable>
-                        </View>
-                     </View>
-                  </ModalCenteredContent>
-               </Modal>
-            )}
-         </>
+   const handleEditMessage = () => {
+      handelResetMessageSelection(userId)();
+      dispatch(toggleEditMessage(filtered[0].msgId));
+      dispatch(
+         setTextMessage({ userId, message: filtered[0]?.msgBody?.media?.caption || filtered[0]?.msgBody?.message }),
       );
+      chatInputRef?.current?.focus();
+   };
+
+   const hadleBlockUser = () => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: `${blockedStaus ? 'Unblock' : 'Block'} ${getUserNameFromStore(userId)}`,
+         noButton: 'CANCEL',
+         yesButton: blockedStaus ? 'UNBLOCK' : 'BLOCK',
+         yesAction: handleUpdateBlockUser(userId, blockedStaus ? 0 : 1, chatUser),
+      });
    };
 
    const menuItems = [];
@@ -327,18 +198,35 @@ function ChatHeader({ chatUser }) {
          formatter: copyToClipboard(filtered, userId),
       });
    }
-   if (filtered.length === 1 && isLocalUser(filtered[0]?.publisherJid)) {
-      // Show Copy and Message Info options
+
+   if (filtered.length === 1 && isLocalUser(filtered[0]?.publisherJid) && filtered[0]?.msgStatus !== 3) {
       menuItems.push({
          label: 'Message Info',
          formatter: handleGoMessageInfoScreen,
       });
+      const now = Date.now();
+      if (
+         now - filtered[0]?.timestamp <= config.editMessageTime &&
+         (filtered[0]?.msgBody.message_type === 'text' || filtered[0]?.msgBody?.media?.caption)
+      ) {
+         menuItems.push({
+            label: 'Edit Message',
+            formatter: handleEditMessage,
+         });
+      }
    }
+
    if (!filtered.length) {
-      // Show Clear Chat and Search options
       menuItems.push({
          label: 'Clear Chat',
          formatter: handleClear,
+      });
+   }
+
+   if (!filtered.length && !MIX_BARE_JID.test(chatUser)) {
+      menuItems.push({
+         label: blockedStaus ? 'Unblock' : 'Block',
+         formatter: hadleBlockUser,
       });
    }
 
@@ -385,13 +273,12 @@ function ChatHeader({ chatUser }) {
                </Text>
             </View>
             <View style={styles.iconsContainer}>
-               {renderReplyIcon()}
+               <RenderReplyIcon userId={userId} />
                {renderDeleteIcon()}
                {renderForwardIcon()}
                {Boolean(menuItems.length) && filtered.length === 1 && <MenuContainer menuItems={menuItems} />}
                {modalContent && <AlertModal {...modalContent} />}
             </View>
-            {renderRoomExistModal()}
             <Modal visible={remove} onRequestClose={onClose}>
                <ModalCenteredContent onPressOutside={onClose}>
                   <View style={styles.deleteModalContentContainer}>
@@ -440,19 +327,9 @@ function ChatHeader({ chatUser }) {
                </View>
             </Pressable>
             <View style={styles.iconsContainer}>
-               {!MIX_BARE_JID.test(chatUser) && (
-                  <IconButton onPress={makeOne2OneVideoCall} containerStyle={{ marginRight: 6 }}>
-                     <VideoCallIcon />
-                  </IconButton>
-               )}
-               {!MIX_BARE_JID.test(chatUser) && (
-                  <IconButton onPress={makeOne2OneAudioCall}>
-                     <AudioCall />
-                  </IconButton>
-               )}
+               <MakeCall chatUser={chatUser} userId={userId} />
                {Boolean(menuItems.length) && <MenuContainer menuItems={menuItems} />}
             </View>
-            {renderRoomExistModal()}
             {modalContent && <AlertModal {...modalContent} />}
          </View>
       );
@@ -520,10 +397,6 @@ const styles = StyleSheet.create({
       color: ApplicationColors.modalTextColor,
       marginTop: 10,
    },
-   deleteModalCheckboxLabel: {
-      fontSize: 14,
-      fontWeight: '400',
-   },
    deleteModalVerticalActionButtonsContainer: {
       justifyContent: 'flex-end',
       alignItems: 'flex-start',
@@ -537,32 +410,5 @@ const styles = StyleSheet.create({
    deleteModalActionButtonText: {
       color: ApplicationColors.mainColor,
       fontWeight: '600',
-   },
-   callModalContentText: {
-      fontSize: 16,
-      fontWeight: '400',
-      marginBottom: 10,
-      color: ApplicationColors.black,
-   },
-   callModalContentContainer: {
-      width: '88%',
-      paddingHorizontal: 24,
-      paddingTop: 18,
-      fontWeight: '300',
-      backgroundColor: ApplicationColors.mainbg,
-   },
-   callModalHorizontalActionButtonsContainer: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      paddingVertical: 14,
-   },
-   deleteModalHorizontalActionButtonsContainer: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      paddingVertical: 12,
-   },
-   deleteModalHorizontalActionButton: {
-      paddingVertical: 4,
-      paddingHorizontal: 8,
    },
 });

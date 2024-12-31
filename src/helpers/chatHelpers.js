@@ -15,8 +15,10 @@ import Toast from 'react-native-simple-toast';
 import Sound from 'react-native-sound';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
-import { handleSendMsg, uploadFileToSDK } from '../SDK/utils';
+import { CONNECTED } from '../SDK/constants';
+import { handleSendMsg } from '../SDK/utils';
 import {
+   BlockedIcon,
    CameraIcon,
    ChatsIcon,
    ContactIcon,
@@ -64,6 +66,7 @@ import {
    fileEmoji,
    imageEmoji,
    locationEmoji,
+   urlRegx,
    videoEmoji,
 } from '../helpers/constants';
 import {
@@ -72,7 +75,6 @@ import {
    deleteMessagesForMe,
    highlightMessage,
    resetMessageSelections,
-   updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
 import {
    clearRecentChatData,
@@ -86,12 +88,15 @@ import {
    getChatMessages,
    getSelectedChatMessages,
    getSelectedChats,
+   getUserNameFromStore,
+   getXmppConnectionStatus,
 } from '../redux/reduxHook';
+import { updateBlockUser } from '../redux/rosterDataSlice';
 import store from '../redux/store';
 import {
+   BLOCKED_CONTACT_LIST_STACK,
    CAMERA_SCREEN,
    CHATS_CREEN,
-   CONVERSATION_SCREEN,
    GALLERY_FOLDER_SCREEN,
    LOCATION_SCREEN,
    MOBILE_CONTACT_LIST_SCREEN,
@@ -106,6 +111,8 @@ const { fileSize, imageFileSize, videoFileSize, audioFileSize, documentFileSize 
 const memoizedUsernameGraphemes = {};
 const splitter = new Graphemer();
 let currentChatUser = '';
+let isConversationScreenActive = false;
+
 const documentAttachmentTypes = [
    DocumentPicker.types.allFiles,
    // DocumentPicker.types.pdf
@@ -121,6 +128,12 @@ const documentAttachmentTypes = [
    // /** need to add rar file type and verify that */
    // '.rar'
 ];
+
+export const setIsConversationScreenActive = val => {
+   isConversationScreenActive = val;
+};
+
+export const getIsConversationScreenActive = () => isConversationScreenActive;
 
 export const showToast = message => {
    Toast.show(message, Toast.SHORT);
@@ -250,9 +263,13 @@ export const millisToMinutesAndSeconds = millis => {
 export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {
    const currentUserJid = getCurrentUserJid();
    if (chatType === CHAT_TYPE_SINGLE) {
-      return userId?.includes('@') ? userId : `${userId}@${currentUserJid?.split('@')[1] || ''}`;
+      return userId?.includes(currentUserJid?.split('@')[1])
+         ? userId
+         : `${userId}@${currentUserJid?.split('@')[1] || ''}`;
    } else {
-      return userId?.includes('@') ? userId : `${userId}@mix.${currentUserJid?.split('@')[1] || ''}`;
+      return userId?.includes(currentUserJid?.split('@')[1])
+         ? userId
+         : `${userId}@mix.${currentUserJid?.split('@')[1] || ''}`;
    }
 };
 
@@ -459,6 +476,22 @@ export const mediaObjContructor = (_package, file) => {
          mediaObj.filename = file.uri.split('/').pop();
          mediaObj.duration = file.duration * 1000 || 0;
          mediaObj.type = file.type + '/' + mediaObj.extension;
+         return mediaObj;
+      case 'AUDIO_RECORD':
+         mediaObj.extension = getExtension(file.fileCopyUri, false);
+         mediaObj.uri = `${file.fileCopyUri}`;
+         mediaObj.fileSize = file.size;
+         mediaObj.type = file.type;
+         mediaObj.filename = file.name;
+         mediaObj.duration = file.duration || 0;
+         return mediaObj;
+      case 'REDUX':
+         mediaObj.extension = getExtension(file.local_path, false);
+         mediaObj.uri = file.local_path;
+         mediaObj.fileSize = file.file_size;
+         mediaObj.duration = file.duration;
+         mediaObj.filename = file.fileName;
+         mediaObj.type = file.fileType;
          return mediaObj;
       default:
          break;
@@ -727,6 +760,13 @@ export const isEqualObjet = (obj1, obj2) => {
    return true;
 };
 
+export const handleConversationScollToBottom = () => {
+   conversationFlatListRef.current.scrollToOffset({
+      indexoffset: 0,
+      animated: true,
+   });
+};
+
 export const handleSendMedia = selectedImages => () => {
    let message = {
       messageType: 'media',
@@ -744,7 +784,13 @@ export const handleSendMedia = selectedImages => () => {
 export const getVideoThumbImage = async uri => {
    const frame = await createThumbnail({
       url: uri,
-      timeStamp: 10000,
+      timeStamp: 1000,
+      maxWidth: 250,
+      maxHeight: 250,
+      quality: Platform.select({
+         android: 100,
+         ios: 0.9,
+      }),
    });
    const base64 = await RNFS.readFile(frame.path, 'base64');
    return base64;
@@ -792,35 +838,10 @@ export const getThumbImage = async uri => {
    const result = await ImageCompressor.compress(uri, {
       maxWidth: 200,
       maxHeight: 200,
-      quality: 0.8,
+      quality: 0.5,
    });
    const response = await RNFS.readFile(result, 'base64');
    return response;
-};
-
-export const handleUploadNextImage = res => {
-   const { userId, msgId } = res;
-
-   // Find the next message in the state object
-   const conversationData = getChatMessages(userId);
-   const nextMessageIndex = conversationData.findIndex(item => item.msgId === msgId) - 1;
-
-   if (nextMessageIndex > -1) {
-      const {
-         msgId: _msgId,
-         userJid,
-         msgBody: { media = {}, media: { file = {}, uploadStatus } = {} } = {},
-      } = conversationData[nextMessageIndex];
-      if (uploadStatus === 0) {
-         const retryObj = {
-            _msgId,
-            userId,
-            is_uploading: 1,
-         };
-         store.dispatch(updateMediaStatus(retryObj));
-         uploadFileToSDK(file, userJid, _msgId, media);
-      }
-   }
 };
 
 /**
@@ -987,18 +1008,15 @@ export const settingsMenu = [
       icon: ChatsIcon,
       rounteName: CHATS_CREEN,
    },
-   /** 
-    * 
    {
       name: 'Notifications',
       icon: NotificationSettingsIcon,
       rounteName: NOTIFICATION_STACK,
    },
-   */
    {
-      name: 'Notifications',
-      icon: NotificationSettingsIcon,
-      rounteName: NOTIFICATION_STACK,
+      name: 'Blocked Contact',
+      icon: BlockedIcon,
+      rounteName: BLOCKED_CONTACT_LIST_STACK,
    },
    {
       name: 'Log out',
@@ -1059,7 +1077,7 @@ export const toggleMuteChat = () => {
 };
 
 export const isActiveChat = jid => {
-   return currentChatUser !== jid || RootNavigation.getCurrentScreen() !== CONVERSATION_SCREEN;
+   return currentChatUser !== jid || !isConversationScreenActive;
 };
 
 export const handleFileOpen = message => {
@@ -1170,15 +1188,19 @@ export const handleReplyPress = (userId, msgId, message) => {
 };
 
 export const findConversationMessageIndex = (msgId, message) => {
-   const data = conversationFlatListRef.current.props.data;
-   const index = data.findIndex(item => item.msgId === msgId);
-   const { deleteStatus, recallStatus } = message;
-   if (deleteStatus !== 0 || recallStatus !== 0) {
-      showToast('This message is no longer available');
-   } else if (index < 0) {
-      return;
-   } else {
-      return index;
+   try {
+      const data = conversationFlatListRef.current.props.data;
+      const index = data.findIndex(item => item.msgId === msgId);
+      const { deleteStatus = 1, recallStatus = 1 } = message;
+      if (deleteStatus !== 0 || recallStatus !== 0) {
+         showToast('This message is no longer available');
+      } else if (index < 0) {
+         return;
+      } else {
+         return index;
+      }
+   } catch (error) {
+      showToast('Something went wrong');
    }
 };
 
@@ -1187,3 +1209,66 @@ export const setCurrentChatUser = currentChatUserId => {
 };
 
 export const getCurrentChatUser = () => currentChatUser;
+
+export const handleUpdateBlockUser = (userId, isBlocked, chatUser) => async () => {
+   if (connectionCheck()) {
+      store.dispatch(updateBlockUser({ userId, isBlocked }));
+      if (isBlocked) {
+         const res = await SDK.blockUser(chatUser);
+         if (res.statusCode === 200) {
+            showToast(`You have blocked ${getUserNameFromStore(userId)}`);
+         }
+      } else {
+         const res = await SDK.unblockUser(chatUser);
+         if (res.statusCode === 200) {
+            showToast(`${getUserNameFromStore(userId)} has been unblocked`);
+         }
+      }
+   }
+};
+
+export const connectionCheck = () => {
+   const xmppConnection = getXmppConnectionStatus();
+   const isNetworkConnected = getNetworkState();
+   if (!isNetworkConnected) {
+      showCheckYourInternetToast();
+      return false;
+   }
+   if (xmppConnection !== CONNECTED) {
+      showToast('Connection Error');
+      return false;
+   }
+   return true;
+};
+
+// Calculate total offset for the FlatList to scroll to
+export const calculateOffset = (itemHeights, index) => {
+   return Array.from({ length: index }, (_, i) => itemHeights[i] || 60).reduce((total, height) => total + height, 0);
+};
+
+export const isValidUrl = str => {
+   return urlRegx.test(str);
+};
+
+export const findUrls = text => {
+   const urlRegex = /https?:\/\/[^\s]+/g;
+   let segments = [];
+   let lastIndex = 0;
+
+   text.replace(urlRegex, (match, offset) => {
+      // Push the text before the URL (if any)
+      if (offset > lastIndex) {
+         segments.push({ isUrl: false, content: text.slice(lastIndex, offset) });
+      }
+      // Push the URL itself
+      segments.push({ isUrl: true, content: match });
+      lastIndex = offset + match.length;
+   });
+
+   // If there's any remaining text after the last URL, add it
+   if (lastIndex < text.length) {
+      segments.push({ isUrl: false, content: text.slice(lastIndex) });
+   }
+
+   return segments;
+};

@@ -1,6 +1,15 @@
 import { AndroidForegroundServiceType } from '@notifee/react-native';
 import { Platform } from 'react-native';
-import { PERMISSIONS, RESULTS, check, checkMultiple, request, requestMultiple } from 'react-native-permissions';
+import {
+   PERMISSIONS,
+   RESULTS,
+   check,
+   checkMultiple,
+   openSettings,
+   request,
+   requestMultiple,
+} from 'react-native-permissions';
+import { RealmKeyValueStore } from '../SDK/SDK';
 
 export const requestFileStoragePermission = async () => {
    // Android Version 32 and below
@@ -218,4 +227,20 @@ export const requestLocationPermission = async () => {
    return request(
       Platform.OS === 'android' ? PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION : PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
    );
+};
+
+export const audioRecordPermission = async () => {
+   const mic_permission = await RealmKeyValueStore.getItem('mic_permission');
+   const storage_permission = await RealmKeyValueStore.getItem('storage_permission');
+   const micpermission = await requestMicroPhonePermission();
+   const imageReadPermission = await requestStoragePermission();
+   if (micpermission === 'granted' && imageReadPermission === 'granted') {
+      return 'granted';
+   } else if (mic_permission || storage_permission) {
+      openSettings();
+   } else if (micpermission === RESULTS.BLOCKED) {
+      RealmKeyValueStore.setItem('mic_permission', 'true');
+   } else if (imageReadPermission === RESULTS.BLOCKED) {
+      RealmKeyValueStore.setItem('storage_permission', 'true');
+   }
 };

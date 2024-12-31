@@ -10,7 +10,7 @@ import { openSettings } from 'react-native-permissions';
 import RNVoipPushNotification from 'react-native-voip-push-notification';
 import SDK, { RealmKeyValueStore } from '../../SDK/SDK';
 import { clearIosCallListeners, muteLocalAudio, muteLocalVideo, resetCallData } from '../../SDK/sdkCallBacks';
-import { getUserProfileFromSDK } from '../../SDK/utils';
+import { getUserProfileFromApi, getUserProfileFromSDK } from '../../SDK/utils';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
 import { getNetworkState } from '../../common/hooks';
 import {
@@ -236,111 +236,108 @@ export const addHeadphonesConnectedListenerForCall = (shouldUpdateInitialValue =
 
 //Making OutGoing Call
 export const initiateMirroflyCall = async (callType, userId) => {
-   let userList = [];
-   if (!userId || preventMultipleClick) {
-      return;
-   }
-   let connectionStatus = getNetworkState();
-   if (connectionStatus) {
+   if (!userId || preventMultipleClick) return;
+   try {
+      const connectionStatus = getNetworkState();
+      if (!connectionStatus) {
+         showToast('Please check your internet connection');
+         return;
+      }
       preventMultipleClick = true;
       addHeadphonesConnectedListenerForCall();
-      let userListData = await getCallData(userId);
-      userList = [...userListData];
-      makeOne2OneCall(callType, userList);
-   } else {
-      showToast('Please check your internet connection');
-      preventMultipleClick = false;
+      const userListData = await getCallData(userId);
+      const validUsers = userListData.filter(user => user.statusCode !== 500);
+      if (!validUsers.length) {
+         console.error('No valid users found:', userListData);
+         return;
+      }
+      return makeOne2OneCall(callType, validUsers);
+   } catch (error) {
+      console.error('Error initiating call:', error);
+      return error;
+   } finally {
+      preventMultipleClick = false; // Ensure this is reset in case of success or error
    }
 };
 
 const makeOne2OneCall = async (callType, usersList) => {
-   let callMode = 'onetoone';
-   let users = [];
-   const maxMemberReached = Boolean(usersList.length > getMaxUsersInCall() - 1);
-   if (maxMemberReached) {
-      /** toast.error("Maximum " + getMaxUsersInCall() + " members allowed in a call"); */
-      return;
+   try {
+      let callMode = 'onetoone';
+      let users = [];
+      const maxMemberReached = Boolean(usersList.length > getMaxUsersInCall() - 1);
+      if (maxMemberReached) {
+         /** toast.error("Maximum " + getMaxUsersInCall() + " members allowed in a call"); */
+         return;
+      }
+      if (usersList.length > 1) {
+         callMode = 'onetomany';
+         users = usersList;
+      } else {
+         usersList.map(participant => {
+            const { userJid, username, GroupUser } = participant;
+            let user = userJid || username || GroupUser;
+            user = user.split('@')[0];
+            /**let userDetails = getDataFromRoster(user);
+             *
+            // if (!userDetails.isDeletedUser) {
+            // }
+             */
+            users.push(formatUserIdToJid(user));
+         });
+      }
+      return makeCall(callMode, callType, users, usersList, '');
+   } catch (error) {
+      console.log('makeOne2OneCall', error);
+   } finally {
+      preventMultipleClick = false;
    }
-   if (usersList.length > 1) {
-      callMode = 'onetomany';
-      users = usersList;
-   } else {
-      usersList.map(participant => {
-         const { userJid, username, GroupUser } = participant;
-         let user = userJid || username || GroupUser;
-         user = user.split('@')[0];
-         /**let userDetails = getDataFromRoster(user);
-          *
-         // if (!userDetails.isDeletedUser) {
-         // }
-          */
-         users.push(formatUserIdToJid(user));
-      });
-   }
-   makeCall(callMode, callType, users, usersList, '');
-   /**
-   else {
-      // if(toast.error.length > 1) {
-      //     toast.dismiss();
-      //     // // toast.error(FEATURE_RESTRICTION_ERROR_MESSAGE);
-      // }
-   }
-   */
 };
 
 const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, groupId = null) => {
    let connectionStatus = getNetworkState();
-   if (connectionStatus) {
+   if (!connectionStatus) {
+      showToast('Please check your internet connection');
+   }
+   try {
       let users = [],
          roomId = '',
          call = null,
          image = '';
-      const vcardData = getLocalUserDetails();
-      let fromuser = formatUserIdToJid(vcardData.fromUser);
+      const { fromUser } = getLocalUserDetails();
+      const fromuser = formatUserIdToJid(fromUser);
       if (callMode === 'onetoone') {
-         users = groupCallMemberDetails;
+         users = [...groupCallMemberDetails];
       } else if (callMode === 'onetomany') {
-         if (groupCallMemberDetails.length > 0) {
-            groupCallMemberDetails.forEach(function (member) {
-               if (member !== fromuser) {
-                  if (typeof member === 'object') users.push(member.userJid);
-                  else users.push(member);
-               }
-            });
-         } else {
-            users = [''];
-         }
+         users =
+            groupCallMemberDetails.length > 0
+               ? groupCallMemberDetails
+                    .filter(member => member !== fromuser)
+                    .map(member => (typeof member === 'object' ? member.userJid : member))
+               : [''];
       }
 
       let callConnectionStatus = {
-         callMode: callMode,
+         callMode,
          callStatus: 'CALLING',
-         callType: callType,
+         callType,
          from: fromuser,
          userList: users.join(','),
+         to: callMode === 'onetoone' ? users.join(',') : groupId,
+         groupId: callMode === 'onetomany' ? groupId : '',
+         userAvatar: callMode === 'onetoone' ? image : '',
       };
-      if (callMode === 'onetoone') {
-         callConnectionStatus.to = users.join(',');
-         callConnectionStatus.userAvatar = image;
-      } else if (callMode === 'onetomany') {
-         callConnectionStatus.to = groupId;
-         callConnectionStatus.groupId = groupId;
-      }
-      // AsyncStorage.setItem('call_connection_status', JSON.stringify(callConnectionStatus))
       let uuid = SDK.randomString(16, 'BA');
       if (Platform.OS === 'ios') {
          startProximitySensor();
          const callerName = usersList.map(ele => ele.name).join(',');
          const hasVideo = callType === 'video';
-         let callerId = users.join(',')?.split?.('@')?.[0];
+         const callerId = users.join(',').split('@')[0];
          store.dispatch(updateCallerUUID(uuid));
          startCall(uuid, callerId, callerName, hasVideo);
       }
-      const debouncedRingTone = debounceFunction(startOutgoingCallRingingTone, 1000);
-      debouncedRingTone(callType);
-
-      const showConfrenceData = store.getState().showConfrenceData;
-      const { data: confrenceData } = showConfrenceData;
+      // Debounced ringtone function to avoid triggering too frequently
+      debounceFunction(startOutgoingCallRingingTone, 1000)(callType);
+      const { data: confrenceData } = store.getState().showConfrenceData;
       store.dispatch(updateCallConnectionState(callConnectionStatus));
       store.dispatch(
          showConfrence({
@@ -351,55 +348,53 @@ const makeCall = async (callMode, callType, groupCallMemberDetails, usersList, g
          }),
       );
       openCallModelActivity();
-      /** store.dispatch(openCallModal()); */
       store.dispatch(setCallModalScreen(OUTGOING_CALL_SCREEN));
-      try {
-         if (callType === 'audio') {
-            muteLocalVideo(true);
-            call = await SDK.makeVoiceCall(users, groupId);
-         } else if (callType === 'video') {
-            muteLocalVideo(false);
-            store.dispatch(updateCallVideoMutedAction(false));
-            call = await SDK.makeVideoCall(users, groupId);
-            enableSpeaker(uuid);
-         }
-         if (call.statusCode !== 200 && call.message === PERMISSION_DENIED) {
-            stopOutgoingCallRingingTone();
-            deleteAndDispatchAction();
-         } else {
-            roomId = call.roomId;
-            /**
-            // callLogsObj.insert({
-            //     "callMode": callConnectionStatus.callMode,
-            //     "callState": 1,
-            //     "callTime": callLogsObj.initTime(),
-            //     "callType": callConnectionStatus.callType,
-            //     "fromUser": callConnectionStatus.from,
-            //     "roomId": roomId,
-            //     "userList": callConnectionStatus.userList,
-            //     ...(callMode === "onetomany" && {
-            //         "groupId": groupId
-            //     })
-            // });
-            */
-            let callConnectionStatusNew = {
-               ...callConnectionStatus,
-               roomId: roomId,
-            };
-            if (Platform.OS === 'android') {
-               const contactNumber = getUserIdFromJid(callConnectionStatus.to);
-               let nickName = getUserNameFromStore(contactNumber) || contactNumber;
-               callNotifyHandler(roomId, callConnectionStatus, callConnectionStatus.to, nickName, 'OUTGOING_CALL');
-            }
-            store.dispatch(updateCallConnectionState(callConnectionStatusNew));
-            startCallingTimer();
-         }
-      } catch (error) {
-         console.log('Error in making call', error);
+      if (callType === 'audio') {
+         muteLocalVideo(true);
+         call = await SDK.makeVoiceCall(users, groupId);
+      } else if (callType === 'video') {
+         muteLocalVideo(false);
+         store.dispatch(updateCallVideoMutedAction(false));
+         call = await SDK.makeVideoCall(users, groupId);
+         enableSpeaker(uuid);
       }
-      preventMultipleClick = false;
-   } else {
-      showToast('Please check your internet connection');
+      if (call.statusCode !== 200 && call.message === PERMISSION_DENIED) {
+         stopOutgoingCallRingingTone();
+         deleteAndDispatchAction();
+         return call;
+      } else {
+         roomId = call.roomId;
+         /**
+         // callLogsObj.insert({
+         //     "callMode": callConnectionStatus.callMode,
+         //     "callState": 1,
+         //     "callTime": callLogsObj.initTime(),
+         //     "callType": callConnectionStatus.callType,
+         //     "fromUser": callConnectionStatus.from,
+         //     "roomId": roomId,
+         //     "userList": callConnectionStatus.userList,
+         //     ...(callMode === "onetomany" && {
+         //         "groupId": groupId
+         //     })
+         // });
+         */
+         let callConnectionStatusNew = {
+            ...callConnectionStatus,
+            roomId: roomId,
+         };
+         if (Platform.OS === 'android') {
+            const contactNumber = getUserIdFromJid(callConnectionStatus.to);
+            let nickName = getUserNameFromStore(contactNumber) || contactNumber;
+            callNotifyHandler(roomId, callConnectionStatus, callConnectionStatus.to, nickName, 'OUTGOING_CALL');
+         }
+         store.dispatch(updateCallConnectionState(callConnectionStatusNew));
+         startCallingTimer();
+         return call;
+      }
+   } catch (error) {
+      console.log('Error in making call', error);
+      return error;
+   } finally {
       preventMultipleClick = false;
    }
 };
@@ -791,44 +786,40 @@ const deleteAndDispatchAction = () => {
    );
 };
 
-export const getCallData = async userJid => {
-   return Promise.all(
-      userJid.map(async userId => {
-         const jid = formatUserIdToJid(userId);
-         const profileData = await SDK.getUserProfile(jid, true);
-         if (profileData && profileData.statusCode === 200) {
-            let response = {
-               email: profileData.data.email,
-               image: profileData.data.image,
-               isAdminBlocked: 0,
-               isDeletedUser: false,
-               isFriend: true,
-               mobileNumber: profileData.data.mobileNumber,
-               name: profileData.data.nickName,
-               nickName: profileData.data.nickName,
-               status: profileData.data.status,
-               userColor: '',
-               userId: profileData.data.userId,
-               userJid: jid,
-            };
-            let data = {
-               contactName: profileData.data.nickName,
-               email: profileData.data.email,
-               image: profileData.data.image,
-               isAdminBlocked: 0,
-               isDeletedUser: false,
-               isFriend: true,
-               mobileNumber: profileData.data.mobileNumber,
-               name: profileData.data.nickName,
-               nickName: profileData.data.nickName,
-               roster: response,
-               userId: profileData.data.userId,
-               userJid: jid,
-            };
-            return data;
-         }
-      }),
-   );
+export const getCallData = async userJids => {
+   const promises = userJids.map(userId => {
+      const jid = formatUserIdToJid(userId);
+      return getUserProfileFromApi(getUserIdFromJid(userId))
+         .then(response => {
+            if (response.statusCode === 200 && response.data) {
+               const { data: profileData = {} } = response;
+               const commonData = {
+                  email: profileData.email,
+                  image: profileData.image,
+                  isAdminBlocked: 0,
+                  isDeletedUser: false,
+                  isFriend: true,
+                  mobileNumber: profileData.mobileNumber,
+                  name: profileData.nickName,
+                  nickName: profileData.nickName,
+                  userId: profileData.userId,
+                  userJid: jid,
+               };
+               return {
+                  ...commonData,
+                  contactName: profileData.nickName,
+                  roster: commonData,
+               };
+            }
+            return response;
+         })
+         .catch(error => {
+            // Catch and return error
+            console.log('getCallData', error);
+            return error;
+         });
+   });
+   return Promise.all(promises);
 };
 
 export const isRoomExist = () => {

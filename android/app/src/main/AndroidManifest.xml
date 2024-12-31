@@ -10,10 +10,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
-
-
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <!-- Add this android 13 permission-->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
@@ -31,7 +28,12 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- foreground Notification permission -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -60,20 +62,20 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:supportsRtl="true">
         <meta-data
             android:name="ic_notification"
             android:resource="@mipmap/ic_notification" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCfG5u1-XDZhWD8vOZGK5hTKyqsVOjHSSM" />
-
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
             android:exported="true"
             android:label="@string/app_name"
-            android:launchMode="standard"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -95,7 +97,9 @@
             android:name=".CallScreenActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden|uiMode"
             android:excludeFromRecents="true"
+            android:taskAffinity="call.video"
             android:exported="false"
+            android:autoRemoveFromRecents="true"
             android:launchMode="singleTask"
             android:lockTaskMode="if_whitelisted"
             android:resizeableActivity="false"
@@ -104,12 +108,12 @@
             android:showWhenLocked="true"
             android:supportsPictureInPicture="true"
             android:turnScreenOn="true"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden"/>
         <service
             android:name="app.notifee.core.ForegroundService"
             android:exported="false"
-            android:foregroundServiceType="location|camera|microphone|phoneCall"
-            tools:replace="android:foregroundServiceType" 
+            android:foregroundServiceType="mediaPlayback|camera|microphone|connectedDevice|shortService"
+            tools:replace="android:foregroundServiceType"
         />
     </application>
     <queries>

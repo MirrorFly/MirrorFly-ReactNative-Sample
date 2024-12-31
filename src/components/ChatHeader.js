@@ -30,7 +30,7 @@ import {
    getSelectedChatMessages,
    getUserNameFromStore,
    useBlockedStatus,
-   useSelectedChatMessages
+   useSelectedChatMessages,
 } from '../redux/reduxHook';
 import {
    FORWARD_MESSSAGE_SCREEN,

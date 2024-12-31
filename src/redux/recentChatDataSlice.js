@@ -1,6 +1,5 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
-import { isLocalUser } from '../helpers/chatHelpers';
-import { currentChatUser } from '../screens/ConversationScreen';
+import { getCurrentChatUser, isLocalUser } from '../helpers/chatHelpers';
 import { ARCHIVED_SCREEN } from '../screens/constants';
 import { clearState } from './clearSlice';
 
@@ -45,7 +44,7 @@ const recentChatDataSlice = createSlice({
                   recallStatus: 0,
                   archiveStatus: archiveSetting === 0 ? archiveSetting : existingChat.archiveStatus,
                };
-               if (userJid !== currentChatUser && !isLocalUser(publisherId)) {
+               if (userJid !== getCurrentChatUser() && !isLocalUser(publisherId)) {
                   updatedChat.unreadCount += 1;
                   updatedChat.isUnread = 1;
                }

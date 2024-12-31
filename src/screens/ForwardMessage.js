@@ -26,6 +26,7 @@ import { useNetworkStatus } from '../common/hooks';
 import ApplicationColors from '../config/appColors';
 import {
    formatUserIdToJid,
+   getCurrentChatUser,
    getMessageObjForward,
    getRecentChatMsgObjForward,
    getUserIdFromJid,
@@ -38,7 +39,6 @@ import { addChatMessageItem, clearChatMessageData, resetMessageSelections } from
 import { addRecentChatItem } from '../redux/recentChatDataSlice';
 import { getUserNameFromStore, useBlockedStatus, useRecentChatData, useRoasterData } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
-import { currentChatUser } from './ConversationScreen';
 import { CONVERSATION_SCREEN } from './constants';
 
 const showMaxUsersLimitToast = () => {
@@ -529,7 +529,7 @@ const ForwardMessage = () => {
       for (let i = 0; i < forwardMessages.length; i++) {
          const msg = forwardMessages[i];
          for (const userId in selectedUsers) {
-            dispatch(resetMessageSelections(getUserIdFromJid(currentChatUser)));
+            dispatch(resetMessageSelections(getUserIdFromJid(getCurrentChatUser())));
             let toUserJid = selectedUsers[userId]?.userJid || formatUserIdToJid(userId);
             const currentNewMsgId = newMsgIdsCopy.shift();
             const recentChatObj = await getRecentChatMsgObjForward(msg, toUserJid, currentNewMsgId);
@@ -539,7 +539,7 @@ const ForwardMessage = () => {
                dispatch(addRecentChatItem(recentChatObj));
             }
             // updating convresations if active chat or delete conversations data
-            if (toUserJid === currentChatUser) {
+            if (toUserJid === getCurrentChatUser()) {
                const conversationChatObj = getMessageObjForward(msg, toUserJid, currentNewMsgId);
                conversationChatObj.userJid = toUserJid;
                // adding conversation history

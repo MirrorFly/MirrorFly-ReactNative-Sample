@@ -4,6 +4,7 @@ import config from '../config/config';
 import {
    calculateWidthAndHeight,
    convertHeicToJpg,
+   getCurrentChatUser,
    getThumbImage,
    getUserIdFromJid,
    getVideoThumbImage,
@@ -26,7 +27,6 @@ import { getArchive, getChatMessage, getChatMessages, getReplyMessage, getRoaste
 import { setRoasterData } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting, updateNotificationSetting } from '../redux/settingDataSlice';
 import store from '../redux/store';
-import { currentChatUser } from '../screens/ConversationScreen';
 import { getCurrentUserJid, mflog } from '../uikitMethods';
 import SDK from './SDK';
 
@@ -315,7 +315,7 @@ export const getSenderMessageObj = (dataObj, idx) => {
 
 export const handleSendMsg = async (obj = {}) => {
    const { messageType, message, location = {}, editMessageId: originalMsgId } = obj;
-   const chatUser = currentChatUser;
+   const chatUser = getCurrentChatUser();
    const userId = getUserIdFromJid(chatUser);
    const replyTo = getReplyMessage(getUserIdFromJid(chatUser)).msgId || '';
    const parentMessage = getChatMessage(userId, replyTo);
@@ -421,11 +421,7 @@ export const handleUploadNextImage = res => {
    const { userId } = res;
    mediaUploadQueue[userId].shift();
    if (!mediaUploadQueue[userId][0]) return;
-   const {
-      msgId,
-      userJid,
-      msgBody: { media = {}, media: { file = {} } = {} } = {},
-   } = mediaUploadQueue[userId][0];
+   const { msgId, userJid, msgBody: { media = {}, media: { file = {} } = {} } = {} } = mediaUploadQueue[userId][0];
 
    const retryObj = {
       msgId,
@@ -527,7 +523,7 @@ export const getUserProfileFromSDK = userId => {
    if (Object.keys(userData).length > 0 && userData?.status) {
       return userData || {};
    }
-   return SDK.getUserProfile(userId).then(res => {
+   return SDK.getUserProfile(userId, false, true).then(res => {
       if (res?.statusCode === 200) {
          if (res.data !== userData) {
             store.dispatch(setRoasterData(res.data));
@@ -566,6 +562,32 @@ export const sendNotificationData = async () => {
 export const getMuteStatus = async userJid => {
    return await SDK.getMuteStatus(userJid);
 };
+
+export const getUserProfileFromApi = async userId => {
+   try {
+      const userData = getRoasterData(userId);
+      let successData = successResponse();
+      if (Object.keys(userData).length > 0 && userData?.status) {
+         successData.data = userData;
+         return successData || {};
+      }
+      const response = await SDK.getUserProfile(userId, false, true);
+      if (response?.statusCode === 200) {
+         if (response.data !== userData) {
+            store.dispatch(setRoasterData(response.data));
+         }
+      }
+      return response || {};
+   } catch (error) {
+      console.log('getUserProfileFromApi', error);
+      return error;
+   }
+};
+
+export const successResponse = message => ({
+   statusCode: 200,
+   message: message || 'SUCCESS',
+});
 
 export const updateTypingStatus = jid => {
    if (!typingStatusSent) {

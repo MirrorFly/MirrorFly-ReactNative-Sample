@@ -184,7 +184,7 @@ const AudioPlayer = props => {
                   onSlidingComplete={onSliderEditing}
                   value={playSeconds}
                   disabled={sliderDisable}
-                  maximumValue={Math.floor(media.duration / 1000)}
+                  maximumValue={Math.floor(media.duration / 1000) || 0}
                   maximumTrackTintColor="#AFB8D0"
                   minimumTrackTintColor="#FFFFFF"
                   trackStyle={style.trackStyle}

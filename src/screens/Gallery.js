@@ -6,15 +6,14 @@ import { CameraSmallIcon, FolderIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import ScreenHeader from '../common/ScreenHeader';
 import ApplicationColors from '../config/appColors';
-import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { getCurrentChatUser, getUserIdFromJid } from '../helpers/chatHelpers';
 import { useRoasterData } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
-import { currentChatUser } from './ConversationScreen';
 import { GALLERY_PHOTOS_SCREEN } from './constants';
 
 const Gallery = () => {
    const navigation = useNavigation();
-   const chatUser = currentChatUser;
+   const chatUser = getCurrentChatUser();
    const userId = getUserIdFromJid(chatUser);
    let { nickName } = useRoasterData(userId) || {};
    nickName = nickName || userId;

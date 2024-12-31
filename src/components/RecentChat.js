@@ -30,8 +30,8 @@ const RecentChat = () => {
    const initFunc = async () => {
       if (!searchText && getHasNextRecentChatPage()) {
          await fetchRecentChats();
-         setIsFetchingData(false);
       }
+      setIsFetchingData(false);
    };
 
    const handleLoadMore = async () => {

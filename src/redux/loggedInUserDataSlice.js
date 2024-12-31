@@ -16,9 +16,9 @@ const loggedInUserDataSlice = createSlice({
       setXmppConnectionStatus: (state, action) => {
          state.xmppStatus = action.payload;
       },
-      extraReducers: builder => {
-         builder.addCase(clearState, () => initialState);
-      },
+   },
+   extraReducers: builder => {
+      builder.addCase(clearState, () => initialState);
    },
 });
 

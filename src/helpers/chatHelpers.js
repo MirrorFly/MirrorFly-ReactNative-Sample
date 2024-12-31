@@ -93,7 +93,6 @@ import {
 } from '../redux/reduxHook';
 import { updateBlockUser } from '../redux/rosterDataSlice';
 import store from '../redux/store';
-import { currentChatUser } from '../screens/ConversationScreen';
 import {
    BLOCKED_CONTACT_LIST_STACK,
    CAMERA_SCREEN,
@@ -111,6 +110,7 @@ const { fileSize, imageFileSize, videoFileSize, audioFileSize, documentFileSize 
 
 const memoizedUsernameGraphemes = {};
 const splitter = new Graphemer();
+let currentChatUser = '';
 let isConversationScreenActive = false;
 
 const documentAttachmentTypes = [
@@ -1203,6 +1203,12 @@ export const findConversationMessageIndex = (msgId, message) => {
       showToast('Something went wrong');
    }
 };
+
+export const setCurrentChatUser = currentChatUserId => {
+   currentChatUser = currentChatUserId;
+};
+
+export const getCurrentChatUser = () => currentChatUser;
 
 export const handleUpdateBlockUser = (userId, isBlocked, chatUser) => async () => {
    if (connectionCheck()) {

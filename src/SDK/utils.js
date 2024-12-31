@@ -466,7 +466,7 @@ export const getUserProfileFromSDK = userId => {
    if (Object.keys(userData).length > 0 && userData?.status) {
       return userData || {};
    }
-   return SDK.getUserProfile(userId).then(res => {
+   return SDK.getUserProfile(userId, false, true).then(res => {
       if (res?.statusCode === 200) {
          if (res.data !== userData) {
             store.dispatch(setRoasterData(res.data));
@@ -505,3 +505,29 @@ export const sendNotificationData = async () => {
 export const getMuteStatus = async userJid => {
    return await SDK.getMuteStatus(userJid);
 };
+
+export const getUserProfileFromApi = async userId => {
+   try {
+      const userData = getRoasterData(userId);
+      let successData = successResponse();
+      if (Object.keys(userData).length > 0 && userData?.status) {
+         successData.data = userData;
+         return successData || {};
+      }
+      const response = await SDK.getUserProfile(userId, false, true);
+      if (response?.statusCode === 200) {
+         if (response.data !== userData) {
+            store.dispatch(setRoasterData(response.data));
+         }
+      }
+      return response || {};
+   } catch (error) {
+      console.log('getUserProfileFromApi', error);
+      return error;
+   }
+};
+
+export const successResponse = message => ({
+   statusCode: 200,
+   message: message || 'SUCCESS',
+});

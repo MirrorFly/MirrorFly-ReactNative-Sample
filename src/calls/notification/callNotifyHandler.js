@@ -33,7 +33,6 @@ import store from '../../redux/store';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../../screens/constants';
 import { getAppSchema } from '../../uikitMethods';
 
-
 let interval;
 export const callNotifyHandler = async (
    roomId,
@@ -92,7 +91,7 @@ export const getIncomingCallNotification = async (
          smallIcon: callType === CALL_TYPE_AUDIO ? 'ic_call_notification' : 'ic_video_call',
          asForegroundService: true,
          foregroundServiceTypes: [
-            AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE,
+            Platform.Version >= 34 && AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE,
             AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK,
          ],
          actions: [
@@ -371,22 +370,23 @@ export const registerNotificationEvents = () => {
 };
 
 export const stopForegroundServiceNotification = async (cancelID = '') => {
-   try {
-      new Promise(async () => {
+   return new Promise(async resolve => {
+      try {
          _BackgroundTimer.clearInterval(interval);
-         let notifications = store.getState().notificationData.data;
+         const notifications = store.getState().notificationData.data;
          await notifee.stopForegroundService();
-         let displayedNotificationId = await notifee.getDisplayedNotifications();
-         let cancelIDS = displayedNotificationId?.find(res => res.id === notifications.id)?.id;
+         const displayedNotificationId = await notifee.getDisplayedNotifications();
+         const cancelIDS = displayedNotificationId?.find(res => res.id === notifications.id)?.id;
          cancelIDS && (await notifee.cancelDisplayedNotification(cancelIDS));
-         let channelId = notifications.android?.channelId;
-         let channel =
+         const channelId = notifications.android?.channelId;
+         const channel =
             channelId &&
             (await notifee.getChannels()).find(res => res.id === channelId && res?.id?.includes('IncomingCall'))?.id;
          channel && (await notifee.deleteChannel(channel));
          store.dispatch(resetNotificationData());
-      });
-   } catch (error) {
-      console.log('Error when stopping foreground service ', error);
-   }
+         resolve();
+      } catch (error) {
+         console.log('Error when stopping foreground service: ', error);
+      }
+   });
 };

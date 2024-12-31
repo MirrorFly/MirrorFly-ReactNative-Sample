@@ -14,7 +14,7 @@ export const requestFileStoragePermission = async () => {
 
 export const requestCameraMicPermission = async () => {
    switch (true) {
-      case Platform.OS === 'ios':
+      case Platform.OS === 'ios': {
          const { 'ios.permission.CAMERA': camera, 'ios.permission.MICROPHONE': mic } = await requestMultiple([
             PERMISSIONS.IOS.CAMERA,
             PERMISSIONS.IOS.MICROPHONE,
@@ -29,7 +29,8 @@ export const requestCameraMicPermission = async () => {
          } else {
             return 'denied';
          }
-      case Platform.OS === 'android':
+      }
+      case Platform.OS === 'android': {
          const permissionStatus = await requestMultiple([PERMISSIONS.ANDROID.CAMERA, PERMISSIONS.ANDROID.RECORD_AUDIO]);
 
          if (
@@ -45,20 +46,22 @@ export const requestCameraMicPermission = async () => {
          } else {
             return RESULTS.DENIED;
          }
+      }
    }
 };
 
 export const requestStoragePermission = async () => {
    switch (true) {
-      case Platform.OS === 'ios':
+      case Platform.OS === 'ios': {
          const iosPermission = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
          if (iosPermission === RESULTS.GRANTED || iosPermission === RESULTS.LIMITED) {
             return RESULTS.GRANTED;
          }
          break;
+      }
       case Platform.OS === 'android' && Platform.Version <= 32: // Android Version 32 and below
          return await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
-      default:
+      default: {
          const androidPermissions = await requestMultiple([
             PERMISSIONS.ANDROID.READ_MEDIA_IMAGES,
             PERMISSIONS.ANDROID.READ_MEDIA_VIDEO,
@@ -76,6 +79,7 @@ export const requestStoragePermission = async () => {
          } else {
             return RESULTS.DENIED;
          }
+      }
    }
 };
 
@@ -85,9 +89,10 @@ export const requestAudioStoragePermission = async () => {
          return await request(PERMISSIONS.IOS.MEDIA_LIBRARY);
       case Platform.OS === 'android' && Platform.Version <= 32: // Android Vresion 32 and below
          return await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
-      default:
+      default: {
          const permited = await requestMultiple([PERMISSIONS.ANDROID.READ_MEDIA_AUDIO]); // Android Vresion 33 and above
          return permited['android.permission.READ_MEDIA_AUDIO'];
+      }
    }
 };
 
@@ -125,17 +130,16 @@ export const checkMicroPhonePermission = async () => {
 
 export const requestBluetoothConnectPermission = () => {
    if (Platform.OS === 'android') {
-      return (Platform.Version < 31 && 'granted') || request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
-   } else {
-      return Promise.resolve('granted');
+      return Platform.Version < 31 ? Promise.resolve(RESULTS.GRANTED) : request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
    }
+   return Promise.resolve(RESULTS.GRANTED);
 };
 
 export const checkBluetoothConnectPermission = () => {
    if (Platform.OS === 'android') {
-      return (Platform.Version < 31 && 'granted') || check(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
+      return Platform.Version < 31 ? Promise.resolve(RESULTS.GRANTED) : check(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
    } else {
-      return Promise.resolve('granted');
+      return Promise.resolve(RESULTS.GRANTED);
    }
 };
 
@@ -199,12 +203,14 @@ export const getForegroundPermission = async callType => {
 
 export const requestCameraPermission = async () => {
    switch (true) {
-      case Platform.OS === 'ios':
+      case Platform.OS === 'ios': {
          const ios_permit = await requestMultiple([PERMISSIONS.IOS.CAMERA]);
          return ios_permit['ios.permission.CAMERA'];
-      case Platform.OS === 'android':
+      }
+      case Platform.OS === 'android': {
          const permited = await requestMultiple([PERMISSIONS.ANDROID.CAMERA]);
          return permited['android.permission.CAMERA'];
+      }
    }
 };
 

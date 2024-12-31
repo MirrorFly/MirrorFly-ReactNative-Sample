@@ -28,9 +28,9 @@ const showConfrenceSlice = createSlice({
       resetConferencePopup() {
          return { ...initialState };
       },
-      extraReducers: builder => {
-         builder.addCase(clearState, () => initialState);
-      },
+   },
+   extraReducers: builder => {
+      builder.addCase(clearState, () => initialState);
    },
 });
 

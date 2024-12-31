@@ -17,6 +17,7 @@ import {
 } from '../common/Icons';
 import NickName from '../common/NickName';
 import {
+   getCurrentChatUser,
    getExtension,
    getImageSource,
    getUserIdFromJid,
@@ -26,14 +27,13 @@ import {
 import { ORIGINAL_MESSAGE_DELETED } from '../helpers/constants';
 import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
 import { getChatMessages, useChatMessage } from '../redux/reduxHook';
-import { currentChatUser } from '../screens/ConversationScreen';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
 
 function ReplyMessage(props) {
    const { message: originalMsg } = props;
    const { msgBody: { replyTo = '' } = {} } = originalMsg;
-   const chatUser = currentChatUser;
+   const chatUser = getCurrentChatUser();
    const dispatch = useDispatch();
    const userId = getUserIdFromJid(chatUser);
    const repliedMessage = useChatMessage(userId, replyTo) || {};

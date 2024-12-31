@@ -12,12 +12,6 @@ const propTypes = {
    handleAttachmentIconPressed: PropTypes.func,
 };
 
-const defaultProps = {
-   visible: false,
-   onRequestClose: () => {},
-   attachmentMenuIcons: [],
-};
-
 function AttachmentMenu({ visible, onRequestClose, attachmentMenuIcons, handleAttachmentIconPressed }) {
    const { width } = Dimensions.get('window');
    const menuWidth = width * 0.96;
@@ -76,7 +70,10 @@ const styles = StyleSheet.create({
       paddingVertical: 10,
       ...Platform.select({
          ios: {
-            top: Dimensions.get('screen').height - 80,
+            top: Math.round(Dimensions.get('screen').height * 0.878),
+         },
+         android: {
+            top: Math.round(Dimensions.get('screen').height * 0.835),
          },
       }),
    },
@@ -95,6 +92,5 @@ const styles = StyleSheet.create({
 });
 
 AttachmentMenu.propTypes = propTypes;
-AttachmentMenu.defaultProps = defaultProps;
 
 export default AttachmentMenu;

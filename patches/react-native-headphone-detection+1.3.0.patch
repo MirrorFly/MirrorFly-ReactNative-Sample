@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native-headphone-detection/android/src/main/java/com/tintef/RNHeadphoneDetection/RNHeadphoneDetectionModule.java b/node_modules/react-native-headphone-detection/android/src/main/java/com/tintef/RNHeadphoneDetection/RNHeadphoneDetectionModule.java
-index fe8c926..0942792 100644
+index fe8c926..e6223af 100644
 --- a/node_modules/react-native-headphone-detection/android/src/main/java/com/tintef/RNHeadphoneDetection/RNHeadphoneDetectionModule.java
 +++ b/node_modules/react-native-headphone-detection/android/src/main/java/com/tintef/RNHeadphoneDetection/RNHeadphoneDetectionModule.java
-@@ -19,145 +19,166 @@ import android.content.Context;
+@@ -19,145 +19,168 @@ import android.content.Context;
  import android.content.Intent;
  import android.content.IntentFilter;
  import android.os.Build;
@@ -47,13 +47,29 @@ index fe8c926..0942792 100644
 -    final ReactApplicationContext reactContext = getReactApplicationContext();
 +    private void maybeRegisterReceiver() {
 +        final ReactApplicationContext reactContext = getReactApplicationContext();
-+
+ 
+-    if (receiver != null) {
+-      return;
+-    }
 +        if (receiver != null) {
 +            return;
 +        }
  
--    if (receiver != null) {
--      return;
+-    receiver = new BroadcastReceiver() {
+-      @Override
+-      public void onReceive(Context context, Intent intent) {
+-        String action = intent.getAction();
+-        WritableMap res = isAudioDeviceConnected();
+-
+-        switch (action) {
+-          case BluetoothDevice.ACTION_ACL_CONNECTED:
+-            res.putBoolean("bluetooth", true);
+-            break;
+-          case BluetoothDevice.ACTION_ACL_DISCONNECTED:
+-            res.putBoolean("bluetooth", false);
+-            break;
+-          default:
+-            break;
 +        receiver = new BroadcastReceiver() {
 +            @Override
 +            public void onReceive(Context context, Intent intent) {
@@ -86,36 +102,22 @@ index fe8c926..0942792 100644
 +        reactContext.registerReceiver(receiver, new IntentFilter(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED));
 +        reactContext.registerReceiver(receiver, new IntentFilter(BluetoothHeadset.ACTION_AUDIO_STATE_CHANGED));
 +        reactContext.registerReceiver(receiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
-+        reactContext.registerReceiver(receiver, new IntentFilter(BluetoothAdapter.EXTRA_STATE));
-     }
- 
--    receiver = new BroadcastReceiver() {
--      @Override
--      public void onReceive(Context context, Intent intent) {
--        String action = intent.getAction();
--        WritableMap res = isAudioDeviceConnected();
--
--        switch (action) {
--          case BluetoothDevice.ACTION_ACL_CONNECTED:
--            res.putBoolean("bluetooth", true);
--            break;
--          case BluetoothDevice.ACTION_ACL_DISCONNECTED:
--            res.putBoolean("bluetooth", false);
--            break;
--          default:
--            break;
-+    private void maybeUnregisterReceiver() {
-+        if (receiver == null) {
-+            return;
++        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
++            reactContext.registerReceiver(receiver, new IntentFilter(BluetoothAdapter.EXTRA_STATE), Context.RECEIVER_NOT_EXPORTED);
          }
-+        getReactApplicationContext().unregisterReceiver(receiver);
-+        receiver = null;
 +    }
  
 -        sendEvent(reactContext, AUDIO_DEVICE_CHANGED_NOTIFICATION, res);
 -      }
 -    };
--
++    private void maybeUnregisterReceiver() {
++        if (receiver == null) {
++            return;
++        }
++        getReactApplicationContext().unregisterReceiver(receiver);
++        receiver = null;
++    }
+ 
 -    reactContext.registerReceiver(receiver, new IntentFilter(Intent.ACTION_HEADSET_PLUG));
 -    reactContext.registerReceiver(receiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
 -    reactContext.registerReceiver(receiver, new IntentFilter(BluetoothAdapter.EXTRA_STATE));
@@ -289,7 +291,6 @@ index fe8c926..0942792 100644
 -    maybeUnregisterReceiver();
 -  }
  }
-\ No newline at end of file
 diff --git a/node_modules/react-native-headphone-detection/ios/RNHeadphoneDetection.m b/node_modules/react-native-headphone-detection/ios/RNHeadphoneDetection.m
 index b02301e..9ba899e 100644
 --- a/node_modules/react-native-headphone-detection/ios/RNHeadphoneDetection.m

@@ -1,0 +1,32 @@
+diff --git a/node_modules/react-native-material-menu/dist/Menu.js b/node_modules/react-native-material-menu/dist/Menu.js
+index 64fbf13..e600e4a 100644
+--- a/node_modules/react-native-material-menu/dist/Menu.js
++++ b/node_modules/react-native-material-menu/dist/Menu.js
+@@ -39,6 +39,7 @@ class Menu extends react_1.default.Component {
+         }
+         this.show();
+     }
++
+     componentDidUpdate(prevProps) {
+         if (prevProps.visible === this.props.visible) {
+             return;
+@@ -55,9 +56,10 @@ class Menu extends react_1.default.Component {
+     };
+     // Start menu animation
+     onMenuLayout = (e) => {
+-        if (this.state.menuState === States.Animating) {
++        if (this.state.menuState === States.Animating || this.state.menuState === States.Hidden) {
+             return;
+         }
++        
+         const { width, height } = e.nativeEvent.layout;
+         this.setState({
+             menuState: States.Animating,
+@@ -152,6 +154,7 @@ class Menu extends react_1.default.Component {
+         };
+         const { menuState } = this.state;
+         const animationStarted = menuState === States.Animating;
++        
+         const modalVisible = menuState === States.Shown || animationStarted;
+         const { testID, anchor, style, children } = this.props;
+         return (react_1.default.createElement(react_native_1.View, { ref: this.setContainerRef, collapsable: false, testID: testID },

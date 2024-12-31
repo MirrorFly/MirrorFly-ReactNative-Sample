@@ -35,7 +35,7 @@ function ConversationList({ chatUser }) {
       }
    };
 
-   const keyExtractor = React.useCallback(item => item.msgId.toString(), []);
+   const keyExtractor = React.useCallback(item => item?.msgId?.toString(), []);
    const getItemLayout = React.useCallback(
       (data, index) => ({ length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index }),
       [],
@@ -43,7 +43,7 @@ function ConversationList({ chatUser }) {
 
    const chatMessageRender = React.useCallback(
       ({ item, index }) => {
-         const notifiactionCheck = messages[index + 1]?.msgBody.message_type;
+         const notifiactionCheck = messages[index + 1]?.msgBody?.message_type;
          const nextMessageUserId = messages[index + 1]?.publisherId;
          const currentMessageUserId = item?.publisherId;
          const showNickName =

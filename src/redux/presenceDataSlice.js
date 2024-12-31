@@ -16,9 +16,9 @@ const presenceDataSlice = createSlice({
          const userId = getUserIdFromJid(fromUserJid);
          state[userId] = action.payload;
       },
-      extraReducers: builder => {
-         builder.addCase(clearState, () => initialState);
-      },
+   },
+   extraReducers: builder => {
+      builder.addCase(clearState, () => initialState);
    },
 });
 

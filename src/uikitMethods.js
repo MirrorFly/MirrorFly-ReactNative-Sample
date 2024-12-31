@@ -103,7 +103,7 @@ export const mirrorflyInitialize = async args => {
          const _extractedData = data.reduce((result, { key, value }) => {
             result[key] = value;
             return result;
-        }, {});         
+         }, {});
          currentUserJID = _extractedData?.['currentUserJID'];
          currentScreen = _extractedData?.['screen'] || REGISTERSCREEN;
          fetchCurrentUserProfile();

@@ -1,10 +1,9 @@
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { ClearTextIcon } from '../common/Icons';
 import NickName from '../common/NickName';
-import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { getCurrentChatUser, getUserIdFromJid } from '../helpers/chatHelpers';
 import { ORIGINAL_MESSAGE_DELETED } from '../helpers/constants';
-import { currentChatUser } from '../screens/ConversationScreen';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
 
@@ -25,7 +24,7 @@ const ReplyDeleted = props => {
                   You
                </Text>
             ) : (
-               <NickName userId={getUserIdFromJid(currentChatUser)} />
+               <NickName userId={getUserIdFromJid(getCurrentChatUser())} />
                // <Text mb={2} color={'#000'} pl={0} fontSize={14} fontWeight={600} py="0">
                //    {profileDetails?.nickName || getUserIdFromJid(currentUserJID)}
                // </Text>

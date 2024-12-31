@@ -37,6 +37,7 @@ import {
 import commonStyles, { modelStyles } from '../styles/commonStyles';
 import UserAvathar from './UserAvathar';
 import UserStatus from './UserStatus';
+import RootNavigation from '../Navigation/rootNavigation';
 
 const propTypes = {
    chatUser: PropTypes.string,
@@ -250,7 +251,7 @@ const GrpCollapsibleToolbar = ({
       if (isNetworkconneted) {
          const { statusCode, message } = await SDK.userDeleteGroup(chatUser);
          if (statusCode === 200) {
-            navigation.navigate(RECENTCHATSCREEN);
+            RootNavigation.reset(RECENTCHATSCREEN);
             dispatch(deleteRecentChatOnUserId(chatUser));
             dispatch(clearChatMessageData({ userId: getUserIdFromJid(chatUser) }));
          } else {

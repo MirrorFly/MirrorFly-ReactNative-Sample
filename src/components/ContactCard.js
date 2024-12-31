@@ -1,19 +1,21 @@
 import Clipboard from '@react-native-clipboard/clipboard';
 import React from 'react';
-import { Linking, StyleSheet, Text, View } from 'react-native';
+import { Linking, Platform, StyleSheet, Text, View } from 'react-native';
 import { useDispatch } from 'react-redux';
+import AlertModal from '../common/AlertModal';
 import { ContactInfoIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import { getConversationHistoryTime } from '../common/timeStamp';
 import ApplicationColors from '../config/appColors';
 import config from '../config/config';
-import { getMessageStatus, getUserIdFromJid } from '../helpers/chatHelpers';
-import { currentChatUser } from '../screens/ConversationScreen';
+import { getCurrentChatUser, getMessageStatus, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
+import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
+import { getChatMessage, getChatMessages } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
 
 const ContactCard = ({ item, isSender }) => {
-   const chatUser = currentChatUser;
+   const chatUser = getCurrentChatUser();
    const dispatch = useDispatch();
    const userId = getUserIdFromJid(chatUser);
    const [modalContent, setModalContent] = React.useState(null);

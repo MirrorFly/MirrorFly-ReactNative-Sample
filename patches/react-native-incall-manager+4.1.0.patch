@@ -1,0 +1,37 @@
+diff --git a/node_modules/react-native-incall-manager/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/react-native-incall-manager/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/react-native-incall-manager/android/src/main/java/com/zxcpoiu/incallmanager/InCallManagerModule.java b/node_modules/react-native-incall-manager/android/src/main/java/com/zxcpoiu/incallmanager/InCallManagerModule.java
+index 7ae63eb..d255bac 100644
+--- a/node_modules/react-native-incall-manager/android/src/main/java/com/zxcpoiu/incallmanager/InCallManagerModule.java
++++ b/node_modules/react-native-incall-manager/android/src/main/java/com/zxcpoiu/incallmanager/InCallManagerModule.java
+@@ -1579,10 +1579,10 @@ public class InCallManagerModule extends ReactContextBaseJavaModule implements L
+     @Override
+     public void onHostDestroy() {
+         Log.d(TAG, "onDestroy()");
+-        stopRingtone();
+-        stopRingback();
+-        stopBusytone();
+-        stop();
++//        stopRingtone();
++//        stopRingback();
++//        stopBusytone();
++//        stop();
+     }
+ 
+     private void updateAudioRoute() {
+diff --git a/node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManager.m b/node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManager.m
+index 7c54f6e..a72fe10 100644
+--- a/node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManager.m
++++ b/node_modules/react-native-incall-manager/ios/RNInCallManager/RNInCallManager.m
+@@ -258,8 +258,9 @@ RCT_EXPORT_METHOD(setSpeakerphoneOn:(BOOL)enable)
+         NSLog(@"Routing audio via Loudspeaker");
+         @try {
+             NSLog(@"Available routes: %@", routes[0]);
++            NSUInteger categoryOptions = AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP | AVAudioSessionCategoryOptionAllowAirPlay;
+             success = [_audioSession setCategory:AVAudioSessionCategoryPlayAndRecord
+-                        withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker
++                        withOptions:categoryOptions
+                         error:nil];
+             if (!success)  NSLog(@"Cannot set category due to error: %@", error);
+             success = [_audioSession setMode:AVAudioSessionModeVoiceChat error: &error];

@@ -15,7 +15,33 @@ buildscript {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+         /** Add this Firebase intialize */
+        // classpath('com.google.gms:google-services:4.4.2')
     }
 }
 
+/* Adding these below subprojects block to fix an error while taking release build 
+error: In order to compile Java 9+ source, please set compileSdkVersion to 30 or above
+*/
+subprojects {
+    afterEvaluate {project ->
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion rootProject.ext.compileSdkVersion
+                buildToolsVersion rootProject.ext.buildToolsVersion
+            }
+        }
+    }
+}
+
+allprojects {
+   repositories {
+     //** Add this line
+     configurations.all {
+         resolutionStrategy {
+             force "com.google.android.gms:play-services-location:21.0.1"
+         }
+     }
+   }
+}
 apply plugin: "com.facebook.react.rootproject"

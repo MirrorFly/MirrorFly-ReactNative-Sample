@@ -253,7 +253,7 @@ export const endCall = async (isFromTimeout = false, userId = '', callType = '')
    SDK.endCall();
    stopOutgoingCallRingingTone();
    if (Platform.OS === 'android') {
-      stopForegroundServiceNotification();
+      await stopForegroundServiceNotification();
    }
    dispatchDisconnected();
    /** callLogs.update(callConnectionDataEndCall.roomId, {

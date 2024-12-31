@@ -1,12 +1,13 @@
 import notifee, {
    AndroidCategory,
    AndroidFlags,
+   AndroidForegroundServiceType,
    AndroidImportance,
    AndroidLaunchActivityFlag,
    AndroidVisibility,
    EventType,
 } from '@notifee/react-native';
-import { AppState, Linking, NativeModules, Platform } from 'react-native';
+import { AppState, Linking, Platform } from 'react-native';
 import _BackgroundTimer from 'react-native-background-timer';
 import RootNavigation from '../../../src/Navigation/rootNavigation';
 import { endCall, getCallDuration } from '../../Helper/Calls/Call';
@@ -22,6 +23,8 @@ import { answerIncomingCall, declineIncomingCall, endOnGoingCall } from '../../H
 import SDK from '../../SDK/SDK';
 import { getChannelIds } from '../../Service/PushNotify';
 import { removeAllDeliveredNotification } from '../../Service/remoteNotifyHandle';
+import { getForegroundPermission } from '../../common/permissions';
+import ActivityModule from '../../customModules/ActivityModule';
 import { getUserIdFromJid } from '../../helpers/chatHelpers';
 import { callDurationTimestamp } from '../../redux/callStateSlice';
 import { resetNotificationData, setNotificationData } from '../../redux/notificationDataSlice';
@@ -29,8 +32,6 @@ import { setRoasterData } from '../../redux/rosterDataSlice';
 import store from '../../redux/store';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../../screens/constants';
 import { getAppSchema } from '../../uikitMethods';
-
-const { ActivityModule } = NativeModules;
 
 let interval;
 export const callNotifyHandler = async (
@@ -89,6 +90,10 @@ export const getIncomingCallNotification = async (
          autoCancel: false,
          smallIcon: callType === CALL_TYPE_AUDIO ? 'ic_call_notification' : 'ic_video_call',
          asForegroundService: true,
+         foregroundServiceTypes: [
+            Platform.Version >= 34 && AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE,
+            AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK,
+         ],
          actions: [
             { title: 'Decline', pressAction: { id: 'decline' } },
             {
@@ -124,6 +129,7 @@ export const getOutGoingCallNotification = async (roomId, callDetailObj, userJid
    let title = `Outgoing ${callDetailObj.callType} call`;
    let callType = callDetailObj?.callType;
    const launchCallActivity = await ActivityModule.getCallActivity();
+   const foregroundServiceTypes = await getForegroundPermission(callType);
    let channelId = await notifee.createChannel({
       id: 'Outgoing Call',
       name: 'Outgoing Call',
@@ -145,6 +151,7 @@ export const getOutGoingCallNotification = async (roomId, callDetailObj, userJid
          category: AndroidCategory.CALL,
          smallIcon: callType === CALL_TYPE_AUDIO ? 'ic_call_notification' : 'ic_video_call',
          asForegroundService: true,
+         foregroundServiceTypes,
          actions: [{ title: 'Hang up', pressAction: { id: 'hangup' } }],
          timestamp: Date.now(),
          showTimestamp: true,
@@ -163,6 +170,7 @@ export const getOnGoingCallNotification = async (roomId, callDetailObj, userJid,
    let title = `Ongoing ${callDetailObj.callType} call`;
    let callType = callDetailObj?.callType;
    const launchCallActivity = await ActivityModule.getCallActivity();
+   const foregroundServiceTypes = await getForegroundPermission(callType);
    let channelId = await notifee.createChannel({
       id: 'OnGoing Call',
       name: 'OnGoing Call',
@@ -183,6 +191,7 @@ export const getOnGoingCallNotification = async (roomId, callDetailObj, userJid,
          sound: '',
          smallIcon: callType === CALL_TYPE_AUDIO ? 'ic_call_notification' : 'ic_video_call',
          asForegroundService: true,
+         foregroundServiceTypes,
          actions: [{ title: 'Hang up', pressAction: { id: 'endCall' } }],
          timestamp: Date.now(),
          showTimestamp: true,
@@ -361,22 +370,23 @@ export const registerNotificationEvents = () => {
 };
 
 export const stopForegroundServiceNotification = async (cancelID = '') => {
-   try {
-      new Promise(async () => {
+   return new Promise(async resolve => {
+      try {
          _BackgroundTimer.clearInterval(interval);
-         let notifications = store.getState().notificationData.data;
+         const notifications = store.getState().notificationData.data;
          await notifee.stopForegroundService();
-         let displayedNotificationId = await notifee.getDisplayedNotifications();
-         let cancelIDS = displayedNotificationId?.find(res => res.id === notifications.id)?.id;
+         const displayedNotificationId = await notifee.getDisplayedNotifications();
+         const cancelIDS = displayedNotificationId?.find(res => res.id === notifications.id)?.id;
          cancelIDS && (await notifee.cancelDisplayedNotification(cancelIDS));
-         let channelId = notifications.android?.channelId;
-         let channel =
+         const channelId = notifications.android?.channelId;
+         const channel =
             channelId &&
             (await notifee.getChannels()).find(res => res.id === channelId && res?.id?.includes('IncomingCall'))?.id;
          channel && (await notifee.deleteChannel(channel));
          store.dispatch(resetNotificationData());
-      });
-   } catch (error) {
-      console.log('Error when stopping foreground service ', error);
-   }
+         resolve();
+      } catch (error) {
+         console.log('Error when stopping foreground service: ', error);
+      }
+   });
 };

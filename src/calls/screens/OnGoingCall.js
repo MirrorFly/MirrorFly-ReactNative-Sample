@@ -34,6 +34,7 @@ import GridLayout from '../components/GridLayout';
 import PipGridLayoutAndroid from '../components/PipGridLayoutAndroid';
 import SmallVideoTile from '../components/SmallVideoTile';
 import Timer from '../components/Timer';
+import { RESULTS } from 'react-native-permissions';
 
 /**
  * @typedef {'grid'|'tile'} LayoutType

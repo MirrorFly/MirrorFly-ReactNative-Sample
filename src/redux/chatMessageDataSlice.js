@@ -126,9 +126,9 @@ const chatMessageDataSlice = createSlice({
             state[userId][index].shouldHighlight = shouldHighlight;
          }
       },
-      extraReducers: builder => {
-         builder.addCase(clearState, () => initialState);
-      },
+   },
+   extraReducers: builder => {
+      builder.addCase(clearState, () => initialState);
    },
 });
 

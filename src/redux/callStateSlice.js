@@ -13,14 +13,14 @@ const initialState = {
    /* // Example data for largeVideoUser property
    largeVideoUser: {
       userJid: largeUserJid,
-      volumeLevelsBasedOnUserJid: { '919988776655@xmpp.contus.us': 10 },
+      volumeLevelsBasedOnUserJid: { '': 10 },
       showVoiceDetect: true | false,
       volumeLevelVideo: 0,
    }, */
    largeVideoUser: {},
    /* // Example data for pinUserData property
    pinUserData: {
-      userJid: '919988776655@xmpp.contus.us' | null,
+      userJid: '' | null,
    }, */
    pinUserData: {},
    callerUUID: '',

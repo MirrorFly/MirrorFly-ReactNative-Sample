@@ -25,9 +25,9 @@ const typingStatusDataSlice = createSlice({
             delete state[fromUserId];
          }
       },
-      extraReducers: builder => {
-         builder.addCase(clearState, () => initialState);
-      },
+   },
+   extraReducers: builder => {
+      builder.addCase(clearState, () => initialState);
    },
 });
 

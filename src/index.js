@@ -1,7 +1,7 @@
 export { MirrorflyComponent } from '../App';
-export { initiateMirroflyCall } from './Helper/Calls/Utility';
 export { ChatScreen } from './Navigation/stackNavigation';
 export { CallComponent as MirrorflyCallComponent } from './calls/CallComponent';
+export { initiateMirroflyCall } from './Helper/Calls/Utility';
 export { setNotificationForegroundService } from './calls/notification/callNotifyHandler';
 export {
    mirrorflyInitialize,
@@ -9,8 +9,7 @@ export {
    mirrorflyProfileUpdate,
    mirrorflyRegister,
    setAppConfig,
-   setupCallScreen
+   setupCallScreen,
 } from './uikitMethods';
-export { SDK };
 import SDK from './SDK/SDK';
-
+export { SDK };

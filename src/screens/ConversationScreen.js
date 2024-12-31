@@ -9,18 +9,22 @@ import ChatHeader from '../components/ChatHeader';
 import ChatInput from '../components/ChatInput';
 import ConversationList from '../components/ConversationList';
 import ReplyContainer from '../components/ReplyContainer';
-import { getImageSource, getUserIdFromJid, handelResetMessageSelection } from '../helpers/chatHelpers';
+import {
+   getImageSource,
+   getUserIdFromJid,
+   handelResetMessageSelection,
+   setCurrentChatUser,
+} from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
 import { resetUnreadCountForChat } from '../redux/recentChatDataSlice';
 import { useChatMessages, useReplyMessage } from '../redux/reduxHook';
 import { RECENTCHATSCREEN } from './constants';
 
-export let currentChatUser = '';
-
 function ConversationScreen({ chatUser = '' }) {
    const { params: { jid: _jid = '' } = {} } = useRoute();
    const [jid, setJid] = React.useState(_jid || chatUser); // TO HANDLE APPLCATION RENDER BY COMPONENT BY COMPONENT
-   currentChatUser = _jid || chatUser;
+   let currentChatUser = _jid || chatUser;
+   setCurrentChatUser(currentChatUser);
    SDK.activeChatUser(currentChatUser);
    const dispatch = useDispatch();
    const userId = getUserIdFromJid(jid);
@@ -42,7 +46,7 @@ function ConversationScreen({ chatUser = '' }) {
       }
       return () => {
          handelResetMessageSelection(userId)();
-         currentChatUser = '';
+         setCurrentChatUser('');
       };
    }, []);
 
@@ -61,12 +65,12 @@ function ConversationScreen({ chatUser = '' }) {
             handelResetMessageSelection(userId)();
             break;
          case navigation.canGoBack():
-            currentChatUser = '';
+            setCurrentChatUser('');
             SDK.activeChatUser(currentChatUser);
             navigation.goBack();
             break;
          default:
-            currentChatUser = '';
+            setCurrentChatUser('');
             SDK.activeChatUser(currentChatUser);
             navigation.reset({
                index: 0,
@@ -92,6 +96,7 @@ function ConversationScreen({ chatUser = '' }) {
 
    return (
       <KeyboardAvoidingView
+         enabled={Platform.OS === 'ios'}
          keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 'auto'}
          style={styles.container}
          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>

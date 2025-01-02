@@ -1,4 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { DOMParser } from '@xmldom/xmldom';
 import React from 'react';
 import {
    BackHandler,
@@ -6,6 +7,7 @@ import {
    Image,
    Keyboard,
    KeyboardAvoidingView,
+   NativeModules,
    Platform,
    Pressable,
    StyleSheet,
@@ -19,11 +21,231 @@ import NickName from '../common/NickName';
 import VideoInfo from '../common/VideoInfo';
 import UserAvathar from '../components/UserAvathar';
 import ApplicationColors from '../config/appColors';
-import { getType, getUserIdFromJid, handleSendMedia } from '../helpers/chatHelpers';
+import { getType, getUserIdFromJid } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../helpers/constants';
 import commonStyles from '../styles/commonStyles';
 import { currentChatUser } from './ConversationScreen';
 import { CAMERA_SCREEN, GALLERY_PHOTOS_SCREEN } from './constants';
+
+const messagObj = {
+   message: '',
+   message_type: 'video',
+   media: {
+      thumb_image: '',
+      caption: '',
+      file_size: 0,
+      fileName: '',
+      file_url: '',
+      file_key: '',
+      duration: 0,
+      is_uploading: 2,
+      originalWidth: 1080,
+      originalHeight: 2400,
+      androidHeight: 320,
+      androidWidth: 210,
+      webHeight: 338,
+      webWidth: 240,
+      isLargeFile: true,
+   },
+   nickName: 'Player mf 5',
+};
+
+const { MediaService } = NativeModules;
+console.log('MediaService ==>', MediaService);
+let subscription = null,
+   commitUrl,
+   fileUploadDetails = {};
+
+const init = () => {
+   try {
+      MediaService?.baseUrlInit?.(config.API_URL + '/');
+   } catch (error) {
+      mflog('init error', error);
+   }
+};
+
+// // // init();
+
+// // // 9170942293751735303909071tlEI000Ot4arFeB89Xne.mp4 iTF5bkx1Iu02y45rU8J9IiakFrz5Vsii
+// // // 91709422937517353003085353SG532RaATaivtT3Wm62.mp4
+
+// const generateUniqueFilePath = async (filePath, counter = 0) => {
+//    // Modify the file path if the counter is greater than 0
+//    const extension = filePath.substring(filePath.lastIndexOf('.') + 1);
+//    const baseName = filePath.substring(0, filePath.lastIndexOf('.'));
+//    const modifiedFilePath = counter > 0 ? `${baseName}(${counter}).${extension}` : filePath;
+
+//    // Check if the file exists
+//    const exists = await RNFS.exists(modifiedFilePath);
+//    // Return the modified file path if it does not exist, otherwise recurse
+//    return exists ? generateUniqueFilePath(filePath, counter + 1) : modifiedFilePath;
+// };
+
+// const handleNativeLargeFile = async (obj, file) => {
+//    try {
+//       messagObj.media.thumb_image = await getVideoThumbImage(file.uri, file.duration);
+//       const eventEmitter = new NativeEventEmitter(MediaService);
+
+//       // Listen for progress updates
+//       subscription = eventEmitter.addListener('UploadProgress', progress => {
+//          console.log('Upload Progress:', progress);
+//          if (progress.progress == 100) {
+//             subscription.remove();
+//          }
+//       });
+//       // Step 1: Initialize values for encryption
+//       const initRes = await MediaService.defineValues(obj);
+//       if (!initRes?.success) {
+//          mflog('Upload File defineValues failed:', JSON.stringify(initRes, null, 2));
+//          return;
+//       }
+//       console.log('Upload File encryptionKey ==>', initRes?.encryptionKey);
+//       fileUploadDetails.encryptkey = initRes?.encryptionKey;
+
+//       messagObj.media.file_key = initRes?.encryptionKey;
+//       // Step 2: Encrypt the file after successful initialization
+//       const encryptFileRes = await MediaService.encryptFile();
+//       if (!encryptFileRes?.success) {
+//          mflog('Upload File encryption failed:', JSON.stringify(encryptFileRes, null, 2));
+//          return;
+//       }
+//       fileUploadDetails.encryptedFilePath = encryptFileRes.encryptedFilePath;
+//       console.log('Upload File encryption successful:', JSON.stringify(encryptFileRes, null, 2));
+//       const msgId = SDK.randomString();
+//       const _file = await RNFS.stat(encryptFileRes.encryptedFilePath);
+//       console.log('file ==>', file);
+//       console.log('_file ==>', _file);
+//       // return
+//       const largeFileUploadRes = await SDK.largeFileUpload({
+//          file: { ...file, ..._file },
+//          chatType: 'chat',
+//          toUser: currentChatUser,
+//          msgId,
+//       });
+//       const { status, data: { fileToken, commitUrl: _commitUrl, uploadId, storage, uploadUrls } = {} } =
+//          largeFileUploadRes;
+//       if (status !== 200) return;
+//       messagObj.media.file_url = fileToken;
+//       messagObj.media = {
+//          ...messagObj.media,
+//          ...file,
+//       };
+//       messagObj.media.file_size = _file.size;
+//       fileUploadDetails.fileToken = fileToken;
+//       commitUrl = _commitUrl;
+//       console.log('messagObj ==>', messagObj);
+//       const result = await MediaService.uploadFileInChunks(uploadUrls, encryptFileRes.encryptedFilePath);
+
+//       console.log('Upload File Result:', result);
+//       await SDK.uploadCommitURL(_commitUrl);
+//       console.log('Upload message object ==>', messagObj);
+//       // return;
+//       const cipher = SDK.encryptMsg(JSON.stringify(messagObj), msgId);
+
+//       const messageIQ = $msg({
+//          to: currentChatUser,
+//          type: 'chat',
+//          id: msgId,
+//       })
+//          .c('chatcontent', {
+//             xmlns: 'jabber:client',
+//             message_type: 'video',
+//             broadcast_id: '',
+//          })
+//          .up()
+//          .c('body', {
+//             message_type: 'video',
+//          })
+//          .t(cipher);
+
+//       const stanza = `<message
+//          id=${msgId}
+//          to=${currentChatUser}
+//          type="chat"
+//          xmlns="jabber:client">
+//          <chatcontent
+//             broadcast_id=""
+//             message_type="video"
+//             xmlns="urn:xmpp:content"
+//          />
+//          <body message_type="video">${cipher}</body>
+//       </message>`;
+
+// const xmlDoc = new DOMParser().parseFromString(stanza, 'text/xml').firstChild;
+
+//       SDK.getConnection?.().sendIQ(xmlDoc);
+//    } catch (error) {
+//       mflog('Upload Error:', error);
+//    }
+// };
+
+const fileEncryption = async selectedItems => {
+   try {
+      const file = selectedItems[0].fileDetails;
+      file.size = file.fileSize;
+      // Step 1: Initialize values for encryption
+      // const initRes = await MediaService.defineValues(obj);
+      // if (!initRes?.success) {
+      //    mflog('Upload File defineValues failed:', JSON.stringify(initRes, null, 2));
+      //    return;
+      // }
+      // console.log('Upload File encryptionKey ==>', initRes?.encryptionKey);
+      // fileUploadDetails.encryptkey = initRes?.encryptionKey;
+      // messagObj.media.file_key = initRes?.encryptionKey;
+      // Step 2: Encrypt the file after successful initialization
+      // const encryptFileRes = await MediaService.encryptFile();
+      // if (!encryptFileRes?.success) {
+      //    mflog('Upload File encryption failed:', JSON.stringify(encryptFileRes, null, 2));
+      //    return;
+      // }
+      // fileUploadDetails.encryptedFilePath = encryptFileRes.encryptedFilePath;
+      // console.log('Upload File encryption successful:', JSON.stringify(encryptFileRes, null, 2));
+      // return;
+      const msgId = SDK.randomString();
+      const largeFileUploadRes = await SDK.largeFileUpload({
+         file,
+         chatType: 'chat',
+         toUser: currentChatUser,
+         msgId,
+      });
+      const { status, data: { fileToken, commitUrl: _commitUrl, uploadId, storage, uploadUrls } = {} } =
+         largeFileUploadRes;
+      if (status !== 200) return;
+      commitUrl = _commitUrl;
+      const result = await MediaService.uploadFileInChunks(uploadUrls, file.uri);
+      console.log('Upload File Result:', result);
+      _commitUrl && (await SDK.uploadCommitURL(_commitUrl));
+
+      messagObj.media.file_url = fileToken;
+      messagObj.media.thumb_image = file.thumbImage;
+      messagObj.media.file_size = file.fileSize;
+      messagObj.media.duration = file.duration;
+      delete file.thumbImage;
+
+      console.log('messagObj ==>', JSON.stringify(messagObj, null, 2));
+
+      const cipher = SDK.encryptMsg(JSON.stringify(messagObj), msgId);
+
+      const stanza = `<message
+         id=${msgId}
+         to=${currentChatUser}
+         type="chat"
+         xmlns="jabber:client">
+         <chatcontent
+            broadcast_id=""
+            message_type="video"
+            xmlns="urn:xmpp:content"
+         />
+         <body message_type="video">${cipher}</body>
+      </message>`;
+
+      const xmlDoc = new DOMParser().parseFromString(stanza, 'text/xml').firstChild;
+
+      SDK.getConnection?.().sendIQ(xmlDoc);
+   } catch (error) {
+      console.log('fileEncryption ==>', error);
+   }
+};
 
 function MediaPreView() {
    const chatUser = currentChatUser;
@@ -154,7 +376,7 @@ function MediaPreView() {
                   cursorColor={ApplicationColors.mainColor}
                />
                <IconButton
-                  onPress={handleSendMedia(componentSelectedImages)}
+                  onPress={() => fileEncryption(componentSelectedImages)}
                   style={[commonStyles.alignItemsFlexEnd, commonStyles.r_5, commonStyles.b_m5]}>
                   <SendBlueIcon color="#fff" />
                </IconButton>

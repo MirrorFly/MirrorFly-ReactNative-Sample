@@ -1,14 +1,30 @@
 import React from 'react';
+import { NativeEventEmitter, NativeModules } from 'react-native';
+import RNFS from 'react-native-fs';
 import { useDispatch } from 'react-redux';
 import { uploadFileToSDK } from '../SDK/utils';
 import { useNetworkStatus } from '../common/hooks';
-import config from '../config/config';
-import { getUserIdFromJid, showToast } from '../helpers/chatHelpers';
+import { getExtension, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
 import { mediaStatusConstants } from '../helpers/constants';
 import { updateMediaStatus } from '../redux/chatMessageDataSlice';
 import { deleteProgress } from '../redux/progressDataSlice';
 import { getMediaProgress, useChatMessage } from '../redux/reduxHook';
 import { currentChatUser } from '../screens/ConversationScreen';
+
+const { MediaService } = NativeModules;
+const eventEmitter = new NativeEventEmitter(MediaService);
+
+const generateUniqueFilePath = async (filePath, counter = 0) => {
+   // Modify the file path if the counter is greater than 0
+   const extension = filePath.substring(filePath.lastIndexOf('.') + 1);
+   const baseName = filePath.substring(0, filePath.lastIndexOf('.'));
+   const modifiedFilePath = counter > 0 ? `${baseName}(${counter}).${extension}` : filePath;
+
+   // Check if the file exists
+   const exists = await RNFS.exists(modifiedFilePath);
+   // Return the modified file path if it does not exist, otherwise recurse
+   return exists ? generateUniqueFilePath(filePath, counter + 1) : modifiedFilePath;
+};
 
 const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    const userId = getUserIdFromJid(currentChatUser);
@@ -26,7 +42,6 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
          setMediaStatus(mediaStatusConstants.NOT_DOWNLOADED);
       }
       if (uploadStatus === 2 && downloadStatus === 2) {
-         setMediaStatus(mediaStatusConstants.LOADED);
       }
       if (uploadStatus === 3 && downloadStatus === 2) {
          setMediaStatus(mediaStatusConstants.NOT_UPLOADED);
@@ -37,31 +52,67 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    }, [uploadStatus, downloadStatus]);
 
    const handleDownload = async () => {
-      if (!networkState) {
-         showToast(config.internetErrorMessage);
-         return;
-      }
-      if (networkState) {
-         setMediaStatus(mediaStatusConstants.DOWNLOADING);
+      const {
+         msgBody: {
+            media,
+            media: {
+               is_downloaded,
+               local_path,
+               fileKey,
+               fileName = '',
+               file_size = '',
+               isLargeFile = false,
+               file_url,
+            } = {},
+         } = {},
+      } = chatMessage;
+
+      if (is_downloaded === 2) {
+         const decryptFileRes = await MediaService.decryptFile(local_path, fileKey, 'ddc0f15cc2c90fca');
+         console.log('decryptFileRes ==>', decryptFileRes);
+         if (!decryptFileRes?.success) return;
          let mediaStatusObj = {
             msgId,
             statusCode: 200,
-            fromUserId: userId,
-            local_path: '',
-            is_downloaded: 1,
+            userId,
+            local_path: 'file://' + decryptFileRes.decryptedFilePath,
+            is_downloaded: 2,
          };
+         console.log('mediaStatusObj ==>', mediaStatusObj);
          dispatch(updateMediaStatus(mediaStatusObj));
-         const response = await SDK.downloadMedia(msgId);
-         if (response?.statusCode !== 200) {
-            const mediaStatusObj = {
-               msgId,
-               fromUserId: userId,
-               downloadStatus: 0,
-               local_path: '',
-            };
-            dispatch(updateMediaStatus(mediaStatusObj));
-         }
+         setMediaStatus(mediaStatusConstants.LOADED);
+         return;
       }
+
+      // Listen for progress updates
+      const downloadProgressSubscription = eventEmitter?.addListener?.('downloadProgress', progress => {
+         console.log('downloadProgressSubscription ==>', downloadProgressSubscription);
+         console.log('handleNativeFileDownload downloadProgress', progress);
+         console.log('progress.downloadedBytes === fileSize ==>', file_size, progress.downloadedBytes === file_size);
+         if (progress.downloadedBytes === file_size) {
+            downloadProgressSubscription.remove();
+         }
+      });
+
+      console.log('fileKey ==>', file_size, fileKey, isLargeFile);
+      const extn = getExtension(file_url, false);
+
+      const { status, data, message } = await SDK.getMediaDownloadURL(file_url);
+      const cachePath = await generateUniqueFilePath(
+         `${RNFS.CachesDirectoryPath}/DEC_${fileName}_${Date.now()}.${extn}`,
+      );
+      console.log('cachePath ==>', cachePath);
+      const nativedownloadRes = await MediaService?.downloadFileInChunks(data, file_size, cachePath);
+      console.log('nativedownloadRes ==>', nativedownloadRes);
+      let mediaStatusObj = {
+         msgId,
+         statusCode: 200,
+         userId,
+         local_path: 'file://' + cachePath,
+         is_downloaded: 2,
+      };
+      console.log('mediaStatusObj ==>', mediaStatusObj);
+      dispatch(updateMediaStatus(mediaStatusObj));
    };
    const handleUpload = () => {
       if (!networkState) {

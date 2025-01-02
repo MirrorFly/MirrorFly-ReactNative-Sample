@@ -33,14 +33,15 @@ const Gallery = () => {
       try {
          setLoading(true);
          const photo = await CameraRoll.getAlbums({
-            albumType: 'All',
+            albumType: 'SmartAlbum',
+            assetType: 'All',
          });
          const _galleryData = await Promise.allSettled(
             photo.map(async item => {
                const params = {
                   first: 1,
                   assetType: 'All',
-                  groupTypes: 'Album',
+                  groupTypes: 'SmartAlbum',
                   include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'playableDuration', 'orientation'],
                   groupName: item.title,
                };
@@ -140,6 +141,7 @@ const Gallery = () => {
          <ScreenHeader title={'Send to ' + nickName} isSearchable={false} />
 
          <FlatList
+            style={{ backgroundColor: '#fff' }}
             numColumns={3}
             data={galleryData}
             keyExtractor={item => item.value.title.toString()}

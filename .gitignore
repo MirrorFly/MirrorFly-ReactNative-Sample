@@ -80,3 +80,4 @@ mirrorfly-uikit-react-native-*.tgz
 *.zip
 
 patches/react-native-network-logger+1.16.1.patch
+.codegpt

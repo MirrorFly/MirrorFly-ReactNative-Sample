@@ -5,8 +5,8 @@ import messaging from '@react-native-firebase/messaging';
 import { AppRegistry, AppState, Platform } from 'react-native';
 import App from './App';
 import { name as appName } from './app.json';
-import config from './src/config/config';
 import { isPipModeEnabled } from './src/Helper/Calls/Utility';
+import config from './src/config/config';
 import { MIRRORFLY_RN } from './src/helpers/constants';
 import { mirrorflyInitialize, mirrorflyNotificationHandler, setAppConfig, setupCallScreen } from './src/uikitMethods';
 
@@ -14,9 +14,12 @@ setAppConfig({ appSchema: MIRRORFLY_RN });
 
 /**
 // import { startNetworkLogging } from 'react-native-network-logger';
-// if (process.env?.NODE_ENV === 'development') {
-//    startNetworkLogging();
-// }
+//  startNetworkLogging();
+ */
+if (process.env?.NODE_ENV === 'development') {
+   require('./ReactotronConfig');
+}
+/**
  */
 mirrorflyInitialize({
    apiBaseUrl: config.API_URL,

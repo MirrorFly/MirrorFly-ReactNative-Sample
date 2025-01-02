@@ -742,10 +742,10 @@ export const handleSendMedia = selectedImages => () => {
  * @param {string} uri local file path of the video
  * @returns {Promise<string>} returns the base64 data of the Thumbnail Image
  */
-export const getVideoThumbImage = async uri => {
+export const getVideoThumbImage = async (uri, duration) => {
    const frame = await createThumbnail({
       url: uri,
-      timeStamp: 10000,
+      timeStamp: duration / 2,
    });
    const base64 = await RNFS.readFile(frame.path, 'base64');
    return base64;

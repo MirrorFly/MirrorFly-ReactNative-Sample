@@ -18,8 +18,13 @@
 		A7DAC5772BB2AF3C005DD787 /* fly_reconnecting_tone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A7DAC5752BB2AF3C005DD787 /* fly_reconnecting_tone.mp3 */; };
 		A7E1A3AC2BB1854C00F4D084 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A7E1A3AB2BB1854C00F4D084 /* GoogleService-Info.plist */; };
 		A7F049482BDA882700A0C4E8 /* RNCallKeep.m in Sources */ = {isa = PBXBuildFile; fileRef = A7F049472BDA882700A0C4E8 /* RNCallKeep.m */; };
+		CE1B14AF2D241C11005F4DCC /* MediaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B14AE2D241C11005F4DCC /* MediaService.swift */; };
 		CE2DD47D2AC589FD009815BD /* MyClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2DD47C2AC589FD009815BD /* MyClass.swift */; };
 		CE2DD47F2AC58EC9009815BD /* FlyEncryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2DD47E2AC58EC9009815BD /* FlyEncryption.swift */; };
+		CE312F4C2D2658B600069D84 /* MediaServiceBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = CE312F4B2D2658B600069D84 /* MediaServiceBridge.m */; };
+		CE312F4E2D26A36000069D84 /* FlyConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE312F4D2D26A36000069D84 /* FlyConstants.swift */; };
+		CE312F502D26AE6F00069D84 /* FlyUtiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE312F4F2D26AE6F00069D84 /* FlyUtiles.swift */; };
+		CE312F522D26AF7000069D84 /* FlyEncryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE312F512D26AF7000069D84 /* FlyEncryption.swift */; };
 		CE56DABC2AC447C100A2BB3A /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = CE56DABB2AC447C100A2BB3A /* NotificationService.m */; };
 		CE56DAC02AC447C100A2BB3A /* NotificationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CE56DAB82AC447C100A2BB3A /* NotificationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CE7BED472AC6E6F6001F131C /* sendDeliveredApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7BED462AC6E6F6001F131C /* sendDeliveredApiCall.swift */; };
@@ -79,9 +84,14 @@
 		A7F049462BDA882700A0C4E8 /* RNCallKeep.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNCallKeep.h; path = mirrorfly_rn/RNCallKeep.h; sourceTree = "<group>"; };
 		A7F049472BDA882700A0C4E8 /* RNCallKeep.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNCallKeep.m; path = mirrorfly_rn/RNCallKeep.m; sourceTree = "<group>"; };
 		AC2B14645BBFA4FFD6E2F689 /* Pods_mirrorfly_rn_mirrorfly_rnTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mirrorfly_rn_mirrorfly_rnTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE1B14AE2D241C11005F4DCC /* MediaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaService.swift; sourceTree = "<group>"; };
 		CE2DD47B2AC589FC009815BD /* NotificationExtension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NotificationExtension-Bridging-Header.h"; sourceTree = "<group>"; };
 		CE2DD47C2AC589FD009815BD /* MyClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyClass.swift; sourceTree = "<group>"; };
 		CE2DD47E2AC58EC9009815BD /* FlyEncryption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlyEncryption.swift; sourceTree = "<group>"; };
+		CE312F4B2D2658B600069D84 /* MediaServiceBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MediaServiceBridge.m; sourceTree = "<group>"; };
+		CE312F4D2D26A36000069D84 /* FlyConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FlyConstants.swift; path = "../../../../ios_core/p078-mirrorfly-ios-core-sdk/MirrorFlySDK/Common/FlyConstants.swift"; sourceTree = "<group>"; };
+		CE312F4F2D26AE6F00069D84 /* FlyUtiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlyUtiles.swift; sourceTree = "<group>"; };
+		CE312F512D26AF7000069D84 /* FlyEncryption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FlyEncryption.swift; path = "../../../../ios_core/p078-mirrorfly-ios-core-sdk/MirrorFlySDK/Common/FlyEncryption.swift"; sourceTree = "<group>"; };
 		CE56DAB82AC447C100A2BB3A /* NotificationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NotificationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE56DABA2AC447C100A2BB3A /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
 		CE56DABB2AC447C100A2BB3A /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
@@ -141,6 +151,8 @@
 		13B07FAE1A68108700A75B9A /* mirrorfly_rn */ = {
 			isa = PBXGroup;
 			children = (
+				CE312F512D26AF7000069D84 /* FlyEncryption.swift */,
+				CE312F4D2D26A36000069D84 /* FlyConstants.swift */,
 				CEEF16552CCA143C00A07FD7 /* mirrorfly_rn-Bridging-Header.h */,
 				A7E1A3AB2BB1854C00F4D084 /* GoogleService-Info.plist */,
 				CE57D1A62ABD800F0086E3A9 /* mirrorfly_rn.entitlements */,
@@ -153,6 +165,9 @@
 				A7F049462BDA882700A0C4E8 /* RNCallKeep.h */,
 				A7F049472BDA882700A0C4E8 /* RNCallKeep.m */,
 				CEEF16602CCB7AA200A07FD7 /* MediaConverter.m */,
+				CE1B14AE2D241C11005F4DCC /* MediaService.swift */,
+				CE312F4B2D2658B600069D84 /* MediaServiceBridge.m */,
+				CE312F4F2D26AE6F00069D84 /* FlyUtiles.swift */,
 			);
 			name = mirrorfly_rn;
 			sourceTree = "<group>";
@@ -542,9 +557,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				A7F049482BDA882700A0C4E8 /* RNCallKeep.m in Sources */,
+				CE1B14AF2D241C11005F4DCC /* MediaService.swift in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
+				CE312F502D26AE6F00069D84 /* FlyUtiles.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				CEEF16612CCB7AA200A07FD7 /* MediaConverter.m in Sources */,
+				CE312F522D26AF7000069D84 /* FlyEncryption.swift in Sources */,
+				CE312F4C2D2658B600069D84 /* MediaServiceBridge.m in Sources */,
+				CE312F4E2D26A36000069D84 /* FlyConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -579,6 +599,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 577998CE203365F73119AA79 /* Pods-mirrorfly_rn-mirrorfly_rnTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
@@ -612,6 +633,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4AD0826896E2B04F7D98C531 /* Pods-mirrorfly_rn-mirrorfly_rnTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;

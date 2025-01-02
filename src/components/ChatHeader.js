@@ -4,7 +4,7 @@ import { BackHandler, Keyboard, StyleSheet, Text, TextInput, View } from 'react-
 import { openSettings } from 'react-native-permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isRoomExist, initiateMirroflyCall } from '../Helper/Calls/Utility';
-import { RealmKeyValueStore } from '../SDK/SDK';
+import SDK, { RealmKeyValueStore } from '../SDK/SDK';
 import AlertModal from '../common/AlertModal';
 import IconButton from '../common/IconButton';
 import {

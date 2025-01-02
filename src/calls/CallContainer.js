@@ -45,7 +45,7 @@ const CallContainer = () => {
    React.useLayoutEffect(() => {
       if (Platform.OS === 'android' && Object.keys(connectionState).length !== 0) {
          dispatch(openCallModal());
-      } else if (Platform.OS === 'android' && Object.keys(connectionState).length === 0) closeCallModalActivity();
+      }
    }, []);
 
    const largeUserId = React.useMemo(() => {

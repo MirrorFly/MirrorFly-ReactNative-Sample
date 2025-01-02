@@ -4,12 +4,11 @@ import RNFS from 'react-native-fs';
 import { useDispatch } from 'react-redux';
 import { uploadFileToSDK } from '../SDK/utils';
 import { useNetworkStatus } from '../common/hooks';
-import { getExtension, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
+import { getCurrentChatUser, getExtension, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
 import { mediaStatusConstants } from '../helpers/constants';
 import { updateMediaStatus } from '../redux/chatMessageDataSlice';
 import { deleteProgress } from '../redux/progressDataSlice';
 import { getMediaProgress, useChatMessage } from '../redux/reduxHook';
-import { currentChatUser } from '../screens/ConversationScreen';
 
 const { MediaService } = NativeModules;
 const eventEmitter = new NativeEventEmitter(MediaService);
@@ -27,7 +26,7 @@ const generateUniqueFilePath = async (filePath, counter = 0) => {
 };
 
 const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
-   const userId = getUserIdFromJid(currentChatUser);
+   const userId = getUserIdFromJid(getCurrentChatUser());
    const dispatch = useDispatch();
    const chatMessage = useChatMessage(userId, msgId);
    const networkState = useNetworkStatus();
@@ -126,7 +125,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
       };
       const { msgId: _msgId, msgBody: { media = {}, media: { file = {} } = {} } = {} } = chatMessage;
       dispatch(updateMediaStatus(retryObj));
-      uploadFileToSDK(file, currentChatUser, _msgId, media);
+      uploadFileToSDK(file, getCurrentChatUser(), _msgId, media);
    };
 
    const cancelProgress = () => {

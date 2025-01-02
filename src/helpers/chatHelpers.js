@@ -88,7 +88,6 @@ import {
    getSelectedChats,
 } from '../redux/reduxHook';
 import store from '../redux/store';
-import { currentChatUser } from '../screens/ConversationScreen';
 import {
    CAMERA_SCREEN,
    CHATS_CREEN,
@@ -106,7 +105,7 @@ const { fileSize, imageFileSize, videoFileSize, audioFileSize, documentFileSize 
 
 const memoizedUsernameGraphemes = {};
 const splitter = new Graphemer();
-
+let currentChatUser = '';
 const documentAttachmentTypes = [
    DocumentPicker.types.allFiles,
    // DocumentPicker.types.pdf
@@ -1182,3 +1181,9 @@ export const findConversationMessageIndex = (msgId, message) => {
       return index;
    }
 };
+
+export const setCurrentChatUser = currentChatUserId => {
+   currentChatUser = currentChatUserId;
+};
+
+export const getCurrentChatUser = () => currentChatUser;

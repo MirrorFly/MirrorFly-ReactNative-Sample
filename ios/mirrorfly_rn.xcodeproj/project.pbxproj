@@ -24,6 +24,11 @@
 		A7B20D1A2CF6DF400075CC1B /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = A7B20D152CF6DF400075CC1B /* NotificationService.m */; };
 		A7B20D1B2CF6DF400075CC1B /* sendDeliveredApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B20D162CF6DF400075CC1B /* sendDeliveredApiCall.swift */; };
 		B42B189CF199C58746A31FD6 /* Pods_mirrorfly_rn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D29BAF4B0875C49FA458AB9 /* Pods_mirrorfly_rn.framework */; };
+		CE312F572D26CC7D00069D84 /* MediaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE312F542D26CC7D00069D84 /* MediaService.swift */; };
+		CE312F582D26CC7D00069D84 /* FlyUtiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE312F552D26CC7D00069D84 /* FlyUtiles.swift */; };
+		CE312F592D26CC7D00069D84 /* MediaServiceBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = CE312F562D26CC7D00069D84 /* MediaServiceBridge.m */; };
+		CE312F5B2D26CFA200069D84 /* FlyEncryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE312F5A2D26CFA200069D84 /* FlyEncryption.swift */; };
+		CE312F5D2D26CFE300069D84 /* FlyConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE312F5C2D26CFE300069D84 /* FlyConstants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,6 +98,12 @@
 		A7B20D142CF6DF400075CC1B /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
 		A7B20D152CF6DF400075CC1B /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
 		A7B20D162CF6DF400075CC1B /* sendDeliveredApiCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sendDeliveredApiCall.swift; sourceTree = "<group>"; };
+		CE312F532D26CC7C00069D84 /* mirrorfly_rn-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "mirrorfly_rn-Bridging-Header.h"; sourceTree = "<group>"; };
+		CE312F542D26CC7D00069D84 /* MediaService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaService.swift; sourceTree = "<group>"; };
+		CE312F552D26CC7D00069D84 /* FlyUtiles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlyUtiles.swift; sourceTree = "<group>"; };
+		CE312F562D26CC7D00069D84 /* MediaServiceBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaServiceBridge.m; sourceTree = "<group>"; };
+		CE312F5A2D26CFA200069D84 /* FlyEncryption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlyEncryption.swift; sourceTree = "<group>"; };
+		CE312F5C2D26CFE300069D84 /* FlyConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FlyConstants.swift; path = "../../../../ios_core/p078-mirrorfly-ios-core-sdk/MirrorFlySDK/Common/FlyConstants.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -143,6 +154,10 @@
 		13B07FAE1A68108700A75B9A /* mirrorfly_rn */ = {
 			isa = PBXGroup;
 			children = (
+				CE312F5C2D26CFE300069D84 /* FlyConstants.swift */,
+				CE312F552D26CC7D00069D84 /* FlyUtiles.swift */,
+				CE312F542D26CC7D00069D84 /* MediaService.swift */,
+				CE312F562D26CC7D00069D84 /* MediaServiceBridge.m */,
 				A7B20C242CF5F71C0075CC1B /* RNCallKeep.h */,
 				A7B20C252CF5F71C0075CC1B /* RNCallKeep.m */,
 				A7B20BFB2CF5EB1B0075CC1B /* mirrorfly_rn.entitlements */,
@@ -156,6 +171,8 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
 				351382106977CC60AE8C9180 /* PrivacyInfo.xcprivacy */,
+				CE312F532D26CC7C00069D84 /* mirrorfly_rn-Bridging-Header.h */,
+				CE312F5A2D26CFA200069D84 /* FlyEncryption.swift */,
 			);
 			name = mirrorfly_rn;
 			sourceTree = "<group>";
@@ -318,7 +335,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						LastSwiftMigration = 1120;
+						LastSwiftMigration = 1530;
 					};
 					A7B20CF92CF6DD2D0075CC1B = {
 						CreatedOnToolsVersion = 16.0;
@@ -535,7 +552,12 @@
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				A7B20C262CF5F71C0075CC1B /* RNCallKeep.m in Sources */,
+				CE312F5B2D26CFA200069D84 /* FlyEncryption.swift in Sources */,
+				CE312F582D26CC7D00069D84 /* FlyUtiles.swift in Sources */,
+				CE312F572D26CC7D00069D84 /* MediaService.swift in Sources */,
+				CE312F5D2D26CFE300069D84 /* FlyConstants.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				CE312F592D26CC7D00069D84 /* MediaServiceBridge.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -656,6 +678,7 @@
 				PRODUCT_NAME = mirrorfly_rn;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Mirror Fly Qa Development Profile";
+				SWIFT_OBJC_BRIDGING_HEADER = "mirrorfly_rn-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -689,6 +712,7 @@
 				PRODUCT_NAME = mirrorfly_rn;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Mirror Fly Qa Inhouse Profile";
+				SWIFT_OBJC_BRIDGING_HEADER = "mirrorfly_rn-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

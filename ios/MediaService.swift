@@ -7,6 +7,7 @@
 
 import Foundation
 import os.log
+import React
 
 @objc(MediaService)
 class MediaService: RCTEventEmitter {

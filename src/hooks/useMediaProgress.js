@@ -100,7 +100,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
       const cachePath = await generateUniqueFilePath(
          `${RNFS.CachesDirectoryPath}/DEC_${fileName}_${Date.now()}.${extn}`,
       );
-      console.log('cachePath ==>', cachePath);
+      console.log('status cachePath ==>', status, cachePath);
       const nativedownloadRes = await MediaService?.downloadFileInChunks(data, file_size, cachePath);
       console.log('nativedownloadRes ==>', nativedownloadRes);
       let mediaStatusObj = {
@@ -112,6 +112,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
       };
       console.log('mediaStatusObj ==>', mediaStatusObj);
       dispatch(updateMediaStatus(mediaStatusObj));
+      !fileKey && setMediaStatus(mediaStatusConstants.LOADED);
    };
    const handleUpload = () => {
       if (!networkState) {

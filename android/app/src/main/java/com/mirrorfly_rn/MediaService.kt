@@ -141,6 +141,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                 fos.write(finalChunk)
                 fos.close()
                 fis.close()
+                val fosFile = File(outputFilePath)
                 withContext(Dispatchers.Main) {
                     promise.resolve(Arguments.createMap().apply {
                         putBoolean("success", true)
@@ -148,6 +149,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                         putString("message", "File encrypted successfully")
                         putString("encryptedFilePath", outputFilePath)
                         putInt("totalBytesWritten", totalBytesWritten.toInt())
+                        putInt("size", fosFile.length().toInt())
                     })
                 }
             } catch (e: Exception) {
@@ -282,11 +284,11 @@ class MediaService(var reactContext: ReactApplicationContext?) :
 
             val call = apiInterface?.uploadBinaryData(uploadUrl, requestBody)
             val response = call?.execute()
-            Log.d(name, "progress ${response?.isSuccessful}")
+            Log.d(name, "progress $response")
             if (response != null && response.isSuccessful) {
                 true
             } else {
-                Log.e(name, "Chunk upload failed: ${response?.errorBody()?.string()}")
+                Log.e(name, "Chunk upload failed: $response")
                 false
             }
         } catch (e: Exception) {
@@ -338,12 +340,10 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                     totalBytesRead += bytesRead
                     Log.d(name, "uploadUrl $bytesRead $uploadUrl")
                     // Upload the chunk
-                    //val success = withContext(Dispatchers.IO) {
                     val success = uploadChunk(
                         uploadUrl,
                         buffer.copyOf(bytesRead)
                     ) // Use only the read portion of the buffer
-                    //   }
 
                     if (!success) {
                         withContext(Dispatchers.Main) {

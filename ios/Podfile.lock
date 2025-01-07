@@ -1354,7 +1354,7 @@ PODS:
     - Yoga
   - react-native-contacts (8.0.4):
     - React-Core
-  - react-native-create-thumbnail (2.0.1):
+  - react-native-create-thumbnail (2.0.0):
     - React-Core
   - react-native-document-picker (9.3.1):
     - DoubleConversion
@@ -2209,7 +2209,7 @@ SPEC CHECKSUMS:
   react-native-cameraroll: 63a9215d849722dea63206aa35dc9a58e6ac6d29
   react-native-compressor: 1e8802ff0a2286d878fc848435deef445fecc0d8
   react-native-contacts: cdeb7709dcc626e5fd7ee3d3e3685357e877cbd5
-  react-native-create-thumbnail: 4ffd51a6c02a9313edc74e2460cd07264221f554
+  react-native-create-thumbnail: ab55d24aea01723cf386f18b0b542aabb1982f27
   react-native-document-picker: 1928548d8b19bbc9f2219b01f1d350aa8ff76508
   react-native-geocoder: 757427682892bb256f3b3745858cc90eba148a8e
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b

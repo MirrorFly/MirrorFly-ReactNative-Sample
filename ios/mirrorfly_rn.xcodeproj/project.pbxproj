@@ -28,7 +28,6 @@
 		CE312F582D26CC7D00069D84 /* FlyUtiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE312F552D26CC7D00069D84 /* FlyUtiles.swift */; };
 		CE312F592D26CC7D00069D84 /* MediaServiceBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = CE312F562D26CC7D00069D84 /* MediaServiceBridge.m */; };
 		CE312F5B2D26CFA200069D84 /* FlyEncryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE312F5A2D26CFA200069D84 /* FlyEncryption.swift */; };
-		CE312F5D2D26CFE300069D84 /* FlyConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE312F5C2D26CFE300069D84 /* FlyConstants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -103,7 +102,6 @@
 		CE312F552D26CC7D00069D84 /* FlyUtiles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlyUtiles.swift; sourceTree = "<group>"; };
 		CE312F562D26CC7D00069D84 /* MediaServiceBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaServiceBridge.m; sourceTree = "<group>"; };
 		CE312F5A2D26CFA200069D84 /* FlyEncryption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlyEncryption.swift; sourceTree = "<group>"; };
-		CE312F5C2D26CFE300069D84 /* FlyConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FlyConstants.swift; path = "../../../../ios_core/p078-mirrorfly-ios-core-sdk/MirrorFlySDK/Common/FlyConstants.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -154,7 +152,6 @@
 		13B07FAE1A68108700A75B9A /* mirrorfly_rn */ = {
 			isa = PBXGroup;
 			children = (
-				CE312F5C2D26CFE300069D84 /* FlyConstants.swift */,
 				CE312F552D26CC7D00069D84 /* FlyUtiles.swift */,
 				CE312F542D26CC7D00069D84 /* MediaService.swift */,
 				CE312F562D26CC7D00069D84 /* MediaServiceBridge.m */,
@@ -555,7 +552,6 @@
 				CE312F5B2D26CFA200069D84 /* FlyEncryption.swift in Sources */,
 				CE312F582D26CC7D00069D84 /* FlyUtiles.swift in Sources */,
 				CE312F572D26CC7D00069D84 /* MediaService.swift in Sources */,
-				CE312F5D2D26CFE300069D84 /* FlyConstants.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				CE312F592D26CC7D00069D84 /* MediaServiceBridge.m in Sources */,
 			);

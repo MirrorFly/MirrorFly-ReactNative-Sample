@@ -7,6 +7,7 @@ import {
    Image,
    Keyboard,
    KeyboardAvoidingView,
+   NativeEventEmitter,
    NativeModules,
    Platform,
    Pressable,
@@ -14,6 +15,7 @@ import {
    TextInput,
    View,
 } from 'react-native';
+import RNFS from 'react-native-fs';
 import PagerView from 'react-native-pager-view';
 import IconButton from '../common/IconButton';
 import { DeleteBinIcon, LeftArrowIcon, PreViewAddIcon, RightArrowIcon, SendBlueIcon } from '../common/Icons';
@@ -21,9 +23,18 @@ import NickName from '../common/NickName';
 import VideoInfo from '../common/VideoInfo';
 import UserAvathar from '../components/UserAvathar';
 import ApplicationColors from '../config/appColors';
-import { getCurrentChatUser, getType, getUserIdFromJid } from '../helpers/chatHelpers';
+import config from '../config/config';
+import {
+   calculateWidthAndHeight,
+   getCurrentChatUser,
+   getThumbImage,
+   getType,
+   getUserIdFromJid,
+   getVideoThumbImage,
+} from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../helpers/constants';
 import commonStyles from '../styles/commonStyles';
+import { mflog } from '../uikitMethods';
 import { CAMERA_SCREEN, GALLERY_PHOTOS_SCREEN } from './constants';
 
 const messagObj = {
@@ -51,6 +62,7 @@ const messagObj = {
 
 const { MediaService } = NativeModules;
 console.log('MediaService ==>', MediaService);
+const eventEmitter = new NativeEventEmitter(MediaService);
 let subscription = null,
    commitUrl,
    fileUploadDetails = {};
@@ -63,7 +75,7 @@ const init = () => {
    }
 };
 
-// // // init();
+init();
 
 // // // 9170942293751735303909071tlEI000Ot4arFeB89Xne.mp4 iTF5bkx1Iu02y45rU8J9IiakFrz5Vsii
 // // // 91709422937517353003085353SG532RaATaivtT3Wm62.mp4
@@ -180,63 +192,107 @@ const init = () => {
 
 const fileEncryption = async selectedItems => {
    try {
-      const file = selectedItems[0].fileDetails;
-      file.size = file.fileSize;
+      const currentChatUser = getCurrentChatUser();
+      const file = { ...selectedItems[0].fileDetails };
+
+      const {
+         extension = 'mp4',
+         type = 'video',
+         modificationTimestamp = 1735887744008,
+         uri = 'file:///Users/user/Library/Developer/CoreSimulator/Devices/9FA93417-BF50-47F6-A8E8-8ED3BA28B0CC/data/Media/DCIM/100APPLE/IMG_0014.MP4',
+         fileSize = 10498677,
+         width = 1280,
+         height = 720,
+         filename = 'SampleVideo_1280x720_10mb.mp4',
+         duration = 62280,
+      } = file;
+
+      if (type.includes('image')) file.thumbImage = await getThumbImage(uri);
+      if (type.includes('video')) file.thumbImage = await getVideoThumbImage(uri, duration);
+
+      const outputFilePath = `${RNFS.CachesDirectoryPath}/DEC_${filename}_${Date.now()}.${extension}`;
+      const fileStat = await RNFS.stat(uri);
+      console.log('fileStat ==>', JSON.stringify(fileStat, null, 2));
+      const obj = {
+         inputFilePath: fileStat.originalFilepath || fileStat.path.replace('file://', ''),
+         outputFilePath,
+         chunkSize: 5 * 1024 * 1024,
+         iv: 'ddc0f15cc2c90fca',
+         fileName: filename,
+      };
+      console.log('obj ==>', JSON.stringify(obj, null, 2));
       // Step 1: Initialize values for encryption
-      // const initRes = await MediaService.defineValues(obj);
-      // if (!initRes?.success) {
-      //    mflog('Upload File defineValues failed:', JSON.stringify(initRes, null, 2));
-      //    return;
-      // }
-      // console.log('Upload File encryptionKey ==>', initRes?.encryptionKey);
-      // fileUploadDetails.encryptkey = initRes?.encryptionKey;
-      // messagObj.media.file_key = initRes?.encryptionKey;
+      const initRes = await MediaService.defineValues(obj);
+      if (!initRes?.success) {
+         mflog('Upload File defineValues failed:', JSON.stringify(initRes, null, 2));
+         return;
+      }
+      console.log('Upload File encryptionKey ==>', initRes?.encryptionKey);
+      messagObj.media.file_key = initRes?.encryptionKey;
       // Step 2: Encrypt the file after successful initialization
-      // const encryptFileRes = await MediaService.encryptFile();
-      // if (!encryptFileRes?.success) {
-      //    mflog('Upload File encryption failed:', JSON.stringify(encryptFileRes, null, 2));
-      //    return;
-      // }
-      // fileUploadDetails.encryptedFilePath = encryptFileRes.encryptedFilePath;
-      // console.log('Upload File encryption successful:', JSON.stringify(encryptFileRes, null, 2));
-      // return;
+      const encryptFileRes = await MediaService.encryptFile();
+      if (!encryptFileRes?.success) {
+         mflog('Upload File encryption failed:', JSON.stringify(encryptFileRes, null, 2));
+         return;
+      }
+      console.log('Upload File encryption successful:', JSON.stringify(encryptFileRes, null, 2));
+      const fileStatEncrypted = await RNFS.stat(uri);
       const msgId = SDK.randomString();
+      file.size = fileStatEncrypted.size;
+      const _file = {
+         ...file,
+         size: encryptFileRes.size,
+      };
+
       const largeFileUploadRes = await SDK.largeFileUpload({
-         file,
+         file: _file,
          chatType: 'chat',
          toUser: currentChatUser,
          msgId,
       });
       const { status, data: { fileToken, commitUrl: _commitUrl, uploadId, storage, uploadUrls } = {} } =
          largeFileUploadRes;
-      if (status !== 200) return;
+      if (status !== 200) return console.log('largeFileUploadRes ==>', largeFileUploadRes);
+
       commitUrl = _commitUrl;
-      const result = await MediaService.uploadFileInChunks(uploadUrls, file.uri);
+      // Listen for progress updates
+      const subscription = eventEmitter.addListener('UploadProgress', progress => {
+         console.log('Upload Progress:', progress);
+         if (progress.progress == 100) {
+            subscription.remove();
+         }
+      });
+      const result = await MediaService.uploadFileInChunks(uploadUrls, encryptFileRes.encryptedFilePath);
       console.log('Upload File Result:', result);
+      console.log('_commitUrl ==>', _commitUrl);
       _commitUrl && (await SDK.uploadCommitURL(_commitUrl));
+
+      let webWidth = 0,
+         webHeight = 0,
+         androidWidth = 0,
+         androidHeight = 0,
+         originalWidth = 0,
+         originalHeight = 0;
+      const mediaDimension = calculateWidthAndHeight(file?.width, file?.height);
+      ({ webWidth, webHeight, androidWidth, androidHeight } = mediaDimension);
 
       messagObj.media.file_url = fileToken;
       messagObj.media.thumb_image = file.thumbImage;
-      messagObj.media.file_size = file.fileSize;
+      messagObj.media.file_size = _file.size;
       messagObj.media.duration = file.duration;
+      messagObj.media.androidHeight = androidHeight;
+      messagObj.media.androidWidth = androidWidth;
+      messagObj.media.webHeight = webHeight;
+      messagObj.media.webWidth = webWidth;
+      messagObj.media.originalHeight = originalHeight;
+      messagObj.media.originalWidth = originalWidth;
       delete file.thumbImage;
 
       console.log('messagObj ==>', JSON.stringify(messagObj, null, 2));
 
       const cipher = SDK.encryptMsg(JSON.stringify(messagObj), msgId);
 
-      const stanza = `<message
-         id=${msgId}
-         to=${currentChatUser}
-         type="chat"
-         xmlns="jabber:client">
-         <chatcontent
-            broadcast_id=""
-            message_type="video"
-            xmlns="urn:xmpp:content"
-         />
-         <body message_type="video">${cipher}</body>
-      </message>`;
+      const stanza = `<message id=${msgId} to=${currentChatUser} type="chat" xmlns="jabber:client"><chatcontent broadcast_id="" message_type="video" xmlns="urn:xmpp:content" /> <body message_type="video">${cipher}</body></message>`;
 
       const xmlDoc = new DOMParser().parseFromString(stanza, 'text/xml').firstChild;
 

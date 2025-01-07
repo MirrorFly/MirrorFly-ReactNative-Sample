@@ -17,6 +17,8 @@ class MediaService: RCTEventEmitter {
   private var outputFilePath: String = ""
   private var chunkSize: Int = (5 * 1024 * 1024)
   private var iv: String = ""
+  private var fileName: String = ""
+  private var messageType: String = ""
   
   private var hasListeners = false
   
@@ -53,6 +55,8 @@ class MediaService: RCTEventEmitter {
     self.outputFilePath = outputFilePath
     self.chunkSize = obj["chunkSize"] as? Int ?? self.chunkSize
     self.iv = obj["iv"] as? String ?? ""
+    self.fileName = obj["fileName"] as? String ?? ""
+    self.messageType = obj["messageType"] as? String ?? ""
     
     // Check if the file exists and is readable
     let fileManager = FileManager.default
@@ -83,7 +87,7 @@ class MediaService: RCTEventEmitter {
   
   // Override to specify the supported events
   override func supportedEvents() -> [String] {
-    return ["downloadProgress"] // List all event names you will send
+    return ["downloadProgress","UploadProgress"] // List all event names you will send
   }
   
   
@@ -175,8 +179,6 @@ class MediaService: RCTEventEmitter {
         var chunkIndex = 0
         let fileSize = fileHandle.seekToEndOfFile()
         fileHandle.seek(toFileOffset: 0) // Reset to the beginning
-        
-        var uploadResponses: [[String: Any]] = []
         while offset < fileSize {
           let length = min(chunkSize, Int(fileSize - offset))
           fileHandle.seek(toFileOffset: offset)
@@ -191,12 +193,13 @@ class MediaService: RCTEventEmitter {
           print("Uploading chunk \(chunkIndex) to \(uploadUrl)")
           let uploadResult = self.uploadChunk(data: data, to: uploadUrl)
           
-          uploadResponses.append([
+          let progressParams: [String: Any] = [
             "chunkIndex": chunkIndex,
             "offset": offset,
             "bytesUploaded": data.count,
             "uploadStatus": uploadResult
-          ])
+          ]
+          self.sendEvent(eventName: "UploadProgress", params: progressParams)
           
           offset += UInt64(length)
           chunkIndex += 1
@@ -208,7 +211,7 @@ class MediaService: RCTEventEmitter {
           resolver([
             "success": true,
             "statusCode": 200,
-            "uploadResponses": uploadResponses
+            "uploadResponses": "File uploaded successfully"
           ])
         }
       } catch {
@@ -312,6 +315,62 @@ class MediaService: RCTEventEmitter {
           "message": "File downloaded successfully",
           "cachePath": cachePath
         ])
+      }
+    }
+  }
+  
+  @objc func decryptFile(
+    _ inputFilePath: String,
+    keyString: String,
+    iv: String,
+    resolver: @escaping RCTPromiseResolveBlock,
+    rejecter: @escaping RCTPromiseRejectBlock){
+      if let url = URL(string: inputFilePath){
+        let folderPath = url.deletingLastPathComponent()
+        let fileName = url.lastPathComponent
+         let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName:fileName, key: keyString)
+
+        if let (filePath , _ ) = streamManager.decryptStreaming(at: folderPath, fileName: fileName,key:keyString, iv: iv){
+          resolver([
+            "success": true,
+            "statusCode": 200,
+            "message": "File decrypted successfully",
+            "decryptedFilePath": filePath.absoluteString
+          ])
+        }else{
+          resolver([
+            "success": false,
+            "statusCode": 500,
+            "message": "Failed decrypted",
+          ])
+        }
+      }
+    }
+  
+  @objc func encryptFile(
+    _ resolver: @escaping RCTPromiseResolveBlock,
+    rejecter: @escaping RCTPromiseRejectBlock
+  ){
+    DispatchQueue.global(qos: .background).async {
+      let filePath = "file://" + self.inputFilePath
+      if let url = URL(string: filePath){
+        
+        
+        let folderPath = url.deletingLastPathComponent()
+        print("Path up to folder name: \(folderPath)")
+        let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName: self.fileName, key: self.keyString)
+        print("#upload initStreamManager")
+        let (bytesWritten,lastChunkFileUrl) = streamManager.startStreaming()
+        print("bytesWritten ==?", bytesWritten, lastChunkFileUrl)
+        DispatchQueue.main.async {
+          resolver([
+            "success": true,
+            "statusCode": 200,
+            "message": "File encrypted successfully",
+            "encryptedFilePath": lastChunkFileUrl.absoluteString,
+            "size": bytesWritten
+          ])
+        }
       }
     }
   }

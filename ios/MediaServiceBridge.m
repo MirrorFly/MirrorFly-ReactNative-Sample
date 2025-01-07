@@ -31,4 +31,13 @@ RCT_EXTERN_METHOD(defineValues:(NSDictionary *)obj
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(encryptFile:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(decryptFile:(NSString *)inputFilePath 
+                  keyString:(NSString *)keyString
+                  iv:(NSString *)iv
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
 @end

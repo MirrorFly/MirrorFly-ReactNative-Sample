@@ -50,7 +50,7 @@ function ReplyMessage(props) {
 
    const {
       msgBody = {},
-      msgBody: { message_type = '', message = '', media = {}, media: { audioType = '' } = {} } = {},
+      msgBody: { message_type = '', message = '', media = {} } = {},
       deleteStatus = 0,
       recallStatus = 0,
       publisherJid = '',
@@ -266,7 +266,6 @@ function ReplyMessage(props) {
                   isSender
                      ? commonStyles.bg_color(themeColorPalatte.chatSenderSecondaryColor)
                      : commonStyles.bg_color(themeColorPalatte.chatReceiverSecondaryColor),
-                  ,
                ]}>
                <NickName
                   userId={publisherId}

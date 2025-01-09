@@ -17,7 +17,7 @@ import commonStyles from '../styles/commonStyles';
 const RenderItem = ({ item, onhandlePress, selectedUsers, searchText }) => {
    const stringSet = getStringSet();
    const themeColorPalatte = useThemeColorPalatte();
-   let { nickName, image: imageToken, colorCode, status, userId } = useRoasterData(item?.userId) || {};
+   let { nickName, image: imageToken, colorCode, status } = useRoasterData(item?.userId) || {};
    const { params: { prevScreen = '' } = {} } = useRoute();
    const [isChecked, setIsChecked] = React.useState(false);
    const isNewGrpSrn = prevScreen === NEW_GROUP;

@@ -78,8 +78,7 @@ function MenuScreen() {
       );
    };
 
-   /*    const renderThemeComponent = () => {
-
+   /** const renderThemeComponent = () => {
       const handleSwitchToggle = async value => {
          setTheme(!value ? 'light' : 'dark');
       };

@@ -683,12 +683,12 @@ export const callBacks = {
                store.dispatch(addRecentChatItem(res));
                store.dispatch(addChatMessageItem(res));
             }
-            if (
-               (!res.notification && (res.msgType === 'receiveMessage' || res.msgType === 'carbonReceiveMessage')) ||
-               (res.msgBody.message_type === NOTIFICATION.toLowerCase() &&
-                  res.msgBody.message === '2' &&
-                  getCurrentUserJid() === res.toUserJid)
-            ) {
+            const isReceiveMessage = ['receiveMessage', 'carbonReceiveMessage'].includes(res.msgType);
+            const isNotificationMessage =
+               res.msgBody.message_type === NOTIFICATION.toLowerCase() &&
+               res.msgBody.message === '2' &&
+               getCurrentUserJid() === res.toUserJid;
+            if ((!res.notification && !res.editMessageId && isReceiveMessage) || isNotificationMessage) {
                pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.fromUserJid);
             }
             break;

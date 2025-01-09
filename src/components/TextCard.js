@@ -1,22 +1,54 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Text from '../common/Text';
 import { getConversationHistoryTime } from '../common/timeStamp';
 import { escapeRegExpReservedChars, getMessageStatus } from '../helpers/chatHelpers';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
 
 const TextCard = ({ item, isSender }) => {
+   const themeColorPalatte = useThemeColorPalatte();
    const { createdAt = '', msgStatus = 0, msgBody: { message = '', replyTo = '' } = {} } = item;
 
    return (
       <View style={commonStyles.paddingHorizontal_4}>
-         {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
-         <Text style={styles.message}>
-            <ChatConversationHighlightedText text={message} textStyle={styles.message} searchValue={''} />
+         {Boolean(replyTo) && <ReplyMessage message={item} isSender={isSender} />}
+         <Text
+            style={[
+               styles.message,
+               commonStyles.textColor(
+                  isSender
+                     ? themeColorPalatte.chatSenderPrimaryTextColor
+                     : themeColorPalatte.chatReceiverPrimaryTextColor,
+               ),
+            ]}>
+            <ChatConversationHighlightedText
+               text={message}
+               textStyle={{
+                  ...styles.message,
+                  ...commonStyles.textColor(
+                     isSender
+                        ? themeColorPalatte.chatSenderPrimaryTextColor
+                        : themeColorPalatte.chatReceiverPrimaryTextColor,
+                  ),
+               }}
+               searchValue={''}
+            />
          </Text>
          <View style={styles.timeStamp}>
             {isSender && getMessageStatus(msgStatus)}
-            <Text style={styles.timeStampText}>{getConversationHistoryTime(createdAt)}</Text>
+            <Text
+               style={[
+                  styles.timeStampText,
+                  commonStyles.textColor(
+                     isSender
+                        ? themeColorPalatte.chatSenderSecondaryTextColor
+                        : themeColorPalatte.chatReceiverSecondaryTextColor,
+                  ),
+               ]}>
+               {getConversationHistoryTime(createdAt)}
+            </Text>
          </View>
       </View>
    );
@@ -44,7 +76,6 @@ const styles = StyleSheet.create({
       fontSize: 14,
       paddingHorizontal: 5,
       paddingVertical: 8,
-      color: '#313131',
       lineHeight: 20,
    },
    timeStamp: {
@@ -56,12 +87,10 @@ const styles = StyleSheet.create({
       justifyContent: 'flex-end',
    },
    timeStampText: {
-      paddingLeft: 4,
-      color: '#455E93',
+      paddingHorizontal: 4,
       fontSize: 10,
       fontWeight: '400',
    },
-
    highlight: {
       backgroundColor: '#D69C23',
       fontWeight: 'bold',

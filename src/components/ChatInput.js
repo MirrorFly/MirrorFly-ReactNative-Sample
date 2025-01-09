@@ -1,17 +1,19 @@
 import React, { createRef } from 'react';
-import { Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Keyboard, StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { handleSendMsg } from '../SDK/utils';
 import AttachmentMenu from '../common/AttachmentMenu';
 import { SendBtn } from '../common/Button';
 import IconButton from '../common/IconButton';
 import { AttachmentIcon, EmojiIcon, KeyboardIcon } from '../common/Icons';
-import ApplicationColors from '../config/appColors';
+import Text from '../common/Text';
+import TextInput from '../common/TextInput';
 import config from '../config/config';
 import { attachmentMenuIcons, getUserIdFromJid } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
+import { getStringSet } from '../localization/stringSet';
 import { setTextMessage } from '../redux/draftSlice';
-import { useTextMessage, useUserType } from '../redux/reduxHook';
+import { useTextMessage, useThemeColorPalatte, useUserType } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import EmojiOverlay from './EmojiPicker';
 
@@ -20,6 +22,8 @@ chatInputRef.current = {};
 
 function ChatInput({ chatUser }) {
    const userId = getUserIdFromJid(chatUser);
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
    const dispatch = useDispatch();
    const typingTimeoutRef = React.useRef(null);
    const message = useTextMessage(userId) || '';
@@ -90,25 +94,29 @@ function ChatInput({ chatUser }) {
                containerStyle={styles.emojiPickerIconWrapper}
                style={styles.emojiPickerIcon}
                onPress={toggleEmojiPicker}>
-               {isEmojiPickerShowing ? <KeyboardIcon /> : <EmojiIcon />}
+               {isEmojiPickerShowing ? (
+                  <KeyboardIcon color={themeColorPalatte.iconColor} />
+               ) : (
+                  <EmojiIcon color={themeColorPalatte.iconColor} />
+               )}
             </IconButton>
             <TextInput
-               ref={chatInputRef}
+               inputRef={chatInputRef}
                value={message}
-               style={styles.inputTextbox}
+               style={[styles.inputTextbox, { color: themeColorPalatte.primaryTextColor }]}
                onChangeText={onChangeMessage}
-               placeholder="Start Typing..."
-               placeholderTextColor="#767676"
+               placeholder={stringSet.PLACEHOLDERS.CHAT_INPUT_PLACEHOLDER}
+               placeholderTextColor={themeColorPalatte.placeholderTextColor}
                numberOfLines={1}
                multiline={true}
-               cursorColor={ApplicationColors.mainColor}
+               cursorColor={themeColorPalatte.primaryColor}
+               selectionColor={themeColorPalatte.primaryColor}
                onFocus={handleCloseEmojiWindow}
             />
-
             <View style={commonStyles.marginHorizontal_10}>
                {/* Remove this view tag while adding mic icon */}
                <IconButton onPress={handleAttachmentconPressed} style={styles.attachmentIcon}>
-                  <AttachmentIcon />
+                  <AttachmentIcon color={themeColorPalatte.iconColor} />
                </IconButton>
             </View>
 
@@ -120,7 +128,7 @@ function ChatInput({ chatUser }) {
                 </IconButton> */}
          </>
       );
-   }, [message, isEmojiPickerShowing]);
+   }, [message, isEmojiPickerShowing, themeColorPalatte]);
 
    const renderSendButton = React.useMemo(() => {
       const isAllowSendMessage = Boolean(message.trim());
@@ -130,9 +138,18 @@ function ChatInput({ chatUser }) {
 
    if (MIX_BARE_JID.test(chatUser) && !userType) {
       return (
-         <View style={styles.container}>
-            <Text style={[commonStyles.px_4, styles.cantMessaegs]}>
-               You can't send messages to this group because you're no longer a participant
+         <View
+            style={[
+               styles.container,
+               { backgroundColor: themeColorPalatte.screenBgColor, borderColor: themeColorPalatte.mainBorderColor },
+            ]}>
+            <Text
+               style={[
+                  commonStyles.px_4,
+                  styles.cantMessaegs,
+                  { color: themeColorPalatte.groupNotificationTextColour },
+               ]}>
+               {stringSet.CHAT_SCREEN.NO_LONGER_PARTICIPANT_SEND_MESSAGE}
             </Text>
          </View>
       );
@@ -140,8 +157,14 @@ function ChatInput({ chatUser }) {
 
    return (
       <>
-         <View style={styles.container}>
-            <View style={styles.textInputContainer}>{textInputRender}</View>
+         <View
+            style={[
+               styles.container,
+               { backgroundColor: themeColorPalatte.screenBgColor, borderColor: themeColorPalatte.mainBorderColor },
+            ]}>
+            <View style={[styles.textInputContainer, { borderColor: themeColorPalatte.mainBorderColor }]}>
+               {textInputRender}
+            </View>
             {renderSendButton}
          </View>
          <AttachmentMenu
@@ -165,14 +188,14 @@ function ChatInput({ chatUser }) {
 export default React.memo(ChatInput);
 
 const styles = StyleSheet.create({
-   cantMessaegs: { textAlign: 'center', fontSize: 15, color: ApplicationColors.groupNotificationTextColour },
+   cantMessaegs: { textAlign: 'center', fontSize: 15 },
    container: {
       flexDirection: 'row',
       width: '100%',
       alignItems: 'center',
       borderTopWidth: 0.25,
-      borderColor: ApplicationColors.mainBorderColor,
       padding: 8,
+      justifyContent: 'center',
    },
    textInputContainer: {
       flexDirection: 'row',
@@ -182,7 +205,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       borderWidth: 1,
       borderRadius: 40,
-      borderColor: ApplicationColors.mainBorderColor,
+      position: 'relative',
    },
    RecordUIContainer: {
       flexDirection: 'row',
@@ -192,7 +215,6 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       borderWidth: 1,
       borderRadius: 40,
-      borderColor: ApplicationColors.mainBorderColor,
    },
    emojiPickerIconWrapper: {
       marginLeft: 5,
@@ -255,13 +277,11 @@ const styles = StyleSheet.create({
       alignItems: 'center',
    },
    micIcon: {
-      backgroundColor: '#3276E2',
       padding: 10,
       borderRadius: 35,
    },
    durationText: {
       fontSize: 12,
-      color: '#3276E2',
       marginLeft: 20,
    },
    totalTimeContainer: {
@@ -276,7 +296,7 @@ const styles = StyleSheet.create({
       marginHorizontal: 10,
       justifyContent: 'space-between',
    },
-   totalDurationText: { fontSize: 12, color: '#3276E2', marginLeft: 6 },
+   totalDurationText: { fontSize: 12, marginLeft: 6 },
    cancelText: {
       color: '#363636',
       fontWeight: '400',

@@ -1,18 +1,24 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
-import { Text } from 'react-native';
-import SDK from '../SDK/SDK';
-import MarqueeText from '../common/MarqueeText';
 import { useNetworkStatus } from '../common/hooks';
+import Text from '../common/Text';
 import { getLastseen } from '../common/timeStamp';
 import { formatUserIdToJid, getUserIdFromJid } from '../helpers/chatHelpers';
 import { USER_PRESENCE_STATUS_OFFLINE, USER_PRESENCE_STATUS_ONLINE } from '../helpers/constants';
-import { getUserNameFromStore, usePresenceData, useTypingData, useXmppConnectionStatus } from '../redux/reduxHook';
+import {
+   getUserNameFromStore,
+   usePresenceData,
+   useThemeColorPalatte,
+   useTypingData,
+   useXmppConnectionStatus,
+} from '../redux/reduxHook';
+import SDK from '../SDK/SDK';
 import commonStyles from '../styles/commonStyles';
 
 const LastSeen = ({ userJid = '', style }) => {
    const userId = getUserIdFromJid(userJid);
    const isNetworkConnected = useNetworkStatus();
+   const themeColorPalatte = useThemeColorPalatte();
    const xmppConnection = useXmppConnectionStatus();
    const [lastSeenData, setLastSeenData] = React.useState({
       seconds: -1,
@@ -109,15 +115,23 @@ const LastSeen = ({ userJid = '', style }) => {
    };
 
    if (isTyping) {
-      return <Text style={[commonStyles.typingText, commonStyles.fontSize_11]}>{isTyping}</Text>;
+      return (
+         <Text style={[commonStyles.textColor(themeColorPalatte.primaryColor), commonStyles.fontSize_11]}>
+            {isTyping}
+         </Text>
+      );
    }
 
    return (
       <>
          {lastSeenData.lastSeen ? (
-            <MarqueeText style={style} key={JSON.stringify(config)} ref={marqueeRef} {...config}>
+            <Text
+               key={JSON.stringify(config)}
+               ref={marqueeRef}
+               {...config}
+               style={{ color: themeColorPalatte.headerSecondaryTextColor, fontWeight: '700', fontSize: 11 }}>
                {lastSeenData.lastSeen}
-            </MarqueeText>
+            </Text>
          ) : null}
       </>
    );

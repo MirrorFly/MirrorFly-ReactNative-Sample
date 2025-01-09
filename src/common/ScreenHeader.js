@@ -1,11 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { BackHandler, StyleSheet, Text, TextInput, View } from 'react-native';
-import ApplicationColors from '../config/appColors';
+import { BackHandler, StyleSheet, View } from 'react-native';
+import { getStringSet } from '../localization/stringSet';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import IconButton from './IconButton';
 import { CloseIcon, LeftArrowIcon, SearchIcon } from './Icons';
 import MenuContainer from './MenuContainer';
+import Text from './Text';
+import TextInput from './TextInput';
 
 function ScreenHeader({
    title = '',
@@ -15,6 +18,8 @@ function ScreenHeader({
    onCreateBtn = () => {},
    isGroupInfoSrn = false,
 }) {
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
    const navigation = useNavigation();
    const [text, setText] = React.useState('');
    const [isSearching, setIsSearching] = React.useState(false);
@@ -58,28 +63,33 @@ function ScreenHeader({
 
    if (isSearching) {
       return (
-         <View style={[styles.container]}>
+         <View style={[[styles.container, commonStyles.bg_color(themeColorPalatte.appBarColor)]]}>
             <IconButton onPress={closeSearch}>
-               <LeftArrowIcon />
+               <LeftArrowIcon color={themeColorPalatte.iconColor} />
             </IconButton>
             <TextInput
-               placeholderTextColor="#d3d3d3"
+               placeholderTextColor={themeColorPalatte.placeholderTextColor}
                value={text}
-               style={styles.textInput}
+               style={[styles.textInput, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}
                onChangeText={handleChangeText}
-               placeholder=" Search..."
-               cursorColor={ApplicationColors.mainColor}
+               placeholder={stringSet.PLACEHOLDERS.SEARCH_PLACEHOLDER}
+               cursorColor={themeColorPalatte.primaryColor}
+               selectionColor={themeColorPalatte.primaryColor}
                returnKeyType="done"
                autoFocus={true}
             />
             {text.trim() && (
                <IconButton onPress={clearText}>
-                  <CloseIcon />
+                  <CloseIcon color={themeColorPalatte.iconColor} />
                </IconButton>
             )}
-            {Boolean(title === 'Add Participants') && (
+            {Boolean(title === stringSet.CONTACT_SCREEN.ADD_PARTICIPANTS_LABEL) && (
                <IconButton onPress={onCreateBtn}>
-                  <Text style={styles.subText}>{isGroupInfoSrn ? 'NEXT' : 'CREATE'}</Text>
+                  <Text style={[styles.subText, commonStyles.textColor(themeColorPalatte.headerPrimaryTextColor)]}>
+                     {isGroupInfoSrn
+                        ? stringSet.CREATE_GROUP_SCREEN.NEXT_BUTTON
+                        : stringSet.CREATE_GROUP_SCREEN.CREATE_BUTTON}
+                  </Text>
                </IconButton>
             )}
          </View>
@@ -88,24 +98,31 @@ function ScreenHeader({
 
    if (title) {
       return (
-         <View style={styles.titleContainer}>
+         <View style={[styles.titleContainer, commonStyles.bg_color(themeColorPalatte.appBarColor)]}>
             <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
                <IconButton onPress={closeSearch}>
-                  <LeftArrowIcon />
+                  <LeftArrowIcon color={themeColorPalatte.iconColor} />
                </IconButton>
-               <Text numberOfLines={1} ellipsizeMode="tail" style={styles.titleText}>
+               <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={[styles.titleText, commonStyles.textColor(themeColorPalatte.headerPrimaryTextColor)]}>
                   {title}
                </Text>
             </View>
             <View style={[commonStyles.hstack]}>
                {!isSearching && isSearchable && (
                   <IconButton onPress={toggleSearch}>
-                     <SearchIcon />
+                     <SearchIcon color={themeColorPalatte.iconColor} />
                   </IconButton>
                )}
-               {Boolean(title === 'Add Participants') && (
+               {Boolean(title === stringSet.CONTACT_SCREEN.ADD_PARTICIPANTS_LABEL) && (
                   <IconButton onPress={onCreateBtn}>
-                     <Text style={styles.subText}>{isGroupInfoSrn ? 'NEXT' : 'CREATE'}</Text>
+                     <Text style={[styles.subText, commonStyles.textColor(themeColorPalatte.headerPrimaryTextColor)]}>
+                        {isGroupInfoSrn
+                           ? stringSet.CREATE_GROUP_SCREEN.NEXT_BUTTON
+                           : stringSet.CREATE_GROUP_SCREEN.CREATE_BUTTON}
+                     </Text>
                   </IconButton>
                )}
                {Boolean(menuItems.length) && <MenuContainer menuItems={menuItems} />}
@@ -115,11 +132,11 @@ function ScreenHeader({
    }
 
    return (
-      <View style={styles.container}>
+      <View style={[styles.container, commonStyles.bg_color(themeColorPalatte.appBarColor)]}>
          <View style={[commonStyles.hstack]}>
             {!isSearching && (
                <IconButton onPress={toggleSearch}>
-                  <SearchIcon />
+                  <SearchIcon color={themeColorPalatte.iconColor} />
                </IconButton>
             )}
             {Boolean(menuItems.length) && <MenuContainer menuItems={menuItems} />}
@@ -137,7 +154,6 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       width: '100%',
       height: 65,
-      backgroundColor: ApplicationColors.headerBg,
       paddingRight: 16,
       paddingVertical: 12,
    },
@@ -147,7 +163,6 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       width: '100%',
       height: 65,
-      backgroundColor: ApplicationColors.headerBg,
       paddingRight: 16,
       paddingVertical: 12,
    },
@@ -158,18 +173,16 @@ const styles = StyleSheet.create({
    },
    textInput: {
       flex: 1,
-      color: 'black',
       fontSize: 16,
    },
    titleText: {
       fontSize: 18,
       paddingHorizontal: 12,
       fontWeight: '600',
-      color: ApplicationColors.black,
+      width: 220,
    },
    subText: {
       fontSize: 14,
-      color: ApplicationColors.black,
       fontWeight: '600',
    },
 });

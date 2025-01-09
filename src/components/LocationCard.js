@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, ImageBackground, StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import mapStaticFallbackImage from '../assets/google-maps-blur.png';
 import ic_baloon from '../assets/ic_baloon.png';
 import { useNetworkStatus } from '../common/hooks';
+import Text from '../common/Text';
 import { getConversationHistoryTime } from '../common/timeStamp';
-import ApplicationColors from '../config/appColors';
 import {
    getImageSource,
    getLocationImageURL,
@@ -15,9 +15,10 @@ import {
    showCheckYourInternetToast,
 } from '../helpers/chatHelpers';
 import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
-import { getChatMessages } from '../redux/reduxHook';
+import { getChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import MessagePressable from './MessagePressable';
+import ReplyMessage from './ReplyMessage';
 
 const LocationCard = ({ chatUser, item, isSender }) => {
    const {
@@ -27,6 +28,7 @@ const LocationCard = ({ chatUser, item, isSender }) => {
       msgBody: { replyTo = '' },
    } = item;
    const userId = getUserIdFromJid(chatUser);
+   const themeColorPalatte = useThemeColorPalatte();
    const dispatch = useDispatch();
    const [isImageLoading, setIsImageLoading] = useState(false);
    const [isImageLoadingError, setIsImageLoadingError] = useState(false);
@@ -75,7 +77,7 @@ const LocationCard = ({ chatUser, item, isSender }) => {
 
    return (
       <View style={[styles.container, replyTo && commonStyles.paddingTop_0]}>
-         {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
+         {Boolean(replyTo) && <ReplyMessage message={item} isSender={isSender} />}
          <MessagePressable
             onPress={handleMapPress}
             onLongPress={onLongPress}
@@ -94,14 +96,16 @@ const LocationCard = ({ chatUser, item, isSender }) => {
             />
             {isImageLoading && (
                <View style={styles.imageLoaderWrapper}>
-                  <ActivityIndicator size={'large'} color={ApplicationColors.mainColor} />
+                  <ActivityIndicator size={'large'} color={themeColorPalatte.primaryColor} />
                </View>
             )}
          </MessagePressable>
          <View style={styles.statusWithTimestampContainer}>
             <ImageBackground source={getImageSource(ic_baloon)} style={styles.imageBackground}>
                {isSender && getMessageStatus(msgStatus)}
-               <Text style={styles.timeStampText}>{getConversationHistoryTime(createdAt)}</Text>
+               <Text style={[styles.timeStampText, { color: themeColorPalatte.white }]}>
+                  {getConversationHistoryTime(createdAt)}
+               </Text>
             </ImageBackground>
          </View>
       </View>
@@ -138,7 +142,6 @@ const styles = StyleSheet.create({
    timeStampText: {
       paddingLeft: 4,
       paddingRight: 8,
-      color: ApplicationColors.white,
       fontSize: 10,
       fontWeight: '400',
    },

@@ -1,6 +1,7 @@
 import React from 'react';
-import { Image, Text, View } from 'react-native';
+import { Image, View } from 'react-native';
 import ic_no_call_history from '../assets/ic_no_call_history.webp';
+import Text from '../common/Text';
 import { getImageSource } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
 

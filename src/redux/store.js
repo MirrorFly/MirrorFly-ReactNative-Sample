@@ -16,6 +16,7 @@ import recentChatDataReducer from './recentChatDataSlice';
 import rosterDataReducer from './rosterDataSlice';
 import settingDataReducer from './settingDataSlice';
 import showConfrenceReducer from './showConfrenceSlice';
+import themeColorReducer from './themeColorDataSlice';
 import typingStatusDataReducer from './typingStatusDataSlice';
 
 // Combine reducers
@@ -37,12 +38,17 @@ const appReducer = combineReducers({
    permissionData: permissionReducer,
    settingsData: settingDataReducer,
    groupData: groupsReducer,
+   themeColorPalatte: themeColorReducer,
 });
 
 // Root reducer
 const rootReducer = (state, action) => {
    if (action.type === 'clearState') {
-      state = undefined;
+      const { themeColorPalatte, ...rest } = state; // Destructure to keep themeColorPalatte intact
+      return {
+         ...rest, // Return the rest of the state excluding themeColorPalatte
+         themeColorPalatte, // Keep themeColorPalatte as it is
+      };
    }
    return appReducer(state, action);
 };

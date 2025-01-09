@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import mapStaticBlurImage from '../assets/google-maps-blur.png';
 import {
@@ -11,11 +11,13 @@ import {
    LocationMarkerIcon,
    PPTIcon,
    PdfIcon,
+   TXTIcon,
    VideoIcon,
    XLSIcon,
    ZipIcon,
 } from '../common/Icons';
 import NickName from '../common/NickName';
+import Text from '../common/Text';
 import {
    getCurrentChatUser,
    getExtension,
@@ -24,14 +26,16 @@ import {
    handleReplyPress,
    millisToMinutesAndSeconds,
 } from '../helpers/chatHelpers';
-import { ORIGINAL_MESSAGE_DELETED } from '../helpers/constants';
+import { getStringSet } from '../localization/stringSet';
 import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
-import { getChatMessages, useChatMessage } from '../redux/reduxHook';
+import { getChatMessages, useChatMessage, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
 
 function ReplyMessage(props) {
-   const { message: originalMsg } = props;
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
+   const { message: originalMsg, isSender } = props;
    const { msgBody: { replyTo = '' } = {} } = originalMsg;
    const chatUser = getCurrentChatUser();
    const dispatch = useDispatch();
@@ -46,7 +50,7 @@ function ReplyMessage(props) {
 
    const {
       msgBody = {},
-      msgBody: { message_type = '', message = '', media = {} } = {},
+      msgBody: { message_type = '', message = '', media = {}, media: { audioType = '' } = {} } = {},
       deleteStatus = 0,
       recallStatus = 0,
       publisherJid = '',
@@ -78,7 +82,7 @@ function ReplyMessage(props) {
             return <ZipIcon width={35} height={35} />;
          case 'txt':
          case 'text':
-            return <DocIcon width={35} height={35} />;
+            return <TXTIcon width={35} height={35} />;
          default:
             return null;
       }
@@ -89,9 +93,32 @@ function ReplyMessage(props) {
    const renderReplyItem = () => {
       if (message_type === 'text') {
          return (
-            <View style={[styles.replyContainer, props.isSame ? styles.senderBg : styles.receiverBg]}>
-               <NickName userId={publisherId} style={styles.nickNameText} />
-               <Text numberOfLines={1} ellipsizeMode="tail">
+            <View
+               style={[
+                  styles.replyContainer,
+                  isSender
+                     ? commonStyles.bg_color(themeColorPalatte.chatSenderSecondaryColor)
+                     : commonStyles.bg_color(themeColorPalatte.chatReceiverSecondaryColor),
+               ]}>
+               <NickName
+                  userId={publisherId}
+                  style={[
+                     styles.nickNameText,
+                     commonStyles.textColor(
+                        isSender
+                           ? themeColorPalatte.chatSenderPrimaryTextColor
+                           : themeColorPalatte.chatReceiverPrimaryTextColor,
+                     ),
+                  ]}
+               />
+               <Text
+                  style={commonStyles.textColor(
+                     isSender
+                        ? themeColorPalatte.chatSenderPrimaryTextColor
+                        : themeColorPalatte.chatReceiverPrimaryTextColor,
+                  )}
+                  numberOfLines={1}
+                  ellipsizeMode="tail">
                   {message}
                </Text>
             </View>
@@ -100,11 +127,38 @@ function ReplyMessage(props) {
 
       if (message_type === 'image') {
          return (
-            <View style={[styles.mediaReplyContainer, props.isSame ? styles.senderBg : styles.receiverBg]}>
-               <NickName userId={publisherId} style={styles.nickNameText} />
+            <View
+               style={[
+                  styles.mediaReplyContainer,
+                  isSender
+                     ? commonStyles.bg_color(themeColorPalatte.chatSenderSecondaryColor)
+                     : commonStyles.bg_color(themeColorPalatte.chatReceiverSecondaryColor),
+               ]}>
+               <NickName
+                  userId={publisherId}
+                  style={[
+                     styles.nickNameText,
+                     commonStyles.textColor(
+                        isSender
+                           ? themeColorPalatte.chatSenderPrimaryTextColor
+                           : themeColorPalatte.chatReceiverPrimaryTextColor,
+                     ),
+                  ]}
+               />
                <View style={styles.mediaLeftStack}>
                   <CameraSmallIcon color={'#7285B5'} width={13} height={13} />
-                  <Text style={styles.attachmentTypeText}>Photo</Text>
+                  <Text
+                     style={[
+                        styles.attachmentTypeText,
+                        commonStyles.textColor(
+                           isSender
+                              ? themeColorPalatte.chatSenderPrimaryTextColor
+                              : themeColorPalatte.chatReceiverPrimaryTextColor,
+                        ),
+                     ]}>
+                     {' '}
+                     {stringSet.COMMON_TEXT.PHOTO_LABEL}
+                  </Text>
                </View>
                <View style={styles.miniMediaPreviewWrapper}>
                   <Image
@@ -121,12 +175,38 @@ function ReplyMessage(props) {
 
       if (message_type === 'video') {
          return (
-            <View style={[styles.mediaReplyContainer, props.isSame ? styles.senderBg : styles.receiverBg]}>
-               <NickName userId={publisherId} style={styles.nickNameText} />
+            <View
+               style={[
+                  styles.mediaReplyContainer,
+                  isSender
+                     ? commonStyles.bg_color(themeColorPalatte.chatSenderSecondaryColor)
+                     : commonStyles.bg_color(themeColorPalatte.chatReceiverSecondaryColor),
+               ]}>
+               <NickName
+                  userId={publisherId}
+                  style={[
+                     styles.nickNameText,
+                     commonStyles.textColor(
+                        isSender
+                           ? themeColorPalatte.chatSenderPrimaryTextColor
+                           : themeColorPalatte.chatReceiverPrimaryTextColor,
+                     ),
+                  ]}
+               />
 
                <View style={styles.mediaLeftStack}>
-                  <VideoIcon color={'#767676'} width="13" height="13" />
-                  <Text style={styles.attachmentTypeText}>Video</Text>
+                  <VideoIcon color={themeColorPalatte.secondaryTextColor} width="13" height="13" />
+                  <Text
+                     style={[
+                        styles.attachmentTypeText,
+                        commonStyles.textColor(
+                           isSender
+                              ? themeColorPalatte.chatSenderPrimaryTextColor
+                              : themeColorPalatte.chatReceiverPrimaryTextColor,
+                        ),
+                     ]}>
+                     {stringSet.COMMON_TEXT.VIDEO_MSG_TYPE}
+                  </Text>
                </View>
                <View style={styles.miniMediaPreviewWrapper}>
                   <Image
@@ -142,10 +222,35 @@ function ReplyMessage(props) {
       }
       if (message_type === 'audio') {
          return (
-            <View style={[styles.mediaReplyContainer, props.isSame ? styles.senderBg : styles.receiverBg]}>
-               <NickName userId={publisherId} style={styles.nickNameText} />
-
-               <Text style={styles.audioDurationText}>{durationString}</Text>
+            <View
+               style={[
+                  styles.mediaReplyContainer,
+                  isSender
+                     ? commonStyles.bg_color(themeColorPalatte.chatSenderSecondaryColor)
+                     : commonStyles.bg_color(themeColorPalatte.chatReceiverSecondaryColor),
+               ]}>
+               <NickName
+                  userId={publisherId}
+                  style={[
+                     styles.nickNameText,
+                     commonStyles.textColor(
+                        isSender
+                           ? themeColorPalatte.chatSenderPrimaryTextColor
+                           : themeColorPalatte.chatReceiverPrimaryTextColor,
+                     ),
+                  ]}
+               />
+               <Text
+                  style={[
+                     styles.audioDurationText,
+                     commonStyles.textColor(
+                        isSender
+                           ? themeColorPalatte.chatSenderPrimaryTextColor
+                           : themeColorPalatte.chatReceiverPrimaryTextColor,
+                     ),
+                  ]}>
+                  {durationString}
+               </Text>
                <View style={[styles.miniMediaPreviewWrapper, styles.audioMiniPreviewWrapperBg]}>
                   <AudioMusicIcon width="22" height="22" color={'#fff'} />
                </View>
@@ -158,16 +263,33 @@ function ReplyMessage(props) {
                style={[
                   styles.mediaReplyContainer,
                   commonStyles.minWidth_250,
-                  props.isSame ? styles.senderBg : styles.receiverBg,
+                  isSender
+                     ? commonStyles.bg_color(themeColorPalatte.chatSenderSecondaryColor)
+                     : commonStyles.bg_color(themeColorPalatte.chatReceiverSecondaryColor),
+                  ,
                ]}>
-               <NickName userId={publisherId} style={styles.nickNameText} />
+               <NickName
+                  userId={publisherId}
+                  style={[
+                     styles.nickNameText,
+                     commonStyles.textColor(
+                        isSender
+                           ? themeColorPalatte.chatSenderPrimaryTextColor
+                           : themeColorPalatte.chatReceiverPrimaryTextColor,
+                     ),
+                  ]}
+               />
                <View style={[styles.mediaLeftStack, commonStyles.paddingLeft_0]}>
-                  <DocumentChatIcon width="12" height="12" color={props.isSame ? '#7285B5' : '#959595'} />
+                  <DocumentChatIcon width="12" height="12" color={isSender ? '#7285B5' : '#959595'} />
                   <Text numberOfLines={1} ellipsizeMode="tail" style={styles.documentFileNameText}>
                      {media?.fileName}
                   </Text>
                </View>
-               <View style={styles.miniMediaPreviewWrapperForFile(isSameUser ? '#fff' : '#A9A9A9')}>
+               <View
+                  style={[
+                     styles.miniMediaPreviewWrapperForFile,
+                     commonStyles.bg_color(isSameUser ? '#fff' : '#A9A9A9'),
+                  ]}>
                   {renderFileIcon()}
                </View>
             </View>
@@ -176,12 +298,38 @@ function ReplyMessage(props) {
 
       if (message_type === 'contact') {
          return (
-            <View style={[styles.replyContainer, props.isSame ? styles.senderBg : styles.receiverBg]}>
-               <NickName userId={publisherId} style={styles.nickNameText} />
+            <View
+               style={[
+                  styles.replyContainer,
+                  isSender
+                     ? commonStyles.bg_color(themeColorPalatte.chatSenderSecondaryColor)
+                     : commonStyles.bg_color(themeColorPalatte.chatReceiverSecondaryColor),
+               ]}>
+               <NickName
+                  userId={publisherId}
+                  style={[
+                     styles.nickNameText,
+                     commonStyles.textColor(
+                        isSender
+                           ? themeColorPalatte.chatSenderPrimaryTextColor
+                           : themeColorPalatte.chatReceiverPrimaryTextColor,
+                     ),
+                  ]}
+               />
                <View style={styles.mediaLeftStack}>
-                  <ContactChatIcon width="12" height="12" color={props.isSame ? '#7285B5' : '#959595'} />
-                  <Text numberOfLines={1} ellipsizeMode="tail" style={styles.attachmentTypeText}>
-                     Contact: {msgBody?.contact?.name}
+                  <ContactChatIcon width="12" height="12" color={isSender ? '#7285B5' : '#959595'} />
+                  <Text
+                     numberOfLines={1}
+                     ellipsizeMode="tail"
+                     style={[
+                        styles.attachmentTypeText,
+                        commonStyles.textColor(
+                           isSender
+                              ? themeColorPalatte.chatSenderPrimaryTextColor
+                              : themeColorPalatte.chatReceiverPrimaryTextColor,
+                        ),
+                     ]}>
+                     {stringSet.CHAT_SCREEN.REPLY_CONTACT_TYPE.replace('{nickName}', msgBody?.contact?.name)}
                   </Text>
                </View>
             </View>
@@ -190,8 +338,24 @@ function ReplyMessage(props) {
 
       if (message_type === 'location') {
          return (
-            <View style={[styles.locationReplyContainer, props.isSame ? styles.senderBg : styles.receiverBg]}>
-               <NickName userId={publisherId} style={styles.nickNameText} />
+            <View
+               style={[
+                  styles.locationReplyContainer,
+                  isSender
+                     ? commonStyles.bg_color(themeColorPalatte.chatSenderSecondaryColor)
+                     : commonStyles.bg_color(themeColorPalatte.chatReceiverSecondaryColor),
+               ]}>
+               <NickName
+                  userId={publisherId}
+                  style={[
+                     styles.nickNameText,
+                     commonStyles.textColor(
+                        isSender
+                           ? themeColorPalatte.chatSenderPrimaryTextColor
+                           : themeColorPalatte.chatReceiverPrimaryTextColor,
+                     ),
+                  ]}
+               />
                <View style={styles.miniPreviewImageWrapperForLocation}>
                   <Image
                      alt="location"
@@ -200,8 +364,18 @@ function ReplyMessage(props) {
                   />
                </View>
                <View style={[styles.mediaLeftStack, commonStyles.paddingLeft_0]}>
-                  <LocationMarkerIcon color={props.isSame ? '#7285B5' : '#959595'} />
-                  <Text style={styles.attachmentTypeText}>Location</Text>
+                  <LocationMarkerIcon color={isSender ? '#7285B5' : '#959595'} />
+                  <Text
+                     style={[
+                        styles.attachmentTypeText,
+                        commonStyles.textColor(
+                           isSender
+                              ? themeColorPalatte.chatSenderPrimaryTextColor
+                              : themeColorPalatte.chatReceiverPrimaryTextColor,
+                        ),
+                     ]}>
+                     {stringSet.COMMON_TEXT.LOCATION_MSG_TYPE}
+                  </Text>
                </View>
             </View>
          );
@@ -233,10 +407,33 @@ function ReplyMessage(props) {
    return (
       <Pressable onPress={passReplyTo} onLongPress={handleLongPress}>
          {recallStatus !== 0 || deleteStatus !== 0 || Object.keys(msgBody).length === 0 ? (
-            <View style={[styles.replyContainer, props.isSame ? styles.senderBg : styles.receiverBg]}>
-               <NickName userId={publisherId} style={commonStyles.fontWeight_bold} />
-               <Text numberOfLines={1} ellipsizeMode="tail">
-                  {ORIGINAL_MESSAGE_DELETED}
+            <View
+               style={[
+                  styles.replyContainer,
+                  isSender
+                     ? commonStyles.bg_color(themeColorPalatte.chatSenderSecondaryColor)
+                     : commonStyles.bg_color(themeColorPalatte.chatReceiverSecondaryColor),
+               ]}>
+               <NickName
+                  userId={publisherId}
+                  style={[
+                     styles.nickNameText,
+                     commonStyles.textColor(
+                        isSender
+                           ? themeColorPalatte.chatSenderPrimaryTextColor
+                           : themeColorPalatte.chatReceiverPrimaryTextColor,
+                     ),
+                  ]}
+               />
+               <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={commonStyles.textColor(
+                     isSender
+                        ? themeColorPalatte.chatSenderPrimaryTextColor
+                        : themeColorPalatte.chatReceiverPrimaryTextColor,
+                  )}>
+                  {stringSet.COMMON_TEXT.ORIGINAL_MESSAGE_DELETED}
                </Text>
             </View>
          ) : (
@@ -275,12 +472,6 @@ const styles = StyleSheet.create({
       minWidth: 180,
       minHeight: 60,
    },
-   senderBg: {
-      backgroundColor: '#D0D8EB',
-   },
-   receiverBg: {
-      backgroundColor: '#EFEFEF',
-   },
    nickNameText: {
       fontWeight: 'bold',
       fontSize: 14,
@@ -297,14 +488,12 @@ const styles = StyleSheet.create({
       paddingLeft: 4,
    },
    attachmentTypeText: {
-      paddingLeft: 4,
-      color: '#313131',
+      paddingHorizontal: 4,
       fontSize: 14,
       fontWeight: '400',
    },
    audioDurationText: {
       marginTop: 4,
-      color: '#313131',
       fontSize: 14,
       fontWeight: '400',
    },
@@ -318,17 +507,16 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
    },
-   miniMediaPreviewWrapperForFile: bgColor => ({
+   miniMediaPreviewWrapperForFile: {
       width: 60,
       height: 60,
       position: 'absolute',
       right: 0,
-      backgroundColor: bgColor,
       borderBottomRightRadius: 5,
       borderTopRightRadius: 5,
       justifyContent: 'center',
       alignItems: 'center',
-   }),
+   },
    miniPreviewImageWrapperForLocation: {
       position: 'absolute',
       top: 0,

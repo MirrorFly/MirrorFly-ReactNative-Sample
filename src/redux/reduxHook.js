@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
 import { selectArchivedChatData, selectFilteredRecentChatData } from './recentChatDataSlice';
 import store from './store';
+import { selectFilteredThemeData } from './themeColorDataSlice';
 
 export const useRecentChatData = () => useSelector(state => state.recentChatData.recentChats);
 export const useUserType = chatUser =>
@@ -29,7 +30,9 @@ export const useArchiveStatus = jid =>
 export const useGroupParticipantsList = groupId => useSelector(state => state.groupData.participantsList[groupId]);
 export const useReplyMessage = userId => useSelector(state => state.draftData.data[userId]?.replyMessage);
 export const useTextMessage = userId => useSelector(state => state.draftData.data[userId]?.text);
-
+export const useThemeColorPalatte = () => useSelector(selectFilteredThemeData);
+export const useThemeColor = () => useSelector(state => state.themeColorPalatte.theme);
+export const useFontFamily = () => useSelector(state => state.themeColorPalatte.fontFamily) || {};
 export const getReplyMessage = userId => store.getState().draftData.data[userId]?.replyMessage || {};
 export const getRecentChatData = () => store.getState().recentChatData.recentChats;
 export const getSelectedChats = () => store.getState().recentChatData.recentChats.filter(item => item.isSelected === 1);

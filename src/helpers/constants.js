@@ -191,6 +191,28 @@ export const mediaStatusConstants = {
    LOADED: 'LOADED',
 };
 
+export const messageTypeConstants = {
+   GROUP_USER_ADDED: 'userAdded',
+   GROUP_USER_REMOVED: 'userRemoved',
+   GROUP_USER_MADE_ADMIN: 'madeAdmin',
+   GROUP_USER_LEFT: 'userLeft',
+   GROUP_PROFILE_INFO_UPDATED: 'profileUpdated',
+   GROUP_CHAT_PROFILE_UPDATED_NOTIFY: 'groupProfileUpdated',
+   GROUP_CREATED: 'groupCreated',
+   NOTIFICATION: 'notification',
+   BLOCK_CONTACT_TYPE: 'block_user',
+};
+
+export const messageNotificationTypes = {
+   0: 'none',
+   1: 'groupCreated',
+   2: 'userAdded',
+   3: 'userRemoved',
+   4: 'profileUpdated',
+   5: 'madeAdmin',
+   6: 'userLeft',
+};
+
 export const MAP_THHUMBNAIL_URL = 'https://maps.googleapis.com/maps/api/staticmap';
 
 export const imageEmoji = '📷';

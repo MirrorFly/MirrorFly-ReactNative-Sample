@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { HighlightedMessage } from '../common/HighlightedMessage';
 import {
    AudioMicIcon,
@@ -10,16 +10,19 @@ import {
    LocationMarkerIcon,
    VideoSmallIcon,
 } from '../common/Icons';
-import ApplicationColors from '../config/appColors';
-import { getMessageStatus } from '../helpers/chatHelpers';
-import { THIS_MESSAGE_WAS_DELETED, YOU_DELETED_THIS_MESSAGE } from '../helpers/constants';
-import { getUserNameFromStore, useTypingData } from '../redux/reduxHook';
+import Text from '../common/Text';
+import { getMessageStatus, getUserIdFromJid, groupNotifyStatus } from '../helpers/chatHelpers';
+import { messageNotificationTypes } from '../helpers/constants';
+import { getUserNameFromStore, useRoasterData, useTypingData } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
-function RecentChatMessage({ userId, item, index, isSender }) {
-   const { msgStatus, recallStatus, msgBody } = item;
+function RecentChatMessage({ userId, item, index, isSender, stringSet, themeColorPalatte }) {
+   const { msgBody: { message = '' } = {}, publisherId = '', toUserJid = '', recallStatus } = item;
    const [isTyping, setIsTyping] = React.useState('');
    const typingStatusData = useTypingData(userId) || {};
+   const publisherName = useRoasterData(publisherId)?.nickName || userId;
+   const toUserID = getUserIdFromJid(toUserJid);
+   const toUserName = useRoasterData(toUserID)?.nickName || toUserJid;
 
    React.useEffect(() => {
       if (typingStatusData.groupId) {
@@ -36,28 +39,47 @@ function RecentChatMessage({ userId, item, index, isSender }) {
       switch (item?.msgBody?.message_type) {
          case 'text':
          case 'auto_text':
-            return <HighlightedMessage text={item?.msgBody?.message} searchValue={''} index={index} />;
+            return (
+               <HighlightedMessage
+                  text={item?.msgBody?.message}
+                  searchValue={''}
+                  index={index}
+                  themeColorPalatte={themeColorPalatte}
+               />
+            );
          case 'notification':
             return (
-               <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
-                  {item?.msgBody.notificationContent}
+               <Text numberOfLines={1} ellipsizeMode="tail" style={{ color: themeColorPalatte.secondaryTextColor }}>
+                  {groupNotifyStatus(
+                     publisherId,
+                     toUserID,
+                     messageNotificationTypes[message],
+                     publisherName,
+                     toUserName,
+                  )}
                </Text>
             );
          case 'image':
             return (
                <View style={[styles.lastSentMessageWrapper, isSender && commonStyles.paddingLeft_4]}>
                   <ImageIcon />
-                  <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
-                     Image
+                  <Text
+                     numberOfLines={1}
+                     ellipsizeMode="tail"
+                     style={[styles.lastSentMessageTypeText, { color: themeColorPalatte.secondaryTextColor }]}>
+                     {stringSet.COMMON_TEXT.IMAGE_MSG_TYPE}
                   </Text>
                </View>
             );
          case 'video':
             return (
                <View style={[styles.lastSentMessageWrapper, isSender && commonStyles.paddingLeft_4]}>
-                  <VideoSmallIcon color={'#767676'} />
-                  <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
-                     Video
+                  <VideoSmallIcon color={themeColorPalatte.secondaryTextColor} />
+                  <Text
+                     numberOfLines={1}
+                     ellipsizeMode="tail"
+                     style={[styles.lastSentMessageTypeText, { color: themeColorPalatte.secondaryTextColor }]}>
+                     {stringSet.COMMON_TEXT.VIDEO_MSG_TYPE}
                   </Text>
                </View>
             );
@@ -65,8 +87,11 @@ function RecentChatMessage({ userId, item, index, isSender }) {
             return (
                <View style={[styles.lastSentMessageWrapper, isSender && commonStyles.paddingLeft_4]}>
                   <DocumentChatIcon />
-                  <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
-                     File
+                  <Text
+                     numberOfLines={1}
+                     ellipsizeMode="tail"
+                     style={[styles.lastSentMessageTypeText, { color: themeColorPalatte.secondaryTextColor }]}>
+                     {stringSet.COMMON_TEXT.FILE_MSG_TYPE}
                   </Text>
                </View>
             );
@@ -74,12 +99,15 @@ function RecentChatMessage({ userId, item, index, isSender }) {
             return (
                <View style={[styles.lastSentMessageWrapper, isSender && commonStyles.paddingLeft_4]}>
                   {Boolean(audioType) ? (
-                     <AudioMicIcon width="14" height="14" fill={'#767676'} />
+                     <AudioMicIcon width="14" height="14" fill={themeColorPalatte.secondaryTextColor} />
                   ) : (
-                     <AudioMusicIcon width="14" height="14" color={'#767676'} />
+                     <AudioMusicIcon width="14" height="14" color={themeColorPalatte.secondaryTextColor} />
                   )}
-                  <Text numberOfLines={1} ellipsizeMode="tail" style={styles.lastSentMessageTypeText}>
-                     Audio
+                  <Text
+                     numberOfLines={1}
+                     ellipsizeMode="tail"
+                     style={[styles.lastSentMessageTypeText, { color: themeColorPalatte.secondaryTextColor }]}>
+                     {stringSet.COMMON_TEXT.AUDIO_MSG_TYPE}
                   </Text>
                </View>
             );
@@ -90,8 +118,12 @@ function RecentChatMessage({ userId, item, index, isSender }) {
                   <Text
                      numberOfLines={1}
                      ellipsizeMode="tail"
-                     style={[styles.lastSentMessageTypeText, commonStyles.paddingLeft_0]}>
-                     Location
+                     style={[
+                        styles.lastSentMessageTypeText,
+                        commonStyles.paddingLeft_0,
+                        { color: themeColorPalatte.secondaryTextColor },
+                     ]}>
+                     {stringSet.COMMON_TEXT.LOCATION_MSG_TYPE}
                   </Text>
                </View>
             );
@@ -99,8 +131,11 @@ function RecentChatMessage({ userId, item, index, isSender }) {
             return (
                <View style={styles.lastSentMessageWrapper}>
                   <ContactChatIcon />
-                  <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.lastSentMessageTypeText]}>
-                     Contact
+                  <Text
+                     numberOfLines={1}
+                     ellipsizeMode="tail"
+                     style={[styles.lastSentMessageTypeText, { color: themeColorPalatte.secondaryTextColor }]}>
+                     {stringSet.COMMON_TEXT.CONTACT_MSG_TYPE}
                   </Text>
                </View>
             );
@@ -110,22 +145,29 @@ function RecentChatMessage({ userId, item, index, isSender }) {
    };
 
    if (isTyping) {
-      return <Text style={[commonStyles.typingText]}>{isTyping}</Text>;
+      return <Text style={[commonStyles.textColor(themeColorPalatte.primaryColor)]}>{isTyping}</Text>;
    }
 
    if (recallStatus) {
       return (
-         <View>
-            <Text>{isSender ? YOU_DELETED_THIS_MESSAGE : THIS_MESSAGE_WAS_DELETED}</Text>
+         <View style={styles.lastSentMessageWrapper}>
+            <View style={commonStyles.p_1} />
+            <Text style={{ color: themeColorPalatte.secondaryTextColor }}>
+               {isSender
+                  ? stringSet.COMMON_TEXT.YOU_DELETED_THIS_MESSAGE
+                  : stringSet.COMMON_TEXT.THIS_MESSAGE_WAS_DELETED}
+            </Text>
          </View>
       );
    }
    return (
-      <View style={styles.lastSentMessageContainer}>
+      <View style={styles.lastSentMessageWrapper}>
          {isSender &&
-            Boolean(Object.keys(msgBody).length) &&
+            Boolean(Object.keys(item?.msgBody).length) &&
             item?.msgBody?.message_type !== 'notification' &&
-            getMessageStatus(msgStatus, 8)}
+            !recallStatus &&
+            getMessageStatus(item?.msgStatus, 8)}
+
          <View style={commonStyles.paddingLeft_4} />
          {renderLastSentMessageBasedOnType()}
       </View>
@@ -167,7 +209,6 @@ const styles = StyleSheet.create({
       width: '83%',
       height: 1,
       alignSelf: 'flex-end',
-      backgroundColor: ApplicationColors.dividerBg,
    },
    lastSentMessageWrapper: {
       flexDirection: 'row',
@@ -176,7 +217,6 @@ const styles = StyleSheet.create({
    },
    lastSentMessageTypeText: {
       paddingHorizontal: 5,
-      color: '#767676',
    },
    lastSentMessageContainer: {
       flexDirection: 'row',

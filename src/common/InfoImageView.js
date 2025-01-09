@@ -1,10 +1,11 @@
 import React from 'react';
-import { Image, Text } from 'react-native';
+import { Image } from 'react-native';
 import grpImage from '../assets/ic_grp_bg.png';
 import { getImageSource, getUsernameGraphemes } from '../helpers/chatHelpers';
 import { CHAT_TYPE_SINGLE } from '../helpers/constants';
 import { useRoasterData } from '../redux/reduxHook';
 import { useFetchImage } from './hooks';
+import Text from './Text';
 
 function InfoImageView({ userId, type, scaledFontSize, ...props }) {
    let { nickName, image } = useRoasterData(userId) || {};

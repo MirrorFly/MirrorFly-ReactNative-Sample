@@ -1,9 +1,11 @@
 import React from 'react';
 import { Dimensions, Image, View } from 'react-native';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 /** import ImageViewer from 'react-native-image-zoom-viewer'; */
 
 const ImageInfo = props => {
    const { selectedMedia } = props;
+   const themeColorPalatte = useThemeColorPalatte();
    const SingleSelectedImage = selectedMedia.media;
    /**
     let isSender = currentUserJID === props?.message?.fromUserJid
@@ -61,7 +63,7 @@ const ImageInfo = props => {
   */
    return (
       <View style={{ flex: 1 }}>
-         <View style={{ flex: 1, backgroundColor: '#fff' }}>
+         <View style={{ flex: 1, backgroundColor: themeColorPalatte.screenBgColor }}>
             <Image
                style={{ flex: 1, width: '100%', height: '100%' }}
                source={{ uri: ImageBase64 }}

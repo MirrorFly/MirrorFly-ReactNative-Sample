@@ -20,8 +20,9 @@ import { getArchive, getChatMessages, getReplyMessage, getRoasterData } from '..
 import { setRoasterData } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting, updateNotificationSetting } from '../redux/settingDataSlice';
 import store from '../redux/store';
+import { updateFontFamily } from '../redux/themeColorDataSlice';
 import { getCurrentUserJid, mflog } from '../uikitMethods';
-import SDK from './SDK';
+import SDK, { RealmKeyValueStore } from './SDK';
 
 let chatPage = {},
    hasNextChatPage = {},
@@ -531,3 +532,11 @@ export const successResponse = message => ({
    statusCode: 200,
    message: message || 'SUCCESS',
 });
+
+export const setFontFamily = fontFamily => {
+   store.dispatch(updateFontFamily(fontFamily));
+};
+
+export const setLanguage = (languageCode = 'en') => {
+   RealmKeyValueStore.setItem('languageCode', languageCode);
+};

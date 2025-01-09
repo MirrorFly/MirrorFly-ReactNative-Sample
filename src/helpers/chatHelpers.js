@@ -58,14 +58,15 @@ import {
    MIN_WIDTH_AND,
    MIN_WIDTH_WEB,
    MIX_BARE_JID,
-   THIS_MESSAGE_WAS_DELETED,
    audioEmoji,
    contactEmoji,
    fileEmoji,
    imageEmoji,
    locationEmoji,
-   videoEmoji,
+   messageTypeConstants,
+   videoEmoji
 } from '../helpers/constants';
+import { getStringSet, replacePlaceholders } from '../localization/stringSet';
 import {
    clearChatMessageData,
    deleteMessagesForEveryone,
@@ -106,6 +107,7 @@ const { fileSize, imageFileSize, videoFileSize, audioFileSize, documentFileSize 
 const memoizedUsernameGraphemes = {};
 const splitter = new Graphemer();
 let currentChatUser = '';
+const stringSet = getStringSet();
 const documentAttachmentTypes = [
    DocumentPicker.types.allFiles,
    // DocumentPicker.types.pdf
@@ -335,10 +337,10 @@ export const openLocationExternally = (latitude, longitude) => {
    });
    if (Linking.canOpenURL(locationUrl)) {
       Linking.openURL(locationUrl).catch(() => {
-         showToast('Unable to open the location');
+         showToast(stringSet.TOAST_MESSAGES.UNABLE_TO_OPEN_THE_LOCATION);
       });
    } else {
-      showToast('No app found to open location');
+      showToast(stringSet.TOAST_MESSAGES.NO_APPS_AVAILABLE_FOR_LOCATION);
    }
 };
 
@@ -391,7 +393,7 @@ export const handleConversationClear = async jid => {
       store.dispatch(clearChatMessageData(userId));
       store.dispatch(clearRecentChatData(jid));
    } else {
-      showToast('There is no conversation');
+      showToast(stringSet.TOAST_MESSAGES.THERE_IS_NO_CONVERSATION);
    }
 };
 
@@ -486,7 +488,7 @@ export const validateFileSize = (size, mediaTypeFile) => {
    const filemb = Math.round(size / 1024);
    const maxAllowedSize = getMaxAllowedFileSize(mediaTypeFile);
    if (filemb >= maxAllowedSize * 1024) {
-      const message = `File size is too large. Try uploading file size below ${maxAllowedSize}MB`;
+      const message = stringSet.TOAST_MESSAGES.FILE_SIZE_TOO_LARGE.replace('{maxAllowedSize}', maxAllowedSize);
       if (mediaTypeFile) {
          return message;
       }
@@ -887,7 +889,7 @@ export const handleImagePickerOpenGallery = async () => {
          .then(async image => {
             const converted = mediaObjContructor('IMAGE_PICKER', image);
             if (converted.fileSize > '10485760') {
-               showToast('Image size too large');
+               showToast(stringSet.TOAST_MESSAGES.IMAGE_SIZE_TOO_LARGE);
                return {};
             }
             return converted;
@@ -923,7 +925,7 @@ export const getNotifyNickName = res => {
 export const getNotifyMessage = res => {
    switch (true) {
       case res.recallStatus === 1:
-         return THIS_MESSAGE_WAS_DELETED;
+         return getStringSet().COMMON_TEXT.THIS_MESSAGE_WAS_DELETED;
       case res.msgBody.message_type === 'text':
          return res?.msgBody?.message;
       case res.msgBody.message_type === 'image':
@@ -945,32 +947,32 @@ export const getNotifyMessage = res => {
 
 export const attachmentMenuIcons = [
    {
-      name: 'Document',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.DOCUMENT_LABEL,
       icon: DocumentIcon,
       formatter: openDocumentPicker,
    },
    {
-      name: 'Camera',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.CAMERA_LABEL,
       icon: CameraIcon,
       formatter: openCamera,
    },
    {
-      name: 'Gallery',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.GALLERY_LABEL,
       icon: GalleryIcon,
       formatter: openGallery,
    },
    {
-      name: 'Audio',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.AUDIO_LABEL,
       icon: HeadSetIcon,
       formatter: handleAudioSelect,
    },
    {
-      name: 'Contact',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.CONTACT_LABEL,
       icon: ContactIcon,
       formatter: openMobileContact,
    },
    {
-      name: 'Location',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.LOCATION_LABEL,
       icon: LocationIcon,
       formatter: openLocation,
    },
@@ -983,25 +985,17 @@ export const settingsMenu = [
       rounteName: PROFILE_STACK,
    },
    {
-      name: 'Chats',
+      name: getStringSet().SETTINGS_SCREEN.CHATS_LABEL,
       icon: ChatsIcon,
       rounteName: CHATS_CREEN,
    },
-   /** 
-    * 
-   {
-      name: 'Notifications',
-      icon: NotificationSettingsIcon,
-      rounteName: NOTIFICATION_STACK,
-   },
-   */
    {
       name: 'Notifications',
       icon: NotificationSettingsIcon,
       rounteName: NOTIFICATION_STACK,
    },
    {
-      name: 'Log out',
+      name: getStringSet().SETTINGS_SCREEN.LOG_OUT_LABEL,
       icon: ExitIcon,
    },
 ];
@@ -1071,15 +1065,14 @@ export const handleFileOpen = message => {
       })
       .catch(err => {
          console.log('Error while opening Document', err);
-         showToast('No apps available to open this file');
+         showToast(stringSet.TOAST_MESSAGES.NO_APPS_AVAILABLE);
       });
 };
 
 export const copyToClipboard = (selectedMsgs, userId) => () => {
-   console.log('userId ==>', userId);
    handelResetMessageSelection(userId)();
    Clipboard.setString(selectedMsgs[0]?.msgBody.message || selectedMsgs[0]?.msgBody?.media?.caption);
-   showToast('1 Text copied successfully to the clipboard');
+   showToast(stringSet.TOAST_MESSAGES.TEXT_COPIED_SUCCESSFULLY);
 };
 
 export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
@@ -1174,7 +1167,7 @@ export const findConversationMessageIndex = (msgId, message) => {
    const index = data.findIndex(item => item.msgId === msgId);
    const { deleteStatus, recallStatus } = message;
    if (deleteStatus !== 0 || recallStatus !== 0) {
-      showToast('This message is no longer available');
+      showToast(stringSet.TOAST_MESSAGES.THIS_MESSAGE_NO_LONGER_AVAILABLE);
    } else if (index < 0) {
       return;
    } else {
@@ -1187,3 +1180,59 @@ export const setCurrentChatUser = currentChatUserId => {
 };
 
 export const getCurrentChatUser = () => currentChatUser;
+
+export const groupNotifyStatus = (publisherId, toUserId, status, publisher = '', toUser = '') => {
+   try {
+      const publisherName = publisher || publisherId;
+      const toUserName = toUser || toUserId;
+      const isPublisherLocalUser = isLocalUser(publisherId);
+      const isToUserLocalUser = isLocalUser(toUserId);
+      switch (status) {
+         case messageTypeConstants.GROUP_CREATED:
+            return isPublisherLocalUser
+               ? stringSet.GROUP_LABELS.GROUP_CREATED_BY_YOU
+               : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_CREATED_BY_PUBLISHER, {
+                    publisherName,
+                 });
+         case messageTypeConstants.GROUP_USER_ADDED:
+            const placeholderData = { publisherName, toUser: toUserName };
+            if (isPublisherLocalUser && isToUserLocalUser) return '';
+            if (isPublisherLocalUser) {
+               return replacePlaceholders(stringSet.GROUP_LABELS.GROUP_YOU_ADDED, {
+                  toUser: toUserName,
+               });
+            }
+            return isToUserLocalUser
+               ? replacePlaceholders(stringSet.GROUP_LABELS.GROUP_PUBLISHER_ADDED_YOU, { publisherName })
+               : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_ADDED_BY_PUBLISHER, placeholderData);
+         case messageTypeConstants.GROUP_USER_REMOVED:
+         case messageTypeConstants.GROUP_USER_LEFT:
+            if (isPublisherLocalUser && isToUserLocalUser) return stringSet.GROUP_LABELS.GROUP_YOU_LEFT;
+            if (isPublisherLocalUser)
+               return replacePlaceholders(stringSet.GROUP_LABELS.GROUP_USER_REMOVED, { userName: toUserName });
+            if (isToUserLocalUser)
+               return replacePlaceholders(stringSet.GROUP_LABELS.GROUP_PUBLISHER_REMOVED_YOU, {
+                  userName: publisherName,
+               });
+            return toUserId === publisherId
+               ? replacePlaceholders(stringSet.GROUP_LABELS.GROUP_PUBLISHER_LEFT, { userName: publisherName })
+               : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_MEMBERS_REMOVED, {
+                    publisherName,
+                    toUser: toUserName,
+                 });
+         case messageTypeConstants.GROUP_PROFILE_INFO_UPDATED:
+            return isPublisherLocalUser
+               ? stringSet.GROUP_LABELS.YOU_UPDATED_GROUP_PROFILE
+               : replacePlaceholders(stringSet.GROUP_LABELS.PUBLISHER_UPDATED_GROUP_PROFILE, { publisherName });
+         case messageTypeConstants.GROUP_USER_MADE_ADMIN:
+            return isToUserLocalUser
+               ? stringSet.GROUP_LABELS.YOU_ARE_NOW_AN_ADMIN
+               : replacePlaceholders(stringSet.GROUP_LABELS.USER_IS_NOW_AN_ADMIN, { userName: toUserName });
+         default:
+            return '';
+      }
+   } catch (error) {
+      console.log('Failed to construct notification', error);
+      return '';
+   }
+};

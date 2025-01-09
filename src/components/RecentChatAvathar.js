@@ -2,13 +2,13 @@ import React from 'react';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 import Avathar from '../common/Avathar';
 import Modal, { ModalCenteredContent } from '../common/Modal';
-import ApplicationColors from '../config/appColors';
-import { useRoasterData } from '../redux/reduxHook';
+import { useRoasterData, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
 function RecentChatAvathar({ type, userId, data = {}, ...props }) {
    const [visible, setVisible] = React.useState(false);
    const profile = useRoasterData(userId);
+   const themeColorPalatte = useThemeColorPalatte();
    const [userProfile, setUserProfile] = React.useState(data);
 
    React.useEffect(() => {
@@ -36,8 +36,8 @@ function RecentChatAvathar({ type, userId, data = {}, ...props }) {
          </Pressable>
          <Modal visible={visible} onRequestClose={onRequestClose}>
             <ModalCenteredContent onPressOutside={onRequestClose}>
-               <View style={[commonStyles.bg_white, commonStyles.borderRadius_5]}>
-                  <ActivityIndicator size={'large'} color={ApplicationColors.mainColor} />
+               <View style={[commonStyles.bg_color(themeColorPalatte.screenBgColor), commonStyles.borderRadius_5]}>
+                  <ActivityIndicator size={'large'} color={themeColorPalatte.primaryColor} />
                </View>
             </ModalCenteredContent>
          </Modal>

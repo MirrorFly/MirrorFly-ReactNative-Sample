@@ -1,16 +1,19 @@
 import React from 'react';
-import { Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { Image, ImageBackground, StyleSheet, View } from 'react-native';
 import ic_baloon from '../assets/ic_baloon.png';
 import noPreview from '../assets/noPreview.png';
 import MediaProgressLoader from '../common/MediaProgressLoader';
+import Text from '../common/Text';
 import { getConversationHistoryTime } from '../common/timeStamp';
-import ApplicationColors from '../config/appColors';
 import { getImageSource, getMessageStatus, getThumbBase64URL } from '../helpers/chatHelpers';
 import useMediaProgress from '../hooks/useMediaProgress';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import CaptionContainer from './CaptionContainer';
+import ReplyMessage from './ReplyMessage';
 
 function ImageCard({ chatUser, item, isSender }) {
+   const themeColorPalatte = useThemeColorPalatte();
    const {
       msgStatus,
       createdAt = '',
@@ -44,8 +47,14 @@ function ImageCard({ chatUser, item, isSender }) {
    });
 
    return (
-      <View style={commonStyles.paddingHorizontal_4}>
-         {Boolean(replyTo) && <ReplyMessage message={messageObject} />}
+      <View
+         style={[
+            commonStyles.paddingHorizontal_4,
+            commonStyles.bg_color(
+               isSender ? themeColorPalatte.chatSenderPrimaryColor : themeColorPalatte.chatReceiverPrimaryColor,
+            ),
+         ]}>
+         {Boolean(replyTo) && <ReplyMessage message={item} isSender={isSender} />}
          <View style={styles.imageContainer}>
             {imageUrl ? (
                <Image
@@ -55,7 +64,7 @@ function ImageCard({ chatUser, item, isSender }) {
                   source={{ uri: imageUrl || getThumbBase64URL(thumb_image) }}
                />
             ) : (
-               <View style={styles.noPreviewWrapper}>
+               <View style={{ backgroundColor: themeColorPalatte.screenBgColor }}>
                   <Image style={styles.noPreview} alt={fileName} source={getImageSource(noPreview)} />
                </View>
             )}
@@ -71,9 +80,11 @@ function ImageCard({ chatUser, item, isSender }) {
             </View>
             {!Boolean(caption) && (
                <View style={styles.messgeStatusAndTimestampWithoutCaption}>
-                  <ImageBackground source={ic_baloon} style={styles.imageBg}>
+                  <ImageBackground source={getImageSource(ic_baloon)} style={styles.imageBg}>
                      {isSender && getMessageStatus(msgStatus)}
-                     <Text style={styles.timestampText}>{getConversationHistoryTime(createdAt)}</Text>
+                     <Text style={[styles.timestampText, { color: themeColorPalatte.white }]}>
+                        {getConversationHistoryTime(createdAt)}
+                     </Text>
                   </ImageBackground>
                </View>
             )}
@@ -109,9 +120,6 @@ const styles = StyleSheet.create({
       width: w,
       height: h,
    }),
-   noPreviewWrapper: {
-      backgroundColor: ApplicationColors.mainbg,
-   },
    noPreviewImage: (w, h) => ({
       resizeMode: 'contain',
       width: w,
@@ -133,7 +141,6 @@ const styles = StyleSheet.create({
    },
    timestampText: {
       paddingLeft: 4,
-      color: ApplicationColors.white,
       fontSize: 10,
       fontWeight: '400',
    },
@@ -142,7 +149,6 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
    },
    captionText: {
-      color: ApplicationColors.black,
       paddingLeft: 12,
       fontSize: 14,
    },

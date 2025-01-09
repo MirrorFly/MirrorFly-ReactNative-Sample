@@ -1,10 +1,9 @@
 import React, { createRef } from 'react';
 import { ActivityIndicator, FlatList } from 'react-native';
 import { fetchMessagesFromSDK, getHasNextChatPage } from '../SDK/utils';
-import ApplicationColors from '../config/appColors';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, NOTIFICATION } from '../helpers/constants';
-import { useChatMessages } from '../redux/reduxHook';
+import { useChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
 import ChatMessage from './ChatMessage';
 
 export const conversationFlatListRef = createRef();
@@ -13,6 +12,7 @@ const ITEM_HEIGHT = 50;
 
 function ConversationList({ chatUser }) {
    const userId = getUserIdFromJid(chatUser);
+   const themeColorPalatte = useThemeColorPalatte();
    const [chatLoading, setChatLoading] = React.useState(false);
    const messages = useChatMessages(getUserIdFromJid(chatUser)) || [];
 
@@ -56,7 +56,7 @@ function ConversationList({ chatUser }) {
 
    return (
       <>
-         {chatLoading && <ActivityIndicator size="large" color={ApplicationColors.mainColor} />}
+         {chatLoading && <ActivityIndicator size="large" color={themeColorPalatte.primaryColor} />}
          <FlatList
             initialNumToRender={10}
             keyboardShouldPersistTaps={'always'}

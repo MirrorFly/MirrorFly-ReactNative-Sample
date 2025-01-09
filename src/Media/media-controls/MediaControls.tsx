@@ -14,7 +14,7 @@ export type Props = {
    fadeOutDelay?: number;
    isFullScreen: boolean;
    isLoading: boolean;
-   mainColor: string;
+   primaryColor: string;
    onFullScreen?: (event: GestureResponderEvent) => void;
    onPaused: (playerState: typeof PLAYER_STATES.ENDED) => void;
    onReplay: () => void;
@@ -35,7 +35,7 @@ const MediaControls = (props: Props) => {
       fadeOutDisable = false,
       fadeOutDelay = 5000,
       isLoading = false,
-      mainColor = 'rgba(12, 83, 175, 0.9)',
+      primaryColor = 'rgba(12, 83, 175, 0.9)',
       onFullScreen,
       onReplay: onReplayCallback,
       onSeek,
@@ -150,13 +150,13 @@ const MediaControls = (props: Props) => {
                      onPause={onPause}
                      onReplay={onReplay}
                      isLoading={isLoading}
-                     mainColor={mainColor}
+                     primaryColor={primaryColor}
                      playerState={playerState}
                   />
                   <Slider
                      progress={progress}
                      duration={duration}
-                     mainColor={mainColor}
+                     primaryColor={primaryColor}
                      onFullScreen={onFullScreen}
                      playerState={playerState}
                      onSeek={onSeek}

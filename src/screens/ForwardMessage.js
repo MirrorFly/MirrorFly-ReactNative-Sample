@@ -2,17 +2,7 @@ import CheckBox from '@react-native-community/checkbox';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { debounce } from 'lodash-es';
 import React from 'react';
-import {
-   ActivityIndicator,
-   BackHandler,
-   Modal,
-   Platform,
-   ScrollView,
-   StyleSheet,
-   Text,
-   TextInput,
-   View,
-} from 'react-native';
+import { ActivityIndicator, BackHandler, Modal, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import SDK from '../SDK/SDK';
 import { fetchContactsFromSDK, resetChatPage } from '../SDK/utils';
@@ -21,8 +11,9 @@ import IconButton from '../common/IconButton';
 import { BackArrowIcon, CloseIcon, SearchIcon, SendBlueIcon } from '../common/Icons';
 import NickName from '../common/NickName';
 import Pressable from '../common/Pressable';
+import Text from '../common/Text';
+import TextInput from '../common/TextInput';
 import { useNetworkStatus } from '../common/hooks';
-import ApplicationColors from '../config/appColors';
 import {
    formatUserIdToJid,
    getCurrentChatUser,
@@ -33,67 +24,76 @@ import {
    showToast,
 } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, CHAT_TYPE_SINGLE, MIX_BARE_JID } from '../helpers/constants';
+import { getStringSet } from '../localization/stringSet';
 import { addChatMessageItem, clearChatMessageData, resetMessageSelections } from '../redux/chatMessageDataSlice';
 import { addRecentChatItem } from '../redux/recentChatDataSlice';
-import { useRecentChatData, useRoasterData } from '../redux/reduxHook';
+import { useRecentChatData, useRoasterData, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { CONVERSATION_SCREEN } from './constants';
 
+const stringSet = getStringSet();
 const showMaxUsersLimitToast = () => {
-   showToast('You can only forward upto 5 users or groups');
+   showToast(stringSet.TOAST_MESSAGES.FORWARD_MESSAGE_MAX_USERS);
 };
 
-const Header = React.memo(({ onCancelPressed, onSearchPressed, onSearch, isSearching, searchText }) => {
-   const handleSearchTextChange = value => {
-      onSearch(value);
-   };
+const Header = React.memo(
+   ({ onCancelPressed, onSearchPressed, onSearch, isSearching, searchText, themeColorPalatte }) => {
+      const handleSearchTextChange = value => {
+         onSearch(value);
+      };
 
-   const handleClearSearch = () => {
-      onSearch('');
-   };
+      const handleClearSearch = () => {
+         onSearch('');
+      };
 
-   return (
-      <View style={styles.headerContainer}>
-         {isSearching ? (
-            <View style={styles.headerLeftSideContainer}>
-               <IconButton style={styles.cancelIcon} onPress={onCancelPressed}>
-                  <BackArrowIcon />
-               </IconButton>
-               <TextInput
-                  value={searchText}
-                  placeholder=" Search..."
-                  autoFocus
-                  onChangeText={handleSearchTextChange}
-                  style={styles.searchInput}
-               />
-               {!!searchText && (
-                  <IconButton style={styles.searchIcon} onPress={handleClearSearch}>
-                     <CloseIcon />
+      return (
+         <View style={[styles.headerContainer, { backgroundColor: themeColorPalatte.appBarColor }]}>
+            {isSearching ? (
+               <View style={styles.headerLeftSideContainer}>
+                  <IconButton style={styles.cancelIcon} onPress={onCancelPressed}>
+                     <BackArrowIcon color={themeColorPalatte.iconColor} />
                   </IconButton>
-               )}
-            </View>
-         ) : (
-            <View style={styles.headerLeftSideContainer}>
-               <IconButton
-                  style={styles.cancelIcon}
-                  _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-                  onPress={onCancelPressed}
-                  borderRadius="full">
-                  <CloseIcon />
-               </IconButton>
-               <Text style={styles.forwardToText}>Forward to...</Text>
-            </View>
-         )}
-         <IconButton
-            style={styles.searchIcon}
-            _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
-            onPress={onSearchPressed}
-            borderRadius="full">
-            <SearchIcon />
-         </IconButton>
-      </View>
-   );
-});
+                  <TextInput
+                     cursorColor={themeColorPalatte.primaryColor}
+                     selectionColor={themeColorPalatte.primaryColor}
+                     placeholderTextColor={themeColorPalatte.placeholderTextColor}
+                     value={searchText}
+                     placeholder={stringSet.PLACEHOLDERS.SEARCH_PLACEHOLDER}
+                     autoFocus
+                     onChangeText={handleSearchTextChange}
+                     style={[styles.searchInput, { color: themeColorPalatte.primaryTextColor }]}
+                  />
+                  {!!searchText && (
+                     <IconButton style={styles.searchIcon} onPress={handleClearSearch}>
+                        <CloseIcon color={themeColorPalatte.iconColor} />
+                     </IconButton>
+                  )}
+               </View>
+            ) : (
+               <View style={styles.headerLeftSideContainer}>
+                  <IconButton
+                     style={styles.cancelIcon}
+                     _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+                     onPress={onCancelPressed}
+                     borderRadius="full">
+                     <CloseIcon color={themeColorPalatte.iconColor} />
+                  </IconButton>
+                  <Text style={[styles.forwardToText, { color: themeColorPalatte.headerPrimaryTextColor }]}>
+                     {stringSet.FORWARD_SCREEN.FORWARD_HEADER_TITLE}
+                  </Text>
+               </View>
+            )}
+            <IconButton
+               style={styles.searchIcon}
+               _pressed={{ bg: 'rgba(50,118,226, 0.1)' }}
+               onPress={onSearchPressed}
+               borderRadius="full">
+               <SearchIcon color={themeColorPalatte.iconColor} />
+            </IconButton>
+         </View>
+      );
+   },
+);
 
 const ContactItem = ({
    name,
@@ -108,6 +108,7 @@ const ContactItem = ({
    const [isChecked, setIsChecked] = React.useState(false);
    let { nickName, status: profileStatus, image: imageToken, colorCode } = useRoasterData(userId);
    const recentChatData = useRecentChatData();
+   const themeColorPalatte = useThemeColorPalatte();
    // updating default values
    nickName = nickName || name || userId;
    colorCode = colorCode || '';
@@ -126,7 +127,7 @@ const ContactItem = ({
       }
 
       if (!userType && MIX_BARE_JID.test(userJid)) {
-         return showToast("You're no longer a participant in this group");
+         return showToast(stringSet.FORWARD_SCREEN.NO_LONGER_PARTICIPANT_GROUP);
       }
       setIsChecked(val => !val);
       handleItemSelect(userId, {
@@ -141,22 +142,22 @@ const ContactItem = ({
    const renderCheckBox = React.useMemo(() => {
       return (
          <CheckBox
-            onFillColor={ApplicationColors.mainColor}
-            onCheckColor={ApplicationColors.mainColor}
+            onFillColor={themeColorPalatte.primaryColor}
+            onCheckColor={themeColorPalatte.primaryColor}
             hideBox={true}
             animationDuration={0.1}
             onAnimationType={'stroke'}
             tintColors={{
-               true: ApplicationColors.mainColor,
-               false: ApplicationColors.mainColor,
+               true: themeColorPalatte.primaryColor,
+               false: themeColorPalatte.primaryColor,
             }}
             value={isChecked}
             disabled={true}
-            style={styles.checkbox}
+            style={[styles.checkbox, { borderColor: themeColorPalatte.primaryColor }]}
             onChange={Platform.OS !== 'ios' && handleChatItemSelect}
          />
       );
-   }, [isChecked]);
+   }, [isChecked, themeColorPalatte]);
 
    return (
       <>
@@ -169,20 +170,22 @@ const ContactItem = ({
                      backgroundColor={colorCode}
                      profileImage={imageToken}
                   />
-                  <View>
-                     <View style={styles.recentChatItemName}>
-                        <NickName
-                           userId={userId}
-                           data={nickName}
-                           searchValue={searchText.trim()}
-                           style={{
-                              color: '#1f2937',
-                              fontWeight: 'bold',
-                              maxWidth: '90%',
-                           }}
-                        />
-                     </View>
-                     <Text style={styles.recentChatItemStatus} numberOfLines={1} ellipsizeMode="tail">
+                  <View style={styles.recentChatItemName}>
+                     <NickName
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        userId={userId}
+                        data={nickName}
+                        searchValue={searchText.trim()}
+                        style={{
+                           color: themeColorPalatte.primaryTextColor,
+                           fontWeight: 'bold',
+                        }}
+                     />
+                     <Text
+                        style={[styles.recentChatItemStatus, { color: themeColorPalatte.primaryTextColor }]}
+                        numberOfLines={1}
+                        ellipsizeMode="tail">
                         {profileStatus}
                      </Text>
                   </View>
@@ -202,7 +205,7 @@ const RecentChatSectionList = ({ data, handleChatSelect, selectedUsers, searchTe
          {/* Header */}
          {data.length > 0 && (
             <View style={styles.recentChatHeader}>
-               <Text style={styles.recentChatHeaderText}>Recent Chat</Text>
+               <Text style={styles.recentChatHeaderText}>{stringSet.FORWARD_SCREEN.RECENT_CHAT_HEADER}</Text>
             </View>
          )}
          {/* List */}
@@ -231,7 +234,7 @@ const GroupChatSectionList = ({ data, handleChatSelect, selectedUsers, searchTex
          {/* Header */}
          {data.length > 0 && (
             <View style={styles.recentChatHeader}>
-               <Text style={styles.recentChatHeaderText}>Groups</Text>
+               <Text style={styles.recentChatHeaderText}>{stringSet.FORWARD_SCREEN.GROUPS_HEADER_TITLE}</Text>
             </View>
          )}
          {/* List */}
@@ -254,13 +257,20 @@ const GroupChatSectionList = ({ data, handleChatSelect, selectedUsers, searchTex
    );
 };
 
-const ContactsSectionList = ({ data, handleChatSelect, selectedUsers, searchText, showLoadMoreLoader }) => {
+const ContactsSectionList = ({
+   data,
+   handleChatSelect,
+   selectedUsers,
+   searchText,
+   showLoadMoreLoader,
+   themeColorPalatte,
+}) => {
    return (
       <View style={styles.recentChatContiner}>
          {/* Header */}
          {data.length > 0 && (
             <View style={styles.recentChatHeader}>
-               <Text style={styles.recentChatHeaderText}>Contacts</Text>
+               <Text style={styles.recentChatHeaderText}>{stringSet.FORWARD_SCREEN.CONTACT_HEADER_TITLE}</Text>
             </View>
          )}
          {/* List */}
@@ -280,7 +290,7 @@ const ContactsSectionList = ({ data, handleChatSelect, selectedUsers, searchText
             ))}
          </View>
          {showLoadMoreLoader ? (
-            <ActivityIndicator size={'large'} color={ApplicationColors.mainColor} style={styles.loadMoreLoader} />
+            <ActivityIndicator size={'large'} color={themeColorPalatte.primaryColor} style={styles.loadMoreLoader} />
          ) : (
             <View style={styles.loadMoreLoaderPlaceholder} />
          )}
@@ -288,18 +298,22 @@ const ContactsSectionList = ({ data, handleChatSelect, selectedUsers, searchText
    );
 };
 
-const SelectedUsersName = ({ users, onMessageSend }) => {
+const SelectedUsersName = ({ users, onMessageSend, themeColorPalatte }) => {
    const userNames = React.useMemo(() => {
       if (Array.isArray(users) && users.length) {
          return users.map(u => u.name || u.userId).join(', ');
       } else {
-         return 'No users selected';
+         return stringSet.FORWARD_SCREEN.NO_USERS_SELECTED;
       }
    }, [users]);
 
    return (
-      <View style={styles.selectedUsersNameContainer} shadow={2}>
-         <Text style={commonStyles.flex1}>{userNames}</Text>
+      <View
+         style={[styles.selectedUsersNameContainer, commonStyles.bg_color(themeColorPalatte.screenBgColor)]}
+         shadow={2}>
+         <Text style={[commonStyles.flex1, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+            {userNames}
+         </Text>
          {users?.length > 0 && (
             <IconButton onPress={onMessageSend} pressedStyle={{ bg: 'rgba(50,118,226, 0.1)' }}>
                <SendBlueIcon width="45" height="45" />
@@ -326,6 +340,7 @@ const ForwardMessage = () => {
    const [filteredGroupChatList, setFilteredGroupChatList] = React.useState([]);
    const [filteredContactList, setFilteredContactList] = React.useState([]);
    const recentChatData = useRecentChatData();
+   const themeColorPalatte = useThemeColorPalatte();
 
    const searchTextValueRef = React.useRef();
 
@@ -442,7 +457,7 @@ const ForwardMessage = () => {
             const filteredUsers = getUsersExceptRecentChatsUsers(users);
             setFilteredContactList(nextPage === 1 ? filteredUsers : val => [...val, ...filteredUsers]);
          } else {
-            showToast('Could not get contacts from server');
+            showToast(stringSet.CONTACT_SCREEN.COULD_NOT_GET_CONTACTS);
          }
          setShowLoadMoreLoader(false);
       }
@@ -508,6 +523,7 @@ const ForwardMessage = () => {
             let toUserJid = selectedUsers[userId]?.userJid || formatUserIdToJid(userId);
             const currentNewMsgId = newMsgIdsCopy.shift();
             const recentChatObj = await getRecentChatMsgObjForward(msg, toUserJid, currentNewMsgId);
+            recentChatObj.userId = getUserIdFromJid(toUserJid);
             recentChatObj.userJid = toUserJid;
             // updating recent chat for last message only
             if (i === forwardMessages.length - 1) {
@@ -577,9 +593,10 @@ const ForwardMessage = () => {
             onSearch={setSearchText}
             isSearching={isSearching}
             searchText={searchText}
+            themeColorPalatte={themeColorPalatte}
          />
       );
-   }, [isSearching, searchText]);
+   }, [isSearching, searchText, themeColorPalatte]);
 
    const renderRecentChat = React.useMemo(() => {
       return (
@@ -611,13 +628,14 @@ const ForwardMessage = () => {
             handleChatSelect={handleUserSelect}
             searchText={searchText}
             showLoadMoreLoader={showLoadMoreLoader}
+            themeColorPalatte={themeColorPalatte}
          />
       );
-   }, [filteredContactList, selectedUsers, showLoadMoreLoader]);
+   }, [filteredContactList, selectedUsers, showLoadMoreLoader, themeColorPalatte]);
 
    return (
       <>
-         <View style={styles.container}>
+         <View style={[styles.container, commonStyles.bg_color(themeColorPalatte.screenBgColor)]}>
             {renderHeader}
             {Boolean(searchText) &&
                !filteredRecentChatList.length &&
@@ -629,9 +647,11 @@ const ForwardMessage = () => {
                         commonStyles.justifyContentCenter,
                         commonStyles.width_100_per,
                         commonStyles.height_100_per,
-                        commonStyles.bg_white,
+                        commonStyles.bg_color(themeColorPalatte.screenBgColor),
                      ]}>
-                     <Text style={styles.noMsg}>No Result Found</Text>
+                     <Text style={[styles.noMsg, commonStyles.textColor(themeColorPalatte.secondaryTextColor)]}>
+                        {stringSet.COMMON_TEXT.NO_RESULTS_FOUND}
+                     </Text>
                   </View>
                )}
             <ScrollView style={commonStyles.flex1} onScroll={handleScroll} scrollEventThrottle={150}>
@@ -639,14 +659,20 @@ const ForwardMessage = () => {
                {renderGroupChat}
                {renderContactList}
             </ScrollView>
-            <SelectedUsersName users={selectedUsersArray} onMessageSend={handleMessageSend} />
+            <SelectedUsersName
+               users={selectedUsersArray}
+               onMessageSend={handleMessageSend}
+               themeColorPalatte={themeColorPalatte}
+            />
          </View>
          {/* Modal for Loader */}
          <Modal visible={showLoader} animationType="fade" onRequestClose={doNothing} transparent>
             <View style={styles.loaderContainer}>
                <View style={styles.loaderWrapper}>
                   <ActivityIndicator color={'#3c3c3c'} size={'large'} style={styles.loader} />
-                  <Text style={styles.loaderText}>Sending</Text>
+                  <Text style={[styles.loaderText, { color: themeColorPalatte.primaryTextColor }]}>
+                     {stringSet.FORWARD_SCREEN.SENDING_LABEL}
+                  </Text>
                </View>
             </View>
          </Modal>
@@ -666,7 +692,6 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       alignItems: 'center',
       height: 65,
-      backgroundColor: '#e8e8e8',
    },
    cancelIcon: {
       justifyContent: 'center',
@@ -679,7 +704,6 @@ const styles = StyleSheet.create({
       alignItems: 'center',
    },
    forwardToText: {
-      color: '#202020',
       fontSize: 20,
       fontWeight: 'bold',
    },
@@ -731,11 +755,11 @@ const styles = StyleSheet.create({
       color: '#424242',
       fontWeight: 'bold',
       marginLeft: 15,
+      width: 250,
    },
    recentChatItemStatus: {
       fontSize: 12,
       color: '#969696',
-      marginLeft: 15,
       width: 250,
    },
    dividerLine: {
@@ -752,7 +776,6 @@ const styles = StyleSheet.create({
       marginHorizontal: 3,
       marginBottom: 5,
       minHeight: 50,
-      backgroundColor: 'white',
       paddingHorizontal: 5,
       paddingVertical: 5,
       borderRadius: 3,
@@ -777,7 +800,6 @@ const styles = StyleSheet.create({
    },
    loaderText: {
       fontSize: 18,
-      color: 'black',
    },
    loadMoreLoader: {
       marginVertical: 15,
@@ -787,15 +809,13 @@ const styles = StyleSheet.create({
       width: '100%',
    },
    noMsg: {
-      color: '#181818',
       fontSize: 16,
-      fontWeight: '800',
+      fontWeight: '700',
       marginBottom: 8,
    },
    checkbox: {
       borderWidth: 2,
       borderRadius: 5,
-      borderColor: '#3276E2',
       width: 20,
       height: 20,
    },

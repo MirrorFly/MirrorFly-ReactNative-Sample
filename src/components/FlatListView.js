@@ -1,20 +1,23 @@
 import CheckBox from '@react-native-community/checkbox';
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
-import { ActivityIndicator, FlatList, Keyboard, Platform, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Keyboard, Platform, StyleSheet, View } from 'react-native';
 import SDK from '../SDK/SDK';
 import Avathar from '../common/Avathar';
 import NickName from '../common/NickName';
 import Pressable from '../common/Pressable';
-import ApplicationColors from '../config/appColors';
+import Text from '../common/Text';
 import config from '../config/config';
 import { showToast } from '../helpers/chatHelpers';
-import { useRoasterData } from '../redux/reduxHook';
+import { getStringSet, replacePlaceholders } from '../localization/stringSet';
+import { useRoasterData, useThemeColorPalatte } from '../redux/reduxHook';
 import { GROUP_INFO, NEW_GROUP } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 
 const RenderItem = ({ item, onhandlePress, selectedUsers, searchText }) => {
-   let { nickName, image: imageToken, colorCode, status } = useRoasterData(item?.userId);
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
+   let { nickName, image: imageToken, colorCode, status, userId } = useRoasterData(item?.userId) || {};
    const { params: { prevScreen = '' } = {} } = useRoute();
    const [isChecked, setIsChecked] = React.useState(false);
    const isNewGrpSrn = prevScreen === NEW_GROUP;
@@ -28,7 +31,11 @@ const RenderItem = ({ item, onhandlePress, selectedUsers, searchText }) => {
    const handlePress = () => {
       Keyboard.dismiss();
       if (Object.keys(selectedUsers).length > config.maxAllowdGroupMembers - 2) {
-         return showToast('Maximum allowed group members ' + config.maxAllowdGroupMembers);
+         return showToast(
+            replacePlaceholders(stringSet.INFO_SCREEN.MAXIMUM_ALLOWED_GROUP_MEMBERS, {
+               maxAllowdGroupMembers: config.maxAllowdGroupMembers,
+            }),
+         );
       }
       onhandlePress(item);
    };
@@ -41,22 +48,22 @@ const RenderItem = ({ item, onhandlePress, selectedUsers, searchText }) => {
    const renderCheckBox = React.useMemo(() => {
       return (
          <CheckBox
-            onFillColor={ApplicationColors.mainColor}
-            onCheckColor={ApplicationColors.mainColor}
+            onFillColor={themeColorPalatte.primaryColor}
+            onCheckColor={themeColorPalatte.primaryColor}
             hideBox={true}
             animationDuration={0.1}
             onAnimationType={'stroke'}
             tintColors={{
-               true: ApplicationColors.mainColor,
-               false: ApplicationColors.mainColor,
+               true: themeColorPalatte.primaryColor,
+               false: themeColorPalatte.primaryColor,
             }}
             onChange={Platform.OS !== 'ios' && handlePress}
             value={isChecked}
             disabled={Platform.OS === 'ios'}
-            style={styles.checkbox}
+            style={[styles.checkbox, { borderColor: themeColorPalatte.primaryColor }]}
          />
       );
-   }, [isChecked]);
+   }, [isChecked, themeColorPalatte]);
 
    return (
       <React.Fragment>
@@ -68,22 +75,25 @@ const RenderItem = ({ item, onhandlePress, selectedUsers, searchText }) => {
                      userId={item?.userId}
                      data={nickName}
                      searchValue={searchText}
-                     style={styles.nickNameText}
+                     style={[styles.nickNameText, { color: themeColorPalatte.primaryTextColor }]}
                   />
-                  <Text style={styles.stautsText} numberOfLines={1} ellipsizeMode="tail">
+                  <Text
+                     style={[{ color: themeColorPalatte.secondaryTextColor }, styles.stautsText]}
+                     numberOfLines={1}
+                     ellipsizeMode="tail">
                      {status}
                   </Text>
                </View>
                {(isNewGrpSrn || isGroupInfoSrn) && renderCheckBox}
             </View>
          </Pressable>
-         <View style={styles.divider} />
+         <View style={[styles.divider, { backgroundColor: themeColorPalatte.dividerBg }]} />
       </React.Fragment>
    );
 };
 
 export default function FlatListView(props) {
-   const { selectedUsers, onhandlePress, isLoading, footerLoader, data, searchText } = props;
+   const { selectedUsers, onhandlePress, isLoading, footerLoader, data, searchText, themeColorPalatte } = props;
    const renderItem = ({ item, index }) => (
       <RenderItem
          searchText={searchText}
@@ -99,7 +109,7 @@ export default function FlatListView(props) {
          return (
             <View style={styles.loaderWrapper}>
                <View style={commonStyles.alignItemsCenter}>
-                  <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
+                  <ActivityIndicator size="large" color={themeColorPalatte.primaryColor} />
                </View>
             </View>
          );
@@ -111,7 +121,7 @@ export default function FlatListView(props) {
          return (
             <View style={commonStyles.mb_130}>
                <View style={commonStyles.alignItemsCenter}>
-                  <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
+                  <ActivityIndicator size="large" color={themeColorPalatte.primaryColor} />
                </View>
             </View>
          );
@@ -121,7 +131,7 @@ export default function FlatListView(props) {
    return (
       <>
          {renderLoaderIfFetching()}
-         <View style={styles.listContainer}>
+         <View style={[styles.listContainer, { backgroundColor: themeColorPalatte.screenBgColor }]}>
             <FlatList
                keyboardShouldPersistTaps={'always'}
                keyExtractor={item => item?.userId}
@@ -141,7 +151,6 @@ export default function FlatListView(props) {
 
 const styles = StyleSheet.create({
    listContainer: {
-      backgroundColor: ApplicationColors.white,
       flex: 1,
    },
    wrapper: {
@@ -155,19 +164,16 @@ const styles = StyleSheet.create({
    },
    nickNameText: {
       flexWrap: 'wrap',
-      color: '#1f2937',
       fontWeight: 'bold',
       marginVertical: 2,
    },
    stautsText: {
-      color: '#4b5563',
       marginVertical: 2,
    },
    divider: {
       width: '83%',
       height: 1,
       alignSelf: 'flex-end',
-      backgroundColor: ApplicationColors.dividerBg,
    },
    loaderWrapper: {
       position: 'absolute',
@@ -178,12 +184,7 @@ const styles = StyleSheet.create({
    checkbox: {
       borderWidth: 2,
       borderRadius: 5,
-      borderColor: '#3276E2',
       width: 20,
       height: 20,
-   },
-   nickName: {
-      color: '#3276E2',
-      fontWeight: 'bold',
    },
 });

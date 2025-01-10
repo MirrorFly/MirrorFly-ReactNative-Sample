@@ -10,7 +10,7 @@ function NotificationMessage(props) {
    const {
       label,
       messageObject: { msgBody: { message = '', notificationContent } = {}, publisherId = '', toUserJid = '' } = {},
-      themeColorPalatte,
+      themeColorPalatte = {},
    } = props;
    const publisherName = getUserNameFromStore(publisherId);
    const toUserID = getUserIdFromJid(toUserJid);

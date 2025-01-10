@@ -1732,6 +1732,8 @@ PODS:
     - React
   - rn-fetch-blob (0.12.0):
     - React-Core
+  - RNAudioRecorderPlayer (3.6.12):
+    - React-Core
   - RNCCheckbox (0.5.17):
     - BEMCheckBox (~> 1.4)
     - React-Core
@@ -1912,6 +1914,7 @@ DEPENDENCIES:
   - ReactNativeIncallManager (from `../node_modules/react-native-incall-manager`)
   - RealmJS (from `../node_modules/realm`)
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
+  - RNAudioRecorderPlayer (from `../node_modules/react-native-audio-recorder-player`)
   - "RNCCheckbox (from `../node_modules/@react-native-community/checkbox`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - RNConvertPhAsset (from `../node_modules/react-native-convert-ph-asset`)
@@ -2119,6 +2122,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/realm"
   rn-fetch-blob:
     :path: "../node_modules/rn-fetch-blob"
+  RNAudioRecorderPlayer:
+    :path: "../node_modules/react-native-audio-recorder-player"
   RNCCheckbox:
     :path: "../node_modules/@react-native-community/checkbox"
   RNCClipboard:
@@ -2205,7 +2210,7 @@ SPEC CHECKSUMS:
   react-native-cameraroll: f424566f8560423f870a9594adc26cb0ca56ec17
   react-native-compressor: cd814c512cfbadc66cd927743645c927f5531986
   react-native-contacts: cdeb7709dcc626e5fd7ee3d3e3685357e877cbd5
-  react-native-create-thumbnail: ab55d24aea01723cf386f18b0b542aabb1982f27
+  react-native-create-thumbnail: 4ffd51a6c02a9313edc74e2460cd07264221f554
   react-native-document-picker: 1928548d8b19bbc9f2219b01f1d350aa8ff76508
   react-native-geocoder: 757427682892bb256f3b3745858cc90eba148a8e
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
@@ -2250,6 +2255,7 @@ SPEC CHECKSUMS:
   ReactNativeIncallManager: bfc9c67358cd524882a7c4116dcb311ac2293d4b
   RealmJS: 389361669e771fe4d13a86be48928d560d214294
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
+  RNAudioRecorderPlayer: 224c7de87722938aedce04000d09baa633148f5b
   RNCCheckbox: a3ca9978cb0846b981d28da4e9914bd437403d77
   RNCClipboard: 69ab8e51324d5b351f6ba72bbdb72478087a2c64
   RNConvertPhAsset: 9b366b8a1abc194b76572712c6f7dd89c9e4e37f
@@ -2272,4 +2278,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 70c00a3230308eab51c35a1971eb0571bfe00fbe
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.16.0

@@ -183,7 +183,7 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
    }, [item]);
    return (
       <>
-         <NotificationMessage label={label} />
+         <NotificationMessage label={label} themeColorPalatte = {themeColorPalatte}/>
          {renderMessage}
       </>
    );

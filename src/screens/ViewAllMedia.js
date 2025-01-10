@@ -158,7 +158,7 @@ const ViewAllMedia = () => {
                   {stringSet.VIEW_ALL_MEDIA_SCREEN.TAB_HEADER_DOCS}
                </Text>
             </Pressable>
-            <Pressable pressedStyle={{}} style={[styles.mediaTabText, { width: '33.33%' }]} onPress={handleTabPress(2)}>
+            <Pressable pressedStyle={{}} style={[styles.mediaTabItem, { width: '33.33%' }]} onPress={handleTabPress(2)}>
                <Text
                   style={[
                      styles.mediaTabText,
@@ -255,7 +255,7 @@ const ViewAllMedia = () => {
                         ]}>
                         <Text style={{ color: themeColorPalatte.primaryTextColor }}>
                            {stringSet.VIEW_ALL_MEDIA_SCREEN.NO_LINKS_FOUND}
-                        </Text>{' '}
+                        </Text>
                      </View>
                   ) : (
                      <View style={[commonStyles.marginTop_5, commonStyles.padding_8]}>

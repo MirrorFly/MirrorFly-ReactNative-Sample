@@ -4620,6 +4620,11 @@ fs.realpath@^1.0.0:
   resolved "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
   integrity sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==
 
+fsevents@^2.2.1, fsevents@^2.3.2, fsevents@~2.3.2:
+  version "2.3.3"
+  resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
+  integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
+
 function-bind@^1.1.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/function-bind/-/function-bind-1.1.2.tgz"
@@ -4894,6 +4899,11 @@ human-signals@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/human-signals/-/human-signals-2.1.0.tgz"
   integrity sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==
+
+hyochan-welcome@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/hyochan-welcome/-/hyochan-welcome-1.0.1.tgz"
+  integrity sha512-WRZNH5grESkOXP/r7xc7TMhO9cUqxaJIuZcQDAjzHWs6viGP+sWtVbiBigxc9YVRrw3hnkESQWwzqg+oOga65A==
 
 idb@7.1.1:
   version "7.1.1"
@@ -7053,6 +7063,13 @@ react-is@^17.0.1:
   resolved "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
+react-native-audio-recorder-player@^3.6.8:
+  version "3.6.12"
+  resolved "https://registry.npmjs.org/react-native-audio-recorder-player/-/react-native-audio-recorder-player-3.6.12.tgz"
+  integrity sha512-/pnZxPA2jvQ9K7oDtrjcAjc/hn124swi451Q/i1Z6yesDVqupE38moNm12HgY1IVupdUCjeiZVqPoShcE0N8mw==
+  dependencies:
+    hyochan-welcome "^1.0.0"
+
 react-native-background-timer@^2.4.1:
   version "2.4.1"
   resolved "https://registry.npmjs.org/react-native-background-timer/-/react-native-background-timer-2.4.1.tgz"
@@ -7080,10 +7097,10 @@ react-native-convert-ph-asset@^1.0.3:
   resolved "https://registry.npmjs.org/react-native-convert-ph-asset/-/react-native-convert-ph-asset-1.0.3.tgz"
   integrity sha512-qdTrUsDlxOvC7KnamjjRnxaijr3myfOwzbYR0vyTl0BjPT25jkCQ9a4Q26egRdy8uqiw7mqB1ZhG5OohwnpsOg==
 
-react-native-create-thumbnail@^1.6.4, react-native-create-thumbnail@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/react-native-create-thumbnail/-/react-native-create-thumbnail-2.0.0.tgz"
-  integrity sha512-1GA0PHGlhSirKUqbtlLLk++3Wkd/fo8H8YUi71Lp5Y2z+AxZMKmY1/IcB9ooDiMzI1Pxr006Kq99JWuXowoykg==
+react-native-create-thumbnail@^1.6.4, react-native-create-thumbnail@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/react-native-create-thumbnail/-/react-native-create-thumbnail-2.0.1.tgz"
+  integrity sha512-D3UEuFJ9hDuf4XTMyNsqsk1SsTxak8EeKTf68QclZQKngwe67YuYaCE8h6CWdzm6ncDH4nbq/MZtFs+d+lD+iA==
 
 react-native-document-picker@^9.3.1:
   version "9.3.1"

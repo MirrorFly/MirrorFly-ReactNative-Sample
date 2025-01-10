@@ -1,35 +1,132 @@
+import { useFocusEffect } from '@react-navigation/native';
 import React, { createRef } from 'react';
-import { Keyboard, StyleSheet, View } from 'react-native';
+import { Animated, Keyboard, PanResponder, Platform, StyleSheet, View } from 'react-native';
+import AudioRecorderPlayer, {
+   AVEncoderAudioQualityIOSType,
+   AVEncodingOption,
+   AVModeIOSOption,
+   AudioEncoderAndroidType,
+   AudioSourceAndroidType,
+} from 'react-native-audio-recorder-player';
+import RNFS from 'react-native-fs';
 import { useDispatch } from 'react-redux';
-import { handleSendMsg } from '../SDK/utils';
+import { pauseAudio } from '../Media/AudioPlayer';
+import { handleSendMsg, updateTypingGoneStatus, updateTypingStatus } from '../SDK/utils';
+import AlertModal from '../common/AlertModal';
 import AttachmentMenu from '../common/AttachmentMenu';
 import { SendBtn } from '../common/Button';
 import IconButton from '../common/IconButton';
-import { AttachmentIcon, EmojiIcon, KeyboardIcon } from '../common/Icons';
+import { AttachmentIcon, BackArrowIconR, DeleteBinIcon, EmojiIcon, KeyboardIcon, MicIcon } from '../common/Icons';
+import NickName from '../common/NickName';
+import RippleAnimation from '../common/RippleAnimation';
 import Text from '../common/Text';
 import TextInput from '../common/TextInput';
+import { useAppState } from '../common/hooks';
+import { audioRecordPermission } from '../common/permissions';
+import { formatMillisecondsToTime } from '../common/timeStamp';
+import ApplicationColors from '../config/appColors';
 import config from '../config/config';
-import { attachmentMenuIcons, getUserIdFromJid } from '../helpers/chatHelpers';
-import { MIX_BARE_JID } from '../helpers/constants';
+import {
+   attachmentMenuIcons,
+   getUserIdFromJid,
+   handleUpdateBlockUser,
+   mediaObjContructor,
+   showToast,
+} from '../helpers/chatHelpers';
+import { MIX_BARE_JID, audioRecord, uriPattern } from '../helpers/constants';
 import { getStringSet } from '../localization/stringSet';
-import { setTextMessage } from '../redux/draftSlice';
-import { useTextMessage, useThemeColorPalatte, useUserType } from '../redux/reduxHook';
+import { toggleEditMessage } from '../redux/chatMessageDataSlice';
+import { setAudioRecordTime, setAudioRecording, setTextMessage } from '../redux/draftSlice';
+import {
+   getAudioRecordTime,
+   getAudioRecording,
+   getUserNameFromStore,
+   useAudioRecordTime,
+   useAudioRecording,
+   useBlockedStatus,
+   useEditMessageId,
+   useTextMessage,
+   useThemeColorPalatte,
+   useUserType,
+} from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import EmojiOverlay from './EmojiPicker';
+
+const audioRecorderPlayer = new AudioRecorderPlayer();
+const audioRecordRef = createRef();
+audioRecordRef.current = {};
+
+let userId = '',
+   fileInfo = {},
+   fileName = {},
+   audioRecordClick = 0;
 
 export const chatInputRef = createRef();
 chatInputRef.current = {};
 
+export const stopAudioRecord = () => {
+   if (getAudioRecording(userId)) {
+      audioRecordRef.current.onStopRecord?.();
+   }
+};
+
 function ChatInput({ chatUser }) {
-   const userId = getUserIdFromJid(chatUser);
+   userId = getUserIdFromJid(chatUser);
    const stringSet = getStringSet();
    const themeColorPalatte = useThemeColorPalatte();
    const dispatch = useDispatch();
+   const appState = useAppState();
    const typingTimeoutRef = React.useRef(null);
    const message = useTextMessage(userId) || '';
    const [menuOpen, setMenuOpen] = React.useState(false);
    const [isEmojiPickerShowing, setIsEmojiPickerShowing] = React.useState(false);
    const userType = useUserType(chatUser); // have to check this to avoid the re-render if any update happen in recent chat this chat input also renders
+   const editMessageId = useEditMessageId();
+   const panRef = React.useRef(new Animated.ValueXY({ x: 0.1, y: 0 })).current;
+   const isAudioRecording = useAudioRecording(userId);
+   const recordSecs = useAudioRecordTime(userId) || 0;
+   const [recordTime, setRecordTime] = React.useState(formatMillisecondsToTime(recordSecs) || '00:00');
+   const [showDeleteIcon, setShowDeleteIcon] = React.useState(false);
+   const blockedStaus = useBlockedStatus(userId);
+   const [modalContent, setModalContent] = React.useState(null);
+
+   useFocusEffect(
+      React.useCallback(() => {
+         return () => {
+            updateTypingGoneStatus(chatUser);
+            stopAudioRecord();
+         };
+      }, [appState]),
+   );
+
+   React.useEffect(() => {
+      return () => {
+         stopAudioRecord();
+      };
+   }, []);
+
+   React.useEffect(() => {
+      audioRecordRef.current.onStopRecord = onStopRecord;
+      const onRecordBackListener = e => {
+         setRecordSecs(e.currentPosition);
+         timeValidate(e.currentPosition);
+         setRecordTime(formatMillisecondsToTime(e.currentPosition));
+      };
+
+      if (isAudioRecording) {
+         audioRecorderPlayer.addRecordBackListener(onRecordBackListener);
+      } else {
+         audioRecorderPlayer.removeRecordBackListener();
+      }
+
+      return () => {
+         audioRecorderPlayer.removeRecordBackListener();
+      };
+   }, [isAudioRecording]);
+
+   const setRecordSecs = time => {
+      dispatch(setAudioRecordTime({ userId, time }));
+   };
 
    const setMessage = text => {
       dispatch(setTextMessage({ userId, message: text }));
@@ -64,7 +161,7 @@ function ChatInput({ chatUser }) {
    const onChangeMessage = text => {
       setMessage(text);
       if (text) {
-         // Need to check here
+         updateTypingStatus(chatUser);
       }
       if (typingTimeoutRef.current) {
          clearTimeout(typingTimeoutRef.current);
@@ -75,8 +172,114 @@ function ChatInput({ chatUser }) {
    };
 
    const sendMessage = () => {
-      setMessage('');
-      handleSendMsg({ chatUser, message: message.trim(), messageType: 'text' });
+      updateTypingGoneStatus(chatUser);
+      switch (true) {
+         case Boolean(editMessageId):
+            setMessage('');
+            dispatch(toggleEditMessage(''));
+            handleSendMsg({
+               chatUser,
+               message: message.trim(),
+               messageType: 'messageEdit',
+               editMessageId: editMessageId,
+            });
+            break;
+         case Boolean(message.trim()):
+            setMessage('');
+            handleSendMsg({ chatUser, message: message.trim(), messageType: 'text' });
+            break;
+         case recordSecs < 1000:
+            showToast('Recorded audio time is too short');
+            onResetRecord();
+            break;
+         case recordSecs >= 1000:
+            onResetRecord();
+            const updatedFile = {
+               fileDetails: fileInfo[userId],
+            };
+            const messageData = {
+               messageType: 'media',
+               content: [updatedFile],
+               chatUser,
+            };
+            handleSendMsg(messageData);
+            break;
+      }
+   };
+
+   const timeValidate = millsec => {
+      const secs = millsec / 1000;
+      if (secs > config.audioRecordDuaration) {
+         showToast('You can record maximum 300 seconds for audio recording');
+         onStopRecord();
+      }
+   };
+
+   const onResetRecord = () => {
+      setAudioRecording('');
+      setRecordTime('');
+      setRecordSecs(0);
+      setShowDeleteIcon(false);
+      dispatch(setAudioRecording({ userId, message: '' }));
+   };
+
+   const onStartRecord = async () => {
+      try {
+         pauseAudio();
+         audioRecordClick += 1;
+         const res = await audioRecordPermission();
+         if (res === 'granted') {
+            fileName[userId] = `MFRN_${Date.now() + audioRecordClick}`;
+            const path = Platform.select({
+               ios: `file://${RNFS.DocumentDirectoryPath}/${fileName[userId]}.aac`,
+               android: `${RNFS.CachesDirectoryPath}/${fileName[userId]}.mp3`,
+            });
+
+            const audioSet = {
+               AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
+               AudioSourceAndroid: AudioSourceAndroidType.MIC,
+               AVModeIOS: AVModeIOSOption.measurement,
+               AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
+               AVNumberOfChannelsKeyIOS: 2,
+               AVFormatIDKeyIOS: AVEncodingOption.aac,
+            };
+            await audioRecorderPlayer.startRecorder(path, audioSet);
+            dispatch(setAudioRecording({ userId, message: audioRecord.RECORDING }));
+         }
+      } catch (error) {
+         console.error('Failed to start recording:', error);
+      }
+   };
+
+   const onStopRecord = async () => {
+      try {
+         if (!getAudioRecording(userId)) {
+            return;
+         }
+         const result = await audioRecorderPlayer.stopRecorder();
+         panRef.setValue({ x: 0.1, y: 0 });
+         dispatch(setAudioRecording({ userId, message: audioRecord.STOPPED }));
+         if (uriPattern.test(result)) {
+            fileInfo[userId] = await RNFS.stat(result);
+            fileInfo[userId].fileCopyUri = result;
+            fileInfo[userId].duration = getAudioRecordTime(userId);
+            fileInfo[userId].name = fileName[userId];
+            fileInfo[userId] = mediaObjContructor('AUDIO_RECORD', fileInfo[userId]);
+            fileInfo[userId].audioType = 'recording';
+            fileInfo[userId].type = 'audio/mp3';
+            console.log('fileInfo[userId] ==>', JSON.stringify(fileInfo[userId], null, 2));
+         }
+      } catch (error) {
+         console.log('Failed to stop audio recording:', error);
+      }
+   };
+
+   const onCancelRecord = async () => {
+      await onStopRecord();
+      if (fileInfo[userId]?.fileCopyUri) {
+         RNFS.unlink(fileInfo[userId].fileCopyUri);
+      }
+      onResetRecord();
    };
 
    const handleCloseEmojiWindow = () => {
@@ -86,6 +289,50 @@ function ChatInput({ chatUser }) {
    const handleEmojiSelect = (...emojis) => {
       setMessage(message + emojis);
    };
+
+   const toggleModalContent = () => {
+      setModalContent(null);
+   };
+
+   const hadleBlockUser = () => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: `Unblock ${getUserNameFromStore(userId)}`,
+         noButton: 'CANCEL',
+         yesButton: 'UNBLOCK',
+         yesAction: handleUpdateBlockUser(userId, 0, chatUser),
+      });
+   };
+
+   const panResponder = React.useRef(
+      PanResponder.create({
+         onMoveShouldSetPanResponder: () => true,
+         onPanResponderMove: (e, gestureState) => {
+            // Calculate the new position considering the initial offset
+            let value = Math.max(-110, Math.min(gestureState.dx, 0));
+            // Limit the movement to between 10% from the left and 90% from the left (10% from the right)
+            panRef.setValue({ x: value, y: 0 });
+            if (value < -90) {
+               setShowDeleteIcon(true);
+            }
+            if (value === -110) {
+               onCancelRecord();
+               Animated.spring(panRef, {
+                  toValue: { x: 0.1, y: 0 },
+                  useNativeDriver: true,
+               }).start();
+            }
+         },
+         onPanResponderRelease: () => {
+            setShowDeleteIcon(false);
+            Animated.spring(panRef, {
+               toValue: { x: 0.1, y: 0 },
+               useNativeDriver: true,
+            }).start();
+         },
+      }),
+   ).current;
 
    const textInputRender = React.useMemo(() => {
       return (
@@ -119,22 +366,91 @@ function ChatInput({ chatUser }) {
                   <AttachmentIcon color={themeColorPalatte.iconColor} />
                </IconButton>
             </View>
-
-            {/* <IconButton
-                    containerStyle={styles.audioRecordIconWrapper}
-                    //   onPress={startRecording}
-                    style={styles.audioRecordIcon}>
-                    <MicIcon style={isRecording && micStyle} />
-                </IconButton> */}
+            {!message.trim() && (
+               <IconButton
+                  containerStyle={styles.audioRecordIconWrapper}
+                  style={styles.audioRecordIcon}
+                  onPress={onStartRecord}>
+                  <MicIcon />
+               </IconButton>
+            )}
          </>
       );
    }, [message, isEmojiPickerShowing, themeColorPalatte]);
 
+   const renderRecording = () => {
+      if (isAudioRecording === audioRecord.RECORDING) {
+         return (
+            <Animated.View
+               style={[
+                  commonStyles.hstack,
+                  commonStyles.alignItemsCenter,
+                  {
+                     transform: [{ translateX: panRef.x }],
+                  },
+               ]}
+               {...panResponder.panHandlers}>
+               <BackArrowIconR fill="#767676" />
+               <Text>Slide to cancel</Text>
+            </Animated.View>
+         );
+      }
+      if (isAudioRecording === audioRecord.STOPPED) {
+         return (
+            <IconButton onPress={onCancelRecord}>
+               <Text style={{ color: 'red' }}>Cancel</Text>
+            </IconButton>
+         );
+      }
+      return null;
+   };
+
    const renderSendButton = React.useMemo(() => {
-      const isAllowSendMessage = Boolean(message.trim());
+      const isAllowSendMessage =
+         Boolean(message.trim()) || Boolean(recordSecs) || isAudioRecording === audioRecord.STOPPED;
+
+      if (isAudioRecording === audioRecord.RECORDING) {
+         return (
+            <View style={[commonStyles.positionRelative]}>
+               <RippleAnimation animateToValue={1.5} baseStyle={styles.avatharPulseAnimatedView} />
+               <IconButton
+                  onPress={onStopRecord}
+                  containerStyle={{
+                     backgroundColor: ApplicationColors.mainColor,
+                     marginLeft: 10,
+                     padding: 2.5,
+                     paddingHorizontal: 5.5,
+                     borderRadius: 100,
+                  }}>
+                  <MicIcon color={ApplicationColors.white} />
+               </IconButton>
+            </View>
+         );
+      }
 
       return isAllowSendMessage ? <SendBtn style={styles.sendButton} onPress={sendMessage} /> : null;
-   }, [message]);
+   }, [message, recordSecs, isAudioRecording]);
+
+   if (blockedStaus) {
+      return (
+         <View style={styles.container}>
+            <Text
+               style={[
+                  commonStyles.px_4,
+                  styles.cantMessaegs,
+                  { color: themeColorPalatte.groupNotificationTextColour },
+               ]}>
+               You have blocked <NickName userId={userId} />.{' '}
+               <Text
+                  style={[commonStyles.mainTextColor, commonStyles.textDecorationLine, commonStyles.fontSize_15]}
+                  onPress={hadleBlockUser}>
+                  Unblock
+               </Text>
+            </Text>
+            {modalContent && <AlertModal {...modalContent} />}
+         </View>
+      );
+   }
 
    if (MIX_BARE_JID.test(chatUser) && !userType) {
       return (
@@ -163,7 +479,30 @@ function ChatInput({ chatUser }) {
                { backgroundColor: themeColorPalatte.screenBgColor, borderColor: themeColorPalatte.mainBorderColor },
             ]}>
             <View style={[styles.textInputContainer, { borderColor: themeColorPalatte.mainBorderColor }]}>
-               {textInputRender}
+               {Boolean(isAudioRecording) ? (
+                  <View style={styles.hstack}>
+                     <View style={{ height: 48, justifyContent: 'center' }}>
+                        {showDeleteIcon ? (
+                           <DeleteBinIcon color={'red'} />
+                        ) : (
+                           <View
+                              style={[
+                                 commonStyles.hstack,
+                                 commonStyles.justifyContentCenter,
+                                 commonStyles.alignItemsCenter,
+                              ]}>
+                              {isAudioRecording === audioRecord.STOPPED && (
+                                 <MicIcon color={ApplicationColors.mainColor} />
+                              )}
+                              <Text style={styles.recordTime}>{recordTime || '00:00'}</Text>
+                           </View>
+                        )}
+                     </View>
+                     <View style={styles.animateContainer}>{renderRecording()}</View>
+                  </View>
+               ) : (
+                  textInputRender
+               )}
             </View>
             {renderSendButton}
          </View>
@@ -193,9 +532,36 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       width: '100%',
       alignItems: 'center',
-      borderTopWidth: 0.25,
-      padding: 8,
       justifyContent: 'center',
+      borderTopWidth: 0.25,
+      borderColor: ApplicationColors.mainBorderColor,
+      padding: 8,
+   },
+   hstack: {
+      marginHorizontal: 12.5,
+      flexDirection: 'row',
+      alignItems: 'center',
+   },
+   recordTime: {
+      fontSize: 14,
+      marginLeft: 10,
+      // Fixed height to match animated view
+      lineHeight: 48, // Center text vertically
+      color: ApplicationColors.mainColor,
+   },
+   animateContainer: {
+      flex: 1,
+      alignItems: 'flex-end',
+   },
+   avatharPulseAnimatedView: {
+      position: 'absolute',
+      width: 45,
+      height: 45,
+      borderRadius: 70,
+      zIndex: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: ApplicationColors.mainColor,
    },
    textInputContainer: {
       flexDirection: 'row',
@@ -205,6 +571,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       borderWidth: 1,
       borderRadius: 40,
+      borderColor: ApplicationColors.mainBorderColor,
       position: 'relative',
    },
    RecordUIContainer: {
@@ -215,6 +582,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       borderWidth: 1,
       borderRadius: 40,
+      borderColor: ApplicationColors.mainBorderColor,
    },
    emojiPickerIconWrapper: {
       marginLeft: 5,
@@ -277,11 +645,13 @@ const styles = StyleSheet.create({
       alignItems: 'center',
    },
    micIcon: {
+      backgroundColor: '#3276E2',
       padding: 10,
       borderRadius: 35,
    },
    durationText: {
       fontSize: 12,
+      color: '#3276E2',
       marginLeft: 20,
    },
    totalTimeContainer: {
@@ -296,7 +666,7 @@ const styles = StyleSheet.create({
       marginHorizontal: 10,
       justifyContent: 'space-between',
    },
-   totalDurationText: { fontSize: 12, marginLeft: 6 },
+   totalDurationText: { fontSize: 12, color: '#3276E2', marginLeft: 6 },
    cancelText: {
       color: '#363636',
       fontWeight: '400',

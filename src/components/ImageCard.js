@@ -15,6 +15,7 @@ import ReplyMessage from './ReplyMessage';
 function ImageCard({ chatUser, item, isSender }) {
    const themeColorPalatte = useThemeColorPalatte();
    const {
+      editMessageId,
       msgStatus,
       createdAt = '',
       msgId,
@@ -95,6 +96,7 @@ function ImageCard({ chatUser, item, isSender }) {
                caption={caption}
                msgStatus={msgStatus}
                timeStamp={getConversationHistoryTime(createdAt)}
+               editMessageId={editMessageId}
             />
          )}
       </View>

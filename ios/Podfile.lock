@@ -1353,7 +1353,7 @@ PODS:
     - Yoga
   - react-native-contacts (8.0.4):
     - React-Core
-  - react-native-create-thumbnail (2.0.0):
+  - react-native-create-thumbnail (2.0.1):
     - React-Core
   - react-native-document-picker (9.3.1):
     - DoubleConversion
@@ -2272,4 +2272,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 70c00a3230308eab51c35a1971eb0571bfe00fbe
 
-COCOAPODS: 1.16.0
+COCOAPODS: 1.16.2

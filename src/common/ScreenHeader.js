@@ -17,6 +17,7 @@ function ScreenHeader({
    isSearchable = true,
    onCreateBtn = () => {},
    isGroupInfoSrn = false,
+   onBackAction,
 }) {
    const stringSet = getStringSet();
    const themeColorPalatte = useThemeColorPalatte();
@@ -31,6 +32,9 @@ function ScreenHeader({
 
    const closeSearch = () => {
       switch (true) {
+         case Boolean(onBackAction):
+            onBackAction?.();
+            break;
          case isSearching:
             setText('');
             setIsSearching(false);

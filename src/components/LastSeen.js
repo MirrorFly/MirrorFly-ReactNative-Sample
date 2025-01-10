@@ -1,18 +1,20 @@
 import { useFocusEffect } from '@react-navigation/native';
-import React from 'react';
-import { useNetworkStatus } from '../common/hooks';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import SDK from '../SDK/SDK';
 import Text from '../common/Text';
+import { useNetworkStatus } from '../common/hooks';
 import { getLastseen } from '../common/timeStamp';
 import { formatUserIdToJid, getUserIdFromJid } from '../helpers/chatHelpers';
 import { USER_PRESENCE_STATUS_OFFLINE, USER_PRESENCE_STATUS_ONLINE } from '../helpers/constants';
 import {
    getUserNameFromStore,
+   useBlockedStatus,
+   useIsBlockedMeStatus,
    usePresenceData,
    useThemeColorPalatte,
    useTypingData,
    useXmppConnectionStatus,
 } from '../redux/reduxHook';
-import SDK from '../SDK/SDK';
 import commonStyles from '../styles/commonStyles';
 
 const LastSeen = ({ userJid = '', style }) => {
@@ -20,99 +22,53 @@ const LastSeen = ({ userJid = '', style }) => {
    const isNetworkConnected = useNetworkStatus();
    const themeColorPalatte = useThemeColorPalatte();
    const xmppConnection = useXmppConnectionStatus();
-   const [lastSeenData, setLastSeenData] = React.useState({
-      seconds: -1,
-      lastSeen: '',
-      userPresenceStatus: '',
-   });
-   let timer = 0;
-   const [config] = React.useState({
-      marqueeOnStart: true,
-      speed: 2,
-      loop: false,
-      delay: 0,
-      consecutive: true,
-   });
-   const [isTyping, setIsTyping] = React.useState('');
-   const marqueeRef = React.useRef(null);
-   const presenseData = usePresenceData(userId) || {};
+   const blockedStatus = useBlockedStatus(userId);
+   const isBlockedMeStatus = useIsBlockedMeStatus(userId);
+
+   const presenceData = usePresenceData(userId);
    const typingStatusData = useTypingData(userId) || {};
 
-   const memoizedTypingStatusData = React.useMemo(() => typingStatusData, [typingStatusData]);
-   const { fromUserJid = '', status = '' } = presenseData;
+   const [lastSeenData, setLastSeenData] = useState({ lastSeen: '', userPresenceStatus: '' });
+   const [isTyping, setIsTyping] = useState('');
+   const marqueeRef = useRef(null);
+
+   const config = { marqueeOnStart: true, speed: 2, loop: false, delay: 0, consecutive: true };
+
+   const updateLastSeen = useCallback(async (updateUserJid, userPresenceStatus) => {
+      const formattedJid = formatUserIdToJid(updateUserJid);
+      const { data: { seconds: lastSeenSeconds = -1 } = {} } = await SDK.getLastSeen(formattedJid);
+      const lastSeen = lastSeenSeconds !== -1 ? getLastseen(lastSeenSeconds) : '';
+      userPresenceStatus =
+         userPresenceStatus || (lastSeenSeconds > 0 ? USER_PRESENCE_STATUS_OFFLINE : USER_PRESENCE_STATUS_ONLINE);
+
+      setLastSeenData({ lastSeen, userPresenceStatus });
+   }, []);
 
    useFocusEffect(
-      React.useCallback(() => {
-         if (userJid) {
-            updateLastSeen(userJid);
-         }
-         return () => clearTimeout(timer);
+      useCallback(() => {
+         if (userJid) updateLastSeen(userJid);
       }, [userJid]),
    );
 
-   React.useEffect(() => {
-      if (isNetworkConnected && xmppConnection === 'CONNECTED') {
-         if (!lastSeenData.lastSeen) {
-            updateLastSeen(userJid, status);
-         }
-      } else
-         setLastSeenData({
-            ...lastSeenData,
-            lastSeen: '',
-         });
-   }, [isNetworkConnected, xmppConnection]);
-
-   React.useEffect(() => {
-      if (fromUserJid === userJid && status !== lastSeenData.userPresenceStatus) {
-         if (status === USER_PRESENCE_STATUS_OFFLINE) {
-            timer = setTimeout(async () => {
-               updateLastSeen(userJid, status);
-            }, 500);
-         } else {
-            updateLastSeen(userJid, status);
-         }
+   useEffect(() => {
+      if (blockedStatus || isBlockedMeStatus) {
+         setLastSeenData({ lastSeen: '', userPresenceStatus: '' });
+         return;
       }
-   }, [presenseData]);
+      if (isNetworkConnected && xmppConnection === 'CONNECTED' && !lastSeenData.lastSeen) {
+         updateLastSeen(userJid, presenceData?.status);
+      }
+   }, [isNetworkConnected, xmppConnection, blockedStatus, isBlockedMeStatus, presenceData]);
 
-   React.useEffect(() => {
-      if (typingStatusData.groupId) {
-         setIsTyping(`${getUserNameFromStore(typingStatusData.fromUserId)} typing...`);
-      } else if (typingStatusData.fromUserId) {
+   useEffect(() => {
+      if (typingStatusData.fromUserId) {
          setIsTyping('typing...');
+      } else if (typingStatusData.groupId) {
+         setIsTyping(`${getUserNameFromStore(typingStatusData.fromUserId)} typing...`);
       } else {
          setIsTyping('');
       }
-   }, [memoizedTypingStatusData]);
-
-   const getLastSeenSeconds = async user_Jid => {
-      if (!user_Jid) {
-         return -1;
-      }
-      const lastSeenRes = await SDK.getLastSeen(user_Jid);
-      if (lastSeenRes && lastSeenRes.statusCode === 200) {
-         return lastSeenRes?.data?.seconds;
-      }
-      return -1;
-   };
-
-   const updateLastSeen = async (updateUserJid, userPresenceStatus, lastSeenSeconds) => {
-      if (!updateUserJid) {
-         return;
-      }
-      updateUserJid = formatUserIdToJid(updateUserJid);
-      let seconds = '';
-      let lastSeen = '';
-      seconds = lastSeenSeconds || (await getLastSeenSeconds(updateUserJid));
-      lastSeen = seconds != -1 ? getLastseen(seconds) : '';
-      userPresenceStatus =
-         userPresenceStatus || (seconds > 0 ? USER_PRESENCE_STATUS_OFFLINE : USER_PRESENCE_STATUS_ONLINE);
-      setLastSeenData({
-         ...lastSeenData,
-         seconds,
-         lastSeen,
-         userPresenceStatus,
-      });
-   };
+   }, [typingStatusData]);
 
    if (isTyping) {
       return (

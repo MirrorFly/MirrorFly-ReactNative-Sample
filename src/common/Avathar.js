@@ -1,22 +1,31 @@
 import React from 'react';
 import { ActivityIndicator, Image, StyleSheet, View } from 'react-native';
 import grpImage from '../assets/ic_grp_bg.png';
+import img from '../assets/img.png';
 import { getImageSource, getUsernameGraphemes } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP } from '../helpers/constants';
-import { useThemeColorPalatte } from '../redux/reduxHook';
+import { useIsBlockedMeStatus, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { useFetchImage, useNetworkStatus } from './hooks';
 import Text from './Text';
 
 const defaultImageDimension = 48;
 
-const Avathar = ({ profileImage, imageStyle, transparentBackgroundForImage = true, imageProps = {}, ...props }) => {
+const Avathar = ({
+   userId,
+   profileImage,
+   imageStyle,
+   transparentBackgroundForImage = true,
+   imageProps = {},
+   ...props
+}) => {
    const { type = '' } = props;
    const themeColorPalatte = useThemeColorPalatte();
    const [isImageLoadError, setIsImageLoadError] = React.useState(false);
    const [isImageLoading, setIsImageLoading] = React.useState(false);
    const isNetworkConnected = useNetworkStatus();
    const { imageUrl, authToken, isLoading } = useFetchImage(profileImage);
+   const isBlockedMeStatus = useIsBlockedMeStatus(userId);
 
    React.useEffect(() => {
       if (isNetworkConnected && isImageLoadError) {
@@ -35,6 +44,10 @@ const Avathar = ({ profileImage, imageStyle, transparentBackgroundForImage = tru
    const handleImageLoadingEnd = () => {
       setIsImageLoading(false);
    };
+
+   if (isBlockedMeStatus) {
+      return <Image {...imageProps} style={imageStyle || styles.imageDiv(props)} source={getImageSource(img)} />;
+   }
 
    if (type === CHAT_TYPE_GROUP && !profileImage) {
       return <Image {...imageProps} style={imageStyle || styles.imageDiv(props)} source={getImageSource(grpImage)} />;

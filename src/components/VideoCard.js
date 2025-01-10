@@ -35,6 +35,7 @@ function VideoCard({ item, isSender }) {
             duration = 0,
          } = {},
       } = {},
+      editMessageId,
    } = item;
    const imageUrl =
       is_uploading === 2 && is_downloaded === 2 ? local_path || fileDetails?.uri : getThumbBase64URL(thumb_image);
@@ -101,6 +102,15 @@ function VideoCard({ item, isSender }) {
                   </ImageBackground>
                </View>
             )}
+            {Boolean(caption) && (
+               <CaptionContainer
+                  isSender={isSender}
+                  caption={caption}
+                  msgStatus={msgStatus}
+                  timeStamp={getConversationHistoryTime(createdAt)}
+                  editMessageId={editMessageId}
+               />
+            )}
             {checkDownloaded && (
                <View
                   style={[
@@ -111,14 +121,6 @@ function VideoCard({ item, isSender }) {
                </View>
             )}
          </View>
-         {Boolean(caption) && (
-            <CaptionContainer
-               isSender={isSender}
-               caption={caption}
-               msgStatus={msgStatus}
-               timeStamp={getConversationHistoryTime(createdAt)}
-            />
-         )}
       </View>
    );
 }

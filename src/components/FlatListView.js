@@ -10,7 +10,7 @@ import Text from '../common/Text';
 import config from '../config/config';
 import { showToast } from '../helpers/chatHelpers';
 import { getStringSet, replacePlaceholders } from '../localization/stringSet';
-import { useRoasterData, useThemeColorPalatte } from '../redux/reduxHook';
+import { useBlockedStatus, useRoasterData, useThemeColorPalatte } from '../redux/reduxHook';
 import { GROUP_INFO, NEW_GROUP } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 
@@ -20,6 +20,7 @@ const RenderItem = ({ item, onhandlePress, selectedUsers, searchText }) => {
    let { nickName, image: imageToken, colorCode, status } = useRoasterData(item?.userId) || {};
    const { params: { prevScreen = '' } = {} } = useRoute();
    const [isChecked, setIsChecked] = React.useState(false);
+   const blockedStaus = useBlockedStatus(item?.userId);
    const isNewGrpSrn = prevScreen === NEW_GROUP;
    const isGroupInfoSrn = prevScreen === GROUP_INFO;
    // updating default values
@@ -65,10 +66,12 @@ const RenderItem = ({ item, onhandlePress, selectedUsers, searchText }) => {
       );
    }, [isChecked, themeColorPalatte]);
 
+   const renderOpacity = blockedStaus && (isNewGrpSrn || isGroupInfoSrn);
+
    return (
       <React.Fragment>
          <Pressable onPress={handlePress}>
-            <View style={styles.wrapper}>
+            <View style={[styles.wrapper, renderOpacity && commonStyles.opacity_0_5]}>
                <Avathar data={nickName} profileImage={imageToken} backgroundColor={colorCode} />
                <View style={[commonStyles.marginLeft_15, commonStyles.flex1]}>
                   <NickName

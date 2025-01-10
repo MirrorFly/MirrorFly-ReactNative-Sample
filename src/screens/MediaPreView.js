@@ -18,7 +18,7 @@ import NickName from '../common/NickName';
 import TextInput from '../common/TextInput';
 import VideoInfo from '../common/VideoInfo';
 import UserAvathar from '../components/UserAvathar';
-import { getCurrentChatUser, getType, getUserIdFromJid, handleSendMedia } from '../helpers/chatHelpers';
+import { getCurrentChatUser, getThumbBase64URL, getType, getUserIdFromJid, handleSendMedia } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../helpers/constants';
 import { getStringSet } from '../localization/stringSet';
 import { useThemeColorPalatte } from '../redux/reduxHook';
@@ -175,22 +175,27 @@ function MediaPreView() {
                showsVerticalScrollIndicator={false}
                pagingEnabled
                keyExtractor={item => item?.fileDetails?.uri}
-               renderItem={({ item, index: i }) => (
-                  <Pressable
-                     activeOpacity={1}
-                     key={item?.fileDetails?.uri}
-                     style={styles.tabButton}
-                     onPress={() => handleIndexChange(i)}>
-                     <Image
-                        source={{ uri: item?.fileDetails?.uri }}
-                        style={[
-                           styles.tabImage,
-                           activeIndex === i && styles.selectedTabImage,
-                           { borderColor: themeColorPalatte.primaryColor },
-                        ]}
-                     />
-                  </Pressable>
-               )}
+               renderItem={({ item, index: i }) => {
+                  const uri = item?.fileDetails?.thumbImage
+                     ? getThumbBase64URL(item?.fileDetails?.thumbImage)
+                     : item?.fileDetails?.uri;
+                  return (
+                     <Pressable
+                        activeOpacity={1}
+                        key={item?.fileDetails?.uri}
+                        style={styles.tabButton}
+                        onPress={() => handleIndexChange(i)}>
+                        <Image
+                           source={{ uri }}
+                           style={[
+                              styles.tabImage,
+                              activeIndex === i && styles.selectedTabImage,
+                              { borderColor: themeColorPalatte.primaryColor },
+                           ]}
+                        />
+                     </Pressable>
+                  );
+               }}
             />
          </View>
          {/* <EmojiOverlay

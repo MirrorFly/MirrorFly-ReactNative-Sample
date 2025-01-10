@@ -8,15 +8,22 @@ import {
    getThumbImage,
    getUserIdFromJid,
    getVideoThumbImage,
+   handleConversationScollToBottom,
    isLocalUser,
    showToast,
 } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, DOCUMENT_FORMATS, MIX_BARE_JID } from '../helpers/constants';
-import { addChatMessageItem, setChatMessages, updateMediaStatus } from '../redux/chatMessageDataSlice';
+import {
+   addChatMessageItem,
+   editChatMessageItem,
+   setChatMessages,
+   setParentMessage,
+   updateMediaStatus,
+} from '../redux/chatMessageDataSlice';
 import { setReplyMessage } from '../redux/draftSlice';
 import { setMemberParticipantsList } from '../redux/groupDataSlice';
-import { addRecentChatItem, setRecentChats } from '../redux/recentChatDataSlice';
-import { getArchive, getChatMessages, getReplyMessage, getRoasterData } from '../redux/reduxHook';
+import { addRecentChatItem, editRecentChatItem, setRecentChats } from '../redux/recentChatDataSlice';
+import { getArchive, getChatMessage, getChatMessages, getReplyMessage, getRoasterData } from '../redux/reduxHook';
 import { setRoasterData } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting, updateNotificationSetting } from '../redux/settingDataSlice';
 import store from '../redux/store';
@@ -27,7 +34,9 @@ import SDK, { RealmKeyValueStore } from './SDK';
 let chatPage = {},
    hasNextChatPage = {},
    hasNextRecentChatPage = true,
-   recentChatPage = 1;
+   recentChatPage = 1,
+   typingStatusSent = false,
+   mediaUploadQueue = {};
 
 export const resetVariable = () => {
    chatPage = {};
@@ -50,6 +59,8 @@ export const getRecentChatPage = () => recentChatPage;
 export const getHasNextRecentChatPage = () => hasNextRecentChatPage;
 
 export const getHasNextChatPage = userId => hasNextChatPage[userId];
+
+export const randomString = () => SDK.randomString(8, 'BA');
 
 export const updateRosterDataForRecentChats = singleRecentChatList => {
    const userProfileDetails = singleRecentChatList.map(chat => chat.profileDetails);
@@ -140,15 +151,23 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          const {
             caption = '',
             fileDetails = {},
-            fileDetails: { fileSize, filename, duration, uri, type, replyTo = '' } = {},
+            fileDetails: {
+               fileSize,
+               filename,
+               duration,
+               uri,
+               type,
+               replyTo = '',
+               thumbImage: fileDetailsThumbImage,
+            } = {},
          } = file;
          const isDocument = DOCUMENT_FORMATS.includes(type);
          const msgType = isDocument ? 'file' : type.split('/')[0];
          let _uri = uri;
-
+         console.log('_uri ==>', _uri);
          file.fileDetails = { ...file.fileDetails, uri: _uri };
          let thumbImage = msgType === 'image' ? await getThumbImage(_uri) : '';
-         thumbImage = msgType === 'video' ? await getVideoThumbImage(_uri) : thumbImage;
+         thumbImage = msgType === 'video' ? fileDetailsThumbImage || (await getVideoThumbImage(_uri)) : thumbImage;
          let fileOptions = {
             fileName: filename,
             fileSize: fileSize,
@@ -173,8 +192,14 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          };
          const conversationChatObj = getSenderMessageObj(dataObj, i);
          conversationChatObj.archiveSetting = getArchive();
+         const userId = getUserIdFromJid(toUserJid);
          store.dispatch(addChatMessageItem(conversationChatObj));
          store.dispatch(addRecentChatItem(conversationChatObj));
+         if (!mediaUploadQueue[userId]) {
+            mediaUploadQueue[userId] = []; // Initialize the array if it doesn't exist
+         }
+
+         mediaUploadQueue[userId].push(conversationChatObj);
          if (i === 0) {
             const { msgId, userJid, msgBody: { media = {}, media: { file = {} } = {} } = {} } = conversationChatObj;
             uploadFileToSDK(file, userJid, msgId, media);
@@ -263,6 +288,7 @@ export const getSenderMessageObj = (dataObj, idx) => {
             androidHeight: androidHeight,
             originalWidth,
             originalHeight,
+            audioType: fileDetails?.audioType || '',
          };
          break;
    }
@@ -289,14 +315,30 @@ export const getSenderMessageObj = (dataObj, idx) => {
 };
 
 export const handleSendMsg = async (obj = {}) => {
-   const { messageType, message, location = {} } = obj;
+   const { messageType, message, location = {}, editMessageId: originalMsgId } = obj;
    const chatUser = getCurrentChatUser();
    const userId = getUserIdFromJid(chatUser);
-   const replyTo = getReplyMessage(getUserIdFromJid(chatUser)).msgId;
+   const replyTo = getReplyMessage(getUserIdFromJid(chatUser)).msgId || '';
+   const parentMessage = getChatMessage(userId, replyTo);
+   if (replyTo) {
+      store.dispatch(setParentMessage(parentMessage));
+   }
    store.dispatch(setReplyMessage({ userId, message: {} }));
    const msgId = SDK.randomString(8, 'BA');
    const isMuted = await getMuteStatus(chatUser);
+   handleConversationScollToBottom();
    switch (messageType) {
+      case 'messageEdit':
+         const { msgBody: { media: { caption = '' } = {} } = {} } = getChatMessage(userId, originalMsgId);
+         const editMessageId = SDK.randomString(8, 'BA');
+         const editObj = caption
+            ? { userJid: chatUser, msgId: originalMsgId, caption: message, editMessageId }
+            : { userJid: chatUser, msgId: originalMsgId, message, editMessageId };
+
+         store.dispatch(editChatMessageItem(editObj));
+         store.dispatch(editRecentChatItem(editObj));
+         SDK.editTextOrCaptionMessage({ ...editObj, originalMessageId: originalMsgId, toJid: chatUser });
+         break;
       case 'text':
          const dataObj = {
             jid: chatUser,
@@ -374,6 +416,21 @@ export const handleSendMsg = async (obj = {}) => {
 
 export const sendSeenStatus = (publisherJid, msgId, groupJid) => {
    SDK.sendSeenStatus(publisherJid, msgId, groupJid);
+};
+
+export const handleUploadNextImage = res => {
+   const { userId } = res;
+   mediaUploadQueue[userId].shift();
+   if (!mediaUploadQueue[userId][0]) return;
+   const { msgId, userJid, msgBody: { media = {}, media: { file = {} } = {} } = {} } = mediaUploadQueue[userId][0];
+
+   const retryObj = {
+      msgId,
+      userId: getUserIdFromJid(userJid),
+      is_uploading: 1,
+   };
+   store.dispatch(updateMediaStatus(retryObj));
+   uploadFileToSDK(file, userJid, msgId, media);
 };
 
 export const uploadFileToSDK = async (file, jid, msgId, media) => {
@@ -539,4 +596,18 @@ export const setFontFamily = fontFamily => {
 
 export const setLanguage = (languageCode = 'en') => {
    RealmKeyValueStore.setItem('languageCode', languageCode);
+};
+
+export const updateTypingStatus = jid => {
+   if (!typingStatusSent) {
+      SDK.sendTypingStatus(jid);
+      typingStatusSent = true;
+   }
+};
+
+export const updateTypingGoneStatus = jid => {
+   if (typingStatusSent) {
+      SDK.sendTypingGoneStatus(jid);
+      typingStatusSent = false;
+   }
 };

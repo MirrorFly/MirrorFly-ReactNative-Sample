@@ -8,15 +8,16 @@ import commonStyles from '../styles/commonStyles';
 
 function NotificationMessage(props) {
    const {
-      messageObject: { msgBody: { message = '' } = {}, publisherId = '', toUserJid = '' } = {},
+      label,
+      messageObject: { msgBody: { message = '', notificationContent } = {}, publisherId = '', toUserJid = '' } = {},
       themeColorPalatte,
    } = props;
    const publisherName = getUserNameFromStore(publisherId);
    const toUserID = getUserIdFromJid(toUserJid);
    const toUserName = getUserNameFromStore(toUserID);
-
+   if (!label && !notificationContent) return null;
    return (
-      <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom_6]}>
+      <View style={[{}, commonStyles.alignItemsCenter, commonStyles.marginBottom_6]}>
          <View
             style={[
                commonStyles.px_8,
@@ -25,7 +26,14 @@ function NotificationMessage(props) {
                { backgroundColor: themeColorPalatte.groupNotificationBgColour },
             ]}>
             <Text style={{ fontSize: 13, color: themeColorPalatte.groupNotificationTextColour }}>
-               {groupNotifyStatus(publisherId, toUserID, messageNotificationTypes[message], publisherName, toUserName)}
+               {label ||
+                  groupNotifyStatus(
+                     publisherId,
+                     toUserID,
+                     messageNotificationTypes[message],
+                     publisherName,
+                     toUserName,
+                  )}
             </Text>
          </View>
       </View>

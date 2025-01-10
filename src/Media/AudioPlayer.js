@@ -5,6 +5,7 @@ import IconButton from '../common/IconButton';
 import { AudioPause, AudioPlay } from '../common/Icons';
 import Text from '../common/Text';
 import { useAppState } from '../common/hooks';
+import { stopAudioRecord } from '../components/ChatInput';
 import { millisToMinutesAndSeconds } from '../helpers/chatHelpers';
 import { mediaStatusConstants } from '../helpers/constants';
 import commonStyles from '../styles/commonStyles';
@@ -100,6 +101,7 @@ const AudioPlayer = props => {
    }, [playState]);
 
    const playSound = () => {
+      stopAudioRecord();
       try {
          if (sound.current) {
             setPlayState(PLAY_STATE_PLAYING);

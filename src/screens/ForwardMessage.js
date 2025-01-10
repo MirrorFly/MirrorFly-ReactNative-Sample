@@ -6,6 +6,7 @@ import { ActivityIndicator, BackHandler, Modal, Platform, ScrollView, StyleSheet
 import { useDispatch } from 'react-redux';
 import SDK from '../SDK/SDK';
 import { fetchContactsFromSDK, resetChatPage } from '../SDK/utils';
+import AlertModal from '../common/AlertModal';
 import Avathar from '../common/Avathar';
 import IconButton from '../common/IconButton';
 import { BackArrowIcon, CloseIcon, SearchIcon, SendBlueIcon } from '../common/Icons';
@@ -20,6 +21,7 @@ import {
    getMessageObjForward,
    getRecentChatMsgObjForward,
    getUserIdFromJid,
+   handleUpdateBlockUser,
    showCheckYourInternetToast,
    showToast,
 } from '../helpers/chatHelpers';
@@ -27,7 +29,7 @@ import { CHAT_TYPE_GROUP, CHAT_TYPE_SINGLE, MIX_BARE_JID } from '../helpers/cons
 import { getStringSet } from '../localization/stringSet';
 import { addChatMessageItem, clearChatMessageData, resetMessageSelections } from '../redux/chatMessageDataSlice';
 import { addRecentChatItem } from '../redux/recentChatDataSlice';
-import { useRecentChatData, useRoasterData, useThemeColorPalatte } from '../redux/reduxHook';
+import { getUserNameFromStore, useBlockedStatus, useRecentChatData, useRoasterData, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { CONVERSATION_SCREEN } from './constants';
 
@@ -109,6 +111,9 @@ const ContactItem = ({
    let { nickName, status: profileStatus, image: imageToken, colorCode } = useRoasterData(userId);
    const recentChatData = useRecentChatData();
    const themeColorPalatte = useThemeColorPalatte();
+   const [modalContent, setModalContent] = React.useState(null);
+   const blockedStaus = useBlockedStatus(userId);
+
    // updating default values
    nickName = nickName || name || userId;
    colorCode = colorCode || '';
@@ -121,6 +126,10 @@ const ContactItem = ({
    }, []);
    const userType = recentChatData.find(r => getUserIdFromJid(r.userJid) === userId)?.userType || '';
    const handleChatItemSelect = () => {
+      if (blockedStaus) {
+         hadleBlockUser();
+         return;
+      }
       if (!isChecked && !isCheckboxAllowed) {
          showMaxUsersLimitToast();
          return;
@@ -136,6 +145,21 @@ const ContactItem = ({
          colorCode,
          status: profileStatus,
          userJid,
+      });
+   };
+
+   const toggleModalContent = () => {
+      setModalContent(null);
+   };
+
+   const hadleBlockUser = () => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: `Unblock ${getUserNameFromStore(userId)}`,
+         noButton: 'CANCEL',
+         yesButton: 'UNBLOCK',
+         yesAction: handleUpdateBlockUser(userId, 0, userJid),
       });
    };
 
@@ -162,8 +186,8 @@ const ContactItem = ({
    return (
       <>
          <Pressable onPress={handleChatItemSelect}>
-            <View style={styles.recentChatListItems}>
-               <View style={styles.recentChatItemAvatarName}>
+            <View style={[styles.recentChatListItems, blockedStaus && commonStyles.opacity_0_5]}>
+               <View style={[styles.recentChatItemAvatarName]}>
                   <Avathar
                      type={MIX_BARE_JID.test(userJid) ? CHAT_TYPE_GROUP : CHAT_TYPE_SINGLE}
                      data={nickName || userId}
@@ -178,7 +202,7 @@ const ContactItem = ({
                         data={nickName}
                         searchValue={searchText.trim()}
                         style={{
-                           color: themeColorPalatte.primaryTextColor,
+                           color: blockedStaus ? '' : themeColorPalatte.primaryTextColor,
                            fontWeight: 'bold',
                         }}
                      />
@@ -195,6 +219,7 @@ const ContactItem = ({
          </Pressable>
          {/* Divider Line */}
          <View style={styles.dividerLine} />
+         {modalContent && <AlertModal {...modalContent} />}
       </>
    );
 };

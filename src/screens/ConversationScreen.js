@@ -8,6 +8,7 @@ import chatBackgroud from '../assets/chatBackgroud.png';
 import ChatHeader from '../components/ChatHeader';
 import ChatInput from '../components/ChatInput';
 import ConversationList from '../components/ConversationList';
+import EditMessage from '../components/EditMessage';
 import ReplyContainer from '../components/ReplyContainer';
 import {
    getImageSource,
@@ -16,6 +17,7 @@ import {
    setCurrentChatUser,
 } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
+import { toggleEditMessage } from '../redux/chatMessageDataSlice';
 import { resetUnreadCountForChat } from '../redux/recentChatDataSlice';
 import { useChatMessages, useReplyMessage, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
@@ -49,6 +51,8 @@ function ConversationScreen({ chatUser = '' }) {
       return () => {
          handelResetMessageSelection(userId)();
          setCurrentChatUser('');
+         SDK.updateRecentChatUnreadCount('');
+         dispatch(toggleEditMessage(''));
       };
    }, []);
 
@@ -110,6 +114,7 @@ function ConversationScreen({ chatUser = '' }) {
          </ImageBackground>
          {renderReplyContainer}
          {renderChatInput}
+         <EditMessage />
       </KeyboardAvoidingView>
    );
 }

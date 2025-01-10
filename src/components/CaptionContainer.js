@@ -5,7 +5,7 @@ import { getMessageStatus } from '../helpers/chatHelpers';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
-const CaptionContainer = ({ isSender, caption, msgStatus, timeStamp }) => {
+const CaptionContainer = ({ caption, msgStatus, timeStamp, isSender, editMessageId }) => {
    const themeColorPalatte = useThemeColorPalatte();
    return (
       Boolean(caption) && (
@@ -23,6 +23,20 @@ const CaptionContainer = ({ isSender, caption, msgStatus, timeStamp }) => {
             </Text>
             <View style={styles.messgeStatusAndTimestampWithCaption}>
                {isSender && getMessageStatus(msgStatus)}
+               {editMessageId && (
+                  <Text
+                     style={[
+                        styles.timeStampText,
+                        { paddingLeft: 4 },
+                        commonStyles.textColor(
+                           isSender
+                              ? themeColorPalatte.chatSenderSecondaryTextColor
+                              : themeColorPalatte.chatReceiverSecondaryTextColor,
+                        ),
+                     ]}>
+                     Edited
+                  </Text>
+               )}
                <Text
                   style={[
                      styles.timeStampText,
@@ -34,6 +48,7 @@ const CaptionContainer = ({ isSender, caption, msgStatus, timeStamp }) => {
                   ]}>
                   {timeStamp}
                </Text>
+               <Text style={styles.timeStampText}>{timeStamp}</Text>
             </View>
          </View>
       )

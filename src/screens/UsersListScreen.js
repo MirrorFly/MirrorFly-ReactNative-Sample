@@ -2,19 +2,22 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { debounce } from 'lodash-es';
 import React from 'react';
 import { ActivityIndicator, Image, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import { fetchContactsFromSDK, fetchGroupParticipants } from '../SDK/utils';
 import no_contacts from '../assets/no_contacts.png';
+import AlertModal from '../common/AlertModal';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import ScreenHeader from '../common/ScreenHeader';
 import Text from '../common/Text';
 import { useNetworkStatus } from '../common/hooks';
 import FlatListView from '../components/FlatListView';
 import config from '../config/config';
-import { getImageSource, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
+import { getImageSource, getUserIdFromJid, handleUpdateBlockUser, showToast } from '../helpers/chatHelpers';
 import { getStringSet, replacePlaceholders } from '../localization/stringSet';
-import { getUserNameFromStore, useRecentChatData, useThemeColorPalatte } from '../redux/reduxHook';
+import { getBlockedStatus, getUserNameFromStore, useRecentChatData, useThemeColorPalatte } from '../redux/reduxHook';
+import { setRoasterData } from '../redux/rosterDataSlice';
 import commonStyles from '../styles/commonStyles';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK, GROUP_INFO, NEW_GROUP } from './constants';
 
@@ -33,6 +36,7 @@ function ContactScreen() {
    } = useRoute();
    const navigation = useNavigation();
    const themeColorPalatte = useThemeColorPalatte();
+   const dispatch = useDispatch();
    grpName = getUserNameFromStore(getUserIdFromJid(jid)) || grpName;
    const recentChatList = useRecentChatData();
    const isNewGrpSrn = prevScreen === NEW_GROUP;
@@ -45,6 +49,7 @@ function ContactScreen() {
    const [contactList, setContactList] = React.useState([]);
    const [selectedUsers, setSelectedUsers] = React.useState({});
    const [modelOpen, setModelOpen] = React.useState(false);
+   const [modalContent, setModalContent] = React.useState(null);
 
    const toggleModel = () => {
       setModelOpen(val => !val);
@@ -155,8 +160,27 @@ function ContactScreen() {
       }
    };
 
+   const toggleModalContent = () => {
+      setModalContent(null);
+   };
+
+   const hadleBlockUser = (userId, userJid) => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: `Unblock ${getUserNameFromStore(userId)}`,
+         noButton: 'CANCEL',
+         yesButton: 'UNBLOCK',
+         yesAction: handleUpdateBlockUser(userId, 0, userJid),
+      });
+   };
+
    const handlePress = item => {
       if (isNewGrpSrn || isGroupInfoSrn) {
+         if (getBlockedStatus(getUserIdFromJid(item.userJid))) {
+            hadleBlockUser(getUserIdFromJid(item.userJid), item.userJid);
+            return;
+         }
          setSelectedUsers(_data => {
             if (_data[item.userJid]) {
                delete _data[item.userJid];
@@ -166,6 +190,7 @@ function ContactScreen() {
             return { ..._data };
          });
       } else {
+         dispatch(setRoasterData(item));
          navigation.navigate(CONVERSATION_STACK, { screen: CONVERSATION_SCREEN, params: { jid: item.userJid } });
       }
    };
@@ -308,6 +333,7 @@ function ContactScreen() {
                </View>
             </ModalCenteredContent>
          </Modal>
+         {modalContent && <AlertModal {...modalContent} />}
       </KeyboardAvoidingView>
    );
 }

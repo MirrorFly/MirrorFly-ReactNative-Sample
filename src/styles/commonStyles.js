@@ -1,4 +1,5 @@
 import { Dimensions, StyleSheet } from 'react-native';
+import ApplicationColors from '../config/appColors';
 
 const { width, height } = Dimensions.get('window');
 
@@ -49,6 +50,10 @@ const commonStyles = {
       alignItems: 'center',
       width: width,
       height: height,
+   },
+   resetMarginAndPadding: {
+      padding: 0,
+      margin: 0,
    },
    mt_12: {
       marginTop: 12,
@@ -536,6 +541,9 @@ const commonStyles = {
    }),
    textDecorationLine: {
       textDecorationLine: 'underline',
+   },
+   mainTextColor: {
+      color: ApplicationColors.mainColor,
    },
    opacity_0_5: {
       opacity: 0.5,

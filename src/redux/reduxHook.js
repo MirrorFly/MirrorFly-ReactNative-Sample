@@ -10,8 +10,13 @@ export const useUserType = chatUser =>
 export const useRecentChatSearchText = () => useSelector(state => state.recentChatData.searchText);
 export const useFilteredRecentChatData = () => useSelector(selectFilteredRecentChatData);
 export const useArchivedChatData = () => useSelector(selectArchivedChatData);
+export const useRoasterList = () => useSelector(state => state.rosterData.data);
 export const useRoasterData = userId => useSelector(state => state.rosterData.data[userId]);
+export const useBlockedStatus = userId => useSelector(state => state.rosterData.data[userId]?.isBlocked);
+export const useIsBlockedMeStatus = userId => useSelector(state => state.rosterData.data[userId]?.isBlockedMe);
 export const useChatMessages = userId => useSelector(state => state.chatMessagesData?.[userId]);
+export const useSelectedChatMessages = userId =>
+   useSelector(state => state.chatMessagesData?.[userId]?.filter(item => item.isSelected === 1));
 export const useChatMessage = (userId, msgId) =>
    useSelector(state => state.chatMessagesData?.[userId]?.find(msg => msg.msgId === msgId));
 export const useXmppConnectionStatus = () => useSelector(state => state.loggedInUserData.xmppStatus);
@@ -33,6 +38,11 @@ export const useTextMessage = userId => useSelector(state => state.draftData.dat
 export const useThemeColorPalatte = () => useSelector(selectFilteredThemeData);
 export const useThemeColor = () => useSelector(state => state.themeColorPalatte.theme);
 export const useFontFamily = () => useSelector(state => state.themeColorPalatte.fontFamily) || {};
+export const useEditMessageId = () => useSelector(state => state.chatMessagesData?.editMessage) || '';
+export const useParentMessage = msgId => useSelector(state => state.chatMessagesData?.parentMessage[msgId]);
+export const useAudioRecording = userId => useSelector(state => state.draftData.data[userId]?.audioRecord);
+export const useAudioRecordTime = userId => useSelector(state => state.draftData.data[userId]?.audioRecordTime);
+
 export const getReplyMessage = userId => store.getState().draftData.data[userId]?.replyMessage || {};
 export const getRecentChatData = () => store.getState().recentChatData.recentChats;
 export const getSelectedChats = () => store.getState().recentChatData.recentChats.filter(item => item.isSelected === 1);
@@ -50,5 +60,9 @@ export const getUserImage = userId => {
    const { image } = store.getState().rosterData.data[userId] || {};
    return image;
 };
+export const getAudioRecording = userId => store.getState().draftData.data[userId]?.audioRecord;
+export const getAudioRecordTime = userId => store.getState().draftData.data[userId]?.audioRecordTime;
 export const getChatMessage = (userId, msgId) =>
    store.getState().chatMessagesData?.[userId]?.find(msg => msg.msgId === msgId);
+export const getXmppConnectionStatus = () => store.getState().loggedInUserData.xmppStatus;
+export const getBlockedStatus = userId => store.getState().rosterData.data[userId]?.isBlocked;

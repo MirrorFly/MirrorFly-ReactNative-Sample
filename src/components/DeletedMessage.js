@@ -1,17 +1,19 @@
 import React from 'react';
-import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { BlockedIcon } from '../common/Icons';
+import Text from '../common/Text';
 import { getConversationHistoryTime } from '../common/timeStamp';
-import ApplicationColors from '../config/appColors';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
-import { THIS_MESSAGE_WAS_DELETED, YOU_DELETED_THIS_MESSAGE } from '../helpers/constants';
+import { getStringSet } from '../localization/stringSet';
 import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
-import { getChatMessages } from '../redux/reduxHook';
+import { getChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import MessagePressable from './MessagePressable';
 
 const DeletedMessage = ({ chatUser, item, isSender }) => {
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
    const userId = getUserIdFromJid(chatUser);
    const dispatch = useDispatch();
    const { isSelected = 0, msgId = '', createdAt = '' } = item;
@@ -45,7 +47,11 @@ const DeletedMessage = ({ chatUser, item, isSender }) => {
          onPress={handlePress}
          onLongPress={handleLongPress}>
          {({ pressed }) => (
-            <View style={[styles.messageContainer, isSelected ? styles.highlightMessage : undefined]}>
+            <View
+               style={[
+                  styles.messageContainer,
+                  isSelected ? { backgroundColor: themeColorPalatte.highlighedMessageBg } : undefined,
+               ]}>
                <MessagePressable
                   forcePress={pressed}
                   style={[
@@ -60,9 +66,15 @@ const DeletedMessage = ({ chatUser, item, isSender }) => {
                   onPress={handlePress}
                   onLongPress={handleLongPress}>
                   <View style={styles.messageWrapper}>
-                     <BlockedIcon fill="#959595" />
-                     <Text style={styles.message(isSender)}>
-                        {isSender ? YOU_DELETED_THIS_MESSAGE : THIS_MESSAGE_WAS_DELETED}
+                     <BlockedIcon color="#959595" />
+                     <Text
+                        style={[
+                           styles.message,
+                           { color: isSender ? themeColorPalatte.secondaryTextColor : '#313131' },
+                        ]}>
+                        {isSender
+                           ? stringSet.COMMON_TEXT.YOU_DELETED_THIS_MESSAGE
+                           : stringSet.COMMON_TEXT.THIS_MESSAGE_WAS_DELETED}
                      </Text>
                   </View>
                   <View style={styles.timeStamp}>
@@ -84,14 +96,13 @@ const styles = StyleSheet.create({
       paddingHorizontal: 8,
       paddingVertical: 7,
    },
-   message: isSender => ({
+   message: {
       marginLeft: 5,
       fontSize: 13,
       fontStyle: 'italic',
       paddingHorizontal: 3,
       paddingVertical: 4,
-      color: isSender ? '#767676' : '#313131',
-   }),
+   },
    timeStamp: {
       padding: 2,
       marginBottom: 4,
@@ -105,9 +116,6 @@ const styles = StyleSheet.create({
    },
    messageContainer: {
       marginBottom: 6,
-   },
-   highlightMessage: {
-      backgroundColor: ApplicationColors.highlighedMessageBg,
    },
    messageCommonStyle: {
       borderRadius: 10,

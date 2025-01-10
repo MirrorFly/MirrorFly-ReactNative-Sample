@@ -1,17 +1,20 @@
 import React from 'react';
-import { Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { I18nManager, Image, ImageBackground, StyleSheet, View } from 'react-native';
 import ic_ballon from '../assets/ic_baloon.png';
 import noPreview from '../assets/noPreview.png';
 import { PlayIcon, VideoIcon } from '../common/Icons';
 import MediaProgressLoader from '../common/MediaProgressLoader';
+import Text from '../common/Text';
 import { getConversationHistoryTime } from '../common/timeStamp';
-import ApplicationColors from '../config/appColors';
 import { getImageSource, getMessageStatus, getThumbBase64URL, millisToMinutesAndSeconds } from '../helpers/chatHelpers';
 import useMediaProgress from '../hooks/useMediaProgress';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import CaptionContainer from './CaptionContainer';
+import ReplyMessage from './ReplyMessage';
 
 function VideoCard({ item, isSender }) {
+   const themeColorPalatte = useThemeColorPalatte();
    const {
       msgStatus,
       createdAt = '',
@@ -49,8 +52,14 @@ function VideoCard({ item, isSender }) {
    const checkDownloaded = is_uploading === 2 && is_downloaded === 2;
 
    return (
-      <View style={commonStyles.paddingHorizontal_4}>
-         {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
+      <View
+         style={[
+            commonStyles.paddingHorizontal_4,
+            commonStyles.bg_color(
+               isSender ? themeColorPalatte.chatSenderPrimaryColor : themeColorPalatte.chatReceiverPrimaryColor,
+            ),
+         ]}>
+         {Boolean(replyTo) && <ReplyMessage message={item} isSender={isSender} />}
          <View style={styles.videoContainer}>
             {thumb_image ? (
                <Image
@@ -69,7 +78,9 @@ function VideoCard({ item, isSender }) {
             )}
             <View style={styles.videoTimeContainer}>
                <VideoIcon color={thumb_image ? '#fff' : '#000'} width="13" height="13" />
-               <Text style={styles.videoTimerText(thumb_image ? '#fff' : '#000')}>{durationInMinutes}</Text>
+               <Text style={[styles.videoTimerText, commonStyles.textColor(thumb_image ? '#fff' : '#000')]}>
+                  {durationInMinutes}
+               </Text>
             </View>
 
             <View style={styles.progressLoaderWrapper}>
@@ -85,7 +96,7 @@ function VideoCard({ item, isSender }) {
 
             {!Boolean(caption) && (
                <View style={styles.messgeStatusAndTimestampWithoutCaption}>
-                  <ImageBackground source={ic_ballon} style={styles.imageBg}>
+                  <ImageBackground source={getImageSource(ic_ballon)} style={styles.imageBg}>
                      {isSender && getMessageStatus(msgStatus)}
                      <Text style={styles.timestampText}>{getConversationHistoryTime(createdAt)}</Text>
                   </ImageBackground>
@@ -101,7 +112,11 @@ function VideoCard({ item, isSender }) {
                />
             )}
             {checkDownloaded && (
-               <View style={styles.playIconWrapper}>
+               <View
+                  style={[
+                     styles.playIconWrapper,
+                     { backgroundColor: themeColorPalatte.colorOnPrimary, shadowColor: themeColorPalatte.shadowColor },
+                  ]}>
                   <PlayIcon width={15} height={15} />
                </View>
             )}
@@ -131,9 +146,6 @@ const styles = StyleSheet.create({
       width: w,
       height: h,
    }),
-   noPreviewWrapper: {
-      backgroundColor: ApplicationColors.mainbg,
-   },
    noPreviewImage: (w, h) => ({
       resizeMode: 'contain',
       width: w,
@@ -155,7 +167,7 @@ const styles = StyleSheet.create({
    },
    timestampText: {
       paddingLeft: 4,
-      color: ApplicationColors.white,
+      color: '#fff',
       fontSize: 10,
       fontWeight: '400',
    },
@@ -163,25 +175,18 @@ const styles = StyleSheet.create({
       paddingBottom: 8,
       justifyContent: 'space-between',
    },
-   captionText: {
-      color: ApplicationColors.black,
-      paddingLeft: 12,
-      fontSize: 14,
-   },
    messgeStatusAndTimestampWithCaption: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-end',
    },
    playIconWrapper: {
-      backgroundColor: ApplicationColors.mainbg,
       position: 'absolute',
       top: '50%',
-      left: '50%',
-      // transforming X and Y for actual width of the icon plus the padding divided by 2 to make it perfectly centered ( 15(width) + 12(padding) / 2 = 13.5 )
-      transform: [{ translateX: -13.5 }, { translateY: -13.5 }],
+      right: I18nManager.isRTL ? '50%' : 'auto',
+      left: I18nManager.isRTL ? 'auto' : '50%',
+      transform: [{ translateX: -13.5 }, { translateY: -13.5 }], // transforming X and Y for actual width of the icon plus the padding divided by 2 to make it perfectly centered ( 15(width) + 12(padding) / 2 = 13.5 )
       elevation: 5,
-      shadowColor: ApplicationColors.shadowColor,
       shadowOffset: { width: 0, height: 6 },
       shadowOpacity: 0.1,
       shadowRadius: 6,
@@ -195,9 +200,8 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
    },
-   videoTimerText: color => ({
+   videoTimerText: {
       paddingHorizontal: 8,
       fontSize: 11,
-      color: color,
-   }),
+   },
 });

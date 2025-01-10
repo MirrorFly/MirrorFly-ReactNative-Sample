@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import CustomSwitch from '../common/CustomSwitch';
+import Text from '../common/Text';
 import ApplicationColors from '../config/appColors';
 import { toggleChatMute } from '../redux/recentChatDataSlice';
 import { useArchive, useArchiveStatus } from '../redux/reduxHook';

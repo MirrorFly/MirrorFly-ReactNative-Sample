@@ -1,15 +1,15 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { View } from 'react-native';
 import { ClearTextIcon } from '../common/Icons';
 import NickName from '../common/NickName';
+import Pressable from '../common/Pressable';
+import Text from '../common/Text';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
-import { getCurrentUserJid } from '../uikitMethods';
 
 const ReplyText = props => {
    const { replyMsgItems, handleRemove } = props;
    const { publisherJid = '' } = replyMsgItems;
-   const isSameUser = publisherJid === getCurrentUserJid();
    const publisherId = getUserIdFromJid(publisherJid);
 
    const RemoveHandle = () => {
@@ -19,17 +19,10 @@ const ReplyText = props => {
    return (
       <View>
          <View flexDirection="row" justifyContent={'space-between'} alignItems={'center'}>
-            {isSameUser ? (
-               <Text style={commonStyles.userName}>You</Text>
-            ) : (
-               <NickName style={commonStyles.userName} userId={publisherId} />
-            )}
+            <NickName style={commonStyles.userName} userId={publisherId} />
             <Pressable
-               style={{
+               contentContainerStyle={{
                   padding: 5,
-                  top: -3,
-                  right: 10,
-                  bottom: 0,
                   backgroundColor: '#FFF',
                   borderRadius: 10,
                   borderColor: '#000',

@@ -5,7 +5,6 @@ import { ActivityIndicator, BackHandler, Dimensions, FlatList, Image, View } fro
 import { TickIcon, VideoSmallIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import GalleryHeader from '../components/GalleryHeader';
-import ApplicationColors from '../config/appColors';
 import {
    getAbsolutePath,
    getThumbBase64URL,
@@ -14,13 +13,17 @@ import {
    showToast,
    validateFileSize,
 } from '../helpers/chatHelpers';
+import { getStringSet } from '../localization/stringSet';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { mflog } from '../uikitMethods';
 import { GALLERY_PHOTOS_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
 
 const GalleryPhotos = () => {
    const { params: { grpView = '', selectedImages: routesSelectedImages = [] } = {} } = useRoute();
+   const stringSet = getStringSet();
    const navigation = useNavigation();
+   const themeColorPalatte = useThemeColorPalatte();
    const PAGE_SIZE = 20;
    let numColumns = 3;
    const [photos, setPhotos] = React.useState([]);
@@ -61,9 +64,9 @@ const GalleryPhotos = () => {
 
    const getTitle = () => {
       if (Object.keys(selectedImages).length) {
-         return Object.keys(selectedImages).length + '/10 Selected';
+         return Object.keys(selectedImages).length + '/10' + ' ' + stringSet.CHAT_SCREEN_ATTACHMENTS.SELECTED;
       } else if (checkBox) {
-         return 'Tap Photo to select';
+         return stringSet.CHAT_SCREEN_ATTACHMENTS.GALLERY_TAP_SELECT_HEADER;
       } else {
          return grpView;
       }
@@ -103,7 +106,7 @@ const GalleryPhotos = () => {
          const isImageSelected = selectedImages[item?.image?.uri];
 
          if (Object.keys(selectedImages).length >= 10 && !isImageSelected) {
-            return showToast("Can't share more than 10 media items");
+            return showToast(stringSet.TOAST_MESSAGES.TOAST_SELECTED_MORE_THAN_ITEM);
          }
 
          if (sizeError) {
@@ -268,16 +271,16 @@ const GalleryPhotos = () => {
       if (loading) {
          return (
             <View style={commonStyles.mb_130}>
-               <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
+               <ActivityIndicator size="large" color={themeColorPalatte.primaryColor} />
             </View>
          );
       }
    };
 
    return (
-      <View>
+      <View style={[commonStyles.bg_color(themeColorPalatte.screenBgColor), commonStyles.flex1]}>
          {renderTitle}
-         <View style={commonStyles.mb_130}>
+         <View style={[commonStyles.mb_130]}>
             <FlatList
                numColumns={3}
                data={memoizedData}

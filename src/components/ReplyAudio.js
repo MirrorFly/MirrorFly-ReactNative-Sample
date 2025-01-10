@@ -1,15 +1,14 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { AudioMusicIcon, ClearTextIcon } from '../common/Icons';
 import NickName from '../common/NickName';
+import Text from '../common/Text';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
-import { getCurrentUserJid } from '../uikitMethods';
 
 const ReplyAudio = props => {
-   const { replyMsgItems, handleRemove } = props;
+   const { replyMsgItems, handleRemove, stringSet } = props;
    const { publisherJid = '', msgBody = {} } = replyMsgItems;
-   const isSameUser = publisherJid === getCurrentUserJid();
    const publisherId = getUserIdFromJid(publisherJid);
 
    const RemoveHandle = () => {
@@ -22,11 +21,7 @@ const ReplyAudio = props => {
    return (
       <View>
          <View flexDirection="row" justifyContent={'space-between'} alignItems={'center'}>
-            {isSameUser ? (
-               <Text style={commonStyles.userName}>You</Text>
-            ) : (
-               <NickName style={commonStyles.userName} userId={publisherId} />
-            )}
+            <NickName style={commonStyles.userName} userId={publisherId} />
             <Pressable
                style={{
                   padding: 5,
@@ -44,11 +39,11 @@ const ReplyAudio = props => {
          </View>
          <View flexDirection="row" alignItems={'center'}>
             <AudioMusicIcon width="14" height="14" color={'#767676'} />
-            <Text style={{ paddingLeft: 8, color: '#000' }}>
+            <Text style={{ paddingHorizontal: 8, color: '#000' }}>
                {`${String(Math.floor(durationInMinutes / 60)).padStart(2, '0')}:${String(
                   durationInMinutes % 60,
                ).padStart(2, '0')} `}
-               Audio
+               {stringSet.COMMON_TEXT.AUDIO_MSG_TYPE}
             </Text>
          </View>
       </View>

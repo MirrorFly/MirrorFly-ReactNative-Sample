@@ -5,16 +5,16 @@ import { useDispatch } from 'react-redux';
 import { CONNECTED } from '../SDK/constants';
 import { sendSeenStatus } from '../SDK/utils';
 import NickName from '../common/NickName';
-import ApplicationColors from '../config/appColors';
 import {
    getIsConversationScreenActive,
    getUserIdFromJid,
    handleFileOpen,
+   openLocationExternally,
    setIsConversationScreenActive,
 } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
 import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
-import { getChatMessages, useXmppConnectionStatus } from '../redux/reduxHook';
+import { getChatMessages, useThemeColorPalatte, useXmppConnectionStatus } from '../redux/reduxHook';
 import { MEDIA_POST_PRE_VIEW_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
@@ -28,6 +28,7 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
    const navigation = useNavigation();
    const useXmppStatus = useXmppConnectionStatus();
    const userId = getUserIdFromJid(chatUser);
+   const themeColorPalatte = useThemeColorPalatte();
    const {
       shouldHighlight = 0,
       msgStatus,
@@ -113,19 +114,23 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
       if (deleteStatus) {
          return null;
       }
-      if (message_type === 'notification') {
-         return <NotificationMessage messageObject={item} label={label} />;
-      }
 
       if (recallStatus) {
          return <DeletedMessage chatUser={chatUser} item={item} isSender={isSender} />;
       }
 
+      if (message_type === 'notification') {
+         return <NotificationMessage messageObject={item} themeColorPalatte={themeColorPalatte} label={label} />;
+      }
+
+      if (recallStatus) {
+         return <DeletedMessage chatUser={chatUser} item={item} isSender={isSender} />;
+      }
       return (
          <Pressable
             style={
                shouldHighlight && {
-                  backgroundColor: ApplicationColors.highlighedMessageBg,
+                  backgroundColor: themeColorPalatte.highlighedMessageBg,
                }
             }
             delayLongPress={300}
@@ -133,9 +138,15 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
             onPress={onPress}
             onLongPress={onLongPress}>
             {({ pressed }) => (
-               <View style={[styles.messageContainer, isSelected ? styles.highlightMessage : undefined]}>
+               <View
+                  style={[
+                     styles.messageContainer,
+                     isSelected ? { backgroundColor: themeColorPalatte.highlighedMessageBg } : undefined,
+                  ]}>
                   <View
                      style={[
+                        commonStyles.hstack,
+                        commonStyles.alignItemsCenter,
                         commonStyles.paddingHorizontal_12,
                         isSender ? commonStyles.alignSelfFlexEnd : commonStyles.alignSelfFlexStart,
                      ]}>
@@ -144,7 +155,12 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
                         style={[styles.messageContentPressable, { maxWidth: messageWidth }]}
                         contentContainerStyle={[
                            styles.messageCommonStyle,
-                           isSender ? styles.sentMessage : styles.receivedMessage,
+                           isSender
+                              ? [styles.sentMessage, { backgroundColor: themeColorPalatte.chatSenderPrimaryColor }]
+                              : [
+                                   styles.receivedMessage,
+                                   { backgroundColor: themeColorPalatte.chatReceiverPrimaryColor },
+                                ],
                         ]}
                         delayLongPress={300}
                         onPress={onPress}
@@ -165,10 +181,9 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
          </Pressable>
       );
    }, [item]);
-
    return (
       <>
-         <NotificationMessage label={label} />
+         <NotificationMessage label={label} themeColorPalatte = {themeColorPalatte}/>
          {renderMessage}
       </>
    );
@@ -183,27 +198,8 @@ const styles = StyleSheet.create({
       height: 6,
       borderRadius: 3,
    },
-   bgClr: {
-      backgroundColor: 'red',
-   },
-   notDelivered: {
-      backgroundColor: '#818181',
-   },
-   delivered: {
-      backgroundColor: '#FFA500',
-   },
-   seen: {
-      backgroundColor: '#66E824',
-   },
-   flex1: { flex: 1 },
-   deleteContainer: {
-      marginBottom: 0.2,
-   },
    messageContainer: {
       marginBottom: 6,
-   },
-   highlightMessage: {
-      backgroundColor: ApplicationColors.highlighedMessageBg,
    },
    messageContentPressable: {
       minWidth: '30%',
@@ -214,12 +210,10 @@ const styles = StyleSheet.create({
       borderColor: '#DDE3E5',
    },
    sentMessage: {
-      backgroundColor: '#E2E8F7',
       borderWidth: 0,
       borderBottomRightRadius: 0,
    },
    receivedMessage: {
-      backgroundColor: '#fff',
       borderWidth: 1,
       borderBottomLeftRadius: 0,
    },

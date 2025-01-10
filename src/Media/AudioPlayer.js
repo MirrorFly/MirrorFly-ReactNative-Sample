@@ -1,8 +1,9 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import Sound from 'react-native-sound';
 import IconButton from '../common/IconButton';
 import { AudioPause, AudioPlay } from '../common/Icons';
+import Text from '../common/Text';
 import { useAppState } from '../common/hooks';
 import { stopAudioRecord } from '../components/ChatInput';
 import { millisToMinutesAndSeconds } from '../helpers/chatHelpers';

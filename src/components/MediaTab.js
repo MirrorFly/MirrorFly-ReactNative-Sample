@@ -1,9 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { ActivityIndicator, Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Dimensions, FlatList, Image, StyleSheet, View } from 'react-native';
 import { AudioWhileIcon, PlayIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
-import ApplicationColors from '../config/appColors';
+import Text from '../common/Text';
 import { getCurrentChatUser, getThumbBase64URL } from '../helpers/chatHelpers';
 import { getMessageTypeCount } from '../screens/ViewAllMedia';
 import { MEDIA_POST_PRE_VIEW_SCREEN } from '../screens/constants';
@@ -11,7 +11,7 @@ import commonStyles from '../styles/commonStyles';
 
 const AudioWhileIconComponent = () => AudioWhileIcon();
 
-const MediaTab = ({ mediaMessages, loading }) => {
+const MediaTab = ({ mediaMessages, loading, themeColorPalatte }) => {
    const navigation = useNavigation();
    let numColumns = 4;
    const { width } = Dimensions.get('window');
@@ -39,13 +39,13 @@ const MediaTab = ({ mediaMessages, loading }) => {
       return (
          <>
             {mediaMessages.length > 0 && (
-               <Text style={[commonStyles.textCenter, commonStyles.colorBlack]}>
+               <Text style={[commonStyles.textCenter, { color: themeColorPalatte.primaryTextColor }]}>
                   {renderImageCountLabel()}, {renderVideoCountLabel()}, {renderAudioCountLabel()}
                </Text>
             )}
             {loading && (
                <View style={[commonStyles.mb_130, commonStyles.marginTop_5]}>
-                  <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
+                  <ActivityIndicator size="large" color={themeColorPalatte.primaryColor} />
                </View>
             )}
          </>
@@ -78,6 +78,7 @@ const MediaTab = ({ mediaMessages, loading }) => {
                   {
                      width: tileSize,
                      height: tileSize,
+                     backgroundColor: themeColorPalatte.screenBgColor,
                   },
                   styles.mediaTile,
                ]}>
@@ -87,7 +88,14 @@ const MediaTab = ({ mediaMessages, loading }) => {
                />
 
                {message_type === 'video' && (
-                  <View style={styles.playIconWrapper}>
+                  <View
+                     style={[
+                        styles.playIconWrapper,
+                        {
+                           backgroundColor: themeColorPalatte.colorOnPrimary,
+                           shadowColor: themeColorPalatte.shadowColor,
+                        },
+                     ]}>
                      <PlayIcon width={10} height={10} />
                   </View>
                )}
@@ -135,19 +143,16 @@ export default React.memo(MediaTab);
 
 const styles = StyleSheet.create({
    mediaTile: {
-      backgroundColor: '#f2f2f2',
       padding: 2,
    },
    imageView: { flex: 1, resizeMode: 'cover' },
    playIconWrapper: {
-      backgroundColor: ApplicationColors.mainbg,
       position: 'absolute',
       top: '50%',
       left: '50%',
       // transforming X and Y for actual width of the icon plus the padding divided by 2 to make it perfectly centered ( 15(width) + 12(padding) / 2 = 13.5 )
       transform: [{ translateX: -13.5 }, { translateY: -13.5 }],
       elevation: 5,
-      shadowColor: ApplicationColors.shadowColor,
       shadowOffset: { width: 0, height: 6 },
       shadowOpacity: 0.1,
       shadowRadius: 6,

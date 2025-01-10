@@ -1,8 +1,10 @@
 import React from 'react';
 import { Pressable, View } from 'react-native';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
-const IconButton = ({ containerStyle, style, pressedStyle, onPress, children, ...props }) => {
+const IconButton = ({ containerStyle, style, pressedStyle, onPress, onLongPress, children, ...props }) => {
+   const themeColorPalatte = useThemeColorPalatte();
    const ProcessedStyle = React.useMemo(() => {
       if (Array.isArray(style)) {
          // merging all the objects into 1 single object
@@ -23,13 +25,14 @@ const IconButton = ({ containerStyle, style, pressedStyle, onPress, children, ..
    }, [containerStyle]);
 
    return (
-      <Pressable style={processedPresableStyle} onPress={onPress} {...props}>
+      <Pressable style={processedPresableStyle} onPress={onPress} onLongPress={onLongPress} {...props}>
          {({ pressed }) => (
             <View
                style={[
                   commonStyles.p_10,
                   ProcessedStyle,
-                  pressed && (pressedStyle || [commonStyles.pressedBg, { borderRadius: 50 }]),
+                  pressed &&
+                     (pressedStyle || [commonStyles.pressedBg(themeColorPalatte.pressedBg), { borderRadius: 50 }]),
                ]}>
                {children}
             </View>

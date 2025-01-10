@@ -1,5 +1,5 @@
-import React from 'react';
-import { Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { TouchableOpacity, View, ViewStyle } from 'react-native';
+import Text from '../../common/Text';
 import RNSlider from '../RNSlider';
 import { Props as MediaControlsProps } from './MediaControls';
 import styles from './MediaControls.style';
@@ -14,7 +14,7 @@ export type CustomSliderStyle = {
 
 type Props = Pick<
    MediaControlsProps,
-   'progress' | 'duration' | 'mainColor' | 'onFullScreen' | 'playerState' | 'onSeek' | 'onSeeking'
+   'progress' | 'duration' | 'primaryColor' | 'onFullScreen' | 'playerState' | 'onSeek' | 'onSeeking'
 > & {
    onPause: () => void;
    customSliderStyle?: CustomSliderStyle;
@@ -23,7 +23,7 @@ type Props = Pick<
 /** const fullScreenImage = require('./assets/ic_fullscreen.png'); */
 
 const Slider = (props: Props) => {
-   const { customSliderStyle, duration, mainColor, onFullScreen, onPause, progress } = props;
+   const { customSliderStyle, duration, primaryColor, onFullScreen, onPause, progress } = props;
 
    const containerStyle = customSliderStyle?.containerStyle || {};
    const customTrackStyle = customSliderStyle?.trackStyle || {};
@@ -59,8 +59,8 @@ const Slider = (props: Props) => {
                maximumValue={Math.floor(duration)}
                value={Math.floor(progress)}
                trackStyle={[styles.track, customTrackStyle]}
-               thumbStyle={[styles.thumb, customThumbStyle, { borderColor: mainColor }]}
-               minimumTrackTintColor={mainColor}
+               thumbStyle={[styles.thumb, customThumbStyle, { borderColor: primaryColor }]}
+               minimumTrackTintColor={primaryColor}
             />
          </View>
          {Boolean(onFullScreen) && (

@@ -8,7 +8,7 @@ import ApplicationColors from '../config/appColors';
 import config from '../config/config';
 import { calculateOffset, getUserIdFromJid, handleConversationScollToBottom } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, NOTIFICATION } from '../helpers/constants';
-import { useChatMessages } from '../redux/reduxHook';
+import { useChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
 import { getCurrentUserJid } from '../uikitMethods';
 import ChatMessage from './ChatMessage';
 
@@ -17,6 +17,7 @@ conversationFlatListRef.current = {};
 const estimatedItemHeight = 60;
 
 const ConversationList = ({ chatUser }) => {
+   const themeColorPalatte = useThemeColorPalatte();
    const userId = React.useMemo(() => getUserIdFromJid(chatUser), [chatUser]);
    const currentUserId = React.useMemo(() => getUserIdFromJid(getCurrentUserJid()), []);
    const messages = useChatMessages(userId) || [];
@@ -120,7 +121,7 @@ const ConversationList = ({ chatUser }) => {
 
    return (
       <>
-         {chatLoading && <ActivityIndicator size="large" color={ApplicationColors.mainColor} />}
+         {chatLoading && <ActivityIndicator size="large" color={themeColorPalatte.primaryColor} />}
          <FlatList
             initialNumToRender={10}
             ref={conversationFlatListRef}

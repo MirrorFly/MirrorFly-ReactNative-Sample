@@ -80,6 +80,8 @@ import {
 } from '../helpers/chatHelpers';
 import {
    BLOCK_CONTACT_TYPE,
+   CALL_CONVERSION_STATUS_CANCEL,
+   CALL_CONVERSION_STATUS_REQ_WAITING,
    CONNECTION_STATE_CONNECTING,
    GROUP_CREATED,
    GROUP_PROFILE_INFO_UPDATED,
@@ -95,6 +97,7 @@ import {
    callConversion,
    callDurationTimestamp,
    clearCallData,
+   closeCallModal,
    setCallModalScreen,
    updateCallConnectionState,
    updateCallerUUID,
@@ -124,6 +127,7 @@ import store from '../redux/store';
 import { resetTypingStatus, setTypingStatus } from '../redux/typingStatusDataSlice';
 import { REGISTERSCREEN } from '../screens/constants';
 import { getCurrentUserJid, getLocalUserDetails, logoutClearVariables, setCurrectUserProfile } from '../uikitMethods';
+import SDK from './SDK';
 import { fetchGroupParticipants, getUserProfileFromSDK, handleUploadNextImage } from './utils';
 
 let localStream = null,

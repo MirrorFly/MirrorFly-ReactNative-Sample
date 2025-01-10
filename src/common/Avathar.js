@@ -1,13 +1,13 @@
 import React from 'react';
-import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, View } from 'react-native';
 import grpImage from '../assets/ic_grp_bg.png';
 import img from '../assets/img.png';
-import ApplicationColors from '../config/appColors';
 import { getImageSource, getUsernameGraphemes } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP } from '../helpers/constants';
-import { useIsBlockedMeStatus } from '../redux/reduxHook';
+import { useIsBlockedMeStatus, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { useFetchImage, useNetworkStatus } from './hooks';
+import Text from './Text';
 
 const defaultImageDimension = 48;
 
@@ -20,6 +20,7 @@ const Avathar = ({
    ...props
 }) => {
    const { type = '' } = props;
+   const themeColorPalatte = useThemeColorPalatte();
    const [isImageLoadError, setIsImageLoadError] = React.useState(false);
    const [isImageLoading, setIsImageLoading] = React.useState(false);
    const isNetworkConnected = useNetworkStatus();
@@ -55,7 +56,7 @@ const Avathar = ({
    if (isLoading && profileImage) {
       return (
          <View style={imageStyle || styles.imageDiv(props, false)}>
-            <ActivityIndicator color={ApplicationColors.mainColor} />
+            <ActivityIndicator color={themeColorPalatte.primaryColor} />
          </View>
       );
    }
@@ -79,7 +80,7 @@ const Avathar = ({
          />
          {isImageLoading && (
             <View style={[styles.imageDiv(props, true, transparentBackgroundForImage), styles.imageLoaderWrapper]}>
-               <ActivityIndicator color={ApplicationColors.mainColor} />
+               <ActivityIndicator color={themeColorPalatte.primaryColor} />
             </View>
          )}
       </View>

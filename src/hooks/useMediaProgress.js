@@ -1,6 +1,5 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { uploadFileToSDK } from '../SDK/utils';
 import { useNetworkStatus } from '../common/hooks';
 import config from '../config/config';
 import { getCurrentChatUser, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
@@ -8,6 +7,8 @@ import { mediaStatusConstants } from '../helpers/constants';
 import { updateMediaStatus } from '../redux/chatMessageDataSlice';
 import { deleteProgress } from '../redux/progressDataSlice';
 import { getMediaProgress, useChatMessage } from '../redux/reduxHook';
+import SDK from '../SDK/SDK';
+import { uploadFileToSDK } from '../SDK/utils';
 
 const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    const userId = getUserIdFromJid(getCurrentChatUser());

@@ -1,16 +1,17 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Text } from 'react-native';
 import SDK from '../SDK/SDK';
-import MarqueeText from '../common/MarqueeText';
+import Text from '../common/Text';
 import { useNetworkStatus } from '../common/hooks';
 import { getLastseen } from '../common/timeStamp';
 import { formatUserIdToJid, getUserIdFromJid } from '../helpers/chatHelpers';
 import { USER_PRESENCE_STATUS_OFFLINE, USER_PRESENCE_STATUS_ONLINE } from '../helpers/constants';
 import {
+   getUserNameFromStore,
    useBlockedStatus,
    useIsBlockedMeStatus,
    usePresenceData,
+   useThemeColorPalatte,
    useTypingData,
    useXmppConnectionStatus,
 } from '../redux/reduxHook';
@@ -19,6 +20,7 @@ import commonStyles from '../styles/commonStyles';
 const LastSeen = ({ userJid = '', style }) => {
    const userId = getUserIdFromJid(userJid);
    const isNetworkConnected = useNetworkStatus();
+   const themeColorPalatte = useThemeColorPalatte();
    const xmppConnection = useXmppConnectionStatus();
    const blockedStatus = useBlockedStatus(userId);
    const isBlockedMeStatus = useIsBlockedMeStatus(userId);
@@ -69,14 +71,26 @@ const LastSeen = ({ userJid = '', style }) => {
    }, [typingStatusData]);
 
    if (isTyping) {
-      return <Text style={[commonStyles.typingText, commonStyles.fontSize_11]}>{isTyping}</Text>;
+      return (
+         <Text style={[commonStyles.textColor(themeColorPalatte.primaryColor), commonStyles.fontSize_11]}>
+            {isTyping}
+         </Text>
+      );
    }
 
-   return lastSeenData.lastSeen ? (
-      <MarqueeText style={style} ref={marqueeRef} {...config}>
-         {lastSeenData.lastSeen}
-      </MarqueeText>
-   ) : null;
+   return (
+      <>
+         {lastSeenData.lastSeen ? (
+            <Text
+               key={JSON.stringify(config)}
+               ref={marqueeRef}
+               {...config}
+               style={{ color: themeColorPalatte.headerSecondaryTextColor, fontWeight: '700', fontSize: 11 }}>
+               {lastSeenData.lastSeen}
+            </Text>
+         ) : null}
+      </>
+   );
 };
 
 export default LastSeen;

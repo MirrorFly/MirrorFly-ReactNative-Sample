@@ -1,6 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { createRef } from 'react';
-import { Animated, Keyboard, PanResponder, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Keyboard, PanResponder, Platform, StyleSheet, View } from 'react-native';
 import AudioRecorderPlayer, {
    AVEncoderAudioQualityIOSType,
    AVEncodingOption,
@@ -19,6 +19,8 @@ import IconButton from '../common/IconButton';
 import { AttachmentIcon, BackArrowIconR, DeleteBinIcon, EmojiIcon, KeyboardIcon, MicIcon } from '../common/Icons';
 import NickName from '../common/NickName';
 import RippleAnimation from '../common/RippleAnimation';
+import Text from '../common/Text';
+import TextInput from '../common/TextInput';
 import { useAppState } from '../common/hooks';
 import { audioRecordPermission } from '../common/permissions';
 import { formatMillisecondsToTime } from '../common/timeStamp';
@@ -29,8 +31,10 @@ import {
    getUserIdFromJid,
    handleUpdateBlockUser,
    mediaObjContructor,
+   showToast,
 } from '../helpers/chatHelpers';
 import { MIX_BARE_JID, audioRecord, uriPattern } from '../helpers/constants';
+import { getStringSet } from '../localization/stringSet';
 import { toggleEditMessage } from '../redux/chatMessageDataSlice';
 import { setAudioRecordTime, setAudioRecording, setTextMessage } from '../redux/draftSlice';
 import {
@@ -42,6 +46,7 @@ import {
    useBlockedStatus,
    useEditMessageId,
    useTextMessage,
+   useThemeColorPalatte,
    useUserType,
 } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
@@ -67,6 +72,8 @@ export const stopAudioRecord = () => {
 
 function ChatInput({ chatUser }) {
    userId = getUserIdFromJid(chatUser);
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
    const dispatch = useDispatch();
    const appState = useAppState();
    const typingTimeoutRef = React.useRef(null);
@@ -334,26 +341,31 @@ function ChatInput({ chatUser }) {
                containerStyle={styles.emojiPickerIconWrapper}
                style={styles.emojiPickerIcon}
                onPress={toggleEmojiPicker}>
-               {isEmojiPickerShowing ? <KeyboardIcon /> : <EmojiIcon />}
+               {isEmojiPickerShowing ? (
+                  <KeyboardIcon color={themeColorPalatte.iconColor} />
+               ) : (
+                  <EmojiIcon color={themeColorPalatte.iconColor} />
+               )}
             </IconButton>
             <TextInput
-               ref={chatInputRef}
+               inputRef={chatInputRef}
                value={message}
-               style={styles.inputTextbox}
+               style={[styles.inputTextbox, { color: themeColorPalatte.primaryTextColor }]}
                onChangeText={onChangeMessage}
-               placeholder="Start Typing..."
-               placeholderTextColor="#767676"
+               placeholder={stringSet.PLACEHOLDERS.CHAT_INPUT_PLACEHOLDER}
+               placeholderTextColor={themeColorPalatte.placeholderTextColor}
                numberOfLines={1}
                multiline={true}
-               cursorColor={ApplicationColors.mainColor}
+               cursorColor={themeColorPalatte.primaryColor}
+               selectionColor={themeColorPalatte.primaryColor}
                onFocus={handleCloseEmojiWindow}
             />
-
-            {!chatUser.includes(config.aiAgentId) && (
+            <View style={commonStyles.marginHorizontal_10}>
+               {/* Remove this view tag while adding mic icon */}
                <IconButton onPress={handleAttachmentconPressed} style={styles.attachmentIcon}>
-                  <AttachmentIcon />
+                  <AttachmentIcon color={themeColorPalatte.iconColor} />
                </IconButton>
-            )}
+            </View>
             {!message.trim() && (
                <IconButton
                   containerStyle={styles.audioRecordIconWrapper}
@@ -364,7 +376,7 @@ function ChatInput({ chatUser }) {
             )}
          </>
       );
-   }, [message, isEmojiPickerShowing]);
+   }, [message, isEmojiPickerShowing, themeColorPalatte]);
 
    const renderRecording = () => {
       if (isAudioRecording === audioRecord.RECORDING) {
@@ -422,7 +434,12 @@ function ChatInput({ chatUser }) {
    if (blockedStaus) {
       return (
          <View style={styles.container}>
-            <Text style={[commonStyles.px_4, styles.cantMessaegs]}>
+            <Text
+               style={[
+                  commonStyles.px_4,
+                  styles.cantMessaegs,
+                  { color: themeColorPalatte.groupNotificationTextColour },
+               ]}>
                You have blocked <NickName userId={userId} />.{' '}
                <Text
                   style={[commonStyles.mainTextColor, commonStyles.textDecorationLine, commonStyles.fontSize_15]}
@@ -437,9 +454,18 @@ function ChatInput({ chatUser }) {
 
    if (MIX_BARE_JID.test(chatUser) && !userType) {
       return (
-         <View style={styles.container}>
-            <Text style={[commonStyles.px_4, styles.cantMessaegs]}>
-               You can't send messages to this group because you're no longer a participant
+         <View
+            style={[
+               styles.container,
+               { backgroundColor: themeColorPalatte.screenBgColor, borderColor: themeColorPalatte.mainBorderColor },
+            ]}>
+            <Text
+               style={[
+                  commonStyles.px_4,
+                  styles.cantMessaegs,
+                  { color: themeColorPalatte.groupNotificationTextColour },
+               ]}>
+               {stringSet.CHAT_SCREEN.NO_LONGER_PARTICIPANT_SEND_MESSAGE}
             </Text>
          </View>
       );
@@ -447,8 +473,12 @@ function ChatInput({ chatUser }) {
 
    return (
       <>
-         <View style={styles.container}>
-            <View style={styles.textInputContainer}>
+         <View
+            style={[
+               styles.container,
+               { backgroundColor: themeColorPalatte.screenBgColor, borderColor: themeColorPalatte.mainBorderColor },
+            ]}>
+            <View style={[styles.textInputContainer, { borderColor: themeColorPalatte.mainBorderColor }]}>
                {Boolean(isAudioRecording) ? (
                   <View style={styles.hstack}>
                      <View style={{ height: 48, justifyContent: 'center' }}>
@@ -497,7 +527,7 @@ function ChatInput({ chatUser }) {
 export default React.memo(ChatInput);
 
 const styles = StyleSheet.create({
-   cantMessaegs: { textAlign: 'center', fontSize: 15, color: ApplicationColors.groupNotificationTextColour },
+   cantMessaegs: { textAlign: 'center', fontSize: 15 },
    container: {
       flexDirection: 'row',
       width: '100%',

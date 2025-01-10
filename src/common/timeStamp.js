@@ -1,6 +1,8 @@
 import { DateTime } from 'luxon';
 import moment from 'moment';
+import { getStringSet, replacePlaceholders } from '../localization/stringSet';
 
+const TIME_FORMAT = "HH:mm";
 function datetoTime(secs) {
    let todayDate = new Date();
    todayDate.setSeconds(todayDate.getSeconds() - secs);
@@ -181,6 +183,7 @@ export const convertUTCTOLocalTimeStamp = dateString => {
  * @param {secs} secs
  */
 export const getLastseen = secs => {
+   let stringSet = getStringSet();
    try {
       let userDate = datetoTime(secs);
       let currentDate = new Date();
@@ -188,14 +191,14 @@ export const getLastseen = secs => {
       let month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
       if (secs === 0) {
-         return 'Online';
+         return stringSet.LAST_SEEN.ONLINE_LABEL;
       } else if (userDate.getDate() === currentDate.getDate() && userDate.getMonth() === currentDate.getMonth()) {
-         return `last seen today at ${moment(userDate).format('h:mm A')}`;
+         return stringSet.LAST_SEEN.LAST_SEEN_TODAY.replace('{time}', moment(userDate).format('h:mm A'));
       } else if (
          (userDate.getDate() === currentDate.getDate() - 1 && userDate.getMonth() === currentDate.getMonth()) ||
          (userDate.getMonth() === currentDate.getMonth() - 1 && findYesterday(secs, currentDate))
       ) {
-         return `last seen yesterday at ${moment(userDate).format('h:mm A')}`;
+         return stringSet.LAST_SEEN.LAST_SEEN_YESTERDAY.replace('{time}', moment(userDate).format('h:mm A'));
       } else if (
          (userDate.getDate() === currentDate.getDate() - 1 ||
             userDate.getDate() === currentDate.getDate() - 2 ||
@@ -205,12 +208,24 @@ export const getLastseen = secs => {
             userDate.getDate() === currentDate.getDate() - 6) &&
          userDate.getMonth() === currentDate.getMonth()
       ) {
-         return `last seen on ${weekday[userDate.getDay()]} at ${moment(userDate).format('h:mm A')}`;
+         return replacePlaceholders(stringSet.LAST_SEEN.LAST_SEEN_WITH_IN_WEEK, {
+            day: weekday[userDate.getDay()],
+            time: moment(userDate).format('h:mm a'),
+         });
       } else {
          if (userDate.getDate().toString().length > 1) {
-            return `last seen ${userDate.getDate()}-${month[userDate.getMonth()]}-${userDate.getFullYear()}`;
+            return replacePlaceholders(stringSet.LAST_SEEN.LAST_SEEN_MORE_THAN_WEEK_DATE_ABOVE_0, {
+               date: userDate.getDate(),
+               month: month[userDate.getMonth()],
+               year: userDate.getFullYear(),
+            });
          } else {
-            return `last seen ${0}${userDate.getDate()}-${month[userDate.getMonth()]}-${userDate.getFullYear()}`;
+            return replacePlaceholders(stringSet.LAST_SEEN.LAST_SEEN_MORE_THAN_WEEK_DATE_BELOW_0, {
+               zero: '0',
+               date: userDate.getDate(),
+               month: month[userDate.getMonth()],
+               year: userDate.getFullYear(),
+            });
          }
       }
    } catch (error) {

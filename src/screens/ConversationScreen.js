@@ -19,7 +19,8 @@ import {
 import { MIX_BARE_JID } from '../helpers/constants';
 import { toggleEditMessage } from '../redux/chatMessageDataSlice';
 import { resetUnreadCountForChat } from '../redux/recentChatDataSlice';
-import { useChatMessages, useReplyMessage } from '../redux/reduxHook';
+import { useChatMessages, useReplyMessage, useThemeColorPalatte } from '../redux/reduxHook';
+import commonStyles from '../styles/commonStyles';
 import { RECENTCHATSCREEN } from './constants';
 
 function ConversationScreen({ chatUser = '' }) {
@@ -27,6 +28,7 @@ function ConversationScreen({ chatUser = '' }) {
    const [jid, setJid] = React.useState(_jid || chatUser); // TO HANDLE APPLCATION RENDER BY COMPONENT BY COMPONENT
    let currentChatUser = _jid || chatUser;
    setCurrentChatUser(currentChatUser);
+   const themeColorPalatte = useThemeColorPalatte();
    SDK.activeChatUser(currentChatUser);
    const dispatch = useDispatch();
    const userId = getUserIdFromJid(jid);
@@ -105,7 +107,9 @@ function ConversationScreen({ chatUser = '' }) {
          style={styles.container}
          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
          {renderChatHeader}
-         <ImageBackground source={getImageSource(chatBackgroud)} style={styles.imageBackground}>
+         <ImageBackground
+            source={getImageSource(chatBackgroud)}
+            style={[styles.imageBackground, commonStyles.bg_color(themeColorPalatte.screenBgColor)]}>
             {renderConversationList}
          </ImageBackground>
          {renderReplyContainer}

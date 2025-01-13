@@ -22,7 +22,7 @@ import {
    getImageSource,
    getUserIdFromJid,
    handleReplyPress,
-   millisToMinutesAndSeconds,
+   millisToHoursMinutesAndSeconds
 } from '../helpers/chatHelpers';
 import { ORIGINAL_MESSAGE_DELETED } from '../helpers/constants';
 import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
@@ -84,7 +84,7 @@ function ReplyMessage(props) {
       }
    }, [fileExtension]);
 
-   const durationString = millisToMinutesAndSeconds(media.duration);
+   const durationString = millisToHoursMinutesAndSeconds(media.duration);
 
    const renderReplyItem = () => {
       if (message_type === 'text') {

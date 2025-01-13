@@ -767,6 +767,7 @@ export const callBacks = {
       }
    },
    mediaDownloadListener: res => {
+      console.log('mediaDownloadListener res==>', res);
       store.dispatch(setProgress(res));
       if (res.progress === 100) {
          const mediaStatusObj = {

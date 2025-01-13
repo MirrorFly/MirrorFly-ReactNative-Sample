@@ -4,7 +4,7 @@ import Sound from 'react-native-sound';
 import IconButton from '../common/IconButton';
 import { AudioPause, AudioPlay } from '../common/Icons';
 import { useAppState } from '../common/hooks';
-import { millisToMinutesAndSeconds } from '../helpers/chatHelpers';
+import { millisToHoursMinutesAndSeconds } from '../helpers/chatHelpers';
 import { mediaStatusConstants } from '../helpers/constants';
 import commonStyles from '../styles/commonStyles';
 import RNSlider from './RNSlider';
@@ -153,7 +153,7 @@ const AudioPlayer = props => {
    */
 
    const currentTimeString = getAudioTimeString(playSeconds);
-   const durationString = millisToMinutesAndSeconds(media.duration);
+   const durationString = millisToHoursMinutesAndSeconds(media.duration);
 
    const sliderDisable = React.useMemo(() => {
       return mediaStatus !== mediaStatusConstants.LOADED;

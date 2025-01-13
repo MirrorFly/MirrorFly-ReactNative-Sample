@@ -23,7 +23,7 @@ import { RECENTCHATSCREEN } from './constants';
 function ConversationScreen({ chatUser = '' }) {
    const { params: { jid: _jid = '' } = {} } = useRoute();
    const [jid, setJid] = React.useState(_jid || chatUser); // TO HANDLE APPLCATION RENDER BY COMPONENT BY COMPONENT
-   let currentChatUser = _jid || chatUser;
+   let currentChatUser = jid || chatUser;
    setCurrentChatUser(currentChatUser);
    SDK.activeChatUser(currentChatUser);
    const dispatch = useDispatch();

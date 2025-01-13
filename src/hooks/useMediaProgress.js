@@ -4,7 +4,7 @@ import RNFS from 'react-native-fs';
 import { useDispatch } from 'react-redux';
 import { uploadFileToSDK } from '../SDK/utils';
 import { useNetworkStatus } from '../common/hooks';
-import { getCurrentChatUser, getExtension, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
+import { getCurrentChatUser, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
 import { mediaStatusConstants } from '../helpers/constants';
 import { updateMediaStatus } from '../redux/chatMessageDataSlice';
 import { deleteProgress } from '../redux/progressDataSlice';
@@ -28,6 +28,7 @@ const generateUniqueFilePath = async (filePath, counter = 0) => {
 const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    const userId = getUserIdFromJid(getCurrentChatUser());
    const dispatch = useDispatch();
+   console.log('userId, msgId ==>', getCurrentChatUser(), userId, msgId);
    const chatMessage = useChatMessage(userId, msgId);
    const networkState = useNetworkStatus();
    /** 'NOT_DOWNLOADED' | 'NOT_UPLOADED' | 'DOWNLOADING' | 'UPLOADING' | 'DOWNLOADED' | 'UPLOADED'  */
@@ -51,68 +52,25 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    }, [uploadStatus, downloadStatus]);
 
    const handleDownload = async () => {
-      const {
-         msgBody: {
-            media,
-            media: {
-               is_downloaded,
-               local_path,
-               fileKey,
-               fileName = '',
-               file_size = '',
-               isLargeFile = false,
-               file_url,
-            } = {},
-         } = {},
-      } = chatMessage;
+      try {
+         setMediaStatus(mediaStatusConstants.DOWNLOADING);
+         const downloadResponse = await SDK.downloadMedia(msgId);
+         console.log('downloadMedia res ==>', downloadResponse);
 
-      if (is_downloaded === 2) {
-         const decryptFileRes = await MediaService.decryptFile(local_path, fileKey, 'ddc0f15cc2c90fca');
-         console.log('decryptFileRes ==>', decryptFileRes);
-         if (!decryptFileRes?.success) return;
-         let mediaStatusObj = {
-            msgId,
-            statusCode: 200,
-            userId,
-            local_path: 'file://' + decryptFileRes.decryptedFilePath,
-            is_downloaded: 2,
-         };
-         console.log('mediaStatusObj ==>', mediaStatusObj);
-         dispatch(updateMediaStatus(mediaStatusObj));
-         setMediaStatus(mediaStatusConstants.LOADED);
-         return;
-      }
-
-      // Listen for progress updates
-      const downloadProgressSubscription = eventEmitter?.addListener?.('downloadProgress', progress => {
-         console.log('downloadProgressSubscription ==>', downloadProgressSubscription);
-         console.log('handleNativeFileDownload downloadProgress', progress);
-         console.log('progress.downloadedBytes === fileSize ==>', file_size, progress.downloadedBytes === file_size);
-         if (progress.downloadedBytes === file_size) {
-            downloadProgressSubscription.remove();
+         if (downloadResponse?.statusCode === 200 || downloadResponse?.statusCode === 304) {
+            dispatch(
+               updateMediaStatus({
+                  msgId,
+                  userId,
+                  local_path: downloadResponse?.decryptedFilePath,
+                  is_downloaded: 2,
+               }),
+            );
+            setMediaStatus(mediaStatusConstants.LOADED);
          }
-      });
-
-      console.log('fileKey ==>', file_size, fileKey, isLargeFile);
-      const extn = getExtension(file_url, false);
-
-      const { status, data, message } = await SDK.getMediaDownloadURL(file_url);
-      const cachePath = await generateUniqueFilePath(
-         `${RNFS.CachesDirectoryPath}/DEC_${fileName}_${Date.now()}.${extn}`,
-      );
-      console.log('status cachePath ==>', status, cachePath);
-      const nativedownloadRes = await MediaService?.downloadFileInChunks(data, file_size, cachePath);
-      console.log('nativedownloadRes ==>', nativedownloadRes);
-      let mediaStatusObj = {
-         msgId,
-         statusCode: 200,
-         userId,
-         local_path: 'file://' + cachePath,
-         is_downloaded: 2,
-      };
-      console.log('mediaStatusObj ==>', mediaStatusObj);
-      dispatch(updateMediaStatus(mediaStatusObj));
-      !fileKey && setMediaStatus(mediaStatusConstants.LOADED);
+      } catch (error) {
+         console.error('Error in handleDownload:', error);
+      }
    };
    const handleUpload = () => {
       if (!networkState) {
@@ -129,30 +87,36 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
       uploadFileToSDK(file, getCurrentChatUser(), _msgId, media);
    };
 
-   const cancelProgress = () => {
-      if (getMediaProgress(msgId)?.source) {
-         if (getMediaProgress(msgId)?.downloadJobId) {
-            getMediaProgress(msgId).source?.cancel?.(getMediaProgress(msgId)?.downloadJobId);
-            const mediaStatusObj = {
-               msgId,
-               userId,
-               is_downloaded: 0,
-            };
-            dispatch(updateMediaStatus(mediaStatusObj));
-            dispatch(deleteProgress({ msgId }));
-            setMediaStatus(mediaStatusConstants.NOT_DOWNLOADED);
-         } else {
-            getMediaProgress(msgId).source?.cancel?.('User Cancelled!');
-            const mediaStatusObj = {
-               msgId,
-               userId,
-               uploadStatus: 3,
-            };
-            dispatch(updateMediaStatus(mediaStatusObj));
+   const cancelProgress = async () => {
+      try {
+         const { source = {}, downloadJobId = '' } = getMediaProgress(msgId);
+         if (source) {
+            if (downloadJobId) {
+               const cancelRes = await source?.cancel?.(downloadJobId);
+               console.log('cancelRes ==>', cancelRes);
+               const mediaStatusObj = {
+                  msgId,
+                  userId,
+                  is_downloaded: 0,
+               };
+               dispatch(updateMediaStatus(mediaStatusObj));
+               dispatch(deleteProgress({ msgId }));
+               setMediaStatus(mediaStatusConstants.NOT_DOWNLOADED);
+            } else {
+               source?.cancel?.('User Cancelled!');
+               const mediaStatusObj = {
+                  msgId,
+                  userId,
+                  uploadStatus: 3,
+               };
+               dispatch(updateMediaStatus(mediaStatusObj));
+            }
          }
-      }
-      if (uploadStatus === 8) {
-         return true;
+         if (uploadStatus === 8) {
+            return true;
+         }
+      } catch (error) {
+         console.log('cancelProgress ==>', error);
       }
    };
 

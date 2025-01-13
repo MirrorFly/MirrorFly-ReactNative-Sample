@@ -31,12 +31,31 @@ RCT_EXTERN_METHOD(defineValues:(NSDictionary *)obj
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(encryptFile:(RCTPromiseResolveBlock)resolve
+RCT_EXTERN_METHOD(encryptFile:uri:(NSString *)uri
+                  keyString:(NSString *)keyString
+                  resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(decryptFile:(NSString *)inputFilePath 
                   keyString:(NSString *)keyString
                   iv:(NSString *)iv
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
+
+RCT_EXTERN_METHOD(startDownload:(NSString *)downloadURL
+                  msgId:(NSString *)msgId
+                  fileSize:(nonnull NSNumber *)fileSize
+                  chunkSize:(nonnull NSNumber *)chunkSize
+                  cachePath:(NSString *)cachePath
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(cancelDownload:(NSString *)msgId
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(pauseDownload:(NSString *)msgId
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 

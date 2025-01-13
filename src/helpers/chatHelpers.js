@@ -241,10 +241,19 @@ export const convertBytesToKB = bytes => {
    }
 };
 
-export const millisToMinutesAndSeconds = millis => {
-   let minutes = Math.floor(millis / 60000);
+export const millisToHoursMinutesAndSeconds = millis => {
+   let hours = Math.floor(millis / 3600000);
+   let minutes = Math.floor((millis % 3600000) / 60000);
    let seconds = parseInt((millis % 60000) / 1000, 10);
-   return (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+
+   return (
+      (hours > 0 ? (hours < 10 ? '0' : '') + hours + ':' : '') +
+      (minutes < 10 ? '0' : '') +
+      minutes +
+      ':' +
+      (seconds < 10 ? '0' : '') +
+      seconds
+   );
 };
 
 export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {

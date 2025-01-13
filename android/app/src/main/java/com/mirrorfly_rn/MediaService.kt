@@ -13,6 +13,8 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -24,7 +26,6 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import javax.crypto.Cipher
 import kotlin.math.roundToInt
-
 
 class MediaService(var reactContext: ReactApplicationContext?) :
     ReactContextBaseJavaModule(reactContext) {
@@ -41,18 +42,168 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     private var iv: String = ""
     private lateinit var cipher: Cipher
     private var apiInterface: APIInterface? = null
-
-    private fun getRandomString(length: Int): String {
-        val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
-        return (1..length)
-            .map { allowedChars.random() }
-            .joinToString("")
-    }
+    private val activeDownloads = mutableMapOf<String, Job>()
 
     @ReactMethod
     fun baseUrlInit(baseURL: String) {
         apiInterface = APIClient().getClient(baseURL)?.create(APIInterface::class.java)
     }
+
+    // Utility to send download progress
+    private suspend fun sendDownloadProgress(msgId: String, startByte: Long, endByte: Long, fileSize: Int) {
+        val progressMap = Arguments.createMap().apply {
+            putString("msgId", msgId)
+            putInt("startByte", startByte.toInt())
+            putInt("endByte", endByte.toInt())
+            putInt("downloadedBytes", endByte.toInt() + 1)
+            putInt("totalBytes", fileSize)
+            putDouble("downloadedBytes", endByte.toDouble())
+        }
+        // Switch to the main thread to send the event
+        withContext(Dispatchers.Main) {
+            sendEvent("downloadProgress", progressMap)
+        }
+    }
+
+    private suspend fun handleDownloadError(promise: Promise, message: String, fileOutputStream: FileOutputStream?, msgId: String) {
+        Log.d(name, message)
+        // Close the file output stream in a blocking context to avoid blocking the main thread
+        withContext(Dispatchers.IO) {
+            fileOutputStream?.close()
+        }
+        // Switch to the main thread to resolve the promise
+        withContext(Dispatchers.Main) {
+            promise.reject("DOWNLOAD_FAILED", message)
+        }
+        activeDownloads.remove(msgId)
+    }
+
+    // Utility to send download completion response
+    private suspend fun sendDownloadComplete(promise: Promise, cachePath: String) {
+        // Switch to the main thread to resolve the promise
+        withContext(Dispatchers.Main) {
+            promise.resolve(Arguments.createMap().apply {
+                putBoolean("success", true)
+                putInt("statusCode", 200)
+                putString("message", "File downloaded successfully at: $cachePath")
+                putString("cachePath", cachePath)
+            })
+        }
+    }
+
+    @ReactMethod
+    fun startDownload(
+        downloadURL: String,
+        msgId: String,
+        fileSize: Int,
+        chunkSize: Int,
+        cachePath: String,
+        promise: Promise
+    ) {
+        Log.d(name, "Starting download for msgId: $msgId with URL: $downloadURL and cachePath: $cachePath")
+
+        // Check if download is already in progress
+        if (activeDownloads.containsKey(msgId)) {
+            promise.resolve(Arguments.createMap().apply {
+                putBoolean("success", false)
+                putInt("statusCode", 102)
+                putString("message", "Download already in progress for msgId: $msgId")
+            })
+            return
+        }
+
+        // Create the download job in a coroutine
+        val job = CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val file = File(cachePath)
+                var startByte: Long = file.length();
+                Log.d(name,"file.length() startByte $startByte")
+                val fileOutputStream = FileOutputStream(file, true)
+
+                while (startByte < fileSize) {
+                    val endByte = minOf(startByte + chunkSize, fileSize.toLong()) - 1
+                    val range = "bytes=$startByte-$endByte"
+
+                    Log.d(name, "Downloading range: $range for msgId: $msgId")
+
+                    val response = apiInterface?.downloadChunkFromPreAuthenticationUrl(downloadURL, range)?.execute()
+
+                    // Check for response failure
+                    if (response == null || !response.isSuccessful) {
+                        handleDownloadError(promise, "Failed to download chunk: $range", fileOutputStream, msgId)
+                        return@launch
+                    }
+
+                    val chunkData = getChunkData(response)
+                    fileOutputStream.write(chunkData)
+                    // Send progress update
+                    sendDownloadProgress(msgId, startByte, endByte, fileSize)
+                    startByte = endByte + 1
+
+                    // Check for cancellation
+                    if (!isActive) {
+                        Log.d(name, "Download canceled for msgId: $msgId")
+                        Log.d(name, "cache length ${file.length()}")
+                        handleDownloadError(promise, "Download canceled", fileOutputStream, msgId)
+                        return@launch
+                    }
+                }
+
+                fileOutputStream.close()
+                sendDownloadComplete(promise, cachePath)
+
+            } catch (e: Exception) {
+                handleDownloadError(promise, "Error downloading file for msgId: $msgId: $e", null, msgId)
+            } finally {
+                activeDownloads.remove(msgId)
+            }
+        }
+
+        // Track the active download job
+        activeDownloads[msgId] = job
+    }
+
+    @ReactMethod
+    fun cancelDownload(msgId: String, promise: Promise) {
+        val job = activeDownloads[msgId]
+        if (job != null) {
+            job.cancel() // This triggers isActive to become false
+            activeDownloads.remove(msgId)
+            promise.resolve(Arguments.createMap().apply {
+                putBoolean("success", false)
+                putString("message", "Download canceled for msgId: $msgId")
+            })
+        } else {
+            promise.reject("CANCEL_FAILED", "No active download found for msgId: $msgId")
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @ReactMethod
@@ -63,7 +214,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                 outputFilePath = obj.getString("outputFilePath") ?: ""
                 chunkSize = if (obj.hasKey("chunkSize")) obj.getInt("chunkSize") else chunkSize
                 iv = obj.getString("iv") ?: ""
-                keyString = getRandomString(32)
+                keyString = cryptLib.getRandomString(32)
                 val file = File(inputFilePath.replace("file://", ""))
                 if (!file.exists()) {
                     withContext(Dispatchers.Main) {
@@ -176,6 +327,8 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                 "React Native Mirrorfly"
             )
+//          reactContext?.externalMediaDirs
+
 
             // Ensure the directory exists
             if (!publicDirectory.exists()) {

@@ -20,6 +20,13 @@ class MediaService: RCTEventEmitter {
   private var fileName: String = ""
   private var messageType: String = ""
   
+  
+  private var streamManager: StreamManager?
+  private var currentUploadTask: URLSessionUploadTask?
+  
+  private var downloadTasks: [String: URLSessionDataTask] = [:]
+  private var downloadTaskCanceled: [String: Bool] = [:]
+  
   private var hasListeners = false
   
   @objc
@@ -34,6 +41,362 @@ class MediaService: RCTEventEmitter {
     print("Received URL: \(url)")
     resolver(url)
   }
+  
+  func checkFileReadableFromURL(_ fileURL: URL) -> (isReadable: Bool, message: String) {
+    let fileManager = FileManager.default
+    
+    // Check if file exists
+    if !fileManager.fileExists(atPath: fileURL.path) {
+      return (false, "The specified file does not exist at the given URL")
+    }
+    
+    // Check if the file is readable by attempting to open it
+    guard let inputStream = InputStream(url: fileURL) else {
+      return (false, "Failed to initialize input stream for the file")
+    }
+    
+    inputStream.open()
+    if inputStream.streamStatus != .open {
+      return (false, "Failed to open file stream for reading")
+    }
+    
+    // Successfully opened the file, close the input stream
+    inputStream.close()
+    return (true, "File is readable and exists. Proceeding with upload.")
+  }
+  
+  func getFreeDiskSpace() -> Int64? {
+    do {
+      let fileManager = FileManager.default
+      let attributes = try fileManager.attributesOfFileSystem(forPath: NSHomeDirectory())
+      if let freeSize = attributes[.systemFreeSize] as? NSNumber {
+        return freeSize.int64Value // Return free space in bytes
+      }
+    } catch {
+      print("Error checking free disk space: \(error.localizedDescription)")
+    }
+    return nil // Return nil if an error occurs
+  }
+  
+  func checkDeviceFressSpace(fileSize: Int64)->(isSpaceAvail: Bool, message: String){
+    do {
+      guard let freeSpace = getFreeDiskSpace() else {
+        return (false, "Unable to determine available storage space")
+      }
+      print("freeSpace ==>",freeSpace)
+      if fileSize > freeSpace {
+        return (false, "Not enough free storage space to upload the file")
+      }
+      return (true, "File is readable, size matches, and there is enough storage space")
+    }
+  }
+  
+  
+  @objc func encryptFile(
+    _ uri: String,
+    keyString: String,
+    resolver: @escaping RCTPromiseResolveBlock,
+    rejecter: @escaping RCTPromiseRejectBlock
+  ){
+    DispatchQueue.global(qos: .background).async {
+      if let url = URL(string: uri){
+        let folderPath = url.deletingLastPathComponent()
+        let fileName = url.lastPathComponent
+        
+        // Check file readability
+        let fileCheck = self.checkFileReadableFromURL(url)
+        if !fileCheck.isReadable {
+          resolver(["success": false, "message": fileCheck.message])
+          return
+        }
+        
+        print("Path up to folder name: \(folderPath)")
+        let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName: fileName, key: keyString)
+        print("#upload initStreamManager")
+        let (bytesWritten,lastChunkFileUrl) = streamManager.startStreaming()
+        print("bytesWritten ==>", bytesWritten, lastChunkFileUrl)
+        DispatchQueue.main.async {
+          resolver([
+            "success": true,
+            "statusCode": 200,
+            "message": "File encrypted successfully",
+            "encryptedFilePath": lastChunkFileUrl.absoluteString,
+            "size": bytesWritten
+          ])
+        }
+      }
+    }
+  }
+  
+  
+  @objc func startUpload(_ fileUri: String, destinationUrl: String, encryptionKey: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+    guard let fileURL = URL(string: fileUri), let _ = URL(string: destinationUrl) else {
+      //      rejecter("INVALID_URL", "Invalid file URI or destination URL", nil)
+      return
+    }
+    
+    // Check if file exists and is readable
+    let fileManager = FileManager.default
+    if !fileManager.fileExists(atPath: fileURL.path) {
+      //      rejecter("FILE_NOT_FOUND", "The specified file does not exist at the given URI", nil)
+      return
+    }
+    
+    // Attempt to open the file with InputStream to ensure it's readable
+    guard let inputStream = InputStream(url: fileURL) else {
+      //      rejecter("FILE_READ_ERROR", "Failed to initialize input stream for the file", nil)
+      return
+    }
+    
+    inputStream.open()
+    if inputStream.streamStatus != .open {
+      //      rejecter("FILE_READ_ERROR", "Failed to open file stream for reading", nil)
+      return
+    }
+    
+    print("startUpload ==>",fileUri)
+    resolver(["lastChunkFileUrl": fileUri])
+  }
+  
+  @objc func pauseUpload(_ uploadId: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+    // Implement pause logic for upload
+    resolver("Upload Paused")
+  }
+  
+  
+  @objc func resumeUpload(_ uploadId: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+    // Implement resume logic for upload
+    resolver("Upload Resumed")
+  }
+  
+  @objc func cancelUpload(_ uploadId: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+    streamManager?.cancelStreaming()
+    resolver("Upload Canceled")
+  }
+  
+  @objc func startDownload(
+    _ downloadURL: String,
+    msgId: String,
+    fileSize: NSNumber,
+    chunkSize: NSNumber,
+    cachePath: String,
+    resolver: @escaping RCTPromiseResolveBlock,
+    rejecter: @escaping RCTPromiseRejectBlock
+  ) {
+    downloadTaskCanceled[msgId] = false
+    
+    if self.downloadTaskCanceled[msgId] == true {
+      DispatchQueue.main.async {
+        resolver([
+          "success": false,
+          "statusCode": 499,
+          "message": "Download Canceled",
+        ])
+      }
+      return
+    }
+    
+    let size = fileSize.intValue
+    var startByte = 0
+    var endByte = 0
+    
+    // Create or open the file for writing chunks
+    let fileManager = FileManager.default
+    let cacheURL = URL(fileURLWithPath: cachePath)
+    
+    do {
+      let fileAttributes = try fileManager.attributesOfItem(atPath: cacheURL.path)
+      if let fileSize = fileAttributes[.size] as? NSNumber {
+        print("File size: \(fileSize.intValue) bytes")
+        startByte = fileSize.intValue
+      } else {
+        print("Could not retrieve file size.")
+      }
+    } catch {}
+        
+    
+
+    
+    if !fileManager.fileExists(atPath: cachePath) {
+      fileManager.createFile(atPath: cachePath, contents: nil, attributes: nil)
+    }
+    
+    DispatchQueue.global(qos: .background).async {
+      while startByte <= size {
+        
+        if self.downloadTaskCanceled[msgId] == true {
+          DispatchQueue.main.async {
+            resolver([
+              "success": false,
+              "statusCode": 499,
+              "message": "Download Canceled",
+            ])
+          }
+          return
+        }
+        
+        if startByte == size {
+          break
+        }
+        
+        endByte = startByte + chunkSize.intValue
+        
+        if endByte >= size {
+          endByte = size - 1
+        }
+        
+        // Construct the range header
+        let rangeHeader = "bytes=\(startByte)-\(endByte)"
+        print("Downloading range: \(rangeHeader)")
+        
+        guard let url = URL(string: downloadURL) else {
+          DispatchQueue.main.async {
+            resolver([
+              "success": false,
+              "statusCode": 404,
+              "message": "Invalid URL: \(downloadURL)",
+            ])
+          }
+          return
+        }
+        
+        var request = URLRequest(url: url)
+        request.setValue(rangeHeader, forHTTPHeaderField: "Range")
+        
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+          if let error = error {
+            print("Error downloading chunk: \(error.localizedDescription)")
+            DispatchQueue.main.async {
+              resolver([
+                "success": false,
+                "statusCode": 499,
+                "message": "Error in file download",
+              ])
+            }
+            semaphore.signal()
+            return
+          }
+          
+          if let data = data, let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 206 {
+            // Successfully downloaded the chunk
+            if let fileHandle = try? FileHandle(forWritingTo: cacheURL) {
+              fileHandle.seekToEndOfFile()
+              fileHandle.write(data)
+              fileHandle.closeFile()
+              
+              // Emit progress update
+              let progressParams: [String: Any] = [
+                "msgId": msgId,
+                "startByte": startByte,
+                "endByte": endByte,
+                "downloadedBytes": endByte + 1,
+                "totalBytes": size
+              ]
+              self.sendEvent(eventName: "downloadProgress", params: progressParams)
+            }
+          } else {
+            print("Unexpected response: \(response!)")
+            DispatchQueue.main.async {
+              resolver([
+                "success": false,
+                "statusCode": 500,
+                "message": "Unexpected response: \(response!)",
+              ])
+            }
+          }
+          
+          semaphore.signal()
+        }
+        
+        task.resume()
+        semaphore.wait() // Wait for the download task to complete
+        self.downloadTasks[msgId] = task
+        // Update the start byte for the next chunk
+        startByte = endByte + 1
+      }
+      
+      // Final resolution
+      DispatchQueue.main.async {
+        resolver([
+          "success": true,
+          "statusCode": 200,
+          "message": "File downloaded successfully",
+          "cachePath": cachePath
+        ])
+      }
+    }
+  }
+  
+  @objc
+  func pauseDownload(_ msgId: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) -> Bool {
+    guard let task = downloadTasks[msgId] else { return false }
+    task.cancel() // Cancel the task
+    downloadTaskCanceled[msgId] = true
+    print("Paused download for \(msgId) at byte:")
+    return true
+  }
+  
+  @objc func cancelDownload(
+    _ msgId: String,
+    resolver: @escaping RCTPromiseResolveBlock,
+    rejecter: @escaping RCTPromiseRejectBlock
+  ) {
+    if let task = downloadTasks[msgId] {
+      task.cancel()
+      downloadTaskCanceled[msgId] = true
+      print("cancelDownload for \(msgId), canceled ==>", downloadTaskCanceled[msgId] ?? false)
+      resolver("Download Canceled")
+    } else {
+      downloadTaskCanceled[msgId] = true
+      resolver("Download Canceled")
+    }
+  }
+  
+  @objc func decryptFile(
+    _ inputFilePath: String,
+    keyString: String,
+    iv: String,
+    resolver: @escaping RCTPromiseResolveBlock,
+    rejecter: @escaping RCTPromiseRejectBlock){
+      if let url = URL(string: inputFilePath){
+        let folderPath = url.deletingLastPathComponent()
+        let fileName = url.lastPathComponent
+        let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName:fileName, key: keyString)
+        
+        if let (filePath , _ ) = streamManager.decryptStreaming(at: folderPath, fileName: fileName,key:keyString, iv: iv){
+          resolver([
+            "success": true,
+            "statusCode": 200,
+            "message": "File decrypted successfully",
+            "decryptedFilePath": filePath.absoluteString
+          ])
+        }else{
+          resolver([
+            "success": false,
+            "statusCode": 500,
+            "message": "Failed decrypted",
+          ])
+        }
+      }
+    }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   @objc func defineValues(
     _ obj: NSDictionary,
@@ -315,62 +678,6 @@ class MediaService: RCTEventEmitter {
           "message": "File downloaded successfully",
           "cachePath": cachePath
         ])
-      }
-    }
-  }
-  
-  @objc func decryptFile(
-    _ inputFilePath: String,
-    keyString: String,
-    iv: String,
-    resolver: @escaping RCTPromiseResolveBlock,
-    rejecter: @escaping RCTPromiseRejectBlock){
-      if let url = URL(string: inputFilePath){
-        let folderPath = url.deletingLastPathComponent()
-        let fileName = url.lastPathComponent
-         let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName:fileName, key: keyString)
-
-        if let (filePath , _ ) = streamManager.decryptStreaming(at: folderPath, fileName: fileName,key:keyString, iv: iv){
-          resolver([
-            "success": true,
-            "statusCode": 200,
-            "message": "File decrypted successfully",
-            "decryptedFilePath": filePath.absoluteString
-          ])
-        }else{
-          resolver([
-            "success": false,
-            "statusCode": 500,
-            "message": "Failed decrypted",
-          ])
-        }
-      }
-    }
-  
-  @objc func encryptFile(
-    _ resolver: @escaping RCTPromiseResolveBlock,
-    rejecter: @escaping RCTPromiseRejectBlock
-  ){
-    DispatchQueue.global(qos: .background).async {
-      let filePath = "file://" + self.inputFilePath
-      if let url = URL(string: filePath){
-        
-        
-        let folderPath = url.deletingLastPathComponent()
-        print("Path up to folder name: \(folderPath)")
-        let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName: self.fileName, key: self.keyString)
-        print("#upload initStreamManager")
-        let (bytesWritten,lastChunkFileUrl) = streamManager.startStreaming()
-        print("bytesWritten ==?", bytesWritten, lastChunkFileUrl)
-        DispatchQueue.main.async {
-          resolver([
-            "success": true,
-            "statusCode": 200,
-            "message": "File encrypted successfully",
-            "encryptedFilePath": lastChunkFileUrl.absoluteString,
-            "size": bytesWritten
-          ])
-        }
       }
     }
   }

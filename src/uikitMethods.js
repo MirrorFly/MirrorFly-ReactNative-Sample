@@ -7,6 +7,7 @@ import RootNavigation from './Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from './SDK/SDK';
 import { callBacks } from './SDK/sdkCallBacks';
 import { getUserSettings, resetVariable, updateNotificationSettings } from './SDK/utils';
+import { createNotificationChannels } from './Service/PushNotify';
 import { pushNotify, updateNotification } from './Service/remoteNotifyHandle';
 import { CallComponent } from './calls/CallComponent';
 import { setupCallKit } from './calls/ios';
@@ -109,7 +110,8 @@ export const mirrorflyInitialize = async args => {
          fetchCurrentUserProfile();
          updateNotificationSettings();
       }
-      await notifee.requestPermission();
+      const settings = await notifee.requestPermission();
+      createNotificationChannels(settings);
       return mfInit;
    } catch (error) {
       return error;

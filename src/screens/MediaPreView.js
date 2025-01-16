@@ -31,6 +31,7 @@ import {
    getType,
    getUserIdFromJid,
    getVideoThumbImage,
+   handleSendMedia,
 } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../helpers/constants';
 import commonStyles from '../styles/commonStyles';
@@ -431,7 +432,7 @@ function MediaPreView() {
                   cursorColor={ApplicationColors.mainColor}
                />
                <IconButton
-                  onPress={() => fileEncryption(componentSelectedImages)}
+                  onPress={handleSendMedia(componentSelectedImages)}
                   style={[commonStyles.alignItemsFlexEnd, commonStyles.r_5, commonStyles.b_m5]}>
                   <SendBlueIcon color="#fff" />
                </IconButton>

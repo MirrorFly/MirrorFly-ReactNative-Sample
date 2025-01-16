@@ -42,27 +42,30 @@ class MediaService: RCTEventEmitter {
     resolver(url)
   }
   
-  func checkFileReadableFromURL(_ fileURL: URL) -> (isReadable: Bool, message: String) {
-    let fileManager = FileManager.default
-    
-    // Check if file exists
-    if !fileManager.fileExists(atPath: fileURL.path) {
-      return (false, "The specified file does not exist at the given URL")
-    }
-    
-    // Check if the file is readable by attempting to open it
-    guard let inputStream = InputStream(url: fileURL) else {
-      return (false, "Failed to initialize input stream for the file")
-    }
-    
-    inputStream.open()
-    if inputStream.streamStatus != .open {
-      return (false, "Failed to open file stream for reading")
-    }
-    
-    // Successfully opened the file, close the input stream
-    inputStream.close()
-    return (true, "File is readable and exists. Proceeding with upload.")
+  func checkFileReadableFromURL(_ filePath: String) -> (isReadable: Bool, message: String) {
+      let fileManager = FileManager.default
+
+      // Check if the file exists at the given path
+      if !fileManager.fileExists(atPath: filePath) {
+          return (false, "The specified file does not exist at the given path")
+      }
+
+      // Convert file path to file URL
+      let fileURL = URL(fileURLWithPath: filePath)
+
+      // Check if the file is readable by attempting to open it
+      guard let inputStream = InputStream(url: fileURL) else {
+          return (false, "Failed to initialize input stream for the file")
+      }
+
+      inputStream.open()
+      if inputStream.streamStatus != .open {
+          return (false, "Failed to open file stream for reading")
+      }
+
+      // Successfully opened the file, close the input stream
+      inputStream.close()
+      return (true, "File is readable and exists. Proceeding with upload.")
   }
   
   func getFreeDiskSpace() -> Int64? {
@@ -93,25 +96,58 @@ class MediaService: RCTEventEmitter {
   
   
   @objc func encryptFile(
-    _ uri: String,
-    keyString: String,
+    _ obj: NSDictionary,
     resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock
   ){
     DispatchQueue.global(qos: .background).async {
-      if let url = URL(string: uri){
-        let folderPath = url.deletingLastPathComponent()
-        let fileName = url.lastPathComponent
+      guard let inputFilePath = obj["inputFilePath"] as? String,
+            let outputFilePath = obj["outputFilePath"] as? String else {
+        let response: [String: Any] = [
+          "success": false,
+          "statusCode": 500,
+          "message":"Missing required parameters 'inputFilePath' or 'outputFilePath"
+        ]
+        resolver(response);
+        return
+      }
+      
+      self.inputFilePath = inputFilePath
+      self.outputFilePath = outputFilePath
+      self.chunkSize = obj["chunkSize"] as? Int ?? self.chunkSize
+      self.iv = obj["iv"] as? String ?? ""
+      self.fileName = obj["fileName"] as? String ?? ""
+      self.messageType = obj["messageType"] as? String ?? ""
+      
+      // Check if the file exists and is readable
+      let fileManager = FileManager.default
+      if !fileManager.fileExists(atPath: self.inputFilePath) || !fileManager.isReadableFile(atPath: self.inputFilePath) {
+        let response: [String: Any] = [
+          "success": false,
+          "statusCode": 404,
+          "message":"Input file path is not readable or does not exist."
+        ]
+        resolver(response)
+        return;
+      }
+      self.keyString =  FlyEncryption.randomString(of: 32)// Encrypt the key using `iv`
+
+      
+        let url = URL(fileURLWithPath: inputFilePath)
+        let outputFileUrl = URL(fileURLWithPath: outputFilePath)
+
+        let folderPath = outputFileUrl.deletingLastPathComponent()
+        let fileName = outputFileUrl.lastPathComponent
         
         // Check file readability
-        let fileCheck = self.checkFileReadableFromURL(url)
+        let fileCheck = self.checkFileReadableFromURL(inputFilePath)
         if !fileCheck.isReadable {
           resolver(["success": false, "message": fileCheck.message])
           return
         }
         
         print("Path up to folder name: \(folderPath)")
-        let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName: fileName, key: keyString)
+      let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName: fileName, key: self.keyString, iv: self.iv)
         print("#upload initStreamManager")
         let (bytesWritten,lastChunkFileUrl) = streamManager.startStreaming()
         print("bytesWritten ==>", bytesWritten, lastChunkFileUrl)
@@ -121,9 +157,9 @@ class MediaService: RCTEventEmitter {
             "statusCode": 200,
             "message": "File encrypted successfully",
             "encryptedFilePath": lastChunkFileUrl.absoluteString,
-            "size": bytesWritten
+            "size": bytesWritten,
+            "encryptionKey":self.keyString,
           ])
-        }
       }
     }
   }
@@ -363,7 +399,7 @@ class MediaService: RCTEventEmitter {
       if let url = URL(string: inputFilePath){
         let folderPath = url.deletingLastPathComponent()
         let fileName = url.lastPathComponent
-        let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName:fileName, key: keyString)
+        let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName:fileName, key: keyString, iv: iv)
         
         if let (filePath , _ ) = streamManager.decryptStreaming(at: folderPath, fileName: fileName,key:keyString, iv: iv){
           resolver([
@@ -450,7 +486,7 @@ class MediaService: RCTEventEmitter {
   
   // Override to specify the supported events
   override func supportedEvents() -> [String] {
-    return ["downloadProgress","UploadProgress"] // List all event names you will send
+    return ["downloadProgress","uploadProgress"] // List all event names you will send
   }
   
   
@@ -507,6 +543,7 @@ class MediaService: RCTEventEmitter {
   @objc func uploadFileInChunks(
     _ uploadUrls: [String],
     filePath: String,
+    msgId: String,
     resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock
   ) {
@@ -559,10 +596,12 @@ class MediaService: RCTEventEmitter {
           let progressParams: [String: Any] = [
             "chunkIndex": chunkIndex,
             "offset": offset,
-            "bytesUploaded": data.count,
-            "uploadStatus": uploadResult
+            "uploadBytes": data.count,
+            "uploadStatus": uploadResult,
+            "totalBytes":fileSize,
+            "msgId":msgId
           ]
-          self.sendEvent(eventName: "UploadProgress", params: progressParams)
+          self.sendEvent(eventName: "uploadProgress", params: progressParams)
           
           offset += UInt64(length)
           chunkIndex += 1

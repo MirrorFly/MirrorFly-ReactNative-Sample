@@ -65,6 +65,26 @@ class MediaService(var reactContext: ReactApplicationContext?) :
         }
     }
 
+    // Utility to send upload progress
+    private suspend fun sendUploadProgress(
+        msgId: String,
+        progress: Double, chunkIndex: Int,
+        totalBytesRead: Long,
+        fileSize: Long
+    ) {
+        val progressMap = Arguments.createMap().apply {
+            putString("msgId", msgId)
+            putInt("chunkIndex", chunkIndex)
+            putInt("progress", progress.toInt())
+            putInt("uploadBytes", totalBytesRead.toInt())
+            putInt("totalBytes", fileSize.toInt())
+        }
+        // Switch to the main thread to send the event
+        withContext(Dispatchers.Main) {
+            sendEvent("uploadProgress", progressMap)
+        }
+    }
+
     private suspend fun handleDownloadError(promise: Promise, message: String, fileOutputStream: FileOutputStream?, msgId: String) {
         Log.d(name, message)
         // Close the file output stream in a blocking context to avoid blocking the main thread
@@ -261,16 +281,35 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     }
 
     @ReactMethod
-    fun encryptFile(promise: Promise) {
+    fun encryptFile(obj: ReadableMap,promise: Promise) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                inputFilePath = obj.getString("inputFilePath") ?: ""
+                outputFilePath = obj.getString("outputFilePath") ?: ""
+                chunkSize = if (obj.hasKey("chunkSize")) obj.getInt("chunkSize") else chunkSize
+                iv = obj.getString("iv") ?: ""
+                keyString = cryptLib.getRandomString(32)
                 val file = File(inputFilePath.replace("file://", ""))
+                // Simulate encryption setup
+                val key = cryptLib.getSHA256(keyString, 32)
+                cipher = cryptLib.encryptFile(key, iv) // Dummy call
+
                 if (!file.exists()) {
                     withContext(Dispatchers.Main) {
                         promise.resolve(Arguments.createMap().apply {
                             putBoolean("success", false)
                             putInt("statusCode", 404)
                             putString("message", "File not found at $inputFilePath")
+                        })
+                    }
+                    return@launch
+                }
+                if (outputFilePath.isEmpty()) {
+                    withContext(Dispatchers.Main) {
+                        promise.resolve(Arguments.createMap().apply {
+                            putBoolean("success", false)
+                            putInt("statusCode", 400)
+                            putString("message", "Output file path is empty")
                         })
                     }
                     return@launch
@@ -299,6 +338,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                         putInt("statusCode", 200)
                         putString("message", "File encrypted successfully")
                         putString("encryptedFilePath", outputFilePath)
+                        putString("encryptionKey", keyString)
                         putInt("totalBytesWritten", totalBytesWritten.toInt())
                         putInt("size", fosFile.length().toInt())
                     })
@@ -454,6 +494,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     fun uploadFileInChunks(
         uploadUrls: ReadableArray,
         encryptedFilePath: String,
+        msgId: String,
         promise: Promise
     ) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -511,12 +552,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
 
                     // Notify progress
                     val progress = (totalBytesRead.toDouble() / file.length()) * 100
-                    val progressMap = Arguments.createMap()
-                    progressMap.putInt("chunkIndex", chunkIndex)
-                    progressMap.putInt("progress", progress.roundToInt())
-                    withContext(Dispatchers.Main) {
-                        sendEvent("UploadProgress", progressMap)
-                    }
+                    sendUploadProgress(msgId,progress,chunkIndex,totalBytesRead,file.length())
                     Log.d(name, "progress $progress")
 
                     chunkIndex++

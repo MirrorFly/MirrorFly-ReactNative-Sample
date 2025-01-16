@@ -4,7 +4,7 @@ const config = {
    audioDuaration: 60,
    fileSize: 50,
    imageFileSize: 10,
-   videoFileSize: 30,
+   videoFileSize: 300,
    audioFileSize: 30,
    documentFileSize: 20,
    maxAllowedMediaCount: 5,

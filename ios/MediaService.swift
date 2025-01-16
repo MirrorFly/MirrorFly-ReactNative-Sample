@@ -576,6 +576,7 @@ class MediaService: RCTEventEmitter {
       do {
         let fileHandle = try FileHandle(forReadingFrom: URL(fileURLWithPath: formattedPath))
         var offset: UInt64 = 0
+        var uploadedBytes: UInt64 = 0
         var chunkIndex = 0
         let fileSize = fileHandle.seekToEndOfFile()
         fileHandle.seek(toFileOffset: 0) // Reset to the beginning
@@ -592,13 +593,15 @@ class MediaService: RCTEventEmitter {
           let uploadUrl = uploadUrls[chunkIndex]
           print("Uploading chunk \(chunkIndex) to \(uploadUrl)")
           let uploadResult = self.uploadChunk(data: data, to: uploadUrl)
-          
+          // Increment the uploadedBytes
+          uploadedBytes += UInt64(length)
+          let progress = (Double(uploadedBytes) / Double(fileSize)) * 100
           let progressParams: [String: Any] = [
             "chunkIndex": chunkIndex,
-            "offset": offset,
-            "uploadBytes": data.count,
+            "uploadedBytes":  uploadedBytes,
             "uploadStatus": uploadResult,
             "totalBytes":fileSize,
+            "progress": progress,
             "msgId":msgId
           ]
           self.sendEvent(eventName: "uploadProgress", params: progressParams)

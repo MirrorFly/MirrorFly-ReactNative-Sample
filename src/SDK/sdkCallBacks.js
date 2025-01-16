@@ -752,6 +752,7 @@ export const callBacks = {
    },
    groupMsgInfoListener: res => {},
    mediaUploadListener: res => {
+      console.log(' mediaUploadListener ==>', res);
       store.dispatch(setProgress(res));
       if (res.progress === 100) {
          const mediaStatusObj = {

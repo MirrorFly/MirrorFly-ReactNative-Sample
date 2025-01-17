@@ -1,17 +1,14 @@
 import React from 'react';
-import { NativeEventEmitter, NativeModules } from 'react-native';
 import RNFS from 'react-native-fs';
 import { useDispatch } from 'react-redux';
 import { uploadFileToSDK } from '../SDK/utils';
+import { cancelProgressNotification } from '../Service/PushNotify';
 import { useNetworkStatus } from '../common/hooks';
 import { getCurrentChatUser, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
 import { mediaStatusConstants } from '../helpers/constants';
 import { updateMediaStatus } from '../redux/chatMessageDataSlice';
 import { deleteProgress } from '../redux/progressDataSlice';
 import { getMediaProgress, useChatMessage } from '../redux/reduxHook';
-
-const { MediaService } = NativeModules;
-const eventEmitter = new NativeEventEmitter(MediaService);
 
 const generateUniqueFilePath = async (filePath, counter = 0) => {
    // Modify the file path if the counter is greater than 0
@@ -28,7 +25,6 @@ const generateUniqueFilePath = async (filePath, counter = 0) => {
 const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    const userId = getUserIdFromJid(getCurrentChatUser());
    const dispatch = useDispatch();
-   console.log('userId, msgId ==>', getCurrentChatUser(), userId, msgId);
    const chatMessage = useChatMessage(userId, msgId);
    const networkState = useNetworkStatus();
    /** 'NOT_DOWNLOADED' | 'NOT_UPLOADED' | 'DOWNLOADING' | 'UPLOADING' | 'DOWNLOADED' | 'UPLOADED'  */
@@ -54,8 +50,14 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    const handleDownload = async () => {
       try {
          setMediaStatus(mediaStatusConstants.DOWNLOADING);
+         dispatch(
+            updateMediaStatus({
+               msgId,
+               userId,
+               is_downloaded: 1,
+            }),
+         );
          const downloadResponse = await SDK.downloadMedia(msgId);
-         console.log('downloadMedia res ==>', downloadResponse);
 
          if (downloadResponse?.statusCode === 200 || downloadResponse?.statusCode === 304) {
             dispatch(
@@ -67,6 +69,9 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
                }),
             );
             setMediaStatus(mediaStatusConstants.LOADED);
+         } else {
+            cancelProgressNotification(msgId);
+            setMediaStatus(mediaStatusConstants.NOT_DOWNLOADED);
          }
       } catch (error) {
          console.error('Error in handleDownload:', error);

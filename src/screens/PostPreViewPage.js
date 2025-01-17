@@ -12,7 +12,6 @@ import { getCurrentUserJid } from '../uikitMethods';
 
 const PostPreViewPage = () => {
    const { params: { jid = '', msgId = '' } = {} } = useRoute();
-   console.log('jid ==>', jid);
    const navigation = useNavigation();
    const currentUserJID = getCurrentUserJid();
    const chatUserId = getUserIdFromJid(jid);

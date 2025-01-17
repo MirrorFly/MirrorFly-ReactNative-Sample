@@ -198,6 +198,25 @@ class MediaService(var reactContext: ReactApplicationContext?) :
         }
     }
 
+    @ReactMethod
+    fun cancelAllDownloads(promise: Promise) {
+        if (activeDownloads.isNotEmpty()) {
+            for ((msgId, job) in activeDownloads) {
+                job.cancel() // Cancel the download job
+            }
+            activeDownloads.clear() // Clear all active download references
+
+            promise.resolve(Arguments.createMap().apply {
+                putBoolean("success", true)
+                putString("message", "All downloads have been canceled")
+            })
+        } else {
+            promise.resolve(Arguments.createMap().apply {
+                putBoolean("success", false)
+                putString("message", "No active downloads to cancel")
+            })
+        }
+    }
 
 
 
@@ -377,7 +396,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
 
             // Create the file name using the input file name and extension
             val inputFile = File(inputFilePath)
-            val fileName = "decrypted_file_${inputFile.nameWithoutExtension}.${fileExtension}"
+            val fileName = "${inputFile.nameWithoutExtension}.${fileExtension}"
 
             // Generate the full file path
             val file = File(publicDirectory, fileName)
@@ -653,7 +672,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
             } catch (e: Exception) {
                 Log.e(name, "Error downloading file: $e")
                 withContext(Dispatchers.Main) {
-                    promise.reject("DOWNLOAD_ERROR", "Error downloading file: ${e}")
+                    promise.reject("DOWNLOAD_ERROR", "Error downloading file: $e")
                 }
             }
         }

@@ -390,6 +390,27 @@ class MediaService: RCTEventEmitter {
     }
   }
   
+  @objc func cancelAllDownloads(
+    _ resolver: @escaping RCTPromiseResolveBlock,
+    rejecter: @escaping RCTPromiseRejectBlock
+  ) {
+    if downloadTasks.isEmpty {
+      resolver("No active downloads to cancel")
+      return
+    }
+
+    for (msgId, task) in downloadTasks {
+      task.cancel()
+      downloadTaskCanceled[msgId] = true
+      print("cancelDownload for \(msgId), canceled ==>", downloadTaskCanceled[msgId] ?? false)
+    }
+    
+    // Clear all active download tasks
+    downloadTasks.removeAll()
+
+    resolver("All downloads canceled")
+  }
+  
   @objc func decryptFile(
     _ inputFilePath: String,
     keyString: String,

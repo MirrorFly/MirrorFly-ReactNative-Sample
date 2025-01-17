@@ -1,8 +1,9 @@
-import notifee, { AndroidVisibility } from '@notifee/react-native';
+import notifee, { AndroidColor, AndroidImportance, AndroidVisibility } from '@notifee/react-native';
 import { MISSED_CALL } from '../Helper/Calls/Constant';
 import { getMuteStatus } from '../SDK/utils';
 import { onChatNotificationBackGround, onChatNotificationForeGround } from '../calls/notification/callNotifyHandler';
 import store from '../redux/store';
+import { mflog } from '../uikitMethods';
 
 export const displayRemoteNotification = async (id, date, title, body, jid, importance) => {
    let isMute = await getMuteStatus(jid);
@@ -64,4 +65,62 @@ export const getChannelIds = (missedCall = false) => {
       channelIds.vibration = false;
    }
    return channelIds;
+};
+
+// Function to show or update the foreground service notification
+export const updateProgressNotification = async (msgId, progress, type) => {
+   await notifee.displayNotification({
+      id: msgId, // Unique ID for the notification
+      title: type === 'download' ? 'Downloading Media' : 'Uploading Media',
+      body: `Progress: ${progress}%`,
+      android: {
+         onlyAlertOnce: true,
+         channelId: 'media_progress_channel',
+         color: AndroidColor.BLUE,
+         importance: AndroidImportance.HIGH,
+         smallIcon: 'ic_notification', // Ensure this matches your app's icon resource
+         ongoing: true,
+         progress: {
+            max: 100,
+            current: progress,
+            indeterminate: false,
+         },
+      },
+      ios: {
+         sound: null,
+         categoryId: 'media_progress_category', // Custom category for progress notifications
+         sound: 'default',
+         attachments: [], // Optionally add an image, e.g., preview of the media
+         customSummary: 'Media progress notification',
+         threadId: 'media_progress', // Group similar notifications
+         foregroundPresentationOptions: {
+            banner: false,
+            list: false,
+            badge: false,
+            sound: false,
+         },
+      },
+   });
+};
+
+// Function to cancel the notification when task completes
+export const cancelProgressNotification = async msgId => {
+   await notifee.cancelNotification(msgId);
+};
+
+export const createNotificationChannels = async settings => {
+   try {
+      if (settings.authorizationStatus === 1) {
+         // Create notification channel for media progress
+         await notifee.createChannel({
+            id: 'media_progress_channel',
+            name: 'Media Progress Channel',
+            sound: 'default', // No sound for progress updates
+         });
+
+         console.log('Media progress notification channel created');
+      }
+   } catch (error) {
+      mflog('Failed to create notification channels', error);
+   }
 };

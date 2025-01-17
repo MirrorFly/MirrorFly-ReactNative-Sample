@@ -178,6 +178,25 @@ class MediaService(var reactContext: ReactApplicationContext?) :
         }
     }
 
+    @ReactMethod
+    fun cancelAllDownloads(promise: Promise) {
+        if (activeDownloads.isNotEmpty()) {
+            for ((msgId, job) in activeDownloads) {
+                job.cancel() // Cancel the download job
+            }
+            activeDownloads.clear() // Clear all active download references
+
+            promise.resolve(Arguments.createMap().apply {
+                putBoolean("success", true)
+                putString("message", "All downloads have been canceled")
+            })
+        } else {
+            promise.resolve(Arguments.createMap().apply {
+                putBoolean("success", false)
+                putString("message", "No active downloads to cancel")
+            })
+        }
+    }
 
 
 

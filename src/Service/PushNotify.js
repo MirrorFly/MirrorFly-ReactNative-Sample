@@ -86,6 +86,20 @@ export const updateProgressNotification = async (msgId, progress, type) => {
             indeterminate: false,
          },
       },
+      ios: {
+         sound: null,
+         categoryId: 'media_progress_category', // Custom category for progress notifications
+         sound: 'default',
+         attachments: [], // Optionally add an image, e.g., preview of the media
+         customSummary: 'Media progress notification',
+         threadId: 'media_progress', // Group similar notifications
+         foregroundPresentationOptions: {
+            banner: false,
+            list: false,
+            badge: false,
+            sound: false,
+         },
+      },
    });
 };
 
@@ -101,7 +115,6 @@ export const createNotificationChannels = async settings => {
          await notifee.createChannel({
             id: 'media_progress_channel',
             name: 'Media Progress Channel',
-            importance: AndroidImportance.HIGH,
             sound: 'default', // No sound for progress updates
          });
 

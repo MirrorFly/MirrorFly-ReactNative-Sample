@@ -2,6 +2,7 @@ import React from 'react';
 import RNFS from 'react-native-fs';
 import { useDispatch } from 'react-redux';
 import { uploadFileToSDK } from '../SDK/utils';
+import { cancelProgressNotification } from '../Service/PushNotify';
 import { useNetworkStatus } from '../common/hooks';
 import { getCurrentChatUser, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
 import { mediaStatusConstants } from '../helpers/constants';
@@ -57,7 +58,6 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
             }),
          );
          const downloadResponse = await SDK.downloadMedia(msgId);
-         console.log('downloadResponse ===>', JSON.stringify(downloadResponse, null, 2));
 
          if (downloadResponse?.statusCode === 200 || downloadResponse?.statusCode === 304) {
             dispatch(
@@ -70,6 +70,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
             );
             setMediaStatus(mediaStatusConstants.LOADED);
          } else {
+            cancelProgressNotification(msgId);
             setMediaStatus(mediaStatusConstants.NOT_DOWNLOADED);
          }
       } catch (error) {

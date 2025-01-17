@@ -18,9 +18,7 @@ const VideoPlayer = () => {
    const navigation = useNavigation();
    const { videoUri: _videoUri, uri } = fileDetails;
    const videoPlayer = React.useRef(null);
-   const [videoUri, setVideoUri] = React.useState(
-      (_videoUri || uri).includes('file://') ? _videoUri || uri : 'file://' + _videoUri || uri,
-   );
+   const [videoUri, setVideoUri] = React.useState(_videoUri || uri);
    const [currentTime, setCurrentTime] = React.useState(0);
    const [duration, setDuration] = React.useState(0);
    const [isLoading, setIsLoading] = React.useState(true);

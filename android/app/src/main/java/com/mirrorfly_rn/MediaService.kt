@@ -76,7 +76,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
             putString("msgId", msgId)
             putInt("chunkIndex", chunkIndex)
             putInt("progress", progress.toInt())
-            putInt("uploadBytes", totalBytesRead.toInt())
+            putInt("uploadedBytes", totalBytesRead.toInt())
             putInt("totalBytes", fileSize.toInt())
         }
         // Switch to the main thread to send the event

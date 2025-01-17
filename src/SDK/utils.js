@@ -147,7 +147,7 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
 
          file.fileDetails = { ...file.fileDetails, uri: _uri };
          let thumbImage = msgType === 'image' ? await getThumbImage(_uri) : '';
-         thumbImage = msgType === 'video' && !thumb_image ? await getVideoThumbImage(_uri) : thumbImage;
+         thumbImage = msgType === 'video' && !thumb_image ? await getVideoThumbImage(_uri, duration) : thumbImage;
          let fileOptions = {
             fileName: filename,
             fileSize: fileSize,

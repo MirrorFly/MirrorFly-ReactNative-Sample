@@ -38,6 +38,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
          setMediaStatus(mediaStatusConstants.NOT_DOWNLOADED);
       }
       if (uploadStatus === 2 && downloadStatus === 2) {
+         setMediaStatus(mediaStatusConstants.LOADED);
       }
       if (uploadStatus === 3 && downloadStatus === 2) {
          setMediaStatus(mediaStatusConstants.NOT_UPLOADED);

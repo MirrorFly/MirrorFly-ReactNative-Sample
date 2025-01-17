@@ -95,19 +95,20 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
 
    const cancelProgress = async () => {
       try {
-         const { source = {}, downloadJobId = '' } = getMediaProgress(msgId);
+         const { source = {}, downloadJobId = '', uploadJobId = '' } = getMediaProgress(msgId);
          if (source) {
-            if (downloadJobId) {
-               const cancelRes = await source?.cancel?.(downloadJobId);
+            if (downloadJobId || uploadJobId) {
+               const cancelRes = await source?.cancel?.(downloadJobId || uploadJobId);
                console.log('cancelRes ==>', cancelRes);
                const mediaStatusObj = {
                   msgId,
                   userId,
-                  is_downloaded: 0,
+                  ...(downloadJobId && { is_downloaded: 0 }),
+                  ...(uploadJobId && { uploadStatus: 3 }),
                };
                dispatch(updateMediaStatus(mediaStatusObj));
                dispatch(deleteProgress({ msgId }));
-               setMediaStatus(mediaStatusConstants.NOT_DOWNLOADED);
+               setMediaStatus(uploadJobId ? mediaStatusConstants.NOT_UPLOADED : mediaStatusConstants.NOT_DOWNLOADED);
             } else {
                source?.cancel?.('User Cancelled!');
                const mediaStatusObj = {

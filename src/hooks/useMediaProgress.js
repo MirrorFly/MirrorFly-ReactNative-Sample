@@ -50,6 +50,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
 
    const handleDownload = async () => {
       try {
+         const { source = {}, downloadJobId = '' } = getMediaProgress(msgId) || {};
          setMediaStatus(mediaStatusConstants.DOWNLOADING);
          dispatch(
             updateMediaStatus({
@@ -58,8 +59,11 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
                is_downloaded: 1,
             }),
          );
-         const downloadResponse = await SDK.downloadMedia(msgId);
-
+         const downloadResponse = downloadJobId
+            ? await source?.resume({ downloadJobId })
+            : await SDK.downloadMedia(msgId);
+         console.log('downloadResponse ==>', downloadResponse);
+         cancelProgressNotification(msgId);
          if (downloadResponse?.statusCode === 200 || downloadResponse?.statusCode === 304) {
             dispatch(
                updateMediaStatus({
@@ -71,7 +75,14 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
             );
             setMediaStatus(mediaStatusConstants.LOADED);
          } else {
-            cancelProgressNotification(msgId);
+            dispatch(
+               updateMediaStatus({
+                  msgId,
+                  userId,
+                  local_path: downloadResponse?.decryptedFilePath,
+                  is_downloaded: 0,
+               }),
+            );
             setMediaStatus(mediaStatusConstants.NOT_DOWNLOADED);
          }
       } catch (error) {

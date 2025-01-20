@@ -19,7 +19,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import java.io.File
@@ -45,6 +44,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     private var apiInterface: APIInterface? = null
     private val activeDownloads = mutableMapOf<String, Job>()
     private val activeUploads = mutableMapOf<String, Job>()
+    private var isAllPauseRequested: Boolean = false
 
     @ReactMethod
     fun baseUrlInit(baseURL: String) {
@@ -212,6 +212,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
 
     @ReactMethod
     fun cancelDownload(msgId: String, promise: Promise) {
+        isAllPauseRequested = true
         val job = activeDownloads[msgId]
         if (job != null) {
             job.cancel() // This triggers isActive to become false
@@ -301,7 +302,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     }
 
     @ReactMethod
-    fun cancelUpload(msgId: String, promise: Promise){
+    fun cancelUpload(msgId: String, promise: Promise) {
         val job = activeUploads[msgId]
         if (job != null) {
             job.cancel() // This triggers isActive to become false
@@ -428,7 +429,13 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     }
 
     @ReactMethod
-    fun decryptFile(inputFilePath: String, keyString: String, iv: String, promise: Promise) {
+    fun decryptFile(
+        inputFilePath: String,
+        msgId: String,
+        keyString: String,
+        iv: String,
+        promise: Promise
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val file = File(inputFilePath.replace("file://", ""))
@@ -443,21 +450,37 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                     }
                     return@launch
                 }
+
+                // Generate the key for decryption
                 val key = cryptLib.getSHA256(keyString, 32)
                 val decipher = cryptLib.decryptFile(key, iv)
-                // Generate the public folder path with the appropriate extension
-                val publicFilePath = generatePublicFolderPath(inputFilePath)
+
+                // Get the file name and generate the path for the decrypted file in cache
+                val fileName = file.name
+                val decryptedFileName = "decrypted-$fileName"
+                val decryptedFilePath =
+                    "${reactContext?.cacheDir?.path}/$decryptedFileName"  // Use reactContext to access cacheDir
+
                 val buffer = ByteArray(chunkSize)
                 val fis = FileInputStream(file)
-                val fos = FileOutputStream(publicFilePath)
+                val fos = FileOutputStream(decryptedFilePath)  // Write to the cache directory first
                 var bytesRead: Int
                 var totalBytesWritten = 0L
-                Log.d(name, "before while loop input file sie ${file.length()}")
+                Log.d(name, "before while loop input file size ${file.length()}")
+
                 while (fis.read(buffer).also { bytesRead = it } != -1) {
                     Log.d(name, "decrypting in while loop $bytesRead")
                     val chunkData = decipher.update(buffer, 0, bytesRead)
                     fos.write(chunkData)
                     totalBytesWritten += chunkData.size
+
+                    val progressMap = Arguments.createMap().apply {
+                        putString("msgId", msgId)
+                        putDouble("totalBytesWritten", totalBytesWritten.toDouble())
+                    }
+                    withContext(Dispatchers.Main) {
+                        sendEvent("decryption", progressMap)
+                    }
                 }
                 Log.d(name, "after while loop")
                 try {
@@ -472,25 +495,27 @@ class MediaService(var reactContext: ReactApplicationContext?) :
 
                 fos.close()
                 fis.close()
-                val output = File(publicFilePath)
-                Log.d(name, "decryptFile publicFilePath file size ${output.length()}")
-                // After successful decryption, delete the input file
+
+                val decryptedFile = File(decryptedFilePath)
+                Log.d(name, "decryptFile decryptedFilePath file size ${decryptedFile.length()}")
+
+                // After moving the file, delete the original (if needed)
                 val deleteSuccess = file.delete()
+
+                // After successful decryption, move the file back to the inputFilePath
+                val moveSuccess = decryptedFile.renameTo(file)
 
                 withContext(Dispatchers.Main) {
                     promise.resolve(Arguments.createMap().apply {
                         putBoolean("success", true)
                         putInt("statusCode", 200)
-                        putString("message", "File decrypted successfully")
+                        putString("message", "File decrypted and moved successfully")
                         putString(
                             "decryptedFilePath",
-                            publicFilePath
-                        ) // Return the path of the decrypted file in the public folder
+                            file.absolutePath
+                        ) // Return the path of the file (moved)
                         putInt("decryptedFileSize", totalBytesWritten.toInt())
-                        putBoolean(
-                            "inputFileDeleted",
-                            deleteSuccess
-                        ) // Indicate if the file was deleted successfully
+                        putBoolean("inputFileDeleted", deleteSuccess)
                     })
                 }
             } catch (e: Exception) {

@@ -42,6 +42,30 @@ class MediaService: RCTEventEmitter {
     resolver(url)
   }
   
+  // React Native calls this when JavaScript starts listening to events
+  override func startObserving() {
+    hasListeners = true
+  }
+  
+  // React Native calls this when JavaScript stops listening to events
+  override func stopObserving() {
+    hasListeners = false
+  }
+  
+  
+  // Override to specify the supported events
+  override func supportedEvents() -> [String] {
+    return ["downloadProgress","uploadProgress", "decyption"] // List all event names you will send
+  }
+  
+  
+  // Method to send progress updates to React Native
+  private func sendEvent(eventName: String, params: [String: Any]) {
+    if self.hasListeners {
+      self.sendEvent(withName: eventName, body: params)
+    }
+  }
+  
   func checkFileReadableFromURL(_ filePath: String) -> (isReadable: Bool, message: String) {
       let fileManager = FileManager.default
 
@@ -147,7 +171,7 @@ class MediaService: RCTEventEmitter {
         }
         
         print("Path up to folder name: \(folderPath)")
-      let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName: fileName, key: self.keyString, iv: self.iv)
+      let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName: fileName, key: self.keyString, iv: self.iv, sendEvent: self.sendEvent)
         print("#upload initStreamManager")
         let (bytesWritten,lastChunkFileUrl) = streamManager.startStreaming()
         print("bytesWritten ==>", bytesWritten, lastChunkFileUrl)
@@ -209,7 +233,7 @@ class MediaService: RCTEventEmitter {
     streamManager?.cancelStreaming()
     resolver("Upload Canceled")
   }
-  
+
   @objc func startDownload(
     _ downloadURL: String,
     msgId: String,
@@ -219,7 +243,16 @@ class MediaService: RCTEventEmitter {
     resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock
   ) {
-    downloadTaskCanceled[msgId] = false
+    if let allTaskPauseRequested = downloadTaskCanceled["allTaskPauseRequested"], allTaskPauseRequested {
+        DispatchQueue.main.async {
+            resolver([
+                "success": false,
+                "statusCode": 499,
+                "message": "All task pause requested",
+            ])
+        }
+      return;
+    }
     
     if self.downloadTaskCanceled[msgId] == true {
       DispatchQueue.main.async {
@@ -390,10 +423,26 @@ class MediaService: RCTEventEmitter {
     }
   }
   
+  @objc func resetPauseRequest (
+    _ resolver: @escaping RCTPromiseResolveBlock,
+    rejecter: @escaping RCTPromiseRejectBlock){
+      downloadTaskCanceled["allTaskPauseRequested"] = false
+      
+      for (msgId, task) in downloadTasks {
+        downloadTaskCanceled[msgId] = false
+      }
+      
+      resolver([
+        "statusCode": 200,
+        "message": "All task pause request reseted",
+      ])
+    }
+  
   @objc func cancelAllDownloads(
     _ resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock
   ) {
+    downloadTaskCanceled["allTaskPauseRequested"] = true
     if downloadTasks.isEmpty {
       resolver("No active downloads to cancel")
       return
@@ -407,12 +456,16 @@ class MediaService: RCTEventEmitter {
     
     // Clear all active download tasks
     downloadTasks.removeAll()
-
-    resolver("All downloads canceled")
+  
+    resolver([
+      "statusCode": 200,
+      "message": "All downloads canceled",
+    ])
   }
   
   @objc func decryptFile(
     _ inputFilePath: String,
+    msgId: String,
     keyString: String,
     iv: String,
     resolver: @escaping RCTPromiseResolveBlock,
@@ -420,9 +473,9 @@ class MediaService: RCTEventEmitter {
       if let url = URL(string: inputFilePath){
         let folderPath = url.deletingLastPathComponent()
         let fileName = url.lastPathComponent
-        let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName:fileName, key: keyString, iv: iv)
+        let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName:fileName, key: keyString, iv: iv, sendEvent: self.sendEvent)
         
-        if let (filePath , _ , totalBytesWritten ) = streamManager.decryptStreaming(at: folderPath, fileName: fileName,key:keyString, iv: iv){
+        if let (filePath , _ , totalBytesWritten ) = streamManager.decryptStreaming(at: folderPath, fileName: fileName,key:keyString, iv: iv, msgId: msgId ){
           resolver([
             "success": true,
             "statusCode": 200,
@@ -505,30 +558,7 @@ class MediaService: RCTEventEmitter {
     }
   }
   
-  
-  // Override to specify the supported events
-  override func supportedEvents() -> [String] {
-    return ["downloadProgress","uploadProgress"] // List all event names you will send
-  }
-  
-  
-  // React Native calls this when JavaScript starts listening to events
-  override func startObserving() {
-    hasListeners = true
-  }
-  
-  // React Native calls this when JavaScript stops listening to events
-  override func stopObserving() {
-    hasListeners = false
-  }
-  
-  
-  // Method to send progress updates to React Native
-  private func sendEvent(eventName: String, params: [String: Any]) {
-    if self.hasListeners {
-      self.sendEvent(withName: eventName, body: params)
-    }
-  }
+
   
   private func uploadChunk(data: Data, to urlString: String) -> String {
     guard let url = URL(string: urlString) else {

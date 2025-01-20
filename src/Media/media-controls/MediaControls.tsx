@@ -145,7 +145,9 @@ const MediaControls = (props: Props) => {
          <Animated.View style={[styles.container, customContainerStyle, { opacity }]}>
             {isVisible && (
                <View style={[styles.container, customContainerStyle]}>
-                  <View style={[styles.controlsRow, styles.toolbarRow, customToolbarStyle]}>{children}</View>
+                  {duration >= 0 && (
+                     <View style={[styles.controlsRow, styles.toolbarRow, customToolbarStyle]}>{children}</View>
+                  )}
                   <Controls
                      onPause={onPause}
                      onReplay={onReplay}
@@ -153,17 +155,19 @@ const MediaControls = (props: Props) => {
                      mainColor={mainColor}
                      playerState={playerState}
                   />
-                  <Slider
-                     progress={progress}
-                     duration={duration}
-                     mainColor={mainColor}
-                     onFullScreen={onFullScreen}
-                     playerState={playerState}
-                     onSeek={onSeek}
-                     onSeeking={onSeeking}
-                     onPause={onPause}
-                     customSliderStyle={sliderStyle}
-                  />
+                  {duration >= 0 && (
+                     <Slider
+                        progress={progress}
+                        duration={duration}
+                        mainColor={mainColor}
+                        onFullScreen={onFullScreen}
+                        playerState={playerState}
+                        onSeek={onSeek}
+                        onSeeking={onSeeking}
+                        onPause={onPause}
+                        customSliderStyle={sliderStyle}
+                     />
+                  )}
                </View>
             )}
          </Animated.View>

@@ -48,13 +48,15 @@ class StreamManager : NSObject {
   var folderName : String!
   var fileExtension :String!
   var cancelStream : Bool = false
+  var sendEvent: (String, [String: Any]) -> Void
   
-  public init(fileURL: URL, folderURL: URL, fileName: String, key: String, iv: String) {
+  public init(fileURL: URL, folderURL: URL, fileName: String, key: String, iv: String, sendEvent: @escaping (String, [String: Any]) -> Void) {
     self.fileURL = fileURL
     self.folderURL = folderURL
     self.fileName = fileName
     self.key = key
     self.iv = iv
+    self.sendEvent = sendEvent
     super.init()
     self.setFolderNameAndFileExtension()
   }
@@ -159,7 +161,7 @@ class StreamManager : NSObject {
       return (totalBytesRead, totalBytesWritten ,outputFileURL)
   }
   
-  func decryptStreaming(at path: URL, fileName: String, key: String, iv: String) -> (URL, String, Int)? {
+  func decryptStreaming(at path: URL, fileName: String, key: String, iv: String, msgId:String) -> (URL, String, Int)? {
       print("#download decryptStreaming Start", fileName)
       
       // Ensure filePath is a valid file URL
@@ -214,7 +216,8 @@ class StreamManager : NSObject {
                   sc: streamCryptor,
                   inputStream: inputStream,
                   outputStream: outputStream,
-                  bufferSize: 5242880
+                  bufferSize: 5242880,
+                  msgId:msgId
               )
               
               // Close streams
@@ -238,7 +241,7 @@ class StreamManager : NSObject {
       return nil
   }
   
-  func decrypt(sc : StreamCryptor,  inputStream: InputStream, outputStream: OutputStream, bufferSize: Int) -> (bytesRead: Int, bytesWritten: Int) {
+  func decrypt(sc : StreamCryptor,  inputStream: InputStream, outputStream: OutputStream, bufferSize: Int, msgId:String) -> (bytesRead: Int, bytesWritten: Int) {
       var inputBuffer = Array<UInt8>(repeating:0, count:bufferSize)
       var outputBuffer = Array<UInt8>(repeating:0, count:bufferSize)
       var cryptedBytes : Int = 0
@@ -251,6 +254,14 @@ class StreamManager : NSObject {
           if(cryptedBytes > 0){
               let bytesWritten = outputStream.write(outputBuffer, maxLength: Int(cryptedBytes))
               totalBytesWritten += bytesWritten
+            // Emit progress update
+            let progressParams: [String: Any] = [
+              "msgId": msgId,
+              "totalBytesWritten": totalBytesWritten,
+            ]
+            
+            self.sendEvent("decyption", progressParams)
+            
           }
       }
     _ = sc.final(bufferOut: &outputBuffer, byteCapacityOut: outputBuffer.count, byteCountOut: &cryptedBytes)

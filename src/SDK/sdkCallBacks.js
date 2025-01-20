@@ -772,8 +772,9 @@ export const callBacks = {
    mediaDownloadListener: res => {
       const { msgId, progress } = res;
       const roundedProgress = Math.round(progress);
-
-      updateProgressNotification(msgId, roundedProgress, 'download');
+      if (Platform.OS === 'android') {
+         updateProgressNotification(msgId, roundedProgress, 'download');
+      }
       store.dispatch(setProgress(res));
       if (res.progress === 100) {
          cancelProgressNotification(msgId);

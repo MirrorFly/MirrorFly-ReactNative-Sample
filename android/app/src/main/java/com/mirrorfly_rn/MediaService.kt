@@ -426,7 +426,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                             "decryptedFilePath",
                             publicFilePath
                         ) // Return the path of the decrypted file in the public folder
-                        putInt("totalBytesWritten", totalBytesWritten.toInt())
+                        putInt("decryptedFileSize", totalBytesWritten.toInt())
                         putBoolean(
                             "inputFileDeleted",
                             deleteSuccess

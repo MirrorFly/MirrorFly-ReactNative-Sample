@@ -386,12 +386,13 @@ class MediaService: RCTEventEmitter {
         let fileName = url.lastPathComponent
         let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName:fileName, key: keyString)
         
-        if let (filePath , _ ) = streamManager.decryptStreaming(at: folderPath, fileName: fileName,key:keyString, iv: iv){
+        if let (filePath , _ , totalBytesWritten ) = streamManager.decryptStreaming(at: folderPath, fileName: fileName,key:keyString, iv: iv){
           resolver([
             "success": true,
             "statusCode": 200,
             "message": "File decrypted successfully",
-            "decryptedFilePath": filePath.absoluteString
+            "decryptedFilePath": filePath.absoluteString,
+            "decryptedFileSize": totalBytesWritten
           ])
         }else{
           resolver([

@@ -157,7 +157,7 @@ class StreamManager : NSObject {
       return (totalBytesRead, totalBytesWritten ,outputFileURL)
   }
   
-  func decryptStreaming(at path: URL, fileName: String, key: String, iv: String) -> (URL, String)? {
+  func decryptStreaming(at path: URL, fileName: String, key: String, iv: String) -> (URL, String, Int)? {
       print("#download decryptStreaming Start", fileName)
       
       // Ensure filePath is a valid file URL
@@ -208,7 +208,7 @@ class StreamManager : NSObject {
               )
               
               // DECRYPTION
-            _ = decrypt(
+            let (_,totalBytesWritten) = decrypt(
                   sc: streamCryptor,
                   inputStream: inputStream,
                   outputStream: outputStream,
@@ -229,7 +229,7 @@ class StreamManager : NSObject {
               
               print("outputURL ==>", outputURL)
               print("#download decryptStreaming END \(filePath)")
-              return (filePath, key)
+              return (filePath, key, totalBytesWritten)
           }
       }
       

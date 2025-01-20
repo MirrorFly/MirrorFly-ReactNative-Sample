@@ -42,17 +42,19 @@ class StreamManager : NSObject {
   let folderURL : URL
   let fileName : String
   var key : String
+  var iv : String
   var chunksCounter : Int = 0
   var lastChunkFileUrl : URL? = nil
   var folderName : String!
   var fileExtension :String!
   var cancelStream : Bool = false
   
-  public init(fileURL: URL, folderURL: URL, fileName: String, key: String) {
+  public init(fileURL: URL, folderURL: URL, fileName: String, key: String, iv: String) {
     self.fileURL = fileURL
     self.folderURL = folderURL
     self.fileName = fileName
     self.key = key
+    self.iv = iv
     super.init()
     self.setFolderNameAndFileExtension()
   }
@@ -92,7 +94,7 @@ class StreamManager : NSObject {
     inputStream.open()
     guard let hashedKey = FlyEncryption.sha256(key, length: 32) else {return (-1,URL(fileURLWithPath: ""))}
     let keyBytes = [UInt8](hashedKey.utf8)
-    let initializationVector = [UInt8]("MYIV".utf8)
+    let initializationVector = [UInt8](self.iv.utf8)
     let streamCryptor = StreamCryptor(operation: .encrypt, algorithm: .aes, mode: .CBC, padding: .PKCS7Padding, key: keyBytes, iv: initializationVector)
     let (_, bytesWritten,outputFileURL) = crypt(sc: streamCryptor, inputStream: inputStream)
     inputStream.close()

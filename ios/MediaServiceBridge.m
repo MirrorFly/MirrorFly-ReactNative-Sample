@@ -18,6 +18,7 @@ RCT_EXTERN_METHOD(baseUrlInit:(NSString *)url
 
 RCT_EXTERN_METHOD(uploadFileInChunks:(NSArray *)uploadUrls
                   filePath:(NSString *)filePath
+                  msgId:(NSString *)msgId
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
@@ -31,8 +32,7 @@ RCT_EXTERN_METHOD(defineValues:(NSDictionary *)obj
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(encryptFile:uri:(NSString *)uri
-                  keyString:(NSString *)keyString
+RCT_EXTERN_METHOD(encryptFile:(NSDictionary *)obj
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 

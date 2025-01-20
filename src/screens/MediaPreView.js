@@ -31,11 +31,13 @@ import {
    getType,
    getUserIdFromJid,
    getVideoThumbImage,
+   handleSendMedia,
 } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../helpers/constants';
 import commonStyles from '../styles/commonStyles';
 import { mflog } from '../uikitMethods';
 import { CAMERA_SCREEN, GALLERY_PHOTOS_SCREEN } from './constants';
+import SDK from '../SDK/SDK';
 
 const messagObj = {
    message: '',
@@ -222,15 +224,15 @@ const fileEncryption = async selectedItems => {
       };
       console.log('obj ==>', JSON.stringify(obj, null, 2));
       // Step 1: Initialize values for encryption
-      const initRes = await MediaService.defineValues(obj);
-      if (!initRes?.success) {
-         mflog('Upload File defineValues failed:', JSON.stringify(initRes, null, 2));
-         return;
-      }
-      console.log('Upload File encryptionKey ==>', initRes?.encryptionKey);
-      messagObj.media.file_key = initRes?.encryptionKey;
+      // const initRes = await MediaService.defineValues(obj);
+      // if (!initRes?.success) {
+      //    mflog('Upload File defineValues failed:', JSON.stringify(initRes, null, 2));
+      //    return;
+      // }
+      // console.log('Upload File encryptionKey ==>', initRes?.encryptionKey);
+      // messagObj.media.file_key = initRes?.encryptionKey;
       // Step 2: Encrypt the file after successful initialization
-      const encryptFileRes = await MediaService.encryptFile();
+      const encryptFileRes = await MediaService.encryptFile(obj);
       if (!encryptFileRes?.success) {
          mflog('Upload File encryption failed:', JSON.stringify(encryptFileRes, null, 2));
          return;
@@ -262,7 +264,7 @@ const fileEncryption = async selectedItems => {
             subscription.remove();
          }
       });
-      const result = await MediaService.uploadFileInChunks(uploadUrls, encryptFileRes.encryptedFilePath);
+      const result = await MediaService.uploadFileInChunks(uploadUrls, encryptFileRes.encryptedFilePath, msgId);
       console.log('Upload File Result:', result);
       console.log('_commitUrl ==>', _commitUrl);
       _commitUrl && (await SDK.uploadCommitURL(_commitUrl));
@@ -431,7 +433,7 @@ function MediaPreView() {
                   cursorColor={ApplicationColors.mainColor}
                />
                <IconButton
-                  onPress={() => fileEncryption(componentSelectedImages)}
+                  onPress={handleSendMedia(componentSelectedImages)}
                   style={[commonStyles.alignItemsFlexEnd, commonStyles.r_5, commonStyles.b_m5]}>
                   <SendBlueIcon color="#fff" />
                </IconButton>

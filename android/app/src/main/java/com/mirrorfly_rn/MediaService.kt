@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import java.io.File
@@ -43,6 +44,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     private lateinit var cipher: Cipher
     private var apiInterface: APIInterface? = null
     private val activeDownloads = mutableMapOf<String, Job>()
+    private val activeUploads = mutableMapOf<String, Job>()
 
     @ReactMethod
     fun baseUrlInit(baseURL: String) {
@@ -50,7 +52,12 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     }
 
     // Utility to send download progress
-    private suspend fun sendDownloadProgress(msgId: String, startByte: Long, endByte: Long, fileSize: Int) {
+    private suspend fun sendDownloadProgress(
+        msgId: String,
+        startByte: Long,
+        endByte: Long,
+        fileSize: Int
+    ) {
         val progressMap = Arguments.createMap().apply {
             putString("msgId", msgId)
             putInt("startByte", startByte.toInt())
@@ -65,7 +72,32 @@ class MediaService(var reactContext: ReactApplicationContext?) :
         }
     }
 
-    private suspend fun handleDownloadError(promise: Promise, message: String, fileOutputStream: FileOutputStream?, msgId: String) {
+    // Utility to send upload progress
+    private suspend fun sendUploadProgress(
+        msgId: String,
+        progress: Double, chunkIndex: Int,
+        totalBytesRead: Long,
+        fileSize: Long
+    ) {
+        val progressMap = Arguments.createMap().apply {
+            putString("msgId", msgId)
+            putInt("chunkIndex", chunkIndex)
+            putInt("progress", progress.toInt())
+            putInt("uploadedBytes", totalBytesRead.toInt())
+            putInt("totalBytes", fileSize.toInt())
+        }
+        // Switch to the main thread to send the event
+        withContext(Dispatchers.Main) {
+            sendEvent("uploadProgress", progressMap)
+        }
+    }
+
+    private suspend fun handleDownloadError(
+        promise: Promise,
+        message: String,
+        fileOutputStream: FileOutputStream?,
+        msgId: String
+    ) {
         Log.d(name, message)
         // Close the file output stream in a blocking context to avoid blocking the main thread
         withContext(Dispatchers.IO) {
@@ -100,7 +132,10 @@ class MediaService(var reactContext: ReactApplicationContext?) :
         cachePath: String,
         promise: Promise
     ) {
-        Log.d(name, "Starting download for msgId: $msgId with URL: $downloadURL and cachePath: $cachePath")
+        Log.d(
+            name,
+            "Starting download for msgId: $msgId with URL: $downloadURL and cachePath: $cachePath"
+        )
 
         // Check if download is already in progress
         if (activeDownloads.containsKey(msgId)) {
@@ -116,8 +151,8 @@ class MediaService(var reactContext: ReactApplicationContext?) :
         val job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val file = File(cachePath)
-                var startByte: Long = file.length();
-                Log.d(name,"file.length() startByte $startByte")
+                var startByte: Long = file.length()
+                Log.d(name, "file.length() startByte $startByte")
                 val fileOutputStream = FileOutputStream(file, true)
 
                 while (startByte < fileSize) {
@@ -126,11 +161,18 @@ class MediaService(var reactContext: ReactApplicationContext?) :
 
                     Log.d(name, "Downloading range: $range for msgId: $msgId")
 
-                    val response = apiInterface?.downloadChunkFromPreAuthenticationUrl(downloadURL, range)?.execute()
+                    val response =
+                        apiInterface?.downloadChunkFromPreAuthenticationUrl(downloadURL, range)
+                            ?.execute()
 
                     // Check for response failure
                     if (response == null || !response.isSuccessful) {
-                        handleDownloadError(promise, "Failed to download chunk: $range", fileOutputStream, msgId)
+                        handleDownloadError(
+                            promise,
+                            "Failed to download chunk: $range",
+                            fileOutputStream,
+                            msgId
+                        )
                         return@launch
                     }
 
@@ -153,7 +195,12 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                 sendDownloadComplete(promise, cachePath)
 
             } catch (e: Exception) {
-                handleDownloadError(promise, "Error downloading file for msgId: $msgId: $e", null, msgId)
+                handleDownloadError(
+                    promise,
+                    "Error downloading file for msgId: $msgId: $e",
+                    null,
+                    msgId
+                )
             } finally {
                 activeDownloads.remove(msgId)
             }
@@ -197,32 +244,6 @@ class MediaService(var reactContext: ReactApplicationContext?) :
             })
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @ReactMethod
@@ -280,16 +301,51 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     }
 
     @ReactMethod
-    fun encryptFile(promise: Promise) {
-        CoroutineScope(Dispatchers.IO).launch {
+    fun cancelUpload(msgId: String, promise: Promise){
+        val job = activeUploads[msgId]
+        if (job != null) {
+            job.cancel() // This triggers isActive to become false
+            activeUploads.remove(msgId)
+            promise.resolve(Arguments.createMap().apply {
+                putBoolean("success", true)
+                putString("message", "Upload cancelled for msgId: $msgId")
+            })
+        } else {
+            promise.reject("CANCEL_FAILED", "No active Upload found for msgId: $msgId")
+        }
+    }
+
+    @ReactMethod
+    fun encryptFile(obj: ReadableMap, promise: Promise) {
+        val msgId = obj.getString("msgId") ?: ""
+        val job = CoroutineScope(Dispatchers.IO).launch {
             try {
+                inputFilePath = obj.getString("inputFilePath") ?: ""
+                outputFilePath = obj.getString("outputFilePath") ?: ""
+                chunkSize = if (obj.hasKey("chunkSize")) obj.getInt("chunkSize") else chunkSize
+                iv = obj.getString("iv") ?: ""
+                keyString = cryptLib.getRandomString(32)
                 val file = File(inputFilePath.replace("file://", ""))
+                // Simulate encryption setup
+                val key = cryptLib.getSHA256(keyString, 32)
+                cipher = cryptLib.encryptFile(key, iv) // Dummy call
+
                 if (!file.exists()) {
                     withContext(Dispatchers.Main) {
                         promise.resolve(Arguments.createMap().apply {
                             putBoolean("success", false)
                             putInt("statusCode", 404)
                             putString("message", "File not found at $inputFilePath")
+                        })
+                    }
+                    return@launch
+                }
+                if (outputFilePath.isEmpty()) {
+                    withContext(Dispatchers.Main) {
+                        promise.resolve(Arguments.createMap().apply {
+                            putBoolean("success", false)
+                            putInt("statusCode", 400)
+                            putString("message", "Output file path is empty")
                         })
                     }
                     return@launch
@@ -318,6 +374,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                         putInt("statusCode", 200)
                         putString("message", "File encrypted successfully")
                         putString("encryptedFilePath", outputFilePath)
+                        putString("encryptionKey", keyString)
                         putInt("totalBytesWritten", totalBytesWritten.toInt())
                         putInt("size", fosFile.length().toInt())
                     })
@@ -330,8 +387,11 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                         putString("message", "Error encrypting file: ${e.message}")
                     })
                 }
+            } finally {
+                activeUploads.remove(msgId)
             }
         }
+        activeUploads[msgId] = job
     }
 
     private fun generatePublicFolderPath(inputFilePath: String): String {
@@ -473,9 +533,10 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     fun uploadFileInChunks(
         uploadUrls: ReadableArray,
         encryptedFilePath: String,
+        msgId: String,
         promise: Promise
     ) {
-        CoroutineScope(Dispatchers.IO).launch {
+        val job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val file = File(encryptedFilePath)
 
@@ -530,12 +591,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
 
                     // Notify progress
                     val progress = (totalBytesRead.toDouble() / file.length()) * 100
-                    val progressMap = Arguments.createMap()
-                    progressMap.putInt("chunkIndex", chunkIndex)
-                    progressMap.putInt("progress", progress.roundToInt())
-                    withContext(Dispatchers.Main) {
-                        sendEvent("UploadProgress", progressMap)
-                    }
+                    sendUploadProgress(msgId, progress, chunkIndex, totalBytesRead, file.length())
                     Log.d(name, "progress $progress")
 
                     chunkIndex++
@@ -557,8 +613,11 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                 withContext(Dispatchers.Main) {
                     promise.reject("UPLOAD_ERROR", "Error uploading file: ${e.message}")
                 }
+            } finally {
+                activeUploads.remove(msgId)
             }
         }
+        activeUploads[msgId] = job
     }
 
     @ReactMethod

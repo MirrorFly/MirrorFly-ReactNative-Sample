@@ -63,7 +63,7 @@ import {
    updateMissedCallNotification,
 } from '../Helper/Calls/Utility';
 import RootNavigation from '../Navigation/rootNavigation';
-import { cancelProgressNotification, updateProgressNotification } from '../Service/PushNotify';
+import { updateProgressNotification } from '../Service/PushNotify';
 import { pushNotify } from '../Service/remoteNotifyHandle';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../calls/notification/callNotifyHandler';
 import ActivityModule from '../customModules/ActivityModule';
@@ -777,7 +777,7 @@ export const callBacks = {
       }
       store.dispatch(setProgress(res));
       if (res.progress === 100) {
-         cancelProgressNotification(msgId);
+         updateProgressNotification(msgId, 0, 'download', true);
          const mediaStatusObj = {
             msgId: res.msgId,
             is_downloaded: 2,

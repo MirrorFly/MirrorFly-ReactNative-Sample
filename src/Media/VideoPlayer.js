@@ -5,6 +5,7 @@ import Video from 'react-native-video';
 import IconButton from '../common/IconButton';
 import { AudioMusicIcon, BackArrowIcon } from '../common/Icons';
 import { useAppState } from '../common/hooks';
+import { showToast } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
 import MediaControls, { PLAYER_STATES } from './media-controls';
 
@@ -142,6 +143,12 @@ const VideoPlayer = () => {
       setPaused(true);
    };
 
+   const onError = error => {
+      showToast(error?.error?.errorException);
+      handlePause();
+      setIsLoading(false);
+   };
+
    return (
       <View style={{ flex: 1, backgroundColor: audioOnly ? '#97A5C7' : '#000' }}>
          <IconButton
@@ -157,6 +164,7 @@ const VideoPlayer = () => {
                </View>
             )}
             <Video
+               onError={onError}
                audioOnly={audioOnly}
                ignoreSilentSwitch={'ignore'}
                onEnd={onEnd}

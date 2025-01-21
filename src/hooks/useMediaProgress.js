@@ -2,7 +2,7 @@ import React from 'react';
 import RNFS from 'react-native-fs';
 import { useDispatch } from 'react-redux';
 import { uploadFileToSDK } from '../SDK/utils';
-import { cancelProgressNotification } from '../Service/PushNotify';
+import { updateProgressNotification } from '../Service/PushNotify';
 import { useNetworkStatus } from '../common/hooks';
 import { getCurrentChatUser, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
 import { mediaStatusConstants } from '../helpers/constants';
@@ -62,8 +62,8 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
          const downloadResponse = downloadJobId
             ? await source?.resume({ downloadJobId })
             : await SDK.downloadMedia(msgId);
-         console.log('downloadResponse ==>', downloadResponse);
-         cancelProgressNotification(msgId);
+         console.log('downloadResponse ==>', downloadJobId, downloadResponse);
+         updateProgressNotification(msgId, 0, 'download', true);
          if (downloadResponse?.statusCode === 200 || downloadResponse?.statusCode === 304) {
             dispatch(
                updateMediaStatus({
@@ -111,6 +111,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
             if (downloadJobId || uploadJobId) {
                const cancelRes = await source?.cancel?.(downloadJobId || uploadJobId);
                console.log('cancelRes ==>', cancelRes);
+               updateProgressNotification(msgId, 0, 'download', true);
                const mediaStatusObj = {
                   msgId,
                   userId,

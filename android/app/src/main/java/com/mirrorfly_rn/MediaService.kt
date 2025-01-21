@@ -132,6 +132,14 @@ class MediaService(var reactContext: ReactApplicationContext?) :
         cachePath: String,
         promise: Promise
     ) {
+        if (isAllPauseRequested) {
+            promise.resolve(Arguments.createMap().apply {
+                putBoolean("success", false)
+                putInt("statusCode", 499)
+                putString("message", "All task pause requested")
+            })
+            return
+        }
         Log.d(
             name,
             "Starting download for msgId: $msgId with URL: $downloadURL and cachePath: $cachePath"
@@ -212,7 +220,6 @@ class MediaService(var reactContext: ReactApplicationContext?) :
 
     @ReactMethod
     fun cancelDownload(msgId: String, promise: Promise) {
-        isAllPauseRequested = true
         val job = activeDownloads[msgId]
         if (job != null) {
             job.cancel() // This triggers isActive to become false
@@ -227,7 +234,13 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     }
 
     @ReactMethod
+    fun resetPauseRequest(promise: Promise){
+        isAllPauseRequested = false
+    }
+
+    @ReactMethod
     fun cancelAllDownloads(promise: Promise) {
+        isAllPauseRequested = true
         if (activeDownloads.isNotEmpty()) {
             for ((msgId, job) in activeDownloads) {
                 job.cancel() // Cancel the download job

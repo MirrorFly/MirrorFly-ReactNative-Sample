@@ -86,7 +86,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
             setMediaStatus(mediaStatusConstants.NOT_DOWNLOADED);
          }
       } catch (error) {
-         console.error('Error in handleDownload:', error);
+         console.log('Error in handleDownload:', error);
       }
    };
    const handleUpload = () => {

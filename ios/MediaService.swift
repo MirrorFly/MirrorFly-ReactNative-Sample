@@ -118,6 +118,34 @@ class MediaService: RCTEventEmitter {
     }
   }
   
+  private func isPaused(msgId: String?, resolver: @escaping ([String: Any]) -> Void) -> Bool {
+      // Check if all tasks are paused
+      if let allTaskPauseRequested = downloadTaskCanceled["allTaskPauseRequested"], allTaskPauseRequested {
+          DispatchQueue.main.async {
+              resolver([
+                  "success": false,
+                  "statusCode": 499,
+                  "message": "All task pause requested",
+              ])
+          }
+          return true // Indicates that the task is paused
+      }
+      
+      // Check if a specific task is canceled
+      if let msgId = msgId, self.downloadTaskCanceled[msgId] == true {
+          DispatchQueue.main.async {
+              resolver([
+                  "success": false,
+                  "statusCode": 499,
+                  "message": "Download Canceled",
+              ])
+          }
+          return true // Indicates that the task is paused
+      }
+      
+      return false // Indicates that the task is not paused
+  }
+  
   
   @objc func encryptFile(
     _ obj: NSDictionary,
@@ -243,26 +271,8 @@ class MediaService: RCTEventEmitter {
     resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock
   ) {
-    if let allTaskPauseRequested = downloadTaskCanceled["allTaskPauseRequested"], allTaskPauseRequested {
-        DispatchQueue.main.async {
-            resolver([
-                "success": false,
-                "statusCode": 499,
-                "message": "All task pause requested",
-            ])
-        }
-      return;
-    }
-    
-    if self.downloadTaskCanceled[msgId] == true {
-      DispatchQueue.main.async {
-        resolver([
-          "success": false,
-          "statusCode": 499,
-          "message": "Download Canceled",
-        ])
-      }
-      return
+    if isPaused(msgId: msgId, resolver: resolver) {
+        return
     }
     
     let size = fileSize.intValue
@@ -293,15 +303,8 @@ class MediaService: RCTEventEmitter {
     DispatchQueue.global(qos: .background).async {
       while startByte <= size {
         
-        if self.downloadTaskCanceled[msgId] == true {
-          DispatchQueue.main.async {
-            resolver([
-              "success": false,
-              "statusCode": 499,
-              "message": "Download Canceled",
-            ])
-          }
-          return
+        if self.isPaused(msgId: msgId, resolver: resolver) {
+            return
         }
         
         if startByte == size {

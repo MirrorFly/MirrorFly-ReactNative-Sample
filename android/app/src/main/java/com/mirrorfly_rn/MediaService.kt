@@ -105,7 +105,11 @@ class MediaService(var reactContext: ReactApplicationContext?) :
         }
         // Switch to the main thread to resolve the promise
         withContext(Dispatchers.Main) {
-            promise.reject("DOWNLOAD_FAILED", message)
+            promise.resolve(Arguments.createMap().apply {
+                putBoolean("success", false)
+                putInt("statusCode", 500)
+                putString("message", message)
+            })
         }
         activeDownloads.remove(msgId)
     }
@@ -203,12 +207,11 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                 sendDownloadComplete(promise, cachePath)
 
             } catch (e: Exception) {
-                handleDownloadError(
-                    promise,
-                    "Error downloading file for msgId: $msgId: $e",
-                    null,
-                    msgId
-                )
+                promise.resolve(Arguments.createMap().apply {
+                    putBoolean("success", false)
+                    putInt("statusCode", 500)
+                    putString("message", "Error downloading file for msgId: $msgId: $e")
+                })
             } finally {
                 activeDownloads.remove(msgId)
             }

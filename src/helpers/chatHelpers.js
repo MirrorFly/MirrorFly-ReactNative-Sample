@@ -255,7 +255,11 @@ export const millisToHoursMinutesAndSeconds = millis => {
    let minutes = Math.floor((millis % 3600000) / 60000);
    let seconds = parseInt((millis % 60000) / 1000, 10);
 
-   let formattedHours = hours > 0 ? (hours < 10 ? '0' + hours : hours) + ':' : '';
+   let formattedHours = '';
+   if (hours > 0) {
+      formattedHours = hours < 10 ? '0' + hours : hours;
+      formattedHours += ':';
+   }
    let formattedMinutes = (minutes < 10 ? '0' : '') + minutes;
    let formattedSeconds = (seconds < 10 ? '0' : '') + seconds;
 

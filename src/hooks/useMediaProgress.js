@@ -7,7 +7,6 @@ import { useNetworkStatus } from '../common/hooks';
 import { getCurrentChatUser, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
 import { mediaStatusConstants } from '../helpers/constants';
 import { updateMediaStatus } from '../redux/chatMessageDataSlice';
-import { deleteProgress } from '../redux/progressDataSlice';
 import { getMediaProgress, useChatMessage } from '../redux/reduxHook';
 
 const generateUniqueFilePath = async (filePath, counter = 0) => {
@@ -119,7 +118,6 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
                   ...(uploadJobId && { uploadStatus: 3 }),
                };
                dispatch(updateMediaStatus(mediaStatusObj));
-               dispatch(deleteProgress({ msgId }));
                setMediaStatus(uploadJobId ? mediaStatusConstants.NOT_UPLOADED : mediaStatusConstants.NOT_DOWNLOADED);
             } else {
                source?.cancel?.('User Cancelled!');

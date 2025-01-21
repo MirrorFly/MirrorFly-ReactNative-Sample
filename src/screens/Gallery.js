@@ -37,7 +37,7 @@ const Gallery = () => {
       try {
          setLoading(true);
          const photo = await CameraRoll.getAlbums({
-            albumType: 'All',
+            albumType: 'SmartAlbum',
             assetType: 'All',
          });
          const _galleryData = await Promise.allSettled(
@@ -145,6 +145,7 @@ const Gallery = () => {
          <ScreenHeader title={screenHeader} isSearchable={false} />
 
          <FlatList
+            style={{ backgroundColor: '#fff' }}
             numColumns={3}
             data={galleryData}
             keyExtractor={item => item.value.title.toString()}

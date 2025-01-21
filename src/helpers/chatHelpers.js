@@ -256,10 +256,20 @@ export const convertBytesToKB = bytes => {
    }
 };
 
-export const millisToMinutesAndSeconds = millis => {
-   let minutes = Math.floor(millis / 60000);
+export const millisToHoursMinutesAndSeconds = millis => {
+   let hours = Math.floor(millis / 3600000);
+   let minutes = Math.floor((millis % 3600000) / 60000);
    let seconds = parseInt((millis % 60000) / 1000, 10);
-   return (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+
+   let formattedHours = '';
+   if (hours > 0) {
+      formattedHours = hours < 10 ? '0' + hours : hours;
+      formattedHours += ':';
+   }
+   let formattedMinutes = (minutes < 10 ? '0' : '') + minutes;
+   let formattedSeconds = (seconds < 10 ? '0' : '') + seconds;
+
+   return formattedHours + formattedMinutes + ':' + formattedSeconds;
 };
 
 export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {
@@ -783,10 +793,10 @@ export const handleSendMedia = selectedImages => () => {
  * @param {string} uri local file path of the video
  * @returns {Promise<string>} returns the base64 data of the Thumbnail Image
  */
-export const getVideoThumbImage = async uri => {
+export const getVideoThumbImage = async (uri, duration) => {
    const frame = await createThumbnail({
       url: uri,
-      timeStamp: 1000,
+      timeStamp: duration / 2,
       maxWidth: 250,
       maxHeight: 250,
       quality: Platform.select({

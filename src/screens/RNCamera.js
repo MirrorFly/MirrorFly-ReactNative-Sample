@@ -19,7 +19,7 @@ import {
    getImageSource,
    getType,
    mediaObjContructor,
-   millisToMinutesAndSeconds,
+   millisToHoursMinutesAndSeconds,
    showToast,
    validateFileSize,
 } from '../helpers/chatHelpers';
@@ -27,7 +27,6 @@ import { getStringSet } from '../localization/stringSet';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { CAMERA_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
-
 
 const cameraService = new CameraService();
 
@@ -183,7 +182,7 @@ const Camera = () => {
                      <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
                         <View style={styles.recording} />
                         <Text style={[commonStyles.fontSize_12, commonStyles.colorWhite]}>
-                           {millisToMinutesAndSeconds(captureTime * 1000)}
+                           {millisToHoursMinutesAndSeconds(captureTime * 1000)}
                         </Text>
                      </View>
                   )}

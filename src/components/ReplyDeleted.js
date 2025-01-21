@@ -1,8 +1,7 @@
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { ClearTextIcon } from '../common/Icons';
 import NickName from '../common/NickName';
-import Text from '../common/Text';
 import { getCurrentChatUser, getUserIdFromJid } from '../helpers/chatHelpers';
 import { getStringSet } from '../localization/stringSet';
 import commonStyles from '../styles/commonStyles';

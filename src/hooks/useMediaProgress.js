@@ -1,14 +1,27 @@
 import React from 'react';
+import RNFS from 'react-native-fs';
 import { useDispatch } from 'react-redux';
+import SDK from '../SDK/SDK';
+import { uploadFileToSDK } from '../SDK/utils';
+import { updateProgressNotification } from '../Service/PushNotify';
 import { useNetworkStatus } from '../common/hooks';
-import config from '../config/config';
 import { getCurrentChatUser, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
 import { mediaStatusConstants } from '../helpers/constants';
 import { updateMediaStatus } from '../redux/chatMessageDataSlice';
 import { deleteProgress } from '../redux/progressDataSlice';
 import { getMediaProgress, useChatMessage } from '../redux/reduxHook';
-import SDK from '../SDK/SDK';
-import { uploadFileToSDK } from '../SDK/utils';
+
+const generateUniqueFilePath = async (filePath, counter = 0) => {
+   // Modify the file path if the counter is greater than 0
+   const extension = filePath.substring(filePath.lastIndexOf('.') + 1);
+   const baseName = filePath.substring(0, filePath.lastIndexOf('.'));
+   const modifiedFilePath = counter > 0 ? `${baseName}(${counter}).${extension}` : filePath;
+
+   // Check if the file exists
+   const exists = await RNFS.exists(modifiedFilePath);
+   // Return the modified file path if it does not exist, otherwise recurse
+   return exists ? generateUniqueFilePath(filePath, counter + 1) : modifiedFilePath;
+};
 
 const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    const userId = getUserIdFromJid(getCurrentChatUser());
@@ -37,30 +50,44 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    }, [uploadStatus, downloadStatus]);
 
    const handleDownload = async () => {
-      if (!networkState) {
-         showToast(config.internetErrorMessage);
-         return;
-      }
-      if (networkState) {
+      try {
+         const { source = {}, downloadJobId = '' } = getMediaProgress(msgId) || {};
          setMediaStatus(mediaStatusConstants.DOWNLOADING);
-         let mediaStatusObj = {
-            msgId,
-            statusCode: 200,
-            fromUserId: userId,
-            local_path: '',
-            is_downloaded: 1,
-         };
-         dispatch(updateMediaStatus(mediaStatusObj));
-         const response = await SDK.downloadMedia(msgId);
-         if (response?.statusCode !== 200) {
-            const mediaStatusObj = {
+         dispatch(
+            updateMediaStatus({
                msgId,
-               fromUserId: userId,
-               downloadStatus: 0,
-               local_path: '',
-            };
-            dispatch(updateMediaStatus(mediaStatusObj));
+               userId,
+               is_downloaded: 1,
+            }),
+         );
+         const downloadResponse = downloadJobId
+            ? await source?.resume({ downloadJobId })
+            : await SDK.downloadMedia(msgId);
+         console.log('downloadResponse ==>', downloadJobId, downloadResponse);
+         updateProgressNotification(msgId, 0, 'download', true);
+         if (downloadResponse?.statusCode === 200 || downloadResponse?.statusCode === 304) {
+            dispatch(
+               updateMediaStatus({
+                  msgId,
+                  userId,
+                  local_path: downloadResponse?.decryptedFilePath,
+                  is_downloaded: 2,
+               }),
+            );
+            setMediaStatus(mediaStatusConstants.LOADED);
+         } else {
+            dispatch(
+               updateMediaStatus({
+                  msgId,
+                  userId,
+                  local_path: downloadResponse?.decryptedFilePath,
+                  is_downloaded: 0,
+               }),
+            );
+            setMediaStatus(mediaStatusConstants.NOT_DOWNLOADED);
          }
+      } catch (error) {
+         console.log('Error in handleDownload:', error);
       }
    };
    const handleUpload = () => {
@@ -78,30 +105,38 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
       uploadFileToSDK(file, getCurrentChatUser(), _msgId, media);
    };
 
-   const cancelProgress = () => {
-      if (getMediaProgress(msgId)?.source) {
-         if (getMediaProgress(msgId)?.downloadJobId) {
-            getMediaProgress(msgId).source?.cancel?.(getMediaProgress(msgId)?.downloadJobId);
-            const mediaStatusObj = {
-               msgId,
-               userId,
-               is_downloaded: 0,
-            };
-            dispatch(updateMediaStatus(mediaStatusObj));
-            dispatch(deleteProgress({ msgId }));
-            setMediaStatus(mediaStatusConstants.NOT_DOWNLOADED);
-         } else {
-            getMediaProgress(msgId).source?.cancel?.('User Cancelled!');
-            const mediaStatusObj = {
-               msgId,
-               userId,
-               uploadStatus: 3,
-            };
-            dispatch(updateMediaStatus(mediaStatusObj));
+   const cancelProgress = async () => {
+      try {
+         const { source = {}, downloadJobId = '', uploadJobId = '' } = getMediaProgress(msgId);
+         if (source) {
+            if (downloadJobId || uploadJobId) {
+               const cancelRes = await source?.cancel?.(downloadJobId || uploadJobId);
+               console.log('cancelRes ==>', cancelRes);
+               updateProgressNotification(msgId, 0, 'download', true);
+               const mediaStatusObj = {
+                  msgId,
+                  userId,
+                  ...(downloadJobId && { is_downloaded: 0 }),
+                  ...(uploadJobId && { uploadStatus: 3 }),
+               };
+               dispatch(updateMediaStatus(mediaStatusObj));
+               dispatch(deleteProgress({ msgId }));
+               setMediaStatus(uploadJobId ? mediaStatusConstants.NOT_UPLOADED : mediaStatusConstants.NOT_DOWNLOADED);
+            } else {
+               source?.cancel?.('User Cancelled!');
+               const mediaStatusObj = {
+                  msgId,
+                  userId,
+                  uploadStatus: 3,
+               };
+               dispatch(updateMediaStatus(mediaStatusObj));
+            }
          }
-      }
-      if (uploadStatus === 8) {
-         return true;
+         if (uploadStatus === 8) {
+            return true;
+         }
+      } catch (error) {
+         console.log('cancelProgress ==>', error);
       }
    };
 

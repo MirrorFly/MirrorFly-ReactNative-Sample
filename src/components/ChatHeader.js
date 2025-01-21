@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { BackHandler, Keyboard, StyleSheet, View } from 'react-native';
+import { BackHandler, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import AlertModal from '../common/AlertModal';
 import IconButton from '../common/IconButton';
@@ -9,8 +9,6 @@ import MenuContainer from '../common/MenuContainer';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import NickName from '../common/NickName';
 import Pressable from '../common/Pressable';
-import Text from '../common/Text';
-import TextInput from '../common/TextInput';
 import config from '../config/config';
 import {
    copyToClipboard,
@@ -28,7 +26,13 @@ import { MIX_BARE_JID } from '../helpers/constants';
 import { getStringSet } from '../localization/stringSet';
 import { setChatSearchText, toggleEditMessage } from '../redux/chatMessageDataSlice';
 import { setTextMessage } from '../redux/draftSlice';
-import { getSelectedChatMessages, getUserNameFromStore, useBlockedStatus, useSelectedChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
+import {
+   getSelectedChatMessages,
+   getUserNameFromStore,
+   useBlockedStatus,
+   useSelectedChatMessages,
+   useThemeColorPalatte,
+} from '../redux/reduxHook';
 import {
    FORWARD_MESSSAGE_SCREEN,
    GROUP_INFO,

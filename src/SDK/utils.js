@@ -175,7 +175,7 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
             uri: _uri,
             duration: duration,
             msgId: msgId,
-            thumbImage: thumbImage,
+            thumbImage: thumb_image || thumbImage,
          };
 
          const dataObj = {

@@ -63,6 +63,7 @@ import {
    updateMissedCallNotification,
 } from '../Helper/Calls/Utility';
 import RootNavigation from '../Navigation/rootNavigation';
+import { updateProgressNotification } from '../Service/PushNotify';
 import { pushNotify } from '../Service/remoteNotifyHandle';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../calls/notification/callNotifyHandler';
 import ActivityModule from '../customModules/ActivityModule';
@@ -653,6 +654,7 @@ const callStatus = res => {
 
 export const callBacks = {
    connectionListener: response => {
+      console.log('response ==>', response);
       store.dispatch(setXmppConnectionStatus(response.status));
       if (response.status === 'LOGOUT') {
          logoutClearVariables();
@@ -778,6 +780,7 @@ export const callBacks = {
    },
    groupMsgInfoListener: res => {},
    mediaUploadListener: res => {
+      console.log(' mediaUploadListener ==>', res);
       store.dispatch(setProgress(res));
       if (res.progress === 100) {
          const mediaStatusObj = {
@@ -793,8 +796,14 @@ export const callBacks = {
       }
    },
    mediaDownloadListener: res => {
+      const { msgId, progress } = res;
+      const roundedProgress = Math.round(progress);
+      if (Platform.OS === 'android') {
+         updateProgressNotification(msgId, roundedProgress, 'download');
+      }
       store.dispatch(setProgress(res));
       if (res.progress === 100) {
+         updateProgressNotification(msgId, 0, 'download', true);
          const mediaStatusObj = {
             msgId: res.msgId,
             is_downloaded: 2,

@@ -24,7 +24,7 @@ import {
    getImageSource,
    getUserIdFromJid,
    handleReplyPress,
-   millisToMinutesAndSeconds,
+   millisToHoursMinutesAndSeconds,
 } from '../helpers/chatHelpers';
 import { getStringSet } from '../localization/stringSet';
 import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
@@ -45,7 +45,7 @@ function ReplyMessage(props) {
 
    const {
       msgBody = {},
-      msgBody: { message_type = '', message = '', media = {}, } = {},
+      msgBody: { message_type = '', message = '', media = {} } = {},
       deleteStatus = 0,
       recallStatus = 0,
       publisherJid = '',
@@ -83,7 +83,7 @@ function ReplyMessage(props) {
       }
    }, [fileExtension]);
 
-   const durationString = millisToMinutesAndSeconds(media.duration);
+   const durationString = millisToHoursMinutesAndSeconds(media.duration);
 
    const passReplyTo = () => {
       const messsageList = getChatMessages(userId);

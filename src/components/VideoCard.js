@@ -6,7 +6,12 @@ import { PlayIcon, VideoIcon } from '../common/Icons';
 import MediaProgressLoader from '../common/MediaProgressLoader';
 import Text from '../common/Text';
 import { getConversationHistoryTime } from '../common/timeStamp';
-import { getImageSource, getMessageStatus, getThumbBase64URL, millisToMinutesAndSeconds } from '../helpers/chatHelpers';
+import {
+   getImageSource,
+   getMessageStatus,
+   getThumbBase64URL,
+   millisToHoursMinutesAndSeconds,
+} from '../helpers/chatHelpers';
 import useMediaProgress from '../hooks/useMediaProgress';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
@@ -47,7 +52,7 @@ function VideoCard({ item, isSender }) {
       msgId: msgId,
    });
 
-   const durationInMinutes = millisToMinutesAndSeconds(duration);
+   const durationInMinutes = millisToHoursMinutesAndSeconds(duration) || '';
 
    const checkDownloaded = is_uploading === 2 && is_downloaded === 2;
 
@@ -132,7 +137,6 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-end',
-      width: 100,
       resizeMode: 'cover',
       padding: 1,
    },

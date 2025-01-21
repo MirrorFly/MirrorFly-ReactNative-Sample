@@ -292,7 +292,9 @@ export const onChatNotificationBackGround = async ({ type, detail }) => {
       const {
          notification: { data: { fromUserJID = '', from_user = '' } = '' },
       } = detail;
-      const push_url = getAppSchema() + `${CONVERSATION_STACK}/${CONVERSATION_SCREEN}?jid=${fromUserJID || from_user}`;
+      const push_url = fromUserJID
+         ? getAppSchema() + `${CONVERSATION_STACK}/${CONVERSATION_SCREEN}?jid=${fromUserJID || from_user}`
+         : getAppSchema();
       const { statusCode, data = {} } = await SDK.getUserProfile(getUserIdFromJid(fromUserJID || from_user));
       if (statusCode === 200) {
          const { userId = '' } = data;

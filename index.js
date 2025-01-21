@@ -12,14 +12,10 @@ import { mirrorflyInitialize, mirrorflyNotificationHandler, setAppConfig, setupC
 
 setAppConfig({ appSchema: MIRRORFLY_RN });
 
-console.debug = () => {};
+if (process.env?.NODE_ENV === 'development') {
+   require('./ReactotronConfig');
+}
 
-/**
- import { startNetworkLogging } from 'react-native-network-logger';
- if (process.env?.NODE_ENV === 'development') {
-    startNetworkLogging();
- } 
- */
 mirrorflyInitialize({
    apiBaseUrl: config.API_URL,
    licenseKey: config.licenseKey,

@@ -18,7 +18,13 @@ import NickName from '../common/NickName';
 import TextInput from '../common/TextInput';
 import VideoInfo from '../common/VideoInfo';
 import UserAvathar from '../components/UserAvathar';
-import { getCurrentChatUser, getThumbBase64URL, getType, getUserIdFromJid, handleSendMedia } from '../helpers/chatHelpers';
+import {
+   getCurrentChatUser,
+   getThumbBase64URL,
+   getType,
+   getUserIdFromJid,
+   handleSendMedia,
+} from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../helpers/constants';
 import { getStringSet } from '../localization/stringSet';
 import { useThemeColorPalatte } from '../redux/reduxHook';

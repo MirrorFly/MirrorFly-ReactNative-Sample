@@ -4,7 +4,7 @@ const config = {
    audioDuaration: 60,
    fileSize: 50,
    imageFileSize: 10,
-   videoFileSize: 30,
+   videoFileSize: 300,
    audioFileSize: 30,
    documentFileSize: 20,
    maxAllowedMediaCount: 5,
@@ -52,6 +52,10 @@ const config = {
    // // ================ growthAXL Environment variables =====================
    // API_URL: 'https://growthaxlprod-api.mirrorfly.com/api/v1', // Paste API BASE URL HERE
    // licenseKey: 'WYXL9kugIbfnKQrvzA4qHOVnpbxmD8',
+   // API_URL: 'https://enterpriseinsta-api.mirrorfly.com',
+   // licenseKey: 'M5hhyMm7o7WiFRumULxlChc6sGFRuU',
+   // API_URL: 'https://growthaxlllc-api.mirrorfly.com/api/v1',
+   // licenseKey: 'o3mN05oAgepcbO0noe3T058WC8jkKN',
 };
 
 export default config;

@@ -255,14 +255,11 @@ export const millisToHoursMinutesAndSeconds = millis => {
    let minutes = Math.floor((millis % 3600000) / 60000);
    let seconds = parseInt((millis % 60000) / 1000, 10);
 
-   return (
-      (hours > 0 ? (hours < 10 ? '0' : '') + hours + ':' : '') +
-      (minutes < 10 ? '0' : '') +
-      minutes +
-      ':' +
-      (seconds < 10 ? '0' : '') +
-      seconds
-   );
+   let formattedHours = hours > 0 ? (hours < 10 ? '0' + hours : hours) + ':' : '';
+   let formattedMinutes = (minutes < 10 ? '0' : '') + minutes;
+   let formattedSeconds = (seconds < 10 ? '0' : '') + seconds;
+
+   return formattedHours + formattedMinutes + ':' + formattedSeconds;
 };
 
 export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {

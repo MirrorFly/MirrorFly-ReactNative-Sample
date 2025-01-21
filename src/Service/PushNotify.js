@@ -120,7 +120,6 @@ export const updateProgressNotification = async (msgId, progress, type, isCancel
          },
       },
       ios: {
-         sound: null,
          categoryId: 'media_progress_category',
          sound: 'default',
          attachments: [],

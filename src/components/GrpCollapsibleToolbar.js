@@ -39,7 +39,6 @@ import {
 import commonStyles, { modelStyles } from '../styles/commonStyles';
 import UserAvathar from './UserAvathar';
 import UserStatus from './UserStatus';
-import RootNavigation from '../Navigation/rootNavigation';
 
 const propTypes = {
    chatUser: PropTypes.string,

@@ -6,15 +6,17 @@ import AlertModal from '../common/AlertModal';
 import { ContactInfoIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import { getConversationHistoryTime } from '../common/timeStamp';
-import ApplicationColors from '../config/appColors';
 import config from '../config/config';
 import { getCurrentChatUser, getMessageStatus, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
+import { getStringSet } from '../localization/stringSet';
 import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
-import { getChatMessage, getChatMessages } from '../redux/reduxHook';
+import { getChatMessage, getChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
 
 const ContactCard = ({ item, isSender }) => {
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
    const chatUser = getCurrentChatUser();
    const dispatch = useDispatch();
    const userId = getUserIdFromJid(chatUser);
@@ -34,7 +36,7 @@ const ContactCard = ({ item, isSender }) => {
 
    const handleCopyInviteLink = () => {
       Clipboard.setString(config.INVITE_APP_URL);
-      showToast('Link Copied');
+      showToast(stringSet.TOAST_MESSAGES.LINK_COPIED);
    };
 
    const toggleModalContent = () => {
@@ -45,10 +47,10 @@ const ContactCard = ({ item, isSender }) => {
       setModalContent({
          visible: true,
          onRequestClose: toggleModalContent,
-         title: 'Invite Friend',
-         noButton: 'Send SMS',
+         title: stringSet.CHAT_SCREEN.CONTACT_CARD_INVITE_LABEL,
+         noButton: stringSet.BUTTON_LABEL.CONTACT_SEND_SMS_BTN,
          noAction: handleInviteContact,
-         yesButton: 'Copy Link',
+         yesButton: stringSet.BUTTON_LABEL.COPY_LINK_BUTTON,
          yesAction: handleCopyInviteLink,
       });
    };
@@ -71,26 +73,56 @@ const ContactCard = ({ item, isSender }) => {
       <View style={styles.container}>
          {Boolean(replyTo) && (
             <View style={commonStyles.marginHorizontal_4}>
-               {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
+               {Boolean(replyTo) && <ReplyMessage message={item} isSender={isSender} />}
             </View>
          )}
          <View style={styles.contactInfo}>
             <View style={styles.SelectedIcon}>
                <ContactInfoIcon width={15} height={15} />
             </View>
-            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.contactNickname}>
+            <Text
+               numberOfLines={1}
+               ellipsizeMode="tail"
+               style={[
+                  styles.contactNickname,
+                  {
+                     color: isSender
+                        ? themeColorPalatte.chatSenderPrimaryTextColor
+                        : themeColorPalatte.chatReceiverPrimaryTextColor,
+                  },
+               ]}>
                {ContactInfo.name}
             </Text>
          </View>
          <View style={styles.timeStampWrapper}>
             {isSender && getMessageStatus(msgStatus)}
-            <Text style={styles.timeStampText}>{getConversationHistoryTime(createdAt)}</Text>
+            <Text
+               style={[
+                  styles.timeStampText,
+                  {
+                     color: isSender
+                        ? themeColorPalatte.chatSenderSecondaryTextColor
+                        : themeColorPalatte.chatReceiverSecondaryTextColor,
+                  },
+               ]}>
+               {getConversationHistoryTime(createdAt)}
+            </Text>
          </View>
          {!isSender && (
             <>
-               <View style={styles.borderLine} />
+               <View style={[styles.borderLine, { borderColor: themeColorPalatte.mainBorderColor }]} />
                <Pressable contentContainerStyle={styles.inviteTextWrapper} onPress={handleInvitePress}>
-                  <Text style={styles.inviteText}>Invite</Text>
+                  <Text
+                     style={[
+                        styles.inviteText,
+                        {
+                           color: isSender
+                              ? themeColorPalatte.chatSenderPrimaryTextColor
+                              : themeColorPalatte.chatReceiverPrimaryTextColor,
+                        },
+                     ]}>
+                     {stringSet.CHAT_SCREEN.CONTACT_CARD_INVITE}
+                  </Text>
                </Pressable>
             </>
          )}
@@ -121,10 +153,9 @@ const styles = StyleSheet.create({
       resizeMode: 'cover',
    },
    contactNickname: {
-      color: '#313131',
       fontSize: 13,
       fontWeight: '400',
-      paddingLeft: 5,
+      paddingHorizontal: 5,
       flex: 1,
    },
    timeStampWrapper: {
@@ -136,18 +167,15 @@ const styles = StyleSheet.create({
       justifyContent: 'flex-end',
    },
    timeStampText: {
-      paddingLeft: 4,
-      color: '#455E93',
+      paddingHorizontal: 4,
       fontSize: 10,
       fontWeight: '400',
    },
    borderLine: {
       borderWidth: 0.5,
-      borderColor: ApplicationColors.mainBorderColor,
    },
    inviteTextWrapper: { justifyContent: 'center', paddingVertical: 10 },
    inviteText: {
-      color: '#313131',
       fontSize: 12,
       fontWeight: '500',
       textAlign: 'center',

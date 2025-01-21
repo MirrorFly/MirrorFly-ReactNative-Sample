@@ -1354,7 +1354,7 @@ PODS:
     - Yoga
   - react-native-contacts (8.0.4):
     - React-Core
-  - react-native-create-thumbnail (2.0.0):
+  - react-native-create-thumbnail (2.0.1):
     - React-Core
   - react-native-document-picker (9.3.1):
     - DoubleConversion

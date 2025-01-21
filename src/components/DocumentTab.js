@@ -1,14 +1,14 @@
 import React from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import { CSVIcon, DocIcon, PPTIcon, PdfIcon, TXTIcon, XLSIcon, ZipIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
+import Text from '../common/Text';
 import { docTimeFormat } from '../common/timeStamp';
-import ApplicationColors from '../config/appColors';
 import { convertBytesToKB, getExtension, handleFileOpen } from '../helpers/chatHelpers';
 import { getMessageTypeCount } from '../screens/ViewAllMedia';
 import commonStyles from '../styles/commonStyles';
 
-function DocumentTab({ docsMessages, loading }) {
+function DocumentTab({ docsMessages, loading, themeColorPalatte }) {
    const renderDocCountLabel = () => {
       return getMessageTypeCount(docsMessages, 'file') > 1
          ? getMessageTypeCount(docsMessages, 'file') + ' Documents'
@@ -45,11 +45,13 @@ function DocumentTab({ docsMessages, loading }) {
       return (
          <>
             {docsMessages.length > 0 && (
-               <Text style={[commonStyles.textCenter, commonStyles.colorBlack]}>{renderDocCountLabel()}</Text>
+               <Text style={[commonStyles.textCenter, { color: themeColorPalatte.primaryTextColor }]}>
+                  {renderDocCountLabel()}
+               </Text>
             )}
             {loading && (
                <View style={[commonStyles.mb_130, commonStyles.marginTop_5]}>
-                  <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
+                  <ActivityIndicator size="large" color={themeColorPalatte.primaryColor} />
                </View>
             )}
          </>
@@ -90,14 +92,20 @@ function DocumentTab({ docsMessages, loading }) {
                ]}>
                <View style={[commonStyles.paddingVertical_8]}>{renderFileIcon(fileExtension)}</View>
                <View style={[commonStyles.flex1, commonStyles.p_4, commonStyles.px_18]}>
-                  <Text style={styles.fileNameText}>{fileName}</Text>
-                  <Text style={styles.fileSizeText}>{convertBytesToKB(file_size)}</Text>
+                  <Text style={[commonStyles.textColor(themeColorPalatte.primaryTextColor), styles.fileNameText]}>
+                     {fileName}
+                  </Text>
+                  <Text style={[commonStyles.textColor(themeColorPalatte.primaryTextColor), styles.fileSizeText]}>
+                     {convertBytesToKB(file_size)}
+                  </Text>
                </View>
                <View style={[commonStyles.justifyContentFlexEnd]}>
-                  <Text style={styles.fileSizeText}>{docTimeFormat(createdAt)}</Text>
+                  <Text style={[commonStyles.textColor(themeColorPalatte.primaryTextColor), styles.fileSizeText]}>
+                     {docTimeFormat(createdAt)}
+                  </Text>
                </View>
             </Pressable>
-            <View style={[commonStyles.dividerLine]} />
+            <View style={[commonStyles.dividerLine(themeColorPalatte.dividerBg)]} />
          </>
       );
    };
@@ -122,10 +130,8 @@ export default React.memo(DocumentTab);
 const styles = StyleSheet.create({
    fileNameText: {
       fontSize: 13,
-      color: '#000',
    },
    fileSizeText: {
       fontSize: 11,
-      color: '#000',
    },
 });

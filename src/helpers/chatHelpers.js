@@ -15,8 +15,9 @@ import Toast from 'react-native-simple-toast';
 import Sound from 'react-native-sound';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
-import { handleSendMsg, uploadFileToSDK } from '../SDK/utils';
+import { handleSendMsg } from '../SDK/utils';
 import {
+   BlockedIcon,
    CameraIcon,
    ChatsIcon,
    ContactIcon,
@@ -58,7 +59,6 @@ import {
    MIN_WIDTH_AND,
    MIN_WIDTH_WEB,
    MIX_BARE_JID,
-   THIS_MESSAGE_WAS_DELETED,
    audioEmoji,
    contactEmoji,
    fileEmoji,
@@ -66,13 +66,13 @@ import {
    locationEmoji,
    videoEmoji,
 } from '../helpers/constants';
+import { getStringSet } from '../localization/stringSet';
 import {
    clearChatMessageData,
    deleteMessagesForEveryone,
    deleteMessagesForMe,
    highlightMessage,
    resetMessageSelections,
-   updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
 import {
    clearRecentChatData,
@@ -89,9 +89,9 @@ import {
 } from '../redux/reduxHook';
 import store from '../redux/store';
 import {
+   BLOCKED_CONTACT_LIST_STACK,
    CAMERA_SCREEN,
    CHATS_CREEN,
-   CONVERSATION_SCREEN,
    GALLERY_FOLDER_SCREEN,
    LOCATION_SCREEN,
    MOBILE_CONTACT_LIST_SCREEN,
@@ -106,6 +106,9 @@ const { fileSize, imageFileSize, videoFileSize, audioFileSize, documentFileSize 
 const memoizedUsernameGraphemes = {};
 const splitter = new Graphemer();
 let currentChatUser = '';
+const stringSet = getStringSet();
+let isConversationScreenActive = false;
+
 const documentAttachmentTypes = [
    DocumentPicker.types.allFiles,
    // DocumentPicker.types.pdf
@@ -121,6 +124,12 @@ const documentAttachmentTypes = [
    // /** need to add rar file type and verify that */
    // '.rar'
 ];
+
+export const setIsConversationScreenActive = val => {
+   isConversationScreenActive = val;
+};
+
+export const getIsConversationScreenActive = () => isConversationScreenActive;
 
 export const showToast = message => {
    Toast.show(message, Toast.SHORT);
@@ -259,9 +268,13 @@ export const millisToHoursMinutesAndSeconds = millis => {
 export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {
    const currentUserJid = getCurrentUserJid();
    if (chatType === CHAT_TYPE_SINGLE) {
-      return userId?.includes('@') ? userId : `${userId}@${currentUserJid?.split('@')[1] || ''}`;
+      return userId?.includes(currentUserJid?.split('@')[1])
+         ? userId
+         : `${userId}@${currentUserJid?.split('@')[1] || ''}`;
    } else {
-      return userId?.includes('@') ? userId : `${userId}@mix.${currentUserJid?.split('@')[1] || ''}`;
+      return userId?.includes(currentUserJid?.split('@')[1])
+         ? userId
+         : `${userId}@mix.${currentUserJid?.split('@')[1] || ''}`;
    }
 };
 
@@ -344,10 +357,10 @@ export const openLocationExternally = (latitude, longitude) => {
    });
    if (Linking.canOpenURL(locationUrl)) {
       Linking.openURL(locationUrl).catch(() => {
-         showToast('Unable to open the location');
+         showToast(stringSet.TOAST_MESSAGES.UNABLE_TO_OPEN_THE_LOCATION);
       });
    } else {
-      showToast('No app found to open location');
+      showToast(stringSet.TOAST_MESSAGES.NO_APPS_AVAILABLE_FOR_LOCATION);
    }
 };
 
@@ -400,7 +413,7 @@ export const handleConversationClear = async jid => {
       store.dispatch(clearChatMessageData(userId));
       store.dispatch(clearRecentChatData(jid));
    } else {
-      showToast('There is no conversation');
+      showToast(stringSet.TOAST_MESSAGES.THERE_IS_NO_CONVERSATION);
    }
 };
 
@@ -469,6 +482,22 @@ export const mediaObjContructor = (_package, file) => {
          mediaObj.duration = file.duration * 1000 || 0;
          mediaObj.type = file.type + '/' + mediaObj.extension;
          return mediaObj;
+      case 'AUDIO_RECORD':
+         mediaObj.extension = getExtension(file.fileCopyUri, false);
+         mediaObj.uri = `${file.fileCopyUri}`;
+         mediaObj.fileSize = file.size;
+         mediaObj.type = file.type;
+         mediaObj.filename = file.name;
+         mediaObj.duration = file.duration || 0;
+         return mediaObj;
+      case 'REDUX':
+         mediaObj.extension = getExtension(file.local_path, false);
+         mediaObj.uri = file.local_path;
+         mediaObj.fileSize = file.file_size;
+         mediaObj.duration = file.duration;
+         mediaObj.filename = file.fileName;
+         mediaObj.type = file.fileType;
+         return mediaObj;
       default:
          break;
    }
@@ -495,7 +524,7 @@ export const validateFileSize = (size, mediaTypeFile) => {
    const filemb = Math.round(size / 1024);
    const maxAllowedSize = getMaxAllowedFileSize(mediaTypeFile);
    if (filemb >= maxAllowedSize * 1024) {
-      const message = `File size is too large. Try uploading file size below ${maxAllowedSize}MB`;
+      const message = stringSet.TOAST_MESSAGES.FILE_SIZE_TOO_LARGE.replace('{maxAllowedSize}', maxAllowedSize);
       if (mediaTypeFile) {
          return message;
       }
@@ -736,6 +765,13 @@ export const isEqualObjet = (obj1, obj2) => {
    return true;
 };
 
+export const handleConversationScollToBottom = () => {
+   conversationFlatListRef.current.scrollToOffset({
+      indexoffset: 0,
+      animated: true,
+   });
+};
+
 export const handleSendMedia = selectedImages => () => {
    let message = {
       messageType: 'media',
@@ -754,6 +790,12 @@ export const getVideoThumbImage = async (uri, duration) => {
    const frame = await createThumbnail({
       url: uri,
       timeStamp: duration / 2,
+      maxWidth: 250,
+      maxHeight: 250,
+      quality: Platform.select({
+         android: 100,
+         ios: 0.9,
+      }),
    });
    const base64 = await RNFS.readFile(frame.path, 'base64');
    return base64;
@@ -801,35 +843,10 @@ export const getThumbImage = async uri => {
    const result = await ImageCompressor.compress(uri, {
       maxWidth: 200,
       maxHeight: 200,
-      quality: 0.8,
+      quality: 0.5,
    });
    const response = await RNFS.readFile(result, 'base64');
    return response;
-};
-
-export const handleUploadNextImage = res => {
-   const { userId, msgId } = res;
-
-   // Find the next message in the state object
-   const conversationData = getChatMessages(userId);
-   const nextMessageIndex = conversationData.findIndex(item => item.msgId === msgId) - 1;
-
-   if (nextMessageIndex > -1) {
-      const {
-         msgId: _msgId,
-         userJid,
-         msgBody: { media = {}, media: { file = {}, uploadStatus } = {} } = {},
-      } = conversationData[nextMessageIndex];
-      if (uploadStatus === 0) {
-         const retryObj = {
-            _msgId,
-            userId,
-            is_uploading: 1,
-         };
-         store.dispatch(updateMediaStatus(retryObj));
-         uploadFileToSDK(file, userJid, _msgId, media);
-      }
-   }
 };
 
 /**
@@ -896,7 +913,7 @@ export const handleImagePickerOpenGallery = async () => {
          .then(async image => {
             const converted = mediaObjContructor('IMAGE_PICKER', image);
             if (converted.fileSize > '10485760') {
-               showToast('Image size too large');
+               showToast(stringSet.TOAST_MESSAGES.IMAGE_SIZE_TOO_LARGE);
                return {};
             }
             return converted;
@@ -932,7 +949,7 @@ export const getNotifyNickName = res => {
 export const getNotifyMessage = res => {
    switch (true) {
       case res.recallStatus === 1:
-         return THIS_MESSAGE_WAS_DELETED;
+         return getStringSet().COMMON_TEXT.THIS_MESSAGE_WAS_DELETED;
       case res.msgBody.message_type === 'text':
          return res?.msgBody?.message;
       case res.msgBody.message_type === 'image':
@@ -954,32 +971,32 @@ export const getNotifyMessage = res => {
 
 export const attachmentMenuIcons = [
    {
-      name: 'Document',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.DOCUMENT_LABEL,
       icon: DocumentIcon,
       formatter: openDocumentPicker,
    },
    {
-      name: 'Camera',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.CAMERA_LABEL,
       icon: CameraIcon,
       formatter: openCamera,
    },
    {
-      name: 'Gallery',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.GALLERY_LABEL,
       icon: GalleryIcon,
       formatter: openGallery,
    },
    {
-      name: 'Audio',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.AUDIO_LABEL,
       icon: HeadSetIcon,
       formatter: handleAudioSelect,
    },
    {
-      name: 'Contact',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.CONTACT_LABEL,
       icon: ContactIcon,
       formatter: openMobileContact,
    },
    {
-      name: 'Location',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.LOCATION_LABEL,
       icon: LocationIcon,
       formatter: openLocation,
    },
@@ -992,25 +1009,22 @@ export const settingsMenu = [
       rounteName: PROFILE_STACK,
    },
    {
-      name: 'Chats',
+      name: getStringSet().SETTINGS_SCREEN.CHATS_LABEL,
       icon: ChatsIcon,
       rounteName: CHATS_CREEN,
    },
-   /** 
-    * 
-   {
-      name: 'Notifications',
-      icon: NotificationSettingsIcon,
-      rounteName: NOTIFICATION_STACK,
-   },
-   */
    {
       name: 'Notifications',
       icon: NotificationSettingsIcon,
       rounteName: NOTIFICATION_STACK,
    },
    {
-      name: 'Log out',
+      name: 'Blocked Contact',
+      icon: BlockedIcon,
+      rounteName: BLOCKED_CONTACT_LIST_STACK,
+   },
+   {
+      name: getStringSet().SETTINGS_SCREEN.LOG_OUT_LABEL,
       icon: ExitIcon,
    },
 ];
@@ -1068,7 +1082,7 @@ export const toggleMuteChat = () => {
 };
 
 export const isActiveChat = jid => {
-   return currentChatUser !== jid || RootNavigation.getCurrentScreen() !== CONVERSATION_SCREEN;
+   return currentChatUser !== jid || !isConversationScreenActive;
 };
 
 export const handleFileOpen = message => {
@@ -1080,15 +1094,14 @@ export const handleFileOpen = message => {
       })
       .catch(err => {
          console.log('Error while opening Document', err);
-         showToast('No apps available to open this file');
+         showToast(stringSet.TOAST_MESSAGES.NO_APPS_AVAILABLE);
       });
 };
 
 export const copyToClipboard = (selectedMsgs, userId) => () => {
-   console.log('userId ==>', userId);
    handelResetMessageSelection(userId)();
    Clipboard.setString(selectedMsgs[0]?.msgBody.message || selectedMsgs[0]?.msgBody?.media?.caption);
-   showToast('1 Text copied successfully to the clipboard');
+   showToast(stringSet.TOAST_MESSAGES.TEXT_COPIED_SUCCESSFULLY);
 };
 
 export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
@@ -1179,15 +1192,19 @@ export const handleReplyPress = (userId, msgId, message) => {
 };
 
 export const findConversationMessageIndex = (msgId, message) => {
-   const data = conversationFlatListRef.current.props.data;
-   const index = data.findIndex(item => item.msgId === msgId);
-   const { deleteStatus, recallStatus } = message;
-   if (deleteStatus !== 0 || recallStatus !== 0) {
-      showToast('This message is no longer available');
-   } else if (index < 0) {
-      return;
-   } else {
-      return index;
+   try {
+      const data = conversationFlatListRef.current.props.data;
+      const index = data.findIndex(item => item.msgId === msgId);
+      const { deleteStatus, recallStatus } = message;
+      if (deleteStatus !== 0 || recallStatus !== 0) {
+         showToast(stringSet.TOAST_MESSAGES.THIS_MESSAGE_NO_LONGER_AVAILABLE);
+      } else if (index < 0) {
+         return;
+      } else {
+         return index;
+      }
+   } catch (error) {
+      showToast('Something went wrong');
    }
 };
 
@@ -1196,3 +1213,121 @@ export const setCurrentChatUser = currentChatUserId => {
 };
 
 export const getCurrentChatUser = () => currentChatUser;
+
+export const groupNotifyStatus = (publisherId, toUserId, status, publisher = '', toUser = '') => {
+   try {
+      const publisherName = publisher || publisherId;
+      const toUserName = toUser || toUserId;
+      const isPublisherLocalUser = isLocalUser(publisherId);
+      const isToUserLocalUser = isLocalUser(toUserId);
+      switch (status) {
+         case messageTypeConstants.GROUP_CREATED:
+            return isPublisherLocalUser
+               ? stringSet.GROUP_LABELS.GROUP_CREATED_BY_YOU
+               : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_CREATED_BY_PUBLISHER, {
+                    publisherName,
+                 });
+         case messageTypeConstants.GROUP_USER_ADDED:
+            const placeholderData = { publisherName, toUser: toUserName };
+            if (isPublisherLocalUser && isToUserLocalUser) return '';
+            if (isPublisherLocalUser) {
+               return replacePlaceholders(stringSet.GROUP_LABELS.GROUP_YOU_ADDED, {
+                  toUser: toUserName,
+               });
+            }
+            return isToUserLocalUser
+               ? replacePlaceholders(stringSet.GROUP_LABELS.GROUP_PUBLISHER_ADDED_YOU, { publisherName })
+               : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_ADDED_BY_PUBLISHER, placeholderData);
+         case messageTypeConstants.GROUP_USER_REMOVED:
+         case messageTypeConstants.GROUP_USER_LEFT:
+            if (isPublisherLocalUser && isToUserLocalUser) return stringSet.GROUP_LABELS.GROUP_YOU_LEFT;
+            if (isPublisherLocalUser)
+               return replacePlaceholders(stringSet.GROUP_LABELS.GROUP_USER_REMOVED, { userName: toUserName });
+            if (isToUserLocalUser)
+               return replacePlaceholders(stringSet.GROUP_LABELS.GROUP_PUBLISHER_REMOVED_YOU, {
+                  userName: publisherName,
+               });
+            return toUserId === publisherId
+               ? replacePlaceholders(stringSet.GROUP_LABELS.GROUP_PUBLISHER_LEFT, { userName: publisherName })
+               : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_MEMBERS_REMOVED, {
+                    publisherName,
+                    toUser: toUserName,
+                 });
+         case messageTypeConstants.GROUP_PROFILE_INFO_UPDATED:
+            return isPublisherLocalUser
+               ? stringSet.GROUP_LABELS.YOU_UPDATED_GROUP_PROFILE
+               : replacePlaceholders(stringSet.GROUP_LABELS.PUBLISHER_UPDATED_GROUP_PROFILE, { publisherName });
+         case messageTypeConstants.GROUP_USER_MADE_ADMIN:
+            return isToUserLocalUser
+               ? stringSet.GROUP_LABELS.YOU_ARE_NOW_AN_ADMIN
+               : replacePlaceholders(stringSet.GROUP_LABELS.USER_IS_NOW_AN_ADMIN, { userName: toUserName });
+         default:
+            return '';
+      }
+   } catch (error) {
+      console.log('Failed to construct notification', error);
+      return '';
+   }
+};
+export const handleUpdateBlockUser = (userId, isBlocked, chatUser) => async () => {
+   if (connectionCheck()) {
+      store.dispatch(updateBlockUser({ userId, isBlocked }));
+      if (isBlocked) {
+         const res = await SDK.blockUser(chatUser);
+         if (res.statusCode === 200) {
+            showToast(`You have blocked ${getUserNameFromStore(userId)}`);
+         }
+      } else {
+         const res = await SDK.unblockUser(chatUser);
+         if (res.statusCode === 200) {
+            showToast(`${getUserNameFromStore(userId)} has been unblocked`);
+         }
+      }
+   }
+};
+
+export const connectionCheck = () => {
+   const xmppConnection = getXmppConnectionStatus();
+   const isNetworkConnected = getNetworkState();
+   if (!isNetworkConnected) {
+      showCheckYourInternetToast();
+      return false;
+   }
+   if (xmppConnection !== CONNECTED) {
+      showToast('Connection Error');
+      return false;
+   }
+   return true;
+};
+
+// Calculate total offset for the FlatList to scroll to
+export const calculateOffset = (itemHeights, index) => {
+   return Array.from({ length: index }, (_, i) => itemHeights[i] || 60).reduce((total, height) => total + height, 0);
+};
+
+export const isValidUrl = str => {
+   return urlRegx.test(str);
+};
+
+export const findUrls = text => {
+   const urlRegex = /https?:\/\/[^\s]+/g;
+   let segments = [];
+   let lastIndex = 0;
+
+   text.replace(urlRegex, (match, offset) => {
+      // Push the text before the URL (if any)
+      if (offset > lastIndex) {
+         segments.push({ isUrl: false, content: text.slice(lastIndex, offset) });
+      }
+      // Push the URL itself
+      segments.push({ isUrl: true, content: match });
+      lastIndex = offset + match.length;
+   });
+
+   // If there's any remaining text after the last URL, add it
+   if (lastIndex < text.length) {
+      segments.push({ isUrl: false, content: text.slice(lastIndex) });
+   }
+
+   return segments;
+};

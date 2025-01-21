@@ -1,0 +1,271 @@
+{
+   "REGISTER_SCREEN": {
+      "REGISTER_NUMBER": "Register Your Number",
+      "REGISTER_INFO_MESSAGE": "Please choose your country code and enter your mobile number to get the verification code.",
+      "REGISTER_CONTINUE_BUTTON_LABEL": "Continue",
+      "ENTER_TOKEN_PLACEHOLDER": "Enter Token",
+      "REGISTER_AGREE_LABEL": "By clicking continue you agree to MirrorFly",
+      "REGISTER_TERMS_AND_CONDITION": "Terms and Conditions",
+      "REGISTER_PRIVACY_POLICY": "Privacy Policy."
+   },
+   "RECENT_CHAT_MENU_DROP_DOWN": {
+      "SETTINGS_LABEL": "Settings",
+      "NEW_GROUP_LABEL": "New Group"
+   },
+   "PROFILE_SCREEN": {
+      "PROFILE_HEADER_TEXT": "Profile",
+      "STATUS_HEADER_LABEL": "Status",
+      "MOBILE_NUM_HEADER_LABEL": "Mobile Number",
+      "EMAIL_HEADER_LABEL": "Email",
+      "DEFAULT_PROFILE_STATUS": "I am in Mirror Fly"
+   },
+   "LAST_SEEN": {
+      "ONLINE_LABEL": "Online",
+      "LAST_SEEN_TODAY": "last seen today at {time}",
+      "LAST_SEEN_YESTERDAY": "last seen yesterday at {time}",
+      "LAST_SEEN_WITH_IN_WEEK": "last seen on {day} at {time}",
+      "LAST_SEEN_MORE_THAN_WEEK_DATE_ABOVE_0": "last seen {date}-{month}-{year}",
+      "LAST_SEEN_MORE_THAN_WEEK_DATE_BELOW_0": "last seen {zero}{date}-{month}-{year}"
+   },
+   "SETTINGS_SCREEN": {
+      "HEADER_TITLE_LABEL": "Settings",
+      "LOG_OUT_LABEL": "Log out",
+      "CHATS_LABEL": "Chats",
+      "BLOCKED_CONTACT": "Blocked Contact",
+      "FEATURE_RESTRICTION": "Feature Restriction"
+   },
+   "SETTINGS_BLOCKED_CONTACT": {
+      "BLOCKED_CONTACT_HEADER": "Blocked Contact List",
+      "NO_BLOCKED_CONTACT_FOUND": "No Blocked Contact found"
+   },
+   "CREATE_GROUP_SCREEN": {
+      "GROUP_INFO_LABEL": "Provide a Group Name and Icon",
+      "NEXT_BUTTON": "NEXT",
+      "CREATE_BUTTON": "CREATE",
+      "NEW_GROUP_BUTTON": "New Group",
+      "GROUP_NAME_INPUT_PLACEHOLDER": "Type group name here"
+   },
+   "SETTING_CHAT_SCREEN": {
+      "CHAT_HEADER_LABEL": "Chats",
+      "ARCHIVE_SETTINGS_LABEL": "Archive Settings",
+      "ARCHIVE_SETTINGS_DES_LABEL": "Archived chats will remain archived when you receive a new message"
+   },
+   "RECENT_CHAT_SCREEN": {
+      "CHAT_TAB_HEADER": "CHATS",
+      "CALLS_TAB_HEADER": "CALLS",
+      "DELETE_CHAT_LABEL": "Delete chat with \"{userName}\"?",
+      "DELETE_MULTIPLE_CHAT_LABEL": "Delete {length} selected chats?"
+   },
+   "CONTACT_SCREEN": {
+      "CONTACT_HEADER_LABEL": "Contacts",
+      "NO_CONTACTS_FOUND": "No contacts found",
+      "REFRESH_BUTTON_LABEL": "Refresh",
+      "ADD_PARTICIPANTS_LABEL": "Add Participants",
+      "COULD_NOT_GET_CONTACTS": "Could not get contacts from server",
+      "DELETE_CONTACT": "Delete Contact"
+   },
+   "CHAT_SCREEN": {
+      "COPY_TEXT_MENU_LABEL": "Copy",
+      "UNBLOCK_LABEL": "Unblock",
+      "BLOCK_LABEL": "Block",
+      "UNBLOCK_CHAT_INPUT_LABEL": "You have blocked {nickName}.",
+      "MESSAGE_INFO_MENU_LABEL": "Message Info",
+      "DELETE_SINGLE_MESSAGE": "Are you sure you want to delete selected message?",
+      "DELETE_MULTIPLE_MESSAGE": "Are you sure you want to delete selected messages?",
+      "DELETE_FOR_ME": "DELETE FOR ME",
+      "DELETE_FOR_EVERYONE": "DELETE FOR EVERYONE",
+      "AUDIO_SLIDE_TO_CANCEL": "Slide to cancel",
+      "AUDIO_CANCEL": "Cancel",
+      "NO_LONGER_PARTICIPANT_SEND_MESSAGE": "You can't send messages to this group because you're no longer a participant",
+      "REPLY_CONTACT_TYPE": "Contact: {nickName}",
+      "CONTACT_CARD_INVITE": "Invite",
+      "CONTACT_CARD_VIEW": "View",
+      "CONTACT_CARD_INVITE_LABEL": "Invite Friend"
+   },
+   "FORWARD_SCREEN": {
+      "FORWARD_HEADER_TITLE": "Forward to...",
+      "NO_USERS_SELECTED": "No users selected",
+      "RECENT_CHAT_HEADER": "Recent Chat",
+      "NO_LONGER_PARTICIPANT_GROUP": "You're no longer a participant in this group",
+      "GROUPS_HEADER_TITLE": "Groups",
+      "CONTACT_HEADER_TITLE": "Contacts",
+      "SENDING_LABEL": "Sending"
+   },
+   "CHAT_SCREEN_ATTACHMENTS": {
+      "DOCUMENT_LABEL": "Document",
+      "CAMERA_LABEL": "Camera",
+      "GALLERY_LABEL": "Gallery",
+      "AUDIO_LABEL": "Audio",
+      "CONTACT_LABEL": "Contact",
+      "LOCATION_LABEL": "Location",
+      "GALLERY_SCREEN_HEADER": "Send to {nickName}",
+      "GALLERY_TAP_SELECT_HEADER": "Tap Photo to select",
+      "DONE_BUTTON": "DONE",
+      "TAP_FOR_PHOTO": "Tap for photo",
+      "CONTACT_TO_SEND": "Contacts to send",
+      "SELECTED": "Selected",
+      "LOCATION_SCREEN_HEADER": "User Location",
+      "SEND_THIS_LOCATION": "Send this location",
+      "CONTACT_PREVIEW_HEADER": "Send contacts"
+   },
+   "MEDIA_PREVIEW_SCREEN": {
+      "ADD_CAPTION_LABEL": "Add a caption...",
+      "SENT_MEDIA_HEADER": "Sent Media",
+      "RECEIVED_MEDIA_HEADER": "Received Media"
+   },
+   "COMMON_TEXT": {
+      "NO_RESULTS_FOUND": "No results found",
+      "NO_NEW_MESSAGES": "No New Messages",
+      "ANY_MESSAGES_APPEAR_HERE": "Any new messages will appear here",
+      "NO_INTERNET_CONNECTION": "Please check your internet connection",
+      "ARCHIVED_CHAT_HEADER_LABEL": "Archived Chats",
+      "RECENT_ARCHIVED_LABEL": "Archived",
+      "NO_ARCHIVED_CHATS": "No archived chats",
+      "IMAGE_MSG_TYPE": "Image",
+      "PHOTO_LABEL": "Photo",
+      "VIDEO_MSG_TYPE": "Video",
+      "FILE_MSG_TYPE": "File",
+      "AUDIO_MSG_TYPE": "Audio",
+      "LOCATION_MSG_TYPE": "Location",
+      "CONTACT_MSG_TYPE": "Contact",
+      "TAKE_PHOTO": "Take Photo",
+      "REMOVE_PHOTO": "Remove Photo",
+      "CHOOSE_FROM_GALLERY": "Choose from Gallery",
+      "PLEASE_WAIT_LABEL": "Please Wait",
+      "YOU_ARE_A_PARTICIPANT": "You are a participant in this group",
+      "YOU_ARE_A_MEMBER": "You are a member of a certain group",
+      "THIS_MESSAGE_WAS_DELETED": "This message was deleted",
+      "YOU_DELETED_THIS_MESSAGE": "You deleted this message",
+      "ORIGINAL_MESSAGE_DELETED": "Original message not available",
+      "YOU_LABEL": "You"
+   },
+   "MESSAGE_INFO_SCREEN": {
+      "MESSAGE_INFO_HEADER": "Message Info",
+      "DELIVERED_LABEL": "Delivered",
+      "READ_LABEL": "Read",
+      "NOT_DELIVERED": "Message sent, not delivered yet",
+      "NOT_READ": "Your message is not read",
+      "DELIVERED_TO_LABEL": "Delivered to {deliveredlength} of {participantslength}",
+      "READ_BY_LABEL": "Read by {readlength} of {participantslength}"
+   },
+   "PLACEHOLDERS": {
+      "SEARCH_PLACEHOLDER": "Search...",
+      "CHAT_INPUT_PLACEHOLDER": "Start Typing...",
+      "ENTER_EMAIL_ID": "Enter Email Id",
+      "ENTER_USER_NAME": "Username ",
+      "ENTER_MOBILE_NUMBER": "Enter mobile number"
+   },
+   "TOAST_MESSAGES": {
+      "TOAST_SELECTED_MORE_THAN_ITEM": "You can't share more than 10 media items",
+      "TOAST_PROVIDE_GROUP_NAME": "Please provide group name",
+      "TOAST_SELECT_TWO_CONTACT": "Add at least two Contacts",
+      "TOAST_SELECT_ANY_CONTACTS": "Select any contacts",
+      "TOAST_GROUP_CREATED_SUCCESSFULLY": "Group created successfully",
+      "GROUP_NAME_EMPTY": "Group name cannot be empty",
+      "FORWARD_MESSAGE_MAX_USERS": "You can only forward upto 5 users or groups",
+      "RECORD_TIME_TOO_SHORT": "Recorded audio time is too short",
+      "EMAIL_VALIDATION": "Email should not be empty",
+      "ENTER_VALID_MAIL": "Please enter a Valid E-Mail",
+      "ENTER_USER_NAME": "Please enter your username",
+      "USER_NAME_TOO_SHORT": "Username is too short",
+      "PROFILE_UPDATE_SUCCESSFULLY": "Profile Updated successfully",
+      "NICK_NAME_MAX_CHAR": "Maximum of 30 Characters",
+      "LINK_COPIED": "Link Copied",
+      "CANNOT_SHARE_MORE_THAN_5_CONTACTS": "You can't share more than 5 contacts",
+      "UNABLE_TO_GET_CURRENT_LOCATION": "Unable to get current location",
+      "FAILED_TO_CREATE_GROUP": "Failed to create group",
+      "FAILED_TO_ADD_PARTICIPANTS": "Failed to add participants",
+      "AUDIO_RECORD_MAX_DURATION": "You can record maximum 300 seconds for audio recording",
+      "IMAGE_SIZE_TOO_LARGE": "Image size too large",
+      "THIS_MESSAGE_NO_LONGER_AVAILABLE": "This message is no longer available",
+      "NO_APPS_AVAILABLE": "No apps available to open this file",
+      "NO_APPS_AVAILABLE_FOR_LOCATION'": "No app found to open location",
+      "UNABLE_TO_OPEN_THE_LOCATION": "Unable to open the location",
+      "THERE_IS_NO_CONVERSATION": "There is no conversation",
+      "TEXT_COPIED_SUCCESSFULLY": "1 Text copied successfully to the clipboard",
+      "FILE_SIZE_TOO_LARGE": "File size is too large. Try uploading file size below {maxAllowedSize}MB",
+      "YOU_HAVE_BLOCKED": "You have blocked {nickName}",
+      "HAS_BEEN_UNBLOCKED": "{nickName} has been unblocked",
+      "PLEASE_ENTER_MOBILE_NUMBER": "Please Enter Mobile Number",
+      "YOUR_MOBILE_NUMBER_IS_TOO_SHORT": "Your mobile number is too short"
+   },
+   "INFO_SCREEN": {
+      "PROFILE_PIC_EDIT_HEADER": "Options",
+      "MEMBERS_LABEL_TEXT": "{participantslength} members",
+      "MAKE_ADMIN_BUTTON": "Make Admin",
+      "ADMIN_LABEL_TEXT": "Admin",
+      "LEAVE_GROUP_HEADER": "Are you sure you want to leave from group?",
+      "REMOVE_FROM_GROUP": "Remove from Group",
+      "VIEW_ALL_MEDIA": "View All Media",
+      "ADD_PARTICIPANTS": "Add Participants",
+      "MAXIMUM_ALLOWED_GROUP_MEMBERS": "Maximum allowed group members {maxAllowdGroupMembers}",
+      "LEAVE_GROUP_LABEL": "Leave Group",
+      "DELETE_GROUP_LABEL": "Delete Group",
+      "ENTER_NAME": "Enter New Name"
+   },
+   "POPUP_TEXT": {
+      "REMOVE_PROFILE_HEADER_TITLE": "Are you sure you want to remove the photo?",
+      "REMOVE_PARTICIPANT_FROM_GROUP": "Are you sure you want to remove {nickName}?",
+      "MAKE_PARTICIPANT_ADMIN": "Are you sure you want to make {nickName} the admin?",
+      "DELETE_GROUP_HEADER": "Are you sure you want to delete this group?",
+      "START_CHAT": "Start Chat",
+      "UNBLOCK_POPUP_LABEL": "Unblock {nickName}",
+      "BLOCK_POPUP_LABEL": "Block {nickName}",
+      "LOG_OUT_HEADER_LABEL": "Are you sure want to logout from the app?"
+   },
+   "BUTTON_LABEL": {
+      "NO_BUTTON": "No",
+      "YES_BUTTON": "Yes",
+      "CANCEL_BUTTON": "CANCEL",
+      "LEAVE_BUTTON": "LEAVE",
+      "DELETE_BUTTON": "DELETE",
+      "OK_BUTTON": "OK",
+      "SAVE_BUTTON": "Save",
+      "UPDATE_CONTINUE_BUTTON": "Update & Continue",
+      "CLOSE_BUTON": "Close",
+      "CONTACT_SEND_SMS_BTN": "Send SMS",
+      "COPY_LINK_BUTTON": "Copy Link",
+      "RETRY_BUTTON": "RETRY",
+      "UNBLOCK_BUTTON": "UNBLOCK",
+      "BLOCK_BUTTON": "BLOCK"
+   },
+   "VIEW_ALL_MEDIA_SCREEN": {
+      "TAB_HEADER_MEDIA": "Media",
+      "TAB_HEADER_DOCS": "Docs",
+      "TAB_HEADER_LINKS": "Links",
+      "NO_MEDIA_FOUND": "No Media Found ...!!!",
+      "NO_DOCS_FOUND": "No Docs Found...!!!",
+      "NO_LINKS_FOUND": "No Links Found...!!!"
+   },
+   "GROUP_LABELS": {
+      "GROUP_CREATED_BY_YOU": "You created this group",
+      "GROUP_CREATED_BY_PUBLISHER": "{publisherName} created this group",
+      "GROUP_YOU_ADDED": "You added {toUser}",
+      "GROUP_ADDED_BY_PUBLISHER": "{publisherName} added {toUser}",
+      "GROUP_PUBLISHER_ADDED_YOU": "{publisherName} added you",
+      "GROUP_YOU_LEFT": "You left",
+      "GROUP_PUBLISHER_LEFT": "{userName} left",
+      "GROUP_USER_REMOVED": "You removed {userName}",
+      "GROUP_PUBLISHER_REMOVED_YOU": "{userName} removed you",
+      "GROUP_MEMBERS_REMOVED": "{publisherName} removed {toUser}",
+      "YOU_UPDATED_GROUP_PROFILE": "You updated this group profile",
+      "PUBLISHER_UPDATED_GROUP_PROFILE": "{publisherName} updated this group profile",
+      "YOU_ARE_NOW_AN_ADMIN": "You are now an admin",
+      "USER_IS_NOW_AN_ADMIN": "{userName} is now an admin"
+   },
+   "ADD_NEW_CONTACT_SCREEN": {
+      "ADD_NEW_CONTACT_HEADER": "Add New Contact"
+   },
+   "FEATURE_RESTRICTION_MENU_SCREEN": {
+      "SINGLE_CHAT": "Single Chat",
+      "SINGLE_CHAT_DESC": "If you enable this toggle, you can see all the individual chat messages",
+      "GROUP_CHAT": "Group Chat",
+      "GROUP_CHAT_DESC": "If you enable this toggle, you can see all the group chat messages",
+      "ARCHIVE_CHAT": "Archive chat",
+      "ARCHIVE_CHAT_DESC": "If you enable this toggle, you can see all the archived chats",
+      "CHAT_HISTORY": "Chat History",
+      "CHAT_HISTORY_DESC": "If you enable this toggle, you can see all the Chat History",
+      "COMMUNICATION": "Communication",
+      "COMMUNICATION_DESC": "If you enable this toggle, you can control how many message you like to display from the Sender."
+   }
+}

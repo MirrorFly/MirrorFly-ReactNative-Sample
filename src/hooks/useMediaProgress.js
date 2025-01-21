@@ -1,6 +1,7 @@
 import React from 'react';
 import RNFS from 'react-native-fs';
 import { useDispatch } from 'react-redux';
+import SDK from '../SDK/SDK';
 import { uploadFileToSDK } from '../SDK/utils';
 import { updateProgressNotification } from '../Service/PushNotify';
 import { useNetworkStatus } from '../common/hooks';

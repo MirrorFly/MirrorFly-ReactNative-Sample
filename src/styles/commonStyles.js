@@ -1,12 +1,12 @@
 import { Dimensions, StyleSheet } from 'react-native';
 import ApplicationColors from '../config/appColors';
+
 const { width, height } = Dimensions.get('window');
 
-export const modelStyles = StyleSheet.create({
+export const modelStyles = {
    inviteFriendModalContentContainer: {
       maxWidth: 500,
       width: '80%',
-      backgroundColor: ApplicationColors.mainbg,
       borderRadius: 5,
       paddingVertical: 15,
       paddingHorizontal: 5,
@@ -18,13 +18,13 @@ export const modelStyles = StyleSheet.create({
       marginVertical: 15,
       paddingHorizontal: 25,
    },
-   modalOption: {
+   modalOption: textColor => ({
       paddingHorizontal: 25,
       paddingVertical: 15,
       fontSize: 14,
-      color: '#000',
-   },
-});
+      color: textColor,
+   }),
+};
 
 export const pressableStyles = StyleSheet.create({
    highlightView: {
@@ -33,12 +33,12 @@ export const pressableStyles = StyleSheet.create({
       right: 0,
       bottom: 0,
       left: 0,
-      backgroundColor: ApplicationColors.pressedBg,
+      backgroundColor: 'rgba(0, 0, 0, 0.1)',
       zIndex: 10,
    },
 });
 
-const commonStyles = StyleSheet.create({
+const commonStyles = {
    flex1: {
       flex: 1,
    },
@@ -48,8 +48,12 @@ const commonStyles = StyleSheet.create({
    centeredContent: {
       justifyContent: 'center',
       alignItems: 'center',
-      width: width, // Set width to the width of the screen
-      height: height, // Set height to the height of the screen
+      width: width,
+      height: height,
+   },
+   resetMarginAndPadding: {
+      padding: 0,
+      margin: 0,
    },
    mt_12: {
       marginTop: 12,
@@ -63,9 +67,12 @@ const commonStyles = StyleSheet.create({
    bg_white: {
       backgroundColor: '#fff',
    },
-   pressedBg: {
-      backgroundColor: ApplicationColors.pressedBg,
-   },
+   bg_color: bgColor => ({
+      backgroundColor: bgColor,
+   }),
+   pressedBg: bgColor => ({
+      backgroundColor: bgColor,
+   }),
    mb_130: {
       marginBottom: 130,
    },
@@ -90,6 +97,12 @@ const commonStyles = StyleSheet.create({
    p_15: {
       padding: 15,
    },
+   fontSize_14: {
+      fontSize: 14,
+   },
+   fontSize_15: {
+      fontSize: 15,
+   },
    fontSize_18: {
       fontSize: 18,
    },
@@ -100,7 +113,7 @@ const commonStyles = StyleSheet.create({
       textAlign: 'center',
    },
    typingText: {
-      color: ApplicationColors.mainColor,
+      color: '#3276E2',
    },
    dispaly_none: {
       display: 'none',
@@ -159,7 +172,7 @@ const commonStyles = StyleSheet.create({
       bottom: -15,
    },
    pressedBg_2: {
-      backgroundColor: ApplicationColors.secondaryPressedBg,
+      backgroundColor: 'rgba(128, 128, 128, 0.5)',
    },
    m_12: {
       margin: 12,
@@ -370,9 +383,6 @@ const commonStyles = StyleSheet.create({
    fontSize_12: {
       fontSize: 12,
    },
-   fontSize_14: {
-      fontSize: 14,
-   },
    bgBlack: {
       backgroundColor: '#000',
    },
@@ -397,11 +407,80 @@ const commonStyles = StyleSheet.create({
    height_100_per: {
       height: '100%',
    },
+   borderRadius_4: {
+      borderRadius: 4,
+   },
    borderRadius_5: {
       borderRadius: 5,
    },
+   borderRadius_6: {
+      borderRadius: 6,
+   },
+   borderRadius_8: {
+      borderRadius: 8,
+   },
+   borderRadius_12: {
+      borderRadius: 12,
+   },
    borderRadius_50: {
       borderRadius: 50,
+   },
+   borderWidth_0: {
+      borderWidth: 0,
+   },
+   borderWidth_1: {
+      borderWidth: 1,
+   },
+   borderWidth_3: {
+      borderWidth: 3,
+   },
+   borderWidth_05: {
+      borderWidth: 0.5,
+   },
+   borderColorWhite: {
+      borderColor: '#fff',
+   },
+   borderColorGray: {
+      borderColor: '#ccc',
+   },
+   borderColorBlack: {
+      borderColor: '#000',
+   },
+   borderColorRed: {
+      borderColor: 'red',
+   },
+   borderColorTransparent: {
+      borderColor: 'transparent',
+   },
+   borderBottomWidth_1: {
+      borderBottomWidth: 1,
+   },
+   borderTopWidth_1: {
+      borderTopWidth: 1,
+   },
+   borderTopWidth_2: {
+      borderTopWidth: 2,
+   },
+   borderBottomWidth_2: {
+      borderBottomWidth: 2,
+   },
+   borderBottomColor_White: {
+      borderBottomColor: '#fff',
+   },
+   borderBottomColor_Gray: {
+      borderBottomColor: '#ccc',
+   },
+   borderBottomColor_Black: {
+      borderBottomColor: '#000',
+   },
+   borderBottomColorTransparent: {
+      borderBottomColor: 'transparent',
+   },
+   borderBottomColorBlack: {
+      borderBottomColor: '#000',
+   },
+   borderBottomColorGray: {
+      borderBottomColor: '#ccc',
    },
    resizeCover: {
       resizeMode: 'cover',
@@ -421,10 +500,6 @@ const commonStyles = StyleSheet.create({
    r_5: {
       right: 5,
    },
-   dividerLine: {
-      height: 0.5,
-      backgroundColor: ApplicationColors.dividerBg,
-   },
    verticalDividerLine: {
       width: 1,
       backgroundColor: '#e3e3e3',
@@ -432,14 +507,12 @@ const commonStyles = StyleSheet.create({
    primarypilbtn: {
       height: 40,
       minHeight: 4,
-      backgroundColor: '#3276E2',
       borderRadius: 25,
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
    },
    primarypilbtntext: {
-      color: '#fff',
       fontSize: 16,
       paddingHorizontal: 25,
    },
@@ -455,6 +528,32 @@ const commonStyles = StyleSheet.create({
       color: '#1f2937',
       fontWeight: 'bold',
    },
-});
+   textInput: {
+      height: 40,
+      borderColor: '#ccc',
+      borderWidth: 1,
+      marginBottom: 10,
+      paddingHorizontal: 10,
+   },
+   dividerLine: dividerBg => ({
+      height: 0.5,
+      backgroundColor: dividerBg,
+   }),
+   textDecorationLine: {
+      textDecorationLine: 'underline',
+   },
+   mainTextColor: {
+      color: ApplicationColors.mainColor,
+   },
+   opacity_0_5: {
+      opacity: 0.5,
+   },
+   textColor: txtcolor => ({
+      color: txtcolor,
+   }),
+   textFontFamily: txtFamily => ({
+      fontFamily: txtFamily,
+   }),
+};
 
 export default commonStyles;

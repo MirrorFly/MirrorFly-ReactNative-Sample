@@ -18,7 +18,14 @@ function UserAvathar({ type, userId, data = {}, ...props }) {
    let { nickName, colorCode, image: imageToken } = userProfile;
 
    return (
-      <Avathar type={type} data={nickName || userId} backgroundColor={colorCode} profileImage={imageToken} {...props} />
+      <Avathar
+         type={type}
+         userId={userId}
+         data={nickName || userId}
+         backgroundColor={colorCode}
+         profileImage={imageToken}
+         {...props}
+      />
    );
 }
 

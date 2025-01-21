@@ -1,3 +1,7 @@
+import store from '../redux/store';
+import { updateTheme } from '../redux/themeColorDataSlice';
+import { RealmKeyValueStore } from '../SDK/SDK';
+
 const ApplicationColors = {
    mainColor: '#3276E2',
    modalOverlayBg: 'rgba(0,0,0,.5)',
@@ -22,3 +26,17 @@ const ApplicationColors = {
 };
 
 export default ApplicationColors;
+
+export const isObjectChanged = (original, response) => {
+   for (let key in response) {
+      if (original[key] !== response[key]) {
+         return true; // A change is detected
+      }
+   }
+   return false; // No change
+};
+
+export const setTheme = (theme = 'light') => {
+   store.dispatch(updateTheme(theme));
+   RealmKeyValueStore.setItem('theme', theme);
+};

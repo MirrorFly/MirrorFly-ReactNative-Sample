@@ -2,6 +2,8 @@ export const MIRRORFLY_RN = 'mirrorfly_rn://';
 
 export const numRegx = /^\d+$/;
 export const MIX_BARE_JID = /^([^( "'&\/:<>@\\)])+\@(mix\.[^( "'&\/:<>@\\)]{1,})$/; //NOSONAR
+export const urlRegx = /(https?|ftp):\/\/[^\s/$.?#].[^\s]*/i;  //NOSONAR
+export const uriPattern = /file:\/\/\/[^\s]+/; //NOSONAR
 export const BLOCK_CONTACT_TYPE = 'block_user';
 export const UNBLOCK_CONTACT_TYPE = 'unblock_user';
 export const CHAT_TYPE_SINGLE = 'chat';
@@ -191,6 +193,28 @@ export const mediaStatusConstants = {
    LOADED: 'LOADED',
 };
 
+export const messageTypeConstants = {
+   GROUP_USER_ADDED: 'userAdded',
+   GROUP_USER_REMOVED: 'userRemoved',
+   GROUP_USER_MADE_ADMIN: 'madeAdmin',
+   GROUP_USER_LEFT: 'userLeft',
+   GROUP_PROFILE_INFO_UPDATED: 'profileUpdated',
+   GROUP_CHAT_PROFILE_UPDATED_NOTIFY: 'groupProfileUpdated',
+   GROUP_CREATED: 'groupCreated',
+   NOTIFICATION: 'notification',
+   BLOCK_CONTACT_TYPE: 'block_user',
+};
+
+export const messageNotificationTypes = {
+   0: 'none',
+   1: 'groupCreated',
+   2: 'userAdded',
+   3: 'userRemoved',
+   4: 'profileUpdated',
+   5: 'madeAdmin',
+   6: 'userLeft',
+};
+
 export const MAP_THHUMBNAIL_URL = 'https://maps.googleapis.com/maps/api/staticmap';
 
 export const imageEmoji = '📷';
@@ -269,3 +293,8 @@ export const PACKAGE_XIAOMI = 'com.miui.securitycenter';
 export const PACKAGE_XIAOMI_WINDOW_COMPONENT = 'com.miui.permcenter.permissions.PermissionsEditorActivity';
 export const alertPermissionMessage =
    'Allow MirrorFly to send you notifications while the app in background.\n\n Please continue to app Settings > select OthersPermission > enable the all permissions.';
+
+export const audioRecord = {
+   RECORDING: 'RECORDING',
+   STOPPED: 'STOPPED',
+};

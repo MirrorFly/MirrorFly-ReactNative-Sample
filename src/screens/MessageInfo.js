@@ -1,18 +1,23 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import ScreenHeader from '../common/ScreenHeader';
+import Text from '../common/Text';
 import { change16TimeWithDateFormat } from '../common/timeStamp';
 import GroupChatMessageInfo from '../components/GroupChatMessageInfo';
 import Message from '../components/Message';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP } from '../helpers/constants';
-import { useChatMessages } from '../redux/reduxHook';
+import { getStringSet } from '../localization/stringSet';
+import { useChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
+import SDK from '../SDK/SDK';
 import commonStyles from '../styles/commonStyles';
 
 function MessageInfo() {
+   const stringSet = getStringSet();
    const { params: { chatUser = '', msgId = '' } = {} } = useRoute();
    const navigation = useNavigation();
+   const themeColorPalatte = useThemeColorPalatte();
    const userId = getUserIdFromJid(chatUser);
    const chatMessageList = useChatMessages(userId);
    const messageObject = chatMessageList.find(item => item.msgId === msgId);
@@ -52,30 +57,46 @@ function MessageInfo() {
          return (
             <View style={[commonStyles.paddingHorizontal_16]}>
                <Text
-                  style={[commonStyles.fw_600, commonStyles.fontSize_18, commonStyles.colorBlack, commonStyles.my_15]}>
-                  Delivered
+                  style={[
+                     commonStyles.fw_600,
+                     commonStyles.fontSize_18,
+                     commonStyles.my_15,
+                     { color: themeColorPalatte.primaryTextColor },
+                  ]}>
+                  {stringSet.MESSAGE_INFO_SCREEN.DELIVERED_LABEL}
                </Text>
                <Text style={[styles.stautsText, commonStyles.marginBottom_8]}>
-                  {deliveredReport ? change16TimeWithDateFormat(deliveredReport) : 'Message sent, not delivered yet'}
+                  {deliveredReport
+                     ? change16TimeWithDateFormat(deliveredReport)
+                     : stringSet.MESSAGE_INFO_SCREEN.NOT_DELIVERED}
                </Text>
-               <View style={commonStyles.dividerLine} />
+               <View style={commonStyles.dividerLine(themeColorPalatte.dividerBg)} />
                <View style={{ padding: 10 }}></View>
                <Text
-                  style={[commonStyles.fw_600, commonStyles.fontSize_18, commonStyles.colorBlack, commonStyles.my_15]}>
-                  Read
+                  style={[
+                     commonStyles.fw_600,
+                     commonStyles.fontSize_18,
+                     { color: themeColorPalatte.primaryTextColor },
+                     commonStyles.my_15,
+                  ]}>
+                  {stringSet.MESSAGE_INFO_SCREEN.READ_LABEL}
                </Text>
                <Text style={[styles.stautsText, commonStyles.marginBottom_8]}>
-                  {seenReport ? change16TimeWithDateFormat(seenReport) : 'Your message is not read'}
+                  {seenReport ? change16TimeWithDateFormat(seenReport) : stringSet.MESSAGE_INFO_SCREEN.NOT_READ}
                </Text>
-               <View style={commonStyles.dividerLine} />
+               <View style={commonStyles.dividerLine(themeColorPalatte.dividerBg)} />
             </View>
          );
       }
    };
 
    return (
-      <View style={[commonStyles.bg_white, commonStyles.flex1]}>
-         <ScreenHeader onhandleBack={handleBackBtn} title="Message Info" isSearchable={false} />
+      <View style={[commonStyles.bg_color(themeColorPalatte.screenBgColor), commonStyles.flex1]}>
+         <ScreenHeader
+            onhandleBack={handleBackBtn}
+            title={stringSet.MESSAGE_INFO_SCREEN.MESSAGE_INFO_HEADER}
+            isSearchable={false}
+         />
          <ScrollView>
             <View style={[commonStyles.paddingHorizontal_12, commonStyles.alignSelfFlexEnd, commonStyles.mt_20]}>
                <View style={[styles.messageContentWrapper, { maxWidth: messageWidth }]}>
@@ -85,7 +106,7 @@ function MessageInfo() {
                </View>
             </View>
             <View style={commonStyles.mt_20} />
-            <View style={commonStyles.dividerLine} />
+            <View style={commonStyles.dividerLine(themeColorPalatte.dividerBg)} />
             {renderMessageBasedOnChatType()}
          </ScrollView>
       </View>

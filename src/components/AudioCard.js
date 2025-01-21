@@ -1,11 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import AudioPlayer from '../Media/AudioPlayer';
 import AttachmentProgressLoader from '../common/AttachmentProgressLoader';
 import { AudioMicIcon, AudioMusicIcon } from '../common/Icons';
+import Text from '../common/Text';
 import { getConversationHistoryTime } from '../common/timeStamp';
 import { getMessageStatus } from '../helpers/chatHelpers';
 import useMediaProgress from '../hooks/useMediaProgress';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
 
@@ -21,7 +23,7 @@ const AudioCard = ({ item, isSender }) => {
       } = {},
    } = item;
    const uri = local_path || fileDetails?.uri;
-
+   const themeColorPalatte = useThemeColorPalatte();
    const { mediaStatus, downloadMedia, retryUploadMedia, cancelProgress } = useMediaProgress({
       mediaUrl: uri,
       uploadStatus: is_uploading || 0,
@@ -32,8 +34,14 @@ const AudioCard = ({ item, isSender }) => {
 
    return (
       <View style={[styles.container, replyTo ? commonStyles.p_4 : undefined]}>
-         {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
-         <View style={styles.audioControlsContainer(isSender ? '#D0D8EB' : '#EFEFEF')}>
+         {Boolean(replyTo) && <ReplyMessage message={item} isSender={isSender} />}
+         <View
+            style={[
+               styles.audioControlsContainer,
+               commonStyles.bg_color(
+                  isSender ? themeColorPalatte.chatSenderSecondaryColor : themeColorPalatte.chatReceiverSecondaryColor,
+               ),
+            ]}>
             <View style={styles.audioIconContainer}>
                {audioType ? <AudioMicIcon width="14" height="14" /> : <AudioMusicIcon width="14" height="14" />}
             </View>
@@ -48,9 +56,25 @@ const AudioCard = ({ item, isSender }) => {
             </View>
             <AudioPlayer msgId={msgId} uri={uri} media={media} mediaStatus={mediaStatus} />
          </View>
-         <View style={styles.bottomView(isSender ? '#E2E8F7' : '#fff')}>
+         <View
+            style={[
+               styles.bottomView,
+               commonStyles.bg_color(
+                  isSender ? themeColorPalatte.chatSenderPrimaryColor : themeColorPalatte.chatReceiverPrimaryColor,
+               ),
+            ]}>
             {isSender && getMessageStatus(msgStatus)}
-            <Text style={styles.timeStampText}>{getConversationHistoryTime(createdAt)}</Text>
+            <Text
+               style={[
+                  styles.timeStampText,
+                  commonStyles.textColor(
+                     isSender
+                        ? themeColorPalatte.chatSenderSecondaryTextColor
+                        : themeColorPalatte.chatReceiverSecondaryTextColor,
+                  ),
+               ]}>
+               {getConversationHistoryTime(createdAt)}
+            </Text>
          </View>
       </View>
    );
@@ -59,24 +83,22 @@ const AudioCard = ({ item, isSender }) => {
 export default AudioCard;
 
 const styles = StyleSheet.create({
-   bottomView: bgColor => ({
+   bottomView: {
       height: 22,
       flexDirection: 'row',
       justifyContent: 'flex-end',
       alignItems: 'center',
-      backgroundColor: bgColor,
-   }),
+   },
    container: {
       width: 250,
       marginBottom: 4,
    },
-   audioControlsContainer: bgColor => ({
+   audioControlsContainer: {
       flexDirection: 'row',
       alignItems: 'center',
       height: 64,
       paddingHorizontal: 8,
-      backgroundColor: bgColor,
-   }),
+   },
    audioIconContainer: {
       backgroundColor: '#97A5C7',
       borderRadius: 25,
@@ -87,7 +109,6 @@ const styles = StyleSheet.create({
    timeStampText: {
       paddingHorizontal: 4,
       textAlign: 'right',
-      color: '#455E93',
       fontSize: 10,
       fontWeight: '400',
    },

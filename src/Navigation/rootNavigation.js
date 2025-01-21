@@ -28,6 +28,7 @@ const RootNavigation = {
       if (navigationRef.isReady()) {
          const findCurrentRoute = routes => {
             const route = routes[routes.length - 1];
+            console.log('route.state ==>', routes);
             if (route.state) {
                // Recursively find the current route in nested navigators
                return findCurrentRoute(route.state.routes);

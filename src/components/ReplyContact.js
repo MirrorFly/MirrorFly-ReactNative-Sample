@@ -1,26 +1,21 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { ClearTextIcon, ContactChatIcon } from '../common/Icons';
 import NickName from '../common/NickName';
+import Text from '../common/Text';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
-import { getCurrentUserJid } from '../uikitMethods';
 
 const ReplyContact = props => {
-   const { replyMsgItems, handleRemove } = props;
+   const { replyMsgItems, handleRemove, stringSet } = props;
    const { publisherJid = '', msgBody = {} } = replyMsgItems;
    const contactInfo = msgBody?.contact;
-   const isSameUser = publisherJid === getCurrentUserJid();
    const publisherId = getUserIdFromJid(publisherJid);
 
    return (
       <View>
          <View flexDirection="row" justifyContent={'space-between'} alignItems={'center'}>
-            {isSameUser ? (
-               <Text style={commonStyles.userName}>You</Text>
-            ) : (
-               <NickName style={commonStyles.userName} userId={publisherId} />
-            )}
+            <NickName style={commonStyles.userName} userId={publisherId} />
             <Pressable
                style={{
                   padding: 5,
@@ -38,8 +33,8 @@ const ReplyContact = props => {
          </View>
          <View flexDirection="row" alignItems={'center'}>
             <ContactChatIcon />
-            <Text pl={2} color="#313131" fontSize={14} fontWeight={400}>
-               Contact: {contactInfo?.name}
+            <Text pl={2} color="#313131" fontSize={14} fontWeight={400} style={{ paddingHorizontal: 4 }}>
+               {stringSet.CHAT_SCREEN.REPLY_CONTACT_TYPE.replace('{nickName}', contactInfo?.name)}
             </Text>
          </View>
       </View>

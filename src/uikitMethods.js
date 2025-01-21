@@ -13,12 +13,14 @@ import { CallComponent } from './calls/CallComponent';
 import { setupCallKit } from './calls/ios';
 import { setNotificationForegroundService } from './calls/notification/callNotifyHandler';
 import { getNotifyMessage, getNotifyNickName, getUserIdFromJid, showToast } from './helpers/chatHelpers';
+import { setLanguageCode } from './localization/stringSet';
 import { addChatMessageItem } from './redux/chatMessageDataSlice';
 import { clearState } from './redux/clearSlice';
 import { addRecentChatItem } from './redux/recentChatDataSlice';
 import { getArchive, getRoasterData } from './redux/reduxHook';
 import { setRoasterData } from './redux/rosterDataSlice';
 import store from './redux/store';
+import { updateTheme, updateThemeColor } from './redux/themeColorDataSlice';
 import { RECENTCHATSCREEN, REGISTERSCREEN } from './screens/constants';
 
 let uiKitCallbackListenersVal = {},
@@ -108,6 +110,11 @@ export const mirrorflyInitialize = async args => {
          }, {});
          currentUserJID = _extractedData?.['currentUserJID'];
          currentScreen = _extractedData?.['screen'] || REGISTERSCREEN;
+         setLanguageCode(_extractedData.languageCode || 'en');
+         let themeColorPalatte =
+            typeof _extractedData.themePalatte === 'object' ? JSON.parse(_extractedData.themePalatte) : {};
+         store.dispatch(updateThemeColor(themeColorPalatte));
+         store.dispatch(updateTheme(_extractedData.theme || 'light'));
          fetchCurrentUserProfile();
          updateNotificationSettings();
       }

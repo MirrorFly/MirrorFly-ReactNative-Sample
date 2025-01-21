@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { getStringSet } from '../localization/stringSet';
 import { setReplyMessage } from '../redux/draftSlice';
 import ReplyAudio from './ReplyAudio';
 import ReplyContact from './ReplyContact';
@@ -13,6 +14,7 @@ import ReplyText from './ReplyText';
 import ReplyVideo from './ReplyVideo';
 
 function ReplyContainer({ chatUser, replyMessage }) {
+   const stringSet = getStringSet();
    const userId = getUserIdFromJid(chatUser);
    const dispatch = useDispatch();
    const { msgBody = {}, deleteStatus = 0, recallStatus = 0, msgBody: { message_type = '' } = {} } = replyMessage;
@@ -27,17 +29,47 @@ function ReplyContainer({ chatUser, replyMessage }) {
          case message_type === 'text':
             return <ReplyText replyMsgItems={replyMessage} handleRemove={handleCloseReplyContainer} />;
          case message_type === 'image':
-            return <ReplyImage replyMsgItems={replyMessage} handleRemove={handleCloseReplyContainer} />;
+            return (
+               <ReplyImage
+                  replyMsgItems={replyMessage}
+                  handleRemove={handleCloseReplyContainer}
+                  stringSet={stringSet}
+               />
+            );
          case message_type === 'video':
-            return <ReplyVideo replyMsgItems={replyMessage} handleRemove={handleCloseReplyContainer} />;
+            return (
+               <ReplyVideo
+                  replyMsgItems={replyMessage}
+                  handleRemove={handleCloseReplyContainer}
+                  stringSet={stringSet}
+               />
+            );
          case message_type === 'audio':
-            return <ReplyAudio replyMsgItems={replyMessage} handleRemove={handleCloseReplyContainer} />;
+            return (
+               <ReplyAudio
+                  replyMsgItems={replyMessage}
+                  handleRemove={handleCloseReplyContainer}
+                  stringSet={stringSet}
+               />
+            );
          case message_type === 'file':
             return <ReplyDocument replyMsgItems={replyMessage} handleRemove={handleCloseReplyContainer} />;
          case message_type === 'contact':
-            return <ReplyContact replyMsgItems={replyMessage} handleRemove={handleCloseReplyContainer} />;
+            return (
+               <ReplyContact
+                  replyMsgItems={replyMessage}
+                  handleRemove={handleCloseReplyContainer}
+                  stringSet={stringSet}
+               />
+            );
          case message_type === 'location':
-            return <ReplyLocation replyMsgItems={replyMessage} handleRemove={handleCloseReplyContainer} />;
+            return (
+               <ReplyLocation
+                  replyMsgItems={replyMessage}
+                  handleRemove={handleCloseReplyContainer}
+                  stringSet={stringSet}
+               />
+            );
          default:
             return null;
       }
@@ -45,7 +77,7 @@ function ReplyContainer({ chatUser, replyMessage }) {
 
    return (
       <View style={styles.replyingMessageContainer}>
-         <View style={styles.replyingMessageContainer}>{renderReplyMessageTemplateAboveInput()}</View>
+         <View style={styles.replyingMessageWrapper}>{renderReplyMessageTemplateAboveInput()}</View>
       </View>
    );
 }
@@ -61,8 +93,8 @@ const styles = StyleSheet.create({
       paddingVertical: 12,
       justifyContent: 'center',
       backgroundColor: '#0000001A',
+      overflow: 'hidden',
    },
-   mapStaticImage: { width: 60, height: 69 },
 });
 
 export default ReplyContainer;

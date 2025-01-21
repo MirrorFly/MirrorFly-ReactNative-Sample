@@ -186,7 +186,7 @@ const VideoPlayer = () => {
             fadeOutDisable={audioOnly || playerState === PLAYER_STATES.PAUSED || playerState === PLAYER_STATES.ENDED}
             duration={duration}
             isLoading={isLoading}
-            mainColor="#333"
+            primaryColor="#333"
             onPaused={onPaused}
             onReplay={onReplay}
             onSeek={onSeek}

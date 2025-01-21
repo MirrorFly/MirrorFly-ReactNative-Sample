@@ -1,15 +1,14 @@
 import React from 'react';
-import { Image, Pressable, Text, View } from 'react-native';
+import { Image, Pressable, View } from 'react-native';
 import { CameraSmallIcon, ClearTextIcon } from '../common/Icons';
 import NickName from '../common/NickName';
+import Text from '../common/Text';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
-import { getCurrentUserJid } from '../uikitMethods';
 
 const ReplyImage = props => {
-   const { replyMsgItems, handleRemove } = props;
+   const { replyMsgItems, handleRemove, stringSet } = props;
    const { publisherJid = '' } = replyMsgItems;
-   const isSameUser = publisherJid === getCurrentUserJid();
    const publisherId = getUserIdFromJid(publisherJid);
 
    const RemoveHandle = () => {
@@ -19,11 +18,7 @@ const ReplyImage = props => {
    return (
       <View style={{ position: 'relative' }}>
          <View flexDirection="row" justifyContent={'space-between'} alignItems={'center'}>
-            {isSameUser ? (
-               <Text style={[commonStyles.userName]}>You</Text>
-            ) : (
-               <NickName style={commonStyles.userName} userId={publisherId} />
-            )}
+            <NickName style={commonStyles.userName} userId={publisherId} />
          </View>
          <View
             style={{
@@ -69,7 +64,9 @@ const ReplyImage = props => {
 
          <View flexDirection="row" alignItems={'center'} pl={1}>
             <CameraSmallIcon width="12" height="13" color={'#7285B5'} />
-            <Text style={{ fontSize: 14, color: '#313131', paddingLeft: 8 }}>Photo</Text>
+            <Text style={{ fontSize: 14, color: '#313131', paddingHorizontal: 8 }}>
+               {stringSet.COMMON_TEXT.PHOTO_LABEL}
+            </Text>
          </View>
       </View>
    );

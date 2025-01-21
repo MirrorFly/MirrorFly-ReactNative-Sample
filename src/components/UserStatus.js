@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from 'react-native';
+import Text from '../common/Text';
 import { useRoasterData } from '../redux/reduxHook';
 
 function UserStatus({ userId, ...props }) {

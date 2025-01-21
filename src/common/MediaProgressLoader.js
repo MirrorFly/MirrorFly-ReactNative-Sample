@@ -1,22 +1,31 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import ApplicationColors from '../config/appColors';
+import { StyleSheet, View } from 'react-native';
 import { convertBytesToKB } from '../helpers/chatHelpers';
 import { mediaStatusConstants } from '../helpers/constants';
+import { getStringSet } from '../localization/stringSet';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { DownloadCancel, DownloadIcon, UploadIcon } from './Icons';
 import MediaBar from './MediaBar';
 import Pressable from './Pressable';
+import Text from './Text';
 
 const MediaProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel, msgId, fileSize }) => {
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
    const fileSizeInKB = convertBytesToKB(fileSize);
-
    const renderMediaStatus = () => {
       switch (mediaStatus) {
          case mediaStatusConstants.DOWNLOADING:
          case mediaStatusConstants.UPLOADING:
             return (
-               <View style={[commonStyles.positionRelative, commonStyles.overflowHidden, commonStyles.borderRadius_5]}>
+               <View
+                  style={[
+                     commonStyles.positionRelative,
+                     commonStyles.overflowHidden,
+                     commonStyles.borderRadius_5,
+                     { width: 80 },
+                  ]}>
                   <Pressable
                      contentContainerStyle={[commonStyles.alignItemsCenter, commonStyles.padding_10_15]}
                      style={[commonStyles.bgBlack_04, commonStyles.width_80]}
@@ -30,7 +39,7 @@ const MediaProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel, msgI
             return (
                <Pressable contentContainerStyle={styles.downloadIconWrapper} onPress={onDownload}>
                   <DownloadIcon />
-                  <Text style={styles.fileSizeText}>{fileSizeInKB}</Text>
+                  <Text style={[styles.fileSizeText, { color: themeColorPalatte.white }]}>{fileSizeInKB}</Text>
                </Pressable>
             );
          case mediaStatusConstants.NOT_UPLOADED:
@@ -45,7 +54,7 @@ const MediaProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel, msgI
                   onPress={onUpload}>
                   <UploadIcon />
                   <Text style={[commonStyles.colorWhite, commonStyles.fontSize_12, commonStyles.marginLeft_10]}>
-                     RETRY
+                     {stringSet.BUTTON_LABEL.RETRY_BUTTON}
                   </Text>
                </Pressable>
             );
@@ -89,7 +98,6 @@ const styles = StyleSheet.create({
    fileSizeText: {
       paddingLeft: 8,
       fontSize: 12,
-      color: ApplicationColors.white,
    },
    loaderBg: {
       position: 'relative',

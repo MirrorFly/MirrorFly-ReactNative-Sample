@@ -1,35 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { BackHandler, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
-import { openSettings } from 'react-native-permissions';
-import { useDispatch, useSelector } from 'react-redux';
-import { isRoomExist, initiateMirroflyCall } from '../Helper/Calls/Utility';
-import SDK, { RealmKeyValueStore } from '../SDK/SDK';
+import { useDispatch } from 'react-redux';
 import AlertModal from '../common/AlertModal';
 import IconButton from '../common/IconButton';
-import {
-   AudioCall,
-   BackArrowIcon,
-   CloseIcon,
-   DeleteIcon,
-   ForwardIcon,
-   LeftArrowIcon,
-   ReplyIcon,
-   VideoCallIcon,
-} from '../common/Icons';
+import { BackArrowIcon, CloseIcon, DeleteIcon, ForwardIcon, LeftArrowIcon } from '../common/Icons';
 import MenuContainer from '../common/MenuContainer';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import NickName from '../common/NickName';
 import Pressable from '../common/Pressable';
-import { useNetworkStatus } from '../common/hooks';
-import {
-   checkAudioCallpermission,
-   checkVideoCallPermission,
-   requestBluetoothConnectPermission,
-   requestCameraMicPermission,
-   requestMicroPhonePermission,
-} from '../common/permissions';
-import ApplicationColors from '../config/appColors';
+import config from '../config/config';
 import {
    copyToClipboard,
    getUserIdFromJid,
@@ -38,15 +18,21 @@ import {
    handleConversationClear,
    handleMessageDelete,
    handleMessageDeleteForEveryOne,
+   handleUpdateBlockUser,
    isAnyMessageWithinLast30Seconds,
    isLocalUser,
-   showToast,
 } from '../helpers/chatHelpers';
-import { ALREADY_ON_CALL, CALL_TYPE_AUDIO, CALL_TYPE_VIDEO, MIX_BARE_JID } from '../helpers/constants';
-import { resetMessageSelections, setChatSearchText } from '../redux/chatMessageDataSlice';
-import { setReplyMessage } from '../redux/draftSlice';
-import { closePermissionModal, showPermissionModal } from '../redux/permissionSlice';
-import { getSelectedChatMessages, useChatMessages, useRecentChatData } from '../redux/reduxHook';
+import { MIX_BARE_JID } from '../helpers/constants';
+import { getStringSet } from '../localization/stringSet';
+import { setChatSearchText, toggleEditMessage } from '../redux/chatMessageDataSlice';
+import { setTextMessage } from '../redux/draftSlice';
+import {
+   getSelectedChatMessages,
+   getUserNameFromStore,
+   useBlockedStatus,
+   useSelectedChatMessages,
+   useThemeColorPalatte,
+} from '../redux/reduxHook';
 import {
    FORWARD_MESSSAGE_SCREEN,
    GROUP_INFO,
@@ -55,27 +41,25 @@ import {
    USER_INFO,
 } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
+import { RenderReplyIcon } from './ChatHeaderActions';
+import { chatInputRef } from './ChatInput';
 import LastSeen from './LastSeen';
+import MakeCall from './MakeCall';
 import UserAvathar from './UserAvathar';
 
 function ChatHeader({ chatUser }) {
    const dispatch = useDispatch();
-   const isNetworkConnected = useNetworkStatus();
    const navigation = useNavigation();
    const userId = getUserIdFromJid(chatUser);
-   const messsageList = useChatMessages(userId) || [];
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
+
+   const filtered = useSelectedChatMessages(userId) || [];
    const [text, setText] = React.useState('');
    const [isSearching, setIsSearching] = React.useState(false);
    const [modalContent, setModalContent] = React.useState(null);
    const [remove, setRemove] = React.useState(false);
-   const permissionData = useSelector(state => state.permissionData.permissionStatus);
-   const [permissionText, setPermissionText] = React.useState('');
-   const [showRoomExist, setShowRoomExist] = React.useState(false);
-   const userType = useRecentChatData().find(r => r.userJid === chatUser)?.userType || '';
-
-   const filtered = React.useMemo(() => {
-      return messsageList.filter(item => item.isSelected === 1);
-   }, [messsageList.map(item => item.isSelected).join(',')]);
+   const blockedStaus = useBlockedStatus(userId);
 
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
@@ -124,9 +108,12 @@ function ChatHeader({ chatUser }) {
          setModalContent({
             visible: true,
             onRequestClose: toggleModalContent,
-            title: 'Are you sure you want to delete selected Message?',
-            noButton: 'CANCEL',
-            yesButton: 'DELETE FOR ME',
+            title:
+               filtered.length < 2
+                  ? stringSet.CHAT_SCREEN.DELETE_SINGLE_MESSAGE
+                  : stringSet.CHAT_SCREEN.DELETE_MULTIPLE_MESSAGE,
+            noButton: stringSet.BUTTON_LABEL.CANCEL_BUTTON,
+            yesButton: stringSet.CHAT_SCREEN.DELETE_FOR_ME,
             yesAction: handleMessageDelete(chatUser),
          });
       } else {
@@ -138,7 +125,7 @@ function ChatHeader({ chatUser }) {
       return (
          <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
             <IconButton onPress={_handleMessageDelete}>
-               <DeleteIcon />
+               <DeleteIcon color={themeColorPalatte.iconColor} />
             </IconButton>
          </View>
       );
@@ -160,28 +147,7 @@ function ChatHeader({ chatUser }) {
 
       return isMediaDownloadedOrUploaded && isAllowForward ? (
          <IconButton style={[commonStyles.padding_10_15]} onPress={_handleForwardMessage}>
-            <ForwardIcon />
-         </IconButton>
-      ) : null;
-   };
-
-   const _handleReplyMessage = () => {
-      Keyboard.dismiss();
-      dispatch(setReplyMessage({ userId, message: filtered[0] }));
-      dispatch(resetMessageSelections(userId));
-   };
-
-   const renderReplyIcon = () => {
-      const isAllowReply = MIX_BARE_JID.test(chatUser)
-         ? userType &&
-           filtered[0]?.msgBody?.media?.is_uploading !== 1 &&
-           !filtered[0]?.recallStatus &&
-           filtered[0]?.msgBody?.media?.is_uploading !== 1 &&
-           !filtered[0]?.recallStatus
-         : filtered[0]?.msgBody?.media?.is_uploading !== 1 && !filtered[0]?.recallStatus;
-      return isAllowReply && filtered?.length === 1 && filtered[0]?.msgStatus !== 3 ? (
-         <IconButton style={[commonStyles.padding_10_15]} onPress={_handleReplyMessage}>
-            <ReplyIcon />
+            <ForwardIcon color={themeColorPalatte.iconColor} />
          </IconButton>
       ) : null;
    };
@@ -211,134 +177,63 @@ function ChatHeader({ chatUser }) {
       handelResetMessageSelection(userId)();
    };
 
-   const makeOne2OneVideoCall = () => {
-      if (!isRoomExist() && isNetworkConnected) {
-         makeOne2OneCall(CALL_TYPE_VIDEO);
-      } else if (!isNetworkConnected) {
-         showToast('Please check your internet connection');
-      } else {
-         setShowRoomExist(true);
-      }
-   };
-
-   const makeOne2OneAudioCall = () => {
-      if (!isRoomExist() && isNetworkConnected) {
-         makeOne2OneCall(CALL_TYPE_AUDIO);
-      } else if (!isNetworkConnected) {
-         showToast('Please check your internet connection');
-      } else {
-         setShowRoomExist(true);
-      }
-   };
-
-   const makeOne2OneCall = async callType => {
-      let isPermissionChecked = false;
-      if (callType === CALL_TYPE_AUDIO) {
-         isPermissionChecked = await RealmKeyValueStore.getItem('microPhone_Permission');
-         RealmKeyValueStore.setItem('microPhone_Permission', 'true');
-      } else {
-         isPermissionChecked = await RealmKeyValueStore.getItem('camera_microPhone_Permission');
-         RealmKeyValueStore.setItem('camera_microPhone_Permission', 'true');
-      }
-      // updating the SDK flag to keep the connection Alive when app goes background because of microphone permission popup
-      SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
-      try {
-         const result =
-            callType === CALL_TYPE_AUDIO ? await requestMicroPhonePermission() : await requestCameraMicPermission();
-         const bluetoothPermission = await requestBluetoothConnectPermission();
-         // updating the SDK flag back to false to behave as usual
-         SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-         if ((result === 'granted' || result === 'limited') && bluetoothPermission === 'granted') {
-            // Checking If Room exist when user granted permission
-            if (!isRoomExist()) {
-               initiateMirroflyCall(callType, [userId]);
-            } else {
-               setShowRoomExist(true);
-            }
-         } else if (isPermissionChecked) {
-            let cameraAndMic = await checkVideoCallPermission();
-            let audioBluetoothPermission = await checkAudioCallpermission();
-            let permissionStatus =
-               callType === 'video'
-                  ? `${cameraAndMic}${' are needed for calling. Please enable it in Settings'}`
-                  : `${audioBluetoothPermission}${' are needed for calling. Please enable it in Settings'}`;
-            setPermissionText(permissionStatus);
-            dispatch(showPermissionModal());
-         }
-      } catch (error) {
-         // updating the SDK flag back to false to behave as usual
-         SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
-         console.log('makeOne2OneCall', error);
-      }
-   };
-
-   const closeIsRoomExist = () => {
-      setShowRoomExist(false);
-   };
-   const renderRoomExistModal = () => {
-      return (
-         <>
-            {/* display modal already in the call */}
-            <Modal visible={showRoomExist} onRequestClose={closeIsRoomExist}>
-               <ModalCenteredContent onPressOutside={closeIsRoomExist}>
-                  <View style={styles.callModalContentContainer}>
-                     <Text style={styles.callModalContentText} numberOfLines={1}>
-                        {ALREADY_ON_CALL}
-                     </Text>
-                     <View style={styles.callModalHorizontalActionButtonsContainer}>
-                        <Pressable
-                           contentContainerStyle={styles.deleteModalHorizontalActionButton}
-                           onPress={() => closeIsRoomExist()}>
-                           <Text style={styles.deleteModalActionButtonText}>OK</Text>
-                        </Pressable>
-                     </View>
-                  </View>
-               </ModalCenteredContent>
-            </Modal>
-            {/* display permission Model */}
-            {permissionData && (
-               <Modal visible={permissionData}>
-                  <ModalCenteredContent>
-                     <View style={styles.callModalContentContainer}>
-                        <Text style={styles.callModalContentText}>{permissionText}</Text>
-                        <View style={styles.callModalHorizontalActionButtonsContainer}>
-                           <Pressable
-                              contentContainerStyle={styles.deleteModalHorizontalActionButton}
-                              onPress={() => {
-                                 openSettings();
-                                 dispatch(closePermissionModal());
-                              }}>
-                              <Text style={styles.deleteModalActionButtonText}>OK</Text>
-                           </Pressable>
-                        </View>
-                     </View>
-                  </ModalCenteredContent>
-               </Modal>
-            )}
-         </>
+   const handleEditMessage = () => {
+      handelResetMessageSelection(userId)();
+      dispatch(toggleEditMessage(filtered[0].msgId));
+      dispatch(
+         setTextMessage({ userId, message: filtered[0]?.msgBody?.media?.caption || filtered[0]?.msgBody?.message }),
       );
+      chatInputRef?.current?.focus();
+   };
+
+   const hadleBlockUser = () => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: `${blockedStaus ? 'Unblock' : 'Block'} ${getUserNameFromStore(userId)}`,
+         noButton: 'CANCEL',
+         yesButton: blockedStaus ? 'UNBLOCK' : 'BLOCK',
+         yesAction: handleUpdateBlockUser(userId, blockedStaus ? 0 : 1, chatUser),
+      });
    };
 
    const menuItems = [];
 
    if (filtered[0]?.msgBody?.message_type === 'text' || filtered[0]?.msgBody?.media?.caption) {
       menuItems.push({
-         label: 'Copy',
+         label: stringSet.CHAT_SCREEN.COPY_TEXT_MENU_LABEL,
          formatter: copyToClipboard(filtered, userId),
       });
    }
-   if (filtered.length === 1 && isLocalUser(filtered[0]?.publisherJid)) {
-      // Show Copy and Message Info options
+
+   if (filtered.length === 1 && isLocalUser(filtered[0]?.publisherJid) && filtered[0]?.msgStatus !== 3) {
       menuItems.push({
-         label: 'Message Info',
+         label: stringSet.CHAT_SCREEN.MESSAGE_INFO_MENU_LABEL,
          formatter: handleGoMessageInfoScreen,
       });
+      const now = Date.now();
+      if (
+         now - filtered[0]?.timestamp <= config.editMessageTime &&
+         (filtered[0]?.msgBody.message_type === 'text' || filtered[0]?.msgBody?.media?.caption)
+      ) {
+         menuItems.push({
+            label: 'Edit Message',
+            formatter: handleEditMessage,
+         });
+      }
    }
+
    if (!filtered.length) {
-      // Show Clear Chat and Search options
       menuItems.push({
          label: 'Clear Chat',
          formatter: handleClear,
+      });
+   }
+
+   if (!filtered.length && !MIX_BARE_JID.test(chatUser)) {
+      menuItems.push({
+         label: blockedStaus ? 'Unblock' : 'Block',
+         formatter: hadleBlockUser,
       });
    }
 
@@ -352,17 +247,25 @@ function ChatHeader({ chatUser }) {
 
    if (isSearching) {
       return (
-         <View style={[styles.headerContainer]}>
+         <View
+            style={[
+               styles.headerContainer,
+               { backgroundColor: themeColorPalatte.appBarColor, borderBottomColor: themeColorPalatte.mainBorderColor },
+            ]}>
             <IconButton onPress={toggleSearch}>
-               <LeftArrowIcon />
+               <LeftArrowIcon color={themeColorPalatte.iconColor} />
             </IconButton>
             <TextInput
-               placeholderTextColor="#d3d3d3"
+               placeholderTextColor={themeColorPalatte.placeholderTextColor}
                value={text}
-               style={styles.textInput}
+               style={[
+                  styles.textInput,
+                  { color: themeColorPalatte.primaryTextColor, borderBottomColor: themeColorPalatte.primaryColor },
+               ]}
                onChangeText={setText}
-               placeholder=" Search..."
-               cursorColor={ApplicationColors.mainColor}
+               placeholder={stringSet.PLACEHOLDERS.SEARCH_PLACEHOLDER}
+               cursorColor={themeColorPalatte.primaryColor}
+               selectionColor={themeColorPalatte.primaryColor}
                returnKeyType="done"
                autoFocus={true}
             />
@@ -375,37 +278,64 @@ function ChatHeader({ chatUser }) {
 
    if (filtered.length) {
       return (
-         <View style={styles.headerContainer}>
+         <View
+            style={[
+               styles.headerContainer,
+               { backgroundColor: themeColorPalatte.appBarColor, borderBottomColor: themeColorPalatte.mainBorderColor },
+            ]}>
             <IconButton onPress={handelResetMessageSelection(userId)}>
-               <CloseIcon />
+               <CloseIcon color={themeColorPalatte.iconColor} />
             </IconButton>
             <View style={commonStyles.flex1}>
-               <Text style={[commonStyles.fontSize_18, commonStyles.colorBlack, commonStyles.pl_10]}>
+               <Text
+                  style={[
+                     commonStyles.fontSize_18,
+                     commonStyles.pl_10,
+                     commonStyles.textColor(themeColorPalatte.headerPrimaryTextColor),
+                  ]}>
                   {filtered.length}
                </Text>
             </View>
             <View style={styles.iconsContainer}>
-               {renderReplyIcon()}
+               <RenderReplyIcon userId={userId} />
                {renderDeleteIcon()}
                {renderForwardIcon()}
                {Boolean(menuItems.length) && filtered.length === 1 && <MenuContainer menuItems={menuItems} />}
                {modalContent && <AlertModal {...modalContent} />}
             </View>
-            {renderRoomExistModal()}
             <Modal visible={remove} onRequestClose={onClose}>
                <ModalCenteredContent onPressOutside={onClose}>
                   <View style={styles.deleteModalContentContainer}>
-                     <Text style={styles.deleteModalContentText} numberOfLines={2}>
-                        Are you sure you want to delete selected Message?
+                     <Text
+                        style={[
+                           styles.deleteModalContentText,
+                           commonStyles.textColor(themeColorPalatte.modalTextColor),
+                        ]}
+                        numberOfLines={2}>
+                        {filtered.length < 2
+                           ? stringSet.CHAT_SCREEN.DELETE_SINGLE_MESSAGE
+                           : stringSet.CHAT_SCREEN.DELETE_MULTIPLE_MESSAGE}
                      </Text>
                      <View style={styles.deleteModalVerticalActionButtonsContainer}>
                         <Pressable
                            contentContainerStyle={styles.deleteModalVerticalActionButton}
                            onPress={handleMessageDelete(chatUser)}>
-                           <Text style={styles.deleteModalActionButtonText}>DELETE FOR ME</Text>
+                           <Text
+                              style={[
+                                 styles.deleteModalActionButtonText,
+                                 commonStyles.textColor(themeColorPalatte.primaryColor),
+                              ]}>
+                              {stringSet.CHAT_SCREEN.DELETE_FOR_ME}
+                           </Text>
                         </Pressable>
                         <Pressable contentContainerStyle={styles.deleteModalVerticalActionButton} onPress={onClose}>
-                           <Text style={styles.deleteModalActionButtonText}>CANCEL</Text>
+                           <Text
+                              style={[
+                                 styles.deleteModalActionButtonText,
+                                 commonStyles.textColor(themeColorPalatte.primaryColor),
+                              ]}>
+                              {stringSet.BUTTON_LABEL.CANCEL_BUTTON}
+                           </Text>
                         </Pressable>
                         <Pressable
                            contentContainerStyle={styles.deleteModalVerticalActionButton}
@@ -413,7 +343,13 @@ function ChatHeader({ chatUser }) {
                               onClose();
                               handleMessageDeleteForEveryOne(chatUser)();
                            }}>
-                           <Text style={styles.deleteModalActionButtonText}>DELETE FOR EVERYONE</Text>
+                           <Text
+                              style={[
+                                 styles.deleteModalActionButtonText,
+                                 commonStyles.textColor(themeColorPalatte.primaryColor),
+                              ]}>
+                              {stringSet.CHAT_SCREEN.DELETE_FOR_EVERYONE}
+                           </Text>
                         </Pressable>
                      </View>
                   </View>
@@ -425,9 +361,13 @@ function ChatHeader({ chatUser }) {
 
    if (!filtered.length) {
       return (
-         <View style={styles.headerContainer}>
+         <View
+            style={[
+               styles.headerContainer,
+               { backgroundColor: themeColorPalatte.appBarColor, borderBottomColor: themeColorPalatte.mainBorderColor },
+            ]}>
             <IconButton onPress={navigation.goBack}>
-               <BackArrowIcon />
+               <BackArrowIcon color={themeColorPalatte.iconColor} />
             </IconButton>
             <Pressable
                onPress={handleRoute}
@@ -435,24 +375,17 @@ function ChatHeader({ chatUser }) {
                contentContainerStyle={styles.userAvatarAndInfoContainer}>
                <UserAvathar width={36} height={36} userId={userId} type={getUserType(chatUser)} />
                <View style={styles.userNameAndLastSeenContainer}>
-                  <NickName userId={userId} style={styles.userNameText} />
+                  <NickName
+                     userId={userId}
+                     style={[styles.userNameText, { color: themeColorPalatte.headerPrimaryTextColor }]}
+                  />
                   <LastSeen userJid={chatUser} style={styles.lastSeenText} />
                </View>
             </Pressable>
             <View style={styles.iconsContainer}>
-               {!MIX_BARE_JID.test(chatUser) && (
-                  <IconButton onPress={makeOne2OneVideoCall} containerStyle={{ marginRight: 6 }}>
-                     <VideoCallIcon />
-                  </IconButton>
-               )}
-               {!MIX_BARE_JID.test(chatUser) && (
-                  <IconButton onPress={makeOne2OneAudioCall}>
-                     <AudioCall />
-                  </IconButton>
-               )}
+               <MakeCall chatUser={chatUser} userId={userId} />
                {Boolean(menuItems.length) && <MenuContainer menuItems={menuItems} />}
             </View>
-            {renderRoomExistModal()}
             {modalContent && <AlertModal {...modalContent} />}
          </View>
       );
@@ -467,9 +400,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       width: '100%',
       height: 60,
-      backgroundColor: ApplicationColors.headerBg,
       borderBottomWidth: 1,
-      borderBottomColor: ApplicationColors.mainBorderColor,
       elevation: 2,
       shadowColor: '#181818',
       shadowOffset: { width: 0, height: 6 },
@@ -487,14 +418,12 @@ const styles = StyleSheet.create({
       padding: 10,
    },
    userNameText: {
-      color: '#181818',
       fontWeight: '700',
       fontSize: 14,
-      maxWidth: 170,
+      maxWidth: 160,
    },
    lastSeenText: {
       fontSize: 12,
-      width: '98%',
       color: '#888888',
    },
    iconsContainer: {
@@ -504,25 +433,21 @@ const styles = StyleSheet.create({
    },
    textInput: {
       flex: 1,
-      color: 'black',
-      fontSize: 16,
+      fontSize: 17,
+      fontWeight: '400',
+      borderBottomWidth: 1,
    },
    deleteModalContentContainer: {
       width: '88%',
       paddingHorizontal: 24,
       paddingVertical: 16,
-      fontWeight: '300',
-      backgroundColor: ApplicationColors.mainbg,
+      fontWeight: '400',
+      backgroundColor: 'white',
    },
    deleteModalContentText: {
       fontSize: 16,
       fontWeight: '400',
-      color: ApplicationColors.modalTextColor,
       marginTop: 10,
-   },
-   deleteModalCheckboxLabel: {
-      fontSize: 14,
-      fontWeight: '400',
    },
    deleteModalVerticalActionButtonsContainer: {
       justifyContent: 'flex-end',
@@ -535,34 +460,6 @@ const styles = StyleSheet.create({
       paddingHorizontal: 8,
    },
    deleteModalActionButtonText: {
-      color: ApplicationColors.mainColor,
       fontWeight: '600',
-   },
-   callModalContentText: {
-      fontSize: 16,
-      fontWeight: '400',
-      marginBottom: 10,
-      color: ApplicationColors.black,
-   },
-   callModalContentContainer: {
-      width: '88%',
-      paddingHorizontal: 24,
-      paddingTop: 18,
-      fontWeight: '300',
-      backgroundColor: ApplicationColors.mainbg,
-   },
-   callModalHorizontalActionButtonsContainer: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      paddingVertical: 14,
-   },
-   deleteModalHorizontalActionButtonsContainer: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      paddingVertical: 12,
-   },
-   deleteModalHorizontalActionButton: {
-      paddingVertical: 4,
-      paddingHorizontal: 8,
    },
 });

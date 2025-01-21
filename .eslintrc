@@ -3,7 +3,6 @@
    "extends": "@react-native",
    "rules": {
       "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "off",
-      "no-undef":"warn"
+      "react-hooks/exhaustive-deps": "off"
    }
 }

@@ -111,7 +111,7 @@ class MediaService: RCTEventEmitter {
         return (false, "Unable to determine available storage space")
       }
       print("freeSpace ==>",freeSpace)
-      if fileSize > freeSpace {
+      if fileSize * 2 > freeSpace {
         return (false, "Not enough free storage space to upload the file")
       }
       return (true, "File is readable, size matches, and there is enough storage space")
@@ -294,7 +294,6 @@ class MediaService: RCTEventEmitter {
     } catch {}
         
     
-
     
     if !fileManager.fileExists(atPath: cachePath) {
       fileManager.createFile(atPath: cachePath, contents: nil, attributes: nil)

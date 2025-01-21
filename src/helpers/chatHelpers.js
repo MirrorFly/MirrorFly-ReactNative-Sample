@@ -15,6 +15,7 @@ import Toast from 'react-native-simple-toast';
 import Sound from 'react-native-sound';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
+import { CONNECTED } from '../SDK/constants';
 import { handleSendMsg } from '../SDK/utils';
 import {
    BlockedIcon,
@@ -64,9 +65,11 @@ import {
    fileEmoji,
    imageEmoji,
    locationEmoji,
+   messageTypeConstants,
+   urlRegx,
    videoEmoji,
 } from '../helpers/constants';
-import { getStringSet } from '../localization/stringSet';
+import { getStringSet, replacePlaceholders } from '../localization/stringSet';
 import {
    clearChatMessageData,
    deleteMessagesForEveryone,
@@ -86,7 +89,10 @@ import {
    getChatMessages,
    getSelectedChatMessages,
    getSelectedChats,
+   getUserNameFromStore,
+   getXmppConnectionStatus,
 } from '../redux/reduxHook';
+import { updateBlockUser } from '../redux/rosterDataSlice';
 import store from '../redux/store';
 import {
    BLOCKED_CONTACT_LIST_STACK,

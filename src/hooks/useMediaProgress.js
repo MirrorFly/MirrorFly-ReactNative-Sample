@@ -1,13 +1,14 @@
 import React from 'react';
 import RNFS from 'react-native-fs';
 import { useDispatch } from 'react-redux';
-import { uploadFileToSDK } from '../SDK/utils';
-import { updateProgressNotification } from '../Service/PushNotify';
 import { useNetworkStatus } from '../common/hooks';
 import { getCurrentChatUser, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
 import { mediaStatusConstants } from '../helpers/constants';
 import { updateMediaStatus } from '../redux/chatMessageDataSlice';
 import { getMediaProgress, useChatMessage } from '../redux/reduxHook';
+import SDK from '../SDK/SDK';
+import { uploadFileToSDK } from '../SDK/utils';
+import { updateProgressNotification } from '../Service/PushNotify';
 
 const generateUniqueFilePath = async (filePath, counter = 0) => {
    // Modify the file path if the counter is greater than 0
@@ -58,11 +59,11 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
                is_downloaded: 1,
             }),
          );
+         await updateProgressNotification({ msgId, progress: 0, type: 'download', isCanceled: false });
          const downloadResponse = downloadJobId
             ? await source?.resume({ downloadJobId })
             : await SDK.downloadMedia(msgId);
          console.log('downloadResponse ==>', downloadJobId, downloadResponse);
-         updateProgressNotification(msgId, 0, 'download', true);
          if (downloadResponse?.statusCode === 200 || downloadResponse?.statusCode === 304) {
             dispatch(
                updateMediaStatus({
@@ -110,7 +111,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
             if (downloadJobId || uploadJobId) {
                const cancelRes = await source?.cancel?.(downloadJobId || uploadJobId);
                console.log('cancelRes ==>', cancelRes);
-               updateProgressNotification(msgId, 0, 'download', true);
+               updateProgressNotification({ msgId, progress: 0, type: 'download', isCanceled: true });
                const mediaStatusObj = {
                   msgId,
                   userId,

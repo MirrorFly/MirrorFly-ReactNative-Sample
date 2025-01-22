@@ -96,7 +96,7 @@ export const mirrorflyInitialize = async args => {
          licenseKey: licenseKey,
          callbackListeners: callBacks,
          isSandbox: isSandbox,
-         // mediaServiceAutoPause: Platform.OS !== 'android', // if you are setting as flase you have run the foregorund service
+         mediaServiceAutoPause: Platform.OS !== 'android', // if you are setting as flase you have run the foregorund service
       });
       uiKitCallbackListenersVal = { callBack };
       if (mfInit.statusCode === 200) {

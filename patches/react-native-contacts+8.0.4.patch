@@ -1,0 +1,353 @@
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/c2de5ebf19a78e1722f3e1258ae16024/results.bin b/node_modules/react-native-contacts/android/build/.transforms/c2de5ebf19a78e1722f3e1258ae16024/results.bin
+new file mode 100644
+index 0000000..0d259dd
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/.transforms/c2de5ebf19a78e1722f3e1258ae16024/results.bin
+@@ -0,0 +1 @@
++o/classes
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/c2de5ebf19a78e1722f3e1258ae16024/transformed/classes/classes_dex/classes.dex b/node_modules/react-native-contacts/android/build/.transforms/c2de5ebf19a78e1722f3e1258ae16024/transformed/classes/classes_dex/classes.dex
+new file mode 100644
+index 0000000..9f96d3d
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/c2de5ebf19a78e1722f3e1258ae16024/transformed/classes/classes_dex/classes.dex differ
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/buildConfig/debug/com/rt2zz/reactnativecontacts/BuildConfig.java b/node_modules/react-native-contacts/android/build/generated/source/buildConfig/debug/com/rt2zz/reactnativecontacts/BuildConfig.java
+new file mode 100644
+index 0000000..ba6504b
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/buildConfig/debug/com/rt2zz/reactnativecontacts/BuildConfig.java
+@@ -0,0 +1,12 @@
++/**
++ * Automatically generated file. DO NOT MODIFY
++ */
++package com.rt2zz.reactnativecontacts;
++
++public final class BuildConfig {
++  public static final boolean DEBUG = Boolean.parseBoolean("true");
++  public static final String LIBRARY_PACKAGE_NAME = "com.rt2zz.reactnativecontacts";
++  public static final String BUILD_TYPE = "debug";
++  // Field from default config.
++  public static final boolean IS_NEW_ARCHITECTURE_ENABLED = false;
++}
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml b/node_modules/react-native-contacts/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+new file mode 100644
+index 0000000..b4472d9
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.rt2zz.reactnativecontacts" >
++
++    <uses-sdk android:minSdkVersion="23" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json b/node_modules/react-native-contacts/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+new file mode 100644
+index 0000000..91efb43
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+@@ -0,0 +1,18 @@
++{
++  "version": 3,
++  "artifactType": {
++    "type": "AAPT_FRIENDLY_MERGED_MANIFESTS",
++    "kind": "Directory"
++  },
++  "applicationId": "com.rt2zz.reactnativecontacts",
++  "variantName": "debug",
++  "elements": [
++    {
++      "type": "SINGLE",
++      "filters": [],
++      "attributes": [],
++      "outputFile": "AndroidManifest.xml"
++    }
++  ],
++  "elementType": "File"
++}
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties b/node_modules/react-native-contacts/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+new file mode 100644
+index 0000000..1211b1e
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+@@ -0,0 +1,6 @@
++aarFormatVersion=1.0
++aarMetadataVersion=1.0
++minCompileSdk=1
++minCompileSdkExtension=0
++minAndroidGradlePluginVersion=1.0.0
++coreLibraryDesugaringEnabled=false
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/aar_metadata/release/writeReleaseAarMetadata/aar-metadata.properties b/node_modules/react-native-contacts/android/build/intermediates/aar_metadata/release/writeReleaseAarMetadata/aar-metadata.properties
+new file mode 100644
+index 0000000..1211b1e
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/aar_metadata/release/writeReleaseAarMetadata/aar-metadata.properties
+@@ -0,0 +1,6 @@
++aarFormatVersion=1.0
++aarMetadataVersion=1.0
++minCompileSdk=1
++minCompileSdkExtension=0
++minAndroidGradlePluginVersion=1.0.0
++coreLibraryDesugaringEnabled=false
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json b/node_modules/react-native-contacts/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+new file mode 100644
+index 0000000..9e26dfe
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+@@ -0,0 +1 @@
++{}
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar b/node_modules/react-native-contacts/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar
+new file mode 100644
+index 0000000..16f7cd0
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar b/node_modules/react-native-contacts/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar
+new file mode 100644
+index 0000000..75ef569
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt b/node_modules/react-native-contacts/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties b/node_modules/react-native-contacts/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+new file mode 100644
+index 0000000..54dbe08
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+@@ -0,0 +1 @@
++#Wed Jan 22 15:34:33 IST 2025
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml b/node_modules/react-native-contacts/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+new file mode 100644
+index 0000000..7530b2c
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/build/generated/res/resValues/debug"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/react-native-contacts/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+new file mode 100644
+index 0000000..3b2fb28
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/debug/jniLibs"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/react-native-contacts/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+new file mode 100644
+index 0000000..201029a
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/debug/shaders"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/incremental/packageDebugAssets/merger.xml b/node_modules/react-native-contacts/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+new file mode 100644
+index 0000000..f259b61
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/main/assets"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/debug/assets"/></dataSet><dataSet config="generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/build/intermediates/shader_assets/debug/compileDebugShaders/out"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/BuildConfig.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/BuildConfig.class
+new file mode 100644
+index 0000000..8b4e5f9
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/BuildConfig.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsManager.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsManager.class
+new file mode 100644
+index 0000000..eb68f4b
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsManager.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$1.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$1.class
+new file mode 100644
+index 0000000..2c5a814
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$1.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$2.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$2.class
+new file mode 100644
+index 0000000..0044f7f
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$2.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$3.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$3.class
+new file mode 100644
+index 0000000..42c193e
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$3.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Birthday.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Birthday.class
+new file mode 100644
+index 0000000..2d16eaf
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Birthday.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Item.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Item.class
+new file mode 100644
+index 0000000..1a1960b
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Item.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$PostalAddressItem.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$PostalAddressItem.class
+new file mode 100644
+index 0000000..ccb0214
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$PostalAddressItem.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact.class
+new file mode 100644
+index 0000000..8246145
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider.class
+new file mode 100644
+index 0000000..e51bad6
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ReactNativeContacts.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ReactNativeContacts.class
+new file mode 100644
+index 0000000..6f6ba2e
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ReactNativeContacts.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl$1.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl$1.class
+new file mode 100644
+index 0000000..b30ef5d
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl$1.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl.class
+new file mode 100644
+index 0000000..88ab430
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt b/node_modules/react-native-contacts/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+new file mode 100644
+index 0000000..78ac5b8
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+@@ -0,0 +1,2 @@
++R_DEF: Internal format may change without notice
++local
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt b/node_modules/react-native-contacts/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+new file mode 100644
+index 0000000..e261c56
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+@@ -0,0 +1,7 @@
++1<?xml version="1.0" encoding="utf-8"?>
++2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++3    package="com.rt2zz.reactnativecontacts" >
++4
++5    <uses-sdk android:minSdkVersion="23" />
++6
++7</manifest>
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml b/node_modules/react-native-contacts/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+new file mode 100644
+index 0000000..b4472d9
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.rt2zz.reactnativecontacts" >
++
++    <uses-sdk android:minSdkVersion="23" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json b/node_modules/react-native-contacts/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+new file mode 100644
+index 0000000..0637a08
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+@@ -0,0 +1 @@
++[]
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt b/node_modules/react-native-contacts/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+new file mode 100644
+index 0000000..08f4ebe
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+@@ -0,0 +1 @@
++0 Warning/Error
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar
+new file mode 100644
+index 0000000..314f20b
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt b/node_modules/react-native-contacts/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+new file mode 100644
+index 0000000..a2297ba
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+@@ -0,0 +1 @@
++com.rt2zz.reactnativecontacts
+diff --git a/node_modules/react-native-contacts/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/react-native-contacts/android/build/outputs/logs/manifest-merger-debug-report.txt
+new file mode 100644
+index 0000000..eed9517
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/outputs/logs/manifest-merger-debug-report.txt
+@@ -0,0 +1,17 @@
++-- Merging decision tree log ---
++manifest
++ADDED from /Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml:2:1-5:12
++	package
++		ADDED from /Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml:4:3-42
++		INJECTED from /Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml
++	xmlns:android
++		ADDED from /Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml:3:3-61
++uses-sdk
++INJECTED from /Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml
++INJECTED from /Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml
++	android:targetSdkVersion
++		INJECTED from /Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml
++	android:minSdkVersion
++		INJECTED from /Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/react-native-contacts/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/react-native-contacts/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
+new file mode 100644
+index 0000000..85d5064
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
+diff --git a/node_modules/react-native-contacts/ios/RCTContacts/RCTContacts.mm b/node_modules/react-native-contacts/ios/RCTContacts/RCTContacts.mm
+index feaf0da..0a5a528 100644
+--- a/node_modules/react-native-contacts/ios/RCTContacts/RCTContacts.mm
++++ b/node_modules/react-native-contacts/ios/RCTContacts/RCTContacts.mm
+@@ -66,7 +66,7 @@ - (NSDictionary *)constantsToExport
+     } else if (authStatus == CNAuthorizationStatusAuthorized){
+         resolve(@"authorized");
+     } else if(@available(iOS 18, *)) {
+-        if (authStatus == CNAuthorizationStatusLimited) {
++        if (authStatus == PHAuthorizationStatusLimited) {
+             resolve(@"limited");
+         }
+     } else {
+@@ -577,7 +577,7 @@ - (NSString *)getPathForDirectory:(int)directory
+     }
+     else if(@available(iOS 18, *))
+     {
+-        if([CNContactStore authorizationStatusForEntityType:entityType] == CNAuthorizationStatusLimited)
++        if([CNContactStore authorizationStatusForEntityType:entityType] == PHAuthorizationStatusLimited)
+         {
+             resolve([self getFilePathForThumbnailImage:recordID addressBook:contactStore]);
+         }
+@@ -622,7 +622,7 @@ -(NSString *) getFilePathForThumbnailImage:(NSString *)recordID
+     }
+     else if(@available(iOS 18, *))
+     {
+-        if([CNContactStore authorizationStatusForEntityType:entityType] == CNAuthorizationStatusLimited)
++        if([CNContactStore authorizationStatusForEntityType:entityType] == PHAuthorizationStatusLimited)
+         {
+             resolve([self getContact:recordID addressBook:contactStore withThumbnails:false]);
+         }
+@@ -1306,7 +1306,7 @@ - (void)checkPermission:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseReject
+      } else if (authStatus == CNAuthorizationStatusAuthorized){
+          resolve(@"authorized");
+      } else if(@available(iOS 18, *)) {
+-         if (authStatus == CNAuthorizationStatusLimited) {
++         if (authStatus == PHAuthorizationStatusLimited) {
+              resolve(@"limited");
+          }
+      } else {
+@@ -1465,7 +1465,7 @@ - (void)getContactById:(nonnull NSString *)recordID resolve:(RCTPromiseResolveBl
+      }
+      else if(@available(iOS 18, *))
+      {
+-        if([CNContactStore authorizationStatusForEntityType:entityType] == CNAuthorizationStatusLimited)
++         if([CNContactStore authorizationStatusForEntityType:entityType] == PHAuthorizationStatusLimited)
+         {
+             resolve([self getContact:recordID addressBook:contactStore withThumbnails:false]);
+         }
+@@ -1522,7 +1522,7 @@ - (void)getPhotoForId:(nonnull NSString *)recordID resolve:(RCTPromiseResolveBlo
+         }
+         else if(@available(iOS 18, *))
+         {
+-            if([CNContactStore authorizationStatusForEntityType:entityType] == CNAuthorizationStatusLimited)
++            if([CNContactStore authorizationStatusForEntityType:entityType] == PHAuthorizationStatusLimited)
+             {
+                 resolve([self getFilePathForThumbnailImage:recordID addressBook:contactStore]);
+             }

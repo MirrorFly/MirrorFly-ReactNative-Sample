@@ -568,7 +568,9 @@ export const openDocumentPicker = async () => {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       setTimeout(async () => {
          const file = await handleDocumentPickSingle();
-         if (!file) return;
+         if (!file) {
+            return;
+         }
          // updating the SDK flag back to false to behave as usual
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
          // Validating the file type and size
@@ -673,7 +675,9 @@ export const handleAudioSelect = async () => {
    if (audioPermission === 'granted' || audioPermission === 'limited') {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       let response = await handleAudioPickerSingle();
-      if (!response) return;
+      if (!response) {
+         return;
+      }
       const replyTo = '';
       let _validate = validation(response.type);
       const sizeError = validateFileSize(response.size, getType(response.type));
@@ -725,13 +729,21 @@ export const calculateKeyboardVerticalOffset = () => {
 };
 
 export const isEqualObjet = (obj1, obj2) => {
-   if (obj1 === obj2) return true;
-   if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) return false;
+   if (obj1 === obj2) {
+      return true;
+   }
+   if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
+      return false;
+   }
    const keys1 = Object.keys(obj1);
    const keys2 = Object.keys(obj2);
-   if (keys1.length !== keys2.length) return false;
+   if (keys1.length !== keys2.length) {
+      return false;
+   }
    for (let key of keys1) {
-      if (!keys2.includes(key) || !isEqualObjet(obj1[key], obj2[key])) return false;
+      if (!keys2.includes(key) || !isEqualObjet(obj1[key], obj2[key])) {
+         return false;
+      }
    }
    return true;
 };
@@ -996,8 +1008,8 @@ export const settingsMenu = [
       icon: ChatsIcon,
       rounteName: CHATS_CREEN,
    },
-   /** 
-    * 
+   /**
+    *
    {
       name: 'Notifications',
       icon: NotificationSettingsIcon,
@@ -1024,7 +1036,9 @@ export const notificationMenu = [
 ];
 
 export function capitalizeFirstLetter(string) {
-   if (!string) return null;
+   if (!string) {
+      return null;
+   }
    return string.charAt(0).toUpperCase() + string.slice(1);
 }
 

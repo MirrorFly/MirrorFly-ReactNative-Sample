@@ -22,6 +22,10 @@ RCT_EXTERN_METHOD(uploadFileInChunks:(NSArray *)uploadUrls
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(cancelUpload:(NSString *)msgId
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(downloadFileInChunks:(NSString *)downloadURL
                   fileSize:(nonnull NSNumber *)fileSize
                   cachePath:(NSString *)cachePath

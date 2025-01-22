@@ -96,7 +96,7 @@
       "react-native-keyevent": "^0.3.2",
       "react-native-maps": "^1.20.1",
       "react-native-material-menu": "^2.0.0",
-      "react-native-pager-view": "^6.5.1",
+      "react-native-pager-view": "6.5.1",
       "react-native-permissions": "^5.2.1",
       "react-native-progress": "^5.0.1",
       "react-native-raw-bottom-sheet": "^2.2.1",

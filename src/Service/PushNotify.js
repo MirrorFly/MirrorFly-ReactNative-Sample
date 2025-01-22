@@ -21,7 +21,9 @@ export const displayRemoteNotification = async (id, date, title, body, jid, impo
          importance,
          visibility: AndroidVisibility.PUBLIC,
       };
-      if (channelIds.sound) channelId.sound = channelIds.sound;
+      if (channelIds.sound) {
+         channelId.sound = channelIds.sound;
+      }
       channelId.vibration = channelIds.vibration;
       let channelIdData = await notifee.createChannel(channelId);
       /** Display a notification */
@@ -44,7 +46,9 @@ export const displayRemoteNotification = async (id, date, title, body, jid, impo
             },
          },
       };
-      if (Platform.OS === 'ios' && channelIds.sound) notification.ios.sound = 'default';
+      if (Platform.OS === 'ios' && channelIds.sound) {
+         notification.ios.sound = 'default';
+      }
       await notifee.displayNotification(notification);
    }
    notifee.onForegroundEvent(onChatNotificationForeGround);

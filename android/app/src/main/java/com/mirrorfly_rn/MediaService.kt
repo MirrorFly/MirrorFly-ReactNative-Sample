@@ -528,7 +528,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                         putString("message", "File decrypted and moved successfully")
                         putString(
                             "decryptedFilePath",
-                            file.absolutePath
+                            "file://${file.absolutePath}"
                         ) // Return the path of the file (moved)
                         putInt("decryptedFileSize", totalBytesWritten.toInt())
                         putBoolean("inputFileDeleted", deleteSuccess)

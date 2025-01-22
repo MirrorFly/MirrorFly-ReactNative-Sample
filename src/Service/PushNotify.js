@@ -93,7 +93,7 @@ export const updateProgressNotification = async (msgId, progress, type, isCancel
    activeDownloads.progress = activeDownloads.files > 0 ? Math.floor(totalProgress / activeDownloads.files) : 0;
 
    // Update notification title
-   const title = activeDownloads.files > 1 ? `Downloading ${activeDownloads.files} files` : `Downloading Media`;
+   const title = activeDownloads.files > 1 ? `Downloading ${activeDownloads.files} files` : 'Downloading 1 file';
 
    // If all downloads are canceled, clear notification
    if (activeDownloads.files === 0) {

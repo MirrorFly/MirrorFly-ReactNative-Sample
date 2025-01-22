@@ -17,7 +17,9 @@ export const displayRemoteNotification = async (id, date, title, body, jid, impo
          importance,
          visibility: AndroidVisibility.PUBLIC,
       };
-      if (channelIds.sound) channelId.sound = channelIds.sound;
+      if (channelIds.sound) {
+         channelId.sound = channelIds.sound;
+      }
       channelId.vibration = channelIds.vibration;
       let channelIdData = await notifee.createChannel(channelId);
       /** Display a notification */
@@ -40,7 +42,9 @@ export const displayRemoteNotification = async (id, date, title, body, jid, impo
             },
          },
       };
-      if (Platform.OS === 'ios' && channelIds.sound) notification.ios.sound = 'default';
+      if (Platform.OS === 'ios' && channelIds.sound) {
+         notification.ios.sound = 'default';
+      }
       await notifee.displayNotification(notification);
    }
    notifee.onForegroundEvent(onChatNotificationForeGround);
@@ -75,7 +79,9 @@ const activeDownloads = {
 };
 
 export const updateProgressNotification = async (msgId, progress, type, isCanceled = false) => {
-   if (Platform.OS == 'ios') return;
+   if (Platform.OS === 'ios') {
+      return;
+   }
    if (isCanceled) {
       // Remove canceled download from tracker
       delete activeDownloads.individualProgress[msgId];
@@ -93,7 +99,7 @@ export const updateProgressNotification = async (msgId, progress, type, isCancel
    activeDownloads.progress = activeDownloads.files > 0 ? Math.floor(totalProgress / activeDownloads.files) : 0;
 
    // Update notification title
-   const title = activeDownloads.files > 1 ? `Downloading ${activeDownloads.files} files` : `Downloading Media`;
+   const title = activeDownloads.files > 1 ? `Downloading ${activeDownloads.files} files` : 'Downloading Media';
 
    // If all downloads are canceled, clear notification
    if (activeDownloads.files === 0) {
@@ -120,7 +126,6 @@ export const updateProgressNotification = async (msgId, progress, type, isCancel
          },
       },
       ios: {
-         sound: null,
          categoryId: 'media_progress_category',
          sound: 'default',
          attachments: [],

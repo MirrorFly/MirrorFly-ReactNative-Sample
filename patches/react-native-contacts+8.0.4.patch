@@ -7,8 +7,7 @@ index 0000000..0d259dd
 +o/classes
 diff --git a/node_modules/react-native-contacts/android/build/.transforms/c2de5ebf19a78e1722f3e1258ae16024/transformed/classes/classes_dex/classes.dex b/node_modules/react-native-contacts/android/build/.transforms/c2de5ebf19a78e1722f3e1258ae16024/transformed/classes/classes_dex/classes.dex
 new file mode 100644
-index 0000000..9f96d3d
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/c2de5ebf19a78e1722f3e1258ae16024/transformed/classes/classes_dex/classes.dex differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/generated/source/buildConfig/debug/com/rt2zz/reactnativecontacts/BuildConfig.java b/node_modules/react-native-contacts/android/build/generated/source/buildConfig/debug/com/rt2zz/reactnativecontacts/BuildConfig.java
 new file mode 100644
 index 0000000..ba6504b
@@ -100,12 +99,10 @@ index 0000000..9e26dfe
 \ No newline at end of file
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar b/node_modules/react-native-contacts/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar
 new file mode 100644
-index 0000000..16f7cd0
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar b/node_modules/react-native-contacts/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar
 new file mode 100644
-index 0000000..75ef569
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt b/node_modules/react-native-contacts/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt
 new file mode 100644
 index 0000000..e69de29
@@ -154,56 +151,43 @@ index 0000000..f259b61
 \ No newline at end of file
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/BuildConfig.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/BuildConfig.class
 new file mode 100644
-index 0000000..8b4e5f9
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/BuildConfig.class differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsManager.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsManager.class
 new file mode 100644
-index 0000000..eb68f4b
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsManager.class differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$1.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$1.class
 new file mode 100644
-index 0000000..2c5a814
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$1.class differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$2.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$2.class
 new file mode 100644
-index 0000000..0044f7f
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$2.class differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$3.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$3.class
 new file mode 100644
-index 0000000..42c193e
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$3.class differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Birthday.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Birthday.class
 new file mode 100644
-index 0000000..2d16eaf
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Birthday.class differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Item.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Item.class
 new file mode 100644
-index 0000000..1a1960b
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Item.class differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$PostalAddressItem.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$PostalAddressItem.class
 new file mode 100644
-index 0000000..ccb0214
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$PostalAddressItem.class differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact.class
 new file mode 100644
-index 0000000..8246145
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact.class differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider.class
 new file mode 100644
-index 0000000..e51bad6
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider.class differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ReactNativeContacts.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ReactNativeContacts.class
 new file mode 100644
-index 0000000..6f6ba2e
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ReactNativeContacts.class differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl$1.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl$1.class
 new file mode 100644
-index 0000000..b30ef5d
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl$1.class differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl.class
 new file mode 100644
-index 0000000..88ab430
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl.class differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt b/node_modules/react-native-contacts/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
 new file mode 100644
 index 0000000..78ac5b8
@@ -257,8 +241,7 @@ index 0000000..08f4ebe
 \ No newline at end of file
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar
 new file mode 100644
-index 0000000..314f20b
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt b/node_modules/react-native-contacts/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
 new file mode 100644
 index 0000000..a2297ba
@@ -291,8 +274,7 @@ index 0000000..eed9517
 +		INJECTED from /Users/user/Desktop/mirrorfly/rn/rn_0.72/bug-fixes/p078-mirrorfly-reactnative-uikitsdk/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml
 diff --git a/node_modules/react-native-contacts/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/react-native-contacts/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
 new file mode 100644
-index 0000000..85d5064
-Binary files /dev/null and b/node_modules/react-native-contacts/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-contacts/ios/RCTContacts/RCTContacts.mm b/node_modules/react-native-contacts/ios/RCTContacts/RCTContacts.mm
 index feaf0da..0a5a528 100644
 --- a/node_modules/react-native-contacts/ios/RCTContacts/RCTContacts.mm

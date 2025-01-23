@@ -615,7 +615,6 @@ class MediaService: RCTEventEmitter {
   
   @objc func uploadFileInChunks(
     _ obj: NSDictionary,
-    msgId: String,
     resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock
   ) {

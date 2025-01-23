@@ -151,6 +151,13 @@ export const updateProgressNotification = async ({
             visibility: AndroidVisibility.PUBLIC,
             smallIcon: 'ic_notification',
             ongoing: true,
+            ...(foregroundStatus && {
+               asForegroundService: true,
+               foregroundServiceTypes: [
+                  Platform.Version >= 34 && AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE,
+                  AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_DATA_SYNC,
+               ],
+            }),
             progress: {
                max: 100,
                current: activeProgress.progress,
@@ -171,14 +178,6 @@ export const updateProgressNotification = async ({
             },
          },
       };
-
-      if (foregroundStatus && Platform.OS === 'android') {
-         notification.android.asForegroundService = true;
-         notification.android.foregroundServiceTypes = [
-            Platform.Version >= 34 && AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE,
-            AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_DATA_SYNC,
-         ];
-      }
 
       notifee.displayNotification(notification);
    } catch (error) {

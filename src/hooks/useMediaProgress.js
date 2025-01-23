@@ -8,18 +8,7 @@ import { getCurrentChatUser, getUserIdFromJid, showToast } from '../helpers/chat
 import { mediaStatusConstants } from '../helpers/constants';
 import { updateMediaStatus } from '../redux/chatMessageDataSlice';
 import { getMediaProgress, useChatMessage } from '../redux/reduxHook';
-
-const generateUniqueFilePath = async (filePath, counter = 0) => {
-   // Modify the file path if the counter is greater than 0
-   const extension = filePath.substring(filePath.lastIndexOf('.') + 1);
-   const baseName = filePath.substring(0, filePath.lastIndexOf('.'));
-   const modifiedFilePath = counter > 0 ? `${baseName}(${counter}).${extension}` : filePath;
-
-   // Check if the file exists
-   const exists = await RNFS.exists(modifiedFilePath);
-   // Return the modified file path if it does not exist, otherwise recurse
-   return exists ? generateUniqueFilePath(filePath, counter + 1) : modifiedFilePath;
-};
+import SDK from '../SDK/SDK';
 
 const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    const userId = getUserIdFromJid(getCurrentChatUser());
@@ -30,6 +19,10 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    const [mediaStatus, setMediaStatus] = React.useState('');
 
    React.useEffect(() => {
+
+   console.log('uploadStatus ==> ', uploadStatus);
+   console.log('downloadStatus ==> ', downloadStatus);
+
       if (downloadStatus === 1) {
          setMediaStatus(mediaStatusConstants.DOWNLOADING);
       }
@@ -88,7 +81,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
          console.log('Error in handleDownload:', error);
       }
    };
-   const handleUpload = () => {
+   const handleUpload = async () => {
       if (!networkState) {
          showToast('Please check your internet connection');
          return;
@@ -100,6 +93,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
       };
       const { msgId: _msgId, msgBody: { media = {}, media: { file = {} } = {} } = {} } = chatMessage;
       dispatch(updateMediaStatus(retryObj));
+      console.log('retryObj ==>', JSON.stringify(retryObj, null, 2));
       uploadFileToSDK(file, getCurrentChatUser(), _msgId, media);
    };
 
@@ -115,7 +109,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
                   msgId,
                   userId,
                   ...(downloadJobId && { is_downloaded: 0 }),
-                  ...(uploadJobId && { uploadStatus: 3 }),
+                  ...(uploadJobId && { is_uploading: 3 }),
                };
                dispatch(updateMediaStatus(mediaStatusObj));
                setMediaStatus(uploadJobId ? mediaStatusConstants.NOT_UPLOADED : mediaStatusConstants.NOT_DOWNLOADED);
@@ -124,7 +118,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
                const mediaStatusObj = {
                   msgId,
                   userId,
-                  uploadStatus: 3,
+                  is_uploading: 3,
                };
                dispatch(updateMediaStatus(mediaStatusObj));
             }

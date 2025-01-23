@@ -595,12 +595,18 @@ class MediaService: RCTEventEmitter {
   }
   
   @objc func uploadFileInChunks(
-    _ uploadUrls: [String],
-    filePath: String,
+    _ obj: NSDictionary,
     msgId: String,
     resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock
   ) {
+    let uploadUrls = obj["uploadUrls"] as? [String] ?? []
+    let filePath = obj["encryptedFilePath"] as? String ?? ""
+    let msgId = obj["msgId"] as? String ?? ""
+    
+    let startIndex  = obj["startIndex"] as? Int ?? 0
+    let startBytesRead  = obj["startBytesRead"] as? Int ?? 0
+    
     let formattedPath = filePath.replacingOccurrences(of: "file://", with: "")
     let fileManager = FileManager.default
     let chunkSize: Int = (5*1024*1024)
@@ -629,9 +635,9 @@ class MediaService: RCTEventEmitter {
     DispatchQueue.global(qos: .background).async {
       do {
         let fileHandle = try FileHandle(forReadingFrom: URL(fileURLWithPath: formattedPath))
-        var offset: UInt64 = 0
+        var offset: UInt64 = UInt64(startBytesRead)
         var uploadedBytes: UInt64 = 0
-        var chunkIndex = 0
+        var chunkIndex = startIndex
         let fileSize = fileHandle.seekToEndOfFile()
         fileHandle.seek(toFileOffset: 0) // Reset to the beginning
         while offset < fileSize {

@@ -20,6 +20,10 @@ RCT_EXTERN_METHOD(encryptFile:(NSDictionary *)obj
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(cancelUpload:(NSString *)msgId
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(downloadFileInChunks:(NSString *)downloadURL
                   fileSize:(nonnull NSNumber *)fileSize
                   cachePath:(NSString *)cachePath
@@ -55,6 +59,9 @@ RCT_EXTERN_METHOD(cancelDownload:(NSString *)msgId
                   rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(cancelAllDownloads:(RCTPromiseResolveBlock *)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(cancelAllUploads:(RCTPromiseResolveBlock *)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(resetPauseRequest:(RCTPromiseResolveBlock *)resolve

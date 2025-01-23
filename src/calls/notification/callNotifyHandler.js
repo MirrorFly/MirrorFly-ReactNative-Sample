@@ -321,9 +321,12 @@ const callNotifiHandling = detail => {
 export const setNotificationForegroundService = async () => {
    // Register foreground service, NOOP
    notifee.registerForegroundService(notification => {
-      const { data: confrenceData = {} } = store.getState().showConfrenceData || {};
-      const { callStatusText } = confrenceData;
       return new Promise(() => {
+         if (notification?.android?.channelId === 'media_progress_channel') {
+            return;
+         }
+         const { data: confrenceData = {} } = store.getState().showConfrenceData || {};
+         const { callStatusText } = confrenceData;
          store.dispatch(setNotificationData(notification));
          if (notification?.android?.channelId === 'OnGoing Call' && callStatusText === CALL_STATUS_CONNECTED) {
             let callStartTime = store.getState()?.callData?.callDuration;

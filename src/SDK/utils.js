@@ -20,6 +20,7 @@ import { getArchive, getChatMessages, getMediaProgress, getReplyMessage, getRoas
 import { setRoasterData } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting, updateNotificationSetting } from '../redux/settingDataSlice';
 import store from '../redux/store';
+import { updateProgressNotification } from '../Service/PushNotify';
 import { getCurrentUserJid, mflog } from '../uikitMethods';
 import SDK from './SDK';
 
@@ -395,6 +396,13 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
          }),
          ...(msgType === 'audio' && { audioType }),
       };
+      await updateProgressNotification({
+         msgId,
+         progress: 0,
+         type: 'upload',
+         isCanceled: false,
+         foregroundStatus: false,
+      });
 
       let response = {};
       response = await SDK.sendMediaMessage(jid, msgId, msgType, file.fileDetails, fileOptions, replyTo, {
@@ -407,6 +415,12 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
          userId: getUserIdFromJid(jid),
       };
       if (response?.statusCode !== 200) {
+         await updateProgressNotification({
+            msgId,
+            progress: 0,
+            type: 'upload',
+            isCanceled: true,
+         });
          updateObj.is_uploading = 3;
          store.dispatch(updateMediaStatus(updateObj));
          showToast(response.message);

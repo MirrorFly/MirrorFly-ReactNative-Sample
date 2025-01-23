@@ -59,7 +59,13 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
                is_downloaded: 1,
             }),
          );
-         await updateProgressNotification({ msgId, progress: 0, type: 'download', isCanceled: false });
+         await updateProgressNotification({
+            msgId,
+            progress: 0,
+            type: 'download',
+            isCanceled: false,
+            foregroundStatus: false,
+         });
          const downloadResponse = downloadJobId
             ? await source?.resume({ downloadJobId })
             : await SDK.downloadMedia(msgId);
@@ -111,7 +117,12 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
             if (downloadJobId || uploadJobId) {
                const cancelRes = await source?.cancel?.(downloadJobId || uploadJobId);
                console.log('cancelRes ==>', cancelRes);
-               updateProgressNotification({ msgId, progress: 0, type: 'download', isCanceled: true });
+               updateProgressNotification({
+                  msgId,
+                  progress: 0,
+                  type: downloadJobId ? 'download' : 'upload',
+                  isCanceled: true,
+               });
                const mediaStatusObj = {
                   msgId,
                   userId,

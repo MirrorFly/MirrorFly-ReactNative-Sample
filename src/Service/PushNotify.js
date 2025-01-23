@@ -1,7 +1,8 @@
 import notifee, {
    AndroidColor,
+   AndroidForegroundServiceType,
    AndroidImportance,
-   AndroidVisibility
+   AndroidVisibility,
 } from '@notifee/react-native';
 import { Platform } from 'react-native';
 import { MISSED_CALL } from '../Helper/Calls/Constant';
@@ -95,7 +96,13 @@ const progressMap = {
    download: activeDownloads,
 };
 
-export const updateProgressNotification = async ({ msgId, progress, type, isCanceled = false }) => {
+export const updateProgressNotification = async ({
+   msgId,
+   progress,
+   type,
+   isCanceled = false,
+   foregroundStatus = true,
+}) => {
    try {
       if (Platform.OS === 'ios') {
          return;
@@ -126,6 +133,7 @@ export const updateProgressNotification = async ({ msgId, progress, type, isCanc
 
       // If all downloads are canceled, clear notification
       if (activeProgress.files === 0) {
+         await notifee.stopForegroundService();
          await notifee.cancelNotification('media_progress_notification');
          return;
       }
@@ -163,6 +171,14 @@ export const updateProgressNotification = async ({ msgId, progress, type, isCanc
             },
          },
       };
+
+      if (foregroundStatus && Platform.OS === 'android') {
+         notification.android.asForegroundService = true;
+         notification.android.foregroundServiceTypes = [
+            Platform.Version >= 34 && AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE,
+            AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_DATA_SYNC,
+         ];
+      }
 
       notifee.displayNotification(notification);
    } catch (error) {

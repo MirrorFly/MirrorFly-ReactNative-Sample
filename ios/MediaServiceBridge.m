@@ -63,6 +63,9 @@ RCT_EXTERN_METHOD(cancelDownload:(NSString *)msgId
 RCT_EXTERN_METHOD(cancelAllDownloads:(RCTPromiseResolveBlock *)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(cancelAllUploads:(RCTPromiseResolveBlock *)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(resetPauseRequest:(RCTPromiseResolveBlock *)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 

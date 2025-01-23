@@ -237,8 +237,27 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     }
 
     @ReactMethod
-    fun resetPauseRequest(promise: Promise){
+    fun resetPauseRequest(promise: Promise) {
         isAllPauseRequested = false
+    }
+
+    @ReactMethod
+    fun cancelAllUploads(promise: Promise) {
+        if (activeUploads.isNotEmpty()) {
+            for ((msgId, job) in activeUploads) {
+                job.cancel() // Cancel the download job
+            }
+            activeUploads.clear() // Clear all active download references
+            promise.resolve(Arguments.createMap().apply {
+                putBoolean("success", true)
+                putString("message", "All uploads have been canceled")
+            })
+        } else {
+            promise.resolve(Arguments.createMap().apply {
+                putBoolean("success", false)
+                putString("message", "No active uploads to cancel")
+            })
+        }
     }
 
     @ReactMethod
@@ -397,13 +416,11 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                     })
                 }
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
                     promise.resolve(Arguments.createMap().apply {
                         putBoolean("success", false)
                         putInt("statusCode", 500)
                         putString("message", "Error encrypting file: ${e.message}")
                     })
-                }
             } finally {
                 activeUploads.remove(msgId)
             }
@@ -651,9 +668,11 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                 }
             } catch (e: Exception) {
                 Log.e(name, "Error uploading file: $e")
-                withContext(Dispatchers.Main) {
-                    promise.reject("UPLOAD_ERROR", "Error uploading file: ${e.message}")
-                }
+                promise.resolve(Arguments.createMap().apply {
+                    putBoolean("success", false)
+                    putInt("statusCode", 500)
+                    putString("message", "Error While Uploading file")
+                })
             } finally {
                 activeUploads.remove(msgId)
             }

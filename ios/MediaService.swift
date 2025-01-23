@@ -242,6 +242,24 @@ class MediaService: RCTEventEmitter {
     }
   }
   
+  @objc func cancelAllUploads(
+    _ resolver: @escaping RCTPromiseResolveBlock,
+    rejecter: @escaping RCTPromiseRejectBlock
+  ) {
+    if activeUploads.isEmpty {
+      resolver("No active uploads to cancel")
+      return
+    }
+    for (msgId, task) in activeUploads {
+      task.cancel()
+      print("cancelUpload for \(msgId)")
+    }
+    resolver([
+      "statusCode": 200,
+      "message": "All uploads canceled",
+    ])
+  }
+  
   
   @objc func startUpload(_ fileUri: String, destinationUrl: String, encryptionKey: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
     guard let fileURL = URL(string: fileUri), let _ = URL(string: destinationUrl) else {

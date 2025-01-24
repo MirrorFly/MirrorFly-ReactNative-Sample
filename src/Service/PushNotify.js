@@ -122,6 +122,9 @@ export const updateProgressNotification = async ({
          activeProgress.individualProgress[msgId] = progress;
       }
 
+      // let foreground = (activeDownloads?.files && activeUploads?.files && (type === 'download' || type === 'upload')) ||
+      // ((activeDownloads?.files || activeUploads?.files) && foregroundStatus);
+
       // Recalculate combined progress
       const totalProgress = Object.values(activeProgress.individualProgress).reduce((sum, p) => sum + p, 0);
       activeProgress.progress = activeProgress.files > 0 ? Math.floor(totalProgress / activeProgress.files) : 0;
@@ -134,7 +137,7 @@ export const updateProgressNotification = async ({
       // If all downloads are canceled, clear notification
       if (activeProgress.files === 0) {
          await notifee.stopForegroundService();
-         await notifee.cancelNotification('media_progress_notification');
+         await notifee.cancelNotification(activeProgress.id);
          return;
       }
 

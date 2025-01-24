@@ -3,6 +3,7 @@ package com.mirrorfly_rn
 import android.os.Environment
 import android.util.Log
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -281,61 +282,6 @@ class MediaService(var reactContext: ReactApplicationContext?) :
         }
     }
 
-
-    @ReactMethod
-    fun defineValues(obj: ReadableMap, promise: Promise) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                inputFilePath = obj.getString("inputFilePath") ?: ""
-                outputFilePath = obj.getString("outputFilePath") ?: ""
-                chunkSize = if (obj.hasKey("chunkSize")) obj.getInt("chunkSize") else chunkSize
-                iv = obj.getString("iv") ?: ""
-                keyString = cryptLib.getRandomString(32)
-                val file = File(inputFilePath.replace("file://", ""))
-                if (!file.exists()) {
-                    withContext(Dispatchers.Main) {
-                        promise.resolve(Arguments.createMap().apply {
-                            putBoolean("success", false)
-                            putInt("statusCode", 404)
-                            putString("message", "File not found at $inputFilePath")
-                        })
-                    }
-                    return@launch
-                }
-                if (outputFilePath.isEmpty()) {
-                    withContext(Dispatchers.Main) {
-                        promise.resolve(Arguments.createMap().apply {
-                            putBoolean("success", false)
-                            putInt("statusCode", 400)
-                            putString("message", "Output file path is empty")
-                        })
-                    }
-                    return@launch
-                }
-
-                // Simulate encryption setup
-                val key = cryptLib.getSHA256(keyString, 32)
-                cipher = cryptLib.encryptFile(key, iv) // Dummy call
-
-                withContext(Dispatchers.Main) {
-                    promise.resolve(Arguments.createMap().apply {
-                        putBoolean("success", true)
-                        putInt("statusCode", 200)
-                        putString("encryptionKey", keyString)
-                    })
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    promise.resolve(Arguments.createMap().apply {
-                        putBoolean("success", false)
-                        putInt("statusCode", 500)
-                        putString("message", "Error initializing values: ${e.message}")
-                    })
-                }
-            }
-        }
-    }
-
     @ReactMethod
     fun cancelUpload(msgId: String, promise: Promise) {
         val job = activeUploads[msgId]
@@ -588,12 +534,12 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     }
 
     @ReactMethod
-    fun uploadFileInChunks(
-        uploadUrls: ReadableArray,
-        encryptedFilePath: String,
-        msgId: String,
-        promise: Promise
-    ) {
+    fun uploadFileInChunks(obj: ReadableMap, promise: Promise) {
+        val uploadUrls: ReadableArray = obj.getArray("uploadUrls") ?: JavaOnlyArray()
+        val encryptedFilePath: String = obj.getString("encryptedFilePath") ?: ""
+        val msgId: String = obj.getString("msgId") ?: ""
+        val startIndex: Int = obj.getInt("startIndex") ?: 0
+        val startBytesRead: Int = obj.getInt("startBytesRead") ?: 0
         val job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val file = File(encryptedFilePath)
@@ -610,10 +556,14 @@ class MediaService(var reactContext: ReactApplicationContext?) :
 
                 val buffer = ByteArray(chunkSize)
                 var bytesRead: Int
-                var totalBytesRead: Long = 0
-                var chunkIndex = 0
+                var totalBytesRead: Long = startBytesRead.toLong()
+                var chunkIndex = startIndex
 
                 val fis = FileInputStream(file)
+
+                if (totalBytesRead > 0) {
+                    fis.skip(totalBytesRead)
+                }
 
                 while (fis.read(buffer).also { bytesRead = it } != -1) {
                     if (chunkIndex >= uploadUrls.size()) {

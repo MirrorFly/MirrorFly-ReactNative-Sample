@@ -283,6 +283,18 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     }
 
     @ReactMethod
+    fun clearCacheFilePath(url: String, promise: Promise) {
+        val encryptedFile = File(url.replace("file://", ""))
+        // After moving the file, delete the original (if needed)
+        val success = encryptedFile.delete()
+        Log.d("TAG", "clearCacheFilePath: $success")
+        promise.resolve(Arguments.createMap().apply {
+            putBoolean("success", success)
+            putString("message", "Upload cancelled for url: $success")
+        })
+    }
+
+    @ReactMethod
     fun cancelUpload(msgId: String, promise: Promise) {
         val job = activeUploads[msgId]
         if (job != null) {
@@ -666,7 +678,6 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                 }
 
                 fis.close()
-                file.delete()
 
 
                 withContext(Dispatchers.Main) {

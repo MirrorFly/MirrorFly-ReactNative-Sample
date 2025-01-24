@@ -122,6 +122,9 @@ export const updateProgressNotification = async ({
          activeProgress.individualProgress[msgId] = progress;
       }
 
+      // let foreground = (activeDownloads?.files && activeUploads?.files && (type === 'download' || type === 'upload')) ||
+      // ((activeDownloads?.files || activeUploads?.files) && foregroundStatus);
+
       // Recalculate combined progress
       const totalProgress = Object.values(activeProgress.individualProgress).reduce((sum, p) => sum + p, 0);
       activeProgress.progress = activeProgress.files > 0 ? Math.floor(totalProgress / activeProgress.files) : 0;
@@ -134,7 +137,7 @@ export const updateProgressNotification = async ({
       // If all downloads are canceled, clear notification
       if (activeProgress.files === 0) {
          await notifee.stopForegroundService();
-         await notifee.cancelNotification('media_progress_notification');
+         await notifee.cancelNotification(activeProgress.id);
          return;
       }
 
@@ -151,6 +154,13 @@ export const updateProgressNotification = async ({
             visibility: AndroidVisibility.PUBLIC,
             smallIcon: 'ic_notification',
             ongoing: true,
+            ...(foregroundStatus && {
+               asForegroundService: true,
+               foregroundServiceTypes: [
+                  Platform.Version >= 34 && AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE,
+                  AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_DATA_SYNC,
+               ],
+            }),
             progress: {
                max: 100,
                current: activeProgress.progress,
@@ -171,14 +181,6 @@ export const updateProgressNotification = async ({
             },
          },
       };
-
-      if (foregroundStatus && Platform.OS === 'android') {
-         notification.android.asForegroundService = true;
-         notification.android.foregroundServiceTypes = [
-            Platform.Version >= 34 && AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE,
-            AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_DATA_SYNC,
-         ];
-      }
 
       notifee.displayNotification(notification);
    } catch (error) {

@@ -242,6 +242,24 @@ class MediaService: RCTEventEmitter {
     }
   }
   
+  @objc func clearCacheFilePath(
+    _ filePath: String,
+    resolver: @escaping RCTPromiseResolveBlock,
+    rejecter: @escaping RCTPromiseRejectBlock
+  ) {
+    let fileManager = FileManager.default
+    let formattedPath = filePath.replacingOccurrences(of: "file://", with: "")
+    if fileManager.fileExists(atPath: formattedPath) {
+      do {
+        try fileManager.removeItem(atPath: formattedPath)
+        resolver("Cleared Successfully")
+      } catch (let error) {
+        print("cancelUpload for \(error)")
+        resolver("Clear Failed")
+      }
+    }
+  }
+  
   @objc func cancelAllUploads(
     _ resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock

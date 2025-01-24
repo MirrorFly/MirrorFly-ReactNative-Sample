@@ -420,6 +420,66 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     }
 
     @ReactMethod
+    fun decryptSmallFile(
+        inputFilePath: String,
+        msgId: String,
+        keyString: String,
+        iv: String,
+        promise: Promise
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val file = File(inputFilePath.replace("file://", ""))
+                val decipher = cryptLib.getSHA256(keyString, 32)
+
+                // Create a temporary file for decrypted output
+                val decryptedFilePath = "${file.parent}/decrypted_${file.name}"
+                val decryptedFile = File(decryptedFilePath)
+
+                val fis = FileInputStream(file)
+                val inputBytes = fis.readBytes()
+
+                val outputBytes = cryptLib.decryptFile(inputBytes, decipher, iv)
+
+                val fos = FileOutputStream(decryptedFile)
+                fos.write(outputBytes)
+
+                fos.close()
+                fis.close()
+
+                // Log the decrypted file size
+                Log.d("DecryptSmallFile", "Decrypted file path: $decryptedFilePath, size: ${decryptedFile.length()}")
+
+                // Delete the original file if needed
+                val deleteSuccess = file.delete()
+
+                // Move the decrypted file back to the original file path
+                val moveSuccess = decryptedFile.renameTo(file)
+
+                withContext(Dispatchers.Main) {
+                    promise.resolve(Arguments.createMap().apply {
+                        putBoolean("success", moveSuccess)
+                        putInt("statusCode", if (moveSuccess) 200 else 500)
+                        putString("message", if (moveSuccess) "File decrypted and moved successfully" else "Failed to move decrypted file")
+                        putString("decryptedFilePath", "file://${file.absolutePath}") // Return the updated file path
+                        putInt("decryptedFileSize", file.length().toInt())
+                        putBoolean("inputFileDeleted", deleteSuccess)
+                    })
+                }
+
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    promise.resolve(Arguments.createMap().apply {
+                        putBoolean("success", false)
+                        putInt("statusCode", 500)
+                        putString("message", "Error decrypting file: ${e.message}")
+                    })
+                }
+            }
+        }
+    }
+
+    @ReactMethod
     fun decryptFile(
         inputFilePath: String,
         msgId: String,

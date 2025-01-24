@@ -617,7 +617,7 @@ const reconnecting = res => {
       remoteAudioMuted: remoteAudioMuted,
       callStatusText: CALL_STATUS_RECONNECT,
    };
-   /** 
+   /**
     *  let vcardData = getLocalUserDetails();
     * let currentUserJid = formatUserIdToJid(vcardData?.fromUser)
    if (currentUserJid === res.userJid) {

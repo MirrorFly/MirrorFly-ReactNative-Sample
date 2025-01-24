@@ -54,6 +54,8 @@ const config = {
    // licenseKey: 'M5hhyMm7o7WiFRumULxlChc6sGFRuU',
    // API_URL: 'https://growthaxlllc-api.mirrorfly.com/api/v1',
    // licenseKey: 'o3mN05oAgepcbO0noe3T058WC8jkKN',
+   // API_URL: 'https://api-preprod-sandbox.mirrorfly.com/api/v1',
+   // licenseKey: 'RLIKkMQkbkAIDMucEdDKNMZ05VOB1F',
 };
 
 export default config;

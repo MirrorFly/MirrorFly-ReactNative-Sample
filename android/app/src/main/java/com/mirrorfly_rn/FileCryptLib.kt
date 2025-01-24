@@ -6,6 +6,8 @@
 package com.mirrorfly_rn
 
 
+import android.os.Build
+import android.util.Base64
 import androidx.annotation.Keep
 import java.io.UnsupportedEncodingException
 import java.nio.charset.StandardCharsets
@@ -130,6 +132,91 @@ class FileCryptLib {
         return _cx  // Return encrypted/decrypted cipher instance
     }
 
+    /**
+     * @param inputByteArray     Text to be encrypted or decrypted
+     * @param encryptionKey Encryption key to used for encryption / decryption
+     * @param mode          specify the mode encryption / decryption
+     * @param initVector    Initialization vector
+     * @return encrypted or decrypted string based on the mode
+     * @throws UnsupportedEncodingException
+     * @throws InvalidKeyException
+     * @throws InvalidAlgorithmParameterException
+     * @throws IllegalBlockSizeException
+     * @throws BadPaddingException
+     */
+    @Throws(
+        UnsupportedEncodingException::class,
+        InvalidKeyException::class,
+        InvalidAlgorithmParameterException::class,
+        IllegalBlockSizeException::class,
+        BadPaddingException::class
+    )
+    private fun encryptDecryptFile(
+        inputByteArray: ByteArray,
+        encryptionKey: String,
+        mode: EncryptMode,
+        initVector: String
+    ): ByteArray {
+
+        var outPutByteArray = inputByteArray // Output byte array
+
+        /**
+         * _encryptionKey = md5(_encryptionKey);
+         * length of the key provided
+         */
+        var len = encryptionKey.toByteArray(StandardCharsets.UTF_8).size
+        if (encryptionKey.toByteArray(StandardCharsets.UTF_8).size > _key.size)
+            len = _key.size
+
+        var ivlen = initVector.toByteArray(StandardCharsets.UTF_8).size
+        if (initVector.toByteArray(StandardCharsets.UTF_8).size > _iv.size)
+            ivlen = _iv.size
+
+        System.arraycopy(encryptionKey.toByteArray(StandardCharsets.UTF_8), 0, _key, 0, len)
+        System.arraycopy(initVector.toByteArray(StandardCharsets.UTF_8), 0, _iv, 0, ivlen)
+
+        /**
+         * Create a new SecretKeySpec
+         */
+        val keySpec = SecretKeySpec(_key, "AES")
+
+        /**
+         * Create a new IvParameterSpec instance with the bytes from the specified buffer iv
+         * used as initialization vector.
+         */
+        val ivSpec = IvParameterSpec(_iv)
+
+        if (mode == EncryptMode.ENCRYPT) { // Encryption
+            /**
+             * Read
+             * https://android-developers.blogspot.com/2013/08/some-securerandom-thoughts.html
+             * for more info.
+             */
+            _cx.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec) // Initialize this cipher instance.
+            val results = _cx.doFinal(inputByteArray)
+
+            val outputBytes = if (Build.VERSION.SDK_INT >= 26) {
+                java.util.Base64.getEncoder().encode(results)
+            } else Base64.encode(results, 0)
+
+            outPutByteArray = outputBytes // Multi-part, transformation and (encryption) Ciphertext
+        }
+
+        if (mode == EncryptMode.DECRYPT) { // Decryption
+            _cx.init(Cipher.DECRYPT_MODE, keySpec, ivSpec) // Initialize this cipher instance
+
+            val outputBytes = if (Build.VERSION.SDK_INT >= 26) {
+                java.util.Base64.getDecoder().decode(inputByteArray)
+            } else Base64.decode(inputByteArray, 0)
+
+            val decryptedVal = _cx.doFinal(outputBytes) // Finish
+
+            outPutByteArray = decryptedVal  // Multi-part transformation(decryption)
+        }
+
+        return outPutByteArray  // Return encrypted/decrypted string
+    }
+
 
     @SuppressWarnings("kotlin:S1133","kotlin:S107","kotlin:S1874")
     @Throws(
@@ -150,6 +237,10 @@ class FileCryptLib {
 
         _cx.init(Cipher.DECRYPT_MODE, keySpec, ivSpec) // Initialize this cipher instance
         return _cx  // Return decrypted cipher instance
+    }
+
+    fun decryptFile(_encryptedText: ByteArray, _key: String, _iv: String): ByteArray {
+        return encryptDecryptFile(_encryptedText, _key, EncryptMode.DECRYPT, _iv)
     }
 
     /***

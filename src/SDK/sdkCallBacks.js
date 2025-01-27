@@ -125,7 +125,13 @@ import { resetConferencePopup, showConfrence, updateConference } from '../redux/
 import store from '../redux/store';
 import { resetTypingStatus, setTypingStatus } from '../redux/typingStatusDataSlice';
 import { REGISTERSCREEN } from '../screens/constants';
-import { getCurrentUserJid, getLocalUserDetails, logoutClearVariables, setCurrectUserProfile } from '../uikitMethods';
+import {
+   getCurrentUserJid,
+   getLocalUserDetails,
+   logoutClearVariables,
+   mflog,
+   setCurrectUserProfile,
+} from '../uikitMethods';
 import SDK from './SDK';
 import { fetchGroupParticipants, getUserProfileFromSDK } from './utils';
 
@@ -652,7 +658,7 @@ const callStatus = res => {
 
 export const callBacks = {
    connectionListener: response => {
-      console.log('response ==>', response);
+      mflog('response ==>', response);
       store.dispatch(setXmppConnectionStatus(response.status));
       if (response.status === 'LOGOUT') {
          logoutClearVariables();

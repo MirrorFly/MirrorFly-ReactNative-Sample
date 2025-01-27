@@ -107,7 +107,7 @@ export const updateProgressNotification = async ({
       if (Platform.OS === 'ios') {
          return;
       }
-
+      console.log('isCanceled ==> ', isCanceled);
       let activeProgress = progressMap[type];
 
       if (isCanceled) {
@@ -127,15 +127,22 @@ export const updateProgressNotification = async ({
 
       // Recalculate combined progress
       const totalProgress = Object.values(activeProgress.individualProgress).reduce((sum, p) => sum + p, 0);
-      activeProgress.progress = activeProgress.files > 0 ? Math.floor(totalProgress / activeProgress.files) : 0;
+      if (Object.keys(activeProgress.individualProgress).length === 1) {
+         activeProgress.progress = progress;
+      } else {
+         activeProgress.progress = activeProgress.files > 0 ? Math.floor(totalProgress / activeProgress.files) : 0;
+      }
 
       const action = type === 'upload' ? 'Uploading' : 'Downloading';
       const fileCount = activeProgress.files;
 
       const title = fileCount > 1 ? `${action} ${fileCount} files` : `${action} file`;
+      console.log(activeProgress.files, 'activeProgress.files');
 
       // If all downloads are canceled, clear notification
       if (activeProgress.files <= 0) {
+         console.log('STOPPPED activeProgress.files');
+
          await notifee.stopForegroundService();
          await notifee.cancelNotification(activeProgress.id);
          return;
@@ -164,7 +171,7 @@ export const updateProgressNotification = async ({
             progress: {
                max: 100,
                current: activeProgress.progress,
-               indeterminate: false,
+               indeterminate: activeProgress.progress <= 0 ? true : false,
             },
          },
          ios: {

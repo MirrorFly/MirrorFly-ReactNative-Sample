@@ -177,9 +177,22 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          conversationChatObj.archiveSetting = getArchive();
          store.dispatch(addChatMessageItem(conversationChatObj));
          store.dispatch(addRecentChatItem(conversationChatObj));
+
+         await updateProgressNotification({
+            msgId,
+            progress: 0,
+            type: 'upload',
+            isCanceled: false,
+            foregroundStatus: false,
+         });
+
          if (i === 0) {
-            const { msgId, userJid, msgBody: { media = {}, media: { file = {} } = {} } = {} } = conversationChatObj;
-            uploadFileToSDK(file, userJid, msgId, media);
+            const {
+               msgId: _msgId,
+               userJid,
+               msgBody: { media = {}, media: { file: _file = {} } = {} } = {},
+            } = conversationChatObj;
+            uploadFileToSDK(_file, userJid, _msgId, media);
          }
       }
    }
@@ -398,19 +411,11 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
          }),
          ...(msgType === 'audio' && { audioType }),
       };
-      await updateProgressNotification({
-         msgId,
-         progress: 0,
-         type: 'upload',
-         isCanceled: false,
-         foregroundStatus: false,
-      });
 
       let response = {};
       response = await SDK.sendMediaMessage(jid, msgId, msgType, file.fileDetails, fileOptions, replyTo, {
          broadCastIdMedia: SDK.randomString(8, 'BA'),
       });
-      console.log('response ==>', JSON.stringify(response, null, 2));
       let updateObj = {
          msgId,
          statusCode: response.statusCode,

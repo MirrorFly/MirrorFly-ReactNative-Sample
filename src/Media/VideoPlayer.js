@@ -20,7 +20,6 @@ const VideoPlayer = () => {
    const { videoUri: _videoUri, uri } = fileDetails;
    const videoPlayer = React.useRef(null);
    const [videoUri, setVideoUri] = React.useState(_videoUri || uri);
-   console.log('videoUri ==> ', videoUri);
    const [currentTime, setCurrentTime] = React.useState(0);
    const [duration, setDuration] = React.useState(0);
    const [isLoading, setIsLoading] = React.useState(true);

@@ -226,18 +226,32 @@ export const handelResetMessageSelection = userId => () => {
 
 export const getThumbBase64URL = thumb => `data:image/png;base64,${thumb}`;
 
+// Helper function to format numbers with a maximum of 2 decimals
+// If the number is a whole number, it removes the decimals
+const formatDecimal = value => {
+   return value % 1 === 0 ? value.toFixed(0) : value.toFixed(2);
+};
+
 export const convertBytesToKB = bytes => {
    if (bytes < 1024) {
-      // If the size is less than 1KB, return bytes only
-      return bytes + ' bytes';
+      // Less than 1 KB, return bytes
+      return `${bytes} bytes`;
    } else if (bytes < 1024 * 1024) {
-      // If the size is less than 1MB, return in KB
+      // Less than 1 MB, return in KB
       const KB = bytes / 1024;
-      return KB.toFixed(2) + ' KB';
-   } else {
-      // If the size is 1MB or more, return in MB
+      return formatDecimal(KB) + ' KB';
+   } else if (bytes < 1024 * 1024 * 1024) {
+      // Less than 1 GB, return in MB
       const MB = bytes / (1024 * 1024);
-      return MB.toFixed(2) + ' MB';
+      return formatDecimal(MB) + ' MB';
+   } else if (bytes < 1024 * 1024 * 1024 * 1024) {
+      // Less than 1 TB, return in GB
+      const GB = bytes / (1024 * 1024 * 1024);
+      return formatDecimal(GB) + ' GB';
+   } else {
+      // 1 TB or more
+      const TB = bytes / (1024 * 1024 * 1024 * 1024);
+      return formatDecimal(TB) + ' TB';
    }
 };
 
@@ -492,10 +506,9 @@ export const isValidFileType = type => {
 };
 
 export const validateFileSize = (size, mediaTypeFile) => {
-   const filemb = Math.round(size / 1024);
    const maxAllowedSize = getMaxAllowedFileSize(mediaTypeFile);
-   if (filemb >= maxAllowedSize * 1024) {
-      const message = `File size is too large. Try uploading file size below ${maxAllowedSize}MB`;
+   if (size >= maxAllowedSize) {
+      const message = `File size is too large. Try uploading file size below ${convertBytesToKB(maxAllowedSize)}`;
       if (mediaTypeFile) {
          return message;
       }

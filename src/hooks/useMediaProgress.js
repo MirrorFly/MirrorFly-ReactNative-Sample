@@ -18,9 +18,6 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    const [mediaStatus, setMediaStatus] = React.useState('');
 
    React.useEffect(() => {
-      console.log('uploadStatus ==> ', uploadStatus);
-      console.log('downloadStatus ==> ', downloadStatus);
-
       if (downloadStatus === 1) {
          setMediaStatus(mediaStatusConstants.DOWNLOADING);
       }
@@ -59,7 +56,6 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
          const downloadResponse = downloadJobId
             ? await source?.resume({ downloadJobId })
             : await SDK.downloadMedia(msgId);
-         console.log('downloadResponse ==>', downloadJobId, downloadResponse);
          if (downloadResponse?.statusCode === 200 || downloadResponse?.statusCode === 304) {
             dispatch(
                updateMediaStatus({
@@ -83,7 +79,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
             setMediaStatus(mediaStatusConstants.NOT_DOWNLOADED);
          }
       } catch (error) {
-         console.log('Error in handleDownload:', error);
+         mflog('Error in handleDownload:', error);
       }
    };
    const handleUpload = async () => {
@@ -98,13 +94,12 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
       };
       const { msgId: _msgId, msgBody: { media = {}, media: { file = {} } = {} } = {} } = chatMessage;
       dispatch(updateMediaStatus(retryObj));
-      console.log('retryObj ==>', JSON.stringify(retryObj, null, 2));
       uploadFileToSDK(file, getCurrentChatUser(), _msgId, media);
    };
 
    const cancelProgress = async () => {
       try {
-         const { source = {}, downloadJobId = '', uploadJobId = '' } = getMediaProgress(msgId);
+         const { source, downloadJobId = '', uploadJobId = '' } = getMediaProgress(msgId) || {};
          if (source) {
             if (downloadJobId || uploadJobId) {
                const cancelRes = await source?.cancel?.(downloadJobId || uploadJobId);
@@ -133,6 +128,13 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
                dispatch(updateMediaStatus(mediaStatusObj));
             }
          } else {
+            console.log('mediaStatus ==> ', mediaStatus);
+            updateProgressNotification({
+               msgId,
+               progress: 0,
+               type: mediaStatus === mediaStatusConstants.DOWNLOADING ? 'download' : 'upload',
+               isCanceled: true,
+            });
             const mediaStatusObj = {
                msgId,
                userId,

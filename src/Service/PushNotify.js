@@ -135,7 +135,7 @@ export const updateProgressNotification = async ({
       const title = fileCount > 1 ? `${action} ${fileCount} files` : `${action} file`;
 
       // If all downloads are canceled, clear notification
-      if (activeProgress.files === 0) {
+      if (activeProgress.files <= 0) {
          await notifee.stopForegroundService();
          await notifee.cancelNotification(activeProgress.id);
          return;

@@ -8,6 +8,7 @@ import {
    getThumbImage,
    getUserIdFromJid,
    getVideoThumbImage,
+   handleUploadNextImage,
    isLocalUser,
    showToast,
 } from '../helpers/chatHelpers';
@@ -23,6 +24,7 @@ import store from '../redux/store';
 import { updateProgressNotification } from '../Service/PushNotify';
 import { getCurrentUserJid, mflog } from '../uikitMethods';
 import SDK from './SDK';
+import BackgroundTimer from 'react-native-background-timer';
 
 let chatPage = {},
    hasNextChatPage = {},
@@ -424,6 +426,14 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
          updateObj.is_uploading = 3;
          store.dispatch(updateMediaStatus(updateObj));
          showToast(response.message);
+
+         const mediaStatusObj = {
+            msgId,
+            userId: updateObj.userId,
+         };
+         BackgroundTimer.setTimeout(() => {
+            handleUploadNextImage(mediaStatusObj);
+         }, 200);
       }
    } catch (error) {
       console.log('uploadFileToSDK -->', error);

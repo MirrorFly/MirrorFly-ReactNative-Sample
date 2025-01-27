@@ -776,7 +776,6 @@ export const callBacks = {
       }
    },
    mediaDownloadListener: res => {
-      console.log(' mediaDownloadListener ==>', res);
       const { msgId, progress } = res;
       const roundedProgress = Math.round(progress);
       if (Platform.OS === 'android') {

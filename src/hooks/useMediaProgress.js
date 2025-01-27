@@ -132,6 +132,14 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
                };
                dispatch(updateMediaStatus(mediaStatusObj));
             }
+         } else {
+            const mediaStatusObj = {
+               msgId,
+               userId,
+               ...(mediaStatus === mediaStatusConstants.DOWNLOADING && { is_downloaded: 0 }),
+               ...(mediaStatus === mediaStatusConstants.UPLOADING && { is_uploading: 3 }),
+            };
+            dispatch(updateMediaStatus(mediaStatusObj));
          }
          if (uploadStatus === 8) {
             return true;

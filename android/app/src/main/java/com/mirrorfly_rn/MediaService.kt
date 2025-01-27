@@ -234,7 +234,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
             job.cancel() // This triggers isActive to become false
             activeDownloads.remove(msgId)
             promise.resolve(Arguments.createMap().apply {
-                putBoolean("success", false)
+                putBoolean("success", true)
                 putString("message", "Download canceled for msgId: $msgId")
             })
         } else {

@@ -830,9 +830,9 @@ export const handleUploadNextImage = res => {
       const {
          msgId: _msgId,
          userJid,
-         msgBody: { media = {}, media: { file = {}, uploadStatus } = {} } = {},
+         msgBody: { media = {}, media: { file = {}, is_uploading } = {} } = {},
       } = conversationData[nextMessageIndex];
-      if (uploadStatus === 0) {
+      if (is_uploading === 0) {
          const retryObj = {
             _msgId,
             userId,

@@ -171,7 +171,8 @@ class MediaService: RCTEventEmitter {
       self.iv = obj["iv"] as? String ?? ""
       self.fileName = obj["fileName"] as? String ?? ""
       self.messageType = obj["messageType"] as? String ?? ""
-      
+      let fileSize = obj["fileSize"] as? Int64 ?? 0
+
       // Check if the file exists and is readable
       let fileManager = FileManager.default
       if !fileManager.fileExists(atPath: self.inputFilePath) || !fileManager.isReadableFile(atPath: self.inputFilePath) {
@@ -183,6 +184,18 @@ class MediaService: RCTEventEmitter {
         resolver(response)
         return;
       }
+      
+      let (isSpaceAvail , message) = self.checkDeviceFressSpace(fileSize:fileSize)
+      if(!isSpaceAvail){
+        let response: [String: Any] = [
+          "success": false,
+          "statusCode": 400,
+          "message": message
+        ]
+        resolver(response)
+        return
+      }
+      
       self.keyString =  FlyEncryption.randomString(of: 32)// Encrypt the key using `iv`
       let url = URL(fileURLWithPath: inputFilePath)
       let outputFileUrl = URL(fileURLWithPath: outputFilePath)
@@ -328,6 +341,16 @@ class MediaService: RCTEventEmitter {
     resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock
   ) {
+    let (isSpaceAvail , message) = self.checkDeviceFressSpace(fileSize:fileSize.int64Value)
+    if(!isSpaceAvail){
+      let response: [String: Any] = [
+        "success": false,
+        "statusCode": 400,
+        "message": message
+      ]
+      resolver(response)
+      return
+    }
     if isPaused(msgId: msgId, resolver: resolver) {
         return
     }

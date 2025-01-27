@@ -1,6 +1,7 @@
 package com.mirrorfly_rn
 
 import android.os.Environment
+import android.os.StatFs
 import android.util.Log
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JavaOnlyArray
@@ -50,6 +51,28 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     @ReactMethod
     fun baseUrlInit(baseURL: String) {
         apiInterface = APIClient().getClient(baseURL)?.create(APIInterface::class.java)
+    }
+
+    private fun getFreeDiskSpace(): Long? {
+        return try {
+            val stat = StatFs(Environment.getDataDirectory().path)
+            val blockSize = stat.blockSizeLong
+            val availableBlocks = stat.availableBlocksLong
+            availableBlocks * blockSize // Free space in bytes
+        } catch (e: Exception) {
+            null // Return null if an error occurs
+        }
+    }
+
+    private fun checkDeviceFreeSpace(fileSize: Long): Pair<Boolean, String> {
+        val freeSpace = getFreeDiskSpace()
+            ?: return Pair(false, "Unable to determine available storage space")
+        println("Free space: $freeSpace bytes")
+        return if (fileSize * 2 > freeSpace) {
+            Pair(false, "Not enough free storage space to upload the file")
+        } else {
+            Pair(true, "File is readable, size matches, and there is enough storage space")
+        }
     }
 
     // Utility to send download progress
@@ -137,6 +160,14 @@ class MediaService(var reactContext: ReactApplicationContext?) :
         cachePath: String,
         promise: Promise
     ) {
+        val (isSpaceAvailable, message) = checkDeviceFreeSpace(fileSize.toLong())
+        if (!isSpaceAvailable) {
+            promise.resolve(Arguments.createMap().apply {
+                putBoolean("success", false)
+                putInt("statusCode", 400)
+                putString("message", message)
+            })
+        }
         if (isAllPauseRequested) {
             promise.resolve(Arguments.createMap().apply {
                 putBoolean("success", false)
@@ -321,6 +352,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                 keyString = cryptLib.getRandomString(32)
                 val file = File(inputFilePath.replace("file://", ""))
                 // Simulate encryption setup
+                val fileSize = obj.getDouble("fileSize").toLong()
                 val key = cryptLib.getSHA256(keyString, 32)
                 cipher = cryptLib.encryptFile(key, iv) // Dummy call
 
@@ -343,6 +375,15 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                         })
                     }
                     return@launch
+                }
+
+                val (isSpaceAvailable, message) = checkDeviceFreeSpace(fileSize)
+                if (!isSpaceAvailable) {
+                    promise.resolve(Arguments.createMap().apply {
+                        putBoolean("success", false)
+                        putInt("statusCode", 400)
+                        putString("message", message)
+                    })
                 }
 
                 val buffer = ByteArray(chunkSize)

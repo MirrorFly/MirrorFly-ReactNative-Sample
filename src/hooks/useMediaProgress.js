@@ -71,6 +71,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
             );
             setMediaStatus(mediaStatusConstants.LOADED);
          } else {
+            showToast(downloadResponse?.message || 'Failed to download media');
             dispatch(
                updateMediaStatus({
                   msgId,

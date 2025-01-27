@@ -180,12 +180,17 @@ class MediaService(var reactContext: ReactApplicationContext?) :
 
                     // Check for response failure
                     if (response == null || !response.isSuccessful) {
-                        handleDownloadError(
-                            promise,
-                            "Failed to download chunk: $range",
-                            fileOutputStream,
-                            msgId
-                        )
+                        val statusCode = response?.code() ?: 500
+                        val errorMessage = response?.errorBody()?.string() ?: "Unknown error"
+                        Log.e(name, "Chunk upload failed with status: ${response?.code()} - ${response?.message()}")
+                        Log.e(name, "Error message: $errorMessage")
+                        withContext(Dispatchers.Main) {
+                            promise.resolve(Arguments.createMap().apply {
+                                putBoolean("success", false)
+                                putInt("statusCode", statusCode)
+                                putString("message", response?.message())
+                            })
+                        }
                         return@launch
                     }
 
@@ -585,7 +590,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
         return response.body()?.bytes() ?: ByteArray(0)
     }
 
-    private suspend fun uploadChunk(uploadUrl: String, chunk: ByteArray): Boolean {
+    private suspend fun uploadChunk(uploadUrl: String, chunk: ByteArray): Pair<Boolean, Int>  {
         return try {
             val requestBody: RequestBody =
                 RequestBody.create("application/octet-stream".toMediaTypeOrNull(), chunk)
@@ -593,15 +598,23 @@ class MediaService(var reactContext: ReactApplicationContext?) :
             val call = apiInterface?.uploadBinaryData(uploadUrl, requestBody)
             val response = call?.execute()
             Log.d(name, "progress $response")
-            if (response != null && response.isSuccessful) {
-                true
+            if (response != null) {
+                if (response.isSuccessful) {
+                    Log.d(name, "Chunk upload successful: ${response.body()?.string()}")
+                    Pair(true, response.code())
+                } else {
+                    val errorMessage = response.errorBody()?.string() ?: "Unknown error"
+                    Log.e(name, "Chunk upload failed with status: ${response.code()} - ${response.message()}")
+                    Log.e(name, "Error message: $errorMessage")
+                    Pair(false, response.code())
+                }
             } else {
-                Log.e(name, "Chunk upload failed: $response")
-                false
+                Log.e(name, "Response is null, chunk upload failed.")
+                Pair(false,  500)
             }
         } catch (e: Exception) {
             Log.e(name, "Error uploading chunk: $e")
-            false
+            Pair(false, 500)
         }
     }
 
@@ -653,17 +666,18 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                     totalBytesRead += bytesRead
                     Log.d(name, "uploadUrl $bytesRead $uploadUrl")
                     // Upload the chunk
-                    val success = uploadChunk(
+                    val (success, statusCode) = uploadChunk(
                         uploadUrl,
                         buffer.copyOf(bytesRead)
                     ) // Use only the read portion of the buffer
 
                     if (!success) {
                         withContext(Dispatchers.Main) {
-                            promise.reject(
-                                "UPLOAD_FAILED",
-                                "Chunk upload failed for URL: $uploadUrl"
-                            )
+                            promise.resolve(Arguments.createMap().apply {
+                                putBoolean("success", false)
+                                putInt("statusCode", statusCode)
+                                putString("message", "Chunk upload failed for URL: $uploadUrl")
+                            })
                         }
                         fis.close()
                         return@launch
@@ -737,8 +751,15 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                         apiInterface?.downloadChunkFromPreAuthenticationUrl(downloadURL, range)
                             ?.execute()
                     if (response == null || !response.isSuccessful) {
+                        val errorMessage = response?.errorBody()?.string() ?: "Unknown error"
+                        Log.e(name, "Chunk upload failed with status: ${response?.code()} - ${response?.message()}")
+                        Log.e(name, "Error message: $errorMessage")
                         withContext(Dispatchers.Main) {
-                            promise.reject("DOWNLOAD_FAILED", "Failed to download chunk: $range")
+                            promise.resolve(Arguments.createMap().apply {
+                                putBoolean("success", false)
+                                putInt("statusCode", 500)
+                                putString("message", errorMessage)
+                            })
                         }
                         fileOutputStream.close()
                         return@launch

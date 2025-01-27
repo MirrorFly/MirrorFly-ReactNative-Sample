@@ -8,6 +8,7 @@ import { getMediaProgress, useChatMessage } from '../redux/reduxHook';
 import SDK from '../SDK/SDK';
 import { uploadFileToSDK } from '../SDK/utils';
 import { updateProgressNotification } from '../Service/PushNotify';
+import { mflog } from '../uikitMethods';
 
 const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    const userId = getUserIdFromJid(getCurrentChatUser());
@@ -67,6 +68,12 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
             );
             setMediaStatus(mediaStatusConstants.LOADED);
          } else {
+            updateProgressNotification({
+               msgId,
+               progress: 0,
+               type: 'download',
+               isCanceled: true,
+            });
             showToast(downloadResponse?.message || 'Failed to download media');
             dispatch(
                updateMediaStatus({
@@ -87,6 +94,13 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
          showToast('Please check your internet connection');
          return;
       }
+      await updateProgressNotification({
+         msgId,
+         progress: 0,
+         type: 'upload',
+         isCanceled: false,
+         foregroundStatus: false,
+      });
       const retryObj = {
          msgId,
          userId,
@@ -94,6 +108,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
       };
       const { msgId: _msgId, msgBody: { media = {}, media: { file = {} } = {} } = {} } = chatMessage;
       dispatch(updateMediaStatus(retryObj));
+
       uploadFileToSDK(file, getCurrentChatUser(), _msgId, media);
    };
 
@@ -104,12 +119,6 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
             if (downloadJobId || uploadJobId) {
                const cancelRes = await source?.cancel?.(downloadJobId || uploadJobId);
                console.log('cancelRes ==>', cancelRes);
-               updateProgressNotification({
-                  msgId,
-                  progress: 0,
-                  type: downloadJobId ? 'download' : 'upload',
-                  isCanceled: true,
-               });
                const mediaStatusObj = {
                   msgId,
                   userId,

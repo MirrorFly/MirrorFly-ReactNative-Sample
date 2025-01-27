@@ -107,9 +107,7 @@ export const updateProgressNotification = async ({
       if (Platform.OS === 'ios') {
          return;
       }
-      console.log('isCanceled ==> ', isCanceled);
       let activeProgress = progressMap[type];
-
       if (isCanceled) {
          // Remove canceled download from tracker
          delete activeProgress.individualProgress[msgId];
@@ -137,12 +135,8 @@ export const updateProgressNotification = async ({
       const fileCount = activeProgress.files;
 
       const title = fileCount > 1 ? `${action} ${fileCount} files` : `${action} file`;
-      console.log(activeProgress.files, 'activeProgress.files');
-
       // If all downloads are canceled, clear notification
       if (activeProgress.files <= 0) {
-         console.log('STOPPPED activeProgress.files');
-
          await notifee.stopForegroundService();
          await notifee.cancelNotification(activeProgress.id);
          return;

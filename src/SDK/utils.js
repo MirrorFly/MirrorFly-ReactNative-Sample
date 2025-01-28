@@ -1,3 +1,4 @@
+import BackgroundTimer from 'react-native-background-timer';
 import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import { changeTimeFormat } from '../common/timeStamp';
 import config from '../config/config';
@@ -9,6 +10,7 @@ import {
    getUserIdFromJid,
    getVideoThumbImage,
    handleConversationScollToBottom,
+   handleUploadNextImage,
    isLocalUser,
    showToast,
 } from '../helpers/chatHelpers';
@@ -28,6 +30,7 @@ import { setRoasterData } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting, updateNotificationSetting } from '../redux/settingDataSlice';
 import store from '../redux/store';
 import { updateFontFamily } from '../redux/themeColorDataSlice';
+import { updateProgressNotification } from '../Service/PushNotify';
 import { getCurrentUserJid, mflog } from '../uikitMethods';
 import SDK, { RealmKeyValueStore } from './SDK';
 
@@ -195,14 +198,22 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          const userId = getUserIdFromJid(toUserJid);
          store.dispatch(addChatMessageItem(conversationChatObj));
          store.dispatch(addRecentChatItem(conversationChatObj));
-         if (!mediaUploadQueue[userId]) {
-            mediaUploadQueue[userId] = []; // Initialize the array if it doesn't exist
-         }
 
-         mediaUploadQueue[userId].push(conversationChatObj);
+         await updateProgressNotification({
+            msgId,
+            progress: 0,
+            type: 'upload',
+            isCanceled: false,
+            foregroundStatus: false,
+         });
+
          if (i === 0) {
-            const { msgId, userJid, msgBody: { media = {}, media: { file = {} } = {} } = {} } = conversationChatObj;
-            uploadFileToSDK(file, userJid, msgId, media);
+            const {
+               msgId: _msgId,
+               userJid,
+               msgBody: { media = {}, media: { file: _file = {} } = {} } = {},
+            } = conversationChatObj;
+            uploadFileToSDK(_file, userJid, _msgId, media);
          }
       }
    }
@@ -458,16 +469,29 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
       response = await SDK.sendMediaMessage(jid, msgId, msgType, file.fileDetails, fileOptions, replyTo, {
          broadCastIdMedia: SDK.randomString(8, 'BA'),
       });
-      console.log('response ==>', JSON.stringify(response, null, 2));
       let updateObj = {
          msgId,
          statusCode: response.statusCode,
          userId: getUserIdFromJid(jid),
       };
       if (response?.statusCode !== 200) {
+         await updateProgressNotification({
+            msgId,
+            progress: 0,
+            type: 'upload',
+            isCanceled: true,
+         });
          updateObj.is_uploading = 3;
          store.dispatch(updateMediaStatus(updateObj));
          showToast(response.message);
+
+         const mediaStatusObj = {
+            msgId,
+            userId: updateObj.userId,
+         };
+         BackgroundTimer.setTimeout(() => {
+            handleUploadNextImage(mediaStatusObj);
+         }, 200);
       }
    } catch (error) {
       console.log('uploadFileToSDK -->', error);

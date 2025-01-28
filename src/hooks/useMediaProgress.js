@@ -1,26 +1,14 @@
 import React from 'react';
-import RNFS from 'react-native-fs';
 import { useDispatch } from 'react-redux';
-import SDK from '../SDK/SDK';
-import { uploadFileToSDK } from '../SDK/utils';
-import { updateProgressNotification } from '../Service/PushNotify';
 import { useNetworkStatus } from '../common/hooks';
 import { getCurrentChatUser, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
 import { mediaStatusConstants } from '../helpers/constants';
 import { updateMediaStatus } from '../redux/chatMessageDataSlice';
 import { getMediaProgress, useChatMessage } from '../redux/reduxHook';
-
-const generateUniqueFilePath = async (filePath, counter = 0) => {
-   // Modify the file path if the counter is greater than 0
-   const extension = filePath.substring(filePath.lastIndexOf('.') + 1);
-   const baseName = filePath.substring(0, filePath.lastIndexOf('.'));
-   const modifiedFilePath = counter > 0 ? `${baseName}(${counter}).${extension}` : filePath;
-
-   // Check if the file exists
-   const exists = await RNFS.exists(modifiedFilePath);
-   // Return the modified file path if it does not exist, otherwise recurse
-   return exists ? generateUniqueFilePath(filePath, counter + 1) : modifiedFilePath;
-};
+import SDK from '../SDK/SDK';
+import { uploadFileToSDK } from '../SDK/utils';
+import { updateProgressNotification } from '../Service/PushNotify';
+import { mflog } from '../uikitMethods';
 
 const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    const userId = getUserIdFromJid(getCurrentChatUser());
@@ -59,11 +47,16 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
                is_downloaded: 1,
             }),
          );
+         await updateProgressNotification({
+            msgId,
+            progress: 0,
+            type: 'download',
+            isCanceled: false,
+            foregroundStatus: false,
+         });
          const downloadResponse = downloadJobId
             ? await source?.resume({ downloadJobId })
             : await SDK.downloadMedia(msgId);
-         console.log('downloadResponse ==>', downloadJobId, downloadResponse);
-         updateProgressNotification(msgId, 0, 'download', true);
          if (downloadResponse?.statusCode === 200 || downloadResponse?.statusCode === 304) {
             dispatch(
                updateMediaStatus({
@@ -75,6 +68,13 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
             );
             setMediaStatus(mediaStatusConstants.LOADED);
          } else {
+            updateProgressNotification({
+               msgId,
+               progress: 0,
+               type: 'download',
+               isCanceled: true,
+            });
+            showToast(downloadResponse?.message || 'Failed to download media');
             dispatch(
                updateMediaStatus({
                   msgId,
@@ -86,14 +86,21 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
             setMediaStatus(mediaStatusConstants.NOT_DOWNLOADED);
          }
       } catch (error) {
-         console.log('Error in handleDownload:', error);
+         mflog('Error in handleDownload:', error);
       }
    };
-   const handleUpload = () => {
+   const handleUpload = async () => {
       if (!networkState) {
          showToast('Please check your internet connection');
          return;
       }
+      await updateProgressNotification({
+         msgId,
+         progress: 0,
+         type: 'upload',
+         isCanceled: false,
+         foregroundStatus: false,
+      });
       const retryObj = {
          msgId,
          userId,
@@ -101,22 +108,22 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
       };
       const { msgId: _msgId, msgBody: { media = {}, media: { file = {} } = {} } = {} } = chatMessage;
       dispatch(updateMediaStatus(retryObj));
+
       uploadFileToSDK(file, getCurrentChatUser(), _msgId, media);
    };
 
    const cancelProgress = async () => {
       try {
-         const { source = {}, downloadJobId = '', uploadJobId = '' } = getMediaProgress(msgId);
+         const { source, downloadJobId = '', uploadJobId = '' } = getMediaProgress(msgId) || {};
          if (source) {
             if (downloadJobId || uploadJobId) {
                const cancelRes = await source?.cancel?.(downloadJobId || uploadJobId);
                console.log('cancelRes ==>', cancelRes);
-               updateProgressNotification(msgId, 0, 'download', true);
                const mediaStatusObj = {
                   msgId,
                   userId,
                   ...(downloadJobId && { is_downloaded: 0 }),
-                  ...(uploadJobId && { uploadStatus: 3 }),
+                  ...(uploadJobId && { is_uploading: 3 }),
                };
                dispatch(updateMediaStatus(mediaStatusObj));
                setMediaStatus(uploadJobId ? mediaStatusConstants.NOT_UPLOADED : mediaStatusConstants.NOT_DOWNLOADED);
@@ -125,10 +132,25 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
                const mediaStatusObj = {
                   msgId,
                   userId,
-                  uploadStatus: 3,
+                  is_uploading: 3,
                };
                dispatch(updateMediaStatus(mediaStatusObj));
             }
+         } else {
+            console.log('mediaStatus ==> ', mediaStatus);
+            updateProgressNotification({
+               msgId,
+               progress: 0,
+               type: mediaStatus === mediaStatusConstants.DOWNLOADING ? 'download' : 'upload',
+               isCanceled: true,
+            });
+            const mediaStatusObj = {
+               msgId,
+               userId,
+               ...(mediaStatus === mediaStatusConstants.DOWNLOADING && { is_downloaded: 0 }),
+               ...(mediaStatus === mediaStatusConstants.UPLOADING && { is_uploading: 3 }),
+            };
+            dispatch(updateMediaStatus(mediaStatusObj));
          }
          if (uploadStatus === 8) {
             return true;

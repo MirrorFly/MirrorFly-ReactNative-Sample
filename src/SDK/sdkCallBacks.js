@@ -127,7 +127,13 @@ import { resetConferencePopup, showConfrence, updateConference } from '../redux/
 import store from '../redux/store';
 import { resetTypingStatus, setTypingStatus } from '../redux/typingStatusDataSlice';
 import { REGISTERSCREEN } from '../screens/constants';
-import { getCurrentUserJid, getLocalUserDetails, logoutClearVariables, setCurrectUserProfile } from '../uikitMethods';
+import {
+   getCurrentUserJid,
+   getLocalUserDetails,
+   logoutClearVariables,
+   mflog,
+   setCurrectUserProfile,
+} from '../uikitMethods';
 import SDK from './SDK';
 import { fetchGroupParticipants, getUserProfileFromSDK, handleUploadNextImage } from './utils';
 
@@ -619,7 +625,7 @@ const reconnecting = res => {
       remoteAudioMuted: remoteAudioMuted,
       callStatusText: CALL_STATUS_RECONNECT,
    };
-   /** 
+   /**
     *  let vcardData = getLocalUserDetails();
     * let currentUserJid = formatUserIdToJid(vcardData?.fromUser)
    if (currentUserJid === res.userJid) {
@@ -654,7 +660,7 @@ const callStatus = res => {
 
 export const callBacks = {
    connectionListener: response => {
-      console.log('response ==>', response);
+      mflog('response ==>', response);
       store.dispatch(setXmppConnectionStatus(response.status));
       if (response.status === 'LOGOUT') {
          logoutClearVariables();
@@ -781,8 +787,14 @@ export const callBacks = {
    groupMsgInfoListener: res => {},
    mediaUploadListener: res => {
       console.log(' mediaUploadListener ==>', res);
+      const { msgId, progress } = res;
+      const roundedProgress = Math.round(progress);
+      if (Platform.OS === 'android') {
+         updateProgressNotification({ msgId, progress: roundedProgress, type: 'upload' });
+      }
       store.dispatch(setProgress(res));
       if (res.progress === 100) {
+         updateProgressNotification({ msgId, progress: 0, type: 'upload', isCanceled: true });
          const mediaStatusObj = {
             msgId: res.msgId,
             is_uploading: 2,
@@ -799,11 +811,11 @@ export const callBacks = {
       const { msgId, progress } = res;
       const roundedProgress = Math.round(progress);
       if (Platform.OS === 'android') {
-         updateProgressNotification(msgId, roundedProgress, 'download');
+         updateProgressNotification({ msgId, progress: roundedProgress, type: 'download' });
       }
       store.dispatch(setProgress(res));
       if (res.progress === 100) {
-         updateProgressNotification(msgId, 0, 'download', true);
+         updateProgressNotification({ msgId, progress: 0, type: 'download', isCanceled: true });
          const mediaStatusObj = {
             msgId: res.msgId,
             is_downloaded: 2,

@@ -16,9 +16,15 @@ RCT_EXTERN_METHOD(baseUrlInit:(NSString *)url
                   rejecter:(RCTPromiseRejectBlock)reject)
 
 
-RCT_EXTERN_METHOD(uploadFileInChunks:(NSArray *)uploadUrls
-                  filePath:(NSString *)filePath
-                  msgId:(NSString *)msgId
+RCT_EXTERN_METHOD(encryptFile:(NSDictionary *)obj
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(clearCacheFilePath:(NSString *)filePath
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(cancelUpload:(NSString *)msgId
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
@@ -32,7 +38,7 @@ RCT_EXTERN_METHOD(defineValues:(NSDictionary *)obj
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(encryptFile:(NSDictionary *)obj
+RCT_EXTERN_METHOD(uploadFileInChunks:(NSDictionary *)obj
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
@@ -57,6 +63,9 @@ RCT_EXTERN_METHOD(cancelDownload:(NSString *)msgId
                   rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(cancelAllDownloads:(RCTPromiseResolveBlock *)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(cancelAllUploads:(RCTPromiseResolveBlock *)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(resetPauseRequest:(RCTPromiseResolveBlock *)resolve

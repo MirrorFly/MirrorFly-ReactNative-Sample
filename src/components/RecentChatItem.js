@@ -35,8 +35,8 @@ const RecentChatItem = React.memo(
       const searchText = useRecentChatSearchText();
       const isSender = getCurrentUserJid() === publisherJid;
 
-      const handleSelectChat = userJid => () => {
-         dispatch(toggleChatSelection(userJid));
+      const handleSelectChat = jid => () => {
+         dispatch(toggleChatSelection(jid));
       };
 
       const handleRoute = chatUser => {

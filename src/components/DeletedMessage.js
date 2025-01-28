@@ -21,7 +21,7 @@ const DeletedMessage = ({ chatUser, item, isSender }) => {
    const handlePress = () => {
       Keyboard.dismiss();
       const messsageList = getChatMessages(userId);
-      const isAnySelected = messsageList.some(item => item.isSelected === 1);
+      const isAnySelected = messsageList.some(_item => _item.isSelected === 1);
       if (isAnySelected) {
          const selectData = {
             chatUserId: getUserIdFromJid(chatUser),

@@ -75,6 +75,7 @@ import {
    getNotifyMessage,
    getNotifyNickName,
    getUserIdFromJid,
+   handleUploadNextImage,
    isLocalUser,
    showToast,
    updateDeleteForEveryOne,
@@ -135,7 +136,7 @@ import {
    setCurrectUserProfile,
 } from '../uikitMethods';
 import SDK from './SDK';
-import { fetchGroupParticipants, getUserProfileFromSDK, handleUploadNextImage } from './utils';
+import { fetchGroupParticipants, getUserProfileFromSDK } from './utils';
 
 let localStream = null,
    localVideoMuted = false,

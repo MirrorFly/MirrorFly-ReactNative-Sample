@@ -7,7 +7,7 @@ import NickName from '../common/NickName';
 import Pressable from '../common/Pressable';
 import { getUserIdFromJid, getUserType, handelResetMessageSelection } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
-import { useAnySelectedChatMessages, useIsChatSearching } from '../redux/reduxHook';
+import { useAnySelectedChatMessages, useIsChatSearching, useThemeColorPalatte } from '../redux/reduxHook';
 import { GROUP_INFO, USER_INFO } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 import {
@@ -23,6 +23,7 @@ import MakeCall from './MakeCall';
 import UserAvathar from './UserAvathar';
 
 function ChatHeader({ chatUser }) {
+   const themeColorPalatte = useThemeColorPalatte();
    const navigation = useNavigation();
    const userId = getUserIdFromJid(chatUser);
    const isAnyChatMessageSelected = useAnySelectedChatMessages(userId);

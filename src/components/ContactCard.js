@@ -21,13 +21,13 @@ const ContactCard = ({ item, isSender }) => {
    const dispatch = useDispatch();
    const userId = getUserIdFromJid(chatUser);
    const [modalContent, setModalContent] = React.useState(null);
-   const { createdAt, msgStatus, msgBody: { contact: ContactInfo = {}, replyTo = '' } = {} } = item;
+   const { msgId, createdAt, msgStatus, msgBody: { contact: ContactInfo = {}, replyTo = '' } = {} } = item;
 
    const handleInviteContact = () => {
-      const ContactInfo = getChatMessage(userId, msgId)?.msgBody?.contact;
-      if (ContactInfo) {
+      const _ContactInfo = getChatMessage(userId, msgId)?.msgBody?.contact;
+      if (_ContactInfo) {
          // open the message app and invite the user to the app with content
-         const phoneNumber = ContactInfo.phone_number[0];
+         const phoneNumber = _ContactInfo.phone_number[0];
          const separator = Platform.OS === 'ios' ? '&' : '?';
          const url = `sms:${phoneNumber}${separator}body=${config.INVITE_SMS_CONTENT}`;
          Linking.openURL(url);
@@ -57,7 +57,7 @@ const ContactCard = ({ item, isSender }) => {
 
    const handleInvitePress = () => {
       const messsageList = getChatMessages(userId);
-      const isAnySelected = messsageList.some(item => item.isSelected === 1);
+      const isAnySelected = messsageList.some(_item => _item.isSelected === 1);
       if (isAnySelected) {
          const selectData = {
             chatUserId: userId,

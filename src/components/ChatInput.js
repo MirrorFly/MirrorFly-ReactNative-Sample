@@ -71,6 +71,12 @@ export const stopAudioRecord = () => {
    }
 };
 
+export const onCancelRecord = () => {
+   if (getAudioRecording(userId)) {
+      audioRecordRef.current.onCancelRecord?.();
+   }
+};
+
 function ChatInput({ chatUser }) {
    userId = getUserIdFromJid(chatUser);
    const stringSet = getStringSet();
@@ -110,6 +116,7 @@ function ChatInput({ chatUser }) {
 
    React.useEffect(() => {
       audioRecordRef.current.onStopRecord = onStopRecord;
+      audioRecordRef.current.onCancelRecord = onCancelRecord;
       const onRecordBackListener = e => {
          setRecordSecs(e.currentPosition);
          timeValidate(e.currentPosition);
@@ -368,14 +375,14 @@ function ChatInput({ chatUser }) {
                   <AttachmentIcon color={themeColorPalatte.iconColor} />
                </IconButton>
             )}
-            {!message.trim() && (
+            {/* {!message.trim() && (
                <IconButton
                   containerStyle={styles.audioRecordIconWrapper}
                   style={styles.audioRecordIcon}
                   onPress={onStartRecord}>
                   <MicIcon />
                </IconButton>
-            )}
+            )} */}
          </>
       );
    }, [message, isEmojiPickerShowing, themeColorPalatte]);
@@ -597,6 +604,7 @@ const styles = StyleSheet.create({
    attachmentIcon: {
       padding: 10,
       paddingHorizontal: 12,
+      paddingRight: 20,
    },
    attachmentNameText: {
       color: '#fff',

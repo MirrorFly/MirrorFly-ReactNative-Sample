@@ -42,7 +42,7 @@ function ReplyMessage(props) {
    const userId = getUserIdFromJid(chatUser);
    const repliedMessage = useParentMessage(replyTo);
    let { msgId } = originalMsg;
- 
+
    const {
       msgBody = {},
       msgBody: { message_type = '', message = '', media = {} } = {},

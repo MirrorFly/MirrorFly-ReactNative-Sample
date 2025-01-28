@@ -10,6 +10,7 @@ import config from '../config/config';
 import {
    copyToClipboard,
    handelResetMessageSelection,
+   handleConversationClear,
    handleMessageDelete,
    handleMessageDeleteForEveryOne,
    handleUpdateBlockUser,
@@ -161,7 +162,9 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
       dispatch(
          setTextMessage({ userId, message: filtered[0]?.msgBody?.media?.caption || filtered[0]?.msgBody?.message }),
       );
-      chatInputRef?.current?.focus();
+      setTimeout(() => {
+         chatInputRef?.current?.focus();
+      }, 10);
    };
 
    const hadleBlockUser = () => {

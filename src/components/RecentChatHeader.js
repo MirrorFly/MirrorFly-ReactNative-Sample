@@ -58,13 +58,13 @@ const RecentChatHeader = () => {
    };
 
    const handleRemoveClose = () => {
-      const isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
-      if (!isUserLeft && filtered.length > 1) {
+      const _isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
+      if (!_isUserLeft && filtered.length > 1) {
          toggleModalContent();
          return showToast(stringSet.COMMON_TEXT.YOU_ARE_A_MEMBER);
       }
 
-      if (!isUserLeft) {
+      if (!_isUserLeft) {
          toggleModalContent();
          return showToast(stringSet.COMMON_TEXT.YOU_ARE_A_PARTICIPANT);
       }
@@ -161,7 +161,7 @@ const RecentChatHeader = () => {
    }, [filtered.length, modalContent, themeColorPalatte]);
 
    const renderScreenHeader = React.useMemo(() => {
-      return !Boolean(filtered.length) && <ScreenHeader onChangeText={handleSearchText} menuItems={menuItems} />;
+      return filtered.length === 0 && <ScreenHeader onChangeText={handleSearchText} menuItems={menuItems} />;
    }, [filtered.length]);
 
    return (

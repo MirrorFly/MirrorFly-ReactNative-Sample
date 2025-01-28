@@ -6,7 +6,7 @@ import IconButton from '../common/IconButton';
 import { DownArrowIcon, LeftArrowIcon, UpArrowIcon } from '../common/Icons';
 import ApplicationColors from '../config/appColors';
 import config from '../config/config';
-import { dispatchSearchLoading, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
+import { calculateOffset, dispatchSearchLoading, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
 import { highlightMessage, setChatSearchText, toggleIsChatSearching } from '../redux/chatMessageDataSlice';
 import { getChatMessages, getIsChatSearching, useChatSearchLoading, useChatSearchText } from '../redux/reduxHook';
 import store from '../redux/store';
@@ -23,8 +23,12 @@ let _filteredMsgIndices = [],
 
 // Common function to reset or update search index
 const updateSearchIndex = (resetCurrentIndex, updateCurrentIndex) => {
-   if (resetCurrentIndex) currentMsgIndex = 0;
-   if (updateCurrentIndex) currentMsgIndex += updateCurrentIndex;
+   if (resetCurrentIndex) {
+      currentMsgIndex = 0;
+   }
+   if (updateCurrentIndex) {
+      currentMsgIndex += updateCurrentIndex;
+   }
 };
 
 // Handle Scrolling to Correct Offset
@@ -67,8 +71,12 @@ export const handleOffset = ({ userId, scrollIndex }) => {
 export const highLightAndScrollToIndex = async ({ userId, msgId, scrollIndex }) => {
    try {
       const offset = await handleOffset({ userId, scrollIndex });
-      if (!offset) return showToast('Something went wrong');
-      if (scrollIndex < 0) return showToast('No results found');
+      if (!offset) {
+         return showToast('Something went wrong');
+      }
+      if (scrollIndex < 0) {
+         return showToast('No results found');
+      }
 
       store.dispatch(highlightMessage({ userId, msgId, shouldHighlight: 1 }));
       conversationFlatListRef.current.scrollToIndex({
@@ -88,13 +96,17 @@ export const highLightAndScrollToIndex = async ({ userId, msgId, scrollIndex }) 
 // Find and filter chat messages
 export const findChatMessageAndUpdate = ({ userId, conversationSearchText, resetCurrentIndex }) => {
    try {
-      if (resetCurrentIndex) currentMsgIndex = 0;
+      if (resetCurrentIndex) {
+         currentMsgIndex = 0;
+      }
       _filteredMsgIndices = [];
       console.log('conversationSearchText ==>', conversationSearchText);
       const messageList = getChatMessages(userId);
       const searchText = conversationSearchText.trim().toLowerCase();
 
-      if (!searchText) return { message: 'No search Value' };
+      if (!searchText) {
+         return { message: 'No search Value' };
+      }
 
       messageList.forEach((msg, index) => {
          const msgBody = msg?.msgBody || {};
@@ -109,7 +121,9 @@ export const findChatMessageAndUpdate = ({ userId, conversationSearchText, reset
             _filteredMsgIndices.push({ index, msgId: msg.msgId, message: `${messageType} message found` });
          }
       });
-      if (resetCurrentIndex) currentMsgIndex = 0;
+      if (resetCurrentIndex) {
+         currentMsgIndex = 0;
+      }
       console.log('_filteredMsgIndices[currentMsgIndex] ==>', currentMsgIndex, _filteredMsgIndices[currentMsgIndex]);
       return _filteredMsgIndices[currentMsgIndex] || { message: 'No message found' };
    } catch (error) {
@@ -124,13 +138,17 @@ export const handleFindMessageSearch = async ({ text, resetCurrentIndex = false,
       const chatUser = currentChatUser;
       const userId = getUserIdFromJid(chatUser);
       const searchText = text?.trim();
-      if (!searchText) return; // Early return for empty search
+      if (!searchText) {
+         return;
+      } // Early return for empty search
 
       updateSearchIndex(resetCurrentIndex, updateCurrentIndex);
       _filteredMsgIndices = [];
 
       // Dispatch loading state once
-      if (!hasDispatchedSearchLoading) dispatchSearchLoading(userId, 'search');
+      if (!hasDispatchedSearchLoading) {
+         dispatchSearchLoading(userId, 'search');
+      }
 
       // Search for the message
       const { index: scrollIndex = -1, msgId = '' } = findChatMessageAndUpdate({
@@ -164,7 +182,9 @@ export const handleFindNextMessage = async ({ direction }) => {
       const updateCurrentIndex = direction === 'upward' ? 1 : -1;
 
       // Dispatch loading state if not already dispatched
-      if (!hasDispatchedSearchLoading) dispatchSearchLoading(userId, direction);
+      if (!hasDispatchedSearchLoading) {
+         dispatchSearchLoading(userId, direction);
+      }
 
       const { index: scrollIndex = -1, msgId = '' } = _filteredMsgIndices?.[currentMsgIndex + updateCurrentIndex] || {};
 

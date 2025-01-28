@@ -42,6 +42,7 @@ import {
    requestStoragePermission,
 } from '../common/permissions';
 import { changeTimeFormat } from '../common/timeStamp';
+import { onCancelRecord } from '../components/ChatInput';
 import { conversationFlatListRef } from '../components/ConversationList';
 import config from '../config/config';
 import {
@@ -1343,6 +1344,7 @@ export const handleUpdateBlockUser = (userId, isBlocked, chatUser) => async () =
       if (isBlocked) {
          const res = await SDK.blockUser(chatUser);
          if (res.statusCode === 200) {
+            onCancelRecord();
             showToast(`You have blocked ${getUserNameFromStore(userId)}`);
          }
       } else {

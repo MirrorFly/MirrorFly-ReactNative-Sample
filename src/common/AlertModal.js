@@ -29,6 +29,7 @@ function AlertModal({
    optionalButton,
    optionalAction,
 }) {
+   const themeColorPalatte = useThemeColorPalatte();
    const onPress = () => {
       yesAction();
       onRequestClose();
@@ -41,7 +42,11 @@ function AlertModal({
    return (
       <Modal visible={visible} onRequestClose={onRequestClose}>
          <ModalCenteredContent onPressOutside={onRequestClose}>
-            <View style={modelStyles.inviteFriendModalContentContainer}>
+            <View
+               style={[
+                  modelStyles.inviteFriendModalContentContainer,
+                  commonStyles.bg_color(themeColorPalatte.screenBgColor),
+               ]}>
                <Text style={styles.optionTitleText}>{title}</Text>
                <View style={optionalButton ? styles.deleteModalVerticalActionButtonsContainer : styles.buttonContainer}>
                   <IconButton
@@ -54,7 +59,9 @@ function AlertModal({
                   <IconButton
                      style={{ paddingHorizontal: 10, paddingVertical: optionalButton ? 10 : 5 }}
                      onPress={onPress}>
-                     <Text style={[styles.pressableText, commonStyles.typingText]}>{yesButton}</Text>
+                     <Text style={[styles.pressableText, commonStyles.textColor(themeColorPalatte.primaryColor)]}>
+                        {yesButton}
+                     </Text>
                   </IconButton>
                   {optionalButton && (
                      <IconButton

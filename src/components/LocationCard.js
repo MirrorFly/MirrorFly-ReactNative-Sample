@@ -42,7 +42,7 @@ const LocationCard = ({ chatUser, item, isSender }) => {
    }, [latitude, longitude]);
 
    const handleMapPress = () => {
-      const isAnySelected = getChatMessages(userId).some(item => item.isSelected === 1);
+      const isAnySelected = getChatMessages(userId).some(_item => _item.isSelected === 1);
       if (isAnySelected) {
          onLongPress();
       } else {

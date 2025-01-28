@@ -98,7 +98,7 @@ function RecentChatMessage({ userId, item, index, isSender, stringSet, themeColo
          case 'audio':
             return (
                <View style={[styles.lastSentMessageWrapper, isSender && commonStyles.paddingLeft_4]}>
-                  {Boolean(audioType) ? (
+                  {audioType ? (
                      <AudioMicIcon width="14" height="14" fill={themeColorPalatte.secondaryTextColor} />
                   ) : (
                      <AudioMusicIcon width="14" height="14" color={themeColorPalatte.secondaryTextColor} />

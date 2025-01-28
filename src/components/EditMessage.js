@@ -3,16 +3,16 @@ import { View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import ScreenHeader from '../common/ScreenHeader';
 import SlideInView from '../common/SlideInView';
-import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { getCurrentChatUser, getUserIdFromJid } from '../helpers/chatHelpers';
 import { toggleEditMessage } from '../redux/chatMessageDataSlice';
 import { setTextMessage } from '../redux/draftSlice';
 import { useChatMessage, useEditMessageId } from '../redux/reduxHook';
-import { currentChatUser } from '../screens/ConversationScreen';
+
 import ChatMessage from './ChatMessage';
 
 function EditMessage() {
    const dispatch = useDispatch();
-   const userId = getUserIdFromJid(currentChatUser);
+   const userId = getUserIdFromJid(getCurrentChatUser());
    const editMessageId = useEditMessageId();
    const message = useChatMessage(userId, editMessageId);
 

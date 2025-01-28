@@ -109,25 +109,16 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
    }
    const lastMessageId = messsageList[messsageList.length - 1]?.msgId || '';
    console.log('lastMessageId ==>', messsageList.length, messsageList.length - 1, lastMessageId);
-   if (lastMessageId.includes('groupCreated')) return (hasNextChatPage[userId] = false);
+   if (lastMessageId.includes('groupCreated')) {
+      return (hasNextChatPage[userId] = false);
+   }
    const page = chatPage[userId] || 1;
-   // const {
-   //    statusCode,
-   //    userJid,
-   //    data = [],
-   // } = await SDK.getChatMessages(fromUserJId, page, config.chatMessagesSizePerPage);
 
    const {
       statusCode,
       userJid,
       data = [],
-   } = await SDK.getChatMessagesByMessageId({
-      jid: fromUserJId,
-      messageId: lastMessageId,
-      size: config.chatMessagesSizePerPage,
-      direction: 'backward',
-      fromServer: false,
-   });
+   } = await SDK.getChatMessages(fromUserJId, page, config.chatMessagesSizePerPage);
 
    if (statusCode === 200) {
       let hasEqualDataFetched = data.length === config.chatMessagesSizePerPage;
@@ -138,27 +129,6 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
       store.dispatch(setChatMessages({ userJid, data, forceUpdate: page === 1 }));
    }
    return data;
-};
-
-const fileFormatConversion = async ({ uri, msgType }) => {
-   try {
-      switch (true) {
-         case uri.includes('ph://') && msgType === 'image':
-            return await convertHeicToJpg(uri);
-         case uri.includes('ph://') && msgType === 'video':
-            const response = await RNConvertPhAsset.convertVideoFromUrl({
-               url: uri,
-               convertTo: 'mpeg4',
-               quality: 'original',
-            });
-            return response.path; // Return the converted video path
-         default:
-            return uri;
-      }
-   } catch (error) {
-      mflog('Failed to convert the file:', error);
-      return ''; // Return empty string in case of an error
-   }
 };
 
 const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUserJid) => {
@@ -211,7 +181,6 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          };
          const conversationChatObj = getSenderMessageObj(dataObj, i);
          conversationChatObj.archiveSetting = getArchive();
-         const userId = getUserIdFromJid(toUserJid);
          store.dispatch(addChatMessageItem(conversationChatObj));
          store.dispatch(addRecentChatItem(conversationChatObj));
 

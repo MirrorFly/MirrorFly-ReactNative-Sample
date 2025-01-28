@@ -63,7 +63,7 @@ import {
    updateMissedCallNotification,
 } from '../Helper/Calls/Utility';
 import RootNavigation from '../Navigation/rootNavigation';
-import { updateProgressNotification } from '../Service/PushNotify';
+import { progressMap, updateProgressNotification } from '../Service/PushNotify';
 import { pushNotify } from '../Service/remoteNotifyHandle';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../calls/notification/callNotifyHandler';
 import ActivityModule from '../customModules/ActivityModule';
@@ -760,11 +760,16 @@ export const callBacks = {
    },
    groupMsgInfoListener: res => {},
    mediaUploadListener: res => {
-      console.log(' mediaUploadListener ==>', res);
       const { msgId, progress } = res;
       const roundedProgress = Math.round(progress);
       if (Platform.OS === 'android') {
-         updateProgressNotification({ msgId, progress: roundedProgress, type: 'upload' });
+         const checkActiveDownload = progressMap.download.files > 0;
+         updateProgressNotification({
+            msgId,
+            progress: roundedProgress,
+            type: 'upload',
+            foregroundStatus: !checkActiveDownload,
+         });
       }
       store.dispatch(setProgress(res));
       if (res.progress === 100) {
@@ -785,7 +790,13 @@ export const callBacks = {
       const { msgId, progress } = res;
       const roundedProgress = Math.round(progress);
       if (Platform.OS === 'android') {
-         updateProgressNotification({ msgId, progress: roundedProgress, type: 'download' });
+         const checkActiveUpload = progressMap.upload.files > 0;
+         updateProgressNotification({
+            msgId,
+            progress: roundedProgress,
+            type: 'download',
+            foregroundStatus: !checkActiveUpload,
+         });
       }
       store.dispatch(setProgress(res));
       if (res.progress === 100) {

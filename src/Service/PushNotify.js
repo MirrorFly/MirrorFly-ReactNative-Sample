@@ -91,7 +91,7 @@ const activeUploads = {
    individualProgress: {}, // Progress of each individual file, keyed by msgId
 };
 
-const progressMap = {
+export const progressMap = {
    upload: activeUploads,
    download: activeDownloads,
 };
@@ -108,85 +108,93 @@ export const updateProgressNotification = async ({
          return;
       }
       let activeProgress = progressMap[type];
-      if (isCanceled) {
-         // Remove canceled download from tracker
-         delete activeProgress.individualProgress[msgId];
-         activeProgress.files -= 1;
-      } else {
-         // Add or update download progress
-         if (activeProgress.individualProgress[msgId] === undefined) {
-            activeProgress.files += 1;
-         }
-         activeProgress.individualProgress[msgId] = progress;
-      }
+      handleProgressUpdate(activeProgress, msgId, progress, isCanceled);
 
-      // let foreground = (activeDownloads?.files && activeUploads?.files && (type === 'download' || type === 'upload')) ||
-      // ((activeDownloads?.files || activeUploads?.files) && foregroundStatus);
-
-      // Recalculate combined progress
-      const totalProgress = Object.values(activeProgress.individualProgress).reduce((sum, p) => sum + p, 0);
-      if (Object.keys(activeProgress.individualProgress).length === 1) {
-         activeProgress.progress = progress;
-      } else {
-         activeProgress.progress = activeProgress.files > 0 ? Math.floor(totalProgress / activeProgress.files) : 0;
-      }
+      const totalProgress = calculateTotalProgress(activeProgress);
+      activeProgress.progress = calculateCombinedProgress(activeProgress, totalProgress, progress);
 
       const action = type === 'upload' ? 'Uploading' : 'Downloading';
       const fileCount = activeProgress.files;
 
       const title = fileCount > 1 ? `${action} ${fileCount} files` : `${action} file`;
-      // If all downloads are canceled, clear notification
       if (activeProgress.files <= 0) {
          await notifee.stopForegroundService();
          await notifee.cancelNotification(activeProgress.id);
          return;
       }
 
-      let notification = {
-         id: activeProgress.id,
-         title,
-         body: `Progress: ${activeProgress.progress}%`,
-         android: {
-            channelId: 'media_progress_channel',
-            autoCancel: false,
-            onlyAlertOnce: true,
-            color: AndroidColor.BLUE,
-            importance: AndroidImportance.HIGH,
-            visibility: AndroidVisibility.PUBLIC,
-            smallIcon: 'ic_notification',
-            ongoing: true,
-            ...(foregroundStatus && {
-               asForegroundService: true,
-               foregroundServiceTypes: [
-                  Platform.Version >= 34 && AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE,
-                  AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_DATA_SYNC,
-               ],
-            }),
-            progress: {
-               max: 100,
-               current: activeProgress.progress,
-               indeterminate: activeProgress.progress <= 0 ? true : false,
-            },
-         },
-         ios: {
-            categoryId: 'media_progress_category',
-            sound: 'default',
-            attachments: [],
-            customSummary: 'Media progress notification',
-            threadId: 'media_progress',
-            foregroundPresentationOptions: {
-               banner: false,
-               list: false,
-               badge: false,
-               sound: false,
-            },
-         },
-      };
-
+      let notification = createNotification(activeProgress, title, foregroundStatus);
       notifee.displayNotification(notification);
    } catch (error) {
       mflog('Failed to update progress notification', error);
    }
+};
+
+const handleProgressUpdate = (activeProgress, msgId, progress, isCanceled) => {
+   if (isCanceled) {
+      delete activeProgress.individualProgress[msgId];
+      activeProgress.files -= 1;
+   } else {
+      if (activeProgress.individualProgress[msgId] === undefined) {
+         activeProgress.files += 1;
+      }
+      activeProgress.individualProgress[msgId] = progress;
+   }
+};
+
+const calculateTotalProgress = activeProgress => {
+   return Object.values(activeProgress.individualProgress).reduce((sum, p) => sum + p, 0);
+};
+
+const calculateCombinedProgress = (activeProgress, totalProgress, progress) => {
+   if (Object.keys(activeProgress.individualProgress).length === 1) {
+      return progress;
+   } else {
+      return activeProgress.files > 0 ? Math.floor(totalProgress / activeProgress.files) : 0;
+   }
+};
+
+const createNotification = (activeProgress, title, foregroundStatus) => {
+   return {
+      id: activeProgress.id,
+      title,
+      body: `Progress: ${activeProgress.progress}%`,
+      android: {
+         channelId: 'media_progress_channel',
+         autoCancel: false,
+         onlyAlertOnce: true,
+         color: AndroidColor.BLUE,
+         importance: AndroidImportance.HIGH,
+         visibility: AndroidVisibility.PUBLIC,
+         smallIcon: 'ic_notification',
+         ongoing: true,
+         ...(foregroundStatus && {
+            asForegroundService: true,
+            foregroundServiceTypes: [
+               Platform.Version >= 34 && AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE,
+               AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_DATA_SYNC,
+            ],
+         }),
+         progress: {
+            max: 100,
+            current: activeProgress.progress,
+            indeterminate: activeProgress.progress <= 0,
+         },
+      },
+      ios: {
+         categoryId: 'media_progress_category',
+         sound: 'default',
+         attachments: [],
+         customSummary: 'Media progress notification',
+         threadId: 'media_progress',
+         foregroundPresentationOptions: {
+            banner: false,
+            list: false,
+            badge: false,
+            sound: false,
+         },
+      },
+   };
 };
 
 export const createNotificationChannels = async settings => {

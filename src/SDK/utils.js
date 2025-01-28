@@ -17,7 +17,7 @@ import { addChatMessageItem, setChatMessages, updateMediaStatus } from '../redux
 import { setReplyMessage } from '../redux/draftSlice';
 import { setMemberParticipantsList } from '../redux/groupDataSlice';
 import { addRecentChatItem, setRecentChats } from '../redux/recentChatDataSlice';
-import { getArchive, getChatMessages, getMediaProgress, getReplyMessage, getRoasterData } from '../redux/reduxHook';
+import { getArchive, getChatMessages, getReplyMessage, getRoasterData } from '../redux/reduxHook';
 import { setRoasterData } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting, updateNotificationSetting } from '../redux/settingDataSlice';
 import store from '../redux/store';

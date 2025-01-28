@@ -138,7 +138,8 @@ function ChatHeader({ chatUser }) {
 
    const renderForwardIcon = () => {
       const isMediaDownloadedOrUploaded = filtered.every(
-         msg => (msg.msgBody?.media?.is_uploading !== 1 || true) && (msg.msgBody?.media?.is_downloaded !== 1 || true),
+         msg =>
+            !msg.msgBody?.media || (msg.msgBody?.media?.is_uploading === 2 && msg.msgBody?.media?.is_downloaded === 2),
       );
 
       const isAllowForward = filtered.every(

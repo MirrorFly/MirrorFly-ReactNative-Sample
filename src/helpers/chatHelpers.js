@@ -16,7 +16,7 @@ import Sound from 'react-native-sound';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
 import { CONNECTED } from '../SDK/constants';
-import { handleSendMsg } from '../SDK/utils';
+import { handleSendMsg, uploadFileToSDK } from '../SDK/utils';
 import {
    BlockedIcon,
    CameraIcon,
@@ -76,6 +76,7 @@ import {
    deleteMessagesForMe,
    highlightMessage,
    resetMessageSelections,
+   updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
 import {
    clearRecentChatData,
@@ -818,16 +819,12 @@ export const handleSendMedia = selectedImages => () => {
  * @param {string} uri local file path of the video
  * @returns {Promise<string>} returns the base64 data of the Thumbnail Image
  */
-export const getVideoThumbImage = async (uri, duration) => {
+export const getVideoThumbImage = async (uri, duration, width, height) => {
    const frame = await createThumbnail({
       url: uri,
       timeStamp: duration / 2,
-      maxWidth: 250,
-      maxHeight: 250,
-      quality: Platform.select({
-         android: 100,
-         ios: 0.9,
-      }),
+      width,
+      height,
    });
    const base64 = await RNFS.readFile(frame.path, 'base64');
    return base64;

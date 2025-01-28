@@ -17,11 +17,16 @@ export function RenderReplyIcon({ userId }) {
    const _handleReplyMessage = () => {
       Keyboard.dismiss();
       dispatch(resetMessageSelections(userId));
-      chatInputRef?.current?.focus();
+
       dispatch(setReplyMessage({ userId, message: filtered[0] }));
+      setTimeout(() => {
+         chatInputRef?.current?.focus();
+      }, 10);
    };
 
-   if (blockedStaus) return null;
+   if (blockedStaus) {
+      return null;
+   }
 
    return (
       <IconButton style={[commonStyles.padding_10_15]} onPress={_handleReplyMessage}>

@@ -15,9 +15,11 @@ function NotificationMessage(props) {
    const publisherName = getUserNameFromStore(publisherId);
    const toUserID = getUserIdFromJid(toUserJid);
    const toUserName = getUserNameFromStore(toUserID);
-   if (!label && !notificationContent) return null;
+   if (!label && !notificationContent) {
+      return null;
+   }
    return (
-      <View style={[{}, commonStyles.alignItemsCenter, commonStyles.marginBottom_6]}>
+      <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom_6]}>
          <View
             style={[
                commonStyles.px_8,

@@ -78,7 +78,9 @@ const ConversationList = ({ chatUser }) => {
 
    // Load more messages
    const handleLoadMore = async () => {
-      if (chatLoading || !getHasNextChatPage(userId)) return;
+      if (chatLoading || !getHasNextChatPage(userId)) {
+         return;
+      }
       setChatLoading(true);
       await fetchMessagesFromSDK(chatUser, true);
       setChatLoading(false);

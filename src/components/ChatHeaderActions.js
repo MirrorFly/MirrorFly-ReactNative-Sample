@@ -208,10 +208,12 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
          label: 'Clear Chat',
          formatter: handleClear,
       });
+      /**
       menuItems.push({
          label: 'Search',
          formatter: toggleSearch,
       });
+       */
    }
 
    if (!filtered.length && !MIX_BARE_JID.test(chatUser)) {

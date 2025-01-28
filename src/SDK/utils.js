@@ -147,10 +147,18 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          const isDocument = DOCUMENT_FORMATS.includes(type);
          const msgType = isDocument ? 'file' : type.split('/')[0];
          let _uri = uri;
-
+         let mediaDimension = {};
+         if (msgType === 'video') {
+            mediaDimension = calculateWidthAndHeight(fileDetails?.width, fileDetails?.height);
+         }
+         const { webWidth = 500, webHeight = 500 } = mediaDimension;
          file.fileDetails = { ...file.fileDetails, uri: _uri };
          let thumbImage = msgType === 'image' ? await getThumbImage(_uri) : '';
-         thumbImage = msgType === 'video' && !thumb_image ? await getVideoThumbImage(_uri, duration) : thumbImage;
+         thumbImage =
+            msgType === 'video' && !thumb_image
+               ? await getVideoThumbImage(_uri, duration, webWidth, webHeight)
+               : thumbImage;
+
          let fileOptions = {
             fileName: filename,
             fileSize: fileSize,

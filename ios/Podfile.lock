@@ -1421,7 +1421,7 @@ PODS:
   - react-native-simple-toast (3.3.2):
     - React-Core
     - Toast (~> 4)
-  - react-native-video (6.9.1):
+  - react-native-video (6.10.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1434,7 +1434,7 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - react-native-video/Video (= 6.9.1)
+    - react-native-video/Video (= 6.10.0)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1443,7 +1443,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-video/Video (6.9.1):
+  - react-native-video/Video (6.10.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1752,7 +1752,7 @@ PODS:
     - React-Core
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.22.0):
+  - RNGestureHandler (2.22.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2223,7 +2223,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: 16ba891ddbceb61ee19e6de8ab884793452e7089
   react-native-safe-area-context: 141eca0fd4e4191288dfc8b96a7c7e1c2983447a
   react-native-simple-toast: 645b68c26e43786fc05e3d7401de2b057f139054
-  react-native-video: 439a3ee225579691a4b2b36c54c5e4c20676b6cb
+  react-native-video: 5ea06ea0e26fbe924734af76de16db586914e309
   react-native-webrtc: 48295e7228279470c4f5acb38570e170723bd3b2
   React-nativeconfig: 31072ab0146e643594f6959c7f970a04b6c9ddd0
   React-NativeModulesApple: f49bb0befd8650ac3ff8fc2684072b16c09bf478
@@ -2261,7 +2261,7 @@ SPEC CHECKSUMS:
   RNFBMessaging: 3b4b92c33a2ad87105c5b6e2e7a3bb5d33a34320
   RNFileViewer: ce7ca3ac370e18554d35d6355cffd7c30437c592
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
-  RNGestureHandler: f6a6630e6bde1a49d1e3fec73b6711f718813538
+  RNGestureHandler: 5c734ddd9b406a5cd792add1fc01f0894ed8ec28
   RNImageCropPicker: 8e39c01f205e00d739c31e682f068aac315587bf
   RNNotifee: 4a6ee5c7deaf00e005050052d73ee6315dff7ec9
   RNPermissions: bf00b2cde5d365bbc992aecb89e72b9210b416a4
@@ -2276,4 +2276,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 6b001eed45a07a9bdf527a76b621c6e4734e9607
 
-COCOAPODS: 1.16.0
+COCOAPODS: 1.16.2

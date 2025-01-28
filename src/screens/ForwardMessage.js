@@ -535,7 +535,15 @@ const ForwardMessage = () => {
          setShowLoader(false);
          onMessageForwaded?.();
          if (Object.values(selectedUsers).length === 1) {
-            navigation.navigate(CONVERSATION_SCREEN, { jid: Object.values(selectedUsers)[0]?.userJid });
+            navigation.reset({
+               index: 0,
+               routes: [
+                  {
+                     name: CONVERSATION_SCREEN,
+                     params: { jid: Object.values(selectedUsers)[0]?.userJid },
+                  },
+               ],
+            });
          } else {
             navigation.goBack();
          }

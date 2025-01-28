@@ -145,7 +145,9 @@ function MediaPreView() {
                   numberOfLines={1}
                   multiline={true}
                   onChangeText={text => {
-                     componentSelectedImages[activeIndex].caption = text;
+                     setComponentSelectedImages(prevImages =>
+                        prevImages.map((item, index) => (index === activeIndex ? { ...item, caption: text } : item)),
+                     );
                   }}
                   placeholderTextColor="#7f7f7f"
                   selectionColor={'#3276E2'}

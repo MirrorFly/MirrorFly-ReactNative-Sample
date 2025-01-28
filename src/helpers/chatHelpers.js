@@ -76,6 +76,10 @@ import {
    deleteMessagesForMe,
    highlightMessage,
    resetMessageSelections,
+   setChatSearchText,
+   setIsSearchChatLoading,
+   toggleEditMessage,
+   toggleIsChatSearching,
    updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
 import {
@@ -441,7 +445,7 @@ export const handleConversationClear = async jid => {
 
 export const isAnyMessageWithinLast30Seconds = (messages = []) => {
    const now = Date.now();
-   return messages.some(message => now - message.timestamp <= 30000 && isLocalUser(message.publisherJid));
+   return messages.every(message => now - message.timestamp <= 30000 && isLocalUser(message.publisherJid));
 };
 
 export const getExtention = filename => {
@@ -1394,4 +1398,19 @@ export const findUrls = text => {
    }
 
    return segments;
+};
+
+export const resetConversationScreen = userId => {
+   dispatchSearchLoading(userId);
+   handelResetMessageSelection(userId)();
+   SDK.updateRecentChatUnreadCount('');
+   store.dispatch(toggleEditMessage(''));
+   store.dispatch(setChatSearchText(''));
+   store.dispatch(toggleIsChatSearching(false));
+};
+
+// Dispatch loading state helper
+export const dispatchSearchLoading = (userId, loadingState = '') => {
+   store.dispatch(setIsSearchChatLoading({ [userId]: loadingState }));
+   // hasDispatchedSearchLoading = loadingState !== '';
 };

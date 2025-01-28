@@ -3,13 +3,14 @@ import { Linking, StyleSheet, View } from 'react-native';
 import Text from '../common/Text';
 import { getConversationHistoryTime } from '../common/timeStamp';
 import { findUrls, getMessageStatus } from '../helpers/chatHelpers';
-import { useThemeColorPalatte } from '../redux/reduxHook';
+import { useChatSearchText, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
 
 const TextCard = ({ item, isSender }) => {
    const themeColorPalatte = useThemeColorPalatte();
    const { createdAt = '', msgStatus = 0, msgBody: { message = '', replyTo = '' } = {}, editMessageId } = item;
+   const searchText = useChatSearchText('');
 
    return (
       <View style={commonStyles.paddingHorizontal_4}>
@@ -63,9 +64,9 @@ const TextCard = ({ item, isSender }) => {
    );
 };
 
-export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchValue = 'hi', index }) => {
-   // Use the findUrls function to split the text into URL and non-URL parts
+export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchValue = '', index }) => {
    const segments = findUrls(text);
+
    const handlePress = url => {
       Linking.openURL(url);
    };
@@ -73,16 +74,39 @@ export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchVa
    return (
       <Text>
          {segments.map((segment, i) => {
-            const isSearchMatch = segment.content.toLowerCase() === searchValue.toLowerCase() ? styles.highlight : {};
-            const urlStyle = segment.isUrl ? styles.underline : {}; // Apply underline only for URLs
+            const content = segment.content;
+            const lowerCaseContent = content.toLowerCase();
+            const lowerCaseSearchValue = searchValue.toLowerCase();
+
+            if (lowerCaseSearchValue && lowerCaseContent.includes(lowerCaseSearchValue)) {
+               const parts = content.split(new RegExp(`(${searchValue})`, 'i'));
+
+               return parts.map((part, partIndex) => {
+                  const isMatch = part.toLowerCase() === lowerCaseSearchValue;
+                  const highlightStyle = isMatch ? styles.highlight : {};
+                  const urlStyle = segment.isUrl ? styles.underline : {}; // Apply underline only for URLs
+
+                  return (
+                     <Text
+                        key={`${i}-${index}-${partIndex}`}
+                        style={[textStyle, highlightStyle, urlStyle]}
+                        onPress={() => segment.isUrl && handlePress(segment.content)}
+                        suppressHighlighting={!segment.isUrl}>
+                        {part}
+                     </Text>
+                  );
+               });
+            }
+
+            // If no match, render normally
+            const urlStyle = segment.isUrl ? styles.underline : {};
             return (
                <Text
-                  key={++i + '-' + index}
-                  ellipsizeMode="tail"
-                  style={[textStyle, isSearchMatch, urlStyle]} // Combine textStyle, highlight, and urlStyle
-                  onPress={() => segment.isUrl && handlePress(segment.content)} // Only make URL parts clickable
+                  key={`${i}-${index}`}
+                  style={[textStyle, urlStyle]}
+                  onPress={() => segment.isUrl && handlePress(segment.content)}
                   suppressHighlighting={!segment.isUrl}>
-                  {segment.content}
+                  {content}
                </Text>
             );
          })}

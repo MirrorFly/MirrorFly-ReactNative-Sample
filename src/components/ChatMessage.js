@@ -64,7 +64,7 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
          return () => {
             setIsConversationScreenActive(false);
          };
-      }, [useXmppStatus]),
+      }, [useXmppStatus, msgStatus]),
    );
 
    const onPress = () => {

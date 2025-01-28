@@ -67,16 +67,15 @@ const chatMessageDataSlice = createSlice({
             if (messageIndex !== -1) {
                if (state[userId][messageIndex] !== action.payload) {
                   state[userId][messageIndex] = {
-                     ...state[userId][messageIndex],
                      ...action.payload,
+                     ...state[userId][messageIndex],
                   };
                }
             } else {
-               state[userId].push(action.payload);
+               state[userId].unshift({ ...action.payload, deleteStatus: 0, recallStatus: 0 });
             }
-            state[userId].sort((a, b) => b.timestamp - a.timestamp);
          } else {
-            state[userId] = [action.payload];
+            state[userId] = [{ ...action.payload, deleteStatus: 0, recallStatus: 0 }];
          }
       },
       updateChatMessageStatus(state, action) {

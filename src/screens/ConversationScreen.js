@@ -113,8 +113,8 @@ function ConversationScreen({ chatUser = '' }) {
             {renderConversationList}
          </ImageBackground>
          {renderReplyContainer}
-         {renderChatInput}
          <EditMessage />
+         {renderChatInput}
       </KeyboardAvoidingView>
    );
 }

@@ -507,11 +507,12 @@ class MediaService: RCTEventEmitter {
   @objc func resetPauseRequest (
     _ resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock){
-      downloadTaskCanceled["allTaskPauseRequested"] = false
+      self.downloadTaskCanceled["allTaskPauseRequested"] = false
       
-      for (msgId, task) in downloadTasks {
-        downloadTaskCanceled[msgId] = false
+      for msgId in downloadTaskCanceled.keys {
+          self.downloadTaskCanceled[msgId] = false
       }
+      
       
       resolver([
         "statusCode": 200,

@@ -337,7 +337,7 @@ const ForwardMessage = () => {
 
    const isInternetReachable = useNetworkStatus();
 
-   const { params: { forwardMessages = [], onMessageForwaded = () => {} } = {} } = useRoute();
+   const { params: { forwardMessages: forward_Messages = [], onMessageForwaded = () => {} } = {} } = useRoute();
 
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
@@ -487,6 +487,7 @@ const ForwardMessage = () => {
 
    const forwardMessagesToSelectedUsers = async () => {
       const newMsgIds = [];
+      let forwardMessages = [...forward_Messages];
       const totalLength = forwardMessages.length * Object.keys(selectedUsers).length;
       forwardMessages.sort((a, b) => {
          if (a.timestamp > b.timestamp) {
@@ -500,7 +501,7 @@ const ForwardMessage = () => {
       for (let i = 0; i < totalLength; i++) {
          newMsgIds.push(SDK.randomString(8, 'BA'));
       }
-      const newMsgIdsCopy = [...newMsgIds];
+      let newMsgIdsCopy = [...newMsgIds];
       for (let i = 0; i < forwardMessages.length; i++) {
          const msg = forwardMessages[i];
          for (const userId in selectedUsers) {

@@ -760,7 +760,6 @@ export const callBacks = {
    },
    groupMsgInfoListener: res => {},
    mediaUploadListener: res => {
-      console.log(' mediaUploadListener ==>', res);
       const { msgId, progress } = res;
       const roundedProgress = Math.round(progress);
       if (Platform.OS === 'android') {

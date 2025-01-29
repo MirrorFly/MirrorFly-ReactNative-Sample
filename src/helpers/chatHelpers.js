@@ -581,9 +581,20 @@ export const openDocumentPicker = async () => {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       setTimeout(async () => {
          const file = await handleDocumentPickSingle();
+
          if (!file) {
             return;
          }
+         // Extract directory path
+         const uriParts = file.uri.split('/');
+         uriParts.pop(); // Remove last part (file name)
+         const correctedUri = uriParts.join('/') + '/' + file.name;
+         // Create a new object to avoid modifying the original reference (good practice)
+         const _updatedFile = {
+            ...file,
+            fileCopyUri: correctedUri,
+            uri: correctedUri,
+         };
          // updating the SDK flag back to false to behave as usual
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
          // Validating the file type and size
@@ -601,7 +612,7 @@ export const openDocumentPicker = async () => {
          }
          // preparing the object and passing it to the sendMessage function
          const updatedFile = {
-            fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
+            fileDetails: mediaObjContructor('DOCUMENT_PICKER', _updatedFile),
          };
          const messageData = {
             messageType: 'media',

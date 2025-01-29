@@ -1,3 +1,4 @@
+import BackgroundTimer from 'react-native-background-timer';
 import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import { changeTimeFormat } from '../common/timeStamp';
 import config from '../config/config';
@@ -17,14 +18,13 @@ import { addChatMessageItem, setChatMessages, updateMediaStatus } from '../redux
 import { setReplyMessage } from '../redux/draftSlice';
 import { setMemberParticipantsList } from '../redux/groupDataSlice';
 import { addRecentChatItem, setRecentChats } from '../redux/recentChatDataSlice';
-import { getArchive, getChatMessages, getMediaProgress, getReplyMessage, getRoasterData } from '../redux/reduxHook';
+import { getArchive, getChatMessages, getReplyMessage, getRoasterData } from '../redux/reduxHook';
 import { setRoasterData } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting, updateNotificationSetting } from '../redux/settingDataSlice';
 import store from '../redux/store';
 import { updateProgressNotification } from '../Service/PushNotify';
 import { getCurrentUserJid, mflog } from '../uikitMethods';
 import SDK from './SDK';
-import BackgroundTimer from 'react-native-background-timer';
 
 let chatPage = {},
    hasNextChatPage = {},

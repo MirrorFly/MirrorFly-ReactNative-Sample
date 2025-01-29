@@ -118,8 +118,10 @@ export const updateProgressNotification = async ({
 
       const title = fileCount > 1 ? `${action} ${fileCount} files` : `${action} file`;
       if (activeProgress.files <= 0) {
-         await notifee.stopForegroundService();
-         await notifee.cancelNotification(activeProgress.id);
+         setTimeout(() => {
+            notifee.stopForegroundService();
+            notifee.cancelNotification(activeProgress.id);
+         }, 200);
          return;
       }
 
@@ -207,6 +209,7 @@ export const createNotificationChannels = async settings => {
             sound: 'default', // No sound for progress updates
             importance: AndroidImportance.HIGH,
             visibility: AndroidVisibility.PUBLIC,
+            vibration: false,
          });
 
          console.log('Media progress notification channel created');

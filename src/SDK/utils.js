@@ -133,9 +133,8 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
 const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUserJid) => {
    if (messageType === 'media') {
       const isMuted = await getMuteStatus(toUserJid);
-      for (let i = 0; i < files.length; i++) {
-         const file = files[i],
-            msgId = SDK.randomString(8, 'BA');
+      const uploadPromises = files.map(async (file, i) => {
+         const msgId = SDK.randomString(8, 'BA');
          const {
             caption = '',
             fileDetails = {},
@@ -198,7 +197,9 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
             } = conversationChatObj;
             uploadFileToSDK(_file, userJid, _msgId, media);
          }
-      }
+      });
+
+      await Promise.all(uploadPromises);
    }
 };
 

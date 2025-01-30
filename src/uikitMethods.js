@@ -3,7 +3,6 @@ import { AppRegistry, Platform } from 'react-native';
 import RNVoipPushNotification from 'react-native-voip-push-notification';
 import { version } from '../package.json';
 import { pushNotifyBackground } from './Helper/Calls/Utility';
-import RootNavigation from './Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from './SDK/SDK';
 import { callBacks } from './SDK/sdkCallBacks';
 import { getUserSettings, resetVariable, updateNotificationSettings } from './SDK/utils';
@@ -181,9 +180,6 @@ export const mirrorflyConnect = async (username, password) => {
          let jid = await SDK.getCurrentUserJid();
          let userJID = jid.userJid.split('/')[0];
          connect.jid = userJID;
-         if (navEnabled) {
-            RootNavigation.reset(RECENTCHATSCREEN);
-         }
          return connect;
       default:
          return connect;

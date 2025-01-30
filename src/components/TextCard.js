@@ -3,14 +3,14 @@ import { Linking, StyleSheet, View } from 'react-native';
 import Text from '../common/Text';
 import { getConversationHistoryTime } from '../common/timeStamp';
 import { findUrls, getMessageStatus } from '../helpers/chatHelpers';
-import { useChatSearchText, useThemeColorPalatte } from '../redux/reduxHook';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
 
 const TextCard = ({ item, isSender }) => {
    const themeColorPalatte = useThemeColorPalatte();
    const { createdAt = '', msgStatus = 0, msgBody: { message = '', replyTo = '' } = {}, editMessageId } = item;
-   const searchText = useChatSearchText('');
+   /**const searchText = useChatSearchText('');*/
 
    return (
       <View style={commonStyles.paddingHorizontal_4}>
@@ -39,15 +39,20 @@ const TextCard = ({ item, isSender }) => {
          </Text>
          <View style={styles.timeStamp}>
             {isSender && getMessageStatus(msgStatus)}
-            {editMessageId && <Text style={[
-                  styles.timeStampText,
-                  commonStyles.textColor(
-                     isSender
-                        ? themeColorPalatte.chatSenderSecondaryTextColor
-                        : themeColorPalatte.chatReceiverSecondaryTextColor,
-                  ),
-                  { paddingLeft: 4 }
-               ]}>Edited</Text>}
+            {editMessageId && (
+               <Text
+                  style={[
+                     styles.timeStampText,
+                     commonStyles.textColor(
+                        isSender
+                           ? themeColorPalatte.chatSenderSecondaryTextColor
+                           : themeColorPalatte.chatReceiverSecondaryTextColor,
+                     ),
+                     { paddingLeft: 4 },
+                  ]}>
+                  Edited
+               </Text>
+            )}
             <Text
                style={[
                   styles.timeStampText,
@@ -88,7 +93,7 @@ export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchVa
 
                   return (
                      <Text
-                        key={`${i}-${index}-${partIndex}`}
+                        key={`${i}-${index + 1}-${partIndex}`}
                         style={[textStyle, highlightStyle, urlStyle]}
                         onPress={() => segment.isUrl && handlePress(segment.content)}
                         suppressHighlighting={!segment.isUrl}>
@@ -102,7 +107,7 @@ export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchVa
             const urlStyle = segment.isUrl ? styles.underline : {};
             return (
                <Text
-                  key={`${i}-${index}`}
+                  key={`${i}-${index + 1}`}
                   style={[textStyle, urlStyle]}
                   onPress={() => segment.isUrl && handlePress(segment.content)}
                   suppressHighlighting={!segment.isUrl}>

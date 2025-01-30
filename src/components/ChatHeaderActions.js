@@ -18,10 +18,9 @@ import {
    isLocalUser,
 } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
-import { resetMessageSelections, toggleEditMessage, toggleIsChatSearching } from '../redux/chatMessageDataSlice';
+import { resetMessageSelections, toggleEditMessage } from '../redux/chatMessageDataSlice';
 import { setReplyMessage, setTextMessage } from '../redux/draftSlice';
 import {
-   getIsChatSearching,
    getSelectedChatMessages,
    getUserNameFromStore,
    useBlockedStatus,
@@ -177,10 +176,11 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
          yesAction: handleUpdateBlockUser(userId, blockedStaus ? 0 : 1, chatUser),
       });
    };
-
+   /**
    const toggleSearch = () => {
       dispatch(toggleIsChatSearching(!getIsChatSearching()));
    };
+   */
 
    if (filtered[0]?.msgBody?.message_type === 'text' || filtered[0]?.msgBody?.media?.caption) {
       menuItems.push({

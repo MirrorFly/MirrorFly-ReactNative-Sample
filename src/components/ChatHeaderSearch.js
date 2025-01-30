@@ -159,10 +159,12 @@ export const handleFindMessageSearch = async ({ text, resetCurrentIndex = false,
       console.log('msgId ==>', msgId);
       console.log('scrollIndex ==>', scrollIndex);
       if (scrollIndex < 0) {
+         /**
          // if (getHasNextChatPage(userId)) {
-         //    return fetchMessagesFromSDK(chatUser, true).then(() => handleFindMessageSearch({ text }));
-         // } else {
-         // }
+            //    return fetchMessagesFromSDK(chatUser, true).then(() => handleFindMessageSearch({ text }));
+            // } else {
+            // }
+         */
          dispatchSearchLoading(userId); // Close search loading
          return showToast('No results found');
       }
@@ -191,7 +193,7 @@ export const handleFindNextMessage = async ({ direction }) => {
       if (scrollIndex < 0) {
          if (getHasNextChatPage(userId) && getIsChatSearching()) {
             return showToast('Need to fetch');
-            // return handleFindMessageSearch({ text: getChatSearchText(), updateCurrentIndex });
+            /**return handleFindMessageSearch({ text: getChatSearchText(), updateCurrentIndex }); */
          } else {
             dispatchSearchLoading(userId); // Close search loading
             return showToast('No results found');

@@ -285,14 +285,7 @@ export const millisToHoursMinutesAndSeconds = millis => {
    if (hours > 0) {
       hoursString = (hours < 10 ? '0' : '') + hours + ':';
    }
-   return (
-      hoursString +
-      (minutes < 10 ? '0' : '') +
-      minutes +
-      ':' +
-      (seconds < 10 ? '0' : '') +
-      seconds
-   );
+   return hoursString + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
 };
 
 export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {
@@ -1428,5 +1421,5 @@ export const resetConversationScreen = userId => {
 // Dispatch loading state helper
 export const dispatchSearchLoading = (userId, loadingState = '') => {
    store.dispatch(setIsSearchChatLoading({ [userId]: loadingState }));
-   // hasDispatchedSearchLoading = loadingState !== '';
+   /** hasDispatchedSearchLoading = loadingState !== '';*/
 };

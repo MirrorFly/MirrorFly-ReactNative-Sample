@@ -375,14 +375,14 @@ function ChatInput({ chatUser }) {
                   <AttachmentIcon color={themeColorPalatte.iconColor} />
                </IconButton>
             )}
-            {/* {!message.trim() && (
+            {!message.trim() && (
                <IconButton
                   containerStyle={styles.audioRecordIconWrapper}
                   style={styles.audioRecordIcon}
                   onPress={onStartRecord}>
                   <MicIcon />
                </IconButton>
-            )} */}
+            )}
          </>
       );
    }, [message, isEmojiPickerShowing, themeColorPalatte]);
@@ -604,7 +604,6 @@ const styles = StyleSheet.create({
    attachmentIcon: {
       padding: 10,
       paddingHorizontal: 12,
-      paddingRight: 20,
    },
    attachmentNameText: {
       color: '#fff',

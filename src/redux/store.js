@@ -43,6 +43,7 @@ const appReducer = combineReducers({
 
 // Root reducer
 const rootReducer = (state, action) => {
+   /**
    // if (action.type === 'clearState') {
    //    const { themeColorPalatte, ...rest } = state; // Destructure to keep themeColorPalatte intact
    //    return {
@@ -50,6 +51,7 @@ const rootReducer = (state, action) => {
    //       themeColorPalatte, // Keep themeColorPalatte as it is
    //    };
    // }
+    */
    return appReducer(state, action);
 };
 

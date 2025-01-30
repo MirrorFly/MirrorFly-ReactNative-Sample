@@ -108,7 +108,8 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
    const lastMessageId = messsageList[messsageList.length - 1]?.msgId || '';
    console.log('lastMessageId ==>', messsageList.length, messsageList.length - 1, lastMessageId);
    if (lastMessageId.includes('groupCreated')) {
-      return (hasNextChatPage[userId] = false);
+      hasNextChatPage[userId] = false;
+      return;
    }
    const page = chatPage[userId] || 1;
 
@@ -181,7 +182,7 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          conversationChatObj.archiveSetting = getArchive();
          store.dispatch(addChatMessageItem(conversationChatObj));
          store.dispatch(addRecentChatItem(conversationChatObj));
-
+         return;
          await updateProgressNotification({
             msgId,
             progress: 0,
@@ -271,7 +272,7 @@ export const getSenderMessageObj = (dataObj, idx) => {
             fileName: fileOptions.fileName,
             file_size: fileOptions.fileSize,
             is_downloaded: 2,
-            is_uploading: idx === 0 ? 1 : 0,
+            is_uploading: 2,
             file_url: '',
             duration: fileOptions.duration || 0,
             local_path: '',

@@ -30,15 +30,20 @@ class MyClass: NSObject {
   }
   
   @objc
-  func getMessage(messageID: String, content: String, type:String, completion: @escaping([String: Any]?) -> Void) {
+  func getMessage(messageID: String, content: String, type:String, userjid:String, completion: @escaping([String: Any]?) -> Void) {
     var dict = [String: Any]()
     removeInvalidMessage(forIDs: [messageID], onCompletion: {
       notification in
+  
       switch (type) {
       case "text":
         let val = convertToDictionary(text: self.run(messageID: messageID, content: content))
         let nickName:String = val?["nickName"] as? String ?? ""
-        dict["nickName"] = nickName
+        if let number = userjid.components(separatedBy: "@").first, !number.isEmpty {
+            dict["nickName"] = FlyEncryption.encryptDecryptData(key: number, data: nickName, encrypt: false, isForProfileName: true)
+        } else {
+            dict["nickName"] = nickName // Fallback in case `number` is nil or empty
+        }
         dict["message"] = val?["message"]
         break;
       case "image":

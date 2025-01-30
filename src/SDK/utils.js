@@ -182,7 +182,6 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          conversationChatObj.archiveSetting = getArchive();
          store.dispatch(addChatMessageItem(conversationChatObj));
          store.dispatch(addRecentChatItem(conversationChatObj));
-         return;
          await updateProgressNotification({
             msgId,
             progress: 0,

@@ -6,6 +6,7 @@ import { findUrls, getMessageStatus } from '../helpers/chatHelpers';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
+import { randomString } from '../SDK/utils';
 
 const TextCard = ({ item, isSender }) => {
    const themeColorPalatte = useThemeColorPalatte();
@@ -93,7 +94,7 @@ export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchVa
 
                   return (
                      <Text
-                        key={`${i}-${index + 1}-${partIndex}`}
+                        key={randomString()}
                         style={[textStyle, highlightStyle, urlStyle]}
                         onPress={() => segment.isUrl && handlePress(segment.content)}
                         suppressHighlighting={!segment.isUrl}>
@@ -107,7 +108,7 @@ export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchVa
             const urlStyle = segment.isUrl ? styles.underline : {};
             return (
                <Text
-                  key={`${i}-${index + 1}`}
+                  key={randomString()}
                   style={[textStyle, urlStyle]}
                   onPress={() => segment.isUrl && handlePress(segment.content)}
                   suppressHighlighting={!segment.isUrl}>

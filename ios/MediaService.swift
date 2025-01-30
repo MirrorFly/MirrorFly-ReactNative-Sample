@@ -507,11 +507,12 @@ class MediaService: RCTEventEmitter {
   @objc func resetPauseRequest (
     _ resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock){
-      downloadTaskCanceled["allTaskPauseRequested"] = false
+      self.downloadTaskCanceled["allTaskPauseRequested"] = false
       
-      for (msgId, task) in downloadTasks {
-        downloadTaskCanceled[msgId] = false
+      for msgId in downloadTaskCanceled.keys {
+          self.downloadTaskCanceled[msgId] = false
       }
+      
       
       resolver([
         "statusCode": 200,
@@ -717,7 +718,7 @@ class MediaService: RCTEventEmitter {
               resolver([
                 "success": false,
                 "statusCode": 400,
-                "uploadResponses": "No upload URL available for chunk \(chunkIndex)",
+                "message": "No upload URL available for chunk \(chunkIndex)",
                 "startIndex": chunkIndex,
                 "startBytesRead": offset
               ])
@@ -734,7 +735,7 @@ class MediaService: RCTEventEmitter {
               resolver([
                 "success": false,
                 "statusCode": 400,
-                "uploadResponses": "Upload canceled",
+                "message": "Upload canceled",
                 "startIndex": chunkIndex,
                 "startBytesRead": offset
               ])
@@ -754,7 +755,7 @@ class MediaService: RCTEventEmitter {
               resolver([
                 "success": false,
                 "statusCode": statusCode,
-                "uploadResponses": "Chunk upload failed with message: \(message)",
+                "message": "Chunk upload failed with message: \(message)",
                 "startIndex": chunkIndex,
                 "startBytesRead": offset
               ])
@@ -787,7 +788,7 @@ class MediaService: RCTEventEmitter {
           resolver([
             "success": true,
             "statusCode": 200,
-            "uploadResponses": "File uploaded successfully"
+            "message": "File uploaded successfully"
           ])
         }
       } catch {

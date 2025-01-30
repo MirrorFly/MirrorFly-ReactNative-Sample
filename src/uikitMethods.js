@@ -205,6 +205,8 @@ export const mirrorflyLogout = async () => {
          showToast(message);
          return statusCode;
       }
+      notifee.stopForegroundService();
+      notifee.cancelAllNotifications();
       return statusCode;
    } catch (error) {}
 };

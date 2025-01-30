@@ -1,10 +1,8 @@
 import BackgroundTimer from 'react-native-background-timer';
-import RNConvertPhAsset from 'react-native-convert-ph-asset';
 import { changeTimeFormat } from '../common/timeStamp';
 import config from '../config/config';
 import {
    calculateWidthAndHeight,
-   convertHeicToJpg,
    getCurrentChatUser,
    getThumbImage,
    getUserIdFromJid,

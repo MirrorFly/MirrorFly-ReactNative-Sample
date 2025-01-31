@@ -37,7 +37,6 @@ function ReplyMessage(props) {
    const dispatch = useDispatch();
    const userId = getUserIdFromJid(chatUser);
    const repliedMessage = useChatMessage(userId, replyTo) || {};
-
    let { msgId, msgBody: { parentMessage = {} } = {} } = originalMsg;
 
    if (!Object.keys(parentMessage).length) {

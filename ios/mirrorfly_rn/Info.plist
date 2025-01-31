@@ -45,8 +45,6 @@
 	<string></string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This is app require your microphone</string>
-	<key>firebase_crashlytics_collection_enabled</key>
-    <true/>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>This is app would like to access your photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -72,5 +70,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>firebase_crashlytics_collection_enabled</key>
+	<true/>
 </dict>
 </plist>

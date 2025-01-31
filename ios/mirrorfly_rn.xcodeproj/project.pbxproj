@@ -16,13 +16,13 @@
 		84C00C8A87A52F85EC234906 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 351382106977CC60AE8C9180 /* PrivacyInfo.xcprivacy */; };
 		A7B20BDD2CF5E2880075CC1B /* fly_reconnecting_tone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A7B20BDA2CF5E2880075CC1B /* fly_reconnecting_tone.mp3 */; };
 		A7B20BDE2CF5E2880075CC1B /* incallmanager_ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A7B20BDB2CF5E2880075CC1B /* incallmanager_ringback.mp3 */; };
-		A7B20BFA2CF5E8EE0075CC1B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A7B20BF92CF5E8EE0075CC1B /* GoogleService-Info.plist */; };
 		A7B20C262CF5F71C0075CC1B /* RNCallKeep.m in Sources */ = {isa = PBXBuildFile; fileRef = A7B20C252CF5F71C0075CC1B /* RNCallKeep.m */; };
 		A7B20D022CF6DD2D0075CC1B /* NotificationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A7B20CFA2CF6DD2D0075CC1B /* NotificationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A7B20D182CF6DF400075CC1B /* FlyEncryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B20D0F2CF6DF400075CC1B /* FlyEncryption.swift */; };
 		A7B20D192CF6DF400075CC1B /* MyClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B20D112CF6DF400075CC1B /* MyClass.swift */; };
 		A7B20D1A2CF6DF400075CC1B /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = A7B20D152CF6DF400075CC1B /* NotificationService.m */; };
 		A7B20D1B2CF6DF400075CC1B /* sendDeliveredApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B20D162CF6DF400075CC1B /* sendDeliveredApiCall.swift */; };
+		A7F436612D4CB216003518B3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A7F436602D4CB216003518B3 /* GoogleService-Info.plist */; };
 		B42B189CF199C58746A31FD6 /* Pods_mirrorfly_rn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D29BAF4B0875C49FA458AB9 /* Pods_mirrorfly_rn.framework */; };
 /* End PBXBuildFile section */
 
@@ -78,7 +78,6 @@
 		89C6BE57DB24E9ADA2F236DE /* Pods-mirrorfly_rn-mirrorfly_rnTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mirrorfly_rn-mirrorfly_rnTests.release.xcconfig"; path = "Target Support Files/Pods-mirrorfly_rn-mirrorfly_rnTests/Pods-mirrorfly_rn-mirrorfly_rnTests.release.xcconfig"; sourceTree = "<group>"; };
 		A7B20BDA2CF5E2880075CC1B /* fly_reconnecting_tone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = fly_reconnecting_tone.mp3; sourceTree = "<group>"; };
 		A7B20BDB2CF5E2880075CC1B /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = incallmanager_ringback.mp3; sourceTree = "<group>"; };
-		A7B20BF92CF5E8EE0075CC1B /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A7B20BFB2CF5EB1B0075CC1B /* mirrorfly_rn.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = mirrorfly_rn.entitlements; path = mirrorfly_rn/mirrorfly_rn.entitlements; sourceTree = "<group>"; };
 		A7B20C242CF5F71C0075CC1B /* RNCallKeep.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNCallKeep.h; path = mirrorfly_rn/RNCallKeep.h; sourceTree = "<group>"; };
 		A7B20C252CF5F71C0075CC1B /* RNCallKeep.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNCallKeep.m; path = mirrorfly_rn/RNCallKeep.m; sourceTree = "<group>"; };
@@ -93,6 +92,7 @@
 		A7B20D142CF6DF400075CC1B /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
 		A7B20D152CF6DF400075CC1B /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
 		A7B20D162CF6DF400075CC1B /* sendDeliveredApiCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sendDeliveredApiCall.swift; sourceTree = "<group>"; };
+		A7F436602D4CB216003518B3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -143,10 +143,10 @@
 		13B07FAE1A68108700A75B9A /* mirrorfly_rn */ = {
 			isa = PBXGroup;
 			children = (
+				A7F436602D4CB216003518B3 /* GoogleService-Info.plist */,
 				A7B20C242CF5F71C0075CC1B /* RNCallKeep.h */,
 				A7B20C252CF5F71C0075CC1B /* RNCallKeep.m */,
 				A7B20BFB2CF5EB1B0075CC1B /* mirrorfly_rn.entitlements */,
-				A7B20BF92CF5E8EE0075CC1B /* GoogleService-Info.plist */,
 				A7B20BDC2CF5E2880075CC1B /* custom_ringtones */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
@@ -364,7 +364,7 @@
 				84C00C8A87A52F85EC234906 /* PrivacyInfo.xcprivacy in Resources */,
 				A7B20BDD2CF5E2880075CC1B /* fly_reconnecting_tone.mp3 in Resources */,
 				A7B20BDE2CF5E2880075CC1B /* incallmanager_ringback.mp3 in Resources */,
-				A7B20BFA2CF5E8EE0075CC1B /* GoogleService-Info.plist in Resources */,
+				A7F436612D4CB216003518B3 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -588,7 +588,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = G44VFA67ZG;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 26VP8T9LM7;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -605,10 +605,10 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mirrorfly.qa;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mirrorfly.reactnativeuikit.qa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Mirror Fly Qa Development Profile";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = ReactNativeDevelopmentQA;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/mirrorfly_rn.app/mirrorfly_rn";
 			};
 			name = Debug;
@@ -652,7 +652,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = G44VFA67ZG;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 26VP8T9LM7;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = mirrorfly_rn/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -665,10 +665,10 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mirrorfly.qa;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mirrorfly.reactnativeuikit.qa;
 				PRODUCT_NAME = mirrorfly_rn;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Mirror Fly Qa Development Profile";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = ReactNativeDevelopmentQA;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -682,11 +682,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = mirrorfly_rn/mirrorfly_rn.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = G44VFA67ZG;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 26VP8T9LM7;
 				INFOPLIST_FILE = mirrorfly_rn/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -698,10 +698,10 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mirrorfly.qa;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mirrorfly.reactnativeuikit.qa;
 				PRODUCT_NAME = mirrorfly_rn;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Mirror Fly Qa Inhouse Profile";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = ReactNativeDevelopmentQA;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -791,10 +791,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -878,10 +875,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -905,7 +899,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = G44VFA67ZG;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 26VP8T9LM7;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -922,10 +916,10 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mirrorfly.qa.notificationextention;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mirrorfly.reactnativeuikit.qa.notificationextention;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "MirrorFly Qa Notification Dev Profile";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = ReactNativeExtensionQA;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "NotificationExtension/NotificationExtension-Bridging-Header.h";
@@ -953,7 +947,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = G44VFA67ZG;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 26VP8T9LM7;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -969,10 +963,10 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mirrorfly.qa.notificationextention;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mirrorfly.reactnativeuikit.qa.notificationextention;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "MirrorFly Qa Notification In house Profile";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = ReactNativeExtensionQA;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "NotificationExtension/NotificationExtension-Bridging-Header.h";

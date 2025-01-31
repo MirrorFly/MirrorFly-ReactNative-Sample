@@ -5,6 +5,9 @@ PODS:
   - FBLazyVector (0.75.4)
   - Firebase/CoreOnly (11.5.0):
     - FirebaseCore (= 11.5.0)
+  - Firebase/Crashlytics (11.5.0):
+    - Firebase/CoreOnly
+    - FirebaseCrashlytics (~> 11.5.0)
   - Firebase/Messaging (11.5.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 11.5.0)
@@ -16,6 +19,15 @@ PODS:
     - FirebaseCore (= 11.5)
   - FirebaseCoreInternal (11.5.0):
     - "GoogleUtilities/NSData+zlib (~> 8.0)"
+  - FirebaseCrashlytics (11.5.0):
+    - FirebaseCore (= 11.5)
+    - FirebaseInstallations (~> 11.0)
+    - FirebaseRemoteConfigInterop (~> 11.0)
+    - FirebaseSessions (~> 11.0)
+    - GoogleDataTransport (~> 10.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - nanopb (~> 3.30910.0)
+    - PromisesObjC (~> 2.4)
   - FirebaseInstallations (11.5.0):
     - FirebaseCore (= 11.5)
     - GoogleUtilities/Environment (~> 8.0)
@@ -30,6 +42,16 @@ PODS:
     - GoogleUtilities/Reachability (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - nanopb (~> 3.30910.0)
+  - FirebaseRemoteConfigInterop (11.7.0)
+  - FirebaseSessions (11.5.0):
+    - FirebaseCore (= 11.5)
+    - FirebaseCoreExtension (= 11.5)
+    - FirebaseInstallations (~> 11.0)
+    - GoogleDataTransport (~> 10.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - GoogleUtilities/UserDefaults (~> 8.0)
+    - nanopb (~> 3.30910.0)
+    - PromisesSwift (~> 2.1)
   - fmt (9.1.0)
   - glog (0.3.5)
   - GoogleDataTransport (10.1.0):
@@ -62,13 +84,15 @@ PODS:
   - hermes-engine (0.75.4):
     - hermes-engine/Pre-built (= 0.75.4)
   - hermes-engine/Pre-built (0.75.4)
-  - JitsiWebRTC (124.0.1)
+  - JitsiWebRTC (124.0.2)
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
   - PromisesObjC (2.4.0)
+  - PromisesSwift (2.4.0):
+    - PromisesObjC (= 2.4.0)
   - RCT-Folly (2024.01.01.00):
     - boost
     - DoubleConversion
@@ -1735,14 +1759,19 @@ PODS:
   - RNCCheckbox (0.5.17):
     - BEMCheckBox (~> 1.4)
     - React-Core
-  - RNCClipboard (1.15.0):
+  - RNCClipboard (1.16.1):
     - React-Core
   - RNConvertPhAsset (1.0.3):
     - React
-  - RNFBApp (21.6.1):
+  - RNFBApp (21.6.2):
     - Firebase/CoreOnly (= 11.5.0)
     - React-Core
-  - RNFBMessaging (21.6.1):
+  - RNFBCrashlytics (21.6.2):
+    - Firebase/Crashlytics (= 11.5.0)
+    - FirebaseCoreExtension
+    - React-Core
+    - RNFBApp
+  - RNFBMessaging (21.6.2):
     - Firebase/Messaging (= 11.5.0)
     - FirebaseCoreExtension
     - React-Core
@@ -1786,7 +1815,7 @@ PODS:
     - RNNotifee/NotifeeCore (= 9.1.8)
   - RNNotifee/NotifeeCore (9.1.8):
     - React-Core
-  - RNPermissions (5.2.1):
+  - RNPermissions (5.2.4):
     - React-Core
   - RNScreens (4.3.0):
     - DoubleConversion
@@ -1916,6 +1945,7 @@ DEPENDENCIES:
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - RNConvertPhAsset (from `../node_modules/react-native-convert-ph-asset`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
+  - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNFileViewer (from `../node_modules/react-native-file-viewer`)
   - RNFS (from `../node_modules/react-native-fs`)
@@ -1936,13 +1966,17 @@ SPEC REPOS:
     - FirebaseCore
     - FirebaseCoreExtension
     - FirebaseCoreInternal
+    - FirebaseCrashlytics
     - FirebaseInstallations
     - FirebaseMessaging
+    - FirebaseRemoteConfigInterop
+    - FirebaseSessions
     - GoogleDataTransport
     - GoogleUtilities
     - JitsiWebRTC
     - nanopb
     - PromisesObjC
+    - PromisesSwift
     - SocketRocket
     - Toast
     - TOCropViewController
@@ -2127,6 +2161,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-convert-ph-asset"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
+  RNFBCrashlytics:
+    :path: "../node_modules/@react-native-firebase/crashlytics"
   RNFBMessaging:
     :path: "../node_modules/@react-native-firebase/messaging"
   RNFileViewer:
@@ -2161,16 +2197,20 @@ SPEC CHECKSUMS:
   FirebaseCore: 93abc05437f8064cd2bc0a53b768fb0bc5a1d006
   FirebaseCoreExtension: ddb2eb987f736b714d30f6386795b52c4670439e
   FirebaseCoreInternal: f47dd28ae7782e6a4738aad3106071a8fe0af604
+  FirebaseCrashlytics: 94c11c3bf296fde8c18f2c9f8e76bd9349227038
   FirebaseInstallations: d8063d302a426d114ac531cd82b1e335a0565745
   FirebaseMessaging: 9f4e42053241bd45ce8565c881bfdd9c1df2f7da
+  FirebaseRemoteConfigInterop: ca12abf9da0003efd3a476b2dff4f7a04fd31b4f
+  FirebaseSessions: b252b3f91a51186188882ea8e7e1730fc1eee391
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: 69ef571f3de08433d766d614c73a9838a06bf7eb
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   hermes-engine: ea92f60f37dba025e293cbe4b4a548fd26b610a0
-  JitsiWebRTC: d0ae5fd6a81e771bfd82c2ee6c6bb542ebd65ee8
+  JitsiWebRTC: b47805ab5668be38e7ee60e2258f49badfe8e1d0
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
+  PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   RCT-Folly: 4464f4d875961fce86008d45f4ecf6cef6de0740
   RCTDeprecation: 726d24248aeab6d7180dac71a936bbca6a994ed1
   RCTRequired: a94e7febda6db0345d207e854323c37e3a31d93b
@@ -2251,16 +2291,17 @@ SPEC CHECKSUMS:
   RealmJS: 389361669e771fe4d13a86be48928d560d214294
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNCCheckbox: a3ca9978cb0846b981d28da4e9914bd437403d77
-  RNCClipboard: 69ab8e51324d5b351f6ba72bbdb72478087a2c64
+  RNCClipboard: d7a8903d32692b0a1e71738c3825465a9acae10e
   RNConvertPhAsset: 9b366b8a1abc194b76572712c6f7dd89c9e4e37f
-  RNFBApp: a3c9c3b23aa2d77001ce62b5a997325927593c12
-  RNFBMessaging: dd213f66f36b249f9ab035efe24dc2a3ede8f8c5
+  RNFBApp: c0543476dee81ed5fc34d06db2f37b8e7e353cf3
+  RNFBCrashlytics: 2da611146e0e923d1cf70b24d63941e5ef7b7648
+  RNFBMessaging: aab4dcf6d121cfe338c9ac45631d90e125b3a5ef
   RNFileViewer: ce7ca3ac370e18554d35d6355cffd7c30437c592
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 5cf4d43fd8d31b236a6d8e392aa48432f01650aa
   RNImageCropPicker: a536bb88eade8336e1d18fdeafa77dc893fbc42e
   RNNotifee: 4a6ee5c7deaf00e005050052d73ee6315dff7ec9
-  RNPermissions: b36480ca76824ed67c1828354e6bd6e1948e96ce
+  RNPermissions: bf00b2cde5d365bbc992aecb89e72b9210b416a4
   RNScreens: 4cfc072a1e1c416e253dd0a9562a595a30bc9a98
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: 3d2bdcaef51c8071880a9c0072fe324f4423a3ba

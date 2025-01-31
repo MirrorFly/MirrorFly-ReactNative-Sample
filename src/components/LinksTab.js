@@ -6,14 +6,20 @@ import { FrontArrowIcon, LinkIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import ApplicationColors from '../config/appColors';
 import { findUrls, getUserIdFromJid, handleReplyPress } from '../helpers/chatHelpers';
+import { getStringSet } from '../localization/stringSet';
+import { useLinkMessages, useThemeColorPalatte } from '../redux/reduxHook';
 import { currentChatUser } from '../screens/ConversationScreen';
 import commonStyles from '../styles/commonStyles';
 
-function LinksTab({ linksMessage, loading }) {
+function LinksTab({ chatUserId, loading }) {
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
+   const linkMessages = useLinkMessages(chatUserId);
+
    const renderDocFooter = () => {
       return (
          <>
-            {linksMessage.length > 0 && <Text style={[commonStyles.textCenter, commonStyles.colorBlack]}>{}</Text>}
+            {linkMessages.length > 0 && <Text style={[commonStyles.textCenter, commonStyles.colorBlack]}>{}</Text>}
             {loading && (
                <View style={[commonStyles.mb_130, commonStyles.marginTop_5]}>
                   <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
@@ -79,7 +85,7 @@ function LinksTab({ linksMessage, loading }) {
                         <FrontArrowIcon color="#7889B3" />
                      </Pressable>
                   </View>
-                  <View style={[commonStyles.dividerLine, { marginVertical: 10 }]} />
+                  <View style={[commonStyles.dividerLine(themeColorPalatte.dividerBg), { marginVertical: 10 }]} />
                </React.Fragment>
             ),
       );
@@ -88,7 +94,7 @@ function LinksTab({ linksMessage, loading }) {
    return (
       <FlatList
          showsVerticalScrollIndicator={false}
-         data={linksMessage}
+         data={linkMessages}
          keyExtractor={item => item.msgId}
          bounces={false}
          renderItem={renderLinkTile}
@@ -96,6 +102,13 @@ function LinksTab({ linksMessage, loading }) {
          initialNumToRender={20}
          maxToRenderPerBatch={20}
          windowSize={15}
+         ListEmptyComponent={
+            <View style={[commonStyles.justifyContentCenter, commonStyles.alignItemsCenter]}>
+               <Text style={{ color: themeColorPalatte.primaryTextColor }}>
+                  {stringSet.VIEW_ALL_MEDIA_SCREEN.NO_LINKS_FOUND}
+               </Text>
+            </View>
+         }
       />
    );
 }

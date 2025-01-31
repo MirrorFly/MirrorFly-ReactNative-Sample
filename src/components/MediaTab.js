@@ -1,17 +1,22 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { ActivityIndicator, Dimensions, FlatList, Image, StyleSheet, View } from 'react-native';
+import { Dimensions, FlatList, Image, StyleSheet, View } from 'react-native';
 import { AudioWhileIcon, PlayIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import Text from '../common/Text';
-import { getCurrentChatUser, getThumbBase64URL } from '../helpers/chatHelpers';
+import { getThumbBase64URL } from '../helpers/chatHelpers';
+import { getStringSet } from '../localization/stringSet';
+import { useMediaMessages, useThemeColorPalatte } from '../redux/reduxHook';
 import { getMessageTypeCount } from '../screens/ViewAllMedia';
 import { MEDIA_POST_PRE_VIEW_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 
 const AudioWhileIconComponent = () => AudioWhileIcon();
 
-const MediaTab = ({ mediaMessages, loading, themeColorPalatte }) => {
+const MediaTab = ({ chatUserId }) => {
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
+   const mediaMessages = useMediaMessages(chatUserId, ['image', 'video', 'audio']);
    const navigation = useNavigation();
    let numColumns = 4;
    const { width } = Dimensions.get('window');
@@ -42,11 +47,6 @@ const MediaTab = ({ mediaMessages, loading, themeColorPalatte }) => {
                <Text style={[commonStyles.textCenter, { color: themeColorPalatte.primaryTextColor }]}>
                   {renderImageCountLabel()}, {renderVideoCountLabel()}, {renderAudioCountLabel()}
                </Text>
-            )}
-            {loading && (
-               <View style={[commonStyles.mb_130, commonStyles.marginTop_5]}>
-                  <ActivityIndicator size="large" color={themeColorPalatte.primaryColor} />
-               </View>
             )}
          </>
       );
@@ -119,7 +119,7 @@ const MediaTab = ({ mediaMessages, loading, themeColorPalatte }) => {
 
    const renderMediaTile = ({ item }) => {
       const handleMediaPress = () => {
-         navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid: getCurrentChatUser(), msgId: item.msgId });
+         navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid: chatUserId, msgId: item.msgId });
       };
       return <Pressable onPress={handleMediaPress}>{renderTileBasedOnMessageType(item)}</Pressable>;
    };
@@ -135,6 +135,14 @@ const MediaTab = ({ mediaMessages, loading, themeColorPalatte }) => {
          initialNumToRender={20}
          maxToRenderPerBatch={20}
          windowSize={15}
+         ListEmptyComponent={
+            <View
+               style={[commonStyles.justifyContentCenter, commonStyles.alignItemsCenter, commonStyles.height_100_per]}>
+               <Text style={{ color: themeColorPalatte.primaryTextColor }}>
+                  {stringSet.VIEW_ALL_MEDIA_SCREEN.NO_MEDIA_FOUND}
+               </Text>
+            </View>
+         }
       />
    );
 };

@@ -8,7 +8,7 @@ import Text from '../common/Text';
 import PostView from '../components/PostView';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
 import { getStringSet } from '../localization/stringSet';
-import { useChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
+import { useMediaMessages, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
 
@@ -19,18 +19,9 @@ const PostPreViewPage = () => {
    const navigation = useNavigation();
    const currentUserJID = getCurrentUserJid();
    const chatUserId = getUserIdFromJid(jid);
-   const messages = useChatMessages(chatUserId);
-
+   const messageList = useMediaMessages(chatUserId, ['image', 'video', 'audio']);
    const [title, setTitle] = React.useState('');
    const [currentIndex, setCurrentIndex] = React.useState(0);
-
-   const messageList = React.useMemo(() => {
-      const filteredMessages = messages.filter(message => {
-         const { msgBody: { message_type = '' } = {} } = message || {};
-         return ['image', 'video', 'audio'].includes(message_type);
-      });
-      return filteredMessages;
-   }, [messages, jid]);
 
    React.useEffect(() => {
       const isSender = currentUserJID === messageList[currentIndex]?.publisherJid;

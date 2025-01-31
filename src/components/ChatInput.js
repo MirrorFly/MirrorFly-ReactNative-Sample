@@ -590,6 +590,7 @@ const styles = StyleSheet.create({
       borderRadius: 40,
       borderColor: ApplicationColors.mainBorderColor,
       position: 'relative',
+      overflow: 'hidden',
    },
    RecordUIContainer: {
       flexDirection: 'row',

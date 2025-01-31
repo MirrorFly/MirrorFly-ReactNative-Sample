@@ -48,7 +48,6 @@ const CaptionContainer = ({ caption, msgStatus, timeStamp, isSender, editMessage
                   ]}>
                   {timeStamp}
                </Text>
-               <Text style={styles.timeStampText}>{timeStamp}</Text>
             </View>
          </View>
       )

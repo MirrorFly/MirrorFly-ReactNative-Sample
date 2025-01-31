@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { getUserIdFromJid, isValidUrl } from '../helpers/chatHelpers';
 import { selectArchivedChatData, selectFilteredRecentChatData } from './recentChatDataSlice';
 import store from './store';
 import { selectFilteredThemeData } from './themeColorDataSlice';
@@ -41,6 +41,71 @@ export const useSelectedChatMessages = userId => {
       },
       // Custom equality function to prevent unnecessary rerenders
       (prev, next) => prev.length === next.length && prev.every((msg, index) => msg === next[index]),
+   );
+};
+
+export const useMediaMessages = (userId, mediaTypeArr = []) => {
+   return useSelector(
+      state => {
+         const messages = state.chatMessagesData?.[userId] || [];
+
+         // Memoize the filtered array based on media conditions
+         return messages.filter(message => {
+            const { msgBody: { message_type = '', media } = {}, deleteStatus, recallStatus } = message || {};
+
+            const { is_downloaded = 0, is_uploading = 0 } = media || {};
+
+            // Apply the filtering conditions
+            return (
+               mediaTypeArr.includes(message_type) &&
+               deleteStatus === 0 &&
+               recallStatus === 0 &&
+               is_downloaded === 2 &&
+               is_uploading === 2
+            );
+         });
+      },
+      // Custom equality function to prevent unnecessary rerenders
+      (prev, next) => {
+         if (prev.length !== next.length) {
+            return false;
+         }
+         for (let i = 0; i < prev.length; i++) {
+            // Compare each message object deeply
+            if (JSON.stringify(prev[i]) !== JSON.stringify(next[i])) {
+               return false;
+            }
+         }
+         return true;
+      },
+   );
+};
+export const useLinkMessages = userId => {
+   return useSelector(
+      state => {
+         const messages = state.chatMessagesData?.[userId] || [];
+
+         // Memoize the filtered array based on message type and URL validity
+         return messages.filter(message => {
+            const { msgBody: { message_type = '', message: _message } = {} } = message || {};
+
+            // Check the condition: message is of type 'text' and textMessage is a valid URL
+            return ['text'].includes(message_type) && isValidUrl(_message);
+         });
+      },
+      // Custom equality function to prevent unnecessary rerenders
+      (prev, next) => {
+         if (prev.length !== next.length) {
+            return false;
+         }
+         for (let i = 0; i < prev.length; i++) {
+            // Compare each message object deeply
+            if (JSON.stringify(prev[i]) !== JSON.stringify(next[i])) {
+               return false;
+            }
+         }
+         return true;
+      },
    );
 };
 export const useChatMessage = (userId, msgId) =>

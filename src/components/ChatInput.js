@@ -71,7 +71,7 @@ export const stopAudioRecord = () => {
    }
 };
 
-export const onCancelRecord = () => {
+export const cancelAudioRecord = () => {
    if (getAudioRecording(userId)) {
       audioRecordRef.current.onCancelRecord?.();
    }
@@ -105,7 +105,7 @@ function ChatInput({ chatUser }) {
             updateTypingGoneStatus(chatUser);
             stopAudioRecord();
          };
-      }, [appState]),
+      }, []),
    );
 
    React.useEffect(() => {
@@ -113,6 +113,12 @@ function ChatInput({ chatUser }) {
          stopAudioRecord();
       };
    }, []);
+
+   React.useEffect(() => {
+      if (!appState) {
+         stopAudioRecord();
+      }
+   }, [appState]);
 
    React.useEffect(() => {
       audioRecordRef.current.onStopRecord = onStopRecord;
@@ -241,8 +247,8 @@ function ChatInput({ chatUser }) {
          if (res === 'granted') {
             fileName[userId] = `MFRN_${Date.now() + audioRecordClick}`;
             const path = Platform.select({
-               ios: `file://${RNFS.DocumentDirectoryPath}/${fileName[userId]}.aac`,
-               android: `${RNFS.CachesDirectoryPath}/${fileName[userId]}.mp3`,
+               ios: `file://${RNFS.DocumentDirectoryPath}/${fileName[userId]}.m4a`,
+               android: `${RNFS.CachesDirectoryPath}/${fileName[userId]}.m4a`,
             });
 
             const audioSet = {
@@ -253,8 +259,10 @@ function ChatInput({ chatUser }) {
                AVNumberOfChannelsKeyIOS: 2,
                AVFormatIDKeyIOS: AVEncodingOption.aac,
             };
-            await audioRecorderPlayer.startRecorder(path, audioSet);
-            dispatch(setAudioRecording({ userId, message: audioRecord.RECORDING }));
+            setTimeout(async () => {
+               await audioRecorderPlayer.startRecorder(path, audioSet);
+               dispatch(setAudioRecording({ userId, message: audioRecord.RECORDING }));
+            }, 100);
          }
       } catch (error) {
          console.error('Failed to start recording:', error);
@@ -276,7 +284,7 @@ function ChatInput({ chatUser }) {
             fileInfo[userId].name = fileName[userId];
             fileInfo[userId] = mediaObjContructor('AUDIO_RECORD', fileInfo[userId]);
             fileInfo[userId].audioType = 'recording';
-            fileInfo[userId].type = 'audio/mp3';
+            fileInfo[userId].type = 'audio/m4a';
             console.log('fileInfo[userId] ==>', JSON.stringify(fileInfo[userId], null, 2));
          }
       } catch (error) {

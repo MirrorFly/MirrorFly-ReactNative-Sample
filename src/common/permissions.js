@@ -233,14 +233,11 @@ export const audioRecordPermission = async () => {
    const mic_permission = await RealmKeyValueStore.getItem('mic_permission');
    const storage_permission = await RealmKeyValueStore.getItem('storage_permission');
    const micpermission = await requestMicroPhonePermission();
-   const imageReadPermission = await requestStoragePermission();
-   if (micpermission === 'granted' && imageReadPermission === 'granted') {
+   if (micpermission === 'granted') {
       return 'granted';
    } else if (mic_permission || storage_permission) {
       openSettings();
    } else if (micpermission === RESULTS.BLOCKED) {
       RealmKeyValueStore.setItem('mic_permission', 'true');
-   } else if (imageReadPermission === RESULTS.BLOCKED) {
-      RealmKeyValueStore.setItem('storage_permission', 'true');
    }
 };

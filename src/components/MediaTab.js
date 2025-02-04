@@ -56,12 +56,9 @@ const MediaTab = ({ chatUserId }) => {
       const {
          deleteStatus = 0,
          recallStatus = 0,
-         msgBody: {
-            media: { thumb_image = '', local_path = '', is_downloaded, is_uploading } = {},
-            message_type = '',
-         } = {},
+         msgBody: { media: { thumb_image = '', is_downloaded, is_uploading } = {}, message_type = '' } = {},
       } = item;
-      const thumbURL = local_path || getThumbBase64URL(thumb_image);
+      const thumbURL = getThumbBase64URL(thumb_image);
 
       if (
          (deleteStatus !== undefined && deleteStatus !== 0) ||

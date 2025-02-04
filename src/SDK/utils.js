@@ -118,7 +118,7 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
       userJid,
       data = [],
    } = await SDK.getChatMessages(fromUserJId, page, config.chatMessagesSizePerPage);
-
+   console.log('data ==> ', data.length);
    if (statusCode === 200) {
       let hasEqualDataFetched = data.length === config.chatMessagesSizePerPage;
       if (data.length && hasEqualDataFetched) {
@@ -130,9 +130,10 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
    return data;
 };
 
-const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUserJid) => {
+const sendMediaMessage = async (messageType, files, chatType, toUserJid) => {
    if (messageType === 'media') {
       const isMuted = await getMuteStatus(toUserJid);
+      console.log('files ==>', files.length);
       const uploadPromises = files.map(async (file, i) => {
          const msgId = SDK.randomString(8, 'BA');
          const {
@@ -190,12 +191,9 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          });
 
          if (i === 0) {
-            const {
-               msgId: _msgId,
-               userJid,
-               msgBody: { media = {}, media: { file: _file = {} } = {} } = {},
-            } = conversationChatObj;
-            uploadFileToSDK(_file, userJid, _msgId, media);
+            const { msgId: _msgId, msgBody: { media = {}, media: { file: _file = {} } = {} } = {} } =
+               conversationChatObj;
+            uploadFileToSDK(_file, toUserJid, _msgId, media);
          }
       });
 
@@ -206,7 +204,7 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
 const parseAndSendMessage = async (message, chatType, messageType, fromUserJid, toUserJid, replyTo) => {
    const { content } = message;
    content[0].fileDetails.replyTo = replyTo;
-   sendMediaMessage(messageType, content, chatType, fromUserJid, toUserJid);
+   sendMediaMessage(messageType, content, chatType, toUserJid);
 };
 
 export const getSenderMessageObj = (dataObj, idx) => {
@@ -272,7 +270,7 @@ export const getSenderMessageObj = (dataObj, idx) => {
             fileName: fileOptions.fileName,
             file_size: fileOptions.fileSize,
             is_downloaded: 2,
-            is_uploading: 2,
+            is_uploading: 1,
             file_url: '',
             duration: fileOptions.duration || 0,
             local_path: '',
@@ -435,6 +433,7 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
       };
 
       let response = {};
+      console.log('jid ==> ', jid);
       response = await SDK.sendMediaMessage(jid, msgId, msgType, file.fileDetails, fileOptions, replyTo, {
          broadCastIdMedia: SDK.randomString(8, 'BA'),
       });

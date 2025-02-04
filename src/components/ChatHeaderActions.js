@@ -182,14 +182,24 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
    };
    */
 
-   if (filtered[0]?.msgBody?.message_type === 'text' || filtered[0]?.msgBody?.media?.caption) {
+   if (
+      (filtered[0]?.msgBody?.message_type === 'text' || filtered[0]?.msgBody?.media?.caption) &&
+      filtered[0]?.deleteStatus === 0 &&
+      filtered[0]?.recallStatus === 0
+   ) {
       menuItems.push({
          label: 'Copy',
          formatter: copyToClipboard(filtered, userId),
       });
    }
 
-   if (filtered.length === 1 && isLocalUser(filtered[0]?.publisherJid) && filtered[0]?.msgStatus !== 3) {
+   if (
+      filtered.length === 1 &&
+      isLocalUser(filtered[0]?.publisherJid) &&
+      filtered[0]?.msgStatus !== 3 &&
+      filtered[0]?.deleteStatus === 0 &&
+      filtered[0]?.recallStatus === 0
+   ) {
       menuItems.push({
          label: 'Message Info',
          formatter: handleGoMessageInfoScreen,
@@ -224,6 +234,10 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
          label: blockedStaus ? 'Unblock' : 'Block',
          formatter: hadleBlockUser,
       });
+   }
+
+   if (menuItems.length === 0) {
+      return null;
    }
 
    return (

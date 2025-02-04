@@ -11,6 +11,7 @@ import { mediaStatusConstants } from '../helpers/constants';
 import commonStyles from '../styles/commonStyles';
 import RNSlider from './RNSlider';
 import style from './styles';
+import { useFocusEffect } from '@react-navigation/native';
 
 const PLAY_STATE_PAUSED = 'paused';
 const PLAY_STATE_PLAYING = 'playing';
@@ -29,6 +30,14 @@ const AudioPlayer = props => {
    let playStateRef = React.useRef(null);
    let sliderEditing = React.useRef(false);
    const appState = useAppState();
+
+   useFocusEffect(
+      React.useCallback(() => {
+         return () => {
+            pauseAudio();
+         };
+      }, []),
+   );
 
    React.useEffect(() => {
       let timeout = setInterval(() => {

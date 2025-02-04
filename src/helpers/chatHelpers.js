@@ -247,33 +247,25 @@ export const handelResetMessageSelection = userId => () => {
 
 export const getThumbBase64URL = thumb => `data:image/png;base64,${thumb}`;
 
-// Helper function to format numbers with a maximum of 2 decimals
-// If the number is a whole number, it removes the decimals
 const formatDecimal = value => {
-   return value % 1 === 0 ? value.toFixed(0) : value.toFixed(2);
+   return new Intl.NumberFormat('en-US', {
+      maximumFractionDigits: 2,
+      minimumFractionDigits: value % 1 === 0 ? 0 : 2,
+   }).format(value);
 };
 
 export const convertBytesToKB = bytes => {
-   if (bytes < 1024) {
-      // Less than 1 KB, return bytes
-      return `${bytes} bytes`;
-   } else if (bytes < 1024 * 1024) {
-      // Less than 1 MB, return in KB
-      const KB = bytes / 1024;
-      return formatDecimal(KB) + ' KB';
-   } else if (bytes < 1024 * 1024 * 1024) {
-      // Less than 1 GB, return in MB
-      const MB = bytes / (1024 * 1024);
-      return formatDecimal(MB) + ' MB';
-   } else if (bytes < 1024 * 1024 * 1024 * 1024) {
-      // Less than 1 TB, return in GB
-      const GB = bytes / (1024 * 1024 * 1024);
-      return formatDecimal(GB) + ' GB';
-   } else {
-      // 1 TB or more
-      const TB = bytes / (1024 * 1024 * 1024 * 1024);
-      return formatDecimal(TB) + ' TB';
+   if (!Number.isFinite(bytes) || bytes < 0) {
+      return 'Invalid size';
    }
+
+   const sizes = ['bytes', 'KB', 'MB', 'GB', 'TB'];
+   let i = 0;
+   while (bytes >= 1024 && i < sizes.length - 1) {
+      bytes /= 1024;
+      i++;
+   }
+   return `${formatDecimal(bytes)} ${sizes[i]}`;
 };
 
 export const millisToHoursMinutesAndSeconds = millis => {
@@ -473,7 +465,7 @@ export const mediaObjContructor = (_package, file) => {
          mediaObj.type = type;
          mediaObj.width = image.width;
          mediaObj.height = image.height;
-         mediaObj.duration = image.playableDuration * 1000;
+         mediaObj.duration = image.playableDuration;
          mediaObj.filename = image.filename;
          mediaObj.thumbImage = image.thumbImage || '';
          return mediaObj;

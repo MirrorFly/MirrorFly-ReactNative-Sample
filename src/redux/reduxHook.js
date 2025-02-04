@@ -160,3 +160,7 @@ export const getChatMessage = (userId, msgId) =>
    store.getState().chatMessagesData?.[userId]?.find(msg => msg.msgId === msgId);
 export const getXmppConnectionStatus = () => store.getState().loggedInUserData.xmppStatus;
 export const getBlockedStatus = userId => store.getState().rosterData.data[userId]?.isBlocked;
+export const getAnySelectedChatMessages = userId => {
+   const messages = store.getState().chatMessagesData?.[userId] || [];
+   return messages.some(item => item.isSelected === 1);
+};

@@ -28,7 +28,7 @@ import {
 } from '../helpers/chatHelpers';
 import { getStringSet } from '../localization/stringSet';
 import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
-import { getChatMessages, useParentMessage, useThemeColorPalatte } from '../redux/reduxHook';
+import { getAnySelectedChatMessages, useParentMessage, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
 
@@ -86,8 +86,7 @@ function ReplyMessage(props) {
    const durationString = millisToHoursMinutesAndSeconds(media.duration);
 
    const passReplyTo = () => {
-      const messsageList = getChatMessages(userId);
-      const isAnySelected = messsageList.some(item => item.isSelected === 1);
+      const isAnySelected = getAnySelectedChatMessages(userId);
       if (isAnySelected) {
          const selectData = {
             chatUserId: userId,
@@ -95,7 +94,6 @@ function ReplyMessage(props) {
          };
          dispatch(toggleMessageSelection(selectData));
       } else {
-         console.log('repliedMessage ==>', JSON.stringify(repliedMessage, null, 2));
          handleReplyPress(userId, replyTo, repliedMessage);
       }
    };

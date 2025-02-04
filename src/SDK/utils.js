@@ -270,7 +270,7 @@ export const getSenderMessageObj = (dataObj, idx) => {
             fileName: fileOptions.fileName,
             file_size: fileOptions.fileSize,
             is_downloaded: 2,
-            is_uploading: 1,
+            is_uploading: idx === 0 ? 1 : 0,
             file_url: '',
             duration: fileOptions.duration || 0,
             local_path: '',

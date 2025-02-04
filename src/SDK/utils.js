@@ -133,7 +133,6 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
 const sendMediaMessage = async (messageType, files, chatType, toUserJid) => {
    if (messageType === 'media') {
       const isMuted = await getMuteStatus(toUserJid);
-      console.log('files ==>', files.length);
       const uploadPromises = files.map(async (file, i) => {
          const msgId = SDK.randomString(8, 'BA');
          const {

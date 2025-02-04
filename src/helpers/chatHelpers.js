@@ -616,7 +616,7 @@ export const openDocumentPicker = async () => {
             return;
          }
          // Extract directory path
-         const uriParts = file.uri.split('/');
+         const uriParts = file.fileCopyUri.split('/');
          uriParts.pop(); // Remove last part (file name)
          const correctedUri = uriParts.join('/') + '/' + file.name;
          // Create a new object to avoid modifying the original reference (good practice)

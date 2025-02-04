@@ -264,14 +264,7 @@ export const millisToHoursMinutesAndSeconds = millis => {
    if (hours > 0) {
       hoursString = (hours < 10 ? '0' : '') + hours + ':';
    }
-   return (
-      hoursString +
-      (minutes < 10 ? '0' : '') +
-      minutes +
-      ':' +
-      (seconds < 10 ? '0' : '') +
-      seconds
-   );
+   return hoursString + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
 };
 
 export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {
@@ -590,7 +583,7 @@ export const openDocumentPicker = async () => {
             return;
          }
          // Extract directory path
-         const uriParts = file.uri.split('/');
+         const uriParts = file.fileCopyUri.split('/');
          uriParts.pop(); // Remove last part (file name)
          const correctedUri = uriParts.join('/') + '/' + file.name;
          // Create a new object to avoid modifying the original reference (good practice)

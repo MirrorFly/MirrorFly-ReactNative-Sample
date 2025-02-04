@@ -17,7 +17,7 @@ import {
 } from './screens/constants';
 import commonStyles from './styles/commonStyles';
 import { getAppInitStatus, getAppSchema } from './uikitMethods';
-
+import crashlytics from '@react-native-firebase/crashlytics';
 const linking = {
    prefixes: [getAppSchema()],
    config: {
@@ -40,6 +40,7 @@ const linking = {
 
 export function MirrorflyChatComponent() {
    React.useEffect(() => {
+      // crashlytics().crash();
       const handleDeepLink = ({ url }) => {
          if (url) {
             const route = url.replace(getAppSchema(), '');

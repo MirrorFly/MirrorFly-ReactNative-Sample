@@ -11,7 +11,8 @@ import { updateProgressNotification } from '../Service/PushNotify';
 import { mflog } from '../uikitMethods';
 
 const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
-   const userId = getUserIdFromJid(getCurrentChatUser());
+   const chatUser = getCurrentChatUser();
+   const userId = getUserIdFromJid(chatUser);
    const dispatch = useDispatch();
    const chatMessage = useChatMessage(userId, msgId);
    const networkState = useNetworkStatus();
@@ -89,6 +90,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
          mflog('Error in handleDownload:', error);
       }
    };
+
    const handleUpload = async () => {
       if (!networkState) {
          showToast('Please check your internet connection');
@@ -109,7 +111,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
       const { msgId: _msgId, msgBody: { media = {}, media: { file = {} } = {} } = {} } = chatMessage;
       dispatch(updateMediaStatus(retryObj));
 
-      uploadFileToSDK(file, getCurrentChatUser(), _msgId, media);
+      uploadFileToSDK(file, chatUser, _msgId, media);
    };
 
    const cancelProgress = async () => {

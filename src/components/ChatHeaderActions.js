@@ -13,19 +13,12 @@ import {
    handleConversationClear,
    handleMessageDelete,
    handleMessageDeleteForEveryOne,
-   handleUpdateBlockUser,
    isAnyMessageWithinLast30Seconds,
    isLocalUser,
 } from '../helpers/chatHelpers';
-import { MIX_BARE_JID } from '../helpers/constants';
-import { resetMessageSelections, toggleEditMessage } from '../redux/chatMessageDataSlice';
-import { setReplyMessage, setTextMessage } from '../redux/draftSlice';
-import {
-   getSelectedChatMessages,
-   getUserNameFromStore,
-   useBlockedStatus,
-   useSelectedChatMessages,
-} from '../redux/reduxHook';
+import { resetMessageSelections } from '../redux/chatMessageDataSlice';
+import { setReplyMessage } from '../redux/draftSlice';
+import { getSelectedChatMessages, useBlockedStatus, useSelectedChatMessages } from '../redux/reduxHook';
 import { FORWARD_MESSSAGE_SCREEN, MESSAGE_INFO_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 import { chatInputRef } from './ChatInput';
@@ -154,7 +147,7 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
       RootNavigation.navigate(MESSAGE_INFO_SCREEN, { chatUser, msgId: filtered[0].msgId });
       handelResetMessageSelection(userId)();
    };
-
+   /**
    const handleEditMessage = () => {
       handelResetMessageSelection(userId)();
       dispatch(toggleEditMessage(filtered[0].msgId));
@@ -165,7 +158,6 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
          chatInputRef?.current?.focus();
       }, 10);
    };
-
    const hadleBlockUser = () => {
       setModalContent({
          visible: true,
@@ -176,6 +168,8 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
          yesAction: handleUpdateBlockUser(userId, blockedStaus ? 0 : 1, chatUser),
       });
    };
+    */
+
    /**
    const toggleSearch = () => {
       dispatch(toggleIsChatSearching(!getIsChatSearching()));
@@ -209,10 +203,12 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
          now - filtered[0]?.timestamp <= config.editMessageTime &&
          (filtered[0]?.msgBody.message_type === 'text' || filtered[0]?.msgBody?.media?.caption)
       ) {
+         /**
          menuItems.push({
             label: 'Edit Message',
             formatter: handleEditMessage,
          });
+          */
       }
    }
 
@@ -229,12 +225,14 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
        */
    }
 
+   /**
    if (!filtered.length && !MIX_BARE_JID.test(chatUser)) {
       menuItems.push({
          label: blockedStaus ? 'Unblock' : 'Block',
          formatter: hadleBlockUser,
       });
    }
+   */
 
    if (menuItems.length === 0) {
       return null;

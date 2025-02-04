@@ -711,7 +711,9 @@ export const callBacks = {
             store.dispatch(updateChatMessageStatus(res));
             break;
          case 'acknowledge':
-            if (res.type === 'seen') store.dispatch(updateChatMessageSeenStatus(res));
+            if (res.type === 'seen') {
+               store.dispatch(updateChatMessageSeenStatus(res));
+            }
             if (res.type === 'acknowledge') {
                store.dispatch(updateRecentMessageStatus(res));
                store.dispatch(updateChatMessageStatus(res));

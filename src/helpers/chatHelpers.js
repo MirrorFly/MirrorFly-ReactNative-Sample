@@ -465,7 +465,7 @@ export const mediaObjContructor = (_package, file) => {
          mediaObj.type = type;
          mediaObj.width = image.width;
          mediaObj.height = image.height;
-         mediaObj.duration = image.playableDuration;
+         mediaObj.duration = image.playableDuration * 1000;
          mediaObj.filename = image.filename;
          mediaObj.thumbImage = image.thumbImage || '';
          return mediaObj;

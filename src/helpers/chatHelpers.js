@@ -574,6 +574,7 @@ export const validation = type => {
 export const handleDocumentPickSingle = async () => {
    try {
       const result = await DocumentPicker.pickSingle({
+         allowMultiSelection: false,
          type: documentAttachmentTypes,
          presentationStyle: 'fullScreen',
          copyTo: Platform.OS === 'android' ? 'documentDirectory' : 'cachesDirectory',
@@ -589,6 +590,7 @@ export const handleDocumentPickSingle = async () => {
 export const handleAudioPickerSingle = async () => {
    try {
       const res = await DocumentPicker.pickSingle({
+         allowMultiSelection: false,
          type: [DocumentPicker.types.audio],
          presentationStyle: 'fullScreen',
          copyTo: Platform.OS === 'android' ? 'documentDirectory' : 'cachesDirectory',
@@ -887,7 +889,7 @@ export const handleUploadNextImage = res => {
 
    // Find the next message in the state object
    const conversationData = getChatMessages(userId);
-   const nextMessageIndex = conversationData.findIndex(item => item.msgId === msgId) - 1;
+   const nextMessageIndex = conversationData?.findIndex(item => item.msgId === msgId) - 1;
 
    if (nextMessageIndex > -1) {
       const {

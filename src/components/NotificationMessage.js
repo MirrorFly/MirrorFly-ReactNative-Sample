@@ -28,14 +28,13 @@ function NotificationMessage(props) {
                { backgroundColor: themeColorPalatte.groupNotificationBgColour },
             ]}>
             <Text style={{ fontSize: 13, color: themeColorPalatte.groupNotificationTextColour }}>
-               {label ||
-                  groupNotifyStatus(
-                     publisherId,
-                     toUserID,
-                     messageNotificationTypes[message],
-                     publisherName,
-                     toUserName,
-                  )}
+               {groupNotifyStatus(
+                  publisherId,
+                  toUserID,
+                  messageNotificationTypes[message],
+                  publisherName,
+                  toUserName,
+               ) || label}
             </Text>
          </View>
       </View>

@@ -130,7 +130,7 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
    return data;
 };
 
-const sendMediaMessage = async (messageType, files, chatType, toUserJid) => {
+const sendMediaMessage = async (messageType, files, chatType, toUserJid, replyTo) => {
    if (messageType === 'media') {
       const isMuted = await getMuteStatus(toUserJid);
       const uploadPromises = files.map(async (file, i) => {
@@ -138,7 +138,7 @@ const sendMediaMessage = async (messageType, files, chatType, toUserJid) => {
          const {
             caption = '',
             fileDetails = {},
-            fileDetails: { fileSize, filename, duration, uri, type, replyTo = '', thumbImage: thumb_image } = {},
+            fileDetails: { fileSize, filename, duration, uri, type, thumbImage: thumb_image } = {},
          } = file;
          const isDocument = DOCUMENT_FORMATS.includes(type);
          const msgType = isDocument ? 'file' : type.split('/')[0];
@@ -188,11 +188,10 @@ const sendMediaMessage = async (messageType, files, chatType, toUserJid) => {
             isCanceled: false,
             foregroundStatus: false,
          });
-
          if (i === 0) {
             const { msgId: _msgId, msgBody: { media = {}, media: { file: _file = {} } = {} } = {} } =
                conversationChatObj;
-            uploadFileToSDK(_file, toUserJid, _msgId, media);
+            uploadFileToSDK(_file, toUserJid, _msgId, media, replyTo);
          }
       });
 
@@ -200,10 +199,9 @@ const sendMediaMessage = async (messageType, files, chatType, toUserJid) => {
    }
 };
 
-const parseAndSendMessage = async (message, chatType, messageType, fromUserJid, toUserJid, replyTo) => {
+const parseAndSendMessage = async (message, chatType, messageType, toUserJid, replyTo) => {
    const { content } = message;
-   content[0].fileDetails.replyTo = replyTo;
-   sendMediaMessage(messageType, content, chatType, toUserJid);
+   sendMediaMessage(messageType, content, chatType, toUserJid, replyTo);
 };
 
 export const getSenderMessageObj = (dataObj, idx) => {
@@ -311,6 +309,7 @@ export const handleSendMsg = async (obj = {}) => {
    const chatUser = getCurrentChatUser();
    const userId = getUserIdFromJid(chatUser);
    const replyTo = getReplyMessage(getUserIdFromJid(chatUser)).msgId || '';
+   console.log('replyTo ==>', JSON.stringify(replyTo, null, 2));
    const parentMessage = getChatMessage(userId, replyTo);
    if (replyTo) {
       store.dispatch(setParentMessage(parentMessage));
@@ -352,7 +351,6 @@ export const handleSendMsg = async (obj = {}) => {
             obj,
             MIX_BARE_JID.test(chatUser) ? CHAT_TYPE_GROUP : 'chat',
             messageType,
-            getCurrentUserJid(),
             chatUser,
             replyTo,
          );
@@ -410,9 +408,9 @@ export const sendSeenStatus = (publisherJid, msgId, groupJid) => {
    SDK.sendSeenStatus(publisherJid, msgId, groupJid);
 };
 
-export const uploadFileToSDK = async (file, jid, msgId, media) => {
+export const uploadFileToSDK = async (file, jid, msgId, media, replyTo) => {
    try {
-      const { caption = '', fileDetails: { replyTo = '', duration = 0, audioType = '', type = '' } = {} } = file;
+      const { caption = '', fileDetails: { duration = 0, audioType = '', type = '' } = {} } = file;
       const isDocument = DOCUMENT_FORMATS.includes(type);
       const msgType = isDocument ? 'file' : type?.split('/')[0] || media.fileType.split('/')[0];
       let fileOptions = {

@@ -3,26 +3,26 @@ PODS:
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.75.4)
-  - Firebase/CoreOnly (11.5.0):
-    - FirebaseCore (= 11.5.0)
-  - Firebase/Messaging (11.5.0):
+  - Firebase/CoreOnly (11.7.0):
+    - FirebaseCore (~> 11.7.0)
+  - Firebase/Messaging (11.7.0):
     - Firebase/CoreOnly
-    - FirebaseMessaging (~> 11.5.0)
-  - FirebaseCore (11.5.0):
-    - FirebaseCoreInternal (= 11.5)
+    - FirebaseMessaging (~> 11.7.0)
+  - FirebaseCore (11.7.0):
+    - FirebaseCoreInternal (~> 11.7.0)
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/Logger (~> 8.0)
-  - FirebaseCoreExtension (11.5.0):
-    - FirebaseCore (= 11.5)
-  - FirebaseCoreInternal (11.5.0):
+  - FirebaseCoreExtension (11.7.0):
+    - FirebaseCore (~> 11.7.0)
+  - FirebaseCoreInternal (11.7.0):
     - "GoogleUtilities/NSData+zlib (~> 8.0)"
-  - FirebaseInstallations (11.5.0):
-    - FirebaseCore (= 11.5)
+  - FirebaseInstallations (11.7.0):
+    - FirebaseCore (~> 11.7.0)
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
-  - FirebaseMessaging (11.5.0):
-    - FirebaseCore (= 11.5)
+  - FirebaseMessaging (11.7.0):
+    - FirebaseCore (~> 11.7.0)
     - FirebaseInstallations (~> 11.0)
     - GoogleDataTransport (~> 10.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
@@ -1331,7 +1331,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-compressor (1.9.0):
+  - react-native-compressor (1.10.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1416,12 +1416,12 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context (4.14.0):
+  - react-native-safe-area-context (4.14.1):
     - React-Core
-  - react-native-simple-toast (3.3.1):
+  - react-native-simple-toast (3.3.2):
     - React-Core
     - Toast (~> 4)
-  - react-native-video (6.8.2):
+  - react-native-video (6.10.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1434,7 +1434,7 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - react-native-video/Video (= 6.8.2)
+    - react-native-video/Video (= 6.10.0)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1443,7 +1443,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-video/Video (6.8.2):
+  - react-native-video/Video (6.10.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1742,11 +1742,11 @@ PODS:
     - React-Core
   - RNConvertPhAsset (1.0.3):
     - React
-  - RNFBApp (21.6.2):
-    - Firebase/CoreOnly (= 11.5.0)
+  - RNFBApp (21.7.1):
+    - Firebase/CoreOnly (= 11.7.0)
     - React-Core
-  - RNFBMessaging (21.6.2):
-    - Firebase/Messaging (= 11.5.0)
+  - RNFBMessaging (21.7.1):
+    - Firebase/Messaging (= 11.7.0)
     - FirebaseCoreExtension
     - React-Core
     - RNFBApp
@@ -1754,7 +1754,7 @@ PODS:
     - React-Core
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.21.2):
+  - RNGestureHandler (2.22.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1775,12 +1775,12 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNImageCropPicker (0.41.5):
+  - RNImageCropPicker (0.41.6):
     - React-Core
     - React-RCTImage
-    - RNImageCropPicker/QBImagePickerController (= 0.41.5)
+    - RNImageCropPicker/QBImagePickerController (= 0.41.6)
     - TOCropViewController (~> 2.7.4)
-  - RNImageCropPicker/QBImagePickerController (0.41.5):
+  - RNImageCropPicker/QBImagePickerController (0.41.6):
     - React-Core
     - React-RCTImage
     - TOCropViewController (~> 2.7.4)
@@ -1791,7 +1791,7 @@ PODS:
     - React-Core
   - RNPermissions (5.2.4):
     - React-Core
-  - RNScreens (4.3.0):
+  - RNScreens (4.5.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1818,7 +1818,7 @@ PODS:
     - RNSound/Core (= 0.11.2)
   - RNSound/Core (0.11.2):
     - React-Core
-  - RNSVG (15.9.0):
+  - RNSVG (15.11.1):
     - React-Core
   - RNVoipPushNotification (3.3.2):
     - React-Core
@@ -2165,12 +2165,12 @@ SPEC CHECKSUMS:
   boost: 4cb898d0bf20404aab1850c656dcea009429d6c1
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: 430e10366de01d1e3d57374500b1b150fe482e6d
-  Firebase: 7a56fe4f56b5ab81b86a6822f5b8f909ae6fc7e2
-  FirebaseCore: 93abc05437f8064cd2bc0a53b768fb0bc5a1d006
-  FirebaseCoreExtension: ddb2eb987f736b714d30f6386795b52c4670439e
-  FirebaseCoreInternal: f47dd28ae7782e6a4738aad3106071a8fe0af604
-  FirebaseInstallations: d8063d302a426d114ac531cd82b1e335a0565745
-  FirebaseMessaging: 9f4e42053241bd45ce8565c881bfdd9c1df2f7da
+  Firebase: a64bf6a8546e6eab54f1c715cd6151f39d2329f4
+  FirebaseCore: 3227e35f4197a924206fbcdc0349325baf4f5de4
+  FirebaseCoreExtension: 206c1b399f0d103055207c16f299b28e3dbd1949
+  FirebaseCoreInternal: d6c17dafc8dc33614733a8b52df78fcb4394c881
+  FirebaseInstallations: 9347e719c3d52d8d7b9074b2c32407dd027305e9
+  FirebaseMessaging: 00ece041b71ddb52a2862ffdee73fb6e9824bd0c
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: 69ef571f3de08433d766d614c73a9838a06bf7eb
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
@@ -2212,7 +2212,7 @@ SPEC CHECKSUMS:
   react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: 63a9215d849722dea63206aa35dc9a58e6ac6d29
-  react-native-compressor: cd814c512cfbadc66cd927743645c927f5531986
+  react-native-compressor: 1e8802ff0a2286d878fc848435deef445fecc0d8
   react-native-contacts: cdeb7709dcc626e5fd7ee3d3e3685357e877cbd5
   react-native-create-thumbnail: ab55d24aea01723cf386f18b0b542aabb1982f27
   react-native-document-picker: 1928548d8b19bbc9f2219b01f1d350aa8ff76508
@@ -2226,9 +2226,9 @@ SPEC CHECKSUMS:
   react-native-maps: ee1e65647460c3d41e778071be5eda10e3da6225
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-pager-view: 16ba891ddbceb61ee19e6de8ab884793452e7089
-  react-native-safe-area-context: 4532f1a0c5d34a46b9324ccaaedcb5582a302b7d
-  react-native-simple-toast: 1f1cc551d419bc0ab05dcb0136554006c274789d
-  react-native-video: e9b194a01e11da615ae00639933a53efdadc5352
+  react-native-safe-area-context: 141eca0fd4e4191288dfc8b96a7c7e1c2983447a
+  react-native-simple-toast: 645b68c26e43786fc05e3d7401de2b057f139054
+  react-native-video: 5ea06ea0e26fbe924734af76de16db586914e309
   react-native-webrtc: 48295e7228279470c4f5acb38570e170723bd3b2
   React-nativeconfig: 31072ab0146e643594f6959c7f970a04b6c9ddd0
   React-NativeModulesApple: f49bb0befd8650ac3ff8fc2684072b16c09bf478
@@ -2263,17 +2263,17 @@ SPEC CHECKSUMS:
   RNCCheckbox: a3ca9978cb0846b981d28da4e9914bd437403d77
   RNCClipboard: d7a8903d32692b0a1e71738c3825465a9acae10e
   RNConvertPhAsset: 9b366b8a1abc194b76572712c6f7dd89c9e4e37f
-  RNFBApp: c0543476dee81ed5fc34d06db2f37b8e7e353cf3
-  RNFBMessaging: aab4dcf6d121cfe338c9ac45631d90e125b3a5ef
+  RNFBApp: e0a2811ca35292b19d390e327612ada2bd115d0a
+  RNFBMessaging: 3b4b92c33a2ad87105c5b6e2e7a3bb5d33a34320
   RNFileViewer: ce7ca3ac370e18554d35d6355cffd7c30437c592
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
-  RNGestureHandler: 5cf4d43fd8d31b236a6d8e392aa48432f01650aa
-  RNImageCropPicker: a536bb88eade8336e1d18fdeafa77dc893fbc42e
+  RNGestureHandler: 5c734ddd9b406a5cd792add1fc01f0894ed8ec28
+  RNImageCropPicker: 8e39c01f205e00d739c31e682f068aac315587bf
   RNNotifee: 4a6ee5c7deaf00e005050052d73ee6315dff7ec9
   RNPermissions: bf00b2cde5d365bbc992aecb89e72b9210b416a4
-  RNScreens: 4cfc072a1e1c416e253dd0a9562a595a30bc9a98
+  RNScreens: 67c6c2d9f4c917508c0414167fba805976e634f4
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
-  RNSVG: 3d2bdcaef51c8071880a9c0072fe324f4423a3ba
+  RNSVG: 669ed128ab9005090c612a0d627dbecb6ab5c76f
   RNVoipPushNotification: 543e18f83089134a35e7f1d2eba4c8b1f7776b08
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Toast: 1f5ea13423a1e6674c4abdac5be53587ae481c4e
@@ -2282,4 +2282,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 6b001eed45a07a9bdf527a76b621c6e4734e9607
 
-COCOAPODS: 1.16.0
+COCOAPODS: 1.16.2

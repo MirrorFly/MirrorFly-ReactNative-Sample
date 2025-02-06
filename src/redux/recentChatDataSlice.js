@@ -108,7 +108,7 @@ const recentChatDataSlice = createSlice({
       updateMsgByLastMsgId(state, action) {
          const { userJid } = action.payload;
          const index = state.recentChats.findIndex(item => item.userJid === userJid);
-         state.recentChats[index] = action.payload;
+         state.recentChats[index] = { ...state.recentChats[index], ...action.payload };
       },
       deleteMessagesForEveryoneInRecentChat(state, action) {
          const userJid = action.payload;

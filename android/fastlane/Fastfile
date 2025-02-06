@@ -54,7 +54,7 @@ platform :android do
       firebase_app_distribution(
         app: "1:235373697524:android:8b3becf8d8ff9be3a0c1a1",
         groups: "reactnative",
-        release_notes: "React-Native ios build for bug-fix MRN-829,MRN-828,MRN-827 ,MRN-826,,MRN-824,MRN-819,MRN-814,MRN-815,MRN-813",
+        release_notes: "React-Native ios build for bug-fix MRN-843,MRN-839,MRN-837,MRN-836,MRN-834,MRN-831,MRN-822,MRN-820,MRN-816,MRN-814",
         apk_path: "../android/app/build/outputs/apk/release/app-release.apk",
         firebase_cli_token: "1//0gfTJ_oWJ0mHNCgYIARAAGBASNwF-L9IrYZM4cUIV5EB8gVnSvtMC6Q7aAtgrgG8R1ybhSY1Np_5r5UuZu28N144_weOQDyONcW4",
       )

@@ -457,9 +457,9 @@ export const mediaObjContructor = (_package, file) => {
    };
 
    switch (_package) {
-      case 'CAMERA_ROLL':
+      case 'CAMERA_ROLL': {
          const { image, type } = file;
-         mediaObj.extension = getExtention(image.filename);
+         mediaObj.extension = getExtention(image.filename) || image.extension;
          mediaObj.uri = image.uri;
          mediaObj.fileSize = image.fileSize;
          mediaObj.type = type;
@@ -469,6 +469,7 @@ export const mediaObjContructor = (_package, file) => {
          mediaObj.filename = image.filename;
          mediaObj.thumbImage = image.thumbImage || '';
          return mediaObj;
+      }
       case 'DOCUMENT_PICKER':
          mediaObj.extension = getExtention(file.name);
          mediaObj.uri = `${file.fileCopyUri}`;

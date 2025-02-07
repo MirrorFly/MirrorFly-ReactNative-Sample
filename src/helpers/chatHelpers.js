@@ -556,13 +556,15 @@ export const handleDocumentPickSingle = async () => {
 
 export const handleAudioPickerSingle = async () => {
    try {
-      const res = await DocumentPicker.pickSingle({
+      let res = await DocumentPicker.pickSingle({
          type: [DocumentPicker.types.audio],
          presentationStyle: 'fullScreen',
          copyTo: Platform.OS === 'android' ? 'documentDirectory' : 'cachesDirectory',
       });
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
       if (res) {
+         res.extension = getExtention(res.uri || res.name);
+         res.fileCopyUri = getValidUri(res);
          return res;
       }
    } catch (error) {
@@ -687,6 +689,16 @@ export const openLocation = async () => {
    } catch (error) {
       console.error('Failed to request location permission:', error);
    }
+};
+
+const getValidUri = response => {
+   let validUri = response.fileCopyUri;
+   try {
+      validUri = decodeURIComponent(validUri);
+   } catch (error) {
+      console.warn('Error decoding URI:', error);
+   }
+   return validUri || response.fileCopyUri;
 };
 
 export const handleAudioSelect = async () => {

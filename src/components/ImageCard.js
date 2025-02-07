@@ -9,6 +9,7 @@ import { getImageSource, getMessageStatus, getThumbBase64URL } from '../helpers/
 import useMediaProgress from '../hooks/useMediaProgress';
 import commonStyles from '../styles/commonStyles';
 import CaptionContainer from './CaptionContainer';
+import ReplyMessage from './ReplyMessage';
 
 function ImageCard({ chatUser, item, isSender }) {
    const {

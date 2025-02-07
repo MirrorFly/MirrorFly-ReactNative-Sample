@@ -54,7 +54,10 @@ function ChatInput({ chatUser }) {
 
    const handleAttachmentIconPressed = item => () => {
       closeModal();
-      item.formatter?.();
+      //Prevent pickers not opening when attachment is selected
+      setTimeout(() => {
+         item.formatter?.();
+      }, 200);
    };
 
    const onChangeMessage = text => {

@@ -1,13 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Dimensions, FlatList, Image, StyleSheet, View } from 'react-native';
-import SDK from '../SDK/SDK';
+import React, { useCallback, useMemo } from 'react';
+import { ActivityIndicator, Dimensions, FlatList, Image, StyleSheet, View } from 'react-native';
 import { AudioWhileIcon, PlayIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import Text from '../common/Text';
 import { getThumbBase64URL } from '../helpers/chatHelpers';
+import { useMergedMediaMessages } from '../hooks/useMediaMessaegs';
 import { getStringSet } from '../localization/stringSet';
-import { useMediaMessages, useThemeColorPalatte } from '../redux/reduxHook';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import { getMessageTypeCount } from '../screens/ViewAllMedia';
 import { MEDIA_POST_PRE_VIEW_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
@@ -15,53 +15,11 @@ import commonStyles from '../styles/commonStyles';
 const MediaTab = ({ chatUserId, jid }) => {
    const stringSet = getStringSet();
    const themeColorPalatte = useThemeColorPalatte();
-   const stateMediaMessages = useMediaMessages(chatUserId, ['image', 'video', 'audio']);
-   const [fetchedMediaMessages, setFetchedMediaMessages] = useState([]);
+   const { mergedMediaMessages, isLoading } = useMergedMediaMessages(jid, ['image', 'video', 'audio']);
    const navigation = useNavigation();
    const { width } = Dimensions.get('window');
    const numColumns = 4;
    const tileSize = width / numColumns;
-   console.log('tileSize ==> ', tileSize);
-   useEffect(() => {
-      getMediaMessages();
-   }, []);
-
-   const getMediaMessages = async () => {
-      const fetchedData = await SDK.getMediaMessages(jid);
-      setFetchedMediaMessages(fetchedData?.data || []);
-   };
-
-   // Memoized merged media messages
-   const mergedMediaMessages = useMemo(() => {
-      const fetchedMessagesMap = {};
-
-      fetchedMediaMessages.forEach(msg => {
-         fetchedMessagesMap[msg.msgId] = msg;
-      });
-
-      stateMediaMessages.forEach(stateMsg => {
-         if (fetchedMessagesMap[stateMsg.msgId]) {
-            // Merge state data into fetched data (state takes priority)
-            fetchedMessagesMap[stateMsg.msgId] = {
-               ...fetchedMessagesMap[stateMsg.msgId],
-               ...stateMsg,
-               msgBody: {
-                  ...fetchedMessagesMap[stateMsg.msgId].msgBody,
-                  ...stateMsg.msgBody,
-                  media: {
-                     ...fetchedMessagesMap[stateMsg.msgId].msgBody.media,
-                     ...stateMsg.msgBody.media,
-                  },
-               },
-            };
-         } else {
-            // Add new state messages that are not in fetched data
-            fetchedMessagesMap[stateMsg.msgId] = stateMsg;
-         }
-      });
-
-      return Object.values(fetchedMessagesMap);
-   }, [stateMediaMessages, fetchedMediaMessages]);
 
    const renderImageCountLabel = useMemo(() => {
       const count = getMessageTypeCount(mergedMediaMessages, 'image');
@@ -80,9 +38,12 @@ const MediaTab = ({ chatUserId, jid }) => {
 
    const renderMediaFooter = () =>
       mergedMediaMessages.length > 0 && (
-         <Text style={[commonStyles.textCenter, { color: themeColorPalatte.primaryTextColor }]}>
-            {renderImageCountLabel}, {renderVideoCountLabel}, {renderAudioCountLabel}
-         </Text>
+         <>
+            <Text style={[commonStyles.textCenter, { color: themeColorPalatte.primaryTextColor }]}>
+               {renderImageCountLabel}, {renderVideoCountLabel}, {renderAudioCountLabel}
+            </Text>
+            {isLoading && <ActivityIndicator size={'large'} color={themeColorPalatte.primaryColor} />}
+         </>
       );
 
    const renderTileBasedOnMessageType = useCallback(
@@ -162,7 +123,7 @@ const MediaTab = ({ chatUserId, jid }) => {
          numColumns={numColumns}
          horizontal={false}
          keyExtractor={item => item.msgId}
-         data={mergedMediaMessages.reverse()}
+         data={mergedMediaMessages}
          bounces={false}
          ListFooterComponent={renderMediaFooter}
          renderItem={renderMediaTile}

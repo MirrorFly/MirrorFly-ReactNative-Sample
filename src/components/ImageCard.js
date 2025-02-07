@@ -57,6 +57,15 @@ function ImageCard({ chatUser, item, isSender }) {
          ]}>
          {Boolean(replyTo) && <ReplyMessage message={item} isSender={isSender} />}
          <View style={styles.imageContainer}>
+            {/* <View style={{ backgroundColor: themeColorPalatte.screenBgColor }}>
+               <Image
+                  thumbImage={getThumbBase64URL(thumb_image) || getImageSource(noPreview)}
+                  uri={imageUrl}
+                  resizeMode="cover"
+                  alt={fileName}
+                  style={styles.image(androidWidth, androidHeight)}
+               />
+            </View> */}
             {imageUrl ? (
                <Image
                   resizeMode="cover"

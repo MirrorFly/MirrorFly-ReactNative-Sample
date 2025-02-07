@@ -1,19 +1,22 @@
 import React from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import { CSVIcon, DocIcon, PPTIcon, PdfIcon, TXTIcon, XLSIcon, ZipIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import Text from '../common/Text';
 import { docTimeFormat } from '../common/timeStamp';
 import { convertBytesToKB, getExtension, handleFileOpen } from '../helpers/chatHelpers';
+import { useMergedMediaMessages } from '../hooks/useMediaMessaegs';
 import { getStringSet } from '../localization/stringSet';
-import { useMediaMessages, useThemeColorPalatte } from '../redux/reduxHook';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import { getMessageTypeCount } from '../screens/ViewAllMedia';
 import commonStyles from '../styles/commonStyles';
 
-function DocumentTab({ chatUserId }) {
+function DocumentTab({ jid }) {
    const stringSet = getStringSet();
    const themeColorPalatte = useThemeColorPalatte();
-   const docsMessages = useMediaMessages(chatUserId, ['file']);
+   const { mergedMediaMessages: docsMessages, isLoading } = useMergedMediaMessages(jid, ['file']);
+
+   // const docsMessages = useMediaMessages(chatUserId, ['file']);
    const renderDocCountLabel = () => {
       return getMessageTypeCount(docsMessages, 'file') > 1
          ? getMessageTypeCount(docsMessages, 'file') + ' Documents'
@@ -50,9 +53,12 @@ function DocumentTab({ chatUserId }) {
       return (
          <>
             {docsMessages.length > 0 && (
-               <Text style={[commonStyles.textCenter, { color: themeColorPalatte.primaryTextColor }]}>
-                  {renderDocCountLabel()}
-               </Text>
+               <>
+                  <Text style={[commonStyles.textCenter, { color: themeColorPalatte.primaryTextColor }]}>
+                     {renderDocCountLabel()}
+                  </Text>
+                  {isLoading && <ActivityIndicator size={'large'} color={themeColorPalatte.primaryColor} />}
+               </>
             )}
          </>
       );

@@ -152,10 +152,10 @@ const ViewAllMedia = () => {
                <MediaTab chatUserId={chatUserId} jid={jid} />
             </View>
             <View key="2" style={[commonStyles.marginTop_5]}>
-               <DocumentTab chatUserId={chatUserId} />
+               <DocumentTab jid={jid} />
             </View>
             <View key="3" style={[commonStyles.marginTop_5]}>
-               <LinksTab chatUserId={chatUserId} />
+               <LinksTab chatUserId={chatUserId} jid={jid} />
             </View>
          </PagerView>
       ),

@@ -600,3 +600,11 @@ export const updateTypingGoneStatus = jid => {
       typingStatusSent = false;
    }
 };
+
+export const getMediaMessages = () => {
+   try {
+   } catch (error) {
+      mflog('Failed to get media messages from SDK', error);
+      return {};
+   }
+};

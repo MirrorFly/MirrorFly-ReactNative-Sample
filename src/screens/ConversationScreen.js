@@ -19,7 +19,7 @@ import {
 } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
 import { resetUnreadCountForChat } from '../redux/recentChatDataSlice';
-import { useReplyMessage, useSelectedChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
+import { useAnySelectedChatMessages, useReplyMessage, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { RECENTCHATSCREEN } from './constants';
 
@@ -33,7 +33,7 @@ function ConversationScreen({ chatUser = '' }) {
    const dispatch = useDispatch();
    const userId = getUserIdFromJid(jid);
    const navigation = useNavigation();
-   const isAnySelected = useSelectedChatMessages(userId) || [];
+   const isAnySelected = useAnySelectedChatMessages(userId);
    const replyMessage = useReplyMessage(userId) || {};
 
    React.useEffect(() => {

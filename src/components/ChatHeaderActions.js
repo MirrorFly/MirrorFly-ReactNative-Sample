@@ -45,7 +45,7 @@ export function RenderReplyIcon({ userId }) {
       }, 10);
    };
 
-   if (blockedStaus) {
+   if (blockedStaus || filtered?.length > 1) {
       return null;
    }
 

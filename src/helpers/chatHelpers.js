@@ -1176,7 +1176,7 @@ export const copyToClipboard = (selectedMsgs, userId) => () => {
 };
 
 export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
-   const timestamp = Date.now() * 1000;
+   const timestamp = Date.now();
    const createdAt = changeTimeFormat(timestamp);
    const senderId = getUserIdFromJid(getCurrentUserJid());
 
@@ -1211,7 +1211,7 @@ export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
 };
 
 export const getRecentChatMsgObjForward = (originalMsg, toJid, newMsgId) => {
-   const timestamp = Date.now() * 1000;
+   const timestamp = Date.now();
    const createdAt = changeTimeFormat(timestamp);
    const senderId = getUserIdFromJid(getCurrentUserJid());
    const archiveSetting = getArchive();

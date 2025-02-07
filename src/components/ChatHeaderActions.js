@@ -106,7 +106,9 @@ export const RenderForwardIcon = ({ userId }) => {
          _message?.msgStatus !== 3 &&
          _message?.deleteStatus === 0 &&
          _message?.recallStatus === 0 &&
-         (_message?.msgBody?.media?.is_uploading !== 1 || _message.msgBody?.media?.is_downloaded !== 1),
+         (_message?.msgBody?.media
+            ? _message?.msgBody?.media?.is_uploading === 2 && _message?.msgBody?.media?.is_downloaded === 2
+            : true), // If no media, skip these checks
    );
 
    return isAllowForward ? (

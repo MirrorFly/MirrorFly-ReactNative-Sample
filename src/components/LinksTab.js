@@ -103,7 +103,7 @@ function LinksTab({ chatUserId, loading }) {
          maxToRenderPerBatch={20}
          windowSize={15}
          ListEmptyComponent={
-            <View style={[commonStyles.justifyContentCenter, commonStyles.alignItemsCenter]}>
+            <View style={[commonStyles.justifyContentCenter, commonStyles.alignItemsCenter, commonStyles.mt_12]}>
                <Text style={{ color: themeColorPalatte.primaryTextColor }}>
                   {stringSet.VIEW_ALL_MEDIA_SCREEN.NO_LINKS_FOUND}
                </Text>

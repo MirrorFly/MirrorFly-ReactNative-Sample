@@ -123,7 +123,12 @@ function DocumentTab({ chatUserId }) {
          windowSize={15}
          ListEmptyComponent={
             <View
-               style={[commonStyles.justifyContentCenter, commonStyles.alignItemsCenter, commonStyles.height_100_per]}>
+               style={[
+                  commonStyles.justifyContentCenter,
+                  commonStyles.alignItemsCenter,
+                  commonStyles.height_100_per,
+                  commonStyles.mt_12,
+               ]}>
                <Text style={{ color: themeColorPalatte.primaryTextColor }}>
                   {stringSet.VIEW_ALL_MEDIA_SCREEN.NO_DOCS_FOUND}
                </Text>

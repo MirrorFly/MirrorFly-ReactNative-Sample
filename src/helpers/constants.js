@@ -148,6 +148,9 @@ export const ALLOWED_ALL_FILE_FORMATS = [
    'rar',
    'pptx',
    'acc',
+   'heic',
+   'heif',
+   'mov',
 ];
 export const CHAT_IMAGES = 'chatimages';
 export const CHAT_AUDIOS = 'chataudios';

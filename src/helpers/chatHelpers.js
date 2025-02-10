@@ -595,10 +595,12 @@ export const openDocumentPicker = async () => {
             fileCopyUri: correctedUri,
             uri: correctedUri,
          };
+         const extension = getExtention(file.name);
+         const fileExtentions = ['pdf', 'xls', 'xlsx', 'doc', 'docx', 'txt', 'ppt', 'zip', 'rar', 'pptx', 'csv'];
          // updating the SDK flag back to false to behave as usual
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
          // Validating the file type and size
-         if (!isValidFileType(file.type)) {
+         if (!fileExtentions.includes(extension)) {
             Alert.alert(
                'Mirrorfly',
                'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',

@@ -527,13 +527,10 @@ export const getAudioDuration = async path => {
    });
 };
 
-export const validation = type => {
-   let mediaType = getType(type);
-   if (!AUDIO_FORMATS.includes(type)) {
+export const validation = extension => {
+   if (!ALLOWED_AUDIO_FORMATS.includes(extension)) {
       let message = 'You can upload only ';
-      if (mediaType === 'audio') {
-         message = message + `${ALLOWED_AUDIO_FORMATS.join(', ')} files`;
-      }
+      message = message + `${ALLOWED_AUDIO_FORMATS.join(', ')} files`;
       return message;
    }
    return '';
@@ -595,7 +592,7 @@ export const openDocumentPicker = async () => {
             fileCopyUri: correctedUri,
             uri: correctedUri,
          };
-         const extension = getExtention(file.name);
+         const extension = getExtension(file.name, false);
          const fileExtentions = ['pdf', 'xls', 'xlsx', 'doc', 'docx', 'txt', 'ppt', 'zip', 'rar', 'pptx', 'csv'];
          // updating the SDK flag back to false to behave as usual
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
@@ -715,7 +712,8 @@ export const handleAudioSelect = async () => {
          return;
       }
       const replyTo = '';
-      let _validate = validation(response.type);
+      const extension = getExtension(response.name);
+      let _validate = validation(extension);
       const sizeError = validateFileSize(response.size, getType(response.type));
       if (_validate && !sizeError) {
          Alert.alert('Mirrorfly', _validate);

@@ -5,7 +5,7 @@ import { useMediaProgress } from '../redux/reduxHook';
 
 function MediaBar({ msgId }) {
    const mediaProgressData = useMediaProgress(msgId) || {};
-
+   console.log('mediaProgressData?.progress ==> ', mediaProgressData?.progress);
    return mediaProgressData?.progress ? (
       <Bar
          useNativeDriver={true}

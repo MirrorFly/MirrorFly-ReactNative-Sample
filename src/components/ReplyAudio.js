@@ -3,7 +3,7 @@ import { Pressable, View } from 'react-native';
 import { AudioMusicIcon, ClearTextIcon } from '../common/Icons';
 import NickName from '../common/NickName';
 import Text from '../common/Text';
-import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { getUserIdFromJid, millisToHoursMinutesAndSeconds } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
 
 const ReplyAudio = props => {
@@ -16,7 +16,7 @@ const ReplyAudio = props => {
    };
 
    const durationInSeconds = msgBody.media.duration;
-   const durationInMinutes = Math.floor(durationInSeconds / 1000);
+   const durationInMinutes =  millisToHoursMinutesAndSeconds(durationInSeconds);
 
    return (
       <View>

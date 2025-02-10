@@ -18,7 +18,6 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    const networkState = useNetworkStatus();
    /** 'NOT_DOWNLOADED' | 'NOT_UPLOADED' | 'DOWNLOADING' | 'UPLOADING' | 'DOWNLOADED' | 'UPLOADED'  */
    const [mediaStatus, setMediaStatus] = React.useState('');
-
    React.useEffect(() => {
       if (downloadStatus === 1) {
          setMediaStatus(mediaStatusConstants.DOWNLOADING);
@@ -39,6 +38,8 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
 
    const handleDownload = async () => {
       try {
+         console.log('chatMessage ==>', JSON.stringify(chatMessage, null, 2));
+
          const { source = {}, downloadJobId = '' } = getMediaProgress(msgId) || {};
          setMediaStatus(mediaStatusConstants.DOWNLOADING);
          dispatch(

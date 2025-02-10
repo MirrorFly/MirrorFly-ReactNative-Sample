@@ -50,6 +50,7 @@ import {
    AUDIO_FORMATS,
    CHAT_TYPE_GROUP,
    CHAT_TYPE_SINGLE,
+   DOCUMENT_FILE_EXT,
    DOCUMENT_FORMATS,
    MAP_THHUMBNAIL_URL,
    MAX_HEIGHT_AND,
@@ -614,7 +615,6 @@ export const openDocumentPicker = async () => {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       setTimeout(async () => {
          const file = await handleDocumentPickSingle();
-
          if (!file) {
             return;
          }
@@ -623,17 +623,17 @@ export const openDocumentPicker = async () => {
          uriParts.pop(); // Remove last part (file name)
          const correctedUri = uriParts.join('/') + '/' + file.name;
          // Create a new object to avoid modifying the original reference (good practice)
+         const extension = getExtension(file.name, false);
          const _updatedFile = {
             ...file,
             fileCopyUri: correctedUri,
             uri: correctedUri,
+            type: file.type || `application/${extension}`,
          };
-         const extension = getExtension(file.name, false);
-         const fileExtentions = ['pdf', 'xls', 'xlsx', 'doc', 'docx', 'txt', 'ppt', 'zip', 'rar', 'pptx', 'csv'];
          // updating the SDK flag back to false to behave as usual
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
          // Validating the file type and size
-         if (!fileExtentions.includes(extension)) {
+         if (!DOCUMENT_FILE_EXT.includes(extension)) {
             Alert.alert(
                'Mirrorfly',
                'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',

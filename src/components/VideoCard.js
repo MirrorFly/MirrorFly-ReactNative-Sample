@@ -98,24 +98,6 @@ function VideoCard({ item, isSender }) {
                   fileSize={fileSize}
                />
             </View>
-
-            {!Boolean(caption) && (
-               <View style={styles.messgeStatusAndTimestampWithoutCaption}>
-                  <ImageBackground source={getImageSource(ic_ballon)} style={styles.imageBg}>
-                     {isSender && getMessageStatus(msgStatus)}
-                     <Text style={styles.timestampText}>{getConversationHistoryTime(createdAt)}</Text>
-                  </ImageBackground>
-               </View>
-            )}
-            {Boolean(caption) && (
-               <CaptionContainer
-                  isSender={isSender}
-                  caption={caption}
-                  msgStatus={msgStatus}
-                  timeStamp={getConversationHistoryTime(createdAt)}
-                  editMessageId={editMessageId}
-               />
-            )}
             {checkDownloaded && (
                <View
                   style={[
@@ -125,7 +107,24 @@ function VideoCard({ item, isSender }) {
                   <PlayIcon width={15} height={15} />
                </View>
             )}
+            {!Boolean(caption) && (
+               <View style={styles.messgeStatusAndTimestampWithoutCaption}>
+                  <ImageBackground source={getImageSource(ic_ballon)} style={styles.imageBg}>
+                     {isSender && getMessageStatus(msgStatus)}
+                     <Text style={styles.timestampText}>{getConversationHistoryTime(createdAt)}</Text>
+                  </ImageBackground>
+               </View>
+            )}
          </View>
+         {Boolean(caption) && (
+            <CaptionContainer
+               isSender={isSender}
+               caption={caption}
+               msgStatus={msgStatus}
+               timeStamp={getConversationHistoryTime(createdAt)}
+               editMessageId={editMessageId}
+            />
+         )}
       </View>
    );
 }

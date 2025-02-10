@@ -12,7 +12,7 @@ import {
    isLocalUser,
    showToast,
 } from '../helpers/chatHelpers';
-import { CHAT_TYPE_GROUP, DOCUMENT_FORMATS, MIX_BARE_JID } from '../helpers/constants';
+import { CHAT_TYPE_GROUP, DOCUMENT_FILE_EXT, DOCUMENT_FORMATS, MIX_BARE_JID } from '../helpers/constants';
 import {
    addChatMessageItem,
    editChatMessageItem,
@@ -138,9 +138,9 @@ const sendMediaMessage = async (messageType, files, chatType, toUserJid, replyTo
          const {
             caption = '',
             fileDetails = {},
-            fileDetails: { fileSize, filename, duration, uri, type, thumbImage: thumb_image } = {},
+            fileDetails: { extension, fileSize, filename, duration, uri, type, thumbImage: thumb_image } = {},
          } = file;
-         const isDocument = DOCUMENT_FORMATS.includes(type);
+         const isDocument = DOCUMENT_FILE_EXT.includes(extension);
          const msgType = isDocument ? 'file' : type.split('/')[0];
          let _uri = uri;
          let mediaDimension = {};
@@ -410,8 +410,9 @@ export const sendSeenStatus = (publisherJid, msgId, groupJid) => {
 
 export const uploadFileToSDK = async (file, jid, msgId, media, replyTo) => {
    try {
-      const { caption = '', fileDetails: { duration = 0, audioType = '', type = '' } = {} } = file;
-      const isDocument = DOCUMENT_FORMATS.includes(type);
+      const { caption = '', fileDetails: { extension, duration = 0, audioType = '', type = '' } = {} } = file;
+      const isDocument = DOCUMENT_FILE_EXT.includes(extension);
+      console.log('type ==> ', type);
       const msgType = isDocument ? 'file' : type?.split('/')[0] || media.fileType.split('/')[0];
       let fileOptions = {
          msgId: msgId,

@@ -157,6 +157,11 @@ const calculateCombinedProgress = (activeProgress, totalProgress, progress) => {
 };
 
 const createNotification = (activeProgress, title, foregroundStatus) => {
+   let foregroundServiceTypes = [
+      ...(Platform.Version >= 30 ? [AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_DATA_SYNC] : []), // Only for Android 11 and above
+      ...(Platform.Version >= 34 ? [AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE] : []), // Only for Android 12 and above
+   ];
+
    return {
       id: activeProgress.id,
       title,
@@ -172,10 +177,7 @@ const createNotification = (activeProgress, title, foregroundStatus) => {
          ongoing: true,
          ...(foregroundStatus && {
             asForegroundService: true,
-            foregroundServiceTypes: [
-               Platform.Version >= 34 && AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE,
-               AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_DATA_SYNC,
-            ],
+            ...(foregroundServiceTypes.length && { foregroundServiceTypes }),
          }),
          progress: {
             max: 100,

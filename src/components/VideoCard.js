@@ -98,21 +98,18 @@ function VideoCard({ item, isSender }) {
                   fileSize={fileSize}
                />
             </View>
-            {checkDownloaded && (
-               <View
-                  style={[
-                     styles.playIconWrapper,
-                     { backgroundColor: themeColorPalatte.colorOnPrimary, shadowColor: themeColorPalatte.shadowColor },
-                  ]}>
-                  <PlayIcon width={15} height={15} />
-               </View>
-            )}
-            {!Boolean(caption) && (
+
+            {!caption && (
                <View style={styles.messgeStatusAndTimestampWithoutCaption}>
                   <ImageBackground source={getImageSource(ic_ballon)} style={styles.imageBg}>
                      {isSender && getMessageStatus(msgStatus)}
                      <Text style={styles.timestampText}>{getConversationHistoryTime(createdAt)}</Text>
                   </ImageBackground>
+               </View>
+            )}
+            {checkDownloaded && (
+               <View style={styles.playIconWrapper}>
+                  <PlayIcon width={15} height={15} />
                </View>
             )}
          </View>
@@ -122,7 +119,6 @@ function VideoCard({ item, isSender }) {
                caption={caption}
                msgStatus={msgStatus}
                timeStamp={getConversationHistoryTime(createdAt)}
-               editMessageId={editMessageId}
             />
          )}
       </View>

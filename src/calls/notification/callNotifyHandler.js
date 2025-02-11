@@ -278,10 +278,12 @@ export const onChatNotificationForeGround = async ({ type, detail }) => {
       const {
          notification: { data: { fromUserJID = '', from_user = '' } = '' },
       } = detail;
-      RootNavigation.navigate(CONVERSATION_STACK, {
-         screen: CONVERSATION_SCREEN,
-         params: { jid: fromUserJID || from_user },
-      });
+      if (fromUserJID || from_user) {
+         RootNavigation.navigate(CONVERSATION_STACK, {
+            screen: CONVERSATION_SCREEN,
+            params: { jid: fromUserJID || from_user },
+         });
+      }
    }
 };
 

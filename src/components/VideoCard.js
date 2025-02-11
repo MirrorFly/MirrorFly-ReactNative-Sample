@@ -108,7 +108,11 @@ function VideoCard({ item, isSender }) {
                </View>
             )}
             {checkDownloaded && (
-               <View style={styles.playIconWrapper}>
+               <View
+                  style={[
+                     styles.playIconWrapper,
+                     { backgroundColor: themeColorPalatte.colorOnPrimary, shadowColor: themeColorPalatte.shadowColor },
+                  ]}>
                   <PlayIcon width={15} height={15} />
                </View>
             )}

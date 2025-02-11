@@ -552,27 +552,26 @@ class MediaService: RCTEventEmitter {
     iv: String,
     resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock){
-      if let url = URL(string: inputFilePath){
-        let folderPath = url.deletingLastPathComponent()
-        let fileName = url.lastPathComponent
-        let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName:fileName, key: keyString, iv: iv, sendEvent: self.sendEvent)
-        
-        if let (filePath , _ , totalBytesWritten ) = streamManager.decryptStreaming(at: folderPath, fileName: fileName,key:keyString, iv: iv, msgId: msgId ){
-          resolver([
-            "success": true,
-            "statusCode": 200,
-            "message": "File decrypted successfully",
-            "decryptedFilePath": filePath.absoluteString,
-            "decryptedFileSize": totalBytesWritten
-          ])
-        }else{
-          resolver([
-            "success": false,
-            "statusCode": 500,
-            "message": "Failed decrypted",
-          ])
-        }
-      }
+          let url = URL(fileURLWithPath: inputFilePath)
+          let folderPath = url.deletingLastPathComponent()
+          let fileName = url.lastPathComponent
+          let streamManager = StreamManager(fileURL: url, folderURL: folderPath, fileName:fileName, key: keyString, iv: iv, sendEvent: self.sendEvent)
+          
+          if let (filePath , _ , totalBytesWritten ) = streamManager.decryptStreaming(at: folderPath, fileName: fileName,key:keyString, iv: iv, msgId: msgId ){
+            resolver([
+              "success": true,
+              "statusCode": 200,
+              "message": "File decrypted successfully",
+              "decryptedFilePath": filePath.absoluteString,
+              "decryptedFileSize": totalBytesWritten
+            ])
+          }else{
+            resolver([
+              "success": false,
+              "statusCode": 500,
+              "message": "Failed decrypted",
+            ])
+          }
     }
   
   @objc func defineValues(

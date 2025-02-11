@@ -148,14 +148,14 @@ const ViewAllMedia = () => {
             style={commonStyles.flex1}
             initialPage={index}
             onPageSelected={e => setIndex(e.nativeEvent.position)}>
-            <View key="1" style={[commonStyles.marginTop_5, commonStyles.padding_8]}>
-               <MediaTab chatUserId={chatUserId} />
+            <View key="1" style={[commonStyles.marginTop_5]}>
+               <MediaTab chatUserId={chatUserId} jid={jid} />
             </View>
-            <View key="2" style={[commonStyles.marginTop_5, commonStyles.padding_8]}>
-               <DocumentTab chatUserId={chatUserId} />
+            <View key="2" style={[commonStyles.marginTop_5]}>
+               <DocumentTab jid={jid} />
             </View>
-            <View key="3" style={[commonStyles.marginTop_5, commonStyles.padding_8]}>
-               <LinksTab chatUserId={chatUserId} />
+            <View key="3" style={[commonStyles.marginTop_5]}>
+               <LinksTab chatUserId={chatUserId} jid={jid} />
             </View>
          </PagerView>
       ),

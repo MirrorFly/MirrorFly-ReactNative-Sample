@@ -123,6 +123,7 @@ function VideoCard({ item, isSender }) {
                caption={caption}
                msgStatus={msgStatus}
                timeStamp={getConversationHistoryTime(createdAt)}
+               editMessageId={editMessageId}
             />
          )}
       </View>

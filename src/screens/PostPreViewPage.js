@@ -6,9 +6,9 @@ import IconButton from '../common/IconButton';
 import { BackArrowIcon } from '../common/Icons';
 import Text from '../common/Text';
 import PostView from '../components/PostView';
-import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { useMergedMediaMessages } from '../hooks/useMediaMessaegs';
 import { getStringSet } from '../localization/stringSet';
-import { useMediaMessages, useThemeColorPalatte } from '../redux/reduxHook';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
 
@@ -18,8 +18,7 @@ const PostPreViewPage = () => {
    const { params: { jid = '', msgId = '' } = {} } = useRoute();
    const navigation = useNavigation();
    const currentUserJID = getCurrentUserJid();
-   const chatUserId = getUserIdFromJid(jid);
-   const messageList = useMediaMessages(chatUserId, ['image', 'video', 'audio']);
+   const { mergedMediaMessages: messageList } = useMergedMediaMessages(jid, ['image', 'video', 'audio']);
    const [title, setTitle] = React.useState('');
    const [currentIndex, setCurrentIndex] = React.useState(0);
 
@@ -41,15 +40,17 @@ const PostPreViewPage = () => {
    };
 
    const initialPage = React.useMemo(() => {
-      const selectedMsgIndex = messageList.findIndex(message => message.msgId === msgId);
+      const selectedMsgIndex = messageList.findIndex(message => {
+         return message.msgId === msgId;
+      });
       setCurrentIndex(selectedMsgIndex);
       return selectedMsgIndex === -1 ? messageList.length - 1 : selectedMsgIndex;
-   }, []);
+   }, [messageList.length]);
 
    const renderMediaPages = React.useMemo(() => {
       return (
          <PagerView style={commonStyles.flex1} initialPage={initialPage} onPageScroll={handlePageSelected}>
-            {messageList.map(item => (
+            {messageList.map?.(item => (
                <PostView key={item.msgId} item={item} />
             ))}
          </PagerView>

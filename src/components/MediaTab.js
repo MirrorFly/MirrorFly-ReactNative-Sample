@@ -107,7 +107,7 @@ const MediaTab = ({ chatUserId, jid }) => {
    const renderMediaTile = useCallback(
       ({ item }) => {
          const handleMediaPress = () => {
-            navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid: chatUserId, msgId: item.msgId });
+            navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid, msgId: item.msgId });
          };
          return (
             <Pressable contentContainerStyle={{}} onPress={handleMediaPress}>

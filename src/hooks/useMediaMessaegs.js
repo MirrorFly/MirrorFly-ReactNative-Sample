@@ -3,6 +3,8 @@ import { getUserIdFromJid } from '../helpers/chatHelpers';
 import { useMediaMessages } from '../redux/reduxHook';
 import SDK from '../SDK/SDK';
 
+const cache = {};
+
 export const useMergedMediaMessages = (jid, mediaTypeArr = []) => {
    const userId = getUserIdFromJid(jid);
    const [fetchedMediaMessages, setFetchedMediaMessages] = useState([]);
@@ -13,6 +15,12 @@ export const useMergedMediaMessages = (jid, mediaTypeArr = []) => {
 
    // Fetch media messages from SDK
    useEffect(() => {
+      const cacheKey = `${jid}-${mediaTypeArr.join(',')}`;
+
+      if (cache[cacheKey]) {
+         setFetchedMediaMessages(cache[cacheKey]);
+         return;
+      }
       const getMediaMessages = async () => {
          if (!userId) {
             return;
@@ -20,7 +28,9 @@ export const useMergedMediaMessages = (jid, mediaTypeArr = []) => {
          setIsLoading(true);
          try {
             const fetchedData = await SDK.getMediaMessages({ jid, messageTypes: mediaTypeArr });
-            setFetchedMediaMessages(fetchedData?.data || []);
+            const messages = fetchedData?.data || [];
+            setFetchedMediaMessages(messages);
+            cache[cacheKey] = messages;
          } catch (error) {
             console.log('Error fetching media messages:', error);
          }
@@ -58,7 +68,6 @@ export const useMergedMediaMessages = (jid, mediaTypeArr = []) => {
             fetchedMessagesMap[stateMsg.msgId] = stateMsg;
          }
       });
-
       return Object.values(fetchedMessagesMap);
    }, [stateMediaMessages, fetchedMediaMessages]);
 

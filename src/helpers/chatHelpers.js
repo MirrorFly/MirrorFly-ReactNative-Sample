@@ -729,7 +729,7 @@ export const openLocation = async () => {
 const getValidUri = response => {
    let validUri = response.fileCopyUri;
    try {
-      validUri = decodeURIComponent(validUri);
+      validUri = decodeURI(validUri);
    } catch (error) {
       console.warn('Error decoding URI:', error);
    }
@@ -898,9 +898,8 @@ export const getThumbImage = async uri => {
    return response;
 };
 
-export const handleUploadNextImage = res => {
+/** export const handleUploadNextImage = res => {
    const { userId, msgId } = res;
-
    // Find the next message in the state object
    const conversationData = getChatMessages(userId);
    const nextMessageIndex = conversationData?.findIndex(item => item.msgId === msgId) - 1;
@@ -919,6 +918,36 @@ export const handleUploadNextImage = res => {
          };
          store.dispatch(updateMediaStatus(retryObj));
          uploadFileToSDK(file, userJid, _msgId, media);
+      }
+   }
+}; */
+
+export const handleUploadNextImage = res => {
+   const { userId, msgId } = res;
+   // Find the next message in the state object
+   const conversationData = getChatMessages(userId);
+   const nextMessageIndex = conversationData.findIndex(item => item.msgId === msgId);
+   if (nextMessageIndex > -1) {
+      for (let i = nextMessageIndex - 1; i >= 0; i--) {
+         const {
+            msgId: _msgId,
+            userJid,
+            msgBody: { media = {}, media: { file = {}, is_uploading } = {} } = {},
+         } = conversationData[i];
+         if (is_uploading === 1 || is_uploading === 3) {
+            continue;
+         }
+         if (is_uploading === 0) {
+            const retryObj = {
+               _msgId,
+               userId,
+               is_uploading: 1, // Mark as uploading
+            };
+            store.dispatch(updateMediaStatus(retryObj)); // Update media status
+            // Start uploading the file
+            uploadFileToSDK(file, userJid, _msgId, media);
+            break; // Exit loop after uploading one image
+         }
       }
    }
 };

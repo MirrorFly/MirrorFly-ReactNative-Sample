@@ -15,6 +15,7 @@ import {
 import useMediaProgress from '../hooks/useMediaProgress';
 import commonStyles from '../styles/commonStyles';
 import CaptionContainer from './CaptionContainer';
+import ReplyMessage from './ReplyMessage';
 
 function VideoCard({ item, isSender }) {
    const {
@@ -87,7 +88,7 @@ function VideoCard({ item, isSender }) {
                />
             </View>
 
-            {!Boolean(caption) && (
+            {!caption && (
                <View style={styles.messgeStatusAndTimestampWithoutCaption}>
                   <ImageBackground source={ic_ballon} style={styles.imageBg}>
                      {isSender && getMessageStatus(msgStatus)}
@@ -95,20 +96,20 @@ function VideoCard({ item, isSender }) {
                   </ImageBackground>
                </View>
             )}
-            {Boolean(caption) && (
-               <CaptionContainer
-                  isSender={isSender}
-                  caption={caption}
-                  msgStatus={msgStatus}
-                  timeStamp={getConversationHistoryTime(createdAt)}
-               />
-            )}
             {checkDownloaded && (
                <View style={styles.playIconWrapper}>
                   <PlayIcon width={15} height={15} />
                </View>
             )}
          </View>
+         {Boolean(caption) && (
+            <CaptionContainer
+               isSender={isSender}
+               caption={caption}
+               msgStatus={msgStatus}
+               timeStamp={getConversationHistoryTime(createdAt)}
+            />
+         )}
       </View>
    );
 }

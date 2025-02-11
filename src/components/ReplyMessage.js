@@ -22,7 +22,7 @@ import {
    getImageSource,
    getUserIdFromJid,
    handleReplyPress,
-   millisToHoursMinutesAndSeconds
+   millisToHoursMinutesAndSeconds,
 } from '../helpers/chatHelpers';
 import { ORIGINAL_MESSAGE_DELETED } from '../helpers/constants';
 import { toggleMessageSelection } from '../redux/chatMessageDataSlice';

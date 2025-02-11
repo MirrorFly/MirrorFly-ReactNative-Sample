@@ -46,7 +46,7 @@ function ImageCard({ chatUser, item, isSender }) {
 
    return (
       <View style={commonStyles.paddingHorizontal_4}>
-         {Boolean(replyTo) && <ReplyMessage message={messageObject} />}
+         {Boolean(replyTo) && <ReplyMessage message={item} />}
          <View style={styles.imageContainer}>
             {imageUrl ? (
                <Image

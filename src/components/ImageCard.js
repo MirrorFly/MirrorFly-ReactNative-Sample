@@ -67,12 +67,18 @@ function ImageCard({ chatUser, item, isSender }) {
                />
             </View> */}
             {imageUrl ? (
-               <Image
+               <ImageBackground
                   resizeMode="cover"
                   style={styles.image(androidWidth, androidHeight)}
                   alt={fileName}
-                  source={{ uri: imageUrl || getThumbBase64URL(thumb_image) }}
-               />
+                  source={{ uri: getThumbBase64URL(thumb_image) }}>
+                  <Image
+                     resizeMode="cover"
+                     style={styles.image(androidWidth, androidHeight)}
+                     alt={fileName}
+                     source={{ uri: imageUrl }}
+                  />
+               </ImageBackground>
             ) : (
                <View style={{ backgroundColor: themeColorPalatte.screenBgColor }}>
                   <Image style={styles.noPreview} alt={fileName} source={getImageSource(noPreview)} />

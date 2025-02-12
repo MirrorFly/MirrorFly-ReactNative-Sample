@@ -30,7 +30,7 @@ import { callDurationTimestamp } from '../../redux/callStateSlice';
 import { resetNotificationData, setNotificationData } from '../../redux/notificationDataSlice';
 import { setRoasterData } from '../../redux/rosterDataSlice';
 import store from '../../redux/store';
-import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../../screens/constants';
+import { CONVERSATION_SCREEN, CONVERSATION_STACK, RECENTCHATSCREEN } from '../../screens/constants';
 import { getAppSchema } from '../../uikitMethods';
 
 let interval;
@@ -292,8 +292,11 @@ export const onChatNotificationBackGround = async ({ type, detail }) => {
       callNotifiHandling(detail);
    } else if (type === EventType.PRESS) {
       const {
-         notification: { data: { fromUserJID = '', from_user = '' } = '' },
+         notification: { data: { fromUserJID = '', from_user = '', progress = 0 } = {} },
       } = detail;
+      if (progress) {
+         RootNavigation.reset(RECENTCHATSCREEN);
+      }
       const push_url = fromUserJID
          ? getAppSchema() + `${CONVERSATION_STACK}/${CONVERSATION_SCREEN}?jid=${fromUserJID || from_user}`
          : getAppSchema();

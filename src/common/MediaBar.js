@@ -5,12 +5,12 @@ import { useMediaProgress } from '../redux/reduxHook';
 
 function MediaBar({ msgId }) {
    const mediaProgressData = useMediaProgress(msgId) || {};
-   console.log('mediaProgressData?.progress ==> ', mediaProgressData?.progress);
    return mediaProgressData?.progress ? (
       <Bar
          useNativeDriver={true}
          progress={mediaProgressData?.progress / 100}
          height={2}
+         width={80}
          color="#fff"
          borderWidth={0}
          unfilledColor={'rgba(0, 0, 0, 0.5)'}

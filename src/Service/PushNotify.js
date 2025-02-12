@@ -166,6 +166,7 @@ const createNotification = (activeProgress, title, foregroundStatus) => {
       id: activeProgress.id,
       title,
       body: `Progress: ${activeProgress.progress}%`,
+      data: { progress: activeProgress.progress },
       android: {
          channelId: 'media_progress_channel',
          autoCancel: false,

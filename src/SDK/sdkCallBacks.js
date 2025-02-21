@@ -137,6 +137,7 @@ import {
 } from '../uikitMethods';
 import SDK from './SDK';
 import { fetchGroupParticipants, getUserProfileFromSDK } from './utils';
+import { stopAudioRecord } from '../components/ChatInput';
 
 let localStream = null,
    localVideoMuted = false,
@@ -852,6 +853,7 @@ export const callBacks = {
    userDeletedListener: res => {},
    adminBlockListener: res => {},
    incomingCallListener: function (res) {
+      stopAudioRecord();
       remoteStream = [];
       localStream = null;
       let callMode = 'onetoone';

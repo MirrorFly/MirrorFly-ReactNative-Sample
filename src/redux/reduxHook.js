@@ -101,6 +101,7 @@ export const useEditMessageId = () => useSelector(state => state.chatMessagesDat
 export const useParentMessage = msgId => useSelector(state => state.chatMessagesData?.parentMessage[msgId]);
 export const useAudioRecording = userId => useSelector(state => state.draftData.data[userId]?.audioRecord);
 export const useAudioRecordTime = userId => useSelector(state => state.draftData.data[userId]?.audioRecordTime);
+export const useRoomLink = () => useSelector(state => state.callData?.connectionState?.roomLink);
 
 export const getReplyMessage = userId => store.getState().draftData.data[userId]?.replyMessage || {};
 export const getRecentChatData = () => store.getState().recentChatData.recentChats;
@@ -132,3 +133,4 @@ export const getAnySelectedChatMessages = userId => {
    const messages = store.getState().chatMessagesData?.[userId] || [];
    return messages.some(item => item.isSelected === 1);
 };
+export const getRoomLink = () => store.getState().callData?.connectionState?.roomLink;

@@ -40,6 +40,7 @@ import { setAudioRecordTime, setAudioRecording, setTextMessage } from '../redux/
 import {
    getAudioRecordTime,
    getAudioRecording,
+   getRoomLink,
    getUserNameFromStore,
    useAudioRecordTime,
    useAudioRecording,
@@ -123,22 +124,13 @@ function ChatInput({ chatUser }) {
    React.useEffect(() => {
       audioRecordRef.current.onStopRecord = onStopRecord;
       audioRecordRef.current.onCancelRecord = onCancelRecord;
-      const onRecordBackListener = e => {
-         setRecordSecs(e.currentPosition);
-         timeValidate(e.currentPosition);
-         setRecordTime(formatMillisecondsToTime(e.currentPosition));
-      };
-
-      if (isAudioRecording) {
-         audioRecorderPlayer.addRecordBackListener(onRecordBackListener);
-      } else {
-         audioRecorderPlayer.removeRecordBackListener();
-      }
-
-      return () => {
-         audioRecorderPlayer.removeRecordBackListener();
-      };
    }, [isAudioRecording]);
+
+   const onRecordBackListener = e => {
+      setRecordSecs(e.currentPosition);
+      timeValidate(e.currentPosition);
+      setRecordTime(formatMillisecondsToTime(e.currentPosition));
+   };
 
    const setRecordSecs = time => {
       dispatch(setAudioRecordTime({ userId, time }));
@@ -159,6 +151,10 @@ function ChatInput({ chatUser }) {
       } else {
          Keyboard.dismiss();
       }
+   };
+
+   const removeListener = () => {
+      audioRecorderPlayer.removeRecordBackListener();
    };
 
    const handleAttachmentconPressed = () => {
@@ -244,6 +240,12 @@ function ChatInput({ chatUser }) {
 
    const onStartRecord = async () => {
       try {
+         const roomLink = getRoomLink();
+         if (roomLink) {
+            showToast(stringSet.TOAST_MESSAGES.AUDIO_CANNOT_BE_RECORDED_WHILE_IN_CALL);
+            return;
+         }
+         console.log('onStartRecord ==> ');
          pauseAudio();
          audioRecordClick += 1;
          const res = await audioRecordPermission();
@@ -265,6 +267,7 @@ function ChatInput({ chatUser }) {
             setTimeout(async () => {
                await audioRecorderPlayer.startRecorder(path, audioSet);
                dispatch(setAudioRecording({ userId, message: audioRecord.RECORDING }));
+               audioRecorderPlayer.addRecordBackListener(onRecordBackListener);
             }, 100);
          }
       } catch (error) {
@@ -279,6 +282,7 @@ function ChatInput({ chatUser }) {
          }
          const result = await audioRecorderPlayer.stopRecorder();
          panRef.setValue({ x: 0.1, y: 0 });
+         removeListener();
          dispatch(setAudioRecording({ userId, message: audioRecord.STOPPED }));
          if (uriPattern.test(result)) {
             fileInfo[userId] = await RNFS.stat(result);
@@ -386,14 +390,12 @@ function ChatInput({ chatUser }) {
                   <AttachmentIcon color={themeColorPalatte.iconColor} />
                </IconButton>
             )}
-            {!message.trim() && (
-               <IconButton
-                  containerStyle={styles.audioRecordIconWrapper}
-                  style={styles.audioRecordIcon}
-                  onPress={onStartRecord}>
-                  <MicIcon />
-               </IconButton>
-            )}
+            <IconButton
+               containerStyle={styles.audioRecordIconWrapper}
+               style={styles.audioRecordIcon}
+               onPress={onStartRecord}>
+               <MicIcon />
+            </IconButton>
          </>
       );
    }, [message, isEmojiPickerShowing, themeColorPalatte]);

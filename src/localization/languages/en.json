@@ -187,7 +187,8 @@
       "YOU_HAVE_BLOCKED": "You have blocked {nickName}",
       "HAS_BEEN_UNBLOCKED": "{nickName} has been unblocked",
       "PLEASE_ENTER_MOBILE_NUMBER": "Please Enter Mobile Number",
-      "YOUR_MOBILE_NUMBER_IS_TOO_SHORT": "Your mobile number is too short"
+      "YOUR_MOBILE_NUMBER_IS_TOO_SHORT": "Your mobile number is too short",
+      "AUDIO_CANNOT_BE_RECORDED_WHILE_IN_CALL": "Audio cannot be recorded while in call"
    },
    "INFO_SCREEN": {
       "PROFILE_PIC_EDIT_HEADER": "Options",

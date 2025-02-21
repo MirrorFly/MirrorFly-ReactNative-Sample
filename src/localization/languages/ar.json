@@ -187,7 +187,8 @@
       "YOU_HAVE_BLOCKED": "لقد قمت بحظر {nickName}",
       "HAS_BEEN_UNBLOCKED": "تم رفع حظر {nickName}",
       "PLEASE_ENTER_MOBILE_NUMBER": "الرجاء إدخال رقم الجوال",
-      "YOUR_MOBILE_NUMBER_IS_TOO_SHORT": "رقم هاتفك المحمول قصير جدًا"
+      "YOUR_MOBILE_NUMBER_IS_TOO_SHORT": "رقم هاتفك المحمول قصير جدًا",
+      "AUDIO_CANNOT_BE_RECORDED_WHILE_IN_CALL": "لا يمكن تسجيل الصوت أثناء المكالمة"
    },
    "INFO_SCREEN": {
       "PROFILE_PIC_EDIT_HEADER": "خيارات",

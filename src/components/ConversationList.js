@@ -47,7 +47,6 @@ const ConversationList = ({ chatUser }) => {
          setChatLoading(false);
       };
       initialize();
-      getMergedMediaMessages(chatUser);
    }, [chatUser]);
 
    // Monitor new messages and update counter

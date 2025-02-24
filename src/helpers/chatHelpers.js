@@ -436,7 +436,11 @@ export const handleConversationClear = async jid => {
 export const isAnyMessageWithinLast30Seconds = (messages = []) => {
    const now = Date.now();
    return messages.every(
-      message => now - message.timestamp <= 30000 && isLocalUser(message.publisherJid) && message?.msgStatus !== 3,
+      message =>
+         now - message.timestamp <= 30000 &&
+         isLocalUser(message.publisherJid) &&
+         message?.msgStatus !== 3 &&
+         message?.recallStatus === 0,
    );
 };
 
@@ -1290,18 +1294,31 @@ export const getRecentChatMsgObjForward = (originalMsg, toJid, newMsgId) => {
 
 export const handleReplyPress = (userId, msgId, message) => {
    const scrollIndex = findConversationMessageIndex(msgId, message);
-   if (!scrollIndex || scrollIndex < 0) {
+   if (scrollIndex < 0) {
       return;
    }
+
    store.dispatch(highlightMessage({ userId, msgId, shouldHighlight: 1 }));
-   conversationFlatListRef.current.scrollToIndex({
-      index: scrollIndex,
+
+   // Compute the exact offset from stored heights
+   let offset = 0;
+   for (let i = 0; i < scrollIndex; i++) {
+      offset += conversationFlatListRef.current.itemLayout[i] || 0; // Use stored height
+   }
+
+   // Adjust for centering
+   const itemHeight = conversationFlatListRef.current.itemLayout[scrollIndex] || 50; // Default height fallback
+   const screenHeight = Dimensions.get('window').height;
+   const adjustedOffset = Math.max(0, offset - screenHeight / 2 + itemHeight / 2);
+
+   conversationFlatListRef.current.scrollToOffset({
+      offset: adjustedOffset,
       animated: true,
-      viewPosition: 0.5,
    });
+
    setTimeout(() => {
       store.dispatch(highlightMessage({ userId, msgId, shouldHighlight: 0 }));
-   }, 500);
+   }, 1000);
 };
 
 export const findConversationMessageIndex = (msgId, message) => {

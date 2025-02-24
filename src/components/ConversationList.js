@@ -61,10 +61,14 @@ const ConversationList = ({ chatUser }) => {
       const yesterday = moment().subtract(1, 'day').startOf('day');
 
       return messages.map((message, index) => {
+         // Skip if the message is deleted or recalled
+         if (message.deleteStatus === 1 || message.recallStatus === 1) {
+            return null;
+         }
          const messageDatePrev = moment(messages[index + 1]?.timestamp);
          const currentMessage = moment(message.timestamp);
 
-         let label;
+         let label = null;
          if (!messageDatePrev.isSame(currentMessage, 'day')) {
             if (currentMessage.isSame(today, 'day')) {
                label = 'Today';

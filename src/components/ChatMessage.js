@@ -123,9 +123,6 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
          return <NotificationMessage messageObject={item} themeColorPalatte={themeColorPalatte} label={label} />;
       }
 
-      if (recallStatus) {
-         return <DeletedMessage chatUser={chatUser} item={item} isSender={isSender} />;
-      }
       return (
          <Pressable
             style={
@@ -183,7 +180,7 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
    }, [item]);
    return (
       <>
-         <NotificationMessage label={label} themeColorPalatte = {themeColorPalatte}/>
+         <NotificationMessage label={label} themeColorPalatte={themeColorPalatte} />
          {renderMessage}
       </>
    );

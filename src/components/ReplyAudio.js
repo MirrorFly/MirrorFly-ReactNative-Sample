@@ -45,7 +45,7 @@ const ReplyAudio = props => {
                <AudioMusicIcon width="14" height="14" color={'#767676'} />
             )}
             <Text style={{ paddingHorizontal: 8, color: '#000' }}>
-               {durationInMinutes}
+               {durationInMinutes}{' '}
                {stringSet.COMMON_TEXT.AUDIO_MSG_TYPE}
             </Text>
          </View>

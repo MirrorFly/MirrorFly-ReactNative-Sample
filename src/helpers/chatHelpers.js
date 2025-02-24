@@ -120,7 +120,8 @@ const memoizedUsernameGraphemes = {};
 const splitter = new Graphemer();
 let currentChatUser = '';
 const stringSet = getStringSet();
-let isConversationScreenActive = false;
+let isConversationScreenActive = false,
+   replyScrollmsgId = '';
 
 const documentAttachmentTypes = [
    DocumentPicker.types.allFiles,
@@ -137,6 +138,12 @@ const documentAttachmentTypes = [
    // /** need to add rar file type and verify that */
    // '.rar'
 ];
+
+export const getReplyScrollmsgId = () => replyScrollmsgId;
+
+export const setReplyScrollmsgId = val => {
+   replyScrollmsgId = val;
+};
 
 export const setIsConversationScreenActive = val => {
    isConversationScreenActive = val;
@@ -1315,10 +1322,7 @@ export const handleReplyPress = (userId, msgId, message) => {
       offset: adjustedOffset,
       animated: true,
    });
-
-   setTimeout(() => {
-      store.dispatch(highlightMessage({ userId, msgId, shouldHighlight: 0 }));
-   }, 1000);
+   replyScrollmsgId = msgId;
 };
 
 export const findConversationMessageIndex = (msgId, message) => {

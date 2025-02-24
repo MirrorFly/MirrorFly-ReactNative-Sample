@@ -6,11 +6,19 @@ import { DoubleDownArrow } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import ApplicationColors from '../config/appColors';
 import config from '../config/config';
-import { calculateOffset, getUserIdFromJid, handleConversationScollToBottom } from '../helpers/chatHelpers';
+import {
+   calculateOffset,
+   getReplyScrollmsgId,
+   getUserIdFromJid,
+   handleConversationScollToBottom,
+   setReplyScrollmsgId,
+} from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, NOTIFICATION } from '../helpers/constants';
 import { useChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
 import { getCurrentUserJid } from '../uikitMethods';
 import ChatMessage from './ChatMessage';
+import store from '../redux/store';
+import { highlightMessage } from '../redux/chatMessageDataSlice';
 
 export const conversationFlatListRef = createRef();
 conversationFlatListRef.current = {};
@@ -147,6 +155,12 @@ const ConversationList = ({ chatUser }) => {
             disableVirtualization={true}
             scrollEventThrottle={16}
             windowSize={5}
+            onMomentumScrollEnd={() => {
+               setTimeout(() => {
+                  store.dispatch(highlightMessage({ userId, msgId: getReplyScrollmsgId(), shouldHighlight: 0 }));
+                  setReplyScrollmsgId(null);
+               }, 1000);
+            }}
             onEndReached={handleLoadMore}
             onEndReachedThreshold={0.5}
             onScroll={handleScroll}

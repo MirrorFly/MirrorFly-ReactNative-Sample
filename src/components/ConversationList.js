@@ -19,6 +19,7 @@ import { getCurrentUserJid } from '../uikitMethods';
 import ChatMessage from './ChatMessage';
 import store from '../redux/store';
 import { highlightMessage } from '../redux/chatMessageDataSlice';
+import { getMergedMediaMessages } from '../hooks/useMediaMessaegs';
 
 export const conversationFlatListRef = createRef();
 conversationFlatListRef.current = {};
@@ -46,6 +47,7 @@ const ConversationList = ({ chatUser }) => {
          setChatLoading(false);
       };
       initialize();
+      getMergedMediaMessages(chatUser);
    }, [chatUser]);
 
    // Monitor new messages and update counter

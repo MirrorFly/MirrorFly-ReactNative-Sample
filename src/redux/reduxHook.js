@@ -134,3 +134,17 @@ export const getAnySelectedChatMessages = userId => {
    return messages.some(item => item.isSelected === 1);
 };
 export const getRoomLink = () => store.getState().callData?.connectionState?.roomLink;
+
+export const getMediaMessages = (userId, mediaTypeArr = []) => {
+   const state = store.getState();
+   const messages = state.chatMessagesData?.[userId] || [];
+
+   return messages.filter(
+      ({ msgBody: { message_type = '', media } = {}, deleteStatus, recallStatus }) =>
+         mediaTypeArr.includes(message_type) &&
+         deleteStatus === 0 &&
+         recallStatus === 0 &&
+         media?.is_downloaded === 2 &&
+         media?.is_uploading === 2,
+   );
+};

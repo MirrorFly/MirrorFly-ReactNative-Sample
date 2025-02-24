@@ -14,6 +14,7 @@ import { getCurrentUserJid } from '../uikitMethods';
 
 const PostPreViewPage = () => {
    const stringSet = getStringSet();
+   const pagerRef = React.useRef();
    const themeColorPalatte = useThemeColorPalatte();
    const { params: { jid = '', msgId = '' } = {} } = useRoute();
    const navigation = useNavigation();
@@ -40,7 +41,7 @@ const PostPreViewPage = () => {
    };
 
    const initialPage = React.useMemo(() => {
-      const selectedMsgIndex = messageList.findIndex(message => {
+      const selectedMsgIndex = messageList.reverse().findIndex(message => {
          return message.msgId === msgId;
       });
       setCurrentIndex(selectedMsgIndex);
@@ -49,7 +50,11 @@ const PostPreViewPage = () => {
 
    const renderMediaPages = React.useMemo(() => {
       return (
-         <PagerView style={commonStyles.flex1} initialPage={initialPage} onPageScroll={handlePageSelected}>
+         <PagerView
+            ref={pagerRef}
+            style={commonStyles.flex1}
+            initialPage={initialPage}
+            onPageScroll={handlePageSelected}>
             {messageList.map?.(item => (
                <PostView key={item.msgId} item={item} />
             ))}

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
-import { useMediaMessages } from '../redux/reduxHook';
+import { getMediaMessages, useMediaMessages } from '../redux/reduxHook';
 import SDK from '../SDK/SDK';
 
 const cache = {};
@@ -21,7 +21,7 @@ export const useMergedMediaMessages = (jid, mediaTypeArr = []) => {
          setFetchedMediaMessages(cache[cacheKey]);
          return;
       }
-      const getMediaMessages = async () => {
+      const getMediaMessage = async () => {
          if (!userId) {
             return;
          }
@@ -37,7 +37,7 @@ export const useMergedMediaMessages = (jid, mediaTypeArr = []) => {
          setIsLoading(false);
       };
 
-      getMediaMessages();
+      getMediaMessage();
    }, [userId]);
 
    // Memoized merged media messages
@@ -72,4 +72,35 @@ export const useMergedMediaMessages = (jid, mediaTypeArr = []) => {
    }, [stateMediaMessages, fetchedMediaMessages]);
 
    return { mergedMediaMessages, isLoading };
+};
+
+export const getMergedMediaMessages = async (jid, mediaTypeArr = []) => {
+   const userId = getUserIdFromJid(jid);
+   const cacheKey = `${jid}-${mediaTypeArr.join(',')}`;
+
+   // Get media messages from Redux
+   const stateMediaMessages = getMediaMessages(userId, mediaTypeArr);
+   const fetchedData = await SDK.getMediaMessages({ jid, messageTypes: mediaTypeArr });
+   const fetchedMessagesMap = fetchedData?.data ? { ...fetchedData.data } : {};
+
+   stateMediaMessages.forEach(stateMsg => {
+      if (fetchedMessagesMap[stateMsg.msgId]) {
+         fetchedMessagesMap[stateMsg.msgId] = {
+            ...fetchedMessagesMap[stateMsg.msgId],
+            ...stateMsg,
+            msgBody: {
+               ...fetchedMessagesMap[stateMsg.msgId].msgBody,
+               ...stateMsg.msgBody,
+               media: {
+                  ...fetchedMessagesMap[stateMsg.msgId].msgBody?.media,
+                  ...stateMsg.msgBody?.media,
+               },
+            },
+         };
+      } else {
+         fetchedMessagesMap[stateMsg.msgId] = stateMsg;
+      }
+   });
+
+   cache[cacheKey] = Object.values(fetchedMessagesMap);
 };

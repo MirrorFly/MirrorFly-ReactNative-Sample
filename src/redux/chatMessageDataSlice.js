@@ -30,7 +30,9 @@ const chatMessageDataSlice = createSlice({
             }
          });
          const userId = getUserIdFromJid(userJid);
-         if (!Array.isArray(data)) return;
+         if (!Array.isArray(data)) {
+            return;
+         }
          if (state[userId] && !forceUpdate) {
             // Merge existing messages with new ones
             state[userId] = removeDuplicates([...state[userId], ...data]);
@@ -54,7 +56,7 @@ const chatMessageDataSlice = createSlice({
          );
       },
       addChatMessageItem(state, action) {
-         const { userJid, msgBody: { replyTo = '', msgId } = {} } = action.payload;
+         const { userJid, msgBody: { replyTo = '' } = {}, msgId } = action.payload;
          const userId = getUserIdFromJid(userJid);
          if (replyTo && state[userId]) {
             const message = state[userId].find(item => item.msgId === replyTo);

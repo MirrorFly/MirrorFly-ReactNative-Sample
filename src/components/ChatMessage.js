@@ -69,7 +69,7 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
 
    const onPress = () => {
       const messsageList = getChatMessages(userId);
-      const isAnySelected = messsageList?.some?.(item => item.isSelected === 1);
+      const isAnySelected = messsageList?.some?.(_item => _item.isSelected === 1);
       switch (true) {
          case isAnySelected:
             const selectData = {
@@ -95,6 +95,8 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
          case message_type === 'locaiton':
             openLocationExternally(latitude, longitude);
             break;
+         default:
+            Keyboard.dismiss();
       }
    };
 

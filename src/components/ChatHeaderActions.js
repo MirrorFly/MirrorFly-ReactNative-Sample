@@ -13,15 +13,23 @@ import {
    handleConversationClear,
    handleMessageDelete,
    handleMessageDeleteForEveryOne,
+   handleUpdateBlockUser,
    isAnyMessageWithinLast30Seconds,
    isLocalUser,
 } from '../helpers/chatHelpers';
-import { resetMessageSelections } from '../redux/chatMessageDataSlice';
-import { setReplyMessage } from '../redux/draftSlice';
-import { getSelectedChatMessages, useBlockedStatus, useSelectedChatMessages } from '../redux/reduxHook';
+import { resetMessageSelections, toggleEditMessage } from '../redux/chatMessageDataSlice';
+import { setReplyMessage, setTextMessage } from '../redux/draftSlice';
+import {
+   getSelectedChatMessages,
+   getUserNameFromStore,
+   useBlockedStatus,
+   useSelectedChatMessages,
+} from '../redux/reduxHook';
 import { FORWARD_MESSSAGE_SCREEN, MESSAGE_INFO_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 import { chatInputRef } from './ChatInput';
+import { MIX_BARE_JID } from '../helpers/constants';
+import { getStringSet } from '../localization/stringSet';
 
 export const RenderMessageSelectionCount = ({ userId }) => {
    const filtered = useSelectedChatMessages(userId) || [];
@@ -58,6 +66,7 @@ export function RenderReplyIcon({ userId }) {
 
 export const RenderDeleteIcon = ({ userId, chatUser }) => {
    const [modalContent, setModalContent] = React.useState(null);
+   const stringSet = getStringSet();
 
    const toggleModalContent = () => {
       setModalContent(null);
@@ -70,12 +79,15 @@ export const RenderDeleteIcon = ({ userId, chatUser }) => {
       setModalContent({
          visible: true,
          onRequestClose: toggleModalContent,
-         title: 'Are you sure you want to delete selected Message?',
-         noButton: 'CANCEL',
-         yesButton: 'DELETE FOR ME',
+         title:
+            selectedMessages?.length > 1
+               ? stringSet.CHAT_SCREEN.DELETE_MULTIPLE_MESSAGE
+               : stringSet.CHAT_SCREEN.DELETE_SINGLE_MESSAGE,
+         noButton: stringSet.BUTTON_LABEL.CANCEL_BUTTON,
+         yesButton: stringSet.CHAT_SCREEN.DELETE_FOR_ME,
          yesAction: handleMessageDelete(chatUser),
          ...(deleteForEveryOne && {
-            optionalButton: 'DELETE FOR EVERYONE',
+            optionalButton: stringSet.CHAT_SCREEN.DELETE_FOR_EVERYONE,
             optionalAction: handleMessageDeleteForEveryOne(chatUser),
          }),
       });
@@ -124,6 +136,7 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
    const filtered = useSelectedChatMessages(userId) || [];
    const blockedStaus = useBlockedStatus(userId);
    const [modalContent, setModalContent] = React.useState(null);
+   const stringSet = getStringSet();
 
    const toggleModalContent = () => {
       setModalContent(null);
@@ -138,9 +151,9 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
       setModalContent({
          visible: true,
          onRequestClose: toggleModalContent,
-         title: 'Are you sure you want to clear the chat?',
-         noButton: 'No',
-         yesButton: 'Yes',
+         title: stringSet.POPUP_TEXT.ARE_YOU_SURE_YOU_WANT_TO_CLEAR_THE_CHAT,
+         noButton: stringSet.BUTTON_LABEL.NO_BUTTON,
+         yesButton: stringSet.BUTTON_LABEL.YES_BUTTON,
          yesAction: handleClearAction,
       });
    };
@@ -149,7 +162,7 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
       RootNavigation.navigate(MESSAGE_INFO_SCREEN, { chatUser, msgId: filtered[0].msgId });
       handelResetMessageSelection(userId)();
    };
-   /**
+
    const handleEditMessage = () => {
       handelResetMessageSelection(userId)();
       dispatch(toggleEditMessage(filtered[0].msgId));
@@ -164,13 +177,16 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
       setModalContent({
          visible: true,
          onRequestClose: toggleModalContent,
-         title: `${blockedStaus ? 'Unblock' : 'Block'} ${getUserNameFromStore(userId)}`,
-         noButton: 'CANCEL',
-         yesButton: blockedStaus ? 'UNBLOCK' : 'BLOCK',
+         title: `${
+            blockedStaus ? stringSet.CHAT_SCREEN.UNBLOCK_LABEL : stringSet.CHAT_SCREEN.BLOCK_LABEL
+         } ${getUserNameFromStore(userId)}`,
+         noButton: stringSet.BUTTON_LABEL.CANCEL_BUTTON,
+         yesButton: blockedStaus
+            ? stringSet.CHAT_SCREEN.UNBLOCK_LABEL.toUpperCase()
+            : stringSet.CHAT_SCREEN.BLOCK_LABEL.toUpperCase(),
          yesAction: handleUpdateBlockUser(userId, blockedStaus ? 0 : 1, chatUser),
       });
    };
-    */
 
    /**
    const toggleSearch = () => {
@@ -184,7 +200,7 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
       filtered[0]?.recallStatus === 0
    ) {
       menuItems.push({
-         label: 'Copy',
+         label: stringSet.CHAT_SCREEN.COPY_TEXT_MENU_LABEL,
          formatter: copyToClipboard(filtered, userId),
       });
    }
@@ -197,7 +213,7 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
       filtered[0]?.recallStatus === 0
    ) {
       menuItems.push({
-         label: 'Message Info',
+         label: stringSet.CHAT_SCREEN.MESSAGE_INFO,
          formatter: handleGoMessageInfoScreen,
       });
       const now = Date.now();
@@ -205,18 +221,16 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
          now - filtered[0]?.timestamp <= config.editMessageTime &&
          (filtered[0]?.msgBody.message_type === 'text' || filtered[0]?.msgBody?.media?.caption)
       ) {
-         /**
          menuItems.push({
-            label: 'Edit Message',
+            label: stringSet.CHAT_SCREEN.EDIT_MESSAGE,
             formatter: handleEditMessage,
          });
-          */
       }
    }
 
    if (!filtered.length) {
       menuItems.push({
-         label: 'Clear Chat',
+         label: stringSet.CHAT_SCREEN.CLEAR_CHAT,
          formatter: handleClear,
       });
       /**
@@ -227,14 +241,12 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
        */
    }
 
-   /**
    if (!filtered.length && !MIX_BARE_JID.test(chatUser)) {
       menuItems.push({
-         label: blockedStaus ? 'Unblock' : 'Block',
+         label: blockedStaus ? stringSet.CHAT_SCREEN.UNBLOCK_LABEL : stringSet.CHAT_SCREEN.BLOCK_LABEL,
          formatter: hadleBlockUser,
       });
    }
-   */
 
    if (menuItems.length === 0) {
       return null;

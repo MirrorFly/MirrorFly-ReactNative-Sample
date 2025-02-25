@@ -184,13 +184,15 @@ function ChatInput({ chatUser }) {
       }
 
       // Set timeout to update typing status after 1000ms (adjust as needed)
-      typingTimeoutRef.current = setTimeout(() => {}, config.typingStatusGoneWaitTime);
+      typingTimeoutRef.current = setTimeout(() => {
+         updateTypingGoneStatus(chatUser);
+      }, config.typingStatusGoneWaitTime);
    };
 
    const sendMessage = () => {
       updateTypingGoneStatus(chatUser);
       switch (true) {
-         case Boolean(editMessageId):
+         case Boolean(message.trim()) && Boolean(editMessageId):
             setMessage('');
             dispatch(toggleEditMessage(''));
             handleSendMsg({
@@ -397,12 +399,14 @@ function ChatInput({ chatUser }) {
                   <AttachmentIcon color={themeColorPalatte.iconColor} />
                </IconButton>
             )}
-            <IconButton
-               containerStyle={styles.audioRecordIconWrapper}
-               style={styles.audioRecordIcon}
-               onPress={onStartRecord}>
-               <MicIcon />
-            </IconButton>
+            {!editMessageId && (
+               <IconButton
+                  containerStyle={styles.audioRecordIconWrapper}
+                  style={styles.audioRecordIcon}
+                  onPress={onStartRecord}>
+                  <MicIcon />
+               </IconButton>
+            )}
          </>
       );
    }, [message, isEmojiPickerShowing, themeColorPalatte]);
@@ -435,7 +439,7 @@ function ChatInput({ chatUser }) {
    };
 
    const renderSendButton = React.useMemo(() => {
-      const isMessage = originalMessage ? originalMessage !== message.trim() : Boolean(message.trim());
+      const isMessage = message.trim() && originalMessage !== message.trim();
       const isAllowSendMessage = isMessage || Boolean(recordSecs) || isAudioRecording === audioRecord.STOPPED;
 
       if (isAudioRecording === audioRecord.RECORDING) {
@@ -473,7 +477,7 @@ function ChatInput({ chatUser }) {
                <Text
                   style={[commonStyles.mainTextColor, commonStyles.textDecorationLine, commonStyles.fontSize_15]}
                   onPress={hadleBlockUser}>
-                  Unblock
+                  {stringSet.CHAT_SCREEN.UNBLOCK_LABEL}
                </Text>
             </Text>
             {modalContent && <AlertModal {...modalContent} />}

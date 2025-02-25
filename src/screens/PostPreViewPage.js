@@ -41,7 +41,7 @@ const PostPreViewPage = () => {
    };
 
    const initialPage = React.useMemo(() => {
-      const selectedMsgIndex = messageList.reverse().findIndex(message => {
+      const selectedMsgIndex = messageList.findIndex(message => {
          return message.msgId === msgId;
       });
       setCurrentIndex(selectedMsgIndex);

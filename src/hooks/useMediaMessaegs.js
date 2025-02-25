@@ -40,35 +40,43 @@ export const useMergedMediaMessages = (jid, mediaTypeArr = []) => {
       getMediaMessage();
    }, [userId]);
 
-   // Memoized merged media messages
    const mergedMediaMessages = useMemo(() => {
-      const fetchedMessagesMap = {};
+      const fetchedMessagesMap = new Map();
 
       // Populate map with fetched messages
       fetchedMediaMessages.forEach(msg => {
-         fetchedMessagesMap[msg.msgId] = msg;
+         fetchedMessagesMap.set(msg.msgId, msg);
       });
 
-      // Merge state messages, prioritizing state data
-      stateMediaMessages.forEach(stateMsg => {
-         if (fetchedMessagesMap[stateMsg.msgId]) {
-            fetchedMessagesMap[stateMsg.msgId] = {
-               ...fetchedMessagesMap[stateMsg.msgId],
-               ...stateMsg,
+      // Maintain stateMediaMessages order while merging
+      const mergedMessages = stateMediaMessages.map(stateMsg => {
+         if (fetchedMessagesMap.has(stateMsg.msgId)) {
+            return {
+               ...fetchedMessagesMap.get(stateMsg.msgId), // Keep fetched message properties
+               ...stateMsg, // Override with state message properties
                msgBody: {
-                  ...fetchedMessagesMap[stateMsg.msgId].msgBody,
+                  ...fetchedMessagesMap.get(stateMsg.msgId).msgBody,
                   ...stateMsg.msgBody,
                   media: {
-                     ...fetchedMessagesMap[stateMsg.msgId].msgBody.media,
+                     ...fetchedMessagesMap.get(stateMsg.msgId).msgBody.media,
                      ...stateMsg.msgBody.media,
                   },
                },
             };
          } else {
-            fetchedMessagesMap[stateMsg.msgId] = stateMsg;
+            return stateMsg; // Keep state message if not in fetched messages
          }
       });
-      return Object.values(fetchedMessagesMap);
+
+      // Append fetched messages that are NOT in stateMediaMessages
+      fetchedMessagesMap.forEach((msg, msgId) => {
+         if (!stateMediaMessages.some(stateMsg => stateMsg.msgId === msgId)) {
+            mergedMessages.push(msg);
+         }
+      });
+
+      // Sort by timestamp to ensure correct order
+      return mergedMessages.sort((a, b) => a.timeStamp - b.timeStamp);
    }, [stateMediaMessages, fetchedMediaMessages]);
 
    return { mergedMediaMessages, isLoading };

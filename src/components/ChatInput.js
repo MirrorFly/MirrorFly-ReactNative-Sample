@@ -40,7 +40,7 @@ import { setAudioRecordTime, setAudioRecording, setTextMessage } from '../redux/
 import {
    getAudioRecordTime,
    getAudioRecording,
-   getRoomLink,
+   getCurrentCallRoomId,
    getUserNameFromStore,
    useAudioRecordTime,
    useAudioRecording,
@@ -61,7 +61,8 @@ audioRecordRef.current = {};
 let userId = '',
    fileInfo = {},
    fileName = {},
-   audioRecordClick = 0;
+   audioRecordClick = 0,
+   isAudioClicked = false;
 
 export const chatInputRef = createRef();
 chatInputRef.current = {};
@@ -81,7 +82,6 @@ export const cancelAudioRecord = () => {
 function ChatInput({ chatUser }) {
    userId = getUserIdFromJid(chatUser);
    const stringSet = getStringSet();
-   let isAudioClicked = false;
    const themeColorPalatte = useThemeColorPalatte();
    const dispatch = useDispatch();
    const appState = useAppState();
@@ -234,26 +234,25 @@ function ChatInput({ chatUser }) {
    };
 
    const onResetRecord = () => {
+      isAudioClicked = false;
       setAudioRecording('');
       setRecordTime('');
       setRecordSecs(0);
       setShowDeleteIcon(false);
       dispatch(setAudioRecording({ userId, message: '' }));
-      isAudioClicked = false;
    };
 
    const onStartRecord = async () => {
       try {
+         const roomId = getCurrentCallRoomId();
+         if (roomId) {
+            showToast(stringSet.TOAST_MESSAGES.AUDIO_CANNOT_BE_RECORDED_WHILE_IN_CALL);
+            return;
+         }
          if (isAudioClicked) {
             return;
          }
          isAudioClicked = true;
-         const roomLink = getRoomLink();
-         if (roomLink) {
-            showToast(stringSet.TOAST_MESSAGES.AUDIO_CANNOT_BE_RECORDED_WHILE_IN_CALL);
-            return;
-         }
-         console.log('onStartRecord ==> ');
          pauseAudio();
          audioRecordClick += 1;
          const res = await audioRecordPermission();

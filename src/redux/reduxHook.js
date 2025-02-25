@@ -134,7 +134,7 @@ export const getAnySelectedChatMessages = userId => {
    return messages.some(item => item.isSelected === 1);
 };
 export const getRoomLink = () => store.getState().callData?.connectionState?.roomLink;
-
+export const getCurrentCallRoomId = () => store.getState().callData?.connectionState?.roomId;
 export const getMediaMessages = (userId, mediaTypeArr = []) => {
    const state = store.getState();
    const messages = state.chatMessagesData?.[userId] || [];

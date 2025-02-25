@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useMemo } from 'react';
 import { ActivityIndicator, Dimensions, FlatList, Image, StyleSheet, View } from 'react-native';
-import { AudioWhileIcon, PlayIcon } from '../common/Icons';
+import { AudioMicIcon, AudioMusicIcon, PlayIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import Text from '../common/Text';
 import { getThumbBase64URL } from '../helpers/chatHelpers';
@@ -51,7 +51,10 @@ const MediaTab = ({ chatUserId, jid }) => {
          const {
             deleteStatus = 0,
             recallStatus = 0,
-            msgBody: { media: { thumb_image = '', is_downloaded, is_uploading } = {}, message_type = '' } = {},
+            msgBody: {
+               media: { thumb_image = '', is_downloaded, is_uploading, audioType } = {},
+               message_type = '',
+            } = {},
          } = item;
 
          if (deleteStatus !== 0 || recallStatus !== 0 || is_downloaded !== 2 || is_uploading !== 2) {
@@ -96,7 +99,11 @@ const MediaTab = ({ chatUserId, jid }) => {
                      styles.audioTile,
                      { width: tileSize - 4, height: tileSize - 4 },
                   ]}>
-                  <AudioWhileIcon />
+                  {audioType ? (
+                     <AudioMicIcon width="31.409" height="23.746" fill="#fff" />
+                  ) : (
+                     <AudioMusicIcon width="31.409" height="23.746" color="#fff" />
+                  )}
                </View>
             );
          }

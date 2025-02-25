@@ -3,7 +3,7 @@ import React from 'react';
 import { BackHandler, Platform, StyleSheet, View } from 'react-native';
 import Video from 'react-native-video';
 import IconButton from '../common/IconButton';
-import { AudioMusicIcon, BackArrowIcon } from '../common/Icons';
+import { AudioMicIcon, AudioMusicIcon, BackArrowIcon } from '../common/Icons';
 import { useAppState } from '../common/hooks';
 import { showToast } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
@@ -14,6 +14,7 @@ const VideoPlayer = () => {
       params: {
          item: { fileDetails = {} },
          audioOnly = false,
+         audioType,
       },
    } = useRoute();
    const navigation = useNavigation();
@@ -160,7 +161,7 @@ const VideoPlayer = () => {
          <View style={[commonStyles.flex1, commonStyles.justifyContentCenter]}>
             {audioOnly && (
                <View style={[commonStyles.flex1, commonStyles.justifyContentCenter, commonStyles.alignItemsCenter]}>
-                  <AudioMusicIcon width={200} height={200} />
+                  {audioType ? <AudioMicIcon width={200} height={200} /> : <AudioMusicIcon width={200} height={200} />}
                </View>
             )}
             <Video

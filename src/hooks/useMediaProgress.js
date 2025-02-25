@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useNetworkStatus } from '../common/hooks';
-import { getCurrentChatUser, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
+import { getCurrentChatUser, getUserIdFromJid, mediaObjContructor, showToast } from '../helpers/chatHelpers';
 import { mediaStatusConstants } from '../helpers/constants';
 import { updateMediaStatus } from '../redux/chatMessageDataSlice';
 import { getMediaProgress, useChatMessage } from '../redux/reduxHook';
@@ -109,10 +109,14 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
          userId,
          is_uploading: 1,
       };
-      const { msgId: _msgId, msgBody: { media = {}, media: { file = {} } = {} } = {} } = chatMessage;
+      const { msgId: _msgId, msgBody: { media = {} } = {} } = chatMessage;
+      const updatedFile = {
+         ...media.file,
+         fileDetails: mediaObjContructor('REDUX', media),
+      };
+      const _file = media.file || updatedFile;
       dispatch(updateMediaStatus(retryObj));
-
-      uploadFileToSDK(file, chatUser, _msgId, media);
+      uploadFileToSDK(_file, chatUser, _msgId, media);
    };
 
    const cancelProgress = async () => {

@@ -527,6 +527,7 @@ export const mediaObjContructor = (_package, file) => {
          mediaObj.duration = file.duration;
          mediaObj.filename = file.fileName;
          mediaObj.type = file.fileType;
+         mediaObj.audioType = file?.audioType;
          return mediaObj;
       default:
          break;

@@ -1,5 +1,5 @@
 import { useFocusEffect } from '@react-navigation/native';
-import React, { createRef } from 'react';
+import React, { createRef, useRef } from 'react';
 import { Animated, Keyboard, PanResponder, Platform, StyleSheet, View } from 'react-native';
 import AudioRecorderPlayer, {
    AVEncoderAudioQualityIOSType,
@@ -82,6 +82,7 @@ export const cancelAudioRecord = () => {
 function ChatInput({ chatUser }) {
    userId = getUserIdFromJid(chatUser);
    const stringSet = getStringSet();
+   const recordTimeoutRef = useRef(null);
    const themeColorPalatte = useThemeColorPalatte();
    const dispatch = useDispatch();
    const appState = useAppState();
@@ -244,39 +245,41 @@ function ChatInput({ chatUser }) {
 
    const onStartRecord = async () => {
       try {
-         const roomId = getCurrentCallRoomId();
-         if (roomId) {
-            showToast(stringSet.TOAST_MESSAGES.AUDIO_CANNOT_BE_RECORDED_WHILE_IN_CALL);
-            return;
-         }
-         if (isAudioClicked) {
-            return;
-         }
-         isAudioClicked = true;
-         pauseAudio();
-         audioRecordClick += 1;
-         const res = await audioRecordPermission();
-         if (res === 'granted') {
-            fileName[userId] = `MFRN_${Date.now() + audioRecordClick}`;
-            const path = Platform.select({
-               ios: `file://${RNFS.DocumentDirectoryPath}/${fileName[userId]}.m4a`,
-               android: `${RNFS.CachesDirectoryPath}/${fileName[userId]}.m4a`,
+         clearTimeout(recordTimeoutRef.current); // Clear previous timeout if exists
+
+         recordTimeoutRef.current = setTimeout(async () => {
+            if (getCurrentCallRoomId()) {
+               return showToast(stringSet.TOAST_MESSAGES.AUDIO_CANNOT_BE_RECORDED_WHILE_IN_CALL);
+            }
+            if (isAudioClicked) {
+               return;
+            }
+
+            isAudioClicked = true;
+            pauseAudio();
+            audioRecordClick += 1;
+
+            if ((await audioRecordPermission()) !== 'granted') {
+               return;
+            }
+
+            const filePath = Platform.select({
+               ios: `file://${RNFS.DocumentDirectoryPath}/MFRN_${Date.now() + audioRecordClick}.m4a`,
+               android: `${RNFS.CachesDirectoryPath}/MFRN_${Date.now() + audioRecordClick}.m4a`,
             });
 
-            const audioSet = {
+            await audioRecorderPlayer.startRecorder(filePath, {
                AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
                AudioSourceAndroid: AudioSourceAndroidType.MIC,
                AVModeIOS: AVModeIOSOption.measurement,
                AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
                AVNumberOfChannelsKeyIOS: 2,
                AVFormatIDKeyIOS: AVEncodingOption.aac,
-            };
-            setTimeout(async () => {
-               await audioRecorderPlayer.startRecorder(path, audioSet);
-               dispatch(setAudioRecording({ userId, message: audioRecord.RECORDING }));
-               audioRecorderPlayer.addRecordBackListener(onRecordBackListener);
-            }, 100);
-         }
+            });
+
+            dispatch(setAudioRecording({ userId, message: audioRecord.RECORDING }));
+            audioRecorderPlayer.addRecordBackListener(onRecordBackListener);
+         }, 500);
       } catch (error) {
          console.error('Failed to start recording:', error);
       }
@@ -284,24 +287,34 @@ function ChatInput({ chatUser }) {
 
    const onStopRecord = async () => {
       try {
-         if (!getAudioRecording(userId)) {
-            return;
-         }
-         const result = await audioRecorderPlayer.stopRecorder();
-         isAudioClicked = false;
-         panRef.setValue({ x: 0.1, y: 0 });
-         removeListener();
-         dispatch(setAudioRecording({ userId, message: audioRecord.STOPPED }));
-         if (uriPattern.test(result)) {
-            fileInfo[userId] = await RNFS.stat(result);
-            fileInfo[userId].fileCopyUri = result;
-            fileInfo[userId].duration = getAudioRecordTime(userId);
-            fileInfo[userId].name = fileName[userId];
-            fileInfo[userId] = mediaObjContructor('AUDIO_RECORD', fileInfo[userId]);
-            fileInfo[userId].audioType = 'recording';
-            fileInfo[userId].type = 'audio/m4a';
-            console.log('fileInfo[userId] ==>', JSON.stringify(fileInfo[userId], null, 2));
-         }
+         clearTimeout(recordTimeoutRef.current); // Clear previous timeout if exists
+
+         recordTimeoutRef.current = setTimeout(async () => {
+            if (!getAudioRecording(userId)) {
+               return;
+            }
+
+            const result = await audioRecorderPlayer.stopRecorder();
+            isAudioClicked = false;
+            panRef.setValue({ x: 0.1, y: 0 });
+            removeListener();
+            dispatch(setAudioRecording({ userId, message: audioRecord.STOPPED }));
+
+            if (uriPattern.test(result)) {
+               const fileStats = await RNFS.stat(result);
+               fileInfo[userId] = {
+                  ...mediaObjContructor('AUDIO_RECORD', {
+                     ...fileStats,
+                     fileCopyUri: result,
+                     duration: getAudioRecordTime(userId),
+                     name: fileName[userId],
+                     audioType: 'recording',
+                     type: 'audio/m4a',
+                  }),
+               };
+               console.log('fileInfo[userId] ==>', JSON.stringify(fileInfo[userId], null, 2));
+            }
+         }, 500); // 500ms debounce
       } catch (error) {
          console.log('Failed to stop audio recording:', error);
       }

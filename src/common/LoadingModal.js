@@ -5,7 +5,7 @@ import commonStyles from '../styles/commonStyles';
 import Modal, { ModalCenteredContent } from './Modal';
 import Text from './Text';
 
-function LoadingModal({ visible, message }) {
+function LoadingModal({ visible, message, behavior = '' }) {
    const themeColorPalatte = useThemeColorPalatte();
 
    const styles = {
@@ -15,6 +15,22 @@ function LoadingModal({ visible, message }) {
       ...commonStyles.alignItemsCenter,
       ...(Boolean(message) && { paddingHorizontal: 15, minWidth: 300, minHeight: 70 }), // Include paddingHorizontal only when message is available
    };
+
+   if (behavior === 'costom' && visible) {
+      return (
+         <View
+            style={[
+               commonStyles.positionAbsolute,
+               commonStyles.alignItemsCenter,
+               commonStyles.justifyContentCenter,
+               { flex: 1, width: '100%', height: '100%', backgroundColor: themeColorPalatte.modalOverlayBg },
+            ]}>
+            <View style={styles}>
+               <ActivityIndicator size={'large'} color={themeColorPalatte.primaryColor} />
+            </View>
+         </View>
+      );
+   }
 
    return (
       <Modal visible={visible}>

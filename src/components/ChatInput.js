@@ -193,11 +193,11 @@ function ChatInput({ chatUser }) {
    const sendMessage = () => {
       updateTypingGoneStatus(chatUser);
       switch (true) {
-         case recordSecs < 1000:
+         case recordSecs && recordSecs < 1000:
             showToast('Recorded audio time is too short');
             onResetRecord();
             break;
-         case recordSecs >= 1000:
+         case recordSecs && recordSecs >= 1000:
             onResetRecord();
             const updatedFile = {
                fileDetails: fileInfo[userId],

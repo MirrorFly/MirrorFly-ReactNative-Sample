@@ -1,12 +1,13 @@
 import React from 'react';
-import { Dimensions, Keyboard, Platform, StyleSheet, Text } from 'react-native';
+import { Dimensions, I18nManager, Keyboard, Platform, StyleSheet } from 'react-native';
 import { Menu, MenuItem } from 'react-native-material-menu';
-import ApplicationColors from '../config/appColors';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import { MenuIconBtn } from './Button';
+import Text from './Text';
 
 function MenuContainer({ menuItems, color, menuStyle }) {
    const [visible, setVisible] = React.useState(false);
-
+   const themeColorPalatte = useThemeColorPalatte();
    const showMenu = () => {
       Keyboard.dismiss();
       setVisible(true);
@@ -23,7 +24,7 @@ function MenuContainer({ menuItems, color, menuStyle }) {
    return (
       <Menu
          animationDuration={200}
-         anchor={<MenuIconBtn onPress={showMenu} />}
+         anchor={<MenuIconBtn onPress={showMenu} color={themeColorPalatte.iconColor} />}
          style={menuStyle || defaultMenuStyle}
          onRequestClose={hideMenu}
          visible={visible}>
@@ -36,7 +37,7 @@ function MenuContainer({ menuItems, color, menuStyle }) {
             };
             return item.label ? (
                <MenuItem key={item.label} onPress={handleMenuItemPress}>
-                  <Text style={styles.menuItem}>{item.label}</Text>
+                  <Text style={{ color: themeColorPalatte.black }}>{item.label}</Text>
                </MenuItem>
             ) : null;
          })}
@@ -48,10 +49,7 @@ const styles = StyleSheet.create({
    topRightMenu: {
       position: 'absolute',
       top: 10,
-      left: Dimensions.get('screen').width - 5,
-   },
-   menuItem: {
-      color: ApplicationColors.black,
+      [I18nManager.isRTL ? 'right' : 'left']: I18nManager.isRTL ? 5 : Dimensions.get('screen').width - 5,
    },
 });
 

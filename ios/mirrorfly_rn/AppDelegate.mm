@@ -1,5 +1,4 @@
 #import "AppDelegate.h"
-
 #import <React/RCTBundleURLProvider.h>
 
 // add the below imports
@@ -12,6 +11,7 @@
 #import <UIKit/UIKit.h>
 // Add the header at the top of the file:
 #import <React/RCTLinkingManager.h>
+#import "React/RCTI18nUtil.h"
 
 @implementation AppDelegate
 
@@ -23,7 +23,7 @@
   self.initialProps = @{};
   
   [RNVoipPushNotificationManager voipRegistration]; // <- add this line just before the below line
-
+  [[RCTI18nUtil sharedInstance] allowRTL:YES];
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 

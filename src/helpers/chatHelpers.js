@@ -15,8 +15,10 @@ import Toast from 'react-native-simple-toast';
 import Sound from 'react-native-sound';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
+import { CONNECTED } from '../SDK/constants';
 import { handleSendMsg, uploadFileToSDK } from '../SDK/utils';
 import {
+   BlockedIcon,
    CameraIcon,
    ChatsIcon,
    ContactIcon,
@@ -40,6 +42,7 @@ import {
    requestStoragePermission,
 } from '../common/permissions';
 import { changeTimeFormat } from '../common/timeStamp';
+import { cancelAudioRecord } from '../components/ChatInput';
 import { conversationFlatListRef } from '../components/ConversationList';
 import config from '../config/config';
 import {
@@ -47,6 +50,7 @@ import {
    AUDIO_FORMATS,
    CHAT_TYPE_GROUP,
    CHAT_TYPE_SINGLE,
+   DOCUMENT_FILE_EXT,
    DOCUMENT_FORMATS,
    MAP_THHUMBNAIL_URL,
    MAX_HEIGHT_AND,
@@ -58,20 +62,26 @@ import {
    MIN_WIDTH_AND,
    MIN_WIDTH_WEB,
    MIX_BARE_JID,
-   THIS_MESSAGE_WAS_DELETED,
    audioEmoji,
    contactEmoji,
    fileEmoji,
    imageEmoji,
    locationEmoji,
+   messageTypeConstants,
+   urlRegx,
    videoEmoji,
 } from '../helpers/constants';
+import { getStringSet, replacePlaceholders } from '../localization/stringSet';
 import {
    clearChatMessageData,
    deleteMessagesForEveryone,
    deleteMessagesForMe,
    highlightMessage,
    resetMessageSelections,
+   setChatSearchText,
+   setIsSearchChatLoading,
+   toggleEditMessage,
+   toggleIsChatSearching,
    updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
 import {
@@ -86,12 +96,15 @@ import {
    getChatMessages,
    getSelectedChatMessages,
    getSelectedChats,
+   getUserNameFromStore,
+   getXmppConnectionStatus,
 } from '../redux/reduxHook';
+import { updateBlockUser } from '../redux/rosterDataSlice';
 import store from '../redux/store';
 import {
+   BLOCKED_CONTACT_LIST_STACK,
    CAMERA_SCREEN,
    CHATS_CREEN,
-   CONVERSATION_SCREEN,
    GALLERY_FOLDER_SCREEN,
    LOCATION_SCREEN,
    MOBILE_CONTACT_LIST_SCREEN,
@@ -106,6 +119,10 @@ const { fileSize, imageFileSize, videoFileSize, audioFileSize, documentFileSize 
 const memoizedUsernameGraphemes = {};
 const splitter = new Graphemer();
 let currentChatUser = '';
+const stringSet = getStringSet();
+let isConversationScreenActive = false,
+   replyScrollmsgId = '';
+
 const documentAttachmentTypes = [
    DocumentPicker.types.allFiles,
    // DocumentPicker.types.pdf
@@ -121,6 +138,18 @@ const documentAttachmentTypes = [
    // /** need to add rar file type and verify that */
    // '.rar'
 ];
+
+export const getReplyScrollmsgId = () => replyScrollmsgId;
+
+export const setReplyScrollmsgId = val => {
+   replyScrollmsgId = val;
+};
+
+export const setIsConversationScreenActive = val => {
+   isConversationScreenActive = val;
+};
+
+export const getIsConversationScreenActive = () => isConversationScreenActive;
 
 export const showToast = message => {
    Toast.show(message, Toast.SHORT);
@@ -226,33 +255,49 @@ export const handelResetMessageSelection = userId => () => {
 
 export const getThumbBase64URL = thumb => `data:image/png;base64,${thumb}`;
 
-export const convertBytesToKB = bytes => {
-   if (bytes < 1024) {
-      // If the size is less than 1KB, return bytes only
-      return bytes + ' bytes';
-   } else if (bytes < 1024 * 1024) {
-      // If the size is less than 1MB, return in KB
-      const KB = bytes / 1024;
-      return KB.toFixed(2) + ' KB';
-   } else {
-      // If the size is 1MB or more, return in MB
-      const MB = bytes / (1024 * 1024);
-      return MB.toFixed(2) + ' MB';
-   }
+const formatDecimal = value => {
+   return new Intl.NumberFormat('en-US', {
+      maximumFractionDigits: 2,
+      minimumFractionDigits: value % 1 === 0 ? 0 : 2,
+   }).format(value);
 };
 
-export const millisToMinutesAndSeconds = millis => {
-   let minutes = Math.floor(millis / 60000);
+export const convertBytesToKB = bytes => {
+   if (!Number.isFinite(bytes) || bytes < 0) {
+      return 'Invalid size';
+   }
+
+   const sizes = ['bytes', 'KB', 'MB', 'GB', 'TB'];
+   let i = 0;
+   while (bytes >= 1024 && i < sizes.length - 1) {
+      bytes /= 1024;
+      i++;
+   }
+   return `${formatDecimal(bytes)} ${sizes[i]}`;
+};
+
+export const millisToHoursMinutesAndSeconds = millis => {
+   let hours = Math.floor(millis / 3600000);
+   let minutes = Math.floor((millis % 3600000) / 60000);
    let seconds = parseInt((millis % 60000) / 1000, 10);
-   return (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+
+   let hoursString = '';
+   if (hours > 0) {
+      hoursString = (hours < 10 ? '0' : '') + hours + ':';
+   }
+   return hoursString + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
 };
 
 export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {
    const currentUserJid = getCurrentUserJid();
    if (chatType === CHAT_TYPE_SINGLE) {
-      return userId?.includes('@') ? userId : `${userId}@${currentUserJid?.split('@')[1] || ''}`;
+      return userId?.includes(currentUserJid?.split('@')[1])
+         ? userId
+         : `${userId}@${currentUserJid?.split('@')[1] || ''}`;
    } else {
-      return userId?.includes('@') ? userId : `${userId}@mix.${currentUserJid?.split('@')[1] || ''}`;
+      return userId?.includes(currentUserJid?.split('@')[1])
+         ? userId
+         : `${userId}@mix.${currentUserJid?.split('@')[1] || ''}`;
    }
 };
 
@@ -335,10 +380,10 @@ export const openLocationExternally = (latitude, longitude) => {
    });
    if (Linking.canOpenURL(locationUrl)) {
       Linking.openURL(locationUrl).catch(() => {
-         showToast('Unable to open the location');
+         showToast(stringSet.TOAST_MESSAGES.UNABLE_TO_OPEN_THE_LOCATION);
       });
    } else {
-      showToast('No app found to open location');
+      showToast(stringSet.TOAST_MESSAGES.NO_APPS_AVAILABLE_FOR_LOCATION);
    }
 };
 
@@ -391,13 +436,19 @@ export const handleConversationClear = async jid => {
       store.dispatch(clearChatMessageData(userId));
       store.dispatch(clearRecentChatData(jid));
    } else {
-      showToast('There is no conversation');
+      showToast(stringSet.TOAST_MESSAGES.THERE_IS_NO_CONVERSATION);
    }
 };
 
 export const isAnyMessageWithinLast30Seconds = (messages = []) => {
    const now = Date.now();
-   return messages.some(message => now - message.timestamp <= 30000 && isLocalUser(message.publisherJid));
+   return messages.every(
+      message =>
+         now - message.timestamp <= 30000 &&
+         isLocalUser(message.publisherJid) &&
+         message?.msgStatus !== 3 &&
+         message?.recallStatus === 0,
+   );
 };
 
 export const getExtention = filename => {
@@ -420,9 +471,9 @@ export const mediaObjContructor = (_package, file) => {
    };
 
    switch (_package) {
-      case 'CAMERA_ROLL':
+      case 'CAMERA_ROLL': {
          const { image, type } = file;
-         mediaObj.extension = getExtention(image.filename);
+         mediaObj.extension = getExtention(image.filename) || image.extension;
          mediaObj.uri = image.uri;
          mediaObj.fileSize = image.fileSize;
          mediaObj.type = type;
@@ -432,6 +483,7 @@ export const mediaObjContructor = (_package, file) => {
          mediaObj.filename = image.filename;
          mediaObj.thumbImage = image.thumbImage || '';
          return mediaObj;
+      }
       case 'DOCUMENT_PICKER':
          mediaObj.extension = getExtention(file.name);
          mediaObj.uri = `${file.fileCopyUri}`;
@@ -460,6 +512,23 @@ export const mediaObjContructor = (_package, file) => {
          mediaObj.duration = file.duration * 1000 || 0;
          mediaObj.type = file.type + '/' + mediaObj.extension;
          return mediaObj;
+      case 'AUDIO_RECORD':
+         mediaObj.extension = getExtension(file.fileCopyUri, false);
+         mediaObj.uri = `${file.fileCopyUri}`;
+         mediaObj.fileSize = file.size;
+         mediaObj.type = file.type;
+         mediaObj.filename = file.name;
+         mediaObj.duration = file.duration || 0;
+         return mediaObj;
+      case 'REDUX':
+         mediaObj.extension = getExtension(file.local_path, false);
+         mediaObj.uri = file.local_path;
+         mediaObj.fileSize = file.file_size;
+         mediaObj.duration = file.duration;
+         mediaObj.filename = file.fileName;
+         mediaObj.type = file.fileType;
+         mediaObj.audioType = file?.audioType;
+         return mediaObj;
       default:
          break;
    }
@@ -483,10 +552,9 @@ export const isValidFileType = type => {
 };
 
 export const validateFileSize = (size, mediaTypeFile) => {
-   const filemb = Math.round(size / 1024);
    const maxAllowedSize = getMaxAllowedFileSize(mediaTypeFile);
-   if (filemb >= maxAllowedSize * 1024) {
-      const message = `File size is too large. Try uploading file size below ${maxAllowedSize}MB`;
+   if (size >= maxAllowedSize) {
+      const message = `File size is too large. Try uploading file size below ${convertBytesToKB(maxAllowedSize)}`;
       if (mediaTypeFile) {
          return message;
       }
@@ -507,13 +575,10 @@ export const getAudioDuration = async path => {
    });
 };
 
-export const validation = type => {
-   let mediaType = getType(type);
-   if (!AUDIO_FORMATS.includes(type)) {
+export const validation = extension => {
+   if (!ALLOWED_AUDIO_FORMATS.includes(extension)) {
       let message = 'You can upload only ';
-      if (mediaType === 'audio') {
-         message = message + `${ALLOWED_AUDIO_FORMATS.join(', ')} files`;
-      }
+      message = message + `${ALLOWED_AUDIO_FORMATS.join(', ')} files`;
       return message;
    }
    return '';
@@ -522,6 +587,7 @@ export const validation = type => {
 export const handleDocumentPickSingle = async () => {
    try {
       const result = await DocumentPicker.pickSingle({
+         allowMultiSelection: false,
          type: documentAttachmentTypes,
          presentationStyle: 'fullScreen',
          copyTo: Platform.OS === 'android' ? 'documentDirectory' : 'cachesDirectory',
@@ -536,13 +602,15 @@ export const handleDocumentPickSingle = async () => {
 
 export const handleAudioPickerSingle = async () => {
    try {
-      const res = await DocumentPicker.pickSingle({
+      let res = await DocumentPicker.pickSingle({
          type: [DocumentPicker.types.audio],
          presentationStyle: 'fullScreen',
          copyTo: Platform.OS === 'android' ? 'documentDirectory' : 'cachesDirectory',
       });
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
       if (res) {
+         res.extension = getExtention(res.uri || res.name);
+         res.fileCopyUri = getValidUri(res);
          return res;
       }
    } catch (error) {
@@ -559,11 +627,25 @@ export const openDocumentPicker = async () => {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       setTimeout(async () => {
          const file = await handleDocumentPickSingle();
-         if (!file) return;
+         if (!file) {
+            return;
+         }
+         // Extract directory path
+         const uriParts = file.fileCopyUri.split('/');
+         uriParts.pop(); // Remove last part (file name)
+         const correctedUri = uriParts.join('/') + '/' + file.name;
+         // Create a new object to avoid modifying the original reference (good practice)
+         const extension = getExtension(file.name, false);
+         const _updatedFile = {
+            ...file,
+            fileCopyUri: correctedUri,
+            uri: correctedUri,
+            type: file.type || `application/${extension}`,
+         };
          // updating the SDK flag back to false to behave as usual
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
          // Validating the file type and size
-         if (!isValidFileType(file.type)) {
+         if (!DOCUMENT_FILE_EXT.includes(extension)) {
             Alert.alert(
                'Mirrorfly',
                'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
@@ -577,7 +659,7 @@ export const openDocumentPicker = async () => {
          }
          // preparing the object and passing it to the sendMessage function
          const updatedFile = {
-            fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
+            fileDetails: mediaObjContructor('DOCUMENT_PICKER', _updatedFile),
          };
          const messageData = {
             messageType: 'media',
@@ -656,6 +738,16 @@ export const openLocation = async () => {
    }
 };
 
+const getValidUri = response => {
+   let validUri = response.fileCopyUri;
+   try {
+      validUri = decodeURI(validUri);
+   } catch (error) {
+      console.warn('Error decoding URI:', error);
+   }
+   return validUri || response.fileCopyUri;
+};
+
 export const handleAudioSelect = async () => {
    const audio_permission = await RealmKeyValueStore.getItem('audio_permission');
    SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
@@ -664,9 +756,12 @@ export const handleAudioSelect = async () => {
    if (audioPermission === 'granted' || audioPermission === 'limited') {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       let response = await handleAudioPickerSingle();
-      if (!response) return;
+      if (!response) {
+         return;
+      }
       const replyTo = '';
-      let _validate = validation(response.type);
+      const extension = getExtension(response.name);
+      let _validate = validation(extension);
       const sizeError = validateFileSize(response.size, getType(response.type));
       if (_validate && !sizeError) {
          Alert.alert('Mirrorfly', _validate);
@@ -716,15 +811,30 @@ export const calculateKeyboardVerticalOffset = () => {
 };
 
 export const isEqualObjet = (obj1, obj2) => {
-   if (obj1 === obj2) return true;
-   if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) return false;
+   if (obj1 === obj2) {
+      return true;
+   }
+   if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
+      return false;
+   }
    const keys1 = Object.keys(obj1);
    const keys2 = Object.keys(obj2);
-   if (keys1.length !== keys2.length) return false;
+   if (keys1.length !== keys2.length) {
+      return false;
+   }
    for (let key of keys1) {
-      if (!keys2.includes(key) || !isEqualObjet(obj1[key], obj2[key])) return false;
+      if (!keys2.includes(key) || !isEqualObjet(obj1[key], obj2[key])) {
+         return false;
+      }
    }
    return true;
+};
+
+export const handleConversationScollToBottom = () => {
+   conversationFlatListRef.current.scrollToOffset({
+      indexoffset: 0,
+      animated: true,
+   });
 };
 
 export const handleSendMedia = selectedImages => () => {
@@ -741,10 +851,12 @@ export const handleSendMedia = selectedImages => () => {
  * @param {string} uri local file path of the video
  * @returns {Promise<string>} returns the base64 data of the Thumbnail Image
  */
-export const getVideoThumbImage = async uri => {
+export const getVideoThumbImage = async (uri, duration, width, height) => {
    const frame = await createThumbnail({
       url: uri,
-      timeStamp: 10000,
+      timeStamp: duration / 2,
+      width,
+      height,
    });
    const base64 = await RNFS.readFile(frame.path, 'base64');
    return base64;
@@ -792,26 +904,25 @@ export const getThumbImage = async uri => {
    const result = await ImageCompressor.compress(uri, {
       maxWidth: 200,
       maxHeight: 200,
-      quality: 0.8,
+      quality: 0.5,
    });
    const response = await RNFS.readFile(result, 'base64');
    return response;
 };
 
-export const handleUploadNextImage = res => {
+/** export const handleUploadNextImage = res => {
    const { userId, msgId } = res;
-
    // Find the next message in the state object
    const conversationData = getChatMessages(userId);
-   const nextMessageIndex = conversationData.findIndex(item => item.msgId === msgId) - 1;
+   const nextMessageIndex = conversationData?.findIndex(item => item.msgId === msgId) - 1;
 
    if (nextMessageIndex > -1) {
       const {
          msgId: _msgId,
          userJid,
-         msgBody: { media = {}, media: { file = {}, uploadStatus } = {} } = {},
+         msgBody: { media = {}, media: { file = {}, is_uploading } = {} } = {},
       } = conversationData[nextMessageIndex];
-      if (uploadStatus === 0) {
+      if (is_uploading === 0) {
          const retryObj = {
             _msgId,
             userId,
@@ -819,6 +930,36 @@ export const handleUploadNextImage = res => {
          };
          store.dispatch(updateMediaStatus(retryObj));
          uploadFileToSDK(file, userJid, _msgId, media);
+      }
+   }
+}; */
+
+export const handleUploadNextImage = res => {
+   const { userId, msgId } = res;
+   // Find the next message in the state object
+   const conversationData = getChatMessages(userId);
+   const nextMessageIndex = conversationData.findIndex(item => item.msgId === msgId);
+   if (nextMessageIndex > -1) {
+      for (let i = nextMessageIndex - 1; i >= 0; i--) {
+         const {
+            msgId: _msgId,
+            userJid,
+            msgBody: { media = {}, media: { file = {}, is_uploading } = {} } = {},
+         } = conversationData[i];
+         if (is_uploading === 1 || is_uploading === 3) {
+            continue;
+         }
+         if (is_uploading === 0) {
+            const retryObj = {
+               _msgId,
+               userId,
+               is_uploading: 1, // Mark as uploading
+            };
+            store.dispatch(updateMediaStatus(retryObj)); // Update media status
+            // Start uploading the file
+            uploadFileToSDK(file, userJid, _msgId, media);
+            break; // Exit loop after uploading one image
+         }
       }
    }
 };
@@ -887,7 +1028,7 @@ export const handleImagePickerOpenGallery = async () => {
          .then(async image => {
             const converted = mediaObjContructor('IMAGE_PICKER', image);
             if (converted.fileSize > '10485760') {
-               showToast('Image size too large');
+               showToast(stringSet.TOAST_MESSAGES.IMAGE_SIZE_TOO_LARGE);
                return {};
             }
             return converted;
@@ -923,7 +1064,7 @@ export const getNotifyNickName = res => {
 export const getNotifyMessage = res => {
    switch (true) {
       case res.recallStatus === 1:
-         return THIS_MESSAGE_WAS_DELETED;
+         return getStringSet().COMMON_TEXT.THIS_MESSAGE_WAS_DELETED;
       case res.msgBody.message_type === 'text':
          return res?.msgBody?.message;
       case res.msgBody.message_type === 'image':
@@ -945,32 +1086,32 @@ export const getNotifyMessage = res => {
 
 export const attachmentMenuIcons = [
    {
-      name: 'Document',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.DOCUMENT_LABEL,
       icon: DocumentIcon,
       formatter: openDocumentPicker,
    },
    {
-      name: 'Camera',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.CAMERA_LABEL,
       icon: CameraIcon,
       formatter: openCamera,
    },
    {
-      name: 'Gallery',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.GALLERY_LABEL,
       icon: GalleryIcon,
       formatter: openGallery,
    },
    {
-      name: 'Audio',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.AUDIO_LABEL,
       icon: HeadSetIcon,
       formatter: handleAudioSelect,
    },
    {
-      name: 'Contact',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.CONTACT_LABEL,
       icon: ContactIcon,
       formatter: openMobileContact,
    },
    {
-      name: 'Location',
+      name: stringSet.CHAT_SCREEN_ATTACHMENTS.LOCATION_LABEL,
       icon: LocationIcon,
       formatter: openLocation,
    },
@@ -983,12 +1124,12 @@ export const settingsMenu = [
       rounteName: PROFILE_STACK,
    },
    {
-      name: 'Chats',
+      name: getStringSet().SETTINGS_SCREEN.CHATS_LABEL,
       icon: ChatsIcon,
       rounteName: CHATS_CREEN,
    },
-   /** 
-    * 
+   /**
+    *
    {
       name: 'Notifications',
       icon: NotificationSettingsIcon,
@@ -1001,7 +1142,12 @@ export const settingsMenu = [
       rounteName: NOTIFICATION_STACK,
    },
    {
-      name: 'Log out',
+      name: 'Blocked Contact',
+      icon: BlockedIcon,
+      rounteName: BLOCKED_CONTACT_LIST_STACK,
+   },
+   {
+      name: getStringSet().SETTINGS_SCREEN.LOG_OUT_LABEL,
       icon: ExitIcon,
    },
 ];
@@ -1015,7 +1161,9 @@ export const notificationMenu = [
 ];
 
 export function capitalizeFirstLetter(string) {
-   if (!string) return null;
+   if (!string) {
+      return null;
+   }
    return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
@@ -1059,7 +1207,7 @@ export const toggleMuteChat = () => {
 };
 
 export const isActiveChat = jid => {
-   return currentChatUser !== jid || RootNavigation.getCurrentScreen() !== CONVERSATION_SCREEN;
+   return currentChatUser !== jid || !isConversationScreenActive;
 };
 
 export const handleFileOpen = message => {
@@ -1071,19 +1219,18 @@ export const handleFileOpen = message => {
       })
       .catch(err => {
          console.log('Error while opening Document', err);
-         showToast('No apps available to open this file');
+         showToast(stringSet.TOAST_MESSAGES.NO_APPS_AVAILABLE);
       });
 };
 
 export const copyToClipboard = (selectedMsgs, userId) => () => {
-   console.log('userId ==>', userId);
    handelResetMessageSelection(userId)();
    Clipboard.setString(selectedMsgs[0]?.msgBody.message || selectedMsgs[0]?.msgBody?.media?.caption);
-   showToast('1 Text copied successfully to the clipboard');
+   showToast(stringSet.TOAST_MESSAGES.TEXT_COPIED_SUCCESSFULLY);
 };
 
 export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
-   const timestamp = Date.now() * 1000;
+   const timestamp = Date.now();
    const createdAt = changeTimeFormat(timestamp);
    const senderId = getUserIdFromJid(getCurrentUserJid());
 
@@ -1118,7 +1265,7 @@ export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
 };
 
 export const getRecentChatMsgObjForward = (originalMsg, toJid, newMsgId) => {
-   const timestamp = Date.now() * 1000;
+   const timestamp = Date.now();
    const createdAt = changeTimeFormat(timestamp);
    const senderId = getUserIdFromJid(getCurrentUserJid());
    const archiveSetting = getArchive();
@@ -1155,30 +1302,44 @@ export const getRecentChatMsgObjForward = (originalMsg, toJid, newMsgId) => {
 
 export const handleReplyPress = (userId, msgId, message) => {
    const scrollIndex = findConversationMessageIndex(msgId, message);
-   if (!scrollIndex || scrollIndex < 0) {
+   if (scrollIndex < 0) {
       return;
    }
+
    store.dispatch(highlightMessage({ userId, msgId, shouldHighlight: 1 }));
-   conversationFlatListRef.current.scrollToIndex({
-      index: scrollIndex,
+
+   // Compute the exact offset from stored heights
+   let offset = 0;
+   for (let i = 0; i < scrollIndex; i++) {
+      offset += conversationFlatListRef.current.itemLayout[i] || 0; // Use stored height
+   }
+
+   // Adjust for centering
+   const itemHeight = conversationFlatListRef.current.itemLayout[scrollIndex] || 50; // Default height fallback
+   const screenHeight = Dimensions.get('window').height;
+   const adjustedOffset = Math.max(0, offset - screenHeight / 2 + itemHeight / 2);
+
+   conversationFlatListRef.current.scrollToOffset({
+      offset: adjustedOffset,
       animated: true,
-      viewPosition: 0.5,
    });
-   setTimeout(() => {
-      store.dispatch(highlightMessage({ userId, msgId, shouldHighlight: 0 }));
-   }, 500);
+   replyScrollmsgId = msgId;
 };
 
 export const findConversationMessageIndex = (msgId, message) => {
-   const data = conversationFlatListRef.current.props.data;
-   const index = data.findIndex(item => item.msgId === msgId);
-   const { deleteStatus, recallStatus } = message;
-   if (deleteStatus !== 0 || recallStatus !== 0) {
-      showToast('This message is no longer available');
-   } else if (index < 0) {
-      return;
-   } else {
-      return index;
+   try {
+      const data = conversationFlatListRef.current.props.data;
+      const index = data.findIndex(item => item.msgId === msgId);
+      const { deleteStatus, recallStatus } = message;
+      if (deleteStatus !== 0 || recallStatus !== 0) {
+         showToast(stringSet.TOAST_MESSAGES.THIS_MESSAGE_NO_LONGER_AVAILABLE);
+      } else if (index < 0) {
+         return;
+      } else {
+         return index;
+      }
+   } catch (error) {
+      showToast('Something went wrong');
    }
 };
 
@@ -1187,3 +1348,137 @@ export const setCurrentChatUser = currentChatUserId => {
 };
 
 export const getCurrentChatUser = () => currentChatUser;
+
+export const groupNotifyStatus = (publisherId, toUserId, status, publisher = '', toUser = '') => {
+   try {
+      const publisherName = publisher || publisherId;
+      const toUserName = toUser || toUserId;
+      const isPublisherLocalUser = isLocalUser(publisherId);
+      const isToUserLocalUser = isLocalUser(toUserId);
+      switch (status) {
+         case messageTypeConstants.GROUP_CREATED:
+            return isPublisherLocalUser
+               ? stringSet.GROUP_LABELS.GROUP_CREATED_BY_YOU
+               : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_CREATED_BY_PUBLISHER, {
+                    publisherName,
+                 });
+         case messageTypeConstants.GROUP_USER_ADDED:
+            const placeholderData = { publisherName, toUser: toUserName };
+            if (isPublisherLocalUser && isToUserLocalUser) return '';
+            if (isPublisherLocalUser) {
+               return replacePlaceholders(stringSet.GROUP_LABELS.GROUP_YOU_ADDED, {
+                  toUser: toUserName,
+               });
+            }
+            return isToUserLocalUser
+               ? replacePlaceholders(stringSet.GROUP_LABELS.GROUP_PUBLISHER_ADDED_YOU, { publisherName })
+               : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_ADDED_BY_PUBLISHER, placeholderData);
+         case messageTypeConstants.GROUP_USER_REMOVED:
+         case messageTypeConstants.GROUP_USER_LEFT:
+            if (isPublisherLocalUser && isToUserLocalUser) return stringSet.GROUP_LABELS.GROUP_YOU_LEFT;
+            if (isPublisherLocalUser)
+               return replacePlaceholders(stringSet.GROUP_LABELS.GROUP_USER_REMOVED, { userName: toUserName });
+            if (isToUserLocalUser)
+               return replacePlaceholders(stringSet.GROUP_LABELS.GROUP_PUBLISHER_REMOVED_YOU, {
+                  userName: publisherName,
+               });
+            return toUserId === publisherId
+               ? replacePlaceholders(stringSet.GROUP_LABELS.GROUP_PUBLISHER_LEFT, { userName: publisherName })
+               : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_MEMBERS_REMOVED, {
+                    publisherName,
+                    toUser: toUserName,
+                 });
+         case messageTypeConstants.GROUP_PROFILE_INFO_UPDATED:
+            return isPublisherLocalUser
+               ? stringSet.GROUP_LABELS.YOU_UPDATED_GROUP_PROFILE
+               : replacePlaceholders(stringSet.GROUP_LABELS.PUBLISHER_UPDATED_GROUP_PROFILE, { publisherName });
+         case messageTypeConstants.GROUP_USER_MADE_ADMIN:
+            return isToUserLocalUser
+               ? stringSet.GROUP_LABELS.YOU_ARE_NOW_AN_ADMIN
+               : replacePlaceholders(stringSet.GROUP_LABELS.USER_IS_NOW_AN_ADMIN, { userName: toUserName });
+         default:
+            return '';
+      }
+   } catch (error) {
+      console.log('Failed to construct notification', error);
+      return '';
+   }
+};
+export const handleUpdateBlockUser = (userId, isBlocked, chatUser) => async () => {
+   if (connectionCheck()) {
+      store.dispatch(updateBlockUser({ userId, isBlocked }));
+      if (isBlocked) {
+         const res = await SDK.blockUser(chatUser);
+         if (res.statusCode === 200) {
+            cancelAudioRecord();
+            showToast(`You have blocked ${getUserNameFromStore(userId)}`);
+         }
+      } else {
+         const res = await SDK.unblockUser(chatUser);
+         if (res.statusCode === 200) {
+            showToast(`${getUserNameFromStore(userId)} has been unblocked`);
+         }
+      }
+   }
+};
+
+export const connectionCheck = () => {
+   const xmppConnection = getXmppConnectionStatus();
+   const isNetworkConnected = getNetworkState();
+   if (!isNetworkConnected) {
+      showCheckYourInternetToast();
+      return false;
+   }
+   if (xmppConnection !== CONNECTED) {
+      showToast('Connection Error');
+      return false;
+   }
+   return true;
+};
+
+// Calculate total offset for the FlatList to scroll to
+export const calculateOffset = (itemHeights, index) => {
+   return Array.from({ length: index }, (_, i) => itemHeights[i] || 60).reduce((total, height) => total + height, 0);
+};
+
+export const isValidUrl = str => {
+   return urlRegx.test(str);
+};
+
+export const findUrls = text => {
+   const urlRegex = /https?:\/\/[^\s]+/g;
+   let segments = [];
+   let lastIndex = 0;
+
+   text.replace(urlRegex, (match, offset) => {
+      // Push the text before the URL (if any)
+      if (offset > lastIndex) {
+         segments.push({ isUrl: false, content: text.slice(lastIndex, offset) });
+      }
+      // Push the URL itself
+      segments.push({ isUrl: true, content: match });
+      lastIndex = offset + match.length;
+   });
+
+   // If there's any remaining text after the last URL, add it
+   if (lastIndex < text.length) {
+      segments.push({ isUrl: false, content: text.slice(lastIndex) });
+   }
+
+   return segments;
+};
+
+export const resetConversationScreen = userId => {
+   dispatchSearchLoading(userId);
+   handelResetMessageSelection(userId)();
+   SDK.updateRecentChatUnreadCount('');
+   store.dispatch(toggleEditMessage(''));
+   store.dispatch(setChatSearchText(''));
+   store.dispatch(toggleIsChatSearching(false));
+};
+
+// Dispatch loading state helper
+export const dispatchSearchLoading = (userId, loadingState = '') => {
+   store.dispatch(setIsSearchChatLoading({ [userId]: loadingState }));
+   /** hasDispatchedSearchLoading = loadingState !== '';*/
+};

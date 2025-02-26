@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Dimensions, Platform, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Platform, StyleSheet, View } from 'react-native';
 import { Menu } from 'react-native-material-menu';
-import ApplicationColors from '../config/appColors';
+import { useThemeColorPalatte } from '../redux/reduxHook';
+import commonStyles from '../styles/commonStyles';
 import IconButton from './IconButton';
+import Text from './Text';
 
 const propTypes = {
    visible: PropTypes.bool,
@@ -15,7 +17,7 @@ const propTypes = {
 function AttachmentMenu({ visible, onRequestClose, attachmentMenuIcons, handleAttachmentIconPressed }) {
    const { width } = Dimensions.get('window');
    const menuWidth = width * 0.96;
-
+   const themeColorPalatte = useThemeColorPalatte();
    const splitArrayIntoChunks = (array, chunkSize) => {
       const chunks = [];
       for (let i = 0; i < array.length; i += chunkSize) {
@@ -28,7 +30,7 @@ function AttachmentMenu({ visible, onRequestClose, attachmentMenuIcons, handleAt
 
    return (
       <>
-         {visible && <View style={styles.modalOverlay} />}
+         {visible && <View style={[styles.modalOverlay, commonStyles.bg_color(themeColorPalatte.modalOverlayBg)]} />}
          <Menu
             animationDuration={visible ? 200 : 0}
             style={[styles.bottomMenu, { width: menuWidth }]}
@@ -61,7 +63,6 @@ const styles = StyleSheet.create({
       bottom: 0,
       left: 0,
       right: 0,
-      backgroundColor: ApplicationColors.modalOverlayBg,
    },
    bottomMenu: {
       flexDirection: 'column',

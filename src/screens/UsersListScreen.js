@@ -1,19 +1,23 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { debounce } from 'lodash-es';
 import React from 'react';
-import { ActivityIndicator, Image, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import { fetchContactsFromSDK, fetchGroupParticipants } from '../SDK/utils';
 import no_contacts from '../assets/no_contacts.png';
+import AlertModal from '../common/AlertModal';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import ScreenHeader from '../common/ScreenHeader';
+import Text from '../common/Text';
 import { useNetworkStatus } from '../common/hooks';
 import FlatListView from '../components/FlatListView';
-import ApplicationColors from '../config/appColors';
 import config from '../config/config';
-import { getImageSource, getUserIdFromJid, showToast } from '../helpers/chatHelpers';
-import { getUserNameFromStore, useRecentChatData } from '../redux/reduxHook';
+import { getImageSource, getUserIdFromJid, handleUpdateBlockUser, showToast } from '../helpers/chatHelpers';
+import { getStringSet, replacePlaceholders } from '../localization/stringSet';
+import { getBlockedStatus, getUserNameFromStore, useRecentChatData, useThemeColorPalatte } from '../redux/reduxHook';
+import { setRoasterData } from '../redux/rosterDataSlice';
 import commonStyles from '../styles/commonStyles';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK, GROUP_INFO, NEW_GROUP } from './constants';
 
@@ -23,6 +27,7 @@ const contactPaginationRefInitialValue = {
 };
 
 function ContactScreen() {
+   const stringSet = getStringSet();
    let {
       params: {
          prevScreen = '',
@@ -30,6 +35,8 @@ function ContactScreen() {
       } = {},
    } = useRoute();
    const navigation = useNavigation();
+   const themeColorPalatte = useThemeColorPalatte();
+   const dispatch = useDispatch();
    grpName = getUserNameFromStore(getUserIdFromJid(jid)) || grpName;
    const recentChatList = useRecentChatData();
    const isNewGrpSrn = prevScreen === NEW_GROUP;
@@ -42,6 +49,7 @@ function ContactScreen() {
    const [contactList, setContactList] = React.useState([]);
    const [selectedUsers, setSelectedUsers] = React.useState({});
    const [modelOpen, setModelOpen] = React.useState(false);
+   const [modalContent, setModalContent] = React.useState(null);
 
    const toggleModel = () => {
       setModelOpen(val => !val);
@@ -135,7 +143,7 @@ function ContactScreen() {
                });
             }
          } else {
-            showToast('Could not get contacts from server');
+            showToast(stringSet.CONTACT_SCREEN.COULD_NOT_GET_CONTACTS);
          }
          setIsFetching(false);
          setFooterLoader(false);
@@ -152,8 +160,27 @@ function ContactScreen() {
       }
    };
 
+   const toggleModalContent = () => {
+      setModalContent(null);
+   };
+
+   const hadleBlockUser = (userId, userJid) => {
+      setModalContent({
+         visible: true,
+         onRequestClose: toggleModalContent,
+         title: `Unblock ${getUserNameFromStore(userId)}`,
+         noButton: 'CANCEL',
+         yesButton: 'UNBLOCK',
+         yesAction: handleUpdateBlockUser(userId, 0, userJid),
+      });
+   };
+
    const handlePress = item => {
       if (isNewGrpSrn || isGroupInfoSrn) {
+         if (getBlockedStatus(getUserIdFromJid(item.userJid))) {
+            hadleBlockUser(getUserIdFromJid(item.userJid), item.userJid);
+            return;
+         }
          setSelectedUsers(_data => {
             if (_data[item.userJid]) {
                delete _data[item.userJid];
@@ -163,6 +190,7 @@ function ContactScreen() {
             return { ..._data };
          });
       } else {
+         dispatch(setRoasterData(item));
          navigation.navigate(CONVERSATION_STACK, { screen: CONVERSATION_SCREEN, params: { jid: item.userJid } });
       }
    };
@@ -187,16 +215,20 @@ function ContactScreen() {
 
    const handleGrpPartcipant = async () => {
       if (!isNetworkconneted) {
-         return showToast('Please check your internet connection');
+         return showToast(stringSet.COMMON_TEXT.NO_INTERNET_CONNECTION);
       }
       if (Object.keys(selectedUsers).length < config.minAllowdGroupMembers && isNewGrpSrn) {
-         return showToast('Add at least two Contacts');
+         return showToast(stringSet.TOAST_MESSAGES.TOAST_SELECT_TWO_CONTACT);
       }
       if (Object.keys(selectedUsers).length > config.maxAllowdGroupMembers && isNewGrpSrn) {
-         return showToast('Maximum allowed group members ' + config.maxAllowdGroupMembers);
+         return showToast(
+            replacePlaceholders(stringSet.INFO_SCREEN.MAXIMUM_ALLOWED_GROUP_MEMBERS, {
+               maxAllowdGroupMembers: config.maxAllowdGroupMembers,
+            }),
+         );
       }
       if (isGroupInfoSrn && !Object.keys(selectedUsers).length) {
-         return showToast('Select any contacts');
+         return showToast(stringSet.TOAST_MESSAGES.TOAST_SELECT_ANY_CONTACTS);
       }
       if (isNetworkconneted) {
          toggleModel();
@@ -210,19 +242,19 @@ function ContactScreen() {
                   showToast(message);
                }
             } catch (error) {
-               showToast('Failed to add participants');
+               showToast(stringSet.TOAST_MESSAGES.FAILED_TO_ADD_PARTICIPANTS);
             }
          } else {
             try {
                const { statusCode, message } = await SDK.createGroup(grpName, Object.keys(selectedUsers), profileImage);
                if (statusCode === 200) {
-                  showToast('Group created successfully');
+                  showToast(stringSet.TOAST_MESSAGES.TOAST_GROUP_CREATED_SUCCESSFULLY);
                   RootNavigation.popToTop();
                } else {
                   showToast(message);
                }
             } catch (error) {
-               showToast('Failed to create group');
+               showToast(stringSet.TOAST_MESSAGES.FAILED_TO_CREATE_GROUP);
             }
          }
          toggleModel();
@@ -233,19 +265,25 @@ function ContactScreen() {
       if (!isNetworkconneted) {
          return (
             <View style={commonStyles.flex1_centeredContent}>
-               <Text style={styles.noMsg}>Please check internet connectivity</Text>
+               <Text style={[styles.noMsg, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+                  {stringSet.COMMON_TEXT.NO_INTERNET_CONNECTION}
+               </Text>
             </View>
          );
       }
       if (!isFetching && contactList?.length === 0) {
          return isSearching ? (
             <View style={commonStyles.flex1_centeredContent}>
-               <Text style={styles.noMsg}>No contacts found</Text>
+               <Text style={[styles.noMsg, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+                  {stringSet.CONTACT_SCREEN.NO_CONTACTS_FOUND}
+               </Text>
             </View>
          ) : (
             <View style={commonStyles.flex1_centeredContent}>
                <Image style={styles.image} resizeMode="cover" source={getImageSource(no_contacts)} />
-               <Text style={styles.noMsg}>No contacts found</Text>
+               <Text style={[styles.noMsg, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+                  {stringSet.CONTACT_SCREEN.NO_CONTACTS_FOUND}
+               </Text>
             </View>
          );
       }
@@ -259,17 +297,22 @@ function ContactScreen() {
             footerLoader={footerLoader}
             data={contactList}
             searchText={searchText}
+            themeColorPalatte={themeColorPalatte}
          />
       );
    };
 
    return (
       <KeyboardAvoidingView
-         style={[commonStyles.flex1, commonStyles.bg_white]}
+         style={[commonStyles.flex1, commonStyles.bg_color(themeColorPalatte.screenBgColor)]}
          behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
          <ScreenHeader
             onChangeText={handleSearch}
-            title={isNewGrpSrn || isGroupInfoSrn ? 'Add Participants' : 'Contacts'}
+            title={
+               isNewGrpSrn || isGroupInfoSrn
+                  ? stringSet.CONTACT_SCREEN.ADD_PARTICIPANTS_LABEL
+                  : stringSet.CONTACT_SCREEN.CONTACT_HEADER_LABEL
+            }
             onhandleBack={handleBackBtn}
             menuItems={[]}
             handleClear={handleClear}
@@ -286,10 +329,11 @@ function ContactScreen() {
                      commonStyles.justifyContentCenter,
                      commonStyles.alignItemsCenter,
                   ]}>
-                  <ActivityIndicator size={'large'} color={ApplicationColors.mainColor} />
+                  <ActivityIndicator size={'large'} color={themeColorPalatte.primaryColor} />
                </View>
             </ModalCenteredContent>
          </Modal>
+         {modalContent && <AlertModal {...modalContent} />}
       </KeyboardAvoidingView>
    );
 }
@@ -308,7 +352,6 @@ const styles = StyleSheet.create({
       marginTop: -100, // margin negative half the height to make it center
    },
    noMsg: {
-      color: '#181818',
       fontSize: 13,
       fontWeight: '600',
       marginBottom: 8,

@@ -7,8 +7,6 @@ import {
    KeyboardAvoidingView,
    Platform,
    StyleSheet,
-   Text,
-   TextInput,
    View,
 } from 'react-native';
 import Contacts from 'react-native-contacts';
@@ -23,8 +21,11 @@ import {
    TickIcon,
 } from '../common/Icons';
 import Pressable from '../common/Pressable';
-import ApplicationColors from '../config/appColors';
+import Text from '../common/Text';
+import TextInput from '../common/TextInput';
 import { showToast } from '../helpers/chatHelpers';
+import { getStringSet } from '../localization/stringSet';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { MOBILE_CONTACT_PREVIEW_SCREEN } from './constants';
 
@@ -34,6 +35,8 @@ const maxScreenWidth = Math.min(screenWidth, 500);
 
 const MobileContacts = () => {
    const navigation = useNavigation();
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
    const [contacts, setContacts] = React.useState([]);
    const [fliterArray, setFliterArray] = React.useState([]);
    const [searchText, setSearchText] = React.useState('');
@@ -112,7 +115,7 @@ const MobileContacts = () => {
          selectedContactsRef.current[item.recordID] = true;
          setSelectedContacts([...selectedContacts, item]);
       } else {
-         showToast("Can't share more than 5 contacts");
+         showToast(stringSet.TOAST_MESSAGES.CANNOT_SHARE_MORE_THAN_5_CONTACTS);
       }
    };
 
@@ -127,7 +130,10 @@ const MobileContacts = () => {
                   <ClearTextIcon color="#fff" />
                </View>
             </Pressable>
-            <Text style={styles.selectcontactName} numberOfLines={1} ellipsizeMode="tail">
+            <Text
+               style={[styles.selectcontactName, commonStyles.textColor(themeColorPalatte.secondaryTextColor)]}
+               numberOfLines={1}
+               ellipsizeMode="tail">
                {item.displayName}
             </Text>
          </View>
@@ -160,7 +166,10 @@ const MobileContacts = () => {
                      </View>
                   ) : null}
                </View>
-               <Text style={styles.contactName} numberOfLines={1} ellipsizeMode="tail">
+               <Text
+                  style={[styles.contactName, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail">
                   {item.displayName}
                </Text>
             </View>
@@ -171,38 +180,44 @@ const MobileContacts = () => {
 
    const renderHeader = () => {
       return (
-         <View style={styles.HeaderContainer}>
+         <View style={[styles.HeaderContainer, commonStyles.bg_color(themeColorPalatte.appBarColor)]}>
             {!isSearching ? (
                <View style={styles.HeadSubcontainer}>
                   <IconButton onPress={goBackToPreviousScreen}>
-                     <BackArrowIcon />
+                     <BackArrowIcon color={themeColorPalatte.iconColor} />
                   </IconButton>
                   <View style={commonStyles.flex1}>
-                     <Text style={styles.HeaderTitle}>Contacts to send</Text>
-                     <Text style={styles.SelectedItem}>{selectedContacts.length} Selected</Text>
+                     <Text
+                        style={[styles.HeaderTitle, commonStyles.textColor(themeColorPalatte.headerPrimaryTextColor)]}>
+                        {stringSet.CHAT_SCREEN_ATTACHMENTS.CONTACT_TO_SEND}
+                     </Text>
+                     <Text style={[styles.SelectedItem, commonStyles.textColor(themeColorPalatte.secondaryTextColor)]}>
+                        {selectedContacts.length} {stringSet.CHAT_SCREEN_ATTACHMENTS.SELECTED}
+                     </Text>
                   </View>
                   <IconButton containerStyle={styles.SearchOption} onPress={toggleSearch}>
-                     <SearchIcon />
+                     <SearchIcon color={themeColorPalatte.iconColor} />
                   </IconButton>
                </View>
             ) : (
                <View style={styles.searchContainer}>
                   <IconButton onPress={toggleSearch}>
-                     <BackArrowIcon color={'#767676'} />
+                     <BackArrowIcon color={themeColorPalatte.iconColor} />
                   </IconButton>
                   <TextInput
-                     placeholderTextColor="#9D9D9D"
+                     placeholderTextColor={themeColorPalatte.placeholderTextColor}
                      value={searchText}
-                     style={styles.inputstyle}
+                     style={[styles.inputstyle, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}
                      onChangeText={handleSearch}
-                     placeholder="Search..."
+                     placeholder={stringSet.PLACEHOLDERS.SEARCH_PLACEHOLDER}
                      autoFocus={true}
                      autoCorrect={false}
-                     cursorColor={ApplicationColors.mainColor}
+                     cursorColor={themeColorPalatte.primaryColor}
+                     selectionColor={themeColorPalatte.primaryColor}
                   />
                   {Boolean(searchText) && (
                      <IconButton containerStyle={commonStyles.marginRight_8} onPress={clearSearch}>
-                        <CloseIcon width={'17'} height={'17'} />
+                        <CloseIcon width={'17'} height={'17'} color={themeColorPalatte.iconColor} />
                      </IconButton>
                   )}
                </View>
@@ -215,8 +230,8 @@ const MobileContacts = () => {
       return (
          <>
             {renderHeader()}
-            <View style={commonStyles.flex1_centeredContent}>
-               <ActivityIndicator size={'large'} color={ApplicationColors.mainColor} />
+            <View style={[commonStyles.flex1_centeredContent, { backgroundColor: themeColorPalatte.screenBgColor }]}>
+               <ActivityIndicator size={'large'} color={themeColorPalatte.primaryColor} />
             </View>
          </>
       );
@@ -225,35 +240,39 @@ const MobileContacts = () => {
    return (
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : ''} style={commonStyles.flex1}>
          {renderHeader()}
-         {/* Selected Contacts Section */}
-         {selectedContacts.length > 0 && (
-            <View>
-               <View style={[commonStyles.hstack]}>{renderSelectedContacts()}</View>
-               <View style={styles.BottomLine} />
-            </View>
-         )}
-         {/* Filtered or all contacts list */}
-         {fliterArray.length > 0 ? (
-            <FlatList
-               keyboardDismissMode="on-drag"
-               keyboardShouldPersistTaps="always"
-               data={fliterArray}
-               showsVerticalScrollIndicator={false}
-               renderItem={renderItem}
-               keyExtractor={item => item.recordID}
-               initialNumToRender={10}
-               maxToRenderPerBatch={20}
-               onScrollToIndexFailed={doNothing}
-               scrollEventThrottle={1}
-               windowSize={10}
-               onEndReachedThreshold={1}
-               disableVirtualization={true}
-            />
-         ) : (
-            <View style={styles.NoContact}>
-               <Text style={styles.NoContactTitle}>No results found</Text>
-            </View>
-         )}
+         <View style={[commonStyles.bg_color(themeColorPalatte.screenBgColor), { height: '100%' }]}>
+            {/* Selected Contacts Section */}
+            {selectedContacts.length > 0 && (
+               <View>
+                  <View style={[commonStyles.hstack]}>{renderSelectedContacts()}</View>
+                  <View style={styles.BottomLine} />
+               </View>
+            )}
+            {/* Filtered or all contacts list */}
+            {fliterArray.length > 0 ? (
+               <FlatList
+                  keyboardDismissMode="on-drag"
+                  keyboardShouldPersistTaps="always"
+                  data={fliterArray}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={renderItem}
+                  keyExtractor={item => item.recordID}
+                  initialNumToRender={10}
+                  maxToRenderPerBatch={20}
+                  onScrollToIndexFailed={doNothing}
+                  scrollEventThrottle={1}
+                  windowSize={10}
+                  onEndReachedThreshold={1}
+                  disableVirtualization={true}
+               />
+            ) : (
+               <View style={styles.NoContact}>
+                  <Text style={[styles.NoContactTitle, commonStyles.textColor(themeColorPalatte.secondaryTextColor)]}>
+                     {stringSet.COMMON_TEXT.NO_RESULTS_FOUND}
+                  </Text>
+               </View>
+            )}
+         </View>
          {/* Floating action button */}
          {selectedContacts?.length > 0 && (
             <Pressable onPress={handleContactNav} style={styles.elevationContainer}>
@@ -272,7 +291,6 @@ const styles = StyleSheet.create({
    HeaderContainer: {
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#F2F2F2',
       paddingLeft: 10,
       height: 60,
       borderBottomWidth: 0.5,
@@ -298,7 +316,6 @@ const styles = StyleSheet.create({
    contactName: {
       fontSize: 14,
       fontWeight: '600',
-      color: '#000000',
       marginLeft: 20,
       flex: 1,
    },
@@ -326,7 +343,6 @@ const styles = StyleSheet.create({
    HeaderTitle: {
       fontSize: 17,
       fontWeight: 'bold',
-      color: '#000',
       marginLeft: 10,
       // marginTop: 10,
    },
@@ -342,7 +358,6 @@ const styles = StyleSheet.create({
    NoContactTitle: {
       fontSize: 18,
       fontWeight: 'bold',
-      color: '#767676',
    },
    SearchOption: {
       marginRight: 15,
@@ -350,7 +365,6 @@ const styles = StyleSheet.create({
    SelectedItem: {
       fontSize: 14,
       fontWeight: '400',
-      color: '#767676',
       marginLeft: 10,
    },
    SelectedItemContainer: {
@@ -367,7 +381,6 @@ const styles = StyleSheet.create({
    },
    selectcontactName: {
       fontSize: 12,
-      color: '#767676',
       marginTop: 3,
    },
    ClearIcon: {
@@ -395,7 +408,6 @@ const styles = StyleSheet.create({
    },
    inputstyle: {
       flex: 1,
-      color: 'black',
       fontSize: 18,
       marginLeft: 10,
    },
@@ -413,6 +425,7 @@ const styles = StyleSheet.create({
    },
    ArrowIcon: {
       alignItems: 'center',
+      marginVertical: 10,
       justifyContent: 'center',
    },
    elevationContainer: {

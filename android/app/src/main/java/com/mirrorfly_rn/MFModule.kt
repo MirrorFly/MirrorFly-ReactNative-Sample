@@ -13,6 +13,7 @@ class MFModule : ReactPackage {
         modules.add(AudioRoutingModule(reactContext))
         modules.add(BluetoothHeadsetDetectModule(reactContext))
         modules.add(RingtoneSilentKeyEventModule(reactContext))
+        modules.add(MediaService(reactContext))
         return modules
     }
 

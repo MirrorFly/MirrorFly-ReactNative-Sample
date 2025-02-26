@@ -1,32 +1,28 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
-import { AudioMusicIcon, ClearTextIcon } from '../common/Icons';
+import { Pressable, View } from 'react-native';
+import { AudioMicIcon, AudioMusicIcon, ClearTextIcon } from '../common/Icons';
 import NickName from '../common/NickName';
-import { getUserIdFromJid } from '../helpers/chatHelpers';
+import Text from '../common/Text';
+import { getUserIdFromJid, millisToHoursMinutesAndSeconds } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
-import { getCurrentUserJid } from '../uikitMethods';
 
 const ReplyAudio = props => {
-   const { replyMsgItems, handleRemove } = props;
+   const { replyMsgItems, handleRemove, stringSet } = props;
    const { publisherJid = '', msgBody = {} } = replyMsgItems;
-   const isSameUser = publisherJid === getCurrentUserJid();
    const publisherId = getUserIdFromJid(publisherJid);
 
    const RemoveHandle = () => {
       handleRemove();
    };
 
-   const durationInSeconds = msgBody.media.duration;
-   const durationInMinutes = Math.floor(durationInSeconds / 1000);
+   const durationInSeconds = msgBody.media.duration || msgBody.media.file.fileDetails.duration;
+   const audioType = msgBody.media.audioType;
+   const durationInMinutes = millisToHoursMinutesAndSeconds(durationInSeconds);
 
    return (
       <View>
          <View flexDirection="row" justifyContent={'space-between'} alignItems={'center'}>
-            {isSameUser ? (
-               <Text style={commonStyles.userName}>You</Text>
-            ) : (
-               <NickName style={commonStyles.userName} userId={publisherId} />
-            )}
+            <NickName style={commonStyles.userName} userId={publisherId} />
             <Pressable
                style={{
                   padding: 5,
@@ -43,12 +39,14 @@ const ReplyAudio = props => {
             </Pressable>
          </View>
          <View flexDirection="row" alignItems={'center'}>
-            <AudioMusicIcon width="14" height="14" color={'#767676'} />
-            <Text style={{ paddingLeft: 8, color: '#000' }}>
-               {`${String(Math.floor(durationInMinutes / 60)).padStart(2, '0')}:${String(
-                  durationInMinutes % 60,
-               ).padStart(2, '0')} `}
-               Audio
+            {audioType ? (
+               <AudioMicIcon width="14" height="14" fill="#767676" />
+            ) : (
+               <AudioMusicIcon width="14" height="14" color={'#767676'} />
+            )}
+            <Text style={{ paddingHorizontal: 8, color: '#000' }}>
+               {durationInMinutes}{' '}
+               {stringSet.COMMON_TEXT.AUDIO_MSG_TYPE}
             </Text>
          </View>
       </View>

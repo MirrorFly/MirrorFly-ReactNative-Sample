@@ -19,7 +19,7 @@ import Modal, { ModalCenteredContent } from '../../common/Modal';
 import ApplicationColors from '../../config/appColors';
 import { getUserIdFromJid } from '../../helpers/chatHelpers';
 import { callConversion } from '../../redux/callStateSlice';
-import { useRoasterData } from '../../redux/reduxHook';
+import { useRoasterData, useThemeColorPalatte } from '../../redux/reduxHook';
 import commonStyles, { modelStyles } from '../../styles/commonStyles';
 
 export let callConverisonInterval = createRef().current;
@@ -35,6 +35,7 @@ const CallConversionPopUp = props => {
    const {
       data: { callStatusText },
    } = useSelector(state => state.showConfrenceData, shallowEqual);
+   const themeColorPalatte = useThemeColorPalatte();
 
    const [popUpData, setPopUpData] = React.useState({
       visible: false,
@@ -204,7 +205,11 @@ const CallConversionPopUp = props => {
    return (
       <Modal visible={popUpData.visible} onRequestClose={() => {}}>
          <ModalCenteredContent onPressOutside={() => {}}>
-            <View style={modelStyles.inviteFriendModalContentContainer}>
+            <View
+               style={[
+                  modelStyles.inviteFriendModalContentContainer,
+                  commonStyles.bg_color(themeColorPalatte.screenBgColor),
+               ]}>
                <Text style={styles.optionTitleText}>{popUpData.title}</Text>
                <View style={styles.buttonContainer}>
                   {popUpData.cancelBtnLabel && (

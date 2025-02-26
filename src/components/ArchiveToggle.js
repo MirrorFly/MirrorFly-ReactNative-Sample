@@ -1,12 +1,15 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import SDK from '../SDK/SDK';
 import CustomSwitch from '../common/CustomSwitch';
-import ApplicationColors from '../config/appColors';
-import { useArchive } from '../redux/reduxHook';
+import Text from '../common/Text';
+import { getStringSet } from '../localization/stringSet';
+import { useArchive, useThemeColorPalatte } from '../redux/reduxHook';
 
 function ArchiveToggle() {
    const archive = useArchive();
+   const themeColorPalatte = useThemeColorPalatte();
+   const stringSet = getStringSet();
 
    const handleSwitchToggle = value => {
       SDK.updateUserSettings(value);
@@ -14,12 +17,18 @@ function ArchiveToggle() {
 
    return (
       <>
-         <View style={styles.contentContainer}>
-            <Text style={{ fontSize: 15, color: ApplicationColors.black, lineHeight: 18, marginBottom: 5 }}>
-               Archive Settings
+         <View style={[styles.contentContainer]}>
+            <Text
+               style={{
+                  fontSize: 15,
+                  color: themeColorPalatte.primaryTextColor,
+                  lineHeight: 18,
+                  marginBottom: 5,
+               }}>
+               {stringSet.SETTING_CHAT_SCREEN.ARCHIVE_SETTINGS_LABEL}
             </Text>
-            <Text style={{ fontSize: 12, lineHeight: 18 }}>
-               Archived chats will remain archived when you receive a new message
+            <Text style={{ fontSize: 12, lineHeight: 18, color: themeColorPalatte.secondaryTextColor }}>
+               {stringSet.SETTING_CHAT_SCREEN.ARCHIVE_SETTINGS_DES_LABEL}
             </Text>
          </View>
          <CustomSwitch value={archive} onToggle={handleSwitchToggle} />

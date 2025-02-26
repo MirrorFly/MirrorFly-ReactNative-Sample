@@ -1,17 +1,20 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { BackHandler, FlatList, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, FlatList, StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
+import Text from '../common/Text';
 import ArchivedHeader from '../components/ArchivedHeader';
 import RecentChatItem from '../components/RecentChatItem';
-import ApplicationColors from '../config/appColors';
+import { getStringSet } from '../localization/stringSet';
 import { resetChatSelections } from '../redux/recentChatDataSlice';
-import { useArchivedChatData } from '../redux/reduxHook';
+import { useArchivedChatData, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { ARCHIVED_SCREEN } from './constants';
 
 function ArchivedScreen() {
+   const stringSet = getStringSet();
    const navigation = useNavigation();
+   const themeColorPalatte = useThemeColorPalatte();
    const dispatch = useDispatch();
    const archiveChats = useArchivedChatData() || [];
 
@@ -45,13 +48,13 @@ function ArchivedScreen() {
    }, [archiveChats]);
 
    const renderItem = ({ item, index }) => (
-      <RecentChatItem key={item.userJid} item={item} index={index} component="archived-chat" />
+      <RecentChatItem key={item.userJid} item={item} index={index} component="archived-chat" stringSet={stringSet} />
    );
 
    return (
       <>
          <ArchivedHeader />
-         <View style={[commonStyles.flex1, commonStyles.bg_white]}>
+         <View style={[commonStyles.flex1, commonStyles.bg_color(themeColorPalatte.screenBgColor)]}>
             {archiveChats.length ? (
                <FlatList
                   keyboardShouldPersistTaps={'always'}
@@ -62,18 +65,22 @@ function ArchivedScreen() {
                   scrollEventThrottle={1}
                   windowSize={20}
                   onEndReachedThreshold={0.1}
-                  ListFooterComponent={<View style={styles.divider} />}
+                  ListFooterComponent={
+                     <View style={[styles.divider, commonStyles.bg_color(themeColorPalatte.dividerBg)]} />
+                  }
                   disableVirtualization={true}
                />
             ) : (
                <View
                   style={[
                      commonStyles.flex1,
-                     commonStyles.bg_white,
+                     commonStyles.bg_color(themeColorPalatte.screenBgColor),
                      commonStyles.justifyContentCenter,
                      commonStyles.alignItemsCenter,
                   ]}>
-                  <Text style={commonStyles.colorBlack}>No archived chats</Text>
+                  <Text style={{ color: themeColorPalatte.primaryTextColor }}>
+                     {stringSet.COMMON_TEXT.NO_ARCHIVED_CHATS}
+                  </Text>
                </View>
             )}
          </View>
@@ -88,6 +95,5 @@ const styles = StyleSheet.create({
       width: '83%',
       height: 0.5,
       alignSelf: 'flex-end',
-      backgroundColor: ApplicationColors.dividerBg,
    },
 });

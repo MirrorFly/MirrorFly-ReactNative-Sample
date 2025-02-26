@@ -1,8 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Animated, Dimensions, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Dimensions, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useDispatch } from 'react-redux';
+import RootNavigation from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import AlertModal from '../common/AlertModal';
 import IconButton from '../common/IconButton';
@@ -19,13 +20,14 @@ import InfoImageView from '../common/InfoImageView';
 import Modal, { ModalBottomContent, ModalCenteredContent } from '../common/Modal';
 import NickName from '../common/NickName';
 import Pressable from '../common/Pressable';
+import Text from '../common/Text';
 import { useNetworkStatus } from '../common/hooks';
-import ApplicationColors from '../config/appColors';
 import config from '../config/config';
 import { getUserIdFromJid, isLocalUser, showNetWorkToast, showToast } from '../helpers/chatHelpers';
+import { getStringSet, replacePlaceholders } from '../localization/stringSet';
 import { clearChatMessageData } from '../redux/chatMessageDataSlice';
 import { deleteRecentChatOnUserId } from '../redux/recentChatDataSlice';
-import { getUserImage, useUserType } from '../redux/reduxHook';
+import { getUserImage, useThemeColorPalatte, useUserType } from '../redux/reduxHook';
 import {
    EDITNAME,
    GROUP_INFO,
@@ -37,7 +39,6 @@ import {
 import commonStyles, { modelStyles } from '../styles/commonStyles';
 import UserAvathar from './UserAvathar';
 import UserStatus from './UserStatus';
-import RootNavigation from '../Navigation/rootNavigation';
 
 const propTypes = {
    chatUser: PropTypes.string,
@@ -62,7 +63,7 @@ const defaultProps = {
    imageToken: '',
 };
 
-const RenderItem = ({ item, index, onhandlePress }) => {
+const RenderItem = ({ item, index, onhandlePress, stringSet, themeColorPalatte }) => {
    // updating default values
    const handlePress = () => onhandlePress(item);
 
@@ -74,7 +75,7 @@ const RenderItem = ({ item, index, onhandlePress }) => {
                <View style={[commonStyles.marginLeft_15, commonStyles.flex1]}>
                   <NickName
                      userId={item?.userId}
-                     style={styles.groupnickNameText}
+                     style={[styles.groupnickNameText, { color: themeColorPalatte.primaryTextColor }]}
                      numberOfLines={1}
                      ellipsizeMode="tail"
                   />
@@ -85,10 +86,14 @@ const RenderItem = ({ item, index, onhandlePress }) => {
                      ellipsizeMode="tail"
                   />
                </View>
-               {item.userType === 'o' && <Text style={{ color: ApplicationColors.mainColor }}>Admin</Text>}
+               {item.userType === 'o' && (
+                  <Text style={{ color: themeColorPalatte.primaryColor }}>
+                     {stringSet.INFO_SCREEN.ADMIN_LABEL_TEXT}
+                  </Text>
+               )}
             </View>
          </Pressable>
-         <View style={commonStyles.groupdividerLine} />
+         <View style={[commonStyles.dividerLine(themeColorPalatte.dividerBg)]} />
       </React.Fragment>
    );
 };
@@ -104,6 +109,8 @@ const GrpCollapsibleToolbar = ({
    handleFromGallery,
    handleRemovePhoto,
 }) => {
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
    const navigation = useNavigation();
    const dispatch = useDispatch();
    const isNetworkconneted = useNetworkStatus();
@@ -187,7 +194,15 @@ const GrpCollapsibleToolbar = ({
    };
 
    const renderParticipant = ({ item, index }) => {
-      return <RenderItem item={item} index={index} onhandlePress={onhandlePress} />;
+      return (
+         <RenderItem
+            item={item}
+            index={index}
+            onhandlePress={onhandlePress}
+            stringSet={stringSet}
+            themeColorPalatte={themeColorPalatte}
+         />
+      );
    };
 
    const localUser = React.useMemo(() => participants.find(item => isLocalUser(item?.userId), [participants]));
@@ -204,9 +219,11 @@ const GrpCollapsibleToolbar = ({
 
    const handleAddParticipants = () => {
       if (participants.length === config.maxAllowdGroupMembers) {
-         return showToast('Maximum allowed group members ' + config.maxAllowdGroupMembers, {
-            id: 'Maximum_allowed_group_members',
-         });
+         return showToast(
+            replacePlaceholders(stringSet.INFO_SCREEN.MAXIMUM_ALLOWED_GROUP_MEMBERS, {
+               maxAllowdGroupMembers: config.maxAllowdGroupMembers,
+            }),
+         );
       }
       navigation.navigate(USERS_LIST_SCREEN, {
          prevScreen: GROUP_INFO,
@@ -292,11 +309,15 @@ const GrpCollapsibleToolbar = ({
       setModalContent({
          visible: true,
          onRequestClose: toggleModalContent,
-         title: `Are you sure you want to remove \n${
-            userDetails?.userProfile?.nickName || userDetails?.userProfile?.mobileNumber || userDetails?.userId || ''
-         }?`,
-         noButton: 'No',
-         yesButton: 'Yes',
+         title: replacePlaceholders(stringSet.POPUP_TEXT.REMOVE_PARTICIPANT_FROM_GROUP, {
+            nickName:
+               userDetails?.userProfile?.nickName ||
+               userDetails?.userProfile?.mobileNumber ||
+               userDetails?.userId ||
+               '',
+         }),
+         noButton: stringSet.BUTTON_LABEL.NO_BUTTON,
+         yesButton: stringSet.BUTTON_LABEL.YES_BUTTON,
          yesAction: handleRemoveUser,
       });
    };
@@ -305,9 +326,9 @@ const GrpCollapsibleToolbar = ({
       setModalContent({
          visible: true,
          onRequestClose: toggleModalContent,
-         title: 'Are you sure you want to remove the photo?',
-         noButton: 'No',
-         yesButton: 'Yes',
+         title: stringSet.POPUP_TEXT.REMOVE_PROFILE_HEADER_TITLE,
+         noButton: stringSet.BUTTON_LABEL.NO_BUTTON,
+         yesButton: stringSet.BUTTON_LABEL.YES_BUTTON,
          yesAction: handleRemovePhoto,
       });
    };
@@ -316,11 +337,15 @@ const GrpCollapsibleToolbar = ({
       setModalContent({
          visible: true,
          onRequestClose: toggleModalContent,
-         title: `Are you sure you want to make ${
-            userDetails?.userProfile?.nickName || userDetails?.userProfile?.mobileNumber || userDetails?.userId || ''
-         } the admin?`,
-         noButton: 'No',
-         yesButton: 'Yes',
+         title: replacePlaceholders(stringSet.POPUP_TEXT.MAKE_PARTICIPANT_ADMIN, {
+            nickName:
+               userDetails?.userProfile?.nickName ||
+               userDetails?.userProfile?.mobileNumber ||
+               userDetails?.userId ||
+               '',
+         }),
+         noButton: stringSet.BUTTON_LABEL.NO_BUTTON,
+         yesButton: stringSet.BUTTON_LABEL.YES_BUTTON,
          yesAction: handleMakeAdmin,
       });
    };
@@ -329,9 +354,9 @@ const GrpCollapsibleToolbar = ({
       setModalContent({
          visible: true,
          onRequestClose: toggleModalContent,
-         title: 'Are you sure you want to leave from group?',
-         noButton: 'CANCEL',
-         yesButton: 'LEAVE',
+         title: stringSet.INFO_SCREEN.LEAVE_GROUP_HEADER,
+         noButton: stringSet.BUTTON_LABEL.CANCEL_BUTTON,
+         yesButton: stringSet.BUTTON_LABEL.LEAVE_BUTTON,
          yesAction: handleLeaveGroup,
       });
    };
@@ -340,9 +365,9 @@ const GrpCollapsibleToolbar = ({
       setModalContent({
          visible: true,
          onRequestClose: toggleModalContent,
-         title: 'Are you sure you want to delete this group?',
-         noButton: 'CANCEL',
-         yesButton: 'DELETE',
+         title: stringSet.POPUP_TEXT.DELETE_GROUP_HEADER,
+         noButton: stringSet.BUTTON_LABEL.CANCEL_BUTTON,
+         yesButton: stringSet.BUTTON_LABEL.DELETE_BUTTON,
          yesAction: handleDeleteGroup,
       });
    };
@@ -373,7 +398,8 @@ const GrpCollapsibleToolbar = ({
                styles.grpHeader,
                {
                   zIndex: 9,
-                  backgroundColor: '#f2f2f2',
+                  shadowColor: themeColorPalatte.shadowColor,
+                  backgroundColor: themeColorPalatte.appBarColor,
                   height: toolbarMaxHeight,
                   transform: [{ translateY: grpheaderTranslate }],
                },
@@ -413,7 +439,7 @@ const GrpCollapsibleToolbar = ({
                      style={[
                         styles.grouptitle,
                         {
-                           color: animatedTitleColor < 280 ? '#fff' : '#000',
+                           color: animatedTitleColor < 280 ? '#fff' : themeColorPalatte.primaryTextColor,
                         },
                      ]}
                   />
@@ -422,7 +448,7 @@ const GrpCollapsibleToolbar = ({
                         numberOfLines={1}
                         ellipsizeMode="tail"
                         style={[styles.groupstautsText, commonStyles.colorWhite]}>
-                        {participants.length} members
+                        {stringSet.INFO_SCREEN.MEMBERS_LABEL_TEXT.replace('{participantslength}', participants.length)}
                      </Animated.Text>
                   )}
                </View>
@@ -439,12 +465,16 @@ const GrpCollapsibleToolbar = ({
          <Animated.View style={styles.grpBar}>
             <View style={styles.groupleft}>
                <IconButton onPress={handleBackBtn}>
-                  <LeftArrowIcon color={animatedTitleColor < 280 ? '#fff' : '#000'} />
+                  <LeftArrowIcon color={animatedTitleColor < 280 ? '#fff' : themeColorPalatte.iconColor} />
                </IconButton>
             </View>
             {Boolean(userType) && (
                <Pressable onPress={handelGroupProfileUpdate} style={styles.groupleft}>
-                  <ImageEditIcon width="25" height="25" color={animatedTitleColor < 280 ? '#fff' : '#000'} />
+                  <ImageEditIcon
+                     width="25"
+                     height="25"
+                     color={animatedTitleColor < 280 ? '#fff' : themeColorPalatte.iconColor}
+                  />
                </Pressable>
             )}
          </Animated.View>
@@ -470,15 +500,15 @@ const GrpCollapsibleToolbar = ({
                            { marginVertical: 12, marginLeft: 20 },
                         ]}>
                         <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-                           <AddUserIcon />
+                           <AddUserIcon color={themeColorPalatte.iconColor} />
                            <Text
                               style={[
                                  commonStyles.marginLeft_8,
                                  commonStyles.fontSize_14,
-                                 commonStyles.colorBlack,
                                  commonStyles.fw_500,
+                                 { color: themeColorPalatte.primaryTextColor },
                               ]}>
-                              Add Participants
+                              {stringSet.INFO_SCREEN.ADD_PARTICIPANTS}
                            </Text>
                         </View>
                      </View>
@@ -496,15 +526,15 @@ const GrpCollapsibleToolbar = ({
                         commonStyles.alignItemsCenter,
                      ]}>
                      <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-                        <GalleryAllIcon />
+                        <GalleryAllIcon color={themeColorPalatte.iconColor} />
                         <Text
                            style={[
                               commonStyles.marginLeft_8,
                               commonStyles.fontSize_14,
-                              commonStyles.colorBlack,
+                              { color: themeColorPalatte.primaryTextColor },
                               commonStyles.fw_500,
                            ]}>
-                           View All Media
+                           {stringSet.INFO_SCREEN.VIEW_ALL_MEDIA}
                         </Text>
                      </View>
                      <FrontArrowIcon />
@@ -517,18 +547,20 @@ const GrpCollapsibleToolbar = ({
                   </View>
                </Pressable> */}
                {Boolean(userType) && (
-                  <Pressable onPress={toggleLeaveGroup}>
-                     <View style={[commonStyles.hstack, commonStyles.m_12, commonStyles.p_4]}>
+                  <Pressable
+                     onPress={toggleLeaveGroup}
+                     contentContainerStyle={{ paddingVertical: 20, paddingHorizontal: 10 }}>
+                     <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
                         <ExitIcon color="#ff3939" />
-                        <Text style={styles.groupgroupActionButton}>Leave Group</Text>
+                        <Text style={styles.groupgroupActionButton}>{stringSet.INFO_SCREEN.LEAVE_GROUP_LABEL}</Text>
                      </View>
                   </Pressable>
                )}
                {!userType && (
                   <Pressable onPress={toggleDeleteGroup}>
-                     <View style={[commonStyles.hstack, commonStyles.m_12, commonStyles.p_4]}>
+                     <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
                         <ExitIcon color="#ff3939" />
-                        <Text style={styles.groupgroupActionButton}>Delete Group</Text>
+                        <Text style={styles.groupgroupActionButton}>{stringSet.INFO_SCREEN.DELETE_GROUP_LABEL}</Text>
                      </View>
                   </Pressable>
                )}
@@ -537,7 +569,11 @@ const GrpCollapsibleToolbar = ({
          </Animated.ScrollView>
          <Modal visible={modelOpen} onRequestClose={toggleModel}>
             <ModalCenteredContent onPressOutside={toggleModel}>
-               <View style={modelStyles.inviteFriendModalContentContainer}>
+               <View
+                  style={[
+                     modelStyles.inviteFriendModalContentContainer,
+                     commonStyles.bg_color(themeColorPalatte.screenBgColor),
+                  ]}>
                   {/* <Pressable>
                      <Text style={modelStyles.modalOption}>Start Chat</Text>
                   </Pressable>
@@ -551,7 +587,9 @@ const GrpCollapsibleToolbar = ({
                               toggleModel();
                               toggleConfirmUserRemoveModal();
                            }}>
-                           <Text style={modelStyles.modalOption}>Remove from Group</Text>
+                           <Text style={modelStyles.modalOption(themeColorPalatte.primaryTextColor)}>
+                              {stringSet.INFO_SCREEN.REMOVE_FROM_GROUP}
+                           </Text>
                         </Pressable>
                         {userDetails.userType !== 'o' && (
                            <Pressable
@@ -559,7 +597,9 @@ const GrpCollapsibleToolbar = ({
                                  toggleModel();
                                  toggleConfirmAdminModal();
                               }}>
-                              <Text style={modelStyles.modalOption}>Make Admin</Text>
+                              <Text style={modelStyles.modalOption(themeColorPalatte.primaryTextColor)}>
+                                 {stringSet.INFO_SCREEN.MAKE_ADMIN_BUTTON}
+                              </Text>
                            </Pressable>
                         )}
                      </>
@@ -570,17 +610,35 @@ const GrpCollapsibleToolbar = ({
          <Modal visible={grpoptionModelOpen} onRequestClose={toggleOptionModel}>
             <ModalBottomContent onPressOutside={toggleOptionModel}>
                <Animated.View
-                  style={[styles.groupoptionModelContainer, { transform: [{ translateY: translateBottomSlide }] }]}>
-                  <Text style={styles.groupoptionTitleText}>Options</Text>
+                  style={[
+                     styles.groupoptionModelContainer,
+                     { transform: [{ translateBottomSlide }], backgroundColor: themeColorPalatte.screenBgColor },
+                  ]}>
+                  <Text
+                     style={[styles.groupoptionTitleText, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+                     {stringSet.INFO_SCREEN.PROFILE_PIC_EDIT_HEADER}
+                  </Text>
                   <Pressable onPress={handleOptionTakePhoto}>
-                     <Text style={styles.grouppressableText}>Take Photo</Text>
+                     <Text
+                        style={[styles.grouppressableText, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+                        {stringSet.COMMON_TEXT.TAKE_PHOTO}
+                     </Text>
                   </Pressable>
                   <Pressable onPress={handleOptionGallery}>
-                     <Text style={styles.grouppressableText}>Choose from Gallery</Text>
+                     <Text
+                        style={[styles.grouppressableText, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+                        {stringSet.COMMON_TEXT.CHOOSE_FROM_GALLERY}
+                     </Text>
                   </Pressable>
                   {Boolean(getUserImage(chatUserId)) && (
                      <Pressable onPress={handleOptionRemove}>
-                        <Text style={styles.grouppressableText}>Remove Photo</Text>
+                        <Text
+                           style={[
+                              styles.grouppressableText,
+                              commonStyles.textColor(themeColorPalatte.primaryTextColor),
+                           ]}>
+                           {stringSet.COMMON_TEXT.REMOVE_PHOTO}
+                        </Text>
                      </Pressable>
                   )}
                </Animated.View>
@@ -603,7 +661,6 @@ const styles = StyleSheet.create({
       /** overflow: 'hidden', commented to display shadow in iOS */
       position: 'absolute',
       elevation: 5,
-      shadowColor: ApplicationColors.shadowColor,
       shadowOffset: { width: 0, height: 3 },
       shadowOpacity: 0.1,
       shadowRadius: 6,
@@ -639,7 +696,7 @@ const styles = StyleSheet.create({
    },
    grouptitle: {
       fontSize: 25,
-      padding: 2,
+      paddingVertical: 2,
       alignItems: 'center',
       maxWidth: 350,
    },
@@ -658,7 +715,6 @@ const styles = StyleSheet.create({
    },
    groupnickNameText: {
       flexWrap: 'wrap',
-      color: '#1f2937',
       fontWeight: 'bold',
       marginVertical: 2,
    },
@@ -669,13 +725,16 @@ const styles = StyleSheet.create({
       width: '83%',
       height: 1,
       alignSelf: 'flex-end',
-      backgroundColor: ApplicationColors.groupdividerBg,
    },
-   groupoptionTitleText: { fontSize: 16, color: '#000', marginVertical: 5, marginHorizontal: 20, lineHeight: 25 },
+   groupoptionTitleText: {
+      fontSize: 16,
+      marginVertical: 5,
+      marginHorizontal: 20,
+      lineHeight: 25,
+   },
    groupoptionModelContainer: {
       maxWidth: 500,
       width: '98%',
-      backgroundColor: '#fff',
       paddingVertical: 12,
       borderTopLeftRadius: 30,
       borderTopRightRadius: 30,

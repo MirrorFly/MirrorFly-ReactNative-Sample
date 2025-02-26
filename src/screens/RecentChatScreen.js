@@ -1,15 +1,17 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Animated, BackHandler, Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, BackHandler, Dimensions, I18nManager, Pressable, StyleSheet, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import { useDispatch } from 'react-redux';
 import { FloatingBtn } from '../common/Button';
+import { Chat_FABICON } from '../common/Icons';
+import Text from '../common/Text';
 import RecentCalls from '../components/RecentCall';
 import RecentChat from '../components/RecentChat';
 import RecentChatHeader from '../components/RecentChatHeader';
-import ApplicationColors from '../config/appColors';
+import { getStringSet } from '../localization/stringSet';
 import { resetChatSelections } from '../redux/recentChatDataSlice';
-import { useFilteredRecentChatData } from '../redux/reduxHook';
+import { useFilteredRecentChatData, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { USERS_LIST_SCREEN } from './constants';
 
@@ -18,6 +20,9 @@ const tabWidth = screenWidth / 2;
 
 function RecentChatScreen() {
    const pagerRef = React.useRef();
+   const isRTL = I18nManager.isRTL;
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
    const navigation = useNavigation();
    const dispatch = useDispatch();
    const recentChatData = useFilteredRecentChatData();
@@ -87,17 +92,26 @@ function RecentChatScreen() {
 
    const onScroll = e => {
       const { offset, position } = e.nativeEvent;
-      const scrollPosition = position * tabWidth + offset * tabWidth;
+      const direction = isRTL ? -1 : 1;
+      const scrollPosition = (position * tabWidth + offset * tabWidth) * direction;
       indicatorPosition.setValue(scrollPosition);
    };
 
    const tabBar = React.useMemo(
       () => (
-         <View style={styles.tabBar}>
-            <Pressable pressedStyle={{}} style={[styles.tabItem, { width: '50%' }]} onPress={handleTabPress(0)}>
+         <View style={[styles.tabBar, commonStyles.bg_color(themeColorPalatte.appBarColor)]}>
+            <Pressable style={[styles.tabItem, { width: '50%' }]} onPress={handleTabPress(0)}>
                <View style={commonStyles.hstack}>
-                  <Text style={[styles.tabText, index === 0 ? styles.activeTabText : styles.inactiveTabText]}>
-                     CHATS
+                  <Text
+                     style={[
+                        styles.tabText,
+                        index === 0
+                           ? commonStyles.textColor(themeColorPalatte.primaryColor)
+                           : commonStyles.textColor(
+                                themeColorPalatte.headerPrimaryTextColor, // Color of the inactive tab text
+                             ),
+                     ]}>
+                     {stringSet.RECENT_CHAT_SCREEN.CHAT_TAB_HEADER}
                   </Text>
                   {chatsBadge > 0 && (
                      <View style={styles.tabBadgeWrapper}>
@@ -106,23 +120,29 @@ function RecentChatScreen() {
                   )}
                </View>
             </Pressable>
-            <Pressable pressedStyle={{}} style={[styles.tabItem, { width: '50%' }]} onPress={handleTabPress(1)}>
-               <Text style={[styles.tabText, index === 1 ? styles.activeTabText : styles.inactiveTabText]}>CALLS</Text>
+            <Pressable style={[styles.tabItem, { width: '50%' }]} onPress={handleTabPress(1)}>
+               <Text style={[styles.tabText, index === 1 ? styles.activeTabText : styles.inactiveTabText]}>
+                  {stringSet.RECENT_CHAT_SCREEN.CALLS_TAB_HEADER}
+               </Text>
             </Pressable>
             {/* Animated active tab indicator */}
             <Animated.View
-               style={[styles.indicator, { transform: [{ translateX: indicatorPosition }], width: indicatorWidth }]}
+               style={[
+                  styles.indicator,
+                  commonStyles.bg_color(themeColorPalatte.primaryColor),
+                  { transform: [{ translateX: indicatorPosition }], width: indicatorWidth },
+               ]}
             />
          </View>
       ),
-      [index, chatsBadge],
+      [index, themeColorPalatte],
    );
 
    const renderPagerView = React.useMemo(
       () => (
          <PagerView
             ref={pagerRef}
-            style={[commonStyles.flex1, commonStyles.bg_white]}
+            style={[commonStyles.flex1]}
             initialPage={index}
             onPageScroll={onScroll}
             onPageSelected={e => setIndex(e.nativeEvent.position)}>
@@ -138,24 +158,24 @@ function RecentChatScreen() {
    );
 
    return (
-      <View style={commonStyles.flex1}>
+      <>
          <RecentChatHeader handleBackBtn={handleBackBtn} />
          {tabBar}
          {renderPagerView}
-         <FloatingBtn onPress={handleRoute(USERS_LIST_SCREEN)} />
-      </View>
+         <FloatingBtn
+            icon={<Chat_FABICON color={themeColorPalatte.colorOnPrimary} />}
+            onPress={handleRoute(USERS_LIST_SCREEN)}
+            color={themeColorPalatte.colorOnPrimary}
+         />
+      </>
    );
 }
 
 const styles = StyleSheet.create({
-   py_1: {
-      paddingVertical: 10,
-   },
    tabBar: {
       flexDirection: 'row',
       justifyContent: 'space-around',
       alignItems: 'center',
-      backgroundColor: ApplicationColors.headerBg,
    },
    tabItem: {
       flex: 1,
@@ -167,30 +187,22 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontWeight: 'bold',
    },
-   activeTabText: {
-      color: ApplicationColors.mainColor, // Color of the active tab text
-   },
-   inactiveTabText: {
-      color: 'black', // Color of the inactive tab text
-   },
    indicator: {
       position: 'absolute',
       bottom: 0,
       height: 3,
-      backgroundColor: ApplicationColors.mainColor, // Color of the active tab indicator
    },
    tabBadgeWrapper: {
       minWidth: 20,
       paddingVertical: 1,
       paddingHorizontal: 4,
-      backgroundColor: ApplicationColors.mainColor,
       borderRadius: 50,
       justifyContent: 'center',
       alignItems: 'center',
       marginLeft: 7,
    },
    tabBadgeText: {
-      color: ApplicationColors.white,
+      color: '#fff',
       fontSize: 13,
    },
 });

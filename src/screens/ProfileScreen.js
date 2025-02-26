@@ -7,8 +7,6 @@ import {
    Platform,
    ScrollView,
    StyleSheet,
-   Text,
-   TextInput,
    View,
    useWindowDimensions,
 } from 'react-native';
@@ -23,9 +21,10 @@ import LoadingModal from '../common/LoadingModal';
 import Modal, { ModalBottomContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import ScreenHeader from '../common/ScreenHeader';
+import Text from '../common/Text';
+import TextInput from '../common/TextInput';
 import { useNetworkStatus } from '../common/hooks';
 import AuthProfileImage from '../components/AuthProfileImage';
-import ApplicationColors from '../config/appColors';
 import {
    calculateKeyboardVerticalOffset,
    getImageSource,
@@ -36,18 +35,23 @@ import {
    isEqualObjet,
    showToast,
 } from '../helpers/chatHelpers';
-import { getUserImage, useRoasterData } from '../redux/reduxHook';
+import { getStringSet } from '../localization/stringSet';
+import { getUserImage, useRoasterData, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid, mirrorflyProfileUpdate } from '../uikitMethods';
 import { PROFILE_IMAGE, PROFILE_STATUS_EDIT, RECENTCHATSCREEN } from './constants';
 
 const ProfileScreen = () => {
-   const [isLoading, setIsLoading] = React.useState(false);
+   const stringSet = getStringSet();
+   const [isLoading, setIsLoading] = React.useState(true);
    const currentUserJID = getCurrentUserJid();
+   const themeColorPalatte = useThemeColorPalatte();
    const navigaiton = useNavigation();
    const userId = getUserIdFromJid(currentUserJID);
    const profile = useRoasterData(userId);
-   const [profileDetails, setProfileDetails] = React.useState({ status: 'I am in Mirror Fly' });
+   const [profileDetails, setProfileDetails] = React.useState({
+      status: stringSet.PROFILE_SCREEN.DEFAULT_PROFILE_STATUS,
+   });
    const isConnected = useNetworkStatus();
    const canGoBack = navigaiton.canGoBack();
    const [optionModelOpen, setOptionModelOpen] = React.useState(false);
@@ -60,7 +64,7 @@ const ProfileScreen = () => {
          setProfileDetails({
             ...profile,
             mobileNumber: profile?.mobileNumber || profile?.userId,
-            status: profile?.status || 'I am in Mirror Fly',
+            status: profile?.status || stringSet.PROFILE_SCREEN.DEFAULT_PROFILE_STATUS,
          });
       }
       setIsLoading(false);
@@ -92,7 +96,7 @@ const ProfileScreen = () => {
    const handleImage = position => () => {
       Keyboard.dismiss();
       if (!isConnected) {
-         showToast('Please check your internet connectivity');
+         showToast(stringSet.COMMON_TEXT.NO_INTERNET_CONNECTION);
       } else if (isConnected) {
          if (position === 'big' && profileDetails.image) {
             navigaiton.navigate(PROFILE_IMAGE, { userId });
@@ -108,20 +112,20 @@ const ProfileScreen = () => {
          profileDetails?.nickName?.trim()?.length > 2 &&
          profileDetails?.email &&
          /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(profileDetails?.email);
-      if (!profileDetails?.nickName.trim()) {
-         return showToast('Please enter your username');
+      if (!profileDetails?.nickName?.trim()) {
+         return showToast(stringSet.TOAST_MESSAGES.ENTER_USER_NAME);
       }
       if (profileDetails?.nickName.trim()?.length < 3) {
-         return showToast('Username is too short');
+         return showToast(stringSet.TOAST_MESSAGES.USER_NAME_TOO_SHORT);
       }
       if (!profileDetails?.email) {
-         return showToast('Email should not be empty');
+         return showToast(stringSet.TOAST_MESSAGES.EMAIL_VALIDATION);
       }
       if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(profileDetails?.email)) {
-         return showToast('Please enter a Valid E-Mail');
+         return showToast(stringSet.TOAST_MESSAGES.ENTER_VALID_MAIL);
       }
       if (!isConnected) {
-         return showToast('Please check your internet connectivity');
+         return showToast(stringSet.COMMON_TEXT.NO_INTERNET_CONNECTION);
       }
       if (isConnected && validation) {
          setIsLoading(true);
@@ -135,7 +139,7 @@ const ProfileScreen = () => {
          });
          setIsLoading(false);
          if (statusCode === 200) {
-            showToast('Profile Updated successfully');
+            showToast(stringSet.TOAST_MESSAGES.PROFILE_UPDATE_SUCCESSFULLY);
             if (!canGoBack) {
                const gotoScreen = RECENTCHATSCREEN;
                RealmKeyValueStore.setItem('screen', gotoScreen);
@@ -157,7 +161,7 @@ const ProfileScreen = () => {
 
    const handleNicknameChange = text => {
       if (text.length > 30) {
-         return showToast('Maximum of 30 Characters');
+         return showToast(stringSet.TOAST_MESSAGES.NICK_NAME_MAX_CHAR);
       }
       if (text.length < 31) {
          setProfileDetails({
@@ -168,7 +172,6 @@ const ProfileScreen = () => {
    };
 
    const handleRemoveImage = () => {
-      console.log('onCLick');
       mirrorflyProfileUpdate({
          image: '',
       });
@@ -182,9 +185,9 @@ const ProfileScreen = () => {
       setModalContent({
          visible: true,
          onRequestClose: toggleModalContent,
-         title: 'Are you sure you want to remove the photo?',
-         noButton: 'No',
-         yesButton: 'Yes',
+         title: stringSet.POPUP_TEXT.REMOVE_PROFILE_HEADER_TITLE,
+         noButton: stringSet.BUTTON_LABEL.NO_BUTTON,
+         yesButton: stringSet.BUTTON_LABEL.YES_BUTTON,
          yesAction: handleRemoveImage,
       });
    };
@@ -256,14 +259,16 @@ const ProfileScreen = () => {
    return (
       <>
          <ScrollView
-            style={styles.keyBoardStyle}
+            style={[styles.keyBoardStyle, commonStyles.bg_color(themeColorPalatte.screenBgColor)]}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             keyboardVerticalOffset={Platform.OS === 'ios' ? calculateKeyboardVerticalOffset() : 0}>
             {navigaiton.canGoBack() ? (
-               <ScreenHeader title="Profile" isSearchable={false} />
+               <ScreenHeader title={stringSet.PROFILE_SCREEN.PROFILE_HEADER_TEXT} isSearchable={false} />
             ) : (
-               <View style={styles.titleContainer}>
-                  <Text style={styles.titleText}>Profile</Text>
+               <View style={[styles.titleContainer, commonStyles.bg_color(themeColorPalatte.appBarColor)]}>
+                  <Text style={[styles.titleText, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+                     {stringSet.PROFILE_SCREEN.PROFILE_HEADER_TEXT}
+                  </Text>
                </View>
             )}
             <View style={[commonStyles.justifyContentCenter]}>
@@ -277,7 +282,10 @@ const ProfileScreen = () => {
                         position: 'relative',
                      }}>
                      <Pressable
-                        pressedStyle={{ borderRadius: 100, padding: 8, backgroundColor: ApplicationColors.pressedBg }}
+                        pressedStyle={[
+                           commonStyles.pressedBg(themeColorPalatte.pressedBg),
+                           { borderRadius: 100, padding: 8 },
+                        ]}
                         onPress={handleImage('big')}>
                         {Boolean(profileDetails?.image) && handleRenderAuthImage}
                         {!Boolean(profileDetails?.image) && Boolean(profileDetails?.nickName?.trim()) && (
@@ -286,7 +294,7 @@ const ProfileScreen = () => {
                               width={157}
                               height={157}
                               data={profileDetails?.nickName?.trim()}
-                              backgroundColor={'#3276E2'}
+                              backgroundColor={themeColorPalatte.primaryColor}
                            />
                         )}
                         {!Boolean(profileDetails?.image) && !Boolean(profileDetails?.nickName?.trim()) && (
@@ -306,6 +314,7 @@ const ProfileScreen = () => {
                   </View>
                   <TextInput
                      style={{
+                        color: themeColorPalatte.primaryTextColor,
                         fontSize: 16,
                         fontWeight: '600',
                         marginTop: 5,
@@ -313,62 +322,97 @@ const ProfileScreen = () => {
                      numberOfLines={1}
                      defaultValue={profileDetails?.nickName}
                      onChangeText={handleNicknameChange}
-                     placeholder="Username " // Adding a trailing space to fix a strange issue ( last letter "e" is not visible )
+                     placeholder={stringSet.PLACEHOLDERS.ENTER_USER_NAME} // Adding a trailing space to fix a strange issue ( last letter "e" is not visible )
                      maxLength={31}
-                     placeholderTextColor="#959595"
+                     placeholderTextColor={themeColorPalatte.placeholderTextColor}
                      keyboardType="default"
-                     cursorColor={ApplicationColors.mainColor}
+                     cursorColor={themeColorPalatte.primaryColor}
+                     selectionColor={themeColorPalatte.primaryColor}
                   />
                </View>
                <View style={{ padding: 20 }}>
                   <Text
-                     style={{
-                        fontSize: 14,
-                        fontWeight: '500',
-                        marginTop: 5,
-                        color: '#000',
-                     }}>
-                     Email
+                     style={[
+                        {
+                           fontSize: 14,
+                           fontWeight: '500',
+                           marginTop: 5,
+                           color: themeColorPalatte.primaryTextColor,
+                        },
+                     ]}>
+                     {stringSet.PROFILE_SCREEN.EMAIL_HEADER_LABEL}
                   </Text>
                   <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
                      <MailIcon />
                      <TextInput
                         // editable={!canGoBack}
-                        style={{ color: '#959595', flex: 1, marginLeft: 8 }}
+                        style={{ color: themeColorPalatte.secondaryTextColor, flex: 1, marginLeft: 8 }}
                         defaultValue={profileDetails?.email}
                         onChangeText={handleEmailChange}
                         maxLength={35}
-                        placeholder="Enter Email Id"
-                        placeholderTextColor={'#959595'}
+                        placeholder={stringSet.PLACEHOLDERS.ENTER_EMAIL_ID}
+                        placeholderTextColor={themeColorPalatte.placeholderTextColor}
                         keyboardType="default"
                         numberOfLines={1}
+                        cursorColor={themeColorPalatte.primaryColor}
+                        selectionColor={themeColorPalatte.primaryColor}
                      />
                   </View>
-                  <View style={[commonStyles.dividerLine, commonStyles.mt_12]} />
-                  <Text style={{ paddingVertical: 10, fontSize: 14, fontWeight: '500', marginTop: 5, color: '#000' }}>
-                     Mobile Number
+                  <View style={[commonStyles.dividerLine(themeColorPalatte.dividerBg), commonStyles.mt_12]} />
+                  <Text
+                     style={[
+                        {
+                           paddingVertical: 10,
+                           fontSize: 14,
+                           fontWeight: '500',
+                           marginTop: 5,
+                           color: themeColorPalatte.primaryTextColor,
+                        },
+                     ]}>
+                     {stringSet.PROFILE_SCREEN.MOBILE_NUM_HEADER_LABEL}
                   </Text>
                   <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
                      <CallIcon />
-                     <Text style={{ color: '#959595', flex: 1, marginLeft: 8 }}>+{profileDetails?.mobileNumber}</Text>
+                     <Text style={[{ color: themeColorPalatte.secondaryTextColor, flex: 1, marginLeft: 8 }]}>
+                        +{profileDetails?.mobileNumber}
+                     </Text>
                   </View>
-                  <View style={[commonStyles.dividerLine, commonStyles.mt_12]} />
-                  <Text style={{ fontSize: 14, fontWeight: '500', marginTop: 5, color: '#000', paddingTop: 10 }}>
-                     Status
+                  <View style={[commonStyles.dividerLine(themeColorPalatte.dividerBg), commonStyles.mt_12]} />
+                  <Text
+                     style={[
+                        {
+                           fontSize: 14,
+                           fontWeight: '500',
+                           marginTop: 5,
+                           color: themeColorPalatte.primaryTextColor,
+                           paddingTop: 10,
+                        },
+                     ]}>
+                     {stringSet.PROFILE_SCREEN.STATUS_HEADER_LABEL}
                   </Text>
                   <Pressable onPress={handleRoute(PROFILE_STATUS_EDIT, { userId })}>
                      <View style={[commonStyles.hstack, commonStyles.alignItemsCenter, { paddingVertical: 10 }]}>
                         <StatusIcon />
-                        <Text style={{ color: '#959595', flex: 1, marginLeft: 8 }}>{profileDetails?.status}</Text>
+                        <Text style={[{ color: themeColorPalatte.secondaryTextColor, flex: 1, marginLeft: 8 }]}>
+                           {profileDetails?.status}
+                        </Text>
                      </View>
                   </Pressable>
-                  <View style={[commonStyles.dividerLine, commonStyles.mt_12]} />
+                  <View style={[commonStyles.dividerLine(themeColorPalatte.dividerBg), commonStyles.mt_12]} />
                </View>
                <View style={[commonStyles.alignItemsCenter, commonStyles.mt_50]}>
                   {!canGoBack && (
-                     <Pressable style={[commonStyles.primarypilbtn]} onPress={handleProfileUpdate}>
-                        <Text style={commonStyles.primarypilbtntext}>
-                           {isUnsavedChangesAvailable ? 'Update & Continue' : 'Save'}
+                     <Pressable
+                        style={[commonStyles.primarypilbtn, commonStyles.bg_color(themeColorPalatte.primaryColor)]}
+                        onPress={handleProfileUpdate}>
+                        <Text
+                           style={[
+                              commonStyles.primarypilbtntext,
+                              commonStyles.textColor(themeColorPalatte.colorOnPrimary),
+                           ]}>
+                           {isUnsavedChangesAvailable
+                              ? stringSet.BUTTON_LABEL.UPDATE_CONTINUE_BUTTON
+                              : stringSet.BUTTON_LABEL.SAVE_BUTTON}
                         </Text>
                      </Pressable>
                   )}
@@ -378,11 +422,18 @@ const ProfileScreen = () => {
                         style={[
                            commonStyles.primarypilbtn,
                            {
-                              backgroundColor: isUnsavedChangesAvailable && canGoBack ? '#3276E2' : '#d3d3d3',
+                              backgroundColor:
+                                 isUnsavedChangesAvailable && canGoBack ? themeColorPalatte.primaryColor : '#d3d3d3',
                            },
                         ]}
                         onPress={handleProfileUpdate}>
-                        <Text style={commonStyles.primarypilbtntext}>Save</Text>
+                        <Text
+                           style={[
+                              commonStyles.primarypilbtntext,
+                              commonStyles.textColor(themeColorPalatte.colorOnPrimary),
+                           ]}>
+                           {stringSet.BUTTON_LABEL.SAVE_BUTTON}
+                        </Text>
                      </Pressable>
                   )}
                </View>
@@ -392,17 +443,31 @@ const ProfileScreen = () => {
          {modalContent && <AlertModal {...modalContent} />}
          <Modal visible={optionModelOpen} onRequestClose={toggleOptionModel}>
             <ModalBottomContent onPressOutside={toggleOptionModel}>
-               <Animated.View style={[styles.optionModelContainer, { transform: [{ translateY }] }]}>
-                  <Text style={styles.optionTitleText}>Options</Text>
+               <Animated.View
+                  style={[
+                     styles.optionModelContainer,
+                     commonStyles.bg_color(themeColorPalatte.screenBgColor),
+                     { transform: [{ translateY }] },
+                  ]}>
+                  <Text style={[styles.optionTitleText, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+                     {stringSet.INFO_SCREEN.PROFILE_PIC_EDIT_HEADER}
+                  </Text>
                   <Pressable onPress={handleOptionTakePhoto}>
-                     <Text style={styles.pressableText}>Take Photo</Text>
+                     <Text style={[styles.pressableText, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+                        {stringSet.COMMON_TEXT.TAKE_PHOTO}
+                     </Text>
                   </Pressable>
                   <Pressable onPress={handleOptionGallery}>
-                     <Text style={styles.pressableText}>Choose from Gallery</Text>
+                     <Text style={[styles.pressableText, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+                        {stringSet.COMMON_TEXT.CHOOSE_FROM_GALLERY}
+                     </Text>
                   </Pressable>
                   {Boolean(getUserImage(userId)) && (
                      <Pressable onPress={handleOptionRemove}>
-                        <Text style={styles.pressableText}>Remove Photo</Text>
+                        <Text
+                           style={[styles.pressableText, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+                           {stringSet.COMMON_TEXT.REMOVE_PHOTO}
+                        </Text>
                      </Pressable>
                   )}
                </Animated.View>
@@ -417,13 +482,11 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
    keyBoardStyle: {
       flex: 1,
-      backgroundColor: ApplicationColors.white,
    },
    titleContainer: {
       alignItems: 'center',
       width: '100%',
       height: 65,
-      backgroundColor: ApplicationColors.headerBg,
       paddingRight: 16,
       paddingVertical: 12,
    },
@@ -435,13 +498,16 @@ const styles = StyleSheet.create({
       fontSize: 18,
       paddingHorizontal: 12,
       fontWeight: '600',
-      color: ApplicationColors.black,
    },
-   optionTitleText: { fontSize: 16, color: '#000', marginVertical: 5, marginHorizontal: 20, lineHeight: 25 },
+   optionTitleText: {
+      fontSize: 16,
+      marginVertical: 5,
+      marginHorizontal: 20,
+      lineHeight: 25,
+   },
    optionModelContainer: {
       maxWidth: 500,
       width: '98%',
-      backgroundColor: '#fff',
       paddingVertical: 12,
       borderTopLeftRadius: 30,
       borderTopRightRadius: 30,

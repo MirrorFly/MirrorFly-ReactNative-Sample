@@ -22,6 +22,7 @@ export default StyleSheet.create({
       flexDirection: 'row',
       marginLeft: 3,
       flex: 1,
+      overflow: 'hidden',
    },
    sliderStyle: {
       flex: 1,

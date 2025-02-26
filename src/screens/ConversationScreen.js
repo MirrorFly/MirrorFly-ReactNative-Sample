@@ -8,33 +8,33 @@ import chatBackgroud from '../assets/chatBackgroud.png';
 import ChatHeader from '../components/ChatHeader';
 import ChatInput from '../components/ChatInput';
 import ConversationList from '../components/ConversationList';
+import EditMessage from '../components/EditMessage';
 import ReplyContainer from '../components/ReplyContainer';
 import {
    getImageSource,
    getUserIdFromJid,
    handelResetMessageSelection,
+   resetConversationScreen,
    setCurrentChatUser,
 } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
 import { resetUnreadCountForChat } from '../redux/recentChatDataSlice';
-import { useChatMessages, useReplyMessage } from '../redux/reduxHook';
+import { useAnySelectedChatMessages, useReplyMessage, useThemeColorPalatte } from '../redux/reduxHook';
+import commonStyles from '../styles/commonStyles';
 import { RECENTCHATSCREEN } from './constants';
 
 function ConversationScreen({ chatUser = '' }) {
    const { params: { jid: _jid = '' } = {} } = useRoute();
    const [jid, setJid] = React.useState(_jid || chatUser); // TO HANDLE APPLCATION RENDER BY COMPONENT BY COMPONENT
-   let currentChatUser = _jid || chatUser;
+   let currentChatUser = jid || chatUser;
    setCurrentChatUser(currentChatUser);
+   const themeColorPalatte = useThemeColorPalatte();
    SDK.activeChatUser(currentChatUser);
    const dispatch = useDispatch();
    const userId = getUserIdFromJid(jid);
    const navigation = useNavigation();
-   const messaesList = useChatMessages(userId) || [];
+   const isAnySelected = useAnySelectedChatMessages(userId);
    const replyMessage = useReplyMessage(userId) || {};
-
-   const isAnySelected = React.useMemo(() => {
-      return messaesList.some(item => item.isSelected === 1);
-   }, [messaesList.map(item => item.isSelected).join(',')]); // Include isSelected in the dependency array
 
    React.useEffect(() => {
       SDK.updateRecentChatUnreadCount(currentChatUser);
@@ -44,10 +44,7 @@ function ConversationScreen({ chatUser = '' }) {
       } else {
          getUserProfileFromSDK(userId);
       }
-      return () => {
-         handelResetMessageSelection(userId)();
-         setCurrentChatUser('');
-      };
+      return () => resetConversationScreen(userId);
    }, []);
 
    React.useEffect(() => {
@@ -101,10 +98,13 @@ function ConversationScreen({ chatUser = '' }) {
          style={styles.container}
          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
          {renderChatHeader}
-         <ImageBackground source={getImageSource(chatBackgroud)} style={styles.imageBackground}>
+         <ImageBackground
+            source={getImageSource(chatBackgroud)}
+            style={[styles.imageBackground, commonStyles.bg_color(themeColorPalatte.screenBgColor)]}>
             {renderConversationList}
          </ImageBackground>
          {renderReplyContainer}
+         <EditMessage />
          {renderChatInput}
       </KeyboardAvoidingView>
    );

@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import RNFS from 'react-native-fs';
 import Video from 'react-native-video';
@@ -14,22 +14,26 @@ import flipCameraIcon from '../assets/ic_flip_camera_android.png';
 import IconButton from '../common/IconButton';
 import { LeftArrowIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
+import Text from '../common/Text';
 import {
    getImageSource,
    getType,
    mediaObjContructor,
-   millisToMinutesAndSeconds,
+   millisToHoursMinutesAndSeconds,
    showToast,
    validateFileSize,
 } from '../helpers/chatHelpers';
+import { getStringSet } from '../localization/stringSet';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { CAMERA_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
-
 
 const cameraService = new CameraService();
 
 const Camera = () => {
    const navigation = useNavigation();
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
    const [flashMode, setFlashMode] = React.useState(RNCamera.Constants.FlashMode.off);
    const [cameraType, setCameraType] = React.useState(RNCamera.Constants.Type.back);
    const { ref, callbackRef } = useCallbackRef();
@@ -178,7 +182,7 @@ const Camera = () => {
                      <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
                         <View style={styles.recording} />
                         <Text style={[commonStyles.fontSize_12, commonStyles.colorWhite]}>
-                           {millisToMinutesAndSeconds(captureTime * 1000)}
+                           {millisToHoursMinutesAndSeconds(captureTime * 1000)}
                         </Text>
                      </View>
                   )}
@@ -202,7 +206,7 @@ const Camera = () => {
                      onPressOut={handlePressOut}
                      style={styles.captureContainer}>
                      {isCapturing ? (
-                        <ActivityIndicator size="lg" color={'#3276E2'} />
+                        <ActivityIndicator size="lg" color={themeColorPalatte.primaryColor} />
                      ) : (
                         recording && <View style={styles.captureBtn} />
                      )}
@@ -221,8 +225,9 @@ const Camera = () => {
             </View>
          </View>
          <View style={styles.textContainer}>
-            {/* Hold for video,  */}
-            <Text style={[commonStyles.fontSize_12, commonStyles.colorWhite]}>Tap for photo</Text>
+            <Text style={[commonStyles.fontSize_12, commonStyles.colorWhite]}>
+               {stringSet.CHAT_SCREEN_ATTACHMENTS.TAP_FOR_PHOTO}
+            </Text>
          </View>
       </>
    );

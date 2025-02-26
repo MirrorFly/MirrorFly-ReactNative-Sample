@@ -3,10 +3,11 @@ import { ActivityIndicator, Image, View } from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
 import Avathar from '../common/Avathar';
-import ApplicationColors from '../config/appColors';
 import { getExtention } from '../helpers/chatHelpers';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 
 const AuthProfileImage = props => {
+   const themeColorPalatte = useThemeColorPalatte();
    const [imageSource, setImageSource] = React.useState(null);
    const [isFetching, setIsFetching] = React.useState(false);
    const profileImageKey = props.image.split('.')[0];
@@ -62,7 +63,7 @@ const AuthProfileImage = props => {
    return (
       <View>
          {isFetching || Boolean(props?.imageUploading) ? (
-            <ActivityIndicator size={'small'} color={ApplicationColors.mainColor} />
+            <ActivityIndicator size={'small'} color={themeColorPalatte.primaryColor} />
          ) : (
             <>
                {Boolean(imageSource) ? (

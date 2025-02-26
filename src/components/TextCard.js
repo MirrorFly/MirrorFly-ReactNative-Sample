@@ -1,37 +1,118 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
+import Text from '../common/Text';
 import { getConversationHistoryTime } from '../common/timeStamp';
-import { escapeRegExpReservedChars, getMessageStatus } from '../helpers/chatHelpers';
+import { findUrls, getMessageStatus } from '../helpers/chatHelpers';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
+import { randomString } from '../SDK/utils';
 
 const TextCard = ({ item, isSender }) => {
-   const { createdAt = '', msgStatus = 0, msgBody: { message = '', replyTo = '' } = {} } = item;
+   const themeColorPalatte = useThemeColorPalatte();
+   const { createdAt = '', msgStatus = 0, msgBody: { message = '', replyTo = '' } = {}, editMessageId } = item;
+   /**const searchText = useChatSearchText('');*/
 
    return (
       <View style={commonStyles.paddingHorizontal_4}>
-         {Boolean(replyTo) && <ReplyMessage message={item} isSame={isSender} />}
-         <Text style={styles.message}>
-            <ChatConversationHighlightedText text={message} textStyle={styles.message} searchValue={''} />
+         {Boolean(replyTo) && <ReplyMessage message={item} isSender={isSender} />}
+         <Text
+            style={[
+               styles.message,
+               commonStyles.textColor(
+                  isSender
+                     ? themeColorPalatte.chatSenderPrimaryTextColor
+                     : themeColorPalatte.chatReceiverPrimaryTextColor,
+               ),
+            ]}>
+            <ChatConversationHighlightedText
+               text={message}
+               textStyle={{
+                  ...styles.message,
+                  ...commonStyles.textColor(
+                     isSender
+                        ? themeColorPalatte.chatSenderPrimaryTextColor
+                        : themeColorPalatte.chatReceiverPrimaryTextColor,
+                  ),
+               }}
+               searchValue={''}
+            />
          </Text>
          <View style={styles.timeStamp}>
             {isSender && getMessageStatus(msgStatus)}
-            <Text style={styles.timeStampText}>{getConversationHistoryTime(createdAt)}</Text>
+            {editMessageId && (
+               <Text
+                  style={[
+                     styles.timeStampText,
+                     commonStyles.textColor(
+                        isSender
+                           ? themeColorPalatte.chatSenderSecondaryTextColor
+                           : themeColorPalatte.chatReceiverSecondaryTextColor,
+                     ),
+                     { paddingLeft: 4 },
+                  ]}>
+                  Edited
+               </Text>
+            )}
+            <Text
+               style={[
+                  styles.timeStampText,
+                  commonStyles.textColor(
+                     isSender
+                        ? themeColorPalatte.chatSenderSecondaryTextColor
+                        : themeColorPalatte.chatReceiverSecondaryTextColor,
+                  ),
+               ]}>
+               {getConversationHistoryTime(createdAt)}
+            </Text>
          </View>
       </View>
    );
 };
-export default TextCard;
 
 export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchValue = '', index }) => {
-   let parts = searchValue ? text.split(new RegExp(`(${escapeRegExpReservedChars(searchValue)})`, 'i')) : [text];
+   const segments = findUrls(text);
+
+   const handlePress = url => {
+      Linking.openURL(url);
+   };
+
    return (
       <Text>
-         {parts.map((part, i) => {
-            const isSearchMatch = part?.toLowerCase() === searchValue.toLowerCase() ? styles.highlight : {};
+         {segments.map((segment, i) => {
+            const content = segment.content;
+            const lowerCaseContent = content.toLowerCase();
+            const lowerCaseSearchValue = searchValue.toLowerCase();
+
+            if (lowerCaseSearchValue && lowerCaseContent.includes(lowerCaseSearchValue)) {
+               const parts = content.split(new RegExp(`(${searchValue})`, 'i'));
+
+               return parts.map((part, partIndex) => {
+                  const isMatch = part.toLowerCase() === lowerCaseSearchValue;
+                  const highlightStyle = isMatch ? styles.highlight : {};
+                  const urlStyle = segment.isUrl ? styles.underline : {}; // Apply underline only for URLs
+
+                  return (
+                     <Text
+                        key={randomString()}
+                        style={[textStyle, highlightStyle, urlStyle]}
+                        onPress={() => segment.isUrl && handlePress(segment.content)}
+                        suppressHighlighting={!segment.isUrl}>
+                        {part}
+                     </Text>
+                  );
+               });
+            }
+
+            // If no match, render normally
+            const urlStyle = segment.isUrl ? styles.underline : {};
             return (
-               <Text key={++i + '-' + index} ellipsizeMode="tail" style={[textStyle, isSearchMatch]}>
-                  {part}
+               <Text
+                  key={randomString()}
+                  style={[textStyle, urlStyle]}
+                  onPress={() => segment.isUrl && handlePress(segment.content)}
+                  suppressHighlighting={!segment.isUrl}>
+                  {content}
                </Text>
             );
          })}
@@ -44,7 +125,6 @@ const styles = StyleSheet.create({
       fontSize: 14,
       paddingHorizontal: 5,
       paddingVertical: 8,
-      color: '#313131',
       lineHeight: 20,
    },
    timeStamp: {
@@ -56,14 +136,18 @@ const styles = StyleSheet.create({
       justifyContent: 'flex-end',
    },
    timeStampText: {
-      paddingLeft: 4,
-      color: '#455E93',
+      paddingHorizontal: 4,
       fontSize: 10,
       fontWeight: '400',
    },
-
    highlight: {
       backgroundColor: '#D69C23',
       fontWeight: 'bold',
    },
+   underline: {
+      color: '#3276E2',
+      textDecorationLine: 'underline', // Underline style for URLs
+   },
 });
+
+export default TextCard;

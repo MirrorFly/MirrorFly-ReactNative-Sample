@@ -1,22 +1,26 @@
 import React from 'react';
-import { ActivityIndicator, Image, SectionList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, SectionList, StyleSheet, View } from 'react-native';
 import SDK from '../SDK/SDK';
 import { fetchRecentChats, getHasNextRecentChatPage } from '../SDK/utils';
 import no_messages from '../assets/no_messages.png';
-import ApplicationColors from '../config/appColors';
+import Text from '../common/Text';
 import { getImageSource } from '../helpers/chatHelpers';
+import { getStringSet } from '../localization/stringSet';
 import {
    useArchive,
    useArchivedChatData,
    useFilteredRecentChatData,
    useRecentChatSearchText,
+   useThemeColorPalatte,
 } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ArchivedChat from './ArchivedChat';
 import RecentChatItem from './RecentChatItem';
 
 const RecentChat = () => {
+   const stringSet = getStringSet();
    const archive = useArchive();
+   const themeColorPalatte = useThemeColorPalatte();
    const searchText = useRecentChatSearchText();
    const recentChatData = useFilteredRecentChatData() || [];
    const recentArchiveChatData = useArchivedChatData() || [];
@@ -48,23 +52,49 @@ const RecentChat = () => {
       }
    };
 
-   const renderItem = ({ item, index }) => <RecentChatItem key={item.userJid} item={item} index={index} />;
+   const renderItem = ({ item, index }) => (
+      <RecentChatItem key={item.userJid} item={item} index={index} stringSet={stringSet} />
+   );
 
    const renderSectionHeaderBasedOnCondition = section => {
       switch (section.title) {
-         case 'Chats':
+         case stringSet.SETTINGS_SCREEN.CHATS_LABEL:
             return (
                <View style={styles.chatsSearchSubHeader}>
-                  <Text style={styles.chatsSearchSubHeaderText}>{section.title}</Text>
-                  <Text style={styles.chatsSearchSubHeaderCountText}>({recentChatData.length})</Text>
+                  <Text
+                     style={[
+                        styles.chatsSearchSubHeaderText,
+                        commonStyles.textColor(themeColorPalatte.primaryTextColor),
+                     ]}>
+                     {section.title}
+                  </Text>
+                  <Text
+                     style={[
+                        styles.chatsSearchSubHeaderCountText,
+                        commonStyles.textColor(themeColorPalatte.primaryTextColor),
+                     ]}>
+                     ({recentChatData.length})
+                  </Text>
                </View>
             );
          case 'Messages':
             return (
                Boolean(filteredMessages.length) && (
                   <View style={styles.chatsSearchSubHeader}>
-                     <Text style={styles.chatsSearchSubHeaderText}>{section.title}</Text>
-                     <Text style={styles.chatsSearchSubHeaderCountText}>({filteredMessages.length})</Text>
+                     <Text
+                        style={[
+                           styles.chatsSearchSubHeaderText,
+                           commonStyles.textColor(themeColorPalatte.primaryTextColor),
+                        ]}>
+                        {section.title}
+                     </Text>
+                     <Text
+                        style={[
+                           styles.chatsSearchSubHeaderCountText,
+                           commonStyles.textColor(themeColorPalatte.primaryTextColor),
+                        ]}>
+                        ({filteredMessages.length})
+                     </Text>
                   </View>
                )
             );
@@ -75,7 +105,7 @@ const RecentChat = () => {
 
    const DATA = [
       {
-         title: 'Chats',
+         title: stringSet.SETTINGS_SCREEN.CHATS_LABEL,
          data: recentChatData,
       },
       {
@@ -85,7 +115,7 @@ const RecentChat = () => {
    ];
 
    const renderHeader = React.useMemo(() => {
-      if (recentArchiveChatData.length && archive && !searchText) {
+      if (recentArchiveChatData.length && Boolean(archive) && !searchText) {
          return <ArchivedChat />;
       }
    }, [searchText, archive, recentArchiveChatData]);
@@ -96,12 +126,12 @@ const RecentChat = () => {
             {Boolean(recentArchiveChatData.length) && !archive && !searchText && <ArchivedChat />}
             {isFetchingData && (
                <View style={commonStyles.marginBottom_10}>
-                  <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
+                  <ActivityIndicator size="large" color={themeColorPalatte.primaryColor} />
                </View>
             )}
          </View>
       );
-   }, [searchText, archive, isFetchingData, recentArchiveChatData]);
+   }, [searchText, archive, isFetchingData, recentArchiveChatData, themeColorPalatte]);
 
    const renderSectionList = React.useMemo(
       () => (
@@ -120,26 +150,34 @@ const RecentChat = () => {
             maxToRenderPerBatch={20}
          />
       ),
-      [recentChatData, filteredMessages, archive, searchText, isFetchingData],
+      [recentChatData, filteredMessages, archive, searchText, isFetchingData, stringSet],
    );
 
    if (!isFetchingData && !recentChatData.length && !filteredMessages.length && !recentArchiveChatData.length) {
       return (
-         <View style={styles.emptyChatView}>
+         <View style={[styles.emptyChatView, commonStyles.bg_color(themeColorPalatte.screenBgColor)]}>
             <Image style={styles.image} resizeMode="cover" source={getImageSource(no_messages)} />
             {searchText ? (
-               <Text style={styles.noMsg}>No Result Found</Text>
+               <Text style={[styles.noMsg, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+                  {stringSet.COMMON_TEXT.NO_RESULTS_FOUND}
+               </Text>
             ) : (
                <>
-                  <Text style={styles.noMsg}>No New Messages</Text>
-                  <Text>Any new messages will appear here</Text>
+                  <Text style={[styles.noMsg, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+                     {stringSet.COMMON_TEXT.NO_NEW_MESSAGES}
+                  </Text>
+                  <Text>{stringSet.COMMON_TEXT.ANY_MESSAGES_APPEAR_HERE}</Text>
                </>
             )}
          </View>
       );
    }
 
-   return <View style={styles.container}>{renderSectionList}</View>;
+   return (
+      <View style={[styles.container, commonStyles.bg_color(themeColorPalatte.screenBgColor)]}>
+         {renderSectionList}
+      </View>
+   );
 };
 
 const styles = StyleSheet.create({
@@ -151,16 +189,14 @@ const styles = StyleSheet.create({
       height: 200,
    },
    noMsg: {
-      color: '#181818',
       fontSize: 16,
-      fontWeight: '800',
+      fontWeight: '700',
       marginBottom: 8,
    },
    emptyChatView: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: ApplicationColors.white,
    },
    chatsSearchSubHeader: {
       flexDirection: 'row',
@@ -170,15 +206,13 @@ const styles = StyleSheet.create({
    },
    chatsSearchSubHeaderText: {
       marginLeft: 8,
-      color: '#181818',
       fontSize: 16,
       fontWeight: '500',
    },
    chatsSearchSubHeaderCountText: {
-      color: '#181818',
       marginLeft: 2,
       fontSize: 16,
-      fontWeight: '800',
+      fontWeight: '700',
    },
 });
 

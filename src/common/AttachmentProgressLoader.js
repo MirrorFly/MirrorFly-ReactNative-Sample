@@ -10,7 +10,13 @@ const AttachmentProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel,
       case mediaStatusConstants.DOWNLOADING:
       case mediaStatusConstants.UPLOADING:
          return (
-            <View style={[commonStyles.positionRelative, commonStyles.overflowHidden, commonStyles.borderRadius_5]}>
+            <View
+               style={[
+                  commonStyles.positionRelative,
+                  commonStyles.overflowHidden,
+                  commonStyles.borderRadius_5,
+                  { width: 36 },
+               ]}>
                <Pressable style={styles.downloadIcon} onPress={onCancel}>
                   <DownloadCancel color="#7285B5" />
                </Pressable>

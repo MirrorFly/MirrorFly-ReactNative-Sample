@@ -16,13 +16,7 @@
 		84C00C8A87A52F85EC234906 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 351382106977CC60AE8C9180 /* PrivacyInfo.xcprivacy */; };
 		A7B20BDD2CF5E2880075CC1B /* fly_reconnecting_tone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A7B20BDA2CF5E2880075CC1B /* fly_reconnecting_tone.mp3 */; };
 		A7B20BDE2CF5E2880075CC1B /* incallmanager_ringback.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A7B20BDB2CF5E2880075CC1B /* incallmanager_ringback.mp3 */; };
-		A7B20BFA2CF5E8EE0075CC1B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A7B20BF92CF5E8EE0075CC1B /* GoogleService-Info.plist */; };
 		A7B20C262CF5F71C0075CC1B /* RNCallKeep.m in Sources */ = {isa = PBXBuildFile; fileRef = A7B20C252CF5F71C0075CC1B /* RNCallKeep.m */; };
-		A7B20D022CF6DD2D0075CC1B /* NotificationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A7B20CFA2CF6DD2D0075CC1B /* NotificationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		A7B20D182CF6DF400075CC1B /* FlyEncryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B20D0F2CF6DF400075CC1B /* FlyEncryption.swift */; };
-		A7B20D192CF6DF400075CC1B /* MyClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B20D112CF6DF400075CC1B /* MyClass.swift */; };
-		A7B20D1A2CF6DF400075CC1B /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = A7B20D152CF6DF400075CC1B /* NotificationService.m */; };
-		A7B20D1B2CF6DF400075CC1B /* sendDeliveredApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B20D162CF6DF400075CC1B /* sendDeliveredApiCall.swift */; };
 		B42B189CF199C58746A31FD6 /* Pods_mirrorfly_rn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D29BAF4B0875C49FA458AB9 /* Pods_mirrorfly_rn.framework */; };
 		CE312F572D26CC7D00069D84 /* MediaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE312F542D26CC7D00069D84 /* MediaService.swift */; };
 		CE312F582D26CC7D00069D84 /* FlyUtiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE312F552D26CC7D00069D84 /* FlyUtiles.swift */; };
@@ -37,13 +31,6 @@
 			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
 			remoteInfo = mirrorfly_rn;
 		};
-		A7B20D002CF6DD2D0075CC1B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A7B20CF92CF6DD2D0075CC1B;
-			remoteInfo = NotificationExtension;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -53,7 +40,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				A7B20D022CF6DD2D0075CC1B /* NotificationExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -81,21 +67,10 @@
 		89C6BE57DB24E9ADA2F236DE /* Pods-mirrorfly_rn-mirrorfly_rnTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mirrorfly_rn-mirrorfly_rnTests.release.xcconfig"; path = "Target Support Files/Pods-mirrorfly_rn-mirrorfly_rnTests/Pods-mirrorfly_rn-mirrorfly_rnTests.release.xcconfig"; sourceTree = "<group>"; };
 		A7B20BDA2CF5E2880075CC1B /* fly_reconnecting_tone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = fly_reconnecting_tone.mp3; sourceTree = "<group>"; };
 		A7B20BDB2CF5E2880075CC1B /* incallmanager_ringback.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = incallmanager_ringback.mp3; sourceTree = "<group>"; };
-		A7B20BF92CF5E8EE0075CC1B /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		A7B20BFB2CF5EB1B0075CC1B /* mirrorfly_rn.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = mirrorfly_rn.entitlements; path = mirrorfly_rn/mirrorfly_rn.entitlements; sourceTree = "<group>"; };
 		A7B20C242CF5F71C0075CC1B /* RNCallKeep.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNCallKeep.h; path = mirrorfly_rn/RNCallKeep.h; sourceTree = "<group>"; };
 		A7B20C252CF5F71C0075CC1B /* RNCallKeep.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNCallKeep.m; path = mirrorfly_rn/RNCallKeep.m; sourceTree = "<group>"; };
 		A7B20C502CF60AC40075CC1B /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		A7B20C522CF60AC40075CC1B /* UserNotificationsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotificationsUI.framework; path = System/Library/Frameworks/UserNotificationsUI.framework; sourceTree = SDKROOT; };
-		A7B20CFA2CF6DD2D0075CC1B /* NotificationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NotificationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		A7B20D0F2CF6DF400075CC1B /* FlyEncryption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlyEncryption.swift; sourceTree = "<group>"; };
-		A7B20D102CF6DF400075CC1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A7B20D112CF6DF400075CC1B /* MyClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyClass.swift; sourceTree = "<group>"; };
-		A7B20D122CF6DF400075CC1B /* NotificationExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotificationExtension.entitlements; sourceTree = "<group>"; };
-		A7B20D132CF6DF400075CC1B /* NotificationExtension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NotificationExtension-Bridging-Header.h"; sourceTree = "<group>"; };
-		A7B20D142CF6DF400075CC1B /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
-		A7B20D152CF6DF400075CC1B /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
-		A7B20D162CF6DF400075CC1B /* sendDeliveredApiCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sendDeliveredApiCall.swift; sourceTree = "<group>"; };
 		CE312F532D26CC7C00069D84 /* mirrorfly_rn-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "mirrorfly_rn-Bridging-Header.h"; sourceTree = "<group>"; };
 		CE312F542D26CC7D00069D84 /* MediaService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaService.swift; sourceTree = "<group>"; };
 		CE312F552D26CC7D00069D84 /* FlyUtiles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlyUtiles.swift; sourceTree = "<group>"; };
@@ -117,13 +92,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B42B189CF199C58746A31FD6 /* Pods_mirrorfly_rn.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A7B20CF72CF6DD2D0075CC1B /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -155,8 +123,6 @@
 				CE312F562D26CC7D00069D84 /* MediaServiceBridge.m */,
 				A7B20C242CF5F71C0075CC1B /* RNCallKeep.h */,
 				A7B20C252CF5F71C0075CC1B /* RNCallKeep.m */,
-				A7B20BFB2CF5EB1B0075CC1B /* mirrorfly_rn.entitlements */,
-				A7B20BF92CF5E8EE0075CC1B /* GoogleService-Info.plist */,
 				A7B20BDC2CF5E2880075CC1B /* custom_ringtones */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
@@ -196,7 +162,6 @@
 				13B07FAE1A68108700A75B9A /* mirrorfly_rn */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* mirrorfly_rnTests */,
-				A7B20D172CF6DF400075CC1B /* NotificationExtension */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
@@ -211,7 +176,6 @@
 			children = (
 				13B07F961A680F5B00A75B9A /* mirrorfly_rn.app */,
 				00E356EE1AD99517003FC87E /* mirrorfly_rnTests.xctest */,
-				A7B20CFA2CF6DD2D0075CC1B /* NotificationExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -223,21 +187,6 @@
 				A7B20BDB2CF5E2880075CC1B /* incallmanager_ringback.mp3 */,
 			);
 			path = custom_ringtones;
-			sourceTree = "<group>";
-		};
-		A7B20D172CF6DF400075CC1B /* NotificationExtension */ = {
-			isa = PBXGroup;
-			children = (
-				A7B20D0F2CF6DF400075CC1B /* FlyEncryption.swift */,
-				A7B20D102CF6DF400075CC1B /* Info.plist */,
-				A7B20D112CF6DF400075CC1B /* MyClass.swift */,
-				A7B20D122CF6DF400075CC1B /* NotificationExtension.entitlements */,
-				A7B20D132CF6DF400075CC1B /* NotificationExtension-Bridging-Header.h */,
-				A7B20D142CF6DF400075CC1B /* NotificationService.h */,
-				A7B20D152CF6DF400075CC1B /* NotificationService.m */,
-				A7B20D162CF6DF400075CC1B /* sendDeliveredApiCall.swift */,
-			);
-			path = NotificationExtension;
 			sourceTree = "<group>";
 		};
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
@@ -292,29 +241,11 @@
 			buildRules = (
 			);
 			dependencies = (
-				A7B20D012CF6DD2D0075CC1B /* PBXTargetDependency */,
 			);
 			name = mirrorfly_rn;
 			productName = mirrorfly_rn;
 			productReference = 13B07F961A680F5B00A75B9A /* mirrorfly_rn.app */;
 			productType = "com.apple.product-type.application";
-		};
-		A7B20CF92CF6DD2D0075CC1B /* NotificationExtension */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A7B20D042CF6DD2D0075CC1B /* Build configuration list for PBXNativeTarget "NotificationExtension" */;
-			buildPhases = (
-				A7B20CF62CF6DD2D0075CC1B /* Sources */,
-				A7B20CF72CF6DD2D0075CC1B /* Frameworks */,
-				A7B20CF82CF6DD2D0075CC1B /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = NotificationExtension;
-			productName = NotificationExtension;
-			productReference = A7B20CFA2CF6DD2D0075CC1B /* NotificationExtension.appex */;
-			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -330,10 +261,6 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1530;
-					};
-					A7B20CF92CF6DD2D0075CC1B = {
-						CreatedOnToolsVersion = 16.0;
-						LastSwiftMigration = 1600;
 					};
 				};
 			};
@@ -352,7 +279,6 @@
 			targets = (
 				13B07F861A680F5B00A75B9A /* mirrorfly_rn */,
 				00E356ED1AD99517003FC87E /* mirrorfly_rnTests */,
-				A7B20CF92CF6DD2D0075CC1B /* NotificationExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -374,14 +300,6 @@
 				84C00C8A87A52F85EC234906 /* PrivacyInfo.xcprivacy in Resources */,
 				A7B20BDD2CF5E2880075CC1B /* fly_reconnecting_tone.mp3 in Resources */,
 				A7B20BDE2CF5E2880075CC1B /* incallmanager_ringback.mp3 in Resources */,
-				A7B20BFA2CF5E8EE0075CC1B /* GoogleService-Info.plist in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A7B20CF82CF6DD2D0075CC1B /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -553,17 +471,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A7B20CF62CF6DD2D0075CC1B /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A7B20D182CF6DF400075CC1B /* FlyEncryption.swift in Sources */,
-				A7B20D192CF6DF400075CC1B /* MyClass.swift in Sources */,
-				A7B20D1A2CF6DF400075CC1B /* NotificationService.m in Sources */,
-				A7B20D1B2CF6DF400075CC1B /* sendDeliveredApiCall.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -572,11 +479,6 @@
 			target = 13B07F861A680F5B00A75B9A /* mirrorfly_rn */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
-		A7B20D012CF6DD2D0075CC1B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A7B20CF92CF6DD2D0075CC1B /* NotificationExtension */;
-			targetProxy = A7B20D002CF6DD2D0075CC1B /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -584,7 +486,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5B7EB9410499542E8C5724F5 /* Pods-mirrorfly_rn-mirrorfly_rnTests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
@@ -617,7 +518,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 89C6BE57DB24E9ADA2F236DE /* Pods-mirrorfly_rn-mirrorfly_rnTests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
@@ -649,7 +549,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = mirrorfly_rn/mirrorfly_rn.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
@@ -682,7 +582,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = mirrorfly_rn/mirrorfly_rn.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
@@ -890,98 +790,6 @@
 			};
 			name = Release;
 		};
-		A7B20D052CF6DD2D0075CC1B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = NotificationExtension/NotificationExtension.entitlements;
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = G44VFA67ZG;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = NotificationExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = NotificationExtension;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.0;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mirrorfly.qa.notificationextention;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "MirrorFly Qa Notification Dev Profile";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "NotificationExtension/NotificationExtension-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		A7B20D062CF6DD2D0075CC1B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = NotificationExtension/NotificationExtension.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = G44VFA67ZG;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = NotificationExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = NotificationExtension;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.0;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mirrorfly.qa.notificationextention;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "MirrorFly Qa Notification In house Profile";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "NotificationExtension/NotificationExtension-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1008,15 +816,6 @@
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
 				83CBBA211A601CBA00E9B192 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A7B20D042CF6DD2D0075CC1B /* Build configuration list for PBXNativeTarget "NotificationExtension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A7B20D052CF6DD2D0075CC1B /* Debug */,
-				A7B20D062CF6DD2D0075CC1B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

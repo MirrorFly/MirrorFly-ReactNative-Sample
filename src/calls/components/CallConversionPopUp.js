@@ -19,7 +19,6 @@ import Modal, { ModalCenteredContent } from '../../common/Modal';
 import ApplicationColors from '../../config/appColors';
 import { getUserIdFromJid } from '../../helpers/chatHelpers';
 import { callConversion } from '../../redux/callStateSlice';
-import { useRoasterData } from '../../redux/reduxHook';
 import { useRoasterData, useThemeColorPalatte } from '../../redux/reduxHook';
 import commonStyles, { modelStyles } from '../../styles/commonStyles';
 

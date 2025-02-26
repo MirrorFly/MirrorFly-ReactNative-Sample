@@ -1,14 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import NickName from '../common/NickName';
 import Pressable from '../common/Pressable';
+import Text from '../common/Text';
 import { convertUTCTOLocalTimeStamp, formatChatDateTime } from '../common/timeStamp';
-import ApplicationColors from '../config/appColors';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
 import { toggleChatSelection } from '../redux/recentChatDataSlice';
-import { getSelectedChats, useRecentChatSearchText } from '../redux/reduxHook';
+import { getSelectedChats, useRecentChatSearchText, useThemeColorPalatte } from '../redux/reduxHook';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
@@ -17,16 +17,26 @@ import RecentChatAvathar from './RecentChatAvathar';
 import RecentChatMessage from './RecentChatMessage';
 
 const RecentChatItem = React.memo(
-   ({ item, index, component = 'recent-chat' }) => {
+   ({ item, index, component = 'recent-chat', stringSet }) => {
       const isRecentChatComponent = component === 'recent-chat';
-      const { createdAt = '', userId = '', isSelected = 0, userJid, publisherJid } = item;
+      const {
+         chatType,
+         createdAt = '',
+         userId = '',
+         isSelected = 0,
+         userJid,
+         publisherJid,
+         unreadCount,
+         profileDetails = {},
+      } = item;
       const dispatch = useDispatch();
       const navigation = useNavigation();
+      const themeColorPalatte = useThemeColorPalatte();
       const searchText = useRecentChatSearchText();
       const isSender = getCurrentUserJid() === publisherJid;
 
-      const handleSelectChat = userJid => () => {
-         dispatch(toggleChatSelection(userJid));
+      const handleSelectChat = jid => () => {
+         dispatch(toggleChatSelection(jid));
       };
 
       const handleRoute = chatUser => {
@@ -46,15 +56,16 @@ const RecentChatItem = React.memo(
          <>
             <Pressable
                delayLongPress={300}
-               onPress={onPress(item.userJid)}
-               onLongPress={searchText ? null : handleSelectChat(item.userJid)}>
+               onPress={onPress(userJid)}
+               contentContainerStyle={isSelected && commonStyles.pressedBg(themeColorPalatte.pressedBg)}
+               onLongPress={searchText ? null : handleSelectChat(userJid)}>
                <View style={[styles.container, isSelected && commonStyles.pressedBg, styles.avatarContainer]}>
                   <View style={[commonStyles.positionRelative]}>
-                     <RecentChatAvathar type={item.chatType} userId={userId} data={item?.profileDetails} />
-                     {item.unreadCount > 0 && (
-                        <View style={styles.unreadCountWrapper}>
-                           <Text style={styles.unreadCountText}>
-                              {item.unreadCount > 99 ? '99+' : item.unreadCount}
+                     <RecentChatAvathar type={chatType} userId={userId} data={profileDetails} />
+                     {unreadCount > 0 && (
+                        <View style={[styles.unreadCountWrapper, { backgroundColor: themeColorPalatte.primaryColor }]}>
+                           <Text style={[styles.unreadCountText, { color: themeColorPalatte.white }]}>
+                              {unreadCount > 99 ? '99+' : unreadCount}
                            </Text>
                         </View>
                      )}
@@ -62,10 +73,10 @@ const RecentChatItem = React.memo(
                   <View style={styles.contentContainer}>
                      <NickName
                         userId={userId}
-                        style={styles.userName}
+                        style={[styles.userName, { color: themeColorPalatte.primaryTextColor }]}
                         searchValue={searchText}
                         index={index}
-                        data={item?.profileDetails}
+                        data={profileDetails}
                         ellipsizeMode="tail"
                      />
                      <RecentChatMessage
@@ -73,22 +84,37 @@ const RecentChatItem = React.memo(
                         userId={getUserIdFromJid(userJid)}
                         item={item}
                         index={index}
+                        stringSet={stringSet}
+                        themeColorPalatte={themeColorPalatte}
                      />
                   </View>
                   <View style={[commonStyles.justifyContentCenter, commonStyles.alignItemsCenter]}>
-                     <Text style={styles.time}>
+                     <Text
+                        style={[
+                           styles.time,
+                           {
+                              color:
+                                 unreadCount > 0 ? themeColorPalatte.primaryColor : themeColorPalatte.primaryTextColor,
+                           },
+                        ]}>
                         {createdAt && formatChatDateTime(convertUTCTOLocalTimeStamp(createdAt), 'recent-chat')}
                      </Text>
                      <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
                         <MuteChatRecentItem recentChatItem={item} isRecentChatComponent={isRecentChatComponent} />
                         {Boolean(item.archiveStatus) && isRecentChatComponent && (
-                           <Text style={styles.archived}>Archived</Text>
+                           <Text
+                              style={[
+                                 styles.archived,
+                                 { borderColor: themeColorPalatte.primaryColor, color: themeColorPalatte.primaryColor },
+                              ]}>
+                              {stringSet.COMMON_TEXT.RECENT_ARCHIVED_LABEL}
+                           </Text>
                         )}
                      </View>
                   </View>
                </View>
             </Pressable>
-            <View style={styles.divider} />
+            <View style={[styles.divider, { backgroundColor: themeColorPalatte.dividerBg }]} />
          </>
       );
    },
@@ -120,10 +146,8 @@ const styles = StyleSheet.create({
    },
    time: {
       fontSize: 10,
-      color: '#1f2937',
    },
    userName: {
-      color: '#1f2937',
       fontWeight: 'bold',
       maxWidth: '90%',
    },
@@ -131,13 +155,11 @@ const styles = StyleSheet.create({
       width: '83%',
       height: 0.5,
       alignSelf: 'flex-end',
-      backgroundColor: ApplicationColors.dividerBg,
    },
    unreadCountWrapper: {
       position: 'absolute',
       top: -3,
       left: 30,
-      backgroundColor: ApplicationColors.mainColor,
       minWidth: 20,
       paddingVertical: 1,
       paddingHorizontal: 4,
@@ -146,15 +168,12 @@ const styles = StyleSheet.create({
       alignItems: 'center',
    },
    unreadCountText: {
-      color: ApplicationColors.white,
       fontSize: 11,
    },
    archived: {
       marginTop: 2,
       padding: 2,
       borderWidth: 1,
-      borderColor: ApplicationColors.mainColor,
-      color: ApplicationColors.mainColor,
       fontSize: 10,
       borderRadius: 5,
    },

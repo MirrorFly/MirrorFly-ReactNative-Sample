@@ -1,16 +1,18 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import ScreenHeader from '../common/ScreenHeader';
+import Text from '../common/Text';
 import { useNetworkStatus } from '../common/hooks';
 import EmojiInput from '../components/EmojiInput';
 import { showNetWorkToast, showToast } from '../helpers/chatHelpers';
-import { useRoasterData } from '../redux/reduxHook';
+import { useRoasterData, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { mirrorflyProfileUpdate } from '../uikitMethods';
 
 const EditStatusPage = () => {
    const { params: { userId } = {} } = useRoute();
+   const themeColorPalatte = useThemeColorPalatte();
    const profile = useRoasterData(userId) || {};
    const isNetworkConnected = useNetworkStatus();
    const navigaiton = useNavigation();
@@ -43,7 +45,7 @@ const EditStatusPage = () => {
    };
 
    return (
-      <View style={[commonStyles.bg_white, commonStyles.flex1]}>
+      <View style={[commonStyles.bg_color(themeColorPalatte.screenBgColor), commonStyles.flex1]}>
          <ScreenHeader title="Add New Status" isSearchable={false} />
          <EmojiInput
             allowedMaxLimit={allowedMaxLimit}

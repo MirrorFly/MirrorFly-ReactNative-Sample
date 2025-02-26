@@ -3,10 +3,12 @@ import Graphemer from 'graphemer';
 import { groupBy, orderBy } from 'lodash-es/collection';
 import { mapValues } from 'lodash-es/object';
 import React from 'react';
-import { Animated, FlatList, Keyboard, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, FlatList, Keyboard, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { TabView } from 'react-native-tab-view';
 import { BackSpaceIcon } from '../common/Icons';
+import Text from '../common/Text';
 import { CHAT_INPUT } from '../helpers/constants';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
 const charFromUtf16 = utf16 => String.fromCodePoint(...utf16.split('-').map(u => '0x' + u));
@@ -22,7 +24,7 @@ const emojiCategoriesTabs = Object.entries(emojisByCategory).map(([key, value]) 
    category: key,
 }));
 
-const TabBarCustom = ({ navigationState, setIndex, state, setState }) => {
+const TabBarCustom = ({ navigationState, setIndex, state, setState, themeColorPalatte }) => {
    const splitter = new Graphemer();
    return (
       <View style={styles.tabcontainer}>
@@ -31,7 +33,11 @@ const TabBarCustom = ({ navigationState, setIndex, state, setState }) => {
             return (
                <Pressable
                   key={route.title}
-                  style={[styles.tab, isActive && styles.activeTab]}
+                  style={[
+                     styles.tab,
+                     isActive && styles.activeTab,
+                     { borderBottomColor: themeColorPalatte.primaryColor },
+                  ]}
                   onPress={() => setIndex(index)}>
                   <Text style={{ fontSize: 18, color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
                </Pressable>
@@ -86,6 +92,7 @@ const EmojiCategory = ({ category, onSelect }) => {
 
 const EmojiOverlay = ({ state, setState, onClose, visible, onSelect, place = '' }) => {
    const layout = useWindowDimensions();
+   const themeColorPalatte = useThemeColorPalatte();
    const [index, setIndex] = React.useState(0);
    const [routes] = React.useState(
       emojiCategoriesTabs.map(tab => ({
@@ -133,7 +140,7 @@ const EmojiOverlay = ({ state, setState, onClose, visible, onSelect, place = '' 
 
    const animationContainerStyle = [
       styles.emojiContainer,
-      { transform: [{ translateY }] },
+      { transform: [{ translateY }], backgroundColor: themeColorPalatte.screenBgColor },
       commonStyles.positionAbsolute,
    ];
 
@@ -145,7 +152,15 @@ const EmojiOverlay = ({ state, setState, onClose, visible, onSelect, place = '' 
       <Animated.View style={animationContainerStyle}>
          <TabView
             keyExtractor={(item, _index) => _index.toString()}
-            renderTabBar={e => <TabBarCustom setIndex={setIndex} setState={setState} state={state} {...e} />}
+            renderTabBar={e => (
+               <TabBarCustom
+                  setIndex={setIndex}
+                  setState={setState}
+                  state={state}
+                  themeColorPalatte={themeColorPalatte}
+                  {...e}
+               />
+            )}
             navigationState={{ index, routes }}
             onIndexChange={setIndex}
             renderScene={renderScene}
@@ -157,7 +172,6 @@ const EmojiOverlay = ({ state, setState, onClose, visible, onSelect, place = '' 
 
 const styles = StyleSheet.create({
    emojiContainer: {
-      backgroundColor: '#f2f2f2',
       height: '40%',
       bottom: 0,
       left: 0,
@@ -180,7 +194,6 @@ const styles = StyleSheet.create({
    },
    activeTab: {
       borderBottomWidth: 1.3,
-      borderBottomColor: '#3276E2',
    },
    container: {
       padding: padding,

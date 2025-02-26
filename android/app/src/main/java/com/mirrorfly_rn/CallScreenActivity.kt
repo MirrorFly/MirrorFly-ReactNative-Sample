@@ -40,10 +40,10 @@ class CallScreenActivity : ReactActivity(), LifecycleEventListener {
     override fun createReactActivityDelegate(): ReactActivityDelegate =
         DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        setIntent(intent)
-    }
+//    override fun onNewIntent(intent: Intent?) {
+//        super.onNewIntent(intent)
+//        setIntent(intent)
+//    }
 
     override fun onResume() {
         Log.d("TAG", "onResume: CallScreenActivity Resume")

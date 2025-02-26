@@ -7,9 +7,9 @@ import {
    PixelRatio,
    ScrollView,
    StyleSheet,
-   Text,
    View,
 } from 'react-native';
+import Text from './Text';
 
 const { UIManager } = NativeModules;
 

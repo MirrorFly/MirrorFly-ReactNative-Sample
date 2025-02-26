@@ -1,27 +1,28 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import { fetchGroupParticipants } from '../SDK/utils';
-import Modal, { ModalCenteredContent } from '../common/Modal';
+import LoadingModal from '../common/LoadingModal';
 import { useNetworkStatus } from '../common/hooks';
 import GrpCollapsibleToolbar from '../components/GrpCollapsibleToolbar';
-import ApplicationColors from '../config/appColors';
 import {
    getUserIdFromJid,
    handleImagePickerOpenCamera,
    handleImagePickerOpenGallery,
    showNetWorkToast,
+   showToast,
 } from '../helpers/chatHelpers';
-import { getUserNameFromStore } from '../redux/reduxHook';
+import { getUserNameFromStore, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
 const GroupInfo = () => {
    const {
       params: { chatUser = '' },
    } = useRoute();
+   const themeColorPalatte = useThemeColorPalatte();
    const chatUserId = getUserIdFromJid(chatUser);
    const isNetworkconneted = useNetworkStatus();
    const [modelOpen, setModelOpen] = React.useState(false);
@@ -95,14 +96,8 @@ const GroupInfo = () => {
 
    return (
       <>
-         <Modal visible={modelOpen}>
-            <ModalCenteredContent>
-               <View style={[commonStyles.bg_white, commonStyles.borderRadius_5]}>
-                  <ActivityIndicator size={'large'} color={ApplicationColors.mainColor} />
-               </View>
-            </ModalCenteredContent>
-         </Modal>
-         <View style={styles.container}>
+         {modelOpen && <LoadingModal />}
+         <View style={[styles.container, commonStyles.bg_color(themeColorPalatte.screenBgColor)]}>
             <GrpCollapsibleToolbar
                chatUser={chatUser}
                handleBackBtn={handleBackBtn}

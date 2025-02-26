@@ -1,14 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Animated, Dimensions, PixelRatio, StyleSheet, Text, View } from 'react-native';
+import { Animated, Dimensions, PixelRatio, StyleSheet, View } from 'react-native';
 import IconButton from '../common/IconButton';
 import { CallIcon, FrontArrowIcon, GalleryAllIcon, LeftArrowIcon, MailIcon, StatusIcon } from '../common/Icons';
 import InfoImageView from '../common/InfoImageView';
 import Pressable from '../common/Pressable';
-import ApplicationColors from '../config/appColors';
+import Text from '../common/Text';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
 import { CHAT_TYPE_SINGLE } from '../helpers/constants';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import { VIEWALLMEDIA } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 import MuteToggle from './MuteToggle';
@@ -43,6 +44,7 @@ const CollapsibleToolbar = ({
    handleBackBtn,
 }) => {
    const navigation = useNavigation();
+   const themeColorPalatte = useThemeColorPalatte();
    const scrollY = React.useRef(new Animated.Value(0)).current;
    const [animatedTitleColor, setAnimatedTitleColor] = React.useState(250);
    const scrollDistance = toolbarMaxHeight - toolbarMinHeight;
@@ -85,6 +87,7 @@ const CollapsibleToolbar = ({
                   zIndex: 9,
                   backgroundColor: '#f2f2f2',
                   height: toolbarMaxHeight,
+                  shadowColor: themeColorPalatte.shadowColor,
                   transform: [{ translateY: headerTranslate }],
                },
             ]}>
@@ -167,7 +170,7 @@ const CollapsibleToolbar = ({
                      <MuteToggle chatUser={chatUser} />
                   </View>
                   <View style={{ marginBottom: 12, borderBottomWidth: 1, borderBottomColor: '#f2f2f2' }}>
-                     <Text style={{ marginBottom: 8, fontSize: 14, color: '#181818', fontWeight: '800' }}>Email</Text>
+                     <Text style={{ marginBottom: 8, fontSize: 14, color: '#181818', fontWeight: '700' }}>Email</Text>
                      <View style={commonStyles.hstack}>
                         <MailIcon />
                         <Text
@@ -182,7 +185,7 @@ const CollapsibleToolbar = ({
                      </View>
                   </View>
                   <View style={{ marginBottom: 12, borderBottomWidth: 1, borderBottomColor: '#f2f2f2' }}>
-                     <Text style={{ marginBottom: 8, fontSize: 14, color: '#181818', fontWeight: '800' }}>
+                     <Text style={{ marginBottom: 8, fontSize: 14, color: '#181818', fontWeight: '700' }}>
                         Mobile Number
                      </Text>
                      <View style={commonStyles.hstack}>
@@ -199,7 +202,7 @@ const CollapsibleToolbar = ({
                      </View>
                   </View>
                   <View style={{ marginBottom: 12, borderBottomWidth: 1, borderBottomColor: '#f2f2f2' }}>
-                     <Text style={{ marginBottom: 8, fontSize: 14, color: '#181818', fontWeight: '800' }}>Status</Text>
+                     <Text style={{ marginBottom: 8, fontSize: 14, color: '#181818', fontWeight: '700' }}>Status</Text>
                      <View style={commonStyles.hstack}>
                         <StatusIcon />
                         <Text
@@ -213,7 +216,7 @@ const CollapsibleToolbar = ({
                         </Text>
                      </View>
                   </View>
-                  <View style={styles.divider} />
+                  <View style={[styles.divider, { backgroundColor: themeColorPalatte.dividerBg }]} />
                </View>
                <Pressable
                   onPress={handleViewAllMedia}
@@ -263,7 +266,6 @@ const styles = StyleSheet.create({
       /** overflow: 'hidden', commented to display shadow in iOS */
       position: 'absolute',
       elevation: 5,
-      shadowColor: ApplicationColors.shadowColor,
       shadowOffset: { width: 0, height: 3 },
       shadowOpacity: 0.1,
       shadowRadius: 6,
@@ -332,7 +334,6 @@ const styles = StyleSheet.create({
       width: '83%',
       height: 1,
       alignSelf: 'flex-end',
-      backgroundColor: ApplicationColors.dividerBg,
    },
    optionTitleText: { fontSize: 16, color: '#000', marginVertical: 5, marginHorizontal: 20, lineHeight: 25 },
    optionModelContainer: {

@@ -4,6 +4,9 @@ import { clearState } from './clearSlice';
 
 const initialState = {
    searchText: '',
+   editMessage: '',
+   parentMessage: {},
+   isChatSearching: false,
 };
 
 const chatMessageDataSlice = createSlice({
@@ -20,8 +23,16 @@ const chatMessageDataSlice = createSlice({
             });
          };
          const { userJid = '', data, forceUpdate = false } = action.payload;
+         data.forEach(message => {
+            const parentMessage = message.msgBody?.parentMessage;
+            if (parentMessage) {
+               state.parentMessage[parentMessage.msgId] = parentMessage;
+            }
+         });
          const userId = getUserIdFromJid(userJid);
-         if (!Array.isArray(data)) return;
+         if (!Array.isArray(data)) {
+            return;
+         }
          if (state[userId] && !forceUpdate) {
             // Merge existing messages with new ones
             state[userId] = removeDuplicates([...state[userId], ...data]);
@@ -45,12 +56,29 @@ const chatMessageDataSlice = createSlice({
          );
       },
       addChatMessageItem(state, action) {
-         const { userJid } = action.payload;
+         const { userJid, msgBody: { replyTo = '' } = {}, msgId } = action.payload;
          const userId = getUserIdFromJid(userJid);
+         if (replyTo && state[userId]) {
+            const message = state[userId].find(item => item.msgId === replyTo);
+            if (message) {
+               state.parentMessage[replyTo] = message;
+            }
+         }
          if (state[userId]) {
-            state[userId] = [action.payload, ...state[userId]];
+            const messageIndex = state[userId].findIndex(item => item.msgId === msgId);
+
+            if (messageIndex !== -1) {
+               if (state[userId][messageIndex] !== action.payload) {
+                  state[userId][messageIndex] = {
+                     ...action.payload,
+                     ...state[userId][messageIndex],
+                  };
+               }
+            } else {
+               state[userId].unshift({ ...action.payload, deleteStatus: 0, recallStatus: 0 });
+            }
          } else {
-            state[userId] = [action.payload];
+            state[userId] = [{ ...action.payload, deleteStatus: 0, recallStatus: 0 }];
          }
       },
       updateChatMessageStatus(state, action) {
@@ -81,6 +109,9 @@ const chatMessageDataSlice = createSlice({
          if (state[userId]) {
             state[userId] = state[userId].map(message => {
                if (msgIds.includes(message.msgId)) {
+                  if (state.parentMessage[message.msgId]) {
+                     state.parentMessage[message.msgId].deleteStatus = 1;
+                  }
                   return { ...message, deleteStatus: 1, isSelected: 0 };
                }
                return message;
@@ -92,6 +123,9 @@ const chatMessageDataSlice = createSlice({
          if (state[userId]) {
             state[userId] = state[userId].map(message => {
                if (msgIds.includes(message.msgId)) {
+                  if (state.parentMessage[message.msgId]) {
+                     state.parentMessage[message.msgId].recallStatus = 1;
+                  }
                   return { ...message, recallStatus: 1, isSelected: 0 };
                }
                return message;
@@ -126,6 +160,33 @@ const chatMessageDataSlice = createSlice({
             state[userId][index].shouldHighlight = shouldHighlight;
          }
       },
+      editChatMessageItem(state, action) {
+         const { userJid, msgId, caption, message, editMessageId } = action.payload;
+         const userId = getUserIdFromJid(userJid);
+         const index = state[userId]?.findIndex(item => item.msgId === msgId);
+         if (state[userId]) {
+            state[userId][index].editMessageId = editMessageId;
+            state[userId][index].msgStatus = 3;
+         }
+         if (state[userId] && message) {
+            state[userId][index].msgBody.message = message;
+         }
+         if (state[userId] && caption) {
+            state[userId][index].msgBody.media.caption = caption;
+         }
+      },
+      toggleEditMessage(state, action) {
+         state.editMessage = action.payload;
+      },
+      setParentMessage(state, action) {
+         state.parentMessage[action.payload.msgId] = action.payload;
+      },
+      toggleIsChatSearching(state, action) {
+         state.isChatSearching = action.payload;
+      },
+      setIsSearchChatLoading(state, action) {
+         state.isSearchChatLoading = action.payload;
+      },
    },
    extraReducers: builder => {
       builder.addCase(clearState, () => initialState);
@@ -146,6 +207,11 @@ export const {
    updateMediaStatus,
    resetChatMessageSlice,
    highlightMessage,
+   toggleEditMessage,
+   editChatMessageItem,
+   setParentMessage,
+   toggleIsChatSearching,
+   setIsSearchChatLoading,
 } = chatMessageDataSlice.actions;
 
 export default chatMessageDataSlice.reducer;

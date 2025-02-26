@@ -5,11 +5,16 @@ import { useDispatch } from 'react-redux';
 import { CONNECTED } from '../SDK/constants';
 import { sendSeenStatus } from '../SDK/utils';
 import NickName from '../common/NickName';
-import ApplicationColors from '../config/appColors';
-import { getUserIdFromJid, handleFileOpen } from '../helpers/chatHelpers';
+import {
+   getIsConversationScreenActive,
+   getUserIdFromJid,
+   handleFileOpen,
+   openLocationExternally,
+   setIsConversationScreenActive,
+} from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
 import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
-import { getChatMessages, useXmppConnectionStatus } from '../redux/reduxHook';
+import { getChatMessages, useThemeColorPalatte, useXmppConnectionStatus } from '../redux/reduxHook';
 import { MEDIA_POST_PRE_VIEW_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
@@ -18,11 +23,12 @@ import Message from './Message';
 import MessagePressable from './MessagePressable';
 import NotificationMessage from './NotificationMessage';
 
-function ChatMessage({ chatUser, item, showNickName }) {
+function ChatMessage({ chatUser, item, showNickName, label }) {
    const dispatch = useDispatch();
    const navigation = useNavigation();
    const useXmppStatus = useXmppConnectionStatus();
    const userId = getUserIdFromJid(chatUser);
+   const themeColorPalatte = useThemeColorPalatte();
    const {
       shouldHighlight = 0,
       msgStatus,
@@ -43,17 +49,27 @@ function ChatMessage({ chatUser, item, showNickName }) {
 
    useFocusEffect(
       React.useCallback(() => {
-         if (useXmppStatus === CONNECTED && !isSender && msgStatus !== 2 && deleteStatus === 0 && recallStatus === 0) {
-            console.log('useXmppStatus ==>', useXmppStatus, isSender, msgStatus, deleteStatus, recallStatus);
+         setIsConversationScreenActive(true);
+         if (
+            getIsConversationScreenActive() &&
+            useXmppStatus === CONNECTED &&
+            !isSender &&
+            msgStatus !== 2 &&
+            deleteStatus === 0 &&
+            recallStatus === 0
+         ) {
             const groupId = MIX_BARE_JID.test(chatUser) ? getUserIdFromJid(chatUser) : '';
             sendSeenStatus(publisherJid, msgId, groupId);
          }
-      }, [useXmppStatus]),
+         return () => {
+            setIsConversationScreenActive(false);
+         };
+      }, [useXmppStatus, msgStatus]),
    );
 
    const onPress = () => {
       const messsageList = getChatMessages(userId);
-      const isAnySelected = messsageList.some(item => item.isSelected === 1);
+      const isAnySelected = messsageList?.some?.(_item => _item.isSelected === 1);
       switch (true) {
          case isAnySelected:
             const selectData = {
@@ -79,6 +95,8 @@ function ChatMessage({ chatUser, item, showNickName }) {
          case message_type === 'locaiton':
             openLocationExternally(latitude, longitude);
             break;
+         default:
+            Keyboard.dismiss();
       }
    };
 
@@ -90,64 +108,83 @@ function ChatMessage({ chatUser, item, showNickName }) {
       dispatch(toggleMessageSelection(selectData));
    };
 
-   if (!message_type) {
-      return null;
-   }
+   const renderMessage = React.useMemo(() => {
+      console.log('render chat message msgId ==>', msgId);
+      if (!message_type) {
+         return null;
+      }
+      if (deleteStatus) {
+         return null;
+      }
 
-   if (deleteStatus) {
-      return null;
-   }
+      if (recallStatus) {
+         return <DeletedMessage chatUser={chatUser} item={item} isSender={isSender} />;
+      }
 
-   if (message_type === 'notification') {
-      return <NotificationMessage messageObject={item} />;
-   }
+      if (message_type === 'notification') {
+         return <NotificationMessage messageObject={item} themeColorPalatte={themeColorPalatte} label={label} />;
+      }
 
-   if (recallStatus) {
-      return <DeletedMessage chatUser={chatUser} item={item} isSender={isSender} />;
-   }
-
-   return (
-      <Pressable
-         style={
-            shouldHighlight && {
-               backgroundColor: ApplicationColors.highlighedMessageBg,
+      return (
+         <Pressable
+            style={
+               shouldHighlight && {
+                  backgroundColor: themeColorPalatte.highlighedMessageBg,
+               }
             }
-         }
-         delayLongPress={300}
-         pressedStyle={commonStyles.bg_transparent}
-         onPress={onPress}
-         onLongPress={onLongPress}>
-         {({ pressed }) => (
-            <View style={[styles.messageContainer, isSelected ? styles.highlightMessage : undefined]}>
+            delayLongPress={300}
+            pressedStyle={commonStyles.bg_transparent}
+            onPress={onPress}
+            onLongPress={onLongPress}>
+            {({ pressed }) => (
                <View
                   style={[
-                     commonStyles.paddingHorizontal_12,
-                     isSender ? commonStyles.alignSelfFlexEnd : commonStyles.alignSelfFlexStart,
+                     styles.messageContainer,
+                     isSelected ? { backgroundColor: themeColorPalatte.highlighedMessageBg } : undefined,
                   ]}>
-                  <MessagePressable
-                     forcePress={pressed}
-                     style={[styles.messageContentPressable, { maxWidth: messageWidth }]}
-                     contentContainerStyle={[
-                        styles.messageCommonStyle,
-                        isSender ? styles.sentMessage : styles.receivedMessage,
-                     ]}
-                     delayLongPress={300}
-                     onPress={onPress}
-                     onLongPress={onLongPress}>
-                     {showNickName && !isSender && message_type && (
-                        <NickName
-                           style={styles.nickname}
-                           userId={item.publisherId}
-                           colorCodeRequired={true}
-                           data={{ nickName }}
-                        />
-                     )}
-                     <Message item={item} isSender={isSender} chatUser={chatUser} />
-                  </MessagePressable>
+                  <View
+                     style={[
+                        commonStyles.hstack,
+                        commonStyles.alignItemsCenter,
+                        commonStyles.paddingHorizontal_12,
+                        isSender ? commonStyles.alignSelfFlexEnd : commonStyles.alignSelfFlexStart,
+                     ]}>
+                     <MessagePressable
+                        forcePress={pressed}
+                        style={[styles.messageContentPressable, { maxWidth: messageWidth }]}
+                        contentContainerStyle={[
+                           styles.messageCommonStyle,
+                           isSender
+                              ? [styles.sentMessage, { backgroundColor: themeColorPalatte.chatSenderPrimaryColor }]
+                              : [
+                                   styles.receivedMessage,
+                                   { backgroundColor: themeColorPalatte.chatReceiverPrimaryColor },
+                                ],
+                        ]}
+                        delayLongPress={300}
+                        onPress={onPress}
+                        onLongPress={onLongPress}>
+                        {showNickName && !isSender && message_type && (
+                           <NickName
+                              style={styles.nickname}
+                              userId={item.publisherId}
+                              colorCodeRequired={true}
+                              data={{ nickName }}
+                           />
+                        )}
+                        <Message item={item} isSender={isSender} chatUser={chatUser} />
+                     </MessagePressable>
+                  </View>
                </View>
-            </View>
-         )}
-      </Pressable>
+            )}
+         </Pressable>
+      );
+   }, [item]);
+   return (
+      <>
+         <NotificationMessage label={label} themeColorPalatte={themeColorPalatte} />
+         {renderMessage}
+      </>
    );
 }
 
@@ -160,27 +197,8 @@ const styles = StyleSheet.create({
       height: 6,
       borderRadius: 3,
    },
-   bgClr: {
-      backgroundColor: 'red',
-   },
-   notDelivered: {
-      backgroundColor: '#818181',
-   },
-   delivered: {
-      backgroundColor: '#FFA500',
-   },
-   seen: {
-      backgroundColor: '#66E824',
-   },
-   flex1: { flex: 1 },
-   deleteContainer: {
-      marginBottom: 0.2,
-   },
    messageContainer: {
       marginBottom: 6,
-   },
-   highlightMessage: {
-      backgroundColor: ApplicationColors.highlighedMessageBg,
    },
    messageContentPressable: {
       minWidth: '30%',
@@ -191,12 +209,10 @@ const styles = StyleSheet.create({
       borderColor: '#DDE3E5',
    },
    sentMessage: {
-      backgroundColor: '#E2E8F7',
       borderWidth: 0,
       borderBottomRightRadius: 0,
    },
    receivedMessage: {
-      backgroundColor: '#fff',
       borderWidth: 1,
       borderBottomLeftRadius: 0,
    },

@@ -1,32 +1,43 @@
-import RNConvertPhAsset from 'react-native-convert-ph-asset';
+import BackgroundTimer from 'react-native-background-timer';
 import { changeTimeFormat } from '../common/timeStamp';
 import config from '../config/config';
 import {
    calculateWidthAndHeight,
-   convertHeicToJpg,
    getCurrentChatUser,
    getThumbImage,
    getUserIdFromJid,
    getVideoThumbImage,
+   handleConversationScollToBottom,
+   handleUploadNextImage,
    isLocalUser,
    showToast,
 } from '../helpers/chatHelpers';
-import { CHAT_TYPE_GROUP, DOCUMENT_FORMATS, MIX_BARE_JID } from '../helpers/constants';
-import { addChatMessageItem, setChatMessages, updateMediaStatus } from '../redux/chatMessageDataSlice';
+import { CHAT_TYPE_GROUP, DOCUMENT_FILE_EXT, DOCUMENT_FORMATS, MIX_BARE_JID } from '../helpers/constants';
+import {
+   addChatMessageItem,
+   editChatMessageItem,
+   setChatMessages,
+   setParentMessage,
+   updateMediaStatus,
+} from '../redux/chatMessageDataSlice';
 import { setReplyMessage } from '../redux/draftSlice';
 import { setMemberParticipantsList } from '../redux/groupDataSlice';
-import { addRecentChatItem, setRecentChats } from '../redux/recentChatDataSlice';
-import { getArchive, getChatMessages, getReplyMessage, getRoasterData } from '../redux/reduxHook';
+import { addRecentChatItem, editRecentChatItem, setRecentChats } from '../redux/recentChatDataSlice';
+import { getArchive, getChatMessage, getChatMessages, getReplyMessage, getRoasterData } from '../redux/reduxHook';
 import { setRoasterData } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting, updateNotificationSetting } from '../redux/settingDataSlice';
 import store from '../redux/store';
+import { updateFontFamily } from '../redux/themeColorDataSlice';
+import { updateProgressNotification } from '../Service/PushNotify';
 import { getCurrentUserJid, mflog } from '../uikitMethods';
-import SDK from './SDK';
+import SDK, { RealmKeyValueStore } from './SDK';
 
 let chatPage = {},
    hasNextChatPage = {},
    hasNextRecentChatPage = true,
-   recentChatPage = 1;
+   recentChatPage = 1,
+   typingStatusSent = false,
+   mediaUploadQueue = {};
 
 export const resetVariable = () => {
    chatPage = {};
@@ -49,6 +60,8 @@ export const getRecentChatPage = () => recentChatPage;
 export const getHasNextRecentChatPage = () => hasNextRecentChatPage;
 
 export const getHasNextChatPage = userId => hasNextChatPage[userId];
+
+export const randomString = () => SDK.randomString(8, 'BA');
 
 export const updateRosterDataForRecentChats = singleRecentChatList => {
    const userProfileDetails = singleRecentChatList.map(chat => chat.profileDetails);
@@ -83,7 +96,7 @@ export const fetchContactsFromSDK = async (_searchText, _pageNumber, _limit) => 
    return contactsResponse;
 };
 
-export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false, pageReset = false) => {
+export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = false, pageReset = false }) => {
    const userId = getUserIdFromJid(fromUserJId);
    const messsageList = getChatMessages(userId) || [];
    if (messsageList.length && !forceGetFromSDK) {
@@ -92,14 +105,22 @@ export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false,
    if (pageReset) {
       delete chatPage[userId];
    }
+   const lastMessageId = messsageList[messsageList.length - 1]?.msgId || '';
+   console.log('lastMessageId ==>', messsageList.length, messsageList.length - 1, lastMessageId);
+   if (lastMessageId.includes('groupCreated')) {
+      hasNextChatPage[userId] = false;
+      return;
+   }
    const page = chatPage[userId] || 1;
+
    const {
       statusCode,
       userJid,
       data = [],
    } = await SDK.getChatMessages(fromUserJId, page, config.chatMessagesSizePerPage);
+   console.log('data ==> ', data.length);
    if (statusCode === 200) {
-      let hasEqualDataFetched = data.length !== 0;
+      let hasEqualDataFetched = data.length === config.chatMessagesSizePerPage;
       if (data.length && hasEqualDataFetched) {
          chatPage[userId] = page + 1;
       }
@@ -109,45 +130,31 @@ export const fetchMessagesFromSDK = async (fromUserJId, forceGetFromSDK = false,
    return data;
 };
 
-const fileFormatConversion = async ({ uri, msgType }) => {
-   try {
-      switch (true) {
-         case uri.includes('ph://') && msgType === 'image':
-            return await convertHeicToJpg(uri);
-         case uri.includes('ph://') && msgType === 'video':
-            const response = await RNConvertPhAsset.convertVideoFromUrl({
-               url: uri,
-               convertTo: 'mpeg4',
-               quality: 'original',
-            });
-            return response.path; // Return the converted video path
-         default:
-            return uri;
-      }
-   } catch (error) {
-      mflog('Failed to convert the file:', error);
-      return ''; // Return empty string in case of an error
-   }
-};
-
-const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUserJid) => {
+const sendMediaMessage = async (messageType, files, chatType, toUserJid, replyTo) => {
    if (messageType === 'media') {
       const isMuted = await getMuteStatus(toUserJid);
-      for (let i = 0; i < files.length; i++) {
-         const file = files[i],
-            msgId = SDK.randomString(8, 'BA');
+      const uploadPromises = files.map(async (file, i) => {
+         const msgId = SDK.randomString(8, 'BA');
          const {
             caption = '',
             fileDetails = {},
-            fileDetails: { fileSize, filename, duration, uri, type, replyTo = '' } = {},
+            fileDetails: { extension, fileSize, filename, duration, uri, type, thumbImage: thumb_image } = {},
          } = file;
-         const isDocument = DOCUMENT_FORMATS.includes(type);
+         const isDocument = DOCUMENT_FILE_EXT.includes(extension);
          const msgType = isDocument ? 'file' : type.split('/')[0];
          let _uri = uri;
-
+         let mediaDimension = {};
+         if (msgType === 'video') {
+            mediaDimension = calculateWidthAndHeight(fileDetails?.width, fileDetails?.height);
+         }
+         const { webWidth = 500, webHeight = 500 } = mediaDimension;
          file.fileDetails = { ...file.fileDetails, uri: _uri };
          let thumbImage = msgType === 'image' ? await getThumbImage(_uri) : '';
-         thumbImage = msgType === 'video' ? await getVideoThumbImage(_uri) : thumbImage;
+         thumbImage =
+            msgType === 'video' && !thumb_image
+               ? await getVideoThumbImage(_uri, duration, webWidth, webHeight)
+               : thumbImage;
+
          let fileOptions = {
             fileName: filename,
             fileSize: fileSize,
@@ -155,7 +162,7 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
             uri: _uri,
             duration: duration,
             msgId: msgId,
-            thumbImage: thumbImage,
+            thumbImage: thumb_image || thumbImage,
          };
 
          const dataObj = {
@@ -174,18 +181,27 @@ const sendMediaMessage = async (messageType, files, chatType, fromUserJid, toUse
          conversationChatObj.archiveSetting = getArchive();
          store.dispatch(addChatMessageItem(conversationChatObj));
          store.dispatch(addRecentChatItem(conversationChatObj));
+         await updateProgressNotification({
+            msgId,
+            progress: 0,
+            type: 'upload',
+            isCanceled: false,
+            foregroundStatus: false,
+         });
          if (i === 0) {
-            const { msgId, userJid, msgBody: { media = {}, media: { file = {} } = {} } = {} } = conversationChatObj;
-            uploadFileToSDK(file, userJid, msgId, media);
+            const { msgId: _msgId, msgBody: { media = {}, media: { file: _file = {} } = {} } = {} } =
+               conversationChatObj;
+            uploadFileToSDK(_file, toUserJid, _msgId, media, replyTo);
          }
-      }
+      });
+
+      await Promise.all(uploadPromises);
    }
 };
 
-const parseAndSendMessage = async (message, chatType, messageType, fromUserJid, toUserJid, replyTo) => {
+const parseAndSendMessage = async (message, chatType, messageType, toUserJid, replyTo) => {
    const { content } = message;
-   content[0].fileDetails.replyTo = replyTo;
-   sendMediaMessage(messageType, content, chatType, fromUserJid, toUserJid);
+   sendMediaMessage(messageType, content, chatType, toUserJid, replyTo);
 };
 
 export const getSenderMessageObj = (dataObj, idx) => {
@@ -262,6 +278,7 @@ export const getSenderMessageObj = (dataObj, idx) => {
             androidHeight: androidHeight,
             originalWidth,
             originalHeight,
+            audioType: fileDetails?.audioType || '',
          };
          break;
    }
@@ -288,14 +305,31 @@ export const getSenderMessageObj = (dataObj, idx) => {
 };
 
 export const handleSendMsg = async (obj = {}) => {
-   const { messageType, message, location = {} } = obj;
+   const { messageType, message, location = {}, editMessageId: originalMsgId } = obj;
    const chatUser = getCurrentChatUser();
    const userId = getUserIdFromJid(chatUser);
-   const replyTo = getReplyMessage(getUserIdFromJid(chatUser)).msgId;
+   const replyTo = getReplyMessage(getUserIdFromJid(chatUser)).msgId || '';
+   console.log('replyTo ==>', JSON.stringify(replyTo, null, 2));
+   const parentMessage = getChatMessage(userId, replyTo);
+   if (replyTo) {
+      store.dispatch(setParentMessage(parentMessage));
+   }
    store.dispatch(setReplyMessage({ userId, message: {} }));
    const msgId = SDK.randomString(8, 'BA');
    const isMuted = await getMuteStatus(chatUser);
+   handleConversationScollToBottom();
    switch (messageType) {
+      case 'messageEdit':
+         const { msgBody: { media: { caption = '' } = {} } = {} } = getChatMessage(userId, originalMsgId);
+         const editMessageId = SDK.randomString(8, 'BA');
+         const editObj = caption
+            ? { userJid: chatUser, msgId: originalMsgId, caption: message, editMessageId }
+            : { userJid: chatUser, msgId: originalMsgId, message, editMessageId };
+
+         store.dispatch(editChatMessageItem(editObj));
+         store.dispatch(editRecentChatItem(editObj));
+         SDK.editTextOrCaptionMessage({ ...editObj, originalMessageId: originalMsgId, toJid: chatUser });
+         break;
       case 'text':
          const dataObj = {
             jid: chatUser,
@@ -317,7 +351,6 @@ export const handleSendMsg = async (obj = {}) => {
             obj,
             MIX_BARE_JID.test(chatUser) ? CHAT_TYPE_GROUP : 'chat',
             messageType,
-            getCurrentUserJid(),
             chatUser,
             replyTo,
          );
@@ -375,10 +408,11 @@ export const sendSeenStatus = (publisherJid, msgId, groupJid) => {
    SDK.sendSeenStatus(publisherJid, msgId, groupJid);
 };
 
-export const uploadFileToSDK = async (file, jid, msgId, media) => {
+export const uploadFileToSDK = async (file, jid, msgId, media, replyTo) => {
    try {
-      const { caption = '', fileDetails: { replyTo = '', duration = 0, audioType = '', type = '' } = {} } = file;
-      const isDocument = DOCUMENT_FORMATS.includes(type);
+      const { caption = '', fileDetails: { extension, duration = 0, audioType = '', type = '' } = {} } = file;
+      const isDocument = DOCUMENT_FILE_EXT.includes(extension);
+      console.log('type ==> ', type);
       const msgType = isDocument ? 'file' : type?.split('/')[0] || media.fileType.split('/')[0];
       let fileOptions = {
          msgId: msgId,
@@ -397,19 +431,33 @@ export const uploadFileToSDK = async (file, jid, msgId, media) => {
       };
 
       let response = {};
+      console.log('jid ==> ', jid);
       response = await SDK.sendMediaMessage(jid, msgId, msgType, file.fileDetails, fileOptions, replyTo, {
          broadCastIdMedia: SDK.randomString(8, 'BA'),
       });
-      console.log('response ==>', JSON.stringify(response, null, 2));
       let updateObj = {
          msgId,
          statusCode: response.statusCode,
          userId: getUserIdFromJid(jid),
       };
       if (response?.statusCode !== 200) {
+         await updateProgressNotification({
+            msgId,
+            progress: 0,
+            type: 'upload',
+            isCanceled: true,
+         });
          updateObj.is_uploading = 3;
          store.dispatch(updateMediaStatus(updateObj));
          showToast(response.message);
+
+         const mediaStatusObj = {
+            msgId,
+            userId: updateObj.userId,
+         };
+         BackgroundTimer.setTimeout(() => {
+            handleUploadNextImage(mediaStatusObj);
+         }, 200);
       }
    } catch (error) {
       console.log('uploadFileToSDK -->', error);
@@ -531,3 +579,25 @@ export const successResponse = message => ({
    statusCode: 200,
    message: message || 'SUCCESS',
 });
+
+export const setFontFamily = fontFamily => {
+   store.dispatch(updateFontFamily(fontFamily));
+};
+
+export const setLanguage = (languageCode = 'en') => {
+   RealmKeyValueStore.setItem('languageCode', languageCode);
+};
+
+export const updateTypingStatus = jid => {
+   if (!typingStatusSent) {
+      SDK.sendTypingStatus(jid);
+      typingStatusSent = true;
+   }
+};
+
+export const updateTypingGoneStatus = jid => {
+   if (typingStatusSent) {
+      SDK.sendTypingGoneStatus(jid);
+      typingStatusSent = false;
+   }
+};

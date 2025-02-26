@@ -1,11 +1,15 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { CheckBox, LeftArrowIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
-import ApplicationColors from '../config/appColors';
+import Text from '../common/Text';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
+import { getStringSet } from '../localization/stringSet';
 
 function GalleryHeader(props) {
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
    const { selectedImages = [], checkBox = false, setCheckbox, onDone = () => {} } = props;
 
    const handlingBackBtn = () => {
@@ -18,17 +22,20 @@ function GalleryHeader(props) {
    };
 
    return (
-      <View style={[commonStyles.hstack, styles.container]} justifyContent="space-between" alignItems="center">
+      <View
+         style={[commonStyles.hstack, styles.container, { backgroundColor: themeColorPalatte.appBarColor }]}
+         justifyContent="space-between"
+         alignItems="center">
          <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
             {Boolean(props?.onhandleBack) && (
                <Pressable
                   contentContainerStyle={commonStyles.p_10}
                   pressedStyle={[commonStyles.bgBlack_01, commonStyles.borderRadius_50]}
                   onPress={handlingBackBtn}>
-                  <LeftArrowIcon />
+                  <LeftArrowIcon color={themeColorPalatte.iconColor} />
                </Pressable>
             )}
-            <Text style={styles.title}>{props?.title}</Text>
+            <Text style={[styles.title, { color: themeColorPalatte.headerPrimaryTextColor }]}>{props?.title}</Text>
          </View>
          <View style={[commonStyles.hstack]}>
             <Pressable
@@ -36,9 +43,11 @@ function GalleryHeader(props) {
                pressedStyle={[commonStyles.bgBlack_01, commonStyles.borderRadius_50]}
                onPress={handleOnPress}>
                {Object.keys(selectedImages).length > 0 ? (
-                  <Text style={styles.subTitle}>DONE</Text>
+                  <Text style={[styles.subTitle, { color: themeColorPalatte.primaryColor }]}>
+                     {stringSet.CHAT_SCREEN_ATTACHMENTS.DONE_BUTTON}
+                  </Text>
                ) : (
-                  !checkBox && <CheckBox />
+                  !checkBox && <CheckBox color={themeColorPalatte.iconColor} />
                )}
             </Pressable>
          </View>
@@ -59,10 +68,8 @@ const styles = StyleSheet.create({
       fontSize: 20,
       paddingHorizontal: 12,
       fontWeight: '600',
-      color: '#000',
    },
    subTitle: {
-      color: ApplicationColors.mainColor,
       fontWeight: '600',
    },
 });

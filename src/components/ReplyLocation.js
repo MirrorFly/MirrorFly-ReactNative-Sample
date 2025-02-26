@@ -1,16 +1,15 @@
 import React from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import mapStaticBlurImage from '../assets/google-maps-blur.png';
 import { ClearTextIcon, LocationMarkerIcon } from '../common/Icons';
 import NickName from '../common/NickName';
+import Text from '../common/Text';
 import { getImageSource, getUserIdFromJid } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
-import { getCurrentUserJid } from '../uikitMethods';
 
 const ReplyLocation = props => {
-   const { replyMsgItems, handleRemove } = props;
+   const { replyMsgItems, handleRemove, stringSet } = props;
    const { publisherJid } = replyMsgItems;
-   const isSender = publisherJid === getCurrentUserJid();
 
    const RemoveHandle = () => {
       handleRemove();
@@ -18,15 +17,7 @@ const ReplyLocation = props => {
 
    return (
       <View style={styles.container}>
-         <View>
-            {isSender ? (
-               <Text color={'#000'} fontSize={14} mb={1} pl={1} fontWeight={600} py="0">
-                  You
-               </Text>
-            ) : (
-               <NickName style={commonStyles.userName} userId={getUserIdFromJid(publisherJid)} />
-            )}
-         </View>
+         <NickName style={commonStyles.userName} userId={getUserIdFromJid(publisherJid)} />
          <View style={styles.replyMessageSection}>
             <Image resizeMode="cover" style={styles.mapStaticImage} source={getImageSource(mapStaticBlurImage)} />
 
@@ -37,8 +28,8 @@ const ReplyLocation = props => {
 
          <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
             <LocationMarkerIcon color={'#7285B5'} />
-            <Text pl={1} fontSize={14} color={'#313131'} fontWeight={400}>
-               Location
+            <Text pl={1} fontSize={14} color={'#313131'} fontWeight={400} style={{ paddingHorizontal: '4' }}>
+               {stringSet.COMMON_TEXT.LOCATION_MSG_TYPE}
             </Text>
          </View>
       </View>

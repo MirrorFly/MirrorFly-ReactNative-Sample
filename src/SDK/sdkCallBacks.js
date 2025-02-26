@@ -63,6 +63,7 @@ import {
    updateMissedCallNotification,
 } from '../Helper/Calls/Utility';
 import RootNavigation from '../Navigation/rootNavigation';
+import { progressMap, updateProgressNotification } from '../Service/PushNotify';
 import { pushNotify } from '../Service/remoteNotifyHandle';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../calls/notification/callNotifyHandler';
 import ActivityModule from '../customModules/ActivityModule';
@@ -80,6 +81,7 @@ import {
    updateDeleteForEveryOne,
 } from '../helpers/chatHelpers';
 import {
+   BLOCK_CONTACT_TYPE,
    CALL_CONVERSION_STATUS_CANCEL,
    CALL_CONVERSION_STATUS_REQ_WAITING,
    CONNECTION_STATE_CONNECTING,
@@ -104,6 +106,7 @@ import {
 } from '../redux/callStateSlice';
 import {
    addChatMessageItem,
+   editChatMessageItem,
    updateChatMessageSeenStatus,
    updateChatMessageStatus,
    updateMediaStatus,
@@ -113,20 +116,28 @@ import { setPresenceData } from '../redux/presenceDataSlice';
 import { setProgress } from '../redux/progressDataSlice';
 import {
    addRecentChatItem,
+   editRecentChatItem,
    toggleArchiveChatsByUserId,
    updateMsgByLastMsgId,
    updateRecentMessageStatus,
 } from '../redux/recentChatDataSlice';
-import { getArchive } from '../redux/reduxHook';
-import { setRoasterData } from '../redux/rosterDataSlice';
+import { getArchive, getChatMessage } from '../redux/reduxHook';
+import { setRoasterData, updateIsBlockedMe } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting } from '../redux/settingDataSlice';
 import { resetConferencePopup, showConfrence, updateConference } from '../redux/showConfrenceSlice';
 import store from '../redux/store';
 import { resetTypingStatus, setTypingStatus } from '../redux/typingStatusDataSlice';
 import { REGISTERSCREEN } from '../screens/constants';
-import { getCurrentUserJid, getLocalUserDetails, logoutClearVariables, setCurrectUserProfile } from '../uikitMethods';
-import { fetchGroupParticipants, getUserProfileFromSDK } from './utils';
+import {
+   getCurrentUserJid,
+   getLocalUserDetails,
+   logoutClearVariables,
+   mflog,
+   setCurrectUserProfile,
+} from '../uikitMethods';
 import SDK from './SDK';
+import { fetchGroupParticipants, getUserProfileFromSDK } from './utils';
+import { stopAudioRecord } from '../components/ChatInput';
 
 let localStream = null,
    localVideoMuted = false,
@@ -616,7 +627,7 @@ const reconnecting = res => {
       remoteAudioMuted: remoteAudioMuted,
       callStatusText: CALL_STATUS_RECONNECT,
    };
-   /** 
+   /**
     *  let vcardData = getLocalUserDetails();
     * let currentUserJid = formatUserIdToJid(vcardData?.fromUser)
    if (currentUserJid === res.userJid) {
@@ -651,6 +662,7 @@ const callStatus = res => {
 
 export const callBacks = {
    connectionListener: response => {
+      mflog('response ==>', response);
       store.dispatch(setXmppConnectionStatus(response.status));
       if (response.status === 'LOGOUT') {
          logoutClearVariables();
@@ -663,14 +675,34 @@ export const callBacks = {
          case 'receiveMessage':
          case 'groupProfileUpdated':
             res.archiveSetting = getArchive();
-            store.dispatch(addRecentChatItem(res));
-            store.dispatch(addChatMessageItem(res));
-            if (
-               (!res.notification && (res.msgType === 'receiveMessage' || res.msgType === 'carbonReceiveMessage')) ||
-               (res.msgBody.message_type === NOTIFICATION.toLowerCase() &&
-                  res.msgBody.message === '2' &&
-                  getCurrentUserJid() === res.toUserJid)
-            ) {
+            const userId = getUserIdFromJid(res?.userJid);
+            if (res?.editMessageId && getChatMessage(userId, res?.msgId)) {
+               const editObj = res?.msgBody?.caption
+                  ? {
+                       userJid: res?.userJid,
+                       msgId: res?.msgId,
+                       caption: res?.msgBody?.caption,
+                       editMessageId: res?.editMessageId,
+                    }
+                  : {
+                       userJid: res?.userJid,
+                       msgId: res?.msgId,
+                       message: res?.msgBody?.message,
+                       editMessageId: res?.editMessageId,
+                    };
+
+               store.dispatch(editChatMessageItem(editObj));
+               store.dispatch(editRecentChatItem(editObj));
+            } else {
+               store.dispatch(addRecentChatItem(res));
+               store.dispatch(addChatMessageItem(res));
+            }
+            const isReceiveMessage = ['receiveMessage', 'carbonReceiveMessage'].includes(res.msgType);
+            const isNotificationMessage =
+               res.msgBody.message_type === NOTIFICATION.toLowerCase() &&
+               res.msgBody.message === '2' &&
+               getCurrentUserJid() === res.toUserJid;
+            if ((!res.notification && !res.editMessageId && isReceiveMessage) || isNotificationMessage) {
                pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.fromUserJid);
             }
             break;
@@ -680,7 +712,9 @@ export const callBacks = {
             store.dispatch(updateChatMessageStatus(res));
             break;
          case 'acknowledge':
-            if (res.type === 'seen') store.dispatch(updateChatMessageSeenStatus(res));
+            if (res.type === 'seen') {
+               store.dispatch(updateChatMessageSeenStatus(res));
+            }
             if (res.type === 'acknowledge') {
                store.dispatch(updateRecentMessageStatus(res));
                store.dispatch(updateChatMessageStatus(res));
@@ -700,10 +734,14 @@ export const callBacks = {
          case 'recallMessage':
             updateDeleteForEveryOne(res.fromUserId, res.msgId.split(','), res.fromUserJid);
             break;
+         case 'userBlockStatus':
+            store.dispatch(
+               updateIsBlockedMe({ userId: res.blockedUserId, isBlockedMe: res.type === BLOCK_CONTACT_TYPE ? 1 : 0 }),
+            );
+            break;
       }
    },
    presenceListener: res => {
-      console.log('presenceListener res ==>', JSON.stringify(res, null, 2));
       store.dispatch(setPresenceData(res));
    },
    userProfileListener: res => {
@@ -752,8 +790,20 @@ export const callBacks = {
    },
    groupMsgInfoListener: res => {},
    mediaUploadListener: res => {
+      const { msgId, progress } = res;
+      const roundedProgress = Math.round(progress);
+      if (Platform.OS === 'android') {
+         const checkActiveDownload = progressMap.download.files > 0;
+         updateProgressNotification({
+            msgId,
+            progress: roundedProgress,
+            type: 'upload',
+            foregroundStatus: !checkActiveDownload,
+         });
+      }
       store.dispatch(setProgress(res));
       if (res.progress === 100) {
+         updateProgressNotification({ msgId, progress: 0, type: 'upload', isCanceled: true });
          const mediaStatusObj = {
             msgId: res.msgId,
             is_uploading: 2,
@@ -767,8 +817,20 @@ export const callBacks = {
       }
    },
    mediaDownloadListener: res => {
+      const { msgId, progress } = res;
+      const roundedProgress = Math.round(progress);
+      if (Platform.OS === 'android') {
+         const checkActiveUpload = progressMap.upload.files > 0;
+         updateProgressNotification({
+            msgId,
+            progress: roundedProgress,
+            type: 'download',
+            foregroundStatus: !checkActiveUpload,
+         });
+      }
       store.dispatch(setProgress(res));
       if (res.progress === 100) {
+         updateProgressNotification({ msgId, progress: 0, type: 'download', isCanceled: true });
          const mediaStatusObj = {
             msgId: res.msgId,
             is_downloaded: 2,
@@ -791,6 +853,7 @@ export const callBacks = {
    userDeletedListener: res => {},
    adminBlockListener: res => {},
    incomingCallListener: function (res) {
+      stopAudioRecord();
       remoteStream = [];
       localStream = null;
       let callMode = 'onetoone';

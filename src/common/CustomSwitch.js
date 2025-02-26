@@ -1,12 +1,14 @@
 import React, { useRef } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
-import ApplicationColors from '../config/appColors';
+import { Animated, I18nManager, StyleSheet, View } from 'react-native';
 import { showNetWorkToast } from '../helpers/chatHelpers';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import IconButton from './IconButton';
 import { useNetworkStatus } from './hooks';
 
 function CustomSwitch({ value, onToggle, disabled = false }) {
    const isNetWorkConnected = useNetworkStatus();
+   const themeColorPalatte = useThemeColorPalatte();
+   const isRTL = I18nManager.isRTL;
    const animatedValue = useRef(new Animated.Value(value ? 1 : 0)).current;
 
    React.useEffect(() => {
@@ -31,7 +33,7 @@ function CustomSwitch({ value, onToggle, disabled = false }) {
 
    const translateX = animatedValue.interpolate({
       inputRange: [0, 1],
-      outputRange: [2, 23], // Adjust the outputRange to change the thumb travel distance
+      outputRange: isRTL ? [-2, -23] : [2, 23],
    });
 
    return (
@@ -39,14 +41,14 @@ function CustomSwitch({ value, onToggle, disabled = false }) {
          <View
             style={[
                styles.switchContainer,
-               Boolean(value) ? styles.switchBorderdOn : styles.switchBorderdOff,
+               Boolean(value) ? { borderColor: themeColorPalatte.primaryColor } : { borderColor: '#767577' },
                { opacity: disabled ? 0.7 : 1 },
             ]}>
             <View style={[styles.switchBackground]} />
             <Animated.View
                style={[
                   styles.thumb,
-                  Boolean(value) ? styles.thumbOn : styles.thumbOff,
+                  Boolean(value) ? { backgroundColor: themeColorPalatte.primaryColor } : styles.thumbOff,
                   { opacity: disabled ? 0.7 : 1 },
                   { transform: [{ translateX }] },
                ]}
@@ -64,12 +66,6 @@ const styles = StyleSheet.create({
       borderWidth: 1,
       justifyContent: 'center',
    },
-   switchBorderdOn: {
-      borderColor: ApplicationColors.mainColor,
-   },
-   switchBorderdOff: {
-      borderColor: '#767577',
-   },
    switchBackground: {
       position: 'absolute',
       top: 0,
@@ -85,9 +81,6 @@ const styles = StyleSheet.create({
       borderRadius: 14,
       position: 'absolute',
       top: 2,
-   },
-   thumbOn: {
-      backgroundColor: ApplicationColors.mainColor,
    },
    thumbOff: {
       backgroundColor: '#767577',

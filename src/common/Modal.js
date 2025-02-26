@@ -6,7 +6,6 @@ import {
    StyleSheet,
    View,
 } from 'react-native';
-import ApplicationColors from '../config/appColors';
 
 export const ModalCenteredContent = ({ children, onPressOutside }) => {
    return (
@@ -59,7 +58,7 @@ const styles = StyleSheet.create({
       bottom: 0,
       left: 0,
       right: 0,
-      backgroundColor: ApplicationColors.modalOverlayBg,
+      backgroundColor: 'rgba(0,0,0,.5)',
    },
    modalCeneteredContentContainer: {
       flex: 1,

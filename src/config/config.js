@@ -2,11 +2,11 @@ const config = {
    attachement: true,
    videoDuaration: 40,
    audioDuaration: 60,
-   fileSize: 50,
-   imageFileSize: 10,
-   videoFileSize: 30,
-   audioFileSize: 30,
-   documentFileSize: 20,
+   fileSize: 2147483648, // bytes
+   imageFileSize: 2147483648, // bytes
+   videoFileSize: 2147483648, // bytes
+   audioFileSize: 2147483648, // bytes
+   documentFileSize: 2147483648, // bytes
    maxAllowedMediaCount: 5,
    maximumAllowedUsersToForward: 5,
    maximumCharForwardPopUp: 60,

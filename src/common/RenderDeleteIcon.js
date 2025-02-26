@@ -1,6 +1,8 @@
 import React from 'react';
+import { MIX_BARE_JID } from '../helpers/constants';
 import { useRecentChatData } from '../redux/reduxHook';
 import IconButton from './IconButton';
+import { DeleteIcon } from './Icons';
 
 function RenderDeleteIcon({ onDelete }) {
     const recentChatData = useRecentChatData();

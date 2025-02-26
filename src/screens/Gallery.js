@@ -1,18 +1,21 @@
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { ActivityIndicator, Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Dimensions, FlatList, Image, StyleSheet, View } from 'react-native';
 import { CameraSmallIcon, FolderIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import ScreenHeader from '../common/ScreenHeader';
-import ApplicationColors from '../config/appColors';
+import Text from '../common/Text';
 import { getCurrentChatUser, getUserIdFromJid } from '../helpers/chatHelpers';
-import { useRoasterData } from '../redux/reduxHook';
+import { getStringSet } from '../localization/stringSet';
+import { useRoasterData, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { GALLERY_PHOTOS_SCREEN } from './constants';
 
 const Gallery = () => {
    const navigation = useNavigation();
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
    const chatUser = getCurrentChatUser();
    const userId = getUserIdFromJid(chatUser);
    let { nickName } = useRoasterData(userId) || {};
@@ -24,6 +27,8 @@ const Gallery = () => {
    let itemWidth = deviceWidth / numColumns;
    itemWidth = itemWidth - (itemWidth / 100) * 0.6;
 
+   let screenHeader = stringSet.CHAT_SCREEN_ATTACHMENTS.GALLERY_SCREEN_HEADER.replace('{nickName}', nickName);
+
    React.useEffect(() => {
       fetchGallery();
    }, []);
@@ -32,14 +37,15 @@ const Gallery = () => {
       try {
          setLoading(true);
          const photo = await CameraRoll.getAlbums({
-            albumType: 'All',
+            albumType: 'SmartAlbum',
+            assetType: 'All',
          });
          const _galleryData = await Promise.allSettled(
             photo.map(async item => {
                const params = {
                   first: 1,
                   assetType: 'All',
-                  groupTypes: 'Album',
+                  groupTypes: 'SmartAlbum',
                   include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'playableDuration', 'orientation'],
                   groupName: item.title,
                };
@@ -83,7 +89,7 @@ const Gallery = () => {
       }
       return (
          <View style={commonStyles.mb_130}>
-            <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
+            <ActivityIndicator size="large" color={themeColorPalatte.primaryColor} />
          </View>
       );
    };
@@ -135,10 +141,11 @@ const Gallery = () => {
    };
 
    return (
-      <View style={{ flex: 1, backgroundColor: '#fff' }}>
-         <ScreenHeader title={'Send to ' + nickName} isSearchable={false} />
+      <View style={[commonStyles.flex1, commonStyles.bg_color(themeColorPalatte.screenBgColor)]}>
+         <ScreenHeader title={screenHeader} isSearchable={false} />
 
          <FlatList
+            style={{ backgroundColor: '#fff' }}
             numColumns={3}
             data={galleryData}
             keyExtractor={item => item.value.title.toString()}

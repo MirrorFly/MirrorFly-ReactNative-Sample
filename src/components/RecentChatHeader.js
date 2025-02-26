@@ -1,22 +1,26 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import RootNavigation from '../Navigation/rootNavigation';
+import SDK from '../SDK/SDK';
 import AlertModal from '../common/AlertModal';
 import IconButton from '../common/IconButton';
 import { ArchiveIcon, ChatMuteIcon, ChatUnMuteIcon, CloseIcon, DeleteIcon } from '../common/Icons';
 import ScreenHeader from '../common/ScreenHeader';
-import ApplicationColors from '../config/appColors';
+import Text from '../common/Text';
 import { getUserIdFromJid, showToast, toggleArchive, toggleMuteChat } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
+import { getStringSet, replacePlaceholders } from '../localization/stringSet';
 import { deleteRecentChats, resetChatSelections, setSearchText } from '../redux/recentChatDataSlice';
-import { getSelectedChats, getUserNameFromStore, useRecentChatData } from '../redux/reduxHook';
+import { getSelectedChats, getUserNameFromStore, useRecentChatData, useThemeColorPalatte } from '../redux/reduxHook';
 import { GROUP_STACK, MENU_SCREEN, SETTINGS_STACK } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 
 const RecentChatHeader = () => {
    const dispatch = useDispatch();
    const recentChatData = useRecentChatData();
+   const themeColorPalatte = useThemeColorPalatte();
+   const stringSet = getStringSet();
    const [modalContent, setModalContent] = React.useState(null);
 
    const filtered = React.useMemo(() => {
@@ -30,7 +34,9 @@ const RecentChatHeader = () => {
 
    const userName = getUserNameFromStore(getUserIdFromJid(filtered[0]?.userJid)) || '';
    const deleteMessage =
-      filtered.length === 1 ? `Delete chat with "${userName}"?` : `Delete ${filtered.length} selected chats?`;
+      filtered.length === 1
+         ? replacePlaceholders(stringSet.RECENT_CHAT_SCREEN.DELETE_CHAT_LABEL, { userName })
+         : replacePlaceholders(stringSet.RECENT_CHAT_SCREEN.DELETE_MULTIPLE_CHAT_LABEL, { length: filtered.length });
 
    const handleSearchText = text => {
       dispatch(setSearchText(text));
@@ -45,22 +51,22 @@ const RecentChatHeader = () => {
          visible: true,
          onRequestClose: toggleModalContent,
          title: deleteMessage,
-         noButton: 'No',
-         yesButton: 'Yes',
+         noButton: stringSet.BUTTON_LABEL.NO_BUTTON,
+         yesButton: stringSet.BUTTON_LABEL.YES_BUTTON,
          yesAction: handleRemoveClose,
       });
    };
 
    const handleRemoveClose = () => {
-      const isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
-      if (!isUserLeft && filtered.length > 1) {
+      const _isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
+      if (!_isUserLeft && filtered.length > 1) {
          toggleModalContent();
-         return showToast('You are a member of a certain group');
+         return showToast(stringSet.COMMON_TEXT.YOU_ARE_A_MEMBER);
       }
 
-      if (!isUserLeft) {
+      if (!_isUserLeft) {
          toggleModalContent();
-         return showToast('You are a participant in this group');
+         return showToast(stringSet.COMMON_TEXT.YOU_ARE_A_PARTICIPANT);
       }
 
       const userJids = getSelectedChats().map(item => item.userJid);
@@ -76,7 +82,7 @@ const RecentChatHeader = () => {
       return isUserLeft ? (
          <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
             <IconButton onPress={handleDelete}>
-               <DeleteIcon />
+               <DeleteIcon color={themeColorPalatte.iconColor} />
             </IconButton>
          </View>
       ) : null;
@@ -86,7 +92,7 @@ const RecentChatHeader = () => {
       return (
          <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
             <IconButton onPress={toggleArchive(true)}>
-               <ArchiveIcon />
+               <ArchiveIcon color={themeColorPalatte.iconColor} />
             </IconButton>
          </View>
       );
@@ -112,11 +118,11 @@ const RecentChatHeader = () => {
 
    const menuItems = [
       {
-         label: 'New Group',
+         label: stringSet.RECENT_CHAT_MENU_DROP_DOWN.NEW_GROUP_LABEL,
          formatter: hanldeGroupRoute,
       },
       {
-         label: 'Settings',
+         label: stringSet.RECENT_CHAT_MENU_DROP_DOWN.SETTINGS_LABEL,
          formatter: hanldeRoute,
       },
    ];
@@ -128,17 +134,17 @@ const RecentChatHeader = () => {
    const renderSelectionHeader = React.useMemo(() => {
       return (
          Boolean(filtered.length) && (
-            <View style={[styles.container, commonStyles.p_15]}>
+            <View style={[styles.container, commonStyles.p_15, commonStyles.bg_color(themeColorPalatte.appBarColor)]}>
                <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
                   <IconButton onPress={resetChatSelection}>
-                     <CloseIcon />
+                     <CloseIcon color={themeColorPalatte.iconColor} />
                   </IconButton>
                   <Text
                      style={[
                         commonStyles.textCenter,
                         commonStyles.fontSize_18,
-                        commonStyles.colorBlack,
                         commonStyles.pl_10,
+                        commonStyles.textColor(themeColorPalatte.headerPrimaryTextColor),
                      ]}>
                      {filtered.length}
                   </Text>
@@ -152,10 +158,10 @@ const RecentChatHeader = () => {
             </View>
          )
       );
-   }, [filtered.length, modalContent]);
+   }, [filtered.length, modalContent, themeColorPalatte]);
 
    const renderScreenHeader = React.useMemo(() => {
-      return !Boolean(filtered.length) && <ScreenHeader onChangeText={handleSearchText} menuItems={menuItems} />;
+      return filtered.length === 0 && <ScreenHeader onChangeText={handleSearchText} menuItems={menuItems} />;
    }, [filtered.length]);
 
    return (
@@ -173,7 +179,6 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       width: '100%',
       height: 65,
-      backgroundColor: ApplicationColors.headerBg,
       paddingRight: 16,
       paddingVertical: 12,
    },

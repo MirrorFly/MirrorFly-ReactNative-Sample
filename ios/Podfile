@@ -62,6 +62,9 @@ target 'mirrorfly_rn' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+  # Add dependency
+  pod 'IDZSwiftCommonCrypto', '~> 0.13.0'
+
   target 'mirrorfly_rnTests' do
     inherit! :complete
     # Pods for testing

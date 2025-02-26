@@ -1,16 +1,19 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import Geocoder from 'react-native-geocoder';
 import Geolocation from 'react-native-geolocation-service';
 import MapView, { Marker } from 'react-native-maps';
 import { handleSendMsg } from '../SDK/utils';
 import { SendBlueIcon } from '../common/Icons';
 import ScreenHeader from '../common/ScreenHeader';
+import Text from '../common/Text';
 import { useNetworkStatus } from '../common/hooks';
-import ApplicationColors from '../config/appColors';
 import config from '../config/config';
 import { showToast } from '../helpers/chatHelpers';
+import { getStringSet } from '../localization/stringSet';
+import { useThemeColorPalatte } from '../redux/reduxHook';
+import commonStyles from '../styles/commonStyles';
 
 Geocoder.fallbackToGoogle(config.GOOGLE_LOCATION_API_KEY);
 
@@ -28,7 +31,9 @@ Geocoder.fallbackToGoogle(config.GOOGLE_LOCATION_API_KEY);
 const locationInitialValue = null;
 
 const LocationScreen = () => {
+   const stringSet = getStringSet();
    const navigation = useNavigation();
+   const themeColorPalatte = useThemeColorPalatte();
    const [location, setLocation] = React.useState(locationInitialValue);
    const [locationAddress, setLocationAddress] = useState('');
    const [isLoading, setIsLoading] = useState(true);
@@ -162,7 +167,7 @@ const LocationScreen = () => {
             error => {
                setIsLoading(false);
                console.error('Error getting current location:', error);
-               showToast('Unable to get current location');
+               showToast(stringSet.TOAST_MESSAGES.UNABLE_TO_GET_CURRENT_LOCATION);
             },
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
          );
@@ -173,7 +178,7 @@ const LocationScreen = () => {
    };
 
    const showNoConnectivityToast = () => {
-      showToast('Please check your internet connection');
+      showToast(stringSet.COMMON_TEXT.NO_INTERNET_CONNECTION);
    };
 
    const handleMapPress = e => {
@@ -196,7 +201,7 @@ const LocationScreen = () => {
       if (isLoading) {
          return (
             <View style={styles.loaderContainer}>
-               <ActivityIndicator size={'large'} color={ApplicationColors.mainColor} />
+               <ActivityIndicator size={'large'} color={themeColorPalatte.primaryColor} />
             </View>
          );
       }
@@ -233,12 +238,18 @@ const LocationScreen = () => {
    const renderFooter = () => {
       if (location != null && Boolean(locationAddress) && isInternetReachable) {
          return (
-            <View style={styles.mapFooter}>
+            <View style={[styles.mapFooter, commonStyles.bg_color(themeColorPalatte.screenBgColor)]}>
                <View style={styles.addressContainer}>
-                  <Text style={styles.LocText}>Send this location</Text>
+                  <Text style={[styles.LocText, commonStyles.textColor(themeColorPalatte.primaryColor)]}>
+                     {stringSet.CHAT_SCREEN_ATTACHMENTS.SEND_THIS_LOCATION}
+                  </Text>
                   <View>
-                     <Text style={styles.addSubText}>{locationAddress.streetAddress}</Text>
-                     <Text style={styles.addCityText}>{renderCityDistrictAndPostalCode()}</Text>
+                     <Text style={[styles.addSubText, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+                        {locationAddress.streetAddress}
+                     </Text>
+                     <Text style={[styles.addCityText, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+                        {renderCityDistrictAndPostalCode()}
+                     </Text>
                   </View>
                </View>
                <View style={styles.elevationContainer}>
@@ -252,9 +263,16 @@ const LocationScreen = () => {
    };
 
    return (
-      <View style={styles.container}>
-         <View style={styles.headerContainer}>
-            <ScreenHeader title="User Location" isSearchable={false} />
+      <View style={[styles.container, commonStyles.bg_color(themeColorPalatte.screenBgColor)]}>
+         <View
+            style={[
+               styles.headerContainer,
+               commonStyles.bg_color(themeColorPalatte.appBarColor),
+               {
+                  borderBottomColor: themeColorPalatte.mainBorderColor,
+               },
+            ]}>
+            <ScreenHeader title={stringSet.CHAT_SCREEN_ATTACHMENTS.LOCATION_SCREEN_HEADER} isSearchable={false} />
          </View>
          {renderMapView()}
          {renderFooter()}
@@ -274,9 +292,7 @@ const styles = StyleSheet.create({
    headerContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: '#F2F2F2',
       borderBottomWidth: 2,
-      borderBottomColor: '#E2E2E2',
       elevation: 6,
    },
    map: {
@@ -288,14 +304,12 @@ const styles = StyleSheet.create({
       position: 'relative',
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: '#fff',
       justifyContent: 'space-between',
       paddingHorizontal: 18,
       paddingTop: 12,
       paddingBottom: 18,
    },
    LocText: {
-      color: '#4879F9',
       fontSize: 14,
       fontWeight: '400',
    },
@@ -313,13 +327,11 @@ const styles = StyleSheet.create({
       marginRight: 5,
    },
    addSubText: {
-      color: '#4D4D4D',
       paddingTop: 4,
       fontSize: 15,
       fontWeight: 'bold',
    },
    addCityText: {
-      color: '#4D4D4D',
       fontSize: 13,
       fontWeight: '400',
       paddingBottom: 4,

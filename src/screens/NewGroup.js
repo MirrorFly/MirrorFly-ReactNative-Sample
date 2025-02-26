@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { BackHandler, Image, Keyboard, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, Image, Keyboard, StyleSheet, View } from 'react-native';
 import CameraIcon from '../assets/camera.png';
 import Avathar from '../common/Avathar';
 import IconButton from '../common/IconButton';
@@ -8,21 +8,25 @@ import { LeftArrowIcon } from '../common/Icons';
 import LoadingModal from '../common/LoadingModal';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
+import Text from '../common/Text';
 import { useNetworkStatus } from '../common/hooks';
 import EmojiInput from '../components/EmojiInput';
-import ApplicationColors from '../config/appColors';
 import {
    getImageSource,
    handleImagePickerOpenCamera,
    handleImagePickerOpenGallery,
-   showToast,
+   showToast
 } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP } from '../helpers/constants';
+import { getStringSet } from '../localization/stringSet';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles, { modelStyles } from '../styles/commonStyles';
-import { NEW_GROUP, USERS_LIST_SCREEN } from './constants';
+import { IMAGEVIEW, NEW_GROUP, USERS_LIST_SCREEN } from './constants';
 
 function NewGroup() {
+   const stringSet = getStringSet();
    const isConnected = useNetworkStatus();
+   const themeColorPalatte = useThemeColorPalatte();
    const navigation = useNavigation();
    const [value, setValue] = React.useState('');
    const [loading, setLoading] = React.useState(false);
@@ -111,7 +115,7 @@ function NewGroup() {
             grpDetails: { grpName: value, profileImage },
          });
       } else {
-         showToast('Please provide group name');
+         showToast(stringSet.TOAST_MESSAGES.TOAST_PROVIDE_GROUP_NAME);
       }
    };
 
@@ -125,7 +129,7 @@ function NewGroup() {
 
    return (
       <>
-         <View style={[styles.container, commonStyles.hstack, { backgroundColor: ApplicationColors.headerBg }]}>
+         <View style={[styles.container, commonStyles.hstack, { backgroundColor: themeColorPalatte.appBarColor }]}>
             <View
                style={[
                   commonStyles.hstack,
@@ -134,17 +138,21 @@ function NewGroup() {
                   commonStyles.marginLeft_10,
                ]}>
                <IconButton onPress={handlingBackBtn}>
-                  <LeftArrowIcon />
+                  <LeftArrowIcon color={themeColorPalatte.iconColor} />
                </IconButton>
-               <Text style={styles.titleText}>New Group</Text>
+               <Text style={[styles.titleText, commonStyles.textColor(themeColorPalatte.headerPrimaryTextColor)]}>
+                  {stringSet.CREATE_GROUP_SCREEN.NEW_GROUP_BUTTON}
+               </Text>
             </View>
             <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
                <IconButton onPress={handleNext}>
-                  <Text style={styles.subText}>NEXT</Text>
+                  <Text style={[styles.subText, commonStyles.textColor(themeColorPalatte.headerPrimaryTextColor)]}>
+                     {stringSet.CREATE_GROUP_SCREEN.NEXT_BUTTON}
+                  </Text>
                </IconButton>
             </View>
          </View>
-         <View style={[commonStyles.bg_white, commonStyles.flex1]}>
+         <View style={[commonStyles.bg_color(themeColorPalatte.screenBgColor), commonStyles.flex1]}>
             <View style={[commonStyles.alignItemsCenter, commonStyles.mt_50]}>
                <View style={{ height: 157, width: 157, position: 'relative' }}>
                   <Pressable
@@ -185,24 +193,39 @@ function NewGroup() {
             </View>
             <EmojiInput setValue={setValue} allowedMaxLimit={25}>
                <Text
-                  style={[commonStyles.pt_15, commonStyles.fw_600, commonStyles.colorBlack, commonStyles.textCenter]}>
-                  Provide a Group Name and Icon
+                  style={[
+                     commonStyles.pt_15,
+                     commonStyles.fw_600,
+                     commonStyles.textCenter,
+                     { color: themeColorPalatte.primaryTextColor },
+                  ]}>
+                  {stringSet.CREATE_GROUP_SCREEN.GROUP_INFO_LABEL}
                </Text>
             </EmojiInput>
          </View>
          <LoadingModal visible={loading} />
          <Modal visible={modelOpen} onRequestClose={toggleModel}>
             <ModalCenteredContent onPressOutside={toggleModel}>
-               <View style={modelStyles.inviteFriendModalContentContainer}>
+               <View
+                  style={[
+                     modelStyles.inviteFriendModalContentContainer,
+                     commonStyles.bg_color(themeColorPalatte.screenBgColor),
+                  ]}>
                   <Pressable onPress={handleOpenGallery}>
-                     <Text style={modelStyles.modalOption}>Choose from Gallery</Text>
+                     <Text style={modelStyles.modalOption(themeColorPalatte.primaryTextColor)}>
+                        {stringSet.COMMON_TEXT.CHOOSE_FROM_GALLERY}
+                     </Text>
                   </Pressable>
                   <Pressable onPress={handleOpenCamera}>
-                     <Text style={modelStyles.modalOption}>Take Photo</Text>
+                     <Text style={modelStyles.modalOption(themeColorPalatte.primaryTextColor)}>
+                        {stringSet.COMMON_TEXT.TAKE_PHOTO}
+                     </Text>
                   </Pressable>
                   {profileImage?.uri && (
                      <Pressable onPress={handleRemovePhoto}>
-                        <Text style={modelStyles.modalOption}>Remove Photo</Text>
+                        <Text style={modelStyles.modalOption(themeColorPalatte.primaryTextColor)}>
+                           {stringSet.COMMON_TEXT.REMOVE_PHOTO}
+                        </Text>
                      </Pressable>
                   )}
                </View>
@@ -222,12 +245,10 @@ const styles = StyleSheet.create({
       fontSize: 18,
       paddingHorizontal: 12,
       fontWeight: '500',
-      color: ApplicationColors.black,
    },
    subText: {
       fontSize: 14,
       paddingHorizontal: 12,
-      color: ApplicationColors.black,
    },
    cameraImage: {
       height: 42,

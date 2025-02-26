@@ -1,16 +1,53 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import ApplicationColors from '../config/appColors';
+import { StyleSheet, View } from 'react-native';
+import Text from '../common/Text';
 import { getMessageStatus } from '../helpers/chatHelpers';
+import { useThemeColorPalatte } from '../redux/reduxHook';
+import commonStyles from '../styles/commonStyles';
 
-const CaptionContainer = ({ caption, msgStatus, timeStamp, isSender }) => {
+const CaptionContainer = ({ caption, msgStatus, timeStamp, isSender, editMessageId }) => {
+   const themeColorPalatte = useThemeColorPalatte();
    return (
       Boolean(caption) && (
          <View style={styles.captionContainer}>
-            <Text style={styles.captionText}>{caption}</Text>
+            <Text
+               style={{
+                  ...commonStyles.textColor(
+                     isSender
+                        ? themeColorPalatte.chatSenderPrimaryTextColor
+                        : themeColorPalatte.chatReceiverPrimaryTextColor,
+                  ),
+                  ...styles.captionText,
+               }}>
+               {caption}
+            </Text>
             <View style={styles.messgeStatusAndTimestampWithCaption}>
                {isSender && getMessageStatus(msgStatus)}
-               <Text style={styles.timeStampText}>{timeStamp}</Text>
+               {editMessageId && (
+                  <Text
+                     style={[
+                        styles.timeStampText,
+                        { paddingLeft: 4 },
+                        commonStyles.textColor(
+                           isSender
+                              ? themeColorPalatte.chatSenderSecondaryTextColor
+                              : themeColorPalatte.chatReceiverSecondaryTextColor,
+                        ),
+                     ]}>
+                     Edited
+                  </Text>
+               )}
+               <Text
+                  style={[
+                     styles.timeStampText,
+                     commonStyles.textColor(
+                        isSender
+                           ? themeColorPalatte.chatSenderSecondaryTextColor
+                           : themeColorPalatte.chatReceiverSecondaryTextColor,
+                     ),
+                  ]}>
+                  {timeStamp}
+               </Text>
             </View>
          </View>
       )
@@ -24,8 +61,7 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
    },
    captionText: {
-      color: ApplicationColors.black,
-      paddingLeft: 4,
+      paddingHorizontal: 4,
       fontSize: 14,
    },
    messgeStatusAndTimestampWithCaption: {
@@ -33,9 +69,9 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'flex-end',
    },
+
    timeStampText: {
-      paddingLeft: 4,
-      color: ApplicationColors.timeStampText,
+      paddingHorizontal: 4,
       fontSize: 10,
       fontWeight: '400',
    },

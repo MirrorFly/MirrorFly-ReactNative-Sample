@@ -126,9 +126,12 @@ export const RenderForwardIcon = ({ userId }) => {
 
 export const RenderMenuItems = ({ userId, chatUser }) => {
    const menuItems = [];
-   const dispatch = useDispatch();
+
    const filtered = useSelectedChatMessages(userId) || [];
-   const blockedStaus = useBlockedStatus(userId);
+   /**
+    * const dispatch = useDispatch();
+    * const blockedStaus = useBlockedStatus(userId);
+    */
    const [modalContent, setModalContent] = React.useState(null);
    const stringSet = getStringSet();
 

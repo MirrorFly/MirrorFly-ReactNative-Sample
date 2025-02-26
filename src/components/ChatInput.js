@@ -193,20 +193,6 @@ function ChatInput({ chatUser }) {
    const sendMessage = () => {
       updateTypingGoneStatus(chatUser);
       switch (true) {
-         case Boolean(message.trim()) && Boolean(editMessageId):
-            setMessage('');
-            dispatch(toggleEditMessage(''));
-            handleSendMsg({
-               chatUser,
-               message: message.trim(),
-               messageType: 'messageEdit',
-               editMessageId: editMessageId,
-            });
-            break;
-         case Boolean(message.trim()):
-            setMessage('');
-            handleSendMsg({ chatUser, message: message.trim(), messageType: 'text' });
-            break;
          case recordSecs < 1000:
             showToast('Recorded audio time is too short');
             onResetRecord();
@@ -222,6 +208,20 @@ function ChatInput({ chatUser }) {
                chatUser,
             };
             handleSendMsg(messageData);
+            break;
+         case Boolean(message.trim()) && Boolean(editMessageId):
+            setMessage('');
+            dispatch(toggleEditMessage(''));
+            handleSendMsg({
+               chatUser,
+               message: message.trim(),
+               messageType: 'messageEdit',
+               editMessageId: editMessageId,
+            });
+            break;
+         case Boolean(message.trim()):
+            setMessage('');
+            handleSendMsg({ chatUser, message: message.trim(), messageType: 'text' });
             break;
       }
    };

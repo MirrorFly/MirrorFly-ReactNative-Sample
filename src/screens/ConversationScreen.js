@@ -14,12 +14,12 @@ import {
    getImageSource,
    getUserIdFromJid,
    handelResetMessageSelection,
+   resetConversationScreen,
    setCurrentChatUser,
 } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
-import { toggleEditMessage } from '../redux/chatMessageDataSlice';
 import { resetUnreadCountForChat } from '../redux/recentChatDataSlice';
-import { useChatMessages, useReplyMessage, useThemeColorPalatte } from '../redux/reduxHook';
+import { useAnySelectedChatMessages, useReplyMessage, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { RECENTCHATSCREEN } from './constants';
 
@@ -33,12 +33,8 @@ function ConversationScreen({ chatUser = '' }) {
    const dispatch = useDispatch();
    const userId = getUserIdFromJid(jid);
    const navigation = useNavigation();
-   const messaesList = useChatMessages(userId) || [];
+   const isAnySelected = useAnySelectedChatMessages(userId);
    const replyMessage = useReplyMessage(userId) || {};
-
-   const isAnySelected = React.useMemo(() => {
-      return messaesList.some(item => item.isSelected === 1);
-   }, [messaesList.map(item => item.isSelected).join(',')]); // Include isSelected in the dependency array
 
    React.useEffect(() => {
       SDK.updateRecentChatUnreadCount(currentChatUser);
@@ -48,12 +44,7 @@ function ConversationScreen({ chatUser = '' }) {
       } else {
          getUserProfileFromSDK(userId);
       }
-      return () => {
-         handelResetMessageSelection(userId)();
-         setCurrentChatUser('');
-         SDK.updateRecentChatUnreadCount('');
-         dispatch(toggleEditMessage(''));
-      };
+      return () => resetConversationScreen(userId);
    }, []);
 
    React.useEffect(() => {
@@ -113,8 +104,8 @@ function ConversationScreen({ chatUser = '' }) {
             {renderConversationList}
          </ImageBackground>
          {renderReplyContainer}
-         {renderChatInput}
          <EditMessage />
+         {renderChatInput}
       </KeyboardAvoidingView>
    );
 }

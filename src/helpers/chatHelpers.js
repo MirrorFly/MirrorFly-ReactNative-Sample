@@ -16,7 +16,7 @@ import Sound from 'react-native-sound';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
 import { CONNECTED } from '../SDK/constants';
-import { handleSendMsg } from '../SDK/utils';
+import { handleSendMsg, uploadFileToSDK } from '../SDK/utils';
 import {
    BlockedIcon,
    CameraIcon,
@@ -42,6 +42,7 @@ import {
    requestStoragePermission,
 } from '../common/permissions';
 import { changeTimeFormat } from '../common/timeStamp';
+import { cancelAudioRecord } from '../components/ChatInput';
 import { conversationFlatListRef } from '../components/ConversationList';
 import config from '../config/config';
 import {
@@ -49,6 +50,7 @@ import {
    AUDIO_FORMATS,
    CHAT_TYPE_GROUP,
    CHAT_TYPE_SINGLE,
+   DOCUMENT_FILE_EXT,
    DOCUMENT_FORMATS,
    MAP_THHUMBNAIL_URL,
    MAX_HEIGHT_AND,
@@ -76,6 +78,11 @@ import {
    deleteMessagesForMe,
    highlightMessage,
    resetMessageSelections,
+   setChatSearchText,
+   setIsSearchChatLoading,
+   toggleEditMessage,
+   toggleIsChatSearching,
+   updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
 import {
    clearRecentChatData,
@@ -113,7 +120,8 @@ const memoizedUsernameGraphemes = {};
 const splitter = new Graphemer();
 let currentChatUser = '';
 const stringSet = getStringSet();
-let isConversationScreenActive = false;
+let isConversationScreenActive = false,
+   replyScrollmsgId = '';
 
 const documentAttachmentTypes = [
    DocumentPicker.types.allFiles,
@@ -130,6 +138,12 @@ const documentAttachmentTypes = [
    // /** need to add rar file type and verify that */
    // '.rar'
 ];
+
+export const getReplyScrollmsgId = () => replyScrollmsgId;
+
+export const setReplyScrollmsgId = val => {
+   replyScrollmsgId = val;
+};
 
 export const setIsConversationScreenActive = val => {
    isConversationScreenActive = val;
@@ -241,19 +255,25 @@ export const handelResetMessageSelection = userId => () => {
 
 export const getThumbBase64URL = thumb => `data:image/png;base64,${thumb}`;
 
+const formatDecimal = value => {
+   return new Intl.NumberFormat('en-US', {
+      maximumFractionDigits: 2,
+      minimumFractionDigits: value % 1 === 0 ? 0 : 2,
+   }).format(value);
+};
+
 export const convertBytesToKB = bytes => {
-   if (bytes < 1024) {
-      // If the size is less than 1KB, return bytes only
-      return bytes + ' bytes';
-   } else if (bytes < 1024 * 1024) {
-      // If the size is less than 1MB, return in KB
-      const KB = bytes / 1024;
-      return KB.toFixed(2) + ' KB';
-   } else {
-      // If the size is 1MB or more, return in MB
-      const MB = bytes / (1024 * 1024);
-      return MB.toFixed(2) + ' MB';
+   if (!Number.isFinite(bytes) || bytes < 0) {
+      return 'Invalid size';
    }
+
+   const sizes = ['bytes', 'KB', 'MB', 'GB', 'TB'];
+   let i = 0;
+   while (bytes >= 1024 && i < sizes.length - 1) {
+      bytes /= 1024;
+      i++;
+   }
+   return `${formatDecimal(bytes)} ${sizes[i]}`;
 };
 
 export const millisToHoursMinutesAndSeconds = millis => {
@@ -261,15 +281,11 @@ export const millisToHoursMinutesAndSeconds = millis => {
    let minutes = Math.floor((millis % 3600000) / 60000);
    let seconds = parseInt((millis % 60000) / 1000, 10);
 
-   let formattedHours = '';
+   let hoursString = '';
    if (hours > 0) {
-      formattedHours = hours < 10 ? '0' + hours : hours;
-      formattedHours += ':';
+      hoursString = (hours < 10 ? '0' : '') + hours + ':';
    }
-   let formattedMinutes = (minutes < 10 ? '0' : '') + minutes;
-   let formattedSeconds = (seconds < 10 ? '0' : '') + seconds;
-
-   return formattedHours + formattedMinutes + ':' + formattedSeconds;
+   return hoursString + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
 };
 
 export const formatUserIdToJid = (userId, chatType = CHAT_TYPE_SINGLE) => {
@@ -426,7 +442,13 @@ export const handleConversationClear = async jid => {
 
 export const isAnyMessageWithinLast30Seconds = (messages = []) => {
    const now = Date.now();
-   return messages.some(message => now - message.timestamp <= 30000 && isLocalUser(message.publisherJid));
+   return messages.every(
+      message =>
+         now - message.timestamp <= 30000 &&
+         isLocalUser(message.publisherJid) &&
+         message?.msgStatus !== 3 &&
+         message?.recallStatus === 0,
+   );
 };
 
 export const getExtention = filename => {
@@ -449,9 +471,9 @@ export const mediaObjContructor = (_package, file) => {
    };
 
    switch (_package) {
-      case 'CAMERA_ROLL':
+      case 'CAMERA_ROLL': {
          const { image, type } = file;
-         mediaObj.extension = getExtention(image.filename);
+         mediaObj.extension = getExtention(image.filename) || image.extension;
          mediaObj.uri = image.uri;
          mediaObj.fileSize = image.fileSize;
          mediaObj.type = type;
@@ -461,6 +483,7 @@ export const mediaObjContructor = (_package, file) => {
          mediaObj.filename = image.filename;
          mediaObj.thumbImage = image.thumbImage || '';
          return mediaObj;
+      }
       case 'DOCUMENT_PICKER':
          mediaObj.extension = getExtention(file.name);
          mediaObj.uri = `${file.fileCopyUri}`;
@@ -504,6 +527,7 @@ export const mediaObjContructor = (_package, file) => {
          mediaObj.duration = file.duration;
          mediaObj.filename = file.fileName;
          mediaObj.type = file.fileType;
+         mediaObj.audioType = file?.audioType;
          return mediaObj;
       default:
          break;
@@ -528,10 +552,9 @@ export const isValidFileType = type => {
 };
 
 export const validateFileSize = (size, mediaTypeFile) => {
-   const filemb = Math.round(size / 1024);
    const maxAllowedSize = getMaxAllowedFileSize(mediaTypeFile);
-   if (filemb >= maxAllowedSize * 1024) {
-      const message = stringSet.TOAST_MESSAGES.FILE_SIZE_TOO_LARGE.replace('{maxAllowedSize}', maxAllowedSize);
+   if (size >= maxAllowedSize) {
+      const message = `File size is too large. Try uploading file size below ${convertBytesToKB(maxAllowedSize)}`;
       if (mediaTypeFile) {
          return message;
       }
@@ -552,13 +575,10 @@ export const getAudioDuration = async path => {
    });
 };
 
-export const validation = type => {
-   let mediaType = getType(type);
-   if (!AUDIO_FORMATS.includes(type)) {
+export const validation = extension => {
+   if (!ALLOWED_AUDIO_FORMATS.includes(extension)) {
       let message = 'You can upload only ';
-      if (mediaType === 'audio') {
-         message = message + `${ALLOWED_AUDIO_FORMATS.join(', ')} files`;
-      }
+      message = message + `${ALLOWED_AUDIO_FORMATS.join(', ')} files`;
       return message;
    }
    return '';
@@ -567,6 +587,7 @@ export const validation = type => {
 export const handleDocumentPickSingle = async () => {
    try {
       const result = await DocumentPicker.pickSingle({
+         allowMultiSelection: false,
          type: documentAttachmentTypes,
          presentationStyle: 'fullScreen',
          copyTo: Platform.OS === 'android' ? 'documentDirectory' : 'cachesDirectory',
@@ -581,13 +602,15 @@ export const handleDocumentPickSingle = async () => {
 
 export const handleAudioPickerSingle = async () => {
    try {
-      const res = await DocumentPicker.pickSingle({
+      let res = await DocumentPicker.pickSingle({
          type: [DocumentPicker.types.audio],
          presentationStyle: 'fullScreen',
          copyTo: Platform.OS === 'android' ? 'documentDirectory' : 'cachesDirectory',
       });
       SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
       if (res) {
+         res.extension = getExtention(res.uri || res.name);
+         res.fileCopyUri = getValidUri(res);
          return res;
       }
    } catch (error) {
@@ -604,11 +627,25 @@ export const openDocumentPicker = async () => {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       setTimeout(async () => {
          const file = await handleDocumentPickSingle();
-         if (!file) return;
+         if (!file) {
+            return;
+         }
+         // Extract directory path
+         const uriParts = file.fileCopyUri.split('/');
+         uriParts.pop(); // Remove last part (file name)
+         const correctedUri = uriParts.join('/') + '/' + file.name;
+         // Create a new object to avoid modifying the original reference (good practice)
+         const extension = getExtension(file.name, false);
+         const _updatedFile = {
+            ...file,
+            fileCopyUri: correctedUri,
+            uri: correctedUri,
+            type: file.type || `application/${extension}`,
+         };
          // updating the SDK flag back to false to behave as usual
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
          // Validating the file type and size
-         if (!isValidFileType(file.type)) {
+         if (!DOCUMENT_FILE_EXT.includes(extension)) {
             Alert.alert(
                'Mirrorfly',
                'You can upload only .pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .zip, .rar, .pptx, .csv  files',
@@ -622,7 +659,7 @@ export const openDocumentPicker = async () => {
          }
          // preparing the object and passing it to the sendMessage function
          const updatedFile = {
-            fileDetails: mediaObjContructor('DOCUMENT_PICKER', file),
+            fileDetails: mediaObjContructor('DOCUMENT_PICKER', _updatedFile),
          };
          const messageData = {
             messageType: 'media',
@@ -701,6 +738,16 @@ export const openLocation = async () => {
    }
 };
 
+const getValidUri = response => {
+   let validUri = response.fileCopyUri;
+   try {
+      validUri = decodeURI(validUri);
+   } catch (error) {
+      console.warn('Error decoding URI:', error);
+   }
+   return validUri || response.fileCopyUri;
+};
+
 export const handleAudioSelect = async () => {
    const audio_permission = await RealmKeyValueStore.getItem('audio_permission');
    SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
@@ -709,9 +756,12 @@ export const handleAudioSelect = async () => {
    if (audioPermission === 'granted' || audioPermission === 'limited') {
       SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
       let response = await handleAudioPickerSingle();
-      if (!response) return;
+      if (!response) {
+         return;
+      }
       const replyTo = '';
-      let _validate = validation(response.type);
+      const extension = getExtension(response.name);
+      let _validate = validation(extension);
       const sizeError = validateFileSize(response.size, getType(response.type));
       if (_validate && !sizeError) {
          Alert.alert('Mirrorfly', _validate);
@@ -761,13 +811,21 @@ export const calculateKeyboardVerticalOffset = () => {
 };
 
 export const isEqualObjet = (obj1, obj2) => {
-   if (obj1 === obj2) return true;
-   if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) return false;
+   if (obj1 === obj2) {
+      return true;
+   }
+   if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
+      return false;
+   }
    const keys1 = Object.keys(obj1);
    const keys2 = Object.keys(obj2);
-   if (keys1.length !== keys2.length) return false;
+   if (keys1.length !== keys2.length) {
+      return false;
+   }
    for (let key of keys1) {
-      if (!keys2.includes(key) || !isEqualObjet(obj1[key], obj2[key])) return false;
+      if (!keys2.includes(key) || !isEqualObjet(obj1[key], obj2[key])) {
+         return false;
+      }
    }
    return true;
 };
@@ -793,16 +851,12 @@ export const handleSendMedia = selectedImages => () => {
  * @param {string} uri local file path of the video
  * @returns {Promise<string>} returns the base64 data of the Thumbnail Image
  */
-export const getVideoThumbImage = async (uri, duration) => {
+export const getVideoThumbImage = async (uri, duration, width, height) => {
    const frame = await createThumbnail({
       url: uri,
       timeStamp: duration / 2,
-      maxWidth: 250,
-      maxHeight: 250,
-      quality: Platform.select({
-         android: 100,
-         ios: 0.9,
-      }),
+      width,
+      height,
    });
    const base64 = await RNFS.readFile(frame.path, 'base64');
    return base64;
@@ -854,6 +908,60 @@ export const getThumbImage = async uri => {
    });
    const response = await RNFS.readFile(result, 'base64');
    return response;
+};
+
+/** export const handleUploadNextImage = res => {
+   const { userId, msgId } = res;
+   // Find the next message in the state object
+   const conversationData = getChatMessages(userId);
+   const nextMessageIndex = conversationData?.findIndex(item => item.msgId === msgId) - 1;
+
+   if (nextMessageIndex > -1) {
+      const {
+         msgId: _msgId,
+         userJid,
+         msgBody: { media = {}, media: { file = {}, is_uploading } = {} } = {},
+      } = conversationData[nextMessageIndex];
+      if (is_uploading === 0) {
+         const retryObj = {
+            _msgId,
+            userId,
+            is_uploading: 1,
+         };
+         store.dispatch(updateMediaStatus(retryObj));
+         uploadFileToSDK(file, userJid, _msgId, media);
+      }
+   }
+}; */
+
+export const handleUploadNextImage = res => {
+   const { userId, msgId } = res;
+   // Find the next message in the state object
+   const conversationData = getChatMessages(userId);
+   const nextMessageIndex = conversationData.findIndex(item => item.msgId === msgId);
+   if (nextMessageIndex > -1) {
+      for (let i = nextMessageIndex - 1; i >= 0; i--) {
+         const {
+            msgId: _msgId,
+            userJid,
+            msgBody: { media = {}, media: { file = {}, is_uploading } = {} } = {},
+         } = conversationData[i];
+         if (is_uploading === 1 || is_uploading === 3) {
+            continue;
+         }
+         if (is_uploading === 0) {
+            const retryObj = {
+               _msgId,
+               userId,
+               is_uploading: 1, // Mark as uploading
+            };
+            store.dispatch(updateMediaStatus(retryObj)); // Update media status
+            // Start uploading the file
+            uploadFileToSDK(file, userJid, _msgId, media);
+            break; // Exit loop after uploading one image
+         }
+      }
+   }
 };
 
 /**
@@ -1020,6 +1128,14 @@ export const settingsMenu = [
       icon: ChatsIcon,
       rounteName: CHATS_CREEN,
    },
+   /**
+    *
+   {
+      name: 'Notifications',
+      icon: NotificationSettingsIcon,
+      rounteName: NOTIFICATION_STACK,
+   },
+   */
    {
       name: 'Notifications',
       icon: NotificationSettingsIcon,
@@ -1045,7 +1161,9 @@ export const notificationMenu = [
 ];
 
 export function capitalizeFirstLetter(string) {
-   if (!string) return null;
+   if (!string) {
+      return null;
+   }
    return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
@@ -1112,7 +1230,7 @@ export const copyToClipboard = (selectedMsgs, userId) => () => {
 };
 
 export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
-   const timestamp = Date.now() * 1000;
+   const timestamp = Date.now();
    const createdAt = changeTimeFormat(timestamp);
    const senderId = getUserIdFromJid(getCurrentUserJid());
 
@@ -1147,7 +1265,7 @@ export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
 };
 
 export const getRecentChatMsgObjForward = (originalMsg, toJid, newMsgId) => {
-   const timestamp = Date.now() * 1000;
+   const timestamp = Date.now();
    const createdAt = changeTimeFormat(timestamp);
    const senderId = getUserIdFromJid(getCurrentUserJid());
    const archiveSetting = getArchive();
@@ -1184,18 +1302,28 @@ export const getRecentChatMsgObjForward = (originalMsg, toJid, newMsgId) => {
 
 export const handleReplyPress = (userId, msgId, message) => {
    const scrollIndex = findConversationMessageIndex(msgId, message);
-   if (!scrollIndex || scrollIndex < 0) {
+   if (scrollIndex < 0) {
       return;
    }
+
    store.dispatch(highlightMessage({ userId, msgId, shouldHighlight: 1 }));
-   conversationFlatListRef.current.scrollToIndex({
-      index: scrollIndex,
+
+   // Compute the exact offset from stored heights
+   let offset = 0;
+   for (let i = 0; i < scrollIndex; i++) {
+      offset += conversationFlatListRef.current.itemLayout[i] || 0; // Use stored height
+   }
+
+   // Adjust for centering
+   const itemHeight = conversationFlatListRef.current.itemLayout[scrollIndex] || 50; // Default height fallback
+   const screenHeight = Dimensions.get('window').height;
+   const adjustedOffset = Math.max(0, offset - screenHeight / 2 + itemHeight / 2);
+
+   conversationFlatListRef.current.scrollToOffset({
+      offset: adjustedOffset,
       animated: true,
-      viewPosition: 0.5,
    });
-   setTimeout(() => {
-      store.dispatch(highlightMessage({ userId, msgId, shouldHighlight: 0 }));
-   }, 500);
+   replyScrollmsgId = msgId;
 };
 
 export const findConversationMessageIndex = (msgId, message) => {
@@ -1282,6 +1410,7 @@ export const handleUpdateBlockUser = (userId, isBlocked, chatUser) => async () =
       if (isBlocked) {
          const res = await SDK.blockUser(chatUser);
          if (res.statusCode === 200) {
+            cancelAudioRecord();
             showToast(`You have blocked ${getUserNameFromStore(userId)}`);
          }
       } else {
@@ -1337,4 +1466,19 @@ export const findUrls = text => {
    }
 
    return segments;
+};
+
+export const resetConversationScreen = userId => {
+   dispatchSearchLoading(userId);
+   handelResetMessageSelection(userId)();
+   SDK.updateRecentChatUnreadCount('');
+   store.dispatch(toggleEditMessage(''));
+   store.dispatch(setChatSearchText(''));
+   store.dispatch(toggleIsChatSearching(false));
+};
+
+// Dispatch loading state helper
+export const dispatchSearchLoading = (userId, loadingState = '') => {
+   store.dispatch(setIsSearchChatLoading({ [userId]: loadingState }));
+   /** hasDispatchedSearchLoading = loadingState !== '';*/
 };

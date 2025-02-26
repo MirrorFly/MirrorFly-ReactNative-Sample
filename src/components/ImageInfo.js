@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, Image, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Image, View } from 'react-native';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 /** import ImageViewer from 'react-native-image-zoom-viewer'; */
 
@@ -7,6 +7,7 @@ const ImageInfo = props => {
    const { selectedMedia } = props;
    const themeColorPalatte = useThemeColorPalatte();
    const SingleSelectedImage = selectedMedia.media;
+   const [loading, setLoading] = React.useState(true);
    /**
     let isSender = currentUserJID === props?.message?.fromUserJid
         const [arrayList, setArrayList] = React.useState("");
@@ -57,20 +58,32 @@ const ImageInfo = props => {
 
     const handleBackBtn = () => {
     props.handleBackBtn();
-  }; 
+  };
 
   const initialIndex = 0;
   */
    return (
-      <View style={{ flex: 1 }}>
-         <View style={{ flex: 1, backgroundColor: themeColorPalatte.screenBgColor }}>
-            <Image
-               style={{ flex: 1, width: '100%', height: '100%' }}
-               source={{ uri: ImageBase64 }}
-               resizeMode="contain"
-            />
+      <View
+         style={{
+            flex: 1,
+            width: '100%',
+            height: '100%',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: themeColorPalatte.screenBgColor,
+         }}>
+         {loading && (
+            <ActivityIndicator size="large" color={themeColorPalatte.primaryColor} style={{ position: 'absolute' }} />
+         )}
+         <Image
+            onLoadStart={() => setLoading(true)}
+            onLoadEnd={() => setLoading(false)}
+            style={{ flex: 1, width: '100%', height: '100%' }}
+            source={{ uri: ImageBase64 }}
+            resizeMode="contain"
+         />
 
-            {/* <ImageZoom
+         {/* <ImageZoom
                uri={ImageBase64}
                minScale={0.5}
                maxScale={3}
@@ -83,7 +96,7 @@ const ImageInfo = props => {
                onResetAnimationEnd={() => mflog('Reset animation ended')}
                // resizeMode="cover"
             /> */}
-            {/* <ImageViewer
+         {/* <ImageViewer
                imageUrls={images}
                style={initialImageSize}
                renderIndicator={() => null}
@@ -94,7 +107,6 @@ const ImageInfo = props => {
                maxOverflow={3}
                // enableSwipeDown={true}
             /> */}
-         </View>
       </View>
    );
 };

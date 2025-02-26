@@ -30,7 +30,7 @@ import { callDurationTimestamp } from '../../redux/callStateSlice';
 import { resetNotificationData, setNotificationData } from '../../redux/notificationDataSlice';
 import { setRoasterData } from '../../redux/rosterDataSlice';
 import store from '../../redux/store';
-import { CONVERSATION_SCREEN, CONVERSATION_STACK } from '../../screens/constants';
+import { CONVERSATION_SCREEN, CONVERSATION_STACK, RECENTCHATSCREEN } from '../../screens/constants';
 import { getAppSchema } from '../../uikitMethods';
 
 let interval;
@@ -278,10 +278,12 @@ export const onChatNotificationForeGround = async ({ type, detail }) => {
       const {
          notification: { data: { fromUserJID = '', from_user = '' } = '' },
       } = detail;
-      RootNavigation.navigate(CONVERSATION_STACK, {
-         screen: CONVERSATION_SCREEN,
-         params: { jid: fromUserJID || from_user },
-      });
+      if (fromUserJID || from_user) {
+         RootNavigation.navigate(CONVERSATION_STACK, {
+            screen: CONVERSATION_SCREEN,
+            params: { jid: fromUserJID || from_user },
+         });
+      }
    }
 };
 
@@ -290,8 +292,11 @@ export const onChatNotificationBackGround = async ({ type, detail }) => {
       callNotifiHandling(detail);
    } else if (type === EventType.PRESS) {
       const {
-         notification: { data: { fromUserJID = '', from_user = '' } = '' },
+         notification: { data: { fromUserJID = '', from_user = '', progress = 0 } = {} },
       } = detail;
+      if (progress) {
+         RootNavigation.reset(RECENTCHATSCREEN);
+      }
       const push_url = fromUserJID
          ? getAppSchema() + `${CONVERSATION_STACK}/${CONVERSATION_SCREEN}?jid=${fromUserJID || from_user}`
          : getAppSchema();
@@ -321,9 +326,12 @@ const callNotifiHandling = detail => {
 export const setNotificationForegroundService = async () => {
    // Register foreground service, NOOP
    notifee.registerForegroundService(notification => {
-      const { data: confrenceData = {} } = store.getState().showConfrenceData || {};
-      const { callStatusText } = confrenceData;
       return new Promise(() => {
+         if (notification?.android?.channelId === 'media_progress_channel') {
+            return;
+         }
+         const { data: confrenceData = {} } = store.getState().showConfrenceData || {};
+         const { callStatusText } = confrenceData;
          store.dispatch(setNotificationData(notification));
          if (notification?.android?.channelId === 'OnGoing Call' && callStatusText === CALL_STATUS_CONNECTED) {
             let callStartTime = store.getState()?.callData?.callDuration;

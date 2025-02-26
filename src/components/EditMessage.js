@@ -3,17 +3,16 @@ import { View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import ScreenHeader from '../common/ScreenHeader';
 import SlideInView from '../common/SlideInView';
-import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { getCurrentChatUser, getUserIdFromJid } from '../helpers/chatHelpers';
 import { toggleEditMessage } from '../redux/chatMessageDataSlice';
 import { setTextMessage } from '../redux/draftSlice';
 import { useChatMessage, useEditMessageId } from '../redux/reduxHook';
-import { currentChatUser } from '../screens/ConversationScreen';
-import ChatInput from './ChatInput';
+
 import ChatMessage from './ChatMessage';
 
 function EditMessage() {
    const dispatch = useDispatch();
-   const userId = getUserIdFromJid(currentChatUser);
+   const userId = getUserIdFromJid(getCurrentChatUser());
    const editMessageId = useEditMessageId();
    const message = useChatMessage(userId, editMessageId);
 
@@ -21,8 +20,6 @@ function EditMessage() {
       dispatch(setTextMessage({ userId, message: '' }));
       dispatch(toggleEditMessage(''));
    };
-
-   const renderChatInput = React.useMemo(() => <ChatInput chatUser={currentChatUser} />, []);
 
    if (!editMessageId) {
       return null;
@@ -38,9 +35,8 @@ function EditMessage() {
                isSearchable={false}
             />
          </View>
-         <View style={{ zIndex: -1, backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
+         <View style={{ zIndex: -1, marginBottom: 68, backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
             <ChatMessage item={message} disablefunction={true} />
-            {renderChatInput}
          </View>
       </SlideInView>
    );

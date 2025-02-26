@@ -6,7 +6,7 @@ import commonStyles from '../styles/commonStyles';
 
 function AttachementBar({ msgId }) {
    const progressData = useMediaProgress(msgId) || {};
-
+   console.log('progressData.progress ==> ', progressData.progress / 100);
    return progressData.progress ? (
       <Bar
          useNativeDriver={true}

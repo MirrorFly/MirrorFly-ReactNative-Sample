@@ -99,22 +99,13 @@ function VideoCard({ item, isSender }) {
                />
             </View>
 
-            {!Boolean(caption) && (
+            {!caption && (
                <View style={styles.messgeStatusAndTimestampWithoutCaption}>
                   <ImageBackground source={getImageSource(ic_ballon)} style={styles.imageBg}>
                      {isSender && getMessageStatus(msgStatus)}
                      <Text style={styles.timestampText}>{getConversationHistoryTime(createdAt)}</Text>
                   </ImageBackground>
                </View>
-            )}
-            {Boolean(caption) && (
-               <CaptionContainer
-                  isSender={isSender}
-                  caption={caption}
-                  msgStatus={msgStatus}
-                  timeStamp={getConversationHistoryTime(createdAt)}
-                  editMessageId={editMessageId}
-               />
             )}
             {checkDownloaded && (
                <View
@@ -126,6 +117,15 @@ function VideoCard({ item, isSender }) {
                </View>
             )}
          </View>
+         {Boolean(caption) && (
+            <CaptionContainer
+               isSender={isSender}
+               caption={caption}
+               msgStatus={msgStatus}
+               timeStamp={getConversationHistoryTime(createdAt)}
+               editMessageId={editMessageId}
+            />
+         )}
       </View>
    );
 }

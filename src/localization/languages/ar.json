@@ -80,7 +80,10 @@
       "CONTACT_CARD_INVITE_LABEL": "دعوة صديق",
       "UNBLOCK_LABEL": "إلغاء الحظر",
       "BLOCK_LABEL": "حاجز",
-      "UNBLOCK_CHAT_INPUT_LABEL": "لقد قمت بحظر {nickName}."
+      "UNBLOCK_CHAT_INPUT_LABEL": "لقد قمت بحظر {nickName}.",
+      "EDIT_MESSAGE": "تحرير الرسالة",
+      "MESSAGE_INFO": "معلومات الرسالة",
+      "CLEAR_CHAT": "مسح الدردشة"
    },
    "FORWARD_SCREEN": {
       "FORWARD_HEADER_TITLE": "إعادة توجيه إلى...",
@@ -187,7 +190,8 @@
       "YOU_HAVE_BLOCKED": "لقد قمت بحظر {nickName}",
       "HAS_BEEN_UNBLOCKED": "تم رفع حظر {nickName}",
       "PLEASE_ENTER_MOBILE_NUMBER": "الرجاء إدخال رقم الجوال",
-      "YOUR_MOBILE_NUMBER_IS_TOO_SHORT": "رقم هاتفك المحمول قصير جدًا"
+      "YOUR_MOBILE_NUMBER_IS_TOO_SHORT": "رقم هاتفك المحمول قصير جدًا",
+      "AUDIO_CANNOT_BE_RECORDED_WHILE_IN_CALL": "لا يمكن تسجيل الصوت أثناء المكالمة"
    },
    "INFO_SCREEN": {
       "PROFILE_PIC_EDIT_HEADER": "خيارات",
@@ -211,7 +215,8 @@
       "START_CHAT": "بدء محادثة",
       "LOG_OUT_HEADER_LABEL": "هل أنت متأكد أنك تريد تسجيل الخروج من التطبيق؟",
       "UNBLOCK_POPUP_LABEL": "إلغاء حظر {nickName}",
-      "BLOCK_POPUP_LABEL": "حظر {nickName}"
+      "BLOCK_POPUP_LABEL": "حظر {nickName}",
+      "ARE_YOU_SURE_YOU_WANT_TO_CLEAR_THE_CHAT": "هل أنت متأكد أنك تريد مسح الدردشة؟"
    },
    "BUTTON_LABEL": {
       "NO_BUTTON": "لا",

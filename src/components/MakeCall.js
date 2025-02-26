@@ -1,23 +1,27 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { openSettings } from 'react-native-permissions';
 import { Text } from 'react-native-svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { ALREADY_ON_CALL, CALL_TYPE_AUDIO, CALL_TYPE_VIDEO } from '../Helper/Calls/Constant';
 import { initiateMirroflyCall, isRoomExist } from '../Helper/Calls/Utility';
-import { RealmKeyValueStore } from '../SDK/SDK';
+import SDK, { RealmKeyValueStore } from '../SDK/SDK';
 import IconButton from '../common/IconButton';
 import { AudioCall, VideoCallIcon } from '../common/Icons';
 import Modal, { ModalCenteredContent } from '../common/Modal';
 import Pressable from '../common/Pressable';
 import { useNetworkStatus } from '../common/hooks';
 import {
+   checkAudioCallpermission,
+   checkVideoCallPermission,
    requestBluetoothConnectPermission,
    requestCameraMicPermission,
    requestMicroPhonePermission,
 } from '../common/permissions';
 import ApplicationColors from '../config/appColors';
+import { showToast } from '../helpers/chatHelpers';
 import { MIX_BARE_JID, audioRecord } from '../helpers/constants';
-import { closePermissionModal } from '../redux/permissionSlice';
+import { closePermissionModal, showPermissionModal } from '../redux/permissionSlice';
 import { useAudioRecording, useBlockedStatus } from '../redux/reduxHook';
 
 function MakeCall({ chatUser, userId }) {
@@ -143,12 +147,12 @@ function MakeCall({ chatUser, userId }) {
       <>
          {!MIX_BARE_JID.test(chatUser) && (
             <IconButton disabled={isCallDisabled} onPress={makeOne2OneVideoCall} containerStyle={{ marginRight: 6 }}>
-               <VideoCallIcon fill={blockedStaus ? '#959595' : '#181818'} />
+               <VideoCallIcon fill={isCallDisabled ? '#959595' : '#181818'} />
             </IconButton>
          )}
          {!MIX_BARE_JID.test(chatUser) && (
             <IconButton disabled={isCallDisabled} onPress={makeOne2OneAudioCall}>
-               <AudioCall fill={blockedStaus ? '#959595' : '#181818'} />
+               <AudioCall fill={isCallDisabled ? '#959595' : '#181818'} />
             </IconButton>
          )}
          {renderRoomExistModal()}

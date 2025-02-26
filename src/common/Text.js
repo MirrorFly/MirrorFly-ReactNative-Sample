@@ -7,12 +7,11 @@ import { useFontFamily } from '../redux/reduxHook';
  * @property {TextStyle} contentContainerStyle
  */
 
-const Text = ({ style = {}, ...props }) => {
+const Text = React.forwardRef(({ style = {}, ...props }, ref) => {
    const isRTL = I18nManager.isRTL;
    const fontFamily = useFontFamily();
 
    const getFontFamilyForWeight = fontWeight => {
-      // Define your font family mapping based on font weight
       switch (fontWeight) {
          case 'bold':
          case '700':
@@ -42,7 +41,7 @@ const Text = ({ style = {}, ...props }) => {
       const baseStyles = Array.isArray(style) ? style : [style];
       const fontWeightStyle = baseStyles.find(s => s?.fontWeight) || {};
       const fontWeight = getFontWeight(fontWeightStyle.fontWeight); // Default weight
-      const fontFamily = getFontFamilyForWeight(fontWeight);
+      const _fontFamily = getFontFamilyForWeight(fontWeight);
       const hasTextAlign = baseStyles.some(s => s?.textAlign);
 
       return StyleSheet.flatten([
@@ -50,17 +49,17 @@ const Text = ({ style = {}, ...props }) => {
          {
             ...(hasTextAlign ? {} : { textAlign: isRTL ? 'left' : 'auto' }),
             writingDirection: 'auto',
-            fontFamily,
+            fontFamily: _fontFamily,
             fontWeight,
          },
       ]);
    }, [style, isRTL, fontFamily]);
 
    return (
-      <RNText style={processedContentContainerStyle} {...props}>
+      <RNText ref={ref} style={processedContentContainerStyle} {...props}>
          {props.children}
       </RNText>
    );
-};
+});
 
 export default Text;

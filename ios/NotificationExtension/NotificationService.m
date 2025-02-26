@@ -27,13 +27,15 @@
   NSString *user_name = [self.bestAttemptContent.userInfo objectForKey:@"user_name"];
   @autoreleasepool {
     MyClass * obj = [MyClass new];
-    [obj getMessageWithMessageID:message_id content:messagecontent type:messagetype completion:^(NSDictionary<NSString *,id> * dict) {
+    [obj getMessageWithMessageID:message_id content:messagecontent type:messagetype userjid:userjid completion:^(NSDictionary<NSString *,id> * dict) {
       self.bestAttemptContent.threadIdentifier =  dict[@"messageID"] ? dict[@"messageID"]: message_id;
-      if (user_name) {
-          self.bestAttemptContent.title = user_name;
+      NSString *nickName =  dict[@"nickName"];
+      if (nickName) {
+        self.bestAttemptContent.title =  dict[@"nickName"];
       } else {
+        self.bestAttemptContent.title = user_name;
           // Handle the case where both nickName and user_name are nil
-        self.bestAttemptContent.title =  dict[@"nickName"];// Optional: set a default title
+        // Optional: set a default title
       }
       self.bestAttemptContent.body = dict[@"message"];
       self.contentHandler(self.bestAttemptContent);

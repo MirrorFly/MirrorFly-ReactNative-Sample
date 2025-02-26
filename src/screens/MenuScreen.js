@@ -13,21 +13,25 @@ import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { logoutClearVariables, mirrorflyLogout } from '../uikitMethods';
 import { REGISTERSCREEN } from './constants';
+import LoadingModal from '../common/LoadingModal';
 
 function MenuScreen() {
    const navigation = useNavigation();
    const themeColorPalatte = useThemeColorPalatte();
    const [modalContent, setModalContent] = React.useState(null);
    const stringSet = getStringSet();
+   const [visible, setVisible] = React.useState(false);
 
    const toggleModalContent = () => {
       setModalContent(null);
    };
 
    const hanldeLogout = async () => {
+      setVisible(true);
       const res = await mirrorflyLogout();
       if (res === 200) {
          setTimeout(() => {
+            setVisible(false);
             logoutClearVariables();
             RootNavigation.reset(REGISTERSCREEN);
          }, 1000);
@@ -126,6 +130,7 @@ function MenuScreen() {
             />
          </View>
          {modalContent && <AlertModal {...modalContent} />}
+         <LoadingModal visible={visible} behavior="costom" />
       </>
    );
 }

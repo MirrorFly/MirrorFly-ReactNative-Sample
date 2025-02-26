@@ -5,10 +5,18 @@ import Pressable from '../common/Pressable';
 import Text from '../common/Text';
 import { docTimeFormat } from '../common/timeStamp';
 import { convertBytesToKB, getExtension, handleFileOpen } from '../helpers/chatHelpers';
+import { useMergedMediaMessages } from '../hooks/useMediaMessaegs';
+import { getStringSet } from '../localization/stringSet';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import { getMessageTypeCount } from '../screens/ViewAllMedia';
 import commonStyles from '../styles/commonStyles';
 
-function DocumentTab({ docsMessages, loading, themeColorPalatte }) {
+function DocumentTab({ jid }) {
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
+   const { mergedMediaMessages: docsMessages, isLoading } = useMergedMediaMessages(jid, ['file']);
+
+   // const docsMessages = useMediaMessages(chatUserId, ['file']);
    const renderDocCountLabel = () => {
       return getMessageTypeCount(docsMessages, 'file') > 1
          ? getMessageTypeCount(docsMessages, 'file') + ' Documents'
@@ -45,14 +53,12 @@ function DocumentTab({ docsMessages, loading, themeColorPalatte }) {
       return (
          <>
             {docsMessages.length > 0 && (
-               <Text style={[commonStyles.textCenter, { color: themeColorPalatte.primaryTextColor }]}>
-                  {renderDocCountLabel()}
-               </Text>
-            )}
-            {loading && (
-               <View style={[commonStyles.mb_130, commonStyles.marginTop_5]}>
-                  <ActivityIndicator size="large" color={themeColorPalatte.primaryColor} />
-               </View>
+               <>
+                  <Text style={[commonStyles.textCenter, { color: themeColorPalatte.primaryTextColor }]}>
+                     {renderDocCountLabel()}
+                  </Text>
+                  {isLoading && <ActivityIndicator size={'large'} color={themeColorPalatte.primaryColor} />}
+               </>
             )}
          </>
       );
@@ -121,6 +127,19 @@ function DocumentTab({ docsMessages, loading, themeColorPalatte }) {
          initialNumToRender={20}
          maxToRenderPerBatch={20}
          windowSize={15}
+         ListEmptyComponent={
+            <View
+               style={[
+                  commonStyles.justifyContentCenter,
+                  commonStyles.alignItemsCenter,
+                  commonStyles.height_100_per,
+                  commonStyles.mt_12,
+               ]}>
+               <Text style={{ color: themeColorPalatte.primaryTextColor }}>
+                  {stringSet.VIEW_ALL_MEDIA_SCREEN.NO_DOCS_FOUND}
+               </Text>
+            </View>
+         }
       />
    );
 }

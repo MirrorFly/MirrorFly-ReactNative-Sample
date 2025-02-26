@@ -12,6 +12,8 @@ import { mirrorflyInitialize, mirrorflyNotificationHandler, setAppConfig, setupC
 
 setAppConfig({ appSchema: MIRRORFLY_RN });
 
+console.debug = () => {};
+
 if (process.env?.NODE_ENV === 'development') {
    require('./ReactotronConfig');
 }

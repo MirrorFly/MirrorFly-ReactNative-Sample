@@ -3,7 +3,6 @@ import { AppRegistry, Platform } from 'react-native';
 import RNVoipPushNotification from 'react-native-voip-push-notification';
 import { version } from '../package.json';
 import { pushNotifyBackground } from './Helper/Calls/Utility';
-import RootNavigation from './Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from './SDK/SDK';
 import { callBacks } from './SDK/sdkCallBacks';
 import { getUserSettings, resetVariable, updateNotificationSettings } from './SDK/utils';
@@ -98,7 +97,7 @@ export const mirrorflyInitialize = async args => {
          licenseKey: licenseKey,
          callbackListeners: callBacks,
          isSandbox: isSandbox,
-         // mediaServiceAutoPause: Platform.OS !== 'android', // if you are setting as flase you have run the foregorund service
+         mediaServiceAutoPause: Platform.OS !== 'android', // if you are setting as flase you have run the foregorund service
       });
       uiKitCallbackListenersVal = { callBack };
       if (mfInit.statusCode === 200) {
@@ -181,9 +180,6 @@ export const mirrorflyConnect = async (username, password) => {
          let jid = await SDK.getCurrentUserJid();
          let userJID = jid.userJid.split('/')[0];
          connect.jid = userJID;
-         if (navEnabled) {
-            RootNavigation.reset(RECENTCHATSCREEN);
-         }
          return connect;
       default:
          return connect;
@@ -205,6 +201,8 @@ export const mirrorflyLogout = async () => {
          showToast(message);
          return statusCode;
       }
+      notifee.stopForegroundService();
+      notifee.cancelAllNotifications();
       return statusCode;
    } catch (error) {}
 };

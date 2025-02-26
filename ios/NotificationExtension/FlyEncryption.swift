@@ -237,6 +237,43 @@ public struct FlyEncryption {
     return s
   }
   
+  public static func encryptDecryptData(key:String, data : String, encrypt : Bool, iv : String = "ckIjaccWBoMNvxdbql8LJ2dmKqT5bp", isForProfileName : Bool = false) -> String{
+          guard let key = FlyEncryption.sha256(key, length: 32) else {
+              return data
+          }
+          guard let flyEncryption = FlyEncryption(encryptionKey: key, initializationVector: iv ) else {
+              return data
+          }
+          if encrypt {
+            guard let htmlEncoding = FlyEncryption.htmlEncoding(content: data, isEncode: true) else{
+                  return data
+              }
+              guard let encryptedData  = flyEncryption.encrypt(string: htmlEncoding) else {
+                  return data
+              }
+              return encryptedData.base64EncodedString()
+          } else {
+  //            if !FlyUtils.isValidBase64(input: data){
+  //                return data
+  //            }
+              if !data.isEmpty {
+                  guard var decryptedData = flyEncryption.decrypt(data:Data(base64Encoded: data)) else {
+                      return data
+                  }
+                  
+                  if isForProfileName {
+                      decryptedData = decryptedData.replacingOccurrences(of: "+", with: "%20")
+                  }
+                  
+                guard let htmlDecodedString = FlyEncryption.htmlEncoding(content: decryptedData, isEncode: false) else{
+                      return data
+                  }
+                  return htmlDecodedString
+              }
+              return data
+          }
+      }
+  
 }
 
 extension Data {

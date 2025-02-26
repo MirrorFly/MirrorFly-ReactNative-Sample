@@ -2,7 +2,7 @@ export const MIRRORFLY_RN = 'mirrorfly_rn://';
 
 export const numRegx = /^\d+$/;
 export const MIX_BARE_JID = /^([^( "'&\/:<>@\\)])+\@(mix\.[^( "'&\/:<>@\\)]{1,})$/; //NOSONAR
-export const urlRegx = /(https?|ftp):\/\/[^\s/$.?#].[^\s]*/i;  //NOSONAR
+export const urlRegx = /(https?|ftp):\/\/[^\s/$.?#].[^\s]*/i; //NOSONAR
 export const uriPattern = /file:\/\/\/[^\s]+/; //NOSONAR
 export const BLOCK_CONTACT_TYPE = 'block_user';
 export const UNBLOCK_CONTACT_TYPE = 'unblock_user';
@@ -129,6 +129,7 @@ export const DOCUMENT_FORMATS = [
    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 ];
+export const DOCUMENT_FILE_EXT = ['pdf', 'xls', 'xlsx', 'doc', 'docx', 'txt', 'ppt', 'zip', 'rar', 'pptx', 'csv'];
 export const ALLOWED_ALL_FILE_FORMATS = [
    'jpg',
    'jpeg',
@@ -150,6 +151,9 @@ export const ALLOWED_ALL_FILE_FORMATS = [
    'rar',
    'pptx',
    'acc',
+   'heic',
+   'heif',
+   'mov',
 ];
 export const CHAT_IMAGES = 'chatimages';
 export const CHAT_AUDIOS = 'chataudios';

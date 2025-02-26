@@ -6,11 +6,20 @@ import { DoubleDownArrow } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import ApplicationColors from '../config/appColors';
 import config from '../config/config';
-import { calculateOffset, getUserIdFromJid, handleConversationScollToBottom } from '../helpers/chatHelpers';
+import {
+   calculateOffset,
+   getReplyScrollmsgId,
+   getUserIdFromJid,
+   handleConversationScollToBottom,
+   setReplyScrollmsgId,
+} from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, NOTIFICATION } from '../helpers/constants';
 import { useChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
 import { getCurrentUserJid } from '../uikitMethods';
 import ChatMessage from './ChatMessage';
+import store from '../redux/store';
+import { highlightMessage } from '../redux/chatMessageDataSlice';
+import { getMergedMediaMessages } from '../hooks/useMediaMessaegs';
 
 export const conversationFlatListRef = createRef();
 conversationFlatListRef.current = {};
@@ -31,7 +40,10 @@ const ConversationList = ({ chatUser }) => {
    React.useEffect(() => {
       const initialize = async () => {
          setChatLoading(true);
-         await fetchMessagesFromSDK(chatUser, messages.length < 10 && !getHasNextChatPage());
+         await fetchMessagesFromSDK({
+            fromUserJId: chatUser,
+            forceGetFromSDK: messages.length < 10 && !getHasNextChatPage(),
+         });
          setChatLoading(false);
       };
       initialize();
@@ -58,10 +70,14 @@ const ConversationList = ({ chatUser }) => {
       const yesterday = moment().subtract(1, 'day').startOf('day');
 
       return messages.map((message, index) => {
+         // Skip if the message is deleted or recalled
+         if (message.deleteStatus === 1 || message.recallStatus === 1) {
+            return null;
+         }
          const messageDatePrev = moment(messages[index + 1]?.timestamp);
          const currentMessage = moment(message.timestamp);
 
-         let label;
+         let label = null;
          if (!messageDatePrev.isSame(currentMessage, 'day')) {
             if (currentMessage.isSame(today, 'day')) {
                label = 'Today';
@@ -78,9 +94,11 @@ const ConversationList = ({ chatUser }) => {
 
    // Load more messages
    const handleLoadMore = async () => {
-      if (chatLoading || !getHasNextChatPage(userId)) return;
+      if (chatLoading || !getHasNextChatPage(userId)) {
+         return;
+      }
       setChatLoading(true);
-      await fetchMessagesFromSDK(chatUser, true);
+      await fetchMessagesFromSDK({ fromUserJId: chatUser, forceGetFromSDK: true });
       setChatLoading(false);
    };
 
@@ -100,6 +118,10 @@ const ConversationList = ({ chatUser }) => {
    const onItemLayout = React.useCallback((event, index) => {
       const { height } = event.nativeEvent.layout;
       setItemHeights(prev => ({ ...prev, [index]: height }));
+      conversationFlatListRef.current.itemLayout = {
+         ...conversationFlatListRef.current.itemLayout,
+         [index]: height,
+      };
    }, []);
 
    // Render each chat message
@@ -123,6 +145,7 @@ const ConversationList = ({ chatUser }) => {
       <>
          {chatLoading && <ActivityIndicator size="large" color={themeColorPalatte.primaryColor} />}
          <FlatList
+            keyboardShouldPersistTaps={'always'}
             initialNumToRender={10}
             ref={conversationFlatListRef}
             data={messages}
@@ -130,8 +153,15 @@ const ConversationList = ({ chatUser }) => {
             renderItem={renderChatMessage}
             keyExtractor={item => item.msgId.toString()}
             maxToRenderPerBatch={20}
+            disableVirtualization={true}
             scrollEventThrottle={16}
             windowSize={5}
+            onMomentumScrollEnd={() => {
+               setTimeout(() => {
+                  store.dispatch(highlightMessage({ userId, msgId: getReplyScrollmsgId(), shouldHighlight: 0 }));
+                  setReplyScrollmsgId(null);
+               }, 1000);
+            }}
             onEndReached={handleLoadMore}
             onEndReachedThreshold={0.5}
             onScroll={handleScroll}

@@ -6,31 +6,22 @@ import IconButton from '../common/IconButton';
 import { BackArrowIcon } from '../common/Icons';
 import Text from '../common/Text';
 import PostView from '../components/PostView';
-import { getUserIdFromJid } from '../helpers/chatHelpers';
+import { useMergedMediaMessages } from '../hooks/useMediaMessaegs';
 import { getStringSet } from '../localization/stringSet';
-import { useChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { getCurrentUserJid } from '../uikitMethods';
 
 const PostPreViewPage = () => {
    const stringSet = getStringSet();
+   const pagerRef = React.useRef();
    const themeColorPalatte = useThemeColorPalatte();
    const { params: { jid = '', msgId = '' } = {} } = useRoute();
    const navigation = useNavigation();
    const currentUserJID = getCurrentUserJid();
-   const chatUserId = getUserIdFromJid(jid);
-   const messages = useChatMessages(chatUserId);
-
+   const { mergedMediaMessages: messageList } = useMergedMediaMessages(jid, ['image', 'video', 'audio']);
    const [title, setTitle] = React.useState('');
    const [currentIndex, setCurrentIndex] = React.useState(0);
-
-   const messageList = React.useMemo(() => {
-      const filteredMessages = messages.filter(message => {
-         const { msgBody: { message_type = '' } = {} } = message || {};
-         return ['image', 'video', 'audio'].includes(message_type);
-      });
-      return filteredMessages;
-   }, [messages, jid]);
 
    React.useEffect(() => {
       const isSender = currentUserJID === messageList[currentIndex]?.publisherJid;
@@ -50,15 +41,21 @@ const PostPreViewPage = () => {
    };
 
    const initialPage = React.useMemo(() => {
-      const selectedMsgIndex = messageList.findIndex(message => message.msgId === msgId);
+      const selectedMsgIndex = messageList.findIndex(message => {
+         return message.msgId === msgId;
+      });
       setCurrentIndex(selectedMsgIndex);
       return selectedMsgIndex === -1 ? messageList.length - 1 : selectedMsgIndex;
-   }, []);
+   }, [messageList.length]);
 
    const renderMediaPages = React.useMemo(() => {
       return (
-         <PagerView style={commonStyles.flex1} initialPage={initialPage} onPageScroll={handlePageSelected}>
-            {messageList.map(item => (
+         <PagerView
+            ref={pagerRef}
+            style={commonStyles.flex1}
+            initialPage={initialPage}
+            onPageScroll={handlePageSelected}>
+            {messageList.map?.(item => (
                <PostView key={item.msgId} item={item} />
             ))}
          </PagerView>

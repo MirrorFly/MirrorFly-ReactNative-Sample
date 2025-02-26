@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { I18nManager, Image, Platform, StyleSheet, View } from 'react-native';
 import RNConvertPhAsset from 'react-native-convert-ph-asset';
-import { AudioMusicIcon, PlayIcon } from '../common/Icons';
+import { AudioMicIcon, AudioMusicIcon, PlayIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import { getThumbBase64URL } from '../helpers/chatHelpers';
 import { useThemeColorPalatte } from '../redux/reduxHook';
@@ -15,6 +15,8 @@ const VideoInfo = props => {
    const themeColorPalatte = useThemeColorPalatte();
    const { item: galleryItem = {}, selectedMedia = {}, audioOnly = false } = props;
    const SingleSelectedImage = selectedMedia.media;
+   const audioType = selectedMedia.media?.audioType;
+
    let item = galleryItem;
    if (SingleSelectedImage?.local_path) {
       item = {
@@ -52,14 +54,14 @@ const VideoInfo = props => {
    }, []);
 
    const handleVideoPlayButton = () => {
-      navigation.navigate(VIDEO_PLAYER_SCREEN, { item, audioOnly });
+      navigation.navigate(VIDEO_PLAYER_SCREEN, { item, audioOnly, audioType });
    };
 
    return (
       <View style={[styles.player, audioOnly ? styles.audioOnly : styles.video]}>
          {audioOnly && (
             <View style={[commonStyles.flex1, commonStyles.justifyContentCenter, commonStyles.alignItemsCenter]}>
-               <AudioMusicIcon width={200} height={200} />
+               {audioType ? <AudioMicIcon width={200} height={200} /> : <AudioMusicIcon width={200} height={200} />}
             </View>
          )}
          <Pressable

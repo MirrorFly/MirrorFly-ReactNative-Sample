@@ -3,26 +3,26 @@ PODS:
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.75.4)
-  - Firebase/CoreOnly (11.5.0):
-    - FirebaseCore (= 11.5.0)
-  - Firebase/Messaging (11.5.0):
+  - Firebase/CoreOnly (11.7.0):
+    - FirebaseCore (~> 11.7.0)
+  - Firebase/Messaging (11.7.0):
     - Firebase/CoreOnly
-    - FirebaseMessaging (~> 11.5.0)
-  - FirebaseCore (11.5.0):
-    - FirebaseCoreInternal (= 11.5)
+    - FirebaseMessaging (~> 11.7.0)
+  - FirebaseCore (11.7.0):
+    - FirebaseCoreInternal (~> 11.7.0)
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/Logger (~> 8.0)
-  - FirebaseCoreExtension (11.5.0):
-    - FirebaseCore (= 11.5)
-  - FirebaseCoreInternal (11.5.0):
+  - FirebaseCoreExtension (11.7.0):
+    - FirebaseCore (~> 11.7.0)
+  - FirebaseCoreInternal (11.7.0):
     - "GoogleUtilities/NSData+zlib (~> 8.0)"
-  - FirebaseInstallations (11.5.0):
-    - FirebaseCore (= 11.5)
+  - FirebaseInstallations (11.7.0):
+    - FirebaseCore (~> 11.7.0)
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
-  - FirebaseMessaging (11.5.0):
-    - FirebaseCore (= 11.5)
+  - FirebaseMessaging (11.7.0):
+    - FirebaseCore (~> 11.7.0)
     - FirebaseInstallations (~> 11.0)
     - GoogleDataTransport (~> 10.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
@@ -63,7 +63,7 @@ PODS:
     - hermes-engine/Pre-built (= 0.75.4)
   - hermes-engine/Pre-built (0.75.4)
   - IDZSwiftCommonCrypto (0.13.0)
-  - JitsiWebRTC (124.0.1)
+  - JitsiWebRTC (124.0.2)
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
     - nanopb/encode (= 3.30910.0)
@@ -1395,7 +1395,7 @@ PODS:
     - React-Core
   - react-native-netinfo (11.4.1):
     - React-Core
-  - react-native-pager-view (6.6.1):
+  - react-native-pager-view (6.5.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1421,7 +1421,7 @@ PODS:
   - react-native-simple-toast (3.3.2):
     - React-Core
     - Toast (~> 4)
-  - react-native-video (6.9.1):
+  - react-native-video (6.10.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1434,7 +1434,7 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - react-native-video/Video (= 6.9.1)
+    - react-native-video/Video (= 6.10.0)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1443,7 +1443,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-video/Video (6.9.1):
+  - react-native-video/Video (6.10.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1738,15 +1738,15 @@ PODS:
   - RNCCheckbox (0.5.17):
     - BEMCheckBox (~> 1.4)
     - React-Core
-  - RNCClipboard (1.16.0):
+  - RNCClipboard (1.16.1):
     - React-Core
   - RNConvertPhAsset (1.0.3):
     - React
-  - RNFBApp (21.6.2):
-    - Firebase/CoreOnly (= 11.5.0)
+  - RNFBApp (21.7.1):
+    - Firebase/CoreOnly (= 11.7.0)
     - React-Core
-  - RNFBMessaging (21.6.2):
-    - Firebase/Messaging (= 11.5.0)
+  - RNFBMessaging (21.7.1):
+    - Firebase/Messaging (= 11.7.0)
     - FirebaseCoreExtension
     - React-Core
     - RNFBApp
@@ -1754,7 +1754,7 @@ PODS:
     - React-Core
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.22.0):
+  - RNGestureHandler (2.22.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1789,7 +1789,7 @@ PODS:
     - RNNotifee/NotifeeCore (= 9.1.8)
   - RNNotifee/NotifeeCore (9.1.8):
     - React-Core
-  - RNPermissions (5.2.2):
+  - RNPermissions (5.2.4):
     - React-Core
   - RNScreens (4.5.0):
     - DoubleConversion
@@ -2165,19 +2165,19 @@ SPEC CHECKSUMS:
   boost: 4cb898d0bf20404aab1850c656dcea009429d6c1
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: 430e10366de01d1e3d57374500b1b150fe482e6d
-  Firebase: 7a56fe4f56b5ab81b86a6822f5b8f909ae6fc7e2
-  FirebaseCore: 93abc05437f8064cd2bc0a53b768fb0bc5a1d006
-  FirebaseCoreExtension: ddb2eb987f736b714d30f6386795b52c4670439e
-  FirebaseCoreInternal: f47dd28ae7782e6a4738aad3106071a8fe0af604
-  FirebaseInstallations: d8063d302a426d114ac531cd82b1e335a0565745
-  FirebaseMessaging: 9f4e42053241bd45ce8565c881bfdd9c1df2f7da
+  Firebase: a64bf6a8546e6eab54f1c715cd6151f39d2329f4
+  FirebaseCore: 3227e35f4197a924206fbcdc0349325baf4f5de4
+  FirebaseCoreExtension: 206c1b399f0d103055207c16f299b28e3dbd1949
+  FirebaseCoreInternal: d6c17dafc8dc33614733a8b52df78fcb4394c881
+  FirebaseInstallations: 9347e719c3d52d8d7b9074b2c32407dd027305e9
+  FirebaseMessaging: 00ece041b71ddb52a2862ffdee73fb6e9824bd0c
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: 69ef571f3de08433d766d614c73a9838a06bf7eb
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   hermes-engine: ea92f60f37dba025e293cbe4b4a548fd26b610a0
   IDZSwiftCommonCrypto: 00dd37cdfbd149312a7e5a582cf9909f8b129f44
-  JitsiWebRTC: d0ae5fd6a81e771bfd82c2ee6c6bb542ebd65ee8
+  JitsiWebRTC: b47805ab5668be38e7ee60e2258f49badfe8e1d0
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RCT-Folly: 4464f4d875961fce86008d45f4ecf6cef6de0740
@@ -2225,10 +2225,10 @@ SPEC CHECKSUMS:
   react-native-keyevent: 0babd7e275086da5386d831211e3283b624dc0b5
   react-native-maps: ee1e65647460c3d41e778071be5eda10e3da6225
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
-  react-native-pager-view: 3ae40be5b2700f3f2645c1fbc751a03a4323172d
+  react-native-pager-view: 16ba891ddbceb61ee19e6de8ab884793452e7089
   react-native-safe-area-context: 141eca0fd4e4191288dfc8b96a7c7e1c2983447a
   react-native-simple-toast: 645b68c26e43786fc05e3d7401de2b057f139054
-  react-native-video: 439a3ee225579691a4b2b36c54c5e4c20676b6cb
+  react-native-video: 5ea06ea0e26fbe924734af76de16db586914e309
   react-native-webrtc: 48295e7228279470c4f5acb38570e170723bd3b2
   React-nativeconfig: 31072ab0146e643594f6959c7f970a04b6c9ddd0
   React-NativeModulesApple: f49bb0befd8650ac3ff8fc2684072b16c09bf478
@@ -2261,16 +2261,16 @@ SPEC CHECKSUMS:
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNAudioRecorderPlayer: 224c7de87722938aedce04000d09baa633148f5b
   RNCCheckbox: a3ca9978cb0846b981d28da4e9914bd437403d77
-  RNCClipboard: 88f7f4933e7731052210d77535560c485ecb75b0
+  RNCClipboard: d7a8903d32692b0a1e71738c3825465a9acae10e
   RNConvertPhAsset: 9b366b8a1abc194b76572712c6f7dd89c9e4e37f
-  RNFBApp: c0543476dee81ed5fc34d06db2f37b8e7e353cf3
-  RNFBMessaging: aab4dcf6d121cfe338c9ac45631d90e125b3a5ef
+  RNFBApp: e0a2811ca35292b19d390e327612ada2bd115d0a
+  RNFBMessaging: 3b4b92c33a2ad87105c5b6e2e7a3bb5d33a34320
   RNFileViewer: ce7ca3ac370e18554d35d6355cffd7c30437c592
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
-  RNGestureHandler: f6a6630e6bde1a49d1e3fec73b6711f718813538
+  RNGestureHandler: 5c734ddd9b406a5cd792add1fc01f0894ed8ec28
   RNImageCropPicker: 8e39c01f205e00d739c31e682f068aac315587bf
   RNNotifee: 4a6ee5c7deaf00e005050052d73ee6315dff7ec9
-  RNPermissions: cfebf379e78f25f0bcb48de4df989e40bf9eea13
+  RNPermissions: bf00b2cde5d365bbc992aecb89e72b9210b416a4
   RNScreens: 67c6c2d9f4c917508c0414167fba805976e634f4
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: 669ed128ab9005090c612a0d627dbecb6ab5c76f

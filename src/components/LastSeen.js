@@ -46,7 +46,9 @@ const LastSeen = ({ userJid = '', style }) => {
 
    useFocusEffect(
       useCallback(() => {
-         if (userJid) updateLastSeen(userJid);
+         if (userJid) {
+            updateLastSeen(userJid);
+         }
       }, [userJid]),
    );
 

@@ -1,8 +1,10 @@
 package com.mirrorfly_rn
 
 import android.os.Environment
+import android.os.StatFs
 import android.util.Log
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -49,6 +51,28 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     @ReactMethod
     fun baseUrlInit(baseURL: String) {
         apiInterface = APIClient().getClient(baseURL)?.create(APIInterface::class.java)
+    }
+
+    private fun getFreeDiskSpace(): Long? {
+        return try {
+            val stat = StatFs(Environment.getDataDirectory().path)
+            val blockSize = stat.blockSizeLong
+            val availableBlocks = stat.availableBlocksLong
+            availableBlocks * blockSize // Free space in bytes
+        } catch (e: Exception) {
+            null // Return null if an error occurs
+        }
+    }
+
+    private fun checkDeviceFreeSpace(fileSize: Long): Pair<Boolean, String> {
+        val freeSpace = getFreeDiskSpace()
+            ?: return Pair(false, "Unable to determine available storage space")
+        println("Free space: $freeSpace bytes")
+        return if (fileSize * 2 > freeSpace) {
+            Pair(false, "Not enough free storage space to upload the file")
+        } else {
+            Pair(true, "File is readable, size matches, and there is enough storage space")
+        }
     }
 
     // Utility to send download progress
@@ -136,6 +160,14 @@ class MediaService(var reactContext: ReactApplicationContext?) :
         cachePath: String,
         promise: Promise
     ) {
+        val (isSpaceAvailable, message) = checkDeviceFreeSpace(fileSize.toLong())
+        if (!isSpaceAvailable) {
+            promise.resolve(Arguments.createMap().apply {
+                putBoolean("success", false)
+                putInt("statusCode", 400)
+                putString("message", message)
+            })
+        }
         if (isAllPauseRequested) {
             promise.resolve(Arguments.createMap().apply {
                 putBoolean("success", false)
@@ -179,12 +211,17 @@ class MediaService(var reactContext: ReactApplicationContext?) :
 
                     // Check for response failure
                     if (response == null || !response.isSuccessful) {
-                        handleDownloadError(
-                            promise,
-                            "Failed to download chunk: $range",
-                            fileOutputStream,
-                            msgId
-                        )
+                        val statusCode = response?.code() ?: 500
+                        val errorMessage = response?.errorBody()?.string() ?: "Unknown error"
+                        Log.e(name, "Chunk upload failed with status: ${response?.code()} - ${response?.message()}")
+                        Log.e(name, "Error message: $errorMessage")
+                        withContext(Dispatchers.Main) {
+                            promise.resolve(Arguments.createMap().apply {
+                                putBoolean("success", false)
+                                putInt("statusCode", statusCode)
+                                putString("message", response?.message())
+                            })
+                        }
                         return@launch
                     }
 
@@ -228,7 +265,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
             job.cancel() // This triggers isActive to become false
             activeDownloads.remove(msgId)
             promise.resolve(Arguments.createMap().apply {
-                putBoolean("success", false)
+                putBoolean("success", true)
                 putString("message", "Download canceled for msgId: $msgId")
             })
         } else {
@@ -237,8 +274,27 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     }
 
     @ReactMethod
-    fun resetPauseRequest(promise: Promise){
+    fun resetPauseRequest(promise: Promise) {
         isAllPauseRequested = false
+    }
+
+    @ReactMethod
+    fun cancelAllUploads(promise: Promise) {
+        if (activeUploads.isNotEmpty()) {
+            for ((msgId, job) in activeUploads) {
+                job.cancel() // Cancel the download job
+            }
+            activeUploads.clear() // Clear all active download references
+            promise.resolve(Arguments.createMap().apply {
+                putBoolean("success", true)
+                putString("message", "All uploads have been canceled")
+            })
+        } else {
+            promise.resolve(Arguments.createMap().apply {
+                putBoolean("success", false)
+                putString("message", "No active uploads to cancel")
+            })
+        }
     }
 
     @ReactMethod
@@ -262,59 +318,16 @@ class MediaService(var reactContext: ReactApplicationContext?) :
         }
     }
 
-
     @ReactMethod
-    fun defineValues(obj: ReadableMap, promise: Promise) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                inputFilePath = obj.getString("inputFilePath") ?: ""
-                outputFilePath = obj.getString("outputFilePath") ?: ""
-                chunkSize = if (obj.hasKey("chunkSize")) obj.getInt("chunkSize") else chunkSize
-                iv = obj.getString("iv") ?: ""
-                keyString = cryptLib.getRandomString(32)
-                val file = File(inputFilePath.replace("file://", ""))
-                if (!file.exists()) {
-                    withContext(Dispatchers.Main) {
-                        promise.resolve(Arguments.createMap().apply {
-                            putBoolean("success", false)
-                            putInt("statusCode", 404)
-                            putString("message", "File not found at $inputFilePath")
-                        })
-                    }
-                    return@launch
-                }
-                if (outputFilePath.isEmpty()) {
-                    withContext(Dispatchers.Main) {
-                        promise.resolve(Arguments.createMap().apply {
-                            putBoolean("success", false)
-                            putInt("statusCode", 400)
-                            putString("message", "Output file path is empty")
-                        })
-                    }
-                    return@launch
-                }
-
-                // Simulate encryption setup
-                val key = cryptLib.getSHA256(keyString, 32)
-                cipher = cryptLib.encryptFile(key, iv) // Dummy call
-
-                withContext(Dispatchers.Main) {
-                    promise.resolve(Arguments.createMap().apply {
-                        putBoolean("success", true)
-                        putInt("statusCode", 200)
-                        putString("encryptionKey", keyString)
-                    })
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    promise.resolve(Arguments.createMap().apply {
-                        putBoolean("success", false)
-                        putInt("statusCode", 500)
-                        putString("message", "Error initializing values: ${e.message}")
-                    })
-                }
-            }
-        }
+    fun clearCacheFilePath(url: String, promise: Promise) {
+        val encryptedFile = File(url.replace("file://", ""))
+        // After moving the file, delete the original (if needed)
+        val success = encryptedFile.delete()
+        Log.d("TAG", "clearCacheFilePath: $success")
+        promise.resolve(Arguments.createMap().apply {
+            putBoolean("success", success)
+            putString("message", "Upload cancelled for url: $success")
+        })
     }
 
     @ReactMethod
@@ -344,6 +357,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                 keyString = cryptLib.getRandomString(32)
                 val file = File(inputFilePath.replace("file://", ""))
                 // Simulate encryption setup
+                val fileSize = obj.getDouble("fileSize").toLong()
                 val key = cryptLib.getSHA256(keyString, 32)
                 cipher = cryptLib.encryptFile(key, iv) // Dummy call
 
@@ -366,6 +380,15 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                         })
                     }
                     return@launch
+                }
+
+                val (isSpaceAvailable, message) = checkDeviceFreeSpace(fileSize)
+                if (!isSpaceAvailable) {
+                    promise.resolve(Arguments.createMap().apply {
+                        putBoolean("success", false)
+                        putInt("statusCode", 400)
+                        putString("message", message)
+                    })
                 }
 
                 val buffer = ByteArray(chunkSize)
@@ -397,13 +420,11 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                     })
                 }
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
                     promise.resolve(Arguments.createMap().apply {
                         putBoolean("success", false)
                         putInt("statusCode", 500)
                         putString("message", "Error encrypting file: ${e.message}")
                     })
-                }
             } finally {
                 activeUploads.remove(msgId)
             }
@@ -441,6 +462,66 @@ class MediaService(var reactContext: ReactApplicationContext?) :
             return file.absolutePath // Return the full path to the public file
         } else {
             throw Exception("External storage is not available")
+        }
+    }
+
+    @ReactMethod
+    fun decryptSmallFile(
+        inputFilePath: String,
+        msgId: String,
+        keyString: String,
+        iv: String,
+        promise: Promise
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val file = File(inputFilePath.replace("file://", ""))
+                val decipher = cryptLib.getSHA256(keyString, 32)
+
+                // Create a temporary file for decrypted output
+                val decryptedFilePath = "${file.parent}/decrypted_${file.name}"
+                val decryptedFile = File(decryptedFilePath)
+
+                val fis = FileInputStream(file)
+                val inputBytes = fis.readBytes()
+
+                val outputBytes = cryptLib.decryptFile(inputBytes, decipher, iv)
+
+                val fos = FileOutputStream(decryptedFile)
+                fos.write(outputBytes)
+
+                fos.close()
+                fis.close()
+
+                // Log the decrypted file size
+                Log.d("DecryptSmallFile", "Decrypted file path: $decryptedFilePath, size: ${decryptedFile.length()}")
+
+                // Delete the original file if needed
+                val deleteSuccess = file.delete()
+
+                // Move the decrypted file back to the original file path
+                val moveSuccess = decryptedFile.renameTo(file)
+
+                withContext(Dispatchers.Main) {
+                    promise.resolve(Arguments.createMap().apply {
+                        putBoolean("success", moveSuccess)
+                        putInt("statusCode", if (moveSuccess) 200 else 500)
+                        putString("message", if (moveSuccess) "File decrypted and moved successfully" else "Failed to move decrypted file")
+                        putString("decryptedFilePath", "file://${file.absolutePath}") // Return the updated file path
+                        putInt("decryptedFileSize", file.length().toInt())
+                        putBoolean("inputFileDeleted", deleteSuccess)
+                    })
+                }
+
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    promise.resolve(Arguments.createMap().apply {
+                        putBoolean("success", false)
+                        putInt("statusCode", 500)
+                        putString("message", "Error decrypting file: ${e.message}")
+                    })
+                }
+            }
         }
     }
 
@@ -528,7 +609,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                         putString("message", "File decrypted and moved successfully")
                         putString(
                             "decryptedFilePath",
-                            file.absolutePath
+                            "file://${file.absolutePath}"
                         ) // Return the path of the file (moved)
                         putInt("decryptedFileSize", totalBytesWritten.toInt())
                         putBoolean("inputFileDeleted", deleteSuccess)
@@ -550,7 +631,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
         return response.body()?.bytes() ?: ByteArray(0)
     }
 
-    private suspend fun uploadChunk(uploadUrl: String, chunk: ByteArray): Boolean {
+    private suspend fun uploadChunk(uploadUrl: String, chunk: ByteArray): Pair<Boolean, Int>  {
         return try {
             val requestBody: RequestBody =
                 RequestBody.create("application/octet-stream".toMediaTypeOrNull(), chunk)
@@ -558,25 +639,33 @@ class MediaService(var reactContext: ReactApplicationContext?) :
             val call = apiInterface?.uploadBinaryData(uploadUrl, requestBody)
             val response = call?.execute()
             Log.d(name, "progress $response")
-            if (response != null && response.isSuccessful) {
-                true
+            if (response != null) {
+                if (response.isSuccessful) {
+                    Log.d(name, "Chunk upload successful: ${response.body()?.string()}")
+                    Pair(true, response.code())
+                } else {
+                    val errorMessage = response.errorBody()?.string() ?: "Unknown error"
+                    Log.e(name, "Chunk upload failed with status: ${response.code()} - ${response.message()}")
+                    Log.e(name, "Error message: $errorMessage")
+                    Pair(false, response.code())
+                }
             } else {
-                Log.e(name, "Chunk upload failed: $response")
-                false
+                Log.e(name, "Response is null, chunk upload failed.")
+                Pair(false,  500)
             }
         } catch (e: Exception) {
             Log.e(name, "Error uploading chunk: $e")
-            false
+            Pair(false, 500)
         }
     }
 
     @ReactMethod
-    fun uploadFileInChunks(
-        uploadUrls: ReadableArray,
-        encryptedFilePath: String,
-        msgId: String,
-        promise: Promise
-    ) {
+    fun uploadFileInChunks(obj: ReadableMap, promise: Promise) {
+        val uploadUrls: ReadableArray = obj.getArray("uploadUrls") ?: JavaOnlyArray()
+        val encryptedFilePath: String = obj.getString("encryptedFilePath") ?: ""
+        val msgId: String = obj.getString("msgId") ?: ""
+        val startIndex: Int = obj.getInt("startIndex") ?: 0
+        val startBytesRead: Int = obj.getInt("startBytesRead") ?: 0
         val job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val file = File(encryptedFilePath)
@@ -593,10 +682,14 @@ class MediaService(var reactContext: ReactApplicationContext?) :
 
                 val buffer = ByteArray(chunkSize)
                 var bytesRead: Int
-                var totalBytesRead: Long = 0
-                var chunkIndex = 0
+                var totalBytesRead: Long = startBytesRead.toLong()
+                var chunkIndex = startIndex
 
                 val fis = FileInputStream(file)
+
+                if (totalBytesRead > 0) {
+                    fis.skip(totalBytesRead)
+                }
 
                 while (fis.read(buffer).also { bytesRead = it } != -1) {
                     if (chunkIndex >= uploadUrls.size()) {
@@ -614,17 +707,18 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                     totalBytesRead += bytesRead
                     Log.d(name, "uploadUrl $bytesRead $uploadUrl")
                     // Upload the chunk
-                    val success = uploadChunk(
+                    val (success, statusCode) = uploadChunk(
                         uploadUrl,
                         buffer.copyOf(bytesRead)
                     ) // Use only the read portion of the buffer
 
                     if (!success) {
                         withContext(Dispatchers.Main) {
-                            promise.reject(
-                                "UPLOAD_FAILED",
-                                "Chunk upload failed for URL: $uploadUrl"
-                            )
+                            promise.resolve(Arguments.createMap().apply {
+                                putBoolean("success", false)
+                                putInt("statusCode", statusCode)
+                                putString("message", "Chunk upload failed for URL: $uploadUrl")
+                            })
                         }
                         fis.close()
                         return@launch
@@ -639,7 +733,6 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                 }
 
                 fis.close()
-                file.delete()
 
 
                 withContext(Dispatchers.Main) {
@@ -651,9 +744,11 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                 }
             } catch (e: Exception) {
                 Log.e(name, "Error uploading file: $e")
-                withContext(Dispatchers.Main) {
-                    promise.reject("UPLOAD_ERROR", "Error uploading file: ${e.message}")
-                }
+                promise.resolve(Arguments.createMap().apply {
+                    putBoolean("success", false)
+                    putInt("statusCode", 500)
+                    putString("message", "Error While Uploading file")
+                })
             } finally {
                 activeUploads.remove(msgId)
             }
@@ -697,8 +792,15 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                         apiInterface?.downloadChunkFromPreAuthenticationUrl(downloadURL, range)
                             ?.execute()
                     if (response == null || !response.isSuccessful) {
+                        val errorMessage = response?.errorBody()?.string() ?: "Unknown error"
+                        Log.e(name, "Chunk upload failed with status: ${response?.code()} - ${response?.message()}")
+                        Log.e(name, "Error message: $errorMessage")
                         withContext(Dispatchers.Main) {
-                            promise.reject("DOWNLOAD_FAILED", "Failed to download chunk: $range")
+                            promise.resolve(Arguments.createMap().apply {
+                                putBoolean("success", false)
+                                putInt("statusCode", 500)
+                                putString("message", errorMessage)
+                            })
                         }
                         fileOutputStream.close()
                         return@launch

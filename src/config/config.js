@@ -2,11 +2,11 @@ const config = {
    attachement: true,
    videoDuaration: 40,
    audioDuaration: 60,
-   fileSize: 50,
-   imageFileSize: 10,
-   videoFileSize: 300,
-   audioFileSize: 30,
-   documentFileSize: 20,
+   fileSize: 2147483648, // bytes
+   imageFileSize: 2147483648, // bytes
+   videoFileSize: 2147483648, // bytes
+   audioFileSize: 2147483648, // bytes
+   documentFileSize: 2147483648, // bytes
    maxAllowedMediaCount: 5,
    maximumAllowedUsersToForward: 5,
    maximumCharForwardPopUp: 60,
@@ -56,6 +56,8 @@ const config = {
    // licenseKey: 'M5hhyMm7o7WiFRumULxlChc6sGFRuU',
    // API_URL: 'https://growthaxlllc-api.mirrorfly.com/api/v1',
    // licenseKey: 'o3mN05oAgepcbO0noe3T058WC8jkKN',
+   // API_URL: 'https://api-preprod-sandbox.mirrorfly.com/api/v1',
+   // licenseKey: 'RLIKkMQkbkAIDMucEdDKNMZ05VOB1F',
 };
 
 export default config;

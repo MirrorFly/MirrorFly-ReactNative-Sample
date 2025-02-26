@@ -64,12 +64,12 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
          return () => {
             setIsConversationScreenActive(false);
          };
-      }, [useXmppStatus]),
+      }, [useXmppStatus, msgStatus]),
    );
 
    const onPress = () => {
       const messsageList = getChatMessages(userId);
-      const isAnySelected = messsageList?.some?.(item => item.isSelected === 1);
+      const isAnySelected = messsageList?.some?.(_item => _item.isSelected === 1);
       switch (true) {
          case isAnySelected:
             const selectData = {
@@ -95,6 +95,8 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
          case message_type === 'locaiton':
             openLocationExternally(latitude, longitude);
             break;
+         default:
+            Keyboard.dismiss();
       }
    };
 
@@ -123,9 +125,6 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
          return <NotificationMessage messageObject={item} themeColorPalatte={themeColorPalatte} label={label} />;
       }
 
-      if (recallStatus) {
-         return <DeletedMessage chatUser={chatUser} item={item} isSender={isSender} />;
-      }
       return (
          <Pressable
             style={
@@ -183,7 +182,7 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
    }, [item]);
    return (
       <>
-         <NotificationMessage label={label} themeColorPalatte = {themeColorPalatte}/>
+         <NotificationMessage label={label} themeColorPalatte={themeColorPalatte} />
          {renderMessage}
       </>
    );

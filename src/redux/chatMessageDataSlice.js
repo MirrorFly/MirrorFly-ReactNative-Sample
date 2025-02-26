@@ -6,6 +6,7 @@ const initialState = {
    searchText: '',
    editMessage: '',
    parentMessage: {},
+   isChatSearching: false,
 };
 
 const chatMessageDataSlice = createSlice({
@@ -29,7 +30,9 @@ const chatMessageDataSlice = createSlice({
             }
          });
          const userId = getUserIdFromJid(userJid);
-         if (!Array.isArray(data)) return;
+         if (!Array.isArray(data)) {
+            return;
+         }
          if (state[userId] && !forceUpdate) {
             // Merge existing messages with new ones
             state[userId] = removeDuplicates([...state[userId], ...data]);
@@ -53,7 +56,7 @@ const chatMessageDataSlice = createSlice({
          );
       },
       addChatMessageItem(state, action) {
-         const { userJid, msgBody: { replyTo = '', msgId } = {} } = action.payload;
+         const { userJid, msgBody: { replyTo = '' } = {}, msgId } = action.payload;
          const userId = getUserIdFromJid(userJid);
          if (replyTo && state[userId]) {
             const message = state[userId].find(item => item.msgId === replyTo);
@@ -67,16 +70,15 @@ const chatMessageDataSlice = createSlice({
             if (messageIndex !== -1) {
                if (state[userId][messageIndex] !== action.payload) {
                   state[userId][messageIndex] = {
-                     ...state[userId][messageIndex],
                      ...action.payload,
+                     ...state[userId][messageIndex],
                   };
                }
             } else {
-               state[userId].push(action.payload);
+               state[userId].unshift({ ...action.payload, deleteStatus: 0, recallStatus: 0 });
             }
-            state[userId].sort((a, b) => b.timestamp - a.timestamp);
          } else {
-            state[userId] = [action.payload];
+            state[userId] = [{ ...action.payload, deleteStatus: 0, recallStatus: 0 }];
          }
       },
       updateChatMessageStatus(state, action) {
@@ -179,6 +181,12 @@ const chatMessageDataSlice = createSlice({
       setParentMessage(state, action) {
          state.parentMessage[action.payload.msgId] = action.payload;
       },
+      toggleIsChatSearching(state, action) {
+         state.isChatSearching = action.payload;
+      },
+      setIsSearchChatLoading(state, action) {
+         state.isSearchChatLoading = action.payload;
+      },
    },
    extraReducers: builder => {
       builder.addCase(clearState, () => initialState);
@@ -202,6 +210,8 @@ export const {
    toggleEditMessage,
    editChatMessageItem,
    setParentMessage,
+   toggleIsChatSearching,
+   setIsSearchChatLoading,
 } = chatMessageDataSlice.actions;
 
 export default chatMessageDataSlice.reducer;

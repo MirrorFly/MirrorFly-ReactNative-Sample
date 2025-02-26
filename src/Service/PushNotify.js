@@ -1,4 +1,9 @@
-import notifee, { AndroidColor, AndroidImportance, AndroidVisibility } from '@notifee/react-native';
+import notifee, {
+   AndroidColor,
+   AndroidForegroundServiceType,
+   AndroidImportance,
+   AndroidVisibility,
+} from '@notifee/react-native';
 import { Platform } from 'react-native';
 import { MISSED_CALL } from '../Helper/Calls/Constant';
 import { getMuteStatus } from '../SDK/utils';
@@ -17,7 +22,9 @@ export const displayRemoteNotification = async (id, date, title, body, jid, impo
          importance,
          visibility: AndroidVisibility.PUBLIC,
       };
-      if (channelIds.sound) channelId.sound = channelIds.sound;
+      if (channelIds.sound) {
+         channelId.sound = channelIds.sound;
+      }
       channelId.vibration = channelIds.vibration;
       let channelIdData = await notifee.createChannel(channelId);
       /** Display a notification */
@@ -40,7 +47,9 @@ export const displayRemoteNotification = async (id, date, title, body, jid, impo
             },
          },
       };
-      if (Platform.OS === 'ios' && channelIds.sound) notification.ios.sound = 'default';
+      if (Platform.OS === 'ios' && channelIds.sound) {
+         notification.ios.sound = 'default';
+      }
       await notifee.displayNotification(notification);
    }
    notifee.onForegroundEvent(onChatNotificationForeGround);
@@ -71,52 +80,110 @@ export const getChannelIds = (missedCall = false) => {
 const activeDownloads = {
    files: 0, // Number of active downloads
    progress: 0, // Combined progress percentage
+   id: 'media_download_progress_channel',
    individualProgress: {}, // Progress of each individual file, keyed by msgId
 };
 
-export const updateProgressNotification = async (msgId, progress, type, isCanceled = false) => {
-   if (Platform.OS == 'ios') return;
-   if (isCanceled) {
-      // Remove canceled download from tracker
-      delete activeDownloads.individualProgress[msgId];
-      activeDownloads.files -= 1;
-   } else {
-      // Add or update download progress
-      if (!activeDownloads.individualProgress[msgId]) {
-         activeDownloads.files += 1;
+const activeUploads = {
+   files: 0, // Number of active downloads
+   progress: 0, // Combined progress percentage
+   id: 'media_upload_progress_channel',
+   individualProgress: {}, // Progress of each individual file, keyed by msgId
+};
+
+export const progressMap = {
+   upload: activeUploads,
+   download: activeDownloads,
+};
+
+export const updateProgressNotification = async ({
+   msgId,
+   progress,
+   type,
+   isCanceled = false,
+   foregroundStatus = true,
+}) => {
+   try {
+      if (Platform.OS === 'ios') {
+         return;
       }
-      activeDownloads.individualProgress[msgId] = progress;
+      let activeProgress = progressMap[type];
+      handleProgressUpdate(activeProgress, msgId, progress, isCanceled);
+
+      const totalProgress = calculateTotalProgress(activeProgress);
+      activeProgress.progress = calculateCombinedProgress(activeProgress, totalProgress, progress);
+
+      const action = type === 'upload' ? 'Uploading' : 'Downloading';
+      const fileCount = activeProgress.files;
+
+      const title = fileCount > 1 ? `${action} ${fileCount} files` : `${action} file`;
+      if (activeProgress.files <= 0) {
+         setTimeout(() => {
+            notifee.stopForegroundService();
+            notifee.cancelNotification(activeProgress.id);
+         }, 200);
+         return;
+      }
+
+      let notification = createNotification(activeProgress, title, foregroundStatus);
+      notifee.displayNotification(notification);
+   } catch (error) {
+      mflog('Failed to update progress notification', error);
    }
+};
 
-   // Recalculate combined progress
-   const totalProgress = Object.values(activeDownloads.individualProgress).reduce((sum, p) => sum + p, 0);
-   activeDownloads.progress = activeDownloads.files > 0 ? Math.floor(totalProgress / activeDownloads.files) : 0;
-
-   // Update notification title
-   const title = activeDownloads.files > 1 ? `Downloading ${activeDownloads.files} files` : 'Downloading 1 file';
-
-   // If all downloads are canceled, clear notification
-   if (activeDownloads.files === 0) {
-      await notifee.cancelNotification('media_progress_notification');
-      return;
+const handleProgressUpdate = (activeProgress, msgId, progress, isCanceled) => {
+   if (isCanceled) {
+      delete activeProgress.individualProgress[msgId];
+      activeProgress.files -= 1;
+   } else {
+      if (activeProgress.individualProgress[msgId] === undefined) {
+         activeProgress.files += 1;
+      }
+      activeProgress.individualProgress[msgId] = progress;
    }
+};
 
-   // Update the notification
-   await notifee.displayNotification({
-      id: 'media_progress_notification', // Single notification ID for all downloads
+const calculateTotalProgress = activeProgress => {
+   return Object.values(activeProgress.individualProgress).reduce((sum, p) => sum + p, 0);
+};
+
+const calculateCombinedProgress = (activeProgress, totalProgress, progress) => {
+   if (Object.keys(activeProgress.individualProgress).length === 1) {
+      return progress;
+   } else {
+      return activeProgress.files > 0 ? Math.floor(totalProgress / activeProgress.files) : 0;
+   }
+};
+
+const createNotification = (activeProgress, title, foregroundStatus) => {
+   let foregroundServiceTypes = [
+      ...(Platform.Version >= 30 ? [AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_DATA_SYNC] : []), // Only for Android 11 and above
+      ...(Platform.Version >= 34 ? [AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE] : []), // Only for Android 12 and above
+   ];
+
+   return {
+      id: activeProgress.id,
       title,
-      body: `Progress: ${activeDownloads.progress}%`,
+      body: `Progress: ${activeProgress.progress}%`,
+      data: { progress: activeProgress.progress },
       android: {
-         onlyAlertOnce: true,
          channelId: 'media_progress_channel',
+         autoCancel: false,
+         onlyAlertOnce: true,
          color: AndroidColor.BLUE,
          importance: AndroidImportance.HIGH,
+         visibility: AndroidVisibility.PUBLIC,
          smallIcon: 'ic_notification',
          ongoing: true,
+         ...(foregroundStatus && {
+            asForegroundService: true,
+            ...(foregroundServiceTypes.length && { foregroundServiceTypes }),
+         }),
          progress: {
             max: 100,
-            current: activeDownloads.progress,
-            indeterminate: false,
+            current: activeProgress.progress,
+            indeterminate: activeProgress.progress <= 0,
          },
       },
       ios: {
@@ -132,7 +199,7 @@ export const updateProgressNotification = async (msgId, progress, type, isCancel
             sound: false,
          },
       },
-   });
+   };
 };
 
 export const createNotificationChannels = async settings => {
@@ -143,6 +210,9 @@ export const createNotificationChannels = async settings => {
             id: 'media_progress_channel',
             name: 'Media Progress Channel',
             sound: 'default', // No sound for progress updates
+            importance: AndroidImportance.HIGH,
+            visibility: AndroidVisibility.PUBLIC,
+            vibration: false,
          });
 
          console.log('Media progress notification channel created');

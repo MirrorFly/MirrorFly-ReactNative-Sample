@@ -80,7 +80,10 @@
       "REPLY_CONTACT_TYPE": "Contact: {nickName}",
       "CONTACT_CARD_INVITE": "Invite",
       "CONTACT_CARD_VIEW": "View",
-      "CONTACT_CARD_INVITE_LABEL": "Invite Friend"
+      "CONTACT_CARD_INVITE_LABEL": "Invite Friend",
+      "EDIT_MESSAGE": "Edit Message",
+      "MESSAGE_INFO": "Message Info",
+      "CLEAR_CHAT": "Clear Chat"
    },
    "FORWARD_SCREEN": {
       "FORWARD_HEADER_TITLE": "Forward to...",
@@ -187,7 +190,8 @@
       "YOU_HAVE_BLOCKED": "You have blocked {nickName}",
       "HAS_BEEN_UNBLOCKED": "{nickName} has been unblocked",
       "PLEASE_ENTER_MOBILE_NUMBER": "Please Enter Mobile Number",
-      "YOUR_MOBILE_NUMBER_IS_TOO_SHORT": "Your mobile number is too short"
+      "YOUR_MOBILE_NUMBER_IS_TOO_SHORT": "Your mobile number is too short",
+      "AUDIO_CANNOT_BE_RECORDED_WHILE_IN_CALL": "Audio cannot be recorded while in call"
    },
    "INFO_SCREEN": {
       "PROFILE_PIC_EDIT_HEADER": "Options",
@@ -211,7 +215,8 @@
       "START_CHAT": "Start Chat",
       "UNBLOCK_POPUP_LABEL": "Unblock {nickName}",
       "BLOCK_POPUP_LABEL": "Block {nickName}",
-      "LOG_OUT_HEADER_LABEL": "Are you sure want to logout from the app?"
+      "LOG_OUT_HEADER_LABEL": "Are you sure want to logout from the app?",
+      "ARE_YOU_SURE_YOU_WANT_TO_CLEAR_THE_CHAT": "Are you sure you want to clear the chat?"
    },
    "BUTTON_LABEL": {
       "NO_BUTTON": "No",

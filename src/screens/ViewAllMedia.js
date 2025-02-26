@@ -10,9 +10,9 @@ import Text from '../common/Text';
 import DocumentTab from '../components/DocumentTab';
 import LinksTab from '../components/LinksTab';
 import { default as MediaTab } from '../components/MediaTab';
-import { getUserIdFromJid, isValidUrl } from '../helpers/chatHelpers';
+import { getUserIdFromJid } from '../helpers/chatHelpers';
 import { getStringSet } from '../localization/stringSet';
-import { useChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -38,12 +38,7 @@ const ViewAllMedia = () => {
    } = useRoute();
    const pagerRef = React.useRef();
    const chatUserId = getUserIdFromJid(jid);
-   const messagesArr = useChatMessages(chatUserId);
    const [index, setIndex] = React.useState(0);
-   const [loading, setLoading] = React.useState(true);
-   const [countBasedOnType, setCountBasedOnType] = React.useState({});
-   const [mediaMessages, setMediaMessages] = React.useState([]);
-   const [docsMessages, setDocsMessages] = React.useState([]);
 
    const [indicatorPosition] = React.useState(new Animated.Value(0)); // State to track the position of the active tab indicator
    const [indicatorWidth] = React.useState(screenWidth / 3); // State to track the width of the active tab indicator
@@ -55,49 +50,6 @@ const ViewAllMedia = () => {
          backHandler.remove();
       };
    }, []);
-
-   React.useEffect(() => {
-      handleGetMedia();
-   }, [messagesArr]);
-
-   const messageList = React.useMemo(() => {
-      const filteredMessages = messagesArr?.filter(message => {
-         const { msgBody: { message_type = '' } = {} } = message || {};
-         return ['image', 'video', 'audio', 'file'].includes(message_type);
-      });
-      return filteredMessages;
-   }, [messagesArr, jid]);
-
-   const linksMessage = React.useMemo(() => {
-      const filteredMessages = messagesArr.filter(message => {
-         const { msgBody: { message_type = '', message: textMessage } = {} } = message || {};
-         return ['text'].includes(message_type) && isValidUrl(textMessage);
-      });
-      return filteredMessages;
-   }, [messagesArr, jid]);
-
-   const handleGetMedia = async () => {
-      const imageCount = messageList?.reverse()?.filter(res => ['image'].includes(res.message_type));
-      setCountBasedOnType({
-         ...countBasedOnType,
-         imageCount: imageCount.length,
-      });
-      const filtedMediaMessages = messageList.filter(
-         res =>
-            ['image', 'video', 'audio'].includes(res?.msgBody?.message_type) &&
-            res?.msgBody?.media.is_downloaded === 2 &&
-            res?.msgBody?.media.is_uploading === 2,
-      );
-      const filtedDocsMessages = messageList.filter(
-         res =>
-            ['file'].includes(res?.msgBody?.message_type) &&
-            res?.msgBody?.media.is_downloaded === 2 &&
-            res?.msgBody?.media.is_uploading === 2,
-      );
-      setDocsMessages(filtedDocsMessages || []);
-      setMediaMessages(filtedMediaMessages || []);
-      setLoading(false);
-   };
 
    const handleBackBtn = () => {
       navigation.goBack();
@@ -126,7 +78,7 @@ const ViewAllMedia = () => {
    const tabBar = React.useMemo(
       () => (
          <View style={[styles.mediaTabBar, { backgroundColor: themeColorPalatte.appBarColor }]}>
-            <Pressable pressedStyle={{}} style={[styles.mediaTabItem, { width: '33.33%' }]} onPress={handleTabPress(0)}>
+            <Pressable pressedStyle={{}} style={[styles.mediaTabItem]} onPress={handleTabPress(0)}>
                <View style={commonStyles.hstack}>
                   <Text
                      style={[
@@ -143,7 +95,7 @@ const ViewAllMedia = () => {
                   </Text>
                </View>
             </Pressable>
-            <Pressable pressedStyle={{}} style={[styles.mediaTabItem, { width: '33.33%' }]} onPress={handleTabPress(1)}>
+            <Pressable pressedStyle={{}} style={[styles.mediaTabItem]} onPress={handleTabPress(1)}>
                <Text
                   style={[
                      styles.mediaTabText,
@@ -158,7 +110,7 @@ const ViewAllMedia = () => {
                   {stringSet.VIEW_ALL_MEDIA_SCREEN.TAB_HEADER_DOCS}
                </Text>
             </Pressable>
-            <Pressable pressedStyle={{}} style={[styles.mediaTabItem, { width: '33.33%' }]} onPress={handleTabPress(2)}>
+            <Pressable pressedStyle={{}} style={[styles.mediaTabItem]} onPress={handleTabPress(2)}>
                <Text
                   style={[
                      styles.mediaTabText,
@@ -196,77 +148,18 @@ const ViewAllMedia = () => {
             style={commonStyles.flex1}
             initialPage={index}
             onPageSelected={e => setIndex(e.nativeEvent.position)}>
-            <View key="1">
-               <View>
-                  {!loading && mediaMessages.length === 0 ? (
-                     <View
-                        style={[
-                           commonStyles.justifyContentCenter,
-                           commonStyles.alignItemsCenter,
-                           commonStyles.height_100_per,
-                        ]}>
-                        <Text style={{ color: themeColorPalatte.primaryTextColor }}>
-                           {stringSet.VIEW_ALL_MEDIA_SCREEN.NO_MEDIA_FOUND}
-                        </Text>
-                     </View>
-                  ) : (
-                     <View style={commonStyles.marginTop_5}>
-                        <MediaTab
-                           mediaMessages={mediaMessages}
-                           loading={loading}
-                           themeColorPalatte={themeColorPalatte}
-                        />
-                     </View>
-                  )}
-               </View>
+            <View key="1" style={[commonStyles.marginTop_5]}>
+               <MediaTab chatUserId={chatUserId} jid={jid} />
             </View>
-            <View key="2">
-               <View>
-                  {!loading && docsMessages.length === 0 ? (
-                     <View
-                        style={[
-                           commonStyles.justifyContentCenter,
-                           commonStyles.alignItemsCenter,
-                           commonStyles.height_100_per,
-                        ]}>
-                        <Text style={{ color: themeColorPalatte.primaryTextColor }}>
-                           {stringSet.VIEW_ALL_MEDIA_SCREEN.NO_DOCS_FOUND}
-                        </Text>
-                     </View>
-                  ) : (
-                     <View style={[commonStyles.marginTop_5, commonStyles.padding_8]}>
-                        <DocumentTab
-                           docsMessages={docsMessages}
-                           loading={loading}
-                           themeColorPalatte={themeColorPalatte}
-                        />
-                     </View>
-                  )}
-               </View>
+            <View key="2" style={[commonStyles.marginTop_5]}>
+               <DocumentTab jid={jid} />
             </View>
-            <View key="3">
-               <View>
-                  {!loading && linksMessage.length === 0 ? (
-                     <View
-                        style={[
-                           commonStyles.justifyContentCenter,
-                           commonStyles.alignItemsCenter,
-                           commonStyles.height_100_per,
-                        ]}>
-                        <Text style={{ color: themeColorPalatte.primaryTextColor }}>
-                           {stringSet.VIEW_ALL_MEDIA_SCREEN.NO_LINKS_FOUND}
-                        </Text>
-                     </View>
-                  ) : (
-                     <View style={[commonStyles.marginTop_5, commonStyles.padding_8]}>
-                        <LinksTab linksMessage={linksMessage} loading={loading} />
-                     </View>
-                  )}
-               </View>
+            <View key="3" style={[commonStyles.marginTop_5]}>
+               <LinksTab chatUserId={chatUserId} jid={jid} />
             </View>
          </PagerView>
       ),
-      [mediaMessages, docsMessages, themeColorPalatte],
+      [],
    );
 
    return (
@@ -308,6 +201,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       height: 50,
+      width: '33.33%',
    },
    mediaTabText: {
       fontSize: 16,

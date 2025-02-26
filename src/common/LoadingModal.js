@@ -5,7 +5,7 @@ import commonStyles from '../styles/commonStyles';
 import Modal, { ModalCenteredContent } from './Modal';
 import Text from './Text';
 
-function LoadingModal({ visible, message, behavior = '' }) {
+function LoadingModal({ visible, message, behavior }) {
    const themeColorPalatte = useThemeColorPalatte();
 
    const styles = {

@@ -1,12 +1,18 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { sendNotificationData } from '../SDK/utils';
 import CustomRadio from '../common/CustomRadio';
 import Pressable from '../common/Pressable';
 import ScreenHeader from '../common/ScreenHeader';
+import Text from '../common/Text';
 import ApplicationColors from '../config/appColors';
-import { useNotificationDisable, useNotificationSound, useNotificationVibration } from '../redux/reduxHook';
+import {
+   useNotificationDisable,
+   useNotificationSound,
+   useNotificationVibration,
+   useThemeColorPalatte,
+} from '../redux/reduxHook';
 import {
    toggleNotificationDisabled,
    toggleNotificationSound,
@@ -114,10 +120,11 @@ const NotificationMute = () => {
 };
 
 function NotificationAlertScreen() {
+   const themeColorPalatte = useThemeColorPalatte();
    return (
       <>
          <ScreenHeader isSearchable={false} title="Notifications Alert" />
-         <View style={[commonStyles.flex1, commonStyles.bg_white]}>
+         <View style={[commonStyles.flex1, commonStyles.bg_color(themeColorPalatte.screenBgColor)]}>
             <NotificationSound />
             <NotificationVibration />
             <NotificationMute />

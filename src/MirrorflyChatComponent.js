@@ -53,12 +53,14 @@ export function MirrorflyChatComponent() {
                });
             }
             const { jid } = params;
-            setTimeout(() => {
-               navigationRef.current?.navigate(CONVERSATION_STACK, {
-                  screen: CONVERSATION_SCREEN,
-                  params: { jid },
-               });
-            }, 10);
+            if (jid) {
+               setTimeout(() => {
+                  navigationRef.current?.navigate(CONVERSATION_STACK, {
+                     screen: CONVERSATION_SCREEN,
+                     params: { jid },
+                  });
+               }, 10);
+            }
          }
       };
 

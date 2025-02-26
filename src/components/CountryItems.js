@@ -1,18 +1,23 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import Text from '../common/Text';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import { REGISTERSCREEN } from '../screens/constants';
 
 const CountryItems = props => {
    const navigation = useNavigation();
+   const themeColorPalatte = useThemeColorPalatte();
    const countrySelectHandler = () => {
       navigation.navigate(REGISTERSCREEN, { selectcountry: props.renderItem });
    };
    return (
       <View>
          <TouchableOpacity style={styles.countryListStyle} onPress={countrySelectHandler}>
-            <Text style={{ fontSize: 15, color: 'black', fontWeight: '400' }}>{props.renderItem.name}</Text>
-            <Text style={{ fontSize: 15, color: '#767676', fontWeight: '400' }}>+{props.renderItem.dial_code}</Text>
+            <Text style={[{ fontSize: 15, color: themeColorPalatte.primaryTextColor, fontWeight: '400' }]}>{props.renderItem.name}</Text>
+            <Text style={[{ fontSize: 15, color: themeColorPalatte.secondaryTextColor, fontWeight: '400' }]}>
+               +{props.renderItem.dial_code}
+            </Text>
          </TouchableOpacity>
       </View>
    );

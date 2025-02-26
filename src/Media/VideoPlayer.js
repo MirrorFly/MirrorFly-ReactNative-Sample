@@ -3,8 +3,9 @@ import React from 'react';
 import { BackHandler, Platform, StyleSheet, View } from 'react-native';
 import Video from 'react-native-video';
 import IconButton from '../common/IconButton';
-import { AudioMusicIcon, BackArrowIcon } from '../common/Icons';
+import { AudioMicIcon, AudioMusicIcon, BackArrowIcon } from '../common/Icons';
 import { useAppState } from '../common/hooks';
+import { showToast } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
 import MediaControls, { PLAYER_STATES } from './media-controls';
 
@@ -13,12 +14,13 @@ const VideoPlayer = () => {
       params: {
          item: { fileDetails = {} },
          audioOnly = false,
+         audioType,
       },
    } = useRoute();
    const navigation = useNavigation();
-   const { videoUri: _videoUri } = fileDetails;
+   const { videoUri: _videoUri, uri } = fileDetails;
    const videoPlayer = React.useRef(null);
-   const [videoUri, setVideoUri] = React.useState(_videoUri);
+   const [videoUri, setVideoUri] = React.useState(_videoUri || uri);
    const [currentTime, setCurrentTime] = React.useState(0);
    const [duration, setDuration] = React.useState(0);
    const [isLoading, setIsLoading] = React.useState(true);
@@ -142,6 +144,12 @@ const VideoPlayer = () => {
       setPaused(true);
    };
 
+   const onError = error => {
+      showToast(error?.error?.errorException);
+      handlePause();
+      setIsLoading(false);
+   };
+
    return (
       <View style={{ flex: 1, backgroundColor: audioOnly ? '#97A5C7' : '#000' }}>
          <IconButton
@@ -153,10 +161,11 @@ const VideoPlayer = () => {
          <View style={[commonStyles.flex1, commonStyles.justifyContentCenter]}>
             {audioOnly && (
                <View style={[commonStyles.flex1, commonStyles.justifyContentCenter, commonStyles.alignItemsCenter]}>
-                  <AudioMusicIcon width={200} height={200} />
+                  {audioType ? <AudioMicIcon width={200} height={200} /> : <AudioMusicIcon width={200} height={200} />}
                </View>
             )}
             <Video
+               onError={onError}
                audioOnly={audioOnly}
                ignoreSilentSwitch={'ignore'}
                onEnd={onEnd}
@@ -178,7 +187,7 @@ const VideoPlayer = () => {
             fadeOutDisable={audioOnly || playerState === PLAYER_STATES.PAUSED || playerState === PLAYER_STATES.ENDED}
             duration={duration}
             isLoading={isLoading}
-            mainColor="#333"
+            primaryColor="#333"
             onPaused={onPaused}
             onReplay={onReplay}
             onSeek={onSeek}

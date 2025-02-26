@@ -35,23 +35,22 @@ const recentChatDataSlice = createSlice({
          const index = state.recentChats.findIndex(item => item?.userJid === userJid);
 
          if (index !== -1) {
-            // If the item is found, update its position and data
-            const newData = [...state.recentChats];
+            const existingChat = state.recentChats[index];
             const updatedChat = {
-               ...newData[index],
+               ...existingChat,
                ...action.payload,
                deleteStatus: 0,
                recallStatus: 0,
-               archiveStatus: archiveSetting === 0 ? archiveSetting : newData[index].archiveStatus,
+               archiveStatus: archiveSetting === 0 ? archiveSetting : existingChat.archiveStatus,
             };
             if (userJid !== getCurrentChatUser() && !isLocalUser(publisherId)) {
                updatedChat.unreadCount += 1;
                updatedChat.isUnread = 1;
             }
 
-            // Move the updated chat to the new index
-            newData.splice(index, 1); // Remove the item from the old position
-            newData.splice(newIndex, 0, updatedChat); // Insert the item at the new position
+            const newData = [...state.recentChats];
+            newData.splice(index, 1); // Remove the old entry
+            newData.splice(newIndex, 0, updatedChat); // Insert the updated entry
 
             state.recentChats = newData;
          } else if (action.payload) {
@@ -107,7 +106,7 @@ const recentChatDataSlice = createSlice({
       updateMsgByLastMsgId(state, action) {
          const { userJid } = action.payload;
          const index = state.recentChats.findIndex(item => item.userJid === userJid);
-         state.recentChats[index] = action.payload;
+         state.recentChats[index] = { ...state.recentChats[index], ...action.payload };
       },
       deleteMessagesForEveryoneInRecentChat(state, action) {
          const userJid = action.payload;
@@ -154,6 +153,19 @@ const recentChatDataSlice = createSlice({
             state.recentChats[index] = { ...state.recentChats[index], unreadCount: 0, isUnread: 0 };
          }
       },
+      editRecentChatItem(state, action) {
+         const { userJid, msgId, message, caption } = action.payload;
+         const index = state.recentChats.findIndex(item => item.userJid === userJid && item.msgId === msgId);
+         if (state.recentChats[index]) {
+            state.recentChats[index].msgStatus = 3;
+         }
+         if (state.recentChats[index] && message) {
+            state.recentChats[index].msgBody.message = message;
+         }
+         if (state[index] && caption) {
+            state.recentChats[index].msgBody.media.caption = caption;
+         }
+      },
    },
    extraReducers: builder => {
       builder.addCase(clearState, () => initialState);
@@ -177,6 +189,7 @@ export const {
    toggleChatMute,
    resetUnreadCountForChat,
    toggleArchiveChatsByUserId,
+   editRecentChatItem,
 } = recentChatDataSlice.actions;
 
 export default recentChatDataSlice.reducer;

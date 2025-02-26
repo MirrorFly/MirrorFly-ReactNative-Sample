@@ -1,132 +1,155 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
-import { ActivityIndicator, Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-native';
-import { AudioWhileIcon, PlayIcon } from '../common/Icons';
+import React, { useCallback, useMemo } from 'react';
+import { ActivityIndicator, Dimensions, FlatList, Image, StyleSheet, View } from 'react-native';
+import { AudioMicIcon, AudioMusicIcon, PlayIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
-import ApplicationColors from '../config/appColors';
-import { getCurrentChatUser, getThumbBase64URL } from '../helpers/chatHelpers';
+import Text from '../common/Text';
+import { getThumbBase64URL } from '../helpers/chatHelpers';
+import { useMergedMediaMessages } from '../hooks/useMediaMessaegs';
+import { getStringSet } from '../localization/stringSet';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import { getMessageTypeCount } from '../screens/ViewAllMedia';
 import { MEDIA_POST_PRE_VIEW_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 
-const AudioWhileIconComponent = () => AudioWhileIcon();
-
-const MediaTab = ({ mediaMessages, loading }) => {
+const MediaTab = ({ chatUserId, jid }) => {
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
+   const { mergedMediaMessages, isLoading } = useMergedMediaMessages(jid, ['image', 'video', 'audio']);
    const navigation = useNavigation();
-   let numColumns = 4;
    const { width } = Dimensions.get('window');
+   const numColumns = 4;
    const tileSize = width / numColumns;
 
-   const renderImageCountLabel = () => {
-      return getMessageTypeCount(mediaMessages, 'image') > 1
-         ? getMessageTypeCount(mediaMessages, 'image') + ' Photos'
-         : getMessageTypeCount(mediaMessages, 'image') + ' Photo';
-   };
+   const renderImageCountLabel = useMemo(() => {
+      const count = getMessageTypeCount(mergedMediaMessages, 'image');
+      return count > 1 ? `${count} Photos` : `${count} Photo`;
+   }, [mergedMediaMessages]);
 
-   const renderVideoCountLabel = () => {
-      return getMessageTypeCount(mediaMessages, 'video') > 1
-         ? getMessageTypeCount(mediaMessages, 'video') + ' Videos'
-         : getMessageTypeCount(mediaMessages, 'video') + ' Video';
-   };
+   const renderVideoCountLabel = useMemo(() => {
+      const count = getMessageTypeCount(mergedMediaMessages, 'video');
+      return count > 1 ? `${count} Videos` : `${count} Video`;
+   }, [mergedMediaMessages]);
 
-   const renderAudioCountLabel = () => {
-      return getMessageTypeCount(mediaMessages, 'audio') > 1
-         ? getMessageTypeCount(mediaMessages, 'audio') + ' Audios'
-         : getMessageTypeCount(mediaMessages, 'audio') + ' Audio';
-   };
+   const renderAudioCountLabel = useMemo(() => {
+      const count = getMessageTypeCount(mergedMediaMessages, 'audio');
+      return count > 1 ? `${count} Audios` : `${count} Audio`;
+   }, [mergedMediaMessages]);
 
-   const renderMediaFooter = () => {
-      return (
+   const renderMediaFooter = () =>
+      mergedMediaMessages.length > 0 && (
          <>
-            {mediaMessages.length > 0 && (
-               <Text style={[commonStyles.textCenter, commonStyles.colorBlack]}>
-                  {renderImageCountLabel()}, {renderVideoCountLabel()}, {renderAudioCountLabel()}
-               </Text>
-            )}
-            {loading && (
-               <View style={[commonStyles.mb_130, commonStyles.marginTop_5]}>
-                  <ActivityIndicator size="large" color={ApplicationColors.mainColor} />
-               </View>
-            )}
+            <Text style={[commonStyles.textCenter, { color: themeColorPalatte.primaryTextColor }]}>
+               {renderImageCountLabel}, {renderVideoCountLabel}, {renderAudioCountLabel}
+            </Text>
+            {isLoading && <ActivityIndicator size={'large'} color={themeColorPalatte.primaryColor} />}
          </>
       );
-   };
 
-   const renderTileBasedOnMessageType = item => {
-      const {
-         deleteStatus = 0,
-         recallStatus = 0,
-         msgBody: {
-            media: { thumb_image = '', local_path = '', is_downloaded, is_uploading } = {},
-            message_type = '',
-         } = {},
-      } = item;
-      const thumbURL = local_path || getThumbBase64URL(thumb_image);
+   const renderTileBasedOnMessageType = useCallback(
+      item => {
+         const {
+            deleteStatus = 0,
+            recallStatus = 0,
+            msgBody: {
+               media: { thumb_image = '', is_downloaded, is_uploading, audioType } = {},
+               message_type = '',
+            } = {},
+         } = item;
 
-      if (
-         (deleteStatus !== undefined && deleteStatus !== 0) ||
-         (recallStatus !== undefined && recallStatus !== 0) ||
-         is_downloaded !== 2 ||
-         is_uploading !== 2
-      ) {
-         return null;
-      }
-      if (['image', 'video'].includes(message_type)) {
+         if (deleteStatus !== 0 || recallStatus !== 0 || is_downloaded !== 2 || is_uploading !== 2) {
+            return null;
+         }
+
+         if (['image', 'video'].includes(message_type)) {
+            return (
+               <View
+                  style={[
+                     { width: tileSize, height: tileSize, backgroundColor: themeColorPalatte.screenBgColor },
+                     styles.mediaTile,
+                  ]}>
+                  <Image
+                     source={{
+                        uri: message_type === 'video' ? getThumbBase64URL(thumb_image) : getThumbBase64URL(thumb_image),
+                     }}
+                     style={styles.imageView}
+                  />
+                  {message_type === 'video' && (
+                     <View
+                        style={[
+                           styles.playIconWrapper,
+                           {
+                              backgroundColor: themeColorPalatte.colorOnPrimary,
+                              shadowColor: themeColorPalatte.shadowColor,
+                           },
+                        ]}>
+                        <PlayIcon width={10} height={10} />
+                     </View>
+                  )}
+               </View>
+            );
+         }
+
+         if (message_type === 'audio') {
+            return (
+               <View
+                  style={[
+                     commonStyles.justifyContentCenter,
+                     commonStyles.alignItemsCenter,
+                     styles.audioTile,
+                     { width: tileSize - 4, height: tileSize - 4 },
+                  ]}>
+                  {audioType ? (
+                     <AudioMicIcon width="31.409" height="23.746" fill="#fff" />
+                  ) : (
+                     <AudioMusicIcon width="31.409" height="23.746" color="#fff" />
+                  )}
+               </View>
+            );
+         }
+      },
+      [themeColorPalatte, tileSize],
+   );
+
+   const renderMediaTile = useCallback(
+      ({ item }) => {
+         const handleMediaPress = () => {
+            navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid, msgId: item.msgId });
+         };
          return (
-            <View
-               style={[
-                  {
-                     width: tileSize,
-                     height: tileSize,
-                  },
-                  styles.mediaTile,
-               ]}>
-               <Image
-                  source={{ uri: message_type === 'video' ? getThumbBase64URL(thumb_image) : thumbURL }}
-                  style={styles.imageView}
-               />
-
-               {message_type === 'video' && (
-                  <View style={styles.playIconWrapper}>
-                     <PlayIcon width={10} height={10} />
-                  </View>
-               )}
-            </View>
+            <Pressable contentContainerStyle={{}} onPress={handleMediaPress}>
+               {renderTileBasedOnMessageType(item)}
+            </Pressable>
          );
-      }
-      if (['audio'].includes(message_type)) {
-         return (
-            <View
-               style={[
-                  commonStyles.justifyContentCenter,
-                  commonStyles.alignItemsCenter,
-                  styles.aduioTile,
-                  { width: tileSize - 4, height: tileSize - 4 },
-               ]}>
-               <AudioWhileIconComponent />
-            </View>
-         );
-      }
-   };
-
-   const renderMediaTile = ({ item }) => {
-      const handleMediaPress = () => {
-         navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid: getCurrentChatUser(), msgId: item.msgId });
-      };
-      return <Pressable onPress={handleMediaPress}>{renderTileBasedOnMessageType(item)}</Pressable>;
-   };
+      },
+      [chatUserId, renderTileBasedOnMessageType],
+   );
 
    return (
       <FlatList
-         numColumns={4}
+         numColumns={numColumns}
+         horizontal={false}
          keyExtractor={item => item.msgId}
-         data={mediaMessages}
+         data={mergedMediaMessages}
          bounces={false}
          ListFooterComponent={renderMediaFooter}
          renderItem={renderMediaTile}
          initialNumToRender={20}
          maxToRenderPerBatch={20}
          windowSize={15}
+         ListEmptyComponent={
+            <View
+               style={[
+                  commonStyles.justifyContentCenter,
+                  commonStyles.alignItemsCenter,
+                  commonStyles.height_100_per,
+                  commonStyles.mt_12,
+               ]}>
+               <Text style={{ color: themeColorPalatte.primaryTextColor }}>
+                  {stringSet.VIEW_ALL_MEDIA_SCREEN.NO_MEDIA_FOUND}
+               </Text>
+            </View>
+         }
       />
    );
 };
@@ -134,27 +157,21 @@ const MediaTab = ({ mediaMessages, loading }) => {
 export default React.memo(MediaTab);
 
 const styles = StyleSheet.create({
-   mediaTile: {
-      backgroundColor: '#f2f2f2',
-      padding: 2,
-   },
+   mediaTile: { padding: 2 },
    imageView: { flex: 1, resizeMode: 'cover' },
    playIconWrapper: {
-      backgroundColor: ApplicationColors.mainbg,
       position: 'absolute',
       top: '50%',
       left: '50%',
-      // transforming X and Y for actual width of the icon plus the padding divided by 2 to make it perfectly centered ( 15(width) + 12(padding) / 2 = 13.5 )
-      transform: [{ translateX: -13.5 }, { translateY: -13.5 }],
+      transform: [{ translateX: -11.5 }, { translateY: -11.5 }],
       elevation: 5,
-      shadowColor: ApplicationColors.shadowColor,
       shadowOffset: { width: 0, height: 6 },
       shadowOpacity: 0.1,
       shadowRadius: 6,
       padding: 6,
       borderRadius: 50,
    },
-   aduioTile: {
+   audioTile: {
       marginTop: 2,
       backgroundColor: '#97A5C7',
       padding: 2,

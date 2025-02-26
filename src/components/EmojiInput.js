@@ -2,10 +2,13 @@ import { useNavigation } from '@react-navigation/native';
 import Graphemer from 'graphemer';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { BackHandler, StyleSheet, Text, TextInput, View } from 'react-native';
+import { BackHandler, StyleSheet, View } from 'react-native';
 import IconButton from '../common/IconButton';
 import { KeyboardIcon, SmileIcon } from '../common/Icons';
-import ApplicationColors from '../config/appColors';
+import Text from '../common/Text';
+import TextInput from '../common/TextInput';
+import { getStringSet } from '../localization/stringSet';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import EmojiOverlay from './EmojiPicker';
 
@@ -24,6 +27,8 @@ function EmojiInput({
    onEmojiWindowToggle = () => {},
    setValue = () => {},
 }) {
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
    const navigation = useNavigation();
    const inputRef = React.useRef();
    const [content, setContent] = React.useState(defaultContent);
@@ -91,22 +96,32 @@ function EmojiInput({
 
    return (
       <>
-         <View style={[commonStyles.hstack, commonStyles.alignItemsCenter, styles.nameTextView, commonStyles.mt_20]}>
+         <View
+            style={[
+               commonStyles.hstack,
+               commonStyles.alignItemsCenter,
+               styles.nameTextView,
+               commonStyles.mt_20,
+               { borderBottomColor: themeColorPalatte.dividerBg },
+            ]}>
             <TextInput
-               cursorColor={ApplicationColors.mainColor}
-               ref={inputRef}
-               placeholder="Type group name here"
-               style={styles.nameTextInput}
+               cursorColor={themeColorPalatte.primaryColor}
+               selectionColor={themeColorPalatte.primaryColor}
+               inputRef={inputRef}
+               placeholder={stringSet.CREATE_GROUP_SCREEN.GROUP_NAME_INPUT_PLACEHOLDER}
+               style={[styles.nameTextInput, { color: themeColorPalatte.primaryTextColor }]}
                multiline={false}
                value={content}
                onChangeText={handleInput}
-               placeholderTextColor={ApplicationColors.placeholderTextColor}
+               placeholderTextColor={themeColorPalatte.placeholderTextColor}
                keyboardType="default"
                onKeyPress={handleOnKeyPress}
                maxLength={maxTextLength}
                onFocus={hideEmojiWindow}
             />
-            {Boolean(allowedMaxLimit) && <Text style={styles.subText}>{count()}</Text>}
+            {Boolean(allowedMaxLimit) && (
+               <Text style={[styles.subText, { color: themeColorPalatte.primaryTextColor }]}>{count()}</Text>
+            )}
             <View style={[commonStyles.marginRight_12, commonStyles.alignItemsCenter, styles.iconWidth]}>
                <IconButton
                   onPress={() => {
@@ -115,7 +130,11 @@ function EmojiInput({
                      }
                      toggleEmojiWindow();
                   }}>
-                  {!isEmojiPickerShowing ? <SmileIcon /> : <KeyboardIcon />}
+                  {!isEmojiPickerShowing ? (
+                     <SmileIcon color={themeColorPalatte.iconColor} />
+                  ) : (
+                     <KeyboardIcon color={themeColorPalatte.iconColor} />
+                  )}
                </IconButton>
             </View>
          </View>
@@ -139,11 +158,9 @@ const styles = StyleSheet.create({
    subText: {
       fontSize: 14,
       paddingHorizontal: 12,
-      color: ApplicationColors.black,
    },
    nameTextView: {
       borderBottomWidth: 1,
-      borderBottomColor: '#f2f2f2',
    },
    iconWidth: {
       width: 40,

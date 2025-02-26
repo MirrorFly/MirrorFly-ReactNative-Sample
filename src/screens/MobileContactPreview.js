@@ -1,15 +1,19 @@
 import CheckBox from '@react-native-community/checkbox';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import RootNavigation from '../Navigation/rootNavigation';
 import { handleSendMsg } from '../SDK/utils';
 import { ContactInfoIcon, PhoneIcon, SendBlueIcon } from '../common/Icons';
 import ScreenHeader from '../common/ScreenHeader';
-import ApplicationColors from '../config/appColors';
+import Text from '../common/Text';
+import { getStringSet } from '../localization/stringSet';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
 const MobileContactPreview = () => {
+   const stringSet = getStringSet();
+   const themeColorPalatte = useThemeColorPalatte();
    const { params: { selectedContacts: contactItems } = {} } = useRoute();
    const navigation = useNavigation();
    const [selectedContacts, setSelectedContacts] = React.useState([]);
@@ -72,7 +76,10 @@ const MobileContactPreview = () => {
                      <ContactInfoIcon />
                   </View>
 
-                  <Text style={styles.selectcontactName} numberOfLines={1} ellipsizeMode="tail">
+                  <Text
+                     style={[styles.selectcontactName, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}
+                     numberOfLines={1}
+                     ellipsizeMode="tail">
                      {item.displayName}
                   </Text>
                </View>
@@ -84,20 +91,26 @@ const MobileContactPreview = () => {
                            <PhoneIcon />
                         </View>
                         <View style={styles.NumberContainer}>
-                           <Text style={styles.NumberText}>{num.number}</Text>
-                           <Text style={styles.MobileText}>{num.label}</Text>
+                           <Text
+                              style={[styles.NumberText, commonStyles.textColor(themeColorPalatte.primaryTextColor)]}>
+                              {num.number}
+                           </Text>
+                           <Text
+                              style={[styles.MobileText, commonStyles.textColor(themeColorPalatte.secondaryTextColor)]}>
+                              {num.label}
+                           </Text>
                         </View>
                      </View>
 
                      <CheckBox
-                        onFillColor={ApplicationColors.mainColor}
-                        onCheckColor={ApplicationColors.mainColor}
+                        onFillColor={themeColorPalatte.primaryColor}
+                        onCheckColor={themeColorPalatte.primaryColor}
                         hideBox={true}
                         animationDuration={0.1}
                         onAnimationType={'stroke'}
                         tintColors={{
-                           true: ApplicationColors.mainColor,
-                           false: ApplicationColors.mainColor,
+                           true: themeColorPalatte.primaryColor,
+                           false: themeColorPalatte.primaryColor,
                         }}
                         value={num.isChecked}
                         disabled={num.isChecked && disableUnCheck}
@@ -117,9 +130,13 @@ const MobileContactPreview = () => {
    };
 
    return (
-      <View style={styles.headerContainer}>
+      <View style={[styles.headerContainer, commonStyles.bg_color(themeColorPalatte.screenBgColor)]}>
          <View style={styles.headerSubContainer}>
-            <ScreenHeader title="Send contacts" onhandleBack={handleClose} />
+            <ScreenHeader
+               title={stringSet.CHAT_SCREEN_ATTACHMENTS.CONTACT_PREVIEW_HEADER}
+               onhandleBack={handleClose}
+               isSearchable={false}
+            />
          </View>
          <ScrollView showsVerticalScrollIndicator={true} contentContainerStyle={styles.contactList}>
             {renderSelectedContacts()}
@@ -183,7 +200,6 @@ const styles = StyleSheet.create({
    },
    selectcontactName: {
       fontSize: 14,
-      color: '#000',
       marginLeft: 10,
       marginTop: 8,
       flex: 1,
@@ -192,14 +208,12 @@ const styles = StyleSheet.create({
       marginLeft: 20,
       marginTop: 6,
       fontSize: 11,
-      color: '#181818',
    },
    MobileText: {
       marginLeft: 23,
       marginTop: 3,
       fontSize: 10,
       marginBottom: 10,
-      color: '#737373',
    },
    ArrowIcon: {
       alignItems: 'center',

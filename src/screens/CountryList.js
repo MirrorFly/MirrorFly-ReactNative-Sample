@@ -1,6 +1,7 @@
 import React from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import ScreenHeader from '../common/ScreenHeader';
+import Text from '../common/Text';
 import { countriescodes } from '../common/countries';
 import CountryItems from '../components/CountryItems';
 

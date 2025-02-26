@@ -1,11 +1,13 @@
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { I18nManager, Image, StyleSheet, View } from 'react-native';
 import SendIcon from '../assets/send.png';
 import { getImageSource } from '../helpers/chatHelpers';
+import { useThemeColorPalatte } from '../redux/reduxHook';
 import IconButton from './IconButton';
-import { Chat_FABICON, MenuIcon } from './Icons';
+import { MenuIcon } from './Icons';
 import Pressable from './Pressable';
 
+const isRTL = I18nManager.isRTL;
 const styles = StyleSheet.create({
    primarypilbtn: {
       height: 40,
@@ -27,7 +29,6 @@ const styles = StyleSheet.create({
       right: 16,
    },
    FloatingBtn: {
-      backgroundColor: '#3276E2',
       borderRadius: 50,
       width: 64,
       height: 64,
@@ -41,10 +42,14 @@ const styles = StyleSheet.create({
 });
 
 export const FloatingBtn = props => {
+   const themeColorPalatte = useThemeColorPalatte();
    return (
       <View style={styles.FloatingBtnContainer}>
-         <Pressable activeOpacity={1} style={styles.FloatingBtn} {...props}>
-            <Chat_FABICON />
+         <Pressable
+            activeOpacity={1}
+            style={[styles.FloatingBtn, { backgroundColor: themeColorPalatte.primaryColor }]}
+            {...props}>
+            {props.icon}
          </Pressable>
       </View>
    );
@@ -61,7 +66,10 @@ export const MenuIconBtn = ({ color, onPress }) => {
 export const SendBtn = React.memo(props => {
    return (
       <IconButton {...props}>
-         <Image source={getImageSource(SendIcon)} style={{ width: 24.33, height: 20.32 }} />
+         <Image
+            source={getImageSource(SendIcon)}
+            style={{ width: 24.33, height: 20.32, transform: [{ scaleX: isRTL ? -1 : 1 }] }}
+         />
       </IconButton>
    );
 });

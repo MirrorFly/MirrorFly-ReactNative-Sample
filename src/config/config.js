@@ -2,11 +2,11 @@ const config = {
    attachement: true,
    videoDuaration: 40,
    audioDuaration: 60,
-   fileSize: 50,
-   imageFileSize: 10,
-   videoFileSize: 30,
-   audioFileSize: 30,
-   documentFileSize: 20,
+   fileSize: 2147483648, // bytes
+   imageFileSize: 2147483648, // bytes
+   videoFileSize: 2147483648, // bytes
+   audioFileSize: 2147483648, // bytes
+   documentFileSize: 2147483648, // bytes
    maxAllowedMediaCount: 5,
    maximumAllowedUsersToForward: 5,
    maximumCharForwardPopUp: 60,
@@ -20,6 +20,8 @@ const config = {
    recentChatsPerPage: 20,
    conversationListBottomYaxisLimit: 60,
    deleteForEveryOneTime: 30, // in Seconds
+   editMessageTime: 900000, // in milli seconds
+   audioRecordDuaration: 300, // in seconds
    INVITE_APP_URL: 'https://app.mirrorfly.com',
    INVITE_SMS_CONTENT:
       'Hey, MirrorFly is a real time chat, Audio and Video call solution for B2B and B2C.\n Download the app from this URL: https://app.mirrorfly.com',
@@ -50,6 +52,12 @@ const config = {
    // // ================ growthAXL Environment variables =====================
    // API_URL: 'https://growthaxlprod-api.mirrorfly.com/api/v1', // Paste API BASE URL HERE
    // licenseKey: 'WYXL9kugIbfnKQrvzA4qHOVnpbxmD8',
+   // API_URL: 'https://enterpriseinsta-api.mirrorfly.com',
+   // licenseKey: 'M5hhyMm7o7WiFRumULxlChc6sGFRuU',
+   // API_URL: 'https://growthaxlllc-api.mirrorfly.com/api/v1',
+   // licenseKey: 'o3mN05oAgepcbO0noe3T058WC8jkKN',
+   // API_URL: 'https://api-preprod-sandbox.mirrorfly.com/api/v1',
+   // licenseKey: 'RLIKkMQkbkAIDMucEdDKNMZ05VOB1F',
 };
 
 export default config;

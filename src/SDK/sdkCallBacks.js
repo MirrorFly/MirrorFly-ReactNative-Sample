@@ -677,11 +677,12 @@ export const callBacks = {
             res.archiveSetting = getArchive();
             const userId = getUserIdFromJid(res?.userJid);
             if (res?.editMessageId && getChatMessage(userId, res?.msgId)) {
-               const editObj = res?.msgBody?.caption
+               console.log('res?.msgBody?.caption ==>', JSON.stringify(res?.msgBody, null, 2));
+               const editObj = res?.msgBody?.media?.caption
                   ? {
                        userJid: res?.userJid,
                        msgId: res?.msgId,
-                       caption: res?.msgBody?.caption,
+                       caption: res?.msgBody?.media?.caption,
                        editMessageId: res?.editMessageId,
                     }
                   : {

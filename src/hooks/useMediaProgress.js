@@ -38,8 +38,6 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
 
    const handleDownload = async () => {
       try {
-         console.log('chatMessage ==>', JSON.stringify(chatMessage, null, 2));
-
          const { source = {}, downloadJobId = '' } = getMediaProgress(msgId) || {};
          setMediaStatus(mediaStatusConstants.DOWNLOADING);
          dispatch(

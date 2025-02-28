@@ -1,6 +1,7 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import PagerView from 'react-native-pager-view';
 import IconButton from '../common/IconButton';
 import { BackArrowIcon } from '../common/Icons';
@@ -63,7 +64,7 @@ const PostPreViewPage = () => {
    }, [messageList]);
 
    return (
-      <View style={commonStyles.flex1}>
+      <GestureHandlerRootView style={commonStyles.flex1}>
          <View style={[styles.header, commonStyles.bg_color(themeColorPalatte.appBarColor)]}>
             <IconButton onPress={handleBackBtn}>
                <BackArrowIcon color={themeColorPalatte.iconColor} />
@@ -73,7 +74,7 @@ const PostPreViewPage = () => {
             </Text>
          </View>
          {renderMediaPages}
-      </View>
+      </GestureHandlerRootView>
    );
 };
 

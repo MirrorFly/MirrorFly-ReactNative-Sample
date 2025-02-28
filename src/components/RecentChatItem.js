@@ -61,7 +61,7 @@ const RecentChatItem = React.memo(
                onLongPress={searchText ? null : handleSelectChat(userJid)}>
                <View style={[styles.container, isSelected && commonStyles.pressedBg, styles.avatarContainer]}>
                   <View style={[commonStyles.positionRelative]}>
-                     <RecentChatAvathar type={chatType} userId={userId} data={profileDetails} />
+                     <RecentChatAvathar type={chatType} userId={userId} data={profileDetails} chatUser={userJid} />
                      {unreadCount > 0 && (
                         <View style={[styles.unreadCountWrapper, { backgroundColor: themeColorPalatte.primaryColor }]}>
                            <Text style={[styles.unreadCountText, { color: themeColorPalatte.white }]}>

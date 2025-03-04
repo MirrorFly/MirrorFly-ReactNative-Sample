@@ -382,6 +382,7 @@ function ChatInput({ chatUser }) {
                )}
             </IconButton>
             <TextInput
+               autoFocus={!!editMessageId}
                inputRef={chatInputRef}
                value={message}
                style={[styles.inputTextbox, { color: themeColorPalatte.primaryTextColor }]}

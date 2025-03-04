@@ -171,9 +171,6 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
       dispatch(
          setTextMessage({ userId, message: filtered[0]?.msgBody?.media?.caption || filtered[0]?.msgBody?.message }),
       );
-      setTimeout(() => {
-         chatInputRef?.current?.focus();
-      }, 10);
    };
 
    const hadleBlockUser = () => {

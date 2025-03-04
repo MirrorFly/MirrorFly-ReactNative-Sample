@@ -19,7 +19,12 @@ import {
 } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
 import { resetUnreadCountForChat } from '../redux/recentChatDataSlice';
-import { useAnySelectedChatMessages, useReplyMessage, useThemeColorPalatte } from '../redux/reduxHook';
+import {
+   useAnySelectedChatMessages,
+   useEditMessageId,
+   useReplyMessage,
+   useThemeColorPalatte,
+} from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { RECENTCHATSCREEN } from './constants';
 
@@ -35,6 +40,7 @@ function ConversationScreen({ chatUser = '' }) {
    const navigation = useNavigation();
    const isAnySelected = useAnySelectedChatMessages(userId);
    const replyMessage = useReplyMessage(userId) || {};
+   const editMessageId = useEditMessageId();
 
    React.useEffect(() => {
       SDK.updateRecentChatUnreadCount(currentChatUser);
@@ -82,7 +88,7 @@ function ConversationScreen({ chatUser = '' }) {
 
    const renderConversationList = React.useMemo(() => <ConversationList chatUser={jid} />, [jid]);
 
-   const renderChatInput = React.useMemo(() => <ChatInput chatUser={jid} />, []);
+   const renderChatInput = React.useMemo(() => (editMessageId ? null : <ChatInput chatUser={jid} />), [editMessageId]);
 
    const renderReplyContainer = React.useMemo(
       () => (
@@ -104,7 +110,7 @@ function ConversationScreen({ chatUser = '' }) {
             {renderConversationList}
          </ImageBackground>
          {renderReplyContainer}
-         <EditMessage />
+         <EditMessage jid={jid} />
          {renderChatInput}
       </KeyboardAvoidingView>
    );

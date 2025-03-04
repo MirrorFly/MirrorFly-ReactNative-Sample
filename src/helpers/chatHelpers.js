@@ -1263,6 +1263,7 @@ export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
             is_downloaded: 2,
          },
       },
+      editMessageId: '',
    };
 };
 
@@ -1299,6 +1300,7 @@ export const getRecentChatMsgObjForward = (originalMsg, toJid, newMsgId) => {
             caption: '',
          },
       },
+      editMessageId: '',
    };
 };
 

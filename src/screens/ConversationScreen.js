@@ -59,7 +59,11 @@ function ConversationScreen({ chatUser = '' }) {
 
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
-      return () => backHandler.remove();
+      return () => {
+         setCurrentChatUser('');
+         SDK.activeChatUser('');
+         backHandler.remove();
+      };
    }, [isAnySelected]);
 
    const handleBackBtn = () => {
@@ -69,12 +73,12 @@ function ConversationScreen({ chatUser = '' }) {
             break;
          case navigation.canGoBack():
             setCurrentChatUser('');
-            SDK.activeChatUser(currentChatUser);
+            SDK.activeChatUser('');
             navigation.goBack();
             break;
          default:
             setCurrentChatUser('');
-            SDK.activeChatUser(currentChatUser);
+            SDK.activeChatUser('');
             navigation.reset({
                index: 0,
                routes: [{ name: RECENTCHATSCREEN }],

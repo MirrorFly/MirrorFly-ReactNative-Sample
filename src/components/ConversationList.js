@@ -156,12 +156,6 @@ const ConversationList = ({ chatUser }) => {
             disableVirtualization={true}
             scrollEventThrottle={16}
             windowSize={5}
-            onMomentumScrollEnd={() => {
-               setTimeout(() => {
-                  store.dispatch(highlightMessage({ userId, msgId: getReplyScrollmsgId(), shouldHighlight: 0 }));
-                  setReplyScrollmsgId(null);
-               }, 1000);
-            }}
             onEndReached={handleLoadMore}
             onEndReachedThreshold={0.5}
             onScroll={handleScroll}

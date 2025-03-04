@@ -46,7 +46,6 @@ import { conversationFlatListRef } from '../components/ConversationList';
 import config from '../config/config';
 import {
    ALLOWED_AUDIO_FORMATS,
-   AUDIO_FORMATS,
    CHAT_TYPE_GROUP,
    CHAT_TYPE_SINGLE,
    DOCUMENT_FILE_EXT,
@@ -83,6 +82,7 @@ import {
    toggleIsChatSearching,
    updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
+import { setTextMessage } from '../redux/draftSlice';
 import {
    clearRecentChatData,
    deleteMessagesForEveryoneInRecentChat,
@@ -100,6 +100,7 @@ import {
 } from '../redux/reduxHook';
 import { updateBlockUser } from '../redux/rosterDataSlice';
 import store from '../redux/store';
+import { showToastMessage } from '../redux/toastMessageSlice';
 import {
    BLOCKED_CONTACT_LIST_STACK,
    CAMERA_SCREEN,
@@ -112,7 +113,6 @@ import {
    PROFILE_STACK,
 } from '../screens/constants';
 import { getCurrentUserJid, mflog } from '../uikitMethods';
-import { showToastMessage } from '../redux/toastMessageSlice';
 
 const { fileSize, imageFileSize, videoFileSize, audioFileSize, documentFileSize } = config;
 
@@ -1416,6 +1416,7 @@ export const handleUpdateBlockUser = (userId, isBlocked, chatUser) => async () =
          const res = await SDK.blockUser(chatUser);
          if (res.statusCode === 200) {
             cancelAudioRecord();
+            store.dispatch(setTextMessage({ userId, message: '' }));
             showToast(`You have blocked ${getUserNameFromStore(userId)}`);
          }
       } else {

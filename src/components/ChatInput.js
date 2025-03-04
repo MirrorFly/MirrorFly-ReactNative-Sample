@@ -287,34 +287,22 @@ function ChatInput({ chatUser }) {
 
    const onStopRecord = async () => {
       try {
-         clearTimeout(recordTimeoutRef.current); // Clear previous timeout if exists
+         const result = await audioRecorderPlayer.stopRecorder();
+         isAudioClicked = false;
+         panRef.setValue({ x: 0.1, y: 0 });
+         removeListener();
+         dispatch(setAudioRecording({ userId, message: audioRecord.STOPPED }));
 
-         recordTimeoutRef.current = setTimeout(async () => {
-            if (!getAudioRecording(userId)) {
-               return;
-            }
-
-            const result = await audioRecorderPlayer.stopRecorder();
-            isAudioClicked = false;
-            panRef.setValue({ x: 0.1, y: 0 });
-            removeListener();
-            dispatch(setAudioRecording({ userId, message: audioRecord.STOPPED }));
-
-            if (uriPattern.test(result)) {
-               const fileStats = await RNFS.stat(result);
-               fileInfo[userId] = {
-                  ...mediaObjContructor('AUDIO_RECORD', {
-                     ...fileStats,
-                     fileCopyUri: result,
-                     duration: getAudioRecordTime(userId),
-                     name: fileName[userId],
-                     audioType: 'recording',
-                     type: 'audio/m4a',
-                  }),
-               };
-               console.log('fileInfo[userId] ==>', JSON.stringify(fileInfo[userId], null, 2));
-            }
-         }, 500); // 500ms debounce
+         if (uriPattern.test(result)) {
+            fileInfo[userId] = await RNFS.stat(result);
+            fileInfo[userId].fileCopyUri = result;
+            fileInfo[userId].duration = getAudioRecordTime(userId);
+            fileInfo[userId].name = fileName[userId];
+            fileInfo[userId] = mediaObjContructor('AUDIO_RECORD', fileInfo[userId]);
+            fileInfo[userId].audioType = 'recording';
+            fileInfo[userId].type = 'audio/m4a';
+            console.log('fileInfo[userId] ==>', JSON.stringify(fileInfo[userId], null, 2));
+         }
       } catch (error) {
          console.log('Failed to stop audio recording:', error);
       }

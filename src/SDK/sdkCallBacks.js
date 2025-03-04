@@ -677,18 +677,20 @@ export const callBacks = {
             res.archiveSetting = getArchive();
             const userId = getUserIdFromJid(res?.userJid);
             if (res?.editMessageId && getChatMessage(userId, res?.msgId)) {
-               const editObj = res?.msgBody?.caption
+               const editObj = res?.msgBody?.media?.caption
                   ? {
                        userJid: res?.userJid,
                        msgId: res?.msgId,
-                       caption: res?.msgBody?.caption,
+                       caption: res?.msgBody?.media?.caption,
                        editMessageId: res?.editMessageId,
+                       msgStatus: res?.msgStatus,
                     }
                   : {
                        userJid: res?.userJid,
                        msgId: res?.msgId,
                        message: res?.msgBody?.message,
                        editMessageId: res?.editMessageId,
+                       msgStatus: res?.msgStatus,
                     };
 
                store.dispatch(editChatMessageItem(editObj));

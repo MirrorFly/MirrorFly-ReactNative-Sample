@@ -55,13 +55,15 @@ function ConversationScreen({ chatUser = '' }) {
 
    React.useEffect(() => {
       setJid(currentChatUser);
+      return () => {
+         setCurrentChatUser('');
+         SDK.activeChatUser('');
+      };
    }, [_jid, chatUser]);
 
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
       return () => {
-         setCurrentChatUser('');
-         SDK.activeChatUser('');
          backHandler.remove();
       };
    }, [isAnySelected]);

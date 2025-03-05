@@ -6,20 +6,11 @@ import { DoubleDownArrow } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import ApplicationColors from '../config/appColors';
 import config from '../config/config';
-import {
-   calculateOffset,
-   getReplyScrollmsgId,
-   getUserIdFromJid,
-   handleConversationScollToBottom,
-   setReplyScrollmsgId,
-} from '../helpers/chatHelpers';
+import { calculateOffset, getUserIdFromJid, handleConversationScollToBottom } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, NOTIFICATION } from '../helpers/constants';
 import { useChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
 import { getCurrentUserJid } from '../uikitMethods';
 import ChatMessage from './ChatMessage';
-import store from '../redux/store';
-import { highlightMessage } from '../redux/chatMessageDataSlice';
-import { getMergedMediaMessages } from '../hooks/useMediaMessaegs';
 
 export const conversationFlatListRef = createRef();
 conversationFlatListRef.current = {};

@@ -601,3 +601,18 @@ export const updateTypingGoneStatus = jid => {
       typingStatusSent = false;
    }
 };
+
+export const mediaCompress = async ({ uri, type, quality }) => {
+   try {
+      const compressMedia = {
+         ['image']: SDK.compressImage,
+         ['video']: SDK.compressVideo,
+      }[type];
+      console.log('compressMedia ==> ', compressMedia);
+      if (compressMedia) {
+         return compressMedia({ uri, quality });
+      }
+   } catch (error) {
+      mflog('Failed to compress video', error);
+   }
+};

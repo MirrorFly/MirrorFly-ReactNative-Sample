@@ -9,6 +9,7 @@ import { useThemeColorPalatte } from '../redux/reduxHook';
 import { VIDEO_PLAYER_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
 import { mflog } from '../uikitMethods';
+import FileViewer from 'react-native-file-viewer';
 
 const VideoInfo = props => {
    const navigation = useNavigation();
@@ -54,7 +55,16 @@ const VideoInfo = props => {
    }, []);
 
    const handleVideoPlayButton = () => {
-      navigation.navigate(VIDEO_PLAYER_SCREEN, { item, audioOnly, audioType });
+      FileViewer.open(item?.fileDetails?.uri, {
+         showOpenWithDialog: true,
+      })
+         .then(res => {
+            console.log('Document opened externally', res);
+         })
+         .catch(err => {
+            console.log('Error while opening Document', err);
+         });
+      // navigation.navigate(VIDEO_PLAYER_SCREEN, { item, audioOnly, audioType });
    };
 
    return (

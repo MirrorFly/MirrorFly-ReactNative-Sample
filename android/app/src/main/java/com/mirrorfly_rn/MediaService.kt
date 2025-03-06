@@ -1,7 +1,15 @@
 package com.mirrorfly_rn
 
+import android.database.Cursor
+import android.media.MediaCodec
+import android.media.MediaCodecInfo
+import android.media.MediaExtractor
+import android.media.MediaFormat
+import android.media.MediaMuxer
+import android.net.Uri
 import android.os.Environment
 import android.os.StatFs
+import android.provider.MediaStore
 import android.util.Log
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JavaOnlyArray
@@ -12,6 +20,7 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,8 +35,11 @@ import retrofit2.Response
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.IOException
+import java.util.UUID
 import javax.crypto.Cipher
 import kotlin.math.roundToInt
+
 
 class MediaService(var reactContext: ReactApplicationContext?) :
     ReactContextBaseJavaModule(reactContext) {
@@ -844,6 +856,207 @@ class MediaService(var reactContext: ReactApplicationContext?) :
         }
     }
 
+    private fun cleanVideoPath(videoPath: String?): String? {
+        if (videoPath == null || videoPath.isEmpty()) {
+            return null // Handle invalid input
+        }
+
+        val uri = Uri.parse(videoPath)
+
+        return if (videoPath.startsWith("file://")) {
+            videoPath.replace("file://", "") // Remove file:// prefix
+        } else if (videoPath.startsWith("content://")) {
+            getRealPathFromURI(uri) // Convert content:// URI to actual file path
+        } else {
+            videoPath // Already a valid file path
+        }
+    }
+
+    private fun getRealPathFromURI(contentUri: Uri): String? {
+        var cursor: Cursor? = null
+        try {
+            val proj = arrayOf(MediaStore.Video.Media.DATA)
+            cursor =
+                reactApplicationContext.contentResolver.query(contentUri, proj, null, null, null)
+            if (cursor != null && cursor.moveToFirst()) {
+                val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
+                return cursor.getString(columnIndex)
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        } finally {
+            cursor?.close()
+        }
+        return null // Return null if conversion fails
+    }
+
+    @ReactMethod
+    fun compressVideoFile(obj: ReadableMap, promise: Promise) {
+        try {
+            val videoPath = if (obj.hasKey("videoPath")) obj.getString("videoPath") else ""
+            val quality = if (obj.hasKey("quality")) obj.getString("quality") else "medium"
+
+
+
+
+            if (videoPath!!.isEmpty()) {
+                promise.reject("INVALID_INPUT", "Video path is required")
+                return
+            }
+
+            val formattedPath = cleanVideoPath(videoPath)
+            if (formattedPath == null) {
+                promise.reject("INVALID_PATH", "Could not resolve valid file path")
+                return
+            }
+
+            val targetBitrate = when (quality) {
+                "best" -> 5000000 // 5 Mbps
+                "high" -> 3000000 // 3 Mbps
+                "medium" -> 2000000 // 2 Mbps
+                "low" -> 1000000 // 1 Mbps
+                "uncompressed" -> 8000000 // 8 Mbps
+                else -> 2000000 // Default medium quality
+            }
+
+            val outputDir = reactApplicationContext.cacheDir
+            val fileName = "compressed_" + UUID.randomUUID().toString() + ".mp4"
+            val outputFile = File(outputDir, fileName)
+            val outputPath = outputFile.absolutePath
+
+            compressVideo(formattedPath, outputPath, targetBitrate)
+
+            val compressedFile = File(outputPath)
+            val fileSize = compressedFile.length()
+            val extractor = MediaExtractor()
+            extractor.setDataSource(outputPath)
+            val duration = extractor.getTrackFormat(0).getLong(MediaFormat.KEY_DURATION) / 1000000
+
+            val result: WritableMap = WritableNativeMap()
+            result.putBoolean("success", true)
+            result.putString("extension", "mp4")
+            result.putString("outputPath", "file://$outputPath")
+            result.putString("fileName", fileName)
+            result.putDouble("fileSize", fileSize.toDouble())
+            result.putDouble("duration", duration.toDouble())
+
+            promise.resolve(result)
+        } catch (e: java.lang.Exception) {
+            promise.reject("COMPRESSION_FAILED", "Compression failed: " + e.message, e)
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun compressVideo(inputPath: String, outputPath: String, targetBitrate: Int) {
+        val extractor = MediaExtractor()
+        extractor.setDataSource(inputPath)
+
+        val videoTrackIndex: Int = selectTrack(extractor, "video/")
+        if (videoTrackIndex < 0) throw IOException("No video track found")
+
+        extractor.selectTrack(videoTrackIndex)
+        val inputFormat = extractor.getTrackFormat(videoTrackIndex)
+        val width = inputFormat.getInteger(MediaFormat.KEY_WIDTH)
+        val height = inputFormat.getInteger(MediaFormat.KEY_HEIGHT)
+        val frameRate =
+            if (inputFormat.containsKey(MediaFormat.KEY_FRAME_RATE)) inputFormat.getInteger(
+                MediaFormat.KEY_FRAME_RATE
+            ) else 30
+        val iFrameInterval = 2
+
+        // Setup Encoder
+        val encoder = MediaCodec.createEncoderByType("video/avc")
+        val outputFormat = MediaFormat.createVideoFormat("video/avc", width, height)
+        outputFormat.setInteger(MediaFormat.KEY_BIT_RATE, targetBitrate)
+        outputFormat.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate)
+        outputFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, iFrameInterval)
+        outputFormat.setInteger(
+            MediaFormat.KEY_COLOR_FORMAT,
+            MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
+        )
+
+        encoder.configure(outputFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
+        encoder.start()
+
+        // Muxer for output video
+        val muxer = MediaMuxer(outputPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4)
+        compressFrames(extractor, encoder, muxer, videoTrackIndex)
+
+        extractor.release()
+        encoder.stop()
+        encoder.release()
+        muxer.stop()
+        muxer.release()
+    }
+
+    private fun selectTrack(extractor: MediaExtractor, mimePrefix: String): Int {
+        val numTracks = extractor.trackCount
+        for (i in 0 until numTracks) {
+            val format = extractor.getTrackFormat(i)
+            val mime = format.getString(MediaFormat.KEY_MIME)
+            if (mime!!.startsWith(mimePrefix)) return i
+        }
+        return -1
+    }
+
+    @Throws(IOException::class)
+    private fun compressFrames(
+        extractor: MediaExtractor,
+        encoder: MediaCodec,
+        muxer: MediaMuxer,
+        videoTrackIndex: Int
+    ) {
+        var videoTrackIndex = videoTrackIndex
+        val inputBuffers = encoder.inputBuffers
+        val bufferInfo = MediaCodec.BufferInfo()
+
+        var inputDone = false
+        var outputDone = false
+
+        while (!outputDone) {
+            if (!inputDone) {
+                val inputBufferIndex = encoder.dequeueInputBuffer(10000)
+                if (inputBufferIndex >= 0) {
+                    val inputBuffer = inputBuffers[inputBufferIndex]
+                    val sampleSize = extractor.readSampleData(inputBuffer, 0)
+
+                    if (sampleSize < 0) {
+                        encoder.queueInputBuffer(
+                            inputBufferIndex,
+                            0,
+                            0,
+                            0,
+                            MediaCodec.BUFFER_FLAG_END_OF_STREAM
+                        )
+                        inputDone = true
+                    } else {
+                        encoder.queueInputBuffer(
+                            inputBufferIndex,
+                            0,
+                            sampleSize,
+                            extractor.sampleTime,
+                            extractor.sampleFlags
+                        )
+                        extractor.advance()
+                    }
+                }
+            }
+
+            val outputBufferIndex = encoder.dequeueOutputBuffer(bufferInfo, 10000)
+            if (outputBufferIndex >= 0) {
+                val outputBuffer = encoder.getOutputBuffer(outputBufferIndex)
+                muxer.writeSampleData(videoTrackIndex, outputBuffer!!, bufferInfo)
+                encoder.releaseOutputBuffer(outputBufferIndex, false)
+            } else if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                val newFormat = encoder.outputFormat
+                videoTrackIndex = muxer.addTrack(newFormat)
+                muxer.start()
+            } else if (outputBufferIndex == MediaCodec.INFO_TRY_AGAIN_LATER) {
+                outputDone = inputDone
+            }
+        }
+    }
+
     @ReactMethod
     fun addListener(eventName: String?) {
         // Keep: Required for RN built in Event Emitter Calls.
@@ -862,5 +1075,11 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                 .emit(eventName, params)
         }
     }
+
+
+
+
+
+
 }
 

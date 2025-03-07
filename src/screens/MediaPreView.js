@@ -59,20 +59,21 @@ function MediaPreView() {
       if (componentSelectedImages.length === 0) {
          return;
       }
-
       setLoading(true); // Show loader before processing
 
       const compressTasks = componentSelectedImages.map(element => {
-         console.log('element.fileDetails.fileSize', convertBytesToKB(element.fileDetails.fileSize));
+         const type = element.fileDetails.type.includes('/')
+            ? element.fileDetails.type.split('/')[0]
+            : element.fileDetails.type.includes('/');
          return mediaCompress({
             uri: element.fileDetails.uri,
-            type: element.fileDetails.type,
-            quality: 'medium',
+            type,
+            quality: 'best',
          }).then(response => {
-            console.log('response', response);
             console.log(
                'response.message.fileSize ==> ',
-               convertBytesToKB(response.message.fileSize),
+               `original ---- ${convertBytesToKB(element.fileDetails.fileSize)} /`,
+               `compressed --- ${convertBytesToKB(response.message.fileSize)}`,
                element.fileDetails.fileSize - response.message.fileSize,
                response.message.fileSize < element.fileDetails.fileSize,
             );

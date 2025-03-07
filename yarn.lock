@@ -6424,10 +6424,10 @@ minimist@^1.2.0, minimist@^1.2.3, minimist@^1.2.6:
   resolved "https://registry.npmjs.org/minimist/-/minimist-1.2.8.tgz"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
 
-mirrorfly-reactnative-sdk@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/mirrorfly-reactnative-sdk/-/mirrorfly-reactnative-sdk-1.1.0.tgz"
-  integrity sha512-5pWBY4IF6YxYskXjP7oTA3jEttlIJBxkP96CZxjFq5InLblnUD8P911ImKO8m3xyYRI8WOAZatpLLtjKY29jRQ==
+mirrorfly-reactnative-sdk@^1.0.21:
+  version "1.0.21"
+  resolved "https://registry.npmjs.org/mirrorfly-reactnative-sdk/-/mirrorfly-reactnative-sdk-1.0.21.tgz"
+  integrity sha512-omgXm+gIm3Kp2zKUtCTAHSY6n+19fCb8qr/tywYysqGcjE/KZSM+YXnu4aIEEl5HVDOUlvgmzvTXQzUCIaOSrg==
   optionalDependencies:
     fsevents "^2.2.1"
 

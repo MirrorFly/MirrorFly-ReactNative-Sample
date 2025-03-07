@@ -280,7 +280,7 @@ const GalleryPhotos = () => {
    return (
       <View style={[commonStyles.bg_color(themeColorPalatte.screenBgColor), commonStyles.flex1]}>
          {renderTitle}
-         <View style={[commonStyles.mb_130]}>
+         <View style={[{ marginBottom: 65 }]}>
             <FlatList
                numColumns={3}
                data={memoizedData}

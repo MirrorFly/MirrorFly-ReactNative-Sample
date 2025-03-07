@@ -1483,6 +1483,8 @@ export const resetConversationScreen = userId => {
    store.dispatch(toggleEditMessage(''));
    store.dispatch(setChatSearchText(''));
    store.dispatch(toggleIsChatSearching(false));
+   setCurrentChatUser('');
+   SDK.activeChatUser('');
 };
 
 // Dispatch loading state helper

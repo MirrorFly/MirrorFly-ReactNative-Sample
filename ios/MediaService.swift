@@ -913,7 +913,10 @@ class MediaService: RCTEventEmitter {
       
       guard let imageData = try? Data(contentsOf: fileURL),
             let uiImage = UIImage(data: imageData) else {
-        rejecter("INVALID_IMAGE", "Could not load image data", nil)
+        resolver([
+          "success": false,
+          "message": "Could not load image data"
+        ])
         return
       }
       

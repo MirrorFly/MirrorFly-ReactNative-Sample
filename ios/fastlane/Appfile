@@ -1,5 +1,5 @@
-app_identifier("com.mirrorfly.qa") # The bundle identifier of your app
-apple_id("bala.m@contus.in") # Your Apple Developer Portal username
+app_identifier("com.mirrorfly.reactnativeuikit.qa") # The bundle identifier of your app
+apple_id("managers@contus.in") # Your Apple Developer Portal username
 
 
 # For more information about the Appfile, see:

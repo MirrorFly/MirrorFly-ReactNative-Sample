@@ -1,6 +1,6 @@
 {
    "name": "mirrorfly-uikit-react-native",
-   "version": "1.4.8",
+   "version": "1.5.0",
    "description": "React-Native based UI kit for Mirrorfly",
    "main": "dist/index.js",
    "module": "dist/index.js",
@@ -67,7 +67,7 @@
       "jest": "^29.6.3",
       "lodash-es": "^4.17.21",
       "luxon": "^3.5.0",
-      "mirrorfly-reactnative-sdk": "^1.0.17",
+      "mirrorfly-reactnative-sdk": "^1.1.0",
       "moment": "^2.30.1",
       "patch-package": "^8.0.0",
       "prettier": "2.8.8",

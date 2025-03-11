@@ -2081,17 +2081,24 @@
   resolved "https://registry.npmjs.org/@react-native-community/netinfo/-/netinfo-11.4.1.tgz"
   integrity sha512-B0BYAkghz3Q2V09BF88RA601XursIEA111tnc2JOaN7axJWmNefmfjZqw/KdSxKZp7CZUuPpjBmz/WCR9uaHYg==
 
-"@react-native-firebase/app@^21.6.0", "@react-native-firebase/app@21.7.1":
-  version "21.7.1"
-  resolved "https://registry.npmjs.org/@react-native-firebase/app/-/app-21.7.1.tgz"
-  integrity sha512-sBXKJE+Uu2+G8SBQzUXMEIyWK932GqxfKsCAVOfzEegxknQuQ8l6qx/tIbMeEFuBJlo334GNctMa4ehePog5lQ==
+"@react-native-firebase/app@~21.6.2", "@react-native-firebase/app@21.6.2":
+  version "21.6.2"
+  resolved "https://registry.npmjs.org/@react-native-firebase/app/-/app-21.6.2.tgz"
+  integrity sha512-yNEzADATa565Nfp1EoWdUgxUw9myCk+u0dblTOu0WQcWddBxug7zEhdvol0k2vkRlEuyLb0biTt7oUy72kKJpw==
   dependencies:
     firebase "10.13.2"
 
-"@react-native-firebase/messaging@^21.6.0":
-  version "21.7.1"
-  resolved "https://registry.npmjs.org/@react-native-firebase/messaging/-/messaging-21.7.1.tgz"
-  integrity sha512-asLoTH/IZROTR/y82UpMqWGFly5TJf9Zvy+EqvgWMKhRWnAPxjC+UFHQeGwut95kg0zBj49H9F6yJ2gjdatOHg==
+"@react-native-firebase/crashlytics@~21.6.2":
+  version "21.6.2"
+  resolved "https://registry.npmjs.org/@react-native-firebase/crashlytics/-/crashlytics-21.6.2.tgz"
+  integrity sha512-L3WyVrk//WsOmxQQVjZ6MNBmv7o9x90K36GNCKa1uLsHcPIOKbyTzCBKjIQdNofpdBYWWj8AZD9HBwwohh2+ow==
+  dependencies:
+    stacktrace-js "^2.0.2"
+
+"@react-native-firebase/messaging@~21.6.2":
+  version "21.6.2"
+  resolved "https://registry.npmjs.org/@react-native-firebase/messaging/-/messaging-21.6.2.tgz"
+  integrity sha512-iFVGDyyfv9029eF/HWbGLAupevhenNB8M5EGcOqRSwc7ED+eswtHUbUBcnUlojmkeMsDUk9Qe+cH8LwTifAgiA==
 
 "@react-native/assets-registry@0.75.4":
   version "0.75.4"
@@ -8139,6 +8146,11 @@ source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.1:
   resolved "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
 
+source-map@0.5.6:
+  version "0.5.6"
+  resolved "https://registry.npmjs.org/source-map/-/source-map-0.5.6.tgz"
+  integrity sha512-MjZkVp0NHr5+TPihLcadqnlVoGIoWo4IBHptutGh9wI3ttUYvCG26HkSuDi+K6lsZ25syXJXcctwgyVCt//xqA==
+
 sourcemap-codec@^1.4.8:
   version "1.4.8"
   resolved "https://registry.npmjs.org/sourcemap-codec/-/sourcemap-codec-1.4.8.tgz"
@@ -8154,6 +8166,13 @@ sprintf-js@~1.0.2:
   resolved "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz"
   integrity sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==
 
+stack-generator@^2.0.5:
+  version "2.0.10"
+  resolved "https://registry.npmjs.org/stack-generator/-/stack-generator-2.0.10.tgz"
+  integrity sha512-mwnua/hkqM6pF4k8SnmZ2zfETsRUpWXREfA/goT8SLCV4iOFa4bzOX2nDipWAZFPTjLvQB82f5yaodMVhK0yJQ==
+  dependencies:
+    stackframe "^1.3.4"
+
 stack-utils@^2.0.3:
   version "2.0.6"
   resolved "https://registry.npmjs.org/stack-utils/-/stack-utils-2.0.6.tgz"
@@ -8165,6 +8184,23 @@ stackframe@^1.3.4:
   version "1.3.4"
   resolved "https://registry.npmjs.org/stackframe/-/stackframe-1.3.4.tgz"
   integrity sha512-oeVtt7eWQS+Na6F//S4kJ2K2VbRlS9D43mAlMyVpVWovy9o+jfgH8O9agzANzaiLjclA0oYzUXEM4PurhSUChw==
+
+stacktrace-gps@^3.0.4:
+  version "3.1.2"
+  resolved "https://registry.npmjs.org/stacktrace-gps/-/stacktrace-gps-3.1.2.tgz"
+  integrity sha512-GcUgbO4Jsqqg6RxfyTHFiPxdPqF+3LFmQhm7MgCuYQOYuWyqxo5pwRPz5d/u6/WYJdEnWfK4r+jGbyD8TSggXQ==
+  dependencies:
+    source-map "0.5.6"
+    stackframe "^1.3.4"
+
+stacktrace-js@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/stacktrace-js/-/stacktrace-js-2.0.2.tgz"
+  integrity sha512-Je5vBeY4S1r/RnLydLl0TBTi3F2qdfWmYsGvtfZgEI+SCprPppaIhQf5nGcal4gI4cGpCV/duLcAzT1np6sQqg==
+  dependencies:
+    error-stack-parser "^2.0.6"
+    stack-generator "^2.0.5"
+    stacktrace-gps "^3.0.4"
 
 stacktrace-parser@^0.1.10:
   version "0.1.10"

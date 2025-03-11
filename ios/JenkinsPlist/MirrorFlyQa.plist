@@ -5,7 +5,7 @@
 	<key>iCloudContainerEnvironment</key>
 	<string>Production</string>
 	<key>method</key>
-	<string>enterprise</string>
+	<string>ad-hoc</string>
 	<key>uploadBitcode</key>
 	<false/>
 	<key>compileBitcode</key>
@@ -15,13 +15,13 @@
 	<key>signingStyle</key>
 	<string>manual</string>
 	<key>signingCertificate</key>
-	<string>iPhone Distribution: CONTUS SUPPORT INTERACTIVE PRIVATE LIMITED</string>
+	<string>iPhone Distribution: Contus Support Interactive</string>
 	<key>provisioningProfiles</key>
 	<dict>
-		<key>com.mirrorfly.qa</key>
-		<string>Mirror Fly Qa Inhouse Profile</string>
-		<key>com.mirrorfly.qa.notificationextention</key>
-		<string>MirrorFly Qa Notification In house Profile</string>
+		<key>com.mirrorfly.reactnativeuikit.qa</key>
+		<string>ReactNative Adhoc</string>
+		<key>com.mirrorfly.reactnativeuikit.qa.notificationextention</key>
+		<string>ReactNative Extension Adhoc</string>
 	</dict>
 </dict>
 </plist>

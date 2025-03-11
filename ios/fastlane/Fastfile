@@ -23,11 +23,10 @@ lane :qa_firebase do
 	build_app(scheme: "mirrorfly_rn",
 	    workspace: "mirrorfly_rn.xcworkspace",
 	    export_options: "JenkinsPlist/MirrorFlyQa.plist",
- 	    export_method: "enterprise"
-
+ 	    export_method: "ad-hoc"
 	)
 	firebase_app_distribution(
-		app: "1:695832127329:ios:f8b6b0fab296a800",
+		app: "1:235373697524:ios:0e9bd66b524978a0a0c1a1",
 		groups: "reactnative",
 		release_notes: "React-Native ios build for MRN-907",
 		firebase_cli_path: "/usr/local/bin/firebase",

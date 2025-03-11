@@ -323,8 +323,8 @@ export const handleSendMsg = async (obj = {}) => {
          const { msgBody: { media: { caption = '' } = {} } = {} } = getChatMessage(userId, originalMsgId);
          const editMessageId = SDK.randomString(8, 'BA');
          const editObj = caption
-            ? { userJid: chatUser, msgId: originalMsgId, caption: message, editMessageId }
-            : { userJid: chatUser, msgId: originalMsgId, message, editMessageId };
+            ? { userJid: chatUser, msgId: originalMsgId, caption: message, editMessageId, msgStatus: 3 }
+            : { userJid: chatUser, msgId: originalMsgId, message, editMessageId, msgStatus: 3 };
 
          store.dispatch(editChatMessageItem(editObj));
          store.dispatch(editRecentChatItem(editObj));
@@ -599,5 +599,20 @@ export const updateTypingGoneStatus = jid => {
    if (typingStatusSent) {
       SDK.sendTypingGoneStatus(jid);
       typingStatusSent = false;
+   }
+};
+
+export const mediaCompress = async ({ uri, type, quality }) => {
+   try {
+      const compressMedia = {
+         ['image']: SDK.compressImage,
+         ['video']: SDK.compressVideo,
+      }[type];
+      console.log('compressMedia ==> ', compressMedia);
+      if (compressMedia) {
+         return compressMedia({ uri, quality });
+      }
+   } catch (error) {
+      mflog('Failed to compress video', error);
    }
 };

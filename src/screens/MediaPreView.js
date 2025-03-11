@@ -14,11 +14,13 @@ import {
 import PagerView from 'react-native-pager-view';
 import IconButton from '../common/IconButton';
 import { DeleteBinIcon, LeftArrowIcon, PreViewAddIcon, RightArrowIcon, SendBlueIcon } from '../common/Icons';
+import LoadingModal from '../common/LoadingModal';
 import NickName from '../common/NickName';
 import TextInput from '../common/TextInput';
 import VideoInfo from '../common/VideoInfo';
 import UserAvathar from '../components/UserAvathar';
 import {
+   convertBytesToKB,
    getCurrentChatUser,
    getThumbBase64URL,
    getType,
@@ -28,8 +30,10 @@ import {
 import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../helpers/constants';
 import { getStringSet } from '../localization/stringSet';
 import { useThemeColorPalatte } from '../redux/reduxHook';
+import { mediaCompress } from '../SDK/utils';
 import commonStyles from '../styles/commonStyles';
 import { CAMERA_SCREEN, GALLERY_PHOTOS_SCREEN } from './constants';
+import { mflog } from '../uikitMethods';
 
 function MediaPreView() {
    const chatUser = getCurrentChatUser();
@@ -41,6 +45,7 @@ function MediaPreView() {
    const pagerRef = React.useRef(null);
    const scrollRef = React.useRef();
    const [activeIndex, setActiveIndex] = React.useState(0);
+   const [loading, setLoading] = React.useState(false);
    const chatType = MIX_BARE_JID.test(chatUser) ? CHAT_TYPE_GROUP : '';
    const [componentSelectedImages, setComponentSelectedImages] = React.useState(selectedImages);
 
@@ -50,6 +55,51 @@ function MediaPreView() {
          backHandler.remove();
       };
    }, []);
+
+   React.useEffect(() => {
+      if (componentSelectedImages.length === 0) {
+         return;
+      }
+      setLoading(true); // Show loader before processing
+
+      const compressTasks = componentSelectedImages.map(element => {
+         const type = element.fileDetails.type.includes('/')
+            ? element.fileDetails.type.split('/')[0]
+            : element.fileDetails.type;
+         return mediaCompress({
+            uri: element.fileDetails.uri,
+            type,
+            quality: 'medium',
+         }).then(response => {
+            mflog(
+               'response.message.fileSize ==> ',
+               `original ---- ${convertBytesToKB(element.fileDetails.fileSize)} ${element.fileDetails.uri}/`,
+               `compressed --- ${convertBytesToKB(response.message.fileSize)} ${response.message.outputPath}`,
+               element.fileDetails.fileSize - response.message.fileSize,
+               response.message.fileSize < element.fileDetails.fileSize,
+            );
+            return {
+               ...element, // Keep other details
+               fileDetails: {
+                  ...element.fileDetails,
+                  uri: response.message.outputPath, // Overwrite URI with compressed file path
+                  fileSize: response.message.fileSize, // Update file size
+               },
+            };
+         });
+      });
+
+      Promise.all(compressTasks)
+         .then(updatedMedia => {
+            setComponentSelectedImages(updatedMedia); // Update state with compressed URIs
+         })
+         .catch(error => {
+            console.log('Compression error ==> ', error);
+         })
+         .finally(() => {
+            setLoading(false); // Close loader once all are done
+         });
+   }, [selectedImages]);
 
    const handleIndexChange = i => {
       pagerRef.current.setPage(i);
@@ -214,6 +264,7 @@ function MediaPreView() {
             onClose={toggleEmojiPicker}
             onSelect={handleEmojiSelect}
          /> */}
+         <LoadingModal message={'Compressing'} visible={loading} />
       </KeyboardAvoidingView>
    );
 }

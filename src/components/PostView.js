@@ -1,8 +1,8 @@
 import React from 'react';
 import { View } from 'react-native';
 import VideoInfo from '../common/VideoInfo';
+import ZoomableImage from '../common/ZoomableImage';
 import commonStyles from '../styles/commonStyles';
-import ImageInfo from './ImageInfo';
 
 function PostView({ item }) {
    const { msgId } = item;
@@ -13,7 +13,11 @@ function PostView({ item }) {
       <View style={[commonStyles.flex1]} key={msgId}>
          {
             {
-               image: <ImageInfo selectedMedia={item.msgBody} />,
+               image: (
+                  <ZoomableImage
+                     image={item.msgBody?.media?.local_path || item.msgBody?.media?.file?.fileDetails?.uri}
+                  />
+               ),
                audio: <VideoInfo audioOnly={true} selectedMedia={item.msgBody} />,
                video: <VideoInfo selectedMedia={item.msgBody} />,
             }[message_type]

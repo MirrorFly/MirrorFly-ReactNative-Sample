@@ -29,7 +29,13 @@ import { CHAT_TYPE_GROUP, CHAT_TYPE_SINGLE, MIX_BARE_JID } from '../helpers/cons
 import { getStringSet } from '../localization/stringSet';
 import { addChatMessageItem, clearChatMessageData, resetMessageSelections } from '../redux/chatMessageDataSlice';
 import { addRecentChatItem } from '../redux/recentChatDataSlice';
-import { getUserNameFromStore, useBlockedStatus, useRecentChatData, useRoasterData, useThemeColorPalatte } from '../redux/reduxHook';
+import {
+   getUserNameFromStore,
+   useBlockedStatus,
+   useRecentChatData,
+   useRoasterData,
+   useThemeColorPalatte,
+} from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { CONVERSATION_SCREEN } from './constants';
 

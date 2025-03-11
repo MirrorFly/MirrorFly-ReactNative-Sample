@@ -154,10 +154,10 @@ const recentChatDataSlice = createSlice({
          }
       },
       editRecentChatItem(state, action) {
-         const { userJid, msgId, message, caption } = action.payload;
+         const { userJid, msgId, message, caption, msgStatus } = action.payload;
          const index = state.recentChats.findIndex(item => item.userJid === userJid && item.msgId === msgId);
          if (state.recentChats[index]) {
-            state.recentChats[index].msgStatus = 3;
+            state.recentChats[index].msgStatus = msgStatus;
          }
          if (state.recentChats[index] && message) {
             state.recentChats[index].msgBody.message = message;

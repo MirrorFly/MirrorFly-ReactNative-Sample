@@ -11,7 +11,6 @@ import RNFS from 'react-native-fs';
 import HeicConverter from 'react-native-heic-converter';
 import ImagePicker from 'react-native-image-crop-picker';
 import { RESULTS, openSettings } from 'react-native-permissions';
-import Toast from 'react-native-simple-toast';
 import Sound from 'react-native-sound';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
@@ -47,7 +46,6 @@ import { conversationFlatListRef } from '../components/ConversationList';
 import config from '../config/config';
 import {
    ALLOWED_AUDIO_FORMATS,
-   AUDIO_FORMATS,
    CHAT_TYPE_GROUP,
    CHAT_TYPE_SINGLE,
    DOCUMENT_FILE_EXT,
@@ -84,6 +82,7 @@ import {
    toggleIsChatSearching,
    updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
+import { setTextMessage } from '../redux/draftSlice';
 import {
    clearRecentChatData,
    deleteMessagesForEveryoneInRecentChat,
@@ -101,6 +100,7 @@ import {
 } from '../redux/reduxHook';
 import { updateBlockUser } from '../redux/rosterDataSlice';
 import store from '../redux/store';
+import { showToastMessage } from '../redux/toastMessageSlice';
 import {
    BLOCKED_CONTACT_LIST_STACK,
    CAMERA_SCREEN,
@@ -113,7 +113,6 @@ import {
    PROFILE_STACK,
 } from '../screens/constants';
 import { getCurrentUserJid, mflog } from '../uikitMethods';
-import { setTextMessage } from '../redux/draftSlice';
 
 const { fileSize, imageFileSize, videoFileSize, audioFileSize, documentFileSize } = config;
 
@@ -121,8 +120,7 @@ const memoizedUsernameGraphemes = {};
 const splitter = new Graphemer();
 let currentChatUser = '';
 const stringSet = getStringSet();
-let isConversationScreenActive = false,
-   replyScrollmsgId = '';
+let isConversationScreenActive = false;
 
 const documentAttachmentTypes = [
    DocumentPicker.types.allFiles,
@@ -140,24 +138,27 @@ const documentAttachmentTypes = [
    // '.rar'
 ];
 
-export const getReplyScrollmsgId = () => replyScrollmsgId;
-
-export const setReplyScrollmsgId = val => {
-   replyScrollmsgId = val;
-};
-
 export const setIsConversationScreenActive = val => {
    isConversationScreenActive = val;
 };
 
 export const getIsConversationScreenActive = () => isConversationScreenActive;
 
-export const showToast = message => {
-   Toast.show(message, Toast.SHORT);
+export const showToast = (message, duration) => {
+   store.dispatch(
+      showToastMessage({
+         message: message,
+         duration: duration,
+      }),
+   );
 };
 
 export const showNetWorkToast = () => {
-   Toast.show(config.internetErrorMessage, Toast.SHORT);
+   store.dispatch(
+      showToastMessage({
+         message: config.internetErrorMessage,
+      }),
+   );
 };
 
 export const getUserIdFromJid = userJid => {
@@ -892,7 +893,7 @@ export const getAbsolutePath = async uri => {
       return { uri: imageData.node.image.filepath, thumbnailBase64: thumbnailResponse.thumbnailBase64 };
    } catch (error) {
       mflog('Get Absolute Path Error:', error);
-      return uri;
+      return { uri, thumbnailBase64: '' };
    }
 };
 
@@ -1262,6 +1263,7 @@ export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
             is_downloaded: 2,
          },
       },
+      editMessageId: '',
    };
 };
 
@@ -1298,6 +1300,7 @@ export const getRecentChatMsgObjForward = (originalMsg, toJid, newMsgId) => {
             caption: '',
          },
       },
+      editMessageId: '',
    };
 };
 
@@ -1324,7 +1327,9 @@ export const handleReplyPress = (userId, msgId, message) => {
       offset: adjustedOffset,
       animated: true,
    });
-   replyScrollmsgId = msgId;
+   setTimeout(() => {
+      store.dispatch(highlightMessage({ userId, msgId, shouldHighlight: 0 }));
+   }, 1000);
 };
 
 export const findConversationMessageIndex = (msgId, message) => {
@@ -1334,8 +1339,9 @@ export const findConversationMessageIndex = (msgId, message) => {
       const { deleteStatus, recallStatus } = message;
       if (deleteStatus !== 0 || recallStatus !== 0) {
          showToast(stringSet.TOAST_MESSAGES.THIS_MESSAGE_NO_LONGER_AVAILABLE);
+         return -1;
       } else if (index < 0) {
-         return;
+         return -1;
       } else {
          return index;
       }
@@ -1477,6 +1483,8 @@ export const resetConversationScreen = userId => {
    store.dispatch(toggleEditMessage(''));
    store.dispatch(setChatSearchText(''));
    store.dispatch(toggleIsChatSearching(false));
+   setCurrentChatUser('');
+   SDK.activeChatUser('');
 };
 
 // Dispatch loading state helper

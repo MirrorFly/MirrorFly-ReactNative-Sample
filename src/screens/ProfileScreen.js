@@ -1,15 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import {
-   Animated,
-   Image,
-   Keyboard,
-   Platform,
-   ScrollView,
-   StyleSheet,
-   View,
-   useWindowDimensions,
-} from 'react-native';
+import { Animated, Image, Keyboard, Platform, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import RootNavigation from '../Navigation/rootNavigation';
 import { RealmKeyValueStore } from '../SDK/SDK';
 import CamerIcon from '../assets/camera.png';
@@ -194,6 +185,7 @@ const ProfileScreen = () => {
 
    const handleTakePhoto = async () => {
       const _image = await handleImagePickerOpenCamera();
+      setIsLoading(false);
       if (Object.keys(_image).length) {
          setIsLoading(true);
          setTimeout(async () => {
@@ -205,6 +197,8 @@ const ProfileScreen = () => {
 
    const handleFromGallery = async () => {
       const _image = await handleImagePickerOpenGallery();
+      setIsLoading(false);
+      console.log('_image ==>', JSON.stringify(_image, null, 2));
       if (Object.keys(_image).length) {
          setIsLoading(true);
          setTimeout(async () => {
@@ -220,12 +214,18 @@ const ProfileScreen = () => {
 
    const handleOptionTakePhoto = () => {
       toggleOptionModel();
-      handleTakePhoto();
+      setIsLoading(true);
+      setTimeout(() => {
+         handleTakePhoto();
+      }, 1000);
    };
 
    const handleOptionGallery = () => {
       toggleOptionModel();
-      handleFromGallery();
+      setIsLoading(true);
+      setTimeout(() => {
+         handleFromGallery();
+      }, 1000);
    };
 
    const handleOptionRemove = () => {

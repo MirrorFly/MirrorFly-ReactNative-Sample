@@ -64,7 +64,7 @@ import {
 } from '../Helper/Calls/Utility';
 import RootNavigation from '../Navigation/rootNavigation';
 import { progressMap, updateProgressNotification } from '../Service/PushNotify';
-import { pushNotify } from '../Service/remoteNotifyHandle';
+import { pushNotify, updateNotification } from '../Service/remoteNotifyHandle';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../calls/notification/callNotifyHandler';
 import ActivityModule from '../customModules/ActivityModule';
 import BluetoothHeadsetDetectionModule from '../customModules/BluetoothHeadsetDetectionModule';
@@ -677,19 +677,20 @@ export const callBacks = {
             res.archiveSetting = getArchive();
             const userId = getUserIdFromJid(res?.userJid);
             if (res?.editMessageId && getChatMessage(userId, res?.msgId)) {
-               console.log('res?.msgBody?.caption ==>', JSON.stringify(res?.msgBody, null, 2));
                const editObj = res?.msgBody?.media?.caption
                   ? {
                        userJid: res?.userJid,
                        msgId: res?.msgId,
                        caption: res?.msgBody?.media?.caption,
                        editMessageId: res?.editMessageId,
+                       msgStatus: res?.msgStatus,
                     }
                   : {
                        userJid: res?.userJid,
                        msgId: res?.msgId,
                        message: res?.msgBody?.message,
                        editMessageId: res?.editMessageId,
+                       msgStatus: res?.msgStatus,
                     };
 
                store.dispatch(editChatMessageItem(editObj));
@@ -703,7 +704,7 @@ export const callBacks = {
                res.msgBody.message_type === NOTIFICATION.toLowerCase() &&
                res.msgBody.message === '2' &&
                getCurrentUserJid() === res.toUserJid;
-            if ((!res.notification && !res.editMessageId && isReceiveMessage) || isNotificationMessage) {
+            if ((!res.notification && isReceiveMessage) || isNotificationMessage) {
                pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.fromUserJid);
             }
             break;
@@ -734,6 +735,11 @@ export const callBacks = {
             break;
          case 'recallMessage':
             updateDeleteForEveryOne(res.fromUserId, res.msgId.split(','), res.fromUserJid);
+            const msgIds = res.msgId.split(',');
+            msgIds.forEach(msgId => {
+               updateNotification(msgId);
+            });
+            console.log('msgIds ==> ', msgIds);
             break;
          case 'userBlockStatus':
             store.dispatch(

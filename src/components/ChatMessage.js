@@ -23,7 +23,7 @@ import Message from './Message';
 import MessagePressable from './MessagePressable';
 import NotificationMessage from './NotificationMessage';
 
-function ChatMessage({ chatUser, item, showNickName, label }) {
+function ChatMessage({ chatUser, item, showNickName, label, disablefunction = false }) {
    const dispatch = useDispatch();
    const navigation = useNavigation();
    const useXmppStatus = useXmppConnectionStatus();
@@ -130,6 +130,7 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
 
       return (
          <Pressable
+            disabled={disablefunction}
             style={
                shouldHighlight && {
                   backgroundColor: themeColorPalatte.highlighedMessageBg,
@@ -153,6 +154,7 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
                         isSender ? commonStyles.alignSelfFlexEnd : commonStyles.alignSelfFlexStart,
                      ]}>
                      <MessagePressable
+                        disabled={disablefunction}
                         forcePress={pressed}
                         style={[styles.messageContentPressable, { maxWidth: messageWidth }]}
                         contentContainerStyle={[

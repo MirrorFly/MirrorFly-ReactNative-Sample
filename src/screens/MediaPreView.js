@@ -62,36 +62,32 @@ function MediaPreView() {
       }
       setLoading(true); // Show loader before processing
 
-      const compressTasks = componentSelectedImages.map(element => {
+      const compressTasks = componentSelectedImages.map((element, index) => {
          const type = element.fileDetails.type.includes('/')
             ? element.fileDetails.type.split('/')[0]
             : element.fileDetails.type;
+
          return mediaCompress({
             uri: element.fileDetails.uri,
             type,
             quality: 'medium',
-         }).then(response => {
-            mflog(
-               'response.message.fileSize ==> ',
-               `original ---- ${convertBytesToKB(element.fileDetails.fileSize)} ${element.fileDetails.uri}/`,
-               `compressed --- ${convertBytesToKB(response.message.fileSize)} ${response.message.outputPath}`,
-               element.fileDetails.fileSize - response.message.fileSize,
-               response.message.fileSize < element.fileDetails.fileSize,
-            );
-            return {
+         }).then(response => ({
+            index, // Store original index
+            compressedData: {
                ...element, // Keep other details
                fileDetails: {
                   ...element.fileDetails,
                   uri: response.message.outputPath, // Overwrite URI with compressed file path
                   fileSize: response.message.fileSize, // Update file size
                },
-            };
-         });
+            },
+         }));
       });
 
       Promise.all(compressTasks)
          .then(updatedMedia => {
-            setComponentSelectedImages(updatedMedia); // Update state with compressed URIs
+            const sortedMedia = updatedMedia.sort((a, b) => a.index - b.index).map(item => item.compressedData);
+            setComponentSelectedImages(sortedMedia); // Update state with compressed URIs in order
          })
          .catch(error => {
             console.log('Compression error ==> ', error);

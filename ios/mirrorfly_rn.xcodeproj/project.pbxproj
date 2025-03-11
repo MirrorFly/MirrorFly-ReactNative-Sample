@@ -24,9 +24,9 @@
 		A7B20D1A2CF6DF400075CC1B /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = A7B20D152CF6DF400075CC1B /* NotificationService.m */; };
 		A7B20D1B2CF6DF400075CC1B /* sendDeliveredApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B20D162CF6DF400075CC1B /* sendDeliveredApiCall.swift */; };
 		B42B189CF199C58746A31FD6 /* Pods_mirrorfly_rn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D29BAF4B0875C49FA458AB9 /* Pods_mirrorfly_rn.framework */; };
-		CE312F572D26CC7D00069D84 /* MediaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE312F542D26CC7D00069D84 /* MediaService.swift */; };
-		CE312F582D26CC7D00069D84 /* FlyUtiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE312F552D26CC7D00069D84 /* FlyUtiles.swift */; };
-		CE312F592D26CC7D00069D84 /* MediaServiceBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = CE312F562D26CC7D00069D84 /* MediaServiceBridge.m */; };
+		CE4307242D801FFC002485FF /* FlyUtiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4307212D801FFC002485FF /* FlyUtiles.swift */; };
+		CE4307252D801FFC002485FF /* MediaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4307222D801FFC002485FF /* MediaService.swift */; };
+		CE4307262D801FFC002485FF /* MediaServiceBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4307232D801FFC002485FF /* MediaServiceBridge.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,10 +96,10 @@
 		A7B20D142CF6DF400075CC1B /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
 		A7B20D152CF6DF400075CC1B /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
 		A7B20D162CF6DF400075CC1B /* sendDeliveredApiCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sendDeliveredApiCall.swift; sourceTree = "<group>"; };
-		CE312F532D26CC7C00069D84 /* mirrorfly_rn-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "mirrorfly_rn-Bridging-Header.h"; sourceTree = "<group>"; };
-		CE312F542D26CC7D00069D84 /* MediaService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaService.swift; sourceTree = "<group>"; };
-		CE312F552D26CC7D00069D84 /* FlyUtiles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlyUtiles.swift; sourceTree = "<group>"; };
-		CE312F562D26CC7D00069D84 /* MediaServiceBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaServiceBridge.m; sourceTree = "<group>"; };
+		CE4307212D801FFC002485FF /* FlyUtiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlyUtiles.swift; sourceTree = "<group>"; };
+		CE4307222D801FFC002485FF /* MediaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaService.swift; sourceTree = "<group>"; };
+		CE4307232D801FFC002485FF /* MediaServiceBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MediaServiceBridge.m; sourceTree = "<group>"; };
+		CE4307282D80203E002485FF /* mirrorfly_rn-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "mirrorfly_rn-Bridging-Header.h"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -150,9 +150,10 @@
 		13B07FAE1A68108700A75B9A /* mirrorfly_rn */ = {
 			isa = PBXGroup;
 			children = (
-				CE312F552D26CC7D00069D84 /* FlyUtiles.swift */,
-				CE312F542D26CC7D00069D84 /* MediaService.swift */,
-				CE312F562D26CC7D00069D84 /* MediaServiceBridge.m */,
+				CE4307282D80203E002485FF /* mirrorfly_rn-Bridging-Header.h */,
+				CE4307212D801FFC002485FF /* FlyUtiles.swift */,
+				CE4307222D801FFC002485FF /* MediaService.swift */,
+				CE4307232D801FFC002485FF /* MediaServiceBridge.m */,
 				A7B20C242CF5F71C0075CC1B /* RNCallKeep.h */,
 				A7B20C252CF5F71C0075CC1B /* RNCallKeep.m */,
 				A7B20BFB2CF5EB1B0075CC1B /* mirrorfly_rn.entitlements */,
@@ -166,7 +167,6 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
 				351382106977CC60AE8C9180 /* PrivacyInfo.xcprivacy */,
-				CE312F532D26CC7C00069D84 /* mirrorfly_rn-Bridging-Header.h */,
 			);
 			name = mirrorfly_rn;
 			sourceTree = "<group>";
@@ -329,7 +329,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						LastSwiftMigration = 1530;
+						LastSwiftMigration = 1620;
 					};
 					A7B20CF92CF6DD2D0075CC1B = {
 						CreatedOnToolsVersion = 16.0;
@@ -546,10 +546,10 @@
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				A7B20C262CF5F71C0075CC1B /* RNCallKeep.m in Sources */,
-				CE312F582D26CC7D00069D84 /* FlyUtiles.swift in Sources */,
-				CE312F572D26CC7D00069D84 /* MediaService.swift in Sources */,
+				CE4307242D801FFC002485FF /* FlyUtiles.swift in Sources */,
+				CE4307252D801FFC002485FF /* MediaService.swift in Sources */,
+				CE4307262D801FFC002485FF /* MediaServiceBridge.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				CE312F592D26CC7D00069D84 /* MediaServiceBridge.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -584,7 +584,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5B7EB9410499542E8C5724F5 /* Pods-mirrorfly_rn-mirrorfly_rnTests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
@@ -617,7 +616,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 89C6BE57DB24E9ADA2F236DE /* Pods-mirrorfly_rn-mirrorfly_rnTests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
@@ -660,7 +658,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = "3.1.1-interalBuild";
+				MARKETING_VERSION = 3.1.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -670,6 +668,7 @@
 				PRODUCT_NAME = mirrorfly_rn;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Mirror Fly Qa Development Profile";
+				SWIFT_OBJC_BRIDGING_HEADER = "mirrorfly_rn-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -693,7 +692,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = "3.1.1-interalBuild";
+				MARKETING_VERSION = 3.1.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -703,6 +702,7 @@
 				PRODUCT_NAME = mirrorfly_rn;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Mirror Fly Qa Inhouse Profile";
+				SWIFT_OBJC_BRIDGING_HEADER = "mirrorfly_rn-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -792,10 +792,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -879,10 +876,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

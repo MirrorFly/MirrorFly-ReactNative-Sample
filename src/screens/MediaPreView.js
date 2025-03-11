@@ -33,6 +33,7 @@ import { useThemeColorPalatte } from '../redux/reduxHook';
 import { mediaCompress } from '../SDK/utils';
 import commonStyles from '../styles/commonStyles';
 import { CAMERA_SCREEN, GALLERY_PHOTOS_SCREEN } from './constants';
+import { mflog } from '../uikitMethods';
 
 function MediaPreView() {
    const chatUser = getCurrentChatUser();
@@ -64,16 +65,16 @@ function MediaPreView() {
       const compressTasks = componentSelectedImages.map(element => {
          const type = element.fileDetails.type.includes('/')
             ? element.fileDetails.type.split('/')[0]
-            : element.fileDetails.type.includes('/');
+            : element.fileDetails.type;
          return mediaCompress({
             uri: element.fileDetails.uri,
             type,
-            quality: 'best',
+            quality: 'medium',
          }).then(response => {
-            console.log(
+            mflog(
                'response.message.fileSize ==> ',
-               `original ---- ${convertBytesToKB(element.fileDetails.fileSize)} /`,
-               `compressed --- ${convertBytesToKB(response.message.fileSize)}`,
+               `original ---- ${convertBytesToKB(element.fileDetails.fileSize)} ${element.fileDetails.uri}/`,
+               `compressed --- ${convertBytesToKB(response.message.fileSize)} ${response.message.outputPath}`,
                element.fileDetails.fileSize - response.message.fileSize,
                response.message.fileSize < element.fileDetails.fileSize,
             );

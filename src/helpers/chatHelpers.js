@@ -893,7 +893,7 @@ export const getAbsolutePath = async uri => {
       return { uri: imageData.node.image.filepath, thumbnailBase64: thumbnailResponse.thumbnailBase64 };
    } catch (error) {
       mflog('Get Absolute Path Error:', error);
-      return uri;
+      return { uri, thumbnailBase64: '' };
    }
 };
 

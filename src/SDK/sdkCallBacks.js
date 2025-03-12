@@ -675,7 +675,16 @@ export const callBacks = {
          case 'receiveMessage':
          case 'groupProfileUpdated':
             res.archiveSetting = getArchive();
+            const isReceiveMessage = ['receiveMessage', 'carbonReceiveMessage'].includes(res.msgType);
+            const archiveSettingAndStatus = res.archiveStatus ? !res.archiveSetting : true;
+            const isNotificationMessage =
+               res.msgBody.message_type === NOTIFICATION.toLowerCase() &&
+               res.msgBody.message === '2' &&
+               getCurrentUserJid() === res.toUserJid;
+            const isShowNotification =
+               (archiveSettingAndStatus && !res.notification && isReceiveMessage) || isNotificationMessage;
             const userId = getUserIdFromJid(res?.userJid);
+
             if (res?.editMessageId && getChatMessage(userId, res?.msgId)) {
                const editObj = res?.msgBody?.media?.caption
                   ? {
@@ -699,12 +708,8 @@ export const callBacks = {
                store.dispatch(addRecentChatItem(res));
                store.dispatch(addChatMessageItem(res));
             }
-            const isReceiveMessage = ['receiveMessage', 'carbonReceiveMessage'].includes(res.msgType);
-            const isNotificationMessage =
-               res.msgBody.message_type === NOTIFICATION.toLowerCase() &&
-               res.msgBody.message === '2' &&
-               getCurrentUserJid() === res.toUserJid;
-            if ((!res.notification && isReceiveMessage) || isNotificationMessage) {
+
+            if (isShowNotification) {
                pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.fromUserJid);
             }
             break;

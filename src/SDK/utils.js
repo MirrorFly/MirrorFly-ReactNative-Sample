@@ -118,7 +118,6 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
       userJid,
       data = [],
    } = await SDK.getChatMessages(fromUserJId, page, config.chatMessagesSizePerPage);
-   console.log('data ==> ', data.length);
    if (statusCode === 200) {
       let hasEqualDataFetched = data.length === config.chatMessagesSizePerPage;
       if (data.length && hasEqualDataFetched) {
@@ -552,6 +551,10 @@ export const sendNotificationData = async () => {
 
 export const getMuteStatus = async userJid => {
    return await SDK.getMuteStatus(userJid);
+};
+
+export const getArchiveStatus = async userJid => {
+   return await SDK.getArchiveStatus(userJid);
 };
 
 export const getUserProfileFromApi = async userId => {

@@ -12,10 +12,12 @@ import ReplyImage from './ReplyImage';
 import ReplyLocation from './ReplyLocation';
 import ReplyText from './ReplyText';
 import ReplyVideo from './ReplyVideo';
+import { useReplyMessage } from '../redux/reduxHook';
 
-function ReplyContainer({ chatUser, replyMessage }) {
+function ReplyContainer({ chatUser }) {
    const stringSet = getStringSet();
    const userId = getUserIdFromJid(chatUser);
+   const replyMessage = useReplyMessage(userId) || {};
    const dispatch = useDispatch();
    const { msgBody = {}, deleteStatus = 0, recallStatus = 0, msgBody: { message_type = '' } = {} } = replyMessage;
    const handleCloseReplyContainer = () => {
@@ -74,6 +76,10 @@ function ReplyContainer({ chatUser, replyMessage }) {
             return null;
       }
    };
+
+   if (Object.keys(replyMessage).length === 0) {
+      return null;
+   }
 
    return (
       <View style={styles.replyingMessageContainer}>

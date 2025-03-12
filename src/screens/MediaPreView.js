@@ -20,7 +20,6 @@ import TextInput from '../common/TextInput';
 import VideoInfo from '../common/VideoInfo';
 import UserAvathar from '../components/UserAvathar';
 import {
-   convertBytesToKB,
    getCurrentChatUser,
    getThumbBase64URL,
    getType,
@@ -30,10 +29,9 @@ import {
 import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../helpers/constants';
 import { getStringSet } from '../localization/stringSet';
 import { useThemeColorPalatte } from '../redux/reduxHook';
-import { mediaCompress } from '../SDK/utils';
+import { mediaCompress, sdkLog } from '../SDK/utils';
 import commonStyles from '../styles/commonStyles';
 import { CAMERA_SCREEN, GALLERY_PHOTOS_SCREEN } from './constants';
-import { mflog } from '../uikitMethods';
 
 function MediaPreView() {
    const chatUser = getCurrentChatUser();
@@ -60,6 +58,7 @@ function MediaPreView() {
       if (componentSelectedImages.length === 0) {
          return;
       }
+      sdkLog('componentSelectedImages.length ==>', componentSelectedImages.length);
       setLoading(true); // Show loader before processing
 
       const compressTasks = componentSelectedImages.map((element, index) => {
@@ -90,7 +89,7 @@ function MediaPreView() {
             setComponentSelectedImages(sortedMedia); // Update state with compressed URIs in order
          })
          .catch(error => {
-            console.log('Compression error ==> ', error);
+            sdkLog('Compression error ==> ', error);
          })
          .finally(() => {
             setLoading(false); // Close loader once all are done

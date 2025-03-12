@@ -3042,6 +3042,19 @@ export const ExitIcon = props => {
    );
 };
 
+export const LogIcon = ({ size = 16, color = 'blue' }) => {
+   return (
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+         {/* Terminal window */}
+         <Rect x="2" y="4" width="20" height="16" rx="1" stroke={color} strokeWidth="1.5" />
+         {/* Console arrow */}
+         <Path d="M6 9L10 12L6 15" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+         {/* Console log line */}
+         <Path d="M14 15H18" stroke={color} strokeWidth="1" strokeLinecap="round" />
+      </Svg>
+   );
+};
+
 export const ReportGroupIcon = props => {
    const { width = '19.896', height = '15.15', color = '#ff3939' } = props;
    return (

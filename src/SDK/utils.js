@@ -12,7 +12,7 @@ import {
    isLocalUser,
    showToast,
 } from '../helpers/chatHelpers';
-import { CHAT_TYPE_GROUP, DOCUMENT_FILE_EXT, DOCUMENT_FORMATS, MIX_BARE_JID } from '../helpers/constants';
+import { CHAT_TYPE_GROUP, DOCUMENT_FILE_EXT, MIX_BARE_JID } from '../helpers/constants';
 import {
    addChatMessageItem,
    editChatMessageItem,
@@ -36,8 +36,7 @@ let chatPage = {},
    hasNextChatPage = {},
    hasNextRecentChatPage = true,
    recentChatPage = 1,
-   typingStatusSent = false,
-   mediaUploadQueue = {};
+   typingStatusSent = false;
 
 export const resetVariable = () => {
    chatPage = {};

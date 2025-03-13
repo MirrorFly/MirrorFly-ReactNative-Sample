@@ -5,10 +5,56 @@ import { getCurrentChatUser, getUserIdFromJid, mediaObjContructor, showToast } f
 import { mediaStatusConstants } from '../helpers/constants';
 import { updateMediaStatus } from '../redux/chatMessageDataSlice';
 import { getMediaProgress, useChatMessage } from '../redux/reduxHook';
+import store from '../redux/store';
 import SDK from '../SDK/SDK';
 import { uploadFileToSDK } from '../SDK/utils';
 import { updateProgressNotification } from '../Service/PushNotify';
 import { mflog } from '../uikitMethods';
+
+export const cancelMediaProgress = async (msgId, userId, mediaStatus, setMediaStatus) => {
+   try {
+      const { source, downloadJobId = '', uploadJobId = '' } = getMediaProgress(msgId) || {};
+      if (source) {
+         if (downloadJobId || uploadJobId) {
+            const cancelRes = await source?.cancel?.(downloadJobId || uploadJobId);
+            console.log('cancelRes ==>', cancelRes);
+            const mediaStatusObj = {
+               msgId,
+               userId,
+               ...(downloadJobId && { is_downloaded: 0 }),
+               ...(uploadJobId && { is_uploading: 3 }),
+            };
+            store.dispatch(updateMediaStatus(mediaStatusObj));
+            setMediaStatus?.(uploadJobId ? mediaStatusConstants.NOT_UPLOADED : mediaStatusConstants.NOT_DOWNLOADED);
+         } else {
+            source?.cancel?.('User Cancelled!');
+            const mediaStatusObj = {
+               msgId,
+               userId,
+               is_uploading: 3,
+            };
+            store.dispatch(updateMediaStatus(mediaStatusObj));
+         }
+      } else {
+         console.log('mediaStatus ==> ', mediaStatus);
+         updateProgressNotification({
+            msgId,
+            progress: 0,
+            type: mediaStatus === mediaStatusConstants.DOWNLOADING ? 'download' : 'upload',
+            isCanceled: true,
+         });
+         const mediaStatusObj = {
+            msgId,
+            userId,
+            ...(mediaStatus === mediaStatusConstants.DOWNLOADING && { is_downloaded: 0 }),
+            ...(mediaStatus === mediaStatusConstants.UPLOADING && { is_uploading: 3 }),
+         };
+         store.dispatch(updateMediaStatus(mediaStatusObj));
+      }
+   } catch (error) {
+      console.log('cancelProgress ==>', error);
+   }
+};
 
 const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    const chatUser = getCurrentChatUser();
@@ -119,47 +165,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
 
    const cancelProgress = async () => {
       try {
-         const { source, downloadJobId = '', uploadJobId = '' } = getMediaProgress(msgId) || {};
-         if (source) {
-            if (downloadJobId || uploadJobId) {
-               const cancelRes = await source?.cancel?.(downloadJobId || uploadJobId);
-               console.log('cancelRes ==>', cancelRes);
-               const mediaStatusObj = {
-                  msgId,
-                  userId,
-                  ...(downloadJobId && { is_downloaded: 0 }),
-                  ...(uploadJobId && { is_uploading: 3 }),
-               };
-               dispatch(updateMediaStatus(mediaStatusObj));
-               setMediaStatus(uploadJobId ? mediaStatusConstants.NOT_UPLOADED : mediaStatusConstants.NOT_DOWNLOADED);
-            } else {
-               source?.cancel?.('User Cancelled!');
-               const mediaStatusObj = {
-                  msgId,
-                  userId,
-                  is_uploading: 3,
-               };
-               dispatch(updateMediaStatus(mediaStatusObj));
-            }
-         } else {
-            console.log('mediaStatus ==> ', mediaStatus);
-            updateProgressNotification({
-               msgId,
-               progress: 0,
-               type: mediaStatus === mediaStatusConstants.DOWNLOADING ? 'download' : 'upload',
-               isCanceled: true,
-            });
-            const mediaStatusObj = {
-               msgId,
-               userId,
-               ...(mediaStatus === mediaStatusConstants.DOWNLOADING && { is_downloaded: 0 }),
-               ...(mediaStatus === mediaStatusConstants.UPLOADING && { is_uploading: 3 }),
-            };
-            dispatch(updateMediaStatus(mediaStatusObj));
-         }
-         if (uploadStatus === 8) {
-            return true;
-         }
+         cancelMediaProgress(msgId, userId, mediaStatus, setMediaStatus);
       } catch (error) {
          console.log('cancelProgress ==>', error);
       }

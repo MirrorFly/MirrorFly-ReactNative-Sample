@@ -82,7 +82,7 @@ import {
    toggleIsChatSearching,
    updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
-import { setTextMessage } from '../redux/draftSlice';
+import { setReplyMessage, setTextMessage } from '../redux/draftSlice';
 import {
    clearRecentChatData,
    deleteMessagesForEveryoneInRecentChat,
@@ -1418,13 +1418,20 @@ export const handleUpdateBlockUser = (userId, isBlocked, chatUser) => async () =
          const res = await SDK.blockUser(chatUser);
          if (res.statusCode === 200) {
             cancelAudioRecord();
+            store.dispatch(setReplyMessage({ userId, message: {} }));
             store.dispatch(setTextMessage({ userId, message: '' }));
             showToast(`You have blocked ${getUserNameFromStore(userId)}`);
+            store.dispatch(updateBlockUser({ userId, isBlocked }));
+         } else {
+            showToast(res?.message);
          }
       } else {
          const res = await SDK.unblockUser(chatUser);
          if (res.statusCode === 200) {
+            store.dispatch(updateBlockUser({ userId, isBlocked }));
             showToast(`${getUserNameFromStore(userId)} has been unblocked`);
+         } else {
+            showToast(res?.message);
          }
       }
    }

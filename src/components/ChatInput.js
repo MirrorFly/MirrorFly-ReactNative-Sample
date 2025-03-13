@@ -467,7 +467,7 @@ function ChatInput({ chatUser }) {
 
    if (blockedStaus) {
       return (
-         <View style={styles.container}>
+         <View style={[styles.container, commonStyles.bg_white]}>
             <Text
                style={[
                   commonStyles.px_4,

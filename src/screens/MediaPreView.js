@@ -55,10 +55,10 @@ function MediaPreView() {
    }, []);
 
    React.useEffect(() => {
+      sdkLog('componentSelectedImages.length ==>', componentSelectedImages.length);
       if (componentSelectedImages.length === 0) {
          return;
       }
-      sdkLog('componentSelectedImages.length ==>', componentSelectedImages.length);
       setLoading(true); // Show loader before processing
 
       const compressTasks = componentSelectedImages.map((element, index) => {

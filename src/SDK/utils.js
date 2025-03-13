@@ -618,3 +618,7 @@ export const mediaCompress = async ({ uri, type, quality }) => {
       mflog('Failed to compress video', error);
    }
 };
+
+export const sdkLog = (...args) => {
+   SDK.mflog('UIKIT', args);
+};

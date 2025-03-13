@@ -18,6 +18,7 @@ import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { mflog } from '../uikitMethods';
 import { GALLERY_PHOTOS_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
+import { sdkLog } from '../SDK/utils';
 
 const GalleryPhotos = () => {
    const { params: { grpView = '', selectedImages: routesSelectedImages = [] } = {} } = useRoute();
@@ -98,6 +99,7 @@ const GalleryPhotos = () => {
          preScreen: GALLERY_PHOTOS_SCREEN,
          selectedImages: [transformedArray],
       });
+      sdkLog('navigation');
    };
 
    const handleSelectImage = React.useCallback(

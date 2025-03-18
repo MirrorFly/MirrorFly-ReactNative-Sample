@@ -12,7 +12,7 @@ import {
    isLocalUser,
    showToast,
 } from '../helpers/chatHelpers';
-import { CHAT_TYPE_GROUP, DOCUMENT_FILE_EXT, DOCUMENT_FORMATS, MIX_BARE_JID } from '../helpers/constants';
+import { CHAT_TYPE_GROUP, DOCUMENT_FILE_EXT, MIX_BARE_JID } from '../helpers/constants';
 import {
    addChatMessageItem,
    editChatMessageItem,
@@ -36,8 +36,7 @@ let chatPage = {},
    hasNextChatPage = {},
    hasNextRecentChatPage = true,
    recentChatPage = 1,
-   typingStatusSent = false,
-   mediaUploadQueue = {};
+   typingStatusSent = false;
 
 export const resetVariable = () => {
    chatPage = {};
@@ -118,7 +117,6 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
       userJid,
       data = [],
    } = await SDK.getChatMessages(fromUserJId, page, config.chatMessagesSizePerPage);
-   console.log('data ==> ', data.length);
    if (statusCode === 200) {
       let hasEqualDataFetched = data.length === config.chatMessagesSizePerPage;
       if (data.length && hasEqualDataFetched) {
@@ -552,6 +550,10 @@ export const sendNotificationData = async () => {
 
 export const getMuteStatus = async userJid => {
    return await SDK.getMuteStatus(userJid);
+};
+
+export const getArchiveStatus = async userJid => {
+   return await SDK.getArchiveStatus(userJid);
 };
 
 export const getUserProfileFromApi = async userId => {

@@ -15,7 +15,7 @@ import Sound from 'react-native-sound';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
 import { CONNECTED } from '../SDK/constants';
-import { handleSendMsg, uploadFileToSDK } from '../SDK/utils';
+import { handleSendMsg, sdkLog, uploadFileToSDK } from '../SDK/utils';
 import {
    BlockedIcon,
    CameraIcon,
@@ -46,6 +46,7 @@ import { cancelAudioRecord } from '../components/ChatInput';
 import { conversationFlatListRef } from '../components/ConversationList';
 import config from '../config/config';
 import {
+   ALLOWED_ALL_FILE_FORMATS,
    ALLOWED_AUDIO_FORMATS,
    CHAT_TYPE_GROUP,
    CHAT_TYPE_SINGLE,
@@ -83,7 +84,7 @@ import {
    toggleIsChatSearching,
    updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
-import { setTextMessage } from '../redux/draftSlice';
+import { setReplyMessage, setTextMessage } from '../redux/draftSlice';
 import {
    clearRecentChatData,
    deleteMessagesForEveryoneInRecentChat,
@@ -550,6 +551,20 @@ const getMaxAllowedFileSize = mediaType => {
    return fileSize;
 };
 
+export const isValidFileToUpload = (size, mediaTypeFile, extension) => {
+   const maxAllowedSize = getMaxAllowedFileSize(mediaTypeFile);
+   if (size >= maxAllowedSize) {
+      const message = `File size is too large. Try uploading file size below ${convertBytesToKB(maxAllowedSize)}`;
+      if (mediaTypeFile) {
+         return message;
+      }
+   }
+   if (!ALLOWED_ALL_FILE_FORMATS.includes(extension?.toLowerCase())) {
+      return 'The file format is not supported';
+   }
+   return '';
+};
+
 export const isValidFileType = type => {
    return DOCUMENT_FORMATS.includes(type);
 };
@@ -841,6 +856,7 @@ export const handleConversationScollToBottom = () => {
 };
 
 export const handleSendMedia = selectedImages => () => {
+   sdkLog('handleSendMedia clicked');
    let message = {
       messageType: 'media',
       content: selectedImages || [],
@@ -890,10 +906,9 @@ export const getAbsolutePath = async uri => {
          quality: 0.5,
       };
       const thumbnailResponse = await CameraRoll.getPhotoThumbnail(uri, options);
-      const imageData = await CameraRoll.iosGetImageDataById(uri);
-      return { uri: imageData.node.image.filepath, thumbnailBase64: thumbnailResponse.thumbnailBase64 };
+      return { uri, thumbnailBase64: thumbnailResponse.thumbnailBase64 };
    } catch (error) {
-      mflog('Get Absolute Path Error:', error);
+      mflog('Get Absolute Path Error:', uri, error);
       return { uri, thumbnailBase64: '' };
    }
 };
@@ -1423,13 +1438,20 @@ export const handleUpdateBlockUser = (userId, isBlocked, chatUser) => async () =
          const res = await SDK.blockUser(chatUser);
          if (res.statusCode === 200) {
             cancelAudioRecord();
+            store.dispatch(setReplyMessage({ userId, message: {} }));
             store.dispatch(setTextMessage({ userId, message: '' }));
             showToast(`You have blocked ${getUserNameFromStore(userId)}`);
+            store.dispatch(updateBlockUser({ userId, isBlocked }));
+         } else {
+            showToast(res?.message);
          }
       } else {
          const res = await SDK.unblockUser(chatUser);
          if (res.statusCode === 200) {
+            store.dispatch(updateBlockUser({ userId, isBlocked }));
             showToast(`${getUserNameFromStore(userId)} has been unblocked`);
+         } else {
+            showToast(res?.message);
          }
       }
    }

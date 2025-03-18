@@ -143,7 +143,7 @@ function MenuScreen() {
             />
          </View>
          {modalContent && <AlertModal {...modalContent} />}
-         <LoadingModal visible={visible} behavior="costom" />
+         <LoadingModal visible={visible} behavior="custom" />
       </>
    );
 }

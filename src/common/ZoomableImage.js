@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Image, ImageBackground, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { getThumbBase64URL } from '../helpers/chatHelpers';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 
 // const config = { duration: 200, easing: Easing.linear };
 
-export default function ZoomableImage({ image }) {
+export default function ZoomableImage({ image, thumbImage }) {
    const { width: screenWidth, height: screenHeight } = useWindowDimensions();
    const themeColorPalatte = useThemeColorPalatte();
 
@@ -54,18 +55,26 @@ export default function ZoomableImage({ image }) {
       transform: [{ scale: scale.value }, { translateX: translate.value.x }, { translateY: translate.value.y }],
    }));
 
+   console.log('thumbImage ==> ', thumbImage);
+
    return (
       <View style={styles.root(themeColorPalatte.screenBgColor)}>
          <GestureDetector gesture={pinch}>
             <Animated.View style={[animatedStyle, styles.center]}>
-               <Image
-                  style={{
-                     width: imageSize.width,
-                     height: imageSize.height,
-                     resizeMode: 'contain',
-                  }}
-                  source={{ uri: image }}
-               />
+               <ImageBackground
+                  resizeMode="cover"
+                  style={styles.image(imageSize.width, imageSize.height)}
+                  alt={'fileName'}
+                  source={{ uri: getThumbBase64URL(thumbImage) }}>
+                  <Image
+                     style={{
+                        width: imageSize.width,
+                        height: imageSize.height,
+                        resizeMode: 'contain',
+                     }}
+                     source={{ uri: image }}
+                  />
+               </ImageBackground>
             </Animated.View>
          </GestureDetector>
       </View>
@@ -83,4 +92,9 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
    },
+   image: (w, h) => ({
+      borderRadius: 5,
+      width: w,
+      height: h,
+   }),
 });

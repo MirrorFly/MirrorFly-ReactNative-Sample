@@ -16,6 +16,9 @@ function PostView({ item }) {
                image: (
                   <ZoomableImage
                      image={item.msgBody?.media?.local_path || item.msgBody?.media?.file?.fileDetails?.uri}
+                     thumbImage={
+                        item.msgBody?.media?.thumb_image || item.msgBody?.media?.file?.fileDetails?.thumb_image
+                     }
                   />
                ),
                audio: <VideoInfo audioOnly={true} selectedMedia={item.msgBody} />,

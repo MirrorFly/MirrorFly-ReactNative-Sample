@@ -765,61 +765,89 @@ class MediaService: RCTEventEmitter {
   
   @objc
   func compressVideoFile(_ obj: NSDictionary, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
-    let videoPath = obj["videoPath"] as? String ?? ""
-    let mediaQuality = obj["quality"] as? String ?? "medium"
-    let formattedPath = videoPath.replacingOccurrences(of: "file://", with: "")
-    
-    var quality = AVAssetExportPresetMediumQuality
-    switch mediaQuality {
-    case "best":
-      quality = AVAssetExportPreset1280x720
-    case "high":
-      quality = AVAssetExportPreset960x540
-    case "medium":
-      quality = AVAssetExportPreset640x480
-    case "low":
-      quality = AVAssetExportPresetLowQuality
-    case "uncompressed":
-      quality = AVAssetExportPresetHighestQuality
-    default:
-      quality = AVAssetExportPresetMediumQuality
-    }
-    
-    let videoURL = URL(fileURLWithPath: formattedPath)
-    let localPath = FileManager.default.temporaryDirectory
-    let fileName = "compressed_" + UUID().uuidString + ".mp4"
-    let outputURL = localPath.appendingPathComponent(fileName)
-    
-    let urlAsset = AVURLAsset(url: videoURL, options: nil)
-    
-    do {
-        let fileSize = try videoURL.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
-        print("Actual File Size: \(fileSize) bytes)")
-    } catch {
-        print("Error retrieving file size: \(error.localizedDescription)")
-    }
-    
-    guard let exportSession = AVAssetExportSession(asset: urlAsset, presetName: quality) else {
-      rejecter("EXPORT_SESSION_ERROR", "Failed to create export session", nil)
+    guard let videoPath = obj["videoPath"] as? String, !videoPath.isEmpty else {
+      rejecter("INVALID_INPUT", "Invalid video path", nil)
       return
     }
     
-    exportSession.outputURL = outputURL
-    exportSession.outputFileType = .mp4
-    exportSession.shouldOptimizeForNetworkUse = true
+    let mediaQuality = obj["quality"] as? String ?? "medium"
     
-    exportSession.exportAsynchronously {
-      switch exportSession.status {
-      case .completed:
-        let fileSize = (try? outputURL.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
-        let duration = CMTimeGetSeconds(urlAsset.duration)
-        resolver(["success": true, "extension":"mp4","outputPath": outputURL.absoluteString, "fileName": fileName, "fileSize": fileSize, "duration": duration])
-      case .failed:
-        rejecter("COMPRESSION_FAILED", exportSession.error?.localizedDescription ?? "Compression failed", exportSession.error)
-      case .cancelled:
-        rejecter("COMPRESSION_CANCELLED", "Compression was cancelled", nil)
+    getValidFileURL(from: videoPath) { videoURL, error in
+      guard let fileURL = videoURL else {
+        rejecter("INVALID_PATH", error ?? "Could not resolve file path", nil)
+        return
+      }
+      
+      var quality = AVAssetExportPresetMediumQuality
+      switch mediaQuality {
+      case "best":
+        quality = AVAssetExportPreset1280x720
+      case "high":
+        quality = AVAssetExportPreset960x540
+      case "medium":
+        quality = AVAssetExportPreset640x480
+      case "low":
+        quality = AVAssetExportPresetLowQuality
+      case "uncompressed":
+        quality = AVAssetExportPresetHighestQuality
       default:
-        rejecter("UNKNOWN_ERROR", "An unknown error occurred", nil)
+        quality = AVAssetExportPresetMediumQuality
+      }
+      
+      let localPath = FileManager.default.temporaryDirectory
+      let fileName = "compressed_" + UUID().uuidString + ".mp4"
+      let outputURL = localPath.appendingPathComponent(fileName)
+      
+      let urlAsset = AVURLAsset(url: fileURL, options: nil)
+      
+      do {
+        let fileSize = try fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
+        
+        let (isSpaceAvail , message) = self.checkDeviceFressSpace(fileSize:Int64(fileSize))
+        if(!isSpaceAvail){
+          let response: [String: Any] = [
+            "success": false,
+            "statusCode": 400,
+            "message": message
+          ]
+          resolver(response)
+          return
+        }
+        
+        print("Actual File Size: \(fileSize) bytes")
+      } catch {
+        print("Error retrieving file size: \(error.localizedDescription)")
+      }
+      
+      guard let exportSession = AVAssetExportSession(asset: urlAsset, presetName: quality) else {
+        rejecter("EXPORT_SESSION_ERROR", "Failed to create export session", nil)
+        return
+      }
+      
+      exportSession.outputURL = outputURL
+      exportSession.outputFileType = .mp4
+      exportSession.shouldOptimizeForNetworkUse = true
+      
+      exportSession.exportAsynchronously {
+        switch exportSession.status {
+        case .completed:
+          let fileSize = (try? outputURL.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
+          let duration = CMTimeGetSeconds(urlAsset.duration)
+          resolver([
+            "success": true,
+            "extension": "mp4",
+            "outputPath": outputURL.absoluteString,
+            "fileName": fileName,
+            "fileSize": fileSize,
+            "duration": duration
+          ])
+        case .failed:
+          rejecter("COMPRESSION_FAILED", exportSession.error?.localizedDescription ?? "Compression failed", exportSession.error)
+        case .cancelled:
+          rejecter("COMPRESSION_CANCELLED", "Compression was cancelled", nil)
+        default:
+          rejecter("UNKNOWN_ERROR", "An unknown error occurred", nil)
+        }
       }
     }
   }

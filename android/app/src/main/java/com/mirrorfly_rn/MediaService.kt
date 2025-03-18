@@ -1025,6 +1025,8 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                     override fun compressFailed() {
                         deleteFile(File(outputPath))
                         val result: WritableMap = WritableNativeMap()
+                        result.putInt("statusCode", 500)
+                        result.putBoolean("success", false)
                         promise.resolve(result)
                     }
 

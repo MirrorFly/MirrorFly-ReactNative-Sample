@@ -9,6 +9,7 @@ import {
    getAbsolutePath,
    getThumbBase64URL,
    getType,
+   isValidFileToUpload,
    mediaObjContructor,
    showToast,
    validateFileSize,
@@ -86,9 +87,9 @@ const GalleryPhotos = () => {
    };
 
    const handleMedia = item => {
-      const sizeError = validateFileSize(item.image.fileSize, getType(item.type));
-      if (sizeError) {
-         return showToast(sizeError);
+      const fileError = isValidFileToUpload(item.image.fileSize, getType(item.type), item.image.extension);
+      if (fileError) {
+         return showToast(fileError);
       }
       const transformedArray = {
          caption: '',

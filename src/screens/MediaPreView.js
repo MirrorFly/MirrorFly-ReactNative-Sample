@@ -70,17 +70,20 @@ function MediaPreView() {
             uri: element.fileDetails.uri,
             type,
             quality: 'medium',
-         }).then(response => ({
-            index, // Store original index
-            compressedData: {
-               ...element, // Keep other details
-               fileDetails: {
-                  ...element.fileDetails,
-                  uri: response.message.outputPath, // Overwrite URI with compressed file path
-                  fileSize: response.message.fileSize, // Update file size
+         }).then(response => {
+            return {
+               index, // Store original index
+               compressedData: {
+                  ...element, // Keep other details
+                  fileDetails: {
+                     ...element.fileDetails,
+                     uri: response.message.outputPath || element.fileDetails.uri, // Overwrite URI with compressed file path
+                     fileSize: response.message.fileSize || element.fileDetails.fileSize, // Update file size
+                     extension: response.message.extension || element.fileDetails.extension,
+                  },
                },
-            },
-         }));
+            };
+         });
       });
 
       Promise.all(compressTasks)
@@ -259,7 +262,7 @@ function MediaPreView() {
             onClose={toggleEmojiPicker}
             onSelect={handleEmojiSelect}
          /> */}
-         <LoadingModal message={'Compressing'} visible={loading} />
+         <LoadingModal message={'Compressing'} visible={loading} behavior={'custom'} />
       </KeyboardAvoidingView>
    );
 }

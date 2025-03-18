@@ -872,37 +872,31 @@ class MediaService: RCTEventEmitter {
         return
       }
       
-      let options = PHImageRequestOptions()
-      options.isSynchronous = true
-      options.deliveryMode = .highQualityFormat
+      let options = PHVideoRequestOptions()
+      options.isNetworkAccessAllowed = true  // Allow iCloud downloads if needed
       
-      if asset.mediaType == .image {
-        PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, _, _, info in
-          guard let data = data else {
-            completion(nil, "Failed to get image data")
-            return
-          }
+      PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { avAsset, _, exportSession in
+        if let urlAsset = avAsset as? AVURLAsset {
+          // ✅ Normal video case
+          completion(urlAsset.url, nil)
+        } else if let composition = avAsset as? AVComposition {
+          // ⚠️ Slow-motion video case (AVComposition has no direct file URL)
+          let exportSession = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetHighestQuality)
+          let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).mp4")
           
-          let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).jpg")
-          do {
-            try data.write(to: tempURL)
-            completion(tempURL, nil)
-          } catch {
-            completion(nil, "Failed to save image file")
+          exportSession?.outputURL = tempURL
+          exportSession?.outputFileType = .mp4
+          exportSession?.shouldOptimizeForNetworkUse = false  // Ensures max quality
+          exportSession?.exportAsynchronously {
+            if exportSession?.status == .completed {
+              completion(tempURL, nil)
+            } else {
+              completion(nil, "Failed to export Slo-Mo video")
+            }
           }
+        } else {
+          completion(nil, "Unsupported asset type")
         }
-      } else if asset.mediaType == .video {
-        let videoOptions = PHVideoRequestOptions()
-        videoOptions.isNetworkAccessAllowed = true
-        PHImageManager.default().requestAVAsset(forVideo: asset, options: videoOptions) { avAsset, _, _ in
-          if let urlAsset = avAsset as? AVURLAsset {
-            completion(urlAsset.url, nil)
-          } else {
-            completion(nil, "Failed to get video file")
-          }
-        }
-      } else {
-        completion(nil, "Unsupported asset type")
       }
       
       return

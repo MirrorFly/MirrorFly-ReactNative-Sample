@@ -1,15 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { I18nManager, Image, Platform, StyleSheet, View } from 'react-native';
-import RNConvertPhAsset from 'react-native-convert-ph-asset';
+import { I18nManager, Image, StyleSheet, View } from 'react-native';
 import { AudioMicIcon, AudioMusicIcon, PlayIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import { getThumbBase64URL } from '../helpers/chatHelpers';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import { VIDEO_PLAYER_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
-import { mflog } from '../uikitMethods';
-import FileViewer from 'react-native-file-viewer';
 
 const VideoInfo = props => {
    const navigation = useNavigation();
@@ -36,35 +33,8 @@ const VideoInfo = props => {
    }
    const { fileDetails: { thumbImage: fileDetailsThumbImage, uri = '' } = {}, thumbImage = '' } = item;
 
-   React.useLayoutEffect(() => {
-      if (Platform.OS === 'ios' && uri.includes('ph://')) {
-         RNConvertPhAsset.convertVideoFromUrl({
-            url: uri,
-            convertTo: 'mov',
-            quality: 'original',
-         })
-            .then(response => {
-               item.fileDetails = { ...item.fileDetails, videoUri: response.path };
-            })
-            .catch(err => {
-               mflog(err);
-            });
-      } else {
-         item.fileDetails = { ...item.fileDetails, videoUri: uri };
-      }
-   }, []);
-
    const handleVideoPlayButton = () => {
-      FileViewer.open(item?.fileDetails?.uri, {
-         showOpenWithDialog: true,
-      })
-         .then(res => {
-            console.log('Document opened externally', res);
-         })
-         .catch(err => {
-            console.log('Error while opening Document', err);
-         });
-      // navigation.navigate(VIDEO_PLAYER_SCREEN, { item, audioOnly, audioType });
+      navigation.navigate(VIDEO_PLAYER_SCREEN, { item, audioOnly, audioType });
    };
 
    return (

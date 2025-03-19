@@ -855,7 +855,7 @@ export const handleConversationScollToBottom = () => {
    });
 };
 
-export const handleSendMedia = selectedImages => () => {
+export const handleSendMedia = selectedImages => {
    sdkLog('handleSendMedia clicked');
    let message = {
       messageType: 'media',

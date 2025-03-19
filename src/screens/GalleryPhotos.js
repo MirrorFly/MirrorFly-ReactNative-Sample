@@ -105,15 +105,15 @@ const GalleryPhotos = () => {
 
    const handleSelectImage = React.useCallback(
       item => {
-         const sizeError = validateFileSize(item.image.fileSize, getType(item.type));
+         const fileError = isValidFileToUpload(item.image.fileSize, getType(item.type), item.image.extension);
          const isImageSelected = selectedImages[item?.image?.uri];
 
          if (Object.keys(selectedImages).length >= 10 && !isImageSelected) {
             return showToast(stringSet.TOAST_MESSAGES.TOAST_SELECTED_MORE_THAN_ITEM);
          }
 
-         if (sizeError) {
-            return showToast(sizeError);
+         if (fileError) {
+            return showToast(fileError);
          }
          const transformedArray = {
             caption: '',

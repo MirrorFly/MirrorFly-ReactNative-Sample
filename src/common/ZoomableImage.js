@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Image, ImageBackground, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Image, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { getThumbBase64URL } from '../helpers/chatHelpers';
 import { useThemeColorPalatte } from '../redux/reduxHook';
-
-// const config = { duration: 200, easing: Easing.linear };
 
 export default function ZoomableImage({ image, thumbImage }) {
    const { width: screenWidth, height: screenHeight } = useWindowDimensions();
@@ -17,7 +15,6 @@ export default function ZoomableImage({ image, thumbImage }) {
       if (image) {
          Image.getSize(image, (imgWidth, imgHeight) => {
             const aspectRatio = imgWidth / imgHeight;
-
             let newWidth = screenWidth;
             let newHeight = screenWidth / aspectRatio;
 
@@ -55,26 +52,24 @@ export default function ZoomableImage({ image, thumbImage }) {
       transform: [{ scale: scale.value }, { translateX: translate.value.x }, { translateY: translate.value.y }],
    }));
 
-   console.log('thumbImage ==> ', thumbImage);
-
    return (
       <View style={styles.root(themeColorPalatte.screenBgColor)}>
          <GestureDetector gesture={pinch}>
             <Animated.View style={[animatedStyle, styles.center]}>
-               <ImageBackground
-                  resizeMode="cover"
-                  style={styles.image(imageSize.width, imageSize.height)}
-                  alt={'fileName'}
-                  source={{ uri: getThumbBase64URL(thumbImage) }}>
-                  <Image
-                     style={{
-                        width: imageSize.width,
-                        height: imageSize.height,
-                        resizeMode: 'contain',
-                     }}
-                     source={{ uri: image }}
-                  />
-               </ImageBackground>
+               {/* Thumbnail (Always Visible Until Main Image Loads) */}
+               <Image
+                  style={[styles.image(imageSize.width, imageSize.height), { position: 'absolute' }]}
+                  source={{ uri: getThumbBase64URL(thumbImage) }}
+               />
+
+               {/* Main Image (Fades in smoothly) */}
+               <Image
+                  style={[styles.image(imageSize.width, imageSize.height), { position: 'absolute' }]}
+                  source={{ uri: image }}
+                  // onLoad={() => {
+                  //    opacity.value = withTiming(1, { duration: 300 }); // Smooth fade-in
+                  // }}
+               />
             </Animated.View>
          </GestureDetector>
       </View>
@@ -93,8 +88,8 @@ const styles = StyleSheet.create({
       alignItems: 'center',
    },
    image: (w, h) => ({
-      borderRadius: 5,
       width: w,
       height: h,
+      borderRadius: 5,
    }),
 });

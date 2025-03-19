@@ -7,7 +7,18 @@ import commonStyles from '../styles/commonStyles';
 function PostView({ item }) {
    const { msgId } = item;
 
-   const { msgBody: { message_type } = {} } = item;
+   const {
+      msgBody: {
+         message_type,
+         media: {
+            androidWidth,
+            androidHeight,
+            local_path,
+            thumb_image,
+            file: { fileDetails: { uri, thumb_image: fileDetailsthumb_image } = {} } = {},
+         } = {},
+      } = {},
+   } = item;
 
    return (
       <View style={[commonStyles.flex1]} key={msgId}>
@@ -15,10 +26,10 @@ function PostView({ item }) {
             {
                image: (
                   <ZoomableImage
-                     image={item.msgBody?.media?.local_path || item.msgBody?.media?.file?.fileDetails?.uri}
-                     thumbImage={
-                        item.msgBody?.media?.thumb_image || item.msgBody?.media?.file?.fileDetails?.thumb_image
-                     }
+                     image={local_path || uri}
+                     androidHeight={androidHeight * 2}
+                     androidWidth={androidWidth * 2}
+                     thumbImage={thumb_image || fileDetailsthumb_image}
                   />
                ),
                audio: <VideoInfo audioOnly={true} selectedMedia={item.msgBody} />,

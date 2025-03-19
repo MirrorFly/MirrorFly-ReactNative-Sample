@@ -42,7 +42,7 @@ const PostPreViewPage = () => {
    };
 
    const initialPage = React.useMemo(() => {
-      return messageList.findIndex(message => message.msgId === msgId) || messageList.length - 1;
+      return messageList.findIndex(message => message.msgId === msgId);
    }, [messageList]);
 
    React.useEffect(() => {
@@ -58,7 +58,7 @@ const PostPreViewPage = () => {
             onPageScroll={handlePageSelected}>
             {messageList.map?.((item, index) => (
                <React.Fragment key={item.msgId}>
-                  {Math.abs(index - currentIndex) <= 1 ? <PostView item={item} /> : <View />}
+                  {index === 0 || Math.abs(index - currentIndex) <= 1 ? <PostView item={item} /> : <View />}
                </React.Fragment>
             ))}
          </PagerView>

@@ -559,7 +559,7 @@ export const isValidFileToUpload = (size, mediaTypeFile, extension) => {
          return message;
       }
    }
-   if (!ALLOWED_ALL_FILE_FORMATS.includes(extension?.toLowerCase())) {
+   if (!ALLOWED_ALL_FILE_FORMATS.includes(extension?.toLowerCase()) || !size) {
       return 'The file format is not supported';
    }
    return '';

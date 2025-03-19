@@ -42,12 +42,12 @@ const PostPreViewPage = () => {
    };
 
    const initialPage = React.useMemo(() => {
-      const selectedMsgIndex = messageList.findIndex(message => {
-         return message.msgId === msgId;
-      });
-      setCurrentIndex(selectedMsgIndex);
-      return selectedMsgIndex === -1 ? messageList.length - 1 : selectedMsgIndex;
-   }, [messageList.length]);
+      return messageList.findIndex(message => message.msgId === msgId) || messageList.length - 1;
+   }, [messageList]);
+
+   React.useEffect(() => {
+      setCurrentIndex(initialPage);
+   }, [initialPage]);
 
    const renderMediaPages = React.useMemo(() => {
       return (
@@ -56,12 +56,14 @@ const PostPreViewPage = () => {
             style={commonStyles.flex1}
             initialPage={initialPage}
             onPageScroll={handlePageSelected}>
-            {messageList.map?.(item => (
-               <PostView key={item.msgId} item={item} />
+            {messageList.map?.((item, index) => (
+               <React.Fragment key={item.msgId}>
+                  {Math.abs(index - currentIndex) <= 1 ? <PostView item={item} /> : <View />}
+               </React.Fragment>
             ))}
          </PagerView>
       );
-   }, [messageList]);
+   }, [messageList, currentIndex]);
 
    return (
       <GestureHandlerRootView style={commonStyles.flex1}>

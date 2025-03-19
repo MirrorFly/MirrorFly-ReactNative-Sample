@@ -40,4 +40,4 @@ function PostView({ item }) {
    );
 }
 
-export default PostView;
+export default React.memo(PostView);

@@ -31,7 +31,9 @@ import { getStringSet } from '../localization/stringSet';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import { mediaCompress, sdkLog } from '../SDK/utils';
 import commonStyles from '../styles/commonStyles';
-import { CAMERA_SCREEN, GALLERY_PHOTOS_SCREEN } from './constants';
+import { CAMERA_SCREEN, GALLERY_PHOTOS_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
+import { CommonActions } from '@react-navigation/native';
+import RootNavigation from '../Navigation/rootNavigation';
 
 function MediaPreView() {
    const chatUser = getCurrentChatUser();
@@ -46,6 +48,7 @@ function MediaPreView() {
    const [loading, setLoading] = React.useState(false);
    const chatType = MIX_BARE_JID.test(chatUser) ? CHAT_TYPE_GROUP : '';
    const [componentSelectedImages, setComponentSelectedImages] = React.useState(selectedImages);
+   const [loadingMessage, setLoadingMessage] = React.useState('Compressing');
 
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
@@ -54,50 +57,61 @@ function MediaPreView() {
       };
    }, []);
 
-   React.useEffect(() => {
-      sdkLog('componentSelectedImages.length ==>', componentSelectedImages.length);
+   const compressSelectedMedia = async () => {
       if (componentSelectedImages.length === 0) {
          return;
       }
-      setLoading(true); // Show loader before processing
 
-      const compressTasks = componentSelectedImages.map((element, index) => {
+      setLoading(true);
+      setLoadingMessage(`Compressing 1 of ${componentSelectedImages.length}`);
+
+      let sortedMedia = [];
+
+      for (let index = 0; index < componentSelectedImages.length; index++) {
+         const element = componentSelectedImages[index];
          const type = element.fileDetails.type.includes('/')
             ? element.fileDetails.type.split('/')[0]
             : element.fileDetails.type;
 
-         return mediaCompress({
-            uri: element.fileDetails.uri,
-            type,
-            quality: 'medium',
-         }).then(response => {
-            return {
-               index, // Store original index
+         // ✅ Update message **before** starting compression
+         setLoadingMessage(`Compressing ${index + 1} of ${componentSelectedImages.length}`);
+
+         try {
+            const response = await mediaCompress({
+               uri: element.fileDetails.uri,
+               type,
+               quality: 'medium',
+            });
+
+            sortedMedia.push({
+               index,
                compressedData: {
-                  ...element, // Keep other details
+                  ...element,
                   fileDetails: {
                      ...element.fileDetails,
-                     uri: response.message.outputPath || element.fileDetails.uri, // Overwrite URI with compressed file path
-                     fileSize: response.message.fileSize || element.fileDetails.fileSize, // Update file size
+                     uri: response.message.outputPath || element.fileDetails.uri,
+                     fileSize: response.message.fileSize || element.fileDetails.fileSize,
                      extension: response.message.extension || element.fileDetails.extension,
                   },
                },
-            };
-         });
-      });
-
-      Promise.all(compressTasks)
-         .then(updatedMedia => {
-            const sortedMedia = updatedMedia.sort((a, b) => a.index - b.index).map(item => item.compressedData);
-            setComponentSelectedImages(sortedMedia); // Update state with compressed URIs in order
-         })
-         .catch(error => {
+            });
+         } catch (error) {
             sdkLog('Compression error ==> ', error);
-         })
-         .finally(() => {
-            setLoading(false); // Close loader once all are done
-         });
-   }, [selectedImages]);
+         }
+      }
+
+      // ✅ Sort and update state
+      sortedMedia = sortedMedia.sort((a, b) => a.index - b.index).map(item => item.compressedData);
+      setComponentSelectedImages(sortedMedia);
+
+      // ✅ Close loader first
+      setLoading(false);
+
+      // ✅ Delay execution slightly to ensure UI updates before navigation
+      setTimeout(() => {
+         handleSendMedia(sortedMedia); // Ensure navigation happens AFTER loader is hidden
+      }, 100);
+   };
 
    const handleIndexChange = i => {
       pagerRef.current.setPage(i);
@@ -119,10 +133,15 @@ function MediaPreView() {
    };
 
    const handleAddButton = () => {
-      navigation.navigate(GALLERY_PHOTOS_SCREEN, {
+      const params = {
          grpView,
          selectedImages: componentSelectedImages,
-      });
+      };
+
+      RootNavigation.resetNavigationStack(navigation, GALLERY_PHOTOS_SCREEN, params, [
+         MEDIA_PRE_VIEW_SCREEN,
+         GALLERY_PHOTOS_SCREEN,
+      ]);
    };
 
    const renderMediaPages = React.useMemo(() => {
@@ -212,7 +231,7 @@ function MediaPreView() {
                   cursorColor={themeColorPalatte.primaryColor}
                />
                <IconButton
-                  onPress={handleSendMedia(componentSelectedImages)}
+                  onPress={compressSelectedMedia}
                   style={[commonStyles.alignItemsFlexEnd, commonStyles.r_5, commonStyles.b_m5]}>
                   <SendBlueIcon color="#fff" />
                </IconButton>
@@ -262,7 +281,7 @@ function MediaPreView() {
             onClose={toggleEmojiPicker}
             onSelect={handleEmojiSelect}
          /> */}
-         <LoadingModal message={'Compressing'} visible={loading} behavior={'custom'} />
+         <LoadingModal message={loadingMessage} visible={loading} behavior={'custom'} />
       </KeyboardAvoidingView>
    );
 }

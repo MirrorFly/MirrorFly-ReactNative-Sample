@@ -12,7 +12,6 @@ import {
    isValidFileToUpload,
    mediaObjContructor,
    showToast,
-   validateFileSize,
 } from '../helpers/chatHelpers';
 import { getStringSet } from '../localization/stringSet';
 import { useThemeColorPalatte } from '../redux/reduxHook';
@@ -207,6 +206,10 @@ const GalleryPhotos = () => {
       }
    };
 
+   const removeInvalidImage = uri => {
+      setPhotos(prevPhotos => prevPhotos.filter(item => item.node.image.uri !== uri));
+   };
+
    const renderItem = ({ item }) => {
       const isImageSelected = selectedImages[item?.node?.image.uri];
 
@@ -237,6 +240,7 @@ const GalleryPhotos = () => {
                            ? getThumbBase64URL(item?.node?.image.thumbImage)
                            : item?.node?.image.uri,
                   }}
+                  // onError={() => removeInvalidImage(item.node.image.uri)} // Remove if error occurs
                />
                {Boolean(isImageSelected) && (
                   <View

@@ -86,7 +86,7 @@ const GalleryPhotos = () => {
    };
 
    const handleMedia = item => {
-      const fileError = isValidFileToUpload(item.image.fileSize, getType(item.type), item.image.extension);
+      const fileError = isValidFileToUpload(item);
       if (fileError) {
          return showToast(fileError);
       }
@@ -104,7 +104,7 @@ const GalleryPhotos = () => {
 
    const handleSelectImage = React.useCallback(
       item => {
-         const fileError = isValidFileToUpload(item.image.fileSize, getType(item.type), item.image.extension);
+         const fileError = isValidFileToUpload(item);
          const isImageSelected = selectedImages[item?.image?.uri];
 
          if (Object.keys(selectedImages).length >= 10 && !isImageSelected) {

@@ -551,7 +551,11 @@ const getMaxAllowedFileSize = mediaType => {
    return fileSize;
 };
 
-export const isValidFileToUpload = (size, mediaTypeFile, extension) => {
+export const isValidFileToUpload = item => {
+   const {
+      image: { fileSize: size, type, extension, width, height, playableDuration },
+   } = item;
+   const mediaTypeFile = getType(type);
    const maxAllowedSize = getMaxAllowedFileSize(mediaTypeFile);
    if (size >= maxAllowedSize) {
       const message = `File size is too large. Try uploading file size below ${convertBytesToKB(maxAllowedSize)}`;
@@ -559,7 +563,13 @@ export const isValidFileToUpload = (size, mediaTypeFile, extension) => {
          return message;
       }
    }
-   if (!ALLOWED_ALL_FILE_FORMATS.includes(extension?.toLowerCase()) || !size) {
+   if (
+      !ALLOWED_ALL_FILE_FORMATS.includes(extension?.toLowerCase()) ||
+      !size ||
+      width <= 0 ||
+      height <= 0 ||
+      playableDuration <= 1
+   ) {
       return 'The file format is not supported';
    }
    return '';

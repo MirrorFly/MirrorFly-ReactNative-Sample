@@ -12,7 +12,6 @@ import {
    isValidFileToUpload,
    mediaObjContructor,
    showToast,
-   validateFileSize,
 } from '../helpers/chatHelpers';
 import { getStringSet } from '../localization/stringSet';
 import { useThemeColorPalatte } from '../redux/reduxHook';
@@ -87,7 +86,7 @@ const GalleryPhotos = () => {
    };
 
    const handleMedia = item => {
-      const fileError = isValidFileToUpload(item.image.fileSize, getType(item.type), item.image.extension);
+      const fileError = isValidFileToUpload(item);
       if (fileError) {
          return showToast(fileError);
       }
@@ -105,7 +104,7 @@ const GalleryPhotos = () => {
 
    const handleSelectImage = React.useCallback(
       item => {
-         const fileError = isValidFileToUpload(item.image.fileSize, getType(item.type), item.image.extension);
+         const fileError = isValidFileToUpload(item);
          const isImageSelected = selectedImages[item?.image?.uri];
 
          if (Object.keys(selectedImages).length >= 10 && !isImageSelected) {
@@ -207,6 +206,10 @@ const GalleryPhotos = () => {
       }
    };
 
+   const removeInvalidImage = uri => {
+      setPhotos(prevPhotos => prevPhotos.filter(item => item.node.image.uri !== uri));
+   };
+
    const renderItem = ({ item }) => {
       const isImageSelected = selectedImages[item?.node?.image.uri];
 
@@ -237,6 +240,7 @@ const GalleryPhotos = () => {
                            ? getThumbBase64URL(item?.node?.image.thumbImage)
                            : item?.node?.image.uri,
                   }}
+                  // onError={() => removeInvalidImage(item.node.image.uri)} // Remove if error occurs
                />
                {Boolean(isImageSelected) && (
                   <View

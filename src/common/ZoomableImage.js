@@ -66,9 +66,6 @@ export default function ZoomableImage({ image, thumbImage }) {
                <Image
                   style={[styles.image(imageSize.width, imageSize.height), { position: 'absolute' }]}
                   source={{ uri: image }}
-                  // onLoad={() => {
-                  //    opacity.value = withTiming(1, { duration: 300 }); // Smooth fade-in
-                  // }}
                />
             </Animated.View>
          </GestureDetector>

@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import {
    BackHandler,
@@ -20,20 +20,22 @@ import TextInput from '../common/TextInput';
 import VideoInfo from '../common/VideoInfo';
 import UserAvathar from '../components/UserAvathar';
 import {
+   calculateWidthAndHeight,
    getCurrentChatUser,
    getThumbBase64URL,
+   getThumbImage,
    getType,
    getUserIdFromJid,
+   getVideoThumbImage,
    handleSendMedia,
 } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../helpers/constants';
 import { getStringSet } from '../localization/stringSet';
+import RootNavigation from '../Navigation/rootNavigation';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import { mediaCompress, sdkLog } from '../SDK/utils';
 import commonStyles from '../styles/commonStyles';
 import { CAMERA_SCREEN, GALLERY_PHOTOS_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
-import { CommonActions } from '@react-navigation/native';
-import RootNavigation from '../Navigation/rootNavigation';
 
 function MediaPreView() {
    const chatUser = getCurrentChatUser();
@@ -49,6 +51,20 @@ function MediaPreView() {
    const chatType = MIX_BARE_JID.test(chatUser) ? CHAT_TYPE_GROUP : '';
    const [componentSelectedImages, setComponentSelectedImages] = React.useState(selectedImages);
    const [loadingMessage, setLoadingMessage] = React.useState('Compressing');
+   const [isActive, setIsActive] = React.useState(false);
+   const abortControllerRef = React.useRef(null);
+
+   useFocusEffect(
+      React.useCallback(() => {
+         setIsActive(true);
+         abortControllerRef.current = new AbortController(); // Create a new AbortController
+
+         return () => {
+            setIsActive(false);
+            abortControllerRef.current?.abort(); // Cancel any ongoing compression
+         };
+      }, []),
+   );
 
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
@@ -58,7 +74,7 @@ function MediaPreView() {
    }, []);
 
    const compressSelectedMedia = async () => {
-      if (componentSelectedImages.length === 0) {
+      if (!isActive || componentSelectedImages.length === 0) {
          return;
       }
 
@@ -68,20 +84,46 @@ function MediaPreView() {
       let sortedMedia = [];
 
       for (let index = 0; index < componentSelectedImages.length; index++) {
-         const element = componentSelectedImages[index];
-         const type = element.fileDetails.type.includes('/')
-            ? element.fileDetails.type.split('/')[0]
-            : element.fileDetails.type;
+         if (!isActive || abortControllerRef.current?.signal.aborted) {
+            return; // ✅ Stop if screen is left
+         }
 
-         // ✅ Update message **before** starting compression
+         const element = componentSelectedImages[index];
+         const fileDetails = element.fileDetails;
+         const type = fileDetails.type.includes('/') ? fileDetails.type.split('/')[0] : fileDetails.type;
+
          setLoadingMessage(`Compressing ${index + 1} of ${componentSelectedImages.length}`);
 
          try {
             const response = await mediaCompress({
-               uri: element.fileDetails.uri,
+               uri: fileDetails.uri,
                type,
                quality: 'medium',
+               signal: abortControllerRef.current?.signal, // Pass the abort signal
             });
+
+            if (!isActive || abortControllerRef.current?.signal.aborted) {
+               return; // ✅ Stop after compression if needed
+            }
+
+            const _uri = response.message.outputPath || fileDetails.uri;
+            let mediaDimension = {},
+               thumbImage = fileDetails?.thumbImage;
+
+            try {
+               if (type === 'video') {
+                  mediaDimension = calculateWidthAndHeight(fileDetails?.width, fileDetails?.height);
+               }
+               const { webWidth = 500, webHeight = 500 } = mediaDimension;
+
+               if (type === 'image' && !fileDetails?.thumbImage) {
+                  thumbImage = await getThumbImage(_uri);
+               } else if (type === 'video' && !fileDetails?.thumbImage) {
+                  thumbImage = await getVideoThumbImage(_uri, fileDetails?.duration, webWidth, webHeight);
+               }
+            } catch (error) {
+               console.log('Thumbnail generation failed:', error);
+            }
 
             sortedMedia.push({
                index,
@@ -89,30 +131,38 @@ function MediaPreView() {
                   ...element,
                   fileDetails: {
                      ...element.fileDetails,
-                     uri: response.message.outputPath || element.fileDetails.uri,
-                     fileSize: response.message.fileSize || element.fileDetails.fileSize,
-                     extension: response.message.extension || element.fileDetails.extension,
+                     uri: _uri,
+                     fileSize: response.message.fileSize || fileDetails.fileSize,
+                     extension: response.message.extension || fileDetails.extension,
+                     thumbImage,
                   },
                },
             });
          } catch (error) {
+            console.log('error ==> ', error);
+            if (error.name === 'AbortError') {
+               sdkLog('Compression aborted.');
+               return;
+            }
             sdkLog('Compression error ==> ', error);
          }
       }
 
-      // ✅ Sort and update state
+      if (!isActive || abortControllerRef.current?.signal.aborted) {
+         return; // ✅ Stop before updating state
+      }
+
       sortedMedia = sortedMedia.sort((a, b) => a.index - b.index).map(item => item.compressedData);
       setComponentSelectedImages(sortedMedia);
 
-      // ✅ Close loader first
       setLoading(false);
 
-      // ✅ Delay execution slightly to ensure UI updates before navigation
       setTimeout(() => {
-         handleSendMedia(sortedMedia); // Ensure navigation happens AFTER loader is hidden
+         if (isActive) {
+            handleSendMedia(sortedMedia);
+         }
       }, 100);
    };
-
    const handleIndexChange = i => {
       pagerRef.current.setPage(i);
    };

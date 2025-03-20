@@ -568,7 +568,7 @@ export const isValidFileToUpload = item => {
       !size ||
       width <= 0 ||
       height <= 0 ||
-      playableDuration <= 1
+      (mediaTypeFile === 'video' && playableDuration <= 1)
    ) {
       return 'The file format is not supported';
    }

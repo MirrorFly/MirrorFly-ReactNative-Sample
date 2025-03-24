@@ -116,7 +116,13 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
       statusCode,
       userJid,
       data = [],
-   } = await SDK.getChatMessages(fromUserJId, page, config.chatMessagesSizePerPage);
+      message,
+   } = await SDK.getChatMessages({
+      toJid: fromUserJId,
+      lastMessageId,
+      size: config.chatMessagesSizePerPage,
+      source: 'db',
+   });
    if (statusCode === 200) {
       let hasEqualDataFetched = data.length === config.chatMessagesSizePerPage;
       if (data.length && hasEqualDataFetched) {
@@ -124,6 +130,9 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
       }
       hasNextChatPage[userId] = hasEqualDataFetched;
       store.dispatch(setChatMessages({ userJid, data, forceUpdate: page === 1 }));
+   }
+   if (statusCode !== 200) {
+      showToast(message);
    }
    return data;
 };

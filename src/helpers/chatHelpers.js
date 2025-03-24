@@ -553,15 +553,14 @@ const getMaxAllowedFileSize = mediaType => {
 
 export const isValidFileToUpload = item => {
    const {
-      image: { fileSize: size, type, extension, width, height, playableDuration },
+      type,
+      image: { fileSize: size, extension, width, height, playableDuration },
    } = item;
    const mediaTypeFile = getType(type);
    const maxAllowedSize = getMaxAllowedFileSize(mediaTypeFile);
    if (size >= maxAllowedSize) {
       const message = `File size is too large. Try uploading file size below ${convertBytesToKB(maxAllowedSize)}`;
-      if (mediaTypeFile) {
-         return message;
-      }
+      return message;
    }
    if (
       !ALLOWED_ALL_FILE_FORMATS.includes(extension?.toLowerCase()) ||

@@ -55,17 +55,6 @@ function MenuScreen() {
                yesButton: stringSet.BUTTON_LABEL.YES_BUTTON,
                yesAction: hanldeLogout,
             });
-         } else if (name === 'Export Log') {
-            FileViewer.open(SDK.getLogFilePath(), {
-               showOpenWithDialog: true,
-            })
-               .then(res => {
-                  console.log('Document opened externally', res);
-               })
-               .catch(err => {
-                  console.log('Error while opening Document', err);
-                  showToast(stringSet.TOAST_MESSAGES.NO_APPS_AVAILABLE);
-               });
          }
       };
 

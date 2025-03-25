@@ -1177,10 +1177,6 @@ export const settingsMenu = [
       name: getStringSet().SETTINGS_SCREEN.LOG_OUT_LABEL,
       icon: ExitIcon,
    },
-   {
-      name: 'Export Log',
-      icon: LogIcon,
-   },
 ];
 
 export const notificationMenu = [

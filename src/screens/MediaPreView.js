@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import {
    BackHandler,
@@ -14,22 +14,29 @@ import {
 import PagerView from 'react-native-pager-view';
 import IconButton from '../common/IconButton';
 import { DeleteBinIcon, LeftArrowIcon, PreViewAddIcon, RightArrowIcon, SendBlueIcon } from '../common/Icons';
+import LoadingModal from '../common/LoadingModal';
 import NickName from '../common/NickName';
 import TextInput from '../common/TextInput';
 import VideoInfo from '../common/VideoInfo';
 import UserAvathar from '../components/UserAvathar';
 import {
+   calculateWidthAndHeight,
    getCurrentChatUser,
    getThumbBase64URL,
+   getThumbImage,
    getType,
    getUserIdFromJid,
+   getVideoThumbImage,
    handleSendMedia,
 } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../helpers/constants';
 import { getStringSet } from '../localization/stringSet';
+import RootNavigation from '../Navigation/rootNavigation';
 import { useThemeColorPalatte } from '../redux/reduxHook';
+import { mediaCompress } from '../SDK/utils';
 import commonStyles from '../styles/commonStyles';
-import { CAMERA_SCREEN, GALLERY_PHOTOS_SCREEN } from './constants';
+import { mflog } from '../uikitMethods';
+import { CAMERA_SCREEN, GALLERY_PHOTOS_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
 
 function MediaPreView() {
    const chatUser = getCurrentChatUser();
@@ -41,8 +48,24 @@ function MediaPreView() {
    const pagerRef = React.useRef(null);
    const scrollRef = React.useRef();
    const [activeIndex, setActiveIndex] = React.useState(0);
+   const [loading, setLoading] = React.useState(false);
    const chatType = MIX_BARE_JID.test(chatUser) ? CHAT_TYPE_GROUP : '';
    const [componentSelectedImages, setComponentSelectedImages] = React.useState(selectedImages);
+   const [loadingMessage, setLoadingMessage] = React.useState('Compressing');
+   const [isActive, setIsActive] = React.useState(false);
+   const abortControllerRef = React.useRef(null);
+
+   useFocusEffect(
+      React.useCallback(() => {
+         setIsActive(true);
+         abortControllerRef.current = new AbortController(); // Create a new AbortController
+
+         return () => {
+            setIsActive(false);
+            abortControllerRef.current?.abort(); // Cancel any ongoing compression
+         };
+      }, []),
+   );
 
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
@@ -51,6 +74,95 @@ function MediaPreView() {
       };
    }, []);
 
+   const compressSelectedMedia = async () => {
+      if (!isActive || componentSelectedImages.length === 0) {
+         return;
+      }
+
+      setLoading(true);
+      setLoadingMessage(`Compressing 1 of ${componentSelectedImages.length}`);
+
+      let sortedMedia = [];
+
+      for (let index = 0; index < componentSelectedImages.length; index++) {
+         if (!isActive || abortControllerRef.current?.signal.aborted) {
+            return; // ✅ Stop if screen is left
+         }
+
+         const element = componentSelectedImages[index];
+         const fileDetails = element.fileDetails;
+         const type = fileDetails.type.includes('/') ? fileDetails.type.split('/')[0] : fileDetails.type;
+
+         setLoadingMessage(`Compressing ${index + 1} of ${componentSelectedImages.length}`);
+
+         try {
+            const response = await mediaCompress({
+               uri: fileDetails.uri,
+               type,
+               quality: 'medium',
+               signal: abortControllerRef.current?.signal, // Pass the abort signal
+            });
+            console.log('response ==> ', response);
+            if (!isActive || abortControllerRef.current?.signal.aborted) {
+               return; // ✅ Stop after compression if needed
+            }
+
+            const _uri = response.outputPath || fileDetails.uri;
+            let mediaDimension = {},
+               thumbImage = fileDetails?.thumbImage;
+
+            try {
+               if (type === 'video') {
+                  mediaDimension = calculateWidthAndHeight(fileDetails?.width, fileDetails?.height);
+               }
+               const { webWidth = 500, webHeight = 500 } = mediaDimension;
+
+               if (type === 'image' && !fileDetails?.thumbImage) {
+                  thumbImage = await getThumbImage(_uri);
+               } else if (type === 'video' && !fileDetails?.thumbImage) {
+                  thumbImage = await getVideoThumbImage(_uri, fileDetails?.duration, webWidth, webHeight);
+               }
+            } catch (error) {
+               console.log('Thumbnail generation failed:', error);
+            }
+
+            sortedMedia.push({
+               index,
+               compressedData: {
+                  ...element,
+                  fileDetails: {
+                     ...element.fileDetails,
+                     uri: _uri,
+                     fileSize: response.fileSize || fileDetails.fileSize,
+                     extension: response.extension || fileDetails.extension,
+                     thumbImage,
+                  },
+               },
+            });
+         } catch (error) {
+            console.log('error ==> ', error);
+            if (error.name === 'AbortError') {
+               return;
+            }
+            mflog('Compression error ==> ', error);
+         }
+      }
+
+      if (!isActive || abortControllerRef.current?.signal.aborted) {
+         return; // ✅ Stop before updating state
+      }
+
+      sortedMedia = sortedMedia.sort((a, b) => a.index - b.index).map(item => item.compressedData);
+      setComponentSelectedImages(sortedMedia);
+
+      setLoading(false);
+
+      setTimeout(() => {
+         if (isActive) {
+            handleSendMedia(sortedMedia);
+         }
+      }, 100);
+   };
    const handleIndexChange = i => {
       pagerRef.current.setPage(i);
    };
@@ -71,10 +183,15 @@ function MediaPreView() {
    };
 
    const handleAddButton = () => {
-      navigation.navigate(GALLERY_PHOTOS_SCREEN, {
+      const params = {
          grpView,
          selectedImages: componentSelectedImages,
-      });
+      };
+
+      RootNavigation.resetNavigationStack(navigation, GALLERY_PHOTOS_SCREEN, params, [
+         MEDIA_PRE_VIEW_SCREEN,
+         GALLERY_PHOTOS_SCREEN,
+      ]);
    };
 
    const renderMediaPages = React.useMemo(() => {
@@ -164,7 +281,7 @@ function MediaPreView() {
                   cursorColor={themeColorPalatte.primaryColor}
                />
                <IconButton
-                  onPress={handleSendMedia(componentSelectedImages)}
+                  onPress={compressSelectedMedia}
                   style={[commonStyles.alignItemsFlexEnd, commonStyles.r_5, commonStyles.b_m5]}>
                   <SendBlueIcon color="#fff" />
                </IconButton>
@@ -214,6 +331,7 @@ function MediaPreView() {
             onClose={toggleEmojiPicker}
             onSelect={handleEmojiSelect}
          /> */}
+         <LoadingModal message={loadingMessage} visible={loading} behavior={'custom'} />
       </KeyboardAvoidingView>
    );
 }

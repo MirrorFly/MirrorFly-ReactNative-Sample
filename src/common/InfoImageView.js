@@ -31,7 +31,11 @@ function InfoImageView({ userId, type, scaledFontSize, ...props }) {
    }
 
    if (type === CHAT_TYPE_SINGLE && !imageUrl) {
-      return <Text style={{ color: '#fff', fontSize: scaledFontSize }}>{getUsernameGraphemes(_nickName)}</Text>;
+      return (
+         <View style={{ ...props.style }}>
+            <Text style={{ color: '#fff', fontSize: scaledFontSize }}>{getUsernameGraphemes(_nickName)}</Text>
+         </View>
+      );
    }
 
    return imageUrl ? (

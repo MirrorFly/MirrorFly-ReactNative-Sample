@@ -106,7 +106,6 @@ function ContactScreen() {
    };
 
    const filters = [
-      { fn: filterOutRecentChatUsers, data: recentChatList },
       { fn: filterOutParticipants, data: participants },
       // Add more filters here if needed
    ];

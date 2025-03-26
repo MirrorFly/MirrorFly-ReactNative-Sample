@@ -1,7 +1,11 @@
 package com.mirrorfly_rn
 
+import android.database.Cursor
+import android.net.Uri
 import android.os.Environment
 import android.os.StatFs
+import android.os.SystemClock
+import android.provider.MediaStore
 import android.util.Log
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JavaOnlyArray
@@ -12,7 +16,11 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import com.mirrorfly_rn.newfilecompression.compressfile.AsynTaskImageCompression
+import com.mirrorfly_rn.newfilecompression.controller.MediaController
+import com.mirrorfly_rn.newfilecompression.helper.VideoEditedInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -26,8 +34,10 @@ import retrofit2.Response
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.util.UUID
 import javax.crypto.Cipher
 import kotlin.math.roundToInt
+
 
 class MediaService(var reactContext: ReactApplicationContext?) :
     ReactContextBaseJavaModule(reactContext) {
@@ -47,6 +57,11 @@ class MediaService(var reactContext: ReactApplicationContext?) :
     private val activeDownloads = mutableMapOf<String, Job>()
     private val activeUploads = mutableMapOf<String, Job>()
     private var isAllPauseRequested: Boolean = false
+
+    /**
+     * To keep video compression info
+     */
+    private var videoEditedInfo: VideoEditedInfo? = null
 
     @ReactMethod
     fun baseUrlInit(baseURL: String) {
@@ -213,7 +228,10 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                     if (response == null || !response.isSuccessful) {
                         val statusCode = response?.code() ?: 500
                         val errorMessage = response?.errorBody()?.string() ?: "Unknown error"
-                        Log.e(name, "Chunk upload failed with status: ${response?.code()} - ${response?.message()}")
+                        Log.e(
+                            name,
+                            "Chunk upload failed with status: ${response?.code()} - ${response?.message()}"
+                        )
                         Log.e(name, "Error message: $errorMessage")
                         withContext(Dispatchers.Main) {
                             promise.resolve(Arguments.createMap().apply {
@@ -420,11 +438,11 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                     })
                 }
             } catch (e: Exception) {
-                    promise.resolve(Arguments.createMap().apply {
-                        putBoolean("success", false)
-                        putInt("statusCode", 500)
-                        putString("message", "Error encrypting file: ${e.message}")
-                    })
+                promise.resolve(Arguments.createMap().apply {
+                    putBoolean("success", false)
+                    putInt("statusCode", 500)
+                    putString("message", "Error encrypting file: ${e.message}")
+                })
             } finally {
                 activeUploads.remove(msgId)
             }
@@ -494,7 +512,10 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                 fis.close()
 
                 // Log the decrypted file size
-                Log.d("DecryptSmallFile", "Decrypted file path: $decryptedFilePath, size: ${decryptedFile.length()}")
+                Log.d(
+                    "DecryptSmallFile",
+                    "Decrypted file path: $decryptedFilePath, size: ${decryptedFile.length()}"
+                )
 
                 // Delete the original file if needed
                 val deleteSuccess = file.delete()
@@ -506,8 +527,14 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                     promise.resolve(Arguments.createMap().apply {
                         putBoolean("success", moveSuccess)
                         putInt("statusCode", if (moveSuccess) 200 else 500)
-                        putString("message", if (moveSuccess) "File decrypted and moved successfully" else "Failed to move decrypted file")
-                        putString("decryptedFilePath", "file://${file.absolutePath}") // Return the updated file path
+                        putString(
+                            "message",
+                            if (moveSuccess) "File decrypted and moved successfully" else "Failed to move decrypted file"
+                        )
+                        putString(
+                            "decryptedFilePath",
+                            "file://${file.absolutePath}"
+                        ) // Return the updated file path
                         putInt("decryptedFileSize", file.length().toInt())
                         putBoolean("inputFileDeleted", deleteSuccess)
                     })
@@ -631,7 +658,7 @@ class MediaService(var reactContext: ReactApplicationContext?) :
         return response.body()?.bytes() ?: ByteArray(0)
     }
 
-    private suspend fun uploadChunk(uploadUrl: String, chunk: ByteArray): Pair<Boolean, Int>  {
+    private suspend fun uploadChunk(uploadUrl: String, chunk: ByteArray): Pair<Boolean, Int> {
         return try {
             val requestBody: RequestBody =
                 RequestBody.create("application/octet-stream".toMediaTypeOrNull(), chunk)
@@ -645,13 +672,16 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                     Pair(true, response.code())
                 } else {
                     val errorMessage = response.errorBody()?.string() ?: "Unknown error"
-                    Log.e(name, "Chunk upload failed with status: ${response.code()} - ${response.message()}")
+                    Log.e(
+                        name,
+                        "Chunk upload failed with status: ${response.code()} - ${response.message()}"
+                    )
                     Log.e(name, "Error message: $errorMessage")
                     Pair(false, response.code())
                 }
             } else {
                 Log.e(name, "Response is null, chunk upload failed.")
-                Pair(false,  500)
+                Pair(false, 500)
             }
         } catch (e: Exception) {
             Log.e(name, "Error uploading chunk: $e")
@@ -793,7 +823,10 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                             ?.execute()
                     if (response == null || !response.isSuccessful) {
                         val errorMessage = response?.errorBody()?.string() ?: "Unknown error"
-                        Log.e(name, "Chunk upload failed with status: ${response?.code()} - ${response?.message()}")
+                        Log.e(
+                            name,
+                            "Chunk upload failed with status: ${response?.code()} - ${response?.message()}"
+                        )
                         Log.e(name, "Error message: $errorMessage")
                         withContext(Dispatchers.Main) {
                             promise.resolve(Arguments.createMap().apply {
@@ -841,6 +874,194 @@ class MediaService(var reactContext: ReactApplicationContext?) :
                     promise.reject("DOWNLOAD_ERROR", "Error downloading file: $e")
                 }
             }
+        }
+    }
+
+    private fun cleanVideoPath(path: String?): String? {
+        if (path == null || path.isEmpty()) {
+            return null // Handle invalid input
+        }
+
+        val uri = Uri.parse(path)
+
+        return if (path.startsWith("file://")) {
+            path.replace("file://", "") // Remove file:// prefix
+        } else if (path.startsWith("content://")) {
+            getRealPathFromURI(uri) // Convert content:// URI to actual file path
+        } else {
+            path // Already a valid file path
+        }
+    }
+
+    private fun getRealPathFromURI(contentUri: Uri): String? {
+        var cursor: Cursor? = null
+        try {
+            val proj = arrayOf(MediaStore.Video.Media.DATA)
+            cursor =
+                reactApplicationContext.contentResolver.query(contentUri, proj, null, null, null)
+            if (cursor != null && cursor.moveToFirst()) {
+                val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
+                return cursor.getString(columnIndex)
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        } finally {
+            cursor?.close()
+        }
+        return null // Return null if conversion fails
+    }
+
+    private fun deleteFile(file: File) {
+        try {
+            if (file.delete()) {
+                Log.d(name, "deleteFile: Success")
+            }
+        } catch (exception: Exception) {
+            Log.e(name, "deleteFile: ${exception.toString()}")
+        }
+
+    }
+
+    @ReactMethod
+    fun compressImageFile(obj: ReadableMap, promise: Promise) {
+        try {
+            val inputPath = if (obj.hasKey("imagePath")) obj.getString("imagePath") else ""
+            val quality = if (obj.hasKey("quality")) obj.getString("quality") ?: "best" else "best"
+            var _quality = 95 // Use var instead of val
+
+            when (quality) {
+                "best" -> _quality = 95  // Adjusted for 0-100 scale
+                "high" -> _quality = 80
+                "medium" -> _quality = 65
+                "low" -> _quality = 35
+                "uncompressed" -> _quality = 100 // 100 means no compression
+                else -> _quality = 80 // Default case
+            }
+
+            // Set the compression quality
+            AsynTaskImageCompression.setCompressionQuality(_quality)
+
+            val formatedPath = cleanVideoPath(inputPath)
+
+            if (formatedPath == null || formatedPath.isEmpty()) {
+                val result: WritableMap = WritableNativeMap()
+                result.putBoolean("success", false)
+                result.putInt("statusCode", 400)
+                result.putString("message", "Invalid input path")
+                promise.resolve(result)
+                return;
+            }
+
+
+            val outputDir = reactApplicationContext.cacheDir
+            val fileName = "compressed_" + UUID.randomUUID().toString() + ".jpg"
+            val outputFile = File(outputDir, fileName)
+            val outputPath = outputFile.absolutePath
+
+            AsynTaskImageCompression.compress(
+                formatedPath,
+                outputPath,
+                object : AsynTaskImageCompression.ImageCompressionListener {
+                    override fun onCompressed(taskID: Int, compressedPath: String) {
+                        Log.d("IMAGE_COMPRESS", "Image File Compress Completed..")
+                        val compressedFile = File(outputPath)
+                        val fileSize = compressedFile.length()
+                        val result: WritableMap = WritableNativeMap()
+                        result.putBoolean("success", true)
+                        result.putInt("statusCode", 200)
+                        result.putString("outputPath", "file://$outputPath")
+                        result.putString("message", "Image File Compress Completed")
+                        result.putDouble("fileSize", fileSize.toDouble())
+                        promise.resolve(result)
+                    }
+
+                    override fun onCompressionFailed(taskID: Int) {
+                        Log.d("IMAGE_COMPRESS", "Image File Compress Failed..")
+                        deleteFile(File(outputPath))
+                        val result: WritableMap = WritableNativeMap()
+                        result.putBoolean("success", false)
+                        result.putInt("statusCode", 500)
+                        result.putString("message", "Image compression failed")
+                        promise.resolve(result)
+                    }
+                })
+        } catch (e: Exception) {
+            val errorResult: WritableMap = WritableNativeMap()
+            errorResult.putBoolean("success", false)
+            errorResult.putInt("statusCode", 500)
+            errorResult.putString("message", e.message ?: "Unknown error")
+
+            promise.resolve(errorResult) // Ensure correct data type
+        }
+    }
+
+
+    @ReactMethod
+    fun compressVideoFile(obj: ReadableMap, promise: Promise) {
+        try {
+            val startTime = SystemClock.uptimeMillis()
+            val inputPath = if (obj.hasKey("videoPath")) obj.getString("videoPath") else ""
+            val quality = if (obj.hasKey("quality")) obj.getString("quality") else "medium"
+            val formatedPath = cleanVideoPath(inputPath)
+            val outputDir = reactApplicationContext.cacheDir
+            val fileName = "compressed_" + UUID.randomUUID().toString() + ".mp4"
+            val outputFile = File(outputDir, fileName)
+            val outputPath = outputFile.absolutePath
+
+            val compressListener: MediaController.VideoConvertorListener =
+                object : MediaController.VideoConvertorListener {
+                    private var lastAvailableSize: Long = 0
+                    override fun checkConversionCanceled(): Boolean {
+                        return false
+                    }
+
+                    override fun didWriteData(availableSize: Long, progress: Float) {
+                        Log.d(
+                            "FILE_UPLOAD_TAG",
+                            "FileCompression_compressInprogress---available_size---$lastAvailableSize---progres----$progress"
+                        )
+                    }
+
+                    override fun compressFailed() {
+                        deleteFile(File(outputPath))
+                        val result: WritableMap = WritableNativeMap()
+                        result.putInt("statusCode", 500)
+                        result.putBoolean("success", false)
+                        promise.resolve(result)
+                    }
+
+                    override fun compressCompleted() {
+                        Log.d("FILE_UPLOAD_TAG", "FileCompression_compressed")
+                        val compressedFile = File(outputPath)
+                        val fileSize = compressedFile.length()
+                        val result: WritableMap = WritableNativeMap()
+                        result.putInt("statusCode", 200)
+                        result.putBoolean("success", true)
+                        result.putString("extension", "mp4")
+                        result.putString("outputPath", "file://$outputPath")
+                        result.putString("fileName", fileName)
+                        result.putDouble("fileSize", fileSize.toDouble())
+                        promise.resolve(result)
+                    }
+
+                    override fun onCompressedFile() {
+                        val compressedFile = File(formatedPath)
+                        val fileSize = compressedFile.length()
+                        val result: WritableMap = WritableNativeMap()
+                        result.putInt("statusCode", 200)
+                        result.putBoolean("success", true)
+                        result.putString("extension", "mp4")
+                        result.putString("outputPath", "file://$formatedPath")
+                        result.putString("fileName", fileName)
+                        result.putDouble("fileSize", fileSize.toDouble())
+                        promise.resolve(result)
+                    }
+
+                }
+            val mediacontrol = MediaController(formatedPath, outputPath, compressListener)
+            mediacontrol.processVideo()
+        } catch (e: java.lang.Exception) {
+            promise.reject("COMPRESSION_FAILED", "Compression failed: " + e.message, e)
         }
     }
 

@@ -108,7 +108,13 @@ const CollapsibleToolbar = ({
                <InfoImageView
                   type={CHAT_TYPE_SINGLE}
                   userId={chatUserId}
-                  style={styles.profileImage}
+                  style={{
+                     ...styles.profileImage,
+                     ...(!imageToken && {
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                     }),
+                  }}
                   scaledFontSize={scaledFontSize}
                />
             </Animated.View>

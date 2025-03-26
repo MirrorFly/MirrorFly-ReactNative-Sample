@@ -8,10 +8,9 @@ import GalleryHeader from '../components/GalleryHeader';
 import {
    getAbsolutePath,
    getThumbBase64URL,
-   getType,
+   isValidFileToUpload,
    mediaObjContructor,
    showToast,
-   validateFileSize,
 } from '../helpers/chatHelpers';
 import { getStringSet } from '../localization/stringSet';
 import { useThemeColorPalatte } from '../redux/reduxHook';
@@ -85,9 +84,9 @@ const GalleryPhotos = () => {
    };
 
    const handleMedia = item => {
-      const sizeError = validateFileSize(item.image.fileSize, getType(item.type));
-      if (sizeError) {
-         return showToast(sizeError);
+      const fileError = isValidFileToUpload(item);
+      if (fileError) {
+         return showToast(fileError);
       }
       const transformedArray = {
          caption: '',
@@ -102,15 +101,15 @@ const GalleryPhotos = () => {
 
    const handleSelectImage = React.useCallback(
       item => {
-         const sizeError = validateFileSize(item.image.fileSize, getType(item.type));
+         const fileError = isValidFileToUpload(item);
          const isImageSelected = selectedImages[item?.image?.uri];
 
          if (Object.keys(selectedImages).length >= 10 && !isImageSelected) {
             return showToast(stringSet.TOAST_MESSAGES.TOAST_SELECTED_MORE_THAN_ITEM);
          }
 
-         if (sizeError) {
-            return showToast(sizeError);
+         if (fileError) {
+            return showToast(fileError);
          }
          const transformedArray = {
             caption: '',
@@ -204,6 +203,10 @@ const GalleryPhotos = () => {
       }
    };
 
+   const removeInvalidImage = uri => {
+      setPhotos(prevPhotos => prevPhotos.filter(item => item.node.image.uri !== uri));
+   };
+
    const renderItem = ({ item }) => {
       const isImageSelected = selectedImages[item?.node?.image.uri];
 
@@ -234,6 +237,7 @@ const GalleryPhotos = () => {
                            ? getThumbBase64URL(item?.node?.image.thumbImage)
                            : item?.node?.image.uri,
                   }}
+                  // onError={() => removeInvalidImage(item.node.image.uri)} // Remove if error occurs
                />
                {Boolean(isImageSelected) && (
                   <View
@@ -280,7 +284,7 @@ const GalleryPhotos = () => {
    return (
       <View style={[commonStyles.bg_color(themeColorPalatte.screenBgColor), commonStyles.flex1]}>
          {renderTitle}
-         <View style={[commonStyles.mb_130]}>
+         <View style={[{ marginBottom: 65 }]}>
             <FlatList
                numColumns={3}
                data={memoizedData}

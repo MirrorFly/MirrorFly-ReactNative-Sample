@@ -71,6 +71,7 @@ import {
    VIEWALLMEDIA,
 } from '../screens/constants';
 import { getCurrentScreen } from '../uikitMethods';
+import ToastMessage from '../common/ToastMessage';
 
 const Stack = createNativeStackNavigator();
 
@@ -180,6 +181,7 @@ function StackNavigationPage() {
             <Stack.Screen name={ARCHIVED_SCREEN}>{prop => <ArchivedScreen {...prop} />}</Stack.Screen>
             <Stack.Screen name={GROUP_STACK}>{prop => <GroupScreenStackNavigation {...prop} />}</Stack.Screen>
          </Stack.Navigator>
+         <ToastMessage />
       </Provider>
    );
 }

@@ -64,7 +64,7 @@ import {
 } from '../Helper/Calls/Utility';
 import RootNavigation from '../Navigation/rootNavigation';
 import { progressMap, updateProgressNotification } from '../Service/PushNotify';
-import { pushNotify } from '../Service/remoteNotifyHandle';
+import { pushNotify, updateNotification } from '../Service/remoteNotifyHandle';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../calls/notification/callNotifyHandler';
 import ActivityModule from '../customModules/ActivityModule';
 import BluetoothHeadsetDetectionModule from '../customModules/BluetoothHeadsetDetectionModule';
@@ -675,20 +675,31 @@ export const callBacks = {
          case 'receiveMessage':
          case 'groupProfileUpdated':
             res.archiveSetting = getArchive();
+            const isReceiveMessage = ['receiveMessage', 'carbonReceiveMessage'].includes(res.msgType);
+            const archiveSettingAndStatus = res.archiveStatus ? !res.archiveSetting : true;
+            const isNotificationMessage =
+               res.msgBody.message_type === NOTIFICATION.toLowerCase() &&
+               res.msgBody.message === '2' &&
+               getCurrentUserJid() === res.toUserJid;
+            const isShowNotification =
+               (archiveSettingAndStatus && !res.notification && isReceiveMessage) || isNotificationMessage;
             const userId = getUserIdFromJid(res?.userJid);
+
             if (res?.editMessageId && getChatMessage(userId, res?.msgId)) {
-               const editObj = res?.msgBody?.caption
+               const editObj = res?.msgBody?.media?.caption
                   ? {
                        userJid: res?.userJid,
                        msgId: res?.msgId,
-                       caption: res?.msgBody?.caption,
+                       caption: res?.msgBody?.media?.caption,
                        editMessageId: res?.editMessageId,
+                       msgStatus: res?.msgStatus,
                     }
                   : {
                        userJid: res?.userJid,
                        msgId: res?.msgId,
                        message: res?.msgBody?.message,
                        editMessageId: res?.editMessageId,
+                       msgStatus: res?.msgStatus,
                     };
 
                store.dispatch(editChatMessageItem(editObj));
@@ -697,12 +708,8 @@ export const callBacks = {
                store.dispatch(addRecentChatItem(res));
                store.dispatch(addChatMessageItem(res));
             }
-            const isReceiveMessage = ['receiveMessage', 'carbonReceiveMessage'].includes(res.msgType);
-            const isNotificationMessage =
-               res.msgBody.message_type === NOTIFICATION.toLowerCase() &&
-               res.msgBody.message === '2' &&
-               getCurrentUserJid() === res.toUserJid;
-            if ((!res.notification && !res.editMessageId && isReceiveMessage) || isNotificationMessage) {
+
+            if (isShowNotification) {
                pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.fromUserJid);
             }
             break;
@@ -733,6 +740,11 @@ export const callBacks = {
             break;
          case 'recallMessage':
             updateDeleteForEveryOne(res.fromUserId, res.msgId.split(','), res.fromUserJid);
+            const msgIds = res.msgId.split(',');
+            msgIds.forEach(msgId => {
+               updateNotification(msgId);
+            });
+            console.log('msgIds ==> ', msgIds);
             break;
          case 'userBlockStatus':
             store.dispatch(

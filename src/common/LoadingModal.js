@@ -16,7 +16,7 @@ function LoadingModal({ visible, message, behavior }) {
       ...(Boolean(message) && { paddingHorizontal: 15, minWidth: 300, minHeight: 70 }), // Include paddingHorizontal only when message is available
    };
 
-   if (behavior === 'costom' && visible) {
+   if (behavior === 'custom' && visible) {
       return (
          <View
             style={[
@@ -27,6 +27,18 @@ function LoadingModal({ visible, message, behavior }) {
             ]}>
             <View style={styles}>
                <ActivityIndicator size={'large'} color={themeColorPalatte.primaryColor} />
+               {Boolean(message) && (
+                  <Text
+                     style={[
+                        {
+                           color: themeColorPalatte.primaryTextColor,
+                           paddingHorizontal: 15,
+                           fontWeight: '500',
+                        },
+                     ]}>
+                     {message}
+                  </Text>
+               )}
             </View>
          </View>
       );

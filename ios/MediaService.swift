@@ -8,6 +8,8 @@
 import Foundation
 import os.log
 import React
+import AVFoundation
+import Photos
 
 @objc(MediaService)
 class MediaService: RCTEventEmitter {
@@ -289,47 +291,6 @@ class MediaService: RCTEventEmitter {
       "statusCode": 200,
       "message": "All uploads canceled",
     ])
-  }
-  
-  
-  @objc func startUpload(_ fileUri: String, destinationUrl: String, encryptionKey: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
-    guard let fileURL = URL(string: fileUri), let _ = URL(string: destinationUrl) else {
-      //      rejecter("INVALID_URL", "Invalid file URI or destination URL", nil)
-      return
-    }
-    
-    // Check if file exists and is readable
-    let fileManager = FileManager.default
-    if !fileManager.fileExists(atPath: fileURL.path) {
-      //      rejecter("FILE_NOT_FOUND", "The specified file does not exist at the given URI", nil)
-      return
-    }
-    
-    // Attempt to open the file with InputStream to ensure it's readable
-    guard let inputStream = InputStream(url: fileURL) else {
-      //      rejecter("FILE_READ_ERROR", "Failed to initialize input stream for the file", nil)
-      return
-    }
-    
-    inputStream.open()
-    if inputStream.streamStatus != .open {
-      //      rejecter("FILE_READ_ERROR", "Failed to open file stream for reading", nil)
-      return
-    }
-    
-    print("startUpload ==>",fileUri)
-    resolver(["lastChunkFileUrl": fileUri])
-  }
-  
-  @objc func pauseUpload(_ uploadId: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
-    // Implement pause logic for upload
-    resolver("Upload Paused")
-  }
-  
-  
-  @objc func resumeUpload(_ uploadId: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
-    // Implement resume logic for upload
-    resolver("Upload Resumed")
   }
   
   @objc func startDownload(
@@ -802,99 +763,232 @@ class MediaService: RCTEventEmitter {
     DispatchQueue.global(qos: .background).async(execute: workItem)
   }
   
-  @objc func downloadFileInChunks(
-    _ downloadURL: String,
-    fileSize: NSNumber,
-    cachePath: String,
-    resolver: @escaping RCTPromiseResolveBlock,
-    rejecter: @escaping RCTPromiseRejectBlock
-  ) {
-    let chunkSize: Int = 5 * 1024 * 1024 // 5 MB chunk size
-    let size = fileSize.intValue
-    var startByte = 0
-    var endByte = 0
-    
-    // Create or open the file for writing chunks
-    let fileManager = FileManager.default
-    let cacheURL = URL(fileURLWithPath: cachePath)
-    
-    if !fileManager.fileExists(atPath: cachePath) {
-      fileManager.createFile(atPath: cachePath, contents: nil, attributes: nil)
+  @objc
+  func compressVideoFile(_ obj: NSDictionary, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+    guard let videoPath = obj["videoPath"] as? String, !videoPath.isEmpty else {
+      rejecter("INVALID_INPUT", "Invalid video path", nil)
+      return
     }
     
-    DispatchQueue.global(qos: .background).async {
-      while startByte <= size {
-        if startByte == size {
-          break
-        }
+    let mediaQuality = obj["quality"] as? String ?? "medium"
+    
+    getValidFileURL(from: videoPath) { videoURL, error in
+      guard let fileURL = videoURL else {
+        rejecter("INVALID_PATH", error ?? "Could not resolve file path", nil)
+        return
+      }
+      
+      var quality = AVAssetExportPresetMediumQuality
+      switch mediaQuality {
+      case "best":
+        quality = AVAssetExportPreset1280x720
+      case "high":
+        quality = AVAssetExportPreset960x540
+      case "medium":
+        quality = AVAssetExportPreset640x480
+      case "low":
+        quality = AVAssetExportPresetLowQuality
+      case "uncompressed":
+        quality = AVAssetExportPresetHighestQuality
+      default:
+        quality = AVAssetExportPresetMediumQuality
+      }
+      
+      let localPath = FileManager.default.temporaryDirectory
+      let fileName = "compressed_" + UUID().uuidString + ".mp4"
+      let outputURL = localPath.appendingPathComponent(fileName)
+      
+      let urlAsset = AVURLAsset(url: fileURL, options: nil)
+      
+      do {
+        let fileSize = try fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
         
-        endByte = startByte + chunkSize
-        
-        if endByte >= size {
-          endByte = size - 1
-        }
-        
-        // Construct the range header
-        let rangeHeader = "bytes=\(startByte)-\(endByte)"
-        print("Downloading range: \(rangeHeader)")
-        
-        guard let url = URL(string: downloadURL) else {
-          rejecter("INVALID_URL", "Invalid URL: \(downloadURL)", nil)
+        let (isSpaceAvail , message) = self.checkDeviceFressSpace(fileSize:Int64(fileSize))
+        if(!isSpaceAvail){
+          let response: [String: Any] = [
+            "success": false,
+            "statusCode": 400,
+            "message": message
+          ]
+          resolver(response)
           return
         }
         
-        var request = URLRequest(url: url)
-        request.setValue(rangeHeader, forHTTPHeaderField: "Range")
+        print("Actual File Size: \(fileSize) bytes")
+      } catch {
+        print("Error retrieving file size: \(error.localizedDescription)")
+      }
+      
+      guard let exportSession = AVAssetExportSession(asset: urlAsset, presetName: quality) else {
+        rejecter("EXPORT_SESSION_ERROR", "Failed to create export session", nil)
+        return
+      }
+      
+      exportSession.outputURL = outputURL
+      exportSession.outputFileType = .mp4
+      exportSession.shouldOptimizeForNetworkUse = true
+      
+      exportSession.exportAsynchronously {
+        switch exportSession.status {
+        case .completed:
+          let fileSize = (try? outputURL.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
+          let duration = CMTimeGetSeconds(urlAsset.duration)
+          resolver([
+            "success": true,
+            "extension": "mp4",
+            "outputPath": outputURL.absoluteString,
+            "fileName": fileName,
+            "fileSize": fileSize,
+            "duration": duration
+          ])
+        case .failed:
+          rejecter("COMPRESSION_FAILED", exportSession.error?.localizedDescription ?? "Compression failed", exportSession.error)
+        case .cancelled:
+          rejecter("COMPRESSION_CANCELLED", "Compression was cancelled", nil)
+        default:
+          rejecter("UNKNOWN_ERROR", "An unknown error occurred", nil)
+        }
+      }
+    }
+  }
+  
+  func getValidFileURL(from inputPath: String, completion: @escaping (URL?, String?) -> Void) {
+    var formattedPath = inputPath
+    
+    // Remove 'file://' if present
+    if inputPath.hasPrefix("file://") {
+      formattedPath = formattedPath.replacingOccurrences(of: "file://", with: "")
+      completion(URL(fileURLWithPath: formattedPath), nil)
+      return
+    }
+    
+    // Handle 'ph://' (Photo Library Asset)
+    if inputPath.hasPrefix("ph://") {
+      let assetID = inputPath.replacingOccurrences(of: "ph://", with: "")
+      let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [assetID], options: nil)
+      
+      guard let asset = fetchResult.firstObject else {
+        completion(nil, "PHAsset not found")
+        return
+      }
+      
+      if asset.mediaType == .image {
+        // ✅ Handle Images
+        let imageOptions = PHImageRequestOptions()
+        imageOptions.isSynchronous = true
+        imageOptions.deliveryMode = .highQualityFormat
         
-        let semaphore = DispatchSemaphore(value: 0)
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-          if let error = error {
-            print("Error downloading chunk: \(error.localizedDescription)")
-            rejecter("DOWNLOAD_ERROR", "Error downloading chunk: \(error.localizedDescription)", error)
-            semaphore.signal()
+        PHImageManager.default().requestImageDataAndOrientation(for: asset, options: imageOptions) { data, _, _, _ in
+          guard let data = data else {
+            completion(nil, "Failed to get image data")
             return
           }
           
-          if let data = data, let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 206 {
-            // Successfully downloaded the chunk
-            if let fileHandle = try? FileHandle(forWritingTo: cacheURL) {
-              fileHandle.seekToEndOfFile()
-              fileHandle.write(data)
-              fileHandle.closeFile()
-              
-              // Emit progress update
-              let progressParams: [String: Any] = [
-                "startByte": startByte,
-                "endByte": endByte,
-                "downloadedBytes": endByte + 1,
-                "totalBytes": size
-              ]
-              self.sendEvent(eventName: "downloadProgress", params: progressParams)
+          let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).jpg")
+          do {
+            try data.write(to: tempURL)
+            completion(tempURL, nil)
+          } catch {
+            completion(nil, "Failed to save image file")
+          }
+        }
+      } else if asset.mediaType == .video {
+        // ✅ Handle Videos (Including Slow-Mo)
+        let videoOptions = PHVideoRequestOptions()
+        videoOptions.isNetworkAccessAllowed = true
+        
+        PHImageManager.default().requestAVAsset(forVideo: asset, options: videoOptions) { avAsset, _, _ in
+          if let urlAsset = avAsset as? AVURLAsset {
+            // ✅ Normal video case
+            completion(urlAsset.url, nil)
+          } else if let composition = avAsset as? AVComposition {
+            // ⚠️ Handle Slow-Mo Videos (AVComposition)
+            let exportSession = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetHighestQuality)
+            let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).mp4")
+            
+            exportSession?.outputURL = tempURL
+            exportSession?.outputFileType = .mp4
+            exportSession?.shouldOptimizeForNetworkUse = false  // Ensures max quality
+            exportSession?.exportAsynchronously {
+              if exportSession?.status == .completed {
+                completion(tempURL, nil)
+              } else {
+                completion(nil, "Failed to export Slo-Mo video")
+              }
             }
           } else {
-            print("Unexpected response: \(response!)")
-            rejecter("DOWNLOAD_ERROR", "Unexpected response during download", nil)
+            completion(nil, "Unsupported asset type")
           }
-          
-          semaphore.signal()
         }
-        
-        task.resume()
-        semaphore.wait() // Wait for the download task to complete
-        
-        // Update the start byte for the next chunk
-        startByte = endByte + 1
+      } else {
+        completion(nil, "Unsupported asset type")
       }
       
-      // Final resolution
-      DispatchQueue.main.async {
+      return
+    }
+    
+    // If no special case, assume it's a direct file path
+    completion(URL(fileURLWithPath: formattedPath), nil)
+  }
+  
+  @objc
+  func compressImageFile(_ obj: NSDictionary, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+    let imagePath = obj["imagePath"] as? String ?? ""
+    let mediaQuality = obj["quality"] as? String ?? "medium"
+    
+    getValidFileURL(from: imagePath) { fileURL, error in
+      guard let fileURL = fileURL else {
+        rejecter("INVALID_PATH", error ?? "Could not resolve file path", nil)
+        return
+      }
+      
+      var quality: CGFloat = 0.35
+      switch mediaQuality {
+      case "best":
+        quality = 0.65
+      case "high":
+        quality = 0.50
+      case "medium":
+        quality = 0.35
+      case "low":
+        quality = 0.025
+      case "uncompressed":
+        quality = 1.0
+      default:
+        quality = 0.35
+      }
+      
+      guard let imageData = try? Data(contentsOf: fileURL),
+            let uiImage = UIImage(data: imageData) else {
+        resolver([
+          "success": false,
+          "message": "Could not load image data"
+        ])
+        return
+      }
+      
+      var compressedData = imageData
+      if mediaQuality != "uncompressed", let jpegData = uiImage.jpegData(compressionQuality: quality) {
+        compressedData = jpegData
+      }
+      
+      let localPath = FileManager.default.temporaryDirectory
+      let fileName = "Image" + UUID().uuidString + ".jpg"
+      let outputURL = localPath.appendingPathComponent(fileName)
+      
+      do {
+        try compressedData.write(to: outputURL, options: .atomic)
+        let fileSize = compressedData.count // Bytes
+        
         resolver([
           "success": true,
-          "statusCode": 200,
-          "message": "File downloaded successfully",
-          "cachePath": cachePath
+          "extension": "jpg",
+          "outputPath": outputURL.absoluteString,
+          "fileName": fileName,
+          "fileSize": fileSize
         ])
+      } catch {
+        rejecter("SAVE_FAILED", "Failed to save compressed image", error)
       }
     }
   }

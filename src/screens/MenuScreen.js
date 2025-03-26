@@ -7,13 +7,15 @@ import { FrontArrowIcon } from '../common/Icons';
 import Pressable from '../common/Pressable';
 import ScreenHeader from '../common/ScreenHeader';
 import Text from '../common/Text';
-import { settingsMenu } from '../helpers/chatHelpers';
+import { settingsMenu, showToast } from '../helpers/chatHelpers';
 import { getStringSet } from '../localization/stringSet';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { logoutClearVariables, mirrorflyLogout } from '../uikitMethods';
 import { REGISTERSCREEN } from './constants';
 import LoadingModal from '../common/LoadingModal';
+import FileViewer from 'react-native-file-viewer';
+import SDK from '../SDK/SDK';
 
 function MenuScreen() {
    const navigation = useNavigation();
@@ -130,7 +132,7 @@ function MenuScreen() {
             />
          </View>
          {modalContent && <AlertModal {...modalContent} />}
-         <LoadingModal visible={visible} behavior="costom" />
+         <LoadingModal visible={visible} behavior="custom" />
       </>
    );
 }

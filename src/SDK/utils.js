@@ -12,7 +12,7 @@ import {
    isLocalUser,
    showToast,
 } from '../helpers/chatHelpers';
-import { CHAT_TYPE_GROUP, DOCUMENT_FILE_EXT, DOCUMENT_FORMATS, MIX_BARE_JID } from '../helpers/constants';
+import { CHAT_TYPE_GROUP, DOCUMENT_FILE_EXT, MIX_BARE_JID } from '../helpers/constants';
 import {
    addChatMessageItem,
    editChatMessageItem,
@@ -36,8 +36,7 @@ let chatPage = {},
    hasNextChatPage = {},
    hasNextRecentChatPage = true,
    recentChatPage = 1,
-   typingStatusSent = false,
-   mediaUploadQueue = {};
+   typingStatusSent = false;
 
 export const resetVariable = () => {
    chatPage = {};
@@ -117,8 +116,13 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
       statusCode,
       userJid,
       data = [],
-   } = await SDK.getChatMessages(fromUserJId, page, config.chatMessagesSizePerPage);
-   console.log('data ==> ', data.length);
+      message,
+   } = await SDK.getChatMessages({
+      toJid: fromUserJId,
+      lastMessageId,
+      size: config.chatMessagesSizePerPage,
+      source: 'db',
+   });
    if (statusCode === 200) {
       let hasEqualDataFetched = data.length === config.chatMessagesSizePerPage;
       if (data.length && hasEqualDataFetched) {
@@ -126,6 +130,9 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
       }
       hasNextChatPage[userId] = hasEqualDataFetched;
       store.dispatch(setChatMessages({ userJid, data, forceUpdate: page === 1 }));
+   }
+   if (statusCode !== 200) {
+      showToast(message);
    }
    return data;
 };
@@ -138,22 +145,13 @@ const sendMediaMessage = async (messageType, files, chatType, toUserJid, replyTo
          const {
             caption = '',
             fileDetails = {},
-            fileDetails: { extension, fileSize, filename, duration, uri, type, thumbImage: thumb_image } = {},
+            fileDetails: { extension, fileSize, filename, duration, uri, type, thumbImage } = {},
          } = file;
          const isDocument = DOCUMENT_FILE_EXT.includes(extension);
          const msgType = isDocument ? 'file' : type.split('/')[0];
          let _uri = uri;
-         let mediaDimension = {};
-         if (msgType === 'video') {
-            mediaDimension = calculateWidthAndHeight(fileDetails?.width, fileDetails?.height);
-         }
-         const { webWidth = 500, webHeight = 500 } = mediaDimension;
+
          file.fileDetails = { ...file.fileDetails, uri: _uri };
-         let thumbImage = msgType === 'image' ? await getThumbImage(_uri) : '';
-         thumbImage =
-            msgType === 'video' && !thumb_image
-               ? await getVideoThumbImage(_uri, duration, webWidth, webHeight)
-               : thumbImage;
 
          let fileOptions = {
             fileName: filename,
@@ -162,7 +160,7 @@ const sendMediaMessage = async (messageType, files, chatType, toUserJid, replyTo
             uri: _uri,
             duration: duration,
             msgId: msgId,
-            thumbImage: thumb_image || thumbImage,
+            thumbImage: thumbImage,
          };
 
          const dataObj = {
@@ -323,8 +321,8 @@ export const handleSendMsg = async (obj = {}) => {
          const { msgBody: { media: { caption = '' } = {} } = {} } = getChatMessage(userId, originalMsgId);
          const editMessageId = SDK.randomString(8, 'BA');
          const editObj = caption
-            ? { userJid: chatUser, msgId: originalMsgId, caption: message, editMessageId }
-            : { userJid: chatUser, msgId: originalMsgId, message, editMessageId };
+            ? { userJid: chatUser, msgId: originalMsgId, caption: message, editMessageId, msgStatus: 3 }
+            : { userJid: chatUser, msgId: originalMsgId, message, editMessageId, msgStatus: 3 };
 
          store.dispatch(editChatMessageItem(editObj));
          store.dispatch(editRecentChatItem(editObj));
@@ -554,6 +552,10 @@ export const getMuteStatus = async userJid => {
    return await SDK.getMuteStatus(userJid);
 };
 
+export const getArchiveStatus = async userJid => {
+   return await SDK.getArchiveStatus(userJid);
+};
+
 export const getUserProfileFromApi = async userId => {
    try {
       const userData = getRoasterData(userId);
@@ -600,4 +602,23 @@ export const updateTypingGoneStatus = jid => {
       SDK.sendTypingGoneStatus(jid);
       typingStatusSent = false;
    }
+};
+
+export const mediaCompress = async ({ uri, type, quality }) => {
+   try {
+      const compressMedia = {
+         ['image']: SDK.compressImage,
+         ['video']: SDK.compressVideo,
+      }[type];
+      console.log('compressMedia ==> ', compressMedia);
+      if (compressMedia) {
+         return compressMedia({ uri, quality });
+      }
+   } catch (error) {
+      mflog('Failed to compress video', error);
+   }
+};
+
+export const sdkLog = (...args) => {
+   SDK.mflog('UIKIT', args);
 };

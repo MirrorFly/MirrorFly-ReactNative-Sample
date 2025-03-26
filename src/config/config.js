@@ -58,6 +58,9 @@ const config = {
    // licenseKey: 'o3mN05oAgepcbO0noe3T058WC8jkKN',
    // API_URL: 'https://api-preprod-sandbox.mirrorfly.com/api/v1',
    // licenseKey: 'RLIKkMQkbkAIDMucEdDKNMZ05VOB1F',
+   // ================ Alemx Environment variables =====================
+   // API_URL: 'https://alemxlimited-api.mirrorfly.com/api/v1',
+   // licenseKey: 'I3NWpEGst8J1TxifQCIPDdbq1OfdCS',
 };
 
 export default config;

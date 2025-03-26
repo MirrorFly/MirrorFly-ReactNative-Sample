@@ -18,6 +18,7 @@ import settingDataReducer from './settingDataSlice';
 import showConfrenceReducer from './showConfrenceSlice';
 import themeColorReducer from './themeColorDataSlice';
 import typingStatusDataReducer from './typingStatusDataSlice';
+import toastMessageSlice from './toastMessageSlice';
 
 // Combine reducers
 const appReducer = combineReducers({
@@ -39,6 +40,7 @@ const appReducer = combineReducers({
    settingsData: settingDataReducer,
    groupData: groupsReducer,
    themeColorPalatte: themeColorReducer,
+   toastMessageData: toastMessageSlice,
 });
 
 // Root reducer

@@ -116,7 +116,13 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
       statusCode,
       userJid,
       data = [],
-   } = await SDK.getChatMessages(fromUserJId, page, config.chatMessagesSizePerPage);
+      message,
+   } = await SDK.getChatMessages({
+      toJid: fromUserJId,
+      lastMessageId,
+      size: config.chatMessagesSizePerPage,
+      source: 'db',
+   });
    if (statusCode === 200) {
       let hasEqualDataFetched = data.length === config.chatMessagesSizePerPage;
       if (data.length && hasEqualDataFetched) {
@@ -124,6 +130,9 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
       }
       hasNextChatPage[userId] = hasEqualDataFetched;
       store.dispatch(setChatMessages({ userJid, data, forceUpdate: page === 1 }));
+   }
+   if (statusCode !== 200) {
+      showToast(message);
    }
    return data;
 };
@@ -136,22 +145,13 @@ const sendMediaMessage = async (messageType, files, chatType, toUserJid, replyTo
          const {
             caption = '',
             fileDetails = {},
-            fileDetails: { extension, fileSize, filename, duration, uri, type, thumbImage: thumb_image } = {},
+            fileDetails: { extension, fileSize, filename, duration, uri, type, thumbImage } = {},
          } = file;
          const isDocument = DOCUMENT_FILE_EXT.includes(extension);
          const msgType = isDocument ? 'file' : type.split('/')[0];
          let _uri = uri;
-         let mediaDimension = {};
-         if (msgType === 'video') {
-            mediaDimension = calculateWidthAndHeight(fileDetails?.width, fileDetails?.height);
-         }
-         const { webWidth = 500, webHeight = 500 } = mediaDimension;
+
          file.fileDetails = { ...file.fileDetails, uri: _uri };
-         let thumbImage = msgType === 'image' ? await getThumbImage(_uri) : '';
-         thumbImage =
-            msgType === 'video' && !thumb_image
-               ? await getVideoThumbImage(_uri, duration, webWidth, webHeight)
-               : thumbImage;
 
          let fileOptions = {
             fileName: filename,
@@ -160,7 +160,7 @@ const sendMediaMessage = async (messageType, files, chatType, toUserJid, replyTo
             uri: _uri,
             duration: duration,
             msgId: msgId,
-            thumbImage: thumb_image || thumbImage,
+            thumbImage: thumbImage,
          };
 
          const dataObj = {

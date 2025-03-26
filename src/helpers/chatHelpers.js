@@ -551,15 +551,24 @@ const getMaxAllowedFileSize = mediaType => {
    return fileSize;
 };
 
-export const isValidFileToUpload = (size, mediaTypeFile, extension) => {
+export const isValidFileToUpload = item => {
+   const {
+      type,
+      image: { fileSize: size, extension, width, height, playableDuration },
+   } = item;
+   const mediaTypeFile = getType(type);
    const maxAllowedSize = getMaxAllowedFileSize(mediaTypeFile);
    if (size >= maxAllowedSize) {
       const message = `File size is too large. Try uploading file size below ${convertBytesToKB(maxAllowedSize)}`;
-      if (mediaTypeFile) {
-         return message;
-      }
+      return message;
    }
-   if (!ALLOWED_ALL_FILE_FORMATS.includes(extension?.toLowerCase())) {
+   if (
+      !ALLOWED_ALL_FILE_FORMATS.includes(extension?.toLowerCase()) ||
+      !size ||
+      width <= 0 ||
+      height <= 0 ||
+      (mediaTypeFile === 'video' && playableDuration <= 1)
+   ) {
       return 'The file format is not supported';
    }
    return '';
@@ -855,7 +864,7 @@ export const handleConversationScollToBottom = () => {
    });
 };
 
-export const handleSendMedia = selectedImages => () => {
+export const handleSendMedia = selectedImages => {
    sdkLog('handleSendMedia clicked');
    let message = {
       messageType: 'media',
@@ -1167,10 +1176,6 @@ export const settingsMenu = [
    {
       name: getStringSet().SETTINGS_SCREEN.LOG_OUT_LABEL,
       icon: ExitIcon,
-   },
-   {
-      name: 'Export Log',
-      icon: LogIcon,
    },
 ];
 

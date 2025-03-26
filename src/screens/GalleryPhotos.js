@@ -12,14 +12,13 @@ import {
    isValidFileToUpload,
    mediaObjContructor,
    showToast,
-   validateFileSize,
 } from '../helpers/chatHelpers';
 import { getStringSet } from '../localization/stringSet';
 import { useThemeColorPalatte } from '../redux/reduxHook';
+import { sdkLog } from '../SDK/utils';
 import commonStyles from '../styles/commonStyles';
 import { mflog } from '../uikitMethods';
 import { GALLERY_PHOTOS_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
-import { sdkLog } from '../SDK/utils';
 
 const GalleryPhotos = () => {
    const { params: { grpView = '', selectedImages: routesSelectedImages = [] } = {} } = useRoute();
@@ -87,7 +86,7 @@ const GalleryPhotos = () => {
    };
 
    const handleMedia = item => {
-      const fileError = isValidFileToUpload(item.image.fileSize, getType(item.type), item.image.extension);
+      const fileError = isValidFileToUpload(item);
       if (fileError) {
          return showToast(fileError);
       }
@@ -105,15 +104,15 @@ const GalleryPhotos = () => {
 
    const handleSelectImage = React.useCallback(
       item => {
-         const sizeError = validateFileSize(item.image.fileSize, getType(item.type));
+         const fileError = isValidFileToUpload(item);
          const isImageSelected = selectedImages[item?.image?.uri];
 
          if (Object.keys(selectedImages).length >= 10 && !isImageSelected) {
             return showToast(stringSet.TOAST_MESSAGES.TOAST_SELECTED_MORE_THAN_ITEM);
          }
 
-         if (sizeError) {
-            return showToast(sizeError);
+         if (fileError) {
+            return showToast(fileError);
          }
          const transformedArray = {
             caption: '',
@@ -207,6 +206,10 @@ const GalleryPhotos = () => {
       }
    };
 
+   const removeInvalidImage = uri => {
+      setPhotos(prevPhotos => prevPhotos.filter(item => item.node.image.uri !== uri));
+   };
+
    const renderItem = ({ item }) => {
       const isImageSelected = selectedImages[item?.node?.image.uri];
 
@@ -237,6 +240,7 @@ const GalleryPhotos = () => {
                            ? getThumbBase64URL(item?.node?.image.thumbImage)
                            : item?.node?.image.uri,
                   }}
+                  // onError={() => removeInvalidImage(item.node.image.uri)} // Remove if error occurs
                />
                {Boolean(isImageSelected) && (
                   <View

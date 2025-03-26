@@ -1,4 +1,4 @@
-import { StackActions, createNavigationContainerRef } from '@react-navigation/native';
+import { CommonActions, StackActions, createNavigationContainerRef } from '@react-navigation/native';
 
 export const navigationRef = createNavigationContainerRef();
 
@@ -39,6 +39,31 @@ const RootNavigation = {
          const state = navigationRef.getState();
          return findCurrentRoute(state.routes);
       }
+   },
+
+   /**
+    * Reset the navigation stack while removing specific screens
+    * @param {object} navigation - Navigation object
+    * @param {string} targetScreen - Screen to navigate to
+    * @param {object} params - Parameters for the target screen (optional)
+    * @param {array} screensToRemove - Screens to be removed from stack
+    */
+   resetNavigationStack(navigation, targetScreen, params = {}, screensToRemove = []) {
+      if (!navigation || !targetScreen) {
+         return;
+      }
+
+      const updatedRoutes = navigation
+         .getState()
+         .routes.filter(route => !screensToRemove.includes(route.name)) // Remove specified screens
+         .concat([{ name: targetScreen, params }]); // Add target screen
+
+      navigation.dispatch(
+         CommonActions.reset({
+            index: updatedRoutes.length - 1, // Set last screen as active
+            routes: updatedRoutes,
+         }),
+      );
    },
 
    popToTop() {

@@ -872,12 +872,13 @@ class MediaService: RCTEventEmitter {
         return
       }
       
-      let options = PHImageRequestOptions()
-      options.isSynchronous = true
-      options.deliveryMode = .highQualityFormat
-      
       if asset.mediaType == .image {
-        PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, _, _, info in
+        // ✅ Handle Images
+        let imageOptions = PHImageRequestOptions()
+        imageOptions.isSynchronous = true
+        imageOptions.deliveryMode = .highQualityFormat
+        
+        PHImageManager.default().requestImageDataAndOrientation(for: asset, options: imageOptions) { data, _, _, _ in
           guard let data = data else {
             completion(nil, "Failed to get image data")
             return
@@ -892,13 +893,31 @@ class MediaService: RCTEventEmitter {
           }
         }
       } else if asset.mediaType == .video {
+        // ✅ Handle Videos (Including Slow-Mo)
         let videoOptions = PHVideoRequestOptions()
         videoOptions.isNetworkAccessAllowed = true
+        
         PHImageManager.default().requestAVAsset(forVideo: asset, options: videoOptions) { avAsset, _, _ in
           if let urlAsset = avAsset as? AVURLAsset {
+            // ✅ Normal video case
             completion(urlAsset.url, nil)
+          } else if let composition = avAsset as? AVComposition {
+            // ⚠️ Handle Slow-Mo Videos (AVComposition)
+            let exportSession = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetHighestQuality)
+            let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).mp4")
+            
+            exportSession?.outputURL = tempURL
+            exportSession?.outputFileType = .mp4
+            exportSession?.shouldOptimizeForNetworkUse = false  // Ensures max quality
+            exportSession?.exportAsynchronously {
+              if exportSession?.status == .completed {
+                completion(tempURL, nil)
+              } else {
+                completion(nil, "Failed to export Slo-Mo video")
+              }
+            }
           } else {
-            completion(nil, "Failed to get video file")
+            completion(nil, "Unsupported asset type")
           }
         }
       } else {

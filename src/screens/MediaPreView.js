@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import {
    BackHandler,
@@ -20,18 +20,22 @@ import TextInput from '../common/TextInput';
 import VideoInfo from '../common/VideoInfo';
 import UserAvathar from '../components/UserAvathar';
 import {
+   calculateWidthAndHeight,
    getCurrentChatUser,
    getThumbBase64URL,
+   getThumbImage,
    getType,
    getUserIdFromJid,
+   getVideoThumbImage,
    handleSendMedia,
 } from '../helpers/chatHelpers';
 import { CHAT_TYPE_GROUP, MIX_BARE_JID } from '../helpers/constants';
 import { getStringSet } from '../localization/stringSet';
+import RootNavigation from '../Navigation/rootNavigation';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import { mediaCompress, sdkLog } from '../SDK/utils';
 import commonStyles from '../styles/commonStyles';
-import { CAMERA_SCREEN, GALLERY_PHOTOS_SCREEN } from './constants';
+import { CAMERA_SCREEN, GALLERY_PHOTOS_SCREEN, MEDIA_PRE_VIEW_SCREEN } from './constants';
 
 function MediaPreView() {
    const chatUser = getCurrentChatUser();
@@ -46,6 +50,21 @@ function MediaPreView() {
    const [loading, setLoading] = React.useState(false);
    const chatType = MIX_BARE_JID.test(chatUser) ? CHAT_TYPE_GROUP : '';
    const [componentSelectedImages, setComponentSelectedImages] = React.useState(selectedImages);
+   const [loadingMessage, setLoadingMessage] = React.useState('Compressing');
+   const [isActive, setIsActive] = React.useState(false);
+   const abortControllerRef = React.useRef(null);
+
+   useFocusEffect(
+      React.useCallback(() => {
+         setIsActive(true);
+         abortControllerRef.current = new AbortController(); // Create a new AbortController
+
+         return () => {
+            setIsActive(false);
+            abortControllerRef.current?.abort(); // Cancel any ongoing compression
+         };
+      }, []),
+   );
 
    React.useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackBtn);
@@ -54,51 +73,96 @@ function MediaPreView() {
       };
    }, []);
 
-   React.useEffect(() => {
-      sdkLog('componentSelectedImages.length ==>', componentSelectedImages.length);
-      if (componentSelectedImages.length === 0) {
+   const compressSelectedMedia = async () => {
+      if (!isActive || componentSelectedImages.length === 0) {
          return;
       }
-      setLoading(true); // Show loader before processing
 
-      const compressTasks = componentSelectedImages.map((element, index) => {
-         const type = element.fileDetails.type.includes('/')
-            ? element.fileDetails.type.split('/')[0]
-            : element.fileDetails.type;
+      setLoading(true);
+      setLoadingMessage(`Compressing 1 of ${componentSelectedImages.length}`);
 
-         return mediaCompress({
-            uri: element.fileDetails.uri,
-            type,
-            quality: 'medium',
-         }).then(response => {
-            return {
-               index, // Store original index
+      let sortedMedia = [];
+
+      for (let index = 0; index < componentSelectedImages.length; index++) {
+         if (!isActive || abortControllerRef.current?.signal.aborted) {
+            return; // ✅ Stop if screen is left
+         }
+
+         const element = componentSelectedImages[index];
+         const fileDetails = element.fileDetails;
+         const type = fileDetails.type.includes('/') ? fileDetails.type.split('/')[0] : fileDetails.type;
+
+         setLoadingMessage(`Compressing ${index + 1} of ${componentSelectedImages.length}`);
+
+         try {
+            const response = await mediaCompress({
+               uri: fileDetails.uri,
+               type,
+               quality: 'medium',
+               signal: abortControllerRef.current?.signal, // Pass the abort signal
+            });
+
+            if (!isActive || abortControllerRef.current?.signal.aborted) {
+               return; // ✅ Stop after compression if needed
+            }
+
+            const _uri = response.message.outputPath || fileDetails.uri;
+            let mediaDimension = {},
+               thumbImage = fileDetails?.thumbImage;
+
+            try {
+               if (type === 'video') {
+                  mediaDimension = calculateWidthAndHeight(fileDetails?.width, fileDetails?.height);
+               }
+               const { webWidth = 500, webHeight = 500 } = mediaDimension;
+
+               if (type === 'image' && !fileDetails?.thumbImage) {
+                  thumbImage = await getThumbImage(_uri);
+               } else if (type === 'video' && !fileDetails?.thumbImage) {
+                  thumbImage = await getVideoThumbImage(_uri, fileDetails?.duration, webWidth, webHeight);
+               }
+            } catch (error) {
+               console.log('Thumbnail generation failed:', error);
+            }
+
+            sortedMedia.push({
+               index,
                compressedData: {
-                  ...element, // Keep other details
+                  ...element,
                   fileDetails: {
                      ...element.fileDetails,
-                     uri: response.message.outputPath || element.fileDetails.uri, // Overwrite URI with compressed file path
-                     fileSize: response.message.fileSize || element.fileDetails.fileSize, // Update file size
-                     extension: response.message.extension || element.fileDetails.extension,
+                     uri: _uri,
+                     fileSize: response.message.fileSize || fileDetails.fileSize,
+                     extension: response.message.extension || fileDetails.extension,
+                     thumbImage,
                   },
                },
-            };
-         });
-      });
-
-      Promise.all(compressTasks)
-         .then(updatedMedia => {
-            const sortedMedia = updatedMedia.sort((a, b) => a.index - b.index).map(item => item.compressedData);
-            setComponentSelectedImages(sortedMedia); // Update state with compressed URIs in order
-         })
-         .catch(error => {
+            });
+         } catch (error) {
+            console.log('error ==> ', error);
+            if (error.name === 'AbortError') {
+               sdkLog('Compression aborted.');
+               return;
+            }
             sdkLog('Compression error ==> ', error);
-         })
-         .finally(() => {
-            setLoading(false); // Close loader once all are done
-         });
-   }, [selectedImages]);
+         }
+      }
 
+      if (!isActive || abortControllerRef.current?.signal.aborted) {
+         return; // ✅ Stop before updating state
+      }
+
+      sortedMedia = sortedMedia.sort((a, b) => a.index - b.index).map(item => item.compressedData);
+      setComponentSelectedImages(sortedMedia);
+
+      setLoading(false);
+
+      setTimeout(() => {
+         if (isActive) {
+            handleSendMedia(sortedMedia);
+         }
+      }, 100);
+   };
    const handleIndexChange = i => {
       pagerRef.current.setPage(i);
    };
@@ -119,10 +183,15 @@ function MediaPreView() {
    };
 
    const handleAddButton = () => {
-      navigation.navigate(GALLERY_PHOTOS_SCREEN, {
+      const params = {
          grpView,
          selectedImages: componentSelectedImages,
-      });
+      };
+
+      RootNavigation.resetNavigationStack(navigation, GALLERY_PHOTOS_SCREEN, params, [
+         MEDIA_PRE_VIEW_SCREEN,
+         GALLERY_PHOTOS_SCREEN,
+      ]);
    };
 
    const renderMediaPages = React.useMemo(() => {
@@ -212,7 +281,7 @@ function MediaPreView() {
                   cursorColor={themeColorPalatte.primaryColor}
                />
                <IconButton
-                  onPress={handleSendMedia(componentSelectedImages)}
+                  onPress={compressSelectedMedia}
                   style={[commonStyles.alignItemsFlexEnd, commonStyles.r_5, commonStyles.b_m5]}>
                   <SendBlueIcon color="#fff" />
                </IconButton>
@@ -262,7 +331,7 @@ function MediaPreView() {
             onClose={toggleEmojiPicker}
             onSelect={handleEmojiSelect}
          /> */}
-         <LoadingModal message={'Compressing'} visible={loading} behavior={'custom'} />
+         <LoadingModal message={loadingMessage} visible={loading} behavior={'custom'} />
       </KeyboardAvoidingView>
    );
 }

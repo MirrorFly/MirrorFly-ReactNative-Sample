@@ -22,6 +22,7 @@ import {
    getRecentChatMsgObjForward,
    getUserIdFromJid,
    handleUpdateBlockUser,
+   setCurrentChatUser,
    showCheckYourInternetToast,
    showToast,
 } from '../helpers/chatHelpers';
@@ -580,6 +581,7 @@ const ForwardMessage = () => {
       await SDK.forwardMessagesToMultipleUsers(contactsToForward, msgIds, true, newMsgIds);
       // navigating the user after setTimeout to finish all the running things in background to avoid unwanted issues
       setTimeout(() => {
+         const jid = Object.values(selectedUsers)[0]?.userJid;
          setShowLoader(false);
          onMessageForwaded?.();
          if (Object.values(selectedUsers).length === 1) {
@@ -588,10 +590,11 @@ const ForwardMessage = () => {
                routes: [
                   {
                      name: CONVERSATION_SCREEN,
-                     params: { jid: Object.values(selectedUsers)[0]?.userJid },
+                     params: { jid },
                   },
                ],
             });
+            setCurrentChatUser(jid);
          } else {
             navigation.goBack();
          }

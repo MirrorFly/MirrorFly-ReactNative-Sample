@@ -161,12 +161,12 @@ const chatMessageDataSlice = createSlice({
          }
       },
       editChatMessageItem(state, action) {
-         const { userJid, msgId, caption, message, editMessageId } = action.payload;
+         const { userJid, msgId, caption, message, editMessageId, msgStatus } = action.payload;
          const userId = getUserIdFromJid(userJid);
          const index = state[userId]?.findIndex(item => item.msgId === msgId);
          if (state[userId]) {
             state[userId][index].editMessageId = editMessageId;
-            state[userId][index].msgStatus = 3;
+            state[userId][index].msgStatus = msgStatus;
          }
          if (state[userId] && message) {
             state[userId][index].msgBody.message = message;

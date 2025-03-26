@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>iCloudContainerEnvironment</key>
+	<string>Production</string>
+	<key>method</key>
+	<string>ad-hoc</string>
+	<key>uploadBitcode</key>
+	<false/>
+	<key>compileBitcode</key>
+	<false/>
+	<key>uploadSymbols</key>
+	<false/>
+	<key>signingStyle</key>
+	<string>manual</string>
+	<key>signingCertificate</key>
+	<string>iPhone Distribution: Contus Support Interactive</string>
+	<key>provisioningProfiles</key>
+	<dict>
+		<key>com.mirrorfly.reactnativeuikit.qa</key>
+		<string>ReactNative Adhoc</string>
+		<key>com.mirrorfly.reactnativeuikit.qa.notificationextention</key>
+		<string>ReactNative Extension Adhoc</string>
+	</dict>
+</dict>
+</plist>

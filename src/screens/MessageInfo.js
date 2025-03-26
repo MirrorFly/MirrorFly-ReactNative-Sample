@@ -33,11 +33,11 @@ function MessageInfo() {
       const fetchMessageInfo = async () => {
          try {
             const _dbValue = await SDK.getMessageInfo(msgId);
-            setDeliveredReport(_dbValue[0].receivedTime);
-            setSeenReport(_dbValue[0].seenTime);
+            setDeliveredReport(_dbValue[0]?.receivedTime);
+            setSeenReport(_dbValue[0]?.seenTime);
             setDbValue(_dbValue);
          } catch (error) {
-            console.error('Error fetching message info:', error);
+            console.log('Error fetching message info:', error);
          }
       };
 

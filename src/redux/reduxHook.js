@@ -44,6 +44,15 @@ export const useSelectedChatMessages = userId => {
    );
 };
 
+export const useBlockedList = () => {
+   return useSelector(state => {
+      const rosterData = state.rosterData.data || {}; // Ensure it's an object
+      return Object.values(rosterData)
+         .filter(user => user.isBlocked)
+         .sort((a, b) => a.nickName.localeCompare(b.nickName)); // Convert to array and filter
+   }, shallowEqual);
+};
+
 export const useMediaMessages = (userId, mediaTypeArr = []) => {
    return useSelector(state => {
       const messages = state.chatMessagesData?.[userId] || [];

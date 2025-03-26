@@ -23,7 +23,7 @@ import Message from './Message';
 import MessagePressable from './MessagePressable';
 import NotificationMessage from './NotificationMessage';
 
-function ChatMessage({ chatUser, item, showNickName, label }) {
+function ChatMessage({ chatUser, item, showNickName, label, disablefunction = false }) {
    const dispatch = useDispatch();
    const navigation = useNavigation();
    const useXmppStatus = useXmppConnectionStatus();
@@ -67,7 +67,7 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
       }, [useXmppStatus, msgStatus]),
    );
 
-   const onPress = () => {
+   const onPress = onMessage => () => {
       const messsageList = getChatMessages(userId);
       const isAnySelected = messsageList?.some?.(_item => _item.isSelected === 1);
       switch (true) {
@@ -78,7 +78,10 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
             };
             dispatch(toggleMessageSelection(selectData));
             break;
-         case is_downloaded === 2 && is_uploading === 2 && (message_type === 'image' || message_type === 'video'):
+         case onMessage &&
+            is_downloaded === 2 &&
+            is_uploading === 2 &&
+            (message_type === 'image' || message_type === 'video'):
             if (Keyboard.isVisible()) {
                let hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
                   navigation.navigate(MEDIA_POST_PRE_VIEW_SCREEN, { jid: chatUser, msgId: msgId });
@@ -127,6 +130,7 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
 
       return (
          <Pressable
+            disabled={disablefunction}
             style={
                shouldHighlight && {
                   backgroundColor: themeColorPalatte.highlighedMessageBg,
@@ -134,7 +138,7 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
             }
             delayLongPress={300}
             pressedStyle={commonStyles.bg_transparent}
-            onPress={onPress}
+            onPress={onPress()}
             onLongPress={onLongPress}>
             {({ pressed }) => (
                <View
@@ -150,6 +154,7 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
                         isSender ? commonStyles.alignSelfFlexEnd : commonStyles.alignSelfFlexStart,
                      ]}>
                      <MessagePressable
+                        disabled={disablefunction}
                         forcePress={pressed}
                         style={[styles.messageContentPressable, { maxWidth: messageWidth }]}
                         contentContainerStyle={[
@@ -162,7 +167,7 @@ function ChatMessage({ chatUser, item, showNickName, label }) {
                                 ],
                         ]}
                         delayLongPress={300}
-                        onPress={onPress}
+                        onPress={onPress('onMessage')}
                         onLongPress={onLongPress}>
                         {showNickName && !isSender && message_type && (
                            <NickName

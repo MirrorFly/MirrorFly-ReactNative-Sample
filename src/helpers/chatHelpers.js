@@ -11,7 +11,6 @@ import RNFS from 'react-native-fs';
 import HeicConverter from 'react-native-heic-converter';
 import ImagePicker from 'react-native-image-crop-picker';
 import { RESULTS, openSettings } from 'react-native-permissions';
-import Toast from 'react-native-simple-toast';
 import Sound from 'react-native-sound';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
@@ -29,7 +28,7 @@ import {
    LocationIcon,
    NotificationSettingsIcon,
    ProfileIcon,
-   SandTimer,
+   SandTimer
 } from '../common/Icons';
 import { getNetworkState } from '../common/hooks';
 import {
@@ -46,8 +45,8 @@ import { cancelAudioRecord } from '../components/ChatInput';
 import { conversationFlatListRef } from '../components/ConversationList';
 import config from '../config/config';
 import {
+   ALLOWED_ALL_FILE_FORMATS,
    ALLOWED_AUDIO_FORMATS,
-   AUDIO_FORMATS,
    CHAT_TYPE_GROUP,
    CHAT_TYPE_SINGLE,
    DOCUMENT_FILE_EXT,
@@ -84,6 +83,7 @@ import {
    toggleIsChatSearching,
    updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
+import { setReplyMessage, setTextMessage } from '../redux/draftSlice';
 import {
    clearRecentChatData,
    deleteMessagesForEveryoneInRecentChat,
@@ -101,6 +101,7 @@ import {
 } from '../redux/reduxHook';
 import { updateBlockUser } from '../redux/rosterDataSlice';
 import store from '../redux/store';
+import { showToastMessage } from '../redux/toastMessageSlice';
 import {
    BLOCKED_CONTACT_LIST_STACK,
    CAMERA_SCREEN,
@@ -120,8 +121,7 @@ const memoizedUsernameGraphemes = {};
 const splitter = new Graphemer();
 let currentChatUser = '';
 const stringSet = getStringSet();
-let isConversationScreenActive = false,
-   replyScrollmsgId = '';
+let isConversationScreenActive = false;
 
 const documentAttachmentTypes = [
    DocumentPicker.types.allFiles,
@@ -139,24 +139,27 @@ const documentAttachmentTypes = [
    // '.rar'
 ];
 
-export const getReplyScrollmsgId = () => replyScrollmsgId;
-
-export const setReplyScrollmsgId = val => {
-   replyScrollmsgId = val;
-};
-
 export const setIsConversationScreenActive = val => {
    isConversationScreenActive = val;
 };
 
 export const getIsConversationScreenActive = () => isConversationScreenActive;
 
-export const showToast = message => {
-   Toast.show(message, Toast.SHORT);
+export const showToast = (message, duration) => {
+   store.dispatch(
+      showToastMessage({
+         message: message,
+         duration: duration,
+      }),
+   );
 };
 
 export const showNetWorkToast = () => {
-   Toast.show(config.internetErrorMessage, Toast.SHORT);
+   store.dispatch(
+      showToastMessage({
+         message: config.internetErrorMessage,
+      }),
+   );
 };
 
 export const getUserIdFromJid = userJid => {
@@ -547,6 +550,29 @@ const getMaxAllowedFileSize = mediaType => {
    return fileSize;
 };
 
+export const isValidFileToUpload = item => {
+   const {
+      type,
+      image: { fileSize: size, extension, width, height, playableDuration },
+   } = item;
+   const mediaTypeFile = getType(type);
+   const maxAllowedSize = getMaxAllowedFileSize(mediaTypeFile);
+   if (size >= maxAllowedSize) {
+      const message = `File size is too large. Try uploading file size below ${convertBytesToKB(maxAllowedSize)}`;
+      return message;
+   }
+   if (
+      !ALLOWED_ALL_FILE_FORMATS.includes(extension?.toLowerCase()) ||
+      !size ||
+      width <= 0 ||
+      height <= 0 ||
+      (mediaTypeFile === 'video' && playableDuration <= 1)
+   ) {
+      return 'The file format is not supported';
+   }
+   return '';
+};
+
 export const isValidFileType = type => {
    return DOCUMENT_FORMATS.includes(type);
 };
@@ -837,7 +863,7 @@ export const handleConversationScollToBottom = () => {
    });
 };
 
-export const handleSendMedia = selectedImages => () => {
+export const handleSendMedia = selectedImages => {
    let message = {
       messageType: 'media',
       content: selectedImages || [],
@@ -887,11 +913,10 @@ export const getAbsolutePath = async uri => {
          quality: 0.5,
       };
       const thumbnailResponse = await CameraRoll.getPhotoThumbnail(uri, options);
-      const imageData = await CameraRoll.iosGetImageDataById(uri);
-      return { uri: imageData.node.image.filepath, thumbnailBase64: thumbnailResponse.thumbnailBase64 };
+      return { uri, thumbnailBase64: thumbnailResponse.thumbnailBase64 };
    } catch (error) {
-      mflog('Get Absolute Path Error:', error);
-      return uri;
+      mflog('Get Absolute Path Error:', uri, error);
+      return { uri, thumbnailBase64: '' };
    }
 };
 
@@ -1261,6 +1286,7 @@ export const getMessageObjForward = (originalMsg, toJid, newMsgId) => {
             is_downloaded: 2,
          },
       },
+      editMessageId: '',
    };
 };
 
@@ -1297,6 +1323,7 @@ export const getRecentChatMsgObjForward = (originalMsg, toJid, newMsgId) => {
             caption: '',
          },
       },
+      editMessageId: '',
    };
 };
 
@@ -1323,7 +1350,9 @@ export const handleReplyPress = (userId, msgId, message) => {
       offset: adjustedOffset,
       animated: true,
    });
-   replyScrollmsgId = msgId;
+   setTimeout(() => {
+      store.dispatch(highlightMessage({ userId, msgId, shouldHighlight: 0 }));
+   }, 1000);
 };
 
 export const findConversationMessageIndex = (msgId, message) => {
@@ -1333,8 +1362,9 @@ export const findConversationMessageIndex = (msgId, message) => {
       const { deleteStatus, recallStatus } = message;
       if (deleteStatus !== 0 || recallStatus !== 0) {
          showToast(stringSet.TOAST_MESSAGES.THIS_MESSAGE_NO_LONGER_AVAILABLE);
+         return -1;
       } else if (index < 0) {
-         return;
+         return -1;
       } else {
          return index;
       }
@@ -1411,12 +1441,20 @@ export const handleUpdateBlockUser = (userId, isBlocked, chatUser) => async () =
          const res = await SDK.blockUser(chatUser);
          if (res.statusCode === 200) {
             cancelAudioRecord();
+            store.dispatch(setReplyMessage({ userId, message: {} }));
+            store.dispatch(setTextMessage({ userId, message: '' }));
             showToast(`You have blocked ${getUserNameFromStore(userId)}`);
+            store.dispatch(updateBlockUser({ userId, isBlocked }));
+         } else {
+            showToast(res?.message);
          }
       } else {
          const res = await SDK.unblockUser(chatUser);
          if (res.statusCode === 200) {
+            store.dispatch(updateBlockUser({ userId, isBlocked }));
             showToast(`${getUserNameFromStore(userId)} has been unblocked`);
+         } else {
+            showToast(res?.message);
          }
       }
    }
@@ -1475,6 +1513,8 @@ export const resetConversationScreen = userId => {
    store.dispatch(toggleEditMessage(''));
    store.dispatch(setChatSearchText(''));
    store.dispatch(toggleIsChatSearching(false));
+   setCurrentChatUser('');
+   SDK.activeChatUser('');
 };
 
 // Dispatch loading state helper

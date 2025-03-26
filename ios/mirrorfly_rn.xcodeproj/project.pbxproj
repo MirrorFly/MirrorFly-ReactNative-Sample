@@ -714,7 +714,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.mirrorfly.reactnativeuikit.qa;
-				PRODUCT_NAME = mirrorfly_rn;	
+				PRODUCT_NAME = mirrorfly_rn;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "ReactNative Adhoc";
 				SWIFT_OBJC_BRIDGING_HEADER = "mirrorfly_rn-Bridging-Header.h";

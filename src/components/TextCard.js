@@ -106,12 +106,16 @@ export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchVa
 
             // If no match, render normally
             const urlStyle = segment.isUrl ? styles.underline : {};
-            return (
+            return segment.isUrl ? (
                <Text
                   key={randomString()}
                   style={[textStyle, urlStyle]}
                   onPress={() => segment.isUrl && handlePress(segment.content)}
                   suppressHighlighting={!segment.isUrl}>
+                  {content}
+               </Text>
+            ) : (
+               <Text key={randomString()} style={[textStyle]}>
                   {content}
                </Text>
             );

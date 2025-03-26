@@ -124,6 +124,12 @@ function ChatInput({ chatUser }) {
    }, [appState]);
 
    React.useEffect(() => {
+      if (blockedStaus && editMessageId) {
+         hadleBlockUser();
+      }
+   }, [editMessageId]);
+
+   React.useEffect(() => {
       audioRecordRef.current.onStopRecord = onStopRecord;
       audioRecordRef.current.onCancelRecord = onCancelRecord;
    }, [isAudioRecording]);
@@ -328,6 +334,11 @@ function ChatInput({ chatUser }) {
       setModalContent(null);
    };
 
+   const handleCloseEdit = () => {
+      dispatch(setTextMessage({ userId, message: '' }));
+      dispatch(toggleEditMessage(''));
+   };
+
    const hadleBlockUser = () => {
       setModalContent({
          visible: true,
@@ -336,6 +347,7 @@ function ChatInput({ chatUser }) {
          noButton: 'CANCEL',
          yesButton: 'UNBLOCK',
          yesAction: handleUpdateBlockUser(userId, 0, chatUser),
+         noAction: handleCloseEdit,
       });
    };
 

@@ -38,7 +38,8 @@ const LastSeen = ({ userJid = '', style }) => {
    const updateLastSeen = useCallback(async (updateUserJid, userPresenceStatus) => {
       const formattedJid = formatUserIdToJid(updateUserJid);
       const { data: { seconds: lastSeenSeconds = -1 } = {} } = await SDK.getLastSeen(formattedJid);
-      const lastSeen = lastSeenSeconds !== -1 ? getLastseen(lastSeenSeconds) : '';
+      const _lastSeenSeconds = !userPresenceStatus ? lastSeenSeconds : 1;
+      const lastSeen = lastSeenSeconds !== -1 ? getLastseen(_lastSeenSeconds) : '';
       userPresenceStatus =
          userPresenceStatus || (lastSeenSeconds > 0 ? USER_PRESENCE_STATUS_OFFLINE : USER_PRESENCE_STATUS_ONLINE);
 
@@ -58,7 +59,7 @@ const LastSeen = ({ userJid = '', style }) => {
          setLastSeenData({ lastSeen: '', userPresenceStatus: '' });
          return;
       }
-      if (isNetworkConnected && xmppConnection === CONNECTED && !lastSeenData.lastSeen) {
+      if (isNetworkConnected && xmppConnection === CONNECTED && !lastSeenData.lastSeen && !presenceData?.status) {
          updateLastSeen(userJid, presenceData?.status);
       }
    }, [isNetworkConnected, xmppConnection, blockedStatus, isBlockedMeStatus, presenceData]);

@@ -17,7 +17,7 @@ export const clearNotifyTimer = () => {
 export const pushNotify = (msgId, title, body, sent_from, onForGround) => {
    const date = Date.now();
    const dateStr = date.toString();
-   const id = dateStr.substring(dateStr.length - 1, 7);
+   const id = notifyObj[msgId]?.id || dateStr.substring(dateStr.length - 1, 7);
    if (isActiveChat(sent_from) || AppState.currentState === 'background') {
       notifyObj = {
          ...notifyObj,

@@ -11,6 +11,7 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.soloader.SoLoader
+import com.mirrorfly_rn.newfilecompression.systemlibLoader.NativeLoader
 
 class MainApplication : Application(), ReactApplication {
 
@@ -33,8 +34,18 @@ class MainApplication : Application(), ReactApplication {
     override val reactHost: ReactHost
         get() = getDefaultReactHost(applicationContext, reactNativeHost)
 
+
+    companion object {
+        private var instance: MainApplication? = null
+        fun getInstance(): MainApplication? {
+            return instance
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
+        instance = this
+        NativeLoader.initNativeLibs(applicationContext)
         val sharedI18nUtilInstance = I18nUtil.instance
         sharedI18nUtilInstance.allowRTL(applicationContext, true)
         SoLoader.init(this, false)

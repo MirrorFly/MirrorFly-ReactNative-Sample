@@ -50,9 +50,9 @@ function ScreenHeader({
       return true;
    };
 
-   const handleChangeText = text => {
-      setText(text);
-      onChangeText(text);
+   const handleChangeText = _text => {
+      setText(_text);
+      onChangeText(_text);
    };
 
    const clearText = () => {

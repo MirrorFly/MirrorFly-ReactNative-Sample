@@ -1,6 +1,7 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import PagerView from 'react-native-pager-view';
 import IconButton from '../common/IconButton';
 import { BackArrowIcon } from '../common/Icons';
@@ -41,12 +42,12 @@ const PostPreViewPage = () => {
    };
 
    const initialPage = React.useMemo(() => {
-      const selectedMsgIndex = messageList.findIndex(message => {
-         return message.msgId === msgId;
-      });
-      setCurrentIndex(selectedMsgIndex);
-      return selectedMsgIndex === -1 ? messageList.length - 1 : selectedMsgIndex;
-   }, [messageList.length]);
+      return messageList.findIndex(message => message.msgId === msgId);
+   }, [messageList]);
+
+   React.useEffect(() => {
+      setCurrentIndex(initialPage);
+   }, [initialPage]);
 
    const renderMediaPages = React.useMemo(() => {
       return (
@@ -55,15 +56,17 @@ const PostPreViewPage = () => {
             style={commonStyles.flex1}
             initialPage={initialPage}
             onPageScroll={handlePageSelected}>
-            {messageList.map?.(item => (
-               <PostView key={item.msgId} item={item} />
+            {messageList.map?.((item, index) => (
+               <React.Fragment key={item.msgId}>
+                  {index === 0 || Math.abs(index - currentIndex) <= 1 ? <PostView item={item} /> : <View />}
+               </React.Fragment>
             ))}
          </PagerView>
       );
-   }, [messageList]);
+   }, [messageList, currentIndex]);
 
    return (
-      <View style={commonStyles.flex1}>
+      <GestureHandlerRootView style={commonStyles.flex1}>
          <View style={[styles.header, commonStyles.bg_color(themeColorPalatte.appBarColor)]}>
             <IconButton onPress={handleBackBtn}>
                <BackArrowIcon color={themeColorPalatte.iconColor} />
@@ -73,7 +76,7 @@ const PostPreViewPage = () => {
             </Text>
          </View>
          {renderMediaPages}
-      </View>
+      </GestureHandlerRootView>
    );
 };
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
-import { Text } from 'react-native-svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { ALREADY_ON_CALL, CALL_TYPE_AUDIO, CALL_TYPE_VIDEO } from '../Helper/Calls/Constant';
 import { initiateMirroflyCall, isRoomExist } from '../Helper/Calls/Utility';
@@ -23,6 +22,7 @@ import { showToast } from '../helpers/chatHelpers';
 import { MIX_BARE_JID, audioRecord } from '../helpers/constants';
 import { closePermissionModal, showPermissionModal } from '../redux/permissionSlice';
 import { useAudioRecording, useBlockedStatus } from '../redux/reduxHook';
+import Text from '../common/Text';
 
 function MakeCall({ chatUser, userId }) {
    const dispatch = useDispatch();
@@ -121,8 +121,8 @@ function MakeCall({ chatUser, userId }) {
             </Modal>
             {/* display permission Model */}
             {permissionData && (
-               <Modal visible={permissionData}>
-                  <ModalCenteredContent>
+               <Modal visible={permissionData} onRequestClose={() => dispatch(closePermissionModal())}>
+                  <ModalCenteredContent onPressOutside={() => dispatch(closePermissionModal())}>
                      <View style={styles.callModalContentContainer}>
                         <Text style={styles.callModalContentText}>{permissionText}</Text>
                         <View style={styles.callModalHorizontalActionButtonsContainer}>

@@ -1,6 +1,7 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import SDK from '../SDK/SDK';
+import { CONNECTED } from '../SDK/constants';
 import Text from '../common/Text';
 import { useNetworkStatus } from '../common/hooks';
 import { getLastseen } from '../common/timeStamp';
@@ -53,11 +54,11 @@ const LastSeen = ({ userJid = '', style }) => {
    );
 
    useEffect(() => {
-      if (blockedStatus || isBlockedMeStatus) {
+      if (blockedStatus || isBlockedMeStatus || xmppConnection !== CONNECTED) {
          setLastSeenData({ lastSeen: '', userPresenceStatus: '' });
          return;
       }
-      if (isNetworkConnected && xmppConnection === 'CONNECTED' && !lastSeenData.lastSeen) {
+      if (isNetworkConnected && xmppConnection === CONNECTED && !lastSeenData.lastSeen) {
          updateLastSeen(userJid, presenceData?.status);
       }
    }, [isNetworkConnected, xmppConnection, blockedStatus, isBlockedMeStatus, presenceData]);

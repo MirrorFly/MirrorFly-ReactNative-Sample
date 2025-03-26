@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import ScreenHeader from '../common/ScreenHeader';
 import SlideInView from '../common/SlideInView';
@@ -7,10 +7,10 @@ import { getCurrentChatUser, getUserIdFromJid } from '../helpers/chatHelpers';
 import { toggleEditMessage } from '../redux/chatMessageDataSlice';
 import { setTextMessage } from '../redux/draftSlice';
 import { useChatMessage, useEditMessageId } from '../redux/reduxHook';
-
+import ChatInput from './ChatInput';
 import ChatMessage from './ChatMessage';
 
-function EditMessage() {
+function EditMessage({ jid }) {
    const dispatch = useDispatch();
    const userId = getUserIdFromJid(getCurrentChatUser());
    const editMessageId = useEditMessageId();
@@ -34,10 +34,11 @@ function EditMessage() {
                title={'Edit Message'}
                isSearchable={false}
             />
+            <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'flex-end' }}>
+               <ChatMessage item={message} disablefunction={true} />
+            </ScrollView>
          </View>
-         <View style={{ zIndex: -1, marginBottom: 68, backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
-            <ChatMessage item={message} disablefunction={true} />
-         </View>
+         <ChatInput chatUser={jid} />
       </SlideInView>
    );
 }

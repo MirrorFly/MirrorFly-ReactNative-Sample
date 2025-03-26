@@ -7,6 +7,7 @@ import AlertModal from './AlertModal';
 import Avathar from './Avathar';
 import NickName from './NickName';
 import Pressable from './Pressable';
+import SDK from '../SDK/SDK';
 
 function UserAvatharNickname({ item }) {
    const [modalContent, setModalContent] = React.useState(null);

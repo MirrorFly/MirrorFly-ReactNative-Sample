@@ -4,6 +4,8 @@ apply plugin: "com.facebook.react"
 
 /** Add this Firebase intialize */
 apply plugin: 'com.google.gms.google-services'
+/** Add this for Firebase crashlytics */
+apply plugin: 'com.google.firebase.crashlytics'
 
 apply plugin: "kotlin-android"
 
@@ -78,7 +80,15 @@ def enableProguardInReleaseBuilds = false
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 android {
-    ndkVersion rootProject.ext.ndkVersion
+
+   ndkVersion "21.4.7075529"
+//    ndkVersion rootProject.ext.ndkVersion
+
+    externalNativeBuild {
+        cmake {
+            path 'jni/CMakeLists.txt'
+        }
+    }
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
@@ -88,7 +98,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "3.0.16"
+        versionName "3.2.7"
         /** Add this for react-native-camera */
         missingDimensionStrategy 'react-native-camera', 'general'
         multiDexEnabled true
@@ -118,7 +128,23 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+
+            /* Add the firebaseCrashlytics extension (by default,
+            * it's disabled to improve build speeds) and set
+            * nativeSymbolUploadEnabled to true along with a pointer to native libs. */
+            firebaseCrashlytics {
+                nativeSymbolUploadEnabled true
+                unstrippedNativeLibsDir 'build/intermediates/merged_native_libs/release/out/lib'
+            }
         }
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://repo.mirrorfly.com/snapshot" }
     }
 }
 
@@ -130,6 +156,16 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.6.2'
     implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+
+    configurations {
+        all {
+            exclude group: 'org.json', module: 'json'
+            exclude group: 'xpp3', module: 'xpp3'
+        }
+    }
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    api 'com.mirrorfly.sdk:mirrorfly-utilities:0.0.1'
 
     // exclude group:'com.squareup.okhttp3', module:'okhttp'
 

@@ -198,6 +198,9 @@ function ChatInput({ chatUser }) {
 
    const sendMessage = () => {
       updateTypingGoneStatus(chatUser);
+      if (blockedStaus) {
+         return hadleBlockUser();
+      }
       switch (true) {
          case recordSecs && recordSecs < 1000:
             showToast('Recorded audio time is too short');

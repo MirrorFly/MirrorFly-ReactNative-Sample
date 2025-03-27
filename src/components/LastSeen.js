@@ -59,7 +59,7 @@ const LastSeen = ({ userJid = '', style }) => {
          setLastSeenData({ lastSeen: '', userPresenceStatus: '' });
          return;
       }
-      if (isNetworkConnected && xmppConnection === CONNECTED && !lastSeenData.lastSeen && !presenceData?.status) {
+      if (isNetworkConnected && xmppConnection === CONNECTED) {
          updateLastSeen(userJid, presenceData?.status);
       }
    }, [isNetworkConnected, xmppConnection, blockedStatus, isBlockedMeStatus, presenceData]);

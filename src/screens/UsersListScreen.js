@@ -176,7 +176,6 @@ function ContactScreen() {
 
    const handlePress = item => {
       const _item = { ...item, isBlocked: getBlockedStatus(getUserIdFromJid(item.userJid)) };
-      console.log('_item ==>', JSON.stringify(_item, null, 2));
       if (isNewGrpSrn || isGroupInfoSrn) {
          if (getBlockedStatus(getUserIdFromJid(_item.userJid))) {
             hadleBlockUser(getUserIdFromJid(_item.userJid), _item.userJid);

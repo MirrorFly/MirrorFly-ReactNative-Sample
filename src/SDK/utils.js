@@ -4,9 +4,7 @@ import config from '../config/config';
 import {
    calculateWidthAndHeight,
    getCurrentChatUser,
-   getThumbImage,
    getUserIdFromJid,
-   getVideoThumbImage,
    handleConversationScollToBottom,
    handleUploadNextImage,
    isLocalUser,
@@ -110,7 +108,6 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
       hasNextChatPage[userId] = false;
       return;
    }
-   const page = chatPage[userId] || 1;
 
    const {
       statusCode,
@@ -124,11 +121,9 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
    });
    if (statusCode === 200) {
       let hasEqualDataFetched = data.length === config.chatMessagesSizePerPage;
-      if (data.length && hasEqualDataFetched) {
-         chatPage[userId] = page + 1;
-      }
+
       hasNextChatPage[userId] = hasEqualDataFetched;
-      store.dispatch(setChatMessages({ userJid, data, forceUpdate: page === 1 }));
+      store.dispatch(setChatMessages({ userJid, data }));
    }
    if (statusCode !== 200) {
       showToast(message);

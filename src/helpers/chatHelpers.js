@@ -26,7 +26,6 @@ import {
    GalleryIcon,
    HeadSetIcon,
    LocationIcon,
-   LogIcon,
    NotificationSettingsIcon,
    ProfileIcon,
    SandTimer,
@@ -42,7 +41,7 @@ import {
    requestStoragePermission,
 } from '../common/permissions';
 import { changeTimeFormat } from '../common/timeStamp';
-import { cancelAudioRecord } from '../components/ChatInput';
+import { stopAudioRecord } from '../components/ChatInput';
 import { conversationFlatListRef } from '../components/ConversationList';
 import config from '../config/config';
 import {
@@ -84,7 +83,7 @@ import {
    toggleIsChatSearching,
    updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
-import { setReplyMessage, setTextMessage } from '../redux/draftSlice';
+import { setReplyMessage } from '../redux/draftSlice';
 import {
    clearRecentChatData,
    deleteMessagesForEveryoneInRecentChat,
@@ -1442,9 +1441,7 @@ export const handleUpdateBlockUser = (userId, isBlocked, chatUser) => async () =
       if (isBlocked) {
          const res = await SDK.blockUser(chatUser);
          if (res.statusCode === 200) {
-            cancelAudioRecord();
-            store.dispatch(setReplyMessage({ userId, message: {} }));
-            store.dispatch(setTextMessage({ userId, message: '' }));
+            stopAudioRecord();
             showToast(`You have blocked ${getUserNameFromStore(userId)}`);
             store.dispatch(updateBlockUser({ userId, isBlocked }));
          } else {

@@ -121,7 +121,6 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
       toJid: fromUserJId,
       lastMessageId,
       size: config.chatMessagesSizePerPage,
-      source: 'db',
    });
    if (statusCode === 200) {
       let hasEqualDataFetched = data.length === config.chatMessagesSizePerPage;

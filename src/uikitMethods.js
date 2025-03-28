@@ -21,6 +21,7 @@ import { setRoasterData } from './redux/rosterDataSlice';
 import store from './redux/store';
 import { updateTheme, updateThemeColor } from './redux/themeColorDataSlice';
 import { RECENTCHATSCREEN, REGISTERSCREEN } from './screens/constants';
+import { NOTIFICATION } from './helpers/constants';
 
 let uiKitCallbackListenersVal = {},
    appInitialized = false,
@@ -68,18 +69,22 @@ export const mirrorflyNotificationHandler = async remoteMessage => {
          return;
       }
       if (notify?.statusCode === 200) {
-         if (
-            notify?.data?.type === 'receiveMessage' ||
-            notify?.data?.msgType === 'groupCreated' ||
-            notify?.data?.msgType === 'groupProfileUpdated'
-         ) {
+         const { data = {}, data: { msgType, archiveStatus } = {} } = notify;
+         notify.data.archiveSetting = getArchive();
+         const isReceiveMessage = ['receiveMessage', 'carbonReceiveMessage'].includes(msgType);
+         const archiveSettingAndStatus = archiveStatus ? !notify.data.archiveSetting : true;
+         const isNotificationMessage =
+            data.msgBody.message_type === NOTIFICATION.toLowerCase() &&
+            data.msgBody.message === '2' &&
+            getCurrentUserJid() === data.toUserJid;
+         const isShowNotification = (archiveSettingAndStatus && isReceiveMessage) || isNotificationMessage;
+         if (isShowNotification) {
             pushNotify(
                notify?.data?.msgId,
                getNotifyNickName(notify?.data),
                getNotifyMessage(notify?.data),
                notify?.data?.fromUserJid,
             );
-            notify.data.archiveSetting = getArchive();
             store.dispatch(addRecentChatItem(notify?.data));
             store.dispatch(addChatMessageItem(notify?.data));
          }

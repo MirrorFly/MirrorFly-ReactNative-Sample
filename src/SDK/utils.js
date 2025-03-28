@@ -523,8 +523,10 @@ export const getUserSettings = async (iq = false) => {
 
 export const updateNotificationSettings = async () => {
    let {
+      data,
       data: { archive = 0, muteNotification = false, notificationSound = true, notificationVibrate = false },
    } = await SDK.getUserSettings();
+   console.log('data ==>', JSON.stringify(data, null, 2));
    store.dispatch(toggleArchiveSetting(Number(archive)));
    store.dispatch(updateNotificationSetting({ muteNotification, notificationSound, notificationVibrate }));
 };

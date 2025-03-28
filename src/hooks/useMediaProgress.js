@@ -11,7 +11,13 @@ import {
 import { mediaStatusConstants } from '../helpers/constants';
 import { setModalContent, toggleModalContent } from '../redux/alertModalSlice';
 import { updateMediaStatus } from '../redux/chatMessageDataSlice';
-import { getMediaProgress, getUserNameFromStore, useBlockedStatus, useChatMessage } from '../redux/reduxHook';
+import {
+   getBlockedStatus,
+   getMediaProgress,
+   getUserNameFromStore,
+   useBlockedStatus,
+   useChatMessage,
+} from '../redux/reduxHook';
 import store from '../redux/store';
 import SDK from '../SDK/SDK';
 import { uploadFileToSDK } from '../SDK/utils';
@@ -79,11 +85,9 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    const networkState = useNetworkStatus();
    const [mediaStatus, setMediaStatus] = React.useState('');
    const blockedStatus = useBlockedStatus(userId);
-   const blockedStatusRef = React.useRef(blockedStatus);
 
    // Effect to cancel any ongoing upload if the user is blocked
    React.useEffect(() => {
-      blockedStatusRef.current = blockedStatus;
       if (blockedStatus) {
          cancelMediaProgress(msgId, userId, mediaStatus, setMediaStatus, true);
       }
@@ -132,7 +136,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
          showToast('Please check your internet connection');
          return;
       }
-      if (blockedStatusRef.current) {
+      if (getBlockedStatus(userId)) {
          promptUnblockModal();
          return;
       }

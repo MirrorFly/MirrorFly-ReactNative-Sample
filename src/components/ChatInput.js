@@ -40,6 +40,7 @@ import { setAudioRecordTime, setAudioRecording, setTextMessage } from '../redux/
 import {
    getAudioRecordTime,
    getAudioRecording,
+   getBlockedStatus,
    getCurrentCallRoomId,
    getUserNameFromStore,
    useAudioRecordTime,
@@ -198,7 +199,7 @@ function ChatInput({ chatUser }) {
 
    const sendMessage = () => {
       updateTypingGoneStatus(chatUser);
-      if (blockedStaus) {
+      if (getBlockedStatus(userId)) {
          return hadleBlockUser();
       }
       switch (true) {

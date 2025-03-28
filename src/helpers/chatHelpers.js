@@ -1435,28 +1435,27 @@ export const groupNotifyStatus = (publisherId, toUserId, status, publisher = '',
       return '';
    }
 };
+
 export const handleUpdateBlockUser = (userId, isBlocked, chatUser) => async () => {
-   if (connectionCheck()) {
-      store.dispatch(updateBlockUser({ userId, isBlocked }));
-      if (isBlocked) {
-         const res = await SDK.blockUser(chatUser);
-         if (res.statusCode === 200) {
-            stopAudioRecord();
-            showToast(`You have blocked ${getUserNameFromStore(userId)}`);
-            store.dispatch(updateBlockUser({ userId, isBlocked }));
-         } else {
-            showToast(res?.message);
-         }
-      } else {
-         const res = await SDK.unblockUser(chatUser);
-         if (res.statusCode === 200) {
-            store.dispatch(updateBlockUser({ userId, isBlocked }));
-            showToast(`${getUserNameFromStore(userId)} has been unblocked`);
-         } else {
-            showToast(res?.message);
-         }
-      }
+   if (!connectionCheck()) {
+      return;
    }
+
+   const res = isBlocked ? await SDK.blockUser(chatUser) : await SDK.unblockUser(chatUser);
+   if (res.statusCode === 200) {
+      store.dispatch(updateBlockUser({ userId, isBlocked }));
+      showToast(
+         isBlocked
+            ? `You have blocked ${getUserNameFromStore(userId)}`
+            : `${getUserNameFromStore(userId)} has been unblocked`,
+      );
+      if (isBlocked) {
+         stopAudioRecord();
+      }
+   } else {
+      showToast(res?.message);
+   }
+   return res;
 };
 
 export const connectionCheck = () => {

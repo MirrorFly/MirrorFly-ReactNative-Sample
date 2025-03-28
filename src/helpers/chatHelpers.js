@@ -83,7 +83,6 @@ import {
    toggleIsChatSearching,
    updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
-import { setReplyMessage } from '../redux/draftSlice';
 import {
    clearRecentChatData,
    deleteMessagesForEveryoneInRecentChat,
@@ -1395,7 +1394,9 @@ export const groupNotifyStatus = (publisherId, toUserId, status, publisher = '',
                  });
          case messageTypeConstants.GROUP_USER_ADDED:
             const placeholderData = { publisherName, toUser: toUserName };
-            if (isPublisherLocalUser && isToUserLocalUser) return '';
+            if (isPublisherLocalUser && isToUserLocalUser) {
+               return '';
+            }
             if (isPublisherLocalUser) {
                return replacePlaceholders(stringSet.GROUP_LABELS.GROUP_YOU_ADDED, {
                   toUser: toUserName,
@@ -1406,13 +1407,17 @@ export const groupNotifyStatus = (publisherId, toUserId, status, publisher = '',
                : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_ADDED_BY_PUBLISHER, placeholderData);
          case messageTypeConstants.GROUP_USER_REMOVED:
          case messageTypeConstants.GROUP_USER_LEFT:
-            if (isPublisherLocalUser && isToUserLocalUser) return stringSet.GROUP_LABELS.GROUP_YOU_LEFT;
-            if (isPublisherLocalUser)
+            if (isPublisherLocalUser && isToUserLocalUser) {
+               return stringSet.GROUP_LABELS.GROUP_YOU_LEFT;
+            }
+            if (isPublisherLocalUser) {
                return replacePlaceholders(stringSet.GROUP_LABELS.GROUP_USER_REMOVED, { userName: toUserName });
-            if (isToUserLocalUser)
+            }
+            if (isToUserLocalUser) {
                return replacePlaceholders(stringSet.GROUP_LABELS.GROUP_PUBLISHER_REMOVED_YOU, {
                   userName: publisherName,
                });
+            }
             return toUserId === publisherId
                ? replacePlaceholders(stringSet.GROUP_LABELS.GROUP_PUBLISHER_LEFT, { userName: publisherName })
                : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_MEMBERS_REMOVED, {

@@ -271,10 +271,10 @@ function ChatInput({ chatUser }) {
             if ((await audioRecordPermission()) !== 'granted') {
                return;
             }
-
+            fileName[userId] = `MFRN_${Date.now() + audioRecordClick}.m4a`;
             const filePath = Platform.select({
-               ios: `file://${RNFS.DocumentDirectoryPath}/MFRN_${Date.now() + audioRecordClick}.m4a`,
-               android: `${RNFS.CachesDirectoryPath}/MFRN_${Date.now() + audioRecordClick}.m4a`,
+               ios: `file://${RNFS.DocumentDirectoryPath}/${fileName[userId]}`,
+               android: `${RNFS.CachesDirectoryPath}/${fileName[userId]}`,
             });
 
             await audioRecorderPlayer.startRecorder(filePath, {

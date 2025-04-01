@@ -162,11 +162,6 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
    };
 
    const handleDownload = async () => {
-      if (blockedStatus) {
-         promptUnblockModal();
-         return;
-      }
-
       try {
          const { source = {}, downloadJobId = '' } = getMediaProgress(msgId) || {};
          setMediaStatus(mediaStatusConstants.DOWNLOADING);

@@ -136,6 +136,11 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
          showToast('Please check your internet connection');
          return;
       }
+      if (getBlockedStatus(userId)) {
+         promptUnblockModal();
+         return;
+      }
+
       await updateProgressNotification({
          msgId,
          progress: 0,
@@ -143,11 +148,8 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
          isCanceled: false,
          foregroundStatus: false,
       });
-      const retryObj = {
-         msgId,
-         userId,
-         is_uploading: 1,
-      };
+
+      const retryObj = { msgId, userId, is_uploading: 1 };
       const { msgId: _msgId, msgBody: { media = {} } = {} } = chatMessage;
       const updatedFile = {
          ...media.file,
@@ -155,6 +157,7 @@ const useMediaProgress = ({ uploadStatus = 0, downloadStatus = 0, msgId }) => {
       };
       const _file = media.file || updatedFile;
       dispatch(updateMediaStatus(retryObj));
+
       uploadFileToSDK(_file, chatUser, _msgId, media);
    };
 

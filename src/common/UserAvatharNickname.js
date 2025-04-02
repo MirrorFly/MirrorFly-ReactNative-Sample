@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { formatUserIdToJid, handleUpdateBlockUser } from '../helpers/chatHelpers';
-import { getUserNameFromStore, useRoasterData } from '../redux/reduxHook';
+import { getUserNameFromStore, useRoasterData, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import AlertModal from './AlertModal';
 import Avathar from './Avathar';
@@ -10,6 +10,7 @@ import Pressable from './Pressable';
 import SDK from '../SDK/SDK';
 
 function UserAvatharNickname({ item }) {
+   const themeColorPalatte = useThemeColorPalatte();
    const [modalContent, setModalContent] = React.useState(null);
    let { nickName, image: imageToken, colorCode } = useRoasterData(item?.userId);
    nickName = nickName || item?.nickName || item?.userId || '';
@@ -41,7 +42,7 @@ function UserAvatharNickname({ item }) {
                </View>
             </View>
          </Pressable>
-         <View style={commonStyles.dividerLine} />
+         <View style={commonStyles.dividerLine(themeColorPalatte.dividerBg)} />
          {modalContent && <AlertModal {...modalContent} />}
       </React.Fragment>
    );

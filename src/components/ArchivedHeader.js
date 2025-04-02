@@ -9,7 +9,7 @@ import Text from '../common/Text';
 import { getUserIdFromJid, showToast, toggleArchive } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
 import { getStringSet, replacePlaceholders } from '../localization/stringSet';
-import { deleteRecentChats, resetChatSelections } from '../redux/recentChatDataSlice';
+import { clearRecentChatData, deleteRecentChats, resetChatSelections } from '../redux/recentChatDataSlice';
 import {
    getArchiveSelectedChats,
    getUserNameFromStore,
@@ -20,6 +20,7 @@ import { ARCHIVED_SCREEN } from '../screens/constants';
 import SDK from '../SDK/SDK';
 import commonStyles from '../styles/commonStyles';
 import MuteChat from './MuteChat';
+import { clearChatMessageData } from '../redux/chatMessageDataSlice';
 
 function ArchivedHeader() {
    const stringSet = getStringSet();
@@ -60,13 +61,13 @@ function ArchivedHeader() {
    };
 
    const handleRemoveClose = () => {
-      const isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
-      if (!isUserLeft && filtered.length > 1) {
+      const _isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
+      if (!_isUserLeft && filtered.length > 1) {
          toggleModalContent();
          return showToast(stringSet.COMMON_TEXT.YOU_ARE_A_MEMBER);
       }
 
-      if (!isUserLeft) {
+      if (!_isUserLeft) {
          toggleModalContent();
          return showToast(stringSet.COMMON_TEXT.YOU_ARE_A_PARTICIPANT);
       }
@@ -75,6 +76,9 @@ function ArchivedHeader() {
 
       userJids.forEach(item => {
          SDK.deleteChat(item);
+         SDK.clearChat(item);
+         dispatch(clearChatMessageData(getUserIdFromJid(item)));
+         dispatch(clearRecentChatData(item));
       });
 
       dispatch(deleteRecentChats(ARCHIVED_SCREEN));

@@ -54,6 +54,7 @@ const SmallVideoTile = ({
                <>
                   <View style={styles.smallVideoUserAvathar}>
                      <Avathar
+                        userId={userId}
                         width={50}
                         height={50}
                         backgroundColor={userProfile.colorCode}

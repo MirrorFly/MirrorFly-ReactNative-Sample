@@ -60,7 +60,6 @@ export default {
       'react-native-progress',
       'react-native-safe-area-context',
       'react-native-screens',
-      'react-native-simple-toast',
       'react-native-sound',
       'react-native-svg',
       'react-native-svg-transformer',
@@ -82,7 +81,6 @@ export default {
       'react-native-material-menu',
       'react-native-keyevent',
       'react-native-ringer-mode',
-      'react-native-simple-toast',
    ],
    plugins: [
       replace({

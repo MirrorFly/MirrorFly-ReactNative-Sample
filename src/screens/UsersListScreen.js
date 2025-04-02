@@ -86,7 +86,7 @@ function ContactScreen() {
    };
 
    // Define the filtering functions
-   const filterOutRecentChatUsers = (users, recentChatList) => {
+   const filterOutRecentChatUsers = users => {
       if (isGroupInfoSrn || isNewGrpSrn) {
          return users;
       }
@@ -175,22 +175,23 @@ function ContactScreen() {
    };
 
    const handlePress = item => {
+      const _item = { ...item, isBlocked: getBlockedStatus(getUserIdFromJid(item.userJid)) };
       if (isNewGrpSrn || isGroupInfoSrn) {
-         if (getBlockedStatus(getUserIdFromJid(item.userJid))) {
-            hadleBlockUser(getUserIdFromJid(item.userJid), item.userJid);
+         if (getBlockedStatus(getUserIdFromJid(_item.userJid))) {
+            hadleBlockUser(getUserIdFromJid(_item.userJid), _item.userJid);
             return;
          }
          setSelectedUsers(_data => {
-            if (_data[item.userJid]) {
-               delete _data[item.userJid];
+            if (_data[_item.userJid]) {
+               delete _data[_item.userJid];
             } else {
-               _data[item.userJid] = item;
+               _data[_item.userJid] = item;
             }
             return { ..._data };
          });
       } else {
-         dispatch(setRoasterData(item));
-         navigation.navigate(CONVERSATION_STACK, { screen: CONVERSATION_SCREEN, params: { jid: item.userJid } });
+         dispatch(setRoasterData(_item));
+         navigation.navigate(CONVERSATION_STACK, { screen: CONVERSATION_SCREEN, params: { jid: _item.userJid } });
       }
    };
 

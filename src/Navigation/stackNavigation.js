@@ -2,6 +2,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { Provider } from 'react-redux';
 import VideoPlayer from '../Media/VideoPlayer';
+import AlertModalRoot from '../common/AlertModalRoot';
+import ToastMessage from '../common/ToastMessage';
 import store from '../redux/store';
 import ArchivedScreen from '../screens/ArchivedScreen';
 import BlockedContactListScreen from '../screens/BlockedContactListScreen';
@@ -71,7 +73,6 @@ import {
    VIEWALLMEDIA,
 } from '../screens/constants';
 import { getCurrentScreen } from '../uikitMethods';
-import ToastMessage from '../common/ToastMessage';
 
 const Stack = createNativeStackNavigator();
 
@@ -182,6 +183,7 @@ function StackNavigationPage() {
             <Stack.Screen name={GROUP_STACK}>{prop => <GroupScreenStackNavigation {...prop} />}</Stack.Screen>
          </Stack.Navigator>
          <ToastMessage />
+         <AlertModalRoot />
       </Provider>
    );
 }

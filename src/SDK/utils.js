@@ -4,9 +4,7 @@ import config from '../config/config';
 import {
    calculateWidthAndHeight,
    getCurrentChatUser,
-   getThumbImage,
    getUserIdFromJid,
-   getVideoThumbImage,
    handleConversationScollToBottom,
    handleUploadNextImage,
    isLocalUser,
@@ -110,7 +108,6 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
       hasNextChatPage[userId] = false;
       return;
    }
-   const page = chatPage[userId] || 1;
 
    const {
       statusCode,
@@ -121,15 +118,12 @@ export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = fals
       toJid: fromUserJId,
       lastMessageId,
       size: config.chatMessagesSizePerPage,
-      source: 'db',
    });
    if (statusCode === 200) {
       let hasEqualDataFetched = data.length === config.chatMessagesSizePerPage;
-      if (data.length && hasEqualDataFetched) {
-         chatPage[userId] = page + 1;
-      }
+
       hasNextChatPage[userId] = hasEqualDataFetched;
-      store.dispatch(setChatMessages({ userJid, data, forceUpdate: page === 1 }));
+      store.dispatch(setChatMessages({ userJid, data }));
    }
    if (statusCode !== 200) {
       showToast(message);
@@ -529,8 +523,10 @@ export const getUserSettings = async (iq = false) => {
 
 export const updateNotificationSettings = async () => {
    let {
+      data,
       data: { archive = 0, muteNotification = false, notificationSound = true, notificationVibrate = false },
    } = await SDK.getUserSettings();
+   console.log('data ==>', JSON.stringify(data, null, 2));
    store.dispatch(toggleArchiveSetting(Number(archive)));
    store.dispatch(updateNotificationSetting({ muteNotification, notificationSound, notificationVibrate }));
 };

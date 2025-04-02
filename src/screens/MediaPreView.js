@@ -106,7 +106,7 @@ function MediaPreView() {
                return; // ✅ Stop after compression if needed
             }
 
-            const _uri = response.message.outputPath || fileDetails.uri;
+            const _uri = response.outputPath || fileDetails.uri;
             let mediaDimension = {},
                thumbImage = fileDetails?.thumbImage;
 
@@ -132,8 +132,8 @@ function MediaPreView() {
                   fileDetails: {
                      ...element.fileDetails,
                      uri: _uri,
-                     fileSize: response.message.fileSize || fileDetails.fileSize,
-                     extension: response.message.extension || fileDetails.extension,
+                     fileSize: response.fileSize || fileDetails.fileSize,
+                     extension: response.extension || fileDetails.extension,
                      thumbImage,
                   },
                },

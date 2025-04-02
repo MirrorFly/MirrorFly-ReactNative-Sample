@@ -40,6 +40,7 @@ import { setAudioRecordTime, setAudioRecording, setTextMessage } from '../redux/
 import {
    getAudioRecordTime,
    getAudioRecording,
+   getBlockedStatus,
    getCurrentCallRoomId,
    getUserNameFromStore,
    useAudioRecordTime,
@@ -124,6 +125,12 @@ function ChatInput({ chatUser }) {
    }, [appState]);
 
    React.useEffect(() => {
+      if (blockedStaus && editMessageId) {
+         hadleBlockUser();
+      }
+   }, [editMessageId]);
+
+   React.useEffect(() => {
       audioRecordRef.current.onStopRecord = onStopRecord;
       audioRecordRef.current.onCancelRecord = onCancelRecord;
    }, [isAudioRecording]);
@@ -192,6 +199,9 @@ function ChatInput({ chatUser }) {
 
    const sendMessage = () => {
       updateTypingGoneStatus(chatUser);
+      if (getBlockedStatus(userId)) {
+         return hadleBlockUser();
+      }
       switch (true) {
          case recordSecs && recordSecs < 1000:
             showToast('Recorded audio time is too short');
@@ -262,10 +272,10 @@ function ChatInput({ chatUser }) {
             if ((await audioRecordPermission()) !== 'granted') {
                return;
             }
-
+            fileName[userId] = `MFRN_${Date.now() + audioRecordClick}.m4a`;
             const filePath = Platform.select({
-               ios: `file://${RNFS.DocumentDirectoryPath}/MFRN_${Date.now() + audioRecordClick}.m4a`,
-               android: `${RNFS.CachesDirectoryPath}/MFRN_${Date.now() + audioRecordClick}.m4a`,
+               ios: `file://${RNFS.DocumentDirectoryPath}/${fileName[userId]}`,
+               android: `${RNFS.CachesDirectoryPath}/${fileName[userId]}`,
             });
 
             await audioRecorderPlayer.startRecorder(filePath, {
@@ -328,6 +338,11 @@ function ChatInput({ chatUser }) {
       setModalContent(null);
    };
 
+   const handleCloseEdit = () => {
+      dispatch(setTextMessage({ userId, message: '' }));
+      dispatch(toggleEditMessage(''));
+   };
+
    const hadleBlockUser = () => {
       setModalContent({
          visible: true,
@@ -336,6 +351,7 @@ function ChatInput({ chatUser }) {
          noButton: 'CANCEL',
          yesButton: 'UNBLOCK',
          yesAction: handleUpdateBlockUser(userId, 0, chatUser),
+         noAction: handleCloseEdit,
       });
    };
 

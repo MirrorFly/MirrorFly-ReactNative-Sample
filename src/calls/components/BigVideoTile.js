@@ -75,6 +75,7 @@ const BigVideoTile = ({
                {/* Pulse animation view here */}
                <PulseAnimatedView animateToValue={1.3} baseStyle={styles.avatharPulseAnimatedView} />
                <Avathar
+                  userId={userId}
                   width={90}
                   height={90}
                   backgroundColor={userProfile.colorCode}

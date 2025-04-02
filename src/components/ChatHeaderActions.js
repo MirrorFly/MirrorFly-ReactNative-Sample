@@ -219,10 +219,10 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
          now - filtered[0]?.timestamp <= config.editMessageTime &&
          (filtered[0]?.msgBody.message_type === 'text' || filtered[0]?.msgBody?.media?.caption)
       ) {
-         // menuItems.push({
-         //    label: stringSet.CHAT_SCREEN.EDIT_MESSAGE,
-         //    formatter: handleEditMessage,
-         // });
+         menuItems.push({
+            label: stringSet.CHAT_SCREEN.EDIT_MESSAGE,
+            formatter: handleEditMessage,
+         });
       }
    }
 
@@ -240,10 +240,10 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
    }
 
    if (!filtered.length && !MIX_BARE_JID.test(chatUser)) {
-      // menuItems.push({
-      //    label: blockedStaus ? stringSet.CHAT_SCREEN.UNBLOCK_LABEL : stringSet.CHAT_SCREEN.BLOCK_LABEL,
-      //    formatter: hadleBlockUser,
-      // });
+      menuItems.push({
+         label: blockedStaus ? stringSet.CHAT_SCREEN.UNBLOCK_LABEL : stringSet.CHAT_SCREEN.BLOCK_LABEL,
+         formatter: hadleBlockUser,
+      });
    }
 
    if (menuItems.length === 0) {

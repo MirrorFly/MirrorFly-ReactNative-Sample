@@ -1,6 +1,6 @@
 {
    "name": "mirrorfly-uikit-react-native",
-   "version": "1.5.0",
+   "version": "2.1.0",
    "description": "React-Native based UI kit for Mirrorfly",
    "main": "dist/index.js",
    "module": "dist/index.js",
@@ -29,7 +29,6 @@
       "@react-native-community/checkbox": "^0.5.17",
       "@react-native-community/netinfo": "^11.4.1",
       "@react-native-firebase/app": "~21.6.2",
-      "@react-native-firebase/crashlytics": "~21.6.2",
       "@react-native-firebase/messaging": "~21.6.2",
       "@react-native/babel-preset": "0.75.4",
       "@react-native/eslint-config": "0.75.4",

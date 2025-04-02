@@ -20,11 +20,13 @@ const config = {
    recentChatsPerPage: 20,
    conversationListBottomYaxisLimit: 60,
    deleteForEveryOneTime: 30, // in Seconds
+   editMessageTime: 900000, // in milli seconds
+   audioRecordDuaration: 300, // in seconds
    INVITE_APP_URL: 'https://app.mirrorfly.com',
    INVITE_SMS_CONTENT:
       'Hey, MirrorFly is a real time chat, Audio and Video call solution for B2B and B2C.\n Download the app from this URL: https://app.mirrorfly.com',
-   API_URL: 'https://api-uikit-qa.contus.us/api/v1',
-   licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
+   API_URL: '************************', // NOSONAR
+   licenseKey: '*****************', // NOSONAR
 };
 
 export default config;

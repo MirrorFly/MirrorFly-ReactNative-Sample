@@ -4,9 +4,7 @@ import config from '../config/config';
 import {
    calculateWidthAndHeight,
    getCurrentChatUser,
-   getThumbImage,
    getUserIdFromJid,
-   getVideoThumbImage,
    handleConversationScollToBottom,
    handleUploadNextImage,
    isLocalUser,
@@ -96,47 +94,41 @@ export const fetchContactsFromSDK = async (_searchText, _pageNumber, _limit) => 
 };
 
 export const fetchMessagesFromSDK = async ({ fromUserJId, forceGetFromSDK = false, pageReset = false }) => {
-   try {
-      const userId = getUserIdFromJid(fromUserJId);
-      const messsageList = getChatMessages(userId) || [];
-      if (messsageList.length && !forceGetFromSDK) {
-         return;
-      }
-      if (pageReset) {
-         delete chatPage[userId];
-      }
-      const lastMessageId = messsageList[messsageList.length - 1]?.msgId || '';
-      console.log('lastMessageId ==>', messsageList.length, messsageList.length - 1, lastMessageId);
-      if (lastMessageId.includes('groupCreated')) {
-         hasNextChatPage[userId] = false;
-         return;
-      }
-      const page = chatPage[userId] || 1;
+   const userId = getUserIdFromJid(fromUserJId);
+   const messsageList = getChatMessages(userId) || [];
+   if (messsageList.length && !forceGetFromSDK) {
+      return;
+   }
+   if (pageReset) {
+      delete chatPage[userId];
+   }
+   const lastMessageId = messsageList[messsageList.length - 1]?.msgId || '';
+   console.log('lastMessageId ==>', messsageList.length, messsageList.length - 1, lastMessageId);
+   if (lastMessageId.includes('groupCreated')) {
+      hasNextChatPage[userId] = false;
+      return;
+   }
 
-      const {
-         statusCode,
-         userJid,
-         data = [],
-         message,
-      } = await SDK.getChatMessages({
-         toJid: fromUserJId,
-         lastMessageId,
-         size: config.chatMessagesSizePerPage,
-         source: 'db',
-      });
-      if (statusCode === 200) {
-         let hasEqualDataFetched = data.length === config.chatMessagesSizePerPage;
-         if (data.length && hasEqualDataFetched) {
-            chatPage[userId] = page + 1;
-         }
-         hasNextChatPage[userId] = hasEqualDataFetched;
-         store.dispatch(setChatMessages({ userJid, data, forceUpdate: page === 1 }));
-      }
-      if (statusCode !== 200) {
-         showToast(message);
-      }
-      return data;
-   } catch (error) {}
+   const {
+      statusCode,
+      userJid,
+      data = [],
+      message,
+   } = await SDK.getChatMessages({
+      toJid: fromUserJId,
+      lastMessageId,
+      size: config.chatMessagesSizePerPage,
+   });
+   if (statusCode === 200) {
+      let hasEqualDataFetched = data.length === config.chatMessagesSizePerPage;
+
+      hasNextChatPage[userId] = hasEqualDataFetched;
+      store.dispatch(setChatMessages({ userJid, data }));
+   }
+   if (statusCode !== 200) {
+      showToast(message);
+   }
+   return data;
 };
 
 const sendMediaMessage = async (messageType, files, chatType, toUserJid, replyTo) => {
@@ -531,8 +523,10 @@ export const getUserSettings = async (iq = false) => {
 
 export const updateNotificationSettings = async () => {
    let {
+      data,
       data: { archive = 0, muteNotification = false, notificationSound = true, notificationVibrate = false },
    } = await SDK.getUserSettings();
+   console.log('data ==>', JSON.stringify(data, null, 2));
    store.dispatch(toggleArchiveSetting(Number(archive)));
    store.dispatch(updateNotificationSetting({ muteNotification, notificationSound, notificationVibrate }));
 };

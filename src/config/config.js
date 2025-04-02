@@ -23,8 +23,8 @@ const config = {
    INVITE_APP_URL: 'https://app.mirrorfly.com',
    INVITE_SMS_CONTENT:
       'Hey, MirrorFly is a real time chat, Audio and Video call solution for B2B and B2C.\n Download the app from this URL: https://app.mirrorfly.com',
-   API_URL: 'https://api-uikit-qa.contus.us/api/v1',
-   licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
+   API_URL: '**********',
+   licenseKey: '*********',
 };
 
 export default config;

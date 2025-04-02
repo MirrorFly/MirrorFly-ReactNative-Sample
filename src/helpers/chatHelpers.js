@@ -26,7 +26,6 @@ import {
    GalleryIcon,
    HeadSetIcon,
    LocationIcon,
-   LogIcon,
    NotificationSettingsIcon,
    ProfileIcon,
    SandTimer,
@@ -42,7 +41,7 @@ import {
    requestStoragePermission,
 } from '../common/permissions';
 import { changeTimeFormat } from '../common/timeStamp';
-import { cancelAudioRecord } from '../components/ChatInput';
+import { stopAudioRecord } from '../components/ChatInput';
 import { conversationFlatListRef } from '../components/ConversationList';
 import config from '../config/config';
 import {
@@ -84,7 +83,6 @@ import {
    toggleIsChatSearching,
    updateMediaStatus,
 } from '../redux/chatMessageDataSlice';
-import { setReplyMessage, setTextMessage } from '../redux/draftSlice';
 import {
    clearRecentChatData,
    deleteMessagesForEveryoneInRecentChat,
@@ -1396,7 +1394,9 @@ export const groupNotifyStatus = (publisherId, toUserId, status, publisher = '',
                  });
          case messageTypeConstants.GROUP_USER_ADDED:
             const placeholderData = { publisherName, toUser: toUserName };
-            if (isPublisherLocalUser && isToUserLocalUser) return '';
+            if (isPublisherLocalUser && isToUserLocalUser) {
+               return '';
+            }
             if (isPublisherLocalUser) {
                return replacePlaceholders(stringSet.GROUP_LABELS.GROUP_YOU_ADDED, {
                   toUser: toUserName,
@@ -1407,13 +1407,17 @@ export const groupNotifyStatus = (publisherId, toUserId, status, publisher = '',
                : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_ADDED_BY_PUBLISHER, placeholderData);
          case messageTypeConstants.GROUP_USER_REMOVED:
          case messageTypeConstants.GROUP_USER_LEFT:
-            if (isPublisherLocalUser && isToUserLocalUser) return stringSet.GROUP_LABELS.GROUP_YOU_LEFT;
-            if (isPublisherLocalUser)
+            if (isPublisherLocalUser && isToUserLocalUser) {
+               return stringSet.GROUP_LABELS.GROUP_YOU_LEFT;
+            }
+            if (isPublisherLocalUser) {
                return replacePlaceholders(stringSet.GROUP_LABELS.GROUP_USER_REMOVED, { userName: toUserName });
-            if (isToUserLocalUser)
+            }
+            if (isToUserLocalUser) {
                return replacePlaceholders(stringSet.GROUP_LABELS.GROUP_PUBLISHER_REMOVED_YOU, {
                   userName: publisherName,
                });
+            }
             return toUserId === publisherId
                ? replacePlaceholders(stringSet.GROUP_LABELS.GROUP_PUBLISHER_LEFT, { userName: publisherName })
                : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_MEMBERS_REMOVED, {
@@ -1436,30 +1440,27 @@ export const groupNotifyStatus = (publisherId, toUserId, status, publisher = '',
       return '';
    }
 };
+
 export const handleUpdateBlockUser = (userId, isBlocked, chatUser) => async () => {
-   if (connectionCheck()) {
-      store.dispatch(updateBlockUser({ userId, isBlocked }));
-      if (isBlocked) {
-         const res = await SDK.blockUser(chatUser);
-         if (res.statusCode === 200) {
-            cancelAudioRecord();
-            store.dispatch(setReplyMessage({ userId, message: {} }));
-            store.dispatch(setTextMessage({ userId, message: '' }));
-            showToast(`You have blocked ${getUserNameFromStore(userId)}`);
-            store.dispatch(updateBlockUser({ userId, isBlocked }));
-         } else {
-            showToast(res?.message);
-         }
-      } else {
-         const res = await SDK.unblockUser(chatUser);
-         if (res.statusCode === 200) {
-            store.dispatch(updateBlockUser({ userId, isBlocked }));
-            showToast(`${getUserNameFromStore(userId)} has been unblocked`);
-         } else {
-            showToast(res?.message);
-         }
-      }
+   if (!connectionCheck()) {
+      return;
    }
+
+   const res = isBlocked ? await SDK.blockUser(chatUser) : await SDK.unblockUser(chatUser);
+   if (res.statusCode === 200) {
+      store.dispatch(updateBlockUser({ userId, isBlocked }));
+      showToast(
+         isBlocked
+            ? `You have blocked ${getUserNameFromStore(userId)}`
+            : `${getUserNameFromStore(userId)} has been unblocked`,
+      );
+      if (isBlocked) {
+         stopAudioRecord();
+      }
+   } else {
+      showToast(res?.message);
+   }
+   return res;
 };
 
 export const connectionCheck = () => {

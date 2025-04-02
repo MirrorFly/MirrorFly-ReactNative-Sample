@@ -12,13 +12,14 @@ import ReplyImage from './ReplyImage';
 import ReplyLocation from './ReplyLocation';
 import ReplyText from './ReplyText';
 import ReplyVideo from './ReplyVideo';
-import { useReplyMessage } from '../redux/reduxHook';
+import { useBlockedStatus, useReplyMessage } from '../redux/reduxHook';
 
 function ReplyContainer({ chatUser }) {
    const stringSet = getStringSet();
    const userId = getUserIdFromJid(chatUser);
    const replyMessage = useReplyMessage(userId) || {};
    const dispatch = useDispatch();
+   const blockedStaus = useBlockedStatus(userId);
    const { msgBody = {}, deleteStatus = 0, recallStatus = 0, msgBody: { message_type = '' } = {} } = replyMessage;
    const handleCloseReplyContainer = () => {
       dispatch(setReplyMessage({ userId, message: {} }));
@@ -77,7 +78,7 @@ function ReplyContainer({ chatUser }) {
       }
    };
 
-   if (Object.keys(replyMessage).length === 0) {
+   if (Object.keys(replyMessage).length === 0 || blockedStaus) {
       return null;
    }
 

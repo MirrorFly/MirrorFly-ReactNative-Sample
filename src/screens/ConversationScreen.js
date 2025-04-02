@@ -45,7 +45,7 @@ function ConversationScreen({ chatUser = '' }) {
          getUserProfileFromSDK(userId);
       }
       return () => resetConversationScreen(userId);
-   }, []);
+   }, [jid]);
 
    React.useEffect(() => {
       setJid(_jid || chatUser);
@@ -84,7 +84,10 @@ function ConversationScreen({ chatUser = '' }) {
 
    const renderConversationList = React.useMemo(() => <ConversationList chatUser={jid} />, [jid]);
 
-   const renderChatInput = React.useMemo(() => (editMessageId ? null : <ChatInput chatUser={jid} />), [editMessageId]);
+   const renderChatInput = React.useMemo(
+      () => (editMessageId ? null : <ChatInput chatUser={jid} />),
+      [jid, editMessageId],
+   );
 
    return (
       <KeyboardAvoidingView

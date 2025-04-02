@@ -120,6 +120,7 @@ const OutGoingCall = () => {
                   )}
                   <View style={[styles.avathar]}>
                      <Avathar
+                        userId={userID}
                         width={90}
                         height={90}
                         backgroundColor={userProfile.colorCode}

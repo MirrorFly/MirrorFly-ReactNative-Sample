@@ -22,6 +22,7 @@ import {
    getRecentChatMsgObjForward,
    getUserIdFromJid,
    handleUpdateBlockUser,
+   setCurrentChatUser,
    showCheckYourInternetToast,
    showToast,
 } from '../helpers/chatHelpers';
@@ -195,6 +196,7 @@ const ContactItem = ({
             <View style={[styles.recentChatListItems, blockedStaus && commonStyles.opacity_0_5]}>
                <View style={[styles.recentChatItemAvatarName]}>
                   <Avathar
+                     userId={userId}
                      type={MIX_BARE_JID.test(userJid) ? CHAT_TYPE_GROUP : CHAT_TYPE_SINGLE}
                      data={nickName || userId}
                      backgroundColor={colorCode}
@@ -580,18 +582,22 @@ const ForwardMessage = () => {
       await SDK.forwardMessagesToMultipleUsers(contactsToForward, msgIds, true, newMsgIds);
       // navigating the user after setTimeout to finish all the running things in background to avoid unwanted issues
       setTimeout(() => {
+         const jid = Object.values(selectedUsers)[0]?.userJid;
+         const userId = getUserIdFromJid(jid);
          setShowLoader(false);
          onMessageForwaded?.();
          if (Object.values(selectedUsers).length === 1) {
+            dispatch(clearChatMessageData(userId));
             navigation.reset({
                index: 0,
                routes: [
                   {
                      name: CONVERSATION_SCREEN,
-                     params: { jid: Object.values(selectedUsers)[0]?.userJid },
+                     params: { jid },
                   },
                ],
             });
+            setCurrentChatUser(jid);
          } else {
             navigation.goBack();
          }

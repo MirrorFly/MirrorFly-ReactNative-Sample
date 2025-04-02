@@ -42,7 +42,7 @@ export const setCurrectUserProfile = profile => {
 };
 
 export const mflog = (...args) => {
-   console.log('RN-UIKIT', Platform.OS, version, ...args);
+   console.log('RN-UIKIT', version, Platform.OS, ...args);
 };
 
 export const setAppConfig = params => {

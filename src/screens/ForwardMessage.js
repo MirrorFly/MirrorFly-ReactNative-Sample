@@ -196,6 +196,7 @@ const ContactItem = ({
             <View style={[styles.recentChatListItems, blockedStaus && commonStyles.opacity_0_5]}>
                <View style={[styles.recentChatItemAvatarName]}>
                   <Avathar
+                     userId={userId}
                      type={MIX_BARE_JID.test(userJid) ? CHAT_TYPE_GROUP : CHAT_TYPE_SINGLE}
                      data={nickName || userId}
                      backgroundColor={colorCode}

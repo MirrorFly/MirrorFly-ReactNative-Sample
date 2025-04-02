@@ -96,6 +96,7 @@ const IncomingCall = ({ userId, userJid, callStatus }) => {
                </Text>
                <View style={commonStyles.marginTop_15}>
                   <Avathar
+                     userId={userId}
                      width={90}
                      height={90}
                      backgroundColor={userProfile.colorCode}

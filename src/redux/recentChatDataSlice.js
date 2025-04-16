@@ -139,11 +139,19 @@ const recentChatDataSlice = createSlice({
          }
       },
       toggleChatMute(state, action) {
-         const { userJid, muteStatus } = action.payload;
-         const index = state.recentChats.findIndex(item => item.userJid === userJid);
-         if (index !== -1) {
-            state.recentChats[index] = { ...state.recentChats[index], muteStatus, isSelected: 0 };
-         }
+         const { userJids, muteStatus } = action.payload;
+         const userJidSet = new Set(userJids);
+
+         state.recentChats = state.recentChats.map(chat => {
+            if (userJidSet.has(chat.userJid)) {
+               return {
+                  ...chat,
+                  muteStatus,
+                  isSelected: 0,
+               };
+            }
+            return chat;
+         });
       },
       resetUnreadCountForChat(state, action) {
          const userJid = action.payload;

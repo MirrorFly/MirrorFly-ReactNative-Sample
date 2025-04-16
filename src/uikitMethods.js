@@ -72,7 +72,7 @@ export const mirrorflyNotificationHandler = async remoteMessage => {
          const { data = {}, data: { msgType, archiveStatus } = {} } = notify;
          notify.data.archiveSetting = getArchive();
          const isReceiveMessage = ['receiveMessage', 'carbonReceiveMessage'].includes(msgType);
-         const archiveSettingAndStatus = archiveStatus ? !notify.data.archiveSetting : true;
+         const archiveSettingAndStatus = archiveStatus ? !notify.data?.archiveSetting : true;
          const isNotificationMessage =
             data.msgBody.message_type === NOTIFICATION.toLowerCase() &&
             data.msgBody.message === '2' &&

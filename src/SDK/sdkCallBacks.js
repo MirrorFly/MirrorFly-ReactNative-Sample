@@ -118,6 +118,7 @@ import {
    addRecentChatItem,
    editRecentChatItem,
    toggleArchiveChatsByUserId,
+   toggleChatMute,
    updateMsgByLastMsgId,
    updateRecentMessageStatus,
 } from '../redux/recentChatDataSlice';
@@ -857,7 +858,8 @@ export const callBacks = {
       store.dispatch(updateMsgByLastMsgId(res));
    },
    muteChatListener: res => {
-      console.log(res, 'muteChatListener');
+      const { userJids, isMuted } = res || {};
+      store.dispatch(toggleChatMute({ userJids, muteStatus: isMuted ? 1 : 0 }));
    },
    archiveChatListener: res => {
       store.dispatch(toggleArchiveChatsByUserId(res));

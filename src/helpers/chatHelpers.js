@@ -1218,14 +1218,14 @@ export const toggleArchive = val => () => {
    }
 };
 
-export const toggleMuteChat = () => {
+export const toggleMuteChat = async () => {
    try {
       let seletedChat = getSelectedChats();
-      let muteStatus = seletedChat.some(res => res.muteStatus === 1) ? 0 : 1;
-      seletedChat.map(item => {
-         SDK.updateMuteNotification(item.userJid, muteStatus === 1 ? true : false);
-         store.dispatch(toggleChatMute({ userJid: item.userJid, muteStatus }));
-      });
+      const muteStatus = seletedChat.every(res => res.muteStatus === 1) ? 0 : 1;
+      const userJids = seletedChat.map(item => item.userJid);
+
+      store.dispatch(toggleChatMute({ userJids, muteStatus }));
+      await SDK.updateMuteNotification(userJids, muteStatus === 1);
    } catch (error) {
       return error;
    }

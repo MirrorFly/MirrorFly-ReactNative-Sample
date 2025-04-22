@@ -39,6 +39,7 @@ import {
 import commonStyles, { modelStyles } from '../styles/commonStyles';
 import UserAvathar from './UserAvathar';
 import UserStatus from './UserStatus';
+import MuteToggle from './MuteToggle';
 
 const propTypes = {
    chatUser: PropTypes.string,
@@ -514,6 +515,13 @@ const GrpCollapsibleToolbar = ({
                      </View>
                   </Pressable>
                )}
+               <View
+                  style={[
+                     commonStyles.hstack,
+                     { marginBottom: 8, borderBottomWidth: 1, borderBottomColor: '#f2f2f2' },
+                  ]}>
+                  <MuteToggle chatUser={chatUser} />
+               </View>
                {renderParticipants()}
                <View mt="5" />
                <Pressable

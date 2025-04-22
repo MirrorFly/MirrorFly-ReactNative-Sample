@@ -66,6 +66,7 @@ import RootNavigation from '../Navigation/rootNavigation';
 import { progressMap, updateProgressNotification } from '../Service/PushNotify';
 import { pushNotify, updateNotification } from '../Service/remoteNotifyHandle';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../calls/notification/callNotifyHandler';
+import { stopAudioRecord } from '../components/ChatInput';
 import ActivityModule from '../customModules/ActivityModule';
 import BluetoothHeadsetDetectionModule from '../customModules/BluetoothHeadsetDetectionModule';
 import RNCallKeep from '../customModules/CallKitModule';
@@ -124,7 +125,7 @@ import {
 } from '../redux/recentChatDataSlice';
 import { getArchive, getChatMessage } from '../redux/reduxHook';
 import { setRoasterData, updateIsBlockedMe } from '../redux/rosterDataSlice';
-import { toggleArchiveSetting } from '../redux/settingDataSlice';
+import { toggleArchiveSetting, toggleNotificationDisabled } from '../redux/settingDataSlice';
 import { resetConferencePopup, showConfrence, updateConference } from '../redux/showConfrenceSlice';
 import store from '../redux/store';
 import { resetTypingStatus, setTypingStatus } from '../redux/typingStatusDataSlice';
@@ -138,7 +139,6 @@ import {
 } from '../uikitMethods';
 import SDK from './SDK';
 import { fetchGroupParticipants, getUserProfileFromSDK } from './utils';
-import { stopAudioRecord } from '../components/ChatInput';
 
 let localStream = null,
    localVideoMuted = false,
@@ -858,8 +858,11 @@ export const callBacks = {
       store.dispatch(updateMsgByLastMsgId(res));
    },
    muteChatListener: res => {
-      const { userJids, isMuted } = res || {};
+      const { userJids, isMuted, muteNotification, muteSetting } = res || {};
       store.dispatch(toggleChatMute({ userJids, muteStatus: isMuted ? 1 : 0 }));
+      if (muteSetting) {
+         store.dispatch(toggleNotificationDisabled(muteNotification));
+      }
    },
    archiveChatListener: res => {
       store.dispatch(toggleArchiveChatsByUserId(res));

@@ -22,7 +22,6 @@ import { setRoasterData } from './redux/rosterDataSlice';
 import store from './redux/store';
 import { updateTheme, updateThemeColor } from './redux/themeColorDataSlice';
 import { RECENTCHATSCREEN, REGISTERSCREEN } from './screens/constants';
-import DeviceInfo from 'react-native-device-info';
 
 let uiKitCallbackListenersVal = {},
    appInitialized = false,
@@ -141,15 +140,12 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadat
          };
       }
 
-      const deviceId = await DeviceInfo.getUniqueId();
-
       const registerRes = await SDK.register({
          userIdentifier,
          fcmtoken: fcmToken,
          voipDeviceToken: voipToken,
          mode: process.env?.NODE_ENV === 'production',
          registerMetaData: metadata,
-         deviceId: deviceId.toLowerCase(),
          forceRegister: true,
       });
       if (registerRes.statusCode === 200) {
@@ -214,7 +210,7 @@ export const mirrorflyLogout = async () => {
       notifee.stopForegroundService();
       notifee.cancelAllNotifications();
       return statusCode;
-   } catch (error) { }
+   } catch (error) {}
 };
 
 export const fetchCurrentUserProfile = async (iq = false) => {

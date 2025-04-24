@@ -12,6 +12,7 @@ import { CallComponent } from './calls/CallComponent';
 import { setupCallKit } from './calls/ios';
 import { setNotificationForegroundService } from './calls/notification/callNotifyHandler';
 import { getNotifyMessage, getNotifyNickName, getUserIdFromJid, showToast } from './helpers/chatHelpers';
+import { NOTIFICATION } from './helpers/constants';
 import { setLanguageCode } from './localization/stringSet';
 import { addChatMessageItem } from './redux/chatMessageDataSlice';
 import { clearState } from './redux/clearSlice';
@@ -21,7 +22,7 @@ import { setRoasterData } from './redux/rosterDataSlice';
 import store from './redux/store';
 import { updateTheme, updateThemeColor } from './redux/themeColorDataSlice';
 import { RECENTCHATSCREEN, REGISTERSCREEN } from './screens/constants';
-import { NOTIFICATION } from './helpers/constants';
+import DeviceInfo from 'react-native-device-info';
 
 let uiKitCallbackListenersVal = {},
    appInitialized = false,
@@ -140,13 +141,17 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadat
          };
       }
 
-      const registerRes = await SDK.register(
+      const deviceId = await DeviceInfo.getUniqueId();
+
+      const registerRes = await SDK.register({
          userIdentifier,
-         fcmToken,
-         voipToken,
-         process.env?.NODE_ENV === 'production',
-         metadata,
-      );
+         fcmtoken: fcmToken,
+         voipDeviceToken: voipToken,
+         mode: process.env?.NODE_ENV === 'production',
+         registerMetaData: metadata,
+         deviceId: deviceId.toLowerCase(),
+         forceRegister: true,
+      });
       if (registerRes.statusCode === 200) {
          const { data } = registerRes;
          const connect = await SDK.connect(data.username, data.password);
@@ -209,7 +214,7 @@ export const mirrorflyLogout = async () => {
       notifee.stopForegroundService();
       notifee.cancelAllNotifications();
       return statusCode;
-   } catch (error) {}
+   } catch (error) { }
 };
 
 export const fetchCurrentUserProfile = async (iq = false) => {

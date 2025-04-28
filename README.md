@@ -30,12 +30,11 @@ Follow the below steps to get your license key:
 **Step 5:** In this file `/src/config/config.js`, please update the API_URL and licenseKey  
 
 ```jsx
-    GOOGLE_LOCATION_API_KEY: '*******************', // NOSONAR
-    API_URL: 'https://console.mirrorfly.com/', // NOSONAR  ADDED mirrorfly console URL to avoid crash in Android
-    licenseKey: '*****************', // NOSONAR
+    GOOGLE_LOCATION_API_KEY: '*******************', // Please update with a valid Google Location API Key
+    API_URL: 'https://console.mirrorfly.com/', // Please update with the valid API_URL, obtained from the MirrorFly console
+    licenseKey: '*******************', // Please update with the valid licenseKey, obtained from the MirrorFly console
 
 ```
-
 
 **Step 6:** Then run the application using the command `npm start -- --reset-cache` 
 

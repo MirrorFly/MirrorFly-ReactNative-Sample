@@ -13,7 +13,6 @@ setAppConfig({ appSchema: MIRRORFLY_RN });
 mirrorflyInitialize({
    apiBaseUrl: config.API_URL,
    licenseKey: config.licenseKey,
-   callbackListeners: () => {},
    isSandbox: false,
 });
 

@@ -6,8 +6,8 @@ Mirrorfly UIKit Sdk is a set of prebuilt UI components that allows you to easily
 
 The requirements for chat SDK for React-Native App are:
 
-- React Version 16.0 or above
-- Node Version v14.17.4 or above
+-  React Version 18.3.1 or above
+-  Node Version v18.20.8 or above
 
 ### Things to be Noted Before Making a Start
 
@@ -25,49 +25,49 @@ Follow the below steps to get your license key:
 
 **Step 4:** You can copy the license key from the ‘Application info’ section
 
-### Integrate the Chat SDK
+**Step 4:** To run this sample app use first install the dependacy `npm i --legacy-peer-deps`
 
-> Install mirrorfly-uikit-react-native (https://www.npmjs.com/package/mirrorfly-uikit-react-native) npm package by terminal command 'npm i mirrorfly-uikit-react-native'. Now the node_modules will have a mirrorfly-uikit-react-native folder and package.json is added with the mirrorfly-uikit-react-native dependency.
-
-**Step 1:** Create a new React project or Open an existing project.
-
-**Step 2:** Open terminal and install mirrorfly-uikit-react-native with npm command 'npm i mirrorfly-uikit-react-native' and check package.json whether the dependency is added with mirrorfly-uikit-react-native as mentioned below.
+**Step 5:** In this file `/src/config/config.js`, please update the API_URL and licenseKey  
 
 ```jsx
-"dependencies": {
- "mirrorfly-uikit-react-native": "^1.0.6",
- "react": "^16.0.0",
- }
+    GOOGLE_LOCATION_API_KEY: '*******************', // NOSONAR
+    API_URL: 'https://console.mirrorfly.com/', // NOSONAR  ADDED mirrorfly console URL to avoid crash in Android
+    licenseKey: '*****************', // NOSONAR
+
 ```
 
->**Note :** Please refer the doc for more info about installation (https://www.mirrorfly.com/docs/uikit/reactnative/quick-start/)
 
-**Step 3:** Import ChatApp component from the mirrorfly-uikit-react-native package in node modules.
+**Step 6:** Then run the application using the command `npm start -- --reset-cache` 
+
+**Step 7:** To integrate the sample app `src` folder with your existing application please follow the upcoming steps
+
+> **Note :** Please refer the doc for more info about installation (https://www.mirrorfly.com/docs/uikit/reactnative/quick-start/)
+
+**Step 8:** In root indes.js file please intialize the mirrorfly SDK using as follows,
+
+```js
+import config from './src/config/config';
+import { mirrorflyInitialize, setupCallScreen } from './src/uikitMethods';
+
+
+mirrorflyInitialize({
+   apiBaseUrl: config.API_URL,
+   licenseKey: config.licenseKey,
+   isSandbox: false, // Based on your license key if you trail user please update this with true
+});
+
+setupCallScreen();
+
+```
 
 ```jsx
-import { ChatApp, mirrorflyInitialize} from 'mirrorfly-uikit-react-native';
+import React from 'react';
+import { Platform } from 'react-native';
+import { MirrorflyComponent } from './src';
+
 function App() {
-
-  const API_URL = '****************';
-  const LICENSE_KEY = '************';
-
-  React.useEffect(() => {
-    (async () => {
-      await mirrorflyInitialize({
-        apiBaseUrl: API_URL,
-        licenseKey: LICENSE_KEY,
-        isSandbox: true,
-        callBack: res => {
-          console.log(res);
-        },
-      });
-    })();
-  }, []);
-
-  return (
-    <>
-       <ChatApp />
-    </>
-  );
+   return <MirrorflyComponent />;
 }
+
 export default App;
+```

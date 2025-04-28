@@ -32,7 +32,7 @@ Follow the below steps to get your license key:
 ```jsx
     GOOGLE_LOCATION_API_KEY: '*******************', // Please update with a valid Google Location API Key
     API_URL: 'https://console.mirrorfly.com/', // Please update with the valid API_URL, obtained from the MirrorFly console
-    licenseKey: '*******************', // Please update with the valid licenseKey, obtained from the MirrorFly console
+    LICENSEKEY: '*******************', // Please update with the valid licenseKey, obtained from the MirrorFly console
 
 ```
 

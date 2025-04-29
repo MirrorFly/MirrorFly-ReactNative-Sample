@@ -24,6 +24,8 @@
 		A7B20D1B2CF6DF400075CC1B /* sendDeliveredApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B20D162CF6DF400075CC1B /* sendDeliveredApiCall.swift */; };
 		A7F436612D4CB216003518B3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A7F436602D4CB216003518B3 /* GoogleService-Info.plist */; };
 		B42B189CF199C58746A31FD6 /* Pods_mirrorfly_rn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D29BAF4B0875C49FA458AB9 /* Pods_mirrorfly_rn.framework */; };
+		CE2074AA2DBA65C800C4A09A /* DeviceIdModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2074A92DBA65C800C4A09A /* DeviceIdModule.swift */; };
+		CE2074AC2DBA666300C4A09A /* DeviceIdModule.m in Sources */ = {isa = PBXBuildFile; fileRef = CE2074AB2DBA666300C4A09A /* DeviceIdModule.m */; };
 		CE4307242D801FFC002485FF /* FlyUtiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4307212D801FFC002485FF /* FlyUtiles.swift */; };
 		CE4307252D801FFC002485FF /* MediaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4307222D801FFC002485FF /* MediaService.swift */; };
 		CE4307262D801FFC002485FF /* MediaServiceBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4307232D801FFC002485FF /* MediaServiceBridge.m */; };
@@ -96,6 +98,8 @@
 		A7B20D152CF6DF400075CC1B /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
 		A7B20D162CF6DF400075CC1B /* sendDeliveredApiCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sendDeliveredApiCall.swift; sourceTree = "<group>"; };
 		A7F436602D4CB216003518B3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		CE2074A92DBA65C800C4A09A /* DeviceIdModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdModule.swift; sourceTree = "<group>"; };
+		CE2074AB2DBA666300C4A09A /* DeviceIdModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceIdModule.m; sourceTree = "<group>"; };
 		CE4307212D801FFC002485FF /* FlyUtiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlyUtiles.swift; sourceTree = "<group>"; };
 		CE4307222D801FFC002485FF /* MediaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaService.swift; sourceTree = "<group>"; };
 		CE4307232D801FFC002485FF /* MediaServiceBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MediaServiceBridge.m; sourceTree = "<group>"; };
@@ -167,6 +171,8 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
 				351382106977CC60AE8C9180 /* PrivacyInfo.xcprivacy */,
+				CE2074A92DBA65C800C4A09A /* DeviceIdModule.swift */,
+				CE2074AB2DBA666300C4A09A /* DeviceIdModule.m */,
 			);
 			name = mirrorfly_rn;
 			sourceTree = "<group>";
@@ -565,6 +571,8 @@
 				CE4307252D801FFC002485FF /* MediaService.swift in Sources */,
 				CE4307262D801FFC002485FF /* MediaServiceBridge.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				CE2074AC2DBA666300C4A09A /* DeviceIdModule.m in Sources */,
+				CE2074AA2DBA65C800C4A09A /* DeviceIdModule.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

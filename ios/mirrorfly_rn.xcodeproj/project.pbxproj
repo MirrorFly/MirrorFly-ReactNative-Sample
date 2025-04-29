@@ -21,6 +21,8 @@
 		CE312F572D26CC7D00069D84 /* MediaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE312F542D26CC7D00069D84 /* MediaService.swift */; };
 		CE312F582D26CC7D00069D84 /* FlyUtiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE312F552D26CC7D00069D84 /* FlyUtiles.swift */; };
 		CE312F592D26CC7D00069D84 /* MediaServiceBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = CE312F562D26CC7D00069D84 /* MediaServiceBridge.m */; };
+		CE8C4CA22DC0F00F00B1D471 /* DeviceIdModule.m in Sources */ = {isa = PBXBuildFile; fileRef = CE8C4CA02DC0F00F00B1D471 /* DeviceIdModule.m */; };
+		CE8C4CA32DC0F00F00B1D471 /* DeviceIdModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8C4CA12DC0F00F00B1D471 /* DeviceIdModule.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +77,8 @@
 		CE312F542D26CC7D00069D84 /* MediaService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaService.swift; sourceTree = "<group>"; };
 		CE312F552D26CC7D00069D84 /* FlyUtiles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlyUtiles.swift; sourceTree = "<group>"; };
 		CE312F562D26CC7D00069D84 /* MediaServiceBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaServiceBridge.m; sourceTree = "<group>"; };
+		CE8C4CA02DC0F00F00B1D471 /* DeviceIdModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceIdModule.m; sourceTree = "<group>"; };
+		CE8C4CA12DC0F00F00B1D471 /* DeviceIdModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdModule.swift; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -118,6 +122,8 @@
 		13B07FAE1A68108700A75B9A /* mirrorfly_rn */ = {
 			isa = PBXGroup;
 			children = (
+				CE8C4CA02DC0F00F00B1D471 /* DeviceIdModule.m */,
+				CE8C4CA12DC0F00F00B1D471 /* DeviceIdModule.swift */,
 				CE312F552D26CC7D00069D84 /* FlyUtiles.swift */,
 				CE312F542D26CC7D00069D84 /* MediaService.swift */,
 				CE312F562D26CC7D00069D84 /* MediaServiceBridge.m */,
@@ -465,6 +471,8 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				A7B20C262CF5F71C0075CC1B /* RNCallKeep.m in Sources */,
 				CE312F582D26CC7D00069D84 /* FlyUtiles.swift in Sources */,
+				CE8C4CA22DC0F00F00B1D471 /* DeviceIdModule.m in Sources */,
+				CE8C4CA32DC0F00F00B1D471 /* DeviceIdModule.swift in Sources */,
 				CE312F572D26CC7D00069D84 /* MediaService.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				CE312F592D26CC7D00069D84 /* MediaServiceBridge.m in Sources */,
@@ -692,10 +700,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -779,10 +784,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

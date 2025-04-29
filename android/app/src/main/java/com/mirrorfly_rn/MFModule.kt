@@ -14,6 +14,7 @@ class MFModule : ReactPackage {
         modules.add(BluetoothHeadsetDetectModule(reactContext))
         modules.add(RingtoneSilentKeyEventModule(reactContext))
         modules.add(MediaService(reactContext))
+        modules.add(DeviceIdModule(reactContext))
         return modules
     }
 

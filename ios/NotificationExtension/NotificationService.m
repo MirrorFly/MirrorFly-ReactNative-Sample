@@ -37,6 +37,7 @@
           // Handle the case where both nickName and user_name are nil
         // Optional: set a default title
       }
+      self.bestAttemptContent.sound = [UNNotificationSound defaultSound];
       self.bestAttemptContent.body = dict[@"message"];
       self.contentHandler(self.bestAttemptContent);
     }];

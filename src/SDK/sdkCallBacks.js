@@ -119,12 +119,11 @@ import {
    addRecentChatItem,
    editRecentChatItem,
    toggleArchiveChatsByUserId,
-   toggleChatMute,
    updateMsgByLastMsgId,
    updateRecentMessageStatus,
 } from '../redux/recentChatDataSlice';
 import { getArchive, getChatMessage } from '../redux/reduxHook';
-import { setRoasterData, updateIsBlockedMe } from '../redux/rosterDataSlice';
+import { setRoasterData, toggleMute, updateIsBlockedMe } from '../redux/rosterDataSlice';
 import { toggleArchiveSetting, toggleNotificationDisabled } from '../redux/settingDataSlice';
 import { resetConferencePopup, showConfrence, updateConference } from '../redux/showConfrenceSlice';
 import store from '../redux/store';
@@ -335,7 +334,7 @@ const updateCallConnectionStatus = usersStatus => {
       ...callConnectionData,
       callMode:
          (callConnectionData?.groupId && callConnectionData?.groupId !== null && callConnectionData?.groupId !== '') ||
-         usersLen > 2
+            usersLen > 2
             ? 'onetomany'
             : 'onetoone',
    };
@@ -689,19 +688,19 @@ export const callBacks = {
             if (res?.editMessageId && getChatMessage(userId, res?.msgId)) {
                const editObj = res?.msgBody?.media?.caption
                   ? {
-                       userJid: res?.userJid,
-                       msgId: res?.msgId,
-                       caption: res?.msgBody?.media?.caption,
-                       editMessageId: res?.editMessageId,
-                       msgStatus: res?.msgStatus,
-                    }
+                     userJid: res?.userJid,
+                     msgId: res?.msgId,
+                     caption: res?.msgBody?.media?.caption,
+                     editMessageId: res?.editMessageId,
+                     msgStatus: res?.msgStatus,
+                  }
                   : {
-                       userJid: res?.userJid,
-                       msgId: res?.msgId,
-                       message: res?.msgBody?.message,
-                       editMessageId: res?.editMessageId,
-                       msgStatus: res?.msgStatus,
-                    };
+                     userJid: res?.userJid,
+                     msgId: res?.msgId,
+                     message: res?.msgBody?.message,
+                     editMessageId: res?.editMessageId,
+                     msgStatus: res?.msgStatus,
+                  };
 
                store.dispatch(editChatMessageItem(editObj));
                store.dispatch(editRecentChatItem(editObj));
@@ -712,6 +711,10 @@ export const callBacks = {
 
             if (isShowNotification && !res?.editMessageId) {
                pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.fromUserJid);
+            }
+            console.log('res ==>', JSON.stringify(res, null, 2));
+            if (res?.profileDetails) {
+               store.dispatch(setRoasterData(res));
             }
             break;
          case 'delivered':
@@ -763,8 +766,8 @@ export const callBacks = {
       }
       store.dispatch(setRoasterData(res));
    },
-   replyMessageListener: res => {},
-   favouriteMessageListener: res => {},
+   replyMessageListener: res => { },
+   favouriteMessageListener: res => { },
    groupProfileListener: res => {
       if (
          res.msgType === GROUP_CREATED ||
@@ -801,7 +804,7 @@ export const callBacks = {
          }, 1000);
       }
    },
-   groupMsgInfoListener: res => {},
+   groupMsgInfoListener: res => { },
    mediaUploadListener: res => {
       const { msgId, progress } = res;
       const roundedProgress = Math.round(progress);
@@ -853,13 +856,13 @@ export const callBacks = {
          store.dispatch(updateMediaStatus(mediaStatusObj));
       }
    },
-   blockUserListener: res => {},
+   blockUserListener: res => { },
    singleMessageDataListener: res => {
       store.dispatch(updateMsgByLastMsgId(res));
    },
    muteChatListener: res => {
       const { userJids, isMuted, muteNotification, muteSetting } = res || {};
-      store.dispatch(toggleChatMute({ userJids, muteStatus: isMuted ? 1 : 0 }));
+      store.dispatch(toggleMute({ userJids, muteStatus: isMuted ? 1 : 0 }));
       if (muteSetting) {
          store.dispatch(toggleNotificationDisabled(muteNotification));
       }
@@ -867,8 +870,8 @@ export const callBacks = {
    archiveChatListener: res => {
       store.dispatch(toggleArchiveChatsByUserId(res));
    },
-   userDeletedListener: res => {},
-   adminBlockListener: res => {},
+   userDeletedListener: res => { },
+   adminBlockListener: res => { },
    incomingCallListener: function (res) {
       stopAudioRecord();
       remoteStream = [];
@@ -1077,8 +1080,8 @@ export const callBacks = {
             const status =
                callConversionData && callConversionData.status === CALL_CONVERSION_STATUS_REQ_WAITING
                   ? {
-                       status: CALL_CONVERSION_STATUS_CANCEL,
-                    }
+                     status: CALL_CONVERSION_STATUS_CANCEL,
+                  }
                   : undefined;
             store.dispatch(callConversion(status));
             status && SDK.callConversion(CALL_CONVERSION_STATUS_CANCEL);
@@ -1088,8 +1091,8 @@ export const callBacks = {
    mediaErrorListener: res => {
       console.log(res, 'mediaErrorListener');
    },
-   callSpeakingListener: res => {},
-   callUsersUpdateListener: res => {},
+   callSpeakingListener: res => { },
+   callUsersUpdateListener: res => { },
    helper: {
       getDisplayName: () => {
          let vcardData = getLocalUserDetails();
@@ -1106,9 +1109,9 @@ export const callBacks = {
          return '';
       },
    },
-   inviteUsersListener: res => {},
-   callUserJoinedListener: function (res) {},
-   callUserLeftListener: function (res) {},
+   inviteUsersListener: res => { },
+   callUserJoinedListener: function (res) { },
+   callUserLeftListener: function (res) { },
    missedCallListener: res => {
       updateMissedCallNotification(res);
    },

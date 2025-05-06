@@ -73,6 +73,8 @@ import {
    VIEWALLMEDIA,
 } from '../screens/constants';
 import { getCurrentScreen } from '../uikitMethods';
+import ConnectionStatus from '../common/ConnectionStatus';
+import { View } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -164,28 +166,34 @@ const GroupScreenStackNavigation = () => {
 };
 
 function StackNavigationPage() {
-   console.log('StackNavigationPage ==>', getCurrentScreen());
    return (
       <Provider store={store}>
-         <Stack.Navigator
-            screenOptions={{
-               headerShown: false,
-               orientation: 'portrait',
-            }}
-            initialRouteName={getCurrentScreen()}>
-            <Stack.Screen name={REGISTERSCREEN}>{prop => <RegisterScreen {...prop} />}</Stack.Screen>
-            <Stack.Screen name={COUNTRY_LIST_SCREEN}>{prop => <CountryList {...prop} />}</Stack.Screen>
-            <Stack.Screen name={RECENTCHATSCREEN}>{prop => <RecentChatScreen {...prop} />}</Stack.Screen>
-            <Stack.Screen name={CONVERSATION_STACK}>{prop => <ChatScreen {...prop} />}</Stack.Screen>
-            <Stack.Screen name={USERS_LIST_SCREEN}>{prop => <UsersListScreen {...prop} />}</Stack.Screen>
-            <Stack.Screen name={SETTINGS_STACK}>{prop => <SettingsScreen {...prop} />}</Stack.Screen>
-            <Stack.Screen name={ARCHIVED_SCREEN}>{prop => <ArchivedScreen {...prop} />}</Stack.Screen>
-            <Stack.Screen name={GROUP_STACK}>{prop => <GroupScreenStackNavigation {...prop} />}</Stack.Screen>
-         </Stack.Navigator>
-         <ToastMessage />
-         <AlertModalRoot />
+         <View style={styles.container}>
+            <ConnectionStatus />
+            <Stack.Navigator
+               screenOptions={{
+                  headerShown: false,
+                  orientation: 'portrait',
+               }}
+               initialRouteName={getCurrentScreen()}>
+               <Stack.Screen name={REGISTERSCREEN}>{prop => <RegisterScreen {...prop} />}</Stack.Screen>
+               <Stack.Screen name={COUNTRY_LIST_SCREEN}>{prop => <CountryList {...prop} />}</Stack.Screen>
+               <Stack.Screen name={RECENTCHATSCREEN}>{prop => <RecentChatScreen {...prop} />}</Stack.Screen>
+               <Stack.Screen name={CONVERSATION_STACK}>{prop => <ChatScreen {...prop} />}</Stack.Screen>
+               <Stack.Screen name={USERS_LIST_SCREEN}>{prop => <UsersListScreen {...prop} />}</Stack.Screen>
+               <Stack.Screen name={SETTINGS_STACK}>{prop => <SettingsScreen {...prop} />}</Stack.Screen>
+               <Stack.Screen name={ARCHIVED_SCREEN}>{prop => <ArchivedScreen {...prop} />}</Stack.Screen>
+               <Stack.Screen name={GROUP_STACK}>{prop => <GroupScreenStackNavigation {...prop} />}</Stack.Screen>
+            </Stack.Navigator>
+            <ToastMessage />
+            <AlertModalRoot />
+         </View>
       </Provider>
    );
 }
 
 export default StackNavigationPage;
+
+const styles = {
+   container: { flex: 1, position: 'relative' },
+};

@@ -61,9 +61,7 @@ export const mirrorflyNotificationHandler = async remoteMessage => {
          return;
       }
       const notify = await SDK.getNotificationData(remoteMessage);
-      if (notify?.data?.muteStatus === 1) {
-         return;
-      }
+
       if (remoteMessage.data.type === 'recall') {
          updateNotification(remoteMessage?.data?.message_id);
          return;
@@ -161,7 +159,7 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadat
                RealmKeyValueStore.setItem('currentUserJID', userJID);
                currentUserJID = userJID;
                fetchCurrentUserProfile(true);
-               getUserSettings(true);
+               getUserSettings();
                SDK.getArchivedChats(true);
                updateNotificationSettings();
                SDK.getUsersIBlocked();
@@ -211,7 +209,7 @@ export const mirrorflyLogout = async () => {
       notifee.stopForegroundService();
       notifee.cancelAllNotifications();
       return statusCode;
-   } catch (error) {}
+   } catch (error) { }
 };
 
 export const fetchCurrentUserProfile = async (iq = false) => {

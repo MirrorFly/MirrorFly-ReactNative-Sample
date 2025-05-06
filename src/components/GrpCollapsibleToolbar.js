@@ -60,7 +60,7 @@ const defaultProps = {
    toolbarMaxHeight: 400,
    toolbarMinHeight: 60,
    participants: [],
-   handleBackBtn: () => {},
+   handleBackBtn: () => { },
    imageToken: '',
 };
 
@@ -566,7 +566,7 @@ const GrpCollapsibleToolbar = ({
                )}
                {!userType && (
                   <Pressable onPress={toggleDeleteGroup}>
-                     <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+                     <View style={[commonStyles.hstack, commonStyles.alignItemsCenter, commonStyles.p_10]}>
                         <ExitIcon color="#ff3939" />
                         <Text style={styles.groupgroupActionButton}>{stringSet.INFO_SCREEN.DELETE_GROUP_LABEL}</Text>
                      </View>

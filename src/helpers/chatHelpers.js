@@ -86,8 +86,8 @@ import {
 import {
    clearRecentChatData,
    deleteMessagesForEveryoneInRecentChat,
+   resetChatSelections,
    toggleArchiveChats,
-   toggleChatMute,
 } from '../redux/recentChatDataSlice';
 import {
    getArchive,
@@ -98,7 +98,7 @@ import {
    getUserNameFromStore,
    getXmppConnectionStatus,
 } from '../redux/reduxHook';
-import { updateBlockUser } from '../redux/rosterDataSlice';
+import { toggleMute, updateBlockUser } from '../redux/rosterDataSlice';
 import store from '../redux/store';
 import { showToastMessage } from '../redux/toastMessageSlice';
 import {
@@ -1218,15 +1218,27 @@ export const toggleArchive = val => () => {
    }
 };
 
+
 export const toggleMuteChat = async () => {
    try {
       let seletedChat = getSelectedChats();
-      const muteStatus = seletedChat.every(res => res.muteStatus === 1) ? 0 : 1;
       const userJids = seletedChat.map(item => item.userJid);
-
-      store.dispatch(toggleChatMute({ userJids, muteStatus }));
-      await SDK.updateMuteNotification(userJids, muteStatus === 1);
+      const rosterData = store.getState().rosterData.data;
+      const muteStatuses = userJids.map(jid => {
+         const userId = getUserIdFromJid(jid);
+         return rosterData[userId]?.muteStatus === 1;
+      });
+      const areAllMuted = muteStatuses.every(status => status === true);
+      const muteStatus = !areAllMuted;
+      const res = await SDK.updateMuteNotification(userJids, muteStatus);
+      if (res.statusCode === 200) {
+         store.dispatch(resetChatSelections());
+         store.dispatch(toggleMute({ userJids, muteStatus }));
+      } else {
+         showToast(res.message);
+      }
    } catch (error) {
+      mflog('Error in toggleMuteChat', error);
       return error;
    }
 };
@@ -1390,8 +1402,8 @@ export const groupNotifyStatus = (publisherId, toUserId, status, publisher = '',
             return isPublisherLocalUser
                ? stringSet.GROUP_LABELS.GROUP_CREATED_BY_YOU
                : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_CREATED_BY_PUBLISHER, {
-                    publisherName,
-                 });
+                  publisherName,
+               });
          case messageTypeConstants.GROUP_USER_ADDED:
             const placeholderData = { publisherName, toUser: toUserName };
             if (isPublisherLocalUser && isToUserLocalUser) {
@@ -1421,9 +1433,9 @@ export const groupNotifyStatus = (publisherId, toUserId, status, publisher = '',
             return toUserId === publisherId
                ? replacePlaceholders(stringSet.GROUP_LABELS.GROUP_PUBLISHER_LEFT, { userName: publisherName })
                : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_MEMBERS_REMOVED, {
-                    publisherName,
-                    toUser: toUserName,
-                 });
+                  publisherName,
+                  toUser: toUserName,
+               });
          case messageTypeConstants.GROUP_PROFILE_INFO_UPDATED:
             return isPublisherLocalUser
                ? stringSet.GROUP_LABELS.YOU_UPDATED_GROUP_PROFILE

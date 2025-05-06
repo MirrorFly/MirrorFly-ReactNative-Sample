@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import IconButton from '../common/IconButton';
 import { ChatMuteIcon, ChatUnMuteIcon } from '../common/Icons';
 import { toggleMuteChat } from '../helpers/chatHelpers';
-import { useArchive } from '../redux/reduxHook';
+import { useArchive, useMuteStatus } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
 const MuteChat = props => {
@@ -25,10 +25,12 @@ export default MuteChat;
 
 export const MuteChatRecentItem = props => {
    const {
-      recentChatItem: { muteStatus },
+      recentChatItem: { userId },
       isRecentChatComponent = false,
    } = props;
    const letArchive = useArchive();
+   const muteStatus = useMuteStatus(userId);
+   console.log('muteStatus ==> ', userId, muteStatus);
    const archiveChatSetting = !isRecentChatComponent ? letArchive : false;
    return Boolean(muteStatus === 1) && Boolean(archiveChatSetting !== 1) && <ChatMuteIcon width={13} height={13} />;
 };

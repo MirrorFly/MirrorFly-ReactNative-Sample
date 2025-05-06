@@ -11,6 +11,7 @@ import Text from '../common/Text';
 import { getUserIdFromJid, showToast, toggleArchive, toggleMuteChat } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
 import { getStringSet, replacePlaceholders } from '../localization/stringSet';
+import { clearChatMessageData } from '../redux/chatMessageDataSlice';
 import {
    clearRecentChatData,
    deleteRecentChats,
@@ -20,7 +21,6 @@ import {
 import { getSelectedChats, getUserNameFromStore, useRecentChatData, useThemeColorPalatte } from '../redux/reduxHook';
 import { GROUP_STACK, MENU_SCREEN, SETTINGS_STACK } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
-import { clearChatMessageData } from '../redux/chatMessageDataSlice';
 
 const RecentChatHeader = () => {
    const dispatch = useDispatch();

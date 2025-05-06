@@ -30,7 +30,6 @@ export const MuteChatRecentItem = props => {
    } = props;
    const letArchive = useArchive();
    const muteStatus = useMuteStatus(userId);
-   console.log('muteStatus ==> ', userId, muteStatus);
    const archiveChatSetting = !isRecentChatComponent ? letArchive : false;
    return Boolean(muteStatus === 1) && Boolean(archiveChatSetting !== 1) && <ChatMuteIcon width={13} height={13} />;
 };

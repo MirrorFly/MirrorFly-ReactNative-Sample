@@ -7,7 +7,13 @@ import commonStyles from '../styles/commonStyles';
 
 function RecentCalls() {
    return (
-      <View style={[commonStyles.flex1, commonStyles.alignItemsCenter, commonStyles.justifyContentCenter]}>
+      <View
+         style={[
+            commonStyles.flex1,
+            commonStyles.alignItemsCenter,
+            commonStyles.justifyContentCenter,
+            commonStyles.bg_white,
+         ]}>
          <Image source={getImageSource(ic_no_call_history)} style={{ width: 200, height: 200 }} />
          <Text style={[commonStyles.fw_600, commonStyles.colorBlack]}>No call log history found</Text>
          <Text>Any new calls will appear here</Text>

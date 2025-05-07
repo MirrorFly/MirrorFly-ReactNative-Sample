@@ -21,13 +21,15 @@ const MuteToggle = ({ chatUser }) => {
    // Disable if group and user not in group, or archived
    const isDisabled = (isGroup && !userType) || !!isArchived;
 
-   const handleSwitchToggle = async (value) => {
+   const handleSwitchToggle = async value => {
       const res = await SDK.updateMuteNotification([chatUser], value);
       if (res.statusCode === 200) {
-         store.dispatch(toggleMute({
-            userJids: [chatUser],
-            muteStatus: value ? 1 : 0,
-         }));
+         store.dispatch(
+            toggleMute({
+               userJids: [chatUser],
+               muteStatus: value ? 1 : 0,
+            }),
+         );
       } else {
          showToast(res.message);
       }
@@ -38,11 +40,7 @@ const MuteToggle = ({ chatUser }) => {
          <View style={styles.contentContainer}>
             <Text style={styles.text}>Mute Notification</Text>
          </View>
-         <CustomSwitch
-            value={isArchived ? 0 : muteStatus}
-            onToggle={handleSwitchToggle}
-            disabled={isDisabled}
-         />
+         <CustomSwitch value={isArchived ? 0 : muteStatus} onToggle={handleSwitchToggle} disabled={isDisabled} />
       </>
    );
 };

@@ -21,6 +21,7 @@ import {
 import { getSelectedChats, getUserNameFromStore, useRecentChatData, useThemeColorPalatte } from '../redux/reduxHook';
 import { GROUP_STACK, MENU_SCREEN, SETTINGS_STACK } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
+import store from '../redux/store';
 
 const RecentChatHeader = () => {
    const dispatch = useDispatch();
@@ -28,14 +29,24 @@ const RecentChatHeader = () => {
    const themeColorPalatte = useThemeColorPalatte();
    const stringSet = getStringSet();
    const [modalContent, setModalContent] = React.useState(null);
+   let isChatMuted = false;
 
    const filtered = React.useMemo(() => {
+      const userJids = recentChatData.filter(item => item.isSelected === 1).map(item => item.userJid);
+      const rosterData = store.getState().rosterData.data;
+      const muteStatuses = userJids.map(jid => {
+         const userId = getUserIdFromJid(jid);
+         return rosterData[userId]?.muteStatus === 1;
+      });
+      const areAllMuted = muteStatuses.every(status => status === true);
+      isChatMuted = areAllMuted;
+
       return recentChatData.filter(
          item => item.isSelected === 1 && (item.archiveStatus === 0 || item.archiveStatus === undefined),
       );
    }, [recentChatData.map(item => item.isSelected).join(',')]); // Include isSelected in the dependency array
    const isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
-   const isChatMuted = filtered.every(res => res.muteStatus === 1);
+   const isExists = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType !== '' : true));
 
    const userName = getUserNameFromStore(getUserIdFromJid(filtered[0]?.userJid)) || '';
    const deleteMessage =
@@ -107,6 +118,9 @@ const RecentChatHeader = () => {
    };
 
    const renderMuteIcon = () => {
+      if (!isExists) {
+         return null;
+      }
       return (
          <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
             <IconButton onPress={toggleMuteChat}>

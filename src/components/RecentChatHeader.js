@@ -44,7 +44,8 @@ const RecentChatHeader = () => {
       return recentChatData.filter(
          item => item.isSelected === 1 && (item.archiveStatus === 0 || item.archiveStatus === undefined),
       );
-   }, [recentChatData.map(item => item.isSelected).join(',')]); // Include isSelected in the dependency array
+   }, [recentChatData.map(item => `${item.isSelected}-${item.userType}`).join(',')]); // Include isSelected in the dependency array
+   console.log('filtered ==> ', filtered);
    const isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
    const isExists = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType !== '' : true));
 
@@ -180,7 +181,7 @@ const RecentChatHeader = () => {
             </View>
          )
       );
-   }, [filtered.length, modalContent, themeColorPalatte]);
+   }, [filtered.map(item => `${item.isSelected}-${item.userType}`).join(','), modalContent, themeColorPalatte]);
 
    const renderScreenHeader = React.useMemo(() => {
       return filtered.length === 0 && <ScreenHeader onChangeText={handleSearchText} menuItems={menuItems} />;

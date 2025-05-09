@@ -40,7 +40,12 @@ const MuteToggle = ({ chatUser }) => {
          <View style={styles.contentContainer}>
             <Text style={styles.text}>Mute Notification</Text>
          </View>
-         <CustomSwitch value={isArchived ? 0 : muteStatus} onToggle={handleSwitchToggle} disabled={isDisabled} />
+         <CustomSwitch
+            value={isArchived ? 0 : muteStatus}
+            onToggle={handleSwitchToggle}
+            disabled={isDisabled}
+            networkDisabled={true}
+         />
       </>
    );
 };

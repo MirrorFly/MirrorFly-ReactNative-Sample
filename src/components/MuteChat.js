@@ -1,28 +1,34 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
+import { useSelector } from 'react-redux';
 import IconButton from '../common/IconButton';
 import { ChatMuteIcon, ChatUnMuteIcon } from '../common/Icons';
 import { getUserIdFromJid, toggleMuteChat } from '../helpers/chatHelpers';
+import { MIX_BARE_JID } from '../helpers/constants';
 import { useArchive, useMuteStatus } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
-import store from '../redux/store';
-import { MIX_BARE_JID } from '../helpers/constants';
 
 const MuteChat = ({ filteredChats }) => {
    const archiveChatSetting = useArchive();
-   const [isChatMuted, setIsChatMuted] = React.useState(false);
+   const [isChatMuted, setIsChatMuted] = useState(false);
+
    const isExists = filteredChats.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType !== '' : true));
 
-   React.useEffect(() => {
-      const userJids = filteredChats.filter(item => item.isSelected === 1).map(item => item.userJid);
-      const rosterData = store.getState().rosterData.data;
-      const muteStatuses = userJids.map(jid => {
+   // Subscribe to rosterData using useSelector
+   const rosterData = useSelector(state => state.rosterData.data);
+
+   const selectedUserJids = useMemo(() => {
+      return filteredChats.filter(item => item.isSelected === 1).map(item => item.userJid);
+   }, [filteredChats]);
+
+   useEffect(() => {
+      const muteStatuses = selectedUserJids.map(jid => {
          const userId = getUserIdFromJid(jid);
          return rosterData[userId]?.muteStatus === 1;
       });
       const areAllMuted = muteStatuses.every(status => status === true);
       setIsChatMuted(areAllMuted);
-   }, [filteredChats]);
+   }, [selectedUserJids, rosterData]);
 
    if (!isExists) {
       return null;
@@ -38,7 +44,6 @@ const MuteChat = ({ filteredChats }) => {
       )
    );
 };
-
 export default MuteChat;
 
 export const MuteChatRecentItem = props => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import AlertModal from '../common/AlertModal';
@@ -18,10 +18,26 @@ import {
    resetChatSelections,
    setSearchText,
 } from '../redux/recentChatDataSlice';
-import { getSelectedChats, getUserNameFromStore, useRecentChatData, useThemeColorPalatte } from '../redux/reduxHook';
+import { getUserNameFromStore, useRecentChatData, useThemeColorPalatte } from '../redux/reduxHook';
 import { GROUP_STACK, MENU_SCREEN, SETTINGS_STACK } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
-import store from '../redux/store';
+
+const RenderMuteIcon = ({ userJids }) => {
+   const rosterData = useSelector(state => state.rosterData.data);
+   const muteStatuses = userJids.map(jid => {
+      const userId = getUserIdFromJid(jid);
+      return rosterData[userId]?.muteStatus === 1;
+   });
+   const areAllMuted = muteStatuses.every(status => status === true);
+
+   return (
+      <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+         <IconButton onPress={toggleMuteChat}>
+            {areAllMuted ? <ChatUnMuteIcon width={17} height={17} /> : <ChatMuteIcon width={17} height={17} />}
+         </IconButton>
+      </View>
+   );
+};
 
 const RecentChatHeader = () => {
    const dispatch = useDispatch();
@@ -29,23 +45,16 @@ const RecentChatHeader = () => {
    const themeColorPalatte = useThemeColorPalatte();
    const stringSet = getStringSet();
    const [modalContent, setModalContent] = React.useState(null);
-   let isChatMuted = false;
+   let userJids = [];
 
    const filtered = React.useMemo(() => {
-      const userJids = recentChatData.filter(item => item.isSelected === 1).map(item => item.userJid);
-      const rosterData = store.getState().rosterData.data;
-      const muteStatuses = userJids.map(jid => {
-         const userId = getUserIdFromJid(jid);
-         return rosterData[userId]?.muteStatus === 1;
-      });
-      const areAllMuted = muteStatuses.every(status => status === true);
-      isChatMuted = areAllMuted;
+      userJids = recentChatData.filter(item => item.isSelected === 1).map(item => item.userJid);
 
       return recentChatData.filter(
          item => item.isSelected === 1 && (item.archiveStatus === 0 || item.archiveStatus === undefined),
       );
    }, [recentChatData.map(item => `${item.isSelected}-${item.userType}`).join(',')]); // Include isSelected in the dependency array
-   console.log('filtered ==> ', filtered);
+
    const isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
    const isExists = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType !== '' : true));
 
@@ -86,8 +95,6 @@ const RecentChatHeader = () => {
          return showToast(stringSet.COMMON_TEXT.YOU_ARE_A_PARTICIPANT);
       }
 
-      const userJids = getSelectedChats().map(item => item.userJid);
-
       userJids.forEach(item => {
          SDK.deleteChat(item);
          SDK.clearChat(item);
@@ -122,13 +129,7 @@ const RecentChatHeader = () => {
       if (!isExists) {
          return null;
       }
-      return (
-         <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-            <IconButton onPress={toggleMuteChat}>
-               {!isChatMuted ? <ChatMuteIcon width={17} height={17} /> : <ChatUnMuteIcon width={17} height={17} />}
-            </IconButton>
-         </View>
-      );
+      return <RenderMuteIcon userJids={userJids} />;
    };
 
    const hanldeRoute = () => {

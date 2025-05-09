@@ -713,7 +713,7 @@ export const callBacks = {
                pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.fromUserJid);
             }
             if (res?.profileDetails) {
-               store.dispatch(setRoasterData(res));
+               store.dispatch(setRoasterData(res?.profileDetails));
             }
             break;
          case 'delivered':

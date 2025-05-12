@@ -20,26 +20,29 @@
 - (void)didReceiveNotificationRequest:(UNNotificationRequest *)request withContentHandler:(void (^)(UNNotificationContent * _Nonnull))contentHandler {
   self.contentHandler = contentHandler;
   self.bestAttemptContent = [request.content mutableCopy];
-  NSString *messagecontent = [self.bestAttemptContent.userInfo objectForKey:@"message_content"];
-  NSString *messagetype = [self.bestAttemptContent.userInfo objectForKey:@"type"];
-  NSString *userjid = [self.bestAttemptContent.userInfo objectForKey:@"from_user"];
+  NSDictionary *userInfo = [self.bestAttemptContent userInfo];
   NSString *message_id = [self.bestAttemptContent.userInfo objectForKey:@"message_id"];
-  NSString *user_name = [self.bestAttemptContent.userInfo objectForKey:@"user_name"];
+  NSString *user_name = [self.bestAttemptContent.userInfo objectForKey:@"user_name"];;
+
   @autoreleasepool {
     MyClass * obj = [MyClass new];
-    [obj getMessageWithMessageID:message_id content:messagecontent type:messagetype userjid:userjid completion:^(NSDictionary<NSString *,id> * dict) {
-      self.bestAttemptContent.threadIdentifier =  dict[@"messageID"] ? dict[@"messageID"]: message_id;
-      NSString *nickName =  dict[@"nickName"];
-      if (nickName) {
-        self.bestAttemptContent.title =  dict[@"nickName"];
-      } else {
-        self.bestAttemptContent.title = user_name;
+    [obj getMessageWithUserInfo:userInfo completion:^(NSDictionary<NSString *,id> *dict){
+      if(dict){
+        self.bestAttemptContent.threadIdentifier =  dict[@"messageID"] ? dict[@"messageID"]: message_id;
+        NSString *nickName =  dict[@"nickName"];
+        if (nickName) {
+          self.bestAttemptContent.title =  dict[@"nickName"];
+        } else {
+          self.bestAttemptContent.title = user_name;
           // Handle the case where both nickName and user_name are nil
-        // Optional: set a default title
+          // Optional: set a default title
+        }
+        self.bestAttemptContent.sound = [UNNotificationSound defaultSound];
+        self.bestAttemptContent.body = dict[@"message"];
+        self.contentHandler(self.bestAttemptContent);
+      } else{
+        self.contentHandler(self.bestAttemptContent);
       }
-      self.bestAttemptContent.sound = [UNNotificationSound defaultSound];
-      self.bestAttemptContent.body = dict[@"message"];
-      self.contentHandler(self.bestAttemptContent);
     }];
   }
 }

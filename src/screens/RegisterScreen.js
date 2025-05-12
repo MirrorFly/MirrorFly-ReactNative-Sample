@@ -69,7 +69,7 @@ const RegisterScreen = ({ navigation }) => {
                onRequestClose: resetModalContent,
                title: 'You have reached the maximum device limit. If you want to continue, one of your device  will be logged out. Do you want to continue?',
                noButton: 'Cancel',
-               yesButton: 'Contuine',
+               yesButton: 'Continue',
                yesAction: () => handleSubmit(true),
             }),
          );

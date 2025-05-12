@@ -709,7 +709,7 @@ export const callBacks = {
                store.dispatch(addChatMessageItem(res));
             }
 
-            if (isShowNotification && !res?.editMessageId) {
+            if (isShowNotification && !res?.editMessageId && !res?.profileDetails?.muteStatus) {
                pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.fromUserJid);
             }
             if (res?.profileDetails) {

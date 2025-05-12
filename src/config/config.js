@@ -62,6 +62,9 @@ const config = {
    // ================ mirrorfly Environment variables =====================
    // API_URL: 'https://api-preprod-sandbox.mirrorfly.com/api/v1',
    // licenseKey: 'g18BX7SCRflA1tuJTgWvlPihioYJVO',
+   // // ================ findmena Environment variables =====================
+   // API_URL: 'https://findmena-api.mirrorfly.com/api/v1',
+   // licenseKey: 'PByC6Ln9dBX6vxZoZ6aHP1zJCDDhzF',
 };
 
 export default config;

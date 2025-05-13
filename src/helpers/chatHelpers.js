@@ -1218,7 +1218,6 @@ export const toggleArchive = val => () => {
    }
 };
 
-
 export const toggleMuteChat = async () => {
    try {
       let seletedChat = getSelectedChats();
@@ -1230,12 +1229,12 @@ export const toggleMuteChat = async () => {
       });
       const areAllMuted = muteStatuses.every(status => status === true);
       const muteStatus = !areAllMuted;
+      store.dispatch(resetChatSelections());
+      store.dispatch(toggleMute({ userJids, muteStatus }));
       const res = await SDK.updateMuteNotification(userJids, muteStatus);
-      if (res.statusCode === 200) {
-         store.dispatch(resetChatSelections());
-         store.dispatch(toggleMute({ userJids, muteStatus }));
-      } else {
+      if (res.statusCode !== 200) {
          showToast(res.message);
+         store.dispatch(toggleMute({ userJids, muteStatus: !muteStatus }));
       }
    } catch (error) {
       mflog('Error in toggleMuteChat', error);
@@ -1402,8 +1401,8 @@ export const groupNotifyStatus = (publisherId, toUserId, status, publisher = '',
             return isPublisherLocalUser
                ? stringSet.GROUP_LABELS.GROUP_CREATED_BY_YOU
                : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_CREATED_BY_PUBLISHER, {
-                  publisherName,
-               });
+                    publisherName,
+                 });
          case messageTypeConstants.GROUP_USER_ADDED:
             const placeholderData = { publisherName, toUser: toUserName };
             if (isPublisherLocalUser && isToUserLocalUser) {
@@ -1433,9 +1432,9 @@ export const groupNotifyStatus = (publisherId, toUserId, status, publisher = '',
             return toUserId === publisherId
                ? replacePlaceholders(stringSet.GROUP_LABELS.GROUP_PUBLISHER_LEFT, { userName: publisherName })
                : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_MEMBERS_REMOVED, {
-                  publisherName,
-                  toUser: toUserName,
-               });
+                    publisherName,
+                    toUser: toUserName,
+                 });
          case messageTypeConstants.GROUP_PROFILE_INFO_UPDATED:
             return isPublisherLocalUser
                ? stringSet.GROUP_LABELS.YOU_UPDATED_GROUP_PROFILE

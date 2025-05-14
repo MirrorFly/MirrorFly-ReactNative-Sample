@@ -70,13 +70,14 @@ const MobileContacts = () => {
                   displayName: (c.givenName ? c.givenName + ' ' : c.givenName) + c.familyName,
                }));
             }
-            const sortedContacts = validContactsList.sort((a, b) => {
+            const sortedContacts = [...validContactsList];
+            sortedContacts.sort((a, b) => {
                const nameA = a.displayName.toLowerCase();
                const nameB = b.displayName.toLowerCase();
                if (nameA < nameB) {
-                  return -1;
+                 return -1;
                } else if (nameA > nameB) {
-                  return 1;
+                 return 1;
                }
                return 0;
             });

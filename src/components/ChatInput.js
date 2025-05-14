@@ -311,7 +311,6 @@ function ChatInput({ chatUser }) {
             fileInfo[userId] = mediaObjContructor('AUDIO_RECORD', fileInfo[userId]);
             fileInfo[userId].audioType = 'recording';
             fileInfo[userId].type = 'audio/m4a';
-            console.log('fileInfo[userId] ==>', JSON.stringify(fileInfo[userId], null, 2));
          }
       } catch (error) {
          console.log('Failed to stop audio recording:', error);

@@ -16,7 +16,7 @@ import FlatListView from '../components/FlatListView';
 import config from '../config/config';
 import { getImageSource, getUserIdFromJid, handleUpdateBlockUser, showToast } from '../helpers/chatHelpers';
 import { getStringSet, replacePlaceholders } from '../localization/stringSet';
-import { getBlockedStatus, getUserNameFromStore, useRecentChatData, useThemeColorPalatte } from '../redux/reduxHook';
+import { getBlockedStatus, getMuteStatus, getUserNameFromStore, useRecentChatData, useThemeColorPalatte } from '../redux/reduxHook';
 import { setRoasterData } from '../redux/rosterDataSlice';
 import commonStyles from '../styles/commonStyles';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK, GROUP_INFO, NEW_GROUP } from './constants';
@@ -175,7 +175,7 @@ function ContactScreen() {
    };
 
    const handlePress = item => {
-      const _item = { ...item, isBlocked: getBlockedStatus(getUserIdFromJid(item.userJid)) };
+      const _item = { ...item, isBlocked: getBlockedStatus(getUserIdFromJid(item.userJid)), muteStatus: getMuteStatus(item.userJid) };
       if (isNewGrpSrn || isGroupInfoSrn) {
          if (getBlockedStatus(getUserIdFromJid(_item.userJid))) {
             hadleBlockUser(getUserIdFromJid(_item.userJid), _item.userJid);

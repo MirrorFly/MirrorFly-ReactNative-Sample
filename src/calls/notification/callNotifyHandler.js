@@ -91,7 +91,7 @@ export const getIncomingCallNotification = async (
          smallIcon: callType === CALL_TYPE_AUDIO ? 'ic_call_notification' : 'ic_video_call',
          asForegroundService: true,
          foregroundServiceTypes: [
-            Platform.Version >= 34 && AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE,
+            ...(Platform.Version >= 34 ? [AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE] : []),
             AndroidForegroundServiceType.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK,
          ],
          actions: [

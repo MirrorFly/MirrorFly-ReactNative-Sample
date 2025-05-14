@@ -18,6 +18,10 @@ function NotificationMessage(props) {
    if (!label && !notificationContent) {
       return null;
    }
+
+   const notificationMessage =
+      groupNotifyStatus(publisherId, toUserID, messageNotificationTypes[message], publisherName, toUserName) || label;
+
    return (
       <View style={[commonStyles.alignItemsCenter, commonStyles.marginBottom_6]}>
          <View
@@ -28,13 +32,7 @@ function NotificationMessage(props) {
                { backgroundColor: themeColorPalatte.groupNotificationBgColour },
             ]}>
             <Text style={{ fontSize: 13, color: themeColorPalatte.groupNotificationTextColour }}>
-               {groupNotifyStatus(
-                  publisherId,
-                  toUserID,
-                  messageNotificationTypes[message],
-                  publisherName,
-                  toUserName,
-               ) || label}
+               {notificationMessage}
             </Text>
          </View>
       </View>

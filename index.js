@@ -9,6 +9,7 @@ import { isPipModeEnabled } from './src/Helper/Calls/Utility';
 import config from './src/config/config';
 import { MIRRORFLY_RN } from './src/helpers/constants';
 import { mirrorflyInitialize, mirrorflyNotificationHandler, setAppConfig, setupCallScreen } from './src/uikitMethods';
+import { sdkLog } from './src/SDK/utils';
 
 setAppConfig({ appSchema: MIRRORFLY_RN });
 
@@ -26,6 +27,7 @@ mirrorflyInitialize({
 });
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
+   sdkLog('Message handled in the background!', remoteMessage);
    if (Platform.OS === 'android') {
       mirrorflyNotificationHandler(remoteMessage);
    }

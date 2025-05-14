@@ -3,51 +3,49 @@ import { StyleSheet, View } from 'react-native';
 import CustomSwitch from '../common/CustomSwitch';
 import Text from '../common/Text';
 import ApplicationColors from '../config/appColors';
-import { toggleChatMute } from '../redux/recentChatDataSlice';
-import { useArchive, useArchiveStatus } from '../redux/reduxHook';
+import { useArchive, useArchiveStatus, useMuteStatus, useUserType } from '../redux/reduxHook';
 import store from '../redux/store';
 import SDK from '../SDK/SDK';
-import { getMuteStatus } from '../SDK/utils';
+import { MIX_BARE_JID } from '../helpers/constants';
+import { showToast } from '../helpers/chatHelpers';
+import { toggleMute } from '../redux/rosterDataSlice';
 
 const MuteToggle = ({ chatUser }) => {
-   const [muteStatus, setMuteStatus] = React.useState(0);
+   const archive = useArchive(); // Global archive setting
+   const muteStatus = useMuteStatus(chatUser);
    const archiveStatus = useArchiveStatus(chatUser);
-   const archive = useArchive();
-   const isDisabledMuteChat = archiveStatus === 1 && archive;
+   const userType = useUserType(chatUser); // null or undefined if not in group
+   const isGroup = MIX_BARE_JID.test(chatUser);
+   const isArchived = archiveStatus === 1 && archive;
 
-   const fetchMuteStatus = React.useCallback(async () => {
-      try {
-         const status = await getMuteStatus(chatUser);
-         setMuteStatus(status);
-      } catch (error) {
-         console.error('Error fetching mute status:', error);
+   // Disable if group and user not in group, or archived
+   const isDisabled = (isGroup && !userType) || !!isArchived;
+
+   const handleSwitchToggle = async value => {
+      const res = await SDK.updateMuteNotification([chatUser], value);
+      if (res.statusCode === 200) {
+         store.dispatch(
+            toggleMute({
+               userJids: [chatUser],
+               muteStatus: value ? 1 : 0,
+            }),
+         );
+      } else {
+         showToast(res.message);
       }
-   }, [chatUser]);
-
-   React.useEffect(() => {
-      fetchMuteStatus();
-   }, []);
-
-   const handleSwitchToggle = value => {
-      SDK.updateMuteNotification(chatUser, value);
-      setMuteStatus(value ? 1 : 0);
-      store.dispatch(toggleChatMute({ userJid: chatUser, muteStatus: value ? 1 : 0 }));
    };
 
    return (
       <>
          <View style={styles.contentContainer}>
-            <Text
-               style={{
-                  fontSize: 15,
-                  color: ApplicationColors.black,
-                  marginBottom: 5,
-                  fontWeight: '500',
-               }}>
-               Mute Notification
-            </Text>
+            <Text style={styles.text}>Mute Notification</Text>
          </View>
-         <CustomSwitch value={muteStatus} onToggle={handleSwitchToggle} disabled={Boolean(isDisabledMuteChat)} />
+         <CustomSwitch
+            value={isArchived ? 0 : muteStatus}
+            onToggle={handleSwitchToggle}
+            disabled={isDisabled}
+            networkDisabled={true}
+         />
       </>
    );
 };
@@ -59,5 +57,11 @@ const styles = StyleSheet.create({
       flex: 1,
       maxWidth: '90%',
       padding: 4,
+   },
+   text: {
+      fontSize: 15,
+      color: ApplicationColors.black,
+      marginBottom: 5,
+      fontWeight: '500',
    },
 });

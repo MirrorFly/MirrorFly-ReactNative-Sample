@@ -91,7 +91,7 @@ const Avathar = ({
    );
 };
 
-export default Avathar;
+export default React.memo(Avathar);
 
 const styles = StyleSheet.create({
    imageDiv: (props, hasImage, transparentBackgroundForImage) => {

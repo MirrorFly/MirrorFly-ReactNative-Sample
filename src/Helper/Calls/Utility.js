@@ -10,7 +10,7 @@ import { openSettings } from 'react-native-permissions';
 import RNVoipPushNotification from 'react-native-voip-push-notification';
 import SDK, { RealmKeyValueStore } from '../../SDK/SDK';
 import { clearIosCallListeners, muteLocalAudio, muteLocalVideo, resetCallData } from '../../SDK/sdkCallBacks';
-import { getUserProfileFromApi, getUserProfileFromSDK } from '../../SDK/utils';
+import { getUserProfileFromApi, getUserProfileFromSDK, sdkLog } from '../../SDK/utils';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../../calls/notification/callNotifyHandler';
 import { getNetworkState } from '../../common/hooks';
 import {
@@ -858,6 +858,7 @@ const onVoipPushNotificationReceived = async data => {
       payload: { caller_id, caller_name },
       callUUID,
    } = data;
+   sdkLog('VoipPushNotificationReceived', data);
    const activeCallUUID = store.getState().callData?.callerUUID || '';
    if (activeCallUUID !== '') {
       const calls = await RNCallKeep.getCalls();

@@ -5,11 +5,12 @@ import { useThemeColorPalatte } from '../redux/reduxHook';
 import IconButton from './IconButton';
 import { useNetworkStatus } from './hooks';
 
-function CustomSwitch({ value, onToggle, disabled = false }) {
+function CustomSwitch({ value, onToggle, disabled = false, networkDisabled = false }) {
    const isNetWorkConnected = useNetworkStatus();
    const themeColorPalatte = useThemeColorPalatte();
    const isRTL = I18nManager.isRTL;
    const animatedValue = useRef(new Animated.Value(value ? 1 : 0)).current;
+   const opacity = disabled ? 0.6 : 1;
 
    React.useEffect(() => {
       animate(value);
@@ -24,7 +25,7 @@ function CustomSwitch({ value, onToggle, disabled = false }) {
    };
 
    const toggleSwitch = () => {
-      if (!isNetWorkConnected) {
+      if (!isNetWorkConnected && !networkDisabled) {
          showNetWorkToast();
          return;
       }
@@ -41,15 +42,15 @@ function CustomSwitch({ value, onToggle, disabled = false }) {
          <View
             style={[
                styles.switchContainer,
-               Boolean(value) ? { borderColor: themeColorPalatte.primaryColor } : { borderColor: '#767577' },
-               { opacity: disabled ? 0.7 : 1 },
+               value ? { borderColor: themeColorPalatte.primaryColor } : { borderColor: '#767577' },
+               { opacity },
             ]}>
             <View style={[styles.switchBackground]} />
             <Animated.View
                style={[
                   styles.thumb,
-                  Boolean(value) ? { backgroundColor: themeColorPalatte.primaryColor } : styles.thumbOff,
-                  { opacity: disabled ? 0.7 : 1 },
+                  value ? { backgroundColor: themeColorPalatte.primaryColor } : styles.thumbOff,
+                  { opacity },
                   { transform: [{ translateX }] },
                ]}
             />

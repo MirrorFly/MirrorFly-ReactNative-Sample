@@ -37,43 +37,35 @@ function ChatHeader({ chatUser }) {
       }
    };
 
+   // Return only the search header separately
    if (isSearching) {
       return <ChatHeaderSearch userId={userId} />;
    }
 
-   if (isAnyChatMessageSelected) {
-      return (
-         <View
-            style={[
-               styles.headerContainer,
-               { backgroundColor: themeColorPalatte.appBarColor, borderBottomColor: themeColorPalatte.mainBorderColor },
-            ]}>
-            <IconButton onPress={handelResetMessageSelection(userId)}>
+   const handleBackOrClose = isAnyChatMessageSelected ? handelResetMessageSelection(userId) : navigation.goBack;
+
+   return (
+      <View
+         style={[
+            styles.headerContainer,
+            {
+               backgroundColor: themeColorPalatte.appBarColor,
+               borderBottomColor: themeColorPalatte.mainBorderColor,
+            },
+         ]}>
+         <IconButton onPress={handleBackOrClose}>
+            {isAnyChatMessageSelected ? (
                <CloseIcon color={themeColorPalatte.iconColor} />
-            </IconButton>
+            ) : (
+               <BackArrowIcon color={themeColorPalatte.iconColor} />
+            )}
+         </IconButton>
+
+         {isAnyChatMessageSelected ? (
             <View style={commonStyles.flex1}>
                <RenderMessageSelectionCount userId={userId} />
             </View>
-            <View style={styles.iconsContainer}>
-               <RenderReplyIcon userId={userId} />
-               <RenderDeleteIcon userId={userId} chatUser={chatUser} />
-               <RenderForwardIcon userId={userId} />
-               <RenderMenuItems userId={userId} chatUser={chatUser} />
-            </View>
-         </View>
-      );
-   }
-
-   if (!isAnyChatMessageSelected) {
-      return (
-         <View
-            style={[
-               styles.headerContainer,
-               { backgroundColor: themeColorPalatte.appBarColor, borderBottomColor: themeColorPalatte.mainBorderColor },
-            ]}>
-            <IconButton onPress={navigation.goBack}>
-               <BackArrowIcon color={themeColorPalatte.iconColor} />
-            </IconButton>
+         ) : (
             <Pressable
                onPress={handleRoute}
                style={commonStyles.flex1}
@@ -87,13 +79,24 @@ function ChatHeader({ chatUser }) {
                   <LastSeen userJid={chatUser} style={styles.lastSeenText} />
                </View>
             </Pressable>
-            <View style={styles.iconsContainer}>
-               <MakeCall chatUser={chatUser} userId={userId} />
+         )}
+
+         <View style={styles.iconsContainer}>
+            <>
+               {isAnyChatMessageSelected ? (
+                  <>
+                     <RenderReplyIcon userId={userId} />
+                     <RenderDeleteIcon userId={userId} chatUser={chatUser} />
+                     <RenderForwardIcon userId={userId} />
+                  </>
+               ) : (
+                  <MakeCall chatUser={chatUser} userId={userId} />
+               )}
                <RenderMenuItems userId={userId} chatUser={chatUser} />
-            </View>
+            </>
          </View>
-      );
-   }
+      </View>
+   );
 }
 
 export default React.memo(ChatHeader);

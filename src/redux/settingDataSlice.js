@@ -1,6 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { clearState } from './clearSlice';
 
+let prevVibrateStatus = false;
+
 const initialState = {
    notificationSound: true,
 };
@@ -15,7 +17,12 @@ const settingDataSlice = createSlice({
       toggleNotificationDisabled(state, action) {
          state['muteNotification'] = action.payload;
          state['notificationSound'] = !action.payload;
-         state['notificationVibrate'] = false;
+         if (action.payload) {
+            prevVibrateStatus = false;
+            state['notificationVibrate'] = prevVibrateStatus;
+         } else {
+            state['notificationVibrate'] = prevVibrateStatus;
+         }
       },
       toggleNotificationSound(state, action) {
          state['muteNotification'] = false;
@@ -24,6 +31,7 @@ const settingDataSlice = createSlice({
       toggleNotificationVibrate(state, action) {
          state['notificationSound'] = state['muteNotification'] ? action.payload : state['notificationSound'];
          state['muteNotification'] = false;
+         prevVibrateStatus = action.payload;
          state['notificationVibrate'] = action.payload;
       },
       updateNotificationSetting(state, action) {

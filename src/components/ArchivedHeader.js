@@ -33,23 +33,23 @@ function ArchivedHeader() {
    }, [recentChatData.map(item => item.isSelected).join(',')]); // Include isSelected in the dependency array
 
    const isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
-   const userName = getUserNameFromStore(getUserIdFromJid(filtered[0]?.userJid)) || '';
-   const isGroupExistMute = filtered.some(res => MIX_BARE_JID.test(res.userJid));
-
-   const deleteMessage =
-      filtered.length === 1
-         ? replacePlaceholders(stringSet.RECENT_CHAT_SCREEN.DELETE_CHAT_LABEL, {
-              userName: userName,
-           })
-         : replacePlaceholders(stringSet.RECENT_CHAT_SCREEN.DELETE_MULTIPLE_CHAT_LABEL, {
-              length: filtered.length,
-           });
 
    const toggleModalContent = () => {
       setModalContent(null);
    };
 
    const handleDelete = () => {
+      const userName = getUserNameFromStore(getUserIdFromJid(filtered[0]?.userJid)) || '';
+
+      const deleteMessage =
+         filtered.length === 1
+            ? replacePlaceholders(stringSet.RECENT_CHAT_SCREEN.DELETE_CHAT_LABEL, {
+                 userName: userName,
+              })
+            : replacePlaceholders(stringSet.RECENT_CHAT_SCREEN.DELETE_MULTIPLE_CHAT_LABEL, {
+                 length: filtered.length,
+              });
+
       setModalContent({
          visible: true,
          onRequestClose: toggleModalContent,
@@ -128,7 +128,7 @@ function ArchivedHeader() {
                </View>
                <View style={commonStyles.hstack}>
                   {renderDeleteIcon()}
-                  {!isGroupExistMute && <MuteChat filteredChats={filtered} />}
+                  <MuteChat filteredChats={filtered} />
                   {renderUnArchiveIcon()}
                </View>
                {modalContent && <AlertModal {...modalContent} />}

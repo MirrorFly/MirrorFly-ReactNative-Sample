@@ -26,12 +26,12 @@ const config = {
    INVITE_SMS_CONTENT:
       'Hey, MirrorFly is a real time chat, Audio and Video call solution for B2B and B2C.\n Download the app from this URL: https://app.mirrorfly.com',
    // ================ Dev environment variables =====================
-   API_URL: 'https://api-uikit-dev.contus.us/api/v1',
-   licenseKey: '2sdgNtr3sFBSM3bYRa7RKDPEiB38Xo',
+   // API_URL: 'https://api-uikit-dev.contus.us/api/v1',
+   // licenseKey: '2sdgNtr3sFBSM3bYRa7RKDPEiB38Xo',
    // =====================================
    // ================ QA Environment variables =====================
-   // API_URL: 'https://api-uikit-qa.contus.us/api/v1',
-   // licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
+   API_URL: 'https://api-uikit-qa.contus.us/api/v1',
+   licenseKey: 'ckIjaccWBoMNvxdbql8LJ2dmKqT5bp',
    // ================ UAT/Staging Environment variables =====================
    // API_URL: 'https://api-uikit-uat.contus.us/api/v1',
    // licenseKey: 'lu3Om85JYSghcsB6vgVoSgTlSQArL5',
@@ -56,11 +56,15 @@ const config = {
    // licenseKey: 'M5hhyMm7o7WiFRumULxlChc6sGFRuU',
    // API_URL: 'https://growthaxlllc-api.mirrorfly.com/api/v1',
    // licenseKey: 'o3mN05oAgepcbO0noe3T058WC8jkKN',
-   // API_URL: 'https://api-preprod-sandbox.mirrorfly.com/api/v1',
-   // licenseKey: 'RLIKkMQkbkAIDMucEdDKNMZ05VOB1F',
    // ================ Alemx Environment variables =====================
    // API_URL: 'https://alemxlimited-api.mirrorfly.com/api/v1',
    // licenseKey: 'I3NWpEGst8J1TxifQCIPDdbq1OfdCS',
+   // ================ mirrorfly Environment variables =====================
+   // API_URL: 'https://api-preprod-sandbox.mirrorfly.com/api/v1',
+   // licenseKey: 'g18BX7SCRflA1tuJTgWvlPihioYJVO',
+   // // ================ findmena Environment variables =====================
+   // API_URL: 'https://findmena-api.mirrorfly.com/api/v1',
+   // licenseKey: 'PByC6Ln9dBX6vxZoZ6aHP1zJCDDhzF',
 };
 
 export default config;

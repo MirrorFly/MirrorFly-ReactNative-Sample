@@ -39,6 +39,7 @@ import {
 import commonStyles, { modelStyles } from '../styles/commonStyles';
 import UserAvathar from './UserAvathar';
 import UserStatus from './UserStatus';
+import MuteToggle from './MuteToggle';
 
 const propTypes = {
    chatUser: PropTypes.string,
@@ -59,7 +60,7 @@ const defaultProps = {
    toolbarMaxHeight: 400,
    toolbarMinHeight: 60,
    participants: [],
-   handleBackBtn: () => {},
+   handleBackBtn: () => { },
    imageToken: '',
 };
 
@@ -514,6 +515,13 @@ const GrpCollapsibleToolbar = ({
                      </View>
                   </Pressable>
                )}
+               <View
+                  style={[
+                     commonStyles.hstack,
+                     { marginBottom: 8, borderBottomWidth: 1, borderBottomColor: '#f2f2f2' },
+                  ]}>
+                  <MuteToggle chatUser={chatUser} />
+               </View>
                {renderParticipants()}
                <View mt="5" />
                <Pressable
@@ -558,7 +566,7 @@ const GrpCollapsibleToolbar = ({
                )}
                {!userType && (
                   <Pressable onPress={toggleDeleteGroup}>
-                     <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+                     <View style={[commonStyles.hstack, commonStyles.alignItemsCenter, commonStyles.p_10]}>
                         <ExitIcon color="#ff3939" />
                         <Text style={styles.groupgroupActionButton}>{stringSet.INFO_SCREEN.DELETE_GROUP_LABEL}</Text>
                      </View>

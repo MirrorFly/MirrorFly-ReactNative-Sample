@@ -66,6 +66,7 @@ import RootNavigation from '../Navigation/rootNavigation';
 import { progressMap, updateProgressNotification } from '../Service/PushNotify';
 import { pushNotify, updateNotification } from '../Service/remoteNotifyHandle';
 import { callNotifyHandler, stopForegroundServiceNotification } from '../calls/notification/callNotifyHandler';
+import { stopAudioRecord } from '../components/ChatInput';
 import ActivityModule from '../customModules/ActivityModule';
 import BluetoothHeadsetDetectionModule from '../customModules/BluetoothHeadsetDetectionModule';
 import RNCallKeep from '../customModules/CallKitModule';
@@ -122,8 +123,8 @@ import {
    updateRecentMessageStatus,
 } from '../redux/recentChatDataSlice';
 import { getArchive, getChatMessage } from '../redux/reduxHook';
-import { setRoasterData, updateIsBlockedMe } from '../redux/rosterDataSlice';
-import { toggleArchiveSetting } from '../redux/settingDataSlice';
+import { setRoasterData, toggleMute, updateIsBlockedMe } from '../redux/rosterDataSlice';
+import { toggleArchiveSetting, toggleNotificationDisabled } from '../redux/settingDataSlice';
 import { resetConferencePopup, showConfrence, updateConference } from '../redux/showConfrenceSlice';
 import store from '../redux/store';
 import { resetTypingStatus, setTypingStatus } from '../redux/typingStatusDataSlice';
@@ -137,7 +138,6 @@ import {
 } from '../uikitMethods';
 import SDK from './SDK';
 import { fetchGroupParticipants, getUserProfileFromSDK } from './utils';
-import { stopAudioRecord } from '../components/ChatInput';
 
 let localStream = null,
    localVideoMuted = false,
@@ -709,8 +709,11 @@ export const callBacks = {
                store.dispatch(addChatMessageItem(res));
             }
 
-            if (isShowNotification && !res?.editMessageId) {
+            if (isShowNotification && !res?.editMessageId && !res?.profileDetails?.muteStatus) {
                pushNotify(res.msgId, getNotifyNickName(res), getNotifyMessage(res), res?.fromUserJid);
+            }
+            if (res?.profileDetails) {
+               store.dispatch(setRoasterData(res?.profileDetails));
             }
             break;
          case 'delivered':
@@ -857,7 +860,11 @@ export const callBacks = {
       store.dispatch(updateMsgByLastMsgId(res));
    },
    muteChatListener: res => {
-      console.log(res, 'muteChatListener');
+      const { userJids, isMuted, muteNotification, muteSetting } = res || {};
+      store.dispatch(toggleMute({ userJids, muteStatus: isMuted ? 1 : 0 }));
+      if (muteSetting) {
+         store.dispatch(toggleNotificationDisabled(muteNotification));
+      }
    },
    archiveChatListener: res => {
       store.dispatch(toggleArchiveChatsByUserId(res));

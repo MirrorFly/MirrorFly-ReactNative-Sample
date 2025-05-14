@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "893798188095",
+    "project_id": "findmena-c1e1a",
+    "storage_bucket": "findmena-c1e1a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:893798188095:android:cffd2a6d3c181b05aee48a",
+        "android_client_info": {
+          "package_name": "com.findmena"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_RCzIaomul4ZVoVERv6onVnIbyzv7NIY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

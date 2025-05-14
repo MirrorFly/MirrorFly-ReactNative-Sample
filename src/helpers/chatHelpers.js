@@ -86,8 +86,8 @@ import {
 import {
    clearRecentChatData,
    deleteMessagesForEveryoneInRecentChat,
+   resetChatSelections,
    toggleArchiveChats,
-   toggleChatMute,
 } from '../redux/recentChatDataSlice';
 import {
    getArchive,
@@ -98,7 +98,7 @@ import {
    getUserNameFromStore,
    getXmppConnectionStatus,
 } from '../redux/reduxHook';
-import { updateBlockUser } from '../redux/rosterDataSlice';
+import { toggleMute, updateBlockUser } from '../redux/rosterDataSlice';
 import store from '../redux/store';
 import { showToastMessage } from '../redux/toastMessageSlice';
 import {
@@ -1218,15 +1218,26 @@ export const toggleArchive = val => () => {
    }
 };
 
-export const toggleMuteChat = () => {
+export const toggleMuteChat = async () => {
    try {
       let seletedChat = getSelectedChats();
-      let muteStatus = seletedChat.some(res => res.muteStatus === 1) ? 0 : 1;
-      seletedChat.map(item => {
-         SDK.updateMuteNotification(item.userJid, muteStatus === 1 ? true : false);
-         store.dispatch(toggleChatMute({ userJid: item.userJid, muteStatus }));
+      const userJids = seletedChat.map(item => item.userJid);
+      const rosterData = store.getState().rosterData.data;
+      const muteStatuses = userJids.map(jid => {
+         const userId = getUserIdFromJid(jid);
+         return rosterData[userId]?.muteStatus === 1;
       });
+      const areAllMuted = muteStatuses.every(status => status === true);
+      const muteStatus = !areAllMuted;
+      store.dispatch(resetChatSelections());
+      store.dispatch(toggleMute({ userJids, muteStatus }));
+      const res = await SDK.updateMuteNotification(userJids, muteStatus);
+      if (res.statusCode !== 200) {
+         showToast(res.message);
+         store.dispatch(toggleMute({ userJids, muteStatus: !muteStatus }));
+      }
    } catch (error) {
+      mflog('Error in toggleMuteChat', error);
       return error;
    }
 };

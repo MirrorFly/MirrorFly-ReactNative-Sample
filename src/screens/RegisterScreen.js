@@ -17,8 +17,11 @@ import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { mirrorflyRegister } from '../uikitMethods';
 import { COUNTRY_LIST_SCREEN, PROFILE_SCREEN, SETTINGS_STACK } from './constants';
+import { useDispatch } from 'react-redux';
+import { setModalContent, toggleModalContent } from '../redux/alertModalSlice';
 
 const RegisterScreen = ({ navigation }) => {
+   const dispatch = useDispatch();
    const { params: { selectcountry = { dial_code: '91', name: 'India', code: 'IN' } } = {} } = useRoute();
    const stringSet = getStringSet();
    const themeColorPalatte = useThemeColorPalatte();
@@ -54,7 +57,26 @@ const RegisterScreen = ({ navigation }) => {
       }
    };
 
-   const handleSubmit = async () => {
+   const resetModalContent = () => {
+      dispatch(toggleModalContent());
+   };
+
+   const promptForceRegister = () => {
+      setTimeout(() => {
+         dispatch(
+            setModalContent({
+               visible: true,
+               onRequestClose: resetModalContent,
+               title: 'You have reached the maximum device limit. If you want to continue, one of your device  will be logged out. Do you want to continue?',
+               noButton: 'Cancel',
+               yesButton: 'Continue',
+               yesAction: () => handleSubmit(true),
+            }),
+         );
+      }, 500);
+   };
+
+   const handleSubmit = async (forceRegister = false) => {
       setIsToastShowing(true);
       if (!mobileNumber) {
          showToast('Please Enter Mobile Number');
@@ -82,11 +104,14 @@ const RegisterScreen = ({ navigation }) => {
             metadata: {
                register: change16TimeWithDateFormat(Date.now()),
             },
+            forceRegister,
          });
          setIsLoading(false);
          if (statusCode === 200 || statusCode === 409) {
             RealmKeyValueStore.setItem('screen', SETTINGS_STACK);
             RootNavigation.reset(SETTINGS_STACK, { screen: PROFILE_SCREEN });
+         } else if (statusCode === 403) {
+            promptForceRegister();
          }
       }
    };
@@ -175,7 +200,7 @@ const RegisterScreen = ({ navigation }) => {
             <View style={[commonStyles.alignItemsCenter, commonStyles.mt_50]}>
                <Pressable
                   style={[commonStyles.primarypilbtn, commonStyles.bg_color(themeColorPalatte.primaryColor)]}
-                  onPress={handleSubmit}>
+                  onPress={() => handleSubmit(false)}>
                   <Text
                      style={[commonStyles.primarypilbtntext, commonStyles.textColor(themeColorPalatte.colorOnPrimary)]}>
                      {stringSet.REGISTER_SCREEN.REGISTER_CONTINUE_BUTTON_LABEL}

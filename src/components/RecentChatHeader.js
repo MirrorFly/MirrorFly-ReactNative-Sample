@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK from '../SDK/SDK';
 import AlertModal from '../common/AlertModal';
@@ -11,16 +11,33 @@ import Text from '../common/Text';
 import { getUserIdFromJid, showToast, toggleArchive, toggleMuteChat } from '../helpers/chatHelpers';
 import { MIX_BARE_JID } from '../helpers/constants';
 import { getStringSet, replacePlaceholders } from '../localization/stringSet';
+import { clearChatMessageData } from '../redux/chatMessageDataSlice';
 import {
    clearRecentChatData,
    deleteRecentChats,
    resetChatSelections,
    setSearchText,
 } from '../redux/recentChatDataSlice';
-import { getSelectedChats, getUserNameFromStore, useRecentChatData, useThemeColorPalatte } from '../redux/reduxHook';
+import { getUserNameFromStore, useRecentChatData, useThemeColorPalatte } from '../redux/reduxHook';
 import { GROUP_STACK, MENU_SCREEN, SETTINGS_STACK } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
-import { clearChatMessageData } from '../redux/chatMessageDataSlice';
+
+const RenderMuteIcon = ({ userJids }) => {
+   const rosterData = useSelector(state => state.rosterData.data);
+   const muteStatuses = userJids.map(jid => {
+      const userId = getUserIdFromJid(jid);
+      return rosterData[userId]?.muteStatus === 1;
+   });
+   const areAllMuted = muteStatuses.every(status => status === true);
+
+   return (
+      <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+         <IconButton onPress={toggleMuteChat}>
+            {areAllMuted ? <ChatUnMuteIcon width={17} height={17} /> : <ChatMuteIcon width={17} height={17} />}
+         </IconButton>
+      </View>
+   );
+};
 
 const RecentChatHeader = () => {
    const dispatch = useDispatch();
@@ -28,15 +45,18 @@ const RecentChatHeader = () => {
    const themeColorPalatte = useThemeColorPalatte();
    const stringSet = getStringSet();
    const [modalContent, setModalContent] = React.useState(null);
+   let userJids = [];
 
    const filtered = React.useMemo(() => {
+      userJids = recentChatData.filter(item => item.isSelected === 1).map(item => item.userJid);
+
       return recentChatData.filter(
          item => item.isSelected === 1 && (item.archiveStatus === 0 || item.archiveStatus === undefined),
       );
-   }, [recentChatData.map(item => item.isSelected).join(',')]); // Include isSelected in the dependency array
+   }, [recentChatData.map(item => `${item.isSelected}-${item.userType}`).join(',')]); // Include isSelected in the dependency array
+
    const isUserLeft = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType === '' : true));
-   const isChatMuted = filtered.some(res => res.muteStatus === 1);
-   const isGroupExistMute = filtered.some(res => MIX_BARE_JID.test(res.userJid));
+   const isExists = filtered.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType !== '' : true));
 
    const userName = getUserNameFromStore(getUserIdFromJid(filtered[0]?.userJid)) || '';
    const deleteMessage =
@@ -75,8 +95,6 @@ const RecentChatHeader = () => {
          return showToast(stringSet.COMMON_TEXT.YOU_ARE_A_PARTICIPANT);
       }
 
-      const userJids = getSelectedChats().map(item => item.userJid);
-
       userJids.forEach(item => {
          SDK.deleteChat(item);
          SDK.clearChat(item);
@@ -108,13 +126,10 @@ const RecentChatHeader = () => {
    };
 
    const renderMuteIcon = () => {
-      return (
-         <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-            <IconButton onPress={toggleMuteChat}>
-               {!isChatMuted ? <ChatMuteIcon width={17} height={17} /> : <ChatUnMuteIcon width={17} height={17} />}
-            </IconButton>
-         </View>
-      );
+      if (!isExists) {
+         return null;
+      }
+      return <RenderMuteIcon userJids={userJids} />;
    };
 
    const hanldeRoute = () => {
@@ -160,14 +175,14 @@ const RecentChatHeader = () => {
                </View>
                <View style={commonStyles.hstack}>
                   {renderDeleteIcon()}
-                  {!isGroupExistMute && renderMuteIcon()}
+                  {renderMuteIcon()}
                   {renderArchiveIcon()}
                </View>
                {modalContent && <AlertModal {...modalContent} />}
             </View>
          )
       );
-   }, [filtered.length, modalContent, themeColorPalatte]);
+   }, [filtered.map(item => `${item.isSelected}-${item.userType}`).join(','), modalContent, themeColorPalatte]);
 
    const renderScreenHeader = React.useMemo(() => {
       return filtered.length === 0 && <ScreenHeader onChangeText={handleSearchText} menuItems={menuItems} />;

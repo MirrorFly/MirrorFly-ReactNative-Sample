@@ -1,15 +1,39 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
+import { useSelector } from 'react-redux';
 import IconButton from '../common/IconButton';
 import { ChatMuteIcon, ChatUnMuteIcon } from '../common/Icons';
-import { toggleMuteChat } from '../helpers/chatHelpers';
-import { useArchive } from '../redux/reduxHook';
+import { getUserIdFromJid, toggleMuteChat } from '../helpers/chatHelpers';
+import { MIX_BARE_JID } from '../helpers/constants';
+import { useArchive, useMuteStatus } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 
-const MuteChat = props => {
-   const { filteredChats } = props;
+const MuteChat = ({ filteredChats }) => {
    const archiveChatSetting = useArchive();
-   const isChatMuted = filteredChats.some(res => res.muteStatus === 1);
+   const [isChatMuted, setIsChatMuted] = useState(false);
+
+   const isExists = filteredChats.every(res => (MIX_BARE_JID.test(res.userJid) ? res.userType !== '' : true));
+
+   // Subscribe to rosterData using useSelector
+   const rosterData = useSelector(state => state.rosterData.data);
+
+   const selectedUserJids = useMemo(() => {
+      return filteredChats.filter(item => item.isSelected === 1).map(item => item.userJid);
+   }, [filteredChats]);
+
+   useEffect(() => {
+      const muteStatuses = selectedUserJids.map(jid => {
+         const userId = getUserIdFromJid(jid);
+         return rosterData[userId]?.muteStatus === 1;
+      });
+      const areAllMuted = muteStatuses.every(status => status === true);
+      setIsChatMuted(areAllMuted);
+   }, [selectedUserJids, rosterData]);
+
+   if (!isExists) {
+      return null;
+   }
+
    return (
       Boolean(archiveChatSetting !== 1) && (
          <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
@@ -20,15 +44,15 @@ const MuteChat = props => {
       )
    );
 };
-
 export default MuteChat;
 
 export const MuteChatRecentItem = props => {
    const {
-      recentChatItem: { muteStatus },
+      recentChatItem: { userId },
       isRecentChatComponent = false,
    } = props;
    const letArchive = useArchive();
+   const muteStatus = useMuteStatus(userId);
    const archiveChatSetting = !isRecentChatComponent ? letArchive : false;
    return Boolean(muteStatus === 1) && Boolean(archiveChatSetting !== 1) && <ChatMuteIcon width={13} height={13} />;
 };

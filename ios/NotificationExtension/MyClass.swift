@@ -30,56 +30,95 @@ class MyClass: NSObject {
   }
   
   @objc
-  func getMessage(messageID: String, content: String, type:String, userjid:String, completion: @escaping([String: Any]?) -> Void) {
-    var dict = [String: Any]()
-    removeInvalidMessage(forIDs: [messageID], onCompletion: {
-      notification in
-  
-      switch (type) {
-      case "text":
-        let val = convertToDictionary(text: self.run(messageID: messageID, content: content))
-        let nickName:String = val?["nickName"] as? String ?? ""
-        if let number = userjid.components(separatedBy: "@").first, !number.isEmpty {
-            dict["nickName"] = FlyEncryption.encryptDecryptData(key: number, data: nickName, encrypt: false, isForProfileName: true)
-        } else {
-            dict["nickName"] = nickName // Fallback in case `number` is nil or empty
-        }
-        dict["message"] = val?["message"]
-        break;
-      case "image":
-        dict["message"] = "📷 Image"
-        break;
-      case "video":
-        dict["message"] = "📽️ Video"
-        break;
-      case "audio":
-        dict["message"] = "🎵 Audio"
-        break;
-      case "file":
-        dict["message"] = "📄 File"
-        break;
-      case "location":
-        dict["message"] = "📌 Location"
-        break;
-      case "contact":
-        dict["message"] = "👤 Contact"
-        break;
-      case "recall":
-        // Need to called for recall message
-      //  removeNotification(messageId: messageID, n: notification)
-        dict["messageID"]  = messageID
-        dict["message"] = "This message was deleted"
-        break;
-      default:
-        dict["message"] = "Unknown message format"
-        break
-      }
+  func getMessage(userInfo: [String: Any], completion: @escaping ([String: Any]?) -> Void) {
+      var dict = [String: Any]()
+
+      // Use empty strings if the keys are not present
+      let messageID = userInfo["message_id"] as? String ?? userInfo["notify_id"] as? String ?? ""
+      let content = userInfo["message_content"] as? String ?? ""
+      let chat_type = userInfo["chat_type"] as? String ?? ""
+      let group_name = userInfo["group_name"] as? String ?? ""
+      let type = userInfo["type"] as? String ?? ""
+      let userjid = userInfo["from_user"] as? String ?? ""
+
       
-      DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(1.0 * Double(NSEC_PER_SEC)) / Double(NSEC_PER_SEC), execute: { [self] in
-        completion(dict)
+    if ["added", "removed"].contains(where: { content.contains($0) }) {
+        if let aps = userInfo["aps"] as? [String: Any],
+           let alert = aps["alert"] as? [String: Any],
+           let body = alert["body"] as? String,
+           let title = alert["title"] as? String,
+           let groupName = userInfo["group_name"] as? String {
+
+            let trimmedGroupName = groupName.trimmingCharacters(in: .whitespacesAndNewlines)
+            var cleanBody = body.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            // Build a regex to match any variation like "group_name:", "group_name :", "group_name :  "
+            let regexPattern = "^" + NSRegularExpression.escapedPattern(for: trimmedGroupName) + "\\s*:\\s*"
+
+            if let regex = try? NSRegularExpression(pattern: regexPattern, options: [.caseInsensitive]) {
+                let range = NSRange(location: 0, length: cleanBody.utf16.count)
+                cleanBody = regex.stringByReplacingMatches(in: cleanBody, options: [], range: range, withTemplate: "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+
+            dict["nickName"] = title
+            dict["message"] = cleanBody
+
+            DispatchQueue.main.async {
+                completion(dict)
+            }
+            return
+        }
+    }
+    
+      removeInvalidMessage(forIDs: [messageID], onCompletion: { notification in
+          switch type {
+          case "text":
+              let val = convertToDictionary(text: self.run(messageID: messageID, content: content))
+              let rawNickName = val?["nickName"] as? String ?? ""
+              let number = userjid.components(separatedBy: "@").first ?? ""
+
+              var decryptedNickName = rawNickName
+              if !number.isEmpty {
+                  decryptedNickName = FlyEncryption.encryptDecryptData(key: number, data: rawNickName, encrypt: false, isForProfileName: true)
+              }
+
+              // Optionally prepend group name if it's a group chat
+              if chat_type == "normal", let groupName = userInfo["group_name"] as? String {
+                  dict["nickName"] = "\(groupName)@ \(decryptedNickName)"
+              } else {
+                  dict["nickName"] = decryptedNickName
+              }
+
+              dict["message"] = val?["message"]
+          case "image":
+              dict["message"] = "📷 Image"
+          case "video":
+              dict["message"] = "📽️ Video"
+          case "audio":
+              dict["message"] = "🎵 Audio"
+          case "file":
+              dict["message"] = "📄 File"
+          case "location":
+              dict["message"] = "📌 Location"
+          case "contact":
+              dict["message"] = "👤 Contact"
+          case "recall":
+              dict["messageID"] = messageID
+              dict["message"] = "This message was deleted"
+          default:
+              dict["message"] = "Unknown message format"
+          }
+        
+        if (dict["nickName"] == nil || (dict["nickName"] as? String)?.isEmpty == true),
+           let groupName = userInfo["group_name"] as? String {
+            dict["nickName"] = groupName
+        }
+          // Call completion with the final dict
+          DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(1.0 * Double(NSEC_PER_SEC)) / Double(NSEC_PER_SEC), execute: { [self] in
+              completion(dict)
+          })
       })
-//      completion(dict)
-    })
   }
 }
 

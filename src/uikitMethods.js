@@ -17,15 +17,13 @@ import { setLanguageCode } from './localization/stringSet';
 import { addChatMessageItem } from './redux/chatMessageDataSlice';
 import { clearState } from './redux/clearSlice';
 import { addRecentChatItem } from './redux/recentChatDataSlice';
-import { getArchive, getRoasterData } from './redux/reduxHook';
+import { getRoasterData } from './redux/reduxHook';
 import { setRoasterData } from './redux/rosterDataSlice';
 import store from './redux/store';
 import { updateTheme, updateThemeColor } from './redux/themeColorDataSlice';
 import { RECENTCHATSCREEN, REGISTERSCREEN } from './screens/constants';
 
-let uiKitCallbackListenersVal = {},
-   appInitialized = false,
-   schemaUrl = '',
+let appInitialized = false,
    appSchema = '',
    voipToken = '',
    currentUserJID = '',
@@ -46,9 +44,8 @@ export const mflog = (...args) => {
 };
 
 export const setAppConfig = params => {
-   const { appSchema: _appSchema = '', stackURL = '' } = params;
+   const { appSchema: _appSchema = '' } = params;
    appSchema = _appSchema || appSchema;
-   schemaUrl = _appSchema || stackURL;
 };
 
 export const mirrorflyNotificationHandler = async remoteMessage => {
@@ -61,23 +58,19 @@ export const mirrorflyNotificationHandler = async remoteMessage => {
          return;
       }
       const notify = await SDK.getNotificationData(remoteMessage);
-      if (notify?.data?.muteStatus === 1) {
-         return;
-      }
+
       if (remoteMessage.data.type === 'recall') {
          updateNotification(remoteMessage?.data?.message_id);
          return;
       }
       if (notify?.statusCode === 200) {
-         const { data = {}, data: { msgType, archiveStatus } = {} } = notify;
-         notify.data.archiveSetting = getArchive();
+         const { data = {}, data: { msgType } = {} } = notify;
          const isReceiveMessage = ['receiveMessage', 'carbonReceiveMessage'].includes(msgType);
-         const archiveSettingAndStatus = archiveStatus ? !notify.data.archiveSetting : true;
          const isNotificationMessage =
-            data.msgBody.message_type === NOTIFICATION.toLowerCase() &&
-            data.msgBody.message === '2' &&
+            data?.msgBody?.message_type === NOTIFICATION.toLowerCase() &&
+            data?.msgBody?.message === '2' &&
             getCurrentUserJid() === data.toUserJid;
-         const isShowNotification = (archiveSettingAndStatus && isReceiveMessage) || isNotificationMessage;
+         const isShowNotification = isReceiveMessage || isNotificationMessage;
          if (isShowNotification) {
             pushNotify(
                notify?.data?.msgId,
@@ -90,13 +83,13 @@ export const mirrorflyNotificationHandler = async remoteMessage => {
          }
       }
    } catch (error) {
-      console.log('messaging().setBackgroundMessageHandler', error);
+      mflog('messaging().setBackgroundMessageHandler', error);
    }
 };
 
 export const mirrorflyInitialize = async args => {
    try {
-      const { apiBaseUrl, licenseKey, isSandbox, callBack } = args;
+      const { apiBaseUrl, licenseKey, isSandbox } = args;
       const mfInit = await SDK.initializeSDK({
          apiBaseUrl: apiBaseUrl,
          licenseKey: licenseKey,
@@ -104,7 +97,6 @@ export const mirrorflyInitialize = async args => {
          isSandbox: isSandbox,
          mediaServiceAutoPause: Platform.OS !== 'android', // if you are setting as flase you have run the foregorund service
       });
-      uiKitCallbackListenersVal = { callBack };
       if (mfInit.statusCode === 200) {
          appInitialized = true;
          const data = await RealmKeyValueStore.getAll();
@@ -130,7 +122,7 @@ export const mirrorflyInitialize = async args => {
    }
 };
 
-export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadata = {} }) => {
+export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadata = {}, forceRegister = false }) => {
    try {
       if (currentUserJID) {
          return {
@@ -146,7 +138,7 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadat
          voipDeviceToken: voipToken,
          mode: process.env?.NODE_ENV === 'production',
          registerMetaData: metadata,
-         forceRegister: true,
+         forceRegister,
       });
       if (registerRes.statusCode === 200) {
          const { data } = registerRes;
@@ -160,7 +152,7 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadat
                RealmKeyValueStore.setItem('currentUserJID', userJID);
                currentUserJID = userJID;
                fetchCurrentUserProfile(true);
-               getUserSettings(true);
+               getUserSettings();
                SDK.getArchivedChats(true);
                updateNotificationSettings();
                SDK.getUsersIBlocked();
@@ -169,10 +161,10 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadat
             default:
                return connect;
          }
-      } else {
+      } else if (registerRes.statusCode !== 403) {
          showToast(registerRes.message);
-         return registerRes;
       }
+      return registerRes;
    } catch (error) {
       return error;
    }

@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import SDK from '../SDK/SDK';
 import { clearState } from './clearSlice';
+import { getUserIdFromJid } from '../helpers/chatHelpers';
 
 const initialState = {
    data: {},
@@ -38,12 +39,28 @@ const rosterDataSlice = createSlice({
             state.data[userId] = { ...state.data[userId], isBlockedMe };
          }
       },
+      toggleMute(state, action) {
+         const { userJids, muteStatus } = action.payload;
+
+         const updatedData = { ...state.data };
+         userJids.forEach(jid => {
+            const normalizedJid = getUserIdFromJid(jid);
+
+            if (updatedData[normalizedJid]) {
+               updatedData[normalizedJid] = {
+                  ...updatedData[normalizedJid],
+                  muteStatus: muteStatus ? 1 : 0,
+               };
+            }
+         });
+         state.data = updatedData;
+      },
    },
    extraReducers: builder => {
       builder.addCase(clearState, () => initialState);
    },
 });
 
-export const { resetRoasterData, setRoasterData, updateBlockUser, updateIsBlockedMe } = rosterDataSlice.actions;
+export const { resetRoasterData, setRoasterData, updateBlockUser, updateIsBlockedMe, toggleMute } = rosterDataSlice.actions;
 
 export default rosterDataSlice.reducer;

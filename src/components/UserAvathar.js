@@ -29,4 +29,4 @@ function UserAvathar({ type, userId, data = {}, ...props }) {
    );
 }
 
-export default UserAvathar;
+export default React.memo(UserAvathar);

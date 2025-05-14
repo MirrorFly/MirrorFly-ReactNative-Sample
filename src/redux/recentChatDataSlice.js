@@ -138,13 +138,6 @@ const recentChatDataSlice = createSlice({
             state.recentChats[index].archiveStatus = isArchived;
          }
       },
-      toggleChatMute(state, action) {
-         const { userJid, muteStatus } = action.payload;
-         const index = state.recentChats.findIndex(item => item.userJid === userJid);
-         if (index !== -1) {
-            state.recentChats[index] = { ...state.recentChats[index], muteStatus, isSelected: 0 };
-         }
-      },
       resetUnreadCountForChat(state, action) {
          const userJid = action.payload;
          const index = state.recentChats.findIndex(item => item.userJid === userJid);
@@ -186,7 +179,6 @@ export const {
    deleteRecentChats,
    deleteRecentChatOnUserId,
    toggleArchiveChats,
-   toggleChatMute,
    resetUnreadCountForChat,
    toggleArchiveChatsByUserId,
    editRecentChatItem,

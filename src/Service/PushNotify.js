@@ -6,15 +6,13 @@ import notifee, {
 } from '@notifee/react-native';
 import { Platform } from 'react-native';
 import { MISSED_CALL } from '../Helper/Calls/Constant';
-import { getMuteStatus } from '../SDK/utils';
 import { onChatNotificationBackGround, onChatNotificationForeGround } from '../calls/notification/callNotifyHandler';
 import store from '../redux/store';
 import { mflog } from '../uikitMethods';
 
 export const displayRemoteNotification = async (id, date, title, body, jid, importance) => {
-   let isMute = await getMuteStatus(jid);
    const { muteNotification = false } = store.getState().settingsData;
-   if (isMute === 0 && !muteNotification) {
+   if (!muteNotification) {
       const channelIds = getChannelIds();
       let channelId = {
          id: channelIds.channelId,

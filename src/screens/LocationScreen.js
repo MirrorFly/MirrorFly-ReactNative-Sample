@@ -62,8 +62,8 @@ const LocationScreen = () => {
          const locationObj = {
             messageType: 'location',
             location: {
-               latitude: location.latitude,
-               longitude: location.longitude,
+               latitude: location?.latitude ?? 0,
+               longitude: location?.longitude ?? 0,
             },
          };
          handleSendMsg(locationObj);
@@ -219,8 +219,8 @@ const LocationScreen = () => {
             {Boolean(location) && (
                <Marker
                   coordinate={{
-                     latitude: location.latitude,
-                     longitude: location.longitude,
+                     latitude: location?.latitude ?? 0,
+                     longitude: location?.longitude ?? 0,
                   }}
                />
             )}

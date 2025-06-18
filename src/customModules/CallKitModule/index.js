@@ -195,7 +195,7 @@ class RNCallKeep {
    reportConnectingOutgoingCallWithUUID = uuid => {
       //only available on iOS
       if (isIOS) {
-         RNCallKeepModuleRNCallKeepModule.reportConnectingOutgoingCallWithUUID(uuid);
+         // RNCallKeepModuleRNCallKeepModule.reportConnectingOutgoingCallWithUUID(uuid)
       }
    };
 
@@ -263,12 +263,12 @@ class RNCallKeep {
    setAudioRoute = (uuid, inputName) => RNCallKeepModule.setAudioRoute(uuid, inputName);
 
    checkIfBusy = () =>
-      isIOS ? RNCallKeepModule.checkIfBusy() : Promise.reject('RNCallKeep.checkIfBusy was called from unsupported OS');
+      isIOS ? RNCallKeepModule.checkIfBusy() : Promise.resolve('RNCallKeep.checkIfBusy was called from unsupported OS');
 
    checkSpeaker = () =>
       isIOS
          ? RNCallKeepModule.checkSpeaker()
-         : Promise.reject('RNCallKeep.checkSpeaker was called from unsupported OS');
+         : Promise.resolve('RNCallKeep.checkSpeaker was called from unsupported OS');
 
    setAvailable = state => {
       if (isIOS) {
@@ -310,7 +310,7 @@ class RNCallKeep {
       }
 
       let iosOptions = {};
-      if (options && options.ios) {
+      if (options?.ios) {
          iosOptions = {
             ...options.ios,
          };
@@ -330,16 +330,16 @@ class RNCallKeep {
 
       return isIOS
          ? RNCallKeepModule.reportUpdatedCall(uuid, localizedCallerName)
-         : Promise.reject('RNCallKeep.reportUpdatedCall was called from unsupported OS');
+         : Promise.resolve('RNCallKeep.reportUpdatedCall was called from unsupported OS');
    };
 
    _setupIOS = async options =>
       new Promise((resolve, reject) => {
          if (!options.appName) {
-            reject('RNCallKeep.setup: option "appName" is required');
+            resolve('RNCallKeep.setup: option "appName" is required');
          }
          if (typeof options.appName !== 'string') {
-            reject('RNCallKeep.setup: option "appName" should be of type "string"');
+            resolve('RNCallKeep.setup: option "appName" should be of type "string"');
          }
 
          resolve(RNCallKeepModule.setup(options));

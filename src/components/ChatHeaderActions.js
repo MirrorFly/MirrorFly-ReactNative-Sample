@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Keyboard, Text, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import RootNavigation from '../Navigation/rootNavigation';
@@ -38,6 +39,10 @@ export const RenderMessageSelectionCount = ({ userId }) => {
    );
 };
 
+RenderMessageSelectionCount.propTypes = {
+   userId: PropTypes.string.isRequired,
+};
+
 export function RenderReplyIcon({ userId }) {
    const dispatch = useDispatch();
    const filtered = useSelectedChatMessages(userId) || [];
@@ -63,6 +68,10 @@ export function RenderReplyIcon({ userId }) {
       </IconButton>
    );
 }
+
+RenderReplyIcon.propTypes = {
+   userId: PropTypes.string.isRequired,
+};
 
 export const RenderDeleteIcon = ({ userId, chatUser }) => {
    const [modalContent, setModalContent] = React.useState(null);
@@ -105,6 +114,11 @@ export const RenderDeleteIcon = ({ userId, chatUser }) => {
    );
 };
 
+RenderDeleteIcon.propTypes = {
+   userId: PropTypes.string.isRequired,
+   chatUser: PropTypes.string.isRequired,
+};
+
 export const RenderForwardIcon = ({ userId }) => {
    const filtered = useSelectedChatMessages(userId) || [];
 
@@ -128,6 +142,10 @@ export const RenderForwardIcon = ({ userId }) => {
          <ForwardIcon />
       </IconButton>
    ) : null;
+};
+
+RenderForwardIcon.propTypes = {
+   userId: PropTypes.string.isRequired,
 };
 
 export const RenderMenuItems = ({ userId, chatUser }) => {
@@ -164,6 +182,7 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
       RootNavigation.navigate(MESSAGE_INFO_SCREEN, { chatUser, msgId: filtered[0].msgId });
       handelResetMessageSelection(userId)();
    };
+
    const handleEditMessage = () => {
       handelResetMessageSelection(userId)();
       dispatch(toggleEditMessage(filtered[0].msgId));
@@ -186,6 +205,7 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
          yesAction: handleUpdateBlockUser(userId, blockedStaus ? 0 : 1, chatUser),
       });
    };
+
    /**
    const toggleSearch = () => {
       dispatch(toggleIsChatSearching(!getIsChatSearching()));
@@ -256,4 +276,9 @@ export const RenderMenuItems = ({ userId, chatUser }) => {
          {modalContent && <AlertModal {...modalContent} />}
       </>
    );
+};
+
+RenderMenuItems.propTypes = {
+   userId: PropTypes.string,
+   chatUser: PropTypes.string,
 };

@@ -16,7 +16,7 @@ import FlatListView from '../components/FlatListView';
 import config from '../config/config';
 import { getImageSource, getUserIdFromJid, handleUpdateBlockUser, showToast } from '../helpers/chatHelpers';
 import { getStringSet, replacePlaceholders } from '../localization/stringSet';
-import { getBlockedStatus, getMuteStatus, getUserNameFromStore, useRecentChatData, useThemeColorPalatte } from '../redux/reduxHook';
+import { getBlockedStatus, getMuteStatus, getUserNameFromStore, useThemeColorPalatte } from '../redux/reduxHook';
 import { setRoasterData } from '../redux/rosterDataSlice';
 import commonStyles from '../styles/commonStyles';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK, GROUP_INFO, NEW_GROUP } from './constants';
@@ -38,7 +38,7 @@ function ContactScreen() {
    const themeColorPalatte = useThemeColorPalatte();
    const dispatch = useDispatch();
    grpName = getUserNameFromStore(getUserIdFromJid(jid)) || grpName;
-   const recentChatList = useRecentChatData();
+
    const isNewGrpSrn = prevScreen === NEW_GROUP;
    const isGroupInfoSrn = prevScreen === GROUP_INFO;
    const isNetworkconneted = useNetworkStatus();
@@ -85,6 +85,8 @@ function ContactScreen() {
       }
    };
 
+   /**
+   const recentChatList = useRecentChatData();
    // Define the filtering functions
    const filterOutRecentChatUsers = users => {
       if (isGroupInfoSrn || isNewGrpSrn) {
@@ -96,8 +98,9 @@ function ContactScreen() {
       }
       return users.filter(user => !recentChatUsersObj[user.userId]);
    };
+    */
 
-   const filterOutParticipants = (users, participants) => {
+   const filterOutParticipants = users => {
       const participantsObj = {};
       for (let participant of participants) {
          participantsObj[participant.userId] = true;
@@ -111,7 +114,7 @@ function ContactScreen() {
    ];
 
    // Main method to apply all filters
-   const getUsersWithFilters = (_users, filters) => {
+   const getUsersWithFilters = _users => {
       return filters.reduce((filteredUsers, filter) => {
          return filter.fn(filteredUsers, filter.data);
       }, _users);
@@ -119,36 +122,59 @@ function ContactScreen() {
 
    const fetchContactListFromSDK = async filter => {
       let { nextPage = 1, hasNextPage = true } = contactsPaginationRef.current || {};
-      if (hasNextPage && filter === searchTextValueRef.current) {
-         nextPage = filter ? 1 : nextPage;
-         if (nextPage > 1) {
-            setFooterLoader(true);
-         } else {
-            setIsFetching(true);
-         }
-         const { statusCode, users, totalPages } = await fetchContactsFromSDK(filter, nextPage, 23);
-         if (statusCode === 200) {
-            updateContactPaginationRefData(totalPages, filter);
-            const filteredUsers = getUsersWithFilters(users, filters);
-            if (nextPage === 1) {
-               setContactList(filteredUsers);
-            } else {
-               setContactList(prevContactList => {
-                  const newUsers = filteredUsers.filter(
-                     newUser => !prevContactList.some(existingUser => existingUser.userJid === newUser.userJid),
-                  );
-                  const updatedList = [...prevContactList, ...newUsers];
-                  return updatedList;
-               });
-            }
-         } else {
-            showToast(stringSet.CONTACT_SCREEN.COULD_NOT_GET_CONTACTS);
-         }
-         setIsFetching(false);
-         setFooterLoader(false);
+      if (!hasNextPage || filter !== searchTextValueRef.current) {
+         return;
+      }
+
+      nextPage = filter ? 1 : nextPage;
+      toggleFetchingState(nextPage);
+
+      const { statusCode, users, totalPages } = await fetchContactsFromSDK(filter, nextPage, 23);
+      if (statusCode !== 200) {
+         showToast(stringSet.CONTACT_SCREEN.COULD_NOT_GET_CONTACTS);
+         resetFetchingState();
+         return;
+      }
+
+      updateContactPaginationRefData(totalPages, filter);
+      processAndSetContacts(users, nextPage);
+      resetFetchingState();
+   };
+
+   const toggleFetchingState = nextPage => {
+      if (nextPage > 1) {
+         setFooterLoader(true);
+      } else {
+         setIsFetching(true);
       }
    };
 
+   const resetFetchingState = () => {
+      setIsFetching(false);
+      setFooterLoader(false);
+   };
+
+   const processAndSetContacts = (users, nextPage) => {
+      const filteredUsers = getUsersWithFilters(users);
+      if (nextPage === 1) {
+         setContactList(filteredUsers);
+      } else {
+         mergeContactLists(filteredUsers);
+      }
+   };
+
+   const mergeContactLists = filteredUsers => {
+      setContactList(prevContactList => {
+         return mergeUniqueContacts(prevContactList, filteredUsers);
+      });
+   };
+
+   const mergeUniqueContacts = (prevContactList, filteredUsers) => {
+      const newUsers = filteredUsers.filter(
+         newUser => !prevContactList.some(existingUser => existingUser.userJid === newUser.userJid),
+      );
+      return [...prevContactList, ...newUsers];
+   };
    const fetchContactListFromSDKWithDebounce = React.useRef(debounce(fetchContactListFromSDK, 700)).current;
 
    const fetchContactList = text => {
@@ -175,7 +201,11 @@ function ContactScreen() {
    };
 
    const handlePress = item => {
-      const _item = { ...item, isBlocked: getBlockedStatus(getUserIdFromJid(item.userJid)), muteStatus: getMuteStatus(item.userJid) };
+      const _item = {
+         ...item,
+         isBlocked: getBlockedStatus(getUserIdFromJid(item.userJid)),
+         muteStatus: getMuteStatus(item.userJid),
+      };
       if (isNewGrpSrn || isGroupInfoSrn) {
          if (getBlockedStatus(getUserIdFromJid(_item.userJid))) {
             hadleBlockUser(getUserIdFromJid(_item.userJid), _item.userJid);
@@ -237,10 +267,11 @@ function ContactScreen() {
                const { statusCode, message } = await SDK.addParticipants(jid, grpName, Object.keys(selectedUsers));
                if (statusCode === 200) {
                   fetchGroupParticipants(jid);
-                  navigation.goBack();
+                  navigation.canGoBack() && navigation.goBack();
                } else {
                   showToast(message);
                }
+               navigation.canGoBack() && navigation.goBack();
             } catch (error) {
                showToast(stringSet.TOAST_MESSAGES.FAILED_TO_ADD_PARTICIPANTS);
             }

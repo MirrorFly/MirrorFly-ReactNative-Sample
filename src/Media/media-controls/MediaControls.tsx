@@ -12,7 +12,6 @@ export type Props = {
    duration: number;
    fadeOutDisable?: boolean;
    fadeOutDelay?: number;
-   isFullScreen: boolean;
    isLoading: boolean;
    primaryColor: string;
    onFullScreen?: (event: GestureResponderEvent) => void;

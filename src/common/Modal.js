@@ -6,6 +6,7 @@ import {
    StyleSheet,
    View,
 } from 'react-native';
+import PropTypes from 'prop-types';
 
 export const ModalCenteredContent = ({ children, onPressOutside }) => {
    return (
@@ -16,6 +17,11 @@ export const ModalCenteredContent = ({ children, onPressOutside }) => {
    );
 };
 
+ModalCenteredContent.propTypes = {
+   children: PropTypes.node,
+   onPressOutside: PropTypes.func,
+};
+
 export const ModalBottomContent = ({ children, onPressOutside }) => {
    return (
       <View style={styles.modalBottomContentContainer}>
@@ -23,6 +29,11 @@ export const ModalBottomContent = ({ children, onPressOutside }) => {
          {children}
       </View>
    );
+};
+
+ModalBottomContent.propTypes = {
+   children: PropTypes.node,
+   onPressOutside: PropTypes.func,
 };
 
 /**
@@ -47,6 +58,14 @@ const Modal = ({
          {children}
       </RNModal>
    );
+};
+
+Modal.propTypes = {
+   visible: PropTypes.bool,
+   transparent: PropTypes.bool,
+   animationType: PropTypes.oneOf(['none', 'slide', 'fade']),
+   statusBarTranslucent: PropTypes.bool,
+   children: PropTypes.node,
 };
 
 export default Modal;

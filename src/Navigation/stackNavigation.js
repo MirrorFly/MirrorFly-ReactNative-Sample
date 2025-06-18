@@ -1,4 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Provider } from 'react-redux';
 import VideoPlayer from '../Media/VideoPlayer';
@@ -112,6 +113,10 @@ export function ChatScreen({ chatUser }) {
       </Provider>
    );
 }
+
+ChatScreen.propTypes = {
+   chatUser: PropTypes.string,
+};
 
 export const ProfileStack = () => {
    return (

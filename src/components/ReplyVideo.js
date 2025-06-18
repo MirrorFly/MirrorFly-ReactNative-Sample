@@ -5,6 +5,7 @@ import NickName from '../common/NickName';
 import Text from '../common/Text';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 const ReplyImage = props => {
    const { replyMsgItems, handleRemove, stringSet } = props;
@@ -70,6 +71,12 @@ const ReplyImage = props => {
          </View>
       </View>
    );
+};
+
+ReplyImage.propTypes = {
+   replyMsgItems: PropTypes.object,
+   handleRemove: PropTypes.func,
+   stringSet: PropTypes.object,
 };
 
 export default ReplyImage;

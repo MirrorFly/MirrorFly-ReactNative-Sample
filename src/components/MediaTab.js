@@ -11,6 +11,7 @@ import { useThemeColorPalatte } from '../redux/reduxHook';
 import { getMessageTypeCount } from '../screens/ViewAllMedia';
 import { MEDIA_POST_PRE_VIEW_SCREEN } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 const MediaTab = ({ chatUserId, jid }) => {
    const stringSet = getStringSet();
@@ -70,7 +71,7 @@ const MediaTab = ({ chatUserId, jid }) => {
                   ]}>
                   <Image
                      source={{
-                        uri: message_type === 'video' ? getThumbBase64URL(thumb_image) : getThumbBase64URL(thumb_image),
+                        uri: getThumbBase64URL(thumb_image),
                      }}
                      style={styles.imageView}
                   />
@@ -152,6 +153,11 @@ const MediaTab = ({ chatUserId, jid }) => {
          }
       />
    );
+};
+
+MediaTab.propTypes = {
+   chatUserId: PropTypes.string,
+   jid: PropTypes.string,
 };
 
 export default React.memo(MediaTab);

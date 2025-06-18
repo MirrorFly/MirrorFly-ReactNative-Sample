@@ -671,9 +671,15 @@ export const callBacks = {
    },
    messageListener: async res => {
       switch (res.msgType) {
+         case 'logout':
+         case 'carbonLogout': {
+            logoutClearVariables();
+            RootNavigation.reset(REGISTERSCREEN);
+            break;
+         }
          case 'groupCreated':
          case 'receiveMessage':
-         case 'groupProfileUpdated':
+         case 'groupProfileUpdated': {
             res.archiveSetting = getArchive();
             const isReceiveMessage = ['receiveMessage', 'carbonReceiveMessage'].includes(res.msgType);
             const archiveSettingAndStatus = res.archiveStatus ? !res.archiveSetting : true;
@@ -716,6 +722,7 @@ export const callBacks = {
                store.dispatch(setRoasterData(res?.profileDetails));
             }
             break;
+         }
          case 'delivered':
          case 'seen':
             store.dispatch(updateRecentMessageStatus(res));
@@ -741,7 +748,7 @@ export const callBacks = {
          case 'deleteMessage':
             SDK.getMessageById(res.lastMsgId);
             break;
-         case 'recallMessage':
+         case 'recallMessage': {
             updateDeleteForEveryOne(res.fromUserId, res.msgId.split(','), res.fromUserJid);
             const msgIds = res.msgId.split(',');
             msgIds.forEach(msgId => {
@@ -749,6 +756,7 @@ export const callBacks = {
             });
             console.log('msgIds ==> ', msgIds);
             break;
+         }
          case 'userBlockStatus':
             store.dispatch(
                updateIsBlockedMe({ userId: res.blockedUserId, isBlockedMe: res.type === BLOCK_CONTACT_TYPE ? 1 : 0 }),
@@ -961,7 +969,7 @@ export const callBacks = {
          if (!res.trackType) {
             return;
          }
-         localStream = { ...localStream } || {};
+         localStream = { ...localStream };
          let mediaStream = null;
          if (res.track) {
             mediaStream = new MediaStream();
@@ -1028,7 +1036,7 @@ export const callBacks = {
          const userIndex = remoteStream.findIndex(item => item.fromJid === res.userJid);
          if (userIndex > -1) {
             let { stream } = newRemoteStream[userIndex];
-            stream = { ...stream } || {};
+            stream = { ...stream };
             stream[streamType] = mediaStream;
             stream['id'] = Date.now();
             stream[streamUniqueId] = Date.now();
@@ -1095,7 +1103,7 @@ export const callBacks = {
    helper: {
       getDisplayName: () => {
          let vcardData = getLocalUserDetails();
-         if (vcardData && vcardData.nickName) {
+         if (vcardData?.nickName) {
             return vcardData.nickName;
          }
          return 'Anonymous user ';
@@ -1118,10 +1126,12 @@ export const callBacks = {
       callSwitch(res);
    },
    muteStatusListener: res => {
-      if (!res) return;
+      if (!res) {
+         return;
+      }
       let localUser = false;
       let vcardData = getLocalUserDetails();
-      const currentUser = vcardData && vcardData.fromUser;
+      const currentUser = vcardData?.fromUser;
       let mutedUser = res.userJid;
       mutedUser = mutedUser.includes('@') ? mutedUser.split('@')[0] : mutedUser;
       if (res.localUser || currentUser === mutedUser) {

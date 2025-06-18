@@ -15,7 +15,7 @@ import Sound from 'react-native-sound';
 import RootNavigation from '../Navigation/rootNavigation';
 import SDK, { RealmKeyValueStore } from '../SDK/SDK';
 import { CONNECTED } from '../SDK/constants';
-import { handleSendMsg, uploadFileToSDK } from '../SDK/utils';
+import { handleSendMsg, sdkLog, uploadFileToSDK } from '../SDK/utils';
 import {
    BlockedIcon,
    CameraIcon,
@@ -26,9 +26,10 @@ import {
    GalleryIcon,
    HeadSetIcon,
    LocationIcon,
+   LogIcon,
    NotificationSettingsIcon,
    ProfileIcon,
-   SandTimer
+   SandTimer,
 } from '../common/Icons';
 import { getNetworkState } from '../common/hooks';
 import {
@@ -162,7 +163,7 @@ export const showNetWorkToast = () => {
 };
 
 export const getUserIdFromJid = userJid => {
-   return userJid && userJid.includes('@') ? userJid.split('@')[0] : userJid;
+   return userJid?.includes('@') ? userJid.split('@')[0] : userJid;
 };
 
 export const getUserType = userJid => {
@@ -170,7 +171,7 @@ export const getUserType = userJid => {
 };
 
 export function getType(type = '') {
-   return type && type.includes('/') ? type.split('/')[0] : type;
+   return type?.includes('/') ? type.split('/')[0] : type;
 }
 
 export const handleRoute = (name, params) => () => {
@@ -370,22 +371,26 @@ export const showCheckYourInternetToast = () => {
    showToast('Please check your internet connection');
 };
 
-export const openLocationExternally = (latitude, longitude) => {
-   const scheme = Platform.select({
-      ios: 'maps://0,0?q=',
-      android: 'geo:0,0?q=',
-   });
-   const latLng = `${latitude},${longitude}`;
-   const locationUrl = Platform.select({
-      ios: `${scheme}${latLng}`,
-      android: `${scheme}${latLng}`,
-   });
-   if (Linking.canOpenURL(locationUrl)) {
-      Linking.openURL(locationUrl).catch(() => {
-         showToast(stringSet.TOAST_MESSAGES.UNABLE_TO_OPEN_THE_LOCATION);
+export const openLocationExternally = async (latitude, longitude) => {
+   try {
+      const scheme = Platform.select({
+         ios: 'maps://0,0?q=',
+         android: 'geo:0,0?q=',
       });
-   } else {
-      showToast(stringSet.TOAST_MESSAGES.NO_APPS_AVAILABLE_FOR_LOCATION);
+      const latLng = `${latitude},${longitude}`;
+      const locationUrl = Platform.select({
+         ios: `${scheme}${latLng}`,
+         android: `${scheme}${latLng}`,
+      });
+
+      const canOpen = await Linking.canOpenURL(locationUrl);
+      if (canOpen) {
+         await Linking.openURL(locationUrl);
+      } else {
+         showToast(stringSet.TOAST_MESSAGES.NO_APPS_AVAILABLE_FOR_LOCATION);
+      }
+   } catch (error) {
+      showToast(stringSet.TOAST_MESSAGES.UNABLE_TO_OPEN_THE_LOCATION);
    }
 };
 
@@ -395,7 +400,7 @@ export const calculateWidthAndHeight = (width, height) => {
 
    switch (true) {
       // Horizontal Video
-      case width > height:
+      case width > height: {
          let resultHeight = Math.round((height / width) * MAX_WIDTH_WEB);
          let resultHeightAnd = Math.round((height / width) * MAX_WIDTH_AND);
 
@@ -406,6 +411,7 @@ export const calculateWidthAndHeight = (width, height) => {
             androidHeight: resultHeightAnd > MIN_HEIGHT_AND ? resultHeightAnd : MIN_HEIGHT_AND,
          };
          break;
+      }
 
       // Vertical Video
       case width < height:
@@ -591,7 +597,7 @@ export const getAudioDuration = async path => {
    return new Promise((resolve, reject) => {
       const sound = new Sound(path, Platform.OS === 'ios' ? '' : Sound.MAIN_BUNDLE, error => {
          if (error) {
-            return reject(error);
+            return mflog('Failed to load sound', error);
          } else {
             const duration = sound.getDuration();
             return resolve(duration);
@@ -863,6 +869,7 @@ export const handleConversationScollToBottom = () => {
 };
 
 export const handleSendMedia = selectedImages => {
+   sdkLog('handleSendMedia clicked');
    let message = {
       messageType: 'media',
       content: selectedImages || [],
@@ -962,7 +969,7 @@ export const handleUploadNextImage = res => {
    const { userId, msgId } = res;
    // Find the next message in the state object
    const conversationData = getChatMessages(userId);
-   const nextMessageIndex = conversationData.findIndex(item => item.msgId === msgId);
+   const nextMessageIndex = conversationData?.findIndex(item => item.msgId === msgId);
    if (nextMessageIndex > -1) {
       for (let i = nextMessageIndex - 1; i >= 0; i--) {
          const {
@@ -1141,6 +1148,19 @@ export const attachmentMenuIcons = [
    },
 ];
 
+const exportLog = () => {
+   FileViewer.open(SDK.getLogFilePath(), {
+      showOpenWithDialog: true,
+   })
+      .then(res => {
+         console.log('Document opened externally', res);
+      })
+      .catch(err => {
+         console.log('Error while opening Document', err);
+         showToast(stringSet.TOAST_MESSAGES.NO_APPS_AVAILABLE);
+      });
+};
+
 export const settingsMenu = [
    {
       name: 'Profile',
@@ -1152,14 +1172,6 @@ export const settingsMenu = [
       icon: ChatsIcon,
       rounteName: CHATS_CREEN,
    },
-   /**
-    *
-   {
-      name: 'Notifications',
-      icon: NotificationSettingsIcon,
-      rounteName: NOTIFICATION_STACK,
-   },
-   */
    {
       name: 'Notifications',
       icon: NotificationSettingsIcon,
@@ -1173,6 +1185,11 @@ export const settingsMenu = [
    {
       name: getStringSet().SETTINGS_SCREEN.LOG_OUT_LABEL,
       icon: ExitIcon,
+   },
+   {
+      name: 'Export Log',
+      icon: LogIcon,
+      formatter: exportLog,
    },
 ];
 
@@ -1402,7 +1419,7 @@ export const groupNotifyStatus = (publisherId, toUserId, status, publisher = '',
                : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_CREATED_BY_PUBLISHER, {
                     publisherName,
                  });
-         case messageTypeConstants.GROUP_USER_ADDED:
+         case messageTypeConstants.GROUP_USER_ADDED: {
             const placeholderData = { publisherName, toUser: toUserName };
             if (isPublisherLocalUser && isToUserLocalUser) {
                return '';
@@ -1415,6 +1432,7 @@ export const groupNotifyStatus = (publisherId, toUserId, status, publisher = '',
             return isToUserLocalUser
                ? replacePlaceholders(stringSet.GROUP_LABELS.GROUP_PUBLISHER_ADDED_YOU, { publisherName })
                : replacePlaceholders(stringSet.GROUP_LABELS.GROUP_ADDED_BY_PUBLISHER, placeholderData);
+         }
          case messageTypeConstants.GROUP_USER_REMOVED:
          case messageTypeConstants.GROUP_USER_LEFT:
             if (isPublisherLocalUser && isToUserLocalUser) {

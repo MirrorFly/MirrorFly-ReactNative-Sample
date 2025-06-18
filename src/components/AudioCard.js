@@ -10,6 +10,7 @@ import useMediaProgress from '../hooks/useMediaProgress';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
+import PropTypes from 'prop-types';
 
 const AudioCard = ({ item, isSender }) => {
    const {
@@ -78,6 +79,27 @@ const AudioCard = ({ item, isSender }) => {
          </View>
       </View>
    );
+};
+
+AudioCard.propTypes = {
+   item: PropTypes.shape({
+      createdAt: PropTypes.string,
+      msgId: PropTypes.string,
+      msgStatus: PropTypes.number,
+      msgBody: PropTypes.shape({
+         media: PropTypes.shape({
+            file: PropTypes.shape({
+               fileDetails: PropTypes.object,
+               is_uploading: PropTypes.bool,
+               is_downloaded: PropTypes.bool,
+               local_path: PropTypes.string,
+            }),
+            audioType: PropTypes.string,
+         }),
+         replyTo: PropTypes.string,
+      }),
+   }),
+   isSender: PropTypes.bool,
 };
 
 export default AudioCard;

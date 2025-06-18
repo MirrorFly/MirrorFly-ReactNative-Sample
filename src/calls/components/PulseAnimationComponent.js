@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
+import PropTypes from 'prop-types';
 
 const PulseAnimationComponent = ({
    color = 'blue',
@@ -138,6 +139,21 @@ const PulseAnimationComponent = ({
          )}
       </View>
    );
+};
+
+PulseAnimationComponent.propTypes = {
+   color: PropTypes.string,
+   diameter: PropTypes.number,
+   duration: PropTypes.number,
+   image: PropTypes.shape({
+      source: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      style: PropTypes.object,
+   }),
+   initialDiameter: PropTypes.number,
+   numPulses: PropTypes.number,
+   pulseStyle: PropTypes.object,
+   speed: PropTypes.number,
+   style: PropTypes.object,
 };
 
 export default PulseAnimationComponent;

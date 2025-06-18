@@ -242,6 +242,22 @@ const updateCallAgainScreenData = (userID, callType) => {
    Store.dispatch(setCallModalScreen(CALL_AGAIN_SCREEN));
 };
 
+export const disconnectCall = async () => {
+   setpreventMultipleClick(false);
+   clearOutgoingTimer();
+   SDK.endCall();
+   stopOutgoingCallRingingTone();
+   if (Platform.OS === 'android') {
+      await stopForegroundServiceNotification();
+   }
+   dispatchDisconnected();
+   clearIosCallListeners();
+   endCallForIos();
+   resetCallData();
+   closeCallModalActivity(true);
+};
+
+
 export const endCall = async (isFromTimeout = false, userId = '', callType = '') => {
    setpreventMultipleClick(false);
    const { data: confrenceData = {} } = Store.getState().showConfrenceData || {};
@@ -500,7 +516,7 @@ export const selectLargeVideoUser = (userJid, volumelevel) => {
          if (!volumeLevelsBasedOnUserJid[userJid]) {
             volumeLevelsBasedOnUserJid[userJid] = 0.5;
          }
-         volumeLevelsInDBBasedOnUserJid[userJid] = volumelevel ? volumelevel : 0;
+         volumeLevelsInDBBasedOnUserJid[userJid] = volumelevel || 0;
          if (Object.keys(volumeLevelsInDBBasedOnUserJid).length > 1) {
             let largest = Object.values(volumeLevelsInDBBasedOnUserJid)[0];
             userJid = Object.keys(volumeLevelsInDBBasedOnUserJid)[0];
@@ -622,7 +638,7 @@ function getFromJidFromRemoteStream(remoteStream) {
 
 export const switchCallData = (callType, res) => {
    const callerUUID = Store.getState().callData.callerUUID || {};
-   const isSpeakerEnabled = callType === CALL_TYPE_VIDEO ? true : false;
+   const isSpeakerEnabled = callType === CALL_TYPE_VIDEO;
    enableSpeaker(callerUUID, isSpeakerEnabled);
    if (Platform.OS === 'android') {
       stopForegroundServiceNotification().then(() => {

@@ -22,6 +22,7 @@ import { setRoasterData } from './redux/rosterDataSlice';
 import store from './redux/store';
 import { updateTheme, updateThemeColor } from './redux/themeColorDataSlice';
 import { RECENTCHATSCREEN, REGISTERSCREEN } from './screens/constants';
+import { disconnectCall } from './Helper/Calls/Call';
 
 let appInitialized = false,
    appSchema = '',
@@ -145,7 +146,7 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadat
          const connect = await SDK.connect(data.username, data.password);
          switch (connect?.statusCode) {
             case 200:
-            case 409:
+            case 409: {
                let jid = await SDK.getCurrentUserJid();
                let userJID = jid.userJid.split('/')[0];
                connect.jid = userJID;
@@ -158,6 +159,7 @@ export const mirrorflyRegister = async ({ userIdentifier, fcmToken = '', metadat
                SDK.getUsersIBlocked();
                SDK.getUsersWhoBlockedMe();
                return connect;
+            }
             default:
                return connect;
          }
@@ -174,17 +176,21 @@ export const mirrorflyConnect = async (username, password) => {
    const connect = await SDK.connect(username, password);
    switch (connect?.statusCode) {
       case 200:
-      case 409:
+      case 409: {
          let jid = await SDK.getCurrentUserJid();
          let userJID = jid.userJid.split('/')[0];
          connect.jid = userJID;
          return connect;
+      }
       default:
          return connect;
    }
 };
 
 export const logoutClearVariables = () => {
+   notifee.stopForegroundService();
+   notifee.cancelAllNotifications();
+   disconnectCall();
    resetVariable();
    currentUserJID = '';
    currentUserProfile = {};
@@ -199,8 +205,6 @@ export const mirrorflyLogout = async () => {
          showToast(message);
          return statusCode;
       }
-      notifee.stopForegroundService();
-      notifee.cancelAllNotifications();
       return statusCode;
    } catch (error) {}
 };

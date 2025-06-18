@@ -21,8 +21,9 @@ import { getUserIdFromJid } from '../../helpers/chatHelpers';
 import { callConversion } from '../../redux/callStateSlice';
 import { useRoasterData, useThemeColorPalatte } from '../../redux/reduxHook';
 import commonStyles, { modelStyles } from '../../styles/commonStyles';
+import PropTypes from 'prop-types';
 
-export let callConverisonInterval = createRef().current;
+export const callConverisonInterval = createRef();
 const CallConversionPopUp = props => {
    const {
       callConversionData,
@@ -93,7 +94,7 @@ const CallConversionPopUp = props => {
       } else if (status === CALL_STATUS_PERMISSION) {
          setPopUpData({
             visible: true,
-            title: `Video Permission are needed for calling. Please enable it in Settings.`,
+            title: 'Video Permission are needed for calling. Please enable it in Settings.',
             permissionEnableSettings: 'OK',
          });
       }
@@ -124,13 +125,17 @@ const CallConversionPopUp = props => {
       }
       let callConversionRes = null;
       if (statusToUpdate === CALL_CONVERSION_STATUS_ACCEPT) {
-         if (callStatusText === CALL_STATUS_DISCONNECTED) return;
+         if (callStatusText === CALL_STATUS_DISCONNECTED) {
+            return;
+         }
          resetConversionPopUp();
          SDK.setShouldKeepConnectionWhenAppGoesBackground(true);
          callConversionRes = await SDK.acceptVideoCallSwitchRequest();
          SDK.setShouldKeepConnectionWhenAppGoesBackground(false);
          resetCallConversionRequestData();
-         if (callConversionRes.statusCode === 200) return;
+         if (callConversionRes.statusCode === 200) {
+            return;
+         }
       } else if (statusToUpdate === CALL_CONVERSION_STATUS_REQUEST_INIT) {
          callConversionRes = await SDK.requestVideoCallSwitch();
       } else if (statusToUpdate === CALL_CONVERSION_STATUS_REQ_WAITING) {
@@ -147,10 +152,10 @@ const CallConversionPopUp = props => {
       dispatch(callConversion({ ...callConversionData, status: statusToUpdate }));
       if (statusToUpdate === CALL_CONVERSION_STATUS_REQ_WAITING) {
          let timeLeft = 20;
-         clearInterval(callConverisonInterval);
-         callConverisonInterval = setInterval(async () => {
+         clearInterval(callConverisonInterval.current);
+         callConverisonInterval.current = setInterval(async () => {
             if (timeLeft === 0) {
-               clearInterval(callConverisonInterval);
+               clearInterval(callConverisonInterval.current);
                dispatch(callConversion({ status: CALL_CONVERSION_STATUS_CANCEL }));
                await SDK.cancelVideoCallSwitchRequest();
                resetCallConversionRequestData();
@@ -161,18 +166,18 @@ const CallConversionPopUp = props => {
          }, 1000);
       }
       if (statusToUpdate === CALL_CONVERSION_STATUS_DECLINE) {
-         clearInterval(callConverisonInterval);
+         clearInterval(callConverisonInterval.current);
          await SDK.declineVideoCallSwitchRequest();
       }
       if (statusToUpdate === CALL_CONVERSION_STATUS_CANCEL) {
-         clearInterval(callConverisonInterval);
+         clearInterval(callConverisonInterval.current);
          resetCallConversionRequestData();
          await SDK.cancelVideoCallSwitchRequest();
       }
    };
 
    const resetConversionPopUp = () => {
-      clearInterval(callConverisonInterval); // Ensure callConverisonInterval is accessible in this scope
+      clearInterval(callConverisonInterval.current); // Ensure callConverisonInterval.current is accessible in this scope
       dispatch(callConversion());
    };
 
@@ -189,7 +194,7 @@ const CallConversionPopUp = props => {
             prevCallConversionData?.status === CALL_CONVERSION_STATUS_REQ_WAITING &&
             callConversionData.status === CALL_CONVERSION_STATUS_DECLINE
          ) {
-            showCallModalToast(`Request declined`, 2500);
+            showCallModalToast('Request declined', 2500);
             resetCallConversionRequestData();
          }
          resetConversionPopUp();
@@ -212,7 +217,7 @@ const CallConversionPopUp = props => {
                ]}>
                <Text style={styles.optionTitleText}>{popUpData.title}</Text>
                <View style={styles.buttonContainer}>
-                  {popUpData.cancelBtnLabel && (
+                  {!!popUpData.cancelBtnLabel && (
                      <IconButton
                         containerStyle={[
                            styles.containerStyle,
@@ -222,14 +227,14 @@ const CallConversionPopUp = props => {
                         <Text style={[styles.pressableText, commonStyles.typingText]}>{popUpData.cancelBtnLabel}</Text>
                      </IconButton>
                   )}
-                  {popUpData.confirmBtnLabel && (
+                  {!!popUpData.confirmBtnLabel && (
                      <IconButton
                         containerStyle={[styles.containerStyle, { marginRight: 12 }]}
                         onPress={() => handleAction(popUpData.confirmStatusToUpdate)}>
                         <Text style={[styles.pressableText, commonStyles.typingText]}>{popUpData.confirmBtnLabel}</Text>
                      </IconButton>
                   )}
-                  {popUpData.permissionEnableSettings && (
+                  {!!popUpData.permissionEnableSettings && (
                      <IconButton
                         containerStyle={[styles.containerStyle, { marginRight: 16 }]}
                         onPress={handlePermissionError}>
@@ -263,5 +268,16 @@ const styles = StyleSheet.create({
       paddingVertical: 2,
    },
 });
+
+CallConversionPopUp.propTypes = {
+   callConversionData: PropTypes.shape({
+      status: PropTypes.string,
+      fromUser: PropTypes.string,
+   }),
+   resetCallConversionRequestData: PropTypes.func,
+   remoteUserRequestingCallSwitch: PropTypes.bool,
+   currentUserRequestingCallSwitch: PropTypes.bool,
+   isPipMode: PropTypes.bool,
+};
 
 export default CallConversionPopUp;

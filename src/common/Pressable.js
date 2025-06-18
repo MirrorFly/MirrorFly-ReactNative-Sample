@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 /**
  * @typedef {Object} CustomProps
@@ -37,6 +38,12 @@ const Pressable = ({ children, contentContainerStyle, pressedStyle, ...props }) 
          )}
       </RNPressable>
    );
+};
+
+Pressable.propTypes = {
+   ...RNPressable.propTypes,
+   contentContainerStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+   pressedStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 };
 
 export default Pressable;

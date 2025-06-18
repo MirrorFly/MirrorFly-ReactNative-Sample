@@ -8,8 +8,19 @@ import { useIsBlockedMeStatus, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { useFetchImage, useNetworkStatus } from './hooks';
 import Text from './Text';
+import PropTypes from 'prop-types';
 
 const defaultImageDimension = 48;
+
+const propTypes = {
+   userId: PropTypes.string,
+   profileImage: PropTypes.string,
+   imageStyle: PropTypes.object,
+   imageProps: PropTypes.object,
+   type: PropTypes.string,
+   data: PropTypes.string,
+   transparentBackgroundForImage: PropTypes.bool,
+};
 
 const Avathar = ({
    userId,
@@ -90,8 +101,8 @@ const Avathar = ({
       </View>
    );
 };
-
-export default React.memo(Avathar);
+Avathar.propTypes = propTypes;
+export default Avathar;
 
 const styles = StyleSheet.create({
    imageDiv: (props, hasImage, transparentBackgroundForImage) => {

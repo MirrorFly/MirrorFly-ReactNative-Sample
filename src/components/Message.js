@@ -6,6 +6,7 @@ import ImageCard from './ImageCard';
 import LocationCard from './LocationCard';
 import TextCard from './TextCard';
 import VideoCard from './VideoCard';
+import PropTypes from 'prop-types';
 
 function Message({ chatUser, item, isSender }) {
    const { msgBody: { message_type } = {} } = item;
@@ -32,5 +33,11 @@ function Message({ chatUser, item, isSender }) {
       return <ContactCard item={item} isSender={isSender} />;
    }
 }
+
+Message.propTypes = {
+   chatUser: PropTypes.string,
+   item: PropTypes.object,
+   isSender: PropTypes.bool,
+};
 
 export default React.memo(Message);

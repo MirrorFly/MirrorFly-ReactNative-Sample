@@ -5,6 +5,7 @@ import SDK, { RealmKeyValueStore } from '../SDK/SDK';
 import Avathar from '../common/Avathar';
 import { getExtention } from '../helpers/chatHelpers';
 import { useThemeColorPalatte } from '../redux/reduxHook';
+import PropTypes from 'prop-types';
 
 const AuthProfileImage = props => {
    const themeColorPalatte = useThemeColorPalatte();
@@ -66,7 +67,7 @@ const AuthProfileImage = props => {
             <ActivityIndicator size={'small'} color={themeColorPalatte.primaryColor} />
          ) : (
             <>
-               {Boolean(imageSource) ? (
+               {imageSource ? (
                   <Image
                      style={{
                         borderRadius: 100,
@@ -88,6 +89,14 @@ const AuthProfileImage = props => {
          )}
       </View>
    );
+};
+
+AuthProfileImage.propTypes = {
+   image: PropTypes.string,
+   nickName: PropTypes.string,
+   imageUploading: PropTypes.bool,
+   component: PropTypes.string,
+   style: PropTypes.object,
 };
 
 export default AuthProfileImage;

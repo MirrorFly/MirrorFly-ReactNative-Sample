@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { HighlightedMessage } from '../common/HighlightedMessage';
@@ -173,6 +174,27 @@ function RecentChatMessage({ userId, item, index, isSender, stringSet, themeColo
       </View>
    );
 }
+
+RecentChatMessage.propTypes = {
+   userId: PropTypes.string,
+   item: PropTypes.shape({
+      msgBody: PropTypes.shape({
+         message: PropTypes.string,
+         message_type: PropTypes.string,
+         media: PropTypes.shape({
+            audioType: PropTypes.string,
+         }),
+      }),
+      msgStatus: PropTypes.number,
+      publisherId: PropTypes.string,
+      toUserJid: PropTypes.string,
+      recallStatus: PropTypes.number,
+   }),
+   index: PropTypes.number,
+   isSender: PropTypes.bool,
+   stringSet: PropTypes.object,
+   themeColorPalatte: PropTypes.object,
+};
 
 export default RecentChatMessage;
 

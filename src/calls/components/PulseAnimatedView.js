@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Animated, Easing } from 'react-native';
+import PropTypes from 'prop-types';
 
 const PulseAnimatedView = ({ animateToValue, baseStyle, animationDuration = 300, children }) => {
    const scaleValue = new Animated.Value(1);
@@ -39,6 +40,13 @@ const PulseAnimatedView = ({ animateToValue, baseStyle, animationDuration = 300,
          {children}
       </Animated.View>
    );
+};
+
+PulseAnimatedView.propTypes = {
+   animateToValue: PropTypes.number,
+   baseStyle: PropTypes.object,
+   animationDuration: PropTypes.number,
+   children: PropTypes.node,
 };
 
 export default PulseAnimatedView;

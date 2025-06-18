@@ -4,6 +4,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { getThumbBase64URL } from '../helpers/chatHelpers';
 import { useThemeColorPalatte } from '../redux/reduxHook';
+import PropTypes from 'prop-types';
 
 export default function ZoomableImage({ image, thumbImage }) {
    const { width: screenWidth, height: screenHeight } = useWindowDimensions();
@@ -72,6 +73,11 @@ export default function ZoomableImage({ image, thumbImage }) {
       </View>
    );
 }
+
+ZoomableImage.propTypes = {
+   image: PropTypes.string,
+   thumbImage: PropTypes.string,
+};
 
 const styles = StyleSheet.create({
    root: screenBgColor => ({

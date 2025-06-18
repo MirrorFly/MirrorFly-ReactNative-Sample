@@ -10,6 +10,7 @@ import {
    View,
 } from 'react-native';
 import Text from './Text';
+import PropTypes from 'prop-types';
 
 const { UIManager } = NativeModules;
 
@@ -51,6 +52,22 @@ const createAnimation = (animatedValue, config, consecutive) => {
    }
 
    return baseAnimation;
+};
+
+createAnimation.propTypes = {
+   animatedValue: Animated.Value,
+   config: PropTypes.shape({
+      toValue: PropTypes.number,
+      duration: PropTypes.number,
+      loop: PropTypes.bool,
+      speed: PropTypes.number,
+      delay: PropTypes.number,
+      consecutive: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+   }),
+   consecutive: PropTypes.shape({
+      resetToValue: PropTypes.number,
+      duration: PropTypes.number,
+   }),
 };
 
 const MarqueeText = (props, ref) => {
@@ -152,16 +169,9 @@ const MarqueeText = (props, ref) => {
             return;
          }
 
-         const measureWidth = component =>
-            new Promise(resolve => {
-               UIManager.measure(findNodeHandle(component), (_x, _y, w) => {
-                  return resolve(w);
-               });
-            });
-
          const [wrapperWidth, textWidth] = await Promise.all([
-            measureWidth(containerRef.current),
-            measureWidth(textRef.current),
+            measureComponentWidth(containerRef.current),
+            measureComponentWidth(textRef.current),
          ]);
 
          containerWidth.current = wrapperWidth;
@@ -169,6 +179,12 @@ const MarqueeText = (props, ref) => {
       } catch (error) {
          console.warn(error);
       }
+   };
+
+   const measureComponentWidth = component => {
+      return new Promise(resolve => {
+         UIManager.measure(findNodeHandle(component), (x, y, w) => resolve(w));
+      });
    };
 
    // Null distance is the special value to allow recalculation
@@ -229,5 +245,16 @@ const styles = StyleSheet.create({
       overflow: 'hidden',
    },
 });
+
+MarqueeText.propTypes = {
+   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+   marqueeOnStart: PropTypes.bool,
+   speed: PropTypes.number,
+   loop: PropTypes.bool,
+   delay: PropTypes.number,
+   consecutive: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+   onMarqueeComplete: PropTypes.func,
+   children: PropTypes.node,
+};
 
 export default React.forwardRef(MarqueeText);

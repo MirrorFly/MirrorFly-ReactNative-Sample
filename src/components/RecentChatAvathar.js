@@ -1,4 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Avathar from '../common/Avathar';
@@ -10,11 +11,11 @@ import Text from '../common/Text';
 import { CHAT_TYPE_SINGLE, MIX_BARE_JID } from '../helpers/constants';
 import { useRoasterData, useThemeColorPalatte } from '../redux/reduxHook';
 import { CONVERSATION_SCREEN, CONVERSATION_STACK, GROUP_INFO, USER_INFO } from '../screens/constants';
+import { fetchGroupParticipants } from '../SDK/utils';
 import commonStyles from '../styles/commonStyles';
 import MakeCall from './MakeCall';
-import { fetchGroupParticipants } from '../SDK/utils';
 
-function RecentChatAvatar({ type, chatUser, userId, data = {}, ...props }) {
+function RecentChatAvatar({ type, chatUser, userId, data = {} }) {
    const [visible, setVisible] = React.useState(false);
    const profile = useRoasterData(userId);
    const themeColorPalette = useThemeColorPalatte();
@@ -69,10 +70,7 @@ function RecentChatAvatar({ type, chatUser, userId, data = {}, ...props }) {
                      commonStyles.borderRadius_12,
                      styles.container,
                   ]}>
-                  {/* Nickname Text - Positioned Top Left */}
                   <Text style={styles.nickNameText}>{nickName}</Text>
-
-                  {/* Image View (Takes Most of the Space) */}
                   <View style={[commonStyles.flex1, commonStyles.width_100_per]}>
                      <InfoImageView
                         scaledFontSize={60}
@@ -81,8 +79,6 @@ function RecentChatAvatar({ type, chatUser, userId, data = {}, ...props }) {
                         style={styles.imageContainer(imageToken, colorCode)}
                      />
                   </View>
-
-                  {/* Bottom Icons - Positioned at Bottom */}
                   <View style={styles.iconContainer}>
                      <IconButton onPress={handleRouteToChat}>
                         <QuickChatIcon color={themeColorPalette.iconColor} />
@@ -98,6 +94,13 @@ function RecentChatAvatar({ type, chatUser, userId, data = {}, ...props }) {
       </>
    );
 }
+
+RecentChatAvatar.propTypes = {
+   type: PropTypes.string,
+   chatUser: PropTypes.string,
+   userId: PropTypes.string,
+   data: PropTypes.object,
+};
 
 export default RecentChatAvatar;
 

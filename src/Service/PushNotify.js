@@ -30,7 +30,7 @@ export const displayRemoteNotification = async (id, date, title, body, jid, impo
          id: id,
          title: title,
          body: body,
-         data: { fromUserJID: jid } || null,
+         data: { fromUserJID: jid },
          android: {
             channelId: channelIdData,
             timestamp: date,

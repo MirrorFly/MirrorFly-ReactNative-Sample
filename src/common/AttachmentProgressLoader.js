@@ -4,6 +4,15 @@ import { mediaStatusConstants } from '../helpers/constants';
 import commonStyles from '../styles/commonStyles';
 import AttachementBar from './AttachementBar';
 import { DownloadCancel, DownloadIcon, UploadIcon } from './Icons';
+import PropTypes from 'prop-types';
+
+const propTypes = {
+   mediaStatus: PropTypes.string,
+   onDownload: PropTypes.func,
+   onUpload: PropTypes.func,
+   onCancel: PropTypes.func,
+   msgId: PropTypes.string,
+};
 
 const AttachmentProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel, msgId }) => {
    switch (mediaStatus) {
@@ -39,6 +48,8 @@ const AttachmentProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel,
          return null;
    }
 };
+
+AttachmentProgressLoader.propTypes = propTypes;
 
 export default React.memo(AttachmentProgressLoader);
 

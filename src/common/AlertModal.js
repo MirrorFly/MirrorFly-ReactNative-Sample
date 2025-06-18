@@ -16,6 +16,7 @@ const propTypes = {
    yesAction: PropTypes.func,
    optionalButton: PropTypes.string,
    optionalAction: PropTypes.func,
+   noAction: PropTypes.func,
 };
 
 function AlertModal({

@@ -57,47 +57,31 @@ const RecentChat = () => {
    );
 
    const renderSectionHeaderBasedOnCondition = section => {
+      const baseTextColor = commonStyles.textColor(themeColorPalatte.primaryTextColor);
+
       switch (section.title) {
          case stringSet.SETTINGS_SCREEN.CHATS_LABEL:
             return (
                <View style={styles.chatsSearchSubHeader}>
-                  <Text
-                     style={[
-                        styles.chatsSearchSubHeaderText,
-                        commonStyles.textColor(themeColorPalatte.primaryTextColor),
-                     ]}>
-                     {section.title}
-                  </Text>
-                  <Text
-                     style={[
-                        styles.chatsSearchSubHeaderCountText,
-                        commonStyles.textColor(themeColorPalatte.primaryTextColor),
-                     ]}>
-                     ({recentChatData.length})
-                  </Text>
+                  <Text style={[styles.chatsSearchSubHeaderText, baseTextColor]}>{section.title}</Text>
+                  <Text style={[styles.chatsSearchSubHeaderCountText, baseTextColor]}>({recentChatData.length})</Text>
                </View>
             );
+
          case 'Messages':
+            if (!filteredMessages.length) {
+               return null;
+            }
+
             return (
-               Boolean(filteredMessages.length) && (
-                  <View style={styles.chatsSearchSubHeader}>
-                     <Text
-                        style={[
-                           styles.chatsSearchSubHeaderText,
-                           commonStyles.textColor(themeColorPalatte.primaryTextColor),
-                        ]}>
-                        {section.title}
-                     </Text>
-                     <Text
-                        style={[
-                           styles.chatsSearchSubHeaderCountText,
-                           commonStyles.textColor(themeColorPalatte.primaryTextColor),
-                        ]}>
-                        ({filteredMessages.length})
-                     </Text>
-                  </View>
-               )
+               <View style={styles.chatsSearchSubHeader}>
+                  <Text style={[styles.chatsSearchSubHeaderText, baseTextColor]}>{section.title}</Text>
+                  <Text style={[styles.chatsSearchSubHeaderCountText, baseTextColor]}>({filteredMessages.length})</Text>
+               </View>
             );
+
+         default:
+            return null;
       }
    };
 

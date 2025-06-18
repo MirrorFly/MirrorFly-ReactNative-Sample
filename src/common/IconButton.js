@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, View } from 'react-native';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 const IconButton = ({ containerStyle, style, pressedStyle, onPress, onLongPress, children, ...props }) => {
    const themeColorPalatte = useThemeColorPalatte();
@@ -39,6 +40,15 @@ const IconButton = ({ containerStyle, style, pressedStyle, onPress, onLongPress,
          )}
       </Pressable>
    );
+};
+
+IconButton.propTypes = {
+   containerStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+   pressedStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+   onPress: PropTypes.func,
+   onLongPress: PropTypes.func,
+   children: PropTypes.node,
 };
 
 export default React.memo(IconButton);

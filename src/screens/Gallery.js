@@ -36,51 +36,43 @@ const Gallery = () => {
    const fetchGallery = async () => {
       try {
          setLoading(true);
-         const photo = await CameraRoll.getAlbums({
+         const albums = await CameraRoll.getAlbums({
             albumType: 'SmartAlbum',
             assetType: 'All',
          });
-         const _galleryData = await Promise.allSettled(
-            photo.map(async item => {
-               const params = {
-                  first: 1,
-                  assetType: 'All',
-                  groupTypes: 'SmartAlbum',
-                  include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'playableDuration', 'orientation'],
-                  groupName: item.title,
-               };
-               return CameraRoll.getPhotos(params).then(res => {
-                  const node = res.edges.find(data => {
-                     return data;
-                  });
-                  if (node) {
-                     return {
-                        count: item.count,
-                        title: item.title,
-                        uri: node.node.image.uri,
-                     };
-                  }
-                  return null;
-               });
-            }),
-         );
-         const filtertedData = _galleryData.filter(item => item.value !== null);
-         filtertedData.sort((a, b) => {
-            const titleA = a.value.title.toUpperCase();
-            const titleB = b.value.title.toUpperCase();
-            if (titleA < titleB) {
-               return -1;
-            } else if (titleA > titleB) {
-               return 1;
-            } else {
-               return 0;
-            }
-         });
-         setGalleryData(filtertedData);
+
+         const _galleryData = await fetchAlbumPhotos(albums);
+         setGalleryData(sortGalleryData(_galleryData));
       } catch (error) {
+         console.error('Error fetching gallery:', error);
       } finally {
          setLoading(false);
       }
+   };
+
+   const fetchAlbumPhotos = async albums => {
+      const albumPromises = albums.map(album => getAlbumCover(album));
+      const results = await Promise.allSettled(albumPromises);
+      return results.filter(item => item.value !== null);
+   };
+
+   const getAlbumCover = async album => {
+      const params = {
+         first: 1,
+         assetType: 'All',
+         groupTypes: 'SmartAlbum',
+         include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'playableDuration', 'orientation'],
+         groupName: album.title,
+      };
+
+      const res = await CameraRoll.getPhotos(params);
+      const node = res.edges.find(data => data);
+
+      return node ? { count: album.count, title: album.title, uri: node.node.image.uri } : null;
+   };
+
+   const sortGalleryData = data => {
+      return data.sort((a, b) => a.value.title.localeCompare(b.value.title));
    };
 
    const renderFooter = () => {

@@ -13,6 +13,7 @@ import { getStringSet, replacePlaceholders } from '../localization/stringSet';
 import { useBlockedStatus, useRoasterData, useThemeColorPalatte } from '../redux/reduxHook';
 import { GROUP_INFO, NEW_GROUP } from '../screens/constants';
 import commonStyles from '../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 const RenderItem = ({ item, onhandlePress, selectedUsers, searchText }) => {
    const stringSet = getStringSet();
@@ -72,11 +73,11 @@ const RenderItem = ({ item, onhandlePress, selectedUsers, searchText }) => {
       <React.Fragment>
          <Pressable onPress={handlePress}>
             <View style={[styles.wrapper, renderOpacity && commonStyles.opacity_0_5]}>
-               <Avathar data={nickName} profileImage={imageToken} backgroundColor={colorCode} />
+               <Avathar userId={item?.userId} data={nickName} profileImage={imageToken} backgroundColor={colorCode} />
                <View style={[commonStyles.marginLeft_15, commonStyles.flex1]}>
                   <NickName
                      userId={item?.userId}
-                     data={nickName}
+                     data={{ nickName }}
                      searchValue={searchText}
                      style={[styles.nickNameText, { color: themeColorPalatte.primaryTextColor }]}
                   />
@@ -93,6 +94,13 @@ const RenderItem = ({ item, onhandlePress, selectedUsers, searchText }) => {
          <View style={[styles.divider, { backgroundColor: themeColorPalatte.dividerBg }]} />
       </React.Fragment>
    );
+};
+
+RenderItem.propTypes = {
+   item: PropTypes.object,
+   onhandlePress: PropTypes.func,
+   selectedUsers: PropTypes.object,
+   searchText: PropTypes.string,
 };
 
 export default function FlatListView(props) {
@@ -151,6 +159,17 @@ export default function FlatListView(props) {
       </>
    );
 }
+
+FlatListView.propTypes = {
+   selectedUsers: PropTypes.object,
+   onhandlePress: PropTypes.func,
+   isLoading: PropTypes.bool,
+   footerLoader: PropTypes.bool,
+   data: PropTypes.array,
+   searchText: PropTypes.string,
+   themeColorPalatte: PropTypes.object,
+   onhandlePagination: PropTypes.func,
+};
 
 const styles = StyleSheet.create({
    listContainer: {

@@ -7,6 +7,7 @@ import ApplicationColors from '../../config/appColors';
 import { getUserIdFromJid } from '../../helpers/chatHelpers';
 import { useRoasterData } from '../../redux/reduxHook';
 import VideoComponent from './VideoComponent';
+import PropTypes from 'prop-types';
 
 const GridItem = ({
    wrapperStyle,
@@ -24,13 +25,12 @@ const GridItem = ({
    const userProfile = useRoasterData(userId);
    const nickName = userProfile.nickName || userId || '';
    let stream = isLocalUser ? localStream : item?.stream;
-   let reconnectStatus =
-      callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && !isLocalUser ? true : false;
+   let reconnectStatus = callStatus && callStatus?.toLowerCase() === CALL_STATUS_RECONNECT && !isLocalUser;
 
    return (
       <Pressable style={[wrapperStyle]} onPress={onPress}>
          <View style={styles.gridItem}>
-            {!isVideoMuted && stream && stream?.video && !reconnectStatus && (
+            {!isVideoMuted && stream?.video && !reconnectStatus && (
                <VideoComponent
                   stream={stream}
                   isFrontCameraEnabled={isLocalUser ? isFrontCameraEnabled : false}
@@ -69,6 +69,19 @@ const GridItem = ({
          </View>
       </Pressable>
    );
+};
+
+GridItem.propTypes = {
+   wrapperStyle: PropTypes.object,
+   item: PropTypes.object,
+   isLocalUser: PropTypes.bool,
+   isFullSize: PropTypes.bool,
+   onPress: PropTypes.func,
+   isAudioMuted: PropTypes.bool,
+   isVideoMuted: PropTypes.bool,
+   localStream: PropTypes.object,
+   isFrontCameraEnabled: PropTypes.bool,
+   callStatus: PropTypes.string,
 };
 
 export const GridLayout = ({
@@ -177,6 +190,19 @@ export const GridLayout = ({
          keyExtractor={_user => String(_user.fromJid)}
       />
    );
+};
+
+GridLayout.propTypes = {
+   remoteStreams: PropTypes.array,
+   localUserJid: PropTypes.string,
+   onPressAnywhere: PropTypes.func,
+   offsetTop: PropTypes.number,
+   animatedOffsetTop: PropTypes.object,
+   remoteAudioMuted: PropTypes.object,
+   localStream: PropTypes.object,
+   remoteVideoMuted: PropTypes.object,
+   isFrontCameraEnabled: PropTypes.bool,
+   callStatus: PropTypes.string,
 };
 
 export default GridLayout;

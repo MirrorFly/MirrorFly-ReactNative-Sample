@@ -13,6 +13,7 @@ import ReplyLocation from './ReplyLocation';
 import ReplyText from './ReplyText';
 import ReplyVideo from './ReplyVideo';
 import { useBlockedStatus, useReplyMessage } from '../redux/reduxHook';
+import PropTypes from 'prop-types';
 
 function ReplyContainer({ chatUser }) {
    const stringSet = getStringSet();
@@ -88,6 +89,10 @@ function ReplyContainer({ chatUser }) {
       </View>
    );
 }
+
+ReplyContainer.propTypes = {
+   chatUser: PropTypes.string,
+};
 
 const styles = StyleSheet.create({
    replyingMessageContainer: {

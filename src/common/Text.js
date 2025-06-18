@@ -1,6 +1,7 @@
 import React from 'react';
 import { I18nManager, Text as RNText, StyleSheet } from 'react-native';
 import { useFontFamily } from '../redux/reduxHook';
+import PropTypes from 'prop-types';
 
 /**
  * @typedef {Object} CustomProps
@@ -61,5 +62,11 @@ const Text = React.forwardRef(({ style = {}, ...props }, ref) => {
       </RNText>
    );
 });
+
+Text.propTypes = {
+   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+   children: PropTypes.node,
+   contentContainerStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+};
 
 export default Text;

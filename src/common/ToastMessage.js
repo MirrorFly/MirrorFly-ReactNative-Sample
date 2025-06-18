@@ -3,7 +3,6 @@ import { Animated, StyleSheet, Text } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import { useDispatch, useSelector } from 'react-redux';
 import { resetToastMessage } from '../redux/toastMessageSlice';
-// import { resetCallModalToastDataAction } from '../../redux/callModalToastSlice';
 
 const opacityAnimationDuration = 300;
 let autoHideToastTimeout;

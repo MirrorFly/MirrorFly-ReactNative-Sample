@@ -7,6 +7,7 @@ import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
 import { randomString } from '../SDK/utils';
+import PropTypes from 'prop-types';
 
 const TextCard = ({ item, isSender }) => {
    const themeColorPalatte = useThemeColorPalatte();
@@ -70,6 +71,11 @@ const TextCard = ({ item, isSender }) => {
    );
 };
 
+TextCard.propTypes = {
+   item: PropTypes.object.isRequired,
+   isSender: PropTypes.bool.isRequired,
+};
+
 export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchValue = '', index }) => {
    const segments = findUrls(text);
 
@@ -122,6 +128,13 @@ export const ChatConversationHighlightedText = ({ textStyle = {}, text, searchVa
          })}
       </Text>
    );
+};
+
+ChatConversationHighlightedText.propTypes = {
+   textStyle: PropTypes.object,
+   text: PropTypes.string.isRequired,
+   searchValue: PropTypes.string,
+   index: PropTypes.number,
 };
 
 const styles = StyleSheet.create({

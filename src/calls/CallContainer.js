@@ -87,11 +87,16 @@ const CallContainer = () => {
 
    const renderCallscreenBasedOnCallStatus = React.useMemo(() => {
       switch (screenName) {
-         case INCOMING_CALL_SCREEN:
-            const _userId = getUserIdFromJid(connectionState?.userJid);
+         case INCOMING_CALL_SCREEN: {
+            const __userId = getUserIdFromJid(connectionState?.userJid);
             return (
-               <IncomingCall userId={_userId} userJid={connectionState?.userJid} callStatus={getIncomingCallStatus()} />
+               <IncomingCall
+                  userId={__userId}
+                  userJid={connectionState?.userJid}
+                  callStatus={getIncomingCallStatus()}
+               />
             );
+         }
          case ONGOING_CALL_SCREEN:
             return <OnGoingCall />;
          case OUTGOING_CALL_SCREEN:

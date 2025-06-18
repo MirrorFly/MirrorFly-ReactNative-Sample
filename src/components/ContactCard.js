@@ -13,6 +13,7 @@ import { toggleMessageSelection } from '../redux/chatMessageDataSlice';
 import { getChatMessage, getChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import ReplyMessage from './ReplyMessage';
+import PropTypes from 'prop-types';
 
 const ContactCard = ({ item, isSender }) => {
    const stringSet = getStringSet();
@@ -129,6 +130,11 @@ const ContactCard = ({ item, isSender }) => {
          {modalContent && <AlertModal {...modalContent} />}
       </View>
    );
+};
+
+ContactCard.propTypes = {
+   item: PropTypes.object.isRequired,
+   isSender: PropTypes.bool,
 };
 
 export default ContactCard;

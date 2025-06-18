@@ -7,6 +7,7 @@ import { getUserIdFromJid, getUsernameGraphemes } from '../../helpers/chatHelper
 import { useRoasterData } from '../../redux/reduxHook';
 import commonStyles from '../../styles/commonStyles';
 import VideoComponent from './VideoComponent';
+import PropTypes from 'prop-types';
 
 const PIPGridItem = ({
    item,
@@ -76,7 +77,7 @@ const PIPGridItem = ({
             backgroundColor: userProfile.colorCode,
             flex: 1,
          }}>
-         {!isVideoMuted && stream && stream?.video && callStatus.toLowerCase() !== CALL_STATUS_RECONNECT && (
+         {!isVideoMuted && stream?.video && callStatus.toLowerCase() !== CALL_STATUS_RECONNECT && (
             <VideoComponent stream={stream} isFrontCameraEnabled={isFrontCameraEnable} zIndex={0} />
          )}
          <View style={{ padding: 5, justifyContent: 'space-between', alignItems: 'center', flex: 1 }}>
@@ -115,6 +116,18 @@ const PIPGridItem = ({
          </View>
       </View>
    );
+};
+
+PIPGridItem.propTypes = {
+   item: PropTypes.object,
+   isLocalUser: PropTypes.bool,
+   isFullSize: PropTypes.bool,
+   isAudioMuted: PropTypes.bool,
+   userStatus: PropTypes.string,
+   stream: PropTypes.object,
+   isVideoMuted: PropTypes.bool,
+   isFrontCameraEnable: PropTypes.bool,
+   callStatus: PropTypes.string,
 };
 
 const PipGridLayoutAndroid = ({
@@ -162,6 +175,16 @@ const PipGridLayoutAndroid = ({
    };
 
    return <View style={styles.pipContainer}>{sortedRemoteStreamsForPip.map(item => renderPipLayoutItem(item))}</View>;
+};
+
+PipGridLayoutAndroid.propTypes = {
+   remoteStream: PropTypes.array,
+   localUserJid: PropTypes.string,
+   remoteAudioMuted: PropTypes.object,
+   callStatus: PropTypes.string,
+   localStream: PropTypes.object,
+   remoteVideoMuted: PropTypes.object,
+   isFrontCameraEnabled: PropTypes.bool,
 };
 
 export default PipGridLayoutAndroid;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { RTCView } from 'react-native-webrtc';
+import PropTypes from 'prop-types';
 
 const VideoComponent = (props = {}) => {
    const { stream, isFrontCameraEnabled, zIndex = 0 } = props;
@@ -10,7 +11,7 @@ const VideoComponent = (props = {}) => {
    }, [stream?.video.toURL()]);
 
    const frontCamera = React.useMemo(() => {
-      return isFrontCameraEnabled ? true : false;
+      return isFrontCameraEnabled;
    }, [isFrontCameraEnabled]);
 
    return stream ? (
@@ -22,6 +23,12 @@ const VideoComponent = (props = {}) => {
          mirror={frontCamera}
       />
    ) : null;
+};
+
+VideoComponent.propTypes = {
+   stream: PropTypes.object,
+   isFrontCameraEnabled: PropTypes.bool,
+   zIndex: PropTypes.number,
 };
 
 export default React.memo(VideoComponent);

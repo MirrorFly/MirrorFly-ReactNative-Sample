@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Image as RNImage } from 'react-native';
+import PropTypes from 'prop-types';
 
 function Image({ thumbImage, uri, ...props }) {
    console.log('uri ==> ', uri);
@@ -31,5 +32,11 @@ function Image({ thumbImage, uri, ...props }) {
       />
    );
 }
+
+Image.propTypes = {
+   thumbImage: PropTypes.string,
+   uri: PropTypes.string,
+   props: PropTypes.object,
+};
 
 export default Image;

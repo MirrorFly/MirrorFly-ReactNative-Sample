@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import RootNavigation from '../Navigation/rootNavigation';
@@ -37,6 +38,10 @@ const RenderMuteIcon = ({ userJids }) => {
          </IconButton>
       </View>
    );
+};
+
+RenderMuteIcon.propTypes = {
+   userJids: PropTypes.array,
 };
 
 const RecentChatHeader = () => {
@@ -156,36 +161,41 @@ const RecentChatHeader = () => {
    };
 
    const renderSelectionHeader = React.useMemo(() => {
+      if (!filtered.length) {
+         return null;
+      }
       return (
-         Boolean(filtered.length) && (
-            <View style={[styles.container, commonStyles.p_15, commonStyles.bg_color(themeColorPalatte.appBarColor)]}>
-               <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
-                  <IconButton onPress={resetChatSelection}>
-                     <CloseIcon color={themeColorPalatte.iconColor} />
-                  </IconButton>
-                  <Text
-                     style={[
-                        commonStyles.textCenter,
-                        commonStyles.fontSize_18,
-                        commonStyles.pl_10,
-                        commonStyles.textColor(themeColorPalatte.headerPrimaryTextColor),
-                     ]}>
-                     {filtered.length}
-                  </Text>
-               </View>
-               <View style={commonStyles.hstack}>
-                  {renderDeleteIcon()}
-                  {renderMuteIcon()}
-                  {renderArchiveIcon()}
-               </View>
-               {modalContent && <AlertModal {...modalContent} />}
+         <View style={[styles.container, commonStyles.p_15, commonStyles.bg_color(themeColorPalatte.appBarColor)]}>
+            <View style={[commonStyles.hstack, commonStyles.alignItemsCenter]}>
+               <IconButton onPress={resetChatSelection}>
+                  <CloseIcon color={themeColorPalatte.iconColor} />
+               </IconButton>
+               <Text
+                  style={[
+                     commonStyles.textCenter,
+                     commonStyles.fontSize_18,
+                     commonStyles.pl_10,
+                     commonStyles.textColor(themeColorPalatte.headerPrimaryTextColor),
+                  ]}>
+                  {filtered.length}
+               </Text>
             </View>
-         )
+            <View style={commonStyles.hstack}>
+               {renderDeleteIcon()}
+               {renderMuteIcon()}
+               {renderArchiveIcon()}
+            </View>
+            {modalContent && <AlertModal {...modalContent} />}
+         </View>
       );
    }, [filtered.map(item => `${item.isSelected}-${item.userType}`).join(','), modalContent, themeColorPalatte]);
 
    const renderScreenHeader = React.useMemo(() => {
-      return filtered.length === 0 && <ScreenHeader onChangeText={handleSearchText} menuItems={menuItems} />;
+      if (filtered.length !== 0) {
+         //NOSONAR
+         return null;
+      }
+      return <ScreenHeader onChangeText={handleSearchText} menuItems={menuItems} />;
    }, [filtered.length]);
 
    return (

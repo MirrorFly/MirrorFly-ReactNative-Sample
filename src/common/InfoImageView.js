@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Image, View } from 'react-native';
 import grpImage from '../assets/ic_grp_bg.png';
 import img from '../assets/img.png';
@@ -54,5 +55,12 @@ function InfoImageView({ userId, type, scaledFontSize, ...props }) {
       <Image {...props} source={getImageSource(grpImage)} />
    );
 }
+
+InfoImageView.propTypes = {
+   userId: PropTypes.string,
+   type: PropTypes.string,
+   scaledFontSize: PropTypes.number,
+   style: PropTypes.object,
+};
 
 export default InfoImageView;

@@ -3,6 +3,17 @@ import { View } from 'react-native';
 import { escapeRegExpReservedChars } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
 import Text from './Text';
+import PropTypes from 'prop-types';
+
+const propTypes = {
+   text: PropTypes.string,
+   searchValue: PropTypes.string,
+   index: PropTypes.number,
+   themeColorPalatte: PropTypes.shape({
+      primaryColor: PropTypes.string,
+      secondaryTextColor: PropTypes.string,
+   }),
+};
 
 export const HighlightedMessage = ({ text, searchValue = '', index, themeColorPalatte }) => {
    const parts = searchValue ? text.split(new RegExp(`(${escapeRegExpReservedChars(searchValue)})`, 'gi')) : [text];
@@ -27,3 +38,5 @@ export const HighlightedMessage = ({ text, searchValue = '', index, themeColorPa
       </View>
    );
 };
+
+HighlightedMessage.propTypes = propTypes;

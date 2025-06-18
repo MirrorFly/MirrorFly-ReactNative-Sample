@@ -4,6 +4,7 @@ import { Menu, MenuItem } from 'react-native-material-menu';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import { MenuIconBtn } from './Button';
 import Text from './Text';
+import PropTypes from 'prop-types';
 
 function MenuContainer({ menuItems, color, menuStyle }) {
    const [visible, setVisible] = React.useState(false);
@@ -44,6 +45,17 @@ function MenuContainer({ menuItems, color, menuStyle }) {
       </Menu>
    );
 }
+
+MenuContainer.propTypes = {
+   menuItems: PropTypes.arrayOf(
+      PropTypes.shape({
+         label: PropTypes.string,
+         formatter: PropTypes.func,
+      }),
+   ),
+   color: PropTypes.string,
+   menuStyle: PropTypes.object,
+};
 
 const styles = StyleSheet.create({
    topRightMenu: {

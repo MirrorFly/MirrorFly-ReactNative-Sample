@@ -171,7 +171,7 @@ export default class Slider extends PureComponent {
       value: new Animated.Value(this.props.value),
    };
 
-   componentWillMount() {
+   componentWillMount() { // NOSONAR
       this._panResponder = PanResponder.create({
          onStartShouldSetPanResponder: this._handleStartShouldSetPanResponder,
          onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,
@@ -183,7 +183,7 @@ export default class Slider extends PureComponent {
       });
    }
 
-   componentWillReceiveProps(nextProps) {
+   componentWillReceiveProps(nextProps) { // NOSONAR
       const newValue = nextProps.value;
 
       if (this.props.value !== newValue) {
@@ -400,9 +400,11 @@ export default class Slider extends PureComponent {
 
    _setCurrentValueAnimated = value => {
       const animationType = this.props.animationType;
-      const animationConfig = Object.assign({}, DEFAULT_ANIMATION_CONFIGS[animationType], this.props.animationConfig, {
+      const animationConfig = {
+         ...DEFAULT_ANIMATION_CONFIGS[animationType],
+         ...this.props.animationConfig,
          toValue: value,
-      });
+      };
 
       Animated[animationType](this.state.value, animationConfig).start();
    };
@@ -430,7 +432,7 @@ export default class Slider extends PureComponent {
       const { width, height } = this._getTouchOverflowSize();
 
       const touchOverflowStyle = {};
-      if (width !== undefined && height !== undefined) {
+      if (width !== undefined && height !== undefined) { //NOSONAR
          const verticalMargin = -height / 2;
          touchOverflowStyle.marginTop = verticalMargin;
          touchOverflowStyle.marginBottom = verticalMargin;
@@ -481,6 +483,14 @@ export default class Slider extends PureComponent {
       return <Animated.View style={[defaultStyles.debugThumbTouchArea, positionStyle]} pointerEvents="none" />;
    };
 }
+
+Slider.propTypes = {
+   ...Slider.propTypes,
+   styles: PropTypes.object,
+   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+   trackStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+   thumbStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+};
 
 const defaultStyles = StyleSheet.create({
    container: {

@@ -9,6 +9,7 @@ import { DownloadCancel, DownloadIcon, UploadIcon } from './Icons';
 import MediaBar from './MediaBar';
 import Pressable from './Pressable';
 import Text from './Text';
+import PropTypes from 'prop-types';
 
 const MediaProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel, msgId, fileSize }) => {
    const stringSet = getStringSet();
@@ -64,6 +65,20 @@ const MediaProgressLoader = ({ mediaStatus, onDownload, onUpload, onCancel, msgI
    };
 
    return <View style={styles.container}>{renderMediaStatus()}</View>;
+};
+
+MediaProgressLoader.propTypes = {
+   mediaStatus: PropTypes.oneOf([
+      mediaStatusConstants.NOT_DOWNLOADED,
+      mediaStatusConstants.DOWNLOADING,
+      mediaStatusConstants.NOT_UPLOADED,
+      mediaStatusConstants.UPLOADING,
+   ]),
+   onDownload: PropTypes.func,
+   onUpload: PropTypes.func,
+   onCancel: PropTypes.func,
+   msgId: PropTypes.string,
+   fileSize: PropTypes.number,
 };
 
 export default React.memo(MediaProgressLoader);

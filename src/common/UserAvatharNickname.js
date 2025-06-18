@@ -8,6 +8,7 @@ import Avathar from './Avathar';
 import NickName from './NickName';
 import Pressable from './Pressable';
 import SDK from '../SDK/SDK';
+import PropTypes from 'prop-types';
 
 function UserAvatharNickname({ item }) {
    const themeColorPalatte = useThemeColorPalatte();
@@ -38,7 +39,7 @@ function UserAvatharNickname({ item }) {
             <View style={styles.wrapper}>
                <Avathar data={nickName} profileImage={imageToken} backgroundColor={colorCode} />
                <View style={[commonStyles.marginLeft_15, commonStyles.flex1]}>
-                  <NickName userId={item?.userId} data={nickName} style={styles.nickNameText} />
+                  <NickName userId={item?.userId} data={{ nickName }} style={styles.nickNameText} />
                </View>
             </View>
          </Pressable>
@@ -47,6 +48,14 @@ function UserAvatharNickname({ item }) {
       </React.Fragment>
    );
 }
+
+UserAvatharNickname.propTypes = {
+   item: PropTypes.shape({
+      userId: PropTypes.string,
+      nickName: PropTypes.string,
+      image: PropTypes.string,
+   }),
+};
 
 export default UserAvatharNickname;
 

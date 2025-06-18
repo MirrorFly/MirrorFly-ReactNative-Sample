@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { ActivityIndicator, View } from 'react-native';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
@@ -10,10 +11,10 @@ function LoadingModal({ visible, message, behavior }) {
 
    const styles = {
       ...{ backgroundColor: themeColorPalatte.screenBgColor },
-      ...(Boolean(message) ? commonStyles.borderRadius_5 : commonStyles.borderRadius_50),
+      ...(message ? commonStyles.borderRadius_5 : commonStyles.borderRadius_50),
       ...commonStyles.hstack,
       ...commonStyles.alignItemsCenter,
-      ...(Boolean(message) && { paddingHorizontal: 15, minWidth: 300, minHeight: 70 }), // Include paddingHorizontal only when message is available
+      ...(message && { paddingHorizontal: 15, minWidth: 300, minHeight: 70 }), // Include paddingHorizontal only when message is available
    };
 
    if (behavior === 'custom' && visible) {
@@ -27,7 +28,7 @@ function LoadingModal({ visible, message, behavior }) {
             ]}>
             <View style={styles}>
                <ActivityIndicator size={'large'} color={themeColorPalatte.primaryColor} />
-               {Boolean(message) && (
+               {message && (
                   <Text
                      style={[
                         {
@@ -49,7 +50,7 @@ function LoadingModal({ visible, message, behavior }) {
          <ModalCenteredContent>
             <View style={styles}>
                <ActivityIndicator size={'large'} color={themeColorPalatte.primaryColor} />
-               {Boolean(message) && (
+               {message && (
                   <Text
                      style={[
                         {
@@ -66,5 +67,10 @@ function LoadingModal({ visible, message, behavior }) {
       </Modal>
    );
 }
+LoadingModal.propTypes = {
+   visible: PropTypes.bool,
+   message: PropTypes.string,
+   behavior: PropTypes.oneOf(['custom', 'default']),
+};
 
 export default LoadingModal;

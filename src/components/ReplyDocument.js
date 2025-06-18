@@ -5,6 +5,7 @@ import NickName from '../common/NickName';
 import Text from '../common/Text';
 import { getUserIdFromJid } from '../helpers/chatHelpers';
 import commonStyles from '../styles/commonStyles';
+import PropTypes from 'prop-types';
 
 const ReplyDocument = props => {
    const { replyMsgItems, handleRemove } = props;
@@ -42,6 +43,11 @@ const ReplyDocument = props => {
          </View>
       </View>
    );
+};
+
+ReplyDocument.propTypes = {
+   replyMsgItems: PropTypes.object,
+   handleRemove: PropTypes.func,
 };
 
 export default ReplyDocument;

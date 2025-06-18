@@ -1,4 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -57,7 +58,7 @@ const RecentChatItem = React.memo(
             <Pressable
                delayLongPress={300}
                onPress={onPress(userJid)}
-               contentContainerStyle={isSelected && commonStyles.pressedBg(themeColorPalatte.pressedBg)}
+               contentContainerStyle={isSelected ? commonStyles.pressedBg(themeColorPalatte.pressedBg) : {}}
                onLongPress={searchText ? null : handleSelectChat(userJid)}>
                <View style={[styles.container, isSelected && commonStyles.pressedBg, styles.avatarContainer]}>
                   <View style={[commonStyles.positionRelative]}>
@@ -122,6 +123,13 @@ const RecentChatItem = React.memo(
       return prevProps.item === nextProps.item;
    },
 );
+
+RecentChatItem.propTypes = {
+   item: PropTypes.object,
+   index: PropTypes.number,
+   component: PropTypes.string,
+   stringSet: PropTypes.object,
+};
 
 const styles = StyleSheet.create({
    container: {

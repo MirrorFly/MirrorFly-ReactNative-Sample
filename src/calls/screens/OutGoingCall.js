@@ -90,18 +90,17 @@ const OutGoingCall = () => {
    };
 
    const handleVideoMute = (_videoMuted, callerUUID) => {
-      if (callType === CALL_TYPE_AUDIO) return;
+      if (callType === CALL_TYPE_AUDIO) {
+         return;
+      }
       updateCallVideoMute(_videoMuted, callerUUID);
    };
 
    return (
       <ImageBackground style={styles.container} source={getImageSource(OutgoingCallBg)}>
-         {localStream &&
-            localStream.video &&
-            !isVideoMuted &&
-            callStatus.toLowerCase() !== CALL_STATUS_DISCONNECTED && (
-               <VideoComponent stream={localStream} isFrontCameraEnabled={isFrontCameraEnabled} />
-            )}
+         {localStream?.video && !isVideoMuted && callStatus.toLowerCase() !== CALL_STATUS_DISCONNECTED && (
+            <VideoComponent stream={localStream} isFrontCameraEnabled={isFrontCameraEnabled} />
+         )}
          <View>
             {/* down arrow to close the modal */}
             <CloseCallModalButton onPress={handleClosePress} />

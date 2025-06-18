@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import { BackHandler, ImageBackground, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
@@ -107,6 +108,10 @@ function ConversationScreen({ chatUser = '' }) {
       </KeyboardAvoidingView>
    );
 }
+
+ConversationScreen.propTypes = {
+   chatUser: PropTypes.string,
+};
 
 const styles = StyleSheet.create({
    container: {

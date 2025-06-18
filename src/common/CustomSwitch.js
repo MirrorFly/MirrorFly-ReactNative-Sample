@@ -4,6 +4,7 @@ import { showNetWorkToast } from '../helpers/chatHelpers';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import IconButton from './IconButton';
 import { useNetworkStatus } from './hooks';
+import PropTypes from 'prop-types';
 
 function CustomSwitch({ value, onToggle, disabled = false, networkDisabled = false }) {
    const isNetWorkConnected = useNetworkStatus();
@@ -58,6 +59,13 @@ function CustomSwitch({ value, onToggle, disabled = false, networkDisabled = fal
       </IconButton>
    );
 }
+
+CustomSwitch.propTypes = {
+   value: PropTypes.number,
+   onToggle: PropTypes.func,
+   disabled: PropTypes.bool,
+   networkDisabled: PropTypes.bool,
+};
 
 const styles = StyleSheet.create({
    switchContainer: {

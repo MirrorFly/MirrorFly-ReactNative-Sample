@@ -4,18 +4,16 @@ import { FlatList, StyleSheet, View } from 'react-native';
 import RootNavigation from '../Navigation/rootNavigation';
 import AlertModal from '../common/AlertModal';
 import { FrontArrowIcon } from '../common/Icons';
+import LoadingModal from '../common/LoadingModal';
 import Pressable from '../common/Pressable';
 import ScreenHeader from '../common/ScreenHeader';
 import Text from '../common/Text';
-import { settingsMenu, showToast } from '../helpers/chatHelpers';
+import { settingsMenu } from '../helpers/chatHelpers';
 import { getStringSet } from '../localization/stringSet';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import { logoutClearVariables, mirrorflyLogout } from '../uikitMethods';
 import { REGISTERSCREEN } from './constants';
-import LoadingModal from '../common/LoadingModal';
-import FileViewer from 'react-native-file-viewer';
-import SDK from '../SDK/SDK';
 
 function MenuScreen() {
    const navigation = useNavigation();
@@ -44,6 +42,9 @@ function MenuScreen() {
       const { name, icon: MenuIcon, rounteName } = item;
 
       const handleRoute = () => {
+         if (item.formatter) {
+            return item.formatter?.();
+         }
          if (rounteName) {
             navigation.navigate(rounteName);
          } else if (name === stringSet.SETTINGS_SCREEN.LOG_OUT_LABEL) {

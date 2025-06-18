@@ -23,6 +23,7 @@ import { MIX_BARE_JID, audioRecord } from '../helpers/constants';
 import { closePermissionModal, showPermissionModal } from '../redux/permissionSlice';
 import { useAudioRecording, useBlockedStatus } from '../redux/reduxHook';
 import Text from '../common/Text';
+import PropTypes from 'prop-types';
 
 function MakeCall({ chatUser, userId }) {
    const dispatch = useDispatch();
@@ -159,6 +160,11 @@ function MakeCall({ chatUser, userId }) {
       </>
    );
 }
+
+MakeCall.propTypes = {
+   chatUser: PropTypes.string,
+   userId: PropTypes.string,
+};
 
 export default MakeCall;
 

@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import NickName from '../common/NickName';
 import ApplicationColors from '../config/appColors';
 import RecentChatAvathar from './RecentChatAvathar';
+import PropTypes from 'prop-types';
 
 // {
 //    "image": "",
@@ -41,6 +42,12 @@ function UserItem({ item, index, searchText }) {
       </>
    );
 }
+
+UserItem.propTypes = {
+   item: PropTypes.object,
+   index: PropTypes.number,
+   searchText: PropTypes.string,
+};
 
 const styles = StyleSheet.create({
    container: {

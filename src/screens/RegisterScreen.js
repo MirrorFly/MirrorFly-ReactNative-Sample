@@ -1,5 +1,5 @@
 import messaging from '@react-native-firebase/messaging';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import { KeyboardAvoidingView, Linking, Platform, Pressable, View } from 'react-native';
 import RootNavigation from '../Navigation/rootNavigation';
@@ -20,7 +20,8 @@ import { COUNTRY_LIST_SCREEN, PROFILE_SCREEN, SETTINGS_STACK } from './constants
 import { useDispatch } from 'react-redux';
 import { setModalContent, toggleModalContent } from '../redux/alertModalSlice';
 
-const RegisterScreen = ({ navigation }) => {
+const RegisterScreen = () => {
+   const navigation = useNavigation();
    const dispatch = useDispatch();
    const { params: { selectcountry = { dial_code: '91', name: 'India', code: 'IN' } } = {} } = useRoute();
    const stringSet = getStringSet();

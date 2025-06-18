@@ -13,6 +13,7 @@ import store from '../redux/store';
 import { currentChatUser } from '../screens/ConversationScreen';
 import { mflog } from '../uikitMethods';
 import { conversationFlatListRef } from './ConversationList';
+import PropTypes from 'prop-types';
 
 const searchInputTime = createRef();
 searchInputTime.current = {};
@@ -33,7 +34,7 @@ const updateSearchIndex = (resetCurrentIndex, updateCurrentIndex) => {
 
 // Handle Scrolling to Correct Offset
 export const handleOffset = ({ userId, scrollIndex }) => {
-   return new Promise((resolve, reject) => {
+   return new Promise(resolve => {
       try {
          const itemLayout = conversationFlatListRef.current.itemLayout;
          const itemLayoutKeys = Object.keys(itemLayout);
@@ -62,7 +63,7 @@ export const handleOffset = ({ userId, scrollIndex }) => {
          }
       } catch (error) {
          mflog('Failed to handle offset', error);
-         reject(false);
+         resolve(false);
       }
    });
 };
@@ -262,6 +263,10 @@ function ChatHeaderSearch({ userId }) {
       </View>
    );
 }
+
+ChatHeaderSearch.propTypes = {
+   userId: PropTypes.string.isRequired,
+};
 
 export default ChatHeaderSearch;
 

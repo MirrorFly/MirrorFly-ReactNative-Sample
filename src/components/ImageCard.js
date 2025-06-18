@@ -11,6 +11,7 @@ import { useThemeColorPalatte } from '../redux/reduxHook';
 import commonStyles from '../styles/commonStyles';
 import CaptionContainer from './CaptionContainer';
 import ReplyMessage from './ReplyMessage';
+import PropTypes from 'prop-types';
 
 function ImageCard({ chatUser, item, isSender }) {
    const themeColorPalatte = useThemeColorPalatte();
@@ -94,7 +95,7 @@ function ImageCard({ chatUser, item, isSender }) {
                   fileSize={fileSize}
                />
             </View>
-            {!Boolean(caption) && (
+            {!caption && (
                <View style={styles.messgeStatusAndTimestampWithoutCaption}>
                   <ImageBackground source={getImageSource(ic_baloon)} style={styles.imageBg}>
                      {isSender && getMessageStatus(msgStatus)}
@@ -117,6 +118,12 @@ function ImageCard({ chatUser, item, isSender }) {
       </View>
    );
 }
+
+ImageCard.propTypes = {
+   chatUser: PropTypes.string,
+   item: PropTypes.object,
+   isSender: PropTypes.bool,
+};
 
 export default ImageCard;
 

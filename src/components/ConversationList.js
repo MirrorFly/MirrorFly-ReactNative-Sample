@@ -11,6 +11,7 @@ import { CHAT_TYPE_GROUP, NOTIFICATION } from '../helpers/constants';
 import { useChatMessages, useThemeColorPalatte } from '../redux/reduxHook';
 import { getCurrentUserJid } from '../uikitMethods';
 import ChatMessage from './ChatMessage';
+import PropTypes from 'prop-types';
 
 export const conversationFlatListRef = createRef();
 conversationFlatListRef.current = {};
@@ -177,6 +178,10 @@ const ConversationList = ({ chatUser }) => {
          )}
       </>
    );
+};
+
+ConversationList.propTypes = {
+   chatUser: PropTypes.string.isRequired,
 };
 
 export default ConversationList;

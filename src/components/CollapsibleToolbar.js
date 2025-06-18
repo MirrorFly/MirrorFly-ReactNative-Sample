@@ -21,14 +21,10 @@ const propTypes = {
    toolbarMinHeight: PropTypes.number,
    imageToken: PropTypes.string,
    handleBackBtn: PropTypes.func,
-};
-
-const defaultProps = {
-   title: '',
-   toolbarMaxHeight: 400,
-   toolbarMinHeight: 60,
-   handleBackBtn: () => {},
-   imageToken: '',
+   bgColor: PropTypes.string,
+   titleStatus: PropTypes.string,
+   mobileNo: PropTypes.string,
+   email: PropTypes.string,
 };
 
 const CollapsibleToolbar = ({
@@ -37,8 +33,8 @@ const CollapsibleToolbar = ({
    title,
    imageToken,
    titleStatus,
-   toolbarMaxHeight,
-   toolbarMinHeight,
+   toolbarMaxHeight = 400,
+   toolbarMinHeight = 60,
    mobileNo,
    email,
    handleBackBtn,
@@ -255,7 +251,6 @@ const CollapsibleToolbar = ({
 };
 
 CollapsibleToolbar.propTypes = propTypes;
-CollapsibleToolbar.defaultProps = defaultProps;
 
 export default CollapsibleToolbar;
 const styles = StyleSheet.create({

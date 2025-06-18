@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import moment from 'moment';
 import { getStringSet, replacePlaceholders } from '../localization/stringSet';
 
-const TIME_FORMAT = "HH:mm";
+const TIME_FORMAT = 'HH:mm';
 function datetoTime(secs) {
    let todayDate = new Date();
    todayDate.setSeconds(todayDate.getSeconds() - secs);
@@ -21,7 +21,7 @@ function secondsToHms(secs) {
 function findYesterday(secs, currentDate) {
    let currentDateInSec = currentDate.getUTCHours();
    let remaingSec = secondsToHms(secs) - currentDateInSec;
-   return remaingSec <= 24 ? true : false;
+   return remaingSec <= 24;
 }
 
 /**
@@ -63,7 +63,7 @@ const formatAMPM = date => {
    let minutes = date.getMinutes();
    let ampm = hours >= 12 ? 'pm' : 'am';
    hours = hours % 12;
-   hours = hours ? hours : 12;
+   hours = hours || 12;
    hours = hours < 10 ? '0' + hours : hours;
    minutes = minutes < 10 ? '0' + minutes : minutes;
    return hours + ':' + minutes + ' ' + ampm;
@@ -212,21 +212,19 @@ export const getLastseen = secs => {
             day: weekday[userDate.getDay()],
             time: moment(userDate).format('h:mm a'),
          });
+      } else if (userDate.getDate().toString().length > 1) {
+         return replacePlaceholders(stringSet.LAST_SEEN.LAST_SEEN_MORE_THAN_WEEK_DATE_ABOVE_0, {
+            date: userDate.getDate(),
+            month: month[userDate.getMonth()],
+            year: userDate.getFullYear(),
+         });
       } else {
-         if (userDate.getDate().toString().length > 1) {
-            return replacePlaceholders(stringSet.LAST_SEEN.LAST_SEEN_MORE_THAN_WEEK_DATE_ABOVE_0, {
-               date: userDate.getDate(),
-               month: month[userDate.getMonth()],
-               year: userDate.getFullYear(),
-            });
-         } else {
-            return replacePlaceholders(stringSet.LAST_SEEN.LAST_SEEN_MORE_THAN_WEEK_DATE_BELOW_0, {
-               zero: '0',
-               date: userDate.getDate(),
-               month: month[userDate.getMonth()],
-               year: userDate.getFullYear(),
-            });
-         }
+         return replacePlaceholders(stringSet.LAST_SEEN.LAST_SEEN_MORE_THAN_WEEK_DATE_BELOW_0, {
+            zero: '0',
+            date: userDate.getDate(),
+            month: month[userDate.getMonth()],
+            year: userDate.getFullYear(),
+         });
       }
    } catch (error) {
       console.log(error, 'getLastseen error');

@@ -9,6 +9,7 @@ import { setTextMessage } from '../redux/draftSlice';
 import { useChatMessage, useEditMessageId } from '../redux/reduxHook';
 import ChatInput from './ChatInput';
 import ChatMessage from './ChatMessage';
+import PropTypes from 'prop-types';
 
 function EditMessage({ jid }) {
    const dispatch = useDispatch();
@@ -42,5 +43,9 @@ function EditMessage({ jid }) {
       </SlideInView>
    );
 }
+
+EditMessage.propTypes = {
+   jid: PropTypes.string.isRequired,
+};
 
 export default EditMessage;

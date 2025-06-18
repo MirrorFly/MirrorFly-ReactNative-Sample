@@ -34,7 +34,13 @@ const Tile = ({ item, renderKey, themeColorPalatte }) => {
    );
 };
 
-function GroupChatMessageInfo({ dbValue, chatUser }) {
+Tile.propTypes = {
+   item: PropTypes.object,
+   renderKey: PropTypes.string,
+   themeColorPalatte: PropTypes.object,
+};
+
+function GroupChatMessageInfo({ dbValue }) {
    const stringSet = getStringSet();
    const themeColorPalatte = useThemeColorPalatte();
    const delivered = dbValue.filter(val => val.receivedTime);

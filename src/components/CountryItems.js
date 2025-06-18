@@ -4,6 +4,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import Text from '../common/Text';
 import { useThemeColorPalatte } from '../redux/reduxHook';
 import { REGISTERSCREEN } from '../screens/constants';
+import PropTypes from 'prop-types';
 
 const CountryItems = props => {
    const navigation = useNavigation();
@@ -21,6 +22,13 @@ const CountryItems = props => {
          </TouchableOpacity>
       </View>
    );
+};
+
+CountryItems.propTypes = {
+   renderItem: PropTypes.shape({
+      name: PropTypes.string,
+      dial_code: PropTypes.string,
+   }),
 };
 
 export default CountryItems;

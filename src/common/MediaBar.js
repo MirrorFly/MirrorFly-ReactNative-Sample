@@ -1,6 +1,7 @@
 import React from 'react';
 import { I18nManager, View } from 'react-native';
 import { Bar } from 'react-native-progress';
+import PropTypes from 'prop-types';
 import { useMediaProgress } from '../redux/reduxHook';
 
 function MediaBar({ msgId }) {
@@ -31,5 +32,8 @@ function MediaBar({ msgId }) {
       </View>
    );
 }
+MediaBar.propTypes = {
+   msgId: PropTypes.string,
+};
 
 export default MediaBar;

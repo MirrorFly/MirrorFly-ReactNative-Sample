@@ -8,6 +8,7 @@ import callUpArrow1 from '../../assets/callUpArrow1.png';
 import { IncomingCallAccept, IncomingCallEnd, IncomingCallIcon, IncomingVideoIcon } from '../../common/Icons';
 import { getImageSource } from '../../helpers/chatHelpers';
 import PulseAnimationComponent from '../components/PulseAnimationComponent';
+import PropTypes from 'prop-types';
 
 const GestureAnimationScreen = (props = {}) => {
    const { acceptCall, declineCall, callType } = props;
@@ -19,7 +20,7 @@ const GestureAnimationScreen = (props = {}) => {
    const upArrow2Opacity = React.useRef(new Animated.Value(1)).current;
    const downArrow1Opacity = React.useRef(new Animated.Value(1)).current;
    const downArrow2Opacity = React.useRef(new Animated.Value(1)).current;
-   let [swipeColor, setSwipeColors] = React.useState('#F2F2F2');
+   const [swipeColors, setSwipeColors] = React.useState('#F2F2F2');
    const duration = 300;
    const delay = 100;
    let swipeHandle = false;
@@ -144,12 +145,12 @@ const GestureAnimationScreen = (props = {}) => {
                   style={{
                      height: 60,
                      width: 60,
-                     backgroundColor: swipeColor,
+                     backgroundColor: swipeColors,
                      justifyContent: 'center',
                      alignItems: 'center',
                      borderRadius: 60,
                   }}>
-                  {swipeColor === '#F2F2F2' &&
+                  {swipeColors === '#F2F2F2' &&
                      (callType === CALL_TYPE_AUDIO ? (
                         <IncomingCallIcon width={20} height={20} />
                      ) : (
@@ -159,7 +160,7 @@ const GestureAnimationScreen = (props = {}) => {
             </Animated.View>
          </View>
       );
-   }, [panY, swipeColor]);
+   }, [panY, swipeColors]);
 
    return (
       <View style={styles.container}>
@@ -191,6 +192,12 @@ const GestureAnimationScreen = (props = {}) => {
          </View>
       </View>
    );
+};
+
+GestureAnimationScreen.propTypes = {
+   acceptCall: PropTypes.func,
+   declineCall: PropTypes.func,
+   callType: PropTypes.string,
 };
 
 export default GestureAnimationScreen;
